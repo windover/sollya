@@ -1,0 +1,10 @@
+>  infnorm -2068904100479875/1409286144+(68695712109675/67108864+(-82114676523855/268435456+(1278056664137/25165824+(-5304537825/1048576+(1238417/4096+(-1285/128+1/7*x)*x)*x)*x)*x)*x)*x in [10.01;10.07], diam = 1e-8;
+Warning: Rounding occured when converting constant "10.01" to floating-point with 120 bits.
+If safe computation is needed, try to increase the precision.
+Warning: Rounding occured when converting constant "10.07" to floating-point with 120 bits.
+If safe computation is needed, try to increase the precision.
+Warning: Rounding occured when converting constant "1e-8" to floating-point with 120 bits.
+If safe computation is needed, try to increase the precision.
+infnorm result:
+[0.21538767115275064132264757731233136578E-11;0.43920189439695513898590389812856932671E-10]
+0.43920189439695513898590389812856932671E-10
