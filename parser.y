@@ -81,6 +81,9 @@ void yyerror(char *message) {
 %token  INFNORMTOKEN
 %token  REMEZTOKEN
 %token  DIAMTOKEN
+%token  DOUBLETOKEN
+%token  DOUBLEDOUBLETOKEN
+%token  TRIPLEDOUBLETOKEN
 
 
 %type <other> commands
@@ -506,6 +509,27 @@ prefixfunction:                 REMEZTOKEN LPARTOKEN function COMMATOKEN degree 
                            {
                              temp_node = (node*) malloc(sizeof(node));
 			     temp_node->nodeType = ABS;
+			     temp_node->child1 = $3;
+			     $$ = temp_node;
+                           }		
+                        |       DOUBLETOKEN LPARTOKEN function RPARTOKEN     						
+                           {
+                             temp_node = (node*) malloc(sizeof(node));
+			     temp_node->nodeType = DOUBLE;
+			     temp_node->child1 = $3;
+			     $$ = temp_node;
+                           }		
+                        |       DOUBLEDOUBLETOKEN LPARTOKEN function RPARTOKEN     			  		
+                           {
+                             temp_node = (node*) malloc(sizeof(node));
+			     temp_node->nodeType = DOUBLEDOUBLE;
+			     temp_node->child1 = $3;
+			     $$ = temp_node;
+                           }		
+                        |       TRIPLEDOUBLETOKEN LPARTOKEN function RPARTOKEN     			   	
+                           {
+                             temp_node = (node*) malloc(sizeof(node));
+			     temp_node->nodeType = TRIPLEDOUBLE;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		

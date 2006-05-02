@@ -69,6 +69,21 @@ REMEZ           "remez"
 INFNORM         "infnorm"
 DIAM            "diam"
 
+DOUBLELONG       "double"
+DOUBLEDOUBLELONG "doubledouble"
+TRIPLEDOUBLELONG "tripledouble"
+
+DOUBLESHORT      "D"
+DOUBLEDOUBLESHORT "DD"
+TRIPLEDOUBLESHORT "TD"
+
+
+DOUBLE          ({DOUBLELONG}|{DOUBLESHORT})
+DOUBLEDOUBLE    ({DOUBLEDOUBLELONG}|{DOUBLEDOUBLESHORT})
+TRIPLEDOUBLE    ({TRIPLEDOUBLELONG}|{TRIPLEDOUBLESHORT})
+
+
+
 %%
 
 %{
@@ -126,6 +141,10 @@ DIAM            "diam"
 {INFNORM}       {     return INFNORMTOKEN;      }
 {REMEZ}         {     return REMEZTOKEN;        } 
 {DIAM}          {     return DIAMTOKEN;         }
+{DOUBLE}        {     return DOUBLETOKEN;       }
+{DOUBLEDOUBLE}  {     return DOUBLEDOUBLETOKEN; }
+{TRIPLEDOUBLE}  {     return TRIPLEDOUBLETOKEN; }
+ 
 
 {VARIABLE}      {     			     
                       if (variablename == NULL) { 

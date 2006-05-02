@@ -3,6 +3,7 @@
 #include "expression.h"
 #include "infnorm.h"
 #include "chain.h"
+#include "double.h"
 
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
@@ -129,6 +130,18 @@ void freeNodeI(nodeI *tree) {
     free(tree);
     break;
   case ABS:
+    freeNodeI(tree->child1);
+    free(tree);
+    break;
+  case DOUBLE:
+    freeNodeI(tree->child1);
+    free(tree);
+    break;
+  case DOUBLEDOUBLE:
+    freeNodeI(tree->child1);
+    free(tree);
+    break;
+  case TRIPLEDOUBLE:
     freeNodeI(tree->child1);
     free(tree);
     break;
@@ -282,6 +295,21 @@ nodeI* expressionToIntervalExpression(node *tree, mp_prec_t prec) {
     copy->nodeType = ABS;
     copy->child1 = expressionToIntervalExpression(tree->child1,prec);
     break;
+  case DOUBLE:
+    copy = (nodeI*) malloc(sizeof(nodeI));
+    copy->nodeType = DOUBLE;
+    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
+    break;
+  case DOUBLEDOUBLE:
+    copy = (nodeI*) malloc(sizeof(nodeI));
+    copy->nodeType = DOUBLEDOUBLE;
+    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
+    break;
+  case TRIPLEDOUBLE:
+    copy = (nodeI*) malloc(sizeof(nodeI));
+    copy->nodeType = TRIPLEDOUBLE;
+    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
+    break;
   default:
    fprintf(stderr,"expressionToIntervalExpression: unknown identifier in the tree\n");
    exit(1);
@@ -377,6 +405,80 @@ void mpfi_pow(mpfi_t z, mpfi_t x, mpfi_t y) {
   mpfi_set(z,res);
   mpfi_clear(res);
 }
+
+
+void mpfi_round_to_double(mpfi_t rop, mpfi_t op) {
+  mpfr_t l,r, lres, rres;
+  mp_prec_t prec;
+
+  prec = mpfi_get_prec(op) + 10;
+  mpfr_init2(l,prec);
+  mpfr_init2(r,prec);
+  mpfr_init2(lres,prec);
+  mpfr_init2(rres,prec);
+
+  mpfi_get_left(l,op);
+  mpfi_get_right(r,op);
+
+  mpfr_round_to_double(lres,l);
+  mpfr_round_to_double(rres,r);
+
+  mpfi_interv_fr(rop,lres,rres);
+
+  mpfr_clear(l);
+  mpfr_clear(r);
+  mpfr_clear(lres);
+  mpfr_clear(rres);
+}
+
+void mpfi_round_to_doubledouble(mpfi_t rop, mpfi_t op) {
+  mpfr_t l,r, lres, rres;
+  mp_prec_t prec;
+
+  prec = mpfi_get_prec(op) + 10;
+  mpfr_init2(l,prec);
+  mpfr_init2(r,prec);
+  mpfr_init2(lres,prec);
+  mpfr_init2(rres,prec);
+
+  mpfi_get_left(l,op);
+  mpfi_get_right(r,op);
+
+  mpfr_round_to_doubledouble(lres,l);
+  mpfr_round_to_doubledouble(rres,r);
+
+  mpfi_interv_fr(rop,lres,rres);
+
+  mpfr_clear(l);
+  mpfr_clear(r);
+  mpfr_clear(lres);
+  mpfr_clear(rres);
+}
+
+void mpfi_round_to_tripledouble(mpfi_t rop, mpfi_t op) {
+  mpfr_t l,r, lres, rres;
+  mp_prec_t prec;
+
+  prec = mpfi_get_prec(op) + 10;
+  mpfr_init2(l,prec);
+  mpfr_init2(r,prec);
+  mpfr_init2(lres,prec);
+  mpfr_init2(rres,prec);
+
+  mpfi_get_left(l,op);
+  mpfi_get_right(r,op);
+
+  mpfr_round_to_tripledouble(lres,l);
+  mpfr_round_to_tripledouble(rres,r);
+
+  mpfi_interv_fr(rop,lres,rres);
+
+  mpfr_clear(l);
+  mpfr_clear(r);
+  mpfr_clear(lres);
+  mpfr_clear(rres);
+}
+
 
 
 void evaluateI(mpfi_t result, nodeI *tree, mpfi_t x, mp_prec_t prec) {
@@ -491,7 +593,20 @@ void evaluateI(mpfi_t result, nodeI *tree, mpfi_t x, mp_prec_t prec) {
     break;
   case ABS:
     evaluateI(stack1, tree->child1, x, prec);
-    mpfi_abs(result, stack1);
+    mpfi_abs(result, stack1);  
+    break;
+  case DOUBLE:
+    evaluateI(stack1, tree->child1, x, prec);
+    mpfi_round_to_double(result, stack1);
+    break;
+  case DOUBLEDOUBLE:
+    evaluateI(stack1, tree->child1, x, prec);
+    mpfi_round_to_doubledouble(result, stack1);
+    break;
+  case TRIPLEDOUBLE:
+    evaluateI(stack1, tree->child1, x, prec);
+    mpfi_round_to_tripledouble(result, stack1);
+    break;
   default:
     fprintf(stderr,"evaluateI: unknown identifier in the tree\n");
     exit(1);

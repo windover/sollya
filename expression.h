@@ -32,7 +32,9 @@
 #define POW 23
 #define NEG 24
 #define ABS 25
-
+#define DOUBLE 26
+#define DOUBLEDOUBLE 27
+#define TRIPLEDOUBLE 28
 
 
 

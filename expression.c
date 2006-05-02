@@ -4,7 +4,7 @@
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
 #include "main.h"
-
+#include "double.h"
 
 
 
@@ -116,6 +116,18 @@ void free_memory(node *tree) {
     free(tree);
     break;
   case ABS:
+    free_memory(tree->child1);
+    free(tree);
+    break;
+  case DOUBLE:
+    free_memory(tree->child1);
+    free(tree);
+    break;
+  case DOUBLEDOUBLE:
+    free_memory(tree->child1);
+    free(tree);
+    break;
+  case TRIPLEDOUBLE:
     free_memory(tree->child1);
     free(tree);
     break;
@@ -332,6 +344,21 @@ void printTree(node *tree) {
     printTree(tree->child1);
     printf(")");
     break;
+  case DOUBLE:
+    printf("double(");
+    printTree(tree->child1);
+    printf(")");
+    break;
+  case DOUBLEDOUBLE:
+    printf("doubledouble(");
+    printTree(tree->child1);
+    printf(")");
+    break;
+  case TRIPLEDOUBLE:
+    printf("tripledouble(");
+    printTree(tree->child1);
+    printf(")");
+    break;
   default:
    fprintf(stderr,"printTree: unknown identifier in the tree\n");
    exit(1);
@@ -480,6 +507,21 @@ node* copyTree(node *tree) {
   case ABS:
     copy = (node*) malloc(sizeof(node));
     copy->nodeType = ABS;
+    copy->child1 = copyTree(tree->child1);
+    break;
+  case DOUBLE:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = DOUBLE;
+    copy->child1 = copyTree(tree->child1);
+    break;
+  case DOUBLEDOUBLE:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = DOUBLEDOUBLE;
+    copy->child1 = copyTree(tree->child1);
+    break;
+  case TRIPLEDOUBLE:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = TRIPLEDOUBLE;
     copy->child1 = copyTree(tree->child1);
     break;
   default:
@@ -1119,6 +1161,24 @@ node* differentiate(node *tree) {
     temp_node2->child2 = h_copy;
     derivative = temp_node;
     break;
+  case DOUBLE:
+    printf(
+"Warning: the double rounding operator is not differentiable.\nRemplacing it by identity when differentiating.\n");
+    temp_node = differentiate(tree->child1);
+    derivative = temp_node;
+    break;
+  case DOUBLEDOUBLE:
+    printf(
+"Warning: the double-double rounding operator is not differentiable.\nRemplacing it by identity when differentiating.\n");
+    temp_node = differentiate(tree->child1);
+    derivative = temp_node;
+    break;
+  case TRIPLEDOUBLE:
+    printf(
+"Warning: the triple-double rounding operator is not differentiable.\nRemplacing it by identity when differentiating.\n");
+    temp_node = differentiate(tree->child1);
+    derivative = temp_node;
+    break;
   default:
    fprintf(stderr,"differentiate: unknown identifier in the tree\n");
    exit(1);
@@ -1271,6 +1331,21 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
     mpfr_abs(result, stack1, GMP_RNDN);
+    break;
+  case DOUBLE:
+    isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
+    if (!isConstant) break;
+    mpfr_round_to_double(result, stack1);
+    break;
+  case DOUBLEDOUBLE:
+    isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
+    if (!isConstant) break;
+    mpfr_round_to_doubledouble(result, stack1);
+  case TRIPLEDOUBLE:
+    isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
+    if (!isConstant) break;
+    mpfr_round_to_tripledouble(result, stack1);
+    break;
   default:
     fprintf(stderr,"evaluateConstantExpression: unknown identifier in the tree\n");
     exit(1);
@@ -1741,6 +1816,52 @@ node* simplify(node *tree) {
       simplified->nodeType = ABS;
       simplified->child1 = simplChild1;
     }
+    break;
+  case DOUBLE:
+    simplChild1 = simplify(tree->child1);
+    simplified = (node*) malloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_init2(*value,precision);
+      simplified->value = value;
+      mpfr_round_to_double(*value, *(simplChild1->value));
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = DOUBLE;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case DOUBLEDOUBLE:
+    simplChild1 = simplify(tree->child1);
+    simplified = (node*) malloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_init2(*value,precision);
+      simplified->value = value;
+      mpfr_round_to_doubledouble(*value, *(simplChild1->value));
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = DOUBLE;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case TRIPLEDOUBLE:
+    simplChild1 = simplify(tree->child1);
+    simplified = (node*) malloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_init2(*value,precision);
+      simplified->value = value;
+      mpfr_round_to_tripledouble(*value, *(simplChild1->value));
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = TRIPLEDOUBLE;
+      simplified->child1 = simplChild1;
+    }
+    break;
   default:
     fprintf(stderr,"simplify: unknown identifier in the tree\n");
     exit(1);
@@ -1863,6 +1984,19 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
   case ABS:
     evaluate(stack1, tree->child1, x, prec);
     mpfr_abs(result, stack1, GMP_RNDN);
+    break;
+  case DOUBLE:
+    evaluate(stack1, tree->child1, x, prec);
+    mpfr_round_to_double(result, stack1);
+    break;
+  case DOUBLEDOUBLE:
+    evaluate(stack1, tree->child1, x, prec);
+    mpfr_round_to_doubledouble(result, stack1);
+    break;
+  case TRIPLEDOUBLE:
+    evaluate(stack1, tree->child1, x, prec);
+    mpfr_round_to_tripledouble(result, stack1);
+    break;
   default:
     fprintf(stderr,"evaluate: unknown identifier in the tree\n");
     exit(1);
