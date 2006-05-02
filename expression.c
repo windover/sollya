@@ -1,4 +1,5 @@
 #include <mpfr.h>
+#include <gmp.h>
 #include "expression.h"
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
@@ -2004,4 +2005,472 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
 
   mpfr_clear(stack1); mpfr_clear(stack2);
   return;
+}
+
+
+int isPolynomial(node *tree) {
+  int res;
+  
+  switch (tree->nodeType) {
+  case VARIABLE:
+    res = 1;
+    break;
+  case CONSTANT:
+    res = 1;
+    break;
+  case ADD:
+    res = isPolynomial(tree->child1) && isPolynomial(tree->child2);
+    break;
+  case SUB:
+    res = isPolynomial(tree->child1) && isPolynomial(tree->child2);
+    break;
+  case MUL:
+    res = isPolynomial(tree->child1) && isPolynomial(tree->child2);
+    break;
+  case DIV:
+    res = 0;
+    break;
+  case SQRT:
+    res = 0;
+    break;
+  case EXP:
+    res = 0;
+    break;
+  case LOG:
+    res = 0;
+    break;
+  case LOG2:
+    res = 0;
+    break;
+  case LOG10:
+    res = 0;
+    break;
+  case SIN:
+    res = 0;
+    break;
+  case COS:
+    res = 0;
+    break;
+  case TAN:
+    res = 0;
+    break;
+  case ASIN:
+    res = 0;
+    break;
+  case ACOS:
+    res = 0;
+    break;
+  case ATAN:
+    res = 0;
+    break;
+  case SINH:
+    res = 0;
+    break;
+  case COSH:
+    res = 0;
+    break;
+  case TANH:
+    res = 0;
+    break;
+  case ASINH:
+    res = 0;
+    break;
+  case ACOSH:
+    res = 0;
+    break;
+  case ATANH:
+    res = 0;
+    break;
+  case POW:
+    {
+      res = 0;
+      if (tree->child2->nodeType == CONSTANT) {
+	if (mpfr_integer_p(*(tree->child2->value))) {
+	  if (mpfr_sgn(*(tree->child2->value)) >= 0) {
+	    res = 1;
+	  }
+	}
+      }
+      res = res && isPolynomial(tree->child1);
+    }
+    break;
+  case NEG:
+    res = isPolynomial(tree->child1);
+    break;
+  case ABS:
+    res = 0;
+    break;
+  case DOUBLE:
+    res = 0;
+    break;
+  case DOUBLEDOUBLE:
+    res = 0;
+    break;
+  case TRIPLEDOUBLE:
+    res = 0;
+    break;
+  default:
+    fprintf(stderr,"isPolynomial: unknown identifier in the tree\n");
+    exit(1);
+  }
+ return res;
+}
+
+#define MAX(a,b) (a) > (b) ? (a) : (b)
+
+
+int getDegreeUnsafe(node *tree) {
+  int l, r;
+  mpfr_t temp;
+
+  switch (tree->nodeType) {
+  case VARIABLE:
+    return 1;
+    break;
+  case CONSTANT:
+    return 0;
+    break;
+  case ADD:
+    l = getDegreeUnsafe(tree->child1);
+    r = getDegreeUnsafe(tree->child1);
+    return MAX(l,r);
+    break;
+  case SUB:
+    l = getDegreeUnsafe(tree->child1);
+    r = getDegreeUnsafe(tree->child1);
+    return MAX(l,r);
+    break;
+  case MUL:
+    l = getDegreeUnsafe(tree->child1);
+    r = getDegreeUnsafe(tree->child1);
+    return l + r;
+    break;
+  case POW:
+    {
+      l = getDegreeUnsafe(tree->child1);
+      if (tree->child2->nodeType != CONSTANT) {
+	printf("getDegree: an error occured. The exponent in a power operator is not constant.\n");
+	exit(1);
+      }
+      if (!mpfr_integer_p(*(tree->child2->value))) {
+	printf("getDegree: an error occured. The exponent in a power operator is not integer.\n");
+	exit(1);
+      }
+      if (mpfr_sgn(*(tree->child2->value)) < 0) {
+	printf("getDegree: an error occured. The exponent in a power operator is negative.\n");
+	exit(1);
+      }
+
+      r = (int) mpfr_get_d(*(tree->child2->value),GMP_RNDN);
+      mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
+      mpfr_set_si(temp,r,GMP_RNDN);
+      if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
+	printf(
+"Warning: tried to compute polynomial degree of an expression using a power operator with an exponent\n");
+	printf("which cannot be represented on a integer variable.\n");
+	mpfr_clear(temp);
+	return -1;
+      }
+      mpfr_clear(temp);
+      return l * r;
+    }
+    break;
+  case NEG:
+    return getDegreeUnsafe(tree->child1);
+    break;
+  default:
+    fprintf(stderr,"getDegree: an error occured on handling the expression tree\n");
+    exit(1);
+  }
+}
+
+int getDegree(node *tree) {
+  if (!isPolynomial(tree)) return -1;
+  return getDegreeUnsafe(tree);
+}
+
+
+
+
+
+node* makeBinomial(node *a, node *b, int n, int s) {
+  node *tree, *coeff, *aPow, *bPow, *tempNode, *tempNode2;
+  mpfr_t *coeffVal, *mpfr_temp;
+  unsigned int i;
+  mpz_t coeffGMP;
+  
+  tree = (node*) malloc(sizeof(node));
+  tree->nodeType = CONSTANT;
+  mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+  mpfr_init2(*mpfr_temp,precision);
+  mpfr_set_d(*mpfr_temp,0.0,GMP_RNDN);
+  tree->value = mpfr_temp;
+  mpz_init(coeffGMP);
+  for (i=0;i<=((unsigned int) n);i++) {
+    mpz_bin_uiui(coeffGMP,(unsigned int) n,i);
+    coeffVal = (mpfr_t *) malloc(sizeof(mpfr_t));
+    mpfr_init2(*coeffVal,precision);
+    if(mpfr_set_z(*coeffVal,coeffGMP,GMP_RNDN) != 0) {
+      printf("Warning: on expanding a power operator a rounding occured when calculating a binomial coefficient.\n");
+      printf("Try to increase the working precision.\n");
+    }
+    if ((s < 0) && ((i & 1) != 0)) {
+      mpfr_neg(*coeffVal,*coeffVal,GMP_RNDN);
+    }
+    coeff = (node*) malloc(sizeof(node));
+    coeff->nodeType = CONSTANT;
+    coeff->value = coeffVal;
+    aPow = (node*) malloc(sizeof(node));
+    aPow->nodeType = POW;
+    aPow->child1 = copyTree(a);
+    tempNode = (node*) malloc(sizeof(node));
+    tempNode->nodeType = CONSTANT;
+    mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+    mpfr_init2(*mpfr_temp,precision);
+    if(mpfr_set_ui(*mpfr_temp,i,GMP_RNDN) != 0) {
+      printf("Warning: on expanding a power operator a rounding occured when calculating an exponent constant.\n");
+      printf("Try to increase the working precision.\n");
+    }
+    tempNode->value = mpfr_temp;
+    aPow->child2 = tempNode;
+    bPow = (node*) malloc(sizeof(node));
+    bPow->nodeType = POW;
+    bPow->child1 = copyTree(b);
+    tempNode = (node*) malloc(sizeof(node));
+    tempNode->nodeType = CONSTANT;
+    mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+    mpfr_init2(*mpfr_temp,precision);
+    if(mpfr_set_ui(*mpfr_temp,((unsigned int) n) - i,GMP_RNDN) != 0) {
+      printf("Warning: on expanding a power operator a rounding occured when calculating an exponent constant.\n");
+      printf("Try to increase the working precision.\n");
+    }
+    tempNode->value = mpfr_temp;
+    bPow->child2 = tempNode;
+    tempNode = (node*) malloc(sizeof(node));
+    tempNode->nodeType = MUL;
+    tempNode->child1 = coeff;
+    tempNode->child2 = aPow;
+    tempNode2 = (node*) malloc(sizeof(node));
+    tempNode2->nodeType = MUL;
+    tempNode2->child1 = tempNode;
+    tempNode2->child2 = bPow;
+    tempNode = (node*) malloc(sizeof(node));
+    tempNode->nodeType = ADD;
+    tempNode->child1 = tree;
+    tempNode->child2 = tempNode2;
+    tree = tempNode;
+  }
+  mpz_clear(coeffGMP);
+
+  return tree;
+}
+
+
+node* expandPowerInPolynomialUnsafe(node *tree) {
+  node *copy, *left, *tempTree, *tempTree2, *tempTree3;
+  int r, i;
+  mpfr_t temp;
+  mpfr_t *value;
+
+
+  switch (tree->nodeType) {
+  case VARIABLE:
+    return copyTree(tree);
+    break;
+  case CONSTANT:
+    return copyTree(tree);
+    break;
+  case ADD:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ADD;
+    copy->child1 = expandPowerInPolynomialUnsafe(tree->child1);
+    copy->child2 = expandPowerInPolynomialUnsafe(tree->child2);
+    return copy;
+    break;
+  case SUB:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = SUB;
+    copy->child1 = expandPowerInPolynomialUnsafe(tree->child1);
+    copy->child2 = expandPowerInPolynomialUnsafe(tree->child2);
+    return copy;    
+    break;
+  case MUL:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = MUL;
+    copy->child1 = expandPowerInPolynomialUnsafe(tree->child1);
+    copy->child2 = expandPowerInPolynomialUnsafe(tree->child2);
+    return copy;
+    break;
+  case POW:
+    {
+      left = expandPowerInPolynomialUnsafe(tree->child1);
+      if (tree->child2->nodeType != CONSTANT) {
+	printf("expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is not constant.\n");
+	exit(1);
+      }
+      if (!mpfr_integer_p(*(tree->child2->value))) {
+	printf("expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is not integer.\n");
+	exit(1);
+      }
+      if (mpfr_sgn(*(tree->child2->value)) < 0) {
+	printf("expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is negative.\n");
+	exit(1);
+      }
+
+      r = (int) mpfr_get_d(*(tree->child2->value),GMP_RNDN);
+      mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
+      mpfr_set_si(temp,r,GMP_RNDN);
+      if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
+	printf("expandPowerInPolynomialUnsafe: tried to expand an expression using a power operator with an exponent\n");
+	printf("which cannot be represented on a integer variable.\n");
+	mpfr_clear(temp);
+	exit(1);
+      }
+      mpfr_clear(temp);
+      if (r > 1) {
+	switch (left->nodeType) {
+	case VARIABLE:
+	case CONSTANT:
+	  tempTree = copyTree(left);
+	  for (i=1;i<r;i++) {
+	    tempTree2 = (node *) malloc(sizeof(node));
+	    tempTree2->nodeType = MUL;
+	    tempTree2->child1 = tempTree;
+	    tempTree2->child2 = copyTree(left);
+	    tempTree = tempTree2;
+	  }
+	  break;
+	case ADD:
+	  tempTree = makeBinomial(left->child1,left->child2,r,1);
+	  break;
+	case SUB:
+	  tempTree = makeBinomial(left->child1,left->child2,r,-1);
+	  break;
+	case MUL:
+	  tempTree = (node *) malloc(sizeof(node));
+	  tempTree->nodeType = MUL;
+	  tempTree2 = (node *) malloc(sizeof(node));
+	  tempTree2->nodeType = POW;
+	  tempTree2->child1 = copyTree(left->child1);
+	  tempTree3 = (node*) malloc(sizeof(node));
+	  tempTree3->nodeType = CONSTANT;
+	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	  mpfr_init2(*value,precision);
+	  mpfr_set_si(*value,r,GMP_RNDN);
+	  tempTree3->value = value;
+	  tempTree2->child2 = tempTree3;
+	  tempTree->child1 = tempTree2;
+	  tempTree2 = (node *) malloc(sizeof(node));
+	  tempTree2->nodeType = POW;
+	  tempTree2->child1 = copyTree(left->child2);
+	  tempTree3 = (node*) malloc(sizeof(node));
+	  tempTree3->nodeType = CONSTANT;
+	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	  mpfr_init2(*value,precision);
+	  mpfr_set_si(*value,r,GMP_RNDN);
+	  tempTree3->value = value;
+	  tempTree2->child2 = tempTree3;
+	  tempTree->child2 = tempTree2;
+	  break;
+	default:
+	  fprintf(stderr,"expandPowerInPolynomialUnsafe: an error occured on handling the expanded expression subtree\n");
+	  exit(1);
+	}
+	copy = expandPowerInPolynomialUnsafe(tempTree);
+	free_memory(tempTree);
+      } else {
+	if (r == 1) {
+	  copy = copyTree(left);
+	} else {
+	  copy = (node*) malloc(sizeof(node));
+	  copy->nodeType = CONSTANT;
+	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	  mpfr_init2(*value,precision);
+	  mpfr_set_d(*value,1.0,GMP_RNDN);
+	  copy->value = value;
+	}
+      }
+      free_memory(left);
+      return copy;
+    }
+    break;
+  case NEG:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = NEG;
+    copy->child1 = expandPowerInPolynomialUnsafe(tree->child1);
+    return copy;
+    break;
+  default:
+    fprintf(stderr,"expandPowerInPolynomialUnsafe: an error occured on handling the expression tree\n");
+    exit(1);
+  }
+}
+
+node* expandPowerInPolynomial(node *tree) {
+  if (getDegree(tree) < 0) return copyTree(tree);
+  return expandPowerInPolynomialUnsafe(tree);
+}
+
+
+node* expandPolynomialUnsafe(node *tree) {
+  node *left, *right, *copy; 
+
+  switch (tree->nodeType) {
+  case VARIABLE:
+    return copyTree(tree);
+    break;
+  case CONSTANT:
+    return copyTree(tree);
+    break;
+  case ADD:
+    left = expandPolynomialUnsafe(tree->child1);
+    right = expandPolynomialUnsafe(tree->child2);
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ADD;
+    copy->child1 = left;
+    copy->child2 = left;
+    return copy;    
+    break;
+  case SUB:
+    left = expandPolynomialUnsafe(tree->child1);
+    right = expandPolynomialUnsafe(tree->child2);
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = SUB;
+    copy->child1 = left;
+    copy->child2 = left;
+    return copy;
+    break;
+  case MUL:
+    
+
+
+
+
+    return NULL;
+    break;
+  case NEG:
+    left = expandPolynomialUnsafe(tree->child1);
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = NEG;
+    copy->child1 = left;
+    return copy;
+    break;
+  default:
+    fprintf(stderr,"expandPolynomialUnsafe: an error occured on handling the expression tree\n");
+    exit(1);
+  }
+}
+
+node* expandPolynomial(node *tree) {
+  node *temp, *temp2;
+  if (getDegree(tree) < 0) return copyTree(tree);
+  temp = expandPowerInPolynomialUnsafe(tree);
+  temp2 = expandPolynomialUnsafe(temp);
+  free_memory(temp);
+  return temp2;
+}
+
+
+node* horner(node *tree) {
+  return expandPowerInPolynomial(tree);
 }

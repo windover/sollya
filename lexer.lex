@@ -82,6 +82,8 @@ DOUBLE          ({DOUBLELONG}|{DOUBLESHORT})
 DOUBLEDOUBLE    ({DOUBLEDOUBLELONG}|{DOUBLEDOUBLESHORT})
 TRIPLEDOUBLE    ({TRIPLEDOUBLELONG}|{TRIPLEDOUBLESHORT})
 
+HORNER          "horner"
+DEGREE          "degree"
 
 
 %%
@@ -144,7 +146,8 @@ TRIPLEDOUBLE    ({TRIPLEDOUBLELONG}|{TRIPLEDOUBLESHORT})
 {DOUBLE}        {     return DOUBLETOKEN;       }
 {DOUBLEDOUBLE}  {     return DOUBLEDOUBLETOKEN; }
 {TRIPLEDOUBLE}  {     return TRIPLEDOUBLETOKEN; }
- 
+{HORNER}        {     return HORNERTOKEN;       }
+{DEGREE}        {     return DEGREETOKEN;       }
 
 {VARIABLE}      {     			     
                       if (variablename == NULL) { 

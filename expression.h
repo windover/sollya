@@ -67,5 +67,7 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec);
 void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec);
 void printValue(mpfr_t *value, mp_prec_t prec);
 node* copyTree(node *tree);
+node* horner(node *tree);
+int getDegree(node *tree);
 
 #endif /* ifdef EXPRESSION_H*/

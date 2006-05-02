@@ -84,6 +84,8 @@ void yyerror(char *message) {
 %token  DOUBLETOKEN
 %token  DOUBLEDOUBLETOKEN
 %token  TRIPLEDOUBLETOKEN
+%token  HORNERTOKEN
+%token  DEGREETOKEN
 
 
 %type <other> commands
@@ -364,7 +366,24 @@ function:			term
 ;
 
 		
-prefixfunction:                 REMEZTOKEN LPARTOKEN function COMMATOKEN degree COMMATOKEN range RPARTOKEN
+prefixfunction:                 DEGREETOKEN LPARTOKEN function RPARTOKEN
+                           {
+			      temp_node = (node*) malloc(sizeof(node));
+			      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+			      mpfr_init2(*(mpfr_temp),(mp_prec_t) precision);
+			      mpfr_set_si(*(mpfr_temp),getDegree($3),GMP_RNDN);
+                              temp_node->nodeType = CONSTANT;
+                              temp_node->value = mpfr_temp;
+			      free_memory($3);
+			      $$ = temp_node;
+                           }
+                        |       HORNERTOKEN LPARTOKEN function RPARTOKEN
+                           {
+			      temp_node = horner($3);
+			      free_memory($3);
+			      $$ = temp_node;
+                           }
+			|       REMEZTOKEN LPARTOKEN function COMMATOKEN degree COMMATOKEN range RPARTOKEN
                            {
 			      temp_node = remez($3, $5, *($7.a), *($7.b), precision);
 			      free_memory($3);
