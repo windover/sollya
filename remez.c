@@ -161,9 +161,41 @@ GEN quickFindZeros(node *tree,int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     mpfr_set(y1,y2,GMP_RNDN);
     evaluate(y2, tree, x2, prec);
   }
+  
+  if (i<deg) printf("The function fails to oscillate enough. Good luck for you.\n");
+  else {
+    if (i==deg) { res[deg+1] = (long)(mpfr_to_PARI(a)); res[deg+2] = (long)(mpfr_to_PARI(b)); }
+    else { // i = deg +1
+      evaluate(y1, tree, a, prec);
+      evaluate(y2, tree, b, prec);
+      if (mpfr_greater_p(a,b)) res[deg+2] = (long)(mpfr_to_PARI(a));
+      else res[deg+2] = (long)(mpfr_to_PARI(b));
+    }
+  }
 
   mpfr_clear(h); mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(y1); mpfr_clear(y2);
-  return res;
+  return sort(res);
+}
+
+
+
+double computeRatio(node *tree, GEN x, mp_prec_t prec) {
+  int i;
+  GEN min, max, temp;
+  long prec_pari = 2 + (prec + BITS_IN_LONG - 1)/BITS_IN_LONG;
+
+  min = evaluate_to_PARI(tree, (GEN)(x[1]), prec);
+  min = gabs(min,prec_pari);
+  max = gcopy(min);
+
+  for(i=0;i<lg(x)-1;i++) {
+    temp = evaluate_to_PARI(tree, (GEN)(x[i+1]), prec);
+    temp = gabs(temp,prec_pari);
+    if (gcmp(min,temp)>0) min = temp;
+    if (gcmp(temp,max)>0) max = temp;
+  }
+
+  return rtodbl(gdiv(gsub(max,min),min));
 }
 
 
@@ -172,8 +204,11 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   ulong ltop=avma;
   long prec_pari = 2 + (prec + BITS_IN_LONG - 1)/BITS_IN_LONG;
   int i,j;
-  GEN u, v, x, temp, M;
+  GEN u, v, x, temp, temp_diff, M;
   node *tree;
+  node *tree_diff;
+  node *res;
+  int test=1;
 
   u = mpfr_to_PARI(a);
   v = mpfr_to_PARI(b);
@@ -189,16 +224,18 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 		  );
   }
   
-  
+
+  M = cgetg(deg+3,t_MAT);
+  temp = cgetg(deg+3, t_COL);
+  temp_diff = cgetg(deg+3, t_COL);
+
   // Boucle principale
-  //while(1) {
+  while(test) {
 
     // Définition de la matrice M de Remez associée aux points x_i
-    temp = cgetg(deg+3, t_COL);
     for (i=0;i<deg+2;i++) {
       temp[i+1] = lcopy(gun);
     }
-    M = cgetg(deg+3,t_MAT);
     for(j=0;j<deg+1;j++) {
       M[j+1] = lcopy(temp);
       for(i=0;i<deg+2;i++) {
@@ -221,29 +258,35 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 
     // Dérivation formelle du polynôme contenu dans temp
     for(i=0;i<deg+2;i++) {
-      temp[i+1] = lmulrs((GEN)(temp[i+1]),(long)i);
+      temp_diff[i+1] = lmulrs((GEN)(temp[i+1]),(long)i);
     }
     
     // Construction de la fonction f'-p'
+    tree_diff = malloc(sizeof(node));
+    tree_diff->nodeType = SUB;
+    tree_diff->child1 = differentiate(func);
+    tree_diff->child2 = convert_poly(2,deg+1, temp_diff, prec);
+
+    // Recherche des zéros de f'-p'
+    x = quickFindZeros(tree_diff,deg,a,b,prec);
+
+    // Construction de la fonction f-p
     tree = malloc(sizeof(node));
     tree->nodeType = SUB;
-    tree->child1 = differentiate(func);
-    tree->child2 = convert_poly(2,deg+1, temp, prec);
+    tree->child1 = copyTree(func);
+    tree->child2 = convert_poly(1,deg+1, temp, prec);
 
-    // DEBUG
-    printf(" La matrice M calculée est : ");output(M);printf("\n");
-    printf(" Le vecteur solution est : ");output(temp);printf("\n");
-    printf(" La fonction à optimiser est : ");printTree(tree);printf("\n");
+    printf("Étape n° %d\n",test);
+    test++;
+    if (computeRatio(tree, x, prec)<0.0001) {
+      test = 0;
+      res = copyTree(tree->child2);
+    }
 
-    // Recherche des zéros de f-p
-    x = quickFindZeros(tree,deg,a,b,prec);
-    
-    // DEBUG
-    printf(" La valeur calculée pour x est : ");output(x);printf("\n");
-    
+    free_memory(tree_diff);
     free_memory(tree);
-    //}
+  }
 
    avma = ltop;
-   return copyTree(func);
+   return res;
 }
