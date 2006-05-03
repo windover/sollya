@@ -64,11 +64,11 @@ void freeNodeI(nodeI *tree) {
     freeNodeI(tree->child1);
     free(tree);
     break;
-  case LOG2:
+  case LOG_2:
     freeNodeI(tree->child1);
     free(tree);
     break;
-  case LOG10:
+  case LOG_10:
     freeNodeI(tree->child1);
     free(tree);
     break;
@@ -209,14 +209,14 @@ nodeI* expressionToIntervalExpression(node *tree, mp_prec_t prec) {
     copy->nodeType = LOG;
     copy->child1 = expressionToIntervalExpression(tree->child1,prec);
     break;
-  case LOG2:
+  case LOG_2:
     copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = LOG2;
+    copy->nodeType = LOG_2;
     copy->child1 = expressionToIntervalExpression(tree->child1,prec);
     break;
-  case LOG10:
+  case LOG_10:
     copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = LOG10;
+    copy->nodeType = LOG_10;
     copy->child1 = expressionToIntervalExpression(tree->child1,prec);
     break;
   case SIN:
@@ -526,11 +526,11 @@ void evaluateI(mpfi_t result, nodeI *tree, mpfi_t x, mp_prec_t prec) {
     evaluateI(stack1, tree->child1, x, prec);
     mpfi_log(result, stack1);
     break;
-  case LOG2:
+  case LOG_2:
     evaluateI(stack1, tree->child1, x, prec);
     mpfi_log2(result, stack1);
     break;
-  case LOG10:
+  case LOG_10:
     evaluateI(stack1, tree->child1, x, prec);
     mpfi_log10(result, stack1);
     break;

@@ -51,11 +51,11 @@ void free_memory(node *tree) {
     free_memory(tree->child1);
     free(tree);
     break;
-  case LOG2:
+  case LOG_2:
     free_memory(tree->child1);
     free(tree);
     break;
-  case LOG10:
+  case LOG_10:
     free_memory(tree->child1);
     free(tree);
     break;
@@ -256,12 +256,12 @@ void printTree(node *tree) {
     printTree(tree->child1);
     printf(")");
     break;
-  case LOG2:
+  case LOG_2:
     printf("log2(");
     printTree(tree->child1);
     printf(")");
     break;
-  case LOG10:
+  case LOG_10:
     printf("log10(");
     printTree(tree->child1);
     printf(")");
@@ -424,14 +424,14 @@ node* copyTree(node *tree) {
     copy->nodeType = LOG;
     copy->child1 = copyTree(tree->child1);
     break;
-  case LOG2:
+  case LOG_2:
     copy = (node*) malloc(sizeof(node));
-    copy->nodeType = LOG2;
+    copy->nodeType = LOG_2;
     copy->child1 = copyTree(tree->child1);
     break;
-  case LOG10:
+  case LOG_10:
     copy = (node*) malloc(sizeof(node));
-    copy->nodeType = LOG10;
+    copy->nodeType = LOG_10;
     copy->child1 = copyTree(tree->child1);
     break;
   case SIN:
@@ -695,7 +695,7 @@ node* differentiate(node *tree) {
     temp_node2->child1 = temp_node3;
     derivative = temp_node;
     break;
-  case LOG2:
+  case LOG_2:
     g_copy = copyTree(tree->child1);
     g_diff = differentiate(tree->child1);
     temp_node = (node*) malloc(sizeof(node));
@@ -727,7 +727,7 @@ node* differentiate(node *tree) {
     temp_node2->child1 = temp_node3;
     derivative = temp_node;
     break;
-  case LOG10:
+  case LOG_10:
     g_copy = copyTree(tree->child1);
     g_diff = differentiate(tree->child1);
     temp_node = (node*) malloc(sizeof(node));
@@ -1246,12 +1246,12 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
     if (!isConstant) break;
     mpfr_log(result, stack1, GMP_RNDN);
     break;
-  case LOG2:
+  case LOG_2:
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
     mpfr_log2(result, stack1, GMP_RNDN);
     break;
-  case LOG10:
+  case LOG_10:
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
     mpfr_log10(result, stack1, GMP_RNDN);
@@ -1357,7 +1357,7 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
 } 
 
 
-node* simplify(node *tree) {
+node* simplifyTree(node *tree) {
   node *simplChild1, *simplChild2, *simplified;
   mpfr_t *value;
 
@@ -1375,8 +1375,8 @@ node* simplify(node *tree) {
     simplified->value = value;
     break;
   case ADD:
-    simplChild1 = simplify(tree->child1);
-    simplChild2 = simplify(tree->child2);
+    simplChild1 = simplifyTree(tree->child1);
+    simplChild2 = simplifyTree(tree->child2);
     simplified = (node*) malloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
@@ -1405,8 +1405,8 @@ node* simplify(node *tree) {
     }
     break;
   case SUB:
-    simplChild1 = simplify(tree->child1);
-    simplChild2 = simplify(tree->child2);
+    simplChild1 = simplifyTree(tree->child1);
+    simplChild2 = simplifyTree(tree->child2);
     simplified = (node*) malloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
@@ -1435,8 +1435,8 @@ node* simplify(node *tree) {
     }
     break;
   case MUL:
-    simplChild1 = simplify(tree->child1);
-    simplChild2 = simplify(tree->child2);
+    simplChild1 = simplifyTree(tree->child1);
+    simplChild2 = simplifyTree(tree->child2);
     simplified = (node*) malloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
@@ -1476,8 +1476,8 @@ node* simplify(node *tree) {
     }
     break;
   case DIV:
-    simplChild1 = simplify(tree->child1);
-    simplChild2 = simplify(tree->child2);
+    simplChild1 = simplifyTree(tree->child1);
+    simplChild2 = simplifyTree(tree->child2);
     simplified = (node*) malloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
@@ -1510,7 +1510,7 @@ node* simplify(node *tree) {
     }
     break;
   case SQRT:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1525,7 +1525,7 @@ node* simplify(node *tree) {
     }
     break;
   case EXP:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1540,7 +1540,7 @@ node* simplify(node *tree) {
     }
     break;
   case LOG:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1554,8 +1554,8 @@ node* simplify(node *tree) {
       simplified->child1 = simplChild1;
     }
     break;
-  case LOG2:
-    simplChild1 = simplify(tree->child1);
+  case LOG_2:
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1565,12 +1565,12 @@ node* simplify(node *tree) {
       mpfr_log2(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
     } else {
-      simplified->nodeType = LOG2;
+      simplified->nodeType = LOG_2;
       simplified->child1 = simplChild1;
     }
     break;
-  case LOG10:
-    simplChild1 = simplify(tree->child1);
+  case LOG_10:
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1580,12 +1580,12 @@ node* simplify(node *tree) {
       mpfr_log10(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
     } else {
-      simplified->nodeType = LOG10;
+      simplified->nodeType = LOG_10;
       simplified->child1 = simplChild1;
     }
     break;
   case SIN:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1600,7 +1600,7 @@ node* simplify(node *tree) {
     }
     break;
   case COS:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1615,7 +1615,7 @@ node* simplify(node *tree) {
     }
     break;
   case TAN:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1630,7 +1630,7 @@ node* simplify(node *tree) {
     }
     break;
   case ASIN:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1645,7 +1645,7 @@ node* simplify(node *tree) {
     }
     break;
   case ACOS:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1660,7 +1660,7 @@ node* simplify(node *tree) {
     }
     break;
   case ATAN:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1675,7 +1675,7 @@ node* simplify(node *tree) {
     }
     break;
   case SINH:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1690,7 +1690,7 @@ node* simplify(node *tree) {
     }
     break;
   case COSH:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1705,7 +1705,7 @@ node* simplify(node *tree) {
     }
     break;
   case TANH:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1720,7 +1720,7 @@ node* simplify(node *tree) {
     }
     break;
   case ASINH:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1735,7 +1735,7 @@ node* simplify(node *tree) {
     }
     break;
   case ACOSH:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1750,7 +1750,7 @@ node* simplify(node *tree) {
     }
     break;
   case ATANH:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1765,8 +1765,8 @@ node* simplify(node *tree) {
     }
     break;
   case POW:
-    simplChild1 = simplify(tree->child1);
-    simplChild2 = simplify(tree->child2);
+    simplChild1 = simplifyTree(tree->child1);
+    simplChild2 = simplifyTree(tree->child2);
     simplified = (node*) malloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
@@ -1789,7 +1789,7 @@ node* simplify(node *tree) {
     }
     break;
   case NEG:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1804,7 +1804,7 @@ node* simplify(node *tree) {
     }
     break;
   case ABS:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1819,7 +1819,7 @@ node* simplify(node *tree) {
     }
     break;
   case DOUBLE:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1834,7 +1834,7 @@ node* simplify(node *tree) {
     }
     break;
   case DOUBLEDOUBLE:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1849,7 +1849,7 @@ node* simplify(node *tree) {
     }
     break;
   case TRIPLEDOUBLE:
-    simplChild1 = simplify(tree->child1);
+    simplChild1 = simplifyTree(tree->child1);
     simplified = (node*) malloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1864,7 +1864,7 @@ node* simplify(node *tree) {
     }
     break;
   default:
-    fprintf(stderr,"simplify: unknown identifier in the tree\n");
+    fprintf(stderr,"simplifyTree: unknown identifier in the tree\n");
     exit(1);
   }
 
@@ -1917,11 +1917,11 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
     evaluate(stack1, tree->child1, x, prec);
     mpfr_log(result, stack1, GMP_RNDN);
     break;
-  case LOG2:
+  case LOG_2:
     evaluate(stack1, tree->child1, x, prec);
     mpfr_log2(result, stack1, GMP_RNDN);
     break;
-  case LOG10:
+  case LOG_10:
     evaluate(stack1, tree->child1, x, prec);
     mpfr_log10(result, stack1, GMP_RNDN);
     break;
@@ -2039,10 +2039,10 @@ int isPolynomial(node *tree) {
   case LOG:
     res = 0;
     break;
-  case LOG2:
+  case LOG_2:
     res = 0;
     break;
-  case LOG10:
+  case LOG_10:
     res = 0;
     break;
   case SIN:
@@ -2584,14 +2584,14 @@ node* expand(node *tree) {
     copy->nodeType = LOG;
     copy->child1 = expand(tree->child1);
     break;
-  case LOG2:
+  case LOG_2:
     copy = (node*) malloc(sizeof(node));
-    copy->nodeType = LOG2;
+    copy->nodeType = LOG_2;
     copy->child1 = expand(tree->child1);
     break;
-  case LOG10:
+  case LOG_10:
     copy = (node*) malloc(sizeof(node));
-    copy->nodeType = LOG10;
+    copy->nodeType = LOG_10;
     copy->child1 = expand(tree->child1);
     break;
   case SIN:

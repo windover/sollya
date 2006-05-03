@@ -1,5 +1,5 @@
 tools: parser.tab.o lex.yy.o plot.o expression.o infnorm.o remez.o main.o chain.o double.o
-	gcc -Wall -g -o tools lex.yy.o plot.o parser.tab.o expression.o infnorm.o remez.o chain.o double.o main.o -lfl -lmpfr -lgmp -lmpfi
+	gcc -Wall -g -o tools lex.yy.o plot.o parser.tab.o expression.o infnorm.o remez.o chain.o double.o main.o -lfl -lmpfr -lgmp -lmpfi -lpari
 
 parser.tab.o: parser.tab.h parser.tab.c expression.h main.h infnorm.h remez.h
 	gcc -Wall -g -c parser.tab.c

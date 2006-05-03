@@ -401,7 +401,7 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                            }
                         |       SIMPLIFYTOKEN LPARTOKEN function RPARTOKEN
                            {
-			     temp_node = simplify($3);
+			     temp_node = simplifyTree($3);
 			     free_memory($3);
 			     $$ = temp_node;
 			   }
@@ -435,14 +435,14 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                         |       LOG2TOKEN LPARTOKEN function RPARTOKEN
                            {
                              temp_node = (node*) malloc(sizeof(node));
-			     temp_node->nodeType = LOG2;
+			     temp_node->nodeType = LOG_2;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       LOG10TOKEN LPARTOKEN function RPARTOKEN
                            {
                              temp_node = (node*) malloc(sizeof(node));
-			     temp_node->nodeType = LOG10;
+			     temp_node->nodeType = LOG_10;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		

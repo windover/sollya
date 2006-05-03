@@ -15,8 +15,8 @@
 #define SQRT 6
 #define EXP 7
 #define LOG 8
-#define LOG2 9
-#define LOG10 10
+#define LOG_2 9
+#define LOG_10 10
 #define SIN 11
 #define COS 12
 #define TAN 13
@@ -61,7 +61,7 @@ struct rangetypeStruct
 void plotTree(node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec);
 void printTree(node *tree);
 node* differentiate(node *tree);
-node* simplify(node *tree); 
+node* simplifyTree(node *tree); 
 void free_memory(node *tree);
 int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec);
 void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec);
