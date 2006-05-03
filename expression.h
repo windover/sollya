@@ -69,5 +69,7 @@ void printValue(mpfr_t *value, mp_prec_t prec);
 node* copyTree(node *tree);
 node* horner(node *tree);
 int getDegree(node *tree);
+node* expand(node *tree);
+
 
 #endif /* ifdef EXPRESSION_H*/

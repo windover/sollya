@@ -2413,7 +2413,7 @@ node* expandPowerInPolynomial(node *tree) {
 
 
 node* expandPolynomialUnsafe(node *tree) {
-  node *left, *right, *copy; 
+  node *left, *right, *copy, *tempNode, *tempNode2, *tempNode3; 
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -2428,7 +2428,7 @@ node* expandPolynomialUnsafe(node *tree) {
     copy = (node*) malloc(sizeof(node));
     copy->nodeType = ADD;
     copy->child1 = left;
-    copy->child2 = left;
+    copy->child2 = right;
     return copy;    
     break;
   case SUB:
@@ -2437,16 +2437,72 @@ node* expandPolynomialUnsafe(node *tree) {
     copy = (node*) malloc(sizeof(node));
     copy->nodeType = SUB;
     copy->child1 = left;
-    copy->child2 = left;
+    copy->child2 = right;
     return copy;
     break;
   case MUL:
-    
-
-
-
-
-    return NULL;
+    left = expandPolynomialUnsafe(tree->child1);
+    right = expandPolynomialUnsafe(tree->child2);
+    switch (left->nodeType) {
+    case VARIABLE:
+    case CONSTANT:
+    case MUL:
+      copy = (node*) malloc(sizeof(node));
+      copy->nodeType = MUL;
+      copy->child1 = left;
+      copy->child2 = right;
+      break;  
+    case ADD:
+      tempNode = (node*) malloc(sizeof(node));
+      tempNode->nodeType = ADD;
+      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2->nodeType = MUL;
+      tempNode3 = (node*) malloc(sizeof(node));
+      tempNode3->nodeType = MUL;
+      tempNode2->child1 = copyTree(left->child1);
+      tempNode2->child2 = copyTree(right);
+      tempNode3->child1 = copyTree(left->child2);
+      tempNode3->child2 = right;
+      tempNode->child1 = tempNode2;
+      tempNode->child2 = tempNode3;
+      free_memory(left);
+      copy = expandPolynomialUnsafe(tempNode);
+      free_memory(tempNode);
+      break;
+    case SUB:
+      tempNode = (node*) malloc(sizeof(node));
+      tempNode->nodeType = SUB;
+      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2->nodeType = MUL;
+      tempNode3 = (node*) malloc(sizeof(node));
+      tempNode3->nodeType = MUL;
+      tempNode2->child1 = copyTree(left->child1);
+      tempNode2->child2 = copyTree(right);
+      tempNode3->child1 = copyTree(left->child2);
+      tempNode3->child2 = right;
+      tempNode->child1 = tempNode2;
+      tempNode->child2 = tempNode3;
+      free_memory(left);
+      copy = expandPolynomialUnsafe(tempNode);
+      free_memory(tempNode);      
+      break;
+    case NEG:
+      tempNode = (node*) malloc(sizeof(node));
+      tempNode->nodeType = NEG;
+      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2->nodeType = MUL;
+      tempNode2->child1 = copyTree(left->child1);
+      tempNode2->child2 = right;
+      tempNode->child1 = tempNode2;
+      free_memory(left);
+      copy = expandPolynomialUnsafe(tempNode);
+      free_memory(tempNode);      
+      break;
+    default:
+      fprintf(stderr,"expandPolynomialUnsafe: an error occured on handling the left rewritten expression subtree\n");
+      exit(1);
+    }
+    return copy;
     break;
   case NEG:
     left = expandPolynomialUnsafe(tree->child1);
@@ -2470,7 +2526,173 @@ node* expandPolynomial(node *tree) {
   return temp2;
 }
 
+node* expand(node *tree) {
+  node *copy;
+  mpfr_t *value;
+
+  if (isPolynomial(tree)) return expandPolynomial(tree);
+
+  switch (tree->nodeType) {
+  case VARIABLE:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = VARIABLE;
+    break;
+  case CONSTANT:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = CONSTANT;
+    value = (mpfr_t*) malloc(sizeof(mpfr_t));
+    mpfr_init2(*value,precision);
+    mpfr_set(*value,*(tree->value),GMP_RNDN);
+    copy->value = value;
+    break;
+  case ADD:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ADD;
+    copy->child1 = expand(tree->child1);
+    copy->child2 = expand(tree->child2);
+    break;
+  case SUB:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = SUB;
+    copy->child1 = expand(tree->child1);
+    copy->child2 = expand(tree->child2);
+    break;
+  case MUL:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = MUL;
+    copy->child1 = expand(tree->child1);
+    copy->child2 = expand(tree->child2);
+    break;
+  case DIV:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = DIV;
+    copy->child1 = expand(tree->child1);
+    copy->child2 = expand(tree->child2);
+    break;
+  case SQRT:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = SQRT;
+    copy->child1 = expand(tree->child1);
+    break;
+  case EXP:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = EXP;
+    copy->child1 = expand(tree->child1);
+    break;
+  case LOG:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = LOG;
+    copy->child1 = expand(tree->child1);
+    break;
+  case LOG2:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = LOG2;
+    copy->child1 = expand(tree->child1);
+    break;
+  case LOG10:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = LOG10;
+    copy->child1 = expand(tree->child1);
+    break;
+  case SIN:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = SIN;
+    copy->child1 = expand(tree->child1);
+    break;
+  case COS:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = COS;
+    copy->child1 = expand(tree->child1);
+    break;
+  case TAN:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = TAN;
+    copy->child1 = expand(tree->child1);
+    break;
+  case ASIN:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ASIN;
+    copy->child1 = expand(tree->child1);
+    break;
+  case ACOS:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ACOS;
+    copy->child1 = expand(tree->child1);
+    break;
+  case ATAN:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ATAN;
+    copy->child1 = expand(tree->child1);
+    break;
+  case SINH:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = SINH;
+    copy->child1 = expand(tree->child1);
+    break;
+  case COSH:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = COSH;
+    copy->child1 = expand(tree->child1);
+    break;
+  case TANH:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = TANH;
+    copy->child1 = expand(tree->child1);
+    break;
+  case ASINH:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ASINH;
+    copy->child1 = expand(tree->child1);
+    break;
+  case ACOSH:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ACOSH;
+    copy->child1 = expand(tree->child1);
+    break;
+  case ATANH:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ATANH;
+    copy->child1 = expand(tree->child1);
+    break;
+  case POW:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = POW;
+    copy->child1 = expand(tree->child1);
+    copy->child2 = expand(tree->child2);
+    break;
+  case NEG:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = NEG;
+    copy->child1 = expand(tree->child1);
+    break;
+  case ABS:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ABS;
+    copy->child1 = expand(tree->child1);
+    break;
+  case DOUBLE:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = DOUBLE;
+    copy->child1 = expand(tree->child1);
+    break;
+  case DOUBLEDOUBLE:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = DOUBLEDOUBLE;
+    copy->child1 = expand(tree->child1);
+    break;
+  case TRIPLEDOUBLE:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = TRIPLEDOUBLE;
+    copy->child1 = expand(tree->child1);
+    break;
+  default:
+   fprintf(stderr,"expand: unknown identifier in the tree\n");
+   exit(1);
+  }
+  return copy;
+}
+
 
 node* horner(node *tree) {
-  return expandPowerInPolynomial(tree);
+  return expand(tree);
 }

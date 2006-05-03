@@ -84,7 +84,7 @@ TRIPLEDOUBLE    ({TRIPLEDOUBLELONG}|{TRIPLEDOUBLESHORT})
 
 HORNER          "horner"
 DEGREE          "degree"
-
+EXPAND          "expand"
 
 %%
 
@@ -148,6 +148,7 @@ DEGREE          "degree"
 {TRIPLEDOUBLE}  {     return TRIPLEDOUBLETOKEN; }
 {HORNER}        {     return HORNERTOKEN;       }
 {DEGREE}        {     return DEGREETOKEN;       }
+{EXPAND}        {     return EXPANDTOKEN;       }
 
 {VARIABLE}      {     			     
                       if (variablename == NULL) { 

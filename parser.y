@@ -86,7 +86,7 @@ void yyerror(char *message) {
 %token  TRIPLEDOUBLETOKEN
 %token  HORNERTOKEN
 %token  DEGREETOKEN
-
+%token  EXPANDTOKEN
 
 %type <other> commands
 %type <other> command
@@ -366,7 +366,13 @@ function:			term
 ;
 
 		
-prefixfunction:                 DEGREETOKEN LPARTOKEN function RPARTOKEN
+prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
+                           {
+			      temp_node = expand($3);
+			      free_memory($3);
+			      $$ = temp_node;
+                           } 
+			|      DEGREETOKEN LPARTOKEN function RPARTOKEN
                            {
 			      temp_node = (node*) malloc(sizeof(node));
 			      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
