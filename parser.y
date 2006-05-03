@@ -156,7 +156,7 @@ command:     plot
 	                   }
 	   | precision SEMICOLONTOKEN 
                            {
-			     precision = $1;
+			     tools_precision = $1;
 			     defaultprecision = $1;
 			     printf("Default precision has been set to %d bits.\n",(int) defaultprecision);
 			     printPrompt();
@@ -211,10 +211,10 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 
 print:       PRINTTOKEN function SEMICOLONTOKEN
                            {
-			     prec_temp = precision;
-			     precision = defaultprecision;
+			     prec_temp = tools_precision;
+			     tools_precision = defaultprecision;
                              printTree($2);
-			     precision = prec_temp;
+			     tools_precision = prec_temp;
 			     printf("\n");
 			     free_memory($2);
 			     free(variablename);
@@ -231,7 +231,7 @@ plot:        PLOTTOKEN precision COMMATOKEN points COLONTOKEN function INTOKEN r
 			     mpfr_clear(*($8.b));
 			     free($8.a);
 			     free($8.b);
-			     precision = defaultprecision;
+			     tools_precision = defaultprecision;
 			     free(variablename);
 			     variablename = NULL;
 			     $$ = NULL;
@@ -244,7 +244,7 @@ plot:        PLOTTOKEN precision COMMATOKEN points COLONTOKEN function INTOKEN r
 			     mpfr_clear(*($8.b));
 			     free($8.a);
 			     free($8.b);
-			     precision = defaultprecision;
+			     tools_precision = defaultprecision;
 			     free(variablename);
 			     variablename = NULL;
 			     $$ = NULL;
@@ -257,33 +257,33 @@ plot:        PLOTTOKEN precision COMMATOKEN points COLONTOKEN function INTOKEN r
 			     mpfr_clear(*($6.b));
 			     free($6.a);
 			     free($6.b);
-			     precision = defaultprecision;
+			     tools_precision = defaultprecision;
 			     free(variablename);
 			     variablename = NULL;
 			     $$ = NULL;										 
 			   }
            | PLOTTOKEN points COLONTOKEN function INTOKEN range SEMICOLONTOKEN 
                            {
-			     plotTree($4, *($6.a), *($6.b), $2, precision);
+			     plotTree($4, *($6.a), *($6.b), $2, tools_precision);
 			     free_memory($4);
 			     mpfr_clear(*($6.a));
 			     mpfr_clear(*($6.b));
 			     free($6.a);
 			     free($6.b);
-			     precision = defaultprecision;
+			     tools_precision = defaultprecision;
 			     free(variablename);
 			     variablename = NULL;
 			     $$ = NULL;
 			   }
            | PLOTTOKEN function INTOKEN range SEMICOLONTOKEN 
                            {
-			     plotTree($2, *($4.a), *($4.b), defaultpoints, precision);
+			     plotTree($2, *($4.a), *($4.b), defaultpoints, tools_precision);
 			     free_memory($2);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
 			     free($4.a);
 			     free($4.b);
-			     precision = defaultprecision;
+			     tools_precision = defaultprecision;
 			     free(variablename);
 			     variablename = NULL;
 			     $$ = NULL;
@@ -292,16 +292,16 @@ plot:        PLOTTOKEN precision COMMATOKEN points COLONTOKEN function INTOKEN r
 
 precision:  PRECTOKEN EQUALTOKEN CONSTTOKEN 
                            {
-			     precision = strtol($3,endptr,10);
+			     tools_precision = strtol($3,endptr,10);
                              if (**endptr != '\0') {
 			       printf("A precision must be integer\n");
 			       exit(1);
 			     }
-			     if (precision < 12) {
+			     if (tools_precision < 12) {
 			       printf("Precision has been increased to 12.\n");
-			       precision = 12;
+			       tools_precision = 12;
 			     }
-			     $$ = precision;
+			     $$ = tools_precision;
                            }
 ;
 
@@ -376,7 +376,7 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                            {
 			      temp_node = (node*) malloc(sizeof(node));
 			      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-			      mpfr_init2(*(mpfr_temp),(mp_prec_t) precision);
+			      mpfr_init2(*(mpfr_temp),(mp_prec_t) tools_precision);
 			      mpfr_set_si(*(mpfr_temp),getDegree($3),GMP_RNDN);
                               temp_node->nodeType = CONSTANT;
                               temp_node->value = mpfr_temp;
@@ -391,7 +391,7 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                            }
 			|       REMEZTOKEN LPARTOKEN function COMMATOKEN degree COMMATOKEN range RPARTOKEN
                            {
-			      temp_node = remez($3, $5, *($7.a), *($7.b), precision);
+			      temp_node = remez($3, $5, *($7.a), *($7.b), tools_precision);
 			      free_memory($3);
 			      mpfr_clear(*($7.a));
 			      mpfr_clear(*($7.b));
@@ -653,18 +653,18 @@ range:  LBRACKETTOKEN rangeconstant SEMICOLONTOKEN rangeconstant RBRACKETTOKEN
 rangeconstant:     function
                            {
 			     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,precision);
+			     mpfr_init2(*mpfr_temp,tools_precision);
 			     if ($1->nodeType != CONSTANT) {
 			       printf(
                       "Warning: the range bound given is not a floating-point constant but an expression to evaluate.\n");
 			     }
-			     if (!evaluateConstantExpression(*mpfr_temp,($1),precision)) {
+			     if (!evaluateConstantExpression(*mpfr_temp,($1),tools_precision)) {
 			       printf("Warning: range bounds must be expressions that evaluate to constants.\n");
 			       printf("Setting %s = 0 when evaluating the given variable expression.\n",variablename);
 			       mpfr_temp2 = (mpfr_t*) malloc(sizeof(mpfr_t));
-			       mpfr_init2(*mpfr_temp2,precision);
+			       mpfr_init2(*mpfr_temp2,tools_precision);
 			       mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
-			       evaluate(*mpfr_temp, ($1), *mpfr_temp2, precision);
+			       evaluate(*mpfr_temp, ($1), *mpfr_temp2, tools_precision);
 			       mpfr_clear(*mpfr_temp2);
 			       free(mpfr_temp2);
 			     }
@@ -676,18 +676,18 @@ rangeconstant:     function
 diamconstant:     function
                            {
 			     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,precision);
+			     mpfr_init2(*mpfr_temp,tools_precision);
 			     if ($1->nodeType != CONSTANT) {
 			       printf(
                       "Warning: the diameter given is not a floating-point constant but an expression to evaluate.\n");
 			     }
-			     if (!evaluateConstantExpression(*mpfr_temp,($1),precision)) {
+			     if (!evaluateConstantExpression(*mpfr_temp,($1),tools_precision)) {
 			       printf("Warning: the diameter must be an expression that evaluates to a constant.\n");
 			       printf("Setting %s = 0 when evaluating the given variable expression.\n",variablename);
 			       mpfr_temp2 = (mpfr_t*) malloc(sizeof(mpfr_t));
-			       mpfr_init2(*mpfr_temp2,precision);
+			       mpfr_init2(*mpfr_temp2,tools_precision);
 			       mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
-			       evaluate(*mpfr_temp, ($1), *mpfr_temp2, precision);
+			       evaluate(*mpfr_temp, ($1), *mpfr_temp2, tools_precision);
 			       mpfr_clear(*mpfr_temp2);
 			       free(mpfr_temp2);
 			     }
@@ -701,15 +701,15 @@ diamconstant:     function
 constant: CONSTTOKEN 
                            {
 			     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,precision);
+			     mpfr_init2(*mpfr_temp,tools_precision);
 			     mpfr_temp2 = (mpfr_t*) malloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp2,precision);
+			     mpfr_init2(*mpfr_temp2,tools_precision);
 			     mpfr_set_str(*mpfr_temp,$1,10,GMP_RNDD);
 			     mpfr_set_str(*mpfr_temp2,$1,10,GMP_RNDU);
 			     if (mpfr_cmp(*mpfr_temp,*mpfr_temp2) != 0) {
 			       printf(
                             "Warning: Rounding occured when converting constant \"%s\" to floating-point with %d bits.\n",
-				      $1,(int) precision);
+				      $1,(int) tools_precision);
 			       printf("If safe computation is needed, try to increase the precision.\n");
 			       mpfr_set_str(*mpfr_temp,$1,10,GMP_RNDN);
 			     } 
@@ -720,18 +720,18 @@ constant: CONSTTOKEN
         | PITOKEN 
                            {
 			     printf("Warning: The pi constant in the expression will be represented on %d bits\n",
-				    (int) precision);
+				    (int) tools_precision);
 			     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,precision);
+			     mpfr_init2(*mpfr_temp,tools_precision);
 			     mpfr_const_pi(*mpfr_temp,GMP_RNDN);
 			     $$ = mpfr_temp;
                            }
         | ETOKEN 
                            {
 			     printf("Warning: The e constant in the expression will be represented on %d bits\n",
-				    (int) precision);
+				    (int) tools_precision);
 			     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,precision);
+			     mpfr_init2(*mpfr_temp,tools_precision);
 			     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
 			     mpfr_exp(*mpfr_temp,*mpfr_temp,GMP_RNDN);
 			     $$ = mpfr_temp;

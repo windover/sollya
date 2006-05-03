@@ -1,4 +1,4 @@
-#include "plot.h"
+#include <pari/pari.h>
 #include <gmp.h>
 #include <mpfr.h>
 #include <stdio.h> /* fprintf, fopen, fclose, */
@@ -12,11 +12,10 @@
 
 
 
-
 char *variablename = NULL;
 mp_prec_t defaultprecision = DEFAULTPRECISION;
 int defaultpoints = DEFAULTPOINTS;
-mp_prec_t precision = DEFAULTPRECISION;
+mp_prec_t tools_precision = DEFAULTPRECISION;
 mp_prec_t prec_temp;
 char **endptr;
 unsigned long int points;
@@ -43,6 +42,7 @@ void printPrompt(void) {
 int main(int argc, char *argv[])
 {
 
+  pari_init(1000000, 2);
   printPrompt();
  
   endptr = (char**) malloc(sizeof(char*));

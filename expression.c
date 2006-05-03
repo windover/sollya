@@ -187,7 +187,7 @@ void printTree(node *tree) {
     printf("%s",variablename);
     break;
   case CONSTANT:
-    printValue(tree->value,precision);
+    printValue(tree->value,tools_precision);
     break;
   case ADD:
     if (isInfix(tree->child1)) 
@@ -381,7 +381,7 @@ node* copyTree(node *tree) {
     copy = (node*) malloc(sizeof(node));
     copy->nodeType = CONSTANT;
     value = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*value,precision);
+    mpfr_init2(*value,tools_precision);
     mpfr_set(*value,*(tree->value),GMP_RNDN);
     copy->value = value;
     break;
@@ -542,7 +542,7 @@ node* differentiate(node *tree) {
   switch (tree->nodeType) {
   case VARIABLE:
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node = (node*) malloc(sizeof(node));
     temp_node->nodeType = CONSTANT;
@@ -551,7 +551,7 @@ node* differentiate(node *tree) {
     break;
   case CONSTANT:
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,0.0,GMP_RNDN);
     temp_node = (node*) malloc(sizeof(node));
     temp_node->nodeType = CONSTANT;
@@ -635,7 +635,7 @@ node* differentiate(node *tree) {
     temp_node4 = (node*) malloc(sizeof(node));
     temp_node4->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,2.0,GMP_RNDN);
     temp_node4->value = mpfr_temp;
     temp_node2->child2 = temp_node4;
@@ -651,7 +651,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,2.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node2 = (node*) malloc(sizeof(node));
@@ -689,7 +689,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node2->child1 = temp_node3;
@@ -707,7 +707,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node2->child1 = temp_node3;
@@ -721,7 +721,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,2.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node2->child1 = temp_node3;
@@ -739,7 +739,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node2->child1 = temp_node3;
@@ -753,7 +753,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,10.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node2->child1 = temp_node3;
@@ -797,7 +797,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node2->child1 = temp_node3;
@@ -805,7 +805,7 @@ node* differentiate(node *tree) {
     temp_node4 = (node*) malloc(sizeof(node));
     temp_node4->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,2.0,GMP_RNDN);
     temp_node4->value = mpfr_temp;
     temp_node3 = (node*) malloc(sizeof(node));
@@ -828,7 +828,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node4->child1 = temp_node3;
@@ -842,7 +842,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node2->child1 = temp_node3;
@@ -865,7 +865,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,-1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node4->child1 = temp_node3;
@@ -879,7 +879,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node2->child1 = temp_node3;
@@ -903,7 +903,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node4 = (node*) malloc(sizeof(node));
@@ -915,7 +915,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node2->child1 = temp_node3;
@@ -958,7 +958,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node2->child1 = temp_node3;
@@ -984,7 +984,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node4->child1 = temp_node3;
@@ -998,7 +998,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node2->child1 = temp_node3;
@@ -1021,7 +1021,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node4->child1 = temp_node3;
@@ -1035,7 +1035,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,-1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node2->child1 = temp_node3;
@@ -1059,7 +1059,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node4 = (node*) malloc(sizeof(node));
@@ -1071,7 +1071,7 @@ node* differentiate(node *tree) {
     temp_node3 = (node*) malloc(sizeof(node));
     temp_node3->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
     temp_node3->value = mpfr_temp;
     temp_node2->child1 = temp_node3;
@@ -1094,7 +1094,7 @@ node* differentiate(node *tree) {
       temp_node4 = (node*) malloc(sizeof(node));
       temp_node4->nodeType = CONSTANT;
       mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*mpfr_temp,precision);
+      mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node4->value = mpfr_temp;
       temp_node3->child2 = temp_node4;
@@ -1370,7 +1370,7 @@ node* simplifyTree(node *tree) {
     simplified = (node*) malloc(sizeof(node));
     simplified->nodeType = CONSTANT;
     value = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*value,precision);
+    mpfr_init2(*value,tools_precision);
     mpfr_set(*value,*(tree->value),GMP_RNDN);
     simplified->value = value;
     break;
@@ -1381,7 +1381,7 @@ node* simplifyTree(node *tree) {
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_add(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1411,7 +1411,7 @@ node* simplifyTree(node *tree) {
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_sub(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1441,7 +1441,7 @@ node* simplifyTree(node *tree) {
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_mul(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1453,7 +1453,7 @@ node* simplifyTree(node *tree) {
 	free_memory(simplChild2);
 	simplified->nodeType = CONSTANT;
 	value = (mpfr_t*) malloc(sizeof(mpfr_t));
-	mpfr_init2(*value,precision);
+	mpfr_init2(*value,tools_precision);
 	simplified->value = value;
 	mpfr_set_d(*value,0.0,GMP_RNDN);
       } else {
@@ -1482,7 +1482,7 @@ node* simplifyTree(node *tree) {
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_div(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1493,7 +1493,7 @@ node* simplifyTree(node *tree) {
 	free_memory(simplChild2);
 	simplified->nodeType = CONSTANT;
 	value = (mpfr_t*) malloc(sizeof(mpfr_t));
-	mpfr_init2(*value,precision);
+	mpfr_init2(*value,tools_precision);
 	simplified->value = value;
 	mpfr_set_d(*value,0.0,GMP_RNDN);
       } else {
@@ -1515,7 +1515,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_sqrt(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1530,7 +1530,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_exp(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1545,7 +1545,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_log(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1560,7 +1560,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_log2(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1575,7 +1575,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_log10(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1590,7 +1590,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_sin(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1605,7 +1605,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_cos(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1620,7 +1620,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_tan(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1635,7 +1635,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_asin(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1650,7 +1650,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_acos(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1665,7 +1665,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_atan(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1680,7 +1680,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_sinh(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1695,7 +1695,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_cosh(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1710,7 +1710,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_tanh(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1725,7 +1725,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_asinh(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1740,7 +1740,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_acosh(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1755,7 +1755,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_atanh(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1771,7 +1771,7 @@ node* simplifyTree(node *tree) {
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_pow(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1794,7 +1794,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_neg(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1809,7 +1809,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_abs(*value, *(simplChild1->value), GMP_RNDN);
       free_memory(simplChild1);
@@ -1824,7 +1824,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_round_to_double(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -1839,7 +1839,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_round_to_doubledouble(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -1854,7 +1854,7 @@ node* simplifyTree(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) malloc(sizeof(mpfr_t));
-      mpfr_init2(*value,precision);
+      mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_round_to_tripledouble(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -2202,17 +2202,17 @@ node* makeBinomial(node *a, node *b, int n, int s) {
   tree = (node*) malloc(sizeof(node));
   tree->nodeType = CONSTANT;
   mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
-  mpfr_init2(*mpfr_temp,precision);
+  mpfr_init2(*mpfr_temp,tools_precision);
   mpfr_set_d(*mpfr_temp,0.0,GMP_RNDN);
   tree->value = mpfr_temp;
   mpz_init(coeffGMP);
   for (i=0;i<=((unsigned int) n);i++) {
     mpz_bin_uiui(coeffGMP,(unsigned int) n,i);
     coeffVal = (mpfr_t *) malloc(sizeof(mpfr_t));
-    mpfr_init2(*coeffVal,precision);
+    mpfr_init2(*coeffVal,tools_precision);
     if(mpfr_set_z(*coeffVal,coeffGMP,GMP_RNDN) != 0) {
       printf("Warning: on expanding a power operator a rounding occured when calculating a binomial coefficient.\n");
-      printf("Try to increase the working precision.\n");
+      printf("Try to increase the working tools_precision.\n");
     }
     if ((s < 0) && ((i & 1) != 0)) {
       mpfr_neg(*coeffVal,*coeffVal,GMP_RNDN);
@@ -2226,10 +2226,10 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     tempNode = (node*) malloc(sizeof(node));
     tempNode->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     if(mpfr_set_ui(*mpfr_temp,i,GMP_RNDN) != 0) {
       printf("Warning: on expanding a power operator a rounding occured when calculating an exponent constant.\n");
-      printf("Try to increase the working precision.\n");
+      printf("Try to increase the working tools_precision.\n");
     }
     tempNode->value = mpfr_temp;
     aPow->child2 = tempNode;
@@ -2239,10 +2239,10 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     tempNode = (node*) malloc(sizeof(node));
     tempNode->nodeType = CONSTANT;
     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_temp,precision);
+    mpfr_init2(*mpfr_temp,tools_precision);
     if(mpfr_set_ui(*mpfr_temp,((unsigned int) n) - i,GMP_RNDN) != 0) {
       printf("Warning: on expanding a power operator a rounding occured when calculating an exponent constant.\n");
-      printf("Try to increase the working precision.\n");
+      printf("Try to increase the working tools_precision.\n");
     }
     tempNode->value = mpfr_temp;
     bPow->child2 = tempNode;
@@ -2355,7 +2355,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	  tempTree3 = (node*) malloc(sizeof(node));
 	  tempTree3->nodeType = CONSTANT;
 	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
-	  mpfr_init2(*value,precision);
+	  mpfr_init2(*value,tools_precision);
 	  mpfr_set_si(*value,r,GMP_RNDN);
 	  tempTree3->value = value;
 	  tempTree2->child2 = tempTree3;
@@ -2366,7 +2366,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	  tempTree3 = (node*) malloc(sizeof(node));
 	  tempTree3->nodeType = CONSTANT;
 	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
-	  mpfr_init2(*value,precision);
+	  mpfr_init2(*value,tools_precision);
 	  mpfr_set_si(*value,r,GMP_RNDN);
 	  tempTree3->value = value;
 	  tempTree2->child2 = tempTree3;
@@ -2385,7 +2385,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	  copy = (node*) malloc(sizeof(node));
 	  copy->nodeType = CONSTANT;
 	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
-	  mpfr_init2(*value,precision);
+	  mpfr_init2(*value,tools_precision);
 	  mpfr_set_d(*value,1.0,GMP_RNDN);
 	  copy->value = value;
 	}
@@ -2541,7 +2541,7 @@ node* expand(node *tree) {
     copy = (node*) malloc(sizeof(node));
     copy->nodeType = CONSTANT;
     value = (mpfr_t*) malloc(sizeof(mpfr_t));
-    mpfr_init2(*value,precision);
+    mpfr_init2(*value,tools_precision);
     mpfr_set(*value,*(tree->value),GMP_RNDN);
     copy->value = value;
     break;

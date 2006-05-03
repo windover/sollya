@@ -7,7 +7,7 @@
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
 
-
+void DEBUG(char *s) { printf(s); }
 
 // Aucune gestion des NaN, Inf, et dénormalisés.
 GEN mpfr_to_PARI(mpfr_t x) {
@@ -133,7 +133,6 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   u = mpfr_to_PARI(a);
   v = mpfr_to_PARI(b);
 
-  
   // Définition du vecteur x de n+2 points de Chebychev
   x = cgetg(deg+3,t_COL);
   for (i=0;i<deg+2;i++) {
@@ -164,25 +163,30 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   M[deg+2] = lcopy(temp);
 
 
+  DEBUG("1\n");
   // Définition du vecteur f(x)
   for(i=0;i<deg+2;i++) {
     temp[i+1] = (long)evaluate_to_PARI(func, (GEN)(x[i+1]), prec);
   }
 
+  DEBUG("2\n");
   // Résolution du système
-  temp = gauss(M,temp);
+  printf("Degré : %d\n",3);
+  printf("%d\n",rank(idmat(3)));
 
+  /*DEBUG("3\n");
   // Construction de la fonction f-p
   tree = malloc(sizeof(node));
   tree->nodeType = SUB;
   tree->child1 = copyTree(func);
   tree->child2 = convert_poly(1,deg+1, temp, prec);
 
+  DEBUG("4\n");
   // DEBUG
   printf(" La matrice M calculée est : ");output(M);printf("\n");
   printf(" Le vecteur solution est : ");output(temp);printf("\n");
-  printf(" La fonction à optimiser est : ");printTree(tree);printf("\n");
-  return func;
+  printf(" La fonction à optimiser est : ");printTree(tree);printf("\n");*/
+  return copyTree(func);
 
 
   /*  mpfr_t x,y;

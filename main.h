@@ -11,7 +11,7 @@
 
 
 extern char *variablename;
-extern mp_prec_t precision;
+extern mp_prec_t tools_precision;
 extern char **endptr;
 extern unsigned long int points;
 extern mpfr_t *mpfr_temp;
