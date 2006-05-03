@@ -181,21 +181,35 @@ GEN quickFindZeros(node *tree,int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 
 double computeRatio(node *tree, GEN x, mp_prec_t prec) {
   int i;
-  GEN min, max, temp;
-  long prec_pari = 2 + (prec + BITS_IN_LONG - 1)/BITS_IN_LONG;
+  mpfr_t min, max, temp;
+  double res;
 
-  min = evaluate_to_PARI(tree, (GEN)(x[1]), prec);
-  min = gabs(min,prec_pari);
-  max = gcopy(min);
+  mpfr_init2(min,prec);
+  mpfr_init2(max,prec);
+  mpfr_init2(temp,prec);
+
+  PARI_to_mpfr(temp, (GEN)(x[1]), GMP_RNDN);
+  evaluate(min, tree, temp, prec);
+  mpfr_abs(min,min,GMP_RNDN);
+  mpfr_set(max,min,GMP_RNDN);
 
   for(i=0;i<lg(x)-1;i++) {
-    temp = evaluate_to_PARI(tree, (GEN)(x[i+1]), prec);
-    temp = gabs(temp,prec_pari);
-    if (gcmp(min,temp)>0) min = temp;
-    if (gcmp(temp,max)>0) max = temp;
+    PARI_to_mpfr(temp, (GEN)(x[i+1]), GMP_RNDN);
+    evaluate(temp, tree, temp, prec);
+    mpfr_abs(temp,temp,GMP_RNDN);
+    if (mpfr_greater_p(min,temp)) mpfr_set(min,temp,GMP_RNDN);
+    if (mpfr_greater_p(temp,max)) mpfr_set(max,temp,GMP_RNDN);
   }
 
-  return rtodbl(gdiv(gsub(max,min),min));
+  mpfr_sub(temp, max, min, GMP_RNDU);
+  mpfr_div(temp, temp, min, GMP_RNDU);
+  res = mpfr_get_d(temp, GMP_RNDU);
+
+  mpfr_clear(min);
+  mpfr_clear(max);
+  mpfr_clear(temp);
+
+  return res;
 }
 
 
@@ -276,7 +290,7 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     tree->child1 = copyTree(func);
     tree->child2 = convert_poly(1,deg+1, temp, prec);
 
-    printf("Étape n° %d\n",test);
+    printf("Étape n° %d ; qualité de l'approximation : %e\n",test,computeRatio(tree, x, prec));
     test++;
     if (computeRatio(tree, x, prec)<0.0001) {
       test = 0;
