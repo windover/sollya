@@ -160,12 +160,11 @@ GEN newton(node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 // Returns a PARI array containing the zeros of tree on [a;b]
 // The compuations are made with precision prec.
 // deg indicates the number of zeros which we are expecting.
-GEN quickFindZeros(node *tree,int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   GEN res;
   long int n = 50*(deg+2);
   long int i=0;
   mpfr_t h, x1, x2, y1, y2;
-  node *diff_tree;
 
   mpfr_init2(h,prec);
   mpfr_init2(y1,prec);
@@ -174,7 +173,6 @@ GEN quickFindZeros(node *tree,int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_init2(x2,prec);
 
   res = cgetg(deg+3, t_COL);
-  diff_tree = differentiate(tree);
 
   mpfr_sub(h,b,a,GMP_RNDD);
   mpfr_div_si(h,h,n,GMP_RNDD);
@@ -207,7 +205,6 @@ GEN quickFindZeros(node *tree,int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     }
   }
 
-  free_memory(diff_tree);
   mpfr_clear(h); mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(y1); mpfr_clear(y2);
   return sort(res);
 }
@@ -253,11 +250,24 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   ulong ltop=avma;
   long prec_pari = 2 + (prec + BITS_IN_LONG - 1)/BITS_IN_LONG;
   int i,j;
-  GEN u, v, x, temp, temp_diff, M;
+  GEN u, v, x, y, temp, temp_diff, temp_diff2, M;
   node *tree;
   node *tree_diff;
+  node *tree_diff2;
   node *res;
   int test=1;
+
+  tree = malloc(sizeof(node));
+  tree->nodeType = SUB;
+  tree->child1 = copyTree(func);
+
+  tree_diff = malloc(sizeof(node));
+  tree_diff->nodeType = SUB;
+  tree_diff->child1 = differentiate(func);
+
+  tree_diff2 = malloc(sizeof(node));
+  tree_diff2->nodeType = SUB;
+  tree_diff2->child1 = differentiate(tree_diff->child1);
 
   u = mpfr_to_PARI(a);
   v = mpfr_to_PARI(b);
@@ -277,6 +287,7 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   M = cgetg(deg+3,t_MAT);
   temp = cgetg(deg+3, t_COL);
   temp_diff = cgetg(deg+3, t_COL);
+  temp_diff2 = cgetg(deg+3, t_COL);
 
   // Main loop
   while(test) {
@@ -301,43 +312,58 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     for(i=0;i<deg+2;i++) {
       temp[i+1] = (long)evaluate_to_PARI(func, (GEN)(x[i+1]), prec);
     }
-    
+    y = gcopy((GEN)(temp[1]));
+
     // Solves the system
     temp = gauss(M,temp);
 
+    // Tests if the precision is sufficient
+    if (gexpo((GEN)(temp[deg+2])) < gexpo(y)-prec+15) {
+      printf("Warning : the precision seems to be not sufficient to compute the polynomial. Please increase the precision.\n");
+      return copyTree(func);
+    }
+
     // Formally derive the polynomial stored in temp
-    for(i=0;i<deg+2;i++) {
+    for(i=0;i<deg+1;i++) {
       temp_diff[i+1] = lmulrs((GEN)(temp[i+1]),(long)i);
     }
     
+    // Formally derive the polynomial stored in temp_diff
+    for(i=0;i<deg;i++) {
+      temp_diff2[i+2] = lmulrs((GEN)(temp_diff[i+2]),(long)i);
+    }
+
     // Construction of the function f-p
-    tree = malloc(sizeof(node));
-    tree->nodeType = SUB;
-    tree->child1 = copyTree(func);
     tree->child2 = convert_poly(1,deg+1, temp, prec);
 
     // Construction of the function f'-p'
-    tree_diff = malloc(sizeof(node));
-    tree_diff->nodeType = SUB;
-    tree_diff->child1 = differentiate(func);
     tree_diff->child2 = convert_poly(2,deg+1, temp_diff, prec);
 
+    // Construction of the function f''-p''
+    tree_diff2->child2 = convert_poly(3,deg+1, temp_diff2, prec);
+
     // Searching the zeros of f'-p'
-    x = quickFindZeros(tree_diff,deg,a,b,prec);
+    x = quickFindZeros(tree_diff, tree_diff2, deg,a,b,prec);
 
     // DEBUG
-    //printf("Étape n° %d ; qualité de l'approximation : %e\n",test,computeRatio(tree, x, prec));
-    //plotTree(tree, a, b, 900, prec);
+    //printf("Étape n° %d ; qualité de l'approximation : %e. Valeur calculée de epsilon : ",test,computeRatio(tree, x, prec));output((GEN)(temp[i+2]));
     test++;
     if (computeRatio(tree, x, prec)<0.0001) {
       test = 0;
       res = copyTree(tree->child2);
     }
 
-    free_memory(tree_diff);
-    free_memory(tree);
+    free_memory(tree_diff2->child2);
+    free_memory(tree_diff->child2);
+    free_memory(tree->child2);
   }
 
-   avma = ltop;
-   return res;
+  free_memory(tree_diff2->child1);
+  free_memory(tree_diff->child1);
+  free_memory(tree->child1);
+  free(tree);
+  free(tree_diff);
+  free(tree_diff2);
+  avma = ltop;
+  return res;
 }
