@@ -24,6 +24,7 @@ mpfr_t *mpfr_temp2;
 rangetype range_temp;
 node *temp_node; 
 int int_temp;
+double double_temp;
 
 extern int yyparse();
 extern FILE *yyin;

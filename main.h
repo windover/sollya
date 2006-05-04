@@ -7,7 +7,7 @@
 
 #define DEFAULTPOINTS 1000
 #define DEFAULTPRECISION 120
-#define DEFAULTDIAM 1e-6
+#define DEFAULTDIAM 1e-3
 
 
 extern char *variablename;
@@ -22,6 +22,7 @@ extern mp_prec_t defaultprecision;
 extern int defaultpoints;
 extern int int_temp;
 extern mp_prec_t prec_temp;
+extern double double_temp;
 
 void printPrompt(void);
 

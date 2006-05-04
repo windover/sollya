@@ -131,20 +131,34 @@ command:     plot
                              $$ = NULL;
                            } 
            | infnorm       {
-	                     printf("infnorm result:\n[");
-			     printValue($1.a,defaultprecision);
-			     printf(";");
-			     printValue($1.b,defaultprecision);
-			     printf("]\n");
+	                     printf("infnorm result: ");
 			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_abs(*($1.a),*($1.a),GMP_RNDN);
 			     mpfr_abs(*($1.b),*($1.b),GMP_RNDN);
-			     mpfr_max(*mpfr_temp,*($1.a),*($1.b),GMP_RNDN);
+			     mpfr_max(*mpfr_temp,*($1.a),*($1.b),GMP_RNDU);
 			     printValue(mpfr_temp,defaultprecision);
 			     printf("\n");
+			     mpfr_temp2 = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp2,defaultprecision);
+			     mpfr_sub(*mpfr_temp2,*($1.a),*($1.b),GMP_RNDU);
+			     mpfr_abs(*mpfr_temp2,*mpfr_temp2,GMP_RNDN);
+			     if (mpfr_zero_p(*mpfr_temp)) {
+			       printf("Absolute diameter of confidence interval: ");
+			       printValue(mpfr_temp2,defaultprecision);
+			       printf("\n");
+			     } else {
+			       mpfr_div(*mpfr_temp2,*mpfr_temp2,*mpfr_temp,GMP_RNDU);
+			       printf("Relative diameter of confidence interval: ");
+			       printValue(mpfr_temp2,defaultprecision);
+			       mpfr_log2(*mpfr_temp2,*mpfr_temp2,GMP_RNDU);
+			       double_temp = mpfr_get_d(*mpfr_temp2,GMP_RNDU);
+			       printf(" (= 2^(%f))\n",double_temp);
+			     }
 			     mpfr_clear(*mpfr_temp);
+			     mpfr_clear(*mpfr_temp2);
 			     free(mpfr_temp);
+			     free(mpfr_temp2);
 			     mpfr_clear(*($1.a));
 			     mpfr_clear(*($1.b));
 			     free($1.a);

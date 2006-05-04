@@ -2132,32 +2132,32 @@ int getDegreeUnsafe(node *tree) {
     break;
   case ADD:
     l = getDegreeUnsafe(tree->child1);
-    r = getDegreeUnsafe(tree->child1);
+    r = getDegreeUnsafe(tree->child2);
     return MAX(l,r);
     break;
   case SUB:
     l = getDegreeUnsafe(tree->child1);
-    r = getDegreeUnsafe(tree->child1);
+    r = getDegreeUnsafe(tree->child2);
     return MAX(l,r);
     break;
   case MUL:
     l = getDegreeUnsafe(tree->child1);
-    r = getDegreeUnsafe(tree->child1);
+    r = getDegreeUnsafe(tree->child2);
     return l + r;
     break;
   case POW:
     {
       l = getDegreeUnsafe(tree->child1);
       if (tree->child2->nodeType != CONSTANT) {
-	printf("getDegree: an error occured. The exponent in a power operator is not constant.\n");
+	printf("getDegreeUnsafe: an error occured. The exponent in a power operator is not constant.\n");
 	exit(1);
       }
       if (!mpfr_integer_p(*(tree->child2->value))) {
-	printf("getDegree: an error occured. The exponent in a power operator is not integer.\n");
+	printf("getDegreeUnsafe: an error occured. The exponent in a power operator is not integer.\n");
 	exit(1);
       }
       if (mpfr_sgn(*(tree->child2->value)) < 0) {
-	printf("getDegree: an error occured. The exponent in a power operator is negative.\n");
+	printf("getDegreeUnsafe: an error occured. The exponent in a power operator is negative.\n");
 	exit(1);
       }
 
@@ -2179,7 +2179,7 @@ int getDegreeUnsafe(node *tree) {
     return getDegreeUnsafe(tree->child1);
     break;
   default:
-    fprintf(stderr,"getDegree: an error occured on handling the expression tree\n");
+    fprintf(stderr,"getDegreeUnsafe: an error occured on handling the expression tree\n");
     exit(1);
   }
 }
@@ -2693,6 +2693,482 @@ node* expand(node *tree) {
 }
 
 
-node* horner(node *tree) {
-  return expand(tree);
+
+int isConstant(node *tree) {
+ switch (tree->nodeType) {
+  case VARIABLE:
+    return 0;
+    break;
+  case CONSTANT:
+    return 1;
+    break;
+  case ADD:
+    return (isConstant(tree->child1) & isConstant(tree->child2));
+    break;
+ case SUB:
+    return (isConstant(tree->child1) & isConstant(tree->child2));
+    break;
+  case MUL:
+    return (isConstant(tree->child1) & isConstant(tree->child2));
+    break;
+  case DIV:
+    return (isConstant(tree->child1) & isConstant(tree->child2));
+    break;
+  case SQRT:
+    return isConstant(tree->child1);
+    break;
+  case EXP:
+    return isConstant(tree->child1);
+    break;
+  case LOG:
+    return isConstant(tree->child1);
+    break;
+  case LOG_2:
+    return isConstant(tree->child1);
+    break;
+  case LOG_10:
+    return isConstant(tree->child1);
+    break;
+  case SIN:
+    return isConstant(tree->child1);
+    break;
+  case COS:
+    return isConstant(tree->child1);
+    break;
+  case TAN:
+    return isConstant(tree->child1);
+    break;
+  case ASIN:
+    return isConstant(tree->child1);
+    break;
+  case ACOS:
+    return isConstant(tree->child1);
+    break;
+  case ATAN:
+    return isConstant(tree->child1);
+    break;
+  case SINH:
+    return isConstant(tree->child1);
+    break;
+  case COSH:
+    return isConstant(tree->child1);
+    break;
+  case TANH:
+    return isConstant(tree->child1);
+    break;
+  case ASINH:
+    return isConstant(tree->child1);
+    break;
+  case ACOSH:
+    return isConstant(tree->child1);
+    break;
+  case ATANH:
+    return isConstant(tree->child1);
+    break;
+  case POW:
+    return (isConstant(tree->child1) & isConstant(tree->child2));
+    break;
+  case NEG:
+    return isConstant(tree->child1);
+    break;
+  case ABS:
+    return isConstant(tree->child1);
+    break;
+  case DOUBLE:
+    return isConstant(tree->child1);
+    break;
+  case DOUBLEDOUBLE:
+    return isConstant(tree->child1);
+    break;
+  case TRIPLEDOUBLE:
+    return isConstant(tree->child1);
+    break;
+  default:
+   fprintf(stderr,"isConstant: unknown identifier in the tree\n");
+   exit(1);
+  }
 }
+
+
+
+int isMonomial(node *tree) {
+
+  switch (tree->nodeType) {
+  case MUL:
+    return (isMonomial(tree->child1) & isMonomial(tree->child2));
+    break;
+  case NEG:
+    return isMonomial(tree->child1);
+    break;
+  case VARIABLE:
+    return 1;
+    break;
+  default: 
+    return isConstant(tree);
+  }
+  return 0;
+}
+
+
+
+node* getCoefficientsInMonomialUnsafe(node *polynom) {
+  node *leftSub, *rightSub, *coeffs;
+  mpfr_t *value;
+
+  if (isConstant(polynom)) return copyTree(polynom);
+
+  if (polynom->nodeType == VARIABLE) return NULL;
+ 
+  if (polynom->nodeType == MUL) {
+    leftSub = getCoefficientsInMonomialUnsafe(polynom->child1);
+    rightSub = getCoefficientsInMonomialUnsafe(polynom->child2);
+    if ((leftSub == NULL) && (rightSub == NULL)) return NULL;
+    if (leftSub == NULL) return rightSub;
+    if (rightSub == NULL) return leftSub;
+    coeffs = (node*) malloc(sizeof(node));
+    coeffs->nodeType = MUL;
+    coeffs->child1 = leftSub;
+    coeffs->child2 = rightSub;
+    return coeffs;
+  }
+
+  if (polynom->nodeType == NEG) {
+    leftSub = getCoefficientsInMonomialUnsafe(polynom->child1);
+    rightSub = (node *) malloc(sizeof(node));
+    rightSub->nodeType = CONSTANT;
+    value = (mpfr_t *) malloc(sizeof(mpfr_t));
+    mpfr_init2(*value,tools_precision);
+    mpfr_set_d(*value,-1.0,GMP_RNDN);
+    rightSub->value = value;
+    if (leftSub == NULL) return rightSub;
+    coeffs = (node*) malloc(sizeof(node));
+    coeffs->nodeType = MUL;
+    coeffs->child1 = leftSub;
+    coeffs->child2 = rightSub;
+    return coeffs;
+  }
+
+  printf("getCoefficientsInMonomialUnsafe: expression does not have the correct monomial form.\n");
+  exit(1);
+  return NULL;
+}
+
+
+void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
+  int degree;
+  node *temp, *coeff, *temp2;
+  mpfr_t *value;
+
+  if (isMonomial(polynom)) {
+    degree = getDegree(polynom);
+    coeff = getCoefficientsInMonomialUnsafe(polynom);
+    if (coeff == NULL) {
+      coeff = (node *) malloc(sizeof(node));
+      coeff->nodeType = CONSTANT;
+      value = (mpfr_t *) malloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      mpfr_set_d(*value,1.0,GMP_RNDN);
+      coeff->value = value;
+    }
+    temp = monomials[degree];
+    if (temp == NULL) {
+      temp = coeff;
+    } else {
+      temp2 = (node*) malloc(sizeof(node));
+      if (sign > 0) temp2->nodeType = ADD; else temp2->nodeType = SUB;
+      temp2->child1 = temp;
+      temp2->child2 = coeff;
+      temp = temp2;
+    }
+    monomials[degree] = temp;
+    return;
+  }
+
+  if (polynom->nodeType == ADD) {
+    getCoefficientsUnsafe(monomials,polynom->child1,1);
+    getCoefficientsUnsafe(monomials,polynom->child2,1);
+    return;
+  }
+
+  if (polynom->nodeType == SUB) {
+    getCoefficientsUnsafe(monomials,polynom->child1,1);
+    getCoefficientsUnsafe(monomials,polynom->child2,-1);
+    return;
+  }
+
+  if (polynom->nodeType == NEG) {
+    getCoefficientsUnsafe(monomials,polynom->child1,-1);
+    return;
+  }
+
+  printf("getCoefficientsUnsafe: the given polynomial is neither a monomial nor a sum of monomials\n");
+  exit(1);
+}
+
+
+
+node* hornerPolynomialUnsafe(node *tree) {
+  node *copy, *temp, *temp2, *temp3, *temp4;
+  node **monomials;
+  int degree, i, k, e;
+  mpfr_t *value;
+  
+  degree = getDegree(tree);
+  monomials = (node**) calloc((degree + 1),sizeof(node*));
+  for (i=0;i<=degree;i++) monomials[i] = NULL;
+  
+  getCoefficientsUnsafe(monomials,tree,1);
+
+  if (monomials[degree] == NULL) {
+    printf(
+"hornerPolynomialUnsafe: an error occured. The coefficient of monomial with polynomial degree exponent is zero.\n");
+    exit(1);
+    return NULL;
+  }
+
+  copy = copyTree(monomials[degree]);
+
+  for (i=degree-1;i>=0;i--) {
+    if (monomials[i] == NULL) {
+      if ((i == 0) || (monomials[i-1] != NULL)) {
+	temp = (node *) malloc(sizeof(node));
+	temp->nodeType = MUL;
+	temp2 = (node *) malloc(sizeof(node));
+	temp2->nodeType = VARIABLE;
+	temp->child1 = temp2;
+	temp->child2 = copy;
+	copy = temp;
+      } else {
+	for (k=i-1;monomials[k]==NULL;k--);
+	e = (i - k) + 1;
+	temp = (node *) malloc(sizeof(node));
+	temp->nodeType = MUL;
+	temp2 = (node *) malloc(sizeof(node));
+	temp2->nodeType = VARIABLE;
+	temp3 = (node *) malloc(sizeof(node));
+	temp3->nodeType = CONSTANT;
+	value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	mpfr_init2(*value,tools_precision);
+	if (mpfr_set_si(*value,e,GMP_RNDN) != 0) {
+	  printf("Warning: rounding occured on representing a monomial power exponent with %d bits.\n",
+		 (int) tools_precision);
+	  printf("Try to increase the precision.\n");
+	}
+	temp3->value = value;
+	temp4 = (node *) malloc(sizeof(node));
+	temp4->nodeType = POW;
+	temp4->child1 = temp2;
+	temp4->child2 = temp3;
+	temp->child1 = temp4;
+	temp->child2 = copy;
+	copy = temp;
+	temp = (node *) malloc(sizeof(node));
+	temp->nodeType = ADD;
+	temp->child1 = copyTree(monomials[k]);
+	temp->child2 = copy;
+	copy = temp;
+	i = k;
+      }
+    } else {
+      temp = (node *) malloc(sizeof(node));
+      temp->nodeType = MUL;
+      temp2 = (node *) malloc(sizeof(node));
+      temp2->nodeType = VARIABLE;
+      temp->child1 = temp2;
+      temp->child2 = copy;
+      copy = temp;
+      temp = (node *) malloc(sizeof(node));
+      temp->nodeType = ADD;
+      temp->child1 = copyTree(monomials[i]);
+      temp->child2 = copy;
+      copy = temp;
+    }
+  }
+  
+
+  for (i=0;i<=degree;i++) {
+    if (monomials[i] != NULL) free_memory(monomials[i]);
+  }
+  free(monomials);
+  return copy;
+}
+
+node* hornerPolynomial(node *tree) {
+  node *temp, *temp2, *temp3;
+  if (getDegree(tree) < 0) return copyTree(tree);
+  temp = expandPowerInPolynomialUnsafe(tree);
+  temp2 = expandPolynomialUnsafe(temp);
+  temp3 = hornerPolynomialUnsafe(temp2);
+  free_memory(temp);
+  free_memory(temp2);
+  return temp3;
+}
+
+
+node* horner(node *tree) {
+  node *copy;
+  mpfr_t *value;
+
+  if (isPolynomial(tree)) return hornerPolynomial(tree);
+
+  switch (tree->nodeType) {
+  case VARIABLE:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = VARIABLE;
+    break;
+  case CONSTANT:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = CONSTANT;
+    value = (mpfr_t*) malloc(sizeof(mpfr_t));
+    mpfr_init2(*value,tools_precision);
+    mpfr_set(*value,*(tree->value),GMP_RNDN);
+    copy->value = value;
+    break;
+  case ADD:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ADD;
+    copy->child1 = horner(tree->child1);
+    copy->child2 = horner(tree->child2);
+    break;
+  case SUB:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = SUB;
+    copy->child1 = horner(tree->child1);
+    copy->child2 = horner(tree->child2);
+    break;
+  case MUL:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = MUL;
+    copy->child1 = horner(tree->child1);
+    copy->child2 = horner(tree->child2);
+    break;
+  case DIV:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = DIV;
+    copy->child1 = horner(tree->child1);
+    copy->child2 = horner(tree->child2);
+    break;
+  case SQRT:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = SQRT;
+    copy->child1 = horner(tree->child1);
+    break;
+  case EXP:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = EXP;
+    copy->child1 = horner(tree->child1);
+    break;
+  case LOG:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = LOG;
+    copy->child1 = horner(tree->child1);
+    break;
+  case LOG_2:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = LOG_2;
+    copy->child1 = horner(tree->child1);
+    break;
+  case LOG_10:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = LOG_10;
+    copy->child1 = horner(tree->child1);
+    break;
+  case SIN:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = SIN;
+    copy->child1 = horner(tree->child1);
+    break;
+  case COS:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = COS;
+    copy->child1 = horner(tree->child1);
+    break;
+  case TAN:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = TAN;
+    copy->child1 = horner(tree->child1);
+    break;
+  case ASIN:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ASIN;
+    copy->child1 = horner(tree->child1);
+    break;
+  case ACOS:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ACOS;
+    copy->child1 = horner(tree->child1);
+    break;
+  case ATAN:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ATAN;
+    copy->child1 = horner(tree->child1);
+    break;
+  case SINH:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = SINH;
+    copy->child1 = horner(tree->child1);
+    break;
+  case COSH:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = COSH;
+    copy->child1 = horner(tree->child1);
+    break;
+  case TANH:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = TANH;
+    copy->child1 = horner(tree->child1);
+    break;
+  case ASINH:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ASINH;
+    copy->child1 = horner(tree->child1);
+    break;
+  case ACOSH:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ACOSH;
+    copy->child1 = horner(tree->child1);
+    break;
+  case ATANH:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ATANH;
+    copy->child1 = horner(tree->child1);
+    break;
+  case POW:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = POW;
+    copy->child1 = horner(tree->child1);
+    copy->child2 = horner(tree->child2);
+    break;
+  case NEG:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = NEG;
+    copy->child1 = horner(tree->child1);
+    break;
+  case ABS:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = ABS;
+    copy->child1 = horner(tree->child1);
+    break;
+  case DOUBLE:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = DOUBLE;
+    copy->child1 = horner(tree->child1);
+    break;
+  case DOUBLEDOUBLE:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = DOUBLEDOUBLE;
+    copy->child1 = horner(tree->child1);
+    break;
+  case TRIPLEDOUBLE:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = TRIPLEDOUBLE;
+    copy->child1 = horner(tree->child1);
+    break;
+  default:
+   fprintf(stderr,"horner: unknown identifier in the tree\n");
+   exit(1);
+  }
+  return copy;
+}
+
+

@@ -823,6 +823,7 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   mpfi_t rangeI, resI;
   nodeI *funcI, *derivI, *secondI;
   node *deriv, *second;
+  mpfr_t rangeDiameter;
 
   res.a = (mpfr_t*) malloc(sizeof(mpfr_t));
   res.b = (mpfr_t*) malloc(sizeof(mpfr_t));
@@ -830,6 +831,9 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   mpfr_init2(*(res.b),prec);
   mpfi_init2(rangeI,prec);
   mpfi_init2(resI,prec);
+  mpfr_init2(rangeDiameter,prec);
+  mpfr_sub(rangeDiameter,*(range.b),*(range.a),GMP_RNDD);
+  mpfr_mul(rangeDiameter,rangeDiameter,diam,GMP_RNDD);
   mpfi_interv_fr(rangeI,*(range.a),*(range.b));
   funcI = expressionToIntervalExpression(func,prec);
   deriv = differentiate(func);
@@ -837,7 +841,7 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   derivI = expressionToIntervalExpression(deriv,prec);
   secondI = expressionToIntervalExpression(second,prec);
 
-  infnormI(resI,funcI,derivI,secondI,rangeI,prec,diam);
+  infnormI(resI,funcI,derivI,secondI,rangeI,prec,rangeDiameter);
 
 
   mpfi_revert_if_needed(resI);
@@ -850,5 +854,6 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   free_memory(second);
   mpfi_clear(rangeI);
   mpfi_clear(resI);
+  mpfr_clear(rangeDiameter);
   return res;
 }
