@@ -326,8 +326,8 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     x = quickFindZeros(tree_diff,deg,a,b,prec);
 
     // DEBUG
-        printf("Étape n° %d ; qualité de l'approximation : %e\n",test,computeRatio(tree, x, prec));
-    plotTree(tree, a, b, 900, prec);
+    //printf("Étape n° %d ; qualité de l'approximation : %e\n",test,computeRatio(tree, x, prec));
+    //plotTree(tree, a, b, 900, prec);
     test++;
     if (computeRatio(tree, x, prec)<0.0001) {
       test = 0;
