@@ -9,7 +9,7 @@
 
 void DEBUG(char *s) { printf(s); }
 
-// Aucune gestion des NaN, Inf, et dénormalisés.
+// NaN, Inf, and denormalized not handled.
 GEN mpfr_to_PARI(mpfr_t x) {
   mp_exp_t e;
   mp_prec_t prec,q,r;
@@ -40,8 +40,8 @@ GEN mpfr_to_PARI(mpfr_t x) {
 }
 
 
-// Aucune gestion des NaN, Inf, et dénormalisés.
-// Pas de gestion du type de x : il faut que ce soit un t_REAL
+// NaN, Inf, and denormalized not handled.
+// No check of the type of x is made (t_REAL or t_INT)
 void PARI_to_mpfr(mpfr_t y, GEN x, mp_rnd_t rnd) {
   long length;
   mpz_t m;
@@ -79,8 +79,8 @@ GEN evaluate_to_PARI(node *tree, GEN x, mp_prec_t prec) {
 }
 
 
-// Convertit un tableau [a0,..,an] de PARI REAL_t
-// en un arbre représentant le polynôme sum(ai*x^i)
+// Convert an array [a0,..,an] of PARI REAL_t values
+// into a tree representing the polynomial sum(ai*x^i)
 node *convert_poly(int first_index, int last_index, GEN tab, mp_prec_t prec) {
   node *tree;
   node *temp1;
@@ -124,7 +124,7 @@ node *convert_poly(int first_index, int last_index, GEN tab, mp_prec_t prec) {
 }
 
 
-// Trouve la racine de tree dans [a;b]
+// Find the unique root of tree in [a;b]
 GEN newton(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   node *diff_tree;
   mpfr_t x, temp1, temp2;
@@ -160,9 +160,9 @@ GEN newton(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   return res;
 }
 
-// Renvoie un vecteur contenant les zéros de tree sur [a;b]
-// Les calculs sont effectués à la précsion prec.
-// deg est une indication sur le nombre de zéros auquel s'attendre
+// Returns a PARI array containing the zeros of tree on [a;b]
+// The compuations are made with precision prec.
+// deg indicates the number of zeros which we are expecting.
 GEN quickFindZeros(node *tree,int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   GEN res;
   long int n = 100*(deg+2);
@@ -188,7 +188,7 @@ GEN quickFindZeros(node *tree,int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     if (mpfr_sgn(y1) != mpfr_sgn(y2)) {
       i++;
       if(i>deg+2)
-	printf("The function oscillate too much. Nevertheless, we try to continue\n");
+	printf("The function oscillates too much. Nevertheless, we try to continue\n");
       else res[i] = (long)(newton(tree, x1, x2, prec));       
     }
     mpfr_set(x1,x2,GMP_RNDN);
@@ -262,7 +262,7 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   u = mpfr_to_PARI(a);
   v = mpfr_to_PARI(b);
 
-  // Définition du vecteur x de n+2 points de Chebychev
+  // Definition of the array x of the n+2 Chebychev points
   x = cgetg(deg+3, t_COL);
   for (i=0;i<deg+2;i++) {
     x[i+1] = lsub(gdivgs(gadd(u,v),2),
@@ -278,10 +278,10 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   temp = cgetg(deg+3, t_COL);
   temp_diff = cgetg(deg+3, t_COL);
 
-  // Boucle principale
+  // Main loop
   while(test) {
 
-    // Définition de la matrice M de Remez associée aux points x_i
+    // Definition of the Remez matrix M with respect to the point x_i
     for (i=0;i<deg+2;i++) {
       temp[i+1] = lcopy(gun);
     }
@@ -297,35 +297,35 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     M[deg+2] = lcopy(temp);
     
     
-    // Définition du vecteur f(x)
+    // Definition of the array f(x)
     for(i=0;i<deg+2;i++) {
       temp[i+1] = (long)evaluate_to_PARI(func, (GEN)(x[i+1]), prec);
     }
     
-    // Résolution du système
+    // Solves the system
     temp = gauss(M,temp);
 
-    // Dérivation formelle du polynôme contenu dans temp
+    // Formally derive the polynomial stored in temp
     for(i=0;i<deg+2;i++) {
       temp_diff[i+1] = lmulrs((GEN)(temp[i+1]),(long)i);
     }
     
-    // Construction de la fonction f'-p'
+    // Construction of the function f'-p'
     tree_diff = malloc(sizeof(node));
     tree_diff->nodeType = SUB;
     tree_diff->child1 = differentiate(func);
     tree_diff->child2 = convert_poly(2,deg+1, temp_diff, prec);
 
-    // Recherche des zéros de f'-p'
+    // Searching the zeros of f'-p'
     x = quickFindZeros(tree_diff,deg,a,b,prec);
 
-    // Construction de la fonction f-p
+    // Construction of the function f-p
     tree = malloc(sizeof(node));
     tree->nodeType = SUB;
     tree->child1 = copyTree(func);
     tree->child2 = convert_poly(1,deg+1, temp, prec);
 
-    printf("Étape n° %d ; qualité de l'approximation : %e\n",test,computeRatio(tree, x, prec));
+    //    printf("Étape n° %d ; qualité de l'approximation : %e\n",test,computeRatio(tree, x, prec));
     test++;
     if (computeRatio(tree, x, prec)<0.0001) {
       test = 0;
