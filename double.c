@@ -9,24 +9,27 @@
 
 
 
-void mpfr_round_to_double(mpfr_t rop, mpfr_t op) {
+int mpfr_round_to_double(mpfr_t rop, mpfr_t op) {
   double d;
+  int res;
 
   if (mpfr_get_prec(op) < 53) {
     printf("Warning: rounding a value computed on less than 53 bits to double precision\n");
   }
 
   d = mpfr_get_d(op,GMP_RNDN);
-  if (mpfr_set_d(rop,d,GMP_RNDN) != 0) {
+  if ((res = mpfr_set_d(rop,d,GMP_RNDN)) != 0) {
     printf("Warning: double rounding occured on invoking the double precision rounding operator.\n");
     printf("Try to increase the working precision\n");
   }
+  return res;
 }
 
-void mpfr_round_to_doubledouble(mpfr_t rop, mpfr_t op) {
+int mpfr_round_to_doubledouble(mpfr_t rop, mpfr_t op) {
   double d;
   mpfr_t accu, temp, rest;
   mp_prec_t prec;
+  int res;
 
   prec = mpfr_get_prec(op);
   if (prec < 106) {
@@ -56,7 +59,7 @@ void mpfr_round_to_doubledouble(mpfr_t rop, mpfr_t op) {
     printf("Warning; double rounding occured on invoking the double-double rounding operator.\n");
     printf("The rounding occured on substracting in MPFR. This should not occur.\n");
   }
-  if (mpfr_set(rop,accu,GMP_RNDN) != 0) {
+  if ((res = mpfr_set(rop,accu,GMP_RNDN)) != 0) {
     printf("Warning; double rounding occured on invoking the double-double rounding operator.\n");
     printf("Try to increase the working precision.\n");
   }
@@ -64,12 +67,14 @@ void mpfr_round_to_doubledouble(mpfr_t rop, mpfr_t op) {
   mpfr_clear(accu);
   mpfr_clear(temp);
   mpfr_clear(rest);
+  return res;
 }
 
-void mpfr_round_to_tripledouble(mpfr_t rop, mpfr_t op) {
+int mpfr_round_to_tripledouble(mpfr_t rop, mpfr_t op) {
   double d;
   mpfr_t accu, temp, rest;
   mp_prec_t prec;
+  int res;
 
   prec = mpfr_get_prec(op);
   if (prec < 159) {
@@ -112,7 +117,7 @@ void mpfr_round_to_tripledouble(mpfr_t rop, mpfr_t op) {
     printf("Warning; double rounding occured on invoking the triple-double rounding operator.\n");
     printf("The rounding occured on substracting in MPFR. This should not occur.\n");
   }
-  if (mpfr_set(rop,accu,GMP_RNDN) != 0) {
+  if ((res = mpfr_set(rop,accu,GMP_RNDN)) != 0) {
     printf("Warning; double rounding occured on invoking the triple-double rounding operator.\n");
     printf("Try to increase the working precision.\n");
   }
@@ -120,4 +125,6 @@ void mpfr_round_to_tripledouble(mpfr_t rop, mpfr_t op) {
   mpfr_clear(accu);
   mpfr_clear(temp);
   mpfr_clear(rest);
+
+  return res;
 }

@@ -86,6 +86,12 @@ HORNER          "horner"
 DEGREE          "degree"
 EXPAND          "expand"
 
+SIMPLIFYSAFE1   "safesimplify"
+SIMPLIFYSAFE2   "simplifysafe"
+
+SIMPLIFYSAFE    ({SIMPLIFYSAFE1}|{SIMPLIFYSAFE2})
+
+
 %%
 
 %{
@@ -149,6 +155,8 @@ EXPAND          "expand"
 {HORNER}        {     return HORNERTOKEN;       }
 {DEGREE}        {     return DEGREETOKEN;       }
 {EXPAND}        {     return EXPANDTOKEN;       }
+{SIMPLIFYSAFE}  {     return SIMPLIFYSAFETOKEN; }
+
 
 {VARIABLE}      {     			     
                       if (variablename == NULL) { 

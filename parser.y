@@ -87,6 +87,8 @@ void yyerror(char *message) {
 %token  HORNERTOKEN
 %token  DEGREETOKEN
 %token  EXPANDTOKEN
+%token  SIMPLIFYSAFETOKEN
+
 
 %type <other> commands
 %type <other> command
@@ -416,6 +418,12 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                         |       SIMPLIFYTOKEN LPARTOKEN function RPARTOKEN
                            {
 			     temp_node = simplifyTree($3);
+			     free_memory($3);
+			     $$ = temp_node;
+			   }
+                        |       SIMPLIFYSAFETOKEN LPARTOKEN function RPARTOKEN
+                           {
+			     temp_node = simplifyTreeErrorfree($3);
 			     free_memory($3);
 			     $$ = temp_node;
 			   }

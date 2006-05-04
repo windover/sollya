@@ -70,6 +70,6 @@ node* copyTree(node *tree);
 node* horner(node *tree);
 int getDegree(node *tree);
 node* expand(node *tree);
-
+node* simplifyTreeErrorfree(node *tree);
 
 #endif /* ifdef EXPRESSION_H*/
