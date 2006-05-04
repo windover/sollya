@@ -674,13 +674,14 @@ range:  LBRACKETTOKEN rangeconstant SEMICOLONTOKEN rangeconstant RBRACKETTOKEN
 
 rangeconstant:     function
                            {
+			     temp_node = simplifyTreeErrorfree($1);
 			     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
-			     if ($1->nodeType != CONSTANT) {
+			     if (temp_node->nodeType != CONSTANT) {
 			       printf(
                       "Warning: the range bound given is not a floating-point constant but an expression to evaluate.\n");
 			     }
-			     if (!evaluateConstantExpression(*mpfr_temp,($1),tools_precision)) {
+			     if (!evaluateConstantExpression(*mpfr_temp,temp_node,tools_precision)) {
 			       printf("Warning: range bounds must be expressions that evaluate to constants.\n");
 			       printf("Setting %s = 0 when evaluating the given variable expression.\n",variablename);
 			       mpfr_temp2 = (mpfr_t*) malloc(sizeof(mpfr_t));
@@ -690,6 +691,7 @@ rangeconstant:     function
 			       mpfr_clear(*mpfr_temp2);
 			       free(mpfr_temp2);
 			     }
+			     free_memory(temp_node);
 			     free_memory($1);
 			     $$ = mpfr_temp;
                            }
@@ -698,14 +700,15 @@ rangeconstant:     function
 
 diamconstant:     function
                            {
+			     temp_node = simplifyTreeErrorfree($1);
 			     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
-			     if ($1->nodeType != CONSTANT) {
+			     if (temp_node->nodeType != CONSTANT) {
 			       printf(
                       "Warning: the diameter given is not a floating-point constant but an expression to evaluate.\n");
 			     }
-			     if (!evaluateConstantExpression(*mpfr_temp,($1),tools_precision)) {
-			       printf("Warning: the diameter must be an expression that evaluates to a constant.\n");
+			     if (!evaluateConstantExpression(*mpfr_temp,temp_node,tools_precision)) {
+			       printf("Warning: diameters must be expressions that evaluate to constants.\n");
 			       printf("Setting %s = 0 when evaluating the given variable expression.\n",variablename);
 			       mpfr_temp2 = (mpfr_t*) malloc(sizeof(mpfr_t));
 			       mpfr_init2(*mpfr_temp2,tools_precision);
@@ -714,6 +717,8 @@ diamconstant:     function
 			       mpfr_clear(*mpfr_temp2);
 			       free(mpfr_temp2);
 			     }
+			     free_memory(temp_node);
+			     free_memory($1);
 			     $$ = mpfr_temp;
                            }
 ;

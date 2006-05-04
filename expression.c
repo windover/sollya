@@ -1217,13 +1217,17 @@ node* simplifyTreeErrorfree(node *tree) {
 }
 
 
-
+int isPolynomial(node *tree);
+node *differentiatePolynomialUnsafe(node *tree);
 
 node* differentiateUnsimplified(node *tree) {
   node *derivative;
   mpfr_t *mpfr_temp;
   node *temp_node, *temp_node2, *temp_node3, *f_diff, *g_diff, *f_copy, *g_copy, *g_copy2, *h_copy, *h_copy2;
   node *temp_node4, *f_copy2;
+
+
+  if (isPolynomial(tree)) return differentiatePolynomialUnsafe(tree);
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -3142,6 +3146,23 @@ node* expandPolynomialUnsafe(node *tree) {
     switch (left->nodeType) {
     case VARIABLE:
     case CONSTANT:
+      switch (right->nodeType) {
+      case VARIABLE:
+      case CONSTANT:
+	copy = (node*) malloc(sizeof(node));
+	copy->nodeType = MUL;
+	copy->child1 = left;
+	copy->child2 = right;
+	break;  
+      default:
+	tempNode = (node*) malloc(sizeof(node));
+	tempNode->nodeType = MUL;
+	tempNode->child1 = right;
+	tempNode->child2 = left;
+	copy = expandPolynomialUnsafe(tempNode);
+	free_memory(tempNode);
+      }
+      break;
     case MUL:
       copy = (node*) malloc(sizeof(node));
       copy->nodeType = MUL;
@@ -3884,4 +3905,148 @@ node* horner(node *tree) {
   temp2 = simplifyTreeErrorfree(temp);
   free_memory(temp);
   return temp2;
+}
+
+
+
+node *differentiatePolynomialUnsafe(node *tree) {
+  node *simplifiedTemp, *simplified, *copy, *temp, *temp2, *temp3, *temp4, *temp5;
+  int degree, i;
+  node **monomials;
+  mpfr_t *value;
+
+  simplifiedTemp = expandPowerInPolynomialUnsafe(tree);
+  simplified = expandPolynomialUnsafe(simplifiedTemp);
+
+  degree = getDegree(simplified);
+
+  if (degree == 0) {
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = CONSTANT;
+    value = (mpfr_t*) malloc(sizeof(mpfr_t));
+    mpfr_init2(*value,tools_precision);
+    mpfr_set_d(*value,0.0,GMP_RNDN);
+    copy->value = value;
+  } else {
+
+    monomials = (node**) calloc((degree + 1),sizeof(node*));
+    for (i=0;i<=degree;i++) monomials[i] = NULL;
+    
+    getCoefficientsUnsafe(monomials,simplified,1);
+    
+    if (monomials[degree] == NULL) {
+      printf(
+	     "differentiatePolynomialUnsafe: an error occured. The coefficient of monomial with polynomial degree exponent is zero.\n"
+	     );
+      exit(1);
+      return NULL;
+    }
+    
+    
+    if (degree >= 2) {
+      temp = copyTree(monomials[degree]);
+      temp2 = (node*) malloc(sizeof(node));
+      temp2->nodeType = CONSTANT;
+      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      if (mpfr_set_si(*value,degree,GMP_RNDN) != 0) {
+	printf("Warning: rounding occured on differentiating a polynomial. A constant could not be written on %d bits.\n",
+	       (int) tools_precision);
+	printf("Try to increase the precision.\n");
+      }
+      temp2->value = value;
+      temp3 = (node*) malloc(sizeof(node));
+      temp3->nodeType = MUL;
+      temp3->child1 = temp2;
+      temp3->child2 = temp;
+      temp2 = (node*) malloc(sizeof(node));
+      temp2->nodeType = CONSTANT;
+      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      if (mpfr_set_si(*value,degree-1,GMP_RNDN) != 0) {
+	printf(
+	       "Warning: rounding occured on differentiating a polynomial. An exponent constant could not be written on %d bits.\n",
+	       (int) tools_precision);
+	printf("Try to increase the precision.\n");
+      }
+      temp2->value = value;
+      temp = (node*) malloc(sizeof(node));
+      temp->nodeType = VARIABLE;
+      temp4 = (node*) malloc(sizeof(node));
+      temp4->nodeType = POW;
+      temp4->child1 = temp;
+      temp4->child2 = temp2;
+      temp5 = (node*) malloc(sizeof(node));
+      temp5->nodeType = MUL;
+      temp5->child1 = temp3;
+      temp5->child2 = temp4;
+      copy = temp5;
+      
+      for (i=degree-1;i>1;i--) {
+	if (monomials[i] != NULL) {
+	  temp = copyTree(monomials[i]);
+	  temp2 = (node*) malloc(sizeof(node));
+	  temp2->nodeType = CONSTANT;
+	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	  mpfr_init2(*value,tools_precision);
+	  if (mpfr_set_si(*value,i,GMP_RNDN) != 0) {
+	    printf("Warning: rounding occured on differentiating a polynomial. A constant could not be written on %d bits.\n",
+		   (int) tools_precision);
+	    printf("Try to increase the precision.\n");
+	  }
+	  temp2->value = value;
+	  temp3 = (node*) malloc(sizeof(node));
+	  temp3->nodeType = MUL;
+	  temp3->child1 = temp2;
+	  temp3->child2 = temp;
+	  temp2 = (node*) malloc(sizeof(node));
+	  temp2->nodeType = CONSTANT;
+	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	  mpfr_init2(*value,tools_precision);
+	  if (mpfr_set_si(*value,i-1,GMP_RNDN) != 0) {
+	    printf(
+		   "Warning: rounding occured on differentiating a polynomial. An exponent constant could not be written on %d bits.\n",
+		   (int) tools_precision);
+	    printf("Try to increase the precision.\n");
+	  }
+	  temp2->value = value;
+	  temp = (node*) malloc(sizeof(node));
+	  temp->nodeType = VARIABLE;
+	  temp4 = (node*) malloc(sizeof(node));
+	  temp4->nodeType = POW;
+	  temp4->child1 = temp;
+	  temp4->child2 = temp2;
+	  temp5 = (node*) malloc(sizeof(node));
+	  temp5->nodeType = MUL;
+	  temp5->child1 = temp3;
+	  temp5->child2 = temp4;
+	  temp = copy;
+	  temp2 = (node*) malloc(sizeof(node));
+	  temp2->nodeType = ADD;
+	  temp2->child1 = temp5;
+	  temp2->child2 = temp;
+	  copy = temp2;      
+	} 
+      }
+      
+      if (monomials[1] != NULL) {
+	temp = copyTree(monomials[1]);
+	temp2 = (node*) malloc(sizeof(node));
+	temp2->nodeType = ADD;
+	temp2->child1 = temp;
+	temp2->child2 = copy;
+	copy = temp2;      
+      } 
+    } else {
+      copy = copyTree(monomials[1]);
+    }
+  
+    for (i=0;i<=degree;i++) {
+      if (monomials[i] != NULL) free_memory(monomials[i]);
+    }
+    free(monomials);
+  } 
+  free_memory(simplifiedTemp);
+  free_memory(simplified);
+  return copy;
 }
