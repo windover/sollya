@@ -690,6 +690,7 @@ rangeconstant:     function
 			       mpfr_clear(*mpfr_temp2);
 			       free(mpfr_temp2);
 			     }
+			     free_memory($1);
 			     $$ = mpfr_temp;
                            }
 ;
