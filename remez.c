@@ -124,6 +124,42 @@ node *convert_poly(int first_index, int last_index, GEN tab, mp_prec_t prec) {
 }
 
 
+// Trouve la racine de tree dans [a;b]
+GEN newton(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+  node *diff_tree;
+  mpfr_t x, temp1, temp2;
+  mpfr_t d;
+  GEN res;
+  unsigned long int n=1;
+  int test=0;
+
+  mpfr_init2(x,prec);
+  mpfr_init2(temp1,prec);
+  mpfr_init2(temp2,prec);
+  mpfr_init2(d,53);
+
+  diff_tree = differentiate(tree);
+  mpfr_sub(d,b,a,GMP_RNDN);
+  test = 1 + (mpfr_get_exp(b)-prec)/mpfr_get_exp(d);
+
+  mpfr_add(x,a,b,GMP_RNDN);
+  mpfr_div_2ui(x,x,1,GMP_RNDN);
+  
+  while(n<=test) {
+    evaluate(temp1, tree, x, prec);
+    evaluate(temp2, diff_tree, x, prec);
+    mpfr_div(temp1, temp1, temp2, GMP_RNDN);
+    mpfr_sub(temp1, x, temp1, GMP_RNDN);
+    n = 2*n;
+  }
+
+  res = mpfr_to_PARI(x);
+  mpfr_clear(x); mpfr_clear(temp1); mpfr_clear(temp2);
+  mpfr_clear(d);
+  free_memory(diff_tree);
+  return res;
+}
+
 // Renvoie un vecteur contenant les zéros de tree sur [a;b]
 // Les calculs sont effectués à la précsion prec.
 // deg est une indication sur le nombre de zéros auquel s'attendre
@@ -153,8 +189,7 @@ GEN quickFindZeros(node *tree,int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
       i++;
       if(i>deg+2)
 	printf("The function oscillate too much. Nevertheless, we try to continue\n");
-      else res[i] = (long)(mpfr_to_PARI(x1));
-       
+      else res[i] = (long)(newton(tree, x1, x2, prec));       
     }
     mpfr_set(x1,x2,GMP_RNDN);
     mpfr_add(x2,x2,h,GMP_RNDN);
