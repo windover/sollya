@@ -125,8 +125,7 @@ node *convert_poly(int first_index, int last_index, GEN tab, mp_prec_t prec) {
 
 
 // Find the unique root of tree in [a;b]
-GEN newton(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
-  node *diff_tree;
+GEN newton(node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_t x, temp1, temp2;
   mpfr_t d;
   GEN res;
@@ -138,7 +137,6 @@ GEN newton(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_init2(temp2,prec);
   mpfr_init2(d,53);
 
-  diff_tree = differentiate(tree);
   mpfr_sub(d,b,a,GMP_RNDN);
   test = 1 + (mpfr_get_exp(b)-prec)/mpfr_get_exp(d);
 
@@ -156,7 +154,6 @@ GEN newton(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   res = mpfr_to_PARI(x);
   mpfr_clear(x); mpfr_clear(temp1); mpfr_clear(temp2);
   mpfr_clear(d);
-  free_memory(diff_tree);
   return res;
 }
 
@@ -165,9 +162,10 @@ GEN newton(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 // deg indicates the number of zeros which we are expecting.
 GEN quickFindZeros(node *tree,int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   GEN res;
-  long int n = 100*(deg+2);
+  long int n = 50*(deg+2);
   long int i=0;
   mpfr_t h, x1, x2, y1, y2;
+  node *diff_tree;
 
   mpfr_init2(h,prec);
   mpfr_init2(y1,prec);
@@ -176,6 +174,7 @@ GEN quickFindZeros(node *tree,int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_init2(x2,prec);
 
   res = cgetg(deg+3, t_COL);
+  diff_tree = differentiate(tree);
 
   mpfr_sub(h,b,a,GMP_RNDD);
   mpfr_div_si(h,h,n,GMP_RNDD);
@@ -188,8 +187,8 @@ GEN quickFindZeros(node *tree,int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     if (mpfr_sgn(y1) != mpfr_sgn(y2)) {
       i++;
       if(i>deg+2)
-	printf("The function oscillates too much. Nevertheless, we try to continue\n");
-      else res[i] = (long)(newton(tree, x1, x2, prec));       
+	printf("The function oscillates too much. Nevertheless, we try to continue.\n");
+      else res[i] = (long)(newton(tree, diff_tree, x1, x2, prec));       
     }
     mpfr_set(x1,x2,GMP_RNDN);
     mpfr_add(x2,x2,h,GMP_RNDN);
@@ -208,6 +207,7 @@ GEN quickFindZeros(node *tree,int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     }
   }
 
+  free_memory(diff_tree);
   mpfr_clear(h); mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(y1); mpfr_clear(y2);
   return sort(res);
 }
@@ -310,6 +310,12 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
       temp_diff[i+1] = lmulrs((GEN)(temp[i+1]),(long)i);
     }
     
+    // Construction of the function f-p
+    tree = malloc(sizeof(node));
+    tree->nodeType = SUB;
+    tree->child1 = copyTree(func);
+    tree->child2 = convert_poly(1,deg+1, temp, prec);
+
     // Construction of the function f'-p'
     tree_diff = malloc(sizeof(node));
     tree_diff->nodeType = SUB;
@@ -319,13 +325,9 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     // Searching the zeros of f'-p'
     x = quickFindZeros(tree_diff,deg,a,b,prec);
 
-    // Construction of the function f-p
-    tree = malloc(sizeof(node));
-    tree->nodeType = SUB;
-    tree->child1 = copyTree(func);
-    tree->child2 = convert_poly(1,deg+1, temp, prec);
-
-    //    printf("Étape n° %d ; qualité de l'approximation : %e\n",test,computeRatio(tree, x, prec));
+    // DEBUG
+        printf("Étape n° %d ; qualité de l'approximation : %e\n",test,computeRatio(tree, x, prec));
+    plotTree(tree, a, b, 900, prec);
     test++;
     if (computeRatio(tree, x, prec)<0.0001) {
       test = 0;
