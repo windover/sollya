@@ -341,7 +341,6 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 
     // Construction of the function f-p
     tree->child2 = convert_poly(1,deg+1, temp, prec);
-    plotTree(tree,a,b,300,prec);
 
     // Construction of the function f'-p'
     tree_diff->child2 = convert_poly(2,deg+1, temp_diff, prec);
