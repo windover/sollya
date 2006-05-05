@@ -4,12 +4,13 @@
 #include "infnorm.h"
 #include "chain.h"
 #include "double.h"
+#include "main.h"
 
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
 
-#define DEBUG 0
+#define DEBUG 1
 
 typedef struct nodeIStruct nodeI;
 
@@ -20,6 +21,11 @@ struct nodeIStruct
   nodeI *child1;
   nodeI *child2;
 };
+
+
+void printInterval(mpfi_t interval);
+void printTreeI(nodeI *tree);
+
 
 
 void freeNodeI(nodeI *tree) {
@@ -484,6 +490,8 @@ void mpfi_round_to_tripledouble(mpfi_t rop, mpfi_t op) {
 void evaluateI(mpfi_t result, nodeI *tree, mpfi_t x, mp_prec_t prec) {
   mpfi_t stack1, stack2;
 
+  printf("Called evaluateI\n");
+ 
   mpfi_init2(stack1, prec);
   mpfi_init2(stack2, prec);
 
@@ -536,11 +544,24 @@ void evaluateI(mpfi_t result, nodeI *tree, mpfi_t x, mp_prec_t prec) {
     break;
   case SIN:
     evaluateI(stack1, tree->child1, x, prec);
+    
+
+    printf("calling mpfi_sin(");
+    printInterval(stack1);
+    printf(")\n");
     mpfi_sin(result, stack1);
+    printf("mpfi_sin returned\n");
+
     break;
   case COS:
     evaluateI(stack1, tree->child1, x, prec);
+
+    printf("calling mpfi_cos(");
+    printInterval(stack1);
+    printf(")\n");
     mpfi_cos(result, stack1);
+    printf("mpfi_cos returned\n");
+
     break;
   case TAN:
     evaluateI(stack1, tree->child1, x, prec);
@@ -613,17 +634,31 @@ void evaluateI(mpfi_t result, nodeI *tree, mpfi_t x, mp_prec_t prec) {
   }
 
   mpfi_clear(stack1); mpfi_clear(stack2);
+
+
+  printf("evaluateI(");
+  printTreeI(tree);
+  printf(",");
+  printInterval(x);
+  printf(", %d ) = ",(int) prec);
+  printInterval(result);
+  printf("\n");
+
   return;
 }
 
 void evaluateITaylor(mpfi_t result, nodeI *func, nodeI *deriv, mpfi_t x, mp_prec_t prec) {
   mpfr_t xZ;
-  mpfi_t xZI, constantTerm, linearTerm;
+  mpfi_t xZI, constantTerm, linearTerm, resultTaylor, resultDirect;
+
+  printf("Called evaluateITaylor\n");
 
   mpfr_init2(xZ,prec);
   mpfi_init2(xZI,prec);
   mpfi_init2(constantTerm,prec);
   mpfi_init2(linearTerm,prec);
+  mpfi_init2(resultTaylor,prec);
+  mpfi_init2(resultDirect,prec);
 
   mpfi_mid(xZ,x);
   mpfi_set_fr(xZI,xZ);
@@ -632,12 +667,33 @@ void evaluateITaylor(mpfi_t result, nodeI *func, nodeI *deriv, mpfi_t x, mp_prec
   evaluateI(linearTerm, deriv, x, prec);
   mpfi_sub(xZI, x, xZI);
   mpfi_mul(linearTerm, xZI, linearTerm);
-  mpfi_add(result, constantTerm, linearTerm);
+  mpfi_add(resultTaylor, constantTerm, linearTerm);
+
+  printf("Hallo\n");
+
+  evaluateI(resultDirect, func, x, prec);
+
+  printf("Ciao\n");
+
+
+  mpfi_intersect(result,resultTaylor,resultDirect);
+
+  printf("evaluateITaylor(");
+  printTreeI(func);
+  printf(",");
+  printTreeI(deriv);
+  printf(",");
+  printInterval(x);
+  printf(") = ");
+  printInterval(result);
+  printf("\n");
 
   mpfr_clear(xZ);
   mpfi_clear(xZI);
   mpfi_clear(constantTerm);
   mpfi_clear(linearTerm);
+  mpfi_clear(resultTaylor);
+  mpfi_clear(resultDirect);
 }
 
 
@@ -650,8 +706,27 @@ chain *findZeros(nodeI *func, nodeI *deriv, mpfi_t range, mp_prec_t prec, mpfr_t
 
   mpfi_revert_if_needed(range);
   mpfr_init2(rangeDiam,prec);
+
+  mpfr_set(rangeDiam,diam,GMP_RNDN);
+
+  printf("findZeros(");
+  printTreeI(func);
+  printf(",");
+  printTreeI(deriv);
+  printf(",");
+  printInterval(range);
+  printf(",");
+  printValue(&rangeDiam,prec);
+  printf(")\n");
+
+
   mpfi_diam_abs(rangeDiam,range);
   if (mpfr_cmp(rangeDiam,diam) <= 0) {
+
+    printf("Coucou\n");
+
+
+
     res = (chain *) malloc(sizeof(chain));
     res->next = NULL;
     temp = (mpfi_t *) malloc(sizeof(mpfi_t));
@@ -659,6 +734,9 @@ chain *findZeros(nodeI *func, nodeI *deriv, mpfi_t range, mp_prec_t prec, mpfr_t
     mpfi_set(*temp,range);
     res->value = temp;
   } else {
+
+    printf("Salut\n");
+
     mpfi_init2(y,prec);
     evaluateITaylor(y, func, deriv, range, prec);
     if (mpfi_has_zero(y)) {
@@ -713,6 +791,212 @@ void printInterval(mpfi_t interval) {
   mpfr_clear(l);
   mpfr_clear(r);
 }
+
+int isInfixI(nodeI *tree) {
+  switch(tree->nodeType) {
+  case ADD:
+  case SUB:
+  case MUL:
+  case DIV:
+  case POW:
+  case NEG:
+    return 1;
+    break;
+  default: return 0;
+  }
+}
+
+
+void printTreeI(nodeI *tree) {
+  switch (tree->nodeType) {
+  case VARIABLE:
+    printf("%s",variablename);
+    break;
+  case CONSTANT:
+    printInterval(*(tree->value));
+    break;
+  case ADD:
+    if (isInfixI(tree->child1)) 
+      printf("(");
+    printTreeI(tree->child1);
+    if (isInfixI(tree->child1)) 
+      printf(")");
+    printf(" + ");
+    if (isInfixI(tree->child2)) 
+      printf("(");
+    printTreeI(tree->child2);
+    if (isInfixI(tree->child2)) 
+      printf(")");
+    break;
+  case SUB:
+    if (isInfixI(tree->child1)) 
+      printf("(");
+    printTreeI(tree->child1);
+    if (isInfixI(tree->child1)) 
+      printf(")");
+    printf(" - ");
+    if (isInfixI(tree->child2)) 
+      printf("(");
+    printTreeI(tree->child2);
+    if (isInfixI(tree->child2)) 
+      printf(")");
+    break;
+  case MUL:
+    if (isInfixI(tree->child1)) 
+      printf("(");
+    printTreeI(tree->child1);
+    if (isInfixI(tree->child1)) 
+      printf(")");
+    printf(" * ");
+    if (isInfixI(tree->child2)) 
+      printf("(");
+    printTreeI(tree->child2);
+    if (isInfixI(tree->child2)) 
+      printf(")");
+    break;
+  case DIV:
+    if (isInfixI(tree->child1)) 
+      printf("(");
+    printTreeI(tree->child1);
+    if (isInfixI(tree->child1)) 
+      printf(")");
+    printf(" / ");
+    if (isInfixI(tree->child2)) 
+      printf("(");
+    printTreeI(tree->child2);
+    if (isInfixI(tree->child2)) 
+      printf(")");
+    break;
+  case SQRT:
+    printf("sqrt(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case EXP:
+    printf("exp(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case LOG:
+    printf("log(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case LOG_2:
+    printf("log2(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case LOG_10:
+    printf("log10(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case SIN:
+    printf("sin(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case COS:
+    printf("cos(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case TAN:
+    printf("tan(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case ASIN:
+    printf("asin(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case ACOS:
+    printf("acos(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case ATAN:
+    printf("atan(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case SINH:
+    printf("sinh(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case COSH:
+    printf("cosh(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case TANH:
+    printf("tanh(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case ASINH:
+    printf("asinh(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case ACOSH:
+    printf("acosh(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case ATANH:
+    printf("atanh(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case POW:
+    if (isInfixI(tree->child1)) 
+      printf("(");
+    printTreeI(tree->child1);
+    if (isInfixI(tree->child1)) 
+      printf(")");
+    printf("^(");
+    printTreeI(tree->child2);
+    printf(")");
+    break;
+  case NEG:
+    printf("-");
+    if (isInfixI(tree->child1)) 
+      printf("(");
+    printTreeI(tree->child1);
+    if (isInfixI(tree->child1)) 
+      printf(")");
+    break;
+  case ABS:
+    printf("abs(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case DOUBLE:
+    printf("double(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case DOUBLEDOUBLE:
+    printf("doubledouble(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  case TRIPLEDOUBLE:
+    printf("tripledouble(");
+    printTreeI(tree->child1);
+    printf(")");
+    break;
+  default:
+   fprintf(stderr,"printTreeI: unknown identifier in the tree\n");
+   exit(1);
+  }
+  return;
+}
+
 
 
 void freeMpfiPtr(void *i) {
@@ -774,6 +1058,7 @@ void infnormI(mpfi_t infnormval, nodeI *func, nodeI *deriv, nodeI *second, mpfi_
 
   curr = zeros;
   while (curr != NULL) {
+
     currInterval = ((mpfi_t *) (curr->value));
     evaluateITaylor(evalFuncOnInterval, func, deriv, *currInterval, prec);
     mpfi_get_left(tl,evalFuncOnInterval);
@@ -790,7 +1075,7 @@ void infnormI(mpfi_t infnormval, nodeI *func, nodeI *deriv, nodeI *second, mpfi_
 
   freeChain(zeros,freeMpfiPtr);
 
-  if (mpfr_cmp(innerLeft,innerRight) > 0) {
+  if (mpfr_cmp(innerLeft,innerRight) >= 0) {
     mpfr_neg(outerLeft,outerLeft,GMP_RNDN);
     mpfr_max(tr,outerLeft,outerRight,GMP_RNDU);
     mpfr_set_d(tl,0.0,GMP_RNDD);
@@ -837,7 +1122,16 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   mpfi_interv_fr(rangeI,*(range.a),*(range.b));
   funcI = expressionToIntervalExpression(func,prec);
   deriv = differentiate(func);
-  second = differentiate(deriv);
+  second = differentiate(deriv); 
+
+  printf("derivative: ");
+  printTree(deriv);
+  printf("\n");
+  printf("second derivative: ");
+  printTree(second);
+  printf("\n");
+
+
   derivI = expressionToIntervalExpression(deriv,prec);
   secondI = expressionToIntervalExpression(second,prec);
 
