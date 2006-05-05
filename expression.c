@@ -1654,7 +1654,7 @@ node* differentiateUnsimplified(node *tree) {
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
       temp_node2 = (node*) malloc(sizeof(node));
-      temp_node2->nodeType = ADD;
+      temp_node2->nodeType = SUB;
       temp_node->child1 = temp_node2;
       temp_node3 = (node*) malloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
@@ -2861,6 +2861,9 @@ int getDegreeUnsafe(node *tree) {
     r = getDegreeUnsafe(tree->child2);
     return l + r;
     break;
+  case DIV:
+    return getDegreeUnsafe(tree->child1);
+    break;
   case POW:
     {
       l = getDegreeUnsafe(tree->child1);
@@ -3017,6 +3020,13 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
     copy->child2 = expandPowerInPolynomialUnsafe(tree->child2);
     return copy;
     break;
+  case DIV:
+    copy = (node*) malloc(sizeof(node));
+    copy->nodeType = DIV;
+    copy->child1 = expandPowerInPolynomialUnsafe(tree->child1);
+    copy->child2 = expandPowerInPolynomialUnsafe(tree->child2);
+    return copy;
+    break;
   case POW:
     {
       left = expandPowerInPolynomialUnsafe(tree->child1);
@@ -3088,6 +3098,61 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	  tempTree2->child2 = tempTree3;
 	  tempTree->child2 = tempTree2;
 	  break;
+	case DIV:
+	  tempTree = (node *) malloc(sizeof(node));
+	  tempTree->nodeType = DIV;
+	  tempTree2 = (node *) malloc(sizeof(node));
+	  tempTree2->nodeType = POW;
+	  tempTree2->child1 = copyTree(left->child1);
+	  tempTree3 = (node*) malloc(sizeof(node));
+	  tempTree3->nodeType = CONSTANT;
+	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	  mpfr_init2(*value,tools_precision);
+	  mpfr_set_si(*value,r,GMP_RNDN);
+	  tempTree3->value = value;
+	  tempTree2->child2 = tempTree3;
+	  tempTree->child1 = tempTree2;
+	  tempTree2 = (node *) malloc(sizeof(node));
+	  tempTree2->nodeType = POW;
+	  tempTree2->child1 = copyTree(left->child2);
+	  tempTree3 = (node*) malloc(sizeof(node));
+	  tempTree3->nodeType = CONSTANT;
+	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	  mpfr_init2(*value,tools_precision);
+	  mpfr_set_si(*value,r,GMP_RNDN);
+	  tempTree3->value = value;
+	  tempTree2->child2 = tempTree3;
+	  tempTree->child2 = tempTree2;
+	  break;
+	case NEG:
+	  if (r & 1) {
+	    /* r is odd */
+	    tempTree = (node *) malloc(sizeof(node));
+	    tempTree->nodeType = NEG;
+	    tempTree2 = (node *) malloc(sizeof(node));
+	    tempTree2->nodeType = POW;
+	    tempTree2->child1 = copyTree(left->child1);
+	    tempTree3 = (node*) malloc(sizeof(node));
+	    tempTree3->nodeType = CONSTANT;
+	    value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	    mpfr_init2(*value,tools_precision);
+	    mpfr_set_si(*value,r,GMP_RNDN);
+	    tempTree3->value = value;
+	    tempTree2->child2 = tempTree3;
+	    tempTree->child1 = tempTree2;
+	  } else {
+	    tempTree = (node *) malloc(sizeof(node));
+	    tempTree->nodeType = POW;
+	    tempTree->child1 = copyTree(left->child1);
+	    tempTree3 = (node*) malloc(sizeof(node));
+	    tempTree3->nodeType = CONSTANT;
+	    value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	    mpfr_init2(*value,tools_precision);
+	    mpfr_set_si(*value,r,GMP_RNDN);
+	    tempTree3->value = value;
+	    tempTree->child2 = tempTree3;
+	  }
+	  break;
 	default:
 	  fprintf(stderr,"expandPowerInPolynomialUnsafe: an error occured on handling the expanded expression subtree\n");
 	  exit(1);
@@ -3129,7 +3194,8 @@ node* expandPowerInPolynomial(node *tree) {
 
 
 node* expandPolynomialUnsafe(node *tree) {
-  node *left, *right, *copy, *tempNode, *tempNode2, *tempNode3; 
+  node *left, *right, *copy, *tempNode, *tempNode2, *tempNode3, *tempNode4; 
+  mpfr_t *value;
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -3232,6 +3298,120 @@ node* expandPolynomialUnsafe(node *tree) {
       free_memory(tempNode);      
       break;
     default:
+      fprintf(stderr,"expandPolynomialUnsafe: an error occured on handling the left rewritten expression subtree\n");
+      exit(1);
+    }
+    return copy;
+    break;
+  case DIV:
+    left = expandPolynomialUnsafe(tree->child1);
+    right = expandPolynomialUnsafe(tree->child2);
+    switch (left->nodeType) {
+    case CONSTANT:
+      copy = (node*) malloc(sizeof(node));
+      copy->nodeType = DIV;
+      copy->child1 = left;
+      copy->child2 = right;
+      break;  
+    case VARIABLE:
+      copy = (node*) malloc(sizeof(node));
+      copy->nodeType = MUL;
+      tempNode = (node*) malloc(sizeof(node));
+      tempNode->nodeType = DIV;
+      tempNode->child2 = right;
+      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2->nodeType = CONSTANT;
+      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      mpfr_set_d(*value,1.0,GMP_RNDN);
+      tempNode2->value = value;
+      tempNode->child1 = tempNode2;
+      copy->child2 = left;
+      copy->child1 = tempNode;
+      break;
+    case ADD:
+      tempNode = (node*) malloc(sizeof(node));
+      tempNode->nodeType = ADD;
+      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2->nodeType = DIV;
+      tempNode3 = (node*) malloc(sizeof(node));
+      tempNode3->nodeType = DIV;
+      tempNode2->child1 = copyTree(left->child1);
+      tempNode2->child2 = copyTree(right);
+      tempNode3->child1 = copyTree(left->child2);
+      tempNode3->child2 = right;
+      tempNode->child1 = tempNode2;
+      tempNode->child2 = tempNode3;
+      free_memory(left);
+      copy = expandPolynomialUnsafe(tempNode);
+      free_memory(tempNode);
+      break;
+    case SUB:
+      tempNode = (node*) malloc(sizeof(node));
+      tempNode->nodeType = SUB;
+      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2->nodeType = DIV;
+      tempNode3 = (node*) malloc(sizeof(node));
+      tempNode3->nodeType = DIV;
+      tempNode2->child1 = copyTree(left->child1);
+      tempNode2->child2 = copyTree(right);
+      tempNode3->child1 = copyTree(left->child2);
+      tempNode3->child2 = right;
+      tempNode->child1 = tempNode2;
+      tempNode->child2 = tempNode3;
+      free_memory(left);
+      copy = expandPolynomialUnsafe(tempNode);
+      free_memory(tempNode);      
+      break;
+    case MUL:
+      tempNode = (node*) malloc(sizeof(node));
+      tempNode->nodeType = MUL;
+      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2->nodeType = DIV;
+      tempNode3 = (node*) malloc(sizeof(node));
+      tempNode3->nodeType = CONSTANT;
+      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      mpfr_set_d(*value,1.0,GMP_RNDN);
+      tempNode3->value = value;
+      tempNode4 = (node*) malloc(sizeof(node));
+      tempNode4->nodeType = MUL;
+      tempNode2->child1 = tempNode3;
+      tempNode2->child2 = right;
+      tempNode->child1 = tempNode2;
+      tempNode->child2 = tempNode3;
+      tempNode3->child1 = copyTree(left->child1);
+      tempNode3->child2 = copyTree(left->child2);
+      free_memory(left);
+      copy = expandPolynomialUnsafe(tempNode);
+      free_memory(tempNode);      
+      break;
+    case DIV:
+      tempNode = (node*) malloc(sizeof(node));
+      tempNode->nodeType = DIV;
+      tempNode->child1 = copyTree(left->child1);
+      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2->nodeType = MUL;
+      tempNode2->child1 = copyTree(left->child2);
+      tempNode2->child2 = right;
+      tempNode->child2 = tempNode2;
+      free_memory(left);
+      copy = expandPolynomialUnsafe(tempNode);
+      free_memory(tempNode);      
+      break;
+    case NEG:
+      tempNode = (node*) malloc(sizeof(node));
+      tempNode->nodeType = NEG;
+      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2->nodeType = DIV;
+      tempNode2->child1 = copyTree(left->child1);
+      tempNode2->child2 = right;
+      tempNode->child1 = tempNode2;
+      free_memory(left);
+      copy = expandPolynomialUnsafe(tempNode);
+      free_memory(tempNode);      
+      break;
+    default: 
       fprintf(stderr,"expandPolynomialUnsafe: an error occured on handling the left rewritten expression subtree\n");
       exit(1);
     }
@@ -3601,6 +3781,7 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
   node *temp, *coeff, *temp2;
   mpfr_t *value;
 
+ 
   if (isMonomial(polynom)) {
     degree = getDegree(polynom);
     coeff = getCoefficientsInMonomialUnsafe(polynom);
@@ -3633,19 +3814,19 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
   }
 
   if (polynom->nodeType == ADD) {
-    getCoefficientsUnsafe(monomials,polynom->child1,1);
-    getCoefficientsUnsafe(monomials,polynom->child2,1);
+    getCoefficientsUnsafe(monomials,polynom->child1,sign);
+    getCoefficientsUnsafe(monomials,polynom->child2,sign);
     return;
   }
 
   if (polynom->nodeType == SUB) {
-    getCoefficientsUnsafe(monomials,polynom->child1,1);
-    getCoefficientsUnsafe(monomials,polynom->child2,-1);
+    getCoefficientsUnsafe(monomials,polynom->child1,sign);
+    getCoefficientsUnsafe(monomials,polynom->child2,-sign);
     return;
   }
 
   if (polynom->nodeType == NEG) {
-    getCoefficientsUnsafe(monomials,polynom->child1,-1);
+    getCoefficientsUnsafe(monomials,polynom->child1,-sign);
     return;
   }
 
@@ -3953,8 +4134,10 @@ node *differentiatePolynomialUnsafe(node *tree) {
     monomials = (node**) calloc((degree + 1),sizeof(node*));
     for (i=0;i<=degree;i++) monomials[i] = NULL;
     
-    getCoefficientsUnsafe(monomials,simplified,1);
    
+    getCoefficientsUnsafe(monomials,simplified,1);
+ 
+  
     if (monomials[degree] == NULL) {
       printf(
 	     "differentiatePolynomialUnsafe: an error occured. The coefficient of a monomial with the polynomial's degree exponent is zero.\n"
