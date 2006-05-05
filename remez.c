@@ -7,8 +7,6 @@
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
 
-void DEBUG(char *s) { printf(s); }
-
 // NaN, Inf, and denormalized not handled.
 GEN mpfr_to_PARI(mpfr_t x) {
   mp_exp_t e;
@@ -160,7 +158,7 @@ GEN newton(node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 // Returns a PARI array containing the zeros of tree on [a;b]
 // The compuations are made with precision prec.
 // deg indicates the number of zeros which we are expecting.
-GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec, int *crash_report) {
   GEN res;
   long int n = 50*(deg+2);
   long int i=0;
@@ -194,7 +192,10 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
     evaluate(y2, tree, x2, prec);
   }
   
-  if (i<deg) printf("The function fails to oscillate enough. Good luck for you.\n");
+  if (i<deg) {
+    printf("The function fails to oscillate enough.\n");
+    *crash_report = -1;
+  }
   else {
     if (i==deg) { res[deg+1] = (long)(mpfr_to_PARI(a)); res[deg+2] = (long)(mpfr_to_PARI(b)); }
     else { // i = deg +1
@@ -255,7 +256,8 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   node *tree_diff;
   node *tree_diff2;
   node *res;
-  int test=1;
+  int test=1, crash_report;
+  printf("Estimation de la taille nécessaire : %lu\n",prec_pari*sizeof(long)*(deg+2)*(deg+10));
 
   tree = malloc(sizeof(node));
   tree->nodeType = SUB;
@@ -318,10 +320,14 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     temp = gauss(M,temp);
 
     // Tests if the precision is sufficient
-    if (gexpo((GEN)(temp[deg+2])) < gexpo(y)-prec+15) {
-      printf("Warning : the precision seems to be not sufficient to compute the polynomial. Please increase the precision.\n");
+    /*if (gexpo((GEN)(temp[deg+2])) < gexpo(y)-prec+15) {
+      printf("Warning : the precision seems to be not sufficient to compute the polynomial. ");
+      printf("Please increase the precision. ");
+      output(temp);
+      printf("Since epsilon is near 2^(%d) and the value of your function is near 2^(%d), ",(int)(gexpo((GEN)(temp[deg+2]))),(int)(gexpo(y)));
+      printf("we suggest you to set prec to %d.\n",(int)(-gexpo((GEN)(temp[deg+2]))+gexpo(y)+20));
       return copyTree(func);
-    }
+      }*/
 
     // Formally derive the polynomial stored in temp
     for(i=0;i<deg+1;i++) {
@@ -335,6 +341,7 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 
     // Construction of the function f-p
     tree->child2 = convert_poly(1,deg+1, temp, prec);
+    plotTree(tree,a,b,300,prec);
 
     // Construction of the function f'-p'
     tree_diff->child2 = convert_poly(2,deg+1, temp_diff, prec);
@@ -343,15 +350,25 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     tree_diff2->child2 = convert_poly(3,deg+1, temp_diff2, prec);
 
     // Searching the zeros of f'-p'
-    x = quickFindZeros(tree_diff, tree_diff2, deg,a,b,prec);
+    crash_report = 0;
+    x = quickFindZeros(tree_diff, tree_diff2, deg,a,b,prec,&crash_report);
+    if (crash_report == -1) {
+      free_memory(tree);
+      free_memory(tree_diff);
+      free_memory(tree_diff2);
+      avma = ltop;
+      return copyTree(func);
+    }
 
     // DEBUG
-    //printf("Étape n° %d ; qualité de l'approximation : %e. Valeur calculée de epsilon : ",test,computeRatio(tree, x, prec));output((GEN)(temp[i+2]));
+    printf("Étape n° %d ; qualité de l'approximation : %e. Valeur calculée de epsilon : ",test,computeRatio(tree, x, prec));output((GEN)(temp[i+2]));
     test++;
     if (computeRatio(tree, x, prec)<0.0001) {
       test = 0;
       res = copyTree(tree->child2);
     }
+
+    //allocatemoremem(0);
 
     free_memory(tree_diff2->child2);
     free_memory(tree_diff->child2);

@@ -43,7 +43,7 @@ void printPrompt(void) {
 int main(int argc, char *argv[])
 {
 
-  pari_init(1000000, 2);
+  pari_init(3000000, 2);
   printPrompt();
  
   endptr = (char**) malloc(sizeof(char*));
