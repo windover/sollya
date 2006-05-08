@@ -4073,7 +4073,7 @@ node* hornerPolynomialUnsafe(node *tree) {
 
   for (i=degree-1;i>=0;i--) {
     if (monomials[i] == NULL) {
-      if ((i == 0) || (monomials[i-1] != NULL)) {
+      if ((i == 0)) {
 	temp = (node *) malloc(sizeof(node));
 	temp->nodeType = MUL;
 	temp2 = (node *) malloc(sizeof(node));
