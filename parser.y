@@ -12,16 +12,14 @@ extern FILE *yyin;
 extern char *yytext;
 
 void yyerror(char *message) {
-  printf("Warning: %s on token \"%s\". Will try to continue parsing (expecting \";\"). May leak memory.\n",
-	 message,yytext);
+  if ((!feof(yyin)) && (!handlingError)) {
+    printf("Warning: %s on token \"%s\". Will try to continue parsing (expecting \";\"). May leak memory.\n",message,yytext);
+  }
 }
 
 %}
 
 
-%locations
-
-%defines
 
 %union {
 	char *value;
@@ -113,23 +111,22 @@ void yyerror(char *message) {
 
 commands:    QUITTOKEN SEMICOLONTOKEN
                            {
-                             exit(0);
 			     $$ = NULL;
+			     YYABORT;
                            }
-           | command commands 
+           | command 
                            {
                              $$ = NULL;
+			     YYACCEPT;
                            }
 ;
 
 command:     plot
                            {
-			     printPrompt();
 			     $$ = NULL;
 			   }
            | print        
                            {
-			     printPrompt();
                              $$ = NULL;
                            } 
            | infnorm       {
@@ -167,7 +164,6 @@ command:     plot
 			     free($1.b);
 			     free(variablename);
 			     variablename = NULL;
-			     printPrompt();
 	                     $$ = NULL;
 	                   }
 	   | precision SEMICOLONTOKEN 
@@ -175,21 +171,19 @@ command:     plot
 			     tools_precision = $1;
 			     defaultprecision = $1;
 			     printf("Default precision has been set to %d bits.\n",(int) defaultprecision);
-			     printPrompt();
                              $$ = NULL;
                            }
 	   | points SEMICOLONTOKEN 
                            {
 			     defaultpoints = $1;
 			     printf("Default point number has been set to %d.\n",(int) defaultpoints);
-			     printPrompt();
                              $$ = NULL;
                            }
            | error SEMICOLONTOKEN
                            {
+			     handlingError = 0;
 			     free(variablename);
 			     variablename = NULL;
-			     printPrompt();
 			     $$ = NULL;
                            }
 ;

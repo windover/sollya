@@ -8,7 +8,7 @@ lex.yy.o: lex.yy.c expression.h main.h
 	gcc -Wall -g -c lex.yy.c
 
 lex.yy.c: lexer.lex parser.tab.h main.h expression.h
-	flex lexer.lex
+	flex -I lexer.lex
 
 parser.tab.c: parser.y expression.h infnorm.h remez.h main.h
 	bison -d parser.y

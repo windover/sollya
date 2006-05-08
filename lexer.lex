@@ -1,9 +1,11 @@
 %{
 
 #include <stdio.h>
+#include <string.h>
 #include "expression.h"
 #include "parser.tab.h"
 #include "main.h"
+
 
 #define YY_NO_UNPUT
 
@@ -102,60 +104,60 @@ SIMPLIFYSAFE    ({SIMPLIFYSAFE1}|{SIMPLIFYSAFE2})
 
 {CONSTANT}      {     
                       yylval.value = yytext;
-                      return CONSTTOKEN;
+                      promptToBePrinted = 0; return CONSTTOKEN;
                 }
-{IN}            {     return INTOKEN; }
-{LBRACKET}      {     return LBRACKETTOKEN; }
-{RBRACKET}      {     return RBRACKETTOKEN; }
+{IN}            {     promptToBePrinted = 0; return INTOKEN; }
+{LBRACKET}      {     promptToBePrinted = 0; return LBRACKETTOKEN; }
+{RBRACKET}      {     promptToBePrinted = 0; return RBRACKETTOKEN; }
 
-{PI}            {     return PITOKEN;    }             
-{E}             {     return ETOKEN;     }              
-{LPAR}          {     return LPARTOKEN     ;    }           
-{RPAR}          {     return RPARTOKEN     ;    }           
-{PLUS}          {     return PLUSTOKEN     ;    }           
-{MINUS}         {     return MINUSTOKEN    ;    }          
-{MUL}           {     return MULTOKEN      ;    }            
-{DIV}           {     return DIVTOKEN      ;    }            
-{POW}           {     return POWTOKEN      ;    }            
-{SQRT}          {     return SQRTTOKEN     ;    }           
-{EXP}           {     return EXPTOKEN      ;    }            
-{LOG}           {     return LOGTOKEN      ;    }            
-{LOG2}          {     return LOG2TOKEN     ;    }           
-{LOG10}         {     return LOG10TOKEN    ;    }          
-{SIN}           {     return SINTOKEN      ;    }            
-{COS}           {     return COSTOKEN      ;    }            
-{TAN}           {     return TANTOKEN      ;    }            
-{ASIN}          {     return ASINTOKEN     ;    }           
-{ACOS}          {     return ACOSTOKEN     ;    }           
-{ATAN}          {     return ATANTOKEN     ;    }           
-{SINH}          {     return SINHTOKEN     ;    }           
-{COSH}          {     return COSHTOKEN     ;    }           
-{TANH}          {     return TANHTOKEN     ;    }           
-{ASINH}         {     return ASINHTOKEN    ;    }          
-{ACOSH}         {     return ACOSHTOKEN    ;    }          
-{ATANH}         {     return ATANHTOKEN    ;    }          
-{ABS}           {     return ABSTOKEN      ;    }            
-{COLON}         {     return COLONTOKEN    ;    }          
-{EQUAL}         {     return EQUALTOKEN    ;    }          
-{COMMA}         {     return COMMATOKEN    ;    }          
-{PREC}          {     return PRECTOKEN     ;    }           
-{POINTS}        {     return POINTSTOKEN   ;    }         
-{SEMICOLON}     {     return SEMICOLONTOKEN;    }      
-{QUIT}          {     return QUITTOKEN;         }
-{PRINT}         {     return PRINTTOKEN;        }
-{DIFF}          {     return DIFFTOKEN;         }
-{SIMPLIFY}      {     return SIMPLIFYTOKEN;     }    
-{PLOT}          {     return PLOTTOKEN;         }
-{INFNORM}       {     return INFNORMTOKEN;      }
-{REMEZ}         {     return REMEZTOKEN;        } 
-{DIAM}          {     return DIAMTOKEN;         }
-{DOUBLE}        {     return DOUBLETOKEN;       }
-{DOUBLEDOUBLE}  {     return DOUBLEDOUBLETOKEN; }
-{TRIPLEDOUBLE}  {     return TRIPLEDOUBLETOKEN; }
-{HORNER}        {     return HORNERTOKEN;       }
-{DEGREE}        {     return DEGREETOKEN;       }
-{EXPAND}        {     return EXPANDTOKEN;       }
-{SIMPLIFYSAFE}  {     return SIMPLIFYSAFETOKEN; }
+{PI}            {     promptToBePrinted = 0; return PITOKEN;    }             
+{E}             {     promptToBePrinted = 0; return ETOKEN;     }              
+{LPAR}          {     promptToBePrinted = 0; return LPARTOKEN     ;    }           
+{RPAR}          {     promptToBePrinted = 0; return RPARTOKEN     ;    }           
+{PLUS}          {     promptToBePrinted = 0; return PLUSTOKEN     ;    }           
+{MINUS}         {     promptToBePrinted = 0; return MINUSTOKEN    ;    }          
+{MUL}           {     promptToBePrinted = 0; return MULTOKEN      ;    }            
+{DIV}           {     promptToBePrinted = 0; return DIVTOKEN      ;    }            
+{POW}           {     promptToBePrinted = 0; return POWTOKEN      ;    }            
+{SQRT}          {     promptToBePrinted = 0; return SQRTTOKEN     ;    }           
+{EXP}           {     promptToBePrinted = 0; return EXPTOKEN      ;    }            
+{LOG}           {     promptToBePrinted = 0; return LOGTOKEN      ;    }            
+{LOG2}          {     promptToBePrinted = 0; return LOG2TOKEN     ;    }           
+{LOG10}         {     promptToBePrinted = 0; return LOG10TOKEN    ;    }          
+{SIN}           {     promptToBePrinted = 0; return SINTOKEN      ;    }            
+{COS}           {     promptToBePrinted = 0; return COSTOKEN      ;    }            
+{TAN}           {     promptToBePrinted = 0; return TANTOKEN      ;    }            
+{ASIN}          {     promptToBePrinted = 0; return ASINTOKEN     ;    }           
+{ACOS}          {     promptToBePrinted = 0; return ACOSTOKEN     ;    }           
+{ATAN}          {     promptToBePrinted = 0; return ATANTOKEN     ;    }           
+{SINH}          {     promptToBePrinted = 0; return SINHTOKEN     ;    }           
+{COSH}          {     promptToBePrinted = 0; return COSHTOKEN     ;    }           
+{TANH}          {     promptToBePrinted = 0; return TANHTOKEN     ;    }           
+{ASINH}         {     promptToBePrinted = 0; return ASINHTOKEN    ;    }          
+{ACOSH}         {     promptToBePrinted = 0; return ACOSHTOKEN    ;    }          
+{ATANH}         {     promptToBePrinted = 0; return ATANHTOKEN    ;    }          
+{ABS}           {     promptToBePrinted = 0; return ABSTOKEN      ;    }            
+{COLON}         {     promptToBePrinted = 0; return COLONTOKEN    ;    }          
+{EQUAL}         {     promptToBePrinted = 0; return EQUALTOKEN    ;    }          
+{COMMA}         {     promptToBePrinted = 0; return COMMATOKEN    ;    }          
+{PREC}          {     promptToBePrinted = 0; return PRECTOKEN     ;    }           
+{POINTS}        {     promptToBePrinted = 0; return POINTSTOKEN   ;    }         
+{SEMICOLON}     {     promptToBePrinted = 0; return SEMICOLONTOKEN;    }      
+{QUIT}          {     promptToBePrinted = 0; return QUITTOKEN;         }
+{PRINT}         {     promptToBePrinted = 0; return PRINTTOKEN;        }
+{DIFF}          {     promptToBePrinted = 0; return DIFFTOKEN;         }
+{SIMPLIFY}      {     promptToBePrinted = 0; return SIMPLIFYTOKEN;     }    
+{PLOT}          {     promptToBePrinted = 0; return PLOTTOKEN;         }
+{INFNORM}       {     promptToBePrinted = 0; return INFNORMTOKEN;      }
+{REMEZ}         {     promptToBePrinted = 0; return REMEZTOKEN;        } 
+{DIAM}          {     promptToBePrinted = 0; return DIAMTOKEN;         }
+{DOUBLE}        {     promptToBePrinted = 0; return DOUBLETOKEN;       }
+{DOUBLEDOUBLE}  {     promptToBePrinted = 0; return DOUBLEDOUBLETOKEN; }
+{TRIPLEDOUBLE}  {     promptToBePrinted = 0; return TRIPLEDOUBLETOKEN; }
+{HORNER}        {     promptToBePrinted = 0; return HORNERTOKEN;       }
+{DEGREE}        {     promptToBePrinted = 0; return DEGREETOKEN;       }
+{EXPAND}        {     promptToBePrinted = 0; return EXPANDTOKEN;       }
+{SIMPLIFYSAFE}  {     promptToBePrinted = 0; return SIMPLIFYSAFETOKEN; }
 
 
 {VARIABLE}      {     			     
@@ -169,13 +171,14 @@ SIMPLIFYSAFE    ({SIMPLIFYSAFE1}|{SIMPLIFYSAFE2})
 				 yytext, variablename);
 			}
                       }
-                      return VARIABLETOKEN;    
+                      promptToBePrinted = 0; return VARIABLETOKEN;    
                 }
 
 [ \t]		{ /* Eat up spaces and tabulators */
 		}
 
-[\n]		{ /* Eat up carriage returns and count them */
+[\n]		{ 
+                      if (promptToBePrinted) printPrompt();
 		}
 
 .		{ /* otherwise */

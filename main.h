@@ -23,8 +23,12 @@ extern int defaultpoints;
 extern int int_temp;
 extern mp_prec_t prec_temp;
 extern double double_temp;
+extern int promptToBePrinted;
+extern int handlingError;
+
 
 void printPrompt(void);
+void recoverFromError(void);
 
 
 #endif /* ifdef MAIN_H*/

@@ -4,12 +4,14 @@
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
+#include <unistd.h>
+#include <signal.h>
+#include <setjmp.h>
 #include "main.h"
 #include "plot.h"
 #include "expression.h"
 #include "remez.h"
 #include "infnorm.h"
-
 
 
 char *variablename = NULL;
@@ -25,33 +27,58 @@ rangetype range_temp;
 node *temp_node; 
 int int_temp;
 double double_temp;
+int promptToBePrinted;
+jmp_buf recoverEnvironment;
+int handlingError;
 
 extern int yyparse();
 extern FILE *yyin;
 
 
-void printPrompt(void) {
+void signalHandler(int i) {
+  printf("\n\n");
   fflush(stdout);
-  fflush(stdin);
-  printf("> ");
-  fflush(stdout);
-  fflush(stdin);
-  clearerr(stdin);
+  exit(0);
 }
 
 
-int main(int argc, char *argv[])
-{
+void recoverFromError(void) {
+  handlingError = 1;
+  longjmp(recoverEnvironment,1);
+  return;
+}
 
+
+void printPrompt(void) {
+  fflush(stdout);
+  fflush(stdin);
+  fflush(stderr);
+  printf("> ");
+  fflush(stdout);
+  fflush(stdin);
+  fflush(stderr);
+}
+
+
+int main(int argc, char *argv[]) {
+  
   pari_init(3000000, 2);
-  printPrompt();
- 
+
+  signal(SIGINT,signalHandler);
+
   endptr = (char**) malloc(sizeof(char*));
   yyin = stdin;
 
+  printPrompt();
   while (!feof(yyin)) {
-    yyparse();
+    if (setjmp(recoverEnvironment)) {
+      printf("Warning: an error occured on internal computation. The last command could not be executed. May leak memory.\n");
+    }
+    if (yyparse()) break;    
+    promptToBePrinted = 1;
   }
+
+  printf("\n");
   
   free(endptr);
 

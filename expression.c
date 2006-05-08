@@ -2868,15 +2868,15 @@ int getDegreeUnsafe(node *tree) {
     {
       l = getDegreeUnsafe(tree->child1);
       if (tree->child2->nodeType != CONSTANT) {
-	printf("getDegreeUnsafe: an error occured. The exponent in a power operator is not constant.\n");
+	fprintf(stderr,"getDegreeUnsafe: an error occured. The exponent in a power operator is not constant.\n");
 	exit(1);
       }
       if (!mpfr_integer_p(*(tree->child2->value))) {
-	printf("getDegreeUnsafe: an error occured. The exponent in a power operator is not integer.\n");
+	fprintf(stderr,"getDegreeUnsafe: an error occured. The exponent in a power operator is not integer.\n");
 	exit(1);
       }
       if (mpfr_sgn(*(tree->child2->value)) < 0) {
-	printf("getDegreeUnsafe: an error occured. The exponent in a power operator is negative.\n");
+	fprintf(stderr,"getDegreeUnsafe: an error occured. The exponent in a power operator is negative.\n");
 	exit(1);
       }
 
@@ -3031,15 +3031,15 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
     {
       left = expandPowerInPolynomialUnsafe(tree->child1);
       if (tree->child2->nodeType != CONSTANT) {
-	printf("expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is not constant.\n");
+	fprintf(stderr,"expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is not constant.\n");
 	exit(1);
       }
       if (!mpfr_integer_p(*(tree->child2->value))) {
-	printf("expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is not integer.\n");
+	fprintf(stderr,"expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is not integer.\n");
 	exit(1);
       }
       if (mpfr_sgn(*(tree->child2->value)) < 0) {
-	printf("expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is negative.\n");
+	fprintf(stderr,"expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is negative.\n");
 	exit(1);
       }
 
@@ -3047,8 +3047,8 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
       mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
       mpfr_set_si(temp,r,GMP_RNDN);
       if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
-	printf("expandPowerInPolynomialUnsafe: tried to expand an expression using a power operator with an exponent\n");
-	printf("which cannot be represented on a integer variable.\n");
+	fprintf(stderr,"expandPowerInPolynomialUnsafe: an error occured. Tried to expand an expression using a power operator with an exponent\n");
+	fprintf(stderr,"which cannot be represented on a integer variable.\n");
 	mpfr_clear(temp);
 	exit(1);
       }
@@ -3193,6 +3193,7 @@ node* expandPowerInPolynomial(node *tree) {
 }
 
 
+
 node* expandPolynomialUnsafe(node *tree) {
   node *left, *right, *copy, *tempNode, *tempNode2, *tempNode3, *tempNode4; 
   mpfr_t *value;
@@ -3297,8 +3298,38 @@ node* expandPolynomialUnsafe(node *tree) {
       copy = expandPolynomialUnsafe(tempNode);
       free_memory(tempNode);      
       break;
+    case DIV:
+      if (isConstant(left)) {
+	copy = (node*) malloc(sizeof(node));
+	copy->nodeType = MUL;
+	copy->child1 = left;
+	copy->child2 = right;
+      } else {
+	tempNode = (node*) malloc(sizeof(node));
+	tempNode->nodeType = MUL;
+	tempNode2 = (node*) malloc(sizeof(node));
+	tempNode2->nodeType = MUL;
+	tempNode3 = (node*) malloc(sizeof(node));
+	tempNode3->nodeType = DIV;
+	tempNode4 = (node*) malloc(sizeof(node));
+	tempNode4->nodeType = CONSTANT;
+	value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	mpfr_init2(*value,tools_precision);
+	mpfr_set_d(*value,1.0,GMP_RNDN);
+	tempNode4->value = value;
+	tempNode3->child1 = tempNode4;
+	tempNode3->child2 = copyTree(left->child2);
+	tempNode2->child1 = copyTree(left->child1);
+	tempNode2->child2 = right;
+	tempNode->child1 = tempNode3;
+	tempNode->child2 = tempNode2;
+	free_memory(left);
+	copy = expandPolynomialUnsafe(tempNode);
+	free_memory(tempNode);
+      }      
+      break;
     default:
-      fprintf(stderr,"expandPolynomialUnsafe: an error occured on handling the left rewritten expression subtree\n");
+      fprintf(stderr,"expandPolynomialUnsafe: an error occured on handling the MUL left rewritten expression subtree\n");
       exit(1);
     }
     return copy;
@@ -3379,9 +3410,9 @@ node* expandPolynomialUnsafe(node *tree) {
       tempNode2->child1 = tempNode3;
       tempNode2->child2 = right;
       tempNode->child1 = tempNode2;
-      tempNode->child2 = tempNode3;
-      tempNode3->child1 = copyTree(left->child1);
-      tempNode3->child2 = copyTree(left->child2);
+      tempNode->child2 = tempNode4;
+      tempNode4->child1 = copyTree(left->child1);
+      tempNode4->child2 = copyTree(left->child2);
       free_memory(left);
       copy = expandPolynomialUnsafe(tempNode);
       free_memory(tempNode);      
@@ -3412,7 +3443,7 @@ node* expandPolynomialUnsafe(node *tree) {
       free_memory(tempNode);      
       break;
     default: 
-      fprintf(stderr,"expandPolynomialUnsafe: an error occured on handling the left rewritten expression subtree\n");
+      fprintf(stderr,"expandPolynomialUnsafe: an error occured on handling the DIV left rewritten expression subtree\n");
       exit(1);
     }
     return copy;
@@ -3429,6 +3460,8 @@ node* expandPolynomialUnsafe(node *tree) {
     exit(1);
   }
 }
+
+
 
 node* expandPolynomial(node *tree) {
   node *temp, *temp2;
@@ -3770,7 +3803,7 @@ node* getCoefficientsInMonomialUnsafe(node *polynom) {
     return coeffs;
   }
 
-  printf("getCoefficientsInMonomialUnsafe: expression does not have the correct monomial form.\n");
+  fprintf(stderr,"getCoefficientsInMonomialUnsafe: an error occured. The expression does not have the correct monomial form.\n");
   exit(1);
   return NULL;
 }
@@ -3830,7 +3863,7 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
     return;
   }
 
-  printf("getCoefficientsUnsafe: the given polynomial is neither a monomial nor a sum of monomials\n");
+  fprintf(stderr,"getCoefficientsUnsafe: an error occured. The given polynomial is neither a monomial nor a sum of monomials\n");
   exit(1);
 }
 
@@ -3849,7 +3882,7 @@ node* hornerPolynomialUnsafe(node *tree) {
   getCoefficientsUnsafe(monomials,tree,1);
 
   if (monomials[degree] == NULL) {
-    printf(
+    fprintf(stderr,
 "hornerPolynomialUnsafe: an error occured. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
     exit(1);
     return NULL;
@@ -4139,7 +4172,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
  
   
     if (monomials[degree] == NULL) {
-      printf(
+      fprintf(stderr,
 	     "differentiatePolynomialUnsafe: an error occured. The coefficient of a monomial with the polynomial's degree exponent is zero.\n"
 	     );
       exit(1);
