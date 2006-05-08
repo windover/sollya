@@ -49,7 +49,7 @@ chain *copyChain(chain *c, void *(*f) (void *)) {
 }
 
 
-chain* concat(chain *c1, chain *c2) {
+chain* concatChains(chain *c1, chain *c2) {
   chain *curr;
 
   if (c1 == NULL) return c2;

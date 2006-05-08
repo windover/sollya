@@ -724,7 +724,7 @@ chain *findZeros(nodeI *func, nodeI *deriv, mpfi_t range, mp_prec_t prec, mpfr_t
       leftchain = findZeros(func,deriv,lI,prec,diam);
       rightchain = findZeros(func,deriv,rI,prec,diam);
 
-      res = concat(leftchain,rightchain);
+      res = concatChains(leftchain,rightchain);
 
       mpfr_clear(l);
       mpfr_clear(m);

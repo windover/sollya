@@ -161,16 +161,10 @@ SIMPLIFYSAFE    ({SIMPLIFYSAFE1}|{SIMPLIFYSAFE2})
 
 
 {VARIABLE}      {     			     
-                      if (variablename == NULL) { 
-                         variablename = (char*) calloc(yyleng + 1,sizeof(char));
-			 strncpy(variablename,yytext,yyleng);
-                      } else {
-			if (strncmp(variablename,yytext,yyleng) != 0) {
-			  printf("Warning: only one variable name is allowed in the expression, ");
-			  printf("will interpret \"%s\" as \"%s\".\n",
-				 yytext, variablename);
-			}
-                      }
+                      if (currentVariable != NULL) free(currentVariable);
+		      currentVariable = NULL;
+		      currentVariable = (char*) calloc(yyleng + 1,sizeof(char));
+		      strncpy(currentVariable,yytext,yyleng);
                       promptToBePrinted = 0; return VARIABLETOKEN;    
                 }
 

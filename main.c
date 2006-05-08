@@ -12,9 +12,11 @@
 #include "expression.h"
 #include "remez.h"
 #include "infnorm.h"
+#include "assignment.h"
 
 
 char *variablename = NULL;
+char *currentVariable = NULL;
 mp_prec_t defaultprecision = DEFAULTPRECISION;
 int defaultpoints = DEFAULTPOINTS;
 mp_prec_t tools_precision = DEFAULTPRECISION;
@@ -30,6 +32,8 @@ double double_temp;
 int promptToBePrinted;
 jmp_buf recoverEnvironment;
 int handlingError;
+chain *symbolTable = NULL;
+char *temp_string;
 
 extern int yyparse();
 extern FILE *yyin;
@@ -81,6 +85,7 @@ int main(int argc, char *argv[]) {
   printf("\n");
   
   free(endptr);
+  freeSymbolTable(symbolTable);
 
   fclose(yyin);
   return 0;

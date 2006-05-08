@@ -1,10 +1,12 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "expression.h"
 #include "main.h"
 #include "remez.h"
 #include "infnorm.h"
+#include "assignment.h"
 
 int yylex();
 
@@ -19,7 +21,7 @@ void yyerror(char *message) {
 
 %}
 
-
+%name parse
 
 %union {
 	char *value;
@@ -29,6 +31,7 @@ void yyerror(char *message) {
         rangetype rangeval;
         mpfr_t *constantval;
         int degreeval;
+        char *string;
 	void *other;
 }
 
@@ -106,6 +109,8 @@ void yyerror(char *message) {
 %type <tree> primary
 %type <degreeval> degree
 %type <rangeval> infnorm
+%type <string> lvariable
+%type <other> assignment
 
 %%
 
@@ -162,8 +167,6 @@ command:     plot
 			     mpfr_clear(*($1.b));
 			     free($1.a);
 			     free($1.b);
-			     free(variablename);
-			     variablename = NULL;
 	                     $$ = NULL;
 	                   }
 	   | precision SEMICOLONTOKEN 
@@ -179,14 +182,36 @@ command:     plot
 			     printf("Default point number has been set to %d.\n",(int) defaultpoints);
                              $$ = NULL;
                            }
+           | assignment SEMICOLONTOKEN
+                           {
+			     $$ = NULL;
+			   }
            | error SEMICOLONTOKEN
                            {
 			     handlingError = 0;
-			     free(variablename);
-			     variablename = NULL;
 			     $$ = NULL;
                            }
 ;
+
+
+assignment:  lvariable EQUALTOKEN function 
+                           {
+			     if ((variablename != NULL) && (strcmp(variablename,($1)) == 0)) {
+			       printf("Warning: the identifer \"%s\" is already bound as the current variable. It cannot be assigned.\n",($1));
+			       printf("The last command will have no effect.\n");
+			     } else {
+			       if (containsEntry(symbolTable,($1))) {
+				 printf("Warning: the identifier \"%s\" is already assigned. It cannot be reassigned.\n",($1));
+				 printf("The last command will have no effect.\n");
+			       } else {
+				 symbolTable = addEntry(symbolTable,($1),($3));
+			       }
+			     }
+			     free(($1));
+			     free_memory(($3));
+			     $$ = NULL;
+                           }
+;     
 
 
 infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
@@ -227,8 +252,6 @@ print:       PRINTTOKEN function SEMICOLONTOKEN
 			     tools_precision = prec_temp;
 			     printf("\n");
 			     free_memory($2);
-			     free(variablename);
-			     variablename = NULL;
 			     $$ = NULL;
                            }
 ;
@@ -242,8 +265,6 @@ plot:        PLOTTOKEN precision COMMATOKEN points COLONTOKEN function INTOKEN r
 			     free($8.a);
 			     free($8.b);
 			     tools_precision = defaultprecision;
-			     free(variablename);
-			     variablename = NULL;
 			     $$ = NULL;
                            }
            | PLOTTOKEN points COMMATOKEN precision COLONTOKEN function INTOKEN range SEMICOLONTOKEN 
@@ -255,8 +276,6 @@ plot:        PLOTTOKEN precision COMMATOKEN points COLONTOKEN function INTOKEN r
 			     free($8.a);
 			     free($8.b);
 			     tools_precision = defaultprecision;
-			     free(variablename);
-			     variablename = NULL;
 			     $$ = NULL;
                            }
            | PLOTTOKEN precision COLONTOKEN function INTOKEN range SEMICOLONTOKEN 
@@ -268,8 +287,6 @@ plot:        PLOTTOKEN precision COMMATOKEN points COLONTOKEN function INTOKEN r
 			     free($6.a);
 			     free($6.b);
 			     tools_precision = defaultprecision;
-			     free(variablename);
-			     variablename = NULL;
 			     $$ = NULL;										 
 			   }
            | PLOTTOKEN points COLONTOKEN function INTOKEN range SEMICOLONTOKEN 
@@ -281,8 +298,6 @@ plot:        PLOTTOKEN precision COMMATOKEN points COLONTOKEN function INTOKEN r
 			     free($6.a);
 			     free($6.b);
 			     tools_precision = defaultprecision;
-			     free(variablename);
-			     variablename = NULL;
 			     $$ = NULL;
 			   }
            | PLOTTOKEN function INTOKEN range SEMICOLONTOKEN 
@@ -294,8 +309,6 @@ plot:        PLOTTOKEN precision COMMATOKEN points COLONTOKEN function INTOKEN r
 			     free($4.a);
 			     free($4.b);
 			     tools_precision = defaultprecision;
-			     free(variablename);
-			     variablename = NULL;
 			     $$ = NULL;
 			   }
 ;
@@ -637,11 +650,33 @@ primary:			variable
 
 variable: VARIABLETOKEN
                            {
-                             temp_node = (node*) malloc(sizeof(node));
-			     temp_node->nodeType = VARIABLE;
+			     if (!containsEntry(symbolTable,currentVariable)) {
+			       if (variablename==NULL) {
+				 variablename = (char *) calloc(strlen(currentVariable)+1,sizeof(char));
+				 strcpy(variablename,currentVariable);
+			       }
+			       if (strcmp(variablename,currentVariable)!=0) {
+				 printf("Warning: the identifier \"%s\" is neither bound by assignment nor equal to the bound current variable.\n",currentVariable);
+				 printf("Will interpret \"%s\" as \"%s\".\n",currentVariable,variablename);
+			       }
+			       temp_node = (node*) malloc(sizeof(node));
+			       temp_node->nodeType = VARIABLE;
+			     } else {
+			       temp_node = getEntry(symbolTable,currentVariable);
+			     }
 			     $$ = temp_node;
                            }
 ;
+
+lvariable: VARIABLETOKEN
+                           {
+			     temp_string = (char *) calloc(strlen(currentVariable)+1,sizeof(char));
+			     strcpy(temp_string,currentVariable);
+			     $$ = temp_string;
+                           }
+;
+
+
 
 range:  LBRACKETTOKEN rangeconstant SEMICOLONTOKEN rangeconstant RBRACKETTOKEN
                            {

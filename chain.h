@@ -15,7 +15,7 @@ chain *addElement(chain *c, void *elem);
 void *first(chain *c);
 chain *tail(chain *c);
 chain *copyChain(chain *c, void * (*f) (void *));
-chain *concat(chain *c1, chain *c2);
+chain *concatChains(chain *c1, chain *c2);
 
 
 

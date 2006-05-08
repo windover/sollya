@@ -4,6 +4,7 @@
 
 #include <mpfr.h>
 #include "expression.h"
+#include "chain.h"
 
 #define DEFAULTPOINTS 1000
 #define DEFAULTPRECISION 120
@@ -11,6 +12,7 @@
 
 
 extern char *variablename;
+extern char *currentVariable;
 extern mp_prec_t tools_precision;
 extern char **endptr;
 extern unsigned long int points;
@@ -25,7 +27,8 @@ extern mp_prec_t prec_temp;
 extern double double_temp;
 extern int promptToBePrinted;
 extern int handlingError;
-
+extern chain *symbolTable;
+extern char *temp_string;
 
 void printPrompt(void);
 void recoverFromError(void);
