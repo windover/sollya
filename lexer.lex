@@ -93,6 +93,7 @@ SIMPLIFYSAFE2   "simplifysafe"
 
 SIMPLIFYSAFE    ({SIMPLIFYSAFE1}|{SIMPLIFYSAFE2})
 
+TAYLOR          "taylor"
 
 %%
 
@@ -158,6 +159,7 @@ SIMPLIFYSAFE    ({SIMPLIFYSAFE1}|{SIMPLIFYSAFE2})
 {DEGREE}        {     promptToBePrinted = 0; return DEGREETOKEN;       }
 {EXPAND}        {     promptToBePrinted = 0; return EXPANDTOKEN;       }
 {SIMPLIFYSAFE}  {     promptToBePrinted = 0; return SIMPLIFYSAFETOKEN; }
+{TAYLOR}        {     promptToBePrinted = 0; return TAYLORTOKEN; }
 
 
 {VARIABLE}      {     			     

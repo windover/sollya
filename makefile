@@ -1,7 +1,7 @@
-tools: parser.tab.o lex.yy.o plot.o expression.o infnorm.o remez.o main.o chain.o double.o assignment.o
-	gcc -Wall -g -o tools lex.yy.o plot.o parser.tab.o expression.o infnorm.o remez.o chain.o double.o assignment.o main.o -lfl -lmpfr -lgmp -lmpfi -lpari
+tools: parser.tab.o lex.yy.o plot.o expression.o infnorm.o remez.o main.o chain.o double.o assignment.o taylor.o
+	gcc -Wall -g -o tools lex.yy.o plot.o parser.tab.o expression.o infnorm.o remez.o chain.o double.o assignment.o taylor.o main.o -lfl -lmpfr -lgmp -lmpfi -lpari
 
-parser.tab.o: parser.tab.h parser.tab.c expression.h main.h infnorm.h remez.h chain.h assignment.h
+parser.tab.o: parser.tab.h parser.tab.c expression.h main.h infnorm.h remez.h chain.h assignment.h taylor.h
 	gcc -Wall -g -c parser.tab.c
 
 lex.yy.o: lex.yy.c expression.h main.h
@@ -36,6 +36,9 @@ chain.o: chain.h chain.c
 
 assignment.o: assignment.h assignment.c
 	gcc -g -Wall -c assignment.c
+
+taylor.o: taylor.h taylor.c
+	gcc -g -Wall -c taylor.c
 
 
 double.o: double.h double.c

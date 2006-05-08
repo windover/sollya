@@ -7,6 +7,7 @@
 #include "remez.h"
 #include "infnorm.h"
 #include "assignment.h"
+#include "taylor.h"
 
 int yylex();
 
@@ -89,7 +90,7 @@ void yyerror(char *message) {
 %token  DEGREETOKEN
 %token  EXPANDTOKEN
 %token  SIMPLIFYSAFETOKEN
-
+%token  TAYLORTOKEN
 
 %type <other> commands
 %type <other> command
@@ -420,6 +421,13 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			      mpfr_clear(*($7.b));
 			      free($7.a);
 			      free($7.b);
+			      $$ = temp_node;
+                           }
+                        |       TAYLORTOKEN LPARTOKEN function COMMATOKEN degree COMMATOKEN function RPARTOKEN
+                           {
+			      temp_node = taylor(($3),($5),($7),tools_precision);
+			      free_memory(($3));
+			      free_memory(($7));
 			      $$ = temp_node;
                            }
                         |       SIMPLIFYTOKEN LPARTOKEN function RPARTOKEN
