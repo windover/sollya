@@ -4082,7 +4082,7 @@ node* hornerPolynomialUnsafe(node *tree) {
 	temp->child2 = copy;
 	copy = temp;
       } else {
-	for (k=i-1;monomials[k]==NULL;k--);
+	for (k=i-1;((monomials[k]==NULL) && (k > 0));k--);
 	e = (i - k) + 1;
 	temp = (node *) malloc(sizeof(node));
 	temp->nodeType = MUL;
@@ -4105,11 +4105,13 @@ node* hornerPolynomialUnsafe(node *tree) {
 	temp->child1 = temp4;
 	temp->child2 = copy;
 	copy = temp;
-	temp = (node *) malloc(sizeof(node));
-	temp->nodeType = ADD;
-	temp->child1 = copyTree(monomials[k]);
-	temp->child2 = copy;
-	copy = temp;
+	if (monomials[k] != NULL) {
+	  temp = (node *) malloc(sizeof(node));
+	  temp->nodeType = ADD;
+	  temp->child1 = copyTree(monomials[k]);
+	  temp->child2 = copy;
+	  copy = temp;
+	}
 	i = k;
       }
     } else {
