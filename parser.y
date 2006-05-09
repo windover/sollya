@@ -22,7 +22,7 @@ void yyerror(char *message) {
 
 %}
 
-%name parse
+
 
 %union {
 	char *value;
