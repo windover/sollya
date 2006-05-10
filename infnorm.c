@@ -12,7 +12,7 @@
 
 #define DEBUG 1
 #define DEBUG2 0
-
+#define DEBUGMPFI 0
 
 
 void printInterval(mpfi_t interval);
@@ -302,45 +302,53 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 	  
 	  newtonMPFR(z,tree->child2,derivDenominator,xl,xr,prec);
 	  
-	  mpfi_init2(zI,prec);
-	  mpfi_set_fr(zI,z);
-	  mpfi_init2(numeratorInZI,prec);
-	  mpfi_init2(denominatorInZI,prec);
-	  
-	  evaluateI(numeratorInZI, tree->child1, zI, prec);
-	  evaluateI(denominatorInZI, tree->child2, zI, prec);
-	  
-	  mpfi_get_left(al,numeratorInZI);
-	  mpfi_get_right(ar,numeratorInZI);
-	  mpfi_get_left(bl,denominatorInZI);
-	  mpfi_get_right(br,denominatorInZI);
+	  if (mpfr_number_p(z)) {
 
-	  if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
-	    /* Hopital's rule can be applied */
+	    mpfi_init2(zI,prec);
+	    mpfi_set_fr(zI,z);
+	    mpfi_init2(numeratorInZI,prec);
+	    mpfi_init2(denominatorInZI,prec);
 	    
-	    derivNumerator = differentiate(tree->child1);
+	    evaluateI(numeratorInZI, tree->child1, zI, prec);
+	    evaluateI(denominatorInZI, tree->child2, zI, prec);
+	  
+	    mpfi_get_left(al,numeratorInZI);
+	    mpfi_get_right(ar,numeratorInZI);
+	    mpfi_get_left(bl,denominatorInZI);
+	    mpfi_get_right(br,denominatorInZI);
 	    
-	    tempNode = (node *) malloc(sizeof(node));
-	    tempNode->nodeType = DIV;
-	    tempNode->child1 = derivNumerator;
-	    tempNode->child2 = copyTree(derivDenominator);
+	    if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
+	      /* Hopital's rule can be applied */
+	      
+	      printf("Warning: applying Hopital's rule\n");
+
+	      derivNumerator = differentiate(tree->child1);
+	      
+	      tempNode = (node *) malloc(sizeof(node));
+	      tempNode->nodeType = DIV;
+	      tempNode->child1 = derivNumerator;
+	      tempNode->child2 = copyTree(derivDenominator);
+	      
+	      evaluateI(stack3, tempNode, x, prec);
+	      
+	      free_memory(tempNode);
+	    } else {
+	      printf("Warning: a division in interval ");
+	      printInterval(x);
+	      printf(" generates infinity.\nTry to exclude a domain around ");
+	      printValue(&z,prec);
+	      printf("\n");
 	    
-	    evaluateI(stack3, tempNode, x, prec);
-	
-	    free_memory(tempNode);
+	      mpfi_div(stack3, stack1, stack2);
+	    }
+
+	    mpfi_clear(numeratorInZI);
+	    mpfi_clear(denominatorInZI);
+	    mpfi_clear(zI);
 	  } else {
-	    printf("Warning: a division in interval ");
-	    printInterval(x);
-	    printf(" generates infinity.\nTry to exclude a domain around ");
-	    printValue(&z,prec);
-	    printf("\n");
-	    
+	    printf("Warning: a division generates infinity.\n");	    
 	    mpfi_div(stack3, stack1, stack2);
 	  }
-
-	  mpfi_clear(numeratorInZI);
-	  mpfi_clear(denominatorInZI);
-	  mpfi_clear(zI);
 	  free_memory(derivDenominator);
 	  mpfr_clear(z);
 	} else {
@@ -377,10 +385,28 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
   case SIN:
     evaluateI(stack1, tree->child1, x, prec);
     mpfi_sin(stack3, stack1);
+
+#if DEBUGMPFI 
+    printf("mpfi_sin(");
+    printInterval(stack1);
+    printf(") = ");
+    printInterval(stack3);
+    printf("\n");
+#endif    
+
     break;
   case COS:
     evaluateI(stack1, tree->child1, x, prec);
     mpfi_cos(stack3, stack1);
+
+#if DEBUGMPFI 
+    printf("mpfi_cos(");
+    printInterval(stack1);
+    printf(") = ");
+    printInterval(stack3);
+    printf("\n");
+#endif    
+
     break;
   case TAN:
     evaluateI(stack1, tree->child1, x, prec);
@@ -463,7 +489,7 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 }
 
 void evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t prec) {
-  mpfr_t xZ;
+  mpfr_t xZ, rTl, rTr;
   mpfi_t xZI, constantTerm, linearTerm, resultTaylor, resultDirect;
 
   mpfr_init2(xZ,prec);
@@ -472,6 +498,9 @@ void evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t
   mpfi_init2(linearTerm,prec);
   mpfi_init2(resultTaylor,prec);
   mpfi_init2(resultDirect,prec);
+
+  mpfr_init2(rTl,prec);
+  mpfr_init2(rTr,prec);
 
   mpfi_mid(xZ,x);
   mpfi_set_fr(xZI,xZ);
@@ -484,7 +513,14 @@ void evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t
 
   evaluateI(resultDirect, func, x, prec);
 
-  mpfi_intersect(result,resultTaylor,resultDirect);
+  mpfi_get_left(rTl,resultTaylor);
+  mpfi_get_right(rTr,resultTaylor);
+  
+  if (mpfr_number_p(rTl) && mpfr_number_p(rTr)) {
+    mpfi_intersect(result,resultTaylor,resultDirect);
+  } else {
+    mpfi_set(result,resultDirect);
+  }
 
   mpfi_revert_if_needed(result);
 
@@ -506,6 +542,8 @@ void evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t
 
 
   mpfr_clear(xZ);
+  mpfr_clear(rTl);
+  mpfr_clear(rTr);
   mpfi_clear(xZI);
   mpfi_clear(constantTerm);
   mpfi_clear(linearTerm);
@@ -715,6 +753,11 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
     evaluateITaylor(evalFuncOnInterval, func, deriv, *currInterval, prec);
     mpfi_get_left(tl,evalFuncOnInterval);
     mpfi_get_right(tr,evalFuncOnInterval);
+
+    if (mpfr_nan_p(tl) || mpfr_nan_p(tr)) {
+      printf("Warning: NaNs occured during the interval evaluation of the zeros.\n");
+    }
+
     mpfr_min(outerLeft,outerLeft,tl,GMP_RNDD);
     mpfr_max(outerRight,outerRight,tr,GMP_RNDU);
     mpfr_min(innerLeft,innerLeft,tr,GMP_RNDU); 
