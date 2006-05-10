@@ -145,7 +145,7 @@ GEN newton(node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     evaluate(temp1, tree, x, prec);
     evaluate(temp2, diff_tree, x, prec);
     mpfr_div(temp1, temp1, temp2, GMP_RNDN);
-    mpfr_sub(temp1, x, temp1, GMP_RNDN);
+    mpfr_sub(x, x, temp1, GMP_RNDN);
     n = 2*n;
   }
 
