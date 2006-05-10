@@ -180,12 +180,43 @@ void mpfi_round_to_tripledouble(mpfi_t rop, mpfi_t op) {
 }
 
 
+void newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+  mpfr_t x, temp1, temp2;
+  mpfr_t d;
+  unsigned long int n=1;
+  int test=0;
+
+  mpfr_init2(x,prec);
+  mpfr_init2(temp1,prec);
+  mpfr_init2(temp2,prec);
+  mpfr_init2(d,prec);
+
+  mpfr_sub(d,b,a,GMP_RNDN);
+  test = 11 + (mpfr_get_exp(b)-prec)/mpfr_get_exp(d);
+
+  mpfr_add(x,a,b,GMP_RNDN);
+  mpfr_div_2ui(x,x,1,GMP_RNDN);
+  
+  while(n<=test) {
+    evaluate(temp1, tree, x, prec);
+    evaluate(temp2, diff_tree, x, prec);
+    mpfr_div(temp1, temp1, temp2, GMP_RNDN);
+    mpfr_sub(x, x, temp1, GMP_RNDN);
+    n = 2*n;
+  }
+
+  mpfr_set(res,x,GMP_RNDN);
+  mpfr_clear(x); mpfr_clear(temp1); mpfr_clear(temp2);
+  mpfr_clear(d);
+}
+
+
 
 void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
   mpfi_t stack1, stack2;
-  mpfi_t stack3;
-  mpfr_t al, ar, bl, br;
-  node *derivNumerator, *derivDenominator;
+  mpfi_t stack3, zI, numeratorInZI, denominatorInZI;
+  mpfr_t al, ar, bl, br, xl, xr, z;
+  node *derivNumerator, *derivDenominator, *tempNode;
  
   mpfi_init2(stack1, prec);
   mpfi_init2(stack2, prec);
@@ -225,20 +256,83 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
     mpfi_get_left(bl,stack2);
     mpfi_get_right(br,stack2);
     if (mpfr_zero_p(al) &&
-	mpfr_zero_p(ar) &&
-	mpfr_zero_p(bl) &&
-	mpfr_zero_p(br)) {
-      
-      derivNumerator = differentiate(tree->child1);
-      derivDenominator = differentiate(tree->child2);
-      
-      evaluateI(stack1, derivNumerator, x, prec);
-      evaluateI(stack2, derivDenominator, x, prec);
-      
-      free_memory(derivNumerator);
-      free_memory(derivDenominator);
-    } 
-    mpfi_div(stack3, stack1, stack2);
+	mpfr_zero_p(ar)) {
+      if (mpfr_zero_p(bl) &&
+	  mpfr_zero_p(br)) {
+	/* [0;0] / [0;0] */
+	derivNumerator = differentiate(tree->child1);
+	derivDenominator = differentiate(tree->child2);
+	
+	evaluateI(stack1, derivNumerator, x, prec);
+	evaluateI(stack2, derivDenominator, x, prec);
+	
+	free_memory(derivNumerator);
+	free_memory(derivDenominator);
+	mpfi_div(stack3, stack1, stack2);
+      } else {
+	/* [0;0] / [bl;br], bl,br != 0 */
+	mpfi_interv_d(stack3,0.0,0.0);
+      }
+    } else {
+      if (mpfi_has_zero(stack2)) {
+	mpfr_init2(xl,prec);
+	mpfr_init2(xr,prec);
+	mpfr_init2(z,prec);
+	
+	mpfi_get_left(xl,x);
+	mpfi_get_right(xr,x);
+
+	derivDenominator = differentiate(tree->child2);
+
+	newtonMPFR(z,tree->child2,derivDenominator,xl,xr,prec);
+
+	mpfi_init2(zI,prec);
+	mpfi_set_fr(zI,z);
+	mpfi_init2(numeratorInZI,prec);
+	mpfi_init2(denominatorInZI,prec);
+
+	evaluateI(numeratorInZI, tree->child1, zI, prec);
+	evaluateI(denominatorInZI, tree->child2, zI, prec);
+
+	mpfi_get_left(al,numeratorInZI);
+	mpfi_get_right(ar,numeratorInZI);
+       	mpfi_get_left(bl,denominatorInZI);
+	mpfi_get_right(br,denominatorInZI);
+
+	if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
+	  /* Hopital's rule can be applied */
+
+	  derivNumerator = differentiate(tree->child1);
+	  
+	  tempNode = (node *) malloc(sizeof(node));
+	  tempNode->nodeType = DIV;
+	  tempNode->child1 = derivNumerator;
+	  tempNode->child2 = copyTree(derivDenominator);
+
+	  evaluateI(stack3, tempNode, x, prec);
+	
+	  free_memory(tempNode);
+	} else {
+	  printf("Warning: a division in interval ");
+	  printInterval(x);
+	  printf(" generates infinity.\nTry to exclude a domain around ");
+	  printValue(&z,prec);
+	  printf("\n");
+
+	  mpfi_div(stack3, stack1, stack2);
+	}
+
+	mpfi_clear(numeratorInZI);
+	mpfi_clear(denominatorInZI);
+	mpfi_clear(zI);
+	free_memory(derivDenominator);
+	mpfr_clear(xl);
+	mpfr_clear(xr);
+	mpfr_clear(z);
+      } else {
+	mpfi_div(stack3, stack1, stack2);
+      }
+    }
     break;
   case SQRT:
     evaluateI(stack1, tree->child1, x, prec);
@@ -373,6 +467,23 @@ void evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t
   mpfi_intersect(result,resultTaylor,resultDirect);
 
   mpfi_revert_if_needed(result);
+
+#if DEBUG2
+  printf("evaluateITaylor:\nfunc = ");
+  printTree(func);
+  printf("\nderiv = ");
+  printTree(deriv);
+  printf("\nx = ");
+  printInterval(x);
+  printf("\nresultTaylor = ");
+  printInterval(resultTaylor);
+  printf("\nresultDirect = ");
+  printInterval(resultDirect);
+  printf("\nresult = ");
+  printInterval(result);
+  printf("\n\n");
+#endif
+
 
   mpfr_clear(xZ);
   mpfi_clear(xZI);
@@ -569,9 +680,6 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   mpfr_min(innerLeft,innerLeft,tr,GMP_RNDU);
   mpfr_max(innerRight,innerRight,tl,GMP_RNDD); 
  
-#if DEBUG
-  printf("Computing intervals possibly containing the zeros of the derivative\n");
-#endif
   tempChain = findZeros(numeratorDeriv,derivNumeratorDeriv,range,prec,diam);
   zeros = joinAdjacentIntervals(tempChain);
 #if DEBUG

@@ -2624,7 +2624,10 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
   case DIV:
     evaluate(stack1, tree->child1, x, prec);
     evaluate(stack2, tree->child2, x, prec);
-    mpfr_div(result, stack1, stack2, GMP_RNDN);
+    if (mpfr_zero_p(stack1)) 
+      mpfr_set_d(result,0.0,GMP_RNDN);
+    else 
+      mpfr_div(result, stack1, stack2, GMP_RNDN);
     break;
   case SQRT:
     evaluate(stack1, tree->child1, x, prec);
