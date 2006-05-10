@@ -184,28 +184,40 @@ void newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_
   mpfr_t x, temp1, temp2;
   mpfr_t d;
   unsigned long int n=1;
-  int test=0;
+  unsigned long int test=0;
 
   mpfr_init2(x,prec);
   mpfr_init2(temp1,prec);
   mpfr_init2(temp2,prec);
   mpfr_init2(d,prec);
 
-  mpfr_sub(d,b,a,GMP_RNDN);
-  test = 11 + (mpfr_get_exp(b)-prec)/mpfr_get_exp(d);
+  evaluate(temp1, tree, a, prec);
+  if (mpfr_zero_p(temp1)) {
+    mpfr_set(res,a,GMP_RNDN);
+  } else {
+    evaluate(temp2, tree, b, prec);
+    if (mpfr_zero_p(temp2)) {
+      mpfr_set(res,b,GMP_RNDN);
+    } else {
 
-  mpfr_add(x,a,b,GMP_RNDN);
-  mpfr_div_2ui(x,x,1,GMP_RNDN);
-  
-  while(n<=test) {
-    evaluate(temp1, tree, x, prec);
-    evaluate(temp2, diff_tree, x, prec);
-    mpfr_div(temp1, temp1, temp2, GMP_RNDN);
-    mpfr_sub(x, x, temp1, GMP_RNDN);
-    n = 2*n;
+      mpfr_sub(d,b,a,GMP_RNDN);
+      test = 11 + (mpfr_get_exp(b)-prec)/mpfr_get_exp(d);
+      if (test > 1048577) test = 1048577; 
+      
+      mpfr_add(x,a,b,GMP_RNDN);
+      mpfr_div_2ui(x,x,1,GMP_RNDN);
+      
+      while(n<=test) {
+	evaluate(temp1, tree, x, prec);
+	evaluate(temp2, diff_tree, x, prec);
+	mpfr_div(temp1, temp1, temp2, GMP_RNDN);
+	mpfr_sub(x, x, temp1, GMP_RNDN);
+	n = 2*n;
+      }
+
+      mpfr_set(res,x,GMP_RNDN);
+    }
   }
-
-  mpfr_set(res,x,GMP_RNDN);
   mpfr_clear(x); mpfr_clear(temp1); mpfr_clear(temp2);
   mpfr_clear(d);
 }
@@ -251,6 +263,7 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
   case DIV:
     evaluateI(stack1, tree->child1, x, prec);
     evaluateI(stack2, tree->child2, x, prec);
+
     mpfi_get_left(al,stack1);
     mpfi_get_right(ar,stack1);
     mpfi_get_left(bl,stack2);
@@ -277,58 +290,65 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
       if (mpfi_has_zero(stack2)) {
 	mpfr_init2(xl,prec);
 	mpfr_init2(xr,prec);
-	mpfr_init2(z,prec);
-	
+
 	mpfi_get_left(xl,x);
 	mpfi_get_right(xr,x);
 
-	derivDenominator = differentiate(tree->child2);
+	if (mpfr_cmp(xl,xr) != 0) {
 
-	newtonMPFR(z,tree->child2,derivDenominator,xl,xr,prec);
-
-	mpfi_init2(zI,prec);
-	mpfi_set_fr(zI,z);
-	mpfi_init2(numeratorInZI,prec);
-	mpfi_init2(denominatorInZI,prec);
-
-	evaluateI(numeratorInZI, tree->child1, zI, prec);
-	evaluateI(denominatorInZI, tree->child2, zI, prec);
-
-	mpfi_get_left(al,numeratorInZI);
-	mpfi_get_right(ar,numeratorInZI);
-       	mpfi_get_left(bl,denominatorInZI);
-	mpfi_get_right(br,denominatorInZI);
-
-	if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
-	  /* Hopital's rule can be applied */
-
-	  derivNumerator = differentiate(tree->child1);
+	  mpfr_init2(z,prec);
 	  
-	  tempNode = (node *) malloc(sizeof(node));
-	  tempNode->nodeType = DIV;
-	  tempNode->child1 = derivNumerator;
-	  tempNode->child2 = copyTree(derivDenominator);
+	  derivDenominator = differentiate(tree->child2);
+	  
+	  newtonMPFR(z,tree->child2,derivDenominator,xl,xr,prec);
+	  
+	  mpfi_init2(zI,prec);
+	  mpfi_set_fr(zI,z);
+	  mpfi_init2(numeratorInZI,prec);
+	  mpfi_init2(denominatorInZI,prec);
+	  
+	  evaluateI(numeratorInZI, tree->child1, zI, prec);
+	  evaluateI(denominatorInZI, tree->child2, zI, prec);
+	  
+	  mpfi_get_left(al,numeratorInZI);
+	  mpfi_get_right(ar,numeratorInZI);
+	  mpfi_get_left(bl,denominatorInZI);
+	  mpfi_get_right(br,denominatorInZI);
 
-	  evaluateI(stack3, tempNode, x, prec);
+	  if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
+	    /* Hopital's rule can be applied */
+	    
+	    derivNumerator = differentiate(tree->child1);
+	    
+	    tempNode = (node *) malloc(sizeof(node));
+	    tempNode->nodeType = DIV;
+	    tempNode->child1 = derivNumerator;
+	    tempNode->child2 = copyTree(derivDenominator);
+	    
+	    evaluateI(stack3, tempNode, x, prec);
 	
-	  free_memory(tempNode);
+	    free_memory(tempNode);
+	  } else {
+	    printf("Warning: a division in interval ");
+	    printInterval(x);
+	    printf(" generates infinity.\nTry to exclude a domain around ");
+	    printValue(&z,prec);
+	    printf("\n");
+	    
+	    mpfi_div(stack3, stack1, stack2);
+	  }
+
+	  mpfi_clear(numeratorInZI);
+	  mpfi_clear(denominatorInZI);
+	  mpfi_clear(zI);
+	  free_memory(derivDenominator);
+	  mpfr_clear(z);
 	} else {
-	  printf("Warning: a division in interval ");
-	  printInterval(x);
-	  printf(" generates infinity.\nTry to exclude a domain around ");
-	  printValue(&z,prec);
-	  printf("\n");
-
-	  mpfi_div(stack3, stack1, stack2);
+	    printf("Warning: a division generates infinity.\n");	    
+	    mpfi_div(stack3, stack1, stack2);
 	}
-
-	mpfi_clear(numeratorInZI);
-	mpfi_clear(denominatorInZI);
-	mpfi_clear(zI);
-	free_memory(derivDenominator);
 	mpfr_clear(xl);
 	mpfr_clear(xr);
-	mpfr_clear(z);
       } else {
 	mpfi_div(stack3, stack1, stack2);
       }
