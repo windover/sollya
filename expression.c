@@ -4347,11 +4347,13 @@ node* hornerUnsimplified(node *tree) {
 
 
 node* horner(node *tree) {
-  node *temp, *temp2;
+  node *temp, *temp2, *temp3;
 
-  temp = hornerUnsimplified(tree);
+  temp3 = simplifyTreeErrorfree(tree);
+  temp = hornerUnsimplified(temp3);
   temp2 = simplifyTreeErrorfree(temp);
   free_memory(temp);
+  free_memory(temp3);
   return temp2;
 }
 
