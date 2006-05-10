@@ -142,6 +142,9 @@ void free_memory(node *tree) {
 
 int isInfix(node *tree) {
   switch(tree->nodeType) {
+  case CONSTANT: 
+    if (mpfr_sgn(*(tree->value)) < 0) return 1;
+    break;
   case ADD:
   case SUB:
   case MUL:
@@ -152,6 +155,7 @@ int isInfix(node *tree) {
     break;
   default: return 0;
   }
+  return 0;
 }
 
 
@@ -167,7 +171,7 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
   t = (int) v;
   v = (double) t;
   mpfr_set_d(y,v,GMP_RNDN);
-  if (mpfr_cmp(y,*value) == 0) {
+  if ((mpfr_cmp(y,*value) == 0) && (mpfr_number_p(*value))) {
     printf("%d",t);
   } else { 
     mpfr_set(y,*value,GMP_RNDN);
@@ -175,7 +179,10 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
       printf("-"); mpfr_neg(y,y,GMP_RNDN);
     }
     str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
-    printf("0.%sE%d",str,(int)e);
+    if (mpfr_number_p(*value)) 
+      printf("0.%sE%d",str,(int)e); 
+    else 
+      printf("%s",str);
     mpfr_free_str(str);      
   }
   mpfr_clear(y);
@@ -3372,7 +3379,6 @@ node* expandDivision(node *tree) {
 
 
 
-
 node* expandPolynomialUnsafe(node *tree) {
   node *left, *right, *copy, *tempNode, *tempNode2, *tempNode3, *tempNode4; 
   mpfr_t *value;
@@ -3426,10 +3432,25 @@ node* expandPolynomialUnsafe(node *tree) {
       }
       break;
     case MUL:
-      copy = (node*) malloc(sizeof(node));
-      copy->nodeType = MUL;
-      copy->child1 = left;
-      copy->child2 = right;
+      switch (right->nodeType) {
+      case ADD:
+      case SUB:
+      case NEG:
+      case DIV:      
+	tempNode = (node*) malloc(sizeof(node));
+	tempNode->nodeType = MUL;
+	tempNode->child1 = right;
+	tempNode->child2 = left;
+	copy = expandPolynomialUnsafe(tempNode);
+	free_memory(tempNode);
+	break;
+      default:
+	copy = (node*) malloc(sizeof(node));
+	copy->nodeType = MUL;
+	copy->child1 = left;
+	copy->child2 = right;
+	break;  
+      }
       break;  
     case ADD:
       tempNode = (node*) malloc(sizeof(node));
@@ -3994,7 +4015,6 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
   int degree;
   node *temp, *coeff, *temp2;
   mpfr_t *value;
-
  
   if (isMonomial(polynom)) {
     degree = getDegree(polynom);
@@ -4051,16 +4071,18 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
 
 
 node* hornerPolynomialUnsafe(node *tree) {
-  node *copy, *temp, *temp2, *temp3, *temp4;
+  node *copy, *temp, *temp2, *temp3, *temp4, *simplified;
   node **monomials;
   int degree, i, k, e;
   mpfr_t *value;
   
-  degree = getDegree(tree);
+  simplified = simplifyTreeErrorfree(tree);
+
+  degree = getDegree(simplified);
   monomials = (node**) calloc((degree + 1),sizeof(node*));
   for (i=0;i<=degree;i++) monomials[i] = NULL;
   
-  getCoefficientsUnsafe(monomials,tree,1);
+  getCoefficientsUnsafe(monomials,simplified,1);
 
   if (monomials[degree] == NULL) {
     fprintf(stderr,
@@ -4135,17 +4157,21 @@ node* hornerPolynomialUnsafe(node *tree) {
     if (monomials[i] != NULL) free_memory(monomials[i]);
   }
   free(monomials);
+
+  free_memory(simplified);
   return copy;
 }
 
 node* hornerPolynomial(node *tree) {
-  node *temp, *temp2, *temp3;
+  node *temp, *temp2, *temp3, *temp4;
   if (getDegree(tree) < 0) return copyTree(tree);
-  temp = expandPowerInPolynomialUnsafe(tree);
+  temp4 = simplifyTreeErrorfree(tree);
+  temp = expandPowerInPolynomialUnsafe(temp4);
   temp2 = expandPolynomialUnsafe(temp);
   temp3 = hornerPolynomialUnsafe(temp2);
   free_memory(temp);
   free_memory(temp2);
+  free_memory(temp4);
   return temp3;
 }
 
@@ -4495,4 +4521,12 @@ node *differentiatePolynomialUnsafe(node *tree) {
   free_memory(simplified);
 
   return copy;
+}
+
+
+node *getNumerator(node *tree) {
+  if (tree->nodeType == DIV) 
+    return copyTree(tree->child1);
+  else 
+    return copyTree(tree);
 }

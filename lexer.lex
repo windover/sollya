@@ -95,6 +95,8 @@ SIMPLIFYSAFE    ({SIMPLIFYSAFE1}|{SIMPLIFYSAFE2})
 
 TAYLOR          "taylor"
 
+FINDZEROS       "findzeros"
+
 %%
 
 %{
@@ -160,7 +162,7 @@ TAYLOR          "taylor"
 {EXPAND}        {     promptToBePrinted = 0; return EXPANDTOKEN;       }
 {SIMPLIFYSAFE}  {     promptToBePrinted = 0; return SIMPLIFYSAFETOKEN; }
 {TAYLOR}        {     promptToBePrinted = 0; return TAYLORTOKEN; }
-
+{FINDZEROS}     {     promptToBePrinted = 0; return FINDZEROSTOKEN; }
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

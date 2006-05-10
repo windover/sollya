@@ -29,6 +29,8 @@ extern int promptToBePrinted;
 extern int handlingError;
 extern chain *symbolTable;
 extern char *temp_string;
+extern chain *chain_temp;
+extern chain *chain_temp2;
 
 void printPrompt(void);
 void recoverFromError(void);

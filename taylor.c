@@ -245,6 +245,7 @@ node *taylor(node* tree, int degree, node* point, mp_prec_t prec) {
   mpz_clear(denominatorGMP);
   
   free_memory(fderiv);
+
   temp = horner(copy);
   free_memory(copy);
   return temp;

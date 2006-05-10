@@ -11,317 +11,11 @@
 #include <errno.h>
 
 #define DEBUG 1
+#define DEBUG2 0
 
-typedef struct nodeIStruct nodeI;
-
-struct nodeIStruct 
-{
-  int nodeType;
-  mpfi_t *value;
-  nodeI *child1;
-  nodeI *child2;
-};
 
 
 void printInterval(mpfi_t interval);
-void printTreeI(nodeI *tree);
-
-
-
-void freeNodeI(nodeI *tree) {
-  switch (tree->nodeType) {
-  case VARIABLE:
-    free(tree);
-    break;
-  case CONSTANT:
-    mpfi_clear(*(tree->value));
-    free(tree->value);
-    free(tree);
-    break;
-  case ADD:
-    freeNodeI(tree->child1);
-    freeNodeI(tree->child2);
-    free(tree);
-    break;
-  case SUB:
-    freeNodeI(tree->child1);
-    freeNodeI(tree->child2);
-    free(tree);
-    break;
-  case MUL:
-    freeNodeI(tree->child1);
-    freeNodeI(tree->child2);
-    free(tree);
-    break;
-  case DIV:
-    freeNodeI(tree->child1);
-    freeNodeI(tree->child2);
-    free(tree);
-    break;
-  case SQRT:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case EXP:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case LOG:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case LOG_2:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case LOG_10:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case SIN:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case COS:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case TAN:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case ASIN:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case ACOS:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case ATAN:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case SINH:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case COSH:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case TANH:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case ASINH:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case ACOSH:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case ATANH:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case POW:
-    freeNodeI(tree->child1);
-    freeNodeI(tree->child2);
-    free(tree);
-    break;
-  case NEG:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case ABS:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case DOUBLE:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case DOUBLEDOUBLE:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  case TRIPLEDOUBLE:
-    freeNodeI(tree->child1);
-    free(tree);
-    break;
-  default:
-   fprintf(stderr,"freeNodeI: unknown identifier (%d) in the tree\n",tree->nodeType);
-   exit(1);
-  }
-  return;
-}
-
-
-nodeI* expressionToIntervalExpression(node *tree, mp_prec_t prec) {
-  nodeI *copy;
-  mpfi_t *value;
-
-  switch (tree->nodeType) {
-  case VARIABLE:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = VARIABLE;
-    break;
-  case CONSTANT:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = CONSTANT;
-    value = (mpfi_t*) malloc(sizeof(mpfi_t));
-    mpfi_init2(*value,prec);
-    mpfi_set_fr(*value,*(tree->value));
-    copy->value = value;
-    break;
-  case ADD:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = ADD;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    copy->child2 = expressionToIntervalExpression(tree->child2,prec);
-    break;
-  case SUB:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = SUB;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    copy->child2 = expressionToIntervalExpression(tree->child2,prec);
-    break;
-  case MUL:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = MUL;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    copy->child2 = expressionToIntervalExpression(tree->child2,prec);
-    break;
-  case DIV:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = DIV;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    copy->child2 = expressionToIntervalExpression(tree->child2,prec);
-    break;
-  case SQRT:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = SQRT;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case EXP:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = EXP;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case LOG:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = LOG;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case LOG_2:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = LOG_2;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case LOG_10:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = LOG_10;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case SIN:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = SIN;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case COS:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = COS;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case TAN:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = TAN;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case ASIN:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = ASIN;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case ACOS:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = ACOS;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case ATAN:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = ATAN;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case SINH:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = SINH;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case COSH:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = COSH;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case TANH:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = TANH;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case ASINH:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = ASINH;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case ACOSH:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = ACOSH;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case ATANH:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = ATANH;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case POW:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = POW;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    copy->child2 = expressionToIntervalExpression(tree->child2,prec);
-    break;
-  case NEG:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = NEG;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case ABS:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = ABS;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case DOUBLE:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = DOUBLE;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case DOUBLEDOUBLE:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = DOUBLEDOUBLE;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  case TRIPLEDOUBLE:
-    copy = (nodeI*) malloc(sizeof(nodeI));
-    copy->nodeType = TRIPLEDOUBLE;
-    copy->child1 = expressionToIntervalExpression(tree->child1,prec);
-    break;
-  default:
-   fprintf(stderr,"expressionToIntervalExpression: unknown identifier in the tree\n");
-   exit(1);
-  }
-  return copy;
-}
 
 
 void mpfi_pow(mpfi_t z, mpfi_t x, mpfi_t y) {
@@ -486,48 +180,27 @@ void mpfi_round_to_tripledouble(mpfi_t rop, mpfi_t op) {
 }
 
 
-void my_mpfi_div(mpfi_t r, mpfi_t a, mpfi_t b) {
-  mpfr_t al, ar, bl, br;
-  mp_prec_t prec;
- 
-  prec = mpfi_get_prec(a) + 10;
-  mpfr_init2(al, prec);
-  mpfr_init2(ar, prec);
-  prec = mpfi_get_prec(b) + 10;
-  mpfr_init2(bl, prec);
-  mpfr_init2(br, prec);
 
-  mpfi_get_left(al, a);
-  mpfi_get_right(ar, a);
-  mpfi_get_left(bl, b);
-  mpfi_get_right(br, b);
-
-  if (!(mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br))) {
-    mpfi_div(r,a,b);
-  } else {
-    mpfi_interv_d(r,0.0,0.0);
-  }
-  mpfr_clear(al);
-  mpfr_clear(ar);
-  mpfr_clear(bl);
-  mpfr_clear(br);
-}
-
-
-void evaluateI(mpfi_t result, nodeI *tree, mpfi_t x, mp_prec_t prec) {
+void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
   mpfi_t stack1, stack2;
   mpfi_t stack3;
+  mpfr_t al, ar, bl, br;
+  node *derivNumerator, *derivDenominator;
  
   mpfi_init2(stack1, prec);
   mpfi_init2(stack2, prec);
   mpfi_init2(stack3, prec);
+  mpfr_init2(al,prec);
+  mpfr_init2(ar,prec);
+  mpfr_init2(bl,prec);
+  mpfr_init2(br,prec);
 
   switch (tree->nodeType) {
   case VARIABLE:
-    mpfi_set(stack3, x);
+    mpfi_set(stack3,x);
     break;
   case CONSTANT:
-    mpfi_set(stack3, *(tree->value));
+    mpfi_set_fr(stack3,*(tree->value));
     break;
   case ADD:
     evaluateI(stack1, tree->child1, x, prec);
@@ -547,7 +220,25 @@ void evaluateI(mpfi_t result, nodeI *tree, mpfi_t x, mp_prec_t prec) {
   case DIV:
     evaluateI(stack1, tree->child1, x, prec);
     evaluateI(stack2, tree->child2, x, prec);
-    my_mpfi_div(stack3, stack1, stack2);
+    mpfi_get_left(al,stack1);
+    mpfi_get_right(ar,stack1);
+    mpfi_get_left(bl,stack2);
+    mpfi_get_right(br,stack2);
+    if (mpfr_zero_p(al) &&
+	mpfr_zero_p(ar) &&
+	mpfr_zero_p(bl) &&
+	mpfr_zero_p(br)) {
+      
+      derivNumerator = differentiate(tree->child1);
+      derivDenominator = differentiate(tree->child2);
+      
+      evaluateI(stack1, derivNumerator, x, prec);
+      evaluateI(stack2, derivDenominator, x, prec);
+      
+      free_memory(derivNumerator);
+      free_memory(derivDenominator);
+    } 
+    mpfi_div(stack3, stack1, stack2);
     break;
   case SQRT:
     evaluateI(stack1, tree->child1, x, prec);
@@ -649,12 +340,15 @@ void evaluateI(mpfi_t result, nodeI *tree, mpfi_t x, mp_prec_t prec) {
 
   mpfi_set(result,stack3);
 
+  mpfi_revert_if_needed(result);
+
   mpfi_clear(stack1); mpfi_clear(stack2); mpfi_clear(stack3);
+  mpfr_clear(al); mpfr_clear(ar); mpfr_clear(bl); mpfr_clear(br);
 
   return;
 }
 
-void evaluateITaylor(mpfi_t result, nodeI *func, nodeI *deriv, mpfi_t x, mp_prec_t prec) {
+void evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t prec) {
   mpfr_t xZ;
   mpfi_t xZI, constantTerm, linearTerm, resultTaylor, resultDirect;
 
@@ -678,6 +372,8 @@ void evaluateITaylor(mpfi_t result, nodeI *func, nodeI *deriv, mpfi_t x, mp_prec
 
   mpfi_intersect(result,resultTaylor,resultDirect);
 
+  mpfi_revert_if_needed(result);
+
   mpfr_clear(xZ);
   mpfi_clear(xZI);
   mpfi_clear(constantTerm);
@@ -688,7 +384,7 @@ void evaluateITaylor(mpfi_t result, nodeI *func, nodeI *deriv, mpfi_t x, mp_prec
 
 
 
-chain *findZeros(nodeI *func, nodeI *deriv, mpfi_t range, mp_prec_t prec, mpfr_t diam) {
+chain *findZeros(node *func, node *deriv, mpfi_t range, mp_prec_t prec, mpfr_t diam) {
   mpfr_t rangeDiam, l,m,r;
   chain *res, *leftchain, *rightchain;
   mpfi_t *temp;
@@ -703,6 +399,7 @@ chain *findZeros(nodeI *func, nodeI *deriv, mpfi_t range, mp_prec_t prec, mpfr_t
     temp = (mpfi_t *) malloc(sizeof(mpfi_t));
     mpfi_init2(*temp,prec);
     mpfi_set(*temp,range);
+    mpfi_revert_if_needed(*temp);
     res->value = temp;
   } else {
     mpfi_init2(y,prec);
@@ -760,221 +457,79 @@ void printInterval(mpfi_t interval) {
   mpfr_clear(r);
 }
 
-int isInfixI(nodeI *tree) {
-  switch(tree->nodeType) {
-  case ADD:
-  case SUB:
-  case MUL:
-  case DIV:
-  case POW:
-  case NEG:
-    return 1;
-    break;
-  default: return 0;
-  }
-}
-
-
-void printTreeI(nodeI *tree) {
-  switch (tree->nodeType) {
-  case VARIABLE:
-    printf("%s",variablename);
-    break;
-  case CONSTANT:
-    printInterval(*(tree->value));
-    break;
-  case ADD:
-    if (isInfixI(tree->child1)) 
-      printf("(");
-    printTreeI(tree->child1);
-    if (isInfixI(tree->child1)) 
-      printf(")");
-    printf(" + ");
-    if (isInfixI(tree->child2)) 
-      printf("(");
-    printTreeI(tree->child2);
-    if (isInfixI(tree->child2)) 
-      printf(")");
-    break;
-  case SUB:
-    if (isInfixI(tree->child1)) 
-      printf("(");
-    printTreeI(tree->child1);
-    if (isInfixI(tree->child1)) 
-      printf(")");
-    printf(" - ");
-    if (isInfixI(tree->child2)) 
-      printf("(");
-    printTreeI(tree->child2);
-    if (isInfixI(tree->child2)) 
-      printf(")");
-    break;
-  case MUL:
-    if (isInfixI(tree->child1)) 
-      printf("(");
-    printTreeI(tree->child1);
-    if (isInfixI(tree->child1)) 
-      printf(")");
-    printf(" * ");
-    if (isInfixI(tree->child2)) 
-      printf("(");
-    printTreeI(tree->child2);
-    if (isInfixI(tree->child2)) 
-      printf(")");
-    break;
-  case DIV:
-    if (isInfixI(tree->child1)) 
-      printf("(");
-    printTreeI(tree->child1);
-    if (isInfixI(tree->child1)) 
-      printf(")");
-    printf(" / ");
-    if (isInfixI(tree->child2)) 
-      printf("(");
-    printTreeI(tree->child2);
-    if (isInfixI(tree->child2)) 
-      printf(")");
-    break;
-  case SQRT:
-    printf("sqrt(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case EXP:
-    printf("exp(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case LOG:
-    printf("log(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case LOG_2:
-    printf("log2(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case LOG_10:
-    printf("log10(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case SIN:
-    printf("sin(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case COS:
-    printf("cos(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case TAN:
-    printf("tan(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case ASIN:
-    printf("asin(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case ACOS:
-    printf("acos(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case ATAN:
-    printf("atan(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case SINH:
-    printf("sinh(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case COSH:
-    printf("cosh(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case TANH:
-    printf("tanh(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case ASINH:
-    printf("asinh(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case ACOSH:
-    printf("acosh(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case ATANH:
-    printf("atanh(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case POW:
-    if (isInfixI(tree->child1)) 
-      printf("(");
-    printTreeI(tree->child1);
-    if (isInfixI(tree->child1)) 
-      printf(")");
-    printf("^(");
-    printTreeI(tree->child2);
-    printf(")");
-    break;
-  case NEG:
-    printf("-");
-    if (isInfixI(tree->child1)) 
-      printf("(");
-    printTreeI(tree->child1);
-    if (isInfixI(tree->child1)) 
-      printf(")");
-    break;
-  case ABS:
-    printf("abs(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case DOUBLE:
-    printf("double(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case DOUBLEDOUBLE:
-    printf("doubledouble(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  case TRIPLEDOUBLE:
-    printf("tripledouble(");
-    printTreeI(tree->child1);
-    printf(")");
-    break;
-  default:
-   fprintf(stderr,"printTreeI: unknown identifier in the tree\n");
-   exit(1);
-  }
-  return;
-}
-
-
 
 void freeMpfiPtr(void *i) {
   mpfi_clear(*((mpfi_t *) i));
   free(i);
 }
 
+chain *joinAdjacentIntervals(chain *intervals) {
+  chain *newChain, *curr;
+  mpfi_t *tempI;
+  mp_prec_t prec, p;
+  mpfr_t newLeft, newRight, l,r;
 
-void infnormI(mpfi_t infnormval, nodeI *func, nodeI *deriv, nodeI *second, mpfi_t range, mp_prec_t prec, mpfr_t diam) {
-  chain *curr, *zeros;
+
+  if (intervals == NULL) return NULL;
+  if (intervals->next == NULL) {
+    tempI = (mpfi_t *) malloc(sizeof(mpfi_t));
+    mpfi_init2(*tempI,mpfi_get_prec(*((mpfi_t *) (intervals->value))));
+    mpfi_set(*tempI,*((mpfi_t *) (intervals->value)));
+    newChain = addElement(NULL,tempI);
+    return newChain;
+  }
+
+  prec = mpfi_get_prec(*((mpfi_t *) (intervals->value)));
+  curr = intervals->next;
+  while (curr != NULL) {
+    p = mpfi_get_prec(*((mpfi_t *) (curr->value)));
+    if (p > prec) prec = p;
+    curr = curr->next;
+  }
+
+
+  mpfr_init2(newLeft,prec);
+  mpfr_init2(newRight,prec);
+  mpfi_get_left(newLeft,*((mpfi_t *) (intervals->value)));
+  mpfi_get_right(newRight,*((mpfi_t *) (intervals->value)));
+  mpfr_init2(l,prec);
+  mpfr_init2(r,prec);
+
+  newChain = NULL;
+  curr = intervals->next;
+  while (curr != NULL) {
+    mpfi_get_left(l,*((mpfi_t *) (curr->value)));
+    mpfi_get_right(r,*((mpfi_t *) (curr->value)));
+    if (mpfr_cmp(l,newRight) == 0) {
+      mpfr_set(newRight,r,GMP_RNDN);
+    } else {
+      tempI = (mpfi_t *) malloc(sizeof(mpfi_t));
+      mpfi_init2(*tempI,prec);
+      mpfi_interv_fr(*tempI,newLeft,newRight);
+      newChain = addElement(newChain,tempI);
+      mpfr_set(newLeft,l,GMP_RNDN);
+      mpfr_set(newRight,r,GMP_RNDN);
+    }
+    curr = curr->next;
+  }
+  tempI = (mpfi_t *) malloc(sizeof(mpfi_t));
+  mpfi_init2(*tempI,prec);
+  mpfi_interv_fr(*tempI,newLeft,newRight);
+  newChain = addElement(newChain,tempI);
+
+  mpfr_clear(l);
+  mpfr_clear(r);
+  mpfr_clear(newLeft);
+  mpfr_clear(newRight);
+  return newChain;
+}
+
+
+
+void infnormI(mpfi_t infnormval, node *func, node *deriv, 
+	      node *numeratorDeriv, node *derivNumeratorDeriv,
+	      mpfi_t range, mp_prec_t prec, mpfr_t diam) {
+  chain *curr, *zeros, *tempChain;
   mpfi_t *currInterval;
   mpfi_t evalFuncOnInterval, lInterv, rInterv;
   mpfr_t innerLeft, innerRight, outerLeft, outerRight, l, r, tl, tr;
@@ -1017,12 +572,14 @@ void infnormI(mpfi_t infnormval, nodeI *func, nodeI *deriv, nodeI *second, mpfi_
 #if DEBUG
   printf("Computing intervals possibly containing the zeros of the derivative\n");
 #endif
-  zeros = findZeros(deriv,second,range,prec,diam);
+  tempChain = findZeros(numeratorDeriv,derivNumeratorDeriv,range,prec,diam);
+  zeros = joinAdjacentIntervals(tempChain);
 #if DEBUG
   i = 0;
   for (curr=zeros;curr!=NULL;curr=curr->next) i++;
-  printf("Found %d intervals possibly containing the zeros of the derivative\nHandling them\n",i);
+  printf("Found %d intervals possibly containing the zeros of the derivative\n",i);
 #endif
+
 
   curr = zeros;
   while (curr != NULL) {
@@ -1036,11 +593,9 @@ void infnormI(mpfi_t infnormval, nodeI *func, nodeI *deriv, nodeI *second, mpfi_
     mpfr_max(innerRight,innerRight,tl,GMP_RNDD); 
     curr = curr->next;
   }
-#if DEBUG
-  printf("Done\n"); 
-#endif
 
   freeChain(zeros,freeMpfiPtr);
+  freeChain(tempChain,freeMpfiPtr);
 
   if (mpfr_cmp(innerLeft,innerRight) >= 0) {
     mpfr_neg(outerLeft,outerLeft,GMP_RNDN);
@@ -1070,11 +625,13 @@ void infnormI(mpfi_t infnormval, nodeI *func, nodeI *deriv, nodeI *second, mpfi_
 }
 
 
+
+
+
 rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   rangetype res;
   mpfi_t rangeI, resI;
-  nodeI *funcI, *derivI, *secondI;
-  node *deriv, *second;
+  node *deriv, *numeratorDeriv, *derivNumeratorDeriv;
   mpfr_t rangeDiameter;
 
   res.a = (mpfr_t*) malloc(sizeof(mpfr_t));
@@ -1087,26 +644,66 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   mpfr_sub(rangeDiameter,*(range.b),*(range.a),GMP_RNDD);
   mpfr_mul(rangeDiameter,rangeDiameter,diam,GMP_RNDD);
   mpfi_interv_fr(rangeI,*(range.a),*(range.b));
-  funcI = expressionToIntervalExpression(func,prec);
   deriv = differentiate(func);
-  second = differentiate(deriv); 
+  numeratorDeriv = getNumerator(deriv);
+  derivNumeratorDeriv = differentiate(numeratorDeriv);
 
-  derivI = expressionToIntervalExpression(deriv,prec);
-  secondI = expressionToIntervalExpression(second,prec);
-
-  infnormI(resI,funcI,derivI,secondI,rangeI,prec,rangeDiameter);
+  
+  infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,prec,rangeDiameter);
 
 
   mpfi_revert_if_needed(resI);
   mpfi_get_left(*(res.a),resI);
   mpfi_get_right(*(res.b),resI);
-  freeNodeI(funcI);
-  freeNodeI(derivI);
-  freeNodeI(secondI);
   free_memory(deriv);
-  free_memory(second);
+  free_memory(numeratorDeriv);
+  free_memory(derivNumeratorDeriv);
   mpfi_clear(rangeI);
   mpfi_clear(resI);
   mpfr_clear(rangeDiameter);
   return res;
+}
+
+
+chain* findZerosFunction(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
+  mpfi_t rangeI;
+  node *deriv, *numerator;
+  mpfr_t rangeDiameter;
+  chain *zerosI, *zeros, *curr;
+  rangetype *tempRange;
+  chain *tempChain;
+
+  mpfi_init2(rangeI,prec);
+  mpfr_init2(rangeDiameter,prec);
+  mpfr_sub(rangeDiameter,*(range.b),*(range.a),GMP_RNDD);
+  mpfr_mul(rangeDiameter,rangeDiameter,diam,GMP_RNDD);
+  mpfi_interv_fr(rangeI,*(range.a),*(range.b));
+
+  numerator = getNumerator(func);
+  deriv = differentiate(numerator);
+
+  tempChain = findZeros(numerator,deriv,rangeI,prec,rangeDiameter);
+  zerosI = joinAdjacentIntervals(tempChain);
+
+  zeros = NULL;
+  curr = zerosI;
+  while (curr != NULL) {
+    tempRange = (rangetype *) malloc(sizeof(rangetype));
+    tempRange->a = (mpfr_t *) malloc(sizeof(mpfr_t));
+    tempRange->b = (mpfr_t *) malloc(sizeof(mpfr_t));
+    mpfr_init2(*(tempRange->a),prec);
+    mpfr_init2(*(tempRange->b),prec);
+    mpfi_get_left(*(tempRange->a),*((mpfi_t *) (curr->value)));
+    mpfi_get_right(*(tempRange->b),*((mpfi_t *) (curr->value)));
+    zeros = addElement(zeros,tempRange);
+    curr = curr->next;
+  }
+
+  freeChain(zerosI,freeMpfiPtr);
+  freeChain(tempChain,freeMpfiPtr);
+  free_memory(numerator);
+  free_memory(deriv);
+  mpfi_clear(rangeI);
+  mpfr_clear(rangeDiameter);
+  return zeros;
 }

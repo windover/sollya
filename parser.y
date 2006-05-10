@@ -91,6 +91,7 @@ void yyerror(char *message) {
 %token  EXPANDTOKEN
 %token  SIMPLIFYSAFETOKEN
 %token  TAYLORTOKEN
+%token  FINDZEROSTOKEN
 
 %type <other> commands
 %type <other> command
@@ -112,6 +113,7 @@ void yyerror(char *message) {
 %type <rangeval> infnorm
 %type <string> lvariable
 %type <other> assignment
+%type <other> findzeros
 
 %%
 
@@ -170,6 +172,9 @@ command:     plot
 			     free($1.b);
 	                     $$ = NULL;
 	                   }
+           | findzeros     {
+	                     $$ = NULL;
+	                   }
 	   | precision SEMICOLONTOKEN 
                            {
 			     tools_precision = $1;
@@ -195,6 +200,9 @@ command:     plot
 ;
 
 
+
+
+
 assignment:  lvariable EQUALTOKEN function 
                            {
 			     if ((variablename != NULL) && (strcmp(variablename,($1)) == 0)) {
@@ -213,6 +221,78 @@ assignment:  lvariable EQUALTOKEN function
 			     $$ = NULL;
                            }
 ;     
+
+
+findzeros:   FINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
+                           {
+			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
+			     chain_temp = findZerosFunction($2,$4,defaultprecision,*mpfr_temp);
+			     mpfr_clear(*mpfr_temp);
+			     free(mpfr_temp);
+			     if (chain_temp == NULL) {
+			       printf("The function has no zeros in the interval.\n");
+			     } else {
+			       printf("All zeros of the given function are contained in:\n");
+			       while (chain_temp != NULL) {
+				 printf("[");
+				 printValue(((rangetype *) (chain_temp->value))->a,defaultprecision);
+				 printf(";");
+				 printValue(((rangetype *) (chain_temp->value))->b,defaultprecision);
+				 printf("]\n");
+				 mpfr_clear(*(((rangetype *) (chain_temp->value))->a));
+				 mpfr_clear(*(((rangetype *) (chain_temp->value))->b));
+				 free(((rangetype *) (chain_temp->value))->a);
+				 free(((rangetype *) (chain_temp->value))->b);
+				 free(chain_temp->value);
+				 chain_temp2 = chain_temp->next;
+				 free(chain_temp);
+				 chain_temp = chain_temp2;
+			       }
+			       printf("\n");
+			     }
+			     free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     $$ = NULL;
+                           }
+                 | FINDZEROSTOKEN function INTOKEN range COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant SEMICOLONTOKEN
+                           {
+			     chain_temp = findZerosFunction($2,$4,defaultprecision,*($8));
+			     mpfr_clear(*($8));
+			     free($8);
+			     if (chain_temp == NULL) {
+			       printf("The function has no zeros in the interval.\n");
+			     } else {
+			       printf("All zeros of the given function are contained in:\n");
+			       while (chain_temp != NULL) {
+				 printf("[");
+				 printValue(((rangetype *) (chain_temp->value))->a,defaultprecision);
+				 printf(";");
+				 printValue(((rangetype *) (chain_temp->value))->b,defaultprecision);
+				 printf("]\n");
+				 mpfr_clear(*(((rangetype *) (chain_temp->value))->a));
+				 mpfr_clear(*(((rangetype *) (chain_temp->value))->b));
+				 free(((rangetype *) (chain_temp->value))->a);
+				 free(((rangetype *) (chain_temp->value))->b);
+				 free(chain_temp->value);
+				 chain_temp2 = chain_temp->next;
+				 free(chain_temp);
+				 chain_temp = chain_temp2;
+			       }
+			       printf("\n");
+			     }
+			     free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     $$ = NULL;
+                           }
+;
 
 
 infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN

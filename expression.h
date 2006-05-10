@@ -71,5 +71,7 @@ node* horner(node *tree);
 int getDegree(node *tree);
 node* expand(node *tree);
 node* simplifyTreeErrorfree(node *tree);
+node *getNumerator(node *tree);
+
 
 #endif /* ifdef EXPRESSION_H*/

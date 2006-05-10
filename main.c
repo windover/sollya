@@ -34,6 +34,8 @@ jmp_buf recoverEnvironment;
 int handlingError;
 chain *symbolTable = NULL;
 char *temp_string;
+chain *chain_temp;
+chain *chain_temp2;
 
 extern int yyparse();
 extern FILE *yyin;
