@@ -10,13 +10,13 @@
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
 
-#define DEBUG 1
+#define DEBUG 0
 #define DEBUG2 0
 #define DEBUGMPFI 0
 
 
 void printInterval(mpfi_t interval);
-
+void freeMpfiPtr(void *i);
 
 void mpfi_pow(mpfi_t z, mpfi_t x, mpfi_t y) {
   mpfr_t l,r,lx,rx;
@@ -215,12 +215,45 @@ void newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_
 }
 
 
+void makeMpfiAroundMpfr(mpfi_t res, mpfr_t x, unsigned int ulps) {
+  mpfr_t xp, xs;
+  mp_prec_t prec;
+  mpfi_t xI;
 
-void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
+
+  prec = mpfr_get_prec(x);
+  mpfr_init2(xp,prec);
+  mpfr_init2(xs,prec);
+  mpfi_init2(xI,prec);
+  
+  mpfr_set(xp,x,GMP_RNDD);
+  mpfr_set(xs,x,GMP_RNDU);
+
+  mpfr_nextbelow(xp);
+  mpfr_nextabove(xs);
+
+  mpfi_interv_fr(xI,xp,xs);
+  
+  mpfi_revert_if_needed(xI);
+  
+  mpfi_blow(xI,xI,(ulps / 4));
+
+  mpfi_set(res,xI);
+  
+  mpfi_clear(xI);
+  mpfr_clear(xp);
+  mpfr_clear(xs);
+}
+
+
+
+chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
   mpfi_t stack1, stack2;
-  mpfi_t stack3, zI, numeratorInZI, denominatorInZI;
+  mpfi_t stack3, zI, numeratorInZI, denominatorInZI, newExcludeTemp;
+  mpfi_t *newExclude;
   mpfr_t al, ar, bl, br, xl, xr, z, z2;
   node *derivNumerator, *derivDenominator, *tempNode;
+  chain *leftExcludes, *rightExcludes, *excludes;
  
   mpfi_init2(stack1, prec);
   mpfi_init2(stack2, prec);
@@ -233,28 +266,33 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
   switch (tree->nodeType) {
   case VARIABLE:
     mpfi_set(stack3,x);
+    excludes = NULL;
     break;
   case CONSTANT:
     mpfi_set_fr(stack3,*(tree->value));
+    excludes = NULL;
     break;
   case ADD:
-    evaluateI(stack1, tree->child1, x, prec);
-    evaluateI(stack2, tree->child2, x, prec);
+    leftExcludes = evaluateI(stack1, tree->child1, x, prec);
+    rightExcludes = evaluateI(stack2, tree->child2, x, prec);
     mpfi_add(stack3, stack1, stack2);
+    excludes = concatChains(leftExcludes,rightExcludes);
     break;
   case SUB:
-    evaluateI(stack1, tree->child1, x, prec);
-    evaluateI(stack2, tree->child2, x, prec);
+    leftExcludes = evaluateI(stack1, tree->child1, x, prec);
+    rightExcludes = evaluateI(stack2, tree->child2, x, prec);
     mpfi_sub(stack3, stack1, stack2);
+    excludes = concatChains(leftExcludes,rightExcludes);
     break;
   case MUL:
-    evaluateI(stack1, tree->child1, x, prec);
-    evaluateI(stack2, tree->child2, x, prec);
+    leftExcludes = evaluateI(stack1, tree->child1, x, prec);
+    rightExcludes = evaluateI(stack2, tree->child2, x, prec);
     mpfi_mul(stack3, stack1, stack2);
+    excludes = concatChains(leftExcludes,rightExcludes);
     break;
   case DIV:
-    evaluateI(stack1, tree->child1, x, prec);
-    evaluateI(stack2, tree->child2, x, prec);
+    leftExcludes = evaluateI(stack1, tree->child1, x, prec);
+    rightExcludes = evaluateI(stack2, tree->child2, x, prec);
 
     mpfi_get_left(al,stack1);
     mpfi_get_right(ar,stack1);
@@ -268,15 +306,22 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 	derivNumerator = differentiate(tree->child1);
 	derivDenominator = differentiate(tree->child2);
 	
-	evaluateI(stack1, derivNumerator, x, prec);
-	evaluateI(stack2, derivDenominator, x, prec);
+	freeChain(leftExcludes,freeMpfiPtr);
+	freeChain(rightExcludes,freeMpfiPtr);
+
+	leftExcludes = evaluateI(stack1, derivNumerator, x, prec);
+	rightExcludes = evaluateI(stack2, derivDenominator, x, prec);
 	
 	free_memory(derivNumerator);
 	free_memory(derivDenominator);
 	mpfi_div(stack3, stack1, stack2);
+	excludes = concatChains(leftExcludes,rightExcludes);
       } else {
 	/* [0;0] / [bl;br], bl,br != 0 */
+	freeChain(leftExcludes,freeMpfiPtr);
+	freeChain(rightExcludes,freeMpfiPtr);
 	mpfi_interv_d(stack3,0.0,0.0);
+	excludes = NULL;
       }
     } else {
       if (mpfi_has_zero(stack2)) {
@@ -311,8 +356,9 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 	    
 	    if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
 	      /* Hopital's rule can be applied */
-	      
+#if DEBUG	      
 	      printf("Warning: applying Hopital's rule\n");
+#endif 
 
 	      derivNumerator = differentiate(tree->child1);
 	      
@@ -321,7 +367,10 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 	      tempNode->child1 = derivNumerator;
 	      tempNode->child2 = copyTree(derivDenominator);
 	      
-	      evaluateI(stack3, tempNode, x, prec);
+	      freeChain(leftExcludes,freeMpfiPtr);
+	      freeChain(rightExcludes,freeMpfiPtr);
+
+	      excludes = evaluateI(stack3, tempNode, x, prec);
 	      
 	      free_memory(tempNode);
 	    } else {
@@ -345,40 +394,66 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 		
 		if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
 		  /* Hopital's rule can be applied */
-		  
+
+#if DEBUG		  
 		  printf("Warning: applying Hopital's rule\n");
+#endif
 		  
 		  tempNode = (node *) malloc(sizeof(node));
 		  tempNode->nodeType = DIV;
 		  tempNode->child1 = derivNumerator;
 		  tempNode->child2 = copyTree(derivDenominator);
-	      
-		  evaluateI(stack3, tempNode, x, prec);
+
+		  freeChain(leftExcludes,freeMpfiPtr);
+		  freeChain(rightExcludes,freeMpfiPtr);
+
+		  excludes = evaluateI(stack3, tempNode, x, prec);
 	      
 		  free_memory(tempNode);
 		} else {
-		  mpfr_clear(z2);
 
+		  newExclude = (mpfi_t *) malloc(sizeof(mpfi_t));
+		  mpfi_init2(*newExclude,prec);
+		  makeMpfiAroundMpfr(*newExclude,z,16777216);
+ 		  mpfi_init2(newExcludeTemp,prec);
+		  makeMpfiAroundMpfr(newExcludeTemp,z2,16777216);
+		  mpfi_union(*newExclude,*newExclude,newExcludeTemp);
+		  mpfi_clear(newExcludeTemp);
+
+
+#if DEBUG
 		  printf("Warning: a division in interval ");
 		  printInterval(x);
-		  printf(" generates infinity.\nTry to exclude a domain around ");
-		  printValue(&z,prec);
-		  printf(" or around ");
-		  printValue(&z2,prec);
+		  printf(" generates infinity.\nTry to exclude the domain ");
+		  printInterval(*newExclude);
 		  printf("\n");
-		  
+#endif 
+
+		  excludes = concatChains(leftExcludes,rightExcludes);
+		  excludes = addElement(excludes,newExclude);
+
+		  mpfr_clear(z2);
 		  mpfi_div(stack3, stack1, stack2);
 		}
 	      } else {
 
 		mpfr_clear(z2);
 
+		newExclude = (mpfi_t *) malloc(sizeof(mpfi_t));
+		mpfi_init2(*newExclude,prec);
+		makeMpfiAroundMpfr(*newExclude,z,16777216);
+
+#if DEBUG
 		printf("Warning: a division in interval ");
 		printInterval(x);
-		printf(" generates infinity.\nTry to exclude a domain around ");
-		printValue(&z,prec);
+		printf(" generates infinity.\nTry to exclude the domain ");
+		printInterval(*newExclude);
 		printf("\n");
+#endif 
 	    
+		excludes = concatChains(leftExcludes,rightExcludes);
+		excludes = addElement(excludes,newExclude);
+
 		mpfi_div(stack3, stack1, stack2);
 	      }
 	    }
@@ -387,36 +462,43 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 	    mpfi_clear(denominatorInZI);
 	    mpfi_clear(zI);
 	  } else {
+#if DEBUG
 	    printf("Warning: a division generates infinity.\n");	    
+#endif 
 	    mpfi_div(stack3, stack1, stack2);
+	    excludes = concatChains(leftExcludes,rightExcludes);
 	  }
 	  free_memory(derivDenominator);
 	  mpfr_clear(z);
 	} else {
+#if DEBUG
 	    printf("Warning: a division generates infinity.\n");	    
+#endif 
 	    mpfi_div(stack3, stack1, stack2);
+	    excludes = concatChains(leftExcludes,rightExcludes);
 	}
 	mpfr_clear(xl);
 	mpfr_clear(xr);
       } else {
 	mpfi_div(stack3, stack1, stack2);
+	excludes = concatChains(leftExcludes,rightExcludes);
       }
     }
     break;
   case SQRT:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_sqrt(stack3, stack1);
     break;
   case EXP:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_exp(stack3, stack1);
     break;
   case LOG:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_log(stack3, stack1);
     break;
   case LOG_2:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_log2(stack3, stack1);
     break;
   case LOG_10:
@@ -424,7 +506,7 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
     mpfi_log10(stack3, stack1);
     break;
   case SIN:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_sin(stack3, stack1);
 
 #if DEBUGMPFI 
@@ -437,7 +519,7 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 
     break;
   case COS:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_cos(stack3, stack1);
 
 #if DEBUGMPFI 
@@ -450,68 +532,69 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 
     break;
   case TAN:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_tan(stack3, stack1);
     break;
   case ASIN:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_asin(stack3, stack1);
     break;
   case ACOS:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_acos(stack3, stack1);
     break;
   case ATAN:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_atan(stack3, stack1);
     break;
   case SINH:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_sinh(stack3, stack1);
     break;
   case COSH:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_cosh(stack3, stack1);
     break;
   case TANH:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_tanh(stack3, stack1);
     break;
   case ASINH:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_asinh(stack3, stack1);
     break;
   case ACOSH:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_acosh(stack3, stack1);
     break;
   case ATANH:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_atanh(stack3, stack1);
     break;
   case POW:
-    evaluateI(stack1, tree->child1, x, prec);
-    evaluateI(stack2, tree->child2, x, prec);
+    leftExcludes = evaluateI(stack1, tree->child1, x, prec);
+    rightExcludes = evaluateI(stack2, tree->child2, x, prec);
     mpfi_pow(stack3, stack1, stack2);
+    excludes = concatChains(leftExcludes,rightExcludes);
     break;
   case NEG:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_neg(stack3, stack1);
     break;
   case ABS:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_abs(stack3, stack1);  
     break;
   case DOUBLE:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_round_to_double(stack3, stack1);
     break;
   case DOUBLEDOUBLE:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_round_to_doubledouble(stack3, stack1);
     break;
   case TRIPLEDOUBLE:
-    evaluateI(stack1, tree->child1, x, prec);
+    excludes = evaluateI(stack1, tree->child1, x, prec);
     mpfi_round_to_tripledouble(stack3, stack1);
     break;
   default:
@@ -526,12 +609,13 @@ void evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
   mpfi_clear(stack1); mpfi_clear(stack2); mpfi_clear(stack3);
   mpfr_clear(al); mpfr_clear(ar); mpfr_clear(bl); mpfr_clear(br);
 
-  return;
+  return excludes;
 }
 
-void evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t prec) {
+chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t prec) {
   mpfr_t xZ, rTl, rTr;
   mpfi_t xZI, constantTerm, linearTerm, resultTaylor, resultDirect;
+  chain *excludes, *directExcludes, *taylorExcludes, *taylorExcludesLinear, *taylorExcludesConstant;
 
   mpfr_init2(xZ,prec);
   mpfi_init2(xZI,prec);
@@ -546,21 +630,25 @@ void evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t
   mpfi_mid(xZ,x);
   mpfi_set_fr(xZI,xZ);
 
-  evaluateI(constantTerm, func, xZI, prec);
-  evaluateI(linearTerm, deriv, x, prec);
+  taylorExcludesConstant = evaluateI(constantTerm, func, xZI, prec);
+  taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec);
   mpfi_sub(xZI, x, xZI);
   mpfi_mul(linearTerm, xZI, linearTerm);
   mpfi_add(resultTaylor, constantTerm, linearTerm);
-
-  evaluateI(resultDirect, func, x, prec);
+  taylorExcludes = concatChains(taylorExcludesConstant, taylorExcludesLinear);
+  
+  directExcludes = evaluateI(resultDirect, func, x, prec);
 
   mpfi_get_left(rTl,resultTaylor);
   mpfi_get_right(rTr,resultTaylor);
   
   if (mpfr_number_p(rTl) && mpfr_number_p(rTr)) {
     mpfi_intersect(result,resultTaylor,resultDirect);
+    excludes = concatChains(directExcludes,taylorExcludes);
   } else {
     mpfi_set(result,resultDirect);
+    freeChain(taylorExcludes,freeMpfiPtr);
+    excludes = directExcludes;
   }
 
   mpfi_revert_if_needed(result);
@@ -590,6 +678,8 @@ void evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t
   mpfi_clear(linearTerm);
   mpfi_clear(resultTaylor);
   mpfi_clear(resultDirect);
+
+  return excludes;
 }
 
 
@@ -599,6 +689,7 @@ chain *findZeros(node *func, node *deriv, mpfi_t range, mp_prec_t prec, mpfr_t d
   chain *res, *leftchain, *rightchain;
   mpfi_t *temp;
   mpfi_t lI, rI, y;
+  chain *excludes;
 
   mpfi_revert_if_needed(range);
   mpfr_init2(rangeDiam,prec);
@@ -613,7 +704,8 @@ chain *findZeros(node *func, node *deriv, mpfi_t range, mp_prec_t prec, mpfr_t d
     res->value = temp;
   } else {
     mpfi_init2(y,prec);
-    evaluateITaylor(y, func, deriv, range, prec);
+    excludes = evaluateITaylor(y, func, deriv, range, prec);
+    freeChain(excludes,freeMpfiPtr);
     if (mpfi_has_zero(y)) {
       mpfr_init2(l,prec);
       mpfr_init2(m,prec);
@@ -738,12 +830,14 @@ chain *joinAdjacentIntervals(chain *intervals) {
 
 void infnormI(mpfi_t infnormval, node *func, node *deriv, 
 	      node *numeratorDeriv, node *derivNumeratorDeriv,
-	      mpfi_t range, mp_prec_t prec, mpfr_t diam) {
+	      mpfi_t range, mp_prec_t prec, mpfr_t diam, chain **mightExcludes) {
   chain *curr, *zeros, *tempChain;
   mpfi_t *currInterval;
   mpfi_t evalFuncOnInterval, lInterv, rInterv;
   mpfr_t innerLeft, innerRight, outerLeft, outerRight, l, r, tl, tr;
   mp_prec_t rangePrec;
+  chain *excludes, *excludesTemp;
+
 #if DEBUG
   int i; 
 #endif
@@ -766,12 +860,13 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   mpfi_set_fr(rInterv,r);
   mpfi_set_fr(lInterv,l);
 
-  evaluateITaylor(evalFuncOnInterval, func, deriv, lInterv, prec);
+  excludes = evaluateITaylor(evalFuncOnInterval, func, deriv, lInterv, prec);
   mpfi_get_left(outerLeft,evalFuncOnInterval);
   mpfi_get_right(outerRight,evalFuncOnInterval);
   mpfr_set(innerLeft,outerRight,GMP_RNDU);
   mpfr_set(innerRight,outerLeft,GMP_RNDD);
-  evaluateITaylor(evalFuncOnInterval, func, deriv, rInterv, prec);
+  excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, rInterv, prec);
+  excludes = concatChains(excludes,excludesTemp);
   mpfi_get_left(tl,evalFuncOnInterval);
   mpfi_get_right(tr,evalFuncOnInterval);
   mpfr_min(outerLeft,outerLeft,tl,GMP_RNDD);
@@ -791,7 +886,8 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   curr = zeros;
   while (curr != NULL) {
     currInterval = ((mpfi_t *) (curr->value));
-    evaluateITaylor(evalFuncOnInterval, func, deriv, *currInterval, prec);
+    excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, *currInterval, prec);
+    excludes = concatChains(excludes,excludesTemp);
     mpfi_get_left(tl,evalFuncOnInterval);
     mpfi_get_right(tr,evalFuncOnInterval);
 
@@ -823,6 +919,9 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
     mpfi_interv_fr(infnormval,tl,tr);
     mpfi_revert_if_needed(infnormval);
   }
+
+  *mightExcludes = excludes;
+
   mpfr_clear(tl);
   mpfr_clear(tr);
   mpfi_clear(lInterv);
@@ -845,6 +944,7 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   mpfi_t rangeI, resI;
   node *deriv, *numeratorDeriv, *derivNumeratorDeriv;
   mpfr_t rangeDiameter;
+  chain *mightExcludes, *curr;
 
   res.a = (mpfr_t*) malloc(sizeof(mpfr_t));
   res.b = (mpfr_t*) malloc(sizeof(mpfr_t));
@@ -859,11 +959,22 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   deriv = differentiate(func);
   numeratorDeriv = getNumerator(deriv);
   derivNumeratorDeriv = differentiate(numeratorDeriv);
-
+  mightExcludes = NULL;
   
-  infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,prec,rangeDiameter);
 
+  infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,prec,rangeDiameter,&mightExcludes);
 
+  if (mightExcludes != NULL) {
+    printf("To get better infnorm quality, try to exclude the following domains.\n");
+    curr = mightExcludes;
+    while(curr != NULL) {
+      printInterval(*((mpfi_t *) (curr->value)));
+      printf("\n");
+      curr = curr->next;
+    }
+    printf("\n");
+  }
+  freeChain(mightExcludes,freeMpfiPtr);
   mpfi_revert_if_needed(resI);
   mpfi_get_left(*(res.a),resI);
   mpfi_get_right(*(res.b),resI);
