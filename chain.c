@@ -8,6 +8,7 @@
 
 void freeChain(chain *c, void (*f) (void *)) {
   chain *curr, *prev;
+  if (c == NULL) return;
   curr = c;
   while (curr != NULL) {
     f(curr->value);

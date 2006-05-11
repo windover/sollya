@@ -252,7 +252,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
   mpfi_t *newExclude;
   mpfr_t al, ar, bl, br, xl, xr, z, z2;
   node *derivNumerator, *derivDenominator, *tempNode;
-  chain *leftExcludes, *rightExcludes, *excludes;
+  chain *leftExcludes, *rightExcludes, *excludes, *t1, *t2;
  
   mpfi_init2(stack1, prec);
   mpfi_init2(stack2, prec);
@@ -345,9 +345,12 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 	    mpfi_init2(numeratorInZI,prec);
 	    mpfi_init2(denominatorInZI,prec);
 	    
-	    evaluateI(numeratorInZI, tree->child1, zI, prec);
-	    evaluateI(denominatorInZI, tree->child2, zI, prec);
+	    t1 = evaluateI(numeratorInZI, tree->child1, zI, prec);
+	    t2 = evaluateI(denominatorInZI, tree->child2, zI, prec);
 	  
+	    freeChain(t1,freeMpfiPtr);
+	    freeChain(t2,freeMpfiPtr);
+
 	    mpfi_get_left(al,numeratorInZI);
 	    mpfi_get_right(ar,numeratorInZI);
 	    mpfi_get_left(bl,denominatorInZI);
@@ -380,9 +383,12 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 	      if (mpfr_number_p(z2)) {
 		mpfi_set_fr(zI,z2);
 	    
-		evaluateI(numeratorInZI, tree->child1, zI, prec);
-		evaluateI(denominatorInZI, tree->child2, zI, prec);
-	  
+		t1 = evaluateI(numeratorInZI, tree->child1, zI, prec);
+		t2 = evaluateI(denominatorInZI, tree->child2, zI, prec);
+
+		freeChain(t1,freeMpfiPtr);
+		freeChain(t2,freeMpfiPtr);
+
 		mpfi_get_left(al,numeratorInZI);
 		mpfi_get_right(ar,numeratorInZI);
 		mpfi_get_left(bl,denominatorInZI);
@@ -712,6 +718,7 @@ void printInterval(mpfi_t interval) {
 
 
 void freeMpfiPtr(void *i) {
+  if (i == NULL) return;
   mpfi_clear(*((mpfi_t *) i));
   free(i);
 }
@@ -1029,6 +1036,8 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
 
   infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,prec,rangeDiameter,NULL,&mightExcludes);
 
+  secondMightExcludes = NULL;
+
   if (mightExcludes != NULL) {
     printf("Warning: to get better infnorm quality, the following domains will be excluded:\n");
     curr = mightExcludes;
@@ -1038,8 +1047,6 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
       curr = curr->next;
     }
     printf("\n");
-
-    secondMightExcludes = NULL;
     
     infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,2*prec,rangeDiameter,mightExcludes,
 	     &secondMightExcludes);
