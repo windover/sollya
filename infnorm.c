@@ -182,14 +182,11 @@ void mpfi_round_to_tripledouble(mpfi_t rop, mpfi_t op) {
 
 void newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_t x, temp1, temp2;
-  mpfr_t d;
   unsigned long int n=1;
-  unsigned long int test=0;
 
   mpfr_init2(x,prec);
   mpfr_init2(temp1,prec);
   mpfr_init2(temp2,prec);
-  mpfr_init2(d,prec);
 
   evaluate(temp1, tree, a, prec);
   if (mpfr_zero_p(temp1)) {
@@ -199,15 +196,11 @@ void newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_
     if (mpfr_zero_p(temp2)) {
       mpfr_set(res,b,GMP_RNDN);
     } else {
-
-      mpfr_sub(d,b,a,GMP_RNDN);
-      test = 2 + (mpfr_get_exp(b)-prec)/mpfr_get_exp(d);
-      if (test > 1048577) test = 1048577; 
       
       mpfr_add(x,a,b,GMP_RNDN);
       mpfr_div_2ui(x,x,1,GMP_RNDN);
       
-      while(n<=test) {
+      while(n<=prec+10) {
 	evaluate(temp1, tree, x, prec);
 	evaluate(temp2, diff_tree, x, prec);
 	mpfr_div(temp1, temp1, temp2, GMP_RNDN);
@@ -219,7 +212,6 @@ void newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_
     }
   }
   mpfr_clear(x); mpfr_clear(temp1); mpfr_clear(temp2);
-  mpfr_clear(d);
 }
 
 
