@@ -166,7 +166,7 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
   double v;
   int t;
 
-  mpfr_init2(y,prec);
+  mpfr_init2(y,prec+5);
   v = mpfr_get_d(*value,GMP_RNDN);
   t = (int) v;
   v = (double) t;
@@ -180,7 +180,7 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
     }
     str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
     if (mpfr_number_p(*value)) 
-      printf("0.%sE%d",str,(int)e); 
+      printf("0.%se%d",str,(int)e); 
     else 
       printf("%s",str);
     mpfr_free_str(str);      

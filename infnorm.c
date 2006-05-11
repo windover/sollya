@@ -11,7 +11,6 @@
 #include <errno.h>
 
 #define DEBUG 0
-#define DEBUG2 0
 #define DEBUGMPFI 0
 
 
@@ -215,7 +214,7 @@ void newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_
 }
 
 
-void makeMpfiAroundMpfr(mpfi_t res, mpfr_t x, unsigned int ulps) {
+void makeMpfiAroundMpfr(mpfi_t res, mpfr_t x, unsigned int thousandUlps) {
   mpfr_t xp, xs;
   mp_prec_t prec;
   mpfi_t xI;
@@ -236,7 +235,7 @@ void makeMpfiAroundMpfr(mpfi_t res, mpfr_t x, unsigned int ulps) {
   
   mpfi_revert_if_needed(xI);
   
-  mpfi_blow(xI,xI,(ulps / 4));
+  mpfi_blow(xI,xI,(((double) thousandUlps) * 250.0));
 
   mpfi_set(res,xI);
   
@@ -356,9 +355,6 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 	    
 	    if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
 	      /* Hopital's rule can be applied */
-#if DEBUG	      
-	      printf("Warning: applying Hopital's rule\n");
-#endif 
 
 	      derivNumerator = differentiate(tree->child1);
 	      
@@ -394,10 +390,6 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 		
 		if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
 		  /* Hopital's rule can be applied */
-
-#if DEBUG		  
-		  printf("Warning: applying Hopital's rule\n");
-#endif
 		  
 		  tempNode = (node *) malloc(sizeof(node));
 		  tempNode->nodeType = DIV;
@@ -420,15 +412,6 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 		  mpfi_union(*newExclude,*newExclude,newExcludeTemp);
 		  mpfi_clear(newExcludeTemp);
 
-
-#if DEBUG
-		  printf("Warning: a division in interval ");
-		  printInterval(x);
-		  printf(" generates infinity.\nTry to exclude the domain ");
-		  printInterval(*newExclude);
-		  printf("\n");
-#endif 
-
 		  excludes = concatChains(leftExcludes,rightExcludes);
 		  excludes = addElement(excludes,newExclude);
 
@@ -442,16 +425,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 		newExclude = (mpfi_t *) malloc(sizeof(mpfi_t));
 		mpfi_init2(*newExclude,prec);
 		makeMpfiAroundMpfr(*newExclude,z,16777216);
-
-#if DEBUG
-		printf("Warning: a division in interval ");
-		printInterval(x);
-		printf(" generates infinity.\nTry to exclude the domain ");
-		printInterval(*newExclude);
-		printf("\n");
-#endif 
-	    
-		excludes = concatChains(leftExcludes,rightExcludes);
+	    	excludes = concatChains(leftExcludes,rightExcludes);
 		excludes = addElement(excludes,newExclude);
 
 		mpfi_div(stack3, stack1, stack2);
@@ -462,18 +436,12 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec) {
 	    mpfi_clear(denominatorInZI);
 	    mpfi_clear(zI);
 	  } else {
-#if DEBUG
-	    printf("Warning: a division generates infinity.\n");	    
-#endif 
 	    mpfi_div(stack3, stack1, stack2);
 	    excludes = concatChains(leftExcludes,rightExcludes);
 	  }
 	  free_memory(derivDenominator);
 	  mpfr_clear(z);
 	} else {
-#if DEBUG
-	    printf("Warning: a division generates infinity.\n");	    
-#endif 
 	    mpfi_div(stack3, stack1, stack2);
 	    excludes = concatChains(leftExcludes,rightExcludes);
 	}
@@ -653,23 +621,6 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
 
   mpfi_revert_if_needed(result);
 
-#if DEBUG2
-  printf("evaluateITaylor:\nfunc = ");
-  printTree(func);
-  printf("\nderiv = ");
-  printTree(deriv);
-  printf("\nx = ");
-  printInterval(x);
-  printf("\nresultTaylor = ");
-  printInterval(resultTaylor);
-  printf("\nresultDirect = ");
-  printInterval(resultDirect);
-  printf("\nresult = ");
-  printInterval(result);
-  printf("\n\n");
-#endif
-
-
   mpfr_clear(xZ);
   mpfr_clear(rTl);
   mpfr_clear(rTr);
@@ -827,10 +778,123 @@ chain *joinAdjacentIntervals(chain *intervals) {
 }
 
 
+chain *excludeIntervals(chain *mainIntervals, chain *excludeIntervals) {
+  chain *curr, *previous, *curr2, *temp;
+  mpfi_t *interval, *exclude;
+  mp_prec_t prec, p;
+  mpfr_t il, ir, el, er;
+
+  if (mainIntervals == NULL) return NULL;
+  if (excludeIntervals == NULL) return mainIntervals;
+
+  prec = 1;
+  curr = mainIntervals;
+  while (curr != NULL) {
+    p = mpfi_get_prec(*((mpfi_t *) curr->value));
+    if (p > prec) prec = p;
+    curr = curr->next;
+  }
+  curr = excludeIntervals;
+  while (curr != NULL) {
+    p = mpfi_get_prec(*((mpfi_t *) curr->value));
+    if (p > prec) prec = p;
+    curr = curr->next;
+  }
+
+  prec += 5;
+
+  mpfr_init2(il,prec);
+  mpfr_init2(ir,prec);
+  mpfr_init2(el,prec);
+  mpfr_init2(er,prec);
+
+  curr2 = excludeIntervals;
+  while (curr2 != NULL) {
+    exclude = (mpfi_t *) (curr2->value);
+    mpfi_revert_if_needed(*exclude);
+    mpfi_get_left(el,*exclude);
+    mpfi_get_right(er,*exclude);
+    curr = mainIntervals;
+    previous = NULL;
+    while (curr != NULL) {
+      interval = (mpfi_t *) (curr->value);
+      mpfi_revert_if_needed(*interval);
+      mpfi_get_left(il,*interval);
+      mpfi_get_right(ir,*interval);
+      if ((mpfr_cmp(el,ir) < 0) && (mpfr_cmp(il,er) < 0)) {
+	if ((mpfr_cmp(il,el) < 0) && (mpfr_cmp(er,ir) < 0)) {
+	  /* We must produce two intervals [il;el] and [er;ir] */
+	  mpfi_interv_fr(*interval,il,el);
+	  interval = (mpfi_t *) malloc(sizeof(mpfi_t));
+	  mpfi_init2(*interval,prec);
+	  mpfi_interv_fr(*interval,er,ir);
+	  temp = (chain *) malloc(sizeof(chain));
+	  temp->value = interval;
+	  temp->next = curr->next;
+	  curr->next = temp;
+	} else {
+	  if (mpfr_cmp(il,el) < 0) {
+	    /* We must produce one interval [il;el] */
+	    mpfi_interv_fr(*interval,il,el);
+	  } else {
+	    if (mpfr_cmp(er,ir) < 0) {
+	      /* We must produce one interval [er;ir] */
+	      mpfi_interv_fr(*interval,er,ir);
+	    } else {
+	      /* We must remove the interval completely */
+	      if (previous != NULL) {
+		/* We are not the first interval in the chain */
+		previous->next = curr->next;
+		mpfi_clear(*interval);
+		free(interval);
+		free(curr);
+		curr = previous;
+	      } else {
+		/* We are the first interval in the chain */
+		if (curr->next != NULL) {
+		  /* We have a successor that will become the head of the chain */
+		  mainIntervals = curr->next;
+		  mpfi_clear(*interval);
+		  free(interval);
+		  free(curr);
+		  curr = mainIntervals;
+		} else {
+		  /* We are the first and the last element in the chain, which will be empty */
+		  
+		  mpfi_clear(*interval);
+		  free(interval);
+		  free(curr);
+		  mpfr_clear(il);
+		  mpfr_clear(ir);
+		  mpfr_clear(el);
+		  mpfr_clear(er);
+		  return NULL;
+		}
+	      }
+	    }
+	  }
+	}
+      }
+      previous = curr;
+      curr = curr->next;
+    }
+    curr2 = curr2->next;
+  }
+
+  mpfr_clear(il);
+  mpfr_clear(ir);
+  mpfr_clear(el);
+  mpfr_clear(er);
+
+  return mainIntervals;
+}
+
 
 void infnormI(mpfi_t infnormval, node *func, node *deriv, 
 	      node *numeratorDeriv, node *derivNumeratorDeriv,
-	      mpfi_t range, mp_prec_t prec, mpfr_t diam, chain **mightExcludes) {
+	      mpfi_t range, mp_prec_t prec, mpfr_t diam, 
+	      chain *intervalsToExclude,
+	      chain **mightExcludes) {
   chain *curr, *zeros, *tempChain;
   mpfi_t *currInterval;
   mpfi_t evalFuncOnInterval, lInterv, rInterv;
@@ -882,6 +946,7 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   printf("Found %d intervals possibly containing the zeros of the derivative\n",i);
 #endif
 
+  zeros = excludeIntervals(zeros,intervalsToExclude);
 
   curr = zeros;
   while (curr != NULL) {
@@ -944,7 +1009,7 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   mpfi_t rangeI, resI;
   node *deriv, *numeratorDeriv, *derivNumeratorDeriv;
   mpfr_t rangeDiameter;
-  chain *mightExcludes, *curr;
+  chain *mightExcludes, *curr, *secondMightExcludes;
 
   res.a = (mpfr_t*) malloc(sizeof(mpfr_t));
   res.b = (mpfr_t*) malloc(sizeof(mpfr_t));
@@ -962,10 +1027,10 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   mightExcludes = NULL;
   
 
-  infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,prec,rangeDiameter,&mightExcludes);
+  infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,prec,rangeDiameter,NULL,&mightExcludes);
 
   if (mightExcludes != NULL) {
-    printf("To get better infnorm quality, try to exclude the following domains.\n");
+    printf("Warning: to get better infnorm quality, the following domains will be excluded:\n");
     curr = mightExcludes;
     while(curr != NULL) {
       printInterval(*((mpfi_t *) (curr->value)));
@@ -973,8 +1038,25 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
       curr = curr->next;
     }
     printf("\n");
+
+    secondMightExcludes = NULL;
+    
+    infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,2*prec,rangeDiameter,mightExcludes,
+	     &secondMightExcludes);
+
+    if (secondMightExcludes != NULL) {
+      printf("Warning: the following domains remain the exclusion of which could improve the result.\n");
+      curr = secondMightExcludes;
+      while(curr != NULL) {
+	printInterval(*((mpfi_t *) (curr->value)));
+	printf("\n");
+	curr = curr->next;
+      }
+      printf("\n");
+    }
   }
   freeChain(mightExcludes,freeMpfiPtr);
+  freeChain(secondMightExcludes,freeMpfiPtr);
   mpfi_revert_if_needed(resI);
   mpfi_get_left(*(res.a),resI);
   mpfi_get_right(*(res.b),resI);
