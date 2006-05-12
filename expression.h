@@ -72,6 +72,6 @@ int getDegree(node *tree);
 node* expand(node *tree);
 node* simplifyTreeErrorfree(node *tree);
 node *getNumerator(node *tree);
-
+node *substitute(node* tree, node *t);
 
 #endif /* ifdef EXPRESSION_H*/

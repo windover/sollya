@@ -96,6 +96,7 @@ SIMPLIFYSAFE    ({SIMPLIFYSAFE1}|{SIMPLIFYSAFE2})
 TAYLOR          "taylor"
 
 FINDZEROS       "findzeros"
+DIRTYINFNORM    "dirtyinfnorm"
 
 %%
 
@@ -163,6 +164,8 @@ FINDZEROS       "findzeros"
 {SIMPLIFYSAFE}  {     promptToBePrinted = 0; return SIMPLIFYSAFETOKEN; }
 {TAYLOR}        {     promptToBePrinted = 0; return TAYLORTOKEN; }
 {FINDZEROS}     {     promptToBePrinted = 0; return FINDZEROSTOKEN; }
+{DIRTYINFNORM}  {     promptToBePrinted = 0; return DIRTYINFNORMTOKEN; }
+
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

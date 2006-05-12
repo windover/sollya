@@ -27,6 +27,7 @@ mpfr_t *mpfr_temp;
 mpfr_t *mpfr_temp2;
 rangetype range_temp;
 node *temp_node; 
+node *temp_node2;
 int int_temp;
 double double_temp;
 int promptToBePrinted;

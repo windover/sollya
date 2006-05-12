@@ -199,7 +199,7 @@ void newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_
       mpfr_add(x,a,b,GMP_RNDN);
       mpfr_div_2ui(x,x,1,GMP_RNDN);
       
-      while(n<=prec+10) {
+      while((n<=prec+10) && (mpfr_cmp(a,x) <= 0) && (mpfr_cmp(x,b) <= 0)) {
 	evaluate(temp1, tree, x, prec);
 	evaluate(temp2, diff_tree, x, prec);
 	mpfr_div(temp1, temp1, temp2, GMP_RNDN);
@@ -1081,10 +1081,8 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   mpfr_t diamJoin;
   mp_prec_t rangePrec;
   chain *excludes, *excludesTemp;
-
-#if DEBUG
   int i; 
-#endif
+
 
   mpfr_init2(innerLeft, prec);
   mpfr_init2(innerRight, prec);
@@ -1124,13 +1122,12 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   mpfr_mul_2ui(diamJoin,diam,3,GMP_RNDN);
   zeros = joinAdjacentIntervals(tempChain,diamJoin);
   mpfr_clear(diamJoin);
-#if DEBUG
-  i = 0;
-  for (curr=zeros;curr!=NULL;curr=curr->next) i++;
-  printf("Found %d intervals possibly containing the zeros of the derivative\n",i);
-#endif
 
   zeros = excludeIntervals(zeros,intervalsToExclude);
+
+  i = 0;
+  for (curr=zeros;curr!=NULL;curr=curr->next) i++;
+  printf("Information: %d intervals have been found that possibly contain the zeros of the derivative\n",i);
 
   curr = zeros;
   while (curr != NULL) {
@@ -1194,6 +1191,115 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
 }
 
 
+void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec) {
+  mpfr_t z, max, temp, x1, x2, y1, y2, step;
+  node *deriv;
+  node *derivsecond;
+
+  mpfr_init2(x1, prec);
+  mpfr_init2(x2, prec);
+  mpfr_init2(step, prec);
+  mpfr_init2(y1, prec);
+  mpfr_init2(y2, prec);
+
+  mpfr_sub(step, b, a, GMP_RNDN);
+  mpfr_div_ui(step, step, points, GMP_RNDN);
+ 
+  if (mpfr_sgn(step) == 0) {
+    printf("Warning: the given interval is reduced to one point.\n");
+    evaluate(y1,tree,a,prec);
+    mpfr_abs(result,y1,GMP_RNDU);
+    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(step);
+    return;
+  }
+
+  if (mpfr_sgn(step) < 0) {
+    printf("Error : the interval is empty\n");
+    mpfr_set_d(result,0.,GMP_RNDN);
+    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(step);
+    return;
+  }
+
+  if (evaluateConstantExpression(y1,tree,prec)) {
+    mpfr_abs(result,y1,GMP_RNDU);
+    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(step);
+    return;
+  }
+ 
+  mpfr_init2(z,prec);
+  mpfr_init2(max,prec);
+  mpfr_init2(temp,prec);
+
+  deriv = differentiate(tree);
+  derivsecond = differentiate(deriv);
+
+  evaluate(temp, tree, a, prec);
+  if (mpfr_number_p(temp)) {
+    mpfr_abs(max, temp, GMP_RNDU);
+  } else {
+    printf("Warning: the evaluation of the given function in ");
+    mpfr_set(z,a,GMP_RNDN);
+    printValue(&z,prec);
+    printf(" gives infinity or NaN\n");
+    printf("This point will be excluded from the infnorm result.\n");
+    mpfr_set_d(max,0.0,GMP_RNDU);
+  }
+  evaluate(temp, tree, b, prec);
+  if (mpfr_number_p(temp)) {
+      mpfr_abs(temp, temp, GMP_RNDU);
+      mpfr_max(max, max, temp, GMP_RNDU);
+  } else {
+    printf("Warning: the evaluation of the given function in ");
+    mpfr_set(z,b,GMP_RNDN);
+    printValue(&z,prec);
+    printf(" gives infinity or NaN\n");
+    printf("This point will be excluded from the infnorm result.\n");
+  }
+
+  mpfr_set(x1,a,GMP_RNDN);
+  mpfr_add(x2,x1,step,GMP_RNDU);
+  if (mpfr_cmp(x2,b)>0) mpfr_set(x2,b,GMP_RNDN);
+  evaluate(y1,deriv,x1,prec);
+  evaluate(y2,deriv,x2,prec);
+  while(mpfr_less_p(x1,b)) {
+    if (mpfr_sgn(y1) != mpfr_sgn(y2)) {
+      newtonMPFR(z, deriv, derivsecond, x1, x2, prec);
+      if (!(mpfr_number_p(z))) {
+	printf("Warning: zero-search by Newton's method produces infinity or NaN\n");
+	printf("Will replace the zero point of the derivative by the mid-point of\nthe considered interval [");
+	printValue(&x1,prec);
+	printf(";");
+	printValue(&x2,prec);
+	printf("]\n");
+	mpfr_add(z,x1,x2,GMP_RNDN);
+	mpfr_div_ui(z,z,2,GMP_RNDN);
+      }
+      evaluate(temp,tree,z,prec);
+      if (mpfr_number_p(temp)) {
+	mpfr_abs(temp, temp, GMP_RNDU);
+	mpfr_max(max, max, temp, GMP_RNDU);
+      } else {
+	printf("Warning: the evaluation of the given function in ");
+	printValue(&z,prec);
+	printf(" gives infinity or NaN.\n");
+	printf("This (possible maximum) point will be excluded from the infnorm result.\n");
+      }
+    }
+    mpfr_set(x1,x2,GMP_RNDN);
+    mpfr_set(y1,y2,GMP_RNDN);
+    mpfr_add(x2,x1,step, GMP_RNDU);
+    if (mpfr_cmp(x2,b)>0) mpfr_set(x2,b,GMP_RNDN);
+    evaluate(y2,deriv,x2,prec);
+  }
+
+  mpfr_set(result,max,GMP_RNDU);
+
+  free_memory(deriv);
+  free_memory(derivsecond);
+  mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(step);
+  mpfr_clear(z); mpfr_clear(max); mpfr_clear(temp);
+  return;
+}
 
 
 

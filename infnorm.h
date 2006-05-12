@@ -8,5 +8,6 @@
 
 rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam);
 chain* findZerosFunction(node *func, rangetype range, mp_prec_t prec, mpfr_t diam);
+void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec);
 
 #endif /* ifdef REMEZ_H*/

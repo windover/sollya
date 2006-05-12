@@ -20,6 +20,7 @@ extern mpfr_t *mpfr_temp;
 extern mpfr_t *mpfr_temp2;
 extern rangetype range_temp;
 extern node *temp_node; 
+extern node *temp_node2;
 extern mp_prec_t defaultprecision;
 extern int defaultpoints;
 extern int int_temp;

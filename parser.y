@@ -92,6 +92,7 @@ void yyerror(char *message) {
 %token  SIMPLIFYSAFETOKEN
 %token  TAYLORTOKEN
 %token  FINDZEROSTOKEN
+%token  DIRTYINFNORMTOKEN
 
 %type <other> commands
 %type <other> command
@@ -114,6 +115,7 @@ void yyerror(char *message) {
 %type <string> lvariable
 %type <other> assignment
 %type <other> findzeros
+%type <constantval> dirtyinfnorm
 
 %%
 
@@ -136,7 +138,18 @@ command:     plot
            | print        
                            {
                              $$ = NULL;
-                           } 
+                           }  
+           | dirtyinfnorm  {
+	                     printf("uncertified infnorm result: ");
+			     printValue(($1),defaultprecision);
+			     printf("\n");
+			     mpfr_clear(*($1));
+			     free(($1));
+			     $$ = NULL;
+	                   }
+;
+
+
            | infnorm       {
 	                     printf("infnorm result: ");
 			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
@@ -327,6 +340,31 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 ;
 
 
+dirtyinfnorm: DIRTYINFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
+                           {
+			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     uncertifiedInfnorm(*mpfr_temp,($2),*(($4).a),*(($4).b),defaultpoints,defaultprecision);
+			     mpfr_clear(*(($4).a));
+			     mpfr_clear(*(($4).b));
+			     free(($4).a);
+			     free(($4).b);
+			     $$ = mpfr_temp;
+			   }
+             | DIRTYINFNORMTOKEN function INTOKEN range COMMATOKEN points SEMICOLONTOKEN
+                           {
+			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     uncertifiedInfnorm(*mpfr_temp,($2),*(($4).a),*(($4).b),($6),defaultprecision);
+			     mpfr_clear(*(($4).a));
+			     mpfr_clear(*(($4).b));
+			     free(($4).a);
+			     free(($4).b);
+			     $$ = mpfr_temp;
+			   }
+;
+
+
 print:       PRINTTOKEN function SEMICOLONTOKEN
                            {
 			     prec_temp = tools_precision;
@@ -419,7 +457,7 @@ points:  POINTSTOKEN EQUALTOKEN CONSTTOKEN
 			       exit(1);
 			     }
 			     if (points < 3) {
-			       printf("You must print at least 3 points. Increasing number to 3.\n");
+			       printf("You must consider at least 3 points. Increasing number to 3.\n");
 			       points = 3;
 			     }
 			     $$ = points;                           
@@ -753,6 +791,26 @@ variable: VARIABLETOKEN
 			       temp_node->nodeType = VARIABLE;
 			     } else {
 			       temp_node = getEntry(symbolTable,currentVariable);
+			     }
+			     $$ = temp_node;
+                           }
+                 | VARIABLETOKEN LPARTOKEN function RPARTOKEN
+                           {
+			     if ((variablename != NULL) && (strcmp(variablename,currentVariable) == 0)) {
+			       printf("Warning: the identifier \"%s\" is equal to the already bound current variable.\n",currentVariable);
+			       printf("Will interpret \"%s()\" as the identity function.\n",currentVariable);
+			       temp_node = ($3);
+			     } else {
+			       if (!containsEntry(symbolTable,currentVariable)) {
+				 printf("Warning: the identifier \"%s\" is not bound by assignment.\n",currentVariable);
+				 printf("Will interpret \"%s()\" as the identity function.\n",currentVariable);
+				 temp_node = ($3);
+			       } else {
+				 temp_node2 = getEntry(symbolTable,currentVariable);
+				 temp_node = substitute(temp_node2,($3));
+				 free_memory(temp_node2);
+				 free_memory(($3));
+			       }
 			     }
 			     $$ = temp_node;
                            }
