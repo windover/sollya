@@ -14,24 +14,28 @@ GEN mpfr_to_PARI(mpfr_t x) {
   mpz_t m;
   int s;
   GEN res;
-  
+
   mpz_init(m);
 
   prec = mpfr_get_prec(x);
   s = mpfr_sgn(x);
   e = mpfr_get_z_exp(m,x);
   if (s<0) mpz_neg(m,m);
-
   r = prec % BITS_IN_LONG;
   q = prec/BITS_IN_LONG;
   if (r==0) { r = BITS_IN_LONG; q--; } 
-
   mpz_mul_2exp(m, m, BITS_IN_LONG-r);
   res = cgetr(q+3);
   mpz_export(&(res[2]),NULL,1,BITS_IN_LONG/8,0,0,m);
 
-  setexpo(res,prec+e-1);
-  setsigne(res,s);
+  if (prec+e-1 < -HIGHEXPOBIT) {
+    setsigne(res,0);
+    res[2]=0;
+  }
+  else {
+    setexpo(res,prec+e-1);
+    setsigne(res,s);
+  }
 
   mpz_clear(m);
   return res;
