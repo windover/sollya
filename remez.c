@@ -203,11 +203,12 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
       evaluate(y2, tree, b, prec);
       if (mpfr_greater_p(a,b)) res[deg+2] = (long)(mpfr_to_PARI(a));
       else res[deg+2] = (long)(mpfr_to_PARI(b));
+      res = sort(res);
     }
   }
 
   mpfr_clear(h); mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(y1); mpfr_clear(y2);
-  return sort(res);
+  return res;
 }
 
 
@@ -257,7 +258,7 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   node *tree_diff2;
   node *res;
   int test=1, crash_report;
-  printf("Estimation de la taille nécessaire : %lu\n",prec_pari*sizeof(long)*(deg+2)*(deg+10));
+  printf("Estimation of the necessary size : %lu\n",prec_pari*sizeof(long)*(deg+2)*(deg+10));
 
   tree = malloc(sizeof(node));
   tree->nodeType = SUB;
@@ -360,7 +361,7 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     }
 
     // DEBUG
-    printf("Étape n° %d ; qualité de l'approximation : %e. Valeur calculée de epsilon : ",test,computeRatio(tree, x, prec));output((GEN)(temp[i+2]));
+    printf("Step %d ; quality of the approximation : %e. Computed value of epsilon : ",test,computeRatio(tree, x, prec));output((GEN)(temp[i+2]));
     test++;
     if (computeRatio(tree, x, prec)<0.0001) {
       test = 0;
