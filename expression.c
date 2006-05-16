@@ -4526,11 +4526,17 @@ node *differentiatePolynomialUnsafe(node *tree) {
 }
 
 
-node *getNumerator(node *tree) {
-  if (tree->nodeType == DIV) 
-    return copyTree(tree->child1);
-  else 
-    return copyTree(tree);
+int getNumeratorDenominator(node **numerator, node **denominator, node *tree) {
+  if (tree->nodeType == DIV) {
+    *numerator = copyTree(tree->child1);
+    *denominator = copyTree(tree->child2);
+    return 1;
+  }
+  else {
+    *numerator = copyTree(tree);
+    *denominator = NULL;
+    return 0;
+  }
 }
 
 

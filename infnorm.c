@@ -182,7 +182,7 @@ void mpfi_round_to_tripledouble(mpfi_t rop, mpfi_t op) {
 int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_t x, temp1, temp2;
   unsigned long int n=1;
-  int okay;
+  int okay, lucky;
 
   mpfr_init2(x,prec);
   mpfr_init2(temp1,prec);
@@ -203,9 +203,14 @@ int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_p
       
       mpfr_add(x,a,b,GMP_RNDN);
       mpfr_div_2ui(x,x,1,GMP_RNDN);
-      
+      lucky = 0;
+
       while((n<=prec+10) && (mpfr_cmp(a,x) <= 0) && (mpfr_cmp(x,b) <= 0)) {
 	evaluate(temp1, tree, x, prec);
+	if (mpfr_zero_p(temp1)) {
+	  lucky = 1;
+	  break;
+	}
 	evaluate(temp2, diff_tree, x, prec);
 	mpfr_div(temp1, temp1, temp2, GMP_RNDN);
 	mpfr_sub(x, x, temp1, GMP_RNDN);
@@ -221,13 +226,17 @@ int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_p
 	  okay = 0;
 	} else {
 	  mpfr_set(res,x,GMP_RNDN);
-	  evaluate(temp1, tree, x, prec);
-	  evaluate(temp2, diff_tree, x, prec);
-	  mpfr_div(temp1, temp1, temp2, GMP_RNDN);
-	  mpfr_abs(temp1,temp1,GMP_RNDN);
-	  mpfr_abs(x,x,GMP_RNDN);
-	  mpfr_div_ui(x,x,1,GMP_RNDN);
-	  okay = (mpfr_cmp(temp1,x) <= 0);
+	  if (!lucky) {
+	    evaluate(temp1, tree, x, prec);
+	    evaluate(temp2, diff_tree, x, prec);
+	    mpfr_div(temp1, temp1, temp2, GMP_RNDN);
+	    mpfr_abs(temp1,temp1,GMP_RNDN);
+	    mpfr_abs(x,x,GMP_RNDN);
+	    mpfr_div_ui(x,x,1,GMP_RNDN);
+	    okay = (mpfr_cmp(temp1,x) <= 0);
+	  } else {
+	    okay = 1;
+	  }
 	}
       }
     }
@@ -828,19 +837,12 @@ chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t pr
     mpfi_init2(y,prec);
     excludes = evaluateITaylor(y, func, deriv, range, prec);
     freeChain(excludes,freeMpfiPtr);
-    if (mpfi_has_zero(y)) {
-
-      /*
-      printf("findZeros: ");
-      printf("range = ");
-      printInterval(range);
-      printf("\n");
-      printf(" y = ");
+    if (!mpfi_bounded_p(y)) {
+      printf("Warning: during zero-search the derivative of the function evaluated to NaN or Inf in the interval ");
       printInterval(y);
-      printf("\n");
-      printf("Since we have a zero, we add.\n");
-      */
-
+      printf(".\nThe function might not be continuously differentiable in this interval.\n");
+    }
+    if ((!mpfi_bounded_p(y)) || mpfi_has_zero(y)) {
       mpfr_init2(l,prec);
       mpfr_init2(m,prec);
       mpfr_init2(r,prec);
@@ -1160,17 +1162,8 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
     mpfi_get_left(tl,evalFuncOnInterval);
     mpfi_get_right(tr,evalFuncOnInterval);
 
-    /*
-    printf("On interval ");
-    printInterval(*currInterval);
-    printf(" f is bounded by ");
-    printInterval(evalFuncOnInterval);
-    printf("\n");
-    */
-
-
     if (mpfr_nan_p(tl) || mpfr_nan_p(tr)) {
-      printf("Warning: NaNs occured during the interval evaluation of the zeros.\n");
+      printf("Warning: NaNs occured during the interval evaluation of the zeros of the derivative.\n");
     }
 
     mpfr_min(outerLeft,outerLeft,tl,GMP_RNDD);
@@ -1340,9 +1333,10 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
 rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   rangetype res;
   mpfi_t rangeI, resI;
-  node *deriv, *numeratorDeriv, *derivNumeratorDeriv;
-  mpfr_t rangeDiameter;
+  node *deriv, *numeratorDeriv, *derivNumeratorDeriv, *denominatorDeriv, *derivDenominatorDeriv;
+  mpfr_t rangeDiameter, z, ya,yb;
   chain *mightExcludes, *curr, *secondMightExcludes;
+  int newtonWorked;
 
 
   res.a = (mpfr_t*) malloc(sizeof(mpfr_t));
@@ -1356,7 +1350,57 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   mpfr_mul(rangeDiameter,rangeDiameter,diam,GMP_RNDD);
   mpfi_interv_fr(rangeI,*(range.a),*(range.b));
   deriv = differentiate(func);
-  numeratorDeriv = getNumerator(deriv);
+  if (getNumeratorDenominator(&numeratorDeriv,&denominatorDeriv,deriv)) {
+    printf("Warning: the derivative of the function is a quotient, thus possibly not continuous in the interval.\n");
+    printf("Only the zeros of the numerator will be searched and pole detection may fail.\n");
+    printf("Be sure that the function is twice continuously differentiable if trusting the infnorm result.\n");
+
+    mpfr_init2(z,prec);
+    mpfr_init2(ya,prec);
+    mpfr_init2(yb,prec);
+    derivDenominatorDeriv = differentiate(denominatorDeriv);
+
+    newtonWorked = newtonMPFR(z, denominatorDeriv, derivDenominatorDeriv, *(range.a), *(range.b), prec);
+
+    if (newtonWorked && mpfr_number_p(z)) {
+      evaluate(ya,numeratorDeriv,z,prec);
+      evaluate(yb,denominatorDeriv,z,prec);
+
+      mpfr_abs(ya,ya,GMP_RNDN);
+      mpfr_abs(yb,yb,GMP_RNDN);
+
+      mpfr_mul_ui(yb,yb,2,GMP_RNDN);
+
+      if (mpfr_cmp(ya,yb) <= 0) {
+	printf("Warning: the derivative of the function seems to have a false pole in ");
+	printValue(&z,prec);
+	printf(" that might be prolongated by continuity.\n");
+	printf("The infnorm result might not be trustful if the derivative cannot actually\n");
+	printf("be prolongated by continuity in this point.\n");
+      } else {
+	printf("Warning: the derivative of the function seems to have a pole in ");
+	printValue(&z,prec);
+	printf(".\n");
+	printf("The infnorm result is likely to be wrong.\n");
+      }
+    } else {
+      evaluate(ya,denominatorDeriv,*(range.a),prec);
+      evaluate(yb,denominatorDeriv,*(range.b),prec);
+
+      if (mpfr_sgn(ya) != mpfr_sgn(yb)) {
+	printf("Warning: the derivative of the function seems to have a (false) pole in the considered interval.\n");
+	printf("The infnorm result might be not trustful if the function is not continuously differentiable.\n");
+      } else {
+	printf("Information: the derivative seems to have no (false) pole in the considered interval.\n");
+      }
+    }
+
+    mpfr_clear(z);
+    mpfr_clear(ya);
+    mpfr_clear(yb);
+    free_memory(derivDenominatorDeriv);
+    free_memory(denominatorDeriv);
+  }
   derivNumeratorDeriv = differentiate(numeratorDeriv);
   mightExcludes = NULL;
   
@@ -1406,7 +1450,7 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
 
 chain* findZerosFunction(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   mpfi_t rangeI;
-  node *deriv, *numerator;
+  node *deriv, *numerator, *denominator;
   mpfr_t rangeDiameter, diamJoin;
   chain *zerosI, *zeros, *curr;
   rangetype *tempRange;
@@ -1418,7 +1462,8 @@ chain* findZerosFunction(node *func, rangetype range, mp_prec_t prec, mpfr_t dia
   mpfr_mul(rangeDiameter,rangeDiameter,diam,GMP_RNDD);
   mpfi_interv_fr(rangeI,*(range.a),*(range.b));
 
-  numerator = getNumerator(func);
+  if (getNumeratorDenominator(&numerator,&denominator,func)) free_memory(denominator);
+
   deriv = differentiate(numerator);
 
   tempChain = findZeros(numerator,deriv,rangeI,prec,rangeDiameter);
