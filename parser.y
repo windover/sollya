@@ -116,6 +116,7 @@ void yyerror(char *message) {
 %type <other> assignment
 %type <other> findzeros
 %type <constantval> dirtyinfnorm
+%type <string> variableWorkAround
 
 %%
 
@@ -775,6 +776,14 @@ primary:			variable
                            }
 ;
 
+variableWorkAround: VARIABLETOKEN 
+                           {
+			     temp_string = (char *) calloc(strlen(currentVariable)+1,sizeof(char));
+			     strcpy(temp_string,currentVariable);
+			     $$ = temp_string;
+                           }
+;;
+
 
 variable: VARIABLETOKEN
                            {
@@ -794,24 +803,26 @@ variable: VARIABLETOKEN
 			     }
 			     $$ = temp_node;
                            }
-                 | VARIABLETOKEN LPARTOKEN function RPARTOKEN
+                 | variableWorkAround LPARTOKEN function RPARTOKEN
                            {
-			     if ((variablename != NULL) && (strcmp(variablename,currentVariable) == 0)) {
-			       printf("Warning: the identifier \"%s\" is equal to the already bound current variable.\n",currentVariable);
-			       printf("Will interpret \"%s()\" as the identity function.\n",currentVariable);
+			     if ((variablename != NULL) && (strcmp(variablename,($1)) == 0)) {
+			       printf("Warning: the identifier \"%s\" is equal to the already bound current variable.\n",
+				      ($1));
+			       printf("Will interpret \"%s()\" as the identity function.\n",($1));
 			       temp_node = ($3);
 			     } else {
-			       if (!containsEntry(symbolTable,currentVariable)) {
-				 printf("Warning: the identifier \"%s\" is not bound by assignment.\n",currentVariable);
-				 printf("Will interpret \"%s()\" as the identity function.\n",currentVariable);
+			       if (!containsEntry(symbolTable,($1))) {
+				 printf("Warning: the identifier \"%s\" is not bound by assignment.\n",($1));
+				 printf("Will interpret \"%s()\" as the identity function.\n",($1));
 				 temp_node = ($3);
 			       } else {
-				 temp_node2 = getEntry(symbolTable,currentVariable);
+				 temp_node2 = getEntry(symbolTable,($1));
 				 temp_node = substitute(temp_node2,($3));
 				 free_memory(temp_node2);
 				 free_memory(($3));
 			       }
 			     }
+			     free(($1));
 			     $$ = temp_node;
                            }
 ;
