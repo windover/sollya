@@ -1,6 +1,7 @@
 #include <pari/pari.h>
 #include <gmp.h>
 #include <mpfr.h>
+#include "main.h"
 #include "expression.h"
 
 #include <stdio.h> /* fprintf, fopen, fclose, */
@@ -29,12 +30,19 @@ GEN mpfr_to_PARI(mpfr_t x) {
   mpz_export(&(res[2]),NULL,1,BITS_IN_LONG/8,0,0,m);
 
   if ((long int)(prec)+e-1 < 3-HIGHEXPOBIT) {
+    printf("Warning: an underflow occured during a conversion.\n");
     setsigne(res,0);
     res[2]=0;
   }
   else {
-    setexpo(res,prec+e-1);
-    setsigne(res,s);
+    if ((long int)(prec)+e-1 >= HIGHEXPOBIT) {
+      printf("Error: an overflow occured during a conversion.\n");
+      recoverFromError();
+    }
+    else {
+      setexpo(res,prec+e-1);
+      setsigne(res,s);
+    }
   }
 
   mpz_clear(m);
@@ -264,7 +272,21 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   int test=1, crash_report;
 
   
-  printf("Estimation of the necessary size : %lu\n",prec_pari*sizeof(long)*(deg+2)*(deg+10));
+  
+  mpfr_t toto;
+  mpfr_init2(toto,53);
+  mpfr_set_d(toto,1.,GMP_RNDN);
+  mpfr_mul_2ui(toto,toto,8388600,GMP_RNDN);
+  printf("%d",HIGHEXPOBIT);
+  for(;;) {
+    mpfr_out_str(stdout,2,0,toto,GMP_RNDN);
+    printf("\n");
+    output(mpfr_to_PARI(toto));
+    printf("\n\n\n\n");
+    mpfr_mul_2ui(toto,toto,1,GMP_RNDN);
+  }
+
+  /*printf("Estimation of the necessary size : %lu\n",prec_pari*sizeof(long)*(deg+2)*(deg+10));
  
   tree = malloc(sizeof(node));
   tree->nodeType = SUB;
@@ -327,7 +349,7 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 
     // Solves the system
     temp = gauss(M,temp);
-
+*/
     // Tests if the precision is sufficient
     /*if (gexpo((GEN)(temp[deg+2])) < gexpo(y)-prec+15) {
       printf("Warning : the precision seems to be not sufficient to compute the polynomial. ");
@@ -337,7 +359,7 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
       printf("we suggest you to set prec to %d.\n",(int)(-gexpo((GEN)(temp[deg+2]))+gexpo(y)+20));
       return copyTree(func);
       }*/
-
+    /*
     // Formally derive the polynomial stored in temp
     for(i=0;i<deg+1;i++) {
       temp_diff[i+1] = lmulrs((GEN)(temp[i+1]),(long)i);
@@ -391,5 +413,5 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   free(tree_diff);
   free(tree_diff2);
   avma = ltop;
-  return res;
+  return res;*/return (copyTree(tree));
 }
