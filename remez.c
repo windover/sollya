@@ -8,7 +8,7 @@
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
 
-// NaN, Inf, and denormalized not handled.
+
 GEN mpfr_to_PARI(mpfr_t x) {
   mp_exp_t e;
   mp_prec_t prec,q,r;
@@ -16,14 +16,26 @@ GEN mpfr_to_PARI(mpfr_t x) {
   int s;
   GEN res;
 
-  mpz_init(m);
-
   prec = mpfr_get_prec(x);
+  r = prec % BITS_IN_LONG;
+  q = prec/BITS_IN_LONG;
+
+  if (!mpfr_number_p(x)) {
+    printf("Error: cannot convert Inf or Nan to PARI.\n");
+    recoverFromError();
+  }
+  if (mpfr_zero_p(x)) {
+    res = cgetr(q+3);
+    setsigne(res,0);
+    res[2] = 0;
+    return res;
+  }  
+
+
+  mpz_init(m);
   s = mpfr_sgn(x);
   e = mpfr_get_z_exp(m,x);
   if (s<0) mpz_neg(m,m);
-  r = prec % BITS_IN_LONG;
-  q = prec/BITS_IN_LONG;
   if (r==0) { r = BITS_IN_LONG; q--; } 
   mpz_mul_2exp(m, m, BITS_IN_LONG-r);
   res = cgetr(q+3);
@@ -57,9 +69,27 @@ void PARI_to_mpfr(mpfr_t y, GEN x, mp_rnd_t rnd) {
   mpz_t m;
   int s;
 
+  s = gsigne(x);
+
+  if (s==0) {
+    mpfr_set_d(y,0.,GMP_RNDN);
+    return;
+  }
+
+  if (gexpo(x)+1 > mpfr_get_emax()) {
+    printf("Warning: generating Inf in a conversion.\n");
+    mpfr_set_inf(y, s);
+    return;
+  }
+
+  if (gexpo(x)+1 < mpfr_get_emin()) {
+    printf("Warning: generating zero in a conversion.\n");
+    mpfr_set_d(y,0.,GMP_RNDN);
+    return;
+  }
+
   mpz_init(m);
 
-  s = gsigne(x);
   length = lg(x)-2;
   mpz_import(m,length,1,BITS_IN_LONG/8,0,0,&(x[2]));
 
@@ -273,17 +303,20 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 
   
   
+  GEN titi;
   mpfr_t toto;
   mpfr_init2(toto,53);
   mpfr_set_d(toto,1.,GMP_RNDN);
-  mpfr_mul_2ui(toto,toto,8388600,GMP_RNDN);
-  printf("%d",HIGHEXPOBIT);
-  for(;;) {
+  mpfr_div_2ui(toto,toto,1073741821,GMP_RNDN);
+  printf("%lu",HIGHEXPOBIT);
+  for(;test<15;test++) {
     mpfr_out_str(stdout,2,0,toto,GMP_RNDN);
     printf("\n");
-    output(mpfr_to_PARI(toto));
+    titi = mpfr_to_PARI(toto);
+    output(titi);
+    PARI_to_mpfr(toto, titi, GMP_RNDN);
     printf("\n\n\n\n");
-    mpfr_mul_2ui(toto,toto,1,GMP_RNDN);
+    mpfr_div_2ui(toto,toto,1,GMP_RNDN);
   }
 
   /*printf("Estimation of the necessary size : %lu\n",prec_pari*sizeof(long)*(deg+2)*(deg+10));
