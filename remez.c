@@ -28,7 +28,7 @@ GEN mpfr_to_PARI(mpfr_t x) {
   res = cgetr(q+3);
   mpz_export(&(res[2]),NULL,1,BITS_IN_LONG/8,0,0,m);
 
-  if (prec+e-1 < -HIGHEXPOBIT) {
+  if ((long int)(prec)+e-1 < 3-HIGHEXPOBIT) {
     setsigne(res,0);
     res[2]=0;
   }
@@ -262,8 +262,10 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   node *tree_diff2;
   node *res;
   int test=1, crash_report;
-  printf("Estimation of the necessary size : %lu\n",prec_pari*sizeof(long)*(deg+2)*(deg+10));
 
+  
+  printf("Estimation of the necessary size : %lu\n",prec_pari*sizeof(long)*(deg+2)*(deg+10));
+ 
   tree = malloc(sizeof(node));
   tree->nodeType = SUB;
   tree->child1 = copyTree(func);
@@ -288,6 +290,8 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 				   2*deg+4),prec_pari)
 		       )
 		  );
+    // To have evenly distributed points, choose the following points :
+    // x[i+1] = ladd(u, gdivgs(gmulgs(gsub(v,u),i),(deg+1)));
   }
   
 
@@ -295,8 +299,8 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   temp = cgetg(deg+3, t_COL);
   temp_diff = cgetg(deg+3, t_COL);
   temp_diff2 = cgetg(deg+3, t_COL);
-
-  // Main loop
+ 
+ // Main loop
   while(test) {
 
     // Definition of the Remez matrix M with respect to the point x_i
@@ -366,6 +370,7 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 
     // DEBUG
     printf("Step %d ; quality of the approximation : %e. Computed value of epsilon : ",test,computeRatio(tree, x, prec));output((GEN)(temp[i+2]));
+    //    plotTree(tree,a,b,500,prec);
     test++;
     if (computeRatio(tree, x, prec)<0.0001) {
       test = 0;
