@@ -62,7 +62,6 @@ GEN mpfr_to_PARI(mpfr_t x) {
 }
 
 
-// NaN, Inf, and denormalized not handled.
 // No check of the type of x is made (t_REAL or t_INT)
 void PARI_to_mpfr(mpfr_t y, GEN x, mp_rnd_t rnd) {
   long length;
@@ -302,24 +301,7 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   int test=1, crash_report;
 
   
-  
-  GEN titi;
-  mpfr_t toto;
-  mpfr_init2(toto,53);
-  mpfr_set_d(toto,1.,GMP_RNDN);
-  mpfr_div_2ui(toto,toto,1073741821,GMP_RNDN);
-  printf("%lu",HIGHEXPOBIT);
-  for(;test<15;test++) {
-    mpfr_out_str(stdout,2,0,toto,GMP_RNDN);
-    printf("\n");
-    titi = mpfr_to_PARI(toto);
-    output(titi);
-    PARI_to_mpfr(toto, titi, GMP_RNDN);
-    printf("\n\n\n\n");
-    mpfr_div_2ui(toto,toto,1,GMP_RNDN);
-  }
-
-  /*printf("Estimation of the necessary size : %lu\n",prec_pari*sizeof(long)*(deg+2)*(deg+10));
+  printf("Estimation of the necessary size : %lu\n",prec_pari*sizeof(long)*(deg+2)*(deg+10));
  
   tree = malloc(sizeof(node));
   tree->nodeType = SUB;
@@ -382,7 +364,7 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 
     // Solves the system
     temp = gauss(M,temp);
-*/
+
     // Tests if the precision is sufficient
     /*if (gexpo((GEN)(temp[deg+2])) < gexpo(y)-prec+15) {
       printf("Warning : the precision seems to be not sufficient to compute the polynomial. ");
@@ -392,7 +374,7 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
       printf("we suggest you to set prec to %d.\n",(int)(-gexpo((GEN)(temp[deg+2]))+gexpo(y)+20));
       return copyTree(func);
       }*/
-    /*
+    
     // Formally derive the polynomial stored in temp
     for(i=0;i<deg+1;i++) {
       temp_diff[i+1] = lmulrs((GEN)(temp[i+1]),(long)i);
@@ -446,5 +428,5 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   free(tree_diff);
   free(tree_diff2);
   avma = ltop;
-  return res;*/return (copyTree(tree));
+  return res;
 }
