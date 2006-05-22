@@ -37,6 +37,9 @@ chain *symbolTable = NULL;
 char *temp_string;
 chain *chain_temp;
 chain *chain_temp2;
+ulong ltop;
+
+extern jmp_buf environnement;
 
 extern int yyparse();
 extern FILE *yyin;
@@ -45,12 +48,33 @@ extern FILE *yyin;
 void signalHandler(int i) {
   printf("\n\n");
   fflush(stdout);
-  exit(0);
+
+  switch (i) {
+  case SIGINT:   
+    exit(0);
+  case SIGSEGV:
+    printf("Warning: handling signal SIGSEGV\n");
+    break;
+  case SIGBUS:
+    printf("Warning: handling signal SIGBREAK\n");
+    break;
+  case SIGFPE:
+    printf("Warning: handling signal SIGFPE\n");
+    break;
+  case SIGPIPE:
+    printf("Warning: handling signal SIGPIPE\n");
+    break;
+  default:
+    printf("Error: must handle an unknown signal.\n");
+    exit(1);
+  }
+  recoverFromError();
 }
 
 
 void recoverFromError(void) {
   handlingError = 1;
+  avma = ltop;
   longjmp(recoverEnvironment,1);
   return;
 }
@@ -70,9 +94,18 @@ void printPrompt(void) {
 int main(int argc, char *argv[]) {
   
   pari_init(3000000, 2);
+  ltop = avma;
+  if (setjmp(environnement)) {
+    printf("Error: an error occured in the PARI subsystem.\n");
+    recoverFromError();
+  }
+
 
   signal(SIGINT,signalHandler);
-
+  signal(SIGSEGV,signalHandler);
+  signal(SIGBUS,signalHandler);
+  signal(SIGFPE,signalHandler);
+  signal(SIGPIPE,signalHandler);
 
   endptr = (char**) malloc(sizeof(char*));
   yyin = stdin;
