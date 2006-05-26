@@ -95,6 +95,7 @@ void yyerror(char *message) {
 %token  DIRTYINFNORMTOKEN
 %token  EVALUATETOKEN
 %token  ATTOKEN
+%token  NUMERATORTOKEN
 
 %type <other> commands
 %type <other> command
@@ -633,6 +634,16 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                            {
 			     temp_node = simplifyTreeErrorfree($3);
 			     free_memory($3);
+			     $$ = temp_node;
+			   }
+                        |       NUMERATORTOKEN LPARTOKEN function RPARTOKEN 
+                           {
+			     if (!getNumeratorDenominator(&temp_node,&temp_node2,($3))) {
+			       printf("Warning: the expression given is not a fraction. ");
+			       printf("Will consider it as a fraction with denominator 1.\n");
+			     } else {
+			       free_memory(temp_node2);
+			     }
 			     $$ = temp_node;
 			   }
 			|       DIFFTOKEN LPARTOKEN function RPARTOKEN

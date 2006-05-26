@@ -101,6 +101,8 @@ DIRTYINFNORM    "dirtyinfnorm"
 EVALUATE        "evaluate"
 AT              "at"
 
+NUMERATOR       "numerator"
+
 %%
 
 %{
@@ -170,6 +172,7 @@ AT              "at"
 {DIRTYINFNORM}  {     promptToBePrinted = 0; return DIRTYINFNORMTOKEN; }
 {EVALUATE}      {     promptToBePrinted = 0; return EVALUATETOKEN; }
 {AT}            {     promptToBePrinted = 0; return ATTOKEN; }
+{NUMERATOR}     {     promptToBePrinted = 0; return NUMERATORTOKEN; }
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

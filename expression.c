@@ -166,6 +166,11 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
   double v;
   int t;
 
+  if (mpfr_get_prec(*value) < prec) {
+    printf("Warning: on printing a value, the defaultprinting precision is less than the precision of the value.\n");
+    printf("Will adapt the precision to the precision to the value.\n");
+    prec = mpfr_get_prec(*value) + 1;
+  }
   mpfr_init2(y,prec+5);
   v = mpfr_get_d(*value,GMP_RNDN);
   t = (int) v;
