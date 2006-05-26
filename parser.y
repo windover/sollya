@@ -865,7 +865,7 @@ variableWorkAround: VARIABLETOKEN
 			     strcpy(temp_string,currentVariable);
 			     $$ = temp_string;
                            }
-;;
+;
 
 
 variable: VARIABLETOKEN
