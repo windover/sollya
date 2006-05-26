@@ -252,11 +252,16 @@ evaluate:    EVALUATETOKEN function INTOKEN range SEMICOLONTOKEN
 			     mpfr_init2(*(range_temp.a),defaultprecision);
 			     mpfr_init2(*(range_temp.b),defaultprecision);
 			     evaluateRangeFunction(range_temp, ($2), ($4), defaultprecision);
-			     printf("[");
-			     printValue(range_temp.a,defaultprecision);
-			     printf(";");
-			     printValue(range_temp.b,defaultprecision);
-			     printf("]\n");
+			     if (mpfr_cmp(*(range_temp.a),*(range_temp.b)) == 0) {
+			       printValue(range_temp.a,defaultprecision);
+			       printf("\n");
+			     } else {
+			       printf("[");
+			       printValue(range_temp.a,defaultprecision);
+			       printf(";");
+			       printValue(range_temp.b,defaultprecision);
+			       printf("]\n");
+			     }
 			     mpfr_clear(*(($4).a));
 			     mpfr_clear(*(($4).b));
 			     free(($4).a);
@@ -280,11 +285,16 @@ evaluate:    EVALUATETOKEN function INTOKEN range SEMICOLONTOKEN
 			     mpfr_set(*(range_temp2.a),*($4),GMP_RNDD);
 			     mpfr_set(*(range_temp2.b),*($4),GMP_RNDU);
 			     evaluateRangeFunction(range_temp, ($2), range_temp2, defaultprecision);
-			     printf("[");
-			     printValue(range_temp.a,defaultprecision);
-			     printf(";");
-			     printValue(range_temp.b,defaultprecision);
-			     printf("]\n");
+			     if (mpfr_cmp(*(range_temp.a),*(range_temp.b)) == 0) {
+			       printValue(range_temp.a,defaultprecision);
+			       printf("\n");
+			     } else {
+			       printf("[");
+			       printValue(range_temp.a,defaultprecision);
+			       printf(";");
+			       printValue(range_temp.b,defaultprecision);
+			       printf("]\n");
+			     }
 			     mpfr_clear(*(range_temp.a));
 			     mpfr_clear(*(range_temp.b));
 			     free(range_temp.a);
