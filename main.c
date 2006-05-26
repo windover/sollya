@@ -26,6 +26,7 @@ unsigned long int points;
 mpfr_t *mpfr_temp;
 mpfr_t *mpfr_temp2;
 rangetype range_temp;
+rangetype range_temp2;
 node *temp_node; 
 node *temp_node2;
 int int_temp;
@@ -38,6 +39,7 @@ char *temp_string;
 chain *chain_temp;
 chain *chain_temp2;
 ulong ltop;
+
 
 extern jmp_buf environnement;
 

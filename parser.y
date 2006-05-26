@@ -93,6 +93,8 @@ void yyerror(char *message) {
 %token  TAYLORTOKEN
 %token  FINDZEROSTOKEN
 %token  DIRTYINFNORMTOKEN
+%token  EVALUATETOKEN
+%token  ATTOKEN
 
 %type <other> commands
 %type <other> command
@@ -106,6 +108,7 @@ void yyerror(char *message) {
 %type <constantval> constant
 %type <constantval> rangeconstant
 %type <constantval> diamconstant
+%type <constantval> constantfunction
 %type <tree> variable 
 %type <tree> term
 %type <tree> subterm
@@ -117,6 +120,7 @@ void yyerror(char *message) {
 %type <other> findzeros
 %type <constantval> dirtyinfnorm
 %type <string> variableWorkAround
+%type <other> evaluate
 
 %%
 
@@ -188,6 +192,9 @@ command:     plot
 			     free($1.b);
 	                     $$ = NULL;
 	                   }
+           | evaluate      {
+	                     $$ = NULL;
+	                   }
            | findzeros     {
 	                     $$ = NULL;
 	                   }
@@ -237,6 +244,61 @@ assignment:  lvariable EQUALTOKEN function
 			     $$ = NULL;
                            }
 ;     
+
+evaluate:    EVALUATETOKEN function INTOKEN range SEMICOLONTOKEN 
+                           {
+			     range_temp.a = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     range_temp.b = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_init2(*(range_temp.a),defaultprecision);
+			     mpfr_init2(*(range_temp.b),defaultprecision);
+			     evaluateRangeFunction(range_temp, ($2), ($4), defaultprecision);
+			     printf("[");
+			     printValue(range_temp.a,defaultprecision);
+			     printf(";");
+			     printValue(range_temp.b,defaultprecision);
+			     printf("]\n");
+			     mpfr_clear(*(($4).a));
+			     mpfr_clear(*(($4).b));
+			     free(($4).a);
+			     free(($4).b);
+			     mpfr_clear(*(range_temp.a));
+			     mpfr_clear(*(range_temp.b));
+			     free(range_temp.a);
+			     free(range_temp.b);
+			     $$ = NULL;
+			   }
+           | EVALUATETOKEN function ATTOKEN constantfunction SEMICOLONTOKEN 
+                           {
+			     range_temp.a = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     range_temp.b = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_init2(*(range_temp.a),defaultprecision);
+			     mpfr_init2(*(range_temp.b),defaultprecision);
+			     range_temp2.a = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     range_temp2.b = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_init2(*(range_temp2.a),defaultprecision);
+			     mpfr_init2(*(range_temp2.b),defaultprecision);
+			     mpfr_set(*(range_temp2.a),*($4),GMP_RNDD);
+			     mpfr_set(*(range_temp2.b),*($4),GMP_RNDU);
+			     evaluateRangeFunction(range_temp, ($2), range_temp2, defaultprecision);
+			     printf("[");
+			     printValue(range_temp.a,defaultprecision);
+			     printf(";");
+			     printValue(range_temp.b,defaultprecision);
+			     printf("]\n");
+			     mpfr_clear(*(range_temp.a));
+			     mpfr_clear(*(range_temp.b));
+			     free(range_temp.a);
+			     free(range_temp.b);
+			     mpfr_clear(*(range_temp2.a));
+			     mpfr_clear(*(range_temp2.b));
+			     free(range_temp2.a);
+			     free(range_temp2.b);
+			     mpfr_clear(*($4));
+			     free(($4));
+			     $$ = NULL;
+			   }
+
+;
 
 
 findzeros:   FINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
@@ -859,6 +921,30 @@ range:  LBRACKETTOKEN rangeconstant SEMICOLONTOKEN rangeconstant RBRACKETTOKEN
                            }
 ;
 
+constantfunction:  function
+                           {
+			     temp_node = simplifyTreeErrorfree($1);
+			     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,tools_precision);
+			     if (temp_node->nodeType != CONSTANT) {
+			       printf(
+                      "Warning: the function given is not a floating-point constant but an expression to evaluate.\n");
+			     }
+			     if (!evaluateConstantExpression(*mpfr_temp,temp_node,tools_precision)) {
+			       printf("Warning: functions in this context must be expressions that evaluate to constants.\n");
+			       printf("Setting %s = 0 when evaluating the given variable expression.\n",variablename);
+			       mpfr_temp2 = (mpfr_t*) malloc(sizeof(mpfr_t));
+			       mpfr_init2(*mpfr_temp2,tools_precision);
+			       mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
+			       evaluate(*mpfr_temp, ($1), *mpfr_temp2, tools_precision);
+			       mpfr_clear(*mpfr_temp2);
+			       free(mpfr_temp2);
+			     }
+			     free_memory(temp_node);
+			     free_memory($1);
+			     $$ = mpfr_temp;
+                           }
+;
 
 rangeconstant:     function
                            {

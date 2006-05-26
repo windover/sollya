@@ -98,6 +98,9 @@ TAYLOR          "taylor"
 FINDZEROS       "findzeros"
 DIRTYINFNORM    "dirtyinfnorm"
 
+EVALUATE        "evaluate"
+AT              "at"
+
 %%
 
 %{
@@ -165,7 +168,8 @@ DIRTYINFNORM    "dirtyinfnorm"
 {TAYLOR}        {     promptToBePrinted = 0; return TAYLORTOKEN; }
 {FINDZEROS}     {     promptToBePrinted = 0; return FINDZEROSTOKEN; }
 {DIRTYINFNORM}  {     promptToBePrinted = 0; return DIRTYINFNORMTOKEN; }
-
+{EVALUATE}      {     promptToBePrinted = 0; return EVALUATETOKEN; }
+{AT}            {     promptToBePrinted = 0; return ATTOKEN; }
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

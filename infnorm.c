@@ -1448,6 +1448,28 @@ rangetype infnorm(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
 }
 
 
+void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_prec_t prec) {
+  mpfi_t x, y;
+  node *deriv;
+  chain *tempChain;
+
+  mpfi_init2(x,prec);
+  mpfi_init2(y,prec);
+  deriv = differentiate(func);
+  mpfi_interv_fr(x,*(xrange.a),*(xrange.b));
+
+  tempChain = evaluateITaylor(y, func, deriv, x, prec);
+
+  mpfi_get_left(*(yrange.a),y);
+  mpfi_get_right(*(yrange.b),y);
+
+  freeChain(tempChain,freeMpfiPtr);
+  free_memory(deriv);
+  mpfi_clear(x);
+  mpfi_clear(y);
+}
+
+
 chain* findZerosFunction(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   mpfi_t rangeI;
   node *deriv, *numerator, *denominator;
