@@ -3,6 +3,7 @@
 #include "expression.h"
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
+#include <string.h>
 #include <errno.h>
 #include "main.h"
 #include "double.h"
@@ -161,17 +162,18 @@ int isInfix(node *tree) {
 
 void printValue(mpfr_t *value, mp_prec_t prec) {
   mpfr_t y;
-  char *str;
-  mp_exp_t e;
+  char *str, *str2;
+  mp_exp_t e, expo;
   double v;
   int t;
 
+
   if (mpfr_get_prec(*value) < prec) {
-    printf("Warning: on printing a value, the defaultprinting precision is less than the precision of the value.\n");
-    printf("Will adapt the precision to the precision to the value.\n");
+    printf("Warning: on printing a value, the default printing precision is less than the precision of the value.\n");
+    printf("Will adapt the precision to the precision of the value.\n");
     prec = mpfr_get_prec(*value) + 1;
   }
-  mpfr_init2(y,prec+5);
+  mpfr_init2(y,prec+10);
   v = mpfr_get_d(*value,GMP_RNDN);
   t = (int) v;
   v = (double) t;
@@ -183,12 +185,38 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
     if (mpfr_sgn(y) < 0) {
       printf("-"); mpfr_neg(y,y,GMP_RNDN);
     }
-    str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
-    if (mpfr_number_p(*value)) 
-      printf("0.%se%d",str,(int)e); 
-    else 
-      printf("%s",str);
-    mpfr_free_str(str);      
+    if (dyadic) {
+      if (!mpfr_number_p(*value)) {
+	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
+	printf("%s",str);
+      } else {
+	expo = mpfr_get_exp(y);
+	if (mpfr_set_exp(y,prec+10)) {
+	  printf("\nWarning: %d is not in the current exponent range of a variable. Values displayed may be wrong.\n",(int)(prec+10));
+	}
+	expo -= prec+10;
+	while (mpfr_integer_p(y)) {
+	  mpfr_div_2ui(y,y,1,GMP_RNDN);
+	  expo += 1;
+	}
+	expo--;
+	if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
+	  printf("\nWarning: rounding occured during displaying a value. Values displayed may be wrong.\n");
+	}
+	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
+	str2 = (char *) calloc(strlen(str)+1,sizeof(char));
+	strncpy(str2,str,e);
+	printf("%sb%d",str2,(int)expo);
+	free(str2);
+      }
+    } else {
+      str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
+      if (mpfr_number_p(*value)) 
+	printf("0.%se%d",str,(int)e); 
+      else 
+	printf("%s",str);
+      mpfr_free_str(str);      
+    }
   }
   mpfr_clear(y);
 }
@@ -4706,4 +4734,68 @@ node *substitute(node* tree, node *t) {
    exit(1);
   }
   return copy;
+}
+
+
+int readDyadic(mpfr_t res, char *c) {
+  char *mantissa, *exponent, *curr, *curr2;  
+  mpfr_t mant, expo, temp1, temp2;
+  mp_prec_t prec;
+  int rounding;
+
+  mantissa = (char *) calloc(strlen(c)+1,sizeof(char));
+  exponent = (char *) calloc(strlen(c)+1,sizeof(char));
+  curr = c; curr2 = mantissa;
+  while ((*curr != '\0') && (*curr != 'b') && (*curr != 'B')) {
+    *curr2 = *curr;
+    curr2++;
+    curr++;
+  }
+  if (*curr != '\0') curr++;
+  curr2 = exponent;
+  while (*curr != '\0') {
+    *curr2 = *curr;
+    curr2++;
+    curr++;
+  }
+
+  rounding = 1;
+
+  prec = mpfr_get_prec(res);
+  mpfr_init2(mant,prec);
+  mpfr_init2(expo,prec);
+  mpfr_init2(temp1,prec);
+  mpfr_init2(temp2,prec); 
+
+  mpfr_set_str(temp1,mantissa,10,GMP_RNDU);
+  mpfr_set_str(temp2,mantissa,10,GMP_RNDD);
+  if (mpfr_cmp(temp1,temp2) != 0) {
+    rounding = 0;
+    mpfr_set_str(temp1,mantissa,10,GMP_RNDN);
+  }
+  if (mpfr_set(mant,temp1,GMP_RNDN) != 0) {
+    rounding = 0;
+  }
+  mpfr_set_str(temp1,exponent,10,GMP_RNDU);
+  mpfr_set_str(temp2,exponent,10,GMP_RNDD);
+  if (mpfr_cmp(temp1,temp2) != 0) {
+    rounding = 0;
+    mpfr_set_str(temp1,exponent,10,GMP_RNDN);
+  }
+  if (mpfr_exp2(expo,temp1,GMP_RNDN) != 0) {
+    rounding = 0;
+  }
+  if (mpfr_mul(res,mant,expo,GMP_RNDN) != 0) {
+    rounding = 0;
+  }
+ 
+  if (!mpfr_number_p(res)) rounding = 1;
+
+  mpfr_clear(mant);
+  mpfr_clear(expo);
+  mpfr_clear(temp1);
+  mpfr_clear(temp2);
+  free(mantissa);
+  free(exponent);
+  return rounding;
 }

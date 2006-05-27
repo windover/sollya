@@ -3,11 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include "expression.h"
+#include "chain.h"
 #include "main.h"
 #include "remez.h"
 #include "infnorm.h"
 #include "assignment.h"
 #include "taylor.h"
+
 
 int yylex();
 
@@ -27,17 +29,18 @@ void yyerror(char *message) {
 %union {
 	char *value;
         node *tree;
+        struct chainStruct *aChain;
         mp_prec_t  precisionval;
         int  pointsnum;
         rangetype rangeval;
         mpfr_t *constantval;
         int degreeval;
-        char *string;
+        char *aString;
 	void *other;
-}
-
+};
 
 %token  <value> CONSTTOKEN
+%token  <value> DYADICCONSTTOKEN
 %token  INTOKEN
 %token  LBRACKETTOKEN
 %token  RBRACKETTOKEN
@@ -96,6 +99,11 @@ void yyerror(char *message) {
 %token  EVALUATETOKEN
 %token  ATTOKEN
 %token  NUMERATORTOKEN
+%token  DENOMINATORTOKEN
+%token  WITHOUTTOKEN
+%token  DYADICTOKEN
+%token  ONTOKEN
+%token  OFFTOKEN
 
 %type <other> commands
 %type <other> command
@@ -116,12 +124,14 @@ void yyerror(char *message) {
 %type <tree> primary
 %type <degreeval> degree
 %type <rangeval> infnorm
-%type <string> lvariable
+%type <aString> lvariable
 %type <other> assignment
 %type <other> findzeros
 %type <constantval> dirtyinfnorm
-%type <string> variableWorkAround
+%type <aString> variableWorkAround
 %type <other> evaluate
+%type <aChain> rangelist
+%type <other> dyadic
 
 %%
 
@@ -153,9 +163,6 @@ command:     plot
 			     free(($1));
 			     $$ = NULL;
 	                   }
-;
-
-
            | infnorm       {
 	                     printf("infnorm result: ");
 			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
@@ -196,6 +203,9 @@ command:     plot
            | evaluate      {
 	                     $$ = NULL;
 	                   }
+           | dyadic SEMICOLONTOKEN  {
+	                     $$ = NULL;
+	                   }
            | findzeros     {
 	                     $$ = NULL;
 	                   }
@@ -223,8 +233,19 @@ command:     plot
                            }
 ;
 
-
-
+dyadic:      DYADICTOKEN EQUALTOKEN ONTOKEN 
+                           {
+			     printf("Dyadic number output activated.\n");
+			     dyadic = 1;
+			     $$ = NULL;
+                           }
+           | DYADICTOKEN EQUALTOKEN OFFTOKEN
+                           {
+			     printf("Dyadic number output deactivated.\n");
+			     dyadic = 0;
+			     $$ = NULL;
+                           }
+;
 
 
 assignment:  lvariable EQUALTOKEN function 
@@ -389,7 +410,7 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
-			     range_temp = infnorm($2,$4,defaultprecision,*mpfr_temp);
+			     range_temp = infnorm($2,$4,NULL,defaultprecision,*mpfr_temp);
 			     mpfr_clear(*mpfr_temp);
 			     free(mpfr_temp);
 			     free_memory($2);
@@ -401,7 +422,7 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
                            }
            | INFNORMTOKEN function INTOKEN range COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant SEMICOLONTOKEN
 	                   {
-			     range_temp = infnorm($2,$4,defaultprecision,*($8));
+			     range_temp = infnorm($2,$4,NULL,defaultprecision,*($8));
 			     mpfr_clear(*($8));
 			     free($8);
 			     free_memory($2);
@@ -409,6 +430,55 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 			     mpfr_clear(*($4.b));
 			     free($4.a);
 			     free($4.b);
+			     $$ = range_temp;
+                           }
+           | INFNORMTOKEN function INTOKEN range WITHOUTTOKEN rangelist SEMICOLONTOKEN
+                           {
+			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
+			     range_temp = infnorm($2,$4,$6,defaultprecision,*mpfr_temp);
+			     mpfr_clear(*mpfr_temp);
+			     free(mpfr_temp);
+			     free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     chain_temp = $6;
+			     while (chain_temp != NULL) {
+			       mpfr_clear(*(((rangetype *) chain_temp->value)->a));
+			       mpfr_clear(*(((rangetype *) chain_temp->value)->b));
+			       free(((rangetype *) chain_temp->value)->a);
+			       free(((rangetype *) chain_temp->value)->b);
+			       free(chain_temp->value);
+			       chain_temp2 = chain_temp->next; 
+			       free(chain_temp);
+			       chain_temp = chain_temp2;
+			     }
+			     $$ = range_temp;
+                           }
+           | INFNORMTOKEN function INTOKEN range WITHOUTTOKEN rangelist COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant SEMICOLONTOKEN
+	                   {
+			     range_temp = infnorm($2,$4,$6,defaultprecision,*($10));
+			     mpfr_clear(*($10));
+			     free($10);
+			     free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     chain_temp = $6;
+			     while (chain_temp != NULL) {
+			       mpfr_clear(*(((rangetype *) chain_temp->value)->a));
+			       mpfr_clear(*(((rangetype *) chain_temp->value)->b));
+			       free(((rangetype *) chain_temp->value)->a);
+			       free(((rangetype *) chain_temp->value)->b);
+			       free(chain_temp->value);
+			       chain_temp2 = chain_temp->next; 
+			       free(chain_temp);
+			       chain_temp = chain_temp2;
+			     }
 			     $$ = range_temp;
                            }
 ;
@@ -644,6 +714,21 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			     } else {
 			       free_memory(temp_node2);
 			     }
+			     $$ = temp_node;
+			   }
+                        |       DENOMINATORTOKEN LPARTOKEN function RPARTOKEN 
+                           {
+			     if (!getNumeratorDenominator(&temp_node2,&temp_node,($3))) {
+			       printf("Warning: the expression given is not a fraction. ");
+			       printf("Will consider it as a fraction with denominator 1.\n");
+			       mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			       mpfr_init2(*mpfr_temp,defaultprecision);
+			       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
+			       temp_node = (node *) malloc(sizeof(node));
+			       temp_node->nodeType = CONSTANT;
+			       temp_node->value = mpfr_temp;
+			     } 
+			     free_memory(temp_node2);
 			     $$ = temp_node;
 			   }
 			|       DIFFTOKEN LPARTOKEN function RPARTOKEN
@@ -919,6 +1004,19 @@ lvariable: VARIABLETOKEN
 ;
 
 
+rangelist:         range                      {
+                                                rangeTempPtr = (rangetype *) malloc(sizeof(rangetype));
+						rangeTempPtr->a = ($1).a;
+						rangeTempPtr->b = ($1).b;
+						$$ = addElement(NULL,(void *) rangeTempPtr);
+                                              }
+                 | rangelist COMMATOKEN range {
+		                                rangeTempPtr = (rangetype *) malloc(sizeof(rangetype));
+						rangeTempPtr->a = ($3).a;
+						rangeTempPtr->b = ($3).b;
+						$$ = addElement(($1),(void *) rangeTempPtr);
+		                              }
+;
 
 range:  LBRACKETTOKEN rangeconstant SEMICOLONTOKEN rangeconstant RBRACKETTOKEN
                            {
@@ -1040,6 +1138,22 @@ constant: CONSTTOKEN
 			     free(mpfr_temp2);
 			     $$ = mpfr_temp;
 			   }
+        | DYADICCONSTTOKEN {
+                             mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,tools_precision);
+			     if (!readDyadic(*mpfr_temp,$1)) {
+			       printf(
+                            "Warning: Rounding occured when converting the dyadic constant \"%s\" to floating-point with %d bits.\n",
+				      $1,(int) tools_precision);
+			       printf("If safe computation is needed, try to increase the precision.\n");
+			     }
+			     if (!mpfr_number_p(*mpfr_temp)) {
+			       printf(
+			  "Error: overflow occured during the conversion of the dyadic constant \"%s\". Will abort the computation.\n",$1);
+			       recoverFromError();
+			     }
+			     $$ = mpfr_temp;
+	                   }
         | PITOKEN 
                            {
 			     printf("Warning: The pi constant in the expression will be represented on %d bits\n",

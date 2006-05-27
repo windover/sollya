@@ -19,6 +19,7 @@ CHAR		[a-zA-Z]
 NUMBER		[0-9]
 
 CONSTANT        ({NUMBER}+|({NUMBER}+"."{NUMBER}*)|({NUMBER}*"."{NUMBER}+))((([eE]([+-])?{NUMBER}+)?))
+DYADICCONSTANT  ({NUMBER}+)([bB])([+-]?)({NUMBER}+)
 VARIABLE        {CHAR}({CHAR}|{NUMBER})*
 
 LPAR            "("
@@ -102,6 +103,13 @@ EVALUATE        "evaluate"
 AT              "at"
 
 NUMERATOR       "numerator"
+DENOMINATOR     "denominator"
+
+WITHOUT         "without"
+
+DYADIC          "dyadic"
+ON              "on"
+OFF             "off"
 
 %%
 
@@ -114,6 +122,10 @@ NUMERATOR       "numerator"
 {CONSTANT}      {     
                       yylval.value = yytext;
                       promptToBePrinted = 0; return CONSTTOKEN;
+                }
+{DYADICCONSTANT} {     
+                      yylval.value = yytext;
+                      promptToBePrinted = 0; return DYADICCONSTTOKEN;
                 }
 {IN}            {     promptToBePrinted = 0; return INTOKEN; }
 {LBRACKET}      {     promptToBePrinted = 0; return LBRACKETTOKEN; }
@@ -173,6 +185,12 @@ NUMERATOR       "numerator"
 {EVALUATE}      {     promptToBePrinted = 0; return EVALUATETOKEN; }
 {AT}            {     promptToBePrinted = 0; return ATTOKEN; }
 {NUMERATOR}     {     promptToBePrinted = 0; return NUMERATORTOKEN; }
+{DENOMINATOR}   {     promptToBePrinted = 0; return DENOMINATORTOKEN; }
+{WITHOUT}       {     promptToBePrinted = 0; return WITHOUTTOKEN; }
+{DYADIC}        {     promptToBePrinted = 0; return DYADICTOKEN; }
+{ON}            {     promptToBePrinted = 0; return ONTOKEN; }
+{OFF}           {     promptToBePrinted = 0; return OFFTOKEN; }
+
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

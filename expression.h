@@ -54,8 +54,7 @@ struct rangetypeStruct
 {
   mpfr_t *a;
   mpfr_t *b;
-}
-;
+};
 
 
 void plotTree(node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec);
@@ -73,5 +72,7 @@ node* expand(node *tree);
 node* simplifyTreeErrorfree(node *tree);
 int getNumeratorDenominator(node **numerator, node **denominator, node *tree);
 node *substitute(node* tree, node *t);
+int readDyadic(mpfr_t res, char *c);
+
 
 #endif /* ifdef EXPRESSION_H*/

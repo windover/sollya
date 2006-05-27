@@ -39,7 +39,8 @@ char *temp_string;
 chain *chain_temp;
 chain *chain_temp2;
 ulong ltop;
-
+rangetype *rangeTempPtr;
+int dyadic = 0;
 
 extern jmp_buf environnement;
 
@@ -50,7 +51,7 @@ extern FILE *yyin;
 void signalHandler(int i) {
   printf("\n\n");
   fflush(stdout);
-
+  promptToBePrinted = 1;
   switch (i) {
   case SIGINT:   
     exit(0);

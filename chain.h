@@ -17,9 +17,4 @@ chain *tail(chain *c);
 chain *copyChain(chain *c, void * (*f) (void *));
 chain *concatChains(chain *c1, chain *c2);
 
-
-
-
-
-
 #endif /* ifdef CHAIN_H*/
