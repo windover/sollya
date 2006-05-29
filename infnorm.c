@@ -1464,14 +1464,12 @@ rangetype infnorm(node *func, rangetype range, chain *excludes, mp_prec_t prec, 
 }
 
 
-void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_prec_t prec) {
+void evaluateRangeFunctionFast(rangetype yrange, node *func, node *deriv, rangetype xrange, mp_prec_t prec) {
   mpfi_t x, y;
-  node *deriv;
   chain *tempChain;
 
   mpfi_init2(x,prec);
   mpfi_init2(y,prec);
-  deriv = differentiate(func);
   mpfi_interv_fr(x,*(xrange.a),*(xrange.b));
 
   tempChain = evaluateITaylor(y, func, deriv, x, prec);
@@ -1480,9 +1478,16 @@ void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_pr
   mpfi_get_right(*(yrange.b),y);
 
   freeChain(tempChain,freeMpfiPtr);
-  free_memory(deriv);
   mpfi_clear(x);
   mpfi_clear(y);
+}
+
+void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_prec_t prec) {
+  node *deriv;
+
+  deriv = differentiate(func);
+  evaluateRangeFunctionFast(yrange,func,deriv,xrange,prec);
+  free_memory(deriv);
 }
 
 
