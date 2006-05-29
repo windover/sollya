@@ -112,6 +112,7 @@ ON              "on"
 OFF             "off"
 
 INTEGRAL        "integral"
+DIRTYINTEGRAL   "dirtyintegral"
 
 %%
 
@@ -193,6 +194,7 @@ INTEGRAL        "integral"
 {ON}            {     promptToBePrinted = 0; return ONTOKEN; }
 {OFF}           {     promptToBePrinted = 0; return OFFTOKEN; }
 {INTEGRAL}      {     promptToBePrinted = 0; return INTEGRALTOKEN; }
+{DIRTYINTEGRAL} {     promptToBePrinted = 0; return DIRTYINTEGRALTOKEN; }
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

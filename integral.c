@@ -148,6 +148,9 @@ void uncertifiedIntegral(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned
     mpfr_add(sum,sum,temp, GMP_RNDN);
 
     mpfr_set(y1, y2, GMP_RNDN);
+
+    if (mpfr_equal_p(x,b)) break;
+
     mpfr_add(x,x,step,GMP_RNDU);
     if (mpfr_greater_p(x,b)) {
       mpfr_sub(x, x, step, GMP_RNDN);

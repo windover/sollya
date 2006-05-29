@@ -105,6 +105,8 @@ void yyerror(char *message) {
 %token  ONTOKEN
 %token  OFFTOKEN
 %token  INTEGRALTOKEN
+%token  DIRTYINTEGRALTOKEN
+
 
 %type <other> commands
 %type <other> command
@@ -129,6 +131,7 @@ void yyerror(char *message) {
 %type <other> assignment
 %type <other> findzeros
 %type <constantval> dirtyinfnorm
+%type <constantval> dirtyintegral
 %type <aString> variableWorkAround
 %type <other> evaluate
 %type <aChain> rangelist
@@ -159,6 +162,14 @@ command:     plot
                            }  
            | dirtyinfnorm  {
 	                     printf("uncertified infnorm result: ");
+			     printValue(($1),defaultprecision);
+			     printf("\n");
+			     mpfr_clear(*($1));
+			     free(($1));
+			     $$ = NULL;
+	                   }
+           | dirtyintegral {
+	                     printf("uncertified integral result: ");
 			     printValue(($1),defaultprecision);
 			     printf("\n");
 			     mpfr_clear(*($1));
@@ -206,15 +217,15 @@ command:     plot
 	                     printf("integral result: ");
 			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
-			     mpfr_abs(*($1.a),*($1.a),GMP_RNDN);
-			     mpfr_abs(*($1.b),*($1.b),GMP_RNDN);
-			     mpfr_max(*mpfr_temp,*($1.a),*($1.b),GMP_RNDU);
+			     mpfr_add(*mpfr_temp,*($1.a),*($1.b),GMP_RNDU);
+			     mpfr_div_2ui(*mpfr_temp,*mpfr_temp,1,GMP_RNDU);
 			     printValue(mpfr_temp,defaultprecision);
 			     printf("\n");
 			     mpfr_temp2 = (mpfr_t *) malloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp2,defaultprecision);
 			     mpfr_sub(*mpfr_temp2,*($1.a),*($1.b),GMP_RNDU);
 			     mpfr_abs(*mpfr_temp2,*mpfr_temp2,GMP_RNDN);
+			     mpfr_div_2ui(*mpfr_temp2,*mpfr_temp2,1,GMP_RNDN);
 			     if (mpfr_zero_p(*mpfr_temp)) {
 			       printf("Absolute diameter of confidence interval: ");
 			       printValue(mpfr_temp2,defaultprecision);
@@ -224,9 +235,10 @@ command:     plot
 			       if (mpfr_number_p(*mpfr_temp2)) {
 				 printf("Relative diameter of confidence interval: ");
 				 printValue(mpfr_temp2,defaultprecision);
+				 mpfr_abs(*mpfr_temp2,*mpfr_temp,GMP_RNDN);
 				 mpfr_log2(*mpfr_temp2,*mpfr_temp2,GMP_RNDU);
 				 double_temp = mpfr_get_d(*mpfr_temp2,GMP_RNDU);
-				 printf(" (= 2^(%f))\n",double_temp);
+				 printf(" (= +/- 2^(%f))\n",double_temp);
 			       }
 			     }
 			     mpfr_clear(*mpfr_temp);
@@ -568,6 +580,30 @@ dirtyinfnorm: DIRTYINFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     uncertifiedInfnorm(*mpfr_temp,($2),*(($4).a),*(($4).b),($6),defaultprecision);
+			     mpfr_clear(*(($4).a));
+			     mpfr_clear(*(($4).b));
+			     free(($4).a);
+			     free(($4).b);
+			     $$ = mpfr_temp;
+			   }
+;
+
+dirtyintegral: DIRTYINTEGRALTOKEN function INTOKEN range SEMICOLONTOKEN
+                           {
+			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     uncertifiedIntegral(*mpfr_temp,($2),*(($4).a),*(($4).b),defaultpoints,defaultprecision);
+			     mpfr_clear(*(($4).a));
+			     mpfr_clear(*(($4).b));
+			     free(($4).a);
+			     free(($4).b);
+			     $$ = mpfr_temp;
+			   }
+             | DIRTYINTEGRALTOKEN function INTOKEN range COMMATOKEN points SEMICOLONTOKEN
+                           {
+			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     uncertifiedIntegral(*mpfr_temp,($2),*(($4).a),*(($4).b),($6),defaultprecision);
 			     mpfr_clear(*(($4).a));
 			     mpfr_clear(*(($4).b));
 			     free(($4).a);
