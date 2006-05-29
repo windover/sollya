@@ -291,6 +291,12 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   chain *leftExcludesConstant, *rightExcludesConstant;
   chain *leftExcludesLinear, *rightExcludesLinear;
   
+  /*
+  printf("evaluateI: ");
+  printTree(tree);
+  printf("\n");
+  */
+
   mpfi_init2(stack1, prec);
   mpfi_init2(stack2, prec);
   mpfi_init2(stack3, prec);

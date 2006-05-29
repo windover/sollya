@@ -234,11 +234,11 @@ command:     plot
 			       mpfr_div(*mpfr_temp2,*mpfr_temp2,*mpfr_temp,GMP_RNDU);
 			       if (mpfr_number_p(*mpfr_temp2)) {
 				 printf("Relative diameter of confidence interval: ");
+				 mpfr_abs(*mpfr_temp2,*mpfr_temp2,GMP_RNDN);
 				 printValue(mpfr_temp2,defaultprecision);
-				 mpfr_abs(*mpfr_temp2,*mpfr_temp,GMP_RNDN);
 				 mpfr_log2(*mpfr_temp2,*mpfr_temp2,GMP_RNDU);
 				 double_temp = mpfr_get_d(*mpfr_temp2,GMP_RNDU);
-				 printf(" (= +/- 2^(%f))\n",double_temp);
+				 printf(" (= 2^(%f))\n",double_temp);
 			       }
 			     }
 			     mpfr_clear(*mpfr_temp);
