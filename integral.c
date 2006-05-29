@@ -14,6 +14,10 @@
 
 
 rangetype integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) {
+  node *deriv;
+
+  deriv = differentiate(func);
+  
   rangetype x,y;
   mpfr_t x1,x2,y1,y2;
   mpfi_t temp, val;
@@ -54,7 +58,7 @@ rangetype integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) 
 
 
   while(mpfr_less_p(x2,*(interval.b))) {
-    evaluateRangeFunction(y, func, x, prec);
+    evaluateRangeFunctionFast(y, func, deriv, x, prec);
 
     mpfi_set_fr(temp, x1);
     mpfi_set_fr(val, x2);
@@ -88,9 +92,74 @@ rangetype integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) 
   mpfr_add(*(sum.b), *(sum.b), y2, GMP_RNDU);
   
  
+  free_memory(deriv);
   mpfi_clear(val); mpfi_clear(temp);
   mpfr_clear(x1); mpfr_clear(x2);  
   mpfr_clear(y1); mpfr_clear(y2);
   
   return sum;
+}
+
+void uncertifiedIntegral(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec) {
+  mpfr_t sum, temp, x, y1, y2, step;
+
+  mpfr_init2(step, prec);
+
+  mpfr_sub(step, b, a, GMP_RNDN);
+  mpfr_div_ui(step, step, points, GMP_RNDN);
+ 
+  if (mpfr_sgn(step) == 0) {
+    printf("Warning: the given interval is reduced to one point.\n");
+    mpfr_set_d(result,0.,GMP_RNDN);
+    mpfr_clear(step);
+    return;
+  }
+
+  if (mpfr_sgn(step) < 0) {
+    printf("Error: the interval is empty.\n");
+    mpfr_set_d(result,0.,GMP_RNDN);
+    mpfr_clear(step);
+    return;
+  }
+
+  mpfr_init2(x, prec);
+  mpfr_init2(y1, prec);
+  mpfr_init2(y2, prec);
+  mpfr_init2(temp, prec);
+  mpfr_init2(sum, prec);
+
+  mpfr_set_d(sum,0.,GMP_RNDN);
+
+  mpfr_set(x,a,GMP_RNDN);
+  evaluate(y1,tree,x,prec);
+
+  mpfr_add(x,x,step,GMP_RNDU);
+  if (mpfr_greater_p(x,b)) {
+    mpfr_sub(x, x, step, GMP_RNDN);
+    mpfr_sub(step, b, x, GMP_RNDN);
+    mpfr_set(x,b,GMP_RNDN);
+  }
+  evaluate(y2,tree,x,prec);
+
+  while(mpfr_lessequal_p(x,b)) {
+    mpfr_add(temp, y1, y2, GMP_RNDN);
+    mpfr_div_2ui(temp, temp, 1, GMP_RNDN);
+    mpfr_mul(temp, temp, step, GMP_RNDN);
+    mpfr_add(sum,sum,temp, GMP_RNDN);
+
+    mpfr_set(y1, y2, GMP_RNDN);
+    mpfr_add(x,x,step,GMP_RNDU);
+    if (mpfr_greater_p(x,b)) {
+      mpfr_sub(x, x, step, GMP_RNDN);
+      mpfr_sub(step, b, x, GMP_RNDN);
+      mpfr_set(x,b,GMP_RNDN);
+    }
+    evaluate(y2,tree,x,prec);
+  }
+
+  mpfr_set(result,sum,GMP_RNDU);
+
+  mpfr_clear(x); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(step);
+  mpfr_clear(sum); mpfr_clear(temp); 
+  return;
 }
