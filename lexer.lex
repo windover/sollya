@@ -111,6 +111,8 @@ DYADIC          "dyadic"
 ON              "on"
 OFF             "off"
 
+INTEGRAL        "integral"
+
 %%
 
 %{
@@ -190,7 +192,7 @@ OFF             "off"
 {DYADIC}        {     promptToBePrinted = 0; return DYADICTOKEN; }
 {ON}            {     promptToBePrinted = 0; return ONTOKEN; }
 {OFF}           {     promptToBePrinted = 0; return OFFTOKEN; }
-
+{INTEGRAL}      {     promptToBePrinted = 0; return INTEGRALTOKEN; }
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

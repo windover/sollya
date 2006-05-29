@@ -13,7 +13,7 @@
 
 
 
-mpfi_t integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) {
+rangetype integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) {
   rangetype x,y;
   mpfr_t x1,x2,y1,y2;
   mpfi_t temp, val;
@@ -58,13 +58,13 @@ mpfi_t integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) {
 
     mpfi_set_fr(temp, x1);
     mpfi_set_fr(val, x2);
-    mpfi_sub(temp, x2, x1);
+    mpfi_sub(temp, val, temp);
     
     mpfi_interv_fr(val, *(y.a), *(y.b));
     mpfi_mul(temp, temp, val);
     
-    mpfr_get_left(y1, temp);
-    mpfr_get_right(y2, temp);
+    mpfi_get_left(y1, temp);
+    mpfi_get_right(y2, temp);
     mpfr_add(*(sum.a), *(sum.a), y1, GMP_RNDD);
     mpfr_add(*(sum.b), *(sum.b), y2, GMP_RNDU);
     
@@ -72,25 +72,25 @@ mpfi_t integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) {
     mpfr_add(x2, x1, diam, GMP_RNDN);
   }
 
-  mpfr_set(x2,b,GMP_RNDU);
+  mpfr_set(x2,*(interval.b),GMP_RNDU);
   evaluateRangeFunction(y, func, x, prec);
 
   mpfi_set_fr(temp, x1);
   mpfi_set_fr(val, x2);
-  mpfi_sub(temp, x2, x1);
+  mpfi_sub(temp, val, temp);
     
   mpfi_interv_fr(val, *(y.a), *(y.b));
   mpfi_mul(temp, temp, val);
     
-  mpfr_get_left(y1, temp);
-  mpfr_get_right(y2, temp);
+  mpfi_get_left(y1, temp);
+  mpfi_get_right(y2, temp);
   mpfr_add(*(sum.a), *(sum.a), y1, GMP_RNDD);
   mpfr_add(*(sum.b), *(sum.b), y2, GMP_RNDU);
   
  
   mpfi_clear(val); mpfi_clear(temp);
-  mpfr_clear(x1); mpfi_clear(x2);  
-  mpfr_clear(y1); mpfi_clear(y2);
+  mpfr_clear(x1); mpfr_clear(x2);  
+  mpfr_clear(y1); mpfr_clear(y2);
   
   return sum;
 }
