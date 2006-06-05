@@ -3,6 +3,7 @@
 
 
 #include <mpfr.h>
+#include <stdio.h>
 
 
 
@@ -35,7 +36,7 @@
 #define DOUBLE 26
 #define DOUBLEDOUBLE 27
 #define TRIPLEDOUBLE 28
-
+#define POLYNOMIAL 29
 
 
 typedef struct nodeStruct node;
@@ -73,6 +74,9 @@ node* simplifyTreeErrorfree(node *tree);
 int getNumeratorDenominator(node **numerator, node **denominator, node *tree);
 node *substitute(node* tree, node *t);
 int readDyadic(mpfr_t res, char *c);
-
+int isPolynomial(node *tree);
+int arity(node *tree);
+void fprintValue(FILE *fd, mpfr_t value);
+void fprintTree(FILE *fd, node *tree);
 
 #endif /* ifdef EXPRESSION_H*/

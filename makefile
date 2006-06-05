@@ -1,5 +1,5 @@
-tools: parser.tab.o lex.yy.o plot.o expression.o infnorm.o remez.o main.o chain.o double.o assignment.o taylor.o integral.o
-	gcc -Wall -g -o tools lex.yy.o plot.o parser.tab.o expression.o infnorm.o remez.o chain.o double.o assignment.o taylor.o integral.o main.o -lfl -lmpfi -lpari -lmpfr -lgmp
+tools: parser.tab.o lex.yy.o plot.o expression.o infnorm.o remez.o main.o chain.o double.o assignment.o taylor.o integral.o proof.o
+	gcc -Wall -g -o tools lex.yy.o plot.o parser.tab.o expression.o infnorm.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o main.o -lfl -lmpfi -lpari -lmpfr -lgmp
 
 parser.tab.o: parser.tab.h parser.tab.c expression.h main.h infnorm.h remez.h chain.h assignment.h taylor.h
 	gcc -Wall -g -c parser.tab.c
@@ -28,7 +28,7 @@ main.o: plot.h expression.h infnorm.h remez.h main.h main.c assignment.h chain.h
 remez.o: remez.h remez.c expression.h main.h
 	gcc -g -Wall -c remez.c
 
-infnorm.o: infnorm.h infnorm.c expression.h main.h chain.h
+infnorm.o: infnorm.h infnorm.c expression.h main.h chain.h proof.h
 	gcc -g -Wall -c infnorm.c
 
 chain.o: chain.h chain.c
@@ -47,6 +47,8 @@ double.o: double.h double.c
 integral.o: integral.h integral.c expression.h
 	gcc -g -Wall -c integral.c
 
+proof.o: proof.h proof.c expression.h infnorm.h 
+	gcc -g -Wall -c proof.c
 
 clean:
 	rm -rf *~

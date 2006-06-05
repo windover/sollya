@@ -5,6 +5,7 @@
 #include "chain.h"
 #include "double.h"
 #include "main.h"
+#include "proof.h"
 
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
@@ -278,7 +279,7 @@ void makeMpfiAroundMpfr(mpfi_t res, mpfr_t x, unsigned int thousandUlps) {
 
 
 
-chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simplifies) {
+chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simplifies, exprBoundTheo *theo) {
   mpfi_t stack1, stack2;
   mpfi_t stack3, zI, numeratorInZI, denominatorInZI, newExcludeTemp;
   mpfi_t *newExclude;
@@ -290,12 +291,53 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   chain *leftExcludes, *rightExcludes, *excludes, *t1, *t2;
   chain *leftExcludesConstant, *rightExcludesConstant;
   chain *leftExcludesLinear, *rightExcludesLinear;
-  
-  /*
-  printf("evaluateI: ");
-  printTree(tree);
-  printf("\n");
-  */
+  exprBoundTheo *leftTheo, *rightTheo, *internalTheo; 
+  exprBoundTheo *leftTheoConstant, *rightTheoConstant, *leftTheoLinear, *rightTheoLinear;
+  int isPolynom;
+
+  isPolynom = 0;
+  internalTheo = NULL;
+  if (theo != NULL) {
+    isPolynom = isPolynomial(tree);
+    
+    if (isPolynom) {
+      theo->functionType = POLYNOMIAL;
+      leftTheo = NULL;
+      rightTheo = NULL;
+    } else {
+      internalTheo = theo;
+      internalTheo->functionType = tree->nodeType;
+      switch (arity(tree)) {
+      case 1:
+	leftTheo = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+	rightTheo = NULL;
+	internalTheo->boundLeft = (mpfi_t *) malloc(sizeof(mpfi_t));
+	mpfi_init2(*(internalTheo->boundLeft),prec);
+	break;
+      case 2:
+	leftTheo = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+	rightTheo = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+	internalTheo->boundLeft = (mpfi_t *) malloc(sizeof(mpfi_t));
+	mpfi_init2(*(internalTheo->boundLeft),prec);
+	internalTheo->boundRight = (mpfi_t *) malloc(sizeof(mpfi_t));
+	mpfi_init2(*(internalTheo->boundRight),prec);
+	break;
+      default:
+	leftTheo = NULL;
+	rightTheo = NULL;
+	break;
+      }
+      internalTheo->theoLeft = leftTheo;
+      internalTheo->theoRight = rightTheo;
+    }
+    theo->x = (mpfi_t *) malloc(sizeof(mpfi_t));
+    mpfi_init2(*(theo->x),mpfi_get_prec(x));
+    mpfi_set(*(theo->x),x);
+    theo->function = copyTree(tree);
+  } else {
+    leftTheo = NULL;
+    rightTheo = NULL;
+  }
 
   mpfi_init2(stack1, prec);
   mpfi_init2(stack2, prec);
@@ -315,10 +357,44 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     excludes = NULL;
     break;
   case ADD:
-    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
-    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifies);
+    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
+    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifies, rightTheo);
     mpfi_add(stack3, stack1, stack2);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+      mpfi_set(*(internalTheo->boundRight),stack2);
+    }
     if ((mpfi_has_zero(stack3)) && (simplifies >= 0)) {
+
+      if (internalTheo != NULL) {
+	internalTheo->simplificationUsed = TAYLOR;
+	leftTheoConstant = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+	rightTheoConstant = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+	leftTheoLinear = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+	rightTheoLinear = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+	internalTheo->theoLeftConstant = leftTheoConstant;
+	internalTheo->theoRightConstant = rightTheoConstant;
+	internalTheo->theoLeftLinear = leftTheoLinear;
+	internalTheo->theoRightLinear = rightTheoLinear;
+	internalTheo->boundLeftConstant = (mpfi_t *) malloc(sizeof(mpfi_t));
+	mpfi_init2(*(internalTheo->boundLeftConstant),prec);
+	internalTheo->boundRightConstant = (mpfi_t *) malloc(sizeof(mpfi_t));
+	mpfi_init2(*(internalTheo->boundRightConstant),prec);
+	internalTheo->boundLeftLinear = (mpfi_t *) malloc(sizeof(mpfi_t));
+	mpfi_init2(*(internalTheo->boundLeftLinear),prec);
+	internalTheo->boundRightLinear = (mpfi_t *) malloc(sizeof(mpfi_t));
+	mpfi_init2(*(internalTheo->boundRightLinear),prec);
+	internalTheo->xZ = (mpfi_t *) malloc(sizeof(mpfi_t));
+	mpfi_init2(*(internalTheo->xZ),prec);
+	internalTheo->xMXZ = (mpfi_t *) malloc(sizeof(mpfi_t));
+	mpfi_init2(*(internalTheo->xMXZ),prec);
+      } else {
+	leftTheoConstant = NULL;
+	rightTheoConstant = NULL;
+	leftTheoLinear = NULL;
+	rightTheoLinear = NULL;
+      }
+
 
       mpfr_init2(z,prec);
       mpfi_init2(zI,prec);
@@ -330,19 +406,32 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       mpfi_mid(z,x);
       mpfi_set_fr(zI,z);
 
-      leftExcludesConstant = evaluateI(leftConstantTerm, tree->child1, zI, prec, simplifies-1);
-      rightExcludesConstant = evaluateI(rightConstantTerm, tree->child2, zI, prec, simplifies-1);
+      if (internalTheo != NULL) mpfi_set(*(internalTheo->xZ),zI);
+
+      leftExcludesConstant = evaluateI(leftConstantTerm, tree->child1, zI, prec, simplifies-1, leftTheoConstant);
+      rightExcludesConstant = evaluateI(rightConstantTerm, tree->child2, zI, prec, simplifies-1, rightTheoConstant);
 
       derivLeft = differentiate(tree->child1);
       derivRight = differentiate(tree->child2);
 
-      leftExcludesLinear = evaluateI(leftLinearTerm, derivLeft, x, prec, simplifies-1);
-      rightExcludesLinear = evaluateI(rightLinearTerm, derivRight, x, prec, simplifies-1);
+      leftExcludesLinear = evaluateI(leftLinearTerm, derivLeft, x, prec, simplifies-1, leftTheoLinear);
+      rightExcludesLinear = evaluateI(rightLinearTerm, derivRight, x, prec, simplifies-1, rightTheoLinear);
+
+      if (internalTheo != NULL) {
+	internalTheo->leftDerivative = copyTree(derivLeft);
+	internalTheo->rightDerivative = copyTree(derivRight);
+	mpfi_set(*(internalTheo->boundLeftConstant),leftConstantTerm);
+	mpfi_set(*(internalTheo->boundRightConstant),rightConstantTerm);
+	mpfi_set(*(internalTheo->boundLeftLinear),leftLinearTerm);
+	mpfi_set(*(internalTheo->boundRightLinear),rightLinearTerm);
+      }
 
       mpfi_add(leftConstantTerm,leftConstantTerm,rightConstantTerm);
       mpfi_add(leftLinearTerm,leftLinearTerm,rightLinearTerm);
 
       mpfi_sub(zI,x,zI);
+
+      if (internalTheo != NULL) mpfi_set(*(internalTheo->xMXZ),zI);
 
       mpfi_mul(leftLinearTerm,zI,leftLinearTerm);
       mpfi_add(leftConstantTerm,leftConstantTerm,leftLinearTerm);
@@ -358,6 +447,21 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	excludes = concatChains(excludes,leftExcludesLinear);
 	excludes = concatChains(excludes,rightExcludesLinear);
       } else {
+	if (internalTheo != NULL) {
+	  internalTheo->simplificationUsed = 1;
+	  freeExprBoundTheo(internalTheo->theoLeftConstant);
+	  freeExprBoundTheo(internalTheo->theoRightConstant);
+	  freeExprBoundTheo(internalTheo->theoLeftLinear);
+	  freeExprBoundTheo(internalTheo->theoRightLinear);
+	  freeMpfiPtr(internalTheo->xZ);
+	  freeMpfiPtr(internalTheo->xMXZ);
+	  freeMpfiPtr(internalTheo->boundLeftConstant);
+	  freeMpfiPtr(internalTheo->boundRightConstant);
+	  freeMpfiPtr(internalTheo->boundLeftLinear);
+	  freeMpfiPtr(internalTheo->boundRightLinear);
+	  free_memory(internalTheo->leftDerivative);
+	  free_memory(internalTheo->rightDerivative);
+	}
 	excludes = concatChains(leftExcludes,rightExcludes);
       }
 
@@ -374,10 +478,44 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     }
     break;
   case SUB:
-    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
-    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifies);
+    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
+    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifies, rightTheo);
     mpfi_sub(stack3, stack1, stack2);
-    if (mpfi_has_zero(stack3) && (simplifies >= 0)) {
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+      mpfi_set(*(internalTheo->boundRight),stack2);
+    }
+    if ((mpfi_has_zero(stack3)) && (simplifies >= 0)) {
+
+      if (internalTheo != NULL) {
+	internalTheo->simplificationUsed = TAYLOR;
+	leftTheoConstant = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+	rightTheoConstant = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+	leftTheoLinear = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+	rightTheoLinear = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+	internalTheo->theoLeftConstant = leftTheoConstant;
+	internalTheo->theoRightConstant = rightTheoConstant;
+	internalTheo->theoLeftLinear = leftTheoLinear;
+	internalTheo->theoRightLinear = rightTheoLinear;
+	internalTheo->boundLeftConstant = (mpfi_t *) malloc(sizeof(mpfi_t));
+	mpfi_init2(*(internalTheo->boundLeftConstant),prec);
+	internalTheo->boundRightConstant = (mpfi_t *) malloc(sizeof(mpfi_t));
+	mpfi_init2(*(internalTheo->boundRightConstant),prec);
+	internalTheo->boundLeftLinear = (mpfi_t *) malloc(sizeof(mpfi_t));
+	mpfi_init2(*(internalTheo->boundLeftLinear),prec);
+	internalTheo->boundRightLinear = (mpfi_t *) malloc(sizeof(mpfi_t));
+	mpfi_init2(*(internalTheo->boundRightLinear),prec);
+	internalTheo->xZ = (mpfi_t *) malloc(sizeof(mpfi_t));
+	mpfi_init2(*(internalTheo->xZ),prec);
+	internalTheo->xMXZ = (mpfi_t *) malloc(sizeof(mpfi_t));
+	mpfi_init2(*(internalTheo->xMXZ),prec);
+      } else {
+	leftTheoConstant = NULL;
+	rightTheoConstant = NULL;
+	leftTheoLinear = NULL;
+	rightTheoLinear = NULL;
+      }
+
 
       mpfr_init2(z,prec);
       mpfi_init2(zI,prec);
@@ -389,19 +527,32 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       mpfi_mid(z,x);
       mpfi_set_fr(zI,z);
 
-      leftExcludesConstant = evaluateI(leftConstantTerm, tree->child1, zI, prec, simplifies-1);
-      rightExcludesConstant = evaluateI(rightConstantTerm, tree->child2, zI, prec, simplifies-1);
+      if (internalTheo != NULL) mpfi_set(*(internalTheo->xZ),zI);
+
+      leftExcludesConstant = evaluateI(leftConstantTerm, tree->child1, zI, prec, simplifies-1, leftTheoConstant);
+      rightExcludesConstant = evaluateI(rightConstantTerm, tree->child2, zI, prec, simplifies-1, rightTheoConstant);
 
       derivLeft = differentiate(tree->child1);
       derivRight = differentiate(tree->child2);
 
-      leftExcludesLinear = evaluateI(leftLinearTerm, derivLeft, x, prec, simplifies-1);
-      rightExcludesLinear = evaluateI(rightLinearTerm, derivRight, x, prec, simplifies-1);
+      leftExcludesLinear = evaluateI(leftLinearTerm, derivLeft, x, prec, simplifies-1, leftTheoLinear);
+      rightExcludesLinear = evaluateI(rightLinearTerm, derivRight, x, prec, simplifies-1, rightTheoLinear);
+
+      if (internalTheo != NULL) {
+	internalTheo->leftDerivative = copyTree(derivLeft);
+	internalTheo->rightDerivative = copyTree(derivRight);
+	mpfi_set(*(internalTheo->boundLeftConstant),leftConstantTerm);
+	mpfi_set(*(internalTheo->boundRightConstant),rightConstantTerm);
+	mpfi_set(*(internalTheo->boundLeftLinear),leftLinearTerm);
+	mpfi_set(*(internalTheo->boundRightLinear),rightLinearTerm);
+      }
 
       mpfi_sub(leftConstantTerm,leftConstantTerm,rightConstantTerm);
       mpfi_sub(leftLinearTerm,leftLinearTerm,rightLinearTerm);
 
       mpfi_sub(zI,x,zI);
+
+      if (internalTheo != NULL) mpfi_set(*(internalTheo->xMXZ),zI);
 
       mpfi_mul(leftLinearTerm,zI,leftLinearTerm);
       mpfi_add(leftConstantTerm,leftConstantTerm,leftLinearTerm);
@@ -417,6 +568,21 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	excludes = concatChains(excludes,leftExcludesLinear);
 	excludes = concatChains(excludes,rightExcludesLinear);
       } else {
+	if (internalTheo != NULL) {
+	  internalTheo->simplificationUsed = 1;
+	  freeExprBoundTheo(internalTheo->theoLeftConstant);
+	  freeExprBoundTheo(internalTheo->theoRightConstant);
+	  freeExprBoundTheo(internalTheo->theoLeftLinear);
+	  freeExprBoundTheo(internalTheo->theoRightLinear);
+	  freeMpfiPtr(internalTheo->xZ);
+	  freeMpfiPtr(internalTheo->xMXZ);
+	  freeMpfiPtr(internalTheo->boundLeftConstant);
+	  freeMpfiPtr(internalTheo->boundRightConstant);
+	  freeMpfiPtr(internalTheo->boundLeftLinear);
+	  freeMpfiPtr(internalTheo->boundRightLinear);
+	  free_memory(internalTheo->leftDerivative);
+	  free_memory(internalTheo->rightDerivative);
+	}
 	excludes = concatChains(leftExcludes,rightExcludes);
       }
 
@@ -433,14 +599,23 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     }
     break;
   case MUL:
-    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
-    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifies);
+    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
+    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifies, rightTheo);
     mpfi_mul(stack3, stack1, stack2);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+      mpfi_set(*(internalTheo->boundRight),stack2);
+    }
     excludes = concatChains(leftExcludes,rightExcludes);
     break;
   case DIV:
-    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
-    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifies);
+    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
+    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifies, rightTheo);
+
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+      mpfi_set(*(internalTheo->boundRight),stack2);
+    }
 
     mpfi_get_left(al,stack1);
     mpfi_get_right(ar,stack1);
@@ -457,8 +632,21 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	freeChain(leftExcludes,freeMpfiPtr);
 	freeChain(rightExcludes,freeMpfiPtr);
 
-	leftExcludes = evaluateI(stack1, derivNumerator, x, prec, simplifies);
-	rightExcludes = evaluateI(stack2, derivDenominator, x, prec, simplifies);
+	if (internalTheo != NULL) {
+	  internalTheo->simplificationUsed = HOPITAL_ON_POINT;
+	  internalTheo->leftDerivative = copyTree(derivNumerator);
+	  internalTheo->rightDerivative = copyTree(derivDenominator);
+	  leftTheoLinear = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+	  rightTheoLinear = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+	  internalTheo->theoLeftLinear = leftTheoLinear;
+	  internalTheo->theoRightLinear = rightTheoLinear;
+	} else {
+	  leftTheoLinear = NULL;
+	  rightTheoLinear = NULL;
+	}
+
+	leftExcludes = evaluateI(stack1, derivNumerator, x, prec, simplifies, leftTheoLinear);
+	rightExcludes = evaluateI(stack2, derivDenominator, x, prec, simplifies, rightTheoLinear);
 	
 	free_memory(derivNumerator);
 	free_memory(derivDenominator);
@@ -466,10 +654,16 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	excludes = concatChains(leftExcludes,rightExcludes);
       } else {
 	/* [0;0] / [bl;br], bl,br != 0 */
-	freeChain(leftExcludes,freeMpfiPtr);
 	freeChain(rightExcludes,freeMpfiPtr);
 	mpfi_interv_d(stack3,0.0,0.0);
-	excludes = NULL;
+	excludes = leftExcludes;
+	if (internalTheo != NULL) {
+	  internalTheo->simplificationUsed = NUMERATOR_IS_ZERO;
+	  freeExprBoundTheo(internalTheo->theoRight);
+	  internalTheo->theoRight = NULL;
+	  freeMpfiPtr(internalTheo->boundRight);
+	  internalTheo->boundRight = NULL;
+	}
       }
     } else {
       if (mpfi_has_zero(stack2)) {
@@ -494,8 +688,16 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	    mpfi_init2(numeratorInZI,prec);
 	    mpfi_init2(denominatorInZI,prec);
 	    
-	    t1 = evaluateI(numeratorInZI, tree->child1, zI, prec, simplifies);
-	    t2 = evaluateI(denominatorInZI, tree->child2, zI, prec, simplifies);
+	    if (internalTheo != NULL) {
+	      	  leftTheoConstant = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+		  rightTheoConstant = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+	    } else {
+	      leftTheoConstant = NULL;
+	      rightTheoConstant = NULL;
+	    }
+
+	    t1 = evaluateI(numeratorInZI, tree->child1, zI, prec, simplifies, leftTheoConstant);
+	    t2 = evaluateI(denominatorInZI, tree->child2, zI, prec, simplifies, rightTheoConstant);
 	  
 	    freeChain(t1,freeMpfiPtr);
 	    freeChain(t2,freeMpfiPtr);
@@ -518,11 +720,40 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	      freeChain(leftExcludes,freeMpfiPtr);
 	      freeChain(rightExcludes,freeMpfiPtr);
 
-	      excludes = evaluateI(stack3, tempNode, x, prec, simplifies);
+	      if (internalTheo != NULL) {
+		leftTheoLinear = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+		internalTheo->simplificationUsed = HOPITAL;
+		internalTheo->leftDerivative = copyTree(tempNode);
+		internalTheo->theoLeftConstant = leftTheoConstant;
+		internalTheo->theoRightConstant = rightTheoConstant;
+		internalTheo->theoLeftLinear = leftTheoLinear;
+		internalTheo->boundLeftLinear = (mpfi_t *) malloc(sizeof(mpfi_t));
+		mpfi_init2(*(internalTheo->boundLeftLinear),prec);
+		internalTheo->boundLeftConstant = (mpfi_t *) malloc(sizeof(mpfi_t));
+		mpfi_init2(*(internalTheo->boundLeftConstant),prec);
+		internalTheo->boundRightConstant = (mpfi_t *) malloc(sizeof(mpfi_t));
+		mpfi_init2(*(internalTheo->boundRightConstant),prec);
+		mpfi_set(*(internalTheo->boundLeftConstant),numeratorInZI);
+		mpfi_set(*(internalTheo->boundRightConstant),denominatorInZI);
+		internalTheo->xZ = (mpfi_t *) malloc(sizeof(mpfi_t));
+		mpfi_init2(*(internalTheo->xZ),prec);
+		mpfi_set(*(internalTheo->xZ),zI);
+	      } else {
+		leftTheoLinear = NULL;
+	      }
+
+	      excludes = evaluateI(stack3, tempNode, x, prec, simplifies, leftTheoLinear);
+
+	      if (internalTheo != NULL) mpfi_set(*(internalTheo->boundLeftLinear),stack3);
 	      
 	      free_memory(tempNode);
 	    } else {
-	      
+	    
+	      if (internalTheo != NULL) {
+		freeExprBoundTheo(leftTheoConstant);
+		freeExprBoundTheo(rightTheoConstant);
+	      }
+  
 	      mpfr_init2(z2,prec);
 
 	      derivNumerator = differentiate(tree->child1);
@@ -531,9 +762,17 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 
 	      if (mpfr_number_p(z2)) {
 		mpfi_set_fr(zI,z2);
+
+		if (internalTheo != NULL) {
+		  leftTheoConstant = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+		  rightTheoConstant = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+		} else {
+		  leftTheoConstant = NULL;
+		  rightTheoConstant = NULL;
+		}
 	    
-		t1 = evaluateI(numeratorInZI, tree->child1, zI, prec, simplifies);
-		t2 = evaluateI(denominatorInZI, tree->child2, zI, prec, simplifies);
+		t1 = evaluateI(numeratorInZI, tree->child1, zI, prec, simplifies, leftTheoConstant);
+		t2 = evaluateI(denominatorInZI, tree->child2, zI, prec, simplifies, rightTheoConstant);
 
 		freeChain(t1,freeMpfiPtr);
 		freeChain(t2,freeMpfiPtr);
@@ -554,10 +793,39 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		  freeChain(leftExcludes,freeMpfiPtr);
 		  freeChain(rightExcludes,freeMpfiPtr);
 
-		  excludes = evaluateI(stack3, tempNode, x, prec, simplifies);
+		  if (internalTheo != NULL) {
+		    leftTheoLinear = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+		    internalTheo->simplificationUsed = HOPITAL;
+		    internalTheo->leftDerivative = copyTree(tempNode);
+		    internalTheo->theoLeftConstant = leftTheoConstant;
+		    internalTheo->theoRightConstant = rightTheoConstant;
+		    internalTheo->theoLeftLinear = leftTheoLinear;
+		    internalTheo->boundLeftLinear = (mpfi_t *) malloc(sizeof(mpfi_t));
+		    mpfi_init2(*(internalTheo->boundLeftLinear),prec);
+		    internalTheo->boundLeftConstant = (mpfi_t *) malloc(sizeof(mpfi_t));
+		    mpfi_init2(*(internalTheo->boundLeftConstant),prec);
+		    internalTheo->boundRightConstant = (mpfi_t *) malloc(sizeof(mpfi_t));
+		    mpfi_init2(*(internalTheo->boundRightConstant),prec);
+		    mpfi_set(*(internalTheo->boundLeftConstant),numeratorInZI);
+		    mpfi_set(*(internalTheo->boundRightConstant),denominatorInZI);
+		    internalTheo->xZ = (mpfi_t *) malloc(sizeof(mpfi_t));
+		    mpfi_init2(*(internalTheo->xZ),prec);
+		    mpfi_set(*(internalTheo->xZ),zI);
+		  } else {
+		    leftTheoLinear = NULL;
+		  }
+
+		  excludes = evaluateI(stack3, tempNode, x, prec, simplifies, leftTheoLinear);
+
+		  if (internalTheo != NULL) mpfi_set(*(internalTheo->boundLeftLinear),stack3);
 	      
 		  free_memory(tempNode);
 		} else {
+
+		  if (internalTheo != NULL) {
+		    freeExprBoundTheo(leftTheoConstant);
+		    freeExprBoundTheo(rightTheoConstant);
+		  }
 
 		  newExclude = (mpfi_t *) malloc(sizeof(mpfi_t));
 		  mpfi_init2(*newExclude,prec);
@@ -609,28 +877,46 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     }
     break;
   case SQRT:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_sqrt(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case EXP:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_exp(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case LOG:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_log(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case LOG_2:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_log2(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case LOG_10:
-    evaluateI(stack1, tree->child1, x, prec, simplifies);
+    evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_log10(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case SIN:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_sin(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
 
 #if DEBUGMPFI 
     printf("mpfi_sin(");
@@ -642,8 +928,11 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 
     break;
   case COS:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_cos(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
 
 #if DEBUGMPFI 
     printf("mpfi_cos(");
@@ -655,70 +944,119 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 
     break;
   case TAN:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_tan(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case ASIN:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_asin(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case ACOS:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_acos(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case ATAN:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_atan(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case SINH:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_sinh(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case COSH:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_cosh(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case TANH:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_tanh(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case ASINH:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_asinh(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case ACOSH:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_acosh(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case ATANH:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_atanh(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case POW:
-    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
-    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifies);
+    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
+    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifies, rightTheo);
     mpfi_pow(stack3, stack1, stack2);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+      mpfi_set(*(internalTheo->boundRight),stack2);
+    }
     excludes = concatChains(leftExcludes,rightExcludes);
     break;
   case NEG:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_neg(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case ABS:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_abs(stack3, stack1);  
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case DOUBLE:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_round_to_double(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case DOUBLEDOUBLE:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_round_to_doubledouble(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   case TRIPLEDOUBLE:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifies, leftTheo);
     mpfi_round_to_tripledouble(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
     break;
   default:
     fprintf(stderr,"evaluateI: unknown identifier in the tree\n");
@@ -726,22 +1064,42 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   }
 
   mpfi_set(result,stack3);
-
   mpfi_revert_if_needed(result);
 
+  if (theo != NULL) {
+    theo->y = (mpfi_t *) malloc(sizeof(mpfi_t));
+    mpfi_init2(*(theo->y),mpfi_get_prec(result));
+    mpfi_set(*(theo->y),result);
+  }
   mpfi_clear(stack1); mpfi_clear(stack2); mpfi_clear(stack3);
   mpfr_clear(al); mpfr_clear(ar); mpfr_clear(bl); mpfr_clear(br);
 
   return excludes;
 }
 
-chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t prec) {
+chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t prec, exprBoundTheo *theo) {
   mpfr_t xZ, rTl, rTr;
-  mpfi_t xZI, constantTerm, linearTerm, resultTaylor, resultDirect;
+  mpfi_t xZI, constantTerm, linearTerm, resultTaylor, resultDirect, temp;
   chain *excludes, *directExcludes, *taylorExcludes, *taylorExcludesLinear, *taylorExcludesConstant;
+  exprBoundTheo *constantTheo, *linearTheo, *directTheo;
+
+  if (theo != NULL) {
+    constantTheo = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+    linearTheo = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+    directTheo = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+    theo->function = copyTree(func);
+    theo->x = (mpfi_t *) malloc(sizeof(mpfi_t));
+    mpfi_init2(*(theo->x),prec);
+    mpfi_set(*(theo->x),x);
+  } else {
+    constantTheo = NULL;
+    linearTheo = NULL;
+    directTheo = NULL;
+  }
 
   mpfr_init2(xZ,prec);
   mpfi_init2(xZI,prec);
+  mpfi_init2(temp,prec);
   mpfi_init2(constantTerm,prec);
   mpfi_init2(linearTerm,prec);
   mpfi_init2(resultTaylor,prec);
@@ -753,14 +1111,14 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   mpfi_mid(xZ,x);
   mpfi_set_fr(xZI,xZ);
 
-  taylorExcludesConstant = evaluateI(constantTerm, func, xZI, prec, 3);
-  taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 3);
-  mpfi_sub(xZI, x, xZI);
-  mpfi_mul(linearTerm, xZI, linearTerm);
+  taylorExcludesConstant = evaluateI(constantTerm, func, xZI, prec, 3, constantTheo);
+  taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 3, linearTheo);
+  mpfi_sub(temp, x, xZI);
+  mpfi_mul(linearTerm, temp, linearTerm);
   mpfi_add(resultTaylor, constantTerm, linearTerm);
   taylorExcludes = concatChains(taylorExcludesConstant, taylorExcludesLinear);
   
-  directExcludes = evaluateI(resultDirect, func, x, prec, 3);
+  directExcludes = evaluateI(resultDirect, func, x, prec, 3, directTheo);
 
   mpfi_get_left(rTl,resultTaylor);
   mpfi_get_right(rTr,resultTaylor);
@@ -768,49 +1126,52 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   if (mpfr_number_p(rTl) && mpfr_number_p(rTr)) {
     mpfi_intersect(result,resultTaylor,resultDirect);
     excludes = concatChains(directExcludes,taylorExcludes);
+    if (theo != NULL) {
+      theo->simplificationUsed = TAYLOR;
+      theo->theoLeft = directTheo;
+      theo->theoLeftConstant = constantTheo;
+      theo->theoLeftLinear = linearTheo;
+      theo->leftDerivative = copyTree(deriv);
+      theo->boundLeft = (mpfi_t *) malloc(sizeof(mpfi_t));
+      mpfi_init2(*(theo->boundLeft),prec);
+      mpfi_set(*(theo->boundLeft),resultDirect);
+      theo->boundLeftConstant = (mpfi_t *) malloc(sizeof(mpfi_t));
+      mpfi_init2(*(theo->boundLeftConstant),prec);
+      mpfi_set(*(theo->boundLeftConstant),constantTerm);
+      theo->boundLeftLinear = (mpfi_t *) malloc(sizeof(mpfi_t));
+      mpfi_init2(*(theo->boundLeftLinear),prec);
+      mpfi_set(*(theo->boundLeftLinear),linearTerm);
+      theo->xZ = (mpfi_t *) malloc(sizeof(mpfi_t));
+      mpfi_init2(*(theo->xZ),prec);
+      mpfi_set(*(theo->xZ),xZI);
+      theo->xMXZ = (mpfi_t *) malloc(sizeof(mpfi_t));
+      mpfi_init2(*(theo->xMXZ),prec);
+      mpfi_set(*(theo->xMXZ),temp);
+    }
   } else {
     mpfi_set(result,resultDirect);
     freeChain(taylorExcludes,freeMpfiPtr);
     excludes = directExcludes;
+    if (theo != NULL) {
+      theo->simplificationUsed = IMPLICATION;
+      theo->theoLeft = directTheo;
+      theo->boundLeft = (mpfi_t *) malloc(sizeof(mpfi_t));
+      mpfi_init2(*(theo->boundLeft),prec);
+      mpfi_set(*(theo->boundLeft),resultDirect);
+      freeExprBoundTheo(constantTheo);
+      freeExprBoundTheo(linearTheo);
+    }
   }
 
   mpfi_revert_if_needed(result);
 
-  /*
-  printf("evaluateITaylor:\n");
-  printf("func = ");
-  printTree(func);
-  printf("\n");
-  printf("deriv = ");
-  printTree(deriv);
-  printf("\n");
-  printf("x = ");
-  printInterval(x);
-  printf("\n");
-  printf("result = ");
-  printInterval(result);
-  printf("\n");
-  printf("resultTaylor = ");
-  printInterval(resultTaylor);
-  printf("\n");
-  printf("resultDirect = ");
-  printInterval(resultDirect);
-  printf("\n");
-  printf("constantTerm = ");
-  printInterval(constantTerm);
-  printf("\n");
-  printf("linearTerm = ");
-  printInterval(linearTerm);
-  printf("\n");
-  */
-
-
-
+  if (theo != NULL) mpfi_set(*(theo->y),result);
 
   mpfr_clear(xZ);
   mpfr_clear(rTl);
   mpfr_clear(rTr);
   mpfi_clear(xZI);
+  mpfi_clear(temp);
   mpfi_clear(constantTerm);
   mpfi_clear(linearTerm);
   mpfi_clear(resultTaylor);
@@ -841,7 +1202,7 @@ chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t pr
     res->value = temp;
   } else {
     mpfi_init2(y,prec);
-    excludes = evaluateITaylor(y, func, deriv, range, prec);
+    excludes = evaluateITaylor(y, func, deriv, range, prec, NULL);
     freeChain(excludes,freeMpfiPtr);
     if (!mpfi_bounded_p(y)) {
       printf("Warning: during zero-search the derivative of the function evaluated to NaN or Inf in the interval ");
@@ -912,6 +1273,26 @@ void printInterval(mpfi_t interval) {
   printf(";");
   printValue(&r,prec);
   printf("]");
+
+  mpfr_clear(l);
+  mpfr_clear(r);
+}
+
+
+void fprintInterval(FILE *fd, mpfi_t interval) {
+  mpfr_t l,r;
+  mp_prec_t prec;
+
+  prec = mpfi_get_prec(interval);
+  mpfr_init2(l,prec);
+  mpfr_init2(r,prec);
+  mpfi_get_left(l,interval);
+  mpfi_get_right(r,interval);
+  fprintf(fd,"[");
+  fprintValue(fd,l);
+  fprintf(fd,";");
+  fprintValue(fd,r);
+  fprintf(fd,"]");
 
   mpfr_clear(l);
   mpfr_clear(r);
@@ -1133,12 +1514,12 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   mpfi_set_fr(rInterv,r);
   mpfi_set_fr(lInterv,l);
 
-  excludes = evaluateITaylor(evalFuncOnInterval, func, deriv, lInterv, prec);
+  excludes = evaluateITaylor(evalFuncOnInterval, func, deriv, lInterv, prec, NULL);
   mpfi_get_left(outerLeft,evalFuncOnInterval);
   mpfi_get_right(outerRight,evalFuncOnInterval);
   mpfr_set(innerLeft,outerRight,GMP_RNDU);
   mpfr_set(innerRight,outerLeft,GMP_RNDD);
-  excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, rInterv, prec);
+  excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, rInterv, prec, NULL);
   excludes = concatChains(excludes,excludesTemp);
   mpfi_get_left(tl,evalFuncOnInterval);
   mpfi_get_right(tr,evalFuncOnInterval);
@@ -1163,7 +1544,7 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   curr = zeros;
   while (curr != NULL) {
     currInterval = ((mpfi_t *) (curr->value));
-    excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, *currInterval, prec);
+    excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, *currInterval, prec, NULL);
     excludes = concatChains(excludes,excludesTemp);
     mpfi_get_left(tl,evalFuncOnInterval);
     mpfi_get_right(tr,evalFuncOnInterval);
@@ -1478,7 +1859,7 @@ void evaluateRangeFunctionFast(rangetype yrange, node *func, node *deriv, ranget
   mpfi_init2(y,prec);
   mpfi_interv_fr(x,*(xrange.a),*(xrange.b));
 
-  tempChain = evaluateITaylor(y, func, deriv, x, prec);
+  tempChain = evaluateITaylor(y, func, deriv, x, prec, NULL);
 
   mpfi_get_left(*(yrange.a),y);
   mpfi_get_right(*(yrange.b),y);

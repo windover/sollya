@@ -3,6 +3,7 @@
 
 
 #include <mpfr.h>
+#include <mpfi.h>
 #include "expression.h"
 #include "chain.h"
 
@@ -11,5 +12,7 @@ chain* findZerosFunction(node *func, rangetype range, mp_prec_t prec, mpfr_t dia
 void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec);
 void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_prec_t prec);
 void evaluateRangeFunctionFast(rangetype yrange, node *func, node *deriv, rangetype xrange, mp_prec_t prec);
+void fprintInterval(FILE *fd, mpfi_t interval);
+
 
 #endif /* ifdef INFNORM_H*/

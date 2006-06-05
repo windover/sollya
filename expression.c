@@ -209,6 +209,7 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
 	printf("%sb%d",str2,(int)expo);
 	free(str2);
       }
+      mpfr_free_str(str);      
     } else {
       str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
       if (mpfr_number_p(*value)) 
@@ -222,13 +223,58 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
 }
 
 
+
+void fprintValue(FILE *fd, mpfr_t value) {
+  mpfr_t y;
+  char *str, *str2;
+  mp_exp_t e, expo;
+  mp_prec_t prec;
+
+  if (mpfr_zero_p(value)) {
+    fprintf(fd,"0");
+  } else {
+    prec = mpfr_get_prec(value);
+    mpfr_init2(y,prec+10);
+    mpfr_set(y,value,GMP_RNDN);
+    if (mpfr_sgn(y) < 0) {
+      fprintf(fd,"-"); mpfr_neg(y,y,GMP_RNDN);
+    }
+    if (!mpfr_number_p(value)) {
+      str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
+      fprintf(fd,"%s",str);
+    } else {
+      expo = mpfr_get_exp(y);
+      if (mpfr_set_exp(y,prec+10)) {
+	printf("\nWarning: upon printing to a file: %d is not in the current exponent range of a variable. Values printed may be wrong.\n",(int)(prec+10));
+      }
+      expo -= prec+10;
+      while (mpfr_integer_p(y)) {
+	mpfr_div_2ui(y,y,1,GMP_RNDN);
+	expo += 1;
+      }
+      expo--;
+      if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
+	printf("\nWarning: upon printing to a file: rounding occured. Values printed may be wrong.\n");
+      }
+      str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
+      str2 = (char *) calloc(strlen(str)+1,sizeof(char));
+      strncpy(str2,str,e);
+      fprintf(fd,"%sb%d",str2,(int)expo);
+      free(str2);
+    }
+    mpfr_clear(y);
+  }
+}
+
+
+
 void printTree(node *tree) {
   switch (tree->nodeType) {
   case VARIABLE:
     printf("%s",variablename);
     break;
   case CONSTANT:
-    printValue(tree->value,tools_precision);
+    printValue(tree->value,mpfr_get_prec(*(tree->value)));
     break;
   case ADD:
     if (isInfix(tree->child1)) 
@@ -411,6 +457,197 @@ void printTree(node *tree) {
   }
   return;
 }
+
+void fprintTree(FILE *fd, node *tree) {
+  switch (tree->nodeType) {
+  case VARIABLE:
+    fprintf(fd,"%s",variablename);
+    break;
+  case CONSTANT:
+    fprintValue(fd,*(tree->value));
+    break;
+  case ADD:
+    if (isInfix(tree->child1)) 
+      fprintf(fd,"(");
+    fprintTree(fd,tree->child1);
+    if (isInfix(tree->child1)) 
+      fprintf(fd,")");
+    fprintf(fd," + ");
+    if (isInfix(tree->child2)) 
+      fprintf(fd,"(");
+    fprintTree(fd,tree->child2);
+    if (isInfix(tree->child2)) 
+      fprintf(fd,")");
+    break;
+  case SUB:
+    if (isInfix(tree->child1)) 
+      fprintf(fd,"(");
+    fprintTree(fd,tree->child1);
+    if (isInfix(tree->child1)) 
+      fprintf(fd,")");
+    fprintf(fd," - ");
+    if (isInfix(tree->child2)) 
+      fprintf(fd,"(");
+    fprintTree(fd,tree->child2);
+    if (isInfix(tree->child2)) 
+      fprintf(fd,")");
+    break;
+  case MUL:
+    if (isInfix(tree->child1)) 
+      fprintf(fd,"(");
+    fprintTree(fd,tree->child1);
+    if (isInfix(tree->child1)) 
+      fprintf(fd,")");
+    fprintf(fd," * ");
+    if (isInfix(tree->child2)) 
+      fprintf(fd,"(");
+    fprintTree(fd,tree->child2);
+    if (isInfix(tree->child2)) 
+      fprintf(fd,")");
+    break;
+  case DIV:
+    if (isInfix(tree->child1)) 
+      fprintf(fd,"(");
+    fprintTree(fd,tree->child1);
+    if (isInfix(tree->child1)) 
+      fprintf(fd,")");
+    fprintf(fd," / ");
+    if (isInfix(tree->child2)) 
+      fprintf(fd,"(");
+    fprintTree(fd,tree->child2);
+    if (isInfix(tree->child2)) 
+      fprintf(fd,")");
+    break;
+  case SQRT:
+    fprintf(fd,"sqrt(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case EXP:
+    fprintf(fd,"exp(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case LOG:
+    fprintf(fd,"log(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case LOG_2:
+    fprintf(fd,"log2(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case LOG_10:
+    fprintf(fd,"log10(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case SIN:
+    fprintf(fd,"sin(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case COS:
+    fprintf(fd,"cos(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case TAN:
+    fprintf(fd,"tan(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case ASIN:
+    fprintf(fd,"asin(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case ACOS:
+    fprintf(fd,"acos(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case ATAN:
+    fprintf(fd,"atan(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case SINH:
+    fprintf(fd,"sinh(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case COSH:
+    fprintf(fd,"cosh(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case TANH:
+    fprintf(fd,"tanh(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case ASINH:
+    fprintf(fd,"asinh(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case ACOSH:
+    fprintf(fd,"acosh(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case ATANH:
+    fprintf(fd,"atanh(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case POW:
+    if (isInfix(tree->child1)) 
+      fprintf(fd,"(");
+    fprintTree(fd,tree->child1);
+    if (isInfix(tree->child1)) 
+      fprintf(fd,")");
+    fprintf(fd,"^(");
+    fprintTree(fd,tree->child2);
+    fprintf(fd,")");
+    break;
+  case NEG:
+    fprintf(fd,"-");
+    if (isInfix(tree->child1)) 
+      fprintf(fd,"(");
+    fprintTree(fd,tree->child1);
+    if (isInfix(tree->child1)) 
+      fprintf(fd,")");
+    break;
+  case ABS:
+    fprintf(fd,"abs(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case DOUBLE:
+    fprintf(fd,"double(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case DOUBLEDOUBLE:
+    fprintf(fd,"doubledouble(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case TRIPLEDOUBLE:
+    fprintf(fd,"tripledouble(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  default:
+   fprintf(stderr,"fprintTree: unknown identifier in the tree\n");
+   exit(1);
+  }
+  return;
+}
+
 
 
 node* copyTree(node *tree) {
@@ -2761,6 +2998,101 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
   return;
 }
 
+
+int arity(node *tree) {
+  switch (tree->nodeType) {
+  case VARIABLE:
+    return 1;
+    break;
+  case CONSTANT:
+    return 0;
+    break;
+  case ADD:
+    return 2;
+    break;
+  case SUB:
+    return 2;
+    break;
+  case MUL:
+    return 2;
+    break;
+  case DIV:
+    return 2;
+    break;
+  case SQRT:
+    return 1;
+    break;
+  case EXP:
+    return 1;
+    break;
+  case LOG:
+    return 1;
+    break;
+  case LOG_2:
+    return 1;
+    break;
+  case LOG_10:
+    return 1;
+    break;
+  case SIN:
+    return 1;
+    break;
+  case COS:
+    return 1;
+    break;
+  case TAN:
+    return 1;
+    break;
+  case ASIN:
+    return 1;
+    break;
+  case ACOS:
+    return 1;
+    break;
+  case ATAN:
+    return 1;
+    break;
+  case SINH:
+    return 1;
+    break;
+  case COSH:
+    return 1;
+    break;
+  case TANH:
+    return 1;
+    break;
+  case ASINH:
+    return 1;
+    break;
+  case ACOSH:
+    return 1;
+    break;
+  case ATANH:
+    return 1;
+    break;
+  case POW:
+    return 2;
+    break;
+  case NEG:
+    return 1;
+    break;
+  case ABS:
+    return 1;
+    break;
+  case DOUBLE:
+    return 1;
+    break;
+  case DOUBLEDOUBLE:
+    return 1;
+    break;
+  case TRIPLEDOUBLE:
+    return 1;
+    break;
+  default:
+    fprintf(stderr,"arity: unknown identifier in the tree\n");
+    exit(1);
+  }
+}
 
 int isConstant(node *tree);
 
