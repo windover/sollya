@@ -1091,6 +1091,8 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
     theo->x = (mpfi_t *) malloc(sizeof(mpfi_t));
     mpfi_init2(*(theo->x),prec);
     mpfi_set(*(theo->x),x);
+    theo->y = (mpfi_t *) malloc(sizeof(mpfi_t));
+    mpfi_init2(*(theo->y),prec);
   } else {
     constantTheo = NULL;
     linearTheo = NULL;
@@ -1182,12 +1184,27 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
 
 
 
-chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t prec, mpfr_t diam) {
+chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t prec, mpfr_t diam, chain **noZeroProofs) {
   mpfr_t rangeDiam, l,m,r;
   chain *res, *leftchain, *rightchain;
   mpfi_t *temp;
   mpfi_t lI, rI, y;
   chain *excludes;
+  chain *leftProofs, *rightProofs;
+  chain **leftProofsPtr, **rightProofsPtr;
+  exprBoundTheo *theo;
+
+  leftProofs = NULL;
+  rightProofs = NULL;
+  if (noZeroProofs != NULL) {
+    leftProofsPtr = &leftProofs;
+    rightProofsPtr = &rightProofs;
+    theo = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+  } else {
+    leftProofsPtr = NULL;
+    rightProofsPtr = NULL;
+    theo = NULL;
+  }
 
   mpfi_revert_if_needed(range);
   mpfr_init2(rangeDiam,prec);
@@ -1202,7 +1219,7 @@ chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t pr
     res->value = temp;
   } else {
     mpfi_init2(y,prec);
-    excludes = evaluateITaylor(y, func, deriv, range, prec, NULL);
+    excludes = evaluateITaylor(y, func, deriv, range, prec, theo);
     freeChain(excludes,freeMpfiPtr);
     if (!mpfi_bounded_p(y)) {
       printf("Warning: during zero-search the derivative of the function evaluated to NaN or Inf in the interval ");
@@ -1222,11 +1239,17 @@ chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t pr
       mpfi_revert_if_needed(lI);
       mpfi_interv_fr(rI,m,r);
       mpfi_revert_if_needed(rI);
+
+      if (theo != NULL) freeExprBoundTheo(theo);
    
-      leftchain = findZerosUnsimplified(func,deriv,lI,prec,diam);
-      rightchain = findZerosUnsimplified(func,deriv,rI,prec,diam);
+      leftchain = findZerosUnsimplified(func,deriv,lI,prec,diam,leftProofsPtr);
+      rightchain = findZerosUnsimplified(func,deriv,rI,prec,diam,rightProofsPtr);
 
       res = concatChains(leftchain,rightchain);
+
+      if (noZeroProofs != NULL) {
+	*noZeroProofs = concatChains(leftProofs,rightProofs);
+      }
 
       mpfr_clear(l);
       mpfr_clear(m);
@@ -1235,6 +1258,7 @@ chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t pr
       mpfi_clear(rI);
     } else {
       res = NULL;
+      if (noZeroProofs != NULL) *noZeroProofs = addElement(*noZeroProofs,theo);
     }
     mpfi_clear(y);
   }
@@ -1242,14 +1266,29 @@ chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t pr
   return res;
 }
 
-chain *findZeros(node *func, node *deriv, mpfi_t range, mp_prec_t prec, mpfr_t diam) {
+chain *findZeros(node *func, node *deriv, mpfi_t range, mp_prec_t prec, mpfr_t diam, noZeroTheo *theo) {
   node *funcSimplified, *derivSimplified;
   chain *temp;
-  
+  chain **noZeroProofs;
+
   funcSimplified = horner(func);
   derivSimplified = horner(deriv);
 
-  temp = findZerosUnsimplified(funcSimplified,derivSimplified,range,prec,diam);
+  if (theo != NULL) {
+    theo->function = copyTree(func);
+    theo->derivative = copyTree(deriv);
+    theo->funcEqual = (equalityTheo *) malloc(sizeof(equalityTheo));
+    theo->funcEqual->expr1 = copyTree(func);
+    theo->funcEqual->expr2 = copyTree(funcSimplified);
+    theo->derivEqual = (equalityTheo *) malloc(sizeof(equalityTheo));
+    theo->derivEqual->expr1 = copyTree(deriv);
+    theo->derivEqual->expr2 = copyTree(derivSimplified);
+    noZeroProofs = &(theo->exprBoundTheos);
+  } else {
+    noZeroProofs = NULL;
+  }
+
+  temp = findZerosUnsimplified(funcSimplified,derivSimplified,range,prec,diam,noZeroProofs);
   
   free_memory(funcSimplified);
   free_memory(derivSimplified);
@@ -1480,13 +1519,23 @@ chain *excludeIntervals(chain *mainIntervals, chain *excludeIntervals) {
   return mainIntervals;
 }
 
+void *copyMpfiPtr(void *ptr) {
+  mpfi_t *newMpfi;
+
+  newMpfi = (mpfi_t *) malloc(sizeof(mpfi_t));
+  mpfi_init2(*newMpfi,mpfi_get_prec(*((mpfi_t *) ptr)));
+  mpfi_set(*newMpfi,*((mpfi_t *) ptr));
+  return (void *) newMpfi;
+}
+
 
 void infnormI(mpfi_t infnormval, node *func, node *deriv, 
 	      node *numeratorDeriv, node *derivNumeratorDeriv,
 	      mpfi_t range, mp_prec_t prec, mpfr_t diam, 
 	      chain *intervalsToExclude,
-	      chain **mightExcludes) {
-  chain *curr, *zeros, *tempChain;
+	      chain **mightExcludes,
+	      infnormTheo *theo) {
+  chain *curr, *zeros, *tempChain, *tempChain2, *tempChain3;
   mpfi_t *currInterval;
   mpfi_t evalFuncOnInterval, lInterv, rInterv;
   mpfr_t innerLeft, innerRight, outerLeft, outerRight, l, r, tl, tr;
@@ -1494,8 +1543,32 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   mp_prec_t rangePrec;
   chain *excludes, *excludesTemp;
   int i; 
+  noZeroTheo *noZeros;
+  exprBoundTheo *evalLeftBound, *evalRightBound, *currZeroTheo;
 
-
+  if (theo != NULL) {
+    theo->function = copyTree(func);
+    theo->derivative = copyTree(deriv);
+    theo->numeratorOfDerivative = copyTree(numeratorDeriv);
+    theo->derivativeOfNumeratorOfDerivative = copyTree(derivNumeratorDeriv);
+    theo->excludedIntervals = copyChain(intervalsToExclude,copyMpfiPtr);
+    noZeros = (noZeroTheo *) calloc(1,sizeof(noZeroTheo));
+    theo->noZeros = noZeros;
+    evalLeftBound = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+    evalRightBound = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+    theo->evalLeftBound = evalLeftBound;
+    theo->evalRightBound = evalRightBound;
+    theo->domain = (mpfi_t *) malloc(sizeof(mpfi_t));
+    theo->infnorm = (mpfi_t *) malloc(sizeof(mpfi_t));
+    mpfi_init2(*(theo->domain),mpfi_get_prec(range));
+    mpfi_init2(*(theo->infnorm),mpfi_get_prec(infnormval));
+    mpfi_set(*(theo->domain),range);
+  } else {
+    noZeros = NULL;
+    evalLeftBound = NULL;
+    evalRightBound = NULL;
+  }
+  
   mpfr_init2(innerLeft, prec);
   mpfr_init2(innerRight, prec);
   mpfr_init2(outerLeft, prec);
@@ -1514,12 +1587,12 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   mpfi_set_fr(rInterv,r);
   mpfi_set_fr(lInterv,l);
 
-  excludes = evaluateITaylor(evalFuncOnInterval, func, deriv, lInterv, prec, NULL);
+  excludes = evaluateITaylor(evalFuncOnInterval, func, deriv, lInterv, prec, evalLeftBound);
   mpfi_get_left(outerLeft,evalFuncOnInterval);
   mpfi_get_right(outerRight,evalFuncOnInterval);
   mpfr_set(innerLeft,outerRight,GMP_RNDU);
   mpfr_set(innerRight,outerLeft,GMP_RNDD);
-  excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, rInterv, prec, NULL);
+  excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, rInterv, prec, evalRightBound);
   excludes = concatChains(excludes,excludesTemp);
   mpfi_get_left(tl,evalFuncOnInterval);
   mpfi_get_right(tr,evalFuncOnInterval);
@@ -1529,10 +1602,13 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   mpfr_max(innerRight,innerRight,tl,GMP_RNDD); 
  
 
-  tempChain = findZeros(numeratorDeriv,derivNumeratorDeriv,range,prec,diam);
+  tempChain = findZeros(numeratorDeriv,derivNumeratorDeriv,range,prec,diam,noZeros);
   mpfr_init2(diamJoin,prec);
   mpfr_mul_2ui(diamJoin,diam,3,GMP_RNDN);
-  zeros = joinAdjacentIntervals(tempChain,diamJoin);
+  tempChain2 = joinAdjacentIntervals(tempChain,diamJoin);
+  tempChain3 = copyChain(tempChain2,copyMpfiPtr);
+  mpfr_mul_2ui(diamJoin,diamJoin,2,GMP_RNDN);
+  zeros = joinAdjacentIntervals(tempChain3,diamJoin);
   mpfr_clear(diamJoin);
 
   zeros = excludeIntervals(zeros,intervalsToExclude);
@@ -1543,11 +1619,20 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
 
   curr = zeros;
   while (curr != NULL) {
+    if (theo != NULL) {
+      currZeroTheo = (exprBoundTheo *) calloc(1,sizeof(currZeroTheo));
+    } else {
+      currZeroTheo = NULL;
+    }
     currInterval = ((mpfi_t *) (curr->value));
-    excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, *currInterval, prec, NULL);
+    excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, *currInterval, prec, currZeroTheo);
     excludes = concatChains(excludes,excludesTemp);
     mpfi_get_left(tl,evalFuncOnInterval);
     mpfi_get_right(tr,evalFuncOnInterval);
+
+    if (theo != NULL) {
+      theo->evalOnZeros = addElement(theo->evalOnZeros,currZeroTheo);
+    }
 
     if (mpfr_nan_p(tl) || mpfr_nan_p(tr)) {
       printf("Warning: NaNs occured during the interval evaluation of the zeros of the derivative.\n");
@@ -1562,6 +1647,8 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
 
   freeChain(zeros,freeMpfiPtr);
   freeChain(tempChain,freeMpfiPtr);
+  freeChain(tempChain2,freeMpfiPtr);
+  freeChain(tempChain3,freeMpfiPtr);
 
   if (mpfr_cmp(innerLeft,innerRight) >= 0) {
     mpfr_neg(outerLeft,outerLeft,GMP_RNDN);
@@ -1579,6 +1666,10 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   }
 
   *mightExcludes = excludes;
+
+  if (theo != NULL) {
+    mpfi_set(*(theo->infnorm),infnormval);
+  }
 
   mpfr_clear(tl);
   mpfr_clear(tr);
@@ -1717,7 +1808,8 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
 
 
 
-rangetype infnorm(node *func, rangetype range, chain *excludes, mp_prec_t prec, mpfr_t diam) {
+rangetype infnorm(node *func, rangetype range, chain *excludes, 
+		  mp_prec_t prec, mpfr_t diam, FILE *proof) {
   rangetype res;
   mpfi_t rangeI, resI;
   mpfi_t *excludeI;
@@ -1726,6 +1818,7 @@ rangetype infnorm(node *func, rangetype range, chain *excludes, mp_prec_t prec, 
   chain *mightExcludes, *curr, *secondMightExcludes, *initialExcludes;
   int newtonWorked;
   mp_prec_t p, p2;
+  infnormTheo *theo;
 
   curr = excludes;
   initialExcludes = NULL;
@@ -1805,9 +1898,16 @@ rangetype infnorm(node *func, rangetype range, chain *excludes, mp_prec_t prec, 
   }
   derivNumeratorDeriv = differentiate(numeratorDeriv);
   mightExcludes = NULL;
-  
 
-  infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,prec,rangeDiameter,initialExcludes,&mightExcludes);
+  if (proof != NULL) {
+    theo = (infnormTheo *) calloc(1,sizeof(infnormTheo));
+  } else {
+    theo = NULL;
+  }
+
+
+  infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,
+	   prec,rangeDiameter,initialExcludes,&mightExcludes,theo);
 
   secondMightExcludes = NULL;
 
@@ -1822,8 +1922,15 @@ rangetype infnorm(node *func, rangetype range, chain *excludes, mp_prec_t prec, 
     printf("\n");
     mightExcludes = concatChains(mightExcludes,initialExcludes);
 
-    infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,2*prec,rangeDiameter,mightExcludes,
-	     &secondMightExcludes);
+    if (theo != NULL) freeInfnormTheo(theo);
+    if (proof != NULL) {
+      theo = (infnormTheo *) calloc(1,sizeof(infnormTheo));
+    } else {
+      theo = NULL;
+    }
+
+    infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,
+	     2*prec,rangeDiameter,mightExcludes,&secondMightExcludes,theo);
 
     if (secondMightExcludes != NULL) {
       printf("Warning: the following domains remain the exclusion of which could improve the result.\n");
@@ -1836,6 +1943,12 @@ rangetype infnorm(node *func, rangetype range, chain *excludes, mp_prec_t prec, 
       printf("\n");
     }
   }
+
+  if (proof != NULL) {
+    fprintInfnormTheo(proof,theo,1);
+  }
+  
+  if (theo != NULL) freeInfnormTheo(theo);
   freeChain(mightExcludes,freeMpfiPtr);
   freeChain(secondMightExcludes,freeMpfiPtr);
   mpfi_revert_if_needed(resI);
@@ -1878,13 +1991,14 @@ void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_pr
 }
 
 
+
 chain* findZerosFunction(node *func, rangetype range, mp_prec_t prec, mpfr_t diam) {
   mpfi_t rangeI;
   node *deriv, *numerator, *denominator;
   mpfr_t rangeDiameter, diamJoin;
   chain *zerosI, *zeros, *curr;
   rangetype *tempRange;
-  chain *tempChain;
+  chain *tempChain, *tempChain2, *tempChain3;
 
   mpfi_init2(rangeI,prec);
   mpfr_init2(rangeDiameter,prec);
@@ -1896,10 +2010,13 @@ chain* findZerosFunction(node *func, rangetype range, mp_prec_t prec, mpfr_t dia
 
   deriv = differentiate(numerator);
 
-  tempChain = findZeros(numerator,deriv,rangeI,prec,rangeDiameter);
+  tempChain = findZeros(numerator,deriv,rangeI,prec,rangeDiameter,NULL);
   mpfr_init2(diamJoin,prec);
   mpfr_mul_2ui(diamJoin,diam,3,GMP_RNDN);
-  zerosI = joinAdjacentIntervals(tempChain,diamJoin);
+  tempChain2 = joinAdjacentIntervals(tempChain,diamJoin);
+  tempChain3 = copyChain(tempChain2,copyMpfiPtr);
+  mpfr_mul_2ui(diamJoin,diamJoin,2,GMP_RNDN);
+  zerosI = joinAdjacentIntervals(tempChain3,diamJoin);
   mpfr_clear(diamJoin);
 
   zeros = NULL;
@@ -1918,6 +2035,8 @@ chain* findZerosFunction(node *func, rangetype range, mp_prec_t prec, mpfr_t dia
 
   freeChain(zerosI,freeMpfiPtr);
   freeChain(tempChain,freeMpfiPtr);
+  freeChain(tempChain2,freeMpfiPtr);
+  freeChain(tempChain3,freeMpfiPtr);
   free_memory(numerator);
   free_memory(deriv);
   mpfi_clear(rangeI);

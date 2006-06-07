@@ -7,27 +7,8 @@
 #include <errno.h>
 #include "expression.h"
 #include "infnorm.h"
+#include "main.h"
 
-/*
-  node *function;
-  int functionType;
-  mpfi_t *x;
-  mpfi_t *boundLeft;
-  mpfi_t *boundRight;
-  mpfi_t *y;
-  exprBoundTheo *theoLeft;
-  exprBoundTheo *theoRight;
-  int simplificationUsed;
-  node *leftDerivative;
-  node *rightDerivative;
-  mpfi_t *xZ;
-  mpfi_t *xMXZ;
-  exprBoundTheo *theoLeftDeriv;
-  exprBoundTheo *theoRightDeriv;
-  mpfi_t *boundLeftDeriv;
-  mpfi_t *boundRightDeriv;
-  int number;
-*/
 
 
 void freeExprBoundTheo(exprBoundTheo *theo) {
@@ -126,7 +107,7 @@ void fprintExprBoundTheoDoWork(FILE *fd, exprBoundTheo *theo) {
   if (theo->theoRightConstant != NULL) fprintExprBoundTheoDoWork(fd,theo->theoRightConstant);
   if (theo->theoLeftLinear != NULL) fprintExprBoundTheoDoWork(fd,theo->theoLeftLinear);
   if (theo->theoRightLinear != NULL) fprintExprBoundTheoDoWork(fd,theo->theoRightLinear);
-  fprintf(fd,"Theorem %d:\nFor all x in ",theo->number);
+  fprintf(fd,"Theorem %d:\nFor all %s in ",theo->number,variablename);
   fprintInterval(fd,*(theo->x));
   fprintf(fd,". ");
   fprintTree(fd,theo->function);
@@ -136,8 +117,131 @@ void fprintExprBoundTheoDoWork(FILE *fd, exprBoundTheo *theo) {
 }
 
 
-void fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
+int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
+  int freeNumber; 
 
-  numberExprBoundTheo(theo,start);
+  freeNumber = numberExprBoundTheo(theo,start);
   fprintExprBoundTheoDoWork(fd, theo);
+  return freeNumber;
+}
+
+
+int fprintEqualityTheo(FILE *fd, equalityTheo *theo, int start) {
+  
+  theo->number = start;
+  fprintf(fd,"Theorem %d:\n",start);
+  fprintTree(fd,theo->expr1);
+  fprintf(fd," = ");
+  fprintTree(fd,theo->expr2);
+  fprintf(fd,"\n");
+  return start+1;
+}
+
+void freeEqualityTheo(equalityTheo *theo) {
+  free_memory(theo->expr1);
+  free_memory(theo->expr2);
+  free(theo);
+}
+
+
+int fprintNoZeroTheo(FILE *fd, noZeroTheo *theo, int start) {
+  int nextNumber;
+  chain *curr;
+
+  nextNumber = start;
+
+  nextNumber = fprintEqualityTheo(fd,theo->funcEqual,nextNumber);
+  nextNumber = fprintEqualityTheo(fd,theo->derivEqual,nextNumber);
+
+  curr = theo->exprBoundTheos;
+  while (curr != NULL) {
+    nextNumber = fprintExprBoundTheo(fd,((exprBoundTheo *) (curr->value)),nextNumber);
+    curr = curr->next;
+  }
+
+  theo->number = nextNumber;
+  nextNumber++;
+
+  fprintf(fd,"Theorem %d:\n",theo->number);
+  fprintf(fd,"The function f(%s) = ",variablename);
+  fprintTree(fd,theo->function);
+  fprintf(fd," has no zeros in the following domain(s):\n");
+  curr = theo->exprBoundTheos;
+  while (curr != NULL) {
+    fprintInterval(fd,*(((exprBoundTheo *) (curr->value))->x));
+    curr = curr->next;
+  }
+  fprintf(fd,"\n");
+
+  return nextNumber;
+}
+
+
+void freeExprBoundTheoOnVoid(void *theo) {
+  freeExprBoundTheo((exprBoundTheo *) theo);
+}
+
+void freeNoZeroTheo(noZeroTheo *theo) {
+  free_memory(theo->function);
+  free_memory(theo->derivative);
+  freeEqualityTheo(theo->funcEqual);
+  freeEqualityTheo(theo->derivEqual);
+  freeChain(theo->exprBoundTheos,freeExprBoundTheoOnVoid);
+  free(theo);
+}
+
+int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
+  int nextNumber;
+  chain *curr;
+
+  nextNumber = start;
+  nextNumber = fprintNoZeroTheo(fd,theo->noZeros,nextNumber);
+  nextNumber = fprintExprBoundTheo(fd,theo->evalLeftBound,nextNumber);
+  nextNumber = fprintExprBoundTheo(fd,theo->evalRightBound,nextNumber);
+
+  curr = theo->evalOnZeros;
+  while (curr != NULL) {
+    nextNumber = fprintExprBoundTheo(fd,((exprBoundTheo *) (curr->value)),nextNumber);
+    curr = curr->next;
+  }
+
+  theo->number = nextNumber;
+  nextNumber++;
+
+  fprintf(fd,"Theorem %d:\n",theo->number);
+  fprintf(fd,"Let be f(%s) = ",variablename);
+  fprintTree(fd,theo->function);
+  fprintf(fd,"\nThe infinite norm of f(%s) for %s in ",variablename,variablename);
+  fprintInterval(fd,*(theo->domain));
+  fprintf(fd," ");
+  if (theo->excludedIntervals != NULL) {
+    fprintf(fd,"without the (union of the) following interval(s)\n");
+    curr = theo->excludedIntervals;
+    while (curr != NULL) {
+      fprintInterval(fd,*((mpfi_t *) (curr->value)));
+      fprintf(fd,"\n");
+      curr = curr->next;
+    }
+  }
+  fprintf(fd,"is bounded by ");
+  fprintInterval(fd,*(theo->infnorm));
+  fprintf(fd,"\n");
+
+  return nextNumber;
+}
+
+
+void freeInfnormTheo(infnormTheo *theo) {
+  free_memory(theo->function);
+  freeMpfiPtr(theo->domain);
+  freeMpfiPtr(theo->infnorm);
+  free_memory(theo->derivative);
+  free_memory(theo->numeratorOfDerivative);
+  free_memory(theo->derivativeOfNumeratorOfDerivative);
+  freeChain(theo->excludedIntervals,freeMpfiPtr);
+  freeNoZeroTheo(theo->noZeros);
+  freeExprBoundTheo(theo->evalLeftBound);
+  freeExprBoundTheo(theo->evalRightBound);
+  freeChain(theo->evalOnZeros,freeExprBoundTheoOnVoid);
+  free(theo);
 }

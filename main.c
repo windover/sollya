@@ -17,6 +17,7 @@
 
 char *variablename = NULL;
 char *currentVariable = NULL;
+char *currentString = NULL;
 mp_prec_t defaultprecision = DEFAULTPRECISION;
 int defaultpoints = DEFAULTPOINTS;
 mp_prec_t tools_precision = DEFAULTPRECISION;
@@ -41,11 +42,90 @@ chain *chain_temp2;
 ulong ltop;
 rangetype *rangeTempPtr;
 int dyadic = 0;
+FILE *temp_fd;
 
 extern jmp_buf environnement;
 
 extern int yyparse();
 extern FILE *yyin;
+
+void demaskString(char *dest, char *src) {
+  char *curr, *curr2;
+  char internalBuf[4];
+  int i;
+
+  for (i=0;i<4;i++) internalBuf[i] = '\0';
+  curr2 = dest;
+  for (curr=src;*curr != '\0';curr++) {
+    if (*curr != '\\') {
+      *curr2++ = *curr;
+    } else {
+      curr++;
+      if (*curr == '\0') break;
+      switch (*curr) {
+      case '\\': 
+	*curr2++ = '\\';
+	break;
+      case '"': 
+	*curr2++ = '"';
+	break;
+      case '?': 
+	*curr2++ = '?';
+	break;
+      case '\'': 
+	*curr2++ = '\'';
+	break;
+      case 'n': 
+	*curr2++ = '\n';
+	break;
+      case 't': 
+	*curr2++ = '\t';
+	break;
+      case 'a': 
+	*curr2++ = '\a';
+	break;
+      case 'b': 
+	*curr2++ = '\b';
+	break;
+      case 'f': 
+	*curr2++ = '\f';
+	break;
+      case 'r': 
+	*curr2++ = '\r';
+	break;
+      case 'v': 
+	*curr2++ = '\v';
+	break;
+      case 'x':
+	curr++;
+        i = 0;
+	while ((i < 2) && (*curr != '\0') && 
+	       (((*curr >= '0') && (*curr <= '9')) ||
+		((*curr >= 'A') && (*curr <= 'F')) ||
+		((*curr >= 'a') && (*curr <= 'f')))) {
+	  internalBuf[i] = *curr;
+	  curr++; i++;
+	}
+	curr--;
+	for (i=0;i<2;i++) {
+	  if ((internalBuf[i] >= 'a') && (internalBuf[i] <= 'f')) {
+	    internalBuf[i] = (internalBuf[i] - 'a') + 'A';
+	  }
+	}
+	*curr2++ = (char) strtol(internalBuf,NULL,16);
+	break;
+      default:
+	i = 0;
+	while ((i < 3) && (*curr != '\0') && (*curr >= '0') && (*curr <= '7')) {
+	  internalBuf[i] = *curr;
+	  curr++; i++;
+	}
+	curr--;
+	*curr2++ = (char) strtol(internalBuf,NULL,8);
+      }
+    }
+  }
+}
 
 
 void signalHandler(int i) {

@@ -8,11 +8,12 @@
 
 #define DEFAULTPOINTS 1000
 #define DEFAULTPRECISION 120
-#define DEFAULTDIAM 1e-3
+#define DEFAULTDIAM 1e-4
 
 
 extern char *variablename;
 extern char *currentVariable;
+extern char *currentString;
 extern mp_prec_t tools_precision;
 extern char **endptr;
 extern unsigned long int points;
@@ -35,9 +36,10 @@ extern char *temp_string;
 extern chain *chain_temp;
 extern chain *chain_temp2;
 extern int dyadic;
+extern FILE *temp_fd;
 
 void printPrompt(void);
 void recoverFromError(void);
-
+void demaskString(char*, char*);
 
 #endif /* ifdef MAIN_H*/

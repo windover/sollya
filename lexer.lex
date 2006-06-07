@@ -7,7 +7,7 @@
 #include "main.h"
 
 
-#define YY_NO_UNPUT
+#define YY_NO_UNPUT 1
 
 
 %}
@@ -114,6 +114,16 @@ OFF             "off"
 INTEGRAL        "integral"
 DIRTYINTEGRAL   "dirtyintegral"
 
+STRINGDELIMITER [\"]
+OCTALCHAR       [01234567]
+OCTAL           ({OCTALCHAR})(({OCTALCHAR})?)(({OCTALCHAR})?)
+HEXACHAR        [0123456789ABCDEFabcdef]
+HEXA            ({HEXACHAR})(({HEXACHAR})?)
+STRING          ({STRINGDELIMITER})((("\\\\")|(("\\")[\"\'\?ntabfrv])|(("\\")({OCTAL}))|(("\\x")({HEXA}))|([^\"^\\]))*)({STRINGDELIMITER})
+
+PROOF           "proof"
+
+
 %%
 
 %{
@@ -195,6 +205,7 @@ DIRTYINTEGRAL   "dirtyintegral"
 {OFF}           {     promptToBePrinted = 0; return OFFTOKEN; }
 {INTEGRAL}      {     promptToBePrinted = 0; return INTEGRALTOKEN; }
 {DIRTYINTEGRAL} {     promptToBePrinted = 0; return DIRTYINTEGRALTOKEN; }
+{PROOF}         {     promptToBePrinted = 0; return PROOFTOKEN; }
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);
@@ -203,6 +214,16 @@ DIRTYINTEGRAL   "dirtyintegral"
 		      strncpy(currentVariable,yytext,yyleng);
                       promptToBePrinted = 0; return VARIABLETOKEN;    
                 }
+
+{STRING}        {     			     
+                      if (currentString != NULL) free(currentString);
+		      currentString = NULL;
+		      currentString = (char*) calloc(yyleng - 1,sizeof(char));
+		      strncpy(currentString,yytext+1,yyleng-2);
+                      promptToBePrinted = 0; return STRINGTOKEN;    
+                }
+
+
 
 [ \t]		{ /* Eat up spaces and tabulators */
 		}
