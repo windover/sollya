@@ -78,5 +78,7 @@ int isPolynomial(node *tree);
 int arity(node *tree);
 void fprintValue(FILE *fd, mpfr_t value);
 void fprintTree(FILE *fd, node *tree);
+int isSyntacticallyEqual(node *tree1, node *tree2);
+
 
 #endif /* ifdef EXPRESSION_H*/

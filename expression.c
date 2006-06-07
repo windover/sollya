@@ -1,7 +1,7 @@
 #include <mpfr.h>
 #include <gmp.h>
 #include "expression.h"
-#include <stdio.h> /* fprintf, fopen, fclose, */
+#include <stdio.h> /* fprinft, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
 #include <string.h>
 #include <errno.h>
@@ -11,6 +11,7 @@
 
 
 void free_memory(node *tree) {
+  if (tree == NULL) return;
   switch (tree->nodeType) {
   case VARIABLE:
     free(tree);
@@ -459,6 +460,7 @@ void printTree(node *tree) {
 }
 
 void fprintTree(FILE *fd, node *tree) {
+  if (tree == NULL) return;
   switch (tree->nodeType) {
   case VARIABLE:
     fprintf(fd,"%s",variablename);
@@ -3093,6 +3095,30 @@ int arity(node *tree) {
     exit(1);
   }
 }
+
+
+int isSyntacticallyEqual(node *tree1, node *tree2) {
+
+  if (tree1->nodeType != tree2->nodeType) return 0;
+  if (tree1->nodeType == CONSTANT) {
+    if (mpfr_equal_p(*(tree1->value),*(tree2->value))) 
+      return 1;
+    else 
+      return 0;
+  }
+  if (tree1->nodeType == VARIABLE) return 1;
+
+  if (arity(tree1) == 1) {
+    if (!isSyntacticallyEqual(tree1->child1,tree2->child1)) return 0;
+  } else {
+    if (!isSyntacticallyEqual(tree1->child1,tree2->child1)) return 0;
+    if (!isSyntacticallyEqual(tree1->child2,tree2->child2)) return 0;
+  }
+
+  return 1;
+}
+
+
 
 int isConstant(node *tree);
 

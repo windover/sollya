@@ -16,5 +16,7 @@ void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_pr
 void evaluateRangeFunctionFast(rangetype yrange, node *func, node *deriv, rangetype xrange, mp_prec_t prec);
 void fprintInterval(FILE *fd, mpfi_t interval);
 void freeMpfiPtr(void *i);
+void *copyMpfiPtr(void *ptr);
+chain *joinAdjacentIntervalsMaximally(chain *intervals);
 
 #endif /* ifdef INFNORM_H*/

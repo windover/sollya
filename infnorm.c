@@ -295,6 +295,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   exprBoundTheo *leftTheoConstant, *rightTheoConstant, *leftTheoLinear, *rightTheoLinear;
   int isPolynom;
 
+  if (theo != NULL) nullifyExprBoundTheo(theo);
+
   isPolynom = 0;
   internalTheo = NULL;
   if (theo != NULL) {
@@ -330,6 +332,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       internalTheo->theoLeft = leftTheo;
       internalTheo->theoRight = rightTheo;
     }
+
     theo->x = (mpfi_t *) malloc(sizeof(mpfi_t));
     mpfi_init2(*(theo->x),mpfi_get_prec(x));
     mpfi_set(*(theo->x),x);
@@ -338,6 +341,12 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     leftTheo = NULL;
     rightTheo = NULL;
   }
+
+  /*
+  printf("tree = ");
+  printTree(tree);
+  printf("\ninternalTheo = %08x, theo = %08x\n",(int) internalTheo, (int) theo);
+  */
 
   mpfi_init2(stack1, prec);
   mpfi_init2(stack2, prec);
@@ -1071,8 +1080,13 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     mpfi_init2(*(theo->y),mpfi_get_prec(result));
     mpfi_set(*(theo->y),result);
   }
-  mpfi_clear(stack1); mpfi_clear(stack2); mpfi_clear(stack3);
-  mpfr_clear(al); mpfr_clear(ar); mpfr_clear(bl); mpfr_clear(br);
+  mpfi_clear(stack1); 
+  mpfi_clear(stack2); 
+  mpfi_clear(stack3);
+  mpfr_clear(al); 
+  mpfr_clear(ar); 
+  mpfr_clear(bl); 
+  mpfr_clear(br);
 
   return excludes;
 }
@@ -1084,10 +1098,15 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   exprBoundTheo *constantTheo, *linearTheo, *directTheo;
 
   if (theo != NULL) {
+    nullifyExprBoundTheo(theo);
     constantTheo = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+    nullifyExprBoundTheo(constantTheo);
     linearTheo = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+    nullifyExprBoundTheo(linearTheo);
     directTheo = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+    nullifyExprBoundTheo(directTheo);
     theo->function = copyTree(func);
+    theo->functionType = func->nodeType;
     theo->x = (mpfi_t *) malloc(sizeof(mpfi_t));
     mpfi_init2(*(theo->x),prec);
     mpfi_set(*(theo->x),x);
@@ -1322,6 +1341,7 @@ void fprintInterval(FILE *fd, mpfi_t interval) {
   mpfr_t l,r;
   mp_prec_t prec;
 
+  
   prec = mpfi_get_prec(interval);
   mpfr_init2(l,prec);
   mpfr_init2(r,prec);
@@ -1406,6 +1426,70 @@ chain *joinAdjacentIntervals(chain *intervals, mpfr_t diam) {
   mpfr_clear(mpfr_temp);
   return newChain;
 }
+
+chain *joinAdjacentIntervalsMaximally(chain *intervals) {
+  chain *newChain, *curr;
+  mpfi_t *tempI;
+  mp_prec_t prec, p;
+  mpfr_t newLeft, newRight, l,r, mpfr_temp;
+
+  if (intervals == NULL) return NULL;
+  if (intervals->next == NULL) {
+    tempI = (mpfi_t *) malloc(sizeof(mpfi_t));
+    mpfi_init2(*tempI,mpfi_get_prec(*((mpfi_t *) (intervals->value))));
+    mpfi_set(*tempI,*((mpfi_t *) (intervals->value)));
+    newChain = addElement(NULL,tempI);
+    return newChain;
+  }
+
+  prec = mpfi_get_prec(*((mpfi_t *) (intervals->value)));
+  curr = intervals->next;
+  while (curr != NULL) {
+    p = mpfi_get_prec(*((mpfi_t *) (curr->value)));
+    if (p > prec) prec = p;
+    curr = curr->next;
+  }
+
+
+  mpfr_init2(newLeft,prec);
+  mpfr_init2(newRight,prec);
+  mpfi_get_left(newLeft,*((mpfi_t *) (intervals->value)));
+  mpfi_get_right(newRight,*((mpfi_t *) (intervals->value)));
+  mpfr_init2(l,prec);
+  mpfr_init2(r,prec);
+  mpfr_init2(mpfr_temp,prec);
+
+  newChain = NULL;
+  curr = intervals->next;
+  while (curr != NULL) {
+    mpfi_get_left(l,*((mpfi_t *) (curr->value)));
+    mpfi_get_right(r,*((mpfi_t *) (curr->value)));
+    mpfr_sub(mpfr_temp,r,newLeft,GMP_RNDN);
+    if (mpfr_cmp(l,newRight) == 0) {
+      mpfr_set(newRight,r,GMP_RNDN);
+    } else {
+      tempI = (mpfi_t *) malloc(sizeof(mpfi_t));
+      mpfi_init2(*tempI,prec);
+      mpfi_interv_fr(*tempI,newLeft,newRight);
+      newChain = addElement(newChain,tempI);
+      mpfr_set(newLeft,l,GMP_RNDN);
+      mpfr_set(newRight,r,GMP_RNDN);
+    }
+    curr = curr->next;
+  }
+  tempI = (mpfi_t *) malloc(sizeof(mpfi_t));
+  mpfi_init2(*tempI,prec);
+  mpfi_interv_fr(*tempI,newLeft,newRight);
+  newChain = addElement(newChain,tempI);
+
+  mpfr_clear(l);
+  mpfr_clear(r);
+  mpfr_clear(newLeft);
+  mpfr_clear(newRight);
+  mpfr_clear(mpfr_temp);
+  return newChain;
+}
+
 
 
 chain *excludeIntervals(chain *mainIntervals, chain *excludeIntervals) {
@@ -1546,6 +1630,7 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   noZeroTheo *noZeros;
   exprBoundTheo *evalLeftBound, *evalRightBound, *currZeroTheo;
 
+  currZeroTheo = NULL;
   if (theo != NULL) {
     theo->function = copyTree(func);
     theo->derivative = copyTree(deriv);
@@ -1555,11 +1640,14 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
     noZeros = (noZeroTheo *) calloc(1,sizeof(noZeroTheo));
     theo->noZeros = noZeros;
     evalLeftBound = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+    nullifyExprBoundTheo(evalLeftBound);
     evalRightBound = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+    nullifyExprBoundTheo(evalRightBound);
     theo->evalLeftBound = evalLeftBound;
     theo->evalRightBound = evalRightBound;
     theo->domain = (mpfi_t *) malloc(sizeof(mpfi_t));
     theo->infnorm = (mpfi_t *) malloc(sizeof(mpfi_t));
+    theo->evalOnZeros = NULL;
     mpfi_init2(*(theo->domain),mpfi_get_prec(range));
     mpfi_init2(*(theo->infnorm),mpfi_get_prec(infnormval));
     mpfi_set(*(theo->domain),range);
@@ -1587,12 +1675,12 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   mpfi_set_fr(rInterv,r);
   mpfi_set_fr(lInterv,l);
 
-  excludes = evaluateITaylor(evalFuncOnInterval, func, deriv, lInterv, prec, evalLeftBound);
+  excludes = evaluateITaylor(evalFuncOnInterval, func, deriv, lInterv, prec, evalLeftBound); 
   mpfi_get_left(outerLeft,evalFuncOnInterval);
   mpfi_get_right(outerRight,evalFuncOnInterval);
   mpfr_set(innerLeft,outerRight,GMP_RNDU);
   mpfr_set(innerRight,outerLeft,GMP_RNDD);
-  excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, rInterv, prec, evalRightBound);
+  excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, rInterv, prec, evalRightBound); 
   excludes = concatChains(excludes,excludesTemp);
   mpfi_get_left(tl,evalFuncOnInterval);
   mpfi_get_right(tr,evalFuncOnInterval);
@@ -1602,7 +1690,7 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   mpfr_max(innerRight,innerRight,tl,GMP_RNDD); 
  
 
-  tempChain = findZeros(numeratorDeriv,derivNumeratorDeriv,range,prec,diam,noZeros);
+  tempChain = findZeros(numeratorDeriv,derivNumeratorDeriv,range,prec,diam,noZeros); 
   mpfr_init2(diamJoin,prec);
   mpfr_mul_2ui(diamJoin,diam,3,GMP_RNDN);
   tempChain2 = joinAdjacentIntervals(tempChain,diamJoin);
@@ -1620,12 +1708,13 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   curr = zeros;
   while (curr != NULL) {
     if (theo != NULL) {
-      currZeroTheo = (exprBoundTheo *) calloc(1,sizeof(currZeroTheo));
+      currZeroTheo = (exprBoundTheo *) calloc(1,sizeof(exprBoundTheo));
+      nullifyExprBoundTheo(currZeroTheo);
     } else {
       currZeroTheo = NULL;
     }
     currInterval = ((mpfi_t *) (curr->value));
-    excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, *currInterval, prec, currZeroTheo);
+    excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, *currInterval, prec, currZeroTheo); 
     excludes = concatChains(excludes,excludesTemp);
     mpfi_get_left(tl,evalFuncOnInterval);
     mpfi_get_right(tr,evalFuncOnInterval);
@@ -1904,7 +1993,6 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
   } else {
     theo = NULL;
   }
-
 
   infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,
 	   prec,rangeDiameter,initialExcludes,&mightExcludes,theo);

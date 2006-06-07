@@ -85,6 +85,7 @@ struct infnormTheoStruct
 
 int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start);
 void freeExprBoundTheo(exprBoundTheo *theo);
+void nullifyExprBoundTheo(exprBoundTheo *theo);
 int fprintNoZeroTheo(FILE *fd, noZeroTheo *theo, int start);
 void freeNoZeroTheo(noZeroTheo *theo);
 int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start);
