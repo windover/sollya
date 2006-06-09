@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "chain.h"
-
+#include "main.h"
 
 
 
@@ -22,7 +22,7 @@ void freeChain(chain *c, void (*f) (void *)) {
 chain *addElement(chain *c, void *elem) {
   chain *newChain;
 
-  newChain = (chain *) malloc(sizeof(chain));
+  newChain = (chain *) safeMalloc(sizeof(chain));
   newChain->next = c;
   newChain->value = elem;
   return newChain;

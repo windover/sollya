@@ -12,7 +12,7 @@
 #define NUMERATOR_IS_ZERO 3
 #define HOPITAL 4
 #define IMPLICATION 5
-
+#define DECORRELATE 6
 
 typedef struct exprBoundTheoStruct exprBoundTheo;
 

@@ -3,7 +3,7 @@
 #include <string.h>
 #include "taylor.h"
 #include "expression.h"
-
+#include "main.h"
 
 
 
@@ -15,10 +15,10 @@ node *taylor(node* tree, int degree, node* point, mp_prec_t prec) {
   int i;
 
 
-  value = (mpfr_t *) malloc(sizeof(mpfr_t));
+  value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*value,prec);
   mpfr_set_d(*value,0.0,GMP_RNDN);
-  copy = (node *) malloc(sizeof(node));
+  copy = (node *) safeMalloc(sizeof(node));
   copy->nodeType = CONSTANT;
   copy->value = value;
 
@@ -29,49 +29,49 @@ node *taylor(node* tree, int degree, node* point, mp_prec_t prec) {
     fderivsubst = simplifyTreeErrorfree(temp);
     free_memory(temp);
     mpz_fac_ui(denominatorGMP,(unsigned int) i);
-    value = (mpfr_t *) malloc(sizeof(mpfr_t));
+    value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,prec);
     if(mpfr_set_z(*value,denominatorGMP,GMP_RNDN) != 0) {
       printf("Warning: rounding occured on computing a taylor constant factor.\n");
       printf("Try to increase the working tools_precision.\n");
     }
-    denominator = (node *) malloc(sizeof(node));
+    denominator = (node *) safeMalloc(sizeof(node));
     denominator->nodeType = CONSTANT;
     denominator->value = value;
-    value = (mpfr_t *) malloc(sizeof(mpfr_t));
+    value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,prec);
     mpfr_set_d(*value,1.0,GMP_RNDN);
-    numerator = (node *) malloc(sizeof(node));
+    numerator = (node *) safeMalloc(sizeof(node));
     numerator->nodeType = CONSTANT;
     numerator->value = value;
-    temp = (node *) malloc(sizeof(node));
+    temp = (node *) safeMalloc(sizeof(node));
     temp->nodeType = DIV;
     temp->child1 = numerator;
     temp->child2 = denominator;
-    temp2 = (node *) malloc(sizeof(node));
+    temp2 = (node *) safeMalloc(sizeof(node));
     temp2->nodeType = MUL;
     temp2->child1 = temp;
     temp2->child2 = fderivsubst;
-    variable = (node *) malloc(sizeof(node));
+    variable = (node *) safeMalloc(sizeof(node));
     variable->nodeType = VARIABLE;
-    value = (mpfr_t *) malloc(sizeof(mpfr_t));
+    value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,prec);
     if(mpfr_set_si(*value,i,GMP_RNDN) != 0) {
       printf("Warning: rounding occured on computing a taylor exponent.\n");
       printf("Try to increase the working tools_precision.\n");
     }
-    expon = (node *) malloc(sizeof(node));
+    expon = (node *) safeMalloc(sizeof(node));
     expon->nodeType = CONSTANT;
     expon->value = value;
-    temp = (node *) malloc(sizeof(node));
+    temp = (node *) safeMalloc(sizeof(node));
     temp->nodeType = POW;
     temp->child1 = variable;
     temp->child2 = expon;
-    term = (node *) malloc(sizeof(node));
+    term = (node *) safeMalloc(sizeof(node));
     term->nodeType = MUL;
     term->child1 = temp2;
     term->child2 = temp;
-    temp = (node *) malloc(sizeof(node));
+    temp = (node *) safeMalloc(sizeof(node));
     temp->nodeType = ADD;
     temp->child1 = copy;
     temp->child2 = term;

@@ -4,6 +4,7 @@
 #include "chain.h"
 #include "assignment.h"
 #include "expression.h"
+#include "main.h"
 
 
 chain *addEntry(chain *symTbl, char *name, node *value) {
@@ -11,8 +12,8 @@ chain *addEntry(chain *symTbl, char *name, node *value) {
 
   if (containsEntry(symTbl,name)) return symTbl;
 
-  newEntry = (entry *) malloc(sizeof(entry));
-  newEntry->name = (char *) calloc(strlen(name)+1,sizeof(char));
+  newEntry = (entry *) safeMalloc(sizeof(entry));
+  newEntry->name = (char *) safeCalloc(strlen(name)+1,sizeof(char));
   strcpy(newEntry->name,name);
   newEntry->value = copyTree(value);
 

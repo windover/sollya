@@ -141,6 +141,103 @@ void free_memory(node *tree) {
   return;
 }
 
+void fprintHeadFunction(FILE *fd,node *tree, char *x, char *y) {
+  if (tree == NULL) return;
+  switch (tree->nodeType) {
+  case VARIABLE:
+    if (x != NULL) fprintf(fd,"%s",x); else fprintf(fd,"x");
+    break;
+  case CONSTANT:
+    fprintValue(fd,*(tree->value));
+    break;
+  case ADD:
+    fprintf(fd,"%s + %s",x,y);
+    break;
+  case SUB:
+    fprintf(fd,"%s - %s",x,y);
+    break;
+  case MUL:
+    fprintf(fd,"%s * %s",x,y);
+    break;
+  case DIV:
+    fprintf(fd,"%s / %s",x,y);
+    break;
+  case SQRT:
+    fprintf(fd,"sqrt(%s)",x);
+    break;
+  case EXP:
+    fprintf(fd,"exp(%s)",x);
+    break;
+  case LOG:
+    fprintf(fd,"log(%s)",x);
+    break;
+  case LOG_2:
+    fprintf(fd,"log2(%s)",x);
+    break;
+  case LOG_10:
+    fprintf(fd,"log10(%s)",x);
+    break;
+  case SIN:
+    fprintf(fd,"sin(%s)",x);
+    break;
+  case COS:
+    fprintf(fd,"cos(%s)",x);
+    break;
+  case TAN:
+    fprintf(fd,"tan(%s)",x);
+    break;
+  case ASIN:
+    fprintf(fd,"asin(%s)",x);
+    break;
+  case ACOS:
+    fprintf(fd,"acos(%s)",x);
+    break;
+  case ATAN:
+    fprintf(fd,"atan(%s)",x);
+    break;
+  case SINH:
+    fprintf(fd,"sinh(%s)",x);
+    break;
+  case COSH:
+    fprintf(fd,"cosh(%s)",x);
+    break;
+  case TANH:
+    fprintf(fd,"tanh(%s)",x);
+    break;
+  case ASINH:
+    fprintf(fd,"asinh(%s)",x);
+    break;
+  case ACOSH:
+    fprintf(fd,"acosh(%s)",x);
+    break;
+  case ATANH:
+    fprintf(fd,"atanh(%s)",x);
+    break;
+  case POW:
+    fprintf(fd,"%s^%s",x,y);
+    break;
+  case NEG:
+    fprintf(fd,"-%s",x);
+    break;
+  case ABS:
+    fprintf(fd,"abs(%s)",x);
+    break;
+  case DOUBLE:
+    fprintf(fd,"double(%s)",x);
+    break;
+  case DOUBLEDOUBLE:
+    fprintf(fd,"doubledouble(%s)",x);
+    break;
+  case TRIPLEDOUBLE:
+    fprintf(fd,"tripledouble(%s)",x);
+    break;
+  default:
+   fprintf(stderr,"fprintHeadFunction: unknown identifier (%d) in the tree\n",tree->nodeType);
+   exit(1);
+  }
+  return;
+}
+
 
 int isInfix(node *tree) {
   switch(tree->nodeType) {
@@ -463,7 +560,7 @@ void fprintTree(FILE *fd, node *tree) {
   if (tree == NULL) return;
   switch (tree->nodeType) {
   case VARIABLE:
-    fprintf(fd,"%s",variablename);
+    if (variablename != NULL) fprintf(fd,"%s",variablename); else fprintf(fd,"x");
     break;
   case CONSTANT:
     fprintValue(fd,*(tree->value));
@@ -658,154 +755,154 @@ node* copyTree(node *tree) {
 
   switch (tree->nodeType) {
   case VARIABLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = VARIABLE;
     break;
   case CONSTANT:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CONSTANT;
-    value = (mpfr_t*) malloc(sizeof(mpfr_t));
+    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,tools_precision);
     mpfr_set(*value,*(tree->value),GMP_RNDN);
     copy->value = value;
     break;
   case ADD:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ADD;
     copy->child1 = copyTree(tree->child1);
     copy->child2 = copyTree(tree->child2);
     break;
   case SUB:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SUB;
     copy->child1 = copyTree(tree->child1);
     copy->child2 = copyTree(tree->child2);
     break;
   case MUL:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = MUL;
     copy->child1 = copyTree(tree->child1);
     copy->child2 = copyTree(tree->child2);
     break;
   case DIV:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DIV;
     copy->child1 = copyTree(tree->child1);
     copy->child2 = copyTree(tree->child2);
     break;
   case SQRT:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SQRT;
     copy->child1 = copyTree(tree->child1);
     break;
   case EXP:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = EXP;
     copy->child1 = copyTree(tree->child1);
     break;
   case LOG:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = LOG;
     copy->child1 = copyTree(tree->child1);
     break;
   case LOG_2:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = LOG_2;
     copy->child1 = copyTree(tree->child1);
     break;
   case LOG_10:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = LOG_10;
     copy->child1 = copyTree(tree->child1);
     break;
   case SIN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SIN;
     copy->child1 = copyTree(tree->child1);
     break;
   case COS:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = COS;
     copy->child1 = copyTree(tree->child1);
     break;
   case TAN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TAN;
     copy->child1 = copyTree(tree->child1);
     break;
   case ASIN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ASIN;
     copy->child1 = copyTree(tree->child1);
     break;
   case ACOS:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ACOS;
     copy->child1 = copyTree(tree->child1);
     break;
   case ATAN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ATAN;
     copy->child1 = copyTree(tree->child1);
     break;
   case SINH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SINH;
     copy->child1 = copyTree(tree->child1);
     break;
   case COSH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = COSH;
     copy->child1 = copyTree(tree->child1);
     break;
   case TANH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TANH;
     copy->child1 = copyTree(tree->child1);
     break;
   case ASINH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ASINH;
     copy->child1 = copyTree(tree->child1);
     break;
   case ACOSH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ACOSH;
     copy->child1 = copyTree(tree->child1);
     break;
   case ATANH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ATANH;
     copy->child1 = copyTree(tree->child1);
     break;
   case POW:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = POW;
     copy->child1 = copyTree(tree->child1);
     copy->child2 = copyTree(tree->child2);
     break;
   case NEG:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = NEG;
     copy->child1 = copyTree(tree->child1);
     break;
   case ABS:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ABS;
     copy->child1 = copyTree(tree->child1);
     break;
   case DOUBLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLE;
     copy->child1 = copyTree(tree->child1);
     break;
   case DOUBLEDOUBLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLEDOUBLE;
     copy->child1 = copyTree(tree->child1);
     break;
   case TRIPLEDOUBLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TRIPLEDOUBLE;
     copy->child1 = copyTree(tree->child1);
     break;
@@ -823,13 +920,13 @@ node* simplifyTreeErrorfree(node *tree) {
 
   switch (tree->nodeType) {
   case VARIABLE:
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     simplified->nodeType = VARIABLE;
     break;
   case CONSTANT:
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     simplified->nodeType = CONSTANT;
-    value = (mpfr_t*) malloc(sizeof(mpfr_t));
+    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,mpfr_get_prec(*(tree->value)) + 10);
     mpfr_set(*value,*(tree->value),GMP_RNDN);
     simplified->value = value;
@@ -837,13 +934,14 @@ node* simplifyTreeErrorfree(node *tree) {
   case ADD:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
     simplChild2 = simplifyTreeErrorfree(tree->child2);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_add(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN) != 0) {
+      if ((mpfr_add(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = ADD;
 	simplified->child1 = simplChild1;
 	simplified->child2 = simplChild2;
@@ -874,13 +972,14 @@ node* simplifyTreeErrorfree(node *tree) {
   case SUB:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
     simplChild2 = simplifyTreeErrorfree(tree->child2);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_sub(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN) != 0) {
+      if ((mpfr_sub(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = SUB;
 	simplified->child1 = simplChild1;
 	simplified->child2 = simplChild2;
@@ -911,13 +1010,14 @@ node* simplifyTreeErrorfree(node *tree) {
   case MUL:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
     simplChild2 = simplifyTreeErrorfree(tree->child2);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_mul(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN) != 0) {
+      if ((mpfr_mul(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = MUL;
 	simplified->child1 = simplChild1;
 	simplified->child2 = simplChild2;
@@ -933,7 +1033,7 @@ node* simplifyTreeErrorfree(node *tree) {
 	free_memory(simplChild1);
 	free_memory(simplChild2);
 	simplified->nodeType = CONSTANT;
-	value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	simplified->value = value;
 	mpfr_set_d(*value,0.0,GMP_RNDN);
@@ -959,13 +1059,14 @@ node* simplifyTreeErrorfree(node *tree) {
   case DIV:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
     simplChild2 = simplifyTreeErrorfree(tree->child2);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_div(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN) != 0) {
+      if ((mpfr_div(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = DIV;
 	simplified->child1 = simplChild1;
 	simplified->child2 = simplChild2;
@@ -980,7 +1081,7 @@ node* simplifyTreeErrorfree(node *tree) {
 	free_memory(simplChild1);
 	free_memory(simplChild2);
 	simplified->nodeType = CONSTANT;
-	value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	simplified->value = value;
 	mpfr_set_d(*value,0.0,GMP_RNDN);
@@ -999,13 +1100,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case SQRT:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_sqrt(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_sqrt(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = SQRT;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1020,13 +1122,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case EXP:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_exp(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_exp(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = EXP;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1041,13 +1144,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case LOG:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_log(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_log(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = LOG;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1062,13 +1166,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case LOG_2:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_log2(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_log2(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = LOG_2;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1083,13 +1188,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case LOG_10:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_log10(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_log10(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = LOG_10;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1104,13 +1210,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case SIN:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_sin(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_sin(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = SIN;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1125,13 +1232,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case COS:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_cos(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_cos(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = COS;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1146,13 +1254,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case TAN:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_tan(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_tan(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = TAN;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1167,13 +1276,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case ASIN:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_asin(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_asin(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = ASIN;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1188,13 +1298,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case ACOS:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_acos(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_acos(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = ACOS;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1209,13 +1320,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case ATAN:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_atan(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_atan(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = ATAN;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1230,13 +1342,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case SINH:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_sinh(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_sinh(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = SINH;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1251,13 +1364,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case COSH:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_cosh(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_cosh(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = COSH;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1272,13 +1386,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case TANH:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_tanh(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_tanh(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = TANH;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1293,13 +1408,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case ASINH:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_asinh(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_asinh(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = ASINH;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1314,13 +1430,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case ACOSH:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_acosh(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_acosh(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = ACOSH;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1335,13 +1452,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case ATANH:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_atanh(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_atanh(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = ATANH;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1357,13 +1475,14 @@ node* simplifyTreeErrorfree(node *tree) {
   case POW:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
     simplChild2 = simplifyTreeErrorfree(tree->child2);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_pow(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN) != 0) {
+      if ((mpfr_pow(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = POW;
 	simplified->child1 = simplChild1;
 	simplified->child2 = simplChild2;
@@ -1387,13 +1506,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case NEG:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_neg(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_neg(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = NEG;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1408,13 +1528,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case ABS:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_abs(*value, *(simplChild1->value), GMP_RNDN) != 0) {
+      if ((mpfr_abs(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = ABS;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1429,13 +1550,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case DOUBLE:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_round_to_double(*value, *(simplChild1->value)) != 0) {
+      if ((mpfr_round_to_double(*value, *(simplChild1->value)) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = DOUBLE;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1450,15 +1572,16 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case DOUBLEDOUBLE:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_round_to_doubledouble(*value, *(simplChild1->value));
       free_memory(simplChild1);
-      if (mpfr_round_to_doubledouble(*value, *(simplChild1->value)) != 0) {
+      if ((mpfr_round_to_doubledouble(*value, *(simplChild1->value)) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = DOUBLEDOUBLE;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1473,13 +1596,14 @@ node* simplifyTreeErrorfree(node *tree) {
     break;
   case TRIPLEDOUBLE:
     simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if (mpfr_round_to_tripledouble(*value, *(simplChild1->value)) != 0) {
+      if ((mpfr_round_to_tripledouble(*value, *(simplChild1->value)) != 0) || 
+	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = TRIPLEDOUBLE;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -1516,32 +1640,32 @@ node* differentiateUnsimplified(node *tree) {
 
     switch (tree->nodeType) {
     case VARIABLE:
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = CONSTANT;
       temp_node->value = mpfr_temp;
       derivative = temp_node;
       break;
     case CONSTANT:
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,0.0,GMP_RNDN);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = CONSTANT;
       temp_node->value = mpfr_temp;
       derivative = temp_node;    
       break;
     case ADD:
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = ADD;
       temp_node->child1 = differentiateUnsimplified(tree->child1);
       temp_node->child2 = differentiateUnsimplified(tree->child2);
       derivative = temp_node;
       break;
     case SUB:
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = SUB;
       temp_node->child1 = differentiateUnsimplified(tree->child1);
       temp_node->child2 = differentiateUnsimplified(tree->child2);
@@ -1551,7 +1675,7 @@ node* differentiateUnsimplified(node *tree) {
       if (tree->child1->nodeType == CONSTANT) {
 	f_diff = differentiateUnsimplified(tree->child2);
 	g_copy = copyTree(tree->child1);
-	temp_node = (node*) malloc(sizeof(node));
+	temp_node = (node*) safeMalloc(sizeof(node));
 	temp_node->nodeType = MUL;
 	temp_node->child1 = g_copy;
 	temp_node->child2 = f_diff;
@@ -1560,7 +1684,7 @@ node* differentiateUnsimplified(node *tree) {
 	if (tree->child2->nodeType == CONSTANT) {
 	  f_diff = differentiateUnsimplified(tree->child1);
 	  g_copy = copyTree(tree->child2);
-	  temp_node = (node*) malloc(sizeof(node));
+	  temp_node = (node*) safeMalloc(sizeof(node));
 	  temp_node->nodeType = MUL;
 	  temp_node->child2 = g_copy;
 	  temp_node->child1 = f_diff;
@@ -1570,11 +1694,11 @@ node* differentiateUnsimplified(node *tree) {
 	  g_copy = copyTree(tree->child2);
 	  f_diff = differentiateUnsimplified(tree->child1);
 	  g_diff = differentiateUnsimplified(tree->child2);
-	  temp_node = (node*) malloc(sizeof(node));
+	  temp_node = (node*) safeMalloc(sizeof(node));
 	  temp_node->nodeType = ADD;
-	  temp_node2 = (node*) malloc(sizeof(node));
+	  temp_node2 = (node*) safeMalloc(sizeof(node));
 	  temp_node2->nodeType = MUL;
-	  temp_node3 = (node*) malloc(sizeof(node));
+	  temp_node3 = (node*) safeMalloc(sizeof(node));
 	  temp_node3->nodeType = MUL;
 	  temp_node->child1 = temp_node2;
 	  temp_node->child2 = temp_node3;
@@ -1591,11 +1715,11 @@ node* differentiateUnsimplified(node *tree) {
       g_copy = copyTree(tree->child2);
       f_diff = differentiateUnsimplified(tree->child1);
       g_diff = differentiateUnsimplified(tree->child2);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = SUB;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = MUL;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = MUL;
       temp_node->child1 = temp_node2;
       temp_node->child2 = temp_node3;
@@ -1604,17 +1728,17 @@ node* differentiateUnsimplified(node *tree) {
       temp_node3->child1 = f_copy;
       temp_node3->child2 = g_diff;
       g_copy = copyTree(tree->child2);
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = POW;
       temp_node2->child1 = g_copy;
-      temp_node4 = (node*) malloc(sizeof(node));
+      temp_node4 = (node*) safeMalloc(sizeof(node));
       temp_node4->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,2.0,GMP_RNDN);
       temp_node4->value = mpfr_temp;
       temp_node2->child2 = temp_node4;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = DIV;
       temp_node3->child1 = temp_node;
       temp_node3->child2 = temp_node2;
@@ -1623,17 +1747,17 @@ node* differentiateUnsimplified(node *tree) {
     case SQRT:
       h_copy = copyTree(tree);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,2.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = MUL;
       temp_node2->child1 = temp_node3;
       temp_node2->child2 = h_copy;
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = DIV;
       temp_node->child1 = g_diff;
       temp_node->child2 = temp_node2;
@@ -1642,10 +1766,10 @@ node* differentiateUnsimplified(node *tree) {
     case EXP:
       g_copy = copyTree(tree->child1);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = EXP;
       temp_node->child1 = temp_node2;
       temp_node2->child1 = g_copy;    
@@ -1654,16 +1778,16 @@ node* differentiateUnsimplified(node *tree) {
     case LOG:
       g_copy = copyTree(tree->child1);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = DIV;
       temp_node->child1 = temp_node2;
       temp_node2->child2 = g_copy;    
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
@@ -1673,29 +1797,29 @@ node* differentiateUnsimplified(node *tree) {
     case LOG_2:
       g_copy = copyTree(tree->child1);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = DIV;
       temp_node->child1 = temp_node2;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
       temp_node2->child1 = temp_node3;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node2->child2 = temp_node3;
       temp_node3->nodeType = MUL;
       temp_node3->child1 = g_copy;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = LOG;
       temp_node3->child2 = temp_node2;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,2.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
@@ -1705,29 +1829,29 @@ node* differentiateUnsimplified(node *tree) {
     case LOG_10:
       g_copy = copyTree(tree->child1);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = DIV;
       temp_node->child1 = temp_node2;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
       temp_node2->child1 = temp_node3;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node2->child2 = temp_node3;
       temp_node3->nodeType = MUL;
       temp_node3->child1 = g_copy;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = LOG;
       temp_node3->child2 = temp_node2;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,10.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
@@ -1737,10 +1861,10 @@ node* differentiateUnsimplified(node *tree) {
     case SIN:
       g_copy = copyTree(tree->child1);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = COS;
       temp_node->child1 = temp_node2;
       temp_node2->child1 = g_copy;
@@ -1749,13 +1873,13 @@ node* differentiateUnsimplified(node *tree) {
     case COS:
       g_copy = copyTree(tree->child1);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = SIN;
       temp_node2->child1 = g_copy;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = NEG;
       temp_node3->child1 = temp_node2;
       temp_node->child1 = temp_node3;
@@ -1763,27 +1887,27 @@ node* differentiateUnsimplified(node *tree) {
       break;
     case TAN:
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = ADD;
       temp_node->child1 = temp_node2;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
       temp_node2->child1 = temp_node3;
       h_copy = copyTree(tree);
-      temp_node4 = (node*) malloc(sizeof(node));
+      temp_node4 = (node*) safeMalloc(sizeof(node));
       temp_node4->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,2.0,GMP_RNDN);
       temp_node4->value = mpfr_temp;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = POW;
       temp_node2->child2 = temp_node3;
       temp_node3->child1 = h_copy;
@@ -1793,40 +1917,40 @@ node* differentiateUnsimplified(node *tree) {
     case ASIN:
       g_copy = copyTree(tree->child1);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node4 = (node*) malloc(sizeof(node));
+      temp_node4 = (node*) safeMalloc(sizeof(node));
       temp_node4->nodeType = DIV;
       temp_node->child1 = temp_node4;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
       temp_node4->child1 = temp_node3;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = POW;
       temp_node3->child1 = g_copy;
-      temp_node5 = (node*) malloc(sizeof(node));
+      temp_node5 = (node*) safeMalloc(sizeof(node));
       temp_node5->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,2.0,GMP_RNDN);
       temp_node5->value = mpfr_temp;
       temp_node3->child2 = temp_node5;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = SUB;
       temp_node2->child2 = temp_node3;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
       temp_node2->child1 = temp_node3;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = SQRT;
       temp_node3->child1 = temp_node2;
       temp_node4->child2 = temp_node3;
@@ -1836,34 +1960,34 @@ node* differentiateUnsimplified(node *tree) {
       g_copy = copyTree(tree->child1);
       g_copy2 = copyTree(tree->child1);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node4 = (node*) malloc(sizeof(node));
+      temp_node4 = (node*) safeMalloc(sizeof(node));
       temp_node4->nodeType = DIV;
       temp_node->child1 = temp_node4;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,-1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
       temp_node4->child1 = temp_node3;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = MUL;
       temp_node3->child1 = g_copy;
       temp_node3->child2 = g_copy2;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = SUB;
       temp_node2->child2 = temp_node3;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
       temp_node2->child1 = temp_node3;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = SQRT;
       temp_node3->child1 = temp_node2;
       temp_node4->child2 = temp_node3;
@@ -1873,28 +1997,28 @@ node* differentiateUnsimplified(node *tree) {
       g_copy = copyTree(tree->child1);
       g_copy2 = copyTree(tree->child1);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = MUL;
       temp_node2->child1 = g_copy;
       temp_node2->child2 = g_copy2;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
-      temp_node4 = (node*) malloc(sizeof(node));
+      temp_node4 = (node*) safeMalloc(sizeof(node));
       temp_node4->nodeType = ADD;
       temp_node4->child1 = temp_node3;
       temp_node4->child2 = temp_node2;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = DIV;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
@@ -1906,10 +2030,10 @@ node* differentiateUnsimplified(node *tree) {
     case SINH:
       g_copy = copyTree(tree->child1);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = COSH;
       temp_node2->child1 = g_copy;
       temp_node->child1 = temp_node2;
@@ -1918,10 +2042,10 @@ node* differentiateUnsimplified(node *tree) {
     case COSH:
       g_copy = copyTree(tree->child1);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = SINH;
       temp_node2->child1 = g_copy;
       temp_node->child1 = temp_node2;
@@ -1929,22 +2053,22 @@ node* differentiateUnsimplified(node *tree) {
       break;
     case TANH:
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = SUB;
       temp_node->child1 = temp_node2;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
       temp_node2->child1 = temp_node3;
       h_copy = copyTree(tree);
       h_copy2 = copyTree(tree);
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = MUL;
       temp_node2->child2 = temp_node3;
       temp_node3->child1 = h_copy;
@@ -1955,34 +2079,34 @@ node* differentiateUnsimplified(node *tree) {
       g_copy = copyTree(tree->child1);
       g_copy2 = copyTree(tree->child1);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node4 = (node*) malloc(sizeof(node));
+      temp_node4 = (node*) safeMalloc(sizeof(node));
       temp_node4->nodeType = DIV;
       temp_node->child1 = temp_node4;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
       temp_node4->child1 = temp_node3;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = MUL;
       temp_node3->child1 = g_copy;
       temp_node3->child2 = g_copy2;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = ADD;
       temp_node2->child2 = temp_node3;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
       temp_node2->child1 = temp_node3;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = SQRT;
       temp_node3->child1 = temp_node2;
       temp_node4->child2 = temp_node3;
@@ -1992,34 +2116,34 @@ node* differentiateUnsimplified(node *tree) {
       g_copy = copyTree(tree->child1);
       g_copy2 = copyTree(tree->child1);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node4 = (node*) malloc(sizeof(node));
+      temp_node4 = (node*) safeMalloc(sizeof(node));
       temp_node4->nodeType = DIV;
       temp_node->child1 = temp_node4;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
       temp_node4->child1 = temp_node3;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = MUL;
       temp_node3->child1 = g_copy;
       temp_node3->child2 = g_copy2;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = ADD;
       temp_node2->child2 = temp_node3;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,-1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
       temp_node2->child1 = temp_node3;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = SQRT;
       temp_node3->child1 = temp_node2;
       temp_node4->child2 = temp_node3;
@@ -2029,28 +2153,28 @@ node* differentiateUnsimplified(node *tree) {
       g_copy = copyTree(tree->child1);
       g_copy2 = copyTree(tree->child1);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = MUL;
       temp_node2->child1 = g_copy;
       temp_node2->child2 = g_copy2;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
-      temp_node4 = (node*) malloc(sizeof(node));
+      temp_node4 = (node*) safeMalloc(sizeof(node));
       temp_node4->nodeType = SUB;
       temp_node4->child1 = temp_node3;
       temp_node4->child2 = temp_node2;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = DIV;
-      temp_node3 = (node*) malloc(sizeof(node));
+      temp_node3 = (node*) safeMalloc(sizeof(node));
       temp_node3->nodeType = CONSTANT;
-      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*mpfr_temp,tools_precision);
       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
       temp_node3->value = mpfr_temp;
@@ -2065,25 +2189,25 @@ node* differentiateUnsimplified(node *tree) {
 	g_copy2 = copyTree(tree->child2);
 	f_diff = differentiateUnsimplified(tree->child1);      
 	f_copy = copyTree(tree->child1);
-	temp_node2 = (node*) malloc(sizeof(node));
+	temp_node2 = (node*) safeMalloc(sizeof(node));
 	temp_node2->nodeType = MUL;
 	temp_node2->child1 = g_copy;
 	temp_node2->child2 = f_diff;
-	temp_node3 = (node*) malloc(sizeof(node));
+	temp_node3 = (node*) safeMalloc(sizeof(node));
 	temp_node3->nodeType = SUB;
-	temp_node4 = (node*) malloc(sizeof(node));
+	temp_node4 = (node*) safeMalloc(sizeof(node));
 	temp_node4->nodeType = CONSTANT;
-	mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*mpfr_temp,tools_precision);
 	mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
 	temp_node4->value = mpfr_temp;
 	temp_node3->child2 = temp_node4;
 	temp_node3->child1 = g_copy2;
-	temp_node4 = (node*) malloc(sizeof(node));
+	temp_node4 = (node*) safeMalloc(sizeof(node));
 	temp_node4->nodeType = POW;
 	temp_node4->child1 = f_copy;
 	temp_node4->child2 = temp_node3;
-	temp_node = (node*) malloc(sizeof(node));
+	temp_node = (node*) safeMalloc(sizeof(node));
 	temp_node->nodeType = MUL;
 	temp_node->child1 = temp_node4;
 	temp_node->child2 = temp_node2;
@@ -2095,26 +2219,26 @@ node* differentiateUnsimplified(node *tree) {
 	f_copy2 = copyTree(tree->child1);
 	g_copy = copyTree(tree->child2);
 	g_diff = differentiateUnsimplified(tree->child2);
-	temp_node4 = (node*) malloc(sizeof(node));
+	temp_node4 = (node*) safeMalloc(sizeof(node));
 	temp_node4->nodeType = LOG;
 	temp_node4->child1 = f_copy;
-	temp_node3 = (node*) malloc(sizeof(node));
+	temp_node3 = (node*) safeMalloc(sizeof(node));
 	temp_node3->nodeType = MUL;
 	temp_node3->child1 = g_diff;
 	temp_node3->child2 = temp_node4;
-	temp_node2 = (node*) malloc(sizeof(node));
+	temp_node2 = (node*) safeMalloc(sizeof(node));
 	temp_node2->nodeType = MUL;
 	temp_node2->child1 = f_diff;
 	temp_node2->child2 = g_copy;
-	temp_node = (node*) malloc(sizeof(node));
+	temp_node = (node*) safeMalloc(sizeof(node));
 	temp_node->nodeType = DIV;
 	temp_node->child1 = temp_node2;
 	temp_node->child2 = f_copy2;
-	temp_node4 = (node*) malloc(sizeof(node));
+	temp_node4 = (node*) safeMalloc(sizeof(node));
 	temp_node4->nodeType = ADD;
 	temp_node4->child1 = temp_node;
 	temp_node4->child2 = temp_node3;
-	temp_node = (node*) malloc(sizeof(node));
+	temp_node = (node*) safeMalloc(sizeof(node));
 	temp_node->nodeType = MUL;
 	temp_node->child1 = h_copy;
 	temp_node->child2 = temp_node4;
@@ -2123,7 +2247,7 @@ node* differentiateUnsimplified(node *tree) {
       break;
     case NEG:
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = NEG;
       temp_node->child1 = g_diff;
       derivative = temp_node;
@@ -2132,10 +2256,10 @@ node* differentiateUnsimplified(node *tree) {
       g_copy = copyTree(tree->child1);
       h_copy = copyTree(tree);
       g_diff = differentiateUnsimplified(tree->child1);
-      temp_node = (node*) malloc(sizeof(node));
+      temp_node = (node*) safeMalloc(sizeof(node));
       temp_node->nodeType = MUL;
       temp_node->child2 = g_diff;
-      temp_node2 = (node*) malloc(sizeof(node));
+      temp_node2 = (node*) safeMalloc(sizeof(node));
       temp_node2->nodeType = DIV;
       temp_node->child1 = temp_node2;
       temp_node2->child1 = g_copy;
@@ -2356,13 +2480,13 @@ node* simplifyTree(node *tree) {
 
   switch (tree->nodeType) {
   case VARIABLE:
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     simplified->nodeType = VARIABLE;
     break;
   case CONSTANT:
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     simplified->nodeType = CONSTANT;
-    value = (mpfr_t*) malloc(sizeof(mpfr_t));
+    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,tools_precision);
     mpfr_set(*value,*(tree->value),GMP_RNDN);
     simplified->value = value;
@@ -2370,10 +2494,10 @@ node* simplifyTree(node *tree) {
   case ADD:
     simplChild1 = simplifyTree(tree->child1);
     simplChild2 = simplifyTree(tree->child2);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_add(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN);
@@ -2400,10 +2524,10 @@ node* simplifyTree(node *tree) {
   case SUB:
     simplChild1 = simplifyTree(tree->child1);
     simplChild2 = simplifyTree(tree->child2);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_sub(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN);
@@ -2430,10 +2554,10 @@ node* simplifyTree(node *tree) {
   case MUL:
     simplChild1 = simplifyTree(tree->child1);
     simplChild2 = simplifyTree(tree->child2);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_mul(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN);
@@ -2445,7 +2569,7 @@ node* simplifyTree(node *tree) {
 	free_memory(simplChild1);
 	free_memory(simplChild2);
 	simplified->nodeType = CONSTANT;
-	value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	simplified->value = value;
 	mpfr_set_d(*value,0.0,GMP_RNDN);
@@ -2471,10 +2595,10 @@ node* simplifyTree(node *tree) {
   case DIV:
     simplChild1 = simplifyTree(tree->child1);
     simplChild2 = simplifyTree(tree->child2);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_div(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN);
@@ -2485,7 +2609,7 @@ node* simplifyTree(node *tree) {
 	free_memory(simplChild1);
 	free_memory(simplChild2);
 	simplified->nodeType = CONSTANT;
-	value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	simplified->value = value;
 	mpfr_set_d(*value,0.0,GMP_RNDN);
@@ -2504,10 +2628,10 @@ node* simplifyTree(node *tree) {
     break;
   case SQRT:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_sqrt(*value, *(simplChild1->value), GMP_RNDN);
@@ -2519,10 +2643,10 @@ node* simplifyTree(node *tree) {
     break;
   case EXP:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_exp(*value, *(simplChild1->value), GMP_RNDN);
@@ -2534,10 +2658,10 @@ node* simplifyTree(node *tree) {
     break;
   case LOG:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_log(*value, *(simplChild1->value), GMP_RNDN);
@@ -2549,10 +2673,10 @@ node* simplifyTree(node *tree) {
     break;
   case LOG_2:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_log2(*value, *(simplChild1->value), GMP_RNDN);
@@ -2564,10 +2688,10 @@ node* simplifyTree(node *tree) {
     break;
   case LOG_10:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_log10(*value, *(simplChild1->value), GMP_RNDN);
@@ -2579,10 +2703,10 @@ node* simplifyTree(node *tree) {
     break;
   case SIN:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_sin(*value, *(simplChild1->value), GMP_RNDN);
@@ -2594,10 +2718,10 @@ node* simplifyTree(node *tree) {
     break;
   case COS:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_cos(*value, *(simplChild1->value), GMP_RNDN);
@@ -2609,10 +2733,10 @@ node* simplifyTree(node *tree) {
     break;
   case TAN:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_tan(*value, *(simplChild1->value), GMP_RNDN);
@@ -2624,10 +2748,10 @@ node* simplifyTree(node *tree) {
     break;
   case ASIN:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_asin(*value, *(simplChild1->value), GMP_RNDN);
@@ -2639,10 +2763,10 @@ node* simplifyTree(node *tree) {
     break;
   case ACOS:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_acos(*value, *(simplChild1->value), GMP_RNDN);
@@ -2654,10 +2778,10 @@ node* simplifyTree(node *tree) {
     break;
   case ATAN:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_atan(*value, *(simplChild1->value), GMP_RNDN);
@@ -2669,10 +2793,10 @@ node* simplifyTree(node *tree) {
     break;
   case SINH:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_sinh(*value, *(simplChild1->value), GMP_RNDN);
@@ -2684,10 +2808,10 @@ node* simplifyTree(node *tree) {
     break;
   case COSH:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_cosh(*value, *(simplChild1->value), GMP_RNDN);
@@ -2699,10 +2823,10 @@ node* simplifyTree(node *tree) {
     break;
   case TANH:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_tanh(*value, *(simplChild1->value), GMP_RNDN);
@@ -2714,10 +2838,10 @@ node* simplifyTree(node *tree) {
     break;
   case ASINH:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_asinh(*value, *(simplChild1->value), GMP_RNDN);
@@ -2729,10 +2853,10 @@ node* simplifyTree(node *tree) {
     break;
   case ACOSH:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_acosh(*value, *(simplChild1->value), GMP_RNDN);
@@ -2744,10 +2868,10 @@ node* simplifyTree(node *tree) {
     break;
   case ATANH:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_atanh(*value, *(simplChild1->value), GMP_RNDN);
@@ -2760,10 +2884,10 @@ node* simplifyTree(node *tree) {
   case POW:
     simplChild1 = simplifyTree(tree->child1);
     simplChild2 = simplifyTree(tree->child2);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_pow(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN);
@@ -2783,10 +2907,10 @@ node* simplifyTree(node *tree) {
     break;
   case NEG:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_neg(*value, *(simplChild1->value), GMP_RNDN);
@@ -2798,10 +2922,10 @@ node* simplifyTree(node *tree) {
     break;
   case ABS:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_abs(*value, *(simplChild1->value), GMP_RNDN);
@@ -2813,10 +2937,10 @@ node* simplifyTree(node *tree) {
     break;
   case DOUBLE:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_round_to_double(*value, *(simplChild1->value));
@@ -2828,10 +2952,10 @@ node* simplifyTree(node *tree) {
     break;
   case DOUBLEDOUBLE:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_round_to_doubledouble(*value, *(simplChild1->value));
@@ -2843,10 +2967,10 @@ node* simplifyTree(node *tree) {
     break;
   case TRIPLEDOUBLE:
     simplChild1 = simplifyTree(tree->child1);
-    simplified = (node*) malloc(sizeof(node));
+    simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       mpfr_round_to_tripledouble(*value, *(simplChild1->value));
@@ -3316,16 +3440,16 @@ node* makeBinomial(node *a, node *b, int n, int s) {
   unsigned int i;
   mpz_t coeffGMP;
   
-  tree = (node*) malloc(sizeof(node));
+  tree = (node*) safeMalloc(sizeof(node));
   tree->nodeType = CONSTANT;
-  mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+  mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*mpfr_temp,tools_precision);
   mpfr_set_d(*mpfr_temp,0.0,GMP_RNDN);
   tree->value = mpfr_temp;
   mpz_init(coeffGMP);
   for (i=0;i<=((unsigned int) n);i++) {
     mpz_bin_uiui(coeffGMP,(unsigned int) n,i);
-    coeffVal = (mpfr_t *) malloc(sizeof(mpfr_t));
+    coeffVal = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*coeffVal,tools_precision);
     if(mpfr_set_z(*coeffVal,coeffGMP,GMP_RNDN) != 0) {
       printf("Warning: on expanding a power operator a rounding occured when calculating a binomial coefficient.\n");
@@ -3334,15 +3458,15 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     if ((s < 0) && ((i & 1) != 0)) {
       mpfr_neg(*coeffVal,*coeffVal,GMP_RNDN);
     }
-    coeff = (node*) malloc(sizeof(node));
+    coeff = (node*) safeMalloc(sizeof(node));
     coeff->nodeType = CONSTANT;
     coeff->value = coeffVal;
-    aPow = (node*) malloc(sizeof(node));
+    aPow = (node*) safeMalloc(sizeof(node));
     aPow->nodeType = POW;
     aPow->child1 = copyTree(a);
-    tempNode = (node*) malloc(sizeof(node));
+    tempNode = (node*) safeMalloc(sizeof(node));
     tempNode->nodeType = CONSTANT;
-    mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+    mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*mpfr_temp,tools_precision);
     if(mpfr_set_ui(*mpfr_temp,i,GMP_RNDN) != 0) {
       printf("Warning: on expanding a power operator a rounding occured when calculating an exponent constant.\n");
@@ -3350,12 +3474,12 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     }
     tempNode->value = mpfr_temp;
     aPow->child2 = tempNode;
-    bPow = (node*) malloc(sizeof(node));
+    bPow = (node*) safeMalloc(sizeof(node));
     bPow->nodeType = POW;
     bPow->child1 = copyTree(b);
-    tempNode = (node*) malloc(sizeof(node));
+    tempNode = (node*) safeMalloc(sizeof(node));
     tempNode->nodeType = CONSTANT;
-    mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+    mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*mpfr_temp,tools_precision);
     if(mpfr_set_ui(*mpfr_temp,((unsigned int) n) - i,GMP_RNDN) != 0) {
       printf("Warning: on expanding a power operator a rounding occured when calculating an exponent constant.\n");
@@ -3363,15 +3487,15 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     }
     tempNode->value = mpfr_temp;
     bPow->child2 = tempNode;
-    tempNode = (node*) malloc(sizeof(node));
+    tempNode = (node*) safeMalloc(sizeof(node));
     tempNode->nodeType = MUL;
     tempNode->child1 = coeff;
     tempNode->child2 = aPow;
-    tempNode2 = (node*) malloc(sizeof(node));
+    tempNode2 = (node*) safeMalloc(sizeof(node));
     tempNode2->nodeType = MUL;
     tempNode2->child1 = tempNode;
     tempNode2->child2 = bPow;
-    tempNode = (node*) malloc(sizeof(node));
+    tempNode = (node*) safeMalloc(sizeof(node));
     tempNode->nodeType = ADD;
     tempNode->child1 = tree;
     tempNode->child2 = tempNode2;
@@ -3398,28 +3522,28 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
     return copyTree(tree);
     break;
   case ADD:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ADD;
     copy->child1 = expandPowerInPolynomialUnsafe(tree->child1);
     copy->child2 = expandPowerInPolynomialUnsafe(tree->child2);
     return copy;
     break;
   case SUB:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SUB;
     copy->child1 = expandPowerInPolynomialUnsafe(tree->child1);
     copy->child2 = expandPowerInPolynomialUnsafe(tree->child2);
     return copy;    
     break;
   case MUL:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = MUL;
     copy->child1 = expandPowerInPolynomialUnsafe(tree->child1);
     copy->child2 = expandPowerInPolynomialUnsafe(tree->child2);
     return copy;
     break;
   case DIV:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DIV;
     copy->child1 = expandPowerInPolynomialUnsafe(tree->child1);
     copy->child2 = expandPowerInPolynomialUnsafe(tree->child2);
@@ -3457,7 +3581,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	case CONSTANT:
 	  tempTree = copyTree(left);
 	  for (i=1;i<r;i++) {
-	    tempTree2 = (node *) malloc(sizeof(node));
+	    tempTree2 = (node *) safeMalloc(sizeof(node));
 	    tempTree2->nodeType = MUL;
 	    tempTree2->child1 = tempTree;
 	    tempTree2->child2 = copyTree(left);
@@ -3471,25 +3595,25 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	  tempTree = makeBinomial(left->child1,left->child2,r,-1);
 	  break;
 	case MUL:
-	  tempTree = (node *) malloc(sizeof(node));
+	  tempTree = (node *) safeMalloc(sizeof(node));
 	  tempTree->nodeType = MUL;
-	  tempTree2 = (node *) malloc(sizeof(node));
+	  tempTree2 = (node *) safeMalloc(sizeof(node));
 	  tempTree2->nodeType = POW;
 	  tempTree2->child1 = copyTree(left->child1);
-	  tempTree3 = (node*) malloc(sizeof(node));
+	  tempTree3 = (node*) safeMalloc(sizeof(node));
 	  tempTree3->nodeType = CONSTANT;
-	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	  value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*value,tools_precision);
 	  mpfr_set_si(*value,r,GMP_RNDN);
 	  tempTree3->value = value;
 	  tempTree2->child2 = tempTree3;
 	  tempTree->child1 = tempTree2;
-	  tempTree2 = (node *) malloc(sizeof(node));
+	  tempTree2 = (node *) safeMalloc(sizeof(node));
 	  tempTree2->nodeType = POW;
 	  tempTree2->child1 = copyTree(left->child2);
-	  tempTree3 = (node*) malloc(sizeof(node));
+	  tempTree3 = (node*) safeMalloc(sizeof(node));
 	  tempTree3->nodeType = CONSTANT;
-	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	  value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*value,tools_precision);
 	  mpfr_set_si(*value,r,GMP_RNDN);
 	  tempTree3->value = value;
@@ -3497,25 +3621,25 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	  tempTree->child2 = tempTree2;
 	  break;
 	case DIV:
-	  tempTree = (node *) malloc(sizeof(node));
+	  tempTree = (node *) safeMalloc(sizeof(node));
 	  tempTree->nodeType = DIV;
-	  tempTree2 = (node *) malloc(sizeof(node));
+	  tempTree2 = (node *) safeMalloc(sizeof(node));
 	  tempTree2->nodeType = POW;
 	  tempTree2->child1 = copyTree(left->child1);
-	  tempTree3 = (node*) malloc(sizeof(node));
+	  tempTree3 = (node*) safeMalloc(sizeof(node));
 	  tempTree3->nodeType = CONSTANT;
-	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	  value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*value,tools_precision);
 	  mpfr_set_si(*value,r,GMP_RNDN);
 	  tempTree3->value = value;
 	  tempTree2->child2 = tempTree3;
 	  tempTree->child1 = tempTree2;
-	  tempTree2 = (node *) malloc(sizeof(node));
+	  tempTree2 = (node *) safeMalloc(sizeof(node));
 	  tempTree2->nodeType = POW;
 	  tempTree2->child1 = copyTree(left->child2);
-	  tempTree3 = (node*) malloc(sizeof(node));
+	  tempTree3 = (node*) safeMalloc(sizeof(node));
 	  tempTree3->nodeType = CONSTANT;
-	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	  value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*value,tools_precision);
 	  mpfr_set_si(*value,r,GMP_RNDN);
 	  tempTree3->value = value;
@@ -3525,26 +3649,26 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	case NEG:
 	  if (r & 1) {
 	    /* r is odd */
-	    tempTree = (node *) malloc(sizeof(node));
+	    tempTree = (node *) safeMalloc(sizeof(node));
 	    tempTree->nodeType = NEG;
-	    tempTree2 = (node *) malloc(sizeof(node));
+	    tempTree2 = (node *) safeMalloc(sizeof(node));
 	    tempTree2->nodeType = POW;
 	    tempTree2->child1 = copyTree(left->child1);
-	    tempTree3 = (node*) malloc(sizeof(node));
+	    tempTree3 = (node*) safeMalloc(sizeof(node));
 	    tempTree3->nodeType = CONSTANT;
-	    value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	    mpfr_init2(*value,tools_precision);
 	    mpfr_set_si(*value,r,GMP_RNDN);
 	    tempTree3->value = value;
 	    tempTree2->child2 = tempTree3;
 	    tempTree->child1 = tempTree2;
 	  } else {
-	    tempTree = (node *) malloc(sizeof(node));
+	    tempTree = (node *) safeMalloc(sizeof(node));
 	    tempTree->nodeType = POW;
 	    tempTree->child1 = copyTree(left->child1);
-	    tempTree3 = (node*) malloc(sizeof(node));
+	    tempTree3 = (node*) safeMalloc(sizeof(node));
 	    tempTree3->nodeType = CONSTANT;
-	    value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	    mpfr_init2(*value,tools_precision);
 	    mpfr_set_si(*value,r,GMP_RNDN);
 	    tempTree3->value = value;
@@ -3561,9 +3685,9 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	if (r == 1) {
 	  copy = copyTree(left);
 	} else {
-	  copy = (node*) malloc(sizeof(node));
+	  copy = (node*) safeMalloc(sizeof(node));
 	  copy->nodeType = CONSTANT;
-	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	  value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*value,tools_precision);
 	  mpfr_set_d(*value,1.0,GMP_RNDN);
 	  copy->value = value;
@@ -3574,7 +3698,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
     }
     break;
   case NEG:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = NEG;
     copy->child1 = expandPowerInPolynomialUnsafe(tree->child1);
     return copy;
@@ -3598,31 +3722,31 @@ node* expandDivision(node *tree) {
 
   switch (tree->nodeType) {
   case VARIABLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = VARIABLE;
     break;
   case CONSTANT:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CONSTANT;
-    value = (mpfr_t*) malloc(sizeof(mpfr_t));
+    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,tools_precision);
     mpfr_set(*value,*(tree->value),GMP_RNDN);
     copy->value = value;
     break;
   case ADD:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ADD;
     copy->child1 = expandDivision(tree->child1);
     copy->child2 = expandDivision(tree->child2);
     break;
   case SUB:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SUB;
     copy->child1 = expandDivision(tree->child1);
     copy->child2 = expandDivision(tree->child2);
     break;
   case MUL:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = MUL;
     copy->child1 = expandDivision(tree->child1);
     copy->child2 = expandDivision(tree->child2);
@@ -3634,130 +3758,130 @@ node* expandDivision(node *tree) {
       tempNode = right->child1;
       right->child1 = right->child2;
       right->child2 = tempNode;
-      copy = (node*) malloc(sizeof(node));
+      copy = (node*) safeMalloc(sizeof(node));
       copy->nodeType = MUL;
       copy->child1 = left;
       copy->child2 = right;
     } else {
-      copy = (node*) malloc(sizeof(node));
+      copy = (node*) safeMalloc(sizeof(node));
       copy->nodeType = DIV;
       copy->child1 = left;
       copy->child2 = right;
     }
     break;
   case SQRT:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SQRT;
     copy->child1 = expandDivision(tree->child1);
     break;
   case EXP:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = EXP;
     copy->child1 = expandDivision(tree->child1);
     break;
   case LOG:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = LOG;
     copy->child1 = expandDivision(tree->child1);
     break;
   case LOG_2:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = LOG_2;
     copy->child1 = expandDivision(tree->child1);
     break;
   case LOG_10:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = LOG_10;
     copy->child1 = expandDivision(tree->child1);
     break;
   case SIN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SIN;
     copy->child1 = expandDivision(tree->child1);
     break;
   case COS:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = COS;
     copy->child1 = expandDivision(tree->child1);
     break;
   case TAN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TAN;
     copy->child1 = expandDivision(tree->child1);
     break;
   case ASIN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ASIN;
     copy->child1 = expandDivision(tree->child1);
     break;
   case ACOS:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ACOS;
     copy->child1 = expandDivision(tree->child1);
     break;
   case ATAN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ATAN;
     copy->child1 = expandDivision(tree->child1);
     break;
   case SINH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SINH;
     copy->child1 = expandDivision(tree->child1);
     break;
   case COSH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = COSH;
     copy->child1 = expandDivision(tree->child1);
     break;
   case TANH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TANH;
     copy->child1 = expandDivision(tree->child1);
     break;
   case ASINH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ASINH;
     copy->child1 = expandDivision(tree->child1);
     break;
   case ACOSH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ACOSH;
     copy->child1 = expandDivision(tree->child1);
     break;
   case ATANH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ATANH;
     copy->child1 = expandDivision(tree->child1);
     break;
   case POW:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = POW;
     copy->child1 = expandDivision(tree->child1);
     copy->child2 = expandDivision(tree->child2);
     break;
   case NEG:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = NEG;
     copy->child1 = expandDivision(tree->child1);
     break;
   case ABS:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ABS;
     copy->child1 = expandDivision(tree->child1);
     break;
   case DOUBLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLE;
     copy->child1 = expandDivision(tree->child1);
     break;
   case DOUBLEDOUBLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLEDOUBLE;
     copy->child1 = expandDivision(tree->child1);
     break;
   case TRIPLEDOUBLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TRIPLEDOUBLE;
     copy->child1 = expandDivision(tree->child1);
     break;
@@ -3784,7 +3908,7 @@ node* expandPolynomialUnsafe(node *tree) {
   case ADD:
     left = expandPolynomialUnsafe(tree->child1);
     right = expandPolynomialUnsafe(tree->child2);
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ADD;
     copy->child1 = left;
     copy->child2 = right;
@@ -3793,7 +3917,7 @@ node* expandPolynomialUnsafe(node *tree) {
   case SUB:
     left = expandPolynomialUnsafe(tree->child1);
     right = expandPolynomialUnsafe(tree->child2);
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SUB;
     copy->child1 = left;
     copy->child2 = right;
@@ -3808,13 +3932,13 @@ node* expandPolynomialUnsafe(node *tree) {
       switch (right->nodeType) {
       case VARIABLE:
       case CONSTANT:
-	copy = (node*) malloc(sizeof(node));
+	copy = (node*) safeMalloc(sizeof(node));
 	copy->nodeType = MUL;
 	copy->child1 = left;
 	copy->child2 = right;
 	break;  
       default:
-	tempNode = (node*) malloc(sizeof(node));
+	tempNode = (node*) safeMalloc(sizeof(node));
 	tempNode->nodeType = MUL;
 	tempNode->child1 = right;
 	tempNode->child2 = left;
@@ -3828,7 +3952,7 @@ node* expandPolynomialUnsafe(node *tree) {
       case SUB:
       case NEG:
       case DIV:      
-	tempNode = (node*) malloc(sizeof(node));
+	tempNode = (node*) safeMalloc(sizeof(node));
 	tempNode->nodeType = MUL;
 	tempNode->child1 = right;
 	tempNode->child2 = left;
@@ -3836,7 +3960,7 @@ node* expandPolynomialUnsafe(node *tree) {
 	free_memory(tempNode);
 	break;
       default:
-	copy = (node*) malloc(sizeof(node));
+	copy = (node*) safeMalloc(sizeof(node));
 	copy->nodeType = MUL;
 	copy->child1 = left;
 	copy->child2 = right;
@@ -3844,11 +3968,11 @@ node* expandPolynomialUnsafe(node *tree) {
       }
       break;  
     case ADD:
-      tempNode = (node*) malloc(sizeof(node));
+      tempNode = (node*) safeMalloc(sizeof(node));
       tempNode->nodeType = ADD;
-      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2 = (node*) safeMalloc(sizeof(node));
       tempNode2->nodeType = MUL;
-      tempNode3 = (node*) malloc(sizeof(node));
+      tempNode3 = (node*) safeMalloc(sizeof(node));
       tempNode3->nodeType = MUL;
       tempNode2->child1 = copyTree(left->child1);
       tempNode2->child2 = copyTree(right);
@@ -3861,11 +3985,11 @@ node* expandPolynomialUnsafe(node *tree) {
       free_memory(tempNode);
       break;
     case SUB:
-      tempNode = (node*) malloc(sizeof(node));
+      tempNode = (node*) safeMalloc(sizeof(node));
       tempNode->nodeType = SUB;
-      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2 = (node*) safeMalloc(sizeof(node));
       tempNode2->nodeType = MUL;
-      tempNode3 = (node*) malloc(sizeof(node));
+      tempNode3 = (node*) safeMalloc(sizeof(node));
       tempNode3->nodeType = MUL;
       tempNode2->child1 = copyTree(left->child1);
       tempNode2->child2 = copyTree(right);
@@ -3878,9 +4002,9 @@ node* expandPolynomialUnsafe(node *tree) {
       free_memory(tempNode);      
       break;
     case NEG:
-      tempNode = (node*) malloc(sizeof(node));
+      tempNode = (node*) safeMalloc(sizeof(node));
       tempNode->nodeType = NEG;
-      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2 = (node*) safeMalloc(sizeof(node));
       tempNode2->nodeType = MUL;
       tempNode2->child1 = copyTree(left->child1);
       tempNode2->child2 = right;
@@ -3891,20 +4015,20 @@ node* expandPolynomialUnsafe(node *tree) {
       break;
     case DIV:
       if (isConstant(left)) {
-	copy = (node*) malloc(sizeof(node));
+	copy = (node*) safeMalloc(sizeof(node));
 	copy->nodeType = MUL;
 	copy->child1 = left;
 	copy->child2 = right;
       } else {
-	tempNode = (node*) malloc(sizeof(node));
+	tempNode = (node*) safeMalloc(sizeof(node));
 	tempNode->nodeType = MUL;
-	tempNode2 = (node*) malloc(sizeof(node));
+	tempNode2 = (node*) safeMalloc(sizeof(node));
 	tempNode2->nodeType = MUL;
-	tempNode3 = (node*) malloc(sizeof(node));
+	tempNode3 = (node*) safeMalloc(sizeof(node));
 	tempNode3->nodeType = DIV;
-	tempNode4 = (node*) malloc(sizeof(node));
+	tempNode4 = (node*) safeMalloc(sizeof(node));
 	tempNode4->nodeType = CONSTANT;
-	value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	mpfr_set_d(*value,1.0,GMP_RNDN);
 	tempNode4->value = value;
@@ -3930,20 +4054,20 @@ node* expandPolynomialUnsafe(node *tree) {
     right = expandPolynomialUnsafe(tree->child2);
     switch (left->nodeType) {
     case CONSTANT:
-      copy = (node*) malloc(sizeof(node));
+      copy = (node*) safeMalloc(sizeof(node));
       copy->nodeType = DIV;
       copy->child1 = left;
       copy->child2 = right;
       break;  
     case VARIABLE:
-      copy = (node*) malloc(sizeof(node));
+      copy = (node*) safeMalloc(sizeof(node));
       copy->nodeType = MUL;
-      tempNode = (node*) malloc(sizeof(node));
+      tempNode = (node*) safeMalloc(sizeof(node));
       tempNode->nodeType = DIV;
       tempNode->child2 = right;
-      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2 = (node*) safeMalloc(sizeof(node));
       tempNode2->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       mpfr_set_d(*value,1.0,GMP_RNDN);
       tempNode2->value = value;
@@ -3952,11 +4076,11 @@ node* expandPolynomialUnsafe(node *tree) {
       copy->child1 = tempNode;
       break;
     case ADD:
-      tempNode = (node*) malloc(sizeof(node));
+      tempNode = (node*) safeMalloc(sizeof(node));
       tempNode->nodeType = ADD;
-      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2 = (node*) safeMalloc(sizeof(node));
       tempNode2->nodeType = DIV;
-      tempNode3 = (node*) malloc(sizeof(node));
+      tempNode3 = (node*) safeMalloc(sizeof(node));
       tempNode3->nodeType = DIV;
       tempNode2->child1 = copyTree(left->child1);
       tempNode2->child2 = copyTree(right);
@@ -3969,11 +4093,11 @@ node* expandPolynomialUnsafe(node *tree) {
       free_memory(tempNode);
       break;
     case SUB:
-      tempNode = (node*) malloc(sizeof(node));
+      tempNode = (node*) safeMalloc(sizeof(node));
       tempNode->nodeType = SUB;
-      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2 = (node*) safeMalloc(sizeof(node));
       tempNode2->nodeType = DIV;
-      tempNode3 = (node*) malloc(sizeof(node));
+      tempNode3 = (node*) safeMalloc(sizeof(node));
       tempNode3->nodeType = DIV;
       tempNode2->child1 = copyTree(left->child1);
       tempNode2->child2 = copyTree(right);
@@ -3986,17 +4110,17 @@ node* expandPolynomialUnsafe(node *tree) {
       free_memory(tempNode);      
       break;
     case MUL:
-      tempNode = (node*) malloc(sizeof(node));
+      tempNode = (node*) safeMalloc(sizeof(node));
       tempNode->nodeType = MUL;
-      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2 = (node*) safeMalloc(sizeof(node));
       tempNode2->nodeType = DIV;
-      tempNode3 = (node*) malloc(sizeof(node));
+      tempNode3 = (node*) safeMalloc(sizeof(node));
       tempNode3->nodeType = CONSTANT;
-      value = (mpfr_t*) malloc(sizeof(mpfr_t));
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       mpfr_set_d(*value,1.0,GMP_RNDN);
       tempNode3->value = value;
-      tempNode4 = (node*) malloc(sizeof(node));
+      tempNode4 = (node*) safeMalloc(sizeof(node));
       tempNode4->nodeType = MUL;
       tempNode2->child1 = tempNode3;
       tempNode2->child2 = right;
@@ -4009,10 +4133,10 @@ node* expandPolynomialUnsafe(node *tree) {
       free_memory(tempNode);      
       break;
     case DIV:
-      tempNode = (node*) malloc(sizeof(node));
+      tempNode = (node*) safeMalloc(sizeof(node));
       tempNode->nodeType = DIV;
       tempNode->child1 = copyTree(left->child1);
-      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2 = (node*) safeMalloc(sizeof(node));
       tempNode2->nodeType = MUL;
       tempNode2->child1 = copyTree(left->child2);
       tempNode2->child2 = right;
@@ -4022,9 +4146,9 @@ node* expandPolynomialUnsafe(node *tree) {
       free_memory(tempNode);      
       break;
     case NEG:
-      tempNode = (node*) malloc(sizeof(node));
+      tempNode = (node*) safeMalloc(sizeof(node));
       tempNode->nodeType = NEG;
-      tempNode2 = (node*) malloc(sizeof(node));
+      tempNode2 = (node*) safeMalloc(sizeof(node));
       tempNode2->nodeType = DIV;
       tempNode2->child1 = copyTree(left->child1);
       tempNode2->child2 = right;
@@ -4041,7 +4165,7 @@ node* expandPolynomialUnsafe(node *tree) {
     break;
   case NEG:
     left = expandPolynomialUnsafe(tree->child1);
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = NEG;
     copy->child1 = left;
     return copy;
@@ -4071,154 +4195,154 @@ node* expandUnsimplified(node *tree) {
 
   switch (tree->nodeType) {
   case VARIABLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = VARIABLE;
     break;
   case CONSTANT:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CONSTANT;
-    value = (mpfr_t*) malloc(sizeof(mpfr_t));
+    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,tools_precision);
     mpfr_set(*value,*(tree->value),GMP_RNDN);
     copy->value = value;
     break;
   case ADD:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ADD;
     copy->child1 = expand(tree->child1);
     copy->child2 = expand(tree->child2);
     break;
   case SUB:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SUB;
     copy->child1 = expand(tree->child1);
     copy->child2 = expand(tree->child2);
     break;
   case MUL:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = MUL;
     copy->child1 = expand(tree->child1);
     copy->child2 = expand(tree->child2);
     break;
   case DIV:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DIV;
     copy->child1 = expand(tree->child1);
     copy->child2 = expand(tree->child2);
     break;
   case SQRT:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SQRT;
     copy->child1 = expand(tree->child1);
     break;
   case EXP:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = EXP;
     copy->child1 = expand(tree->child1);
     break;
   case LOG:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = LOG;
     copy->child1 = expand(tree->child1);
     break;
   case LOG_2:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = LOG_2;
     copy->child1 = expand(tree->child1);
     break;
   case LOG_10:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = LOG_10;
     copy->child1 = expand(tree->child1);
     break;
   case SIN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SIN;
     copy->child1 = expand(tree->child1);
     break;
   case COS:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = COS;
     copy->child1 = expand(tree->child1);
     break;
   case TAN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TAN;
     copy->child1 = expand(tree->child1);
     break;
   case ASIN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ASIN;
     copy->child1 = expand(tree->child1);
     break;
   case ACOS:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ACOS;
     copy->child1 = expand(tree->child1);
     break;
   case ATAN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ATAN;
     copy->child1 = expand(tree->child1);
     break;
   case SINH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SINH;
     copy->child1 = expand(tree->child1);
     break;
   case COSH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = COSH;
     copy->child1 = expand(tree->child1);
     break;
   case TANH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TANH;
     copy->child1 = expand(tree->child1);
     break;
   case ASINH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ASINH;
     copy->child1 = expand(tree->child1);
     break;
   case ACOSH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ACOSH;
     copy->child1 = expand(tree->child1);
     break;
   case ATANH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ATANH;
     copy->child1 = expand(tree->child1);
     break;
   case POW:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = POW;
     copy->child1 = expand(tree->child1);
     copy->child2 = expand(tree->child2);
     break;
   case NEG:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = NEG;
     copy->child1 = expand(tree->child1);
     break;
   case ABS:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ABS;
     copy->child1 = expand(tree->child1);
     break;
   case DOUBLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLE;
     copy->child1 = expand(tree->child1);
     break;
   case DOUBLEDOUBLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLEDOUBLE;
     copy->child1 = expand(tree->child1);
     break;
   case TRIPLEDOUBLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TRIPLEDOUBLE;
     copy->child1 = expand(tree->child1);
     break;
@@ -4373,7 +4497,7 @@ node* getCoefficientsInMonomialUnsafe(node *polynom) {
     if ((leftSub == NULL) && (rightSub == NULL)) return NULL;
     if (leftSub == NULL) return rightSub;
     if (rightSub == NULL) return leftSub;
-    coeffs = (node*) malloc(sizeof(node));
+    coeffs = (node*) safeMalloc(sizeof(node));
     coeffs->nodeType = MUL;
     coeffs->child1 = leftSub;
     coeffs->child2 = rightSub;
@@ -4382,14 +4506,14 @@ node* getCoefficientsInMonomialUnsafe(node *polynom) {
 
   if (polynom->nodeType == NEG) {
     leftSub = getCoefficientsInMonomialUnsafe(polynom->child1);
-    rightSub = (node *) malloc(sizeof(node));
+    rightSub = (node *) safeMalloc(sizeof(node));
     rightSub->nodeType = CONSTANT;
-    value = (mpfr_t *) malloc(sizeof(mpfr_t));
+    value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,tools_precision);
     mpfr_set_d(*value,-1.0,GMP_RNDN);
     rightSub->value = value;
     if (leftSub == NULL) return rightSub;
-    coeffs = (node*) malloc(sizeof(node));
+    coeffs = (node*) safeMalloc(sizeof(node));
     coeffs->nodeType = MUL;
     coeffs->child1 = leftSub;
     coeffs->child2 = rightSub;
@@ -4411,9 +4535,9 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
     degree = getDegree(polynom);
     coeff = getCoefficientsInMonomialUnsafe(polynom);
     if (coeff == NULL) {
-      coeff = (node *) malloc(sizeof(node));
+      coeff = (node *) safeMalloc(sizeof(node));
       coeff->nodeType = CONSTANT;
-      value = (mpfr_t *) malloc(sizeof(mpfr_t));
+      value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       mpfr_set_d(*value,1.0,GMP_RNDN);
       coeff->value = value;
@@ -4421,14 +4545,14 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
     temp = monomials[degree];
     if (temp == NULL) {
       if (sign < 0) {
-	temp2 = (node *) malloc(sizeof(node));
+	temp2 = (node *) safeMalloc(sizeof(node));
 	temp2->nodeType = NEG;
 	temp2->child1 = coeff;
 	coeff = temp2;
       }
       temp = coeff;
     } else {
-      temp2 = (node*) malloc(sizeof(node));
+      temp2 = (node*) safeMalloc(sizeof(node));
       if (sign > 0) temp2->nodeType = ADD; else temp2->nodeType = SUB;
       temp2->child1 = temp;
       temp2->child2 = coeff;
@@ -4487,9 +4611,9 @@ node* hornerPolynomialUnsafe(node *tree) {
   for (i=degree-1;i>=0;i--) {
     if (monomials[i] == NULL) {
       if ((i == 0)) {
-	temp = (node *) malloc(sizeof(node));
+	temp = (node *) safeMalloc(sizeof(node));
 	temp->nodeType = MUL;
-	temp2 = (node *) malloc(sizeof(node));
+	temp2 = (node *) safeMalloc(sizeof(node));
 	temp2->nodeType = VARIABLE;
 	temp->child1 = temp2;
 	temp->child2 = copy;
@@ -4497,13 +4621,13 @@ node* hornerPolynomialUnsafe(node *tree) {
       } else {
 	for (k=i-1;((monomials[k]==NULL) && (k > 0));k--);
 	e = (i - k) + 1;
-	temp = (node *) malloc(sizeof(node));
+	temp = (node *) safeMalloc(sizeof(node));
 	temp->nodeType = MUL;
-	temp2 = (node *) malloc(sizeof(node));
+	temp2 = (node *) safeMalloc(sizeof(node));
 	temp2->nodeType = VARIABLE;
-	temp3 = (node *) malloc(sizeof(node));
+	temp3 = (node *) safeMalloc(sizeof(node));
 	temp3->nodeType = CONSTANT;
-	value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,e,GMP_RNDN) != 0) {
 	  printf("Warning: rounding occured on representing a monomial power exponent with %d bits.\n",
@@ -4511,7 +4635,7 @@ node* hornerPolynomialUnsafe(node *tree) {
 	  printf("Try to increase the precision.\n");
 	}
 	temp3->value = value;
-	temp4 = (node *) malloc(sizeof(node));
+	temp4 = (node *) safeMalloc(sizeof(node));
 	temp4->nodeType = POW;
 	temp4->child1 = temp2;
 	temp4->child2 = temp3;
@@ -4519,7 +4643,7 @@ node* hornerPolynomialUnsafe(node *tree) {
 	temp->child2 = copy;
 	copy = temp;
 	if (monomials[k] != NULL) {
-	  temp = (node *) malloc(sizeof(node));
+	  temp = (node *) safeMalloc(sizeof(node));
 	  temp->nodeType = ADD;
 	  temp->child1 = copyTree(monomials[k]);
 	  temp->child2 = copy;
@@ -4528,14 +4652,14 @@ node* hornerPolynomialUnsafe(node *tree) {
 	i = k;
       }
     } else {
-      temp = (node *) malloc(sizeof(node));
+      temp = (node *) safeMalloc(sizeof(node));
       temp->nodeType = MUL;
-      temp2 = (node *) malloc(sizeof(node));
+      temp2 = (node *) safeMalloc(sizeof(node));
       temp2->nodeType = VARIABLE;
       temp->child1 = temp2;
       temp->child2 = copy;
       copy = temp;
-      temp = (node *) malloc(sizeof(node));
+      temp = (node *) safeMalloc(sizeof(node));
       temp->nodeType = ADD;
       temp->child1 = copyTree(monomials[i]);
       temp->child2 = copy;
@@ -4575,154 +4699,154 @@ node* hornerUnsimplified(node *tree) {
 
   switch (tree->nodeType) {
   case VARIABLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = VARIABLE;
     break;
   case CONSTANT:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CONSTANT;
-    value = (mpfr_t*) malloc(sizeof(mpfr_t));
+    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,tools_precision);
     mpfr_set(*value,*(tree->value),GMP_RNDN);
     copy->value = value;
     break;
   case ADD:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ADD;
     copy->child1 = horner(tree->child1);
     copy->child2 = horner(tree->child2);
     break;
   case SUB:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SUB;
     copy->child1 = horner(tree->child1);
     copy->child2 = horner(tree->child2);
     break;
   case MUL:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = MUL;
     copy->child1 = horner(tree->child1);
     copy->child2 = horner(tree->child2);
     break;
   case DIV:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DIV;
     copy->child1 = horner(tree->child1);
     copy->child2 = horner(tree->child2);
     break;
   case SQRT:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SQRT;
     copy->child1 = horner(tree->child1);
     break;
   case EXP:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = EXP;
     copy->child1 = horner(tree->child1);
     break;
   case LOG:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = LOG;
     copy->child1 = horner(tree->child1);
     break;
   case LOG_2:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = LOG_2;
     copy->child1 = horner(tree->child1);
     break;
   case LOG_10:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = LOG_10;
     copy->child1 = horner(tree->child1);
     break;
   case SIN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SIN;
     copy->child1 = horner(tree->child1);
     break;
   case COS:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = COS;
     copy->child1 = horner(tree->child1);
     break;
   case TAN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TAN;
     copy->child1 = horner(tree->child1);
     break;
   case ASIN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ASIN;
     copy->child1 = horner(tree->child1);
     break;
   case ACOS:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ACOS;
     copy->child1 = horner(tree->child1);
     break;
   case ATAN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ATAN;
     copy->child1 = horner(tree->child1);
     break;
   case SINH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SINH;
     copy->child1 = horner(tree->child1);
     break;
   case COSH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = COSH;
     copy->child1 = horner(tree->child1);
     break;
   case TANH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TANH;
     copy->child1 = horner(tree->child1);
     break;
   case ASINH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ASINH;
     copy->child1 = horner(tree->child1);
     break;
   case ACOSH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ACOSH;
     copy->child1 = horner(tree->child1);
     break;
   case ATANH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ATANH;
     copy->child1 = horner(tree->child1);
     break;
   case POW:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = POW;
     copy->child1 = horner(tree->child1);
     copy->child2 = horner(tree->child2);
     break;
   case NEG:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = NEG;
     copy->child1 = horner(tree->child1);
     break;
   case ABS:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ABS;
     copy->child1 = horner(tree->child1);
     break;
   case DOUBLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLE;
     copy->child1 = horner(tree->child1);
     break;
   case DOUBLEDOUBLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLEDOUBLE;
     copy->child1 = horner(tree->child1);
     break;
   case TRIPLEDOUBLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TRIPLEDOUBLE;
     copy->child1 = horner(tree->child1);
     break;
@@ -4758,9 +4882,9 @@ node *differentiatePolynomialUnsafe(node *tree) {
   degree = getDegree(simplified);
 
   if (degree == 0) {
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CONSTANT;
-    value = (mpfr_t*) malloc(sizeof(mpfr_t));
+    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,tools_precision);
     mpfr_set_d(*value,0.0,GMP_RNDN);
     copy->value = value;
@@ -4785,9 +4909,9 @@ node *differentiatePolynomialUnsafe(node *tree) {
     if (degree >= 2) {
       if (degree > 2) {
 	temp = copyTree(monomials[degree]);
-	temp2 = (node*) malloc(sizeof(node));
+	temp2 = (node*) safeMalloc(sizeof(node));
 	temp2->nodeType = CONSTANT;
-	value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,degree,GMP_RNDN) != 0) {
 	  printf("Warning: rounding occured on differentiating a polynomial. A constant could not be written on %d bits.\n",
@@ -4795,13 +4919,13 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	  printf("Try to increase the precision.\n");
 	}
 	temp2->value = value;
-	temp3 = (node*) malloc(sizeof(node));
+	temp3 = (node*) safeMalloc(sizeof(node));
 	temp3->nodeType = MUL;
 	temp3->child1 = temp2;
 	temp3->child2 = temp;
-	temp2 = (node*) malloc(sizeof(node));
+	temp2 = (node*) safeMalloc(sizeof(node));
 	temp2->nodeType = CONSTANT;
-	value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,degree-1,GMP_RNDN) != 0) {
 	  printf(
@@ -4810,22 +4934,22 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	  printf("Try to increase the precision.\n");
 	}
 	temp2->value = value;
-	temp = (node*) malloc(sizeof(node));
+	temp = (node*) safeMalloc(sizeof(node));
 	temp->nodeType = VARIABLE;
-	temp4 = (node*) malloc(sizeof(node));
+	temp4 = (node*) safeMalloc(sizeof(node));
 	temp4->nodeType = POW;
 	temp4->child1 = temp;
 	temp4->child2 = temp2;
-	temp5 = (node*) malloc(sizeof(node));
+	temp5 = (node*) safeMalloc(sizeof(node));
 	temp5->nodeType = MUL;
 	temp5->child1 = temp3;
 	temp5->child2 = temp4;
 	copy = temp5;
       } else {
 	temp = copyTree(monomials[degree]);
-	temp2 = (node*) malloc(sizeof(node));
+	temp2 = (node*) safeMalloc(sizeof(node));
 	temp2->nodeType = CONSTANT;
-	value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,degree,GMP_RNDN) != 0) {
 	  printf("Warning: rounding occured on differentiating a polynomial. A constant could not be written on %d bits.\n",
@@ -4833,13 +4957,13 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	  printf("Try to increase the precision.\n");
 	}
 	temp2->value = value;
-	temp3 = (node*) malloc(sizeof(node));
+	temp3 = (node*) safeMalloc(sizeof(node));
 	temp3->nodeType = MUL;
 	temp3->child1 = temp2;
 	temp3->child2 = temp;
-	temp = (node*) malloc(sizeof(node));
+	temp = (node*) safeMalloc(sizeof(node));
 	temp->nodeType = VARIABLE;
-	temp4 = (node*) malloc(sizeof(node));
+	temp4 = (node*) safeMalloc(sizeof(node));
 	temp4->nodeType = MUL;
 	temp4->child1 = temp3;
 	temp4->child2 = temp;
@@ -4849,9 +4973,9 @@ node *differentiatePolynomialUnsafe(node *tree) {
       for (i=degree-1;i>1;i--) {
 	if (monomials[i] != NULL) {
 	  temp = copyTree(monomials[i]);
-	  temp2 = (node*) malloc(sizeof(node));
+	  temp2 = (node*) safeMalloc(sizeof(node));
 	  temp2->nodeType = CONSTANT;
-	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	  value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*value,tools_precision);
 	  if (mpfr_set_si(*value,i,GMP_RNDN) != 0) {
 	    printf("Warning: rounding occured on differentiating a polynomial. A constant could not be written on %d bits.\n",
@@ -4859,13 +4983,13 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	    printf("Try to increase the precision.\n");
 	  }
 	  temp2->value = value;
-	  temp3 = (node*) malloc(sizeof(node));
+	  temp3 = (node*) safeMalloc(sizeof(node));
 	  temp3->nodeType = MUL;
 	  temp3->child1 = temp2;
 	  temp3->child2 = temp;
-	  temp2 = (node*) malloc(sizeof(node));
+	  temp2 = (node*) safeMalloc(sizeof(node));
 	  temp2->nodeType = CONSTANT;
-	  value = (mpfr_t*) malloc(sizeof(mpfr_t));
+	  value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*value,tools_precision);
 	  if (mpfr_set_si(*value,i-1,GMP_RNDN) != 0) {
 	    printf(
@@ -4874,18 +4998,18 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	    printf("Try to increase the precision.\n");
 	  }
 	  temp2->value = value;
-	  temp = (node*) malloc(sizeof(node));
+	  temp = (node*) safeMalloc(sizeof(node));
 	  temp->nodeType = VARIABLE;
-	  temp4 = (node*) malloc(sizeof(node));
+	  temp4 = (node*) safeMalloc(sizeof(node));
 	  temp4->nodeType = POW;
 	  temp4->child1 = temp;
 	  temp4->child2 = temp2;
-	  temp5 = (node*) malloc(sizeof(node));
+	  temp5 = (node*) safeMalloc(sizeof(node));
 	  temp5->nodeType = MUL;
 	  temp5->child1 = temp3;
 	  temp5->child2 = temp4;
 	  temp = copy;
-	  temp2 = (node*) malloc(sizeof(node));
+	  temp2 = (node*) safeMalloc(sizeof(node));
 	  temp2->nodeType = ADD;
 	  temp2->child1 = temp5;
 	  temp2->child2 = temp;
@@ -4895,7 +5019,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
       
       if (monomials[1] != NULL) {
 	temp = copyTree(monomials[1]);
-	temp2 = (node*) malloc(sizeof(node));
+	temp2 = (node*) safeMalloc(sizeof(node));
 	temp2->nodeType = ADD;
 	temp2->child1 = temp;
 	temp2->child2 = copy;
@@ -4940,150 +5064,150 @@ node *substitute(node* tree, node *t) {
     copy = copyTree(t);
     break;
   case CONSTANT:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CONSTANT;
-    value = (mpfr_t*) malloc(sizeof(mpfr_t));
+    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,mpfr_get_prec(*(tree->value)));
     mpfr_set(*value,*(tree->value),GMP_RNDN);
     copy->value = value;
     break;
   case ADD:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ADD;
     copy->child1 = substitute(tree->child1,t);
     copy->child2 = substitute(tree->child2,t);
     break;
   case SUB:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SUB;
     copy->child1 = substitute(tree->child1,t);
     copy->child2 = substitute(tree->child2,t);
     break;
   case MUL:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = MUL;
     copy->child1 = substitute(tree->child1,t);
     copy->child2 = substitute(tree->child2,t);
     break;
   case DIV:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DIV;
     copy->child1 = substitute(tree->child1,t);
     copy->child2 = substitute(tree->child2,t);
     break;
   case SQRT:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SQRT;
     copy->child1 = substitute(tree->child1,t);
     break;
   case EXP:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = EXP;
     copy->child1 = substitute(tree->child1,t);
     break;
   case LOG:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = LOG;
     copy->child1 = substitute(tree->child1,t);
     break;
   case LOG_2:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = LOG_2;
     copy->child1 = substitute(tree->child1,t);
     break;
   case LOG_10:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = LOG_10;
     copy->child1 = substitute(tree->child1,t);
     break;
   case SIN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SIN;
     copy->child1 = substitute(tree->child1,t);
     break;
   case COS:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = COS;
     copy->child1 = substitute(tree->child1,t);
     break;
   case TAN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TAN;
     copy->child1 = substitute(tree->child1,t);
     break;
   case ASIN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ASIN;
     copy->child1 = substitute(tree->child1,t);
     break;
   case ACOS:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ACOS;
     copy->child1 = substitute(tree->child1,t);
     break;
   case ATAN:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ATAN;
     copy->child1 = substitute(tree->child1,t);
     break;
   case SINH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SINH;
     copy->child1 = substitute(tree->child1,t);
     break;
   case COSH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = COSH;
     copy->child1 = substitute(tree->child1,t);
     break;
   case TANH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TANH;
     copy->child1 = substitute(tree->child1,t);
     break;
   case ASINH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ASINH;
     copy->child1 = substitute(tree->child1,t);
     break;
   case ACOSH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ACOSH;
     copy->child1 = substitute(tree->child1,t);
     break;
   case ATANH:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ATANH;
     copy->child1 = substitute(tree->child1,t);
     break;
   case POW:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = POW;
     copy->child1 = substitute(tree->child1,t);
     copy->child2 = substitute(tree->child2,t);
     break;
   case NEG:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = NEG;
     copy->child1 = substitute(tree->child1,t);
     break;
   case ABS:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ABS;
     copy->child1 = substitute(tree->child1,t);
     break;
   case DOUBLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLE;
     copy->child1 = substitute(tree->child1,t);
     break;
   case DOUBLEDOUBLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLEDOUBLE;
     copy->child1 = substitute(tree->child1,t);
     break;
   case TRIPLEDOUBLE:
-    copy = (node*) malloc(sizeof(node));
+    copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TRIPLEDOUBLE;
     copy->child1 = substitute(tree->child1,t);
     break;

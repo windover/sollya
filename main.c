@@ -49,6 +49,29 @@ extern jmp_buf environnement;
 extern int yyparse();
 extern FILE *yyin;
 
+
+void *safeCalloc (size_t nmemb, size_t size) {
+  void *ptr;
+  ptr = calloc(nmemb,size);
+  if (ptr == NULL) {
+    printf("Error: calloc could not succeed. No more memory left.\n");
+    exit(1);
+  }
+  return ptr;
+}
+
+void *safeMalloc (size_t size) {
+  void *ptr;
+  ptr = malloc(size);
+  if (ptr == NULL) {
+    printf("Error: malloc could not succeed. No more memory left.\n");
+    exit(1);
+  }
+  return ptr;
+}
+
+
+
 void demaskString(char *dest, char *src) {
   char *curr, *curr2;
   char internalBuf[4];
@@ -185,12 +208,12 @@ int main(int argc, char *argv[]) {
 
 
   signal(SIGINT,signalHandler);
-  signal(SIGSEGV,signalHandler);
+  //  signal(SIGSEGV,signalHandler);
   signal(SIGBUS,signalHandler);
   signal(SIGFPE,signalHandler);
   signal(SIGPIPE,signalHandler);
 
-  endptr = (char**) malloc(sizeof(char*));
+  endptr = (char**) safeMalloc(sizeof(char*));
   yyin = stdin;
 
   printPrompt();

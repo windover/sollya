@@ -210,7 +210,7 @@ PROOF           "proof"
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);
 		      currentVariable = NULL;
-		      currentVariable = (char*) calloc(yyleng + 1,sizeof(char));
+		      currentVariable = (char*) safeCalloc(yyleng + 1,sizeof(char));
 		      strncpy(currentVariable,yytext,yyleng);
                       promptToBePrinted = 0; return VARIABLETOKEN;    
                 }
@@ -218,7 +218,7 @@ PROOF           "proof"
 {STRING}        {     			     
                       if (currentString != NULL) free(currentString);
 		      currentString = NULL;
-		      currentString = (char*) calloc(yyleng - 1,sizeof(char));
+		      currentString = (char*) safeCalloc(yyleng - 1,sizeof(char));
 		      strncpy(currentString,yytext+1,yyleng-2);
                       promptToBePrinted = 0; return STRINGTOKEN;    
                 }

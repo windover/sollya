@@ -183,14 +183,14 @@ command:     plot
 	                   }
            | infnorm       {
 	                     printf("infnorm result: ");
-			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_abs(*($1.a),*($1.a),GMP_RNDN);
 			     mpfr_abs(*($1.b),*($1.b),GMP_RNDN);
 			     mpfr_max(*mpfr_temp,*($1.a),*($1.b),GMP_RNDU);
 			     printValue(mpfr_temp,defaultprecision);
 			     printf("\n");
-			     mpfr_temp2 = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_temp2 = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp2,defaultprecision);
 			     mpfr_sub(*mpfr_temp2,*($1.a),*($1.b),GMP_RNDU);
 			     mpfr_abs(*mpfr_temp2,*mpfr_temp2,GMP_RNDN);
@@ -220,13 +220,13 @@ command:     plot
 	                   }
            | integral      {
 	                     printf("integral result: ");
-			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_add(*mpfr_temp,*($1.a),*($1.b),GMP_RNDU);
 			     mpfr_div_2ui(*mpfr_temp,*mpfr_temp,1,GMP_RNDU);
 			     printValue(mpfr_temp,defaultprecision);
 			     printf("\n");
-			     mpfr_temp2 = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_temp2 = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp2,defaultprecision);
 			     mpfr_sub(*mpfr_temp2,*($1.a),*($1.b),GMP_RNDU);
 			     mpfr_abs(*mpfr_temp2,*mpfr_temp2,GMP_RNDN);
@@ -325,8 +325,8 @@ assignment:  lvariable EQUALTOKEN function
 
 evaluate:    EVALUATETOKEN function INTOKEN range SEMICOLONTOKEN 
                            {
-			     range_temp.a = (mpfr_t *) malloc(sizeof(mpfr_t));
-			     range_temp.b = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     range_temp.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     range_temp.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*(range_temp.a),defaultprecision);
 			     mpfr_init2(*(range_temp.b),defaultprecision);
 			     evaluateRangeFunction(range_temp, ($2), ($4), defaultprecision);
@@ -352,12 +352,12 @@ evaluate:    EVALUATETOKEN function INTOKEN range SEMICOLONTOKEN
 			   }
            | EVALUATETOKEN function ATTOKEN constantfunction SEMICOLONTOKEN 
                            {
-			     range_temp.a = (mpfr_t *) malloc(sizeof(mpfr_t));
-			     range_temp.b = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     range_temp.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     range_temp.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*(range_temp.a),defaultprecision);
 			     mpfr_init2(*(range_temp.b),defaultprecision);
-			     range_temp2.a = (mpfr_t *) malloc(sizeof(mpfr_t));
-			     range_temp2.b = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     range_temp2.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     range_temp2.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*(range_temp2.a),defaultprecision);
 			     mpfr_init2(*(range_temp2.b),defaultprecision);
 			     mpfr_set(*(range_temp2.a),*($4),GMP_RNDD);
@@ -391,7 +391,7 @@ evaluate:    EVALUATETOKEN function INTOKEN range SEMICOLONTOKEN
 
 findzeros:   FINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
                            {
-			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
 			     chain_temp = findZerosFunction($2,$4,defaultprecision,*mpfr_temp);
@@ -463,7 +463,7 @@ findzeros:   FINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
 
 infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
                            {
-			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
 			     range_temp = infnorm($2,$4,NULL,defaultprecision,*mpfr_temp,NULL);
@@ -490,7 +490,7 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
                            }
            | INFNORMTOKEN function INTOKEN range WITHOUTTOKEN rangelist SEMICOLONTOKEN
                            {
-			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
 			     range_temp = infnorm($2,$4,$6,defaultprecision,*mpfr_temp,NULL);
@@ -539,7 +539,7 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
                            }
            | INFNORMTOKEN function INTOKEN range COMMATOKEN PROOFTOKEN EQUALTOKEN writefile SEMICOLONTOKEN
                            {
-			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
 			     range_temp = infnorm($2,$4,NULL,defaultprecision,*mpfr_temp,($8));
@@ -568,7 +568,7 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
                            }
            | INFNORMTOKEN function INTOKEN range WITHOUTTOKEN rangelist COMMATOKEN PROOFTOKEN EQUALTOKEN writefile SEMICOLONTOKEN
                            {
-			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
 			     range_temp = infnorm($2,$4,$6,defaultprecision,*mpfr_temp,($10));
@@ -622,7 +622,7 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 
 integral:     INTEGRALTOKEN function INTOKEN range SEMICOLONTOKEN
                            {
-			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
 			     range_temp = integral($2,$4,defaultprecision,*mpfr_temp);
@@ -651,7 +651,7 @@ integral:     INTEGRALTOKEN function INTOKEN range SEMICOLONTOKEN
 
 dirtyinfnorm: DIRTYINFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
                            {
-			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     uncertifiedInfnorm(*mpfr_temp,($2),*(($4).a),*(($4).b),defaultpoints,defaultprecision);
 			     mpfr_clear(*(($4).a));
@@ -662,7 +662,7 @@ dirtyinfnorm: DIRTYINFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 			   }
              | DIRTYINFNORMTOKEN function INTOKEN range COMMATOKEN points SEMICOLONTOKEN
                            {
-			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     uncertifiedInfnorm(*mpfr_temp,($2),*(($4).a),*(($4).b),($6),defaultprecision);
 			     mpfr_clear(*(($4).a));
@@ -675,7 +675,7 @@ dirtyinfnorm: DIRTYINFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 
 dirtyintegral: DIRTYINTEGRALTOKEN function INTOKEN range SEMICOLONTOKEN
                            {
-			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     uncertifiedIntegral(*mpfr_temp,($2),*(($4).a),*(($4).b),defaultpoints,defaultprecision);
 			     mpfr_clear(*(($4).a));
@@ -686,7 +686,7 @@ dirtyintegral: DIRTYINTEGRALTOKEN function INTOKEN range SEMICOLONTOKEN
 			   }
              | DIRTYINTEGRALTOKEN function INTOKEN range COMMATOKEN points SEMICOLONTOKEN
                            {
-			     mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     uncertifiedIntegral(*mpfr_temp,($2),*(($4).a),*(($4).b),($6),defaultprecision);
 			     mpfr_clear(*(($4).a));
@@ -825,7 +825,7 @@ function:			term
                            }   									
       			|	function PLUSTOKEN term			
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ADD;
 			     temp_node->child1 = $1;
 			     temp_node->child2 = $3;
@@ -833,7 +833,7 @@ function:			term
                            }										
 			|	function MINUSTOKEN term			
 		           {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = SUB;
 			     temp_node->child1 = $1;
 			     temp_node->child2 = $3;
@@ -841,7 +841,7 @@ function:			term
                            }				   			
 			|	MINUSTOKEN term			
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = NEG;
 			     temp_node->child1 = $2;
 			     $$ = temp_node;
@@ -857,8 +857,8 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                            } 
 			|      DEGREETOKEN LPARTOKEN function RPARTOKEN
                            {
-			      temp_node = (node*) malloc(sizeof(node));
-			      mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+			      temp_node = (node*) safeMalloc(sizeof(node));
+			      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			      mpfr_init2(*(mpfr_temp),(mp_prec_t) tools_precision);
 			      mpfr_set_si(*(mpfr_temp),getDegree($3),GMP_RNDN);
                               temp_node->nodeType = CONSTANT;
@@ -916,10 +916,10 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			     if (!getNumeratorDenominator(&temp_node2,&temp_node,($3))) {
 			       printf("Warning: the expression given is not a fraction. ");
 			       printf("Will consider it as a fraction with denominator 1.\n");
-			       mpfr_temp = (mpfr_t *) malloc(sizeof(mpfr_t));
+			       mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			       mpfr_init2(*mpfr_temp,defaultprecision);
 			       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
-			       temp_node = (node *) malloc(sizeof(node));
+			       temp_node = (node *) safeMalloc(sizeof(node));
 			       temp_node->nodeType = CONSTANT;
 			       temp_node->value = mpfr_temp;
 			     } 
@@ -934,147 +934,147 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			   }
 			|       SQRTTOKEN LPARTOKEN function RPARTOKEN    
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = SQRT;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       EXPTOKEN LPARTOKEN function RPARTOKEN    
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = EXP;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       LOGTOKEN LPARTOKEN function RPARTOKEN
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = LOG;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       LOG2TOKEN LPARTOKEN function RPARTOKEN
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = LOG_2;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       LOG10TOKEN LPARTOKEN function RPARTOKEN
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = LOG_10;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       SINTOKEN LPARTOKEN function RPARTOKEN
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = SIN;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       COSTOKEN LPARTOKEN function RPARTOKEN
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = COS;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       TANTOKEN LPARTOKEN function RPARTOKEN
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = TAN;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       ASINTOKEN LPARTOKEN function RPARTOKEN
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ASIN;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       ACOSTOKEN LPARTOKEN function RPARTOKEN    
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ACOS;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       ATANTOKEN LPARTOKEN function RPARTOKEN    
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ATAN;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       SINHTOKEN LPARTOKEN function RPARTOKEN    
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = SINH;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       COSHTOKEN LPARTOKEN function RPARTOKEN    
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = COSH;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       TANHTOKEN LPARTOKEN function RPARTOKEN    
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = TANH;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       ASINHTOKEN LPARTOKEN function RPARTOKEN   
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ASINH;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       ACOSHTOKEN LPARTOKEN function RPARTOKEN   
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ACOSH;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       ATANHTOKEN LPARTOKEN function RPARTOKEN   
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ATANH;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       ABSTOKEN LPARTOKEN function RPARTOKEN     						
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ABS;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       DOUBLETOKEN LPARTOKEN function RPARTOKEN     						
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = DOUBLE;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       DOUBLEDOUBLETOKEN LPARTOKEN function RPARTOKEN     			  		
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = DOUBLEDOUBLE;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
                         |       TRIPLEDOUBLETOKEN LPARTOKEN function RPARTOKEN     			   	
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = TRIPLEDOUBLE;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
@@ -1087,7 +1087,7 @@ term:				subterm
                            }												
 			|	term MULTOKEN subterm				
 			   {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = MUL;
 			     temp_node->child1 = $1;
 			     temp_node->child2 = $3;
@@ -1096,7 +1096,7 @@ term:				subterm
 										
 			|	term DIVTOKEN subterm				
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = DIV;
 			     temp_node->child1 = $1;
 			     temp_node->child2 = $3;
@@ -1110,7 +1110,7 @@ subterm:                        primary
                            }
                         |       subterm POWTOKEN primary
                            {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = POW;
 			     temp_node->child1 = $1;
 			     temp_node->child2 = $3;
@@ -1124,7 +1124,7 @@ primary:			variable
                            }	  									
 			|       constant  
 			   {
-                             temp_node = (node*) malloc(sizeof(node));
+                             temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = CONSTANT;
 			     temp_node->value = $1;
 			     $$ = temp_node;
@@ -1141,7 +1141,7 @@ primary:			variable
 
 variableWorkAround: VARIABLETOKEN 
                            {
-			     temp_string = (char *) calloc(strlen(currentVariable)+1,sizeof(char));
+			     temp_string = (char *) safeCalloc(strlen(currentVariable)+1,sizeof(char));
 			     strcpy(temp_string,currentVariable);
 			     $$ = temp_string;
                            }
@@ -1152,14 +1152,14 @@ variable: VARIABLETOKEN
                            {
 			     if (!containsEntry(symbolTable,currentVariable)) {
 			       if (variablename==NULL) {
-				 variablename = (char *) calloc(strlen(currentVariable)+1,sizeof(char));
+				 variablename = (char *) safeCalloc(strlen(currentVariable)+1,sizeof(char));
 				 strcpy(variablename,currentVariable);
 			       }
 			       if (strcmp(variablename,currentVariable)!=0) {
 				 printf("Warning: the identifier \"%s\" is neither bound by assignment nor equal to the bound current variable.\n",currentVariable);
 				 printf("Will interpret \"%s\" as \"%s\".\n",currentVariable,variablename);
 			       }
-			       temp_node = (node*) malloc(sizeof(node));
+			       temp_node = (node*) safeMalloc(sizeof(node));
 			       temp_node->nodeType = VARIABLE;
 			     } else {
 			       temp_node = getEntry(symbolTable,currentVariable);
@@ -1192,7 +1192,7 @@ variable: VARIABLETOKEN
 
 lvariable: VARIABLETOKEN
                            {
-			     temp_string = (char *) calloc(strlen(currentVariable)+1,sizeof(char));
+			     temp_string = (char *) safeCalloc(strlen(currentVariable)+1,sizeof(char));
 			     strcpy(temp_string,currentVariable);
 			     $$ = temp_string;
                            }
@@ -1200,7 +1200,7 @@ lvariable: VARIABLETOKEN
 
 string: STRINGTOKEN
                            {
-			     temp_string = (char *) calloc(strlen(currentString)+1,sizeof(char));
+			     temp_string = (char *) safeCalloc(strlen(currentString)+1,sizeof(char));
 			     demaskString(temp_string,currentString);
 			     $$ = temp_string;
                            }
@@ -1222,13 +1222,13 @@ writefile: string
 
 
 rangelist:         range                      {
-                                                rangeTempPtr = (rangetype *) malloc(sizeof(rangetype));
+                                                rangeTempPtr = (rangetype *) safeMalloc(sizeof(rangetype));
 						rangeTempPtr->a = ($1).a;
 						rangeTempPtr->b = ($1).b;
 						$$ = addElement(NULL,(void *) rangeTempPtr);
                                               }
                  | rangelist COMMATOKEN range {
-		                                rangeTempPtr = (rangetype *) malloc(sizeof(rangetype));
+		                                rangeTempPtr = (rangetype *) safeMalloc(sizeof(rangetype));
 						rangeTempPtr->a = ($3).a;
 						rangeTempPtr->b = ($3).b;
 						$$ = addElement(($1),(void *) rangeTempPtr);
@@ -1260,7 +1260,7 @@ range:  LBRACKETTOKEN rangeconstant SEMICOLONTOKEN rangeconstant RBRACKETTOKEN
 constantfunction:  function
                            {
 			     temp_node = simplifyTreeErrorfree($1);
-			     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
 			     if (temp_node->nodeType != CONSTANT) {
 			       printf(
@@ -1269,7 +1269,7 @@ constantfunction:  function
 			     if (!evaluateConstantExpression(*mpfr_temp,temp_node,tools_precision)) {
 			       printf("Warning: functions in this context must be expressions that evaluate to constants.\n");
 			       printf("Setting %s = 0 when evaluating the given variable expression.\n",variablename);
-			       mpfr_temp2 = (mpfr_t*) malloc(sizeof(mpfr_t));
+			       mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			       mpfr_init2(*mpfr_temp2,tools_precision);
 			       mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
 			       evaluate(*mpfr_temp, ($1), *mpfr_temp2, tools_precision);
@@ -1285,7 +1285,7 @@ constantfunction:  function
 rangeconstant:     function
                            {
 			     temp_node = simplifyTreeErrorfree($1);
-			     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
 			     if (temp_node->nodeType != CONSTANT) {
 			       printf(
@@ -1294,7 +1294,7 @@ rangeconstant:     function
 			     if (!evaluateConstantExpression(*mpfr_temp,temp_node,tools_precision)) {
 			       printf("Warning: range bounds must be expressions that evaluate to constants.\n");
 			       printf("Setting %s = 0 when evaluating the given variable expression.\n",variablename);
-			       mpfr_temp2 = (mpfr_t*) malloc(sizeof(mpfr_t));
+			       mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			       mpfr_init2(*mpfr_temp2,tools_precision);
 			       mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
 			       evaluate(*mpfr_temp, ($1), *mpfr_temp2, tools_precision);
@@ -1311,7 +1311,7 @@ rangeconstant:     function
 diamconstant:     function
                            {
 			     temp_node = simplifyTreeErrorfree($1);
-			     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
 			     if (temp_node->nodeType != CONSTANT) {
 			       printf(
@@ -1320,7 +1320,7 @@ diamconstant:     function
 			     if (!evaluateConstantExpression(*mpfr_temp,temp_node,tools_precision)) {
 			       printf("Warning: diameters must be expressions that evaluate to constants.\n");
 			       printf("Setting %s = 0 when evaluating the given variable expression.\n",variablename);
-			       mpfr_temp2 = (mpfr_t*) malloc(sizeof(mpfr_t));
+			       mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			       mpfr_init2(*mpfr_temp2,tools_precision);
 			       mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
 			       evaluate(*mpfr_temp, ($1), *mpfr_temp2, tools_precision);
@@ -1338,9 +1338,9 @@ diamconstant:     function
 
 constant: CONSTTOKEN 
                            {
-			     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
-			     mpfr_temp2 = (mpfr_t*) malloc(sizeof(mpfr_t));
+			     mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp2,tools_precision);
 			     mpfr_set_str(*mpfr_temp,$1,10,GMP_RNDD);
 			     mpfr_set_str(*mpfr_temp2,$1,10,GMP_RNDU);
@@ -1356,7 +1356,7 @@ constant: CONSTTOKEN
 			     $$ = mpfr_temp;
 			   }
         | DYADICCONSTTOKEN {
-                             mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+                             mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
 			     if (!readDyadic(*mpfr_temp,$1)) {
 			       printf(
@@ -1375,7 +1375,7 @@ constant: CONSTTOKEN
                            {
 			     printf("Warning: The pi constant in the expression will be represented on %d bits\n",
 				    (int) tools_precision);
-			     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
 			     mpfr_const_pi(*mpfr_temp,GMP_RNDN);
 			     $$ = mpfr_temp;
@@ -1384,7 +1384,7 @@ constant: CONSTTOKEN
                            {
 			     printf("Warning: The e constant in the expression will be represented on %d bits\n",
 				    (int) tools_precision);
-			     mpfr_temp = (mpfr_t*) malloc(sizeof(mpfr_t));
+			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
 			     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
 			     mpfr_exp(*mpfr_temp,*mpfr_temp,GMP_RNDN);
