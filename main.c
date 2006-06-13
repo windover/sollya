@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <setjmp.h>
+#include <stdarg.h>
 #include "main.h"
 #include "plot.h"
 #include "expression.h"
@@ -44,6 +45,7 @@ rangetype *rangeTempPtr;
 int dyadic = 0;
 FILE *temp_fd;
 int *intTempPtr = NULL;
+int verbosity = 0;
 
 extern jmp_buf environnement;
 
@@ -70,7 +72,6 @@ void *safeMalloc (size_t size) {
   }
   return ptr;
 }
-
 
 
 void demaskString(char *dest, char *src) {
@@ -150,6 +151,18 @@ void demaskString(char *dest, char *src) {
     }
   }
 }
+
+
+int printMessage(int verb, const char *format, ...) {
+  va_list varlist;
+  
+  if (verbosity < verb) return 0;
+  
+  va_start(varlist,format);
+
+  return vprintf(format,varlist);
+}
+
 
 
 void signalHandler(int i) {

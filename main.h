@@ -38,11 +38,13 @@ extern chain *chain_temp2;
 extern int dyadic;
 extern FILE *temp_fd;
 extern int *intTempPtr;
+extern int verbosity;
 
 void printPrompt(void);
 void recoverFromError(void);
 void demaskString(char*, char*);
 void *safeCalloc (size_t nmemb, size_t size);
 void *safeMalloc (size_t size);
+int printMessage(int verb, const char *format, ...);
 
 #endif /* ifdef MAIN_H*/

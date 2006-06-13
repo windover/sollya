@@ -123,6 +123,7 @@ STRING          ({STRINGDELIMITER})((("\\\\")|(("\\")[\"\'\?ntabfrv])|(("\\")({O
 
 PROOF           "proof"
 
+VERBOSITY       "verbosity"
 
 %%
 
@@ -206,6 +207,7 @@ PROOF           "proof"
 {INTEGRAL}      {     promptToBePrinted = 0; return INTEGRALTOKEN; }
 {DIRTYINTEGRAL} {     promptToBePrinted = 0; return DIRTYINTEGRALTOKEN; }
 {PROOF}         {     promptToBePrinted = 0; return PROOFTOKEN; }
+{VERBOSITY}     {     promptToBePrinted = 0; return VERBOSITYTOKEN; }
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

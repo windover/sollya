@@ -36,6 +36,7 @@ void yyerror(char *message) {
         rangetype rangeval;
         mpfr_t *constantval;
         int degreeval;
+        int verbval;
         char *aString;
         FILE *aFile;
 	void *other;
@@ -110,6 +111,7 @@ void yyerror(char *message) {
 %token  DIRTYINTEGRALTOKEN
 %token  STRINGTOKEN
 %token  PROOFTOKEN
+%token  VERBOSITYTOKEN
 
 %type <other> commands
 %type <other> command
@@ -144,6 +146,8 @@ void yyerror(char *message) {
 %type <aFile> writefile
 %type <aChain> monomials
 %type <aChain> degreelist
+%type <verbval> verbosity
+%type <other> verbosityset
 
 %%
 
@@ -264,6 +268,9 @@ command:     plot
            | dyadic SEMICOLONTOKEN  {
 	                     $$ = NULL;
 	                   }
+           | verbosityset SEMICOLONTOKEN {
+	                     $$ = NULL;
+	                   }
            | findzeros     {
 	                     $$ = NULL;
 	                   }
@@ -301,6 +308,14 @@ dyadic:      DYADICTOKEN EQUALTOKEN ONTOKEN
                            {
 			     printf("Dyadic number output deactivated.\n");
 			     dyadic = 0;
+			     $$ = NULL;
+                           }
+;
+
+verbosityset:  VERBOSITYTOKEN EQUALTOKEN verbosity
+                           {
+			     printf("Verbosity set to level %d.\n",($3));
+			     verbosity = ($3);
 			     $$ = NULL;
                            }
 ;
@@ -815,6 +830,21 @@ degree:  CONSTTOKEN
 			     if (int_temp < 0) {
 			       printf("The degree of a polynomial must be a positive number. Will do degree 3.\n");
 			       int_temp = 3;
+			     }
+			     $$ = int_temp;                           
+                           }
+;
+
+verbosity:  CONSTTOKEN
+                           {
+			     int_temp = (int) strtol($1,endptr,10);
+                             if (**endptr != '\0') {
+			       printf("The tool's verbosity must be an integer value. Will set verbosity 0.\n");
+			       int_temp = 0;
+			     }
+			     if (int_temp < 0) {
+			       printf("The tool's verbosity must be a positive value. Will set verbosity 0.\n");
+			       int_temp = 0;
 			     }
 			     $$ = int_temp;                           
                            }

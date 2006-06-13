@@ -1718,7 +1718,8 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
 
   i = 0;
   for (curr=zeros;curr!=NULL;curr=curr->next) i++;
-  printf("Information: %d intervals have been found that possibly contain the zeros of the derivative\n",i);
+  printMessage(1,
+	  "Information: %d interval(s) have (has) been found that possibly contain(s) the zeros of the derivative.\n",i);
 
   curr = zeros;
   while (curr != NULL) {
@@ -2025,13 +2026,13 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
       mpfr_mul_ui(yb,yb,2,GMP_RNDN);
 
       if (mpfr_cmp(ya,yb) <= 0) {
-	printf("Warning: the derivative of the function seems to have a false pole in ");
+	printf("Warning: the derivative of the function seems to have a extensible singularity in ");
 	printValue(&z,prec);
-	printf(" that might be prolongated by continuity.\n");
+	printf(".\n");
 	printf("The infnorm result might not be trustful if the derivative cannot actually\n");
-	printf("be prolongated by continuity in this point.\n");
+	printf("be extended in this point.\n");
       } else {
-	printf("Warning: the derivative of the function seems to have a pole in ");
+	printf("Warning: the derivative of the function seems to have a singularity in ");
 	printValue(&z,prec);
 	printf(".\n");
 	printf("The infnorm result is likely to be wrong.\n");
@@ -2041,10 +2042,10 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
       evaluate(yb,denominatorDeriv,*(range.b),prec);
 
       if (mpfr_sgn(ya) != mpfr_sgn(yb)) {
-	printf("Warning: the derivative of the function seems to have a (false) pole in the considered interval.\n");
+	printf("Warning: the derivative of the function seems to have a (extensible) singularity in the considered interval.\n");
 	printf("The infnorm result might be not trustful if the function is not continuously differentiable.\n");
       } else {
-	printf("Information: the derivative seems to have no (false) pole in the considered interval.\n");
+	printMessage(1,"Information: the derivative seems to have no (false) pole in the considered interval.\n");
       }
     }
 
@@ -2102,9 +2103,9 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
   }
 
   if (proof != NULL) {
-    printf("Information: started writing the proof.\n");
+    printMessage(1,"Information: started writing the proof.\n");
     fprintInfnormTheo(proof,theo,1);
-    printf("Information: proof written.\n");
+    printMessage(1,"Information: proof written.\n");
   }
   
   if (theo != NULL) freeInfnormTheo(theo);
