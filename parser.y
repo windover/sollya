@@ -19,7 +19,7 @@ extern char *yytext;
 
 void yyerror(char *message) {
   if ((!feof(yyin)) && (!handlingError)) {
-    printf("Warning: %s on token \"%s\". Will try to continue parsing (expecting \";\"). May leak memory.\n",message,yytext);
+    fprintf(stderr,"Warning: %s on token \"%s\". Will try to continue parsing (expecting \";\"). May leak memory.\n",message,yytext);
   }
 }
 
@@ -324,12 +324,12 @@ verbosityset:  VERBOSITYTOKEN EQUALTOKEN verbosity
 assignment:  lvariable EQUALTOKEN function 
                            {
 			     if ((variablename != NULL) && (strcmp(variablename,($1)) == 0)) {
-			       printf("Warning: the identifer \"%s\" is already bound as the current variable. It cannot be assigned.\n",($1));
-			       printf("The last command will have no effect.\n");
+			       printMessage(1,"Warning: the identifer \"%s\" is already bound as the current variable. It cannot be assigned.\n",($1));
+			       printMessage(1,"The last command will have no effect.\n");
 			     } else {
 			       if (containsEntry(symbolTable,($1))) {
-				 printf("Warning: the identifier \"%s\" is already assigned. It cannot be reassigned.\n",($1));
-				 printf("The last command will have no effect.\n");
+				 printMessage(1,"Warning: the identifier \"%s\" is already assigned. It cannot be reassigned.\n",($1));
+				 printMessage(1,"The last command will have no effect.\n");
 			       } else {
 				 symbolTable = addEntry(symbolTable,($1),($3));
 			       }
@@ -794,11 +794,11 @@ precision:  PRECTOKEN EQUALTOKEN CONSTTOKEN
                            {
 			     tools_precision = strtol($3,endptr,10);
                              if (**endptr != '\0') {
-			       printf("A precision must be integer\n");
-			       exit(1);
+			       printMessage(1,"Warning: A precision must be integer. Will set precision to 12 bits.\n");
+			       tools_precision = 12;
 			     }
 			     if (tools_precision < 12) {
-			       printf("Precision has been increased to 12.\n");
+			       printMessage(1,"Warning: The tools precision must be at least 12 bits.\nPrecision has been increased to 12.\n");
 			       tools_precision = 12;
 			     }
 			     $$ = tools_precision;
@@ -809,11 +809,11 @@ points:  POINTSTOKEN EQUALTOKEN CONSTTOKEN
                            {
 			     points = (unsigned long int) strtol($3,endptr,10);
                              if (**endptr != '\0') {
-			       printf("Number of points must be integer\n");
-			       exit(1);
+			       printMessage(1,"Warning: The number of points to be plotted must be integer. Will print 10 points.\n");
+			       points = 10;
 			     }
 			     if (points < 3) {
-			       printf("You must consider at least 3 points. Increasing number to 3.\n");
+			       printMessage(1,"Warning: at least 3 points must be considered. Will increase their number to 3.\n");
 			       points = 3;
 			     }
 			     $$ = points;                           
@@ -824,11 +824,11 @@ degree:  CONSTTOKEN
                            {
 			     int_temp = (int) strtol($1,endptr,10);
                              if (**endptr != '\0') {
-			       printf("The degree of a polynomial must be integer. Will do degree 3.\n");
+			       printMessage(1,"Warning: the degree of a polynomial must be integer. Will do degree 3.\n");
 			       int_temp = 3;
 			     }
 			     if (int_temp < 0) {
-			       printf("The degree of a polynomial must be a positive number. Will do degree 3.\n");
+			       printMessage(1,"The degree of a polynomial must be a positive number. Will do degree 3.\n");
 			       int_temp = 3;
 			     }
 			     $$ = int_temp;                           
@@ -839,12 +839,12 @@ verbosity:  CONSTTOKEN
                            {
 			     int_temp = (int) strtol($1,endptr,10);
                              if (**endptr != '\0') {
-			       printf("The tool's verbosity must be an integer value. Will set verbosity 0.\n");
-			       int_temp = 0;
+			       printMessage(1,"Warning: the tool's verbosity must be an integer value. Will set verbosity 1.\n");
+			       int_temp = 1;
 			     }
 			     if (int_temp < 0) {
-			       printf("The tool's verbosity must be a positive value. Will set verbosity 0.\n");
-			       int_temp = 0;
+			       printMessage(1,"Warning: The tool's verbosity must be a positive value. Will set verbosity 1.\n");
+			       int_temp = 1;
 			     }
 			     $$ = int_temp;                           
                            }
@@ -937,8 +937,8 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                         |       NUMERATORTOKEN LPARTOKEN function RPARTOKEN 
                            {
 			     if (!getNumeratorDenominator(&temp_node,&temp_node2,($3))) {
-			       printf("Warning: the expression given is not a fraction. ");
-			       printf("Will consider it as a fraction with denominator 1.\n");
+			       printMessage(1,"Warning: the expression given is not a fraction. ");
+			       printMessage(1,"Will consider it as a fraction with denominator 1.\n");
 			     } else {
 			       free_memory(temp_node2);
 			     }
@@ -947,8 +947,8 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                         |       DENOMINATORTOKEN LPARTOKEN function RPARTOKEN 
                            {
 			     if (!getNumeratorDenominator(&temp_node2,&temp_node,($3))) {
-			       printf("Warning: the expression given is not a fraction. ");
-			       printf("Will consider it as a fraction with denominator 1.\n");
+			       printMessage(1,"Warning: the expression given is not a fraction. ");
+			       printMessage(1,"Will consider it as a fraction with denominator 1.\n");
 			       mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			       mpfr_init2(*mpfr_temp,defaultprecision);
 			       mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
@@ -1217,8 +1217,8 @@ variable: VARIABLETOKEN
 				 strcpy(variablename,currentVariable);
 			       }
 			       if (strcmp(variablename,currentVariable)!=0) {
-				 printf("Warning: the identifier \"%s\" is neither bound by assignment nor equal to the bound current variable.\n",currentVariable);
-				 printf("Will interpret \"%s\" as \"%s\".\n",currentVariable,variablename);
+				 printMessage(1,"Warning: the identifier \"%s\" is neither bound by assignment nor equal to the bound current variable.\n",currentVariable);
+				 printMessage(1,"Will interpret \"%s\" as \"%s\".\n",currentVariable,variablename);
 			       }
 			       temp_node = (node*) safeMalloc(sizeof(node));
 			       temp_node->nodeType = VARIABLE;
@@ -1230,14 +1230,14 @@ variable: VARIABLETOKEN
                  | variableWorkAround LPARTOKEN function RPARTOKEN
                            {
 			     if ((variablename != NULL) && (strcmp(variablename,($1)) == 0)) {
-			       printf("Warning: the identifier \"%s\" is equal to the already bound current variable.\n",
+			       printMessage(1,"Warning: the identifier \"%s\" is equal to the already bound current variable.\n",
 				      ($1));
-			       printf("Will interpret \"%s()\" as the identity function.\n",($1));
+			       printMessage(1,"Will interpret \"%s()\" as the identity function.\n",($1));
 			       temp_node = ($3);
 			     } else {
 			       if (!containsEntry(symbolTable,($1))) {
-				 printf("Warning: the identifier \"%s\" is not bound by assignment.\n",($1));
-				 printf("Will interpret \"%s()\" as the identity function.\n",($1));
+				 printMessage(1,"Warning: the identifier \"%s\" is not bound by assignment.\n",($1));
+				 printMessage(1,"Will interpret \"%s()\" as the identity function.\n",($1));
 				 temp_node = ($3);
 			       } else {
 				 temp_node2 = getEntry(symbolTable,($1));
@@ -1271,8 +1271,8 @@ writefile: string
                            {
 			     temp_fd = fopen(($1),"w");
 			     if (temp_fd == NULL) {
-			       printf("Error: the file \"%s\" could not be opened for writing: ",($1));
-			       printf("\"%s\".\n",strerror(errno));
+			       fprintf(stderr,"Error: the file \"%s\" could not be opened for writing: ",($1));
+			       fprintf(stderr,"\"%s\".\n",strerror(errno));
 			       free(($1));
 			       recoverFromError();
 			     }
@@ -1301,7 +1301,7 @@ range:  LBRACKETTOKEN rangeconstant SEMICOLONTOKEN rangeconstant RBRACKETTOKEN
                              range_temp.a = $2;
 			     range_temp.b = $4;
 			     if (mpfr_cmp(*(range_temp.a),*(range_temp.b)) > 0) {
-			       printf("Warning: the range bounds are not correctly ordered. Will revert them.\n");
+			       printMessage(1,"Warning: the range bounds are not correctly ordered. Will revert them.\n");
 			       mpfr_swap(*(range_temp.a),*(range_temp.b));
 		             }
 			     $$ = range_temp;
@@ -1311,7 +1311,7 @@ range:  LBRACKETTOKEN rangeconstant SEMICOLONTOKEN rangeconstant RBRACKETTOKEN
                              range_temp.a = $2;
 			     range_temp.b = $4;
 			     if (mpfr_cmp(*(range_temp.a),*(range_temp.b)) > 0) {
-			       printf("Warning: the range bounds are not correctly ordered. Will revert them.\n");
+			       printMessage(1,"Warning: the range bounds are not correctly ordered. Will revert them.\n");
 			       mpfr_swap(*(range_temp.a),*(range_temp.b));
 		             }
 			     $$ = range_temp;
@@ -1324,12 +1324,12 @@ constantfunction:  function
 			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
 			     if (temp_node->nodeType != CONSTANT) {
-			       printf(
+			       printMessage(1,
                       "Warning: the function given is not a floating-point constant but an expression to evaluate.\n");
 			     }
 			     if (!evaluateConstantExpression(*mpfr_temp,temp_node,tools_precision)) {
-			       printf("Warning: functions in this context must be expressions that evaluate to constants.\n");
-			       printf("Setting %s = 0 when evaluating the given variable expression.\n",variablename);
+			       printMessage(1,"Warning: functions in this context must be expressions that evaluate to constants.\n");
+			       printMessage(1,"Setting %s = 0 when evaluating the given variable expression.\n",variablename);
 			       mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			       mpfr_init2(*mpfr_temp2,tools_precision);
 			       mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
@@ -1349,12 +1349,12 @@ rangeconstant:     function
 			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
 			     if (temp_node->nodeType != CONSTANT) {
-			       printf(
+			       printMessage(1,
                       "Warning: the range bound given is not a floating-point constant but an expression to evaluate.\n");
 			     }
 			     if (!evaluateConstantExpression(*mpfr_temp,temp_node,tools_precision)) {
-			       printf("Warning: range bounds must be expressions that evaluate to constants.\n");
-			       printf("Setting %s = 0 when evaluating the given variable expression.\n",variablename);
+			       printMessage(1,"Warning: range bounds must be expressions that evaluate to constants.\n");
+			       printMessage(1,"Setting %s = 0 when evaluating the given variable expression.\n",variablename);
 			       mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			       mpfr_init2(*mpfr_temp2,tools_precision);
 			       mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
@@ -1375,12 +1375,12 @@ diamconstant:     function
 			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
 			     if (temp_node->nodeType != CONSTANT) {
-			       printf(
+			       printMessage(1,
                       "Warning: the diameter given is not a floating-point constant but an expression to evaluate.\n");
 			     }
 			     if (!evaluateConstantExpression(*mpfr_temp,temp_node,tools_precision)) {
-			       printf("Warning: diameters must be expressions that evaluate to constants.\n");
-			       printf("Setting %s = 0 when evaluating the given variable expression.\n",variablename);
+			       printMessage(1,"Warning: diameters must be expressions that evaluate to constants.\n");
+			       printMessage(1,"Setting %s = 0 when evaluating the given variable expression.\n",variablename);
 			       mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			       mpfr_init2(*mpfr_temp2,tools_precision);
 			       mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
@@ -1406,10 +1406,10 @@ constant: CONSTTOKEN
 			     mpfr_set_str(*mpfr_temp,$1,10,GMP_RNDD);
 			     mpfr_set_str(*mpfr_temp2,$1,10,GMP_RNDU);
 			     if (mpfr_cmp(*mpfr_temp,*mpfr_temp2) != 0) {
-			       printf(
+			       printMessage(1,
                             "Warning: Rounding occured when converting constant \"%s\" to floating-point with %d bits.\n",
 				      $1,(int) tools_precision);
-			       printf("If safe computation is needed, try to increase the precision.\n");
+			       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
 			       mpfr_set_str(*mpfr_temp,$1,10,GMP_RNDN);
 			     } 
 			     mpfr_clear(*mpfr_temp2);
@@ -1420,13 +1420,13 @@ constant: CONSTTOKEN
                              mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
 			     if (!readDyadic(*mpfr_temp,$1)) {
-			       printf(
+			       printMessage(1,
                             "Warning: Rounding occured when converting the dyadic constant \"%s\" to floating-point with %d bits.\n",
 				      $1,(int) tools_precision);
-			       printf("If safe computation is needed, try to increase the precision.\n");
+			       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
 			     }
 			     if (!mpfr_number_p(*mpfr_temp)) {
-			       printf(
+			       fprintf(stderr,
 			  "Error: overflow occured during the conversion of the dyadic constant \"%s\". Will abort the computation.\n",$1);
 			       recoverFromError();
 			     }
@@ -1434,7 +1434,7 @@ constant: CONSTTOKEN
 	                   }
         | PITOKEN 
                            {
-			     printf("Warning: The pi constant in the expression will be represented on %d bits\n",
+			     printMessage(1,"Warning: The pi constant in the expression will be represented on %d bits\n",
 				    (int) tools_precision);
 			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
@@ -1443,7 +1443,7 @@ constant: CONSTTOKEN
                            }
         | ETOKEN 
                            {
-			     printf("Warning: The e constant in the expression will be represented on %d bits\n",
+			     printMessage(1,"Warning: The e constant in the expression will be represented on %d bits\n",
 				    (int) tools_precision);
 			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);

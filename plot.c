@@ -8,7 +8,7 @@
 #include <errno.h>
 #include "plot.h"
 #include "expression.h"
-
+#include "main.h"
 
 void plotTree(node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec) {
   mpfr_t x, y, step;
@@ -38,7 +38,7 @@ void plotTree(node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_
   }
 
   if (mpfr_sgn(step) < 0) {
-    printf("Error : the interval is empty\n");
+    printMessage(1,"Warning: the interval is empty\n");
     mpfr_clear(x); mpfr_clear(y); mpfr_clear(step);
     return;
   }

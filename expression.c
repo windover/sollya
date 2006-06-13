@@ -135,7 +135,7 @@ void free_memory(node *tree) {
     free(tree);
     break;
   default:
-   fprintf(stderr,"free_memory: unknown identifier (%d) in the tree\n",tree->nodeType);
+   fprintf(stderr,"Error: free_memory: unknown identifier (%d) in the tree\n",tree->nodeType);
    exit(1);
   }
   return;
@@ -267,8 +267,8 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
 
 
   if (mpfr_get_prec(*value) < prec) {
-    printf("Warning: on printing a value, the default printing precision is less than the precision of the value.\n");
-    printf("Will adapt the precision to the precision of the value.\n");
+    printMessage(1,"Warning: on printing a value, the default printing precision is less than the precision of the value.\n");
+    printMessage(1,"Will adapt the precision to the precision of the value.\n");
     prec = mpfr_get_prec(*value) + 1;
   }
   mpfr_init2(y,prec+10);
@@ -290,7 +290,7 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
       } else {
 	expo = mpfr_get_exp(y);
 	if (mpfr_set_exp(y,prec+10)) {
-	  printf("\nWarning: %d is not in the current exponent range of a variable. Values displayed may be wrong.\n",(int)(prec+10));
+	  printMessage(1,"\nWarning: %d is not in the current exponent range of a variable. Values displayed may be wrong.\n",(int)(prec+10));
 	}
 	expo -= prec+10;
 	while (mpfr_integer_p(y)) {
@@ -299,7 +299,7 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
 	}
 	expo--;
 	if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
-	  printf("\nWarning: rounding occured during displaying a value. Values displayed may be wrong.\n");
+	  printMessage(1,"\nWarning: rounding occured during displaying a value. Values displayed may be wrong.\n");
 	}
 	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
 	str2 = (char *) calloc(strlen(str)+1,sizeof(char));
@@ -343,7 +343,7 @@ void fprintValue(FILE *fd, mpfr_t value) {
     } else {
       expo = mpfr_get_exp(y);
       if (mpfr_set_exp(y,prec+10)) {
-	printf("\nWarning: upon printing to a file: %d is not in the current exponent range of a variable. Values printed may be wrong.\n",(int)(prec+10));
+	printMessage(1,"\nWarning: upon printing to a file: %d is not in the current exponent range of a variable. Values printed may be wrong.\n",(int)(prec+10));
       }
       expo -= prec+10;
       while (mpfr_integer_p(y)) {
@@ -352,7 +352,7 @@ void fprintValue(FILE *fd, mpfr_t value) {
       }
       expo--;
       if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
-	printf("\nWarning: upon printing to a file: rounding occured. Values printed may be wrong.\n");
+	printMessage(1,"\nWarning: upon printing to a file: rounding occured. Values printed may be wrong.\n");
       }
       str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
       str2 = (char *) calloc(strlen(str)+1,sizeof(char));
@@ -550,7 +550,7 @@ void printTree(node *tree) {
     printf(")");
     break;
   default:
-   fprintf(stderr,"printTree: unknown identifier in the tree\n");
+   fprintf(stderr,"Error: printTree: unknown identifier in the tree\n");
    exit(1);
   }
   return;
@@ -741,7 +741,7 @@ void fprintTree(FILE *fd, node *tree) {
     fprintf(fd,")");
     break;
   default:
-   fprintf(stderr,"fprintTree: unknown identifier in the tree\n");
+   fprintf(stderr,"Error: fprintTree: unknown identifier in the tree\n");
    exit(1);
   }
   return;
@@ -907,7 +907,7 @@ node* copyTree(node *tree) {
     copy->child1 = copyTree(tree->child1);
     break;
   default:
-   fprintf(stderr,"copyTree: unknown identifier in the tree\n");
+   fprintf(stderr,"Error: copyTree: unknown identifier in the tree\n");
    exit(1);
   }
   return copy;
@@ -1617,7 +1617,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   default:
-    fprintf(stderr,"simplifyTreeErrorfree: unknown identifier in the tree\n");
+    fprintf(stderr,"Error: simplifyTreeErrorfree: unknown identifier in the tree\n");
     exit(1);
   }
 
@@ -2267,25 +2267,25 @@ node* differentiateUnsimplified(node *tree) {
       derivative = temp_node;
       break;
     case DOUBLE:
-      printf(
+      printMessage(1,
 	     "Warning: the double rounding operator is not differentiable.\nRemplacing it by identity when differentiating.\n");
       temp_node = differentiateUnsimplified(tree->child1);
       derivative = temp_node;
       break;
     case DOUBLEDOUBLE:
-      printf(
+      printMessage(1,
 	     "Warning: the double-double rounding operator is not differentiable.\nRemplacing it by identity when differentiating.\n");
       temp_node = differentiateUnsimplified(tree->child1);
       derivative = temp_node;
       break;
     case TRIPLEDOUBLE:
-      printf(
+      printMessage(1,
 	     "Warning: the triple-double rounding operator is not differentiable.\nRemplacing it by identity when differentiating.\n");
       temp_node = differentiateUnsimplified(tree->child1);
       derivative = temp_node;
       break;
     default:
-      fprintf(stderr,"differentiateUnsimplified: unknown identifier in the tree\n");
+      fprintf(stderr,"Error: differentiateUnsimplified: unknown identifier in the tree\n");
       exit(1);
     }
   }
@@ -2465,7 +2465,7 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
     mpfr_round_to_tripledouble(result, stack1);
     break;
   default:
-    fprintf(stderr,"evaluateConstantExpression: unknown identifier in the tree\n");
+    fprintf(stderr,"Error: evaluateConstantExpression: unknown identifier in the tree\n");
     exit(1);
   }
 
@@ -2981,7 +2981,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   default:
-    fprintf(stderr,"simplifyTree: unknown identifier in the tree\n");
+    fprintf(stderr,"Error: simplifyTree: unknown identifier in the tree\n");
     exit(1);
   }
 
@@ -3116,7 +3116,7 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
     mpfr_round_to_tripledouble(result, stack1);
     break;
   default:
-    fprintf(stderr,"evaluate: unknown identifier in the tree\n");
+    fprintf(stderr,"Error: evaluate: unknown identifier in the tree\n");
     exit(1);
   }
 
@@ -3215,7 +3215,7 @@ int arity(node *tree) {
     return 1;
     break;
   default:
-    fprintf(stderr,"arity: unknown identifier in the tree\n");
+    fprintf(stderr,"Error: arity: unknown identifier in the tree\n");
     exit(1);
   }
 }
@@ -3348,7 +3348,7 @@ int isPolynomial(node *tree) {
     res = 0;
     break;
   default:
-    fprintf(stderr,"isPolynomial: unknown identifier in the tree\n");
+    fprintf(stderr,"Error: isPolynomial: unknown identifier in the tree\n");
     exit(1);
   }
  return res;
@@ -3390,15 +3390,15 @@ int getDegreeUnsafe(node *tree) {
     {
       l = getDegreeUnsafe(tree->child1);
       if (tree->child2->nodeType != CONSTANT) {
-	fprintf(stderr,"getDegreeUnsafe: an error occured. The exponent in a power operator is not constant.\n");
+	fprintf(stderr,"Error: getDegreeUnsafe: an error occured. The exponent in a power operator is not constant.\n");
 	exit(1);
       }
       if (!mpfr_integer_p(*(tree->child2->value))) {
-	fprintf(stderr,"getDegreeUnsafe: an error occured. The exponent in a power operator is not integer.\n");
+	fprintf(stderr,"Error: getDegreeUnsafe: an error occured. The exponent in a power operator is not integer.\n");
 	exit(1);
       }
       if (mpfr_sgn(*(tree->child2->value)) < 0) {
-	fprintf(stderr,"getDegreeUnsafe: an error occured. The exponent in a power operator is negative.\n");
+	fprintf(stderr,"Error: getDegreeUnsafe: an error occured. The exponent in a power operator is negative.\n");
 	exit(1);
       }
 
@@ -3406,7 +3406,7 @@ int getDegreeUnsafe(node *tree) {
       mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
       mpfr_set_si(temp,r,GMP_RNDN);
       if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
-	printf(
+	printMessage(1,
 "Warning: tried to compute polynomial degree of an expression using a power operator with an exponent\n");
 	printf("which cannot be represented on a integer variable.\n");
 	mpfr_clear(temp);
@@ -3420,7 +3420,7 @@ int getDegreeUnsafe(node *tree) {
     return getDegreeUnsafe(tree->child1);
     break;
   default:
-    fprintf(stderr,"getDegreeUnsafe: an error occured on handling the expression tree\n");
+    fprintf(stderr,"Error: getDegreeUnsafe: an error occured on handling the expression tree\n");
     exit(1);
   }
 }
@@ -3452,8 +3452,8 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     coeffVal = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*coeffVal,tools_precision);
     if(mpfr_set_z(*coeffVal,coeffGMP,GMP_RNDN) != 0) {
-      printf("Warning: on expanding a power operator a rounding occured when calculating a binomial coefficient.\n");
-      printf("Try to increase the working tools_precision.\n");
+      printMessage(1,"Warning: on expanding a power operator a rounding occured when calculating a binomial coefficient.\n");
+      printMessage(1,"Try to increase the working precision.\n");
     }
     if ((s < 0) && ((i & 1) != 0)) {
       mpfr_neg(*coeffVal,*coeffVal,GMP_RNDN);
@@ -3469,8 +3469,8 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*mpfr_temp,tools_precision);
     if(mpfr_set_ui(*mpfr_temp,i,GMP_RNDN) != 0) {
-      printf("Warning: on expanding a power operator a rounding occured when calculating an exponent constant.\n");
-      printf("Try to increase the working tools_precision.\n");
+      printMessage(1,"Warning: on expanding a power operator a rounding occured when calculating an exponent constant.\n");
+      printMessage(1,"Try to increase the working precision.\n");
     }
     tempNode->value = mpfr_temp;
     aPow->child2 = tempNode;
@@ -3482,8 +3482,8 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*mpfr_temp,tools_precision);
     if(mpfr_set_ui(*mpfr_temp,((unsigned int) n) - i,GMP_RNDN) != 0) {
-      printf("Warning: on expanding a power operator a rounding occured when calculating an exponent constant.\n");
-      printf("Try to increase the working tools_precision.\n");
+      printMessage(1,"Warning: on expanding a power operator a rounding occured when calculating an exponent constant.\n");
+      printMessage(1,"Try to increase the working precision.\n");
     }
     tempNode->value = mpfr_temp;
     bPow->child2 = tempNode;
@@ -3553,15 +3553,15 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
     {
       left = expandPowerInPolynomialUnsafe(tree->child1);
       if (tree->child2->nodeType != CONSTANT) {
-	fprintf(stderr,"expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is not constant.\n");
+	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is not constant.\n");
 	exit(1);
       }
       if (!mpfr_integer_p(*(tree->child2->value))) {
-	fprintf(stderr,"expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is not integer.\n");
+	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is not integer.\n");
 	exit(1);
       }
       if (mpfr_sgn(*(tree->child2->value)) < 0) {
-	fprintf(stderr,"expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is negative.\n");
+	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is negative.\n");
 	exit(1);
       }
 
@@ -3569,7 +3569,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
       mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
       mpfr_set_si(temp,r,GMP_RNDN);
       if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
-	fprintf(stderr,"expandPowerInPolynomialUnsafe: an error occured. Tried to expand an expression using a power operator with an exponent\n");
+	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occured. Tried to expand an expression using a power operator with an exponent\n");
 	fprintf(stderr,"which cannot be represented on a integer variable.\n");
 	mpfr_clear(temp);
 	exit(1);
@@ -3676,7 +3676,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	  }
 	  break;
 	default:
-	  fprintf(stderr,"expandPowerInPolynomialUnsafe: an error occured on handling the expanded expression subtree\n");
+	  fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occured on handling the expanded expression subtree\n");
 	  exit(1);
 	}
 	copy = expandPowerInPolynomialUnsafe(tempTree);
@@ -3704,7 +3704,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
     return copy;
     break;
   default:
-    fprintf(stderr,"expandPowerInPolynomialUnsafe: an error occured on handling the expression tree\n");
+    fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occured on handling the expression tree\n");
     exit(1);
   }
 }
@@ -3886,7 +3886,7 @@ node* expandDivision(node *tree) {
     copy->child1 = expandDivision(tree->child1);
     break;
   default:
-   fprintf(stderr,"expandDivision: unknown identifier in the tree\n");
+   fprintf(stderr,"Error: expandDivision: unknown identifier in the tree\n");
    exit(1);
   }
   return copy;
@@ -4044,7 +4044,7 @@ node* expandPolynomialUnsafe(node *tree) {
       }      
       break;
     default:
-      fprintf(stderr,"expandPolynomialUnsafe: an error occured on handling the MUL left rewritten expression subtree\n");
+      fprintf(stderr,"Error: expandPolynomialUnsafe: an error occured on handling the MUL left rewritten expression subtree\n");
       exit(1);
     }
     return copy;
@@ -4158,7 +4158,7 @@ node* expandPolynomialUnsafe(node *tree) {
       free_memory(tempNode);      
       break;
     default: 
-      fprintf(stderr,"expandPolynomialUnsafe: an error occured on handling the DIV left rewritten expression subtree\n");
+      fprintf(stderr,"Error: expandPolynomialUnsafe: an error occured on handling the DIV left rewritten expression subtree\n");
       exit(1);
     }
     return copy;
@@ -4171,7 +4171,7 @@ node* expandPolynomialUnsafe(node *tree) {
     return copy;
     break;
   default:
-    fprintf(stderr,"expandPolynomialUnsafe: an error occured on handling the expression tree\n");
+    fprintf(stderr,"Error: expandPolynomialUnsafe: an error occured on handling the expression tree\n");
     exit(1);
   }
 }
@@ -4347,7 +4347,7 @@ node* expandUnsimplified(node *tree) {
     copy->child1 = expand(tree->child1);
     break;
   default:
-   fprintf(stderr,"expand: unknown identifier in the tree\n");
+   fprintf(stderr,"Error: expand: unknown identifier in the tree\n");
    exit(1);
   }
   return copy;
@@ -4456,7 +4456,7 @@ int isConstant(node *tree) {
     return isConstant(tree->child1);
     break;
   default:
-   fprintf(stderr,"isConstant: unknown identifier in the tree\n");
+   fprintf(stderr,"Error: isConstant: unknown identifier in the tree\n");
    exit(1);
   }
 }
@@ -4520,7 +4520,7 @@ node* getCoefficientsInMonomialUnsafe(node *polynom) {
     return coeffs;
   }
 
-  fprintf(stderr,"getCoefficientsInMonomialUnsafe: an error occured. The expression does not have the correct monomial form.\n");
+  fprintf(stderr,"Error: getCoefficientsInMonomialUnsafe: an error occured. The expression does not have the correct monomial form.\n");
   exit(1);
   return NULL;
 }
@@ -4579,7 +4579,7 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
     return;
   }
 
-  fprintf(stderr,"getCoefficientsUnsafe: an error occured. The given polynomial is neither a monomial nor a sum of monomials\n");
+  fprintf(stderr,"Error: getCoefficientsUnsafe: an error occured. The given polynomial is neither a monomial nor a sum of monomials\n");
   exit(1);
 }
 
@@ -4601,7 +4601,7 @@ node* hornerPolynomialUnsafe(node *tree) {
 
   if (monomials[degree] == NULL) {
     fprintf(stderr,
-"hornerPolynomialUnsafe: an error occured. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
+"Error: hornerPolynomialUnsafe: an error occured. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
     exit(1);
     return NULL;
   }
@@ -4630,9 +4630,9 @@ node* hornerPolynomialUnsafe(node *tree) {
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,e,GMP_RNDN) != 0) {
-	  printf("Warning: rounding occured on representing a monomial power exponent with %d bits.\n",
+	  printMessage(1,"Warning: rounding occured on representing a monomial power exponent with %d bits.\n",
 		 (int) tools_precision);
-	  printf("Try to increase the precision.\n");
+	  printMessage(1,"Try to increase the precision.\n");
 	}
 	temp3->value = value;
 	temp4 = (node *) safeMalloc(sizeof(node));
@@ -4851,7 +4851,7 @@ node* hornerUnsimplified(node *tree) {
     copy->child1 = horner(tree->child1);
     break;
   default:
-   fprintf(stderr,"horner: unknown identifier in the tree\n");
+   fprintf(stderr,"Error: horner: unknown identifier in the tree\n");
    exit(1);
   }
   return copy;
@@ -4899,7 +4899,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
   
     if (monomials[degree] == NULL) {
       fprintf(stderr,
-	     "differentiatePolynomialUnsafe: an error occured. The coefficient of a monomial with the polynomial's degree exponent is zero.\n"
+	     "Error: differentiatePolynomialUnsafe: an error occured. The coefficient of a monomial with the polynomial's degree exponent is zero.\n"
 	     );
       exit(1);
       return NULL;
@@ -4914,9 +4914,9 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,degree,GMP_RNDN) != 0) {
-	  printf("Warning: rounding occured on differentiating a polynomial. A constant could not be written on %d bits.\n",
+	  printMessage(1,"Warning: rounding occured on differentiating a polynomial. A constant could not be written on %d bits.\n",
 		 (int) tools_precision);
-	  printf("Try to increase the precision.\n");
+	  printMessage(1,"Try to increase the precision.\n");
 	}
 	temp2->value = value;
 	temp3 = (node*) safeMalloc(sizeof(node));
@@ -4928,10 +4928,10 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,degree-1,GMP_RNDN) != 0) {
-	  printf(
+	  printMessage(1,
 		 "Warning: rounding occured on differentiating a polynomial. An exponent constant could not be written on %d bits.\n",
 		 (int) tools_precision);
-	  printf("Try to increase the precision.\n");
+	  printMessage(1,"Try to increase the precision.\n");
 	}
 	temp2->value = value;
 	temp = (node*) safeMalloc(sizeof(node));
@@ -4952,9 +4952,9 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,degree,GMP_RNDN) != 0) {
-	  printf("Warning: rounding occured on differentiating a polynomial. A constant could not be written on %d bits.\n",
+	  printMessage(1,"Warning: rounding occured on differentiating a polynomial. A constant could not be written on %d bits.\n",
 		 (int) tools_precision);
-	  printf("Try to increase the precision.\n");
+	  printMessage(1,"Try to increase the precision.\n");
 	}
 	temp2->value = value;
 	temp3 = (node*) safeMalloc(sizeof(node));
@@ -4978,9 +4978,9 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	  value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*value,tools_precision);
 	  if (mpfr_set_si(*value,i,GMP_RNDN) != 0) {
-	    printf("Warning: rounding occured on differentiating a polynomial. A constant could not be written on %d bits.\n",
+	    printMessage(1,"Warning: rounding occured on differentiating a polynomial. A constant could not be written on %d bits.\n",
 		   (int) tools_precision);
-	    printf("Try to increase the precision.\n");
+	    printMessage(1,"Try to increase the precision.\n");
 	  }
 	  temp2->value = value;
 	  temp3 = (node*) safeMalloc(sizeof(node));
@@ -4992,10 +4992,10 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	  value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*value,tools_precision);
 	  if (mpfr_set_si(*value,i-1,GMP_RNDN) != 0) {
-	    printf(
+	    printMessage(1,
 		   "Warning: rounding occured on differentiating a polynomial. An exponent constant could not be written on %d bits.\n",
 		   (int) tools_precision);
-	    printf("Try to increase the precision.\n");
+	    printMessage(1,"Try to increase the precision.\n");
 	  }
 	  temp2->value = value;
 	  temp = (node*) safeMalloc(sizeof(node));
@@ -5212,7 +5212,7 @@ node *substitute(node* tree, node *t) {
     copy->child1 = substitute(tree->child1,t);
     break;
   default:
-   fprintf(stderr,"substitute: unknown identifier in the tree\n");
+   fprintf(stderr,"Error: substitute: unknown identifier in the tree\n");
    exit(1);
   }
   return copy;

@@ -3,6 +3,7 @@
 #include "expression.h"
 #include "infnorm.h"
 #include "integral.h"
+#include "main.h"
 
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
@@ -23,8 +24,8 @@ rangetype integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) 
   mpfi_t temp, val;
 
   rangetype sum;
-  sum.a = (mpfr_t*) malloc(sizeof(mpfr_t));
-  sum.b = (mpfr_t*) malloc(sizeof(mpfr_t));
+  sum.a = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+  sum.b = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*(sum.a),prec);
   mpfr_init2(*(sum.b),prec);
   mpfr_set_d(*(sum.a),0.,GMP_RNDD);
@@ -32,12 +33,12 @@ rangetype integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) 
   
   
   if (mpfr_equal_p(*(interval.a),*(interval.b))) {
-    printf("Warning: the given interval is reduced to one point.\n");
+    printMessage(1,"Warning: the given interval is reduced to one point.\n");
     return sum;
   }
 
   if (mpfr_less_p(*(interval.b),*(interval.a))) {
-    printf("Error: the interval is empty.\n");
+    printMessage(1,"Warning: the interval is empty.\n");
     return sum;
   }
 
@@ -109,14 +110,14 @@ void uncertifiedIntegral(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned
   mpfr_div_ui(step, step, points, GMP_RNDN);
  
   if (mpfr_sgn(step) == 0) {
-    printf("Warning: the given interval is reduced to one point.\n");
+    printMessage(1,"Warning: the given interval is reduced to one point.\n");
     mpfr_set_d(result,0.,GMP_RNDN);
     mpfr_clear(step);
     return;
   }
 
   if (mpfr_sgn(step) < 0) {
-    printf("Error: the interval is empty.\n");
+    printMessage(1,"Warning: the interval is empty.\n");
     mpfr_set_d(result,0.,GMP_RNDN);
     mpfr_clear(step);
     return;

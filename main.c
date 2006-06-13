@@ -45,7 +45,7 @@ rangetype *rangeTempPtr;
 int dyadic = 0;
 FILE *temp_fd;
 int *intTempPtr = NULL;
-int verbosity = 0;
+int verbosity = 1;
 
 extern jmp_buf environnement;
 
@@ -57,7 +57,7 @@ void *safeCalloc (size_t nmemb, size_t size) {
   void *ptr;
   ptr = calloc(nmemb,size);
   if (ptr == NULL) {
-    printf("Error: calloc could not succeed. No more memory left.\n");
+    fprintf(stderr,"Error: calloc could not succeed. No more memory left.\n");
     exit(1);
   }
   return ptr;
@@ -67,7 +67,7 @@ void *safeMalloc (size_t size) {
   void *ptr;
   ptr = malloc(size);
   if (ptr == NULL) {
-    printf("Error: malloc could not succeed. No more memory left.\n");
+    fprintf(stderr,"Error: malloc could not succeed. No more memory left.\n");
     exit(1);
   }
   return ptr;
@@ -173,19 +173,19 @@ void signalHandler(int i) {
   case SIGINT:   
     exit(0);
   case SIGSEGV:
-    printf("Warning: handling signal SIGSEGV\n");
+    fprintf(stderr,"Warning: handling signal SIGSEGV\n");
     break;
   case SIGBUS:
-    printf("Warning: handling signal SIGBREAK\n");
+    fprintf(stderr,"Warning: handling signal SIGBREAK\n");
     break;
   case SIGFPE:
-    printf("Warning: handling signal SIGFPE\n");
+    fprintf(stderr,"Warning: handling signal SIGFPE\n");
     break;
   case SIGPIPE:
-    printf("Warning: handling signal SIGPIPE\n");
+    fprintf(stderr,"Warning: handling signal SIGPIPE\n");
     break;
   default:
-    printf("Error: must handle an unknown signal.\n");
+    fprintf(stderr,"Error: must handle an unknown signal.\n");
     exit(1);
   }
   recoverFromError();
@@ -216,13 +216,13 @@ int main(int argc, char *argv[]) {
   pari_init(3000000, 2);
   ltop = avma;
   if (setjmp(environnement)) {
-    printf("Error: an error occured in the PARI subsystem.\n");
+    fprintf(stderr,"Error: an error occured in the PARI subsystem.\n");
     recoverFromError();
   }
 
 
   signal(SIGINT,signalHandler);
-  //  signal(SIGSEGV,signalHandler);
+  signal(SIGSEGV,signalHandler);
   signal(SIGBUS,signalHandler);
   signal(SIGFPE,signalHandler);
   signal(SIGPIPE,signalHandler);
@@ -233,7 +233,7 @@ int main(int argc, char *argv[]) {
   printPrompt();
   while (!feof(yyin)) {
     if (setjmp(recoverEnvironment)) {
-      printf("Warning: an error occured on internal computation. The last command could not be executed. May leak memory.\n");
+      fprintf(stderr,"Warning: an error occured on internal computation. The last command could not be executed. May leak memory.\n");
     }
     if (yyparse()) break;    
     promptToBePrinted = 1;

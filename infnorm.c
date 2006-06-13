@@ -1068,7 +1068,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     }
     break;
   default:
-    fprintf(stderr,"evaluateI: unknown identifier in the tree\n");
+    fprintf(stderr,"Error: evaluateI: unknown identifier in the tree\n");
     exit(1);
   }
 
@@ -1256,9 +1256,9 @@ chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t pr
     excludes = evaluateITaylor(y, func, deriv, range, prec, theo);
     freeChain(excludes,freeMpfiPtr);
     if (!mpfi_bounded_p(y)) {
-      printf("Warning: during zero-search the derivative of the function evaluated to NaN or Inf in the interval ");
-      printInterval(y);
-      printf(".\nThe function might not be continuously differentiable in this interval.\n");
+      printMessage(1,"Warning: during zero-search the derivative of the function evaluated to NaN or Inf in the interval ");
+      if (verbosity >= 1) printInterval(y);
+      printMessage(1,".\nThe function might not be continuously differentiable in this interval.\n");
     }
     if ((!mpfi_bounded_p(y)) || mpfi_has_zero(y)) {
       mpfr_init2(l,prec);
@@ -1718,7 +1718,7 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
 
   i = 0;
   for (curr=zeros;curr!=NULL;curr=curr->next) i++;
-  printMessage(1,
+  printMessage(2,
 	  "Information: %d interval(s) have (has) been found that possibly contain(s) the zeros of the derivative.\n",i);
 
   curr = zeros;
@@ -1740,7 +1740,7 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
     }
 
     if (mpfr_nan_p(tl) || mpfr_nan_p(tr)) {
-      printf("Warning: NaNs occured during the interval evaluation of the zeros of the derivative.\n");
+      printMessage(1,"Warning: NaNs occured during the interval evaluation of the zeros of the derivative.\n");
     }
 
     mpfr_min(outerLeft,outerLeft,tl,GMP_RNDD);
@@ -1850,7 +1850,7 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   mpfr_div_ui(step, step, points, GMP_RNDN);
  
   if (mpfr_sgn(step) == 0) {
-    printf("Warning: the given interval is reduced to one point.\n");
+    printMessage(1,"Warning: the given interval is reduced to one point.\n");
     evaluate(y1,tree,a,prec);
     mpfr_abs(result,y1,GMP_RNDU);
     mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(step);
@@ -1858,14 +1858,14 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   }
 
   if (mpfr_sgn(step) < 0) {
-    printf("Error: the interval is empty.\n");
+    printMessage(1,"Warning: the interval is empty.\n");
     mpfr_set_d(result,0.,GMP_RNDN);
     mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(step);
     return;
   }
 
   if (evaluateConstantExpression(y1,tree,prec)) {
-    printf("Warning: the expression is constant.\n");
+    printMessage(1,"Warning: the expression is constant.\n");
     mpfr_abs(result,y1,GMP_RNDU);
     mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(step);
     return;
@@ -1882,11 +1882,11 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   if (!mpfr_nan_p(temp)) {
     mpfr_abs(max, temp, GMP_RNDU);
   } else {
-    printf("Warning: the evaluation of the given function in ");
+    printMessage(1,"Warning: the evaluation of the given function in ");
     mpfr_set(z,a,GMP_RNDN);
-    printValue(&z,prec);
-    printf(" gives NaN.\n");
-    printf("This point will be excluded from the infnorm result.\n");
+    if (verbosity >= 1) printValue(&z,prec);
+    printMessage(1," gives NaN.\n");
+    printMessage(1,"This point will be excluded from the infnorm result.\n");
     mpfr_set_d(max,0.0,GMP_RNDU);
   }
   evaluate(temp, tree, b, prec);
@@ -1894,11 +1894,11 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
       mpfr_abs(temp, temp, GMP_RNDU);
       mpfr_max(max, max, temp, GMP_RNDU);
   } else {
-    printf("Warning: the evaluation of the given function in ");
+    printMessage(1,"Warning: the evaluation of the given function in ");
     mpfr_set(z,b,GMP_RNDN);
-    printValue(&z,prec);
-    printf(" gives NaN\n");
-    printf("This point will be excluded from the infnorm result.\n");
+    if (verbosity >= 1) printValue(&z,prec);
+    printMessage(1," gives NaN\n");
+    printMessage(1,"This point will be excluded from the infnorm result.\n");
   }
 
   mpfr_set(x1,a,GMP_RNDN);
@@ -1910,19 +1910,19 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
     if (mpfr_sgn(y1) != mpfr_sgn(y2)) {
       newtonWorked = newtonMPFR(z, deriv, derivsecond, x1, x2, prec);
       if (!newtonWorked) {
-	printf("Warning: zero-search by Newton's method did not converge on the interval\n[");
-	printValue(&x1,prec);
-	printf(";");
-	printValue(&x2,prec);
-	printf("]\nThis (possibly maximul) point will be excluded from the infnorm result.\n");
+	printMessage(1,"Warning: zero-search by Newton's method did not converge on the interval\n[");
+	if (verbosity >= 1) printValue(&x1,prec);
+	printMessage(1,";");
+	if (verbosity >= 1) printValue(&x2,prec);
+	printMessage(1,"]\nThis (possibly maximul) point will be excluded from the infnorm result.\n");
       } else {
 	if (!(mpfr_number_p(z))) {
-	  printf("Warning: zero-search by Newton's method produces infinity or NaN\n");
-	  printf("Will replace the zero point of the derivative by the mid-point of\nthe considered interval [");
-	  printValue(&x1,prec);
-	  printf(";");
-	  printValue(&x2,prec);
-	  printf("]\n");
+	  printMessage(1,"Warning: zero-search by Newton's method produces infinity or NaN.\n");
+	  printMessage(1,"Will replace the zero point of the derivative by the mid-point of\nthe considered interval [");
+	  if (verbosity >= 1) printValue(&x1,prec);
+	  printMessage(1,";");
+	  if (verbosity >= 1) printValue(&x2,prec);
+	  printMessage(1,"]\n");
 	  mpfr_add(z,x1,x2,GMP_RNDN);
 	  mpfr_div_ui(z,z,2,GMP_RNDN);
 	}
@@ -1931,10 +1931,10 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
 	  mpfr_abs(temp, temp, GMP_RNDU);
 	  mpfr_max(max, max, temp, GMP_RNDU);
 	} else {
-	  printf("Warning: the evaluation of the given function in ");
-	  printValue(&z,prec);
-	  printf(" gives NaN.\n");
-	  printf("This (possibly maximum) point will be excluded from the infnorm result.\n");
+	  printMessage(1,"Warning: the evaluation of the given function in ");
+	  if (verbosity >= 1) printValue(&z,prec);
+	  printMessage(1," gives NaN.\n");
+	  printMessage(1,"This (possibly maximum) point will be excluded from the infnorm result.\n");
 	}
       }
     }
@@ -1977,8 +1977,8 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
 
   if (isTrivialInfnormCase(res, func)) {
     if (proof != NULL) {
-      printf("Warning: the infnorm on the given function is trivially calculable.\n");
-      printf("No proof will be generated.\n");
+      printMessage(1,"Warning: the infnorm on the given function is trivially calculable.\n");
+      printMessage(1,"No proof will be generated.\n");
     }
     return res;
   }
@@ -2005,9 +2005,9 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
   mpfi_interv_fr(rangeI,*(range.a),*(range.b));
   deriv = differentiate(func);
   if (getNumeratorDenominator(&numeratorDeriv,&denominatorDeriv,deriv)) {
-    printf("Warning: the derivative of the function is a quotient, thus possibly not continuous in the interval.\n");
-    printf("Only the zeros of the numerator will be searched and pole detection may fail.\n");
-    printf("Be sure that the function is twice continuously differentiable if trusting the infnorm result.\n");
+    printMessage(1,"Warning: the derivative of the function is a quotient, thus possibly not continuous in the interval.\n");
+    printMessage(1,"Only the zeros of the numerator will be searched and pole detection may fail.\n");
+    printMessage(1,"Be sure that the function is twice continuously differentiable if trusting the infnorm result.\n");
 
     mpfr_init2(z,prec);
     mpfr_init2(ya,prec);
@@ -2026,26 +2026,26 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
       mpfr_mul_ui(yb,yb,2,GMP_RNDN);
 
       if (mpfr_cmp(ya,yb) <= 0) {
-	printf("Warning: the derivative of the function seems to have a extensible singularity in ");
-	printValue(&z,prec);
-	printf(".\n");
-	printf("The infnorm result might not be trustful if the derivative cannot actually\n");
-	printf("be extended in this point.\n");
+	printMessage(1,"Warning: the derivative of the function seems to have a extensible singularity in ");
+	if (verbosity >= 1) printValue(&z,prec);
+	printMessage(1,".\n");
+	printMessage(1,"The infnorm result might not be trustful if the derivative cannot actually\n");
+	printMessage(1,"be extended in this point.\n");
       } else {
-	printf("Warning: the derivative of the function seems to have a singularity in ");
-	printValue(&z,prec);
-	printf(".\n");
-	printf("The infnorm result is likely to be wrong.\n");
+	printMessage(1,"Warning: the derivative of the function seems to have a singularity in ");
+	if (verbosity >= 1) printValue(&z,prec);
+	printMessage(1,".\n");
+	printMessage(1,"The infnorm result is likely to be wrong.\n");
       }
     } else {
       evaluate(ya,denominatorDeriv,*(range.a),prec);
       evaluate(yb,denominatorDeriv,*(range.b),prec);
 
       if (mpfr_sgn(ya) != mpfr_sgn(yb)) {
-	printf("Warning: the derivative of the function seems to have a (extensible) singularity in the considered interval.\n");
-	printf("The infnorm result might be not trustful if the function is not continuously differentiable.\n");
+	printMessage(1,"Warning: the derivative of the function seems to have a (extensible) singularity in the considered interval.\n");
+	printMessage(1,"The infnorm result might be not trustful if the function is not continuously differentiable.\n");
       } else {
-	printMessage(1,"Information: the derivative seems to have no (false) pole in the considered interval.\n");
+	printMessage(2,"Information: the derivative seems to have no (false) pole in the considered interval.\n");
       }
     }
 
@@ -2070,14 +2070,16 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
   secondMightExcludes = NULL;
 
   if (mightExcludes != NULL) {
-    printf("Warning: to get better infnorm quality, the following domains will be excluded additionally:\n");
-    curr = mightExcludes;
-    while(curr != NULL) {
-      printInterval(*((mpfi_t *) (curr->value)));
+    printMessage(1,"Warning: to get better infnorm quality, the following domains will be excluded additionally:\n");
+    if (verbosity >= 1) {
+      curr = mightExcludes;
+      while(curr != NULL) {
+	printInterval(*((mpfi_t *) (curr->value)));
+	printf("\n");
+	curr = curr->next;
+      }
       printf("\n");
-      curr = curr->next;
     }
-    printf("\n");
     mightExcludes = concatChains(mightExcludes,initialExcludes);
 
     if (theo != NULL) freeInfnormTheo(theo);
@@ -2091,21 +2093,23 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
 	     2*prec,rangeDiameter,mightExcludes,&secondMightExcludes,theo);
 
     if (secondMightExcludes != NULL) {
-      printf("Warning: the following domains remain the exclusion of which could improve the result.\n");
-      curr = secondMightExcludes;
-      while(curr != NULL) {
-	printInterval(*((mpfi_t *) (curr->value)));
+      printMessage(1,"Warning: the following domains remain the exclusion of which could improve the result.\n");
+      if (verbosity >= 1) {
+	curr = secondMightExcludes;
+	while(curr != NULL) {
+	  printInterval(*((mpfi_t *) (curr->value)));
+	  printf("\n");
+	  curr = curr->next;
+	}
 	printf("\n");
-	curr = curr->next;
       }
-      printf("\n");
     }
   }
 
   if (proof != NULL) {
-    printMessage(1,"Information: started writing the proof.\n");
+    printMessage(2,"Information: started writing the proof.\n");
     fprintInfnormTheo(proof,theo,1);
-    printMessage(1,"Information: proof written.\n");
+    printMessage(2,"Information: proof written.\n");
   }
   
   if (theo != NULL) freeInfnormTheo(theo);
