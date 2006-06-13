@@ -1,3 +1,7 @@
+#include <stdio.h> /* fprintf, fopen, fclose, */
+#include <stdlib.h> /* exit, free, mktemp */
+#include <errno.h>
+
 #include <mpfr.h>
 #include <mpfi.h>
 #include "expression.h"
@@ -5,9 +9,6 @@
 #include "integral.h"
 #include "main.h"
 
-#include <stdio.h> /* fprintf, fopen, fclose, */
-#include <stdlib.h> /* exit, free, mktemp */
-#include <errno.h>
 
 #define DEBUG 0
 #define DEBUGMPFI 0
@@ -56,7 +57,6 @@ rangetype integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) 
   mpfr_init2(y2,prec);
   y.a = &y1;
   y.b = &y2;
-
 
   while(mpfr_less_p(x2,*(interval.b))) {
     evaluateRangeFunctionFast(y, func, deriv, x, prec);

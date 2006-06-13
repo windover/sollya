@@ -120,44 +120,86 @@ GEN evaluate_to_PARI(node *tree, GEN x, mp_prec_t prec) {
 
 
 // Convert an array [a0,..,an] of PARI REAL_t values
-// into a tree representing the polynomial sum(ai*x^i)
-node *convert_poly(int first_index, int last_index, GEN tab, mp_prec_t prec) {
+// using the chain [k0,...,kn] of ints
+// into a tree representing the polynomial sum(ai*x^ki)
+node *convert_poly(int first_index, int last_index, GEN tab, chain *monomials, mp_prec_t prec) {
   node *tree;
   node *temp1;
   node *temp2;
+  node *temp3;
+  node *temp4;
+  node *temp5;
+  node *temp6;
   mpfr_t *value;
+  mpfr_t *value2;
+
+  if (lengthChain(monomials) != (last_index-first_index)+1) {
+    printf("Error : in Remez, trying to convert an array of coefficients with respect to a list of monomials with different length.\n");
+    recoverFromError();
+  }
 
   if (first_index == last_index) {
     tree = malloc(sizeof(node));
-    tree->nodeType = CONSTANT;
+    tree->nodeType = MUL;
+
+    temp1 = malloc(sizeof(node));
+    temp1->nodeType = CONSTANT;
     value = malloc(sizeof(mpfr_t));
     mpfr_init2(*value, prec);
     PARI_to_mpfr(*value, (GEN)(tab[first_index]), GMP_RNDN);
-    tree->value = value;
-  }
-  else {
-    temp1 = convert_poly(first_index+1, last_index, tab, prec);
+    temp1->value = value;
+    tree->child1 = temp1;
 
     temp2 = malloc(sizeof(node));
-    temp2->nodeType = CONSTANT;
-    value = malloc(sizeof(mpfr_t));
-    mpfr_init2(*value, prec);
-    PARI_to_mpfr(*value,(GEN)(tab[first_index]), GMP_RNDN);
-    temp2->value = value;
+    temp2->nodeType = POW;
+    temp3 = malloc(sizeof(node));
+    temp3->nodeType = VARIABLE;
+    temp2->child1 = temp3;
+
+    temp4 = malloc(sizeof(node));
+    temp4->nodeType = CONSTANT;
+    value2 = malloc(sizeof(mpfr_t));
+    mpfr_init2(*value2, prec);
+    mpfr_set_si(*value2, *((int *) monomials->value), GMP_RNDN);
+    temp4->value = value2;
+    temp2->child2 = temp4;
+    tree->child2 = temp2;
+  }
+  else {
+    temp1 = convert_poly(first_index+1, last_index, tab, monomials->next, prec);
 
     tree = malloc(sizeof(node));
     tree->nodeType = ADD;
-    tree->child1 = temp2;
+    tree->child2 = temp1;
 
     temp2 = malloc(sizeof(node));
     temp2->nodeType = MUL;
-    temp2->child2 = temp1;
-    
-    temp1 = malloc(sizeof(node));
-    temp1->nodeType = VARIABLE;
-    temp2->child1 = temp1;
 
-    tree->child2 = temp2;
+    temp3 = malloc(sizeof(node));
+    temp3->nodeType = CONSTANT;
+    value = malloc(sizeof(mpfr_t));
+    mpfr_init2(*value, prec);
+    PARI_to_mpfr(*value, (GEN)(tab[first_index]), GMP_RNDN);
+    temp3->value = value;
+
+    temp4 = malloc(sizeof(node));
+    temp4->nodeType = POW;
+    
+    temp5 = malloc(sizeof(node));
+    temp5->nodeType = VARIABLE;
+
+    temp6 = malloc(sizeof(node));
+    temp6->nodeType = CONSTANT;
+    value2 = malloc(sizeof(mpfr_t));
+    mpfr_init2(*value2, prec);
+    mpfr_set_si(*value2, *((int *) monomials->value), GMP_RNDN);
+    temp6->value = value2;
+
+    temp4->child1 = temp5;
+    temp4->child2 = temp6;
+    temp2->child1 = temp3;
+    temp2->child2 = temp4;
+    tree->child1 = temp2;
   }
 
   return tree;
@@ -289,11 +331,9 @@ double computeRatio(node *tree, GEN x, mp_prec_t prec) {
 }
 
 
-/* 
-   Suppose that the list monom is sorted.
-
-   Tests whether monom contains two equal ints.
-*/
+ 
+// Suppose that the list monom is sorted.
+// Tests whether monom contains two equal ints.
 int testMonomials(chain *monom) {
   chain *curr;
 
@@ -309,29 +349,61 @@ int testMonomials(chain *monom) {
 }
 
 
-node* remez(node *func, chain *monom, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+// Gives the monomials corresponding to the derivative of the argument m
+chain *deriveMonomials(chain *m) {
+  chain *res;
+  chain *curr;
+  int *elem;
+
+  res = NULL;
+  curr = m;
+  while(curr!=NULL) {
+    if (*((int *)(curr->value)) != 0) {
+      elem = (int *) safeMalloc(sizeof(int));
+      *elem = (*((int *)(curr->value))) - 1;
+      res = addElement(res,elem);
+    }
+    curr = curr->next;
+  }
+
+  sortChain(res,cmpIntPtr);
+  return res;
+}
+
+
+long lMypowgs(GEN x, long i) {
+  if (gsigne(x) == 0) {
+    if (i==0) return (long)(gun);
+    else return (long)(gzero);
+  }
+  // else...
+  return lpowgs(x,i);
+}
+
+
+node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   ulong ltop=avma;
   long prec_pari = 2 + (prec + BITS_IN_LONG - 1)/BITS_IN_LONG;
-  int i,j;
+  int i,j,k;
   GEN u, v, x, y, temp, temp_diff, temp_diff2, M;
   node *tree;
   node *tree_diff;
   node *tree_diff2;
   node *res;
   int test=1, crash_report;
-  int deg;
+  int deg, deg_diff, deg_diff2;
+  chain *monomials_diff;
+  chain *monomials_diff2;
+  chain *curr;
 
+  sortChain(monomials,cmpIntPtr);
 
-  sortChain(monom,cmpIntPtr);
-
-  if (!testMonomials(monom)) {
+  if (!testMonomials(monomials)) {
     printf("Error: monomial degree is given twice in argument to Remez algorithm.\n");
     recoverFromError();
   }
 
-  deg = lengthChain(monom) - 1;
-
-  printf("Estimation of the necessary size : %lu\n",prec_pari*sizeof(long)*(deg+2)*(deg+10));
+  deg = lengthChain(monomials) - 1;
  
   tree = malloc(sizeof(node));
   tree->nodeType = SUB;
@@ -345,6 +417,10 @@ node* remez(node *func, chain *monom, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   tree_diff2->nodeType = SUB;
   tree_diff2->child1 = differentiate(tree_diff->child1);
 
+  monomials_diff = deriveMonomials(monomials);
+  monomials_diff2 = deriveMonomials(monomials_diff);
+
+
   u = mpfr_to_PARI(a);
   v = mpfr_to_PARI(b);
 
@@ -352,15 +428,14 @@ node* remez(node *func, chain *monom, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   x = cgetg(deg+3, t_COL);
   for (i=0;i<deg+2;i++) {
     x[i+1] = lsub(gdivgs(gadd(u,v),2),
-		  gmul(gdivgs(gsub(v,u),2),
-		       gcos(gdivgs(gmulgs(mppi(prec_pari),2*i+1),
-				   2*deg+4),prec_pari)
-		       )
-		  );
-    // To have evenly distributed points, choose the following points :
+    		  gmul(gdivgs(gsub(v,u),2),
+    		       gcos(gdivgs(gmulgs(mppi(prec_pari),2*i+1),
+    				   2*deg+4),prec_pari)
+    		       )
+    		  );
+    // To get evenly distributed points, choose the following points :
     // x[i+1] = ladd(u, gdivgs(gmulgs(gsub(v,u),i),(deg+1)));
   }
-  
 
   M = cgetg(deg+3,t_MAT);
   temp = cgetg(deg+3, t_COL);
@@ -371,14 +446,17 @@ node* remez(node *func, chain *monom, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   while(test) {
 
     // Definition of the Remez matrix M with respect to the point x_i
-    for (i=0;i<deg+2;i++) {
-      temp[i+1] = lcopy(gun);
-    }
-    for(j=0;j<deg+1;j++) {
-      M[j+1] = lcopy(temp);
-      for(i=0;i<deg+2;i++) {
-	temp[i+1] = lmul((GEN)temp[i+1],(GEN)x[i+1]);
+    curr = monomials;
+    temp = gcopy(x);
+
+    j=1;
+    while(curr != NULL) {
+      M[j] = lcopy(temp);
+      for(i=0;i<=deg+1;i++) {
+	coeff(M,i+1,j) = lMypowgs(gcoeff(M,i+1,j),(long)(*((int *)(curr->value))));
       }
+      j++;
+      curr = curr->next;
     }
     for(i=0;i<deg+2;i++) {
       temp[i+1] = (long)stoi((i % 2)*2-1);
@@ -406,23 +484,42 @@ node* remez(node *func, chain *monom, mpfr_t a, mpfr_t b, mp_prec_t prec) {
       }*/
     
     // Formally derive the polynomial stored in temp
-    for(i=0;i<deg+1;i++) {
-      temp_diff[i+1] = lmulrs((GEN)(temp[i+1]),(long)i);
+    curr = monomials;
+    deg_diff = 0;
+    k = 1;
+    while(curr!=NULL) {
+      j = (*((int *)(curr->value)));
+      if (j!=0) {
+	deg_diff++;
+	temp_diff[deg_diff] = lmulrs((GEN)(temp[k]),(long)(j));
+      }
+      k++;
+      curr = curr->next;
     }
-    
+
+
     // Formally derive the polynomial stored in temp_diff
-    for(i=0;i<deg;i++) {
-      temp_diff2[i+2] = lmulrs((GEN)(temp_diff[i+2]),(long)i);
+    curr = monomials_diff;
+    deg_diff2 = 0;
+    k=1;
+    while(curr!=NULL) {
+      j = (*((int *)(curr->value)));
+      if (j!=0) {
+	deg_diff2++;
+	temp_diff2[deg_diff2] = lmulrs((GEN)(temp_diff[k]),(long)(j));
+      }
+      k++;
+      curr = curr->next;
     }
 
     // Construction of the function f-p
-    tree->child2 = convert_poly(1,deg+1, temp, prec);
+    tree->child2 = convert_poly(1,deg+1, temp, monomials, prec);
 
     // Construction of the function f'-p'
-    tree_diff->child2 = convert_poly(2,deg+1, temp_diff, prec);
+    tree_diff->child2 = convert_poly(1,deg_diff, temp_diff, monomials_diff, prec);
 
     // Construction of the function f''-p''
-    tree_diff2->child2 = convert_poly(3,deg+1, temp_diff2, prec);
+    tree_diff2->child2 = convert_poly(1,deg_diff2, temp_diff2, monomials_diff2, prec);
 
     // Searching the zeros of f'-p'
     crash_report = 0;
@@ -431,13 +528,16 @@ node* remez(node *func, chain *monom, mpfr_t a, mpfr_t b, mp_prec_t prec) {
       free_memory(tree);
       free_memory(tree_diff);
       free_memory(tree_diff2);
+      freeChain(monomials_diff,freeIntPtr);
+      freeChain(monomials_diff2,freeIntPtr);
       avma = ltop;
       return copyTree(func);
     }
 
     // DEBUG
-    printf("Step %d ; quality of the approximation : %e. Computed value of epsilon : ",test,computeRatio(tree, x, prec));output((GEN)(temp[i+2]));
+    printf("Step %d ; quality of the approximation : %e. Computed value of epsilon : ",test,computeRatio(tree, x, prec));output((GEN)(temp[deg+2]));
     //plotTree(tree,a,b,500,prec);
+    //for(i=0;i<100000;i++){}
     test++;
     if (computeRatio(tree, x, prec)<0.0001) {
       test = 0;
@@ -457,6 +557,8 @@ node* remez(node *func, chain *monom, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   free(tree);
   free(tree_diff);
   free(tree_diff2);
+  freeChain(monomials_diff,freeIntPtr);
+  freeChain(monomials_diff2,freeIntPtr);
   avma = ltop;
   return res;
 }
