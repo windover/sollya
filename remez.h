@@ -6,9 +6,10 @@
 #include <mpfr.h>
 #include "expression.h"
 #include "remez.h"
+#include "chain.h"
 
 
-node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec);
+node* remez(node *func, chain* monom, mpfr_t a, mpfr_t b, mp_prec_t prec);
 
 
 #endif /* ifdef REMEZ_H*/

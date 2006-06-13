@@ -142,6 +142,8 @@ void yyerror(char *message) {
 %type <rangeval> integral
 %type <aString> string
 %type <aFile> writefile
+%type <aChain> monomials
+%type <aChain> degreelist
 
 %%
 
@@ -872,7 +874,7 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			      free_memory($3);
 			      $$ = temp_node;
                            }
-			|       REMEZTOKEN LPARTOKEN function COMMATOKEN degree COMMATOKEN range RPARTOKEN
+			|       REMEZTOKEN LPARTOKEN function COMMATOKEN monomials COMMATOKEN range RPARTOKEN
                            {
 			      temp_node = remez($3, $5, *($7.a), *($7.b), tools_precision);
 			      free_memory($3);
@@ -880,6 +882,7 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			      mpfr_clear(*($7.b));
 			      free($7.a);
 			      free($7.b);
+			      freeChain($5,freeIntPtr);
 			      $$ = temp_node;
                            }
                         |       TAYLORTOKEN LPARTOKEN function COMMATOKEN degree COMMATOKEN function RPARTOKEN
@@ -1080,6 +1083,34 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			     $$ = temp_node;
                            }		
 ;
+
+monomials:                      degree
+                           {
+			     $$ = makeIntPtrChain(($1));
+			   }
+                        |       LBRACKETTOKEN degreelist RBRACKETTOKEN
+                           {
+			     $$ = $2;
+			   }
+;
+
+degreelist:                     degree 
+                           {
+			     intTempPtr = (int *) safeMalloc(sizeof(int));
+			     *intTempPtr = ($1);
+			     chain_temp = addElement(NULL,intTempPtr);
+			     $$ = chain_temp;
+			   }
+                         |      degreelist COMMATOKEN degree
+                           {
+			     intTempPtr = (int *) safeMalloc(sizeof(int));
+			     *intTempPtr = ($3);
+			     chain_temp = addElement(($1),intTempPtr);
+			     $$ = chain_temp;
+			   }
+;
+
+
 
 term:				subterm						
 			   {

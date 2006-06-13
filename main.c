@@ -43,6 +43,7 @@ ulong ltop;
 rangetype *rangeTempPtr;
 int dyadic = 0;
 FILE *temp_fd;
+int *intTempPtr = NULL;
 
 extern jmp_buf environnement;
 

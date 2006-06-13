@@ -63,3 +63,68 @@ chain* concatChains(chain *c1, chain *c2) {
 
   return c1;
 }
+
+void freeIntPtr(void *ptr) {
+  if (ptr == NULL) return;
+  free(ptr);
+}
+
+chain *makeIntPtrChain(int n) {
+  int i;
+  int *elem;
+  chain *c;
+  
+  c = NULL;
+  for (i=0;i<=n;i++) {
+    elem = (int *) safeMalloc(sizeof(int));
+    *elem = i;
+    c = addElement(c,elem);
+  }
+
+  return c;
+}
+
+int lengthChain(chain *c) {
+  int i;
+  chain *curr;
+
+  i = 0;
+  curr = c;
+  while (curr != NULL) {
+    i++;
+    curr = curr->next;
+  }
+
+  return i;
+}
+
+
+void sortChain(chain *c,  int (*f) (void *, void *)) {
+  chain *curr1, *curr2;
+  void *t;
+
+  if (c==NULL) return;
+  if (c->next == NULL) return;
+
+  /* else... */
+  
+  curr1 = c;
+  while (curr1 != NULL) {
+    curr2 = curr1->next;
+    while (curr2 != NULL) {
+      if (f(curr1->value, curr2->value)>=0) {
+	t = curr1->value;
+	curr1->value = curr2->value;
+	curr2->value = t;
+      }
+      curr2 = curr2->next;
+    }
+    curr1 = curr1->next;
+  }
+  return;
+}
+
+int cmpIntPtr(void *a, void *b) {
+  return (*((int *) a) - *((int *) b));
+}
+

@@ -3,6 +3,7 @@
 #include <mpfr.h>
 #include "main.h"
 #include "expression.h"
+#include "chain.h"
 
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
@@ -288,8 +289,27 @@ double computeRatio(node *tree, GEN x, mp_prec_t prec) {
 }
 
 
+/* 
+   Suppose that the list monom is sorted.
 
-node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+   Tests whether monom contains two equal ints.
+*/
+int testMonomials(chain *monom) {
+  chain *curr;
+
+  if (monom == NULL) return 1;
+  
+  curr = monom;
+  while (curr->next != NULL) {
+    if (*((int *) (curr->value)) == *((int *) (curr->next->value))) return 0;
+    curr = curr->next;
+  }
+
+  return 1;
+}
+
+
+node* remez(node *func, chain *monom, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   ulong ltop=avma;
   long prec_pari = 2 + (prec + BITS_IN_LONG - 1)/BITS_IN_LONG;
   int i,j;
@@ -299,8 +319,18 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   node *tree_diff2;
   node *res;
   int test=1, crash_report;
+  int deg;
 
-  
+
+  sortChain(monom,cmpIntPtr);
+
+  if (!testMonomials(monom)) {
+    printf("Error: monomial degree is given twice in argument to Remez algorithm.\n");
+    recoverFromError();
+  }
+
+  deg = lengthChain(monom) - 1;
+
   printf("Estimation of the necessary size : %lu\n",prec_pari*sizeof(long)*(deg+2)*(deg+10));
  
   tree = malloc(sizeof(node));
@@ -407,7 +437,7 @@ node* remez(node *func, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 
     // DEBUG
     printf("Step %d ; quality of the approximation : %e. Computed value of epsilon : ",test,computeRatio(tree, x, prec));output((GEN)(temp[i+2]));
-    //    plotTree(tree,a,b,500,prec);
+    //plotTree(tree,a,b,500,prec);
     test++;
     if (computeRatio(tree, x, prec)<0.0001) {
       test = 0;

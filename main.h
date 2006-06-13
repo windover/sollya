@@ -37,6 +37,7 @@ extern chain *chain_temp;
 extern chain *chain_temp2;
 extern int dyadic;
 extern FILE *temp_fd;
+extern int *intTempPtr;
 
 void printPrompt(void);
 void recoverFromError(void);
