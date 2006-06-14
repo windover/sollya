@@ -125,6 +125,14 @@ PROOF           "proof"
 
 VERBOSITY       "verbosity"
 
+WORSTCASE       "worstcase"
+WITH            "with"
+INPUTPREC       "inputprec"
+OUTPUTPREC      "outputprec"
+INPUTEXPO       "inputexpo"
+EPSILON         "epsilon"
+
+
 %%
 
 %{
@@ -208,6 +216,15 @@ VERBOSITY       "verbosity"
 {DIRTYINTEGRAL} {     promptToBePrinted = 0; return DIRTYINTEGRALTOKEN; }
 {PROOF}         {     promptToBePrinted = 0; return PROOFTOKEN; }
 {VERBOSITY}     {     promptToBePrinted = 0; return VERBOSITYTOKEN; }
+{WORSTCASE}     {     promptToBePrinted = 0; return WORSTCASETOKEN; }	
+{WITH}          {     promptToBePrinted = 0; return WITHTOKEN; }	
+{INPUTPREC}     {     promptToBePrinted = 0; return INPUTPRECTOKEN; }	
+{OUTPUTPREC}    {     promptToBePrinted = 0; return OUTPUTPRECTOKEN; }	
+{INPUTEXPO}     {     promptToBePrinted = 0; return INPUTEXPOTOKEN; }	
+{EPSILON}       {     promptToBePrinted = 0; return EPSILONTOKEN; }     
+
+
+
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

@@ -11,6 +11,7 @@
 #include "assignment.h"
 #include "taylor.h"
 #include "integral.h"
+#include "worstcase.h"
 
 int yylex();
 
@@ -112,6 +113,13 @@ void yyerror(char *message) {
 %token  STRINGTOKEN
 %token  PROOFTOKEN
 %token  VERBOSITYTOKEN
+%token  WORSTCASETOKEN
+%token  WITHTOKEN
+%token  INPUTPRECTOKEN
+%token  OUTPUTPRECTOKEN
+%token  INPUTEXPOTOKEN
+%token  EPSILONTOKEN
+
 
 %type <other> commands
 %type <other> command
@@ -148,6 +156,7 @@ void yyerror(char *message) {
 %type <aChain> degreelist
 %type <verbval> verbosity
 %type <other> verbosityset
+%type <other> worstcase
 
 %%
 
@@ -263,6 +272,9 @@ command:     plot
 	                     $$ = NULL;
 	                   }
            | evaluate      {
+	                     $$ = NULL;
+	                   }
+           | worstcase     {
 	                     $$ = NULL;
 	                   }
            | dyadic SEMICOLONTOKEN  {
@@ -404,6 +416,32 @@ evaluate:    EVALUATETOKEN function INTOKEN range SEMICOLONTOKEN
 			   }
 
 ;
+
+
+worstcase:   WORSTCASETOKEN function WITHTOKEN INPUTPRECTOKEN EQUALTOKEN constantfunction COMMATOKEN INPUTEXPOTOKEN EQUALTOKEN range COMMATOKEN OUTPUTPRECTOKEN EQUALTOKEN constantfunction COMMATOKEN EPSILONTOKEN EQUALTOKEN constantfunction SEMICOLONTOKEN
+                           {
+			     /* function $2
+                                inputprec $6
+				outputprec $14
+				inputexpo $10
+				epsilon $18
+			     */
+			     printWorstCases(($2), *($6), ($10), *($14), *($18), tools_precision);
+			     free_memory($2);
+			     mpfr_clear(*($6));
+			     mpfr_clear(*($14));
+			     mpfr_clear(*($18));
+			     free($6);
+			     free($14);
+			     free($18);
+			     mpfr_clear(*(($10).a));
+			     mpfr_clear(*(($10).b));
+			     free(($10).a);
+			     free(($10).b);
+			     $$ = NULL;
+			   }
+;
+
 
 
 findzeros:   FINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
