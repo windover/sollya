@@ -157,6 +157,7 @@ void yyerror(char *message) {
 %type <verbval> verbosity
 %type <other> verbosityset
 %type <other> worstcase
+%type <constantval> commandfunction
 
 %%
 
@@ -180,7 +181,7 @@ command:     plot
                            {
                              $$ = NULL;
                            }  
-           | dirtyinfnorm  {
+           | dirtyinfnorm  SEMICOLONTOKEN {
 	                     printf("uncertified infnorm result: ");
 			     printValue(($1),defaultprecision);
 			     printf("\n");
@@ -188,7 +189,7 @@ command:     plot
 			     free(($1));
 			     $$ = NULL;
 	                   }
-           | dirtyintegral {
+           | dirtyintegral SEMICOLONTOKEN {
 	                     printf("uncertified integral result: ");
 			     printValue(($1),defaultprecision);
 			     printf("\n");
@@ -196,7 +197,7 @@ command:     plot
 			     free(($1));
 			     $$ = NULL;
 	                   }
-           | infnorm       {
+           | infnorm SEMICOLONTOKEN {
 	                     printf("infnorm result: ");
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
@@ -233,7 +234,7 @@ command:     plot
 			     free($1.b);
 	                     $$ = NULL;
 	                   }
-           | integral      {
+           | integral SEMICOLONTOKEN {
 	                     printf("integral result: ");
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
@@ -540,7 +541,7 @@ findzeros:   FINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
 ;
 
 
-infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
+infnorm:     INFNORMTOKEN function INTOKEN range 
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
@@ -555,7 +556,7 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 			     free($4.b);
 			     $$ = range_temp;
                            }
-           | INFNORMTOKEN function INTOKEN range COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant SEMICOLONTOKEN
+           | INFNORMTOKEN function INTOKEN range COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant 
 	                   {
 			     range_temp = infnorm($2,$4,NULL,defaultprecision,*($8),NULL);
 			     mpfr_clear(*($8));
@@ -567,7 +568,7 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 			     free($4.b);
 			     $$ = range_temp;
                            }
-           | INFNORMTOKEN function INTOKEN range WITHOUTTOKEN rangelist SEMICOLONTOKEN
+           | INFNORMTOKEN function INTOKEN range WITHOUTTOKEN rangelist 
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
@@ -593,7 +594,7 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 			     }
 			     $$ = range_temp;
                            }
-           | INFNORMTOKEN function INTOKEN range WITHOUTTOKEN rangelist COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant SEMICOLONTOKEN
+           | INFNORMTOKEN function INTOKEN range WITHOUTTOKEN rangelist COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant 
 	                   {
 			     range_temp = infnorm($2,$4,$6,defaultprecision,*($10),NULL);
 			     mpfr_clear(*($10));
@@ -616,7 +617,7 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 			     }
 			     $$ = range_temp;
                            }
-           | INFNORMTOKEN function INTOKEN range COMMATOKEN PROOFTOKEN EQUALTOKEN writefile SEMICOLONTOKEN
+           | INFNORMTOKEN function INTOKEN range COMMATOKEN PROOFTOKEN EQUALTOKEN writefile 
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
@@ -632,7 +633,7 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 			     free($4.b);
 			     $$ = range_temp;
                            }
-           | INFNORMTOKEN function INTOKEN range COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant COMMATOKEN PROOFTOKEN EQUALTOKEN writefile SEMICOLONTOKEN
+           | INFNORMTOKEN function INTOKEN range COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant COMMATOKEN PROOFTOKEN EQUALTOKEN writefile 
 	                   {
 			     range_temp = infnorm($2,$4,NULL,defaultprecision,*($8),($12));
 			     mpfr_clear(*($8));
@@ -645,7 +646,7 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 			     free($4.b);
 			     $$ = range_temp;
                            }
-           | INFNORMTOKEN function INTOKEN range WITHOUTTOKEN rangelist COMMATOKEN PROOFTOKEN EQUALTOKEN writefile SEMICOLONTOKEN
+           | INFNORMTOKEN function INTOKEN range WITHOUTTOKEN rangelist COMMATOKEN PROOFTOKEN EQUALTOKEN writefile 
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
@@ -672,7 +673,7 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 			     }
 			     $$ = range_temp;
                            }
-           | INFNORMTOKEN function INTOKEN range WITHOUTTOKEN rangelist COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant COMMATOKEN PROOFTOKEN EQUALTOKEN writefile SEMICOLONTOKEN
+           | INFNORMTOKEN function INTOKEN range WITHOUTTOKEN rangelist COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant COMMATOKEN PROOFTOKEN EQUALTOKEN writefile
 	                   {
 			     range_temp = infnorm($2,$4,$6,defaultprecision,*($10),($14));
 			     fclose(($14));
@@ -699,7 +700,7 @@ infnorm:     INFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 ;
 
 
-integral:     INTEGRALTOKEN function INTOKEN range SEMICOLONTOKEN
+integral:     INTEGRALTOKEN function INTOKEN range
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
@@ -714,7 +715,7 @@ integral:     INTEGRALTOKEN function INTOKEN range SEMICOLONTOKEN
 			     free($4.b);
 			     $$ = range_temp;
                            }
-           | INTEGRALTOKEN function INTOKEN range COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant SEMICOLONTOKEN
+           | INTEGRALTOKEN function INTOKEN range COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant 
 	                   {
 			     range_temp = integral($2,$4,defaultprecision,*($8));
 			     mpfr_clear(*($8));
@@ -728,7 +729,7 @@ integral:     INTEGRALTOKEN function INTOKEN range SEMICOLONTOKEN
                            }
 ;
 
-dirtyinfnorm: DIRTYINFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
+dirtyinfnorm: DIRTYINFNORMTOKEN function INTOKEN range 
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
@@ -739,7 +740,7 @@ dirtyinfnorm: DIRTYINFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 			     free(($4).b);
 			     $$ = mpfr_temp;
 			   }
-             | DIRTYINFNORMTOKEN function INTOKEN range COMMATOKEN points SEMICOLONTOKEN
+             | DIRTYINFNORMTOKEN function INTOKEN range COMMATOKEN points 
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
@@ -752,7 +753,7 @@ dirtyinfnorm: DIRTYINFNORMTOKEN function INTOKEN range SEMICOLONTOKEN
 			   }
 ;
 
-dirtyintegral: DIRTYINTEGRALTOKEN function INTOKEN range SEMICOLONTOKEN
+dirtyintegral: DIRTYINTEGRALTOKEN function INTOKEN range 
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
@@ -763,7 +764,7 @@ dirtyintegral: DIRTYINTEGRALTOKEN function INTOKEN range SEMICOLONTOKEN
 			     free(($4).b);
 			     $$ = mpfr_temp;
 			   }
-             | DIRTYINTEGRALTOKEN function INTOKEN range COMMATOKEN points SEMICOLONTOKEN
+             | DIRTYINTEGRALTOKEN function INTOKEN range COMMATOKEN points 
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
@@ -1260,6 +1261,60 @@ primary:			variable
                            {
                              $$ = $1;
                            }
+                        |       LPARTOKEN commandfunction RPARTOKEN
+                           {
+			     temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = CONSTANT;
+			     temp_node->value = $2;
+			     $$ = temp_node;
+			   }
+;
+
+
+commandfunction:          infnorm
+                           {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,tools_precision);
+			     mpfr_abs(*($1.a),*($1.a),GMP_RNDN);
+			     mpfr_abs(*($1.b),*($1.b),GMP_RNDN);
+			     mpfr_max(*mpfr_temp,*($1.a),*($1.b),GMP_RNDU);
+			     mpfr_clear(*($1.a));
+			     mpfr_clear(*($1.b));
+			     free(($1.a));
+			     free(($1.b));
+			     $$ = mpfr_temp;
+			   }
+                        | integral
+                           {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,tools_precision);
+			     mpfr_abs(*($1.a),*($1.a),GMP_RNDN);
+			     mpfr_abs(*($1.b),*($1.b),GMP_RNDN);
+			     mpfr_max(*mpfr_temp,*($1.a),*($1.b),GMP_RNDU);
+			     mpfr_clear(*($1.a));
+			     mpfr_clear(*($1.b));
+			     free(($1.a));
+			     free(($1.b));
+			     $$ = mpfr_temp;
+			   }
+                        | dirtyinfnorm
+                           {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,tools_precision);
+			     mpfr_abs(*mpfr_temp,*($1),GMP_RNDU);
+			     mpfr_clear(*($1));
+			     free($1);
+			     $$ = mpfr_temp;
+			   }
+                        | dirtyintegral
+                           {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,tools_precision);
+			     mpfr_abs(*mpfr_temp,*($1),GMP_RNDU);
+			     mpfr_clear(*($1));
+			     free($1);
+			     $$ = mpfr_temp;
+			   }
 ;
 
 variableWorkAround: VARIABLETOKEN 

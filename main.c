@@ -215,11 +215,12 @@ int main(int argc, char *argv[]) {
   
   pari_init(3000000, 2);
   ltop = avma;
+  
   if (setjmp(environnement)) {
     fprintf(stderr,"Error: an error occured in the PARI subsystem.\n");
     recoverFromError();
   }
-
+  
 
   signal(SIGINT,signalHandler);
   signal(SIGSEGV,signalHandler);
