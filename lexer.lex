@@ -131,6 +131,7 @@ INPUTPREC       "inputprec"
 OUTPUTPREC      "outputprec"
 INPUTEXPO       "inputexpo"
 EPSILON         "epsilon"
+OUTPUT          "output"
 
 
 %%
@@ -222,7 +223,7 @@ EPSILON         "epsilon"
 {OUTPUTPREC}    {     promptToBePrinted = 0; return OUTPUTPRECTOKEN; }	
 {INPUTEXPO}     {     promptToBePrinted = 0; return INPUTEXPOTOKEN; }	
 {EPSILON}       {     promptToBePrinted = 0; return EPSILONTOKEN; }     
-
+{OUTPUT}        {     promptToBePrinted = 0; return OUTPUTTOKEN; }     
 
 
 

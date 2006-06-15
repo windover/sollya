@@ -3,10 +3,11 @@
 
 
 #include <mpfr.h>
+#include <stdio.h>
 #include "expression.h"
 
 
-void printWorstCases(node *func, mpfr_t inputprec, rangetype inputExponRange, mpfr_t outputprec, mpfr_t epsilon, mp_prec_t prec);
+void printWorstCases(node *func, mpfr_t inputprec, rangetype inputExponRange, mpfr_t outputprec, mpfr_t epsilon, mp_prec_t prec, FILE *fd);
 
 
 

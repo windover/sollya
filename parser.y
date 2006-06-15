@@ -119,7 +119,7 @@ void yyerror(char *message) {
 %token  OUTPUTPRECTOKEN
 %token  INPUTEXPOTOKEN
 %token  EPSILONTOKEN
-
+%token  OUTPUTTOKEN
 
 %type <other> commands
 %type <other> command
@@ -426,7 +426,7 @@ worstcase:   WORSTCASETOKEN function WITHTOKEN INPUTPRECTOKEN EQUALTOKEN constan
 				inputexpo $10
 				epsilon $18
 			     */
-			     printWorstCases(($2), *($6), ($10), *($14), *($18), tools_precision);
+			     printWorstCases(($2), *($6), ($10), *($14), *($18), tools_precision, NULL);
 			     free_memory($2);
 			     mpfr_clear(*($6));
 			     mpfr_clear(*($14));
@@ -438,6 +438,30 @@ worstcase:   WORSTCASETOKEN function WITHTOKEN INPUTPRECTOKEN EQUALTOKEN constan
 			     mpfr_clear(*(($10).b));
 			     free(($10).a);
 			     free(($10).b);
+			     $$ = NULL;
+			   }
+           | WORSTCASETOKEN function WITHTOKEN INPUTPRECTOKEN EQUALTOKEN constantfunction COMMATOKEN INPUTEXPOTOKEN EQUALTOKEN range COMMATOKEN OUTPUTPRECTOKEN EQUALTOKEN constantfunction COMMATOKEN EPSILONTOKEN EQUALTOKEN constantfunction COMMATOKEN OUTPUTTOKEN EQUALTOKEN writefile SEMICOLONTOKEN 
+                           {
+			     /* function $2
+                                inputprec $6
+				outputprec $14
+				inputexpo $10
+				epsilon $18
+				file $22
+			     */
+			     printWorstCases(($2), *($6), ($10), *($14), *($18), tools_precision, ($22));
+			     free_memory($2);
+			     mpfr_clear(*($6));
+			     mpfr_clear(*($14));
+			     mpfr_clear(*($18));
+			     free($6);
+			     free($14);
+			     free($18);
+			     mpfr_clear(*(($10).a));
+			     mpfr_clear(*(($10).b));
+			     free(($10).a);
+			     free(($10).b);
+			     fclose($22);
 			     $$ = NULL;
 			   }
 ;

@@ -4,8 +4,10 @@
 
 #include <mpfr.h>
 #include <mpfi.h>
+#include <stdio.h>
 #include "expression.h"
 #include "chain.h"
+
 
 #define TAYLOR 1
 #define HOPITAL_ON_POINT 2

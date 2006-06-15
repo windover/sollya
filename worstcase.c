@@ -43,7 +43,7 @@ int mpfrToInt(int *res, mpfr_t val) {
 
 void printWorstCases(node *func, 
 		     mpfr_t inputprec, rangetype inputExponRange, 
-		     mpfr_t outputprec, mpfr_t epsilon, mp_prec_t prec) {
+		     mpfr_t outputprec, mpfr_t epsilon, mp_prec_t prec, FILE *fd) {
   int inputprecision, outputprecision, firstexponent, lastexponent;
   mpfr_t temp, temp2, x, y, yR, xL;
   double eps;
@@ -129,21 +129,34 @@ void printWorstCases(node *func,
     if (mpfr_zero_p(y)) {
       printMessage(1,"Warning: the given function evaluates to 0 on ");
       if (verbosity >= 1) printValue(&x,mpfr_get_prec(x));
-      printMessage(1,"\n The rounding error will be considered as an absolute one.\n");
+      printMessage(1,"\nThe rounding error will be considered as an absolute one.\n");
     } else {
       mpfr_div(temp2,temp2,y,GMP_RNDN);
     }
     
     if (mpfr_cmp(temp2,epsilon) <= 0) {
-      printf("x = ");
+      printf("%s = ",variablename);
       printValue(&x,mpfr_get_prec(x));
-      printf(" y = ");
+      printf("\t\tf(%s) = ",variablename);
       printValue(&yR,mpfr_get_prec(yR));
-      printf(" eps = ");
+      printf("\t\teps = ");
       printValue(&temp2,mpfr_get_prec(temp2));
-      mpfr_log2(temp2,temp2,GMP_RNDN);
-      eps = mpfr_get_d(temp2,GMP_RNDN);
+      mpfr_log2(temp,temp2,GMP_RNDN);
+      eps = mpfr_get_d(temp,GMP_RNDN);
       printf(" = 2^(%f) \n",eps);
+      if (fd != NULL) {
+	fprintf(fd,"%s = ",variablename);
+	fprintValue(fd,x);
+	fprintf(fd,"\tf(%s) = ",variablename);
+	fprintValue(fd,yR);
+	fprintf(fd,"\teps = ");
+	fprintValue(fd,temp2);
+	fprintf(fd," = 2^(%f) ",eps);
+	if (mpfr_zero_p(y)) {
+	  fprintf(fd,"ABSOLUTE");
+	} 
+	fprintf(fd,"\n");
+      }
     }
 
     mpfr_nextabove(x);
