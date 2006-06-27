@@ -4,6 +4,7 @@
 #include "main.h"
 #include "expression.h"
 #include "chain.h"
+#include "remez.h"
 
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */

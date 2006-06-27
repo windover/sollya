@@ -1,5 +1,5 @@
-tools: parser.tab.o lex.yy.o plot.o expression.o infnorm.o remez.o main.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o
-	gcc -Wall -g -o tools lex.yy.o plot.o parser.tab.o expression.o infnorm.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o main.o -lfl -lmpfi -lpari -lmpfr -lgmp
+tools: parser.tab.o lex.yy.o plot.o expression.o infnorm.o remez.o main.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o
+	gcc -Wall -g -o tools lex.yy.o plot.o parser.tab.o expression.o infnorm.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o main.o -lfl -lmpfi -lpari -lmpfr -lgmp
 
 parser.tab.o: parser.tab.h parser.tab.c expression.h main.h infnorm.h remez.h chain.h assignment.h taylor.h
 	gcc -Wall -g -c parser.tab.c
@@ -27,6 +27,10 @@ main.o: plot.h expression.h infnorm.h remez.h main.h main.c assignment.h chain.h
 
 remez.o: remez.h remez.c expression.h main.h
 	gcc -g -Wall -c remez.c
+
+fpminimax.o: fpminimax.h fpminimax.c expression.h main.h
+	gcc -g -Wall -c fpminimax.c
+
 
 infnorm.o: infnorm.h infnorm.c expression.h main.h chain.h proof.h
 	gcc -g -Wall -c infnorm.c
