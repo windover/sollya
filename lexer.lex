@@ -133,6 +133,10 @@ INPUTEXPO       "inputexpo"
 EPSILON         "epsilon"
 OUTPUT          "output"
 
+LEFTANGLE       "<"
+RIGHTANGLEUNDERSCORE ">_"
+RIGHTANGLE      ">"
+
 
 %%
 
@@ -224,7 +228,9 @@ OUTPUT          "output"
 {INPUTEXPO}     {     promptToBePrinted = 0; return INPUTEXPOTOKEN; }	
 {EPSILON}       {     promptToBePrinted = 0; return EPSILONTOKEN; }     
 {OUTPUT}        {     promptToBePrinted = 0; return OUTPUTTOKEN; }     
-
+{LEFTANGLE}        {     promptToBePrinted = 0; return LEFTANGLETOKEN; }     
+{RIGHTANGLEUNDERSCORE}        {     promptToBePrinted = 0; return RIGHTANGLEUNDERSCORETOKEN; }     
+{RIGHTANGLE}        {     promptToBePrinted = 0; return RIGHTANGLETOKEN; }     
 
 
 {VARIABLE}      {     			     

@@ -120,6 +120,9 @@ void yyerror(char *message) {
 %token  INPUTEXPOTOKEN
 %token  EPSILONTOKEN
 %token  OUTPUTTOKEN
+%token  LEFTANGLETOKEN
+%token  RIGHTANGLEUNDERSCORETOKEN
+%token  RIGHTANGLETOKEN
 
 %type <other> commands
 %type <other> command
@@ -1250,7 +1253,14 @@ primary:			variable
                            {
                              $$ = $1;
                            }
-                        |       LPARTOKEN commandfunction RPARTOKEN
+                        |       LEFTANGLETOKEN commandfunction RIGHTANGLETOKEN
+                           {
+			     temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = CONSTANT;
+			     temp_node->value = $2;
+			     $$ = temp_node;
+			   }
+                        |       LEFTANGLETOKEN commandfunction RIGHTANGLEUNDERSCORETOKEN
                            {
 			     temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = CONSTANT;

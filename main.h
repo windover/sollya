@@ -6,7 +6,7 @@
 #include "expression.h"
 #include "chain.h"
 
-#define DEFAULTPOINTS 1000
+#define DEFAULTPOINTS 300
 #define DEFAULTPRECISION 120
 #define DEFAULTDIAM 1e-4
 
