@@ -1368,20 +1368,21 @@ variableWorkAround: VARIABLETOKEN
 
 variable: variableWorkAround
                            {
-			     if (!containsEntry(symbolTable,currentVariable)) {
+			     if (!containsEntry(symbolTable,$1)) {
 			       if (variablename==NULL) {
-				 variablename = (char *) safeCalloc(strlen(currentVariable)+1,sizeof(char));
-				 strcpy(variablename,currentVariable);
+				 variablename = (char *) safeCalloc(strlen($1)+1,sizeof(char));
+				 strcpy(variablename,$1);
 			       }
-			       if (strcmp(variablename,currentVariable)!=0) {
-				 printMessage(1,"Warning: the identifier \"%s\" is neither bound by assignment nor equal to the bound current variable.\n",currentVariable);
-				 printMessage(1,"Will interpret \"%s\" as \"%s\".\n",currentVariable,variablename);
+			       if (strcmp(variablename,$1)!=0) {
+				 printMessage(1,"Warning: the identifier \"%s\" is neither bound by assignment nor equal to the bound current variable.\n",$1);
+				 printMessage(1,"Will interpret \"%s\" as \"%s\".\n",$1,variablename);
 			       }
 			       temp_node = (node*) safeMalloc(sizeof(node));
 			       temp_node->nodeType = VARIABLE;
 			     } else {
-			       temp_node = getEntry(symbolTable,currentVariable);
+			       temp_node = getEntry(symbolTable,$1);
 			     }
+			     free($1);
 			     $$ = temp_node;
                            }
                  | variableWorkAround LPARTOKEN function RPARTOKEN
@@ -1650,6 +1651,7 @@ monomialsAndPrecision:     monomials COMMATOKEN format
 			     doubleChainTemp = (doubleChain *) safeMalloc(sizeof(doubleChain));
 			     doubleChainTemp->a = $1;
 			     doubleChainTemp->b = chain_temp;
+			     freeFormatTypePtr($3);
 			     $$ = doubleChainTemp;
 			   }
                          | monomials COMMATOKEN LBRACKETTOKEN formatlist RBRACKETTOKEN

@@ -176,6 +176,8 @@ void signalHandler(int i) {
   promptToBePrinted = 1;
   switch (i) {
   case SIGINT:   
+    if(currentVariable != NULL) free(currentVariable);
+    if(variablename != NULL) free(variablename);
     exit(0);
   case SIGSEGV:
     fprintf(stderr,"Warning: handling signal SIGSEGV\n");
@@ -249,6 +251,8 @@ int main(int argc, char *argv[]) {
   
   free(endptr);
   freeSymbolTable(symbolTable);
+  if(currentVariable != NULL) free(currentVariable);
+  if(variablename != NULL) free(variablename);
 
   fclose(yyin);
   return 0;
