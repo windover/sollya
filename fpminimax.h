@@ -54,7 +54,9 @@ struct pointsStruct
 node *fpminimax(node *expr, chain *monomials, chain *formats, mpfr_t a, mpfr_t b, 
 		errorType *error, pointsType *points, int quality, FILE *fd);
 
-
+void freeFormatTypePtr(void *ptr);
+void freeErrorTypePtr(void *ptr);
+void freePointsTypePtr(void *ptr);
 
 
 

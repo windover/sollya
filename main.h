@@ -5,11 +5,18 @@
 #include <mpfr.h>
 #include "expression.h"
 #include "chain.h"
+#include "fpminimax.h"
 
 #define DEFAULTPOINTS 300
 #define DEFAULTPRECISION 120
 #define DEFAULTDIAM 1e-4
 
+typedef struct doubleChainStruct doubleChain;
+
+struct doubleChainStruct {
+  chain *a;
+  chain *b;
+};
 
 extern char *variablename;
 extern char *currentVariable;
@@ -27,6 +34,7 @@ extern node *temp_node2;
 extern mp_prec_t defaultprecision;
 extern int defaultpoints;
 extern int int_temp;
+extern int int_temp2;
 extern mp_prec_t prec_temp;
 extern double double_temp;
 extern int promptToBePrinted;
@@ -39,6 +47,10 @@ extern int dyadic;
 extern FILE *temp_fd;
 extern int *intTempPtr;
 extern int verbosity;
+extern doubleChain *doubleChainTemp;
+extern formatType *formatTypeTemp;
+extern errorType *errorTypeTemp;
+extern pointsType *pointsTypeTemp;
 
 void printPrompt(void);
 void recoverFromError(void);

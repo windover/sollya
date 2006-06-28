@@ -18,7 +18,7 @@
 CHAR		[a-zA-Z]
 NUMBER		[0-9]
 
-CONSTANT        ({NUMBER}+|({NUMBER}+"."{NUMBER}*)|({NUMBER}*"."{NUMBER}+))((([eE]([+-])?{NUMBER}+)?))
+CONSTANT        ({NUMBER}+|({NUMBER}*"."{NUMBER}+))((([eE]([+-])?{NUMBER}+)?))
 DYADICCONSTANT  ({NUMBER}+)([bB])([+-]?)({NUMBER}+)
 VARIABLE        {CHAR}({CHAR}|{NUMBER})*
 
@@ -135,7 +135,22 @@ OUTPUT          "output"
 
 LEFTANGLE       "<"
 RIGHTANGLEUNDERSCORE ">_"
+RIGHTANGLEDOT ">."
 RIGHTANGLE      ">"
+
+SUBSTITUTE      "substitute"
+
+FPMINIMAX       "fpminimax"
+MI              "mi"
+TI              "ti"
+ABSOLUTE        "absolute"
+RELATIVE        "relative"
+WEIGHT          "weight"
+EQUI            "equi"
+CHEB            "cheb"
+
+
+DOTS            "..."
 
 
 %%
@@ -145,7 +160,7 @@ RIGHTANGLE      ">"
 %}
 
 
-
+{DOTS}          {     promptToBePrinted = 0; return DOTSTOKEN;              }     
 {CONSTANT}      {     
                       yylval.value = yytext;
                       promptToBePrinted = 0; return CONSTTOKEN;
@@ -228,9 +243,27 @@ RIGHTANGLE      ">"
 {INPUTEXPO}     {     promptToBePrinted = 0; return INPUTEXPOTOKEN; }	
 {EPSILON}       {     promptToBePrinted = 0; return EPSILONTOKEN; }     
 {OUTPUT}        {     promptToBePrinted = 0; return OUTPUTTOKEN; }     
-{LEFTANGLE}        {     promptToBePrinted = 0; return LEFTANGLETOKEN; }     
-{RIGHTANGLEUNDERSCORE}        {     promptToBePrinted = 0; return RIGHTANGLEUNDERSCORETOKEN; }     
-{RIGHTANGLE}        {     promptToBePrinted = 0; return RIGHTANGLETOKEN; }     
+{LEFTANGLE}              {     promptToBePrinted = 0; return LEFTANGLETOKEN; }     
+{RIGHTANGLEUNDERSCORE}   {     promptToBePrinted = 0; return RIGHTANGLEUNDERSCORETOKEN; }     
+{RIGHTANGLEDOT}          {     promptToBePrinted = 0; return RIGHTANGLEDOTTOKEN; }     
+{RIGHTANGLE}             {     promptToBePrinted = 0; return RIGHTANGLETOKEN; }     
+{SUBSTITUTE}             {     promptToBePrinted = 0; return SUBSTITUTETOKEN; }     
+{FPMINIMAX}              {     promptToBePrinted = 0; return FPMINIMAXTOKEN;        }     
+{MI}                     {     promptToBePrinted = 0; return MITOKEN;               }     
+{TI}                     {     promptToBePrinted = 0; return TITOKEN;               }     
+{ABSOLUTE}               {     promptToBePrinted = 0; return ABSOLUTETOKEN;         }     
+{RELATIVE}               {     promptToBePrinted = 0; return RELATIVETOKEN;         }     
+{WEIGHT}                 {     promptToBePrinted = 0; return WEIGHTTOKEN;           }     
+{EQUI}                   {     promptToBePrinted = 0; return EQUITOKEN;             }     
+{CHEB}                   {     promptToBePrinted = 0; return CHEBTOKEN;             }     
+
+
+
+
+
+
+
+
 
 
 {VARIABLE}      {     			     

@@ -32,6 +32,7 @@ rangetype range_temp2;
 node *temp_node; 
 node *temp_node2;
 int int_temp;
+int int_temp2;
 double double_temp;
 int promptToBePrinted;
 jmp_buf recoverEnvironment;
@@ -46,6 +47,10 @@ int dyadic = 0;
 FILE *temp_fd;
 int *intTempPtr = NULL;
 int verbosity = 1;
+doubleChain *doubleChainTemp;
+formatType *formatTypeTemp;
+errorType *errorTypeTemp;
+pointsType *pointsTypeTemp;
 
 extern jmp_buf environnement;
 

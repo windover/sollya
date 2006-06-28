@@ -12,6 +12,7 @@
 #include "taylor.h"
 #include "integral.h"
 #include "worstcase.h"
+#include "fpminimax.h"
 
 int yylex();
 
@@ -32,12 +33,17 @@ void yyerror(char *message) {
 	char *value;
         node *tree;
         struct chainStruct *aChain;
+        struct doubleChainStruct *aDoubleChain;
+        struct formatStruct *aFormat;
+        struct errorStruct *anError;
+        struct pointsStruct *aPoint;
         mp_prec_t  precisionval;
         int  pointsnum;
         rangetype rangeval;
         mpfr_t *constantval;
         int degreeval;
         int verbval;
+        int anInteger;
         char *aString;
         FILE *aFile;
 	void *other;
@@ -122,7 +128,19 @@ void yyerror(char *message) {
 %token  OUTPUTTOKEN
 %token  LEFTANGLETOKEN
 %token  RIGHTANGLEUNDERSCORETOKEN
+%token  RIGHTANGLEDOTTOKEN
 %token  RIGHTANGLETOKEN
+%token  SUBSTITUTETOKEN
+%token  FPMINIMAXTOKEN
+%token  MITOKEN        
+%token  TITOKEN        
+%token  ABSOLUTETOKEN
+%token  RELATIVETOKEN  
+%token  WEIGHTTOKEN    
+%token  EQUITOKEN      
+%token  CHEBTOKEN      
+%token  DOTSTOKEN      
+
 
 %type <other> commands
 %type <other> command
@@ -149,7 +167,7 @@ void yyerror(char *message) {
 %type <constantval> dirtyinfnorm
 %type <constantval> dirtyintegral
 %type <aString> variableWorkAround
-%type <other> evaluate
+%type <rangeval> evaluate
 %type <aChain> rangelist
 %type <other> dyadic
 %type <rangeval> integral
@@ -160,7 +178,15 @@ void yyerror(char *message) {
 %type <verbval> verbosity
 %type <other> verbosityset
 %type <other> worstcase
-%type <constantval> commandfunction
+%type <rangeval> commandfunction
+%type <aDoubleChain> monomialsAndPrecision
+%type <aFormat> format
+%type <aChain> formatlist
+%type <anError> errordefinition
+%type <aPoint> pointsdefinition
+%type <aChain> pointslist
+%type <anInteger> integer
+%type <tree> fpminimax
 
 %%
 
@@ -275,8 +301,23 @@ command:     plot
 			     free($1.b);
 	                     $$ = NULL;
 	                   }
-           | evaluate      {
-	                     $$ = NULL;
+           | evaluate SEMICOLONTOKEN      
+                            {
+			      if (mpfr_cmp(*($1.a),*($1.b)) == 0) {
+				printValue($1.a,defaultprecision);
+				printf("\n");
+			      } else {
+				printf("[");
+				printValue($1.a,defaultprecision);
+				printf(";");
+				printValue($1.b,defaultprecision);
+				printf("]\n");
+			      }
+			      mpfr_clear(*($1.a));
+			      mpfr_clear(*($1.b));
+			      free($1.a);
+			      free($1.b);
+			      $$ = NULL;
 	                   }
            | worstcase     {
 	                     $$ = NULL;
@@ -356,34 +397,21 @@ assignment:  lvariable EQUALTOKEN function
                            }
 ;     
 
-evaluate:    EVALUATETOKEN function INTOKEN range SEMICOLONTOKEN 
+evaluate:    EVALUATETOKEN function INTOKEN range 
                            {
 			     range_temp.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     range_temp.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*(range_temp.a),defaultprecision);
 			     mpfr_init2(*(range_temp.b),defaultprecision);
 			     evaluateRangeFunction(range_temp, ($2), ($4), defaultprecision);
-			     if (mpfr_cmp(*(range_temp.a),*(range_temp.b)) == 0) {
-			       printValue(range_temp.a,defaultprecision);
-			       printf("\n");
-			     } else {
-			       printf("[");
-			       printValue(range_temp.a,defaultprecision);
-			       printf(";");
-			       printValue(range_temp.b,defaultprecision);
-			       printf("]\n");
-			     }
 			     mpfr_clear(*(($4).a));
 			     mpfr_clear(*(($4).b));
 			     free(($4).a);
 			     free(($4).b);
-			     mpfr_clear(*(range_temp.a));
-			     mpfr_clear(*(range_temp.b));
-			     free(range_temp.a);
-			     free(range_temp.b);
-			     $$ = NULL;
+			     free_memory($2);
+			     $$ = range_temp;
 			   }
-           | EVALUATETOKEN function ATTOKEN constantfunction SEMICOLONTOKEN 
+           | EVALUATETOKEN function ATTOKEN constantfunction 
                            {
 			     range_temp.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     range_temp.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
@@ -396,27 +424,14 @@ evaluate:    EVALUATETOKEN function INTOKEN range SEMICOLONTOKEN
 			     mpfr_set(*(range_temp2.a),*($4),GMP_RNDD);
 			     mpfr_set(*(range_temp2.b),*($4),GMP_RNDU);
 			     evaluateRangeFunction(range_temp, ($2), range_temp2, defaultprecision);
-			     if (mpfr_cmp(*(range_temp.a),*(range_temp.b)) == 0) {
-			       printValue(range_temp.a,defaultprecision);
-			       printf("\n");
-			     } else {
-			       printf("[");
-			       printValue(range_temp.a,defaultprecision);
-			       printf(";");
-			       printValue(range_temp.b,defaultprecision);
-			       printf("]\n");
-			     }
-			     mpfr_clear(*(range_temp.a));
-			     mpfr_clear(*(range_temp.b));
-			     free(range_temp.a);
-			     free(range_temp.b);
 			     mpfr_clear(*(range_temp2.a));
 			     mpfr_clear(*(range_temp2.b));
 			     free(range_temp2.a);
 			     free(range_temp2.b);
 			     mpfr_clear(*($4));
 			     free(($4));
-			     $$ = NULL;
+			     free_memory($2);
+			     $$ = range_temp;
 			   }
 
 ;
@@ -970,6 +985,11 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			      freeChain($5,freeIntPtr);
 			      $$ = temp_node;
                            }
+			|       fpminimax
+                           {
+			      temp_node = $1;
+			      $$ = temp_node;
+                           }
                         |       TAYLORTOKEN LPARTOKEN function COMMATOKEN degree COMMATOKEN function RPARTOKEN
                            {
 			      temp_node = taylor(($3),($5),($7),tools_precision);
@@ -977,6 +997,14 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			      free_memory(($7));
 			      $$ = temp_node;
                            }
+                        |       SUBSTITUTETOKEN LPARTOKEN function COMMATOKEN function RPARTOKEN
+                           {
+			      temp_node = substitute(($3),($5));
+			      free_memory(($3));
+			      free_memory(($5));
+			      $$ = temp_node;
+                           }
+
                         |       SIMPLIFYTOKEN LPARTOKEN function RPARTOKEN
                            {
 			     temp_node = simplifyTree($3);
@@ -1193,6 +1221,14 @@ degreelist:                     degree
 			     chain_temp = addElement(($1),intTempPtr);
 			     $$ = chain_temp;
 			   }
+                         |      degree DOTSTOKEN degree
+                           {
+			     if (($1) > ($3)) {
+			       printMessage(1,"Warning: the bounds given for a elliptic degree list are not in ascending order.\nThis list or sublist will not be taken into account.\n");
+			     }
+			     chain_temp = makeIntPtrChainFromTo(($1),($3));
+			     $$ = chain_temp;
+			   }
 ;
 
 
@@ -1257,14 +1293,29 @@ primary:			variable
                            {
 			     temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = CONSTANT;
-			     temp_node->value = $2;
+			     temp_node->value = $2.b;
+			     mpfr_clear(*($2.a));
 			     $$ = temp_node;
 			   }
                         |       LEFTANGLETOKEN commandfunction RIGHTANGLEUNDERSCORETOKEN
                            {
 			     temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = CONSTANT;
-			     temp_node->value = $2;
+			     temp_node->value = $2.a;
+			     mpfr_clear(*($2.b));
+			     $$ = temp_node;
+			   }
+                        |       LEFTANGLETOKEN commandfunction RIGHTANGLEDOTTOKEN
+                           {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,tools_precision);
+			     mpfr_add(*mpfr_temp,*($2.a),*($2.b),GMP_RNDN);
+			     mpfr_div_2ui(*mpfr_temp,*mpfr_temp,1,GMP_RNDN);
+			     temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = CONSTANT;
+			     temp_node->value = mpfr_temp;
+			     mpfr_clear(*($2.a));
+			     mpfr_clear(*($2.b));
 			     $$ = temp_node;
 			   }
 ;
@@ -1272,47 +1323,33 @@ primary:			variable
 
 commandfunction:          infnorm
                            {
-			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,tools_precision);
-			     mpfr_abs(*($1.a),*($1.a),GMP_RNDN);
-			     mpfr_abs(*($1.b),*($1.b),GMP_RNDN);
-			     mpfr_max(*mpfr_temp,*($1.a),*($1.b),GMP_RNDU);
-			     mpfr_clear(*($1.a));
-			     mpfr_clear(*($1.b));
-			     free(($1.a));
-			     free(($1.b));
-			     $$ = mpfr_temp;
+			     $$ = $1;
 			   }
                         | integral
                            {
-			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,tools_precision);
-			     mpfr_abs(*($1.a),*($1.a),GMP_RNDN);
-			     mpfr_abs(*($1.b),*($1.b),GMP_RNDN);
-			     mpfr_max(*mpfr_temp,*($1.a),*($1.b),GMP_RNDU);
-			     mpfr_clear(*($1.a));
-			     mpfr_clear(*($1.b));
-			     free(($1.a));
-			     free(($1.b));
-			     $$ = mpfr_temp;
+			     $$ = $1;
 			   }
+                        | evaluate 
+                           {
+			     $$ = $1;
+                           }
                         | dirtyinfnorm
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,tools_precision);
-			     mpfr_abs(*mpfr_temp,*($1),GMP_RNDU);
-			     mpfr_clear(*($1));
-			     free($1);
-			     $$ = mpfr_temp;
+			     mpfr_init2(*mpfr_temp,mpfr_get_prec(*($1)));
+			     mpfr_set(*mpfr_temp,*($1),GMP_RNDN);
+			     range_temp.a = $1;
+			     range_temp.b = mpfr_temp;
+			     $$ = range_temp;
 			   }
                         | dirtyintegral
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,tools_precision);
-			     mpfr_abs(*mpfr_temp,*($1),GMP_RNDU);
-			     mpfr_clear(*($1));
-			     free($1);
-			     $$ = mpfr_temp;
+			     mpfr_init2(*mpfr_temp,mpfr_get_prec(*($1)));
+			     mpfr_set(*mpfr_temp,*($1),GMP_RNDN);
+			     range_temp.a = $1;
+			     range_temp.b = mpfr_temp;
+			     $$ = range_temp;
 			   }
 ;
 
@@ -1325,7 +1362,7 @@ variableWorkAround: VARIABLETOKEN
 ;
 
 
-variable: VARIABLETOKEN
+variable: variableWorkAround
                            {
 			     if (!containsEntry(symbolTable,currentVariable)) {
 			       if (variablename==NULL) {
@@ -1566,6 +1603,428 @@ constant: CONSTTOKEN
 			     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
 			     mpfr_exp(*mpfr_temp,*mpfr_temp,GMP_RNDN);
 			     $$ = mpfr_temp;
+			   }
+;
+
+
+integer:                   CONSTTOKEN 
+                           {  
+			     int_temp = (unsigned long int) strtol($1,endptr,10);
+                             if (**endptr != '\0') {
+			       printMessage(1,"Warning: The number given in this context must be integer. Will interpret the constant as 0.\n");
+			       int_temp = 0;
+			     }
+			     $$ = int_temp;                           
+			   }
+;
+
+monomialsAndPrecision:     monomials COMMATOKEN format
+                           {
+			     chain_temp = NULL;
+			     int_temp = lengthChain($1);
+			     for (int_temp2=0;int_temp2<int_temp;int_temp2++) {
+			       formatTypeTemp = (formatType *) safeMalloc(sizeof(formatType));
+			       formatTypeTemp->formatType = ($3)->formatType;
+			       formatTypeTemp->prec = ($3)->prec;
+			       if (formatTypeTemp->formatType == TI_FORMAT) {
+				 mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+				 mpfr_init2(*mpfr_temp,mpfr_get_prec(*(($3)->tiValue)));
+				 mpfr_set(*mpfr_temp,*(($3)->tiValue),GMP_RNDN);
+				 formatTypeTemp->tiValue = mpfr_temp;
+			       }
+			       chain_temp = addElement(chain_temp,(void *) formatTypeTemp);
+			     }
+			     doubleChainTemp = (doubleChain *) safeMalloc(sizeof(doubleChain));
+			     doubleChainTemp->a = $1;
+			     doubleChainTemp->b = chain_temp;
+			     $$ = doubleChainTemp;
+			   }
+                         | monomials COMMATOKEN LBRACKETTOKEN formatlist RBRACKETTOKEN
+                           {
+			     if (lengthChain($1) != lengthChain($4)) {
+			       printMessage(1,"Warning: the number of the coefficients to be present in the polynomial asked for and the number of their precisions do not correspond.\n");
+			       printMessage(1,"The last command will be aborted and have no effect.\n");
+			       recoverFromError();
+			     }
+			     doubleChainTemp = (doubleChain *) safeMalloc(sizeof(doubleChain));
+			     doubleChainTemp->a = $1;
+			     doubleChainTemp->b = $4;
+			     $$ = doubleChainTemp;
+			   }
+;
+
+
+format:                    DOUBLETOKEN
+                           {
+			     formatTypeTemp = (formatType *) safeMalloc(sizeof(formatType));
+			     formatTypeTemp->formatType = DOUBLE_FORMAT;
+			     $$ = formatTypeTemp;
+			   }
+                         | DOUBLEDOUBLETOKEN
+                           {
+			     formatTypeTemp = (formatType *) safeMalloc(sizeof(formatType));
+			     formatTypeTemp->formatType = DOUBLEDOUBLE_FORMAT;
+			     $$ = formatTypeTemp;
+			   }
+                         | TRIPLEDOUBLETOKEN
+                           {
+			     formatTypeTemp = (formatType *) safeMalloc(sizeof(formatType));
+			     formatTypeTemp->formatType = TRIPLEDOUBLE_FORMAT;
+			     $$ = formatTypeTemp;
+			   }
+                         | integer
+                           {
+			     int_temp = $1;
+			     if (int_temp < 0) {
+			       printMessage(1,"Precisions must be positive integers. Will do precision 0 here.\n");
+			       int_temp = 0;
+			     }
+			     formatTypeTemp = (formatType *) safeMalloc(sizeof(formatType));
+			     formatTypeTemp->formatType = PRECISION_FORMAT;
+			     formatTypeTemp->prec = int_temp;
+			     $$ = formatTypeTemp;
+			   }
+                         | MITOKEN EQUALTOKEN integer
+                           {
+			     formatTypeTemp = (formatType *) safeMalloc(sizeof(formatType));
+			     formatTypeTemp->formatType = MI_FORMAT;
+			     formatTypeTemp->prec = $3;
+			     $$ = formatTypeTemp;			     
+			   }
+                         | TITOKEN EQUALTOKEN constantfunction
+                           {
+			     formatTypeTemp = (formatType *) safeMalloc(sizeof(formatType));
+			     formatTypeTemp->formatType = TI_FORMAT;
+			     formatTypeTemp->tiValue = $3;
+			     $$ = formatTypeTemp;			     
+			   }
+;
+
+formatlist:                format
+                           {
+			     $$ = addElement(NULL,(void *) $1);
+			   }
+                         | formatlist SEMICOLONTOKEN format
+                           {
+			     $$ = addElement($1,(void *) $3);
+			   }
+;
+
+errordefinition:           ABSOLUTETOKEN
+                           {
+			     errorTypeTemp = (errorType *) safeMalloc(sizeof(errorType));
+			     errorTypeTemp->errorType = ABSOLUTE_ERROR;
+			     $$ = errorTypeTemp;
+			   }
+                         | RELATIVETOKEN
+                           {
+			     errorTypeTemp = (errorType *) safeMalloc(sizeof(errorType));
+			     errorTypeTemp->errorType = RELATIVE_ERROR;
+			     $$ = errorTypeTemp;
+			   }
+                         | WEIGHTTOKEN EQUALTOKEN function
+                           {
+			     errorTypeTemp = (errorType *) safeMalloc(sizeof(errorType));
+			     errorTypeTemp->errorType = WEIGHTFUNCTION_ERROR;
+			     errorTypeTemp->weightFunction = $3;
+			     $$ = errorTypeTemp;
+			   }
+;
+
+
+pointsdefinition:          EQUITOKEN
+                           {
+			     pointsTypeTemp = (pointsType *) safeMalloc(sizeof(pointsType));
+			     pointsTypeTemp->pointsType = EQUI_POINTS;
+			     $$ = pointsTypeTemp;
+			   }
+                         | CHEBTOKEN
+                           {
+			     pointsTypeTemp = (pointsType *) safeMalloc(sizeof(pointsType));
+			     pointsTypeTemp->pointsType = CHEB_POINTS;
+			     $$ = pointsTypeTemp;
+			   }
+                         | REMEZTOKEN
+                           {
+			     pointsTypeTemp = (pointsType *) safeMalloc(sizeof(pointsType));
+			     pointsTypeTemp->pointsType = REMEZ_POINTS;
+			     $$ = pointsTypeTemp;
+			   }
+                         | LBRACKETTOKEN pointslist RBRACKETTOKEN
+                           {
+			     pointsTypeTemp = (pointsType *) safeMalloc(sizeof(pointsType));
+			     pointsTypeTemp->pointsType = USER_POINTS;
+			     pointsTypeTemp->pointsList = $2;
+			     $$ = pointsTypeTemp;
+			   }
+;
+
+pointslist:                constantfunction
+                           {
+			     $$ = addElement(NULL,(void *) $1);
+			   }
+                         | pointslist SEMICOLONTOKEN constantfunction
+                           {
+			     $$ = addElement($1,(void *) $3);
+			   }
+;
+
+
+fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range LPARTOKEN
+                           {
+			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, NULL, -1, NULL);
+			     free_memory($3);
+			     freeChain($5->a,freeIntPtr);
+			     freeChain($5->b,freeFormatTypePtr);
+			     free($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);
+			     free($7.b);
+			     $$ = temp_node;
+			   }
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition LPARTOKEN 
+                           {
+			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, NULL, -1, NULL);
+			     free_memory($3);
+			     freeChain($5->a,freeIntPtr);
+			     freeChain($5->b,freeFormatTypePtr);
+			     free($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);
+			     free($7.b);
+			     freeErrorTypePtr($9);
+			     $$ = temp_node;
+			   }
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN pointsdefinition LPARTOKEN 
+                           {
+			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, $9, -1, NULL);
+			     free_memory($3);
+			     freeChain($5->a,freeIntPtr);
+			     freeChain($5->b,freeFormatTypePtr);
+			     free($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);
+			     free($7.b);
+			     freePointsTypePtr($9);
+			     $$ = temp_node;
+			   }
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN integer LPARTOKEN 
+                           {
+			     int_temp = $9;
+			     if (int_temp < 1) {
+			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
+			       int_temp = -1;
+			     } 
+			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, NULL, int_temp, NULL);
+			     free_memory($3);
+			     freeChain($5->a,freeIntPtr);
+			     freeChain($5->b,freeFormatTypePtr);
+			     free($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);
+			     free($7.b);
+			     $$ = temp_node;
+			   }
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN writefile LPARTOKEN 
+                           {
+			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, NULL, -1, $9);
+			     free_memory($3);
+			     freeChain($5->a,freeIntPtr);
+			     freeChain($5->b,freeFormatTypePtr);
+			     free($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);
+			     free($7.b);
+			     fclose($9);
+			     $$ = temp_node;
+			   }
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN pointsdefinition LPARTOKEN 
+                           {
+			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, $11, -1, NULL);
+			     free_memory($3);
+			     freeChain($5->a,freeIntPtr);
+			     freeChain($5->b,freeFormatTypePtr);
+			     free($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);
+			     free($7.b);
+			     freeErrorTypePtr($9);
+			     freePointsTypePtr($11);
+			     $$ = temp_node;
+			   }
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN integer LPARTOKEN 
+                           {
+			     int_temp = $11;
+			     if (int_temp < 1) {
+			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
+			       int_temp = -1;
+			     } 
+			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, NULL, int_temp, NULL);
+			     free_memory($3);
+			     freeChain($5->a,freeIntPtr);
+			     freeChain($5->b,freeFormatTypePtr);
+			     free($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);
+			     free($7.b);
+			     freeErrorTypePtr($9);
+			     $$ = temp_node;
+			   }
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN writefile LPARTOKEN 
+                           {
+			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, NULL, -1, $11);
+			     free_memory($3);
+			     freeChain($5->a,freeIntPtr);
+			     freeChain($5->b,freeFormatTypePtr);
+			     free($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);
+			     free($7.b);
+			     freeErrorTypePtr($9);
+			     fclose($11);
+			     $$ = temp_node;
+			   }
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN pointsdefinition COMMATOKEN integer LPARTOKEN 
+                           {
+			     int_temp = $11;
+			     if (int_temp < 1) {
+			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
+			       int_temp = -1;
+			     } 
+			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, $9, int_temp, NULL);
+			     free_memory($3);
+			     freeChain($5->a,freeIntPtr);
+			     freeChain($5->b,freeFormatTypePtr);
+			     free($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);
+			     free($7.b);
+			     freePointsTypePtr($9);
+			     $$ = temp_node;
+			   }
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN pointsdefinition COMMATOKEN writefile LPARTOKEN 
+                           {
+			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, $9, -1, $11);
+			     free_memory($3);
+			     freeChain($5->a,freeIntPtr);
+			     freeChain($5->b,freeFormatTypePtr);
+			     free($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);
+			     free($7.b);
+			     freePointsTypePtr($9);
+			     fclose($11);
+			     $$ = temp_node;
+			   }
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN integer COMMATOKEN writefile LPARTOKEN 
+                           {
+			     int_temp = $9;
+			     if (int_temp < 1) {
+			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
+			       int_temp = -1;
+			     } 
+			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, NULL, int_temp, $11);
+			     free_memory($3);
+			     freeChain($5->a,freeIntPtr);
+			     freeChain($5->b,freeFormatTypePtr);
+			     free($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);
+			     free($7.b);
+			     fclose($11);
+			     $$ = temp_node;
+			   }
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN pointsdefinition COMMATOKEN integer LPARTOKEN 
+                           {
+			     int_temp = $13;
+			     if (int_temp < 1) {
+			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
+			       int_temp = -1;
+			     } 
+			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, $11, int_temp, NULL);
+			     free_memory($3);
+			     freeChain($5->a,freeIntPtr);
+			     freeChain($5->b,freeFormatTypePtr);
+			     free($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);
+			     free($7.b);
+			     freeErrorTypePtr($9);
+			     freePointsTypePtr($11);
+			     $$ = temp_node;
+			   }
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN integer COMMATOKEN writefile LPARTOKEN 
+                           {
+			     int_temp = $11;
+			     if (int_temp < 1) {
+			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
+			       int_temp = -1;
+			     } 
+			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, NULL, int_temp, $13);
+			     free_memory($3);
+			     freeChain($5->a,freeIntPtr);
+			     freeChain($5->b,freeFormatTypePtr);
+			     free($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);
+			     free($7.b);
+			     freeErrorTypePtr($9);
+			     fclose($13);
+			     $$ = temp_node;
+			   }
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN pointsdefinition COMMATOKEN integer COMMATOKEN writefile LPARTOKEN 
+                           {
+			     int_temp = $11;
+			     if (int_temp < 1) {
+			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
+			       int_temp = -1;
+			     } 
+			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, $9, int_temp, $13);
+			     free_memory($3);
+			     freeChain($5->a,freeIntPtr);
+			     freeChain($5->b,freeFormatTypePtr);
+			     free($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);
+			     free($7.b);
+			     freePointsTypePtr($9);
+			     fclose($13);
+			     $$ = temp_node;
+			   }
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN pointsdefinition COMMATOKEN integer COMMATOKEN writefile LPARTOKEN 
+                           {
+			     int_temp = $13;
+			     if (int_temp < 1) {
+			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
+			       int_temp = -1;
+			     } 
+			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, $11, int_temp, $15);
+			     free_memory($3);
+			     freeChain($5->a,freeIntPtr);
+			     freeChain($5->b,freeFormatTypePtr);
+			     free($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);
+			     free($7.b);
+			     freeErrorTypePtr($9);
+			     freePointsTypePtr($11);
+			     fclose($15);
+			     $$ = temp_node;
 			   }
 ;
 

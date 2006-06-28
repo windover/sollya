@@ -2268,20 +2268,35 @@ node* differentiateUnsimplified(node *tree) {
       break;
     case DOUBLE:
       printMessage(1,
-	     "Warning: the double rounding operator is not differentiable.\nRemplacing it by identity when differentiating.\n");
-      temp_node = differentiateUnsimplified(tree->child1);
+	     "Warning: the double rounding operator is not differentiable.\nRemplacing it by a constant function when differentiating.\n");
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*mpfr_temp,tools_precision);
+      mpfr_set_d(*mpfr_temp,0.0,GMP_RNDN);
+      temp_node = (node*) safeMalloc(sizeof(node));
+      temp_node->nodeType = CONSTANT;
+      temp_node->value = mpfr_temp;
       derivative = temp_node;
       break;
     case DOUBLEDOUBLE:
       printMessage(1,
-	     "Warning: the double-double rounding operator is not differentiable.\nRemplacing it by identity when differentiating.\n");
-      temp_node = differentiateUnsimplified(tree->child1);
+	     "Warning: the double-double rounding operator is not differentiable.\nRemplacing it by a constant function when differentiating.\n");
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*mpfr_temp,tools_precision);
+      mpfr_set_d(*mpfr_temp,0.0,GMP_RNDN);
+      temp_node = (node*) safeMalloc(sizeof(node));
+      temp_node->nodeType = CONSTANT;
+      temp_node->value = mpfr_temp;
       derivative = temp_node;
       break;
     case TRIPLEDOUBLE:
       printMessage(1,
-	     "Warning: the triple-double rounding operator is not differentiable.\nRemplacing it by identity when differentiating.\n");
-      temp_node = differentiateUnsimplified(tree->child1);
+	     "Warning: the triple-double rounding operator is not differentiable.\nRemplacing it by a constant function when differentiating.\n");
+      mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*mpfr_temp,tools_precision);
+      mpfr_set_d(*mpfr_temp,0.0,GMP_RNDN);
+      temp_node = (node*) safeMalloc(sizeof(node));
+      temp_node->nodeType = CONSTANT;
+      temp_node->value = mpfr_temp;
       derivative = temp_node;
       break;
     default:

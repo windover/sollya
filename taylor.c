@@ -9,11 +9,27 @@
 
 
 node *taylor(node* tree, int degree, node* point, mp_prec_t prec) {
-  node *copy, *temp, *temp2, *fderiv, *fderivsubst, *denominator, *numerator, *expon, *variable, *term;
+  node *copy, *temp, *temp2, *fderiv, *fderivsubst, *denominator, *numerator, *expon, *variable, *term, *pointTemp;
   mpfr_t *value;
   mpz_t denominatorGMP;
   int i;
 
+  if (!isConstant(point)) {
+    printMessage(1,"Warning: the expression given for the development point is not constant.\n");
+    printMessage(1,"Will evaluate the expression in %s = 0 before using it as development point.\n",variablename);
+    temp = (node *) safeMalloc(sizeof(node));
+    temp->nodeType = CONSTANT;
+    value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*value,prec);
+    mpfr_set_d(*value,0.0,GMP_RNDN);
+    temp->value = value;
+    temp2 = substitute(point,temp);
+    pointTemp = simplifyTreeErrorfree(temp2);
+    free_memory(temp);
+    free_memory(temp2);
+  } else {
+    pointTemp = copyTree(point);
+  }
 
   value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*value,prec);
@@ -25,7 +41,7 @@ node *taylor(node* tree, int degree, node* point, mp_prec_t prec) {
   mpz_init(denominatorGMP);
   fderiv = copyTree(tree);
   for (i=0;i<=degree;i++) {
-    temp = substitute(fderiv,point);
+    temp = substitute(fderiv,pointTemp);
     fderivsubst = simplifyTreeErrorfree(temp);
     free_memory(temp);
     mpz_fac_ui(denominatorGMP,(unsigned int) i);
@@ -86,5 +102,6 @@ node *taylor(node* tree, int degree, node* point, mp_prec_t prec) {
 
   temp = horner(copy);
   free_memory(copy);
+  free_memory(pointTemp);
   return temp;
 }

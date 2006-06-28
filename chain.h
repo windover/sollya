@@ -18,6 +18,7 @@ chain *copyChain(chain *c, void * (*f) (void *));
 chain *concatChains(chain *c1, chain *c2);
 void freeIntPtr(void *ptr);
 chain *makeIntPtrChain(int n);
+chain *makeIntPtrChainFromTo(int m, int n);
 int lengthChain(chain *c);
 void sortChain(chain *c,  int (*f) (void *, void *));
 int cmpIntPtr(void *a, void *b);

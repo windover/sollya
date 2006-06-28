@@ -70,12 +70,16 @@ void freeIntPtr(void *ptr) {
 }
 
 chain *makeIntPtrChain(int n) {
+  return makeIntPtrChainFromTo(0,n);
+}
+
+chain *makeIntPtrChainFromTo(int m, int n) {
   int i;
   int *elem;
   chain *c;
   
   c = NULL;
-  for (i=0;i<=n;i++) {
+  for (i=m;i<=n;i++) {
     elem = (int *) safeMalloc(sizeof(int));
     *elem = i;
     c = addElement(c,elem);
@@ -83,6 +87,8 @@ chain *makeIntPtrChain(int n) {
 
   return c;
 }
+
+
 
 int lengthChain(chain *c) {
   int i;
