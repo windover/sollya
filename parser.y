@@ -1295,6 +1295,7 @@ primary:			variable
 			     temp_node->nodeType = CONSTANT;
 			     temp_node->value = $2.b;
 			     mpfr_clear(*($2.a));
+			     free($2.a);
 			     $$ = temp_node;
 			   }
                         |       LEFTANGLETOKEN commandfunction RIGHTANGLEUNDERSCORETOKEN
@@ -1303,6 +1304,7 @@ primary:			variable
 			     temp_node->nodeType = CONSTANT;
 			     temp_node->value = $2.a;
 			     mpfr_clear(*($2.b));
+			     free($2.b);
 			     $$ = temp_node;
 			   }
                         |       LEFTANGLETOKEN commandfunction RIGHTANGLEDOTTOKEN
@@ -1316,6 +1318,8 @@ primary:			variable
 			     temp_node->value = mpfr_temp;
 			     mpfr_clear(*($2.a));
 			     mpfr_clear(*($2.b));
+			     free($2.a);
+			     free($2.b);
 			     $$ = temp_node;
 			   }
 ;
@@ -1704,7 +1708,7 @@ formatlist:                format
                            {
 			     $$ = addElement(NULL,(void *) $1);
 			   }
-                         | formatlist SEMICOLONTOKEN format
+                         | formatlist COMMATOKEN format
                            {
 			     $$ = addElement($1,(void *) $3);
 			   }
@@ -1763,14 +1767,14 @@ pointslist:                constantfunction
                            {
 			     $$ = addElement(NULL,(void *) $1);
 			   }
-                         | pointslist SEMICOLONTOKEN constantfunction
+                         | pointslist COMMATOKEN constantfunction
                            {
 			     $$ = addElement($1,(void *) $3);
 			   }
 ;
 
 
-fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range LPARTOKEN
+fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range RPARTOKEN
                            {
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, NULL, -1, NULL);
 			     free_memory($3);
@@ -1783,7 +1787,7 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			     free($7.b);
 			     $$ = temp_node;
 			   }
-                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition LPARTOKEN 
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition RPARTOKEN 
                            {
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, NULL, -1, NULL);
 			     free_memory($3);
@@ -1797,7 +1801,7 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			     freeErrorTypePtr($9);
 			     $$ = temp_node;
 			   }
-                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN pointsdefinition LPARTOKEN 
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN pointsdefinition RPARTOKEN 
                            {
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, $9, -1, NULL);
 			     free_memory($3);
@@ -1811,7 +1815,7 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			     freePointsTypePtr($9);
 			     $$ = temp_node;
 			   }
-                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN integer LPARTOKEN 
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN integer RPARTOKEN 
                            {
 			     int_temp = $9;
 			     if (int_temp < 1) {
@@ -1829,7 +1833,7 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			     free($7.b);
 			     $$ = temp_node;
 			   }
-                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN writefile LPARTOKEN 
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN writefile RPARTOKEN 
                            {
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, NULL, -1, $9);
 			     free_memory($3);
@@ -1843,7 +1847,7 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			     fclose($9);
 			     $$ = temp_node;
 			   }
-                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN pointsdefinition LPARTOKEN 
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN pointsdefinition RPARTOKEN 
                            {
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, $11, -1, NULL);
 			     free_memory($3);
@@ -1858,7 +1862,7 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			     freePointsTypePtr($11);
 			     $$ = temp_node;
 			   }
-                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN integer LPARTOKEN 
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN integer RPARTOKEN 
                            {
 			     int_temp = $11;
 			     if (int_temp < 1) {
@@ -1877,7 +1881,7 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			     freeErrorTypePtr($9);
 			     $$ = temp_node;
 			   }
-                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN writefile LPARTOKEN 
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN writefile RPARTOKEN 
                            {
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, NULL, -1, $11);
 			     free_memory($3);
@@ -1892,7 +1896,7 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			     fclose($11);
 			     $$ = temp_node;
 			   }
-                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN pointsdefinition COMMATOKEN integer LPARTOKEN 
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN pointsdefinition COMMATOKEN integer RPARTOKEN 
                            {
 			     int_temp = $11;
 			     if (int_temp < 1) {
@@ -1911,7 +1915,7 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			     freePointsTypePtr($9);
 			     $$ = temp_node;
 			   }
-                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN pointsdefinition COMMATOKEN writefile LPARTOKEN 
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN pointsdefinition COMMATOKEN writefile RPARTOKEN 
                            {
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, $9, -1, $11);
 			     free_memory($3);
@@ -1926,7 +1930,7 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			     fclose($11);
 			     $$ = temp_node;
 			   }
-                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN integer COMMATOKEN writefile LPARTOKEN 
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN integer COMMATOKEN writefile RPARTOKEN 
                            {
 			     int_temp = $9;
 			     if (int_temp < 1) {
@@ -1945,7 +1949,7 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			     fclose($11);
 			     $$ = temp_node;
 			   }
-                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN pointsdefinition COMMATOKEN integer LPARTOKEN 
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN pointsdefinition COMMATOKEN integer RPARTOKEN 
                            {
 			     int_temp = $13;
 			     if (int_temp < 1) {
@@ -1965,7 +1969,7 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			     freePointsTypePtr($11);
 			     $$ = temp_node;
 			   }
-                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN integer COMMATOKEN writefile LPARTOKEN 
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN integer COMMATOKEN writefile RPARTOKEN 
                            {
 			     int_temp = $11;
 			     if (int_temp < 1) {
@@ -1985,7 +1989,7 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			     fclose($13);
 			     $$ = temp_node;
 			   }
-                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN pointsdefinition COMMATOKEN integer COMMATOKEN writefile LPARTOKEN 
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN pointsdefinition COMMATOKEN integer COMMATOKEN writefile RPARTOKEN 
                            {
 			     int_temp = $11;
 			     if (int_temp < 1) {
@@ -2005,7 +2009,7 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			     fclose($13);
 			     $$ = temp_node;
 			   }
-                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN pointsdefinition COMMATOKEN integer COMMATOKEN writefile LPARTOKEN 
+                         | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN pointsdefinition COMMATOKEN integer COMMATOKEN writefile RPARTOKEN 
                            {
 			     int_temp = $13;
 			     if (int_temp < 1) {
