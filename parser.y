@@ -1620,6 +1620,15 @@ integer:                   CONSTTOKEN
 			     }
 			     $$ = int_temp;                           
 			   }
+                         | MINUSTOKEN CONSTTOKEN 
+                           {  
+			     int_temp = (unsigned long int) strtol($2,endptr,10);
+                             if (**endptr != '\0') {
+			       printMessage(1,"Warning: The number given in this context must be integer. Will interpret the constant as 0.\n");
+			       int_temp = 0;
+			     }
+			     $$ = -int_temp;                           
+			   }
 ;
 
 monomialsAndPrecision:     monomials COMMATOKEN format
