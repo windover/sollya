@@ -152,6 +152,11 @@ CHEB            "cheb"
 
 DOTS            "..."
 
+IMPLEMENTPOLY   "implementpoly"
+NAME            "name"
+VARIABLEMETA    "variable"
+AS              "as"
+
 
 %%
 
@@ -256,9 +261,10 @@ DOTS            "..."
 {WEIGHT}                 {     promptToBePrinted = 0; return WEIGHTTOKEN;           }     
 {EQUI}                   {     promptToBePrinted = 0; return EQUITOKEN;             }     
 {CHEB}                   {     promptToBePrinted = 0; return CHEBTOKEN;             }     
-
-
-
+{IMPLEMENTPOLY}          {     promptToBePrinted = 0; return IMPLEMENTPOLYTOKEN;    }     
+{NAME}                   {     promptToBePrinted = 0; return NAMETOKEN;             }     
+{VARIABLEMETA}           {     promptToBePrinted = 0; return VARIABLEMETATOKEN;     }
+{AS}                     {     promptToBePrinted = 0; return ASTOKEN;               }          
 
 
 

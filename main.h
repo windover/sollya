@@ -8,8 +8,11 @@
 #include "fpminimax.h"
 
 #define DEFAULTPOINTS 300
-#define DEFAULTPRECISION 120
+#define DEFAULTPRECISION 200
 #define DEFAULTDIAM 1e-4
+
+
+
 
 typedef struct doubleChainStruct doubleChain;
 

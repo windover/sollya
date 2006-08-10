@@ -81,5 +81,7 @@ void fprintTree(FILE *fd, node *tree);
 int isSyntacticallyEqual(node *tree1, node *tree2);
 void fprintHeadFunction(FILE *fd,node *tree, char *x, char *y);
 int isConstant(node *tree);
+void getCoefficients(int *degree, node ***coefficients, node *poly);
+
 
 #endif /* ifdef EXPRESSION_H*/

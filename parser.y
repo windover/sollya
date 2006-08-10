@@ -13,6 +13,7 @@
 #include "integral.h"
 #include "worstcase.h"
 #include "fpminimax.h"
+#include "implement.h"
 
 int yylex();
 
@@ -140,6 +141,10 @@ void yyerror(char *message) {
 %token  EQUITOKEN      
 %token  CHEBTOKEN      
 %token  DOTSTOKEN      
+%token  IMPLEMENTPOLYTOKEN      
+%token  NAMETOKEN
+%token  VARIABLEMETATOKEN      
+%token  ASTOKEN
 
 
 %type <other> commands
@@ -187,6 +192,8 @@ void yyerror(char *message) {
 %type <aChain> pointslist
 %type <anInteger> integer
 %type <tree> fpminimax
+%type <other> implementpoly
+%type <anInteger> variableformat
 
 %%
 
@@ -345,6 +352,10 @@ command:     plot
                              $$ = NULL;
                            }
            | assignment SEMICOLONTOKEN
+                           {
+			     $$ = NULL;
+			   }
+           | implementpoly SEMICOLONTOKEN
                            {
 			     $$ = NULL;
 			   }
@@ -856,6 +867,40 @@ plot:        PLOTTOKEN function INTOKEN range SEMICOLONTOKEN
 			     free($4.a);
 			     free($4.b);
 			     tools_precision = defaultprecision;
+			     $$ = NULL;
+			   }
+;
+
+variableformat:     DOUBLETOKEN 
+                           {
+			     $$ = 1;
+                           }
+                  | DOUBLEDOUBLETOKEN 
+                           {
+			     $$ = 2;
+			   }
+                  | TRIPLEDOUBLETOKEN 
+                           {
+			     $$ = 3;
+			   }
+;
+
+implementpoly:        IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction WITHTOKEN VARIABLEMETATOKEN ASTOKEN variableformat INTOKEN writefile WITHTOKEN NAMETOKEN EQUALTOKEN string 
+                           {
+			     int_temp = implementpoly($2,$4,$8,$12,$14,$18,tools_precision);
+			     free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     mpfr_clear(*($8));
+			     free($8);
+			     fclose($14);
+			     free($18);
+			     if (int_temp) 
+			       printMessage(2,"Information: the implementation has succeeded.\n"); 
+			     else 
+			       printMessage(1,"Warning: the implementation has not succeeded. The code may be incomplete.\n"); 
 			     $$ = NULL;
 			   }
 ;

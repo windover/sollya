@@ -302,7 +302,7 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
 	  printMessage(1,"\nWarning: rounding occured during displaying a value. Values displayed may be wrong.\n");
 	}
 	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
-	str2 = (char *) calloc(strlen(str)+1,sizeof(char));
+	str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
 	strncpy(str2,str,e);
 	printf("%sb%d",str2,(int)expo);
 	free(str2);
@@ -355,7 +355,7 @@ void fprintValue(FILE *fd, mpfr_t value) {
 	printMessage(1,"\nWarning: upon printing to a file: rounding occured. Values printed may be wrong.\n");
       }
       str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
-      str2 = (char *) calloc(strlen(str)+1,sizeof(char));
+      str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
       strncpy(str2,str,e);
       fprintf(fd,"%sb%d",str2,(int)expo);
       free(str2);
@@ -3263,6 +3263,7 @@ int isConstant(node *tree);
 
 int isPolynomial(node *tree) {
   int res;
+  node *temp;
   
   switch (tree->nodeType) {
   case VARIABLE:
@@ -3337,14 +3338,19 @@ int isPolynomial(node *tree) {
   case POW:
     {
       res = 0;
-      if (tree->child2->nodeType == CONSTANT) {
-	if (mpfr_integer_p(*(tree->child2->value))) {
-	  if (mpfr_sgn(*(tree->child2->value)) >= 0) {
-	    res = 1;
+      if (isConstant(tree)) {
+	res = 1;
+      } else {
+	temp = simplifyTreeErrorfree(tree->child2);
+	if (temp->nodeType == CONSTANT) {
+	  if (mpfr_integer_p(*(temp->value))) {
+	    if (mpfr_sgn(*(temp->value)) >= 0) {
+	      res = 1;
+	    }
 	  }
 	}
+	free_memory(temp);
       }
-      res = res && isPolynomial(tree->child1);
     }
     break;
   case NEG:
@@ -4599,6 +4605,33 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
 }
 
 
+void getCoefficients(int *degree, node ***coefficients, node *poly) {
+  node *temp, *temp2, *temp3, *temp4;
+  int i;
+
+  *degree = getDegree(poly);
+  if (*degree < 0) {
+    printMessage(1,"Warning: Tried to get coefficients of an expression that is not a polynomial.\n");
+    return;
+  }
+
+  temp = simplifyTreeErrorfree(poly);
+  temp2 = expandPowerInPolynomialUnsafe(temp);
+  temp3 = expandPolynomialUnsafe(temp2);
+  temp4 = simplifyTreeErrorfree(temp3);
+
+  *coefficients = (node**) safeCalloc((*degree + 1),sizeof(node*));
+  for (i=0;i<=*degree;i++) (*coefficients)[i] = NULL;
+
+  getCoefficientsUnsafe(*coefficients,temp4,1);
+
+  free_memory(temp);
+  free_memory(temp2);
+  free_memory(temp3);
+  free_memory(temp4);
+}
+
+
 
 node* hornerPolynomialUnsafe(node *tree) {
   node *copy, *temp, *temp2, *temp3, *temp4, *simplified;
@@ -4609,7 +4642,7 @@ node* hornerPolynomialUnsafe(node *tree) {
   simplified = simplifyTreeErrorfree(tree);
 
   degree = getDegree(simplified);
-  monomials = (node**) calloc((degree + 1),sizeof(node*));
+  monomials = (node**) safeCalloc((degree + 1),sizeof(node*));
   for (i=0;i<=degree;i++) monomials[i] = NULL;
   
   getCoefficientsUnsafe(monomials,simplified,1);
@@ -4885,6 +4918,8 @@ node* horner(node *tree) {
 }
 
 
+
+
 node *differentiatePolynomialUnsafe(node *tree) {
   node *simplifiedTemp, *simplified, *copy, *temp, *temp2, *temp3, *temp4, *temp5;
   int degree, i;
@@ -4905,7 +4940,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
     copy->value = value;
   } else {
 
-    monomials = (node**) calloc((degree + 1),sizeof(node*));
+    monomials = (node**) safeCalloc((degree + 1),sizeof(node*));
     for (i=0;i<=degree;i++) monomials[i] = NULL;
     
    
@@ -5240,8 +5275,8 @@ int readDyadic(mpfr_t res, char *c) {
   mp_prec_t prec;
   int rounding;
 
-  mantissa = (char *) calloc(strlen(c)+1,sizeof(char));
-  exponent = (char *) calloc(strlen(c)+1,sizeof(char));
+  mantissa = (char *) safeCalloc(strlen(c)+1,sizeof(char));
+  exponent = (char *) safeCalloc(strlen(c)+1,sizeof(char));
   curr = c; curr2 = mantissa;
   while ((*curr != '\0') && (*curr != 'b') && (*curr != 'B')) {
     *curr2 = *curr;

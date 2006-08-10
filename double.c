@@ -18,10 +18,13 @@ int mpfr_round_to_double(mpfr_t rop, mpfr_t op) {
   }
 
   d = mpfr_get_d(op,GMP_RNDN);
-  if ((res = mpfr_set_d(rop,d,GMP_RNDN)) != 0) {
+  if (mpfr_set_d(rop,d,GMP_RNDN) != 0) {
     printMessage(1,"Warning: double rounding occured on invoking the double precision rounding operator.\n");
     printMessage(1,"Try to increase the working precision.\n");
   }
+  
+  res = mpfr_cmp(rop,op);
+
   return res;
 }
 
@@ -59,10 +62,12 @@ int mpfr_round_to_doubledouble(mpfr_t rop, mpfr_t op) {
     printMessage(1,"Warning: double rounding occured on invoking the double-double rounding operator.\n");
     printMessage(1,"The rounding occured on substracting in MPFR. This should not occur.\n");
   }
-  if ((res = mpfr_set(rop,accu,GMP_RNDN)) != 0) {
+  if (mpfr_set(rop,accu,GMP_RNDN) != 0) {
     printMessage(1,"Warning: double rounding occured on invoking the double-double rounding operator.\n");
     printMessage(1,"Try to increase the working precision.\n");
   }
+
+  res = mpfr_cmp(rop,op);
 
   mpfr_clear(accu);
   mpfr_clear(temp);
@@ -117,10 +122,12 @@ int mpfr_round_to_tripledouble(mpfr_t rop, mpfr_t op) {
     printMessage(1,"Warning: double rounding occured on invoking the triple-double rounding operator.\n");
     printMessage(1,"The rounding occured on substracting in MPFR. This should not occur.\n");
   }
-  if ((res = mpfr_set(rop,accu,GMP_RNDN)) != 0) {
+  if (mpfr_set(rop,accu,GMP_RNDN) != 0) {
     printMessage(1,"Warning: double rounding occured on invoking the triple-double rounding operator.\n");
     printMessage(1,"Try to increase the working precision.\n");
   }
+
+  res = mpfr_cmp(rop,op);
 
   mpfr_clear(accu);
   mpfr_clear(temp);
