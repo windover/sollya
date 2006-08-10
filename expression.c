@@ -2311,6 +2311,8 @@ node* differentiateUnsimplified(node *tree) {
 node* differentiate(node *tree) {
   node *temp, *temp2, *temp3;
 
+  printMessage(12,"Information: formally differentiating a function.\n");
+
   temp3 = simplifyTreeErrorfree(tree);
   temp = differentiateUnsimplified(temp3);
   temp2 = simplifyTreeErrorfree(temp);
@@ -3341,15 +3343,20 @@ int isPolynomial(node *tree) {
       if (isConstant(tree)) {
 	res = 1;
       } else {
-	temp = simplifyTreeErrorfree(tree->child2);
-	if (temp->nodeType == CONSTANT) {
-	  if (mpfr_integer_p(*(temp->value))) {
-	    if (mpfr_sgn(*(temp->value)) >= 0) {
-	      res = isPolynomial(tree->child1);
+	if (isPolynomial(tree->child1)) {
+	  if (tree->child2->nodeType == CONSTANT) 
+	    temp = tree->child2; 
+	  else 
+	    temp = simplifyTreeErrorfree(tree->child2);
+	  if (temp->nodeType == CONSTANT) {
+	    if (mpfr_integer_p(*(temp->value))) {
+	      if (mpfr_sgn(*(temp->value)) >= 0) {
+		res = 1;
+	      }
 	    }
 	  }
+	  if (tree->child2->nodeType != CONSTANT) free_memory(temp);
 	}
-	free_memory(temp);
       }
     }
     break;

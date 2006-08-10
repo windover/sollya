@@ -368,7 +368,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       mpfi_set(*(internalTheo->boundLeft),stack1);
       mpfi_set(*(internalTheo->boundRight),stack2);
     }
-    if ((mpfi_has_zero(stack3)) && (simplifies >= 0)) {
+    if ((mpfi_has_zero(stack3)) && (simplifies > 0)) {
 
       if (internalTheo != NULL) {
 	internalTheo->simplificationUsed = DECORRELATE;
@@ -432,6 +432,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	excludes = concatChains(excludes,leftExcludesLinear);
 	excludes = concatChains(excludes,rightExcludesLinear);
 
+	printMessage(4,"Information: decorrelating an interval addition.\n");
+
 	if (internalTheo != NULL) {
 	  internalTheo->boundLeftConstant = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
 	  mpfi_init2(*(internalTheo->boundLeftConstant),prec);
@@ -492,7 +494,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       mpfi_set(*(internalTheo->boundLeft),stack1);
       mpfi_set(*(internalTheo->boundRight),stack2);
     }
-    if ((mpfi_has_zero(stack3)) && (simplifies >= 0)) {
+    if ((mpfi_has_zero(stack3)) && (simplifies > 0)) {
 
       if (internalTheo != NULL) {
 	internalTheo->simplificationUsed = DECORRELATE;
@@ -555,6 +557,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	excludes = concatChains(excludes,rightExcludesConstant);	
 	excludes = concatChains(excludes,leftExcludesLinear);
 	excludes = concatChains(excludes,rightExcludesLinear);
+
+	printMessage(4,"Information: decorrelating an interval substraction.\n");
 
 	if (internalTheo != NULL) {
 	  internalTheo->boundLeftConstant = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
@@ -642,6 +646,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	freeChain(leftExcludes,freeMpfiPtr);
 	freeChain(rightExcludes,freeMpfiPtr);
 
+	printMessage(4,"Information: using Hopital's rule on point division.\n");
+
 	if (internalTheo != NULL) {
 	  internalTheo->simplificationUsed = HOPITAL_ON_POINT;
 	  internalTheo->leftDerivative = copyTree(derivNumerator);
@@ -665,6 +671,9 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       } else {
 	/* [0;0] / [bl;br], bl,br != 0 */
 	freeChain(rightExcludes,freeMpfiPtr);
+
+	printMessage(4,"Information: simplifying an interval division with 0 point numerator.\n");
+
 	mpfi_interv_d(stack3,0.0,0.0);
 	excludes = leftExcludes;
 	if (internalTheo != NULL) {
@@ -677,7 +686,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       }
     } else {
       if (mpfi_has_zero(stack2) && 
-	  (simplifies >= 0)) {
+	  (simplifies > 0)) {
 	mpfr_init2(xl,prec);
 	mpfr_init2(xr,prec);
 
@@ -753,6 +762,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		leftTheoLinear = NULL;
 	      }
 
+	      printMessage(4,"Information: using Hopital's rule (general case) on denominator zero.\n");
+
 	      excludes = evaluateI(stack3, tempNode, x, prec, simplifies-1, leftTheoLinear);
 
 	      if (internalTheo != NULL) mpfi_set(*(internalTheo->boundLeftLinear),stack3);
@@ -827,6 +838,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		  } else {
 		    leftTheoLinear = NULL;
 		  }
+
+		  printMessage(4,"Information: using Hopital's rule (general case) on numerator zero.\n");
 
 		  excludes = evaluateI(stack3, tempNode, x, prec, simplifies-1, leftTheoLinear);
 
@@ -1101,6 +1114,8 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   chain *excludes, *directExcludes, *taylorExcludes, *taylorExcludesLinear, *taylorExcludesConstant;
   exprBoundTheo *constantTheo, *linearTheo, *directTheo;
 
+  printMessage(8,"Information: evaluating a function in interval arithmetic using Taylor's formula.\n");
+
   if (theo != NULL) {
     nullifyExprBoundTheo(theo);
 
@@ -1144,14 +1159,14 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   mpfi_mid(xZ,x);
   mpfi_set_fr(xZI,xZ);
 
-  taylorExcludesConstant = evaluateI(constantTerm, func, xZI, prec, 2, constantTheo);
-  taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 2, linearTheo);
+  taylorExcludesConstant = evaluateI(constantTerm, func, xZI, prec, 1, constantTheo);
+  taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, linearTheo);
   mpfi_sub(temp, x, xZI);
   mpfi_mul(linearTerm, temp, linearTerm);
   mpfi_add(resultTaylor, constantTerm, linearTerm);
   taylorExcludes = concatChains(taylorExcludesConstant, taylorExcludesLinear);
   
-  directExcludes = evaluateI(resultDirect, func, x, prec, 2, directTheo);
+  directExcludes = evaluateI(resultDirect, func, x, prec, 1, directTheo);
 
   mpfi_get_left(rTl,resultTaylor);
   mpfi_get_right(rTr,resultTaylor);
@@ -1326,7 +1341,9 @@ chain *findZeros(node *func, node *deriv, mpfi_t range, mp_prec_t prec, mpfr_t d
     noZeroProofs = NULL;
   }
 
+  printMessage(3,"Information: invoking the recursive interval zero search.\n");
   temp = findZerosUnsimplified(funcSimplified,derivSimplified,range,prec,diam,noZeroProofs);
+  printMessage(3,"Information: the recursive interval zero search has finished.\n");
   
   free_memory(funcSimplified);
   free_memory(derivSimplified);
@@ -1708,8 +1725,9 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   mpfr_min(innerLeft,innerLeft,tr,GMP_RNDU);
   mpfr_max(innerRight,innerRight,tl,GMP_RNDD); 
  
-
+  printMessage(3,"Information: invoking interval zero search.\n");
   tempChain = findZeros(numeratorDeriv,derivNumeratorDeriv,range,prec,diam,noZeros); 
+  printMessage(3,"Information: interval zero search is done.\n");
   mpfr_init2(diamJoin,prec);
   mpfr_mul_2ui(diamJoin,diam,3,GMP_RNDN);
   tempChain2 = joinAdjacentIntervals(tempChain,diamJoin);
@@ -2072,8 +2090,12 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
     theo = NULL;
   }
 
+  printMessage(3,"Information: invoking the interval infnorm subfunction.\n");
+
   infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,
 	   prec,rangeDiameter,initialExcludes,&mightExcludes,theo);
+
+  printMessage(3,"Information: interval infnorm subfunction has finished.\n");
 
   secondMightExcludes = NULL;
 
@@ -2096,9 +2118,13 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
     } else {
       theo = NULL;
     }
+    
+    printMessage(3,"Information: invoking the interval infnorm subfunction on additional excludes.\n");
 
     infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,
 	     2*prec,rangeDiameter,mightExcludes,&secondMightExcludes,theo);
+
+    printMessage(3,"Information: interval infnorm subfunction on additional excludes has finished.\n");
 
     if (secondMightExcludes != NULL) {
       printMessage(1,"Warning: the following domains remain the exclusion of which could improve the result.\n");
