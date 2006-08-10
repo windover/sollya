@@ -2010,6 +2010,7 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
   mpfr_mul(rangeDiameter,rangeDiameter,diam,GMP_RNDD);
   mpfi_interv_fr(rangeI,*(range.a),*(range.b));
   deriv = differentiate(func);
+
   if (getNumeratorDenominator(&numeratorDeriv,&denominatorDeriv,deriv)) {
     printMessage(1,"Warning: the derivative of the function is a quotient, thus possibly not continuous in the interval.\n");
     printMessage(1,"Only the zeros of the numerator will be searched and pole detection may fail.\n");
@@ -2018,6 +2019,7 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
     mpfr_init2(z,prec);
     mpfr_init2(ya,prec);
     mpfr_init2(yb,prec);
+
     derivDenominatorDeriv = differentiate(denominatorDeriv);
 
     newtonWorked = newtonMPFR(z, denominatorDeriv, derivDenominatorDeriv, *(range.a), *(range.b), prec);

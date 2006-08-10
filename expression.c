@@ -3345,7 +3345,7 @@ int isPolynomial(node *tree) {
 	if (temp->nodeType == CONSTANT) {
 	  if (mpfr_integer_p(*(temp->value))) {
 	    if (mpfr_sgn(*(temp->value)) >= 0) {
-	      res = 1;
+	      res = isPolynomial(tree->child1);
 	    }
 	  }
 	}
