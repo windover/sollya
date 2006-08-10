@@ -9,7 +9,7 @@
 
 #define DEFAULTPOINTS 500
 #define DEFAULTPRECISION 165
-#define DEFAULTDIAM 1e-6
+#define DEFAULTDIAM 1e-4
 
 
 
