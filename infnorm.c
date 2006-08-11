@@ -15,6 +15,7 @@
 #define DEBUGMPFI 0
 
 
+
 void printInterval(mpfi_t interval);
 void freeMpfiPtr(void *i);
 
@@ -281,7 +282,7 @@ void makeMpfiAroundMpfr(mpfi_t res, mpfr_t x, unsigned int thousandUlps) {
 
 chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simplifiesA, int simplifiesB, exprBoundTheo *theo) {
   mpfi_t stack1, stack2;
-  mpfi_t stack3, zI, numeratorInZI, denominatorInZI, newExcludeTemp, xMXZ, temp1, temp2;
+  mpfi_t stack3, zI, numeratorInZI, denominatorInZI, newExcludeTemp, xMXZ, temp1, temp2, tempA, tempB;
   mpfi_t *newExclude;
   mpfi_t leftConstantTerm, rightConstantTerm;
   mpfi_t leftLinearTerm, rightLinearTerm;
@@ -294,6 +295,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   exprBoundTheo *leftTheo, *rightTheo, *internalTheo; 
   exprBoundTheo *leftTheoConstant, *rightTheoConstant, *leftTheoLinear, *rightTheoLinear;
   int isPolynom;
+
+  excludes = NULL;
 
   if (theo != NULL) nullifyExprBoundTheo(theo);
 
@@ -400,6 +403,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       mpfi_init2(xMXZ,prec);
       mpfi_init2(temp1,prec);
       mpfi_init2(temp2,prec);
+      mpfi_init2(tempA,prec);
+      mpfi_init2(tempB,prec);
 
       mpfi_mid(z,x);
       mpfi_set_fr(zI,z);
@@ -413,18 +418,36 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       leftExcludesLinear = evaluateI(leftLinearTerm, derivLeft, x, prec, simplifiesA-1, simplifiesB, leftTheoLinear);
       rightExcludesLinear = evaluateI(rightLinearTerm, derivRight, x, prec, simplifiesA-1, simplifiesB, rightTheoLinear);
 
-      mpfi_add(temp1,leftConstantTerm,rightConstantTerm);
-      mpfi_add(temp2,leftLinearTerm,rightLinearTerm);
+      mpfi_add(tempA,leftConstantTerm,rightConstantTerm);
+      mpfi_add(tempB,leftLinearTerm,rightLinearTerm);
 
       mpfi_sub(xMXZ,x,zI);
 
-      mpfi_mul(temp2,xMXZ,temp2);
-      mpfi_add(temp1,temp1,temp2);
+      mpfi_mul(temp2,xMXZ,tempB);
+      mpfi_add(temp1,tempA,temp2);
 
       mpfi_get_left(al,temp1);
       mpfi_get_right(ar,temp1);
 
       if (mpfr_number_p(al) && mpfr_number_p(ar)) {
+
+	printMessage(8,"Information: decorrelating an interval addition.\n");
+	if (verbosity >= 12) {
+	  printf("Decorrelating on function\n");
+	  printTree(tree);
+	  printf("\nconstant term:\n");
+	  printInterval(tempA);
+	  printf("\nlinear term:\n");
+	  printInterval(tempB);
+	  printf("\ntranslated interval:\n");
+	  printInterval(xMXZ);
+	  printf("\nTaylor evaluation:\n");
+	  printInterval(temp1);
+	  printf("\ndirect evaluation:\n");
+	  printInterval(stack3);
+	  printf("\n");
+	}
+
 	mpfi_intersect(stack3,stack3,temp1);
 	excludes = concatChains(leftExcludes,rightExcludes);
 	excludes = concatChains(excludes,leftExcludesConstant);
@@ -432,7 +455,6 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	excludes = concatChains(excludes,leftExcludesLinear);
 	excludes = concatChains(excludes,rightExcludesLinear);
 
-	printMessage(4,"Information: decorrelating an interval addition.\n");
 
 	if (internalTheo != NULL) {
 	  internalTheo->boundLeftConstant = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
@@ -478,6 +500,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       mpfi_clear(xMXZ);
       mpfi_clear(temp1);
       mpfi_clear(temp2);
+      mpfi_clear(tempA);
+      mpfi_clear(tempB);
       mpfi_clear(leftConstantTerm);
       mpfi_clear(rightConstantTerm);
       mpfi_clear(leftLinearTerm);
@@ -526,6 +550,9 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       mpfi_init2(xMXZ,prec);
       mpfi_init2(temp1,prec);
       mpfi_init2(temp2,prec);
+      mpfi_init2(tempA,prec);
+      mpfi_init2(tempB,prec);
+
 
       mpfi_mid(z,x);
       mpfi_set_fr(zI,z);
@@ -539,18 +566,35 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       leftExcludesLinear = evaluateI(leftLinearTerm, derivLeft, x, prec, simplifiesA-1, simplifiesB, leftTheoLinear);
       rightExcludesLinear = evaluateI(rightLinearTerm, derivRight, x, prec, simplifiesA-1, simplifiesB, rightTheoLinear);
 
-      mpfi_sub(temp1,leftConstantTerm,rightConstantTerm);
-      mpfi_sub(temp2,leftLinearTerm,rightLinearTerm);
+      mpfi_sub(tempA,leftConstantTerm,rightConstantTerm);
+      mpfi_sub(tempB,leftLinearTerm,rightLinearTerm);
 
       mpfi_sub(xMXZ,x,zI);
 
-      mpfi_mul(temp2,xMXZ,temp2);
-      mpfi_add(temp1,temp1,temp2);
+      mpfi_mul(temp2,xMXZ,tempB);
+      mpfi_add(temp1,tempA,temp2);
 
       mpfi_get_left(al,temp1);
       mpfi_get_right(ar,temp1);
 
       if (mpfr_number_p(al) && mpfr_number_p(ar)) {
+
+	printMessage(8,"Information: decorrelating an interval substraction.\n");
+	if (verbosity >= 12) {
+	  printf("Decorrelating on function\n");
+	  printTree(tree);
+	  printf("\nconstant term:\n");
+	  printInterval(tempA);
+	  printf("\nlinear term:\n");
+	  printInterval(tempB);
+	  printf("\ntranslated interval:\n");
+	  printInterval(xMXZ);
+	  printf("\nTaylor evaluation:\n");
+	  printInterval(temp1);
+	  printf("\ndirect evaluation:\n");
+	  printInterval(stack3);
+	  printf("\n");
+	}
 
 	mpfi_intersect(stack3,stack3,temp1);
 	excludes = concatChains(leftExcludes,rightExcludes);
@@ -558,8 +602,6 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	excludes = concatChains(excludes,rightExcludesConstant);	
 	excludes = concatChains(excludes,leftExcludesLinear);
 	excludes = concatChains(excludes,rightExcludesLinear);
-
-	printMessage(4,"Information: decorrelating an interval substraction.\n");
 
 	if (internalTheo != NULL) {
 	  internalTheo->boundLeftConstant = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
@@ -605,6 +647,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       mpfi_clear(xMXZ);
       mpfi_clear(temp1);
       mpfi_clear(temp2);
+      mpfi_clear(tempA);
+      mpfi_clear(tempB);
       mpfi_clear(leftConstantTerm);
       mpfi_clear(rightConstantTerm);
       mpfi_clear(leftLinearTerm);
@@ -647,7 +691,12 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	freeChain(leftExcludes,freeMpfiPtr);
 	freeChain(rightExcludes,freeMpfiPtr);
 
-	printMessage(4,"Information: using Hopital's rule on point division.\n");
+	printMessage(8,"Information: using Hopital's rule on point division.\n");
+	if (verbosity >= 12) {
+	  printf("Hopital's rule is used on function\n");
+	  printTree(tree);
+	  printf("\n");
+	}
 
 	if (internalTheo != NULL) {
 	  internalTheo->simplificationUsed = HOPITAL_ON_POINT;
@@ -673,7 +722,13 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	/* [0;0] / [bl;br], bl,br != 0 */
 	freeChain(rightExcludes,freeMpfiPtr);
 
-	printMessage(4,"Information: simplifying an interval division with 0 point numerator.\n");
+	printMessage(8,"Information: simplifying an interval division with 0 point numerator.\n");
+	if (verbosity >= 12) {
+	  printf("Simplification on function\n");
+	  printTree(tree);
+	  printf("\n");
+	}
+
 
 	mpfi_interv_d(stack3,0.0,0.0);
 	excludes = leftExcludes;
@@ -763,7 +818,13 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		leftTheoLinear = NULL;
 	      }
 
-	      printMessage(4,"Information: using Hopital's rule (general case) on denominator zero.\n");
+	      printMessage(8,"Information: using Hopital's rule (general case) on denominator zero.\n");
+	      if (verbosity >= 12) {
+		printf("Hopital's rule is used on function\n");
+		printTree(tree);
+		printf("\n");
+	      }
+
 
 	      excludes = evaluateI(stack3, tempNode, x, prec, simplifiesA, simplifiesB-1, leftTheoLinear);
 
@@ -840,7 +901,13 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		    leftTheoLinear = NULL;
 		  }
 
-		  printMessage(4,"Information: using Hopital's rule (general case) on numerator zero.\n");
+		  printMessage(8,"Information: using Hopital's rule (general case) on numerator zero.\n");
+		  if (verbosity >= 12) {
+		    printf("Hopital's rule is used on function\n");
+		    printTree(tree);
+		    printf("\n");
+		  }
+
 
 		  excludes = evaluateI(stack3, tempNode, x, prec, simplifiesA, simplifiesB-1, leftTheoLinear);
 
@@ -1109,13 +1176,21 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   return excludes;
 }
 
-chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t prec, exprBoundTheo *theo) {
+chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t prec, int recurse, exprBoundTheo *theo) {
   mpfr_t xZ, rTl, rTr;
-  mpfi_t xZI, constantTerm, linearTerm, resultTaylor, resultDirect, temp;
+  mpfi_t xZI, constantTerm, linearTerm, resultTaylor, resultDirect, temp, temp2;
   chain *excludes, *directExcludes, *taylorExcludes, *taylorExcludesLinear, *taylorExcludesConstant;
   exprBoundTheo *constantTheo, *linearTheo, *directTheo;
+  node *nextderiv;
 
-  printMessage(8,"Information: evaluating a function in interval arithmetic using Taylor's formula.\n");
+  printMessage(9,"Information: evaluating a function in interval arithmetic using Taylor's formula.\n");
+  if (verbosity >= 12) {
+    printf("Information: the function is\n");
+    printTree(func);
+    printf("\nIts derivative is\n");
+    printTree(deriv);
+    printf("\n");
+  }
 
   if (theo != NULL) {
     nullifyExprBoundTheo(theo);
@@ -1149,6 +1224,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   mpfr_init2(xZ,prec);
   mpfi_init2(xZI,prec);
   mpfi_init2(temp,prec);
+  mpfi_init2(temp2,prec);
   mpfi_init2(constantTerm,prec);
   mpfi_init2(linearTerm,prec);
   mpfi_init2(resultTaylor,prec);
@@ -1161,13 +1237,35 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   mpfi_set_fr(xZI,xZ);
 
   taylorExcludesConstant = evaluateI(constantTerm, func, xZI, prec, 1, 2, constantTheo);
-  taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, 2, linearTheo);
+  if (recurse > 0) {
+    nextderiv = differentiate(deriv);
+    taylorExcludesLinear = evaluateITaylor(linearTerm, deriv, nextderiv, x, prec, recurse - 1, linearTheo);
+    free_memory(nextderiv);
+  } else {
+    taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, 2, linearTheo);
+  }
   mpfi_sub(temp, x, xZI);
-  mpfi_mul(linearTerm, temp, linearTerm);
-  mpfi_add(resultTaylor, constantTerm, linearTerm);
+  mpfi_mul(temp2, temp, linearTerm);
+  mpfi_add(resultTaylor, constantTerm, temp2);
   taylorExcludes = concatChains(taylorExcludesConstant, taylorExcludesLinear);
   
   directExcludes = evaluateI(resultDirect, func, x, prec, 0, 2, directTheo);
+
+  if (verbosity >= 12) {
+    printf("Information: Taylor evaluation: domain:\n");
+    printInterval(x);
+    printf("\nconstant term:\n");
+    printInterval(constantTerm);
+    printf("\nlinear term:\n");
+    printInterval(linearTerm);
+    printf("\ntranslated interval:\n");
+    printInterval(temp);
+    printf("\nmultiplied linear term:\n");
+    printInterval(temp2);
+    printf("\ndirect evaluation:\n");
+    printInterval(resultDirect);
+    printf("\n");
+  }
 
   mpfi_get_left(rTl,resultTaylor);
   mpfi_get_right(rTr,resultTaylor);
@@ -1228,6 +1326,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   mpfr_clear(rTr);
   mpfi_clear(xZI);
   mpfi_clear(temp);
+  mpfi_clear(temp2);
   mpfi_clear(constantTerm);
   mpfi_clear(linearTerm);
   mpfi_clear(resultTaylor);
@@ -1273,7 +1372,7 @@ chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t pr
     res->value = temp;
   } else {
     mpfi_init2(y,prec);
-    excludes = evaluateITaylor(y, func, deriv, range, prec, theo);
+    excludes = evaluateITaylor(y, func, deriv, range, prec, taylorrecursions, theo);
     freeChain(excludes,freeMpfiPtr);
     if (!mpfi_bounded_p(y)) {
       printMessage(1,"Warning: during zero-search the derivative of the function evaluated to NaN or Inf in the interval ");
@@ -1712,12 +1811,12 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   mpfi_set_fr(rInterv,r);
   mpfi_set_fr(lInterv,l);
 
-  excludes = evaluateITaylor(evalFuncOnInterval, func, deriv, lInterv, prec, evalLeftBound); 
+  excludes = evaluateITaylor(evalFuncOnInterval, func, deriv, lInterv, prec, taylorrecursions, evalLeftBound); 
   mpfi_get_left(outerLeft,evalFuncOnInterval);
   mpfi_get_right(outerRight,evalFuncOnInterval);
   mpfr_set(innerLeft,outerRight,GMP_RNDU);
   mpfr_set(innerRight,outerLeft,GMP_RNDD);
-  excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, rInterv, prec, evalRightBound); 
+  excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, rInterv, prec, taylorrecursions, evalRightBound); 
   excludes = concatChains(excludes,excludesTemp);
   mpfi_get_left(tl,evalFuncOnInterval);
   mpfi_get_right(tr,evalFuncOnInterval);
@@ -1746,6 +1845,19 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
 
   curr = zeros;
   while (curr != NULL) {
+
+    if (verbosity >= 7) {
+      printf("Information:\nCurrent inner enclosure: [");
+      printValue(&innerLeft,prec);
+      printf(";");
+      printValue(&innerRight,prec);
+      printf("]\nCurrent outer enclosure: [");
+      printValue(&outerLeft,prec);
+      printf(";");
+      printValue(&outerRight,prec);
+      printf("]\n");
+    }
+
     if (theo != NULL) {
       currZeroTheo = (exprBoundTheo *) safeCalloc(1,sizeof(exprBoundTheo));
       nullifyExprBoundTheo(currZeroTheo);
@@ -1753,7 +1865,16 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
       currZeroTheo = NULL;
     }
     currInterval = ((mpfi_t *) (curr->value));
-    excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, *currInterval, prec, currZeroTheo); 
+    excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, *currInterval, prec, taylorrecursions, currZeroTheo); 
+
+    if (verbosity >= 7) {
+      printf("Information: The function evaluates on\n");
+      printInterval(*currInterval);
+      printf(" to\n");
+      printInterval(evalFuncOnInterval);
+      printf("\n");
+    }
+
     excludes = concatChains(excludes,excludesTemp);
     mpfi_get_left(tl,evalFuncOnInterval);
     mpfi_get_right(tr,evalFuncOnInterval);
@@ -2171,7 +2292,7 @@ void evaluateRangeFunctionFast(rangetype yrange, node *func, node *deriv, ranget
   mpfi_init2(y,prec);
   mpfi_interv_fr(x,*(xrange.a),*(xrange.b));
 
-  tempChain = evaluateITaylor(y, func, deriv, x, prec, NULL);
+  tempChain = evaluateITaylor(y, func, deriv, x, prec, taylorrecursions, NULL);
 
   mpfi_get_left(*(yrange.a),y);
   mpfi_get_right(*(yrange.b),y);
@@ -2182,11 +2303,15 @@ void evaluateRangeFunctionFast(rangetype yrange, node *func, node *deriv, ranget
 }
 
 void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_prec_t prec) {
-  node *deriv;
+  node *deriv, *temp, *temp2;
 
-  deriv = differentiate(func);
+  temp = differentiate(func);
+  deriv = horner(temp);
+  temp2 = horner(func);
   evaluateRangeFunctionFast(yrange,func,deriv,xrange,prec);
   free_memory(deriv);
+  free_memory(temp);
+  free_memory(temp2);
 }
 
 
@@ -2241,4 +2366,104 @@ chain* findZerosFunction(node *func, rangetype range, mp_prec_t prec, mpfr_t dia
   mpfi_clear(rangeI);
   mpfr_clear(rangeDiameter);
   return zeros;
+}
+
+
+int checkInfnormI(node *func, node *deriv, mpfi_t infnormval, mpfi_t range, mpfr_t diam, mp_prec_t prec) {
+  mpfi_t evaluateOnRange, rangeLeft, rangeRight;
+  chain *tempChain;
+  mpfr_t l,m,r, diamRange;
+  int resultLeft, resultRight;
+
+  mpfi_init2(evaluateOnRange,prec);
+
+  tempChain = evaluateITaylor(evaluateOnRange, func, deriv, range, prec, taylorrecursions, NULL);
+
+  freeChain(tempChain,freeMpfiPtr);
+
+  if (mpfi_is_inside(evaluateOnRange, infnormval)) {
+    /* Simple end case: the interval evaluation is contained in the given interval for infnorm */
+    mpfi_clear(evaluateOnRange);
+    return 1;
+  }
+
+  mpfr_init2(diamRange,prec);
+  mpfi_diam(diamRange,range);
+
+  if (mpfr_cmp(diamRange,diam) <= 0) {
+    /* Simple end case: the range to test is already smaller than diam but we could not check */
+    if (verbosity >= 2) {
+      printf("Infnormation: could not check the infinite norm on the domain\n");
+      printInterval(range);
+      printf("\nThe function evaluates here to\n");
+      printInterval(evaluateOnRange);
+      printf("\n");
+    }
+    mpfi_clear(evaluateOnRange);
+    mpfr_clear(diamRange);
+    return 0;
+  }
+
+  mpfr_init2(l,prec);
+  mpfr_init2(m,prec);
+  mpfr_init2(r,prec);
+  mpfi_init2(rangeLeft,prec);
+  mpfi_init2(rangeRight,prec);
+  
+  mpfi_get_left(l,range);
+  mpfi_mid(m,range);
+  mpfi_get_right(r,range);
+  
+  mpfi_interv_fr(rangeLeft,l,m);
+  mpfi_interv_fr(rangeRight,m,r);
+
+  /* Recurse on half the range */
+  
+  resultLeft = 0;
+  resultRight = 0;
+
+  resultLeft = checkInfnormI(func, deriv, infnormval, rangeLeft, diam, prec);
+  if (resultLeft || (verbosity >= 4)) resultRight = checkInfnormI(func, deriv, infnormval, rangeRight, diam, prec);
+
+  mpfi_clear(rangeRight);
+  mpfi_clear(rangeLeft);
+  mpfr_clear(r);
+  mpfr_clear(m);
+  mpfr_clear(l);
+  mpfi_clear(evaluateOnRange);
+  mpfr_clear(diamRange);
+
+  return (resultLeft & resultRight);
+}
+
+
+int checkInfnorm(node *func, rangetype range, mpfr_t infnormval, mpfr_t diam, mp_prec_t prec) {
+  node *deriv;
+  mpfi_t rangeI, infnormvalI;
+  mpfr_t rangeDiameter, tempLeft, tempRight;
+  int result;
+
+  mpfi_init2(rangeI,prec);
+  mpfi_init2(infnormvalI,prec);
+  mpfr_init2(rangeDiameter,prec);
+  mpfr_init2(tempLeft,prec);
+  mpfr_init2(tempRight,prec);
+
+  mpfr_sub(rangeDiameter,*(range.b),*(range.a),GMP_RNDD);
+  mpfr_mul(rangeDiameter,rangeDiameter,diam,GMP_RNDD);
+  mpfi_interv_fr(rangeI,*(range.a),*(range.b));
+  mpfr_abs(tempRight,infnormval,GMP_RNDU);
+  mpfr_neg(tempLeft,tempRight,GMP_RNDD);
+  mpfi_interv_fr(infnormvalI,tempLeft,tempRight);
+  deriv = differentiate(func);
+
+  result = checkInfnormI(func, deriv, infnormvalI, rangeI, rangeDiameter, prec);
+  
+  mpfr_clear(tempLeft);
+  mpfr_clear(tempRight);
+  mpfr_clear(rangeDiameter);
+  mpfi_clear(infnormvalI);
+  mpfi_clear(rangeI);
+
+  return result;
 }

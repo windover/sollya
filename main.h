@@ -10,7 +10,7 @@
 #define DEFAULTPOINTS 500
 #define DEFAULTPRECISION 165
 #define DEFAULTDIAM 1e-4
-
+#define DEFAULTTAYLORRECURSIONS 0
 
 
 
@@ -36,6 +36,7 @@ extern node *temp_node;
 extern node *temp_node2;
 extern mp_prec_t defaultprecision;
 extern int defaultpoints;
+extern int taylorrecursions;
 extern int int_temp;
 extern int int_temp2;
 extern mp_prec_t prec_temp;
@@ -54,6 +55,8 @@ extern doubleChain *doubleChainTemp;
 extern formatType *formatTypeTemp;
 extern errorType *errorTypeTemp;
 extern pointsType *pointsTypeTemp;
+
+
 
 void printPrompt(void);
 void recoverFromError(void);

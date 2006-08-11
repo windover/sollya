@@ -145,6 +145,10 @@ void yyerror(char *message) {
 %token  NAMETOKEN
 %token  VARIABLEMETATOKEN      
 %token  ASTOKEN
+%token  CHECKINFNORMTOKEN
+%token	BOUNDEDTOKEN     
+%token	BYTOKEN          
+%token  TAYLORRECURSIONSTOKEN
 
 
 %type <other> commands
@@ -181,6 +185,7 @@ void yyerror(char *message) {
 %type <aChain> monomials
 %type <aChain> degreelist
 %type <verbval> verbosity
+%type <anInteger> taylorrecursionsvalue
 %type <other> verbosityset
 %type <other> worstcase
 %type <rangeval> commandfunction
@@ -194,6 +199,8 @@ void yyerror(char *message) {
 %type <tree> fpminimax
 %type <other> implementpoly
 %type <anInteger> variableformat
+%type <anInteger> checkinfnorm
+%type <other> taylorrecursions
 
 %%
 
@@ -332,6 +339,9 @@ command:     plot
            | dyadic SEMICOLONTOKEN  {
 	                     $$ = NULL;
 	                   }
+           | taylorrecursions SEMICOLONTOKEN {
+	                     $$ = NULL;
+	                   }
            | verbosityset SEMICOLONTOKEN {
 	                     $$ = NULL;
 	                   }
@@ -357,6 +367,16 @@ command:     plot
 			   }
            | implementpoly SEMICOLONTOKEN
                            {
+			     $$ = NULL;
+			   }
+           | checkinfnorm SEMICOLONTOKEN
+	                   {
+			     if ($1) {
+			       printf("The given bound for the infinite norm of the given function is satisfied.\n");
+			     } else {
+			       printf("The given bound for the infinite norm of the given function could not be verified.\n");
+			       printMessage(2,"Information: Try to decrease the diameter for the test dichotomy.\n");
+			     }
 			     $$ = NULL;
 			   }
            | error SEMICOLONTOKEN
@@ -388,6 +408,13 @@ verbosityset:  VERBOSITYTOKEN EQUALTOKEN verbosity
                            }
 ;
 
+taylorrecursions: TAYLORRECURSIONSTOKEN EQUALTOKEN taylorrecursionsvalue
+                           {
+			     printf("The number of recursions for the Taylor evaluation is set to %d.\n",($3));
+			     taylorrecursions = ($3);
+			     $$ = NULL;
+			   }
+;
 
 assignment:  lvariable EQUALTOKEN function 
                            {
@@ -905,6 +932,49 @@ implementpoly:        IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILO
 			   }
 ;
 
+checkinfnorm:        CHECKINFNORMTOKEN function INTOKEN range BOUNDEDTOKEN BYTOKEN constantfunction 
+                           {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
+			     if (mpfr_sgn(*($7)) < 0) {
+			       printMessage(1,"Warning: the given bound evaluates to a negative value. Infinite norms are by definition positive.\nWill take the opposite of the given bound.\n");
+			       mpfr_neg(*($7),*($7),GMP_RNDN);
+			     } 
+			     int_temp = checkInfnorm($2, $4, *($7), *mpfr_temp, defaultprecision);
+			     free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     mpfr_clear(*($7));
+			     free($7);
+			     mpfr_clear(*mpfr_temp);
+			     free(mpfr_temp);
+			     $$ = int_temp;
+			   }
+                   | CHECKINFNORMTOKEN function INTOKEN range BOUNDEDTOKEN BYTOKEN constantfunction COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant 
+                           {
+			     if (mpfr_sgn(*($7)) < 0) {
+			       printMessage(1,"Warning: the given bound evaluates to a negative value. Infinite norms are by definition positive.\nWill take the opposite of the given bound.\n");
+			       mpfr_neg(*($7),*($7),GMP_RNDN);
+			     } 
+			     int_temp = checkInfnorm($2, $4, *($7), *($11), defaultprecision);
+			     free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     mpfr_clear(*($7));
+			     free($7);
+			     mpfr_clear(*($11));
+			     free($11);
+			     $$ = int_temp;
+			   }
+;
+
+
+
 precision:  PRECTOKEN EQUALTOKEN CONSTTOKEN 
                            {
 			     tools_precision = strtol($3,endptr,10);
@@ -960,6 +1030,21 @@ verbosity:  CONSTTOKEN
 			     if (int_temp < 0) {
 			       printMessage(1,"Warning: The tool's verbosity must be a positive value. Will set verbosity 1.\n");
 			       int_temp = 1;
+			     }
+			     $$ = int_temp;                           
+                           }
+;
+
+taylorrecursionsvalue:  CONSTTOKEN
+                           {
+			     int_temp = (int) strtol($1,endptr,10);
+                             if (**endptr != '\0') {
+			       printMessage(1,"Warning: the number of recursions for Taylor evaluation must be an integer. Will set the value to 0.\n");
+			       int_temp = 0;
+			     }
+			     if (int_temp < 0) {
+			       printMessage(1,"Warning: the number of recursions for Taylor evaluation must be positive or zero. Will set the value to 0.\n");
+			       int_temp = 0;
 			     }
 			     $$ = int_temp;                           
                            }

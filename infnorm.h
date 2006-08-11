@@ -18,5 +18,6 @@ void fprintInterval(FILE *fd, mpfi_t interval);
 void freeMpfiPtr(void *i);
 void *copyMpfiPtr(void *ptr);
 chain *joinAdjacentIntervalsMaximally(chain *intervals);
+int checkInfnorm(node *func, rangetype range, mpfr_t infnormval, mpfr_t diam, mp_prec_t prec);
 
 #endif /* ifdef INFNORM_H*/

@@ -157,6 +157,11 @@ NAME            "name"
 VARIABLEMETA    "variable"
 AS              "as"
 
+CHECKINFNORM    "checkinfnorm"
+BOUNDED         "bounded"
+BY              "by"
+
+TAYLORRECURSIONS "taylorrecursions"
 
 %%
 
@@ -265,10 +270,10 @@ AS              "as"
 {NAME}                   {     promptToBePrinted = 0; return NAMETOKEN;             }     
 {VARIABLEMETA}           {     promptToBePrinted = 0; return VARIABLEMETATOKEN;     }
 {AS}                     {     promptToBePrinted = 0; return ASTOKEN;               }          
-
-
-
-
+{CHECKINFNORM}           {     promptToBePrinted = 0; return CHECKINFNORMTOKEN;     }          
+{BOUNDED}                {     promptToBePrinted = 0; return BOUNDEDTOKEN;          }
+{BY}                     {     promptToBePrinted = 0; return BYTOKEN;               }                    
+{TAYLORRECURSIONS}       {     promptToBePrinted = 0; return TAYLORRECURSIONSTOKEN; }                    
 
 
 

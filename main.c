@@ -22,6 +22,7 @@ char *currentString = NULL;
 mp_prec_t defaultprecision = DEFAULTPRECISION;
 int defaultpoints = DEFAULTPOINTS;
 mp_prec_t tools_precision = DEFAULTPRECISION;
+int taylorrecursions = DEFAULTTAYLORRECURSIONS;
 mp_prec_t prec_temp;
 char **endptr;
 unsigned long int points;
