@@ -1,0 +1,2724 @@
+#include <mpfr.h>
+#include <gmp.h>
+#include "implement.h"
+#include <stdio.h> /* fprinft, fopen, fclose, */
+#include <stdlib.h> /* exit, free, mktemp */
+#include <string.h>
+#include <errno.h>
+#include "main.h"
+#include "expression.h"
+#include "double.h"
+#include "infnorm.h"
+
+node *makePolynomial(mpfr_t *coefficients, int degree) {
+  node *tempTree, *tempTree2, *tempTree3;
+  int i;
+  
+  tempTree = (node *) safeMalloc(sizeof(node));
+  tempTree->nodeType = CONSTANT;
+  tempTree->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*(tempTree->value),mpfr_get_prec(coefficients[degree]));
+  mpfr_set(*(tempTree->value),coefficients[degree],GMP_RNDN);
+  for (i=degree-1;i>=0;i--) {
+    tempTree2 = (node *) safeMalloc(sizeof(node));
+    tempTree2->nodeType = MUL;
+    tempTree3 = (node *) safeMalloc(sizeof(node));
+    tempTree3->nodeType = VARIABLE;
+    tempTree2->child1 = tempTree3;
+    tempTree2->child2 = tempTree;
+    tempTree = (node *) safeMalloc(sizeof(node));
+    tempTree->nodeType = ADD;
+    tempTree->child2 = tempTree2;
+    tempTree3 = (node *) safeMalloc(sizeof(node));
+    tempTree3->nodeType = CONSTANT;
+    tempTree3->value = (mpfr_t *) safeMalloc(sizeof(node));
+    mpfr_init2(*(tempTree3->value),mpfr_get_prec(coefficients[i]));
+    mpfr_set(*(tempTree3->value),coefficients[i],GMP_RNDN);
+    tempTree->child1 = tempTree3;
+  }
+  tempTree2 = horner(tempTree);
+  free_memory(tempTree);
+  return tempTree2;
+}
+
+
+int determinePowers(mpfr_t *coefficients, int degree, int *mulPrec, int *powPrec) {
+  int i,k;
+
+  for (i=0;i<degree;i++) powPrec[i] = -1;
+
+  i=0; k=0;
+
+  while (i<=degree) {
+    while ((i<=degree) && (mpfr_zero_p(coefficients[i]))) {
+      i++;
+      k++;
+    }
+
+    if (k>=1) {
+      if (mulPrec[i-1] > powPrec[k-1]) powPrec[k-1] = mulPrec[i-1];
+    }
+    k=1;
+    i++;
+  }
+  
+  return 1;
+}
+
+
+int determinePrecisionsHelper(mpfr_t *coefficients, int degree, 
+			int *addPrec, int *mulPrec, 
+			mpfr_t accuracy, rangetype range, 
+			mp_prec_t prec) {
+  
+  mpfr_t temp, temp2;
+  int precOfAccur, res;
+  node *q, *tempNode, *tempNode2;
+
+
+  mpfr_init2(temp,prec);
+  mpfr_log2(temp,accuracy,GMP_RNDN);
+  precOfAccur = -mpfr_get_si(temp,GMP_RNDD);
+
+  if (degree == 0) {
+    /* In this case, the polynomial is a constant.
+       No addition and no multiplication must be done.
+       addPrec, mulPrec will be -1
+    */
+    addPrec[0] = -1;
+    mulPrec[0] = -1;
+    mpfr_clear(temp);
+    return 1;
+  }
+
+  /* In this case, we check if the constant coefficient is zero.
+     If this is the case, no addition must be made, so addPrec will be -1.
+     The multiplication must be performed with the precision demanded by the
+     target accuracy. Thus, mulPrec will be precOfAccur. 
+     We continue then filling in the values for the higher degrees with the
+     same accuracy.
+  */
+
+  if (mpfr_zero_p(coefficients[0])) {
+    addPrec[0] = -1;
+    mulPrec[0] = precOfAccur;
+    res = determinePrecisionsHelper(coefficients+1, degree-1, addPrec+1, mulPrec+1, 
+			            accuracy, range, prec);
+    mpfr_clear(temp);
+    return res;
+  }
+
+  /* If we are here, we have a non-zero constant coefficient 
+     and thus an addition to do.
+
+     Notate      p(x) = c + x * q(x)
+
+     We compute alpha = || x * q(x) / c ||^\infty in the given range.
+
+     The addition must be made with the precision demanded by the
+     target accuracy. 
+
+     There is no test if the addition can be performed 
+     with such an accuracy and if there will be no cancellation.
+     TODO!!!
+
+     The multiplication and the following steps can then be 
+     performed with an accuracy of accuracy / alpha.
+  */
+
+  addPrec[0] = precOfAccur;
+
+  q = makePolynomial(coefficients+1,degree-1);
+  tempNode = (node *) safeMalloc(sizeof(node));
+  tempNode->nodeType = VARIABLE;
+  tempNode2 = (node *) safeMalloc(sizeof(node));
+  tempNode2->nodeType = MUL;
+  tempNode2->child1 = tempNode;
+  tempNode2->child2 = q;
+  tempNode = (node *) safeMalloc(sizeof(node));
+  tempNode->nodeType = DIV;
+  tempNode->child1 = tempNode2;
+  tempNode2 = (node *) safeMalloc(sizeof(node));
+  tempNode2->nodeType = CONSTANT;
+  tempNode2->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*(tempNode2->value),mpfr_get_prec(coefficients[0]));
+  mpfr_set(*(tempNode2->value),coefficients[0],GMP_RNDN);
+  tempNode->child2 = tempNode2;
+
+  tempNode2 = horner(tempNode);
+  free_memory(tempNode);
+  tempNode = tempNode2;
+  
+  uncertifiedInfnorm(temp, tempNode, *(range.a), *(range.b), defaultpoints, prec);
+
+  free_memory(tempNode);
+  mpfr_init2(temp2,prec);
+  
+  mpfr_div(temp2,accuracy,temp,GMP_RNDN);
+  mpfr_set_d(temp,0.5,GMP_RNDN);
+  if (mpfr_cmp(temp2,temp) >= 0) {
+    mpfr_set(temp2,temp,GMP_RNDN);
+  }
+  mpfr_log2(temp,temp2,GMP_RNDN);
+  precOfAccur = -mpfr_get_si(temp,GMP_RNDD);
+
+  mulPrec[0] = precOfAccur;
+  
+  res = determinePrecisionsHelper(coefficients+1, degree-1, addPrec+1, mulPrec+1, 
+			          temp2, range, prec);
+  
+  mpfr_clear(temp);
+  mpfr_clear(temp2);
+  return res;
+}
+
+int determineCoefficientFormat(mpfr_t coefficient) {
+  mpfr_t temp;
+  int res;
+
+  mpfr_init2(temp,mpfr_get_prec(coefficient));
+
+  if (mpfr_round_to_double(temp,coefficient) == 0) {
+    res = 1;
+  } else {
+    if (mpfr_round_to_doubledouble(temp,coefficient) == 0) {
+      res = 2;
+    } else {
+      if (mpfr_round_to_tripledouble(temp,coefficient) == 0) {
+	res = 3;
+      } else {
+	res = 4;
+      }
+    }
+  }
+  
+  mpfr_clear(temp);
+  return res;
+}
+
+int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree, 
+			int *addPrec, int *mulPrec, 
+			mpfr_t accuracy, rangetype range, 
+			mp_prec_t prec) {
+  int res, i, currentPrec, format, coeffPrec, rounded;
+  mpfr_t temp;
+
+  currentPrec = 0;
+  coeffPrec = 0;
+
+  /* Recursively determine the precisions needed on the unrounded polynomial */
+
+  res = determinePrecisionsHelper(coefficients, degree, addPrec, mulPrec, accuracy, range, prec);
+
+  /* Check the coefficients' precision, round them if needed or adapt the precision of the steps if needed */
+
+  /* First check if the precisions must be adapted for the grace of forced coefficient formats */
+
+  rounded = 0;
+
+  mpfr_init2(temp,prec);
+  for (i=degree;i>=0;i--) {
+    if (mulPrec[i] >= 0) {
+      currentPrec = mulPrec[i];
+      break;
+    }
+  }
+  for (i=degree;i>=0;i--) {
+
+    /* Check if the precision of the next step is at least as great as the one of the previous (multiplication) */
+    if (mulPrec[i] >= 0) {
+      if (currentPrec > mulPrec[i]) {
+	mulPrec[i] = currentPrec; 
+	printMessage(2,"Information: the precision of a previous Horner step is greater than the one of the next.\n");
+	printMessage(2,"Must adapt the precision for the next step on a multiplication.\n");
+      } else currentPrec = mulPrec[i];
+    }
+
+    if ((!coeffsAutoRound[i]) && (!mpfr_zero_p(coefficients[i]))) {
+      /* The coefficient will not be rounded automatically
+	 Its precision must be taken into account 
+      */
+      format = determineCoefficientFormat(coefficients[i]);
+      if (format > 3) {
+	res = 0;
+	printMessage(1,"Warning: a coefficient's precision is higher than triple-double but no automatic rounding will be performed.\n");
+	printMessage(1,"This should not occur. The coefficient will now be rounded to a triple-double.\n");
+	format = 3;
+	mpfr_round_to_tripledouble(temp,coefficients[i]);
+	mpfr_set(coefficients[i],temp,GMP_RNDN);
+      }
+      switch (format) {
+      case 3: 
+	coeffPrec = 159;
+	break;
+      case 2:
+	coeffPrec = 106;
+	break;
+      case 1:
+	coeffPrec = 53;
+	break;
+      default: 
+	fprintf(stderr,"Error: in determinePrecisions: unknown expansion format.\n");
+      }
+     
+      if (coeffPrec > currentPrec) {
+	currentPrec = coeffPrec;
+	printMessage(1,"Warning: the infered precision of the %dth coefficient of the polynomial is greater than\n",i);
+	printMessage(1,"the necessary precision computed for this step. This may make the automatic determination\n");
+	printMessage(1,"of precisions useless.\n");
+      }
+    } 
+    
+    /* Check if the precision of the next step is at least as great as the one of the previous (addition) */
+    if (addPrec[i] >= 0) {
+      if (currentPrec > addPrec[i]) {	
+	printMessage(2,"Information: the precision of a previous Horner step is greater than the one of the next.\n");
+	printMessage(2,"Must adapt the precision for the next step on an addition.\n");
+	addPrec[i] = currentPrec; 
+      } else currentPrec = addPrec[i];
+    }
+    
+  }
+
+  currentPrec = 159;
+
+  /* Second, round automatically the coefficients for which the precision is computed automatically */
+  for (i=0;i<=degree;i++) {
+    if (coeffsAutoRound[i]) {
+      /* Automatically round the coefficient to the computed necessary precision */
+      if (addPrec[i] >= 0) 
+	currentPrec = addPrec[i]; 
+      else {
+	if ((i > 0) && (mulPrec[i-1] >= 0)) currentPrec = mulPrec[i-1];
+      }
+      if (currentPrec > 102) {
+	/* Round to triple-double */
+	if (mpfr_round_to_tripledouble(temp, coefficients[i]) != 0) {
+	  rounded = 1;
+	  printMessage(2,"Information: the %dth coefficient of the polynomial has automatically been rounded to a triple-double.\n",i);
+	}
+	if (mpfr_set(coefficients[i],temp,GMP_RNDN) != 0) {
+	  printMessage(1,"Warning: there was an error during the internal handling of a coefficient.\n");
+	  res = 0;
+	}
+      } else {
+	if (currentPrec > 53) {
+	  /* Round to double-double */
+	  if (mpfr_round_to_doubledouble(temp, coefficients[i]) != 0) {
+	    rounded = 1;
+	    printMessage(2,"Information: the %dth coefficient of the polynomial has automatically been rounded to a double-double.\n",i);
+	  }
+	  if (mpfr_set(coefficients[i],temp,GMP_RNDN) != 0) {
+	    printMessage(1,"Warning: there was an error during the internal handling of a coefficient.\n");
+	    res = 0;
+	  }
+	} else {
+	  /* Round to double */
+	  if (mpfr_round_to_double(temp, coefficients[i]) != 0) {
+	    rounded = 1;
+	    printMessage(2,"Information: the %dth coefficient of the polynomial has automatically been rounded to a double.\n",i);
+	  }
+	  if (mpfr_set(coefficients[i],temp,GMP_RNDN) != 0) {
+	    printMessage(1,"Warning: there was an error during the internal handling of a coefficient.\n");
+	    res = 0;
+	  }
+	}
+      }
+    }
+  }
+
+  if (rounded) {
+    printMessage(1,"Warning: at least one of the coefficients of the given polynomial has been rounded in a way\n");
+    printMessage(1,"that the target precision can be achieved at lower cost. Nevertheless, the implemented polynomial\n");
+    printMessage(1,"is different from the given one.\n");
+  }
+
+  mpfr_clear(temp);
+
+  return res;
+}
+
+
+int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, char *name) {
+  int i, k, l, res, issuedCode, issuedVariables, c;
+  int *powers, *operand1, *operand2;
+  char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2; 
+
+  res = 1; 
+  
+  code = (char *) safeCalloc(CODESIZE,sizeof(char));
+  variables = (char *) safeCalloc(CODESIZE,sizeof(char));
+  buffer1 = (char *) safeCalloc(CODESIZE,sizeof(char));
+  buffer2 = (char *) safeCalloc(CODESIZE,sizeof(char));
+  
+  codeIssue = code;
+  variablesIssue = variables;
+  issuedCode = 0;
+  issuedVariables = 0;
+  
+  powers = (int *) safeCalloc(degree,sizeof(int));
+  operand1 = (int *) safeCalloc(degree,sizeof(int));
+  operand2 = (int *) safeCalloc(degree,sizeof(int));
+  for (i=0;i<degree;i++) powers[i] = powPrec[i];
+    
+  for (i=degree-1;i>0;i--) {
+    if (powers[i] >= 0) {
+      if ((i % 2) == 1) { 
+	if (powers[i] > powers[(i+1)/2-1]) powers[(i+1)/2-1] = powers[i];
+	operand1[i] = (i+1)/2 - 1;
+	operand2[i] = (i+1)/2 - 1;
+      } else {
+	for (k=i-1;k>0;k--) {
+	  if (powers[k] >= 0) break;
+	}
+	l = i - k - 1;
+	if (powers[i] > powers[k]) powers[k] = powers[i];
+	if (powers[i] > powers[l]) powers[l] = powers[i];
+	operand1[i] = k;
+	operand2[i] = l;
+      }
+    }    
+  }
+  
+  for (i=1;i<degree;i++) {
+    if (powers[i] >= 0) {      
+      /* Test whether we must produce a double, a double-double or a triple-double */
+      if (powers[i] > 102) {
+	/* Produce a triple-double or an exact result for x^2 with x as a double */
+	
+	if (operand1[i] == 0) {
+	  /* The first operand is x */
+	  if (operand2[i] == 0) {
+	    /* The second operand is x, too */
+	    switch (variablePrecision) {
+	    case 1:
+	      /* Produce an exact double-double x^2 instead of a triple-double */
+	      c = snprintf(buffer1,CODESIZE,
+			   "Mul12(&%s_%s_pow2h,&%s_%s_pow2m,%s,%s);",
+			   name,variablename,name,variablename,variablename,variablename);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_%s_pow2h, %s_%s_pow2m;",
+			   name,variablename,name,variablename);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      break;
+	    case 2:
+	      /* Produce a triple-double x^2 out of two double-double x's */
+	      c = snprintf(buffer1,CODESIZE,
+			   "Mul23(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%sh,%sm,%sh,%sm);",
+			   name,variablename,name,variablename,name,variablename,
+			   variablename,variablename,variablename,variablename);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_%s_pow2h, %s_%s_pow2m, %s_%s_pow2l;",
+			   name,variablename,name,variablename,name,variablename);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;	      
+	      break;
+	    case 3:
+	      /* Produce a triple-double x^2 out of two triple-double x's */
+	      c = snprintf(buffer1,CODESIZE,
+			   "Mul33(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%sh,%sm,%sl,%sh,%sm,%sl);",
+			   name,variablename,name,variablename,name,variablename,
+			   variablename,variablename,variablename,variablename,variablename,variablename);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_%s_pow2h, %s_%s_pow2m, %s_%s_pow2l;",
+			   name,variablename,name,variablename,name,variablename);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      break;
+	    default: 
+	      res = 0;
+	    }
+	  } else {
+	    /* The first operand is x and the second is x^? as a triple-double */
+	    switch (variablePrecision) {
+	    case 1:
+	      if (operand2[i] == 1) {
+		/* Produce a triple-double out if a double x and an exact double-double x^2 */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul123(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s,%s_%s_pow2h,%s_%s_pow2m);",
+			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
+			     variablename,name,variablename,name,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
+			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      } else {
+		/* Produce a triple-double out of a double x and a triple-double x^? */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul133(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
+			     variablename,name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
+			     name,variablename,operand2[i]+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
+			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);		
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      }
+	      break;
+	    case 2:
+	      /* Produce a triple-double out of a double-double x and a triple-double x^? */
+	      c = snprintf(buffer1,CODESIZE,
+			   "Mul233(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%sh,%sm,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
+			   variablename,variablename,name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
+			   name,variablename,operand2[i]+1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
+			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      break;
+	    case 3:
+	      /* Produce a triple-double out of a triple-double x and a triple-double x^? */
+	      c = snprintf(buffer1,CODESIZE,
+			   "Mul33(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%sh,%sm,%sl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
+			   variablename,variablename,variablename,
+			   name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
+			   name,variablename,operand2[i]+1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
+			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      break;
+	    default: 
+	      res = 0;
+	    }
+	  }
+	} else {
+	  /* The first operand is not x */
+	  if (operand2[i] == 0) {
+	    /* The second operand is x and the first is x^? as a triple-double */
+	    switch (variablePrecision) {
+	    case 1:
+	      if (operand1[i] == 1) {
+		/* Produce a triple-double out an exact double-double x^2 and a double x */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul123(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s,%s_%s_pow2h,%s_%s_pow2m);",
+			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
+			     variablename,name,variablename,name,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
+			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      } else {
+		/* Produce a triple-double out of a triple-double x^? and a double x*/
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul133(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
+			     variablename,name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
+			     name,variablename,operand1[i]+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
+			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);		
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      }
+	      break;
+	    case 2:
+	      /* Produce a triple-double out of a triple-double x^? and a double-double x */
+	      c = snprintf(buffer1,CODESIZE,
+			   "Mul233(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%sh,%sm,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
+			   variablename,variablename,name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
+			   name,variablename,operand1[i]+1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
+			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      break;
+	    case 3:
+	      /* Produce a triple-double out of a triple-double x^? and a triple-double x */
+	      c = snprintf(buffer1,CODESIZE,
+			   "Mul33(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%sh,%sm,%sl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
+			   variablename,variablename,variablename,
+			   name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
+			   name,variablename,operand1[i]+1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
+			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      break;
+	    default: 
+	      res = 0;
+	    }
+	  } else {
+	    /* None of the opernands is x */
+	    if (variablePrecision == 1) {
+	      if (operand1[i] == 1) {
+		/* The first operand is a double-double x^2 */
+		if (operand2[i] == 1) {
+		  /* The second operand is a double-double x^2 */
+		  /* Produce a triple-double x^4 out of two double-double x^2 */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul23(&%s_%s_pow4h,&%s_%s_pow4m,&%s_%s_pow4l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2h,%s_%s_pow2m);",
+			       name,variablename,name,variablename,name,variablename,
+			       name,variablename,name,variablename,name,variablename,name,variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_%s_pow4h, %s_%s_pow4m, %s_%s_pow4l;",
+			       name,variablename,name,variablename,name,variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		} else {
+		  /* Produce a triple-double out of a double-double x^2 and a triple-double x^? */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul233(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
+			       name,variablename,name,variablename,
+			       name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
+			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		}
+	      } else {
+		/* The first operand is surely a triple-double */
+		if (operand2[i] == 1) {
+		  /* The second operand is a double-double x^2 */
+		  /* Produce a triple-double out of a triple-double x^? and a double-double x^2 */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul233(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
+			       name,variablename,name,variablename,
+			       name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
+			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		} else {
+		  /* Both operands are surely triple-doubles; we produce a triple-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul33(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
+			       name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
+			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		}
+	      }
+	    } else {
+	      /* Both operands are surely triple-doubles; we produce a triple-double */
+	      c = snprintf(buffer1,CODESIZE,
+			   "Mul33(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
+			   name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
+			   name,variablename,operand1[i]+1,
+			   name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
+			   name,variablename,operand2[i]+1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
+			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	    }
+	  }
+	}
+      } else {
+	if (powers[i] > 53) {
+	  /* Produce a double-double */
+	  if (operand1[i] == 0) {
+	    /* The first operand is x */
+	    if (operand2[i] == 0) {
+	      /* The second operand is x */
+	      switch (variablePrecision) {
+	      case 1:
+		/* Produce a double-double x^2 out of a double x and a double x */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul12(&%s_%s_pow2h,&%s_%s_pow2m,%s,%s);",
+			     name,variablename,name,variablename,variablename,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow2h, %s_%s_pow2m;",
+			     name,variablename,name,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		break;
+	      case 2:
+	      case 3:
+		/* Produce a double-double x^2 out of a double-double or better x and a double-double or better x */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul22(&%s_%s_pow2h,&%s_%s_pow2m,%sh,%sm,%sh,%sm);",
+			     name,variablename,name,variablename,variablename,variablename,variablename,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow2h, %s_%s_pow2m;",
+			     name,variablename,name,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		break;
+	      default:
+		res = 0;
+	      }
+	    } else {
+	      /* The first operand is x and the second is x^2 as a double-double or better */
+	      switch (variablePrecision) {
+	      case 1:
+		/* Produce a double-double out of a double x and a double-double x^? */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul122(&%s_%s_pow%dh,&%s_%s_pow%dm,%s,%s_%s_pow%dh,%s_%s_pow%dm);",
+			     name,variablename,i+1,name,variablename,i+1,
+			     variablename,name,variablename,operand2[i]+1,name,variablename,operand2[i]+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow%dh, %s_%s_pow%dm;",
+			     name,variablename,i+1,name,variablename,i+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		break;
+	      case 2:
+	      case 3:
+		/* Produce a double-double out of a double-double or better x and a double-double or better x^? */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul22(&%s_%s_pow%dh,&%s_%s_pow%dm,%sh,%sm,%s_%s_pow%dh,%s_%s_pow%dm);",
+			     name,variablename,i+1,name,variablename,i+1,
+			     variablename,variablename,
+			     name,variablename,operand2[i]+1,name,variablename,operand2[i]+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow%dh, %s_%s_pow%dm;",
+			     name,variablename,i+1,name,variablename,i+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		break;
+	      default:
+		res = 0;
+	      }
+	    }
+	  } else {
+	    /* The first opernand is x^? as a double-double or better */
+	    if (operand2[i] == 0) {
+	      /* The second operand is x */
+	      switch (variablePrecision) {
+	      case 1:
+		/* Produce a double-double out of a double-double x^? and a double x */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul122(&%s_%s_pow%dh,&%s_%s_pow%dm,%s,%s_%s_pow%dh,%s_%s_pow%dm);",
+			     name,variablename,i+1,name,variablename,i+1,
+			     variablename,name,variablename,operand1[i]+1,name,variablename,operand1[i]+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow%dh, %s_%s_pow%dm;",
+			     name,variablename,i+1,name,variablename,i+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		break;
+	      case 2:
+	      case 3:
+		/* Produce a double-double out of a double-double or better x^? and a double-double or better x */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul22(&%s_%s_pow%dh,&%s_%s_pow%dm,%sh,%sm,%s_%s_pow%dh,%s_%s_pow%dm);",
+			     name,variablename,i+1,name,variablename,i+1,
+			     variablename,variablename,
+			     name,variablename,operand1[i]+1,name,variablename,operand1[i]+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow%dh, %s_%s_pow%dm;",
+			     name,variablename,i+1,name,variablename,i+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		break;
+	      default:
+		res = 0;
+	      }
+	    } else {
+	      /* None of the operands is x and thus both double-doubles or better */
+	      /* Produce a double-double out of two double-doubles or better */
+	      c = snprintf(buffer1,CODESIZE,
+			   "Mul22(&%s_%s_pow%dh,&%s_%s_pow%dm,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dh,%s_%s_pow%dm);",
+			   name,variablename,i+1,name,variablename,i+1,
+			   name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
+			   name,variablename,operand2[i]+1,name,variablename,operand2[i]+1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_%s_pow%dh, %s_%s_pow%dm;",
+			   name,variablename,i+1,name,variablename,i+1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	    }
+	  }
+	} else {
+	  /* Produce a double */
+	  if (operand1[i] == 0) {
+	    /* The first operand is x */
+	    if (operand2[i] == 0) {
+	      /* The second operand is x */
+	      if (variablePrecision == 1) {
+		/* Produce x^2 as a double out of x as a double */
+		c = snprintf(buffer1,CODESIZE,
+			     "%s_%s_pow2h = %s * %s;",
+			     name,variablename,variablename,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow2h;",
+			     name,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      } else {
+		/* Produce x^2 as a double out of x as a double-double or better */
+		c = snprintf(buffer1,CODESIZE,
+			     "%s_%s_pow2h = %sh * %sh;",
+			     name,variablename,variablename,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow2h;",
+			     name,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      }
+	    } else {
+	      /* The first operand is x, the second is x^? as a double or better */
+	      if (variablePrecision == 1) {
+		/* Produce a double out of a double x and a double or better x^? */
+		c = snprintf(buffer1,CODESIZE,
+			     "%s_%s_pow%dh = %s * %s_%s_pow%dh;",
+			     name,variablename,i+1,variablename,name,variablename,operand2[i]+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow%dh;",
+			     name,variablename,i+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      } else {
+		/* Produce a double out of a double-double or better x and a double or better x^? */
+		c = snprintf(buffer1,CODESIZE,
+			     "%s_%s_pow%dh = %sh * %s_%s_pow%dh;",
+			     name,variablename,i+1,variablename,name,variablename,operand2[i]+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow%dh;",
+			     name,variablename,i+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      }
+	    }
+	  } else { 
+	    /* The first operand is x^? as a double or better */
+	    if (operand2[i] == 0) {
+	      /* The second operand is x */
+	      if (variablePrecision == 1) {
+		/* Produce a double out of a double or better x^? and a double x */
+		c = snprintf(buffer1,CODESIZE,
+			     "%s_%s_pow%dh = %s * %s_%s_pow%dh;",
+			     name,variablename,i+1,variablename,name,variablename,operand1[i]+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow%dh;",
+			     name,variablename,i+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      } else {
+		/* Produce a double out of a double or better x^? and a double-double or better x */
+		c = snprintf(buffer1,CODESIZE,
+			     "%s_%s_pow%dh = %sh * %s_%s_pow%dh;",
+			     name,variablename,i+1,variablename,name,variablename,operand1[i]+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_%s_pow%dh;",
+			     name,variablename,i+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      }
+	    } else {
+	      /* Produce a double out of two doubles or better */
+	      c = snprintf(buffer1,CODESIZE,
+			   "%s_%s_pow%dh = %s_%s_pow%dh * %s_%s_pow%dh;",
+			   name,variablename,i+1,name,variablename,operand1[i]+1,name,variablename,operand2[i]+1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_%s_pow%dh;",
+			   name,variablename,i+1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	    }
+	  }
+	}
+      }
+            
+      c = snprintf(codeIssue,CODESIZE-issuedCode,"%s\n",buffer1);
+      if (c < 0) {
+	res = 0;
+	c = 0;
+      }
+      if (c >= CODESIZE-issuedCode) {
+	res = 0;
+	c = CODESIZE-issuedCode;
+      }
+      issuedCode += c;
+      codeIssue += c;
+      c = snprintf(variablesIssue,CODESIZE-issuedVariables,"%s\n",buffer2);
+      if (c < 0) {
+	res = 0;
+	c = 0;
+      }
+      if (c >= CODESIZE-issuedVariables) {
+	res = 0;
+	c = CODESIZE-issuedVariables;
+      }
+      issuedVariables += c;
+      variablesIssue += c;    
+    }
+  }
+
+
+  /* Issue the variable definitions and the code */
+  if (fprintf(fd,"%s\n\n%s\n\n",variables,code) < 0) res = 0;
+  
+  free(powers);
+  free(operand1);
+  free(operand2);
+  free(code);
+  free(variables);
+  free(buffer1);
+  free(buffer2);
+  return res;
+}
+
+int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name, mp_prec_t prec) {
+  int res, i;
+  double current;
+  mpfr_t temp, temp2;
+
+  res = 1;
+  mpfr_init2(temp,prec);
+  mpfr_init2(temp2,prec);
+
+  for (i=0;i<=degree;i++) {
+    if (!mpfr_zero_p(coefficients[i])) {
+      if (determineCoefficientFormat(coefficients[i]) > 3) {
+	printMessage(1,"Warning: tried to implement a coefficient that cannot even be written on a triple-double.\n");
+	printMessage(1,"This should not occur. The coefficient will be rounded to a triple-double.\n");
+      }
+      if (mpfr_set(temp,coefficients[i],GMP_RNDN) != 0) {
+	printMessage(1,"Warning: a rounding occured on internal handling (on copying) of the %dth coefficient.\n");
+	res = 0;
+      }
+      current = mpfr_get_d(temp,GMP_RNDN);
+      if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
+	printMessage(1,"Warning: a rounding occured on internal handling (on recasting) of the %dth coefficient.\n");
+	res = 0;
+      }
+      if (mpfr_sub(temp,temp,temp2,GMP_RNDN) != 0) {
+	printMessage(1,"Warning: a rounding occured on internal handling (on a substraction) of the %dth coefficient.\n");
+	res = 0;
+      }
+      fprintf(fd,"#define %s_coeff_%dh %1.80e\n",name,i,current);
+      current = mpfr_get_d(temp,GMP_RNDN);
+      if (current != 0.0) {
+	if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
+	  printMessage(1,"Warning: a rounding occured on internal handling (on recasting) of the %dth coefficient.\n");
+	  res = 0;
+	}
+	if (mpfr_sub(temp,temp,temp2,GMP_RNDN) != 0) {
+	  printMessage(1,"Warning: a rounding occured on internal handling (on a substraction) of the %dth coefficient.\n");
+	  res = 0;
+	}
+	fprintf(fd,"#define %s_coeff_%dm %1.80e\n",name,i,current);
+	current = mpfr_get_d(temp,GMP_RNDN);
+	if (current != 0.0) {
+	  if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
+	    printMessage(1,"Warning: a rounding occured on internal handling (on recasting) of the %dth coefficient.\n");
+	    res = 0;
+	  }
+	  if (mpfr_sub(temp,temp,temp2,GMP_RNDN) != 0) {
+	    printMessage(1,"Warning: a rounding occured on internal handling (on a substraction) of the %dth coefficient.\n");
+	    res = 0;
+	  }
+	  fprintf(fd,"#define %s_coeff_%dl %1.80e\n",name,i,current); 
+	}
+      }
+    }
+  }
+ 
+  fprintf(fd,"\n\n");
+
+  mpfr_clear(temp);
+  mpfr_clear(temp2);
+  return res;
+}
+
+int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec, 
+		    int degree, int variablePrecision, FILE *fd, char *name) {
+  int res, i, k, variableNumber, comingFormat, producedFormat, issuedCode, issuedVariables, c, coeffFormat;
+  char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2; 
+  
+  res = 1; 
+  
+  code = (char *) safeCalloc(CODESIZE,sizeof(char));
+  variables = (char *) safeCalloc(CODESIZE,sizeof(char));
+  buffer1 = (char *) safeCalloc(CODESIZE,sizeof(char));
+  buffer2 = (char *) safeCalloc(CODESIZE,sizeof(char));
+  
+  codeIssue = code;
+  variablesIssue = variables;
+  issuedCode = 0;
+  issuedVariables = 0;
+
+
+  /* Initialise with the first step */
+
+  variableNumber = 1;
+  for (i=degree;((i>=0) && (mpfr_zero_p(coefficients[i])));i--);
+  switch (producedFormat = determineCoefficientFormat(coefficients[i])) {
+  case 3:
+    c = snprintf(buffer1,CODESIZE,
+		 "%s_t_%dh = %s_coeff_%dh; %s_t_%dm = %s_coeff_%dm; %s_t_%dl = %s_coeff_%dl;",
+		 name,variableNumber,name,i,
+		 name,variableNumber,name,i,
+		 name,variableNumber,name,i);
+    if ((c < 0) || (c >= CODESIZE)) res = 0;
+    c = snprintf(buffer2,CODESIZE,
+		 "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+		 name,variableNumber,
+		 name,variableNumber,
+		 name,variableNumber);
+    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+    variableNumber++;
+    break;
+  case 2:
+    c = snprintf(buffer1,CODESIZE,
+		 "%s_t_%dh = %s_coeff_%dh; %s_t_%dm = %s_coeff_%dm;",
+		 name,variableNumber,name,i,
+		 name,variableNumber,name,i);
+    if ((c < 0) || (c >= CODESIZE)) res = 0;
+    c = snprintf(buffer2,CODESIZE,
+		 "double %s_t_%dh, %s_t_%dm;",
+		 name,variableNumber,
+		 name,variableNumber);
+    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+    variableNumber++;
+    break;
+  case 1:
+    c = snprintf(buffer1,CODESIZE,
+		 "%s_t_%dh = %s_coeff_%dh;",
+		 name,variableNumber,name,i);
+    if ((c < 0) || (c >= CODESIZE)) res = 0;
+    c = snprintf(buffer2,CODESIZE,
+		 "double %s_t_%dh;",
+		 name,variableNumber);
+    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+    variableNumber++;
+    break;
+  default:
+    printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
+    producedFormat = 1;
+    res = 0;
+  }  
+
+  comingFormat = producedFormat;
+
+  c = snprintf(codeIssue,CODESIZE-issuedCode,"%s\n",buffer1);
+  if (c < 0) {
+    res = 0;
+    c = 0;
+  }
+  if (c >= CODESIZE-issuedCode) {
+    res = 0;
+    c = CODESIZE-issuedCode;
+  }
+  issuedCode += c;
+  codeIssue += c;
+  c = snprintf(variablesIssue,CODESIZE-issuedVariables,"%s\n",buffer2);
+  if (c < 0) {
+    res = 0;
+    c = 0;
+  }
+  if (c >= CODESIZE-issuedVariables) {
+    res = 0;
+    c = CODESIZE-issuedVariables;
+  }
+  issuedVariables += c;
+  variablesIssue += c;    
+  
+  /* Continue with the normal steps */
+
+  while (i>=0) {
+    i--;
+    k = 1;
+    while ((i>=0) && (mpfr_zero_p(coefficients[i]))) {
+      i--;
+      k++;
+    }
+    if (i>=0) {
+
+      coeffFormat = determineCoefficientFormat(coefficients[i]);
+
+      /* Special case: fused addition and multiplication */
+      /* We have two special operators:
+	 
+         MulAdd212 and MulAdd22
+      
+         We can use them if 
+         - 53 < addPrec[i] <= 102
+         - 53 < mulPrec[i] <= 102
+         - comingFormat = 2
+         - coeffFormat = 2
+	 
+	 The value for x^k will either be completely correct (k = 1, variablePrecision = 1) or
+	 can be rounded down because of the target accuracy.
+      
+      */
+      if ((53 < addPrec[i]) && (addPrec[i] <= 102) &&
+	  (53 < mulPrec[i]) && (mulPrec[i] <= 102) && 
+	  (comingFormat == 2) &&
+	  (coeffFormat == 2)) {
+
+	producedFormat = 2;
+	if (k == 1) {
+	  /* Multiplication by a pure x, two possible cases: x as a double or a double-double (or better) */
+	  if (variablePrecision == 1) {
+	    /* Multiplication by x stored as a double */
+	    c = snprintf(buffer1,CODESIZE,
+			 "MulAdd212(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%s,%s_t_%dh,%s_t_%dm);",
+			 name,variableNumber,name,variableNumber,
+			 name,i,name,i,
+			 variablename,
+			 name,variableNumber-1,name,variableNumber-1);
+	    if ((c < 0) || (c >= CODESIZE)) res = 0;
+	    c = snprintf(buffer2,CODESIZE,
+			 "double %s_t_%dh, %s_t_%dm;",
+			 name,variableNumber,name,variableNumber);
+	    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	  } else {
+	    /* Multiplication by x stored as a double-double (or better) */
+	    c = snprintf(buffer1,CODESIZE,
+			 "MulAdd22(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%sh,%sm,%s_t_%dh,%s_t_%dm);",
+			 name,variableNumber,name,variableNumber,
+			 name,i,name,i,
+			 variablename,variablename,
+			 name,variableNumber-1,name,variableNumber-1);
+	    if ((c < 0) || (c >= CODESIZE)) res = 0;
+	    c = snprintf(buffer2,CODESIZE,
+			 "double %s_t_%dh, %s_t_%dm;",
+			 name,variableNumber,name,variableNumber);
+	    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	  }
+	} else {
+	  /* Multiplication by x^k, which we be in any case at least a double-double */
+	  c = snprintf(buffer1,CODESIZE,
+		       "MulAdd22(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_%s_pow%dh,%s_%s_pow%dm,%s_t_%dh,%s_t_%dm);",
+		       name,variableNumber,name,variableNumber,
+		       name,i,name,i,
+		       name,variablename,k,name,variablename,k,
+		       name,variableNumber-1,name,variableNumber-1);
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;
+	  c = snprintf(buffer2,CODESIZE,
+		       "double %s_t_%dh, %s_t_%dm;",
+		       name,variableNumber,name,variableNumber);
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	}
+
+	variableNumber++;
+	comingFormat = producedFormat;
+	
+	/* Issue the generated buffers to memory */
+	c = snprintf(codeIssue,CODESIZE-issuedCode,"%s\n",buffer1);
+	if (c < 0) {
+	  res = 0;
+	  c = 0;
+	}
+	if (c >= CODESIZE-issuedCode) {
+	  res = 0;
+	  c = CODESIZE-issuedCode;
+	}
+	issuedCode += c;
+	codeIssue += c;
+	c = snprintf(variablesIssue,CODESIZE-issuedVariables,"%s\n",buffer2);
+	if (c < 0) {
+	  res = 0;
+	  c = 0;
+	}
+	if (c >= CODESIZE-issuedVariables) {
+	  res = 0;
+	  c = CODESIZE-issuedVariables;
+	}
+	issuedVariables += c;
+	variablesIssue += c;    
+      } else {
+	/* General case: multiplication followed by addition */
+
+      
+	/* Generate first the multiplication by x or the correspondant power of x in the buffer */
+	/* mulPrec[i] determines the format to produce and influences on the 
+	   precision of x or the power of x
+	*/
+	
+	if (mulPrec[i] > 102) {
+	  /* Produce a triple-double (or a double-double exactly if comingFormat = 1 and x as a double */
+	  if (k == 1) {
+	    /* Multiply by pure x as a double, double-double or triple-double */
+	    switch (variablePrecision) {
+	    case 3:
+	      /* Multiply comingFormat by a triple-double x, produce a triple-double */
+	      producedFormat = 3;
+	      switch (comingFormat) {
+	      case 3:
+		/* Multiply the triple-double temporary by a triple-double x, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%sl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     variablename,variablename,variablename,
+			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      case 2:
+		/* Multiply the double-double temporary by a triple-double x, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%sh,%sm,%sl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     name,variableNumber-1,name,variableNumber-1,
+			     variablename,variablename,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      default:
+		/* Multiply the double temporary by a triple-double x, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%sh,%sm,%sl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     name,variableNumber-1,name,variableNumber-1,
+			     variablename,variablename,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      }
+	      break;
+	    case 2:
+	      producedFormat = 3;
+	      switch (comingFormat) {
+	      case 3:
+		/* Multiply the triple-double temporary by a double-double x, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     variablename,variablename,
+			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      case 2:
+		/* Multiply the double-double temporary by a double-double x, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%s_t_%dh,%s_t_%dm);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     variablename,variablename,
+			     name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      default:
+		/* Multiply the double temporary by a double-double x, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%sh,%sm);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     name,variableNumber-1,
+			     variablename,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      }
+	      break;
+	    case 1:
+	      switch (comingFormat) {
+	      case 3:
+		/* Multiply the triple-double temporary by a double x, produce a triple-double */
+		producedFormat = 3;
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     variablename,
+			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      case 2:
+		/* Multiply the double-double temporary by a double x, produce a triple-double */
+		producedFormat = 3;
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s,%s_t_%dh,%s_t_%dm);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     variablename,
+			     name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      default:
+		/* Multiply the double temporary by a double x, produce a double-double */
+		producedFormat = 2;
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul12(&%s_t_%dh,&%s_t_%dm,%s,%s_t_%dh);",
+			     name,variableNumber,name,variableNumber,
+			     variablename,
+			     name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm;",
+			     name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      }
+	      break;
+	    default:
+	      printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",variablename);
+	      printMessage(1,"The implementation will be wrong.\n");
+	      res = 0;
+	      producedFormat = 1;
+	    }
+	  } else {
+	    producedFormat = 3;
+	    if (k == 2) {
+	      /* Multiply by x^2, which is a double-double if x is a double or a triple-double otherwise */
+	      if (variablePrecision == 1) {
+		/* Multiply comingFormat by a double-double x^2, produce a triple-double */
+		switch (comingFormat) {
+		case 3:
+		  /* Multiply the triple-double temporary by a double-double x^2, produce a triple-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       name,variablename,name,variablename,
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			       name,variableNumber,name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  break;
+		case 2:
+		  /* Multiply the double-double temporary by a double-double x^2, produce a triple-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_t_%dh,%s_t_%dm);",
+			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       name,variablename,name,variablename,
+			       name,variableNumber-1,name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			       name,variableNumber,name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  break;
+		default:
+		  /* Multiply the double temporary by a double-double x^2, produce a triple-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow2h,%s_%s_pow2m);",
+			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       name,variableNumber-1,
+			       name,variablename,name,variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			       name,variableNumber,name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		}
+	      } else {
+		/* Multiply comingFormat by a triple-double x^2, produce a triple-double */
+		switch (comingFormat) {
+		case 3:
+		  /* Multiply the triple-double temporary by a triple-double x^2, produce a triple-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       name,variablename,name,variablename,name,variablename,
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			       name,variableNumber,name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  break;
+		case 2:
+		  /* Multiply the double-double temporary by a triple-double x^2, produce a triple-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);",
+			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       name,variableNumber-1,name,variableNumber-1,
+			       name,variablename,name,variablename,name,variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			       name,variableNumber,name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  break;
+		default:
+		  /* Multiply the double temporary by a triple-double x^2, produce a triple-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);",
+			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       name,variableNumber-1,
+			       name,variablename,name,variablename,name,variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			       name,variableNumber,name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		}
+	      }
+	    } else {
+	      /* Multiply by x^k, which is in any case a triple-double, produce a triple-double */
+	      switch (comingFormat) {
+	      case 3:
+		/* Multiply the triple-double temporary by a triple-double x^k, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     name,variablename,k,name,variablename,k,name,variablename,k,
+			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      case 2:
+		/* Multiply the double-double temporary by a triple-double x^k, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     name,variableNumber-1,name,variableNumber-1,
+			     name,variablename,k,name,variablename,k,name,variablename,k);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      default:
+		/* Multiply the double temporary by a triple-double x^k, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     name,variableNumber-1,
+			     name,variablename,k,name,variablename,k,name,variablename,k);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      }
+	    }
+	  }
+	} else {
+	  if (mulPrec[i] > 53) {
+	    /* Produce a double-double */
+	    producedFormat = 2;
+	    if (k == 1) {
+	      /* Multiply comingFormat by x as a double or double-double (or better), produce a double-double */
+	      switch (variablePrecision) {
+	      case 3:
+	      case 2:
+		/* Multiply comingFormat by x as a double-double (or better), produce a double-double */
+		switch (comingFormat) {
+		case 3:
+		  printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
+		  printMessage(1,"The implementation will be wrong.\n");
+		  res = 0;
+		  break;
+		case 2:
+		  /* Multiply the double-double temporary by x as double-double (or better), produce a double-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul22(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_t_%dm,%sh,%sm);",
+			       name,variableNumber,name,variableNumber,
+			       name,variableNumber-1,name,variableNumber-1,
+			       variablename,variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm;",
+			       name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  break;
+		default:
+		  /* Multiply the double temporary by x as a double-double (or better), produce a double-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul122(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%sh,%sm);",
+			       name,variableNumber,name,variableNumber,
+			       name,variableNumber-1,
+			       variablename,variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm;",
+			       name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		}
+		break;
+	      case 1:
+		/* Multiply comingFormat by x as a double, produce a double-double */
+		switch (comingFormat) {
+		case 3:
+		  printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
+		  printMessage(1,"The implementation will be wrong.\n");
+		  res = 0;
+		  break;
+		case 2:
+		  /* Multiply the double-double temporary by x as double, produce a double-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul122(&%s_t_%dh,&%s_t_%dm,%s,%s_t_%dh,%s_t_%dm);",
+			       name,variableNumber,name,variableNumber,
+			       variablename,
+			       name,variableNumber-1,name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm;",
+			       name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  break;
+		default:
+		  /* Multiply the double temporary by x as a double, produce a double-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul12(&%s_t_%dh,&%s_t_%dm,%s,%s_t_%dh);",
+			       name,variableNumber,name,variableNumber,
+			       variablename,
+			       name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm;",
+			       name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		}
+		break;
+	      default:
+		printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",variablename);
+		printMessage(1,"The implementation will be wrong.\n");
+		res = 0;
+	      }
+	    } else {
+	      /* Multiply comingFormat by x^k which should be at least a double-double in any case */
+	      switch (comingFormat) {
+	      case 3:
+		printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
+		printMessage(1,"The implementation will be wrong.\n");
+		res = 0;
+		break;
+	      case 2:
+		/* Multiply the double-double temporary by x^k as double-double, produce a double-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul22(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_t_%dm,%s_%s_pow%dh,%s_%s_pow%dm);",
+			     name,variableNumber,name,variableNumber,
+			     name,variableNumber-1,name,variableNumber-1,
+			     name,variablename,k,name,variablename,k);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm;",
+			     name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		break;
+	      default:
+		/* Multiply the double temporary by x^k as a double-double, produce a double-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul122(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_%s_pow%dh,%s_%s_pow%dm);",
+			     name,variableNumber,name,variableNumber,
+			     name,variableNumber-1,
+			     name,variablename,k,name,variablename,k);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm;",
+			     name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      }
+	    }
+	  } else {
+	    /* Produce a double */
+	    producedFormat = 1;
+	    if (k == 1) {
+	      /* Multiply by x as a double (or better) */
+	      if (comingFormat == 1) {
+		switch (variablePrecision) {
+		case 3:
+		case 2:
+		  /* Multiply the double temporary by x as a double-double (or better) read as a double, 
+		     produce a double 
+		  */
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_t_%dh = %s_t_%dh * %sh;",
+			       name,variableNumber,
+			       name,variableNumber-1,
+			       variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh;",
+			       name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		  break;
+		case 1:
+		  /* Multiply the double temporary by x as a double, produce a double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_t_%dh = %s_t_%dh * %s;",
+			       name,variableNumber,
+			       name,variableNumber-1,
+			       variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh;",
+			       name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		  break;
+		default:
+		  printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",variablename);
+		  printMessage(1,"The implementation will be wrong.\n");
+		  res = 0;
+		}
+	      } else {
+		printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
+		printMessage(1,"The implementation will be wrong.\n");
+		res = 0;
+	      }
+	    } else {
+	      if (comingFormat == 1) {
+		/* Multiply the double temporary by x^k as a double (or better) */
+		c = snprintf(buffer1,CODESIZE,
+			     "%s_t_%dh = %s_t_%dh * %s_%s_pow%dh;",
+			     name,variableNumber,
+			     name,variableNumber-1,
+			     name,variablename,k);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh;",
+			     name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      } else {
+		printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
+		printMessage(1,"The implementation will be wrong.\n");
+		res = 0;
+	      }
+	    }
+	  }
+	}
+	
+	variableNumber++;
+	comingFormat = producedFormat;
+	
+	/* Issue the multiplication to memory */
+	c = snprintf(codeIssue,CODESIZE-issuedCode,"%s\n",buffer1);
+	if (c < 0) {
+	  res = 0;
+	  c = 0;
+	}
+	if (c >= CODESIZE-issuedCode) {
+	  res = 0;
+	  c = CODESIZE-issuedCode;
+	}
+	issuedCode += c;
+	codeIssue += c;
+	c = snprintf(variablesIssue,CODESIZE-issuedVariables,"%s\n",buffer2);
+	if (c < 0) {
+	  res = 0;
+	  c = 0;
+	}
+	if (c >= CODESIZE-issuedVariables) {
+	  res = 0;
+	  c = CODESIZE-issuedVariables;
+	}
+	issuedVariables += c;
+	variablesIssue += c;    
+	
+	/* Generate the addition with the next coefficient in the buffer */
+	/* addPrec[i] indicates the format to produce 
+	   coeffFormat = determineCoefficientFormat(coefficients[i]) indicates 
+	   the format of the coefficient
+	*/
+		
+	if (addPrec[i] > 102) {
+	  /* Produce a triple-double or an exact double-double result 
+	     The result is a double-double if comingFormat is a double and the coefficient is a double 
+	  */
+	  switch (comingFormat) {
+	  case 3:
+	    /* Add the coefficient to the triple-double temporary, produce a triple-double */
+	    producedFormat = 3;
+	    switch (coeffFormat) {
+	    case 3:
+	      /* Add the triple-double coefficient to the triple-double temporary, produce a triple-double */
+	      c = snprintf(buffer1,CODESIZE,
+			   "Add33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			   name,variableNumber,name,variableNumber,name,variableNumber,
+			   name,i,name,i,name,i,
+			   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			   name,variableNumber,name,variableNumber,name,variableNumber);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      break;
+	    case 2:
+	      /* Add the double-double coefficient to the triple-double temporary, produce a triple-double */
+	      c = snprintf(buffer1,CODESIZE,
+			   "Add233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			   name,variableNumber,name,variableNumber,name,variableNumber,
+			   name,i,name,i,
+			   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			   name,variableNumber,name,variableNumber,name,variableNumber);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      break;
+	    case 1:
+	      /* Add the double coefficient to the triple-double temporary, produce a triple-double */
+	      c = snprintf(buffer1,CODESIZE,
+			   "Add133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			   name,variableNumber,name,variableNumber,name,variableNumber,
+			   name,i,
+			   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			   name,variableNumber,name,variableNumber,name,variableNumber);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      break;
+	    default:
+	      printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
+	      res = 0;
+	    }
+	    break;
+	  case 2:
+	    /* Add the coefficient to the double-double temporary, produce a triple-double */
+	    producedFormat = 3;
+	    switch (coeffFormat) {
+	    case 3:
+	      /* Add the triple-double coefficient to the double-double temporary, produce a triple-double */
+	      c = snprintf(buffer1,CODESIZE,
+			   "Add233Cond(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl);",
+			   name,variableNumber,name,variableNumber,name,variableNumber,
+			   name,variableNumber-1,name,variableNumber-1,
+			   name,i,name,i,name,i);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			   name,variableNumber,name,variableNumber,name,variableNumber);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      break;
+	    case 2:
+	      /* Add the double-double coefficient to the double-double temporary, produce a triple-double */
+	      
+	      /* REMARK/ TODO: We have no Add23, we expand the temporary to triple-double */
+	      
+	      c = snprintf(buffer1,CODESIZE,
+			   "Add233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%dh,%s_t_%dm,0.0); /* THIS IS TOO EXACT */",
+			   name,variableNumber,name,variableNumber,name,variableNumber,
+			   name,i,name,i,
+			   name,variableNumber-1,name,variableNumber-1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			   name,variableNumber,name,variableNumber,name,variableNumber);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      break;
+	    case 1:
+	      /* Add the double coefficient to the double-double temporary, produce a triple-double */
+	      c = snprintf(buffer1,CODESIZE,
+			   "Add123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_t_%dh,%s_t_%dm);",
+			   name,variableNumber,name,variableNumber,name,variableNumber,
+			   name,i,
+			   name,variableNumber-1,name,variableNumber-1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			   name,variableNumber,name,variableNumber,name,variableNumber);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      break;
+	    default:
+	      printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
+	      res = 0;
+	    }
+	    break;
+	  default:
+	    /* Add the coefficient to the double temporary, produce a triple-double or a double-double */
+	    switch (coeffFormat) {
+	    case 3:
+	      /* Add the triple-double coefficient to the double temporary, produce a triple-double */
+	      producedFormat = 3;
+	      c = snprintf(buffer1,CODESIZE,
+			   "Add133Cond(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl);",
+			   name,variableNumber,name,variableNumber,name,variableNumber,
+			   name,variableNumber-1,
+			   name,i,name,i,name,i);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			   name,variableNumber,name,variableNumber,name,variableNumber);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	      break;
+	    case 2:
+	      /* Add the double-double coefficient to the double temporary, produce a triple-double */
+	      producedFormat = 3;
+	      
+	      /* REMARK/ TODO: We have no Add213, we expand the coefficient to triple-double */
+	      
+	      c = snprintf(buffer1,CODESIZE,
+			   "Add133Cond(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_coeff_%dh,%s_coeff_%dm,0.0); /* THIS IS TOO EXACT */",
+			   name,variableNumber,name,variableNumber,name,variableNumber,
+			   name,variableNumber-1,
+			   name,i,name,i);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			   name,variableNumber,name,variableNumber,name,variableNumber);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	      break;
+	    case 1:
+	      /* Add the double coefficient to the double temporary, produce a double-double */
+	      producedFormat = 2;
+	      c = snprintf(buffer1,CODESIZE,
+			   "Add12(%s_t_%dh,%s_t_%dm,%s_coeff_%dh,%s_t_%dh);",
+			   name,variableNumber,name,variableNumber,
+			   name,i,
+			   name,variableNumber-1);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2,CODESIZE,
+			   "double %s_t_%dh, %s_t_%dm;",
+			   name,variableNumber,name,variableNumber);
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	      break;
+	    default:
+	      printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
+	      res = 0;
+	    }
+	  }
+	} else {
+	  if (addPrec[i] > 53) {
+	    producedFormat = 2;
+	    /* Produce a double-double */
+	    switch (comingFormat) {
+	    case 3:
+	      printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
+	      printMessage(1,"The implementation will be wrong.\n");
+	      res = 0;
+	      break;
+	    case 2:
+	      /* Add the coefficient to the double-double temporary, produce a double-double */
+	      switch (coeffFormat) {
+	      case 3:
+		printMessage(1,"Warning: error in the management of precisions in coefficient rounding. This should not occur.\n");
+		printMessage(1,"The implementation will be wrong.\n");
+		res = 0;
+		break;
+	      case 2:
+		/* Add the double-double coefficient to the double-double temporary, produce a double-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Add22(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_t_%dh,%s_t_%dm);",
+			     name,variableNumber,name,variableNumber,
+			     name,i,name,i,
+			     name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm;",
+			     name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+		break;
+	      case 1:
+		/* Add the double coefficient to the double-double temporary, produce a double-double */
+		
+		/* REMARK/ TODO: We have still no Add122, we expand the coefficient to double-double */
+		
+		c = snprintf(buffer1,CODESIZE,
+			     "Add22(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,0.0,%s_t_%dh,%s_t_%dm); /* THIS IS TOO EXACT */",
+			     name,variableNumber,name,variableNumber,
+			     name,i,
+			     name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm;",
+			     name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+		break;
+	      default:
+		printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
+		res = 0;
+	      }
+	      break;
+	    default:
+	      /* Add the coefficient to the double temporary, produce a double-double */
+	      switch (coeffFormat) {
+	      case 3:
+		printMessage(1,"Warning: error in the management of precisions in coefficient rounding. This should not occur.\n");
+		printMessage(1,"The implementation will be wrong.\n");
+		res = 0;
+		break;
+	      case 2:
+		/* Add the double-double coefficient to the double temporary, produce a double-double */
+		
+		/* REMARK/ TODO: We have no Add212, we expand the temporary to double-double */
+		
+		c = snprintf(buffer1,CODESIZE,
+			     "Add22(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_t_%dh,0.0); /* THIS IS TOO EXACT */",
+			     name,variableNumber,name,variableNumber,
+			     name,i,name,i,
+			     name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm;",
+			     name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+		break;
+	      case 1:
+		/* Add the double coefficient to the double temporary, produce a double-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Add12(%s_t_%dh,%s_t_%dm,%s_coeff_%dh,%s_t_%dh);",
+			     name,variableNumber,name,variableNumber,
+			     name,i,
+			     name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm;",
+			     name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+		break;
+	      default:
+		printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
+		res = 0;
+	      }
+	    }
+	  } else {
+	    /* Produce a double */
+	    producedFormat = 1;
+	    if (comingFormat == 1) {
+	      if (coeffFormat == 1) {
+		/* Add the double coefficient to the double temporary, produce a double */
+		c = snprintf(buffer1,CODESIZE,
+			     "%s_t_%dh = %s_coeff_%dh + %s_t_%dh;",
+			     name,variableNumber,
+			     name,i,
+			     name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh;",
+			     name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	      } else {
+		printMessage(1,"Warning: error in the management of precisions in coefficient rounding. This should not occur.\n");
+		printMessage(1,"The implementation will be wrong.\n");
+		res = 0;
+	      }
+	    } else {
+	      printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
+	      printMessage(1,"The implementation will be wrong.\n");
+	      res = 0;
+	    }
+	  }
+	}
+	
+	variableNumber++;
+	comingFormat = producedFormat;
+	
+	/* Issue the addition to memory */
+	c = snprintf(codeIssue,CODESIZE-issuedCode,"%s\n",buffer1);
+	if (c < 0) {
+	  res = 0;
+	  c = 0;
+	}
+	if (c >= CODESIZE-issuedCode) {
+	  res = 0;
+	  c = CODESIZE-issuedCode;
+	}
+	issuedCode += c;
+	codeIssue += c;
+	c = snprintf(variablesIssue,CODESIZE-issuedVariables,"%s\n",buffer2);
+	if (c < 0) {
+	  res = 0;
+	  c = 0;
+	}
+	if (c >= CODESIZE-issuedVariables) {
+	  res = 0;
+	  c = CODESIZE-issuedVariables;
+	}
+	issuedVariables += c;
+	variablesIssue += c;    
+	
+      } /* Special fused or normal case */
+      
+    } else {
+      k--;
+      if (k > 0) {
+	/* The evaluation ends with the last multiplication by x or a power */	
+	if (mulPrec[0] > 102) {
+	  /* Produce a triple-double (or a double-double exactly if comingFormat = 1 and x as a double */
+	  if (k == 1) {
+	    /* Multiply by pure x as a double, double-double or triple-double */
+	    switch (variablePrecision) {
+	    case 3:
+	      /* Multiply comingFormat by a triple-double x, produce a triple-double */
+	      producedFormat = 3;
+	      switch (comingFormat) {
+	      case 3:
+		/* Multiply the triple-double temporary by a triple-double x, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%sl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     variablename,variablename,variablename,
+			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      case 2:
+		/* Multiply the double-double temporary by a triple-double x, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%sh,%sm,%sl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     name,variableNumber-1,name,variableNumber-1,
+			     variablename,variablename,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      default:
+		/* Multiply the double temporary by a triple-double x, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%sh,%sm,%sl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     name,variableNumber-1,name,variableNumber-1,
+			     variablename,variablename,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      }
+	      break;
+	    case 2:
+	      producedFormat = 3;
+	      switch (comingFormat) {
+	      case 3:
+		/* Multiply the triple-double temporary by a double-double x, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     variablename,variablename,
+			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      case 2:
+		/* Multiply the double-double temporary by a double-double x, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%s_t_%dh,%s_t_%dm);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     variablename,variablename,
+			     name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      default:
+		/* Multiply the double temporary by a double-double x, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%sh,%sm);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     name,variableNumber-1,
+			     variablename,variablename);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      }
+	      break;
+	    case 1:
+	      switch (comingFormat) {
+	      case 3:
+		/* Multiply the triple-double temporary by a double x, produce a triple-double */
+		producedFormat = 3;
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     variablename,
+			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      case 2:
+		/* Multiply the double-double temporary by a double x, produce a triple-double */
+		producedFormat = 3;
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s,%s_t_%dh,%s_t_%dm);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     variablename,
+			     name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      default:
+		/* Multiply the double temporary by a double x, produce a double-double */
+		producedFormat = 2;
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul12(&%s_t_%dh,&%s_t_%dm,%s,%s_t_%dh);",
+			     name,variableNumber,name,variableNumber,
+			     variablename,
+			     name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm;",
+			     name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      }
+	      break;
+	    default:
+	      printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",variablename);
+	      printMessage(1,"The implementation will be wrong.\n");
+	      res = 0;
+	      producedFormat = 1;
+	    }
+	  } else {
+	    producedFormat = 3;
+	    if (k == 2) {
+	      /* Multiply by x^2, which is a double-double if x is a double or a triple-double otherwise */
+	      if (variablePrecision == 1) {
+		/* Multiply comingFormat by a double-double x^2, produce a triple-double */
+		switch (comingFormat) {
+		case 3:
+		  /* Multiply the triple-double temporary by a double-double x^2, produce a triple-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       name,variablename,name,variablename,
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			       name,variableNumber,name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  break;
+		case 2:
+		  /* Multiply the double-double temporary by a double-double x^2, produce a triple-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_t_%dh,%s_t_%dm);",
+			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       name,variablename,name,variablename,
+			       name,variableNumber-1,name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			       name,variableNumber,name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  break;
+		default:
+		  /* Multiply the double temporary by a double-double x^2, produce a triple-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow2h,%s_%s_pow2m);",
+			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       name,variableNumber-1,
+			       name,variablename,name,variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			       name,variableNumber,name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		}
+	      } else {
+		/* Multiply comingFormat by a triple-double x^2, produce a triple-double */
+		switch (comingFormat) {
+		case 3:
+		  /* Multiply the triple-double temporary by a triple-double x^2, produce a triple-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       name,variablename,name,variablename,name,variablename,
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			       name,variableNumber,name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  break;
+		case 2:
+		  /* Multiply the double-double temporary by a triple-double x^2, produce a triple-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);",
+			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       name,variableNumber-1,name,variableNumber-1,
+			       name,variablename,name,variablename,name,variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			       name,variableNumber,name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  break;
+		default:
+		  /* Multiply the double temporary by a triple-double x^2, produce a triple-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);",
+			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       name,variableNumber-1,
+			       name,variablename,name,variablename,name,variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			       name,variableNumber,name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		}
+	      }
+	    } else {
+	      /* Multiply by x^k, which is in any case a triple-double, produce a triple-double */
+	      switch (comingFormat) {
+	      case 3:
+		/* Multiply the triple-double temporary by a triple-double x^k, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     name,variablename,k,name,variablename,k,name,variablename,k,
+			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      case 2:
+		/* Multiply the double-double temporary by a triple-double x^k, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     name,variableNumber-1,name,variableNumber-1,
+			     name,variablename,k,name,variablename,k,name,variablename,k);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		break;
+	      default:
+		/* Multiply the double temporary by a triple-double x^k, produce a triple-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     name,variableNumber-1,
+			     name,variablename,k,name,variablename,k,name,variablename,k);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
+			     name,variableNumber,name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      }
+	    }
+	  }
+	} else {
+	  if (mulPrec[0] > 53) {
+	    /* Produce a double-double */
+	    producedFormat = 2;
+	    if (k == 1) {
+	      /* Multiply comingFormat by x as a double or double-double (or better), produce a double-double */
+	      switch (variablePrecision) {
+	      case 3:
+	      case 2:
+		/* Multiply comingFormat by x as a double-double (or better), produce a double-double */
+		switch (comingFormat) {
+		case 3:
+		  printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
+		  printMessage(1,"The implementation will be wrong.\n");
+		  res = 0;
+		  break;
+		case 2:
+		  /* Multiply the double-double temporary by x as double-double (or better), produce a double-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul22(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_t_%dm,%sh,%sm);",
+			       name,variableNumber,name,variableNumber,
+			       name,variableNumber-1,name,variableNumber-1,
+			       variablename,variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm;",
+			       name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  break;
+		default:
+		  /* Multiply the double temporary by x as a double-double (or better), produce a double-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul122(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%sh,%sm);",
+			       name,variableNumber,name,variableNumber,
+			       name,variableNumber-1,
+			       variablename,variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm;",
+			       name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		}
+		break;
+	      case 1:
+		/* Multiply comingFormat by x as a double, produce a double-double */
+		switch (comingFormat) {
+		case 3:
+		  printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
+		  printMessage(1,"The implementation will be wrong.\n");
+		  res = 0;
+		  break;
+		case 2:
+		  /* Multiply the double-double temporary by x as double, produce a double-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul122(&%s_t_%dh,&%s_t_%dm,%s,%s_t_%dh,%s_t_%dm);",
+			       name,variableNumber,name,variableNumber,
+			       variablename,
+			       name,variableNumber-1,name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm;",
+			       name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  break;
+		default:
+		  /* Multiply the double temporary by x as a double, produce a double-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Mul12(&%s_t_%dh,&%s_t_%dm,%s,%s_t_%dh);",
+			       name,variableNumber,name,variableNumber,
+			       variablename,
+			       name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh, %s_t_%dm;",
+			       name,variableNumber,name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		}
+		break;
+	      default:
+		printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",variablename);
+		printMessage(1,"The implementation will be wrong.\n");
+		res = 0;
+	      }
+	    } else {
+	      /* Multiply comingFormat by x^k which should be at least a double-double in any case */
+	      switch (comingFormat) {
+	      case 3:
+		printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
+		printMessage(1,"The implementation will be wrong.\n");
+		res = 0;
+		break;
+	      case 2:
+		/* Multiply the double-double temporary by x^k as double-double, produce a double-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul22(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_t_%dm,%s_%s_pow%dh,%s_%s_pow%dm);",
+			     name,variableNumber,name,variableNumber,
+			     name,variableNumber-1,name,variableNumber-1,
+			     name,variablename,k,name,variablename,k);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm;",
+			     name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		break;
+	      default:
+		/* Multiply the double temporary by x^k as a double-double, produce a double-double */
+		c = snprintf(buffer1,CODESIZE,
+			     "Mul122(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_%s_pow%dh,%s_%s_pow%dm);",
+			     name,variableNumber,name,variableNumber,
+			     name,variableNumber-1,
+			     name,variablename,k,name,variablename,k);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh, %s_t_%dm;",
+			     name,variableNumber,name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      }
+	    }
+	  } else {
+	    /* Produce a double */
+	    producedFormat = 1;
+	    if (k == 1) {
+	      /* Multiply by x as a double (or better) */
+	      if (comingFormat == 1) {
+		switch (variablePrecision) {
+		case 3:
+		case 2:
+		  /* Multiply the double temporary by x as a double-double (or better) read as a double, 
+		     produce a double 
+		  */
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_t_%dh = %s_t_%dh * %sh;",
+			       name,variableNumber,
+			       name,variableNumber-1,
+			       variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh;",
+			       name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		  break;
+		case 1:
+		  /* Multiply the double temporary by x as a double, produce a double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_t_%dh = %s_t_%dh * %s;",
+			       name,variableNumber,
+			       name,variableNumber-1,
+			       variablename);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2,CODESIZE,
+			       "double %s_t_%dh;",
+			       name,variableNumber);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		  break;
+		default:
+		  printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",variablename);
+		  printMessage(1,"The implementation will be wrong.\n");
+		  res = 0;
+		}
+	      } else {
+		printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
+		printMessage(1,"The implementation will be wrong.\n");
+		res = 0;
+	      }
+	    } else {
+	      if (comingFormat == 1) {
+		/* Multiply the double temporary by x^k as a double (or better) */
+		c = snprintf(buffer1,CODESIZE,
+			     "%s_t_%dh = %s_t_%dh * %s_%s_pow%dh;",
+			     name,variableNumber,
+			     name,variableNumber-1,
+			     name,variablename,k);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2,CODESIZE,
+			     "double %s_t_%dh;",
+			     name,variableNumber);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      } else {
+		printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
+		printMessage(1,"The implementation will be wrong.\n");
+		res = 0;
+	      }
+	    }
+	  }
+	}
+	
+	variableNumber++;
+	comingFormat = producedFormat;
+
+	/* Issue the buffers to memory */
+	c = snprintf(codeIssue,CODESIZE-issuedCode,"%s\n",buffer1);
+	if (c < 0) {
+	  res = 0;
+	  c = 0;
+	}
+	if (c >= CODESIZE-issuedCode) {
+	  res = 0;
+	  c = CODESIZE-issuedCode;
+	}
+	issuedCode += c;
+	codeIssue += c;
+	c = snprintf(variablesIssue,CODESIZE-issuedVariables,"%s\n",buffer2);
+	if (c < 0) {
+	  res = 0;
+	  c = 0;
+	}
+	if (c >= CODESIZE-issuedVariables) {
+	  res = 0;
+	  c = CODESIZE-issuedVariables;
+	}
+	issuedVariables += c;
+	variablesIssue += c;    
+	
+	/* The evaluation is now complete, issue code for copying to the result variables */
+	
+	switch (comingFormat) {
+	case 3:
+	  c = snprintf(buffer1,CODESIZE,
+		       "*%s_resh = %s_t_%dh; *%s_resm = %s_t_%dm; *%s_resl = %s_t_%dl;",
+		       name,name,variableNumber-1,
+		       name,name,variableNumber-1,
+		       name,name,variableNumber-1);
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;
+	  c = snprintf(buffer2,CODESIZE," ");
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	  break;
+	case 2:
+	  c = snprintf(buffer1,CODESIZE,
+		       "*%s_resh = %s_t_%dh; *%s_resm = %s_t_%dm;",
+		       name,name,variableNumber-1,
+		       name,name,variableNumber-1);
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;
+	  c = snprintf(buffer2,CODESIZE," ");
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	  break;
+	default:
+	  c = snprintf(buffer1,CODESIZE,
+		       "*%s_resh = %s_t_%dh;",
+		       name,name,variableNumber-1);
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;
+	  c = snprintf(buffer2,CODESIZE," ");
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	}
+	
+      } else {
+	/* The evaluation is already complete, issue code for copying to the result variables */
+
+	switch (comingFormat) {
+	case 3:
+	  c = snprintf(buffer1,CODESIZE,
+		       "*%s_resh = %s_t_%dh; *%s_resm = %s_t_%dm; *%s_resl = %s_t_%dl;",
+		       name,name,variableNumber-1,
+		       name,name,variableNumber-1,
+		       name,name,variableNumber-1);
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;
+	  c = snprintf(buffer2,CODESIZE," ");
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	  break;
+	case 2:
+	  c = snprintf(buffer1,CODESIZE,
+		       "*%s_resh = %s_t_%dh; *%s_resm = %s_t_%dm;",
+		       name,name,variableNumber-1,
+		       name,name,variableNumber-1);
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;
+	  c = snprintf(buffer2,CODESIZE," ");
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	  break;
+	default:
+	  c = snprintf(buffer1,CODESIZE,
+		       "*%s_resh = %s_t_%dh;",
+		       name,name,variableNumber-1);
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;
+	  c = snprintf(buffer2,CODESIZE," ");
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	}
+      }
+      /* Issue the buffers to memory */
+      c = snprintf(codeIssue,CODESIZE-issuedCode,"%s\n",buffer1);
+      if (c < 0) {
+	res = 0;
+	c = 0;
+      }
+      if (c >= CODESIZE-issuedCode) {
+	res = 0;
+	c = CODESIZE-issuedCode;
+      }
+      issuedCode += c;
+      codeIssue += c;
+      c = snprintf(variablesIssue,CODESIZE-issuedVariables,"%s\n",buffer2);
+      if (c < 0) {
+	res = 0;
+	c = 0;
+      }
+      if (c >= CODESIZE-issuedVariables) {
+	res = 0;
+	c = CODESIZE-issuedVariables;
+      }
+      issuedVariables += c;
+      variablesIssue += c;    
+    } /* End else to if normal or last step */
+  } /* End loop on degrees */
+
+  /* Issue the variable definitions and the code to the file */
+  if (fprintf(fd,"%s\n\n%s\n\n",variables,code) < 0) res = 0;
+
+  free(code);
+  free(variables);
+  free(buffer1);
+  free(buffer2);
+
+  return res;
+}
+
+
+int implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecision, FILE *fd, char *name, mp_prec_t prec) {
+  mpfr_t temp;
+  node *simplifiedFunc;
+  int degree, i;
+  node **coefficients;
+  node *tempTree;
+  mpfr_t *fpCoefficients;
+  int *addPrec, *mulPrec, *powPrec;
+  int *fpCoeffRoundAutomatically;
+  int targetPrec;
+
+  if (prec < 159) {
+    printMessage(1,"Warning: the current tool's precision (%d bits) is not sufficient for implementing triple-double code.\n",prec);
+    printMessage(1,"Will temporarily increase the precision to 159 bits.\n");
+    prec = 159;
+  }
+
+  if (!isPolynomial(func)) {
+    printMessage(1,"Warning: the function given is not a polynomial.\n");
+    return 0;
+  }
+
+  mpfr_init2(temp,prec);
+  mpfr_set_d(temp,1.0,GMP_RNDN);
+
+  if (mpfr_greaterequal_p(*accur,temp)) {
+    printMessage(1,"Warning: the target accuracy is greater or equal to 1 = 2^0.\n");
+    printMessage(1,"Implementation of a such a function makes no sense.\n");
+    mpfr_clear(temp);
+    return 0;
+  }
+  
+  mpfr_div_2ui(temp,temp,140,GMP_RNDN);
+
+  if (mpfr_less_p(*accur,temp)) {
+    printMessage(1,"Warning: the target accuracy is less than 2^(-140).\n");
+    printMessage(1,"Implementation is currently restrained to maximally triple-double precision.\n");
+    mpfr_clear(temp);
+    return 0;
+  }
+
+  simplifiedFunc = simplifyTreeErrorfree(func);
+
+  getCoefficients(&degree,&coefficients,simplifiedFunc);
+
+  if (degree < 0) {
+    fprintf(stderr,"Error: implementpoly: an error occured. Could not extract the coefficients of the given polynomial.\n");
+    exit(1);
+  }
+
+  fpCoefficients = (mpfr_t *) safeCalloc(degree+1,sizeof(mpfr_t));
+  fpCoeffRoundAutomatically = (int *) safeCalloc(degree+1,sizeof(int));
+
+  for (i=0;i<=degree;i++) {
+    mpfr_init2(fpCoefficients[i],prec);
+    fpCoeffRoundAutomatically[i] = 0;
+
+    if (coefficients[i] != NULL) {
+      tempTree = simplifyTreeErrorfree(coefficients[i]);
+      free_memory(coefficients[i]);
+      if (!isConstant(tempTree)) {
+	fprintf(stderr,"Error: implementpoly: an error occured. A polynomial coefficient is not constant.\n");
+	exit(1);
+      }
+      if (tempTree->nodeType != CONSTANT) {
+	printMessage(1,"Warning: the %dth coefficient of the polynomial to implement is neither a floating point\n",i);
+	printMessage(1,"constant nor is able to be evaluated without rounding to a floating point constant.\n");
+	printMessage(1,"Will evaluate it in round-to-nearest with the current precision (%d bits) before rounding to\n",prec);
+	printMessage(1,"the target precision. A double rounding issue may occur.\n");
+	evaluateConstantExpression(fpCoefficients[i], tempTree, prec);
+	fpCoeffRoundAutomatically[i] = 1;
+      } else {
+	if (mpfr_set(fpCoefficients[i],*(tempTree->value),GMP_RNDN) != 0) {
+	  printMessage(1,"Warning: rounding occured on internal handling of a coefficient of the given polynomial.\n");
+	  fpCoeffRoundAutomatically[i] = 1;
+	}
+      }
+      free_memory(tempTree);
+    } else {
+      mpfr_set_d(fpCoefficients[i],0.0,GMP_RNDN);
+    }
+  }
+  free(coefficients);
+
+  for (i=0;i<=degree;i++) {
+    if (mpfr_round_to_tripledouble(temp, fpCoefficients[i]) != 0) {
+      printMessage(2,"Information: the %dth coefficient of the polynomial given cannot even be stored without rounding on a\n",i);
+      printMessage(2,"triple-double floating point variable. Automatic rounding will be used for maximally triple-double precision.\n");
+      fpCoeffRoundAutomatically[i] = 1;
+    }
+  }
+
+  addPrec = (int *) safeCalloc(degree+1,sizeof(int));
+  mulPrec = (int *) safeCalloc(degree+1,sizeof(int));
+
+  if (!determinePrecisions(fpCoefficients, fpCoeffRoundAutomatically, degree, addPrec, mulPrec, *accur, range, prec)) {
+    printMessage(1,"Warning: a problem has been encountered during the determination of the precisions needed.\n");
+    printMessage(1,"The produced implementation may be incorrect.\n");
+  }
+
+  if (verbosity >= 2) {
+    tempTree = makePolynomial(fpCoefficients,degree);
+    printf("Information: the polynomial that will be implemented is:\n");
+    printTree(tempTree);
+    printf("\n");
+    free_memory(tempTree);
+  }
+
+  powPrec = (int *) safeCalloc(degree,sizeof(int));
+
+  if (!determinePowers(fpCoefficients, degree, mulPrec, powPrec)) {
+    printMessage(1,"Warning: a problem has been encountered during the determination of the powers needed.\n");
+    printMessage(1,"The produced implementation may be incorrect.\n");
+  }
+
+  if (!implementCoefficients(fpCoefficients, degree, fd, name, prec)) {
+    printMessage(1,"Warning: a problem has been encountered during the generation of the code for the coefficients.\n");
+    printMessage(1,"The produced implementation may be incorrect.\n");
+  }
+
+  fprintf(fd,"void %s(",name);
+  mpfr_log2(temp,*accur,GMP_RNDD);
+  targetPrec = -mpfr_get_si(temp,GMP_RNDN);
+  
+  if (targetPrec > 102) {
+    if (fprintf(fd,"double *%s_resh, double *%s_resm, double *%s_resl, ",name,name,name) < 0) 
+      printMessage(1,"Warning: could not write to the file for the implementation.\n");
+  } else {
+    if (targetPrec > 53) {
+      if (fprintf(fd,"double *%s_resh, double *%s_resm, ",name,name) < 0)
+	printMessage(1,"Warning: could not write to the file for the implementation.\n");
+    } else {
+      if (fprintf(fd,"double *%s_resh, ",name) < 0) 
+	printMessage(1,"Warning: could not write to the file for the implementation.\n");
+    }
+  }
+
+  switch (variablePrecision) {
+  case 3:
+    if (fprintf(fd,"double %sh, double %sm, double %sl) {\n",variablename,variablename,variablename) < 0) 
+      printMessage(1,"Warning: could not write to the file for the implementation.\n");
+    break;
+  case 2:
+    if (fprintf(fd,"double %sh, double %sm) {\n",variablename,variablename) < 0) 
+      printMessage(1,"Warning: could not write to the file for the implementation.\n");
+    break;
+  case 1:
+    if (fprintf(fd,"double %s) {\n",variablename) < 0) 
+      printMessage(1,"Warning: could not write to the file for the implementation.\n");
+    break;
+  default:
+    printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",variablename);
+    printMessage(1,"The implementation will be wrong.\n");
+  }
+
+  if (!implementPowers(powPrec, degree, variablePrecision, fd, name)) {
+    printMessage(1,"Warning: a problem has been encountered during the generation of the code for the powers of %s.\n",
+		 variablename);
+    printMessage(1,"The produced implementation may be incorrect.\n");
+  }
+
+  if (!implementHorner(fpCoefficients, addPrec, mulPrec, degree, variablePrecision, fd, name)) {
+    printMessage(1,"Warning: a problem has been encountered during the generation of the code for the horner scheme.\n");
+    printMessage(1,"The produced implementation may be incorrect.\n");
+  }
+
+  if (fprintf(fd,"}\n") < 0) 
+    printMessage(1,"Warning: could not write to the file for the implementation.\n");
+
+  for (i=0;i<=degree;i++) mpfr_clear(fpCoefficients[i]);
+  free(fpCoefficients);
+  free(addPrec);
+  free(mulPrec);
+  free(powPrec);
+  free_memory(simplifiedFunc);
+  mpfr_clear(temp);
+
+  return 1;
+}
