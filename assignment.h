@@ -10,17 +10,14 @@ typedef struct entryStruct entry;
 struct entryStruct 
 {
   char *name;
-  node *value;
+  void *value;
 };
 
 
-
-chain* addEntry(chain *symTbl, char *name, node *value);
+chain *addEntry(chain *symTbl, char *name, void *value, void * (*copyValue) (void *));
 int containsEntry(chain *symTbl, char *name);
-node *getEntry(chain *symTbl, char *name); 
-void freeSymbolTable(chain *symTbl);
-
-
+void *getEntry(chain *symTbl, char *name, void * (*copyValue) (void *));
+void freeSymbolTable(chain *symTbl, void (*f) (void *));
 
 
 

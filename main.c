@@ -39,6 +39,7 @@ int promptToBePrinted;
 jmp_buf recoverEnvironment;
 int handlingError;
 chain *symbolTable = NULL;
+chain *symbolTable2 = NULL;
 char *temp_string;
 chain *chain_temp;
 chain *chain_temp2;
@@ -78,6 +79,7 @@ void *safeMalloc (size_t size) {
   }
   return ptr;
 }
+
 
 
 void demaskString(char *dest, char *src) {
@@ -251,7 +253,8 @@ int main(int argc, char *argv[]) {
   printf("\n");
   
   free(endptr);
-  freeSymbolTable(symbolTable);
+  freeSymbolTable(symbolTable,freeMemoryOnVoid);
+  freeSymbolTable(symbolTable2,freeRangetypePtr);
   if(currentVariable != NULL) free(currentVariable);
   if(variablename != NULL) free(variablename);
 

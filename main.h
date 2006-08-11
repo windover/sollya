@@ -44,6 +44,7 @@ extern double double_temp;
 extern int promptToBePrinted;
 extern int handlingError;
 extern chain *symbolTable;
+extern chain *symbolTable2;
 extern char *temp_string;
 extern chain *chain_temp;
 extern chain *chain_temp2;

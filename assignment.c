@@ -7,7 +7,7 @@
 #include "main.h"
 
 
-chain *addEntry(chain *symTbl, char *name, node *value) {
+chain *addEntry(chain *symTbl, char *name, void *value, void * (*copyValue) (void *)) {
   entry *newEntry;
 
   if (containsEntry(symTbl,name)) return symTbl;
@@ -15,7 +15,7 @@ chain *addEntry(chain *symTbl, char *name, node *value) {
   newEntry = (entry *) safeMalloc(sizeof(entry));
   newEntry->name = (char *) safeCalloc(strlen(name)+1,sizeof(char));
   strcpy(newEntry->name,name);
-  newEntry->value = copyTree(value);
+  newEntry->value = copyValue(value);
 
   symTbl = addElement(symTbl,newEntry);   
   return symTbl;
@@ -33,15 +33,15 @@ int containsEntry(chain *symTbl, char *name) {
   return 0;
 }
 
-node *getEntry(chain *symTbl, char *name) {
+void *getEntry(chain *symTbl, char *name, void * (*copyValue) (void *)) {
   chain *curr;
-  node *result;
+  void *result;
 
   result = NULL;
   curr = symTbl;
   while (curr != NULL) {
     if (strcmp(((entry *) (curr->value))->name,name) == 0) {
-      result = copyTree(((entry *) curr->value)->value);
+      result = copyValue(((entry *) curr->value)->value);
       break;
     }
     curr = curr->next;
@@ -52,12 +52,15 @@ node *getEntry(chain *symTbl, char *name) {
 
 
 
-void freeEntry(void *e) {
-  free_memory(((entry *) e)->value);
+void freeEntry(void *e, void (*f) (void *)) {
+  f(((entry *) e)->value);
   free(((entry *) e)->name);
   free(e);
 }
 
-void freeSymbolTable(chain *symTbl) {
-  if (symTbl != NULL) freeChain(symTbl,freeEntry);
+void freeSymbolTable(chain *symTbl, void (*f) (void *)) {
+  if (symTbl != NULL) {
+    if (symTbl->next != NULL) freeSymbolTable(symTbl->next,f);
+    freeEntry(symTbl->value,f);
+  }
 }

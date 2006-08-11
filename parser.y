@@ -160,6 +160,7 @@ void yyerror(char *message) {
 %type <tree> function
 %type <tree> prefixfunction
 %type <rangeval> range
+%type <rangeval> directrange
 %type <constantval> constant
 %type <constantval> rangeconstant
 %type <constantval> diamconstant
@@ -426,13 +427,28 @@ assignment:  lvariable EQUALTOKEN function
 				 printMessage(1,"Warning: the identifier \"%s\" is already assigned. It cannot be reassigned.\n",($1));
 				 printMessage(1,"The last command will have no effect.\n");
 			       } else {
-				 symbolTable = addEntry(symbolTable,($1),($3));
+				 symbolTable = addEntry(symbolTable,($1),($3),copyTreeOnVoid);
 			       }
 			     }
 			     free(($1));
 			     free_memory(($3));
 			     $$ = NULL;
                            }
+           | lvariable EQUALTOKEN directrange
+                           {
+			     if (containsEntry(symbolTable2,($1))) {
+			       printMessage(1,"Warning: the identifier \"%s\" is already assigned. It cannot be reassigned.\n",($1));
+			       printMessage(1,"The last command will have no effect.\n");
+			     } else {
+			       symbolTable2 = addEntry(symbolTable2,($1),&($3),copyRangetypePtr);
+			     }
+			     free($1);
+			     mpfr_clear(*(($3).a));
+			     mpfr_clear(*(($3).b));			     
+			     free(($3).a);
+			     free(($3).b);
+			     $$ = NULL;
+			   }
 ;     
 
 evaluate:    EVALUATETOKEN function INTOKEN range 
@@ -1467,6 +1483,10 @@ commandfunction:          infnorm
                            {
 			     $$ = $1;
                            }
+                        | range
+                           {
+			     $$ = $1;
+                           }
                         | dirtyinfnorm
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
@@ -1510,7 +1530,7 @@ variable: variableWorkAround
 			       temp_node = (node*) safeMalloc(sizeof(node));
 			       temp_node->nodeType = VARIABLE;
 			     } else {
-			       temp_node = getEntry(symbolTable,$1);
+			       temp_node = getEntry(symbolTable,$1,copyTreeOnVoid);
 			     }
 			     free($1);
 			     $$ = temp_node;
@@ -1528,7 +1548,7 @@ variable: variableWorkAround
 				 printMessage(1,"Will interpret \"%s()\" as the identity function.\n",($1));
 				 temp_node = ($3);
 			       } else {
-				 temp_node2 = getEntry(symbolTable,($1));
+				 temp_node2 = getEntry(symbolTable,($1),copyTreeOnVoid);
 				 temp_node = substitute(temp_node2,($3));
 				 free_memory(temp_node2);
 				 free_memory(($3));
@@ -1584,7 +1604,35 @@ rangelist:         range                      {
 		                              }
 ;
 
-range:  LBRACKETTOKEN rangeconstant SEMICOLONTOKEN rangeconstant RBRACKETTOKEN
+range:        directrange 
+                           {
+			     $$ = $1;
+                           }
+            | variableWorkAround 
+                           {
+			     if (!containsEntry(symbolTable2,$1)) {
+			       printMessage(1,"Warning: the identifier \"%s\" is not bound be assignment.\n",$1);
+			       printMessage(1,"Will take [-1;1] for \"%s\".\n",$1);
+			       range_temp.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			       range_temp.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			       mpfr_init2(*(range_temp.a),defaultprecision);
+			       mpfr_init2(*(range_temp.b),defaultprecision);
+			       mpfr_set_d(*(range_temp.a),-1.0,GMP_RNDN);
+			       mpfr_set_d(*(range_temp.b),1.0,GMP_RNDN);
+			     } else {
+			       rangeTempPtr = getEntry(symbolTable2,$1,copyRangetypePtr);
+			       range_temp.a = rangeTempPtr->a;
+			       range_temp.b = rangeTempPtr->b;
+			       free(rangeTempPtr);
+			     }
+			     free($1);
+			     $$ = range_temp;
+	                   }
+;
+
+
+
+directrange:  LBRACKETTOKEN rangeconstant SEMICOLONTOKEN rangeconstant RBRACKETTOKEN
                            {
                              range_temp.a = $2;
 			     range_temp.b = $4;
