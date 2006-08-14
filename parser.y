@@ -14,6 +14,7 @@
 #include "worstcase.h"
 #include "fpminimax.h"
 #include "implement.h"
+#include "double.h"
 
 int yylex();
 
@@ -52,6 +53,7 @@ void yyerror(char *message) {
 
 %token  <value> CONSTTOKEN
 %token  <value> DYADICCONSTTOKEN
+%token  <value> HEXCONSTTOKEN
 %token  INTOKEN
 %token  LBRACKETTOKEN
 %token  RBRACKETTOKEN
@@ -149,7 +151,7 @@ void yyerror(char *message) {
 %token	BOUNDEDTOKEN     
 %token	BYTOKEN          
 %token  TAYLORRECURSIONSTOKEN
-
+%token  PRINTHEXATOKEN
 
 %type <other> commands
 %type <other> command
@@ -202,6 +204,7 @@ void yyerror(char *message) {
 %type <anInteger> variableformat
 %type <anInteger> checkinfnorm
 %type <other> taylorrecursions
+%type <other> printHexa
 
 %%
 
@@ -225,6 +228,10 @@ command:     plot
                            {
                              $$ = NULL;
                            }  
+           | printHexa 
+                           {
+			     $$ = NULL;
+			   }
            | dirtyinfnorm  SEMICOLONTOKEN {
 	                     printf("uncertified infnorm result: ");
 			     printValue(($1),defaultprecision);
@@ -865,6 +872,15 @@ print:       PRINTTOKEN function SEMICOLONTOKEN
 			     printf("%s\n",($2));
 			     free(($2));
                              $$ = NULL;
+			   }
+;
+
+printHexa:  PRINTHEXATOKEN constantfunction SEMICOLONTOKEN 
+                           {
+			     printDoubleInHexa(*($2));
+			     mpfr_clear(*($2));
+			     free($2);
+			     $$ = NULL;
 			   }
 ;
 
@@ -1767,6 +1783,22 @@ constant: CONSTTOKEN
 			       recoverFromError();
 			     }
 			     $$ = mpfr_temp;
+	                   }
+        | HEXCONSTTOKEN    {
+	                     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,tools_precision);
+			     if (!readHexa(*mpfr_temp,$1)) {
+			       printMessage(1,
+                            "Warning: Rounding occured when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
+				      $1,(int) tools_precision);
+			       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+			     }
+			     if (!mpfr_number_p(*mpfr_temp)) {
+			       fprintf(stderr,
+			  "Error: overflow occured during the conversion of the hexadecimal constant \"%s\". Will abort the computation.\n",$1);
+			       recoverFromError();
+			     }
+	                     $$ = mpfr_temp;
 	                   }
         | PITOKEN 
                            {

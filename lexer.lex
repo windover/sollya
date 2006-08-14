@@ -17,9 +17,11 @@
 
 CHAR		[a-zA-Z]
 NUMBER		[0-9]
+HEXNUMBER       (([0-9])|([ABCDEFabcdef]))
 
 CONSTANT        ({NUMBER}+|({NUMBER}*"."{NUMBER}+))((([eE]([+-])?{NUMBER}+)?))
 DYADICCONSTANT  ({NUMBER}+)([bB])([+-]?)({NUMBER}+)
+HEXCONSTANT     ("0x"){HEXNUMBER}{16}
 VARIABLE        {CHAR}({CHAR}|{NUMBER})*
 
 LPAR            "("
@@ -163,6 +165,8 @@ BY              "by"
 
 TAYLORRECURSIONS "taylorrecursions"
 
+PRINTHEXA       "printhexa"
+
 %%
 
 %{
@@ -178,6 +182,10 @@ TAYLORRECURSIONS "taylorrecursions"
 {DYADICCONSTANT} {     
                       yylval.value = yytext;
                       promptToBePrinted = 0; return DYADICCONSTTOKEN;
+                }
+{HEXCONSTANT}   {     
+                      yylval.value = yytext;
+                      promptToBePrinted = 0; return HEXCONSTTOKEN;
                 }
 {IN}            {     promptToBePrinted = 0; return INTOKEN; }
 {LBRACKET}      {     promptToBePrinted = 0; return LBRACKETTOKEN; }
@@ -274,7 +282,7 @@ TAYLORRECURSIONS "taylorrecursions"
 {BOUNDED}                {     promptToBePrinted = 0; return BOUNDEDTOKEN;          }
 {BY}                     {     promptToBePrinted = 0; return BYTOKEN;               }                    
 {TAYLORRECURSIONS}       {     promptToBePrinted = 0; return TAYLORRECURSIONSTOKEN; }                    
-
+{PRINTHEXA}              {     promptToBePrinted = 0; return PRINTHEXATOKEN; }                    
 
 
 {VARIABLE}      {     			     
