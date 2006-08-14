@@ -167,6 +167,8 @@ TAYLORRECURSIONS "taylorrecursions"
 
 PRINTHEXA       "printhexa"
 
+ROUNDCOEFFICIENTS "roundcoefficients"
+
 %%
 
 %{
@@ -283,7 +285,7 @@ PRINTHEXA       "printhexa"
 {BY}                     {     promptToBePrinted = 0; return BYTOKEN;               }                    
 {TAYLORRECURSIONS}       {     promptToBePrinted = 0; return TAYLORRECURSIONSTOKEN; }                    
 {PRINTHEXA}              {     promptToBePrinted = 0; return PRINTHEXATOKEN; }                    
-
+{ROUNDCOEFFICIENTS}      {     promptToBePrinted = 0; return ROUNDCOEFFICIENTSTOKEN; }                    
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

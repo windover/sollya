@@ -86,6 +86,7 @@ void *copyTreeOnVoid(void *tree);
 void freeMemoryOnVoid(void *tree);
 void freeRangetypePtr(void *ptr);
 void *copyRangetypePtr(void *ptr);
+node *makePolynomial(mpfr_t *coefficients, int degree);
 
 
 #endif /* ifdef EXPRESSION_H*/

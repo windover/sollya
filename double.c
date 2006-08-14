@@ -224,3 +224,135 @@ int readHexa(mpfr_t res, char *c) {
   if (mpfr_set_d(res,x,GMP_RNDN) != 0) ret = 0; else ret = 1;
   return ret;
 }
+
+
+node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
+  int degree, listLength, i, deg, res, fillUp, k;
+  chain *curr;
+  int *formatsArray, *tempArray;
+  node *roundedPoly, *temp;
+  node **coefficients;
+  mpfr_t *fpcoefficients;
+  mpfr_t tempMpfr;
+
+  degree = getDegree(poly);
+
+  if (degree < 0) {
+    printMessage(1,"Warning: the given function is not a polynomial.\n");
+    return copyTree(poly);
+  }
+
+  listLength = lengthChain(formats);
+
+  if (listLength > (degree + 1)) {
+    printMessage(1,"Warning: the number of the given formats does not correspond to the degree of the given polynomial.\n");
+    return copyTree(poly);
+  }
+
+  if (*((int *) formats->value) == -1) {
+    fillUp = 1;
+    curr = formats->next;
+  } else {
+    curr = formats;
+    fillUp = 0;
+    if (listLength != (degree + 1)) {
+      printMessage(1,"Warning: the number of the given formats does not correspond to the degree of the given polynomial.\n");
+      return copyTree(poly);
+    }
+  }
+  
+  tempArray = (int *) safeCalloc(degree + 1,sizeof(int));
+
+  i = 0;
+  while (curr != NULL) {
+    tempArray[i] = *((int *) curr->value);
+    i++;
+    curr = curr->next;
+  }
+  k = i;
+  
+  formatsArray = (int *) safeCalloc(degree + 1,sizeof(int));
+
+  if (fillUp) {
+    for (i=k-1;i>=0;i--) {
+      formatsArray[(k-1) - i] = tempArray[i];
+    }
+    for (i=k;i<=degree;i++) {
+      formatsArray[i] = formatsArray[k-1];
+    }
+  } else {
+    for (i=degree;i>=0;i--) {
+      formatsArray[degree - i] = tempArray[i];
+    }
+  }
+
+  free(tempArray);
+
+  getCoefficients(&deg,&coefficients,poly);
+
+  if (deg != degree) {
+    printMessage(1,"Warning: an error occured while extracting the coefficients of the polynomial.\n");
+    for (i=0;i<=deg;i++) {
+      if (coefficients[i] != NULL) free_memory(coefficients[i]);
+    }
+    free(coefficients);
+    return copyTree(poly);
+  }
+
+  fpcoefficients = (mpfr_t *) safeCalloc(degree+1,sizeof(mpfr_t));
+
+  mpfr_init2(tempMpfr,prec > 160 ? prec : 160);
+
+  res = 0;
+
+  for (i=0;i<=degree;i++) {
+    if (coefficients[i] != NULL) {
+      temp = simplifyTreeErrorfree(coefficients[i]);
+      if (temp->nodeType != CONSTANT) {
+	printMessage(1,"Warning: the %dth coefficient of the given polynomial does not evaluate to a floating-point constant without any rounding.\n",i);
+	printMessage(1,"Will evaluate the coefficient in the current precision in floating-point before rounding to the target format.\n");
+	mpfr_init2(fpcoefficients[i],prec);
+	evaluateConstantExpression(fpcoefficients[i], temp, prec);
+	res = 1;
+      } else {
+	mpfr_init2(fpcoefficients[i],mpfr_get_prec(*(temp->value)));
+	mpfr_set(fpcoefficients[i],*(temp->value),GMP_RNDN);
+      }
+      free_memory(temp);
+    } else {
+      mpfr_init2(fpcoefficients[i],prec);
+      mpfr_set_d(fpcoefficients[i],0.0,GMP_RNDN);
+    }
+    switch (formatsArray[i]) {
+    case 3:
+      if (mpfr_round_to_tripledouble(tempMpfr, fpcoefficients[i]) != 0) res = 1;
+      break;
+    case 2:
+      if (mpfr_round_to_doubledouble(tempMpfr, fpcoefficients[i]) != 0) res = 1;
+      break;
+    case 1:
+      if (mpfr_round_to_double(tempMpfr, fpcoefficients[i]) != 0) res = 1;
+      break;
+    default:
+      printMessage(1,"Warning: unknown expansion format found. No rounding will be performed.\n");
+      mpfr_set(tempMpfr,fpcoefficients[i],GMP_RNDN);
+    }
+    if (mpfr_set(fpcoefficients[i],tempMpfr,GMP_RNDN) != 0) {
+      printMessage(1,"Warning: double rounding occured on internal handling of a coefficient.\nTry to increase the precision.\n");
+    }
+  }
+
+  if (res) {
+    printMessage(2,"Information: at least one coefficient has been rounded.\n");
+  } else {
+    printMessage(2,"Information: there has not been any rounding of the coefficients.\n");
+  }
+
+  roundedPoly = makePolynomial(fpcoefficients, degree);
+
+  for (i=0;i<=degree;i++) mpfr_clear(fpcoefficients[i]);
+  free(fpcoefficients);
+  free(formatsArray);
+  mpfr_clear(tempMpfr);
+  return roundedPoly;
+}

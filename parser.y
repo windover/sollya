@@ -152,6 +152,7 @@ void yyerror(char *message) {
 %token	BYTOKEN          
 %token  TAYLORRECURSIONSTOKEN
 %token  PRINTHEXATOKEN
+%token  ROUNDCOEFFICIENTSTOKEN
 
 %type <other> commands
 %type <other> command
@@ -205,6 +206,10 @@ void yyerror(char *message) {
 %type <anInteger> checkinfnorm
 %type <other> taylorrecursions
 %type <other> printHexa
+%type <tree> roundcoefficients
+%type <aChain> expansionFormats
+%type <anInteger> expansionFormat
+%type <aChain> expansionFormatList
 
 %%
 
@@ -1136,6 +1141,10 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			      free_memory($3);
 			      $$ = temp_node;
                            }
+                        |       roundcoefficients
+                           {
+			      $$ = $1;
+			   }
 			|       REMEZTOKEN LPARTOKEN function COMMATOKEN monomials COMMATOKEN range RPARTOKEN
                            {
 			      temp_node = remez($3, $5, *($7.a), *($7.b), tools_precision);
@@ -1935,6 +1944,9 @@ formatlist:                format
 			   }
 ;
 
+
+
+
 errordefinition:           ABSOLUTETOKEN
                            {
 			     errorTypeTemp = (errorType *) safeMalloc(sizeof(errorType));
@@ -2253,3 +2265,53 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			   }
 ;
 
+
+
+expansionFormat:           DOUBLETOKEN
+                           {
+			     $$ = 1;
+			   }
+                         | DOUBLEDOUBLETOKEN
+                           {
+			     $$ = 2;
+			   }
+                         | TRIPLEDOUBLETOKEN
+                           {
+			     $$ = 3;
+			   }
+;
+
+expansionFormatList:       expansionFormat
+                           {
+			     intTempPtr = (int *) safeMalloc(sizeof(int));
+			     *intTempPtr = $1;
+			     $$ = addElement(NULL,(void *) intTempPtr);
+                           }
+                         | expansionFormatList COMMATOKEN expansionFormat
+                           {
+			     intTempPtr = (int *) safeMalloc(sizeof(int));
+			     *intTempPtr = $3;
+			     $$ = addElement($1,(void *) intTempPtr);
+			   }
+;
+
+expansionFormats:          LBRACKETTOKEN expansionFormatList RBRACKETTOKEN
+                           {
+			     $$ = $2;
+			   }
+                         | LBRACKETTOKEN expansionFormatList DOTSTOKEN RBRACKETTOKEN
+                           {
+			     intTempPtr = (int *) safeMalloc(sizeof(int));
+			     *intTempPtr = -1;
+			     $$ = addElement($2,(void *) intTempPtr);
+			   }
+;
+
+roundcoefficients:         ROUNDCOEFFICIENTSTOKEN LPARTOKEN function COMMATOKEN expansionFormats RPARTOKEN
+                           {
+			     temp_node = roundPolynomialCoefficients($3, $5, defaultprecision);
+			     free_memory($3);
+			     freeChain($5,freeIntPtr);
+			     $$ = temp_node;
+			   }
+;

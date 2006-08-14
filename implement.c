@@ -10,36 +10,6 @@
 #include "double.h"
 #include "infnorm.h"
 
-node *makePolynomial(mpfr_t *coefficients, int degree) {
-  node *tempTree, *tempTree2, *tempTree3;
-  int i;
-  
-  tempTree = (node *) safeMalloc(sizeof(node));
-  tempTree->nodeType = CONSTANT;
-  tempTree->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-  mpfr_init2(*(tempTree->value),mpfr_get_prec(coefficients[degree]));
-  mpfr_set(*(tempTree->value),coefficients[degree],GMP_RNDN);
-  for (i=degree-1;i>=0;i--) {
-    tempTree2 = (node *) safeMalloc(sizeof(node));
-    tempTree2->nodeType = MUL;
-    tempTree3 = (node *) safeMalloc(sizeof(node));
-    tempTree3->nodeType = VARIABLE;
-    tempTree2->child1 = tempTree3;
-    tempTree2->child2 = tempTree;
-    tempTree = (node *) safeMalloc(sizeof(node));
-    tempTree->nodeType = ADD;
-    tempTree->child2 = tempTree2;
-    tempTree3 = (node *) safeMalloc(sizeof(node));
-    tempTree3->nodeType = CONSTANT;
-    tempTree3->value = (mpfr_t *) safeMalloc(sizeof(node));
-    mpfr_init2(*(tempTree3->value),mpfr_get_prec(coefficients[i]));
-    mpfr_set(*(tempTree3->value),coefficients[i],GMP_RNDN);
-    tempTree->child1 = tempTree3;
-  }
-  tempTree2 = horner(tempTree);
-  free_memory(tempTree);
-  return tempTree2;
-}
 
 
 int determinePowers(mpfr_t *coefficients, int degree, int *mulPrec, int *powPrec) {
