@@ -169,6 +169,8 @@ PRINTHEXA       "printhexa"
 
 ROUNDCOEFFICIENTS "roundcoefficients"
 
+HONORCOEFFPREC  "honorcoeffprec"
+
 %%
 
 %{
@@ -286,6 +288,7 @@ ROUNDCOEFFICIENTS "roundcoefficients"
 {TAYLORRECURSIONS}       {     promptToBePrinted = 0; return TAYLORRECURSIONSTOKEN; }                    
 {PRINTHEXA}              {     promptToBePrinted = 0; return PRINTHEXATOKEN; }                    
 {ROUNDCOEFFICIENTS}      {     promptToBePrinted = 0; return ROUNDCOEFFICIENTSTOKEN; }                    
+{HONORCOEFFPREC}         {     promptToBePrinted = 0; return HONORCOEFFPRECTOKEN; }                    
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

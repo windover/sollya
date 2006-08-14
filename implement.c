@@ -87,10 +87,12 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
 
      The addition must be made with the precision demanded by the
      target accuracy. 
+     
+     If alpha is less than 1/2, the addition can be performed
+     without any cancellation. 
+     We check this condition. If it cannot be fulfilled, we
+     do not know how to implement the polynomial automatically.
 
-     There is no test if the addition can be performed 
-     with such an accuracy and if there will be no cancellation.
-     TODO!!!
 
      The multiplication and the following steps can then be 
      performed with an accuracy of accuracy / alpha.
@@ -123,7 +125,17 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
 
   free_memory(tempNode);
   mpfr_init2(temp2,prec);
-  
+
+  mpfr_set_d(temp2,0.5,GMP_RNDN);
+  if (mpfr_cmp(temp,temp2) >= 0) {
+    printMessage(1,"Warning: a coefficient is not at least 2 times greater than a already evaluated sub-polynomial.\n");
+    printMessage(1,"This procedure is not able to implement the polynomial correctly in this case.\n");
+    mpfr_set_d(temp,1.0,GMP_RNDN);
+    res = 0;
+  } else {
+    res = 1;
+  }
+
   mpfr_div(temp2,accuracy,temp,GMP_RNDN);
   mpfr_set_d(temp,0.5,GMP_RNDN);
   if (mpfr_cmp(temp2,temp) >= 0) {
@@ -134,8 +146,8 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
 
   mulPrec[0] = precOfAccur;
   
-  res = determinePrecisionsHelper(coefficients+1, degree-1, addPrec+1, mulPrec+1, 
-			          temp2, range, prec);
+  res = res & determinePrecisionsHelper(coefficients+1, degree-1, addPrec+1, mulPrec+1, 
+					temp2, range, prec);
   
   mpfr_clear(temp);
   mpfr_clear(temp2);
@@ -222,7 +234,7 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
 	coeffPrec = 159;
 	break;
       case 2:
-	coeffPrec = 106;
+	coeffPrec = 102;
 	break;
       case 1:
 	coeffPrec = 53;
@@ -250,10 +262,10 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
     
   }
 
-  currentPrec = 159;
+  currentPrec = 50;
 
   /* Second, round automatically the coefficients for which the precision is computed automatically */
-  for (i=0;i<=degree;i++) {
+  for (i=degree;i>=0;i--) {
     if (coeffsAutoRound[i]) {
       /* Automatically round the coefficient to the computed necessary precision */
       if (addPrec[i] >= 0) 
@@ -2513,9 +2525,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 }
 
 
-int implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecision, FILE *fd, char *name, mp_prec_t prec) {
+node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecision, 
+		    FILE *fd, char *name, int honorCoeffPrec, mp_prec_t prec) {
   mpfr_t temp;
-  node *simplifiedFunc;
+  node *simplifiedFunc, *implementedPoly;
   int degree, i;
   node **coefficients;
   node *tempTree;
@@ -2532,7 +2545,7 @@ int implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecis
 
   if (!isPolynomial(func)) {
     printMessage(1,"Warning: the function given is not a polynomial.\n");
-    return 0;
+    return NULL;
   }
 
   mpfr_init2(temp,prec);
@@ -2542,7 +2555,7 @@ int implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecis
     printMessage(1,"Warning: the target accuracy is greater or equal to 1 = 2^0.\n");
     printMessage(1,"Implementation of a such a function makes no sense.\n");
     mpfr_clear(temp);
-    return 0;
+    return NULL;
   }
   
   mpfr_div_2ui(temp,temp,140,GMP_RNDN);
@@ -2551,7 +2564,7 @@ int implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecis
     printMessage(1,"Warning: the target accuracy is less than 2^(-140).\n");
     printMessage(1,"Implementation is currently restrained to maximally triple-double precision.\n");
     mpfr_clear(temp);
-    return 0;
+    return NULL;
   }
 
   simplifiedFunc = simplifyTreeErrorfree(func);
@@ -2597,10 +2610,16 @@ int implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecis
   }
   free(coefficients);
 
-  for (i=0;i<=degree;i++) {
-    if (mpfr_round_to_tripledouble(temp, fpCoefficients[i]) != 0) {
-      printMessage(2,"Information: the %dth coefficient of the polynomial given cannot even be stored without rounding on a\n",i);
-      printMessage(2,"triple-double floating point variable. Automatic rounding will be used for maximally triple-double precision.\n");
+  if (honorCoeffPrec) {
+    for (i=0;i<=degree;i++) {
+      if (mpfr_round_to_tripledouble(temp, fpCoefficients[i]) != 0) {
+	printMessage(2,"Information: the %dth coefficient of the polynomial given cannot even be stored without rounding on a\n",i);
+	printMessage(2,"triple-double floating point variable. Automatic rounding will be used for maximally triple-double precision.\n");
+	fpCoeffRoundAutomatically[i] = 1;
+      }
+    }
+  } else {
+    for (i=0;i<=degree;i++) {
       fpCoeffRoundAutomatically[i] = 1;
     }
   }
@@ -2613,12 +2632,12 @@ int implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecis
     printMessage(1,"The produced implementation may be incorrect.\n");
   }
 
+
+  implementedPoly = makePolynomial(fpCoefficients,degree);
   if (verbosity >= 2) {
-    tempTree = makePolynomial(fpCoefficients,degree);
     printf("Information: the polynomial that will be implemented is:\n");
-    printTree(tempTree);
+    printTree(implementedPoly);
     printf("\n");
-    free_memory(tempTree);
   }
 
   powPrec = (int *) safeCalloc(degree,sizeof(int));
@@ -2690,5 +2709,5 @@ int implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecis
   free_memory(simplifiedFunc);
   mpfr_clear(temp);
 
-  return 1;
+  return implementedPoly;
 }

@@ -153,6 +153,7 @@ void yyerror(char *message) {
 %token  TAYLORRECURSIONSTOKEN
 %token  PRINTHEXATOKEN
 %token  ROUNDCOEFFICIENTSTOKEN
+%token  HONORCOEFFPRECTOKEN
 
 %type <other> commands
 %type <other> command
@@ -201,7 +202,7 @@ void yyerror(char *message) {
 %type <aChain> pointslist
 %type <anInteger> integer
 %type <tree> fpminimax
-%type <other> implementpoly
+%type <tree> implementpoly
 %type <anInteger> variableformat
 %type <anInteger> checkinfnorm
 %type <other> taylorrecursions
@@ -380,6 +381,7 @@ command:     plot
 			   }
            | implementpoly SEMICOLONTOKEN
                            {
+			     free_memory($1);
 			     $$ = NULL;
 			   }
            | checkinfnorm SEMICOLONTOKEN
@@ -951,7 +953,13 @@ variableformat:     DOUBLETOKEN
 
 implementpoly:        IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction WITHTOKEN VARIABLEMETATOKEN ASTOKEN variableformat INTOKEN writefile WITHTOKEN NAMETOKEN EQUALTOKEN string 
                            {
-			     int_temp = implementpoly($2,$4,$8,$12,$14,$18,tools_precision);
+			     temp_node = implementpoly($2,$4,$8,$12,$14,$18,0,tools_precision);
+			     if (temp_node != NULL) {
+			       printMessage(2,"Information: the implementation has succeeded.\n"); 
+			     } else {
+			       printMessage(1,"Warning: the implementation has not succeeded. The code may be incomplete.\n"); 
+			       temp_node = copyTree($2);
+			     }
 			     free_memory($2);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -961,11 +969,27 @@ implementpoly:        IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILO
 			     free($8);
 			     fclose($14);
 			     free($18);
-			     if (int_temp) 
+			     $$ = temp_node;
+			   }
+                    | IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction WITHTOKEN VARIABLEMETATOKEN ASTOKEN variableformat INTOKEN writefile WITHTOKEN NAMETOKEN EQUALTOKEN string COMMATOKEN HONORCOEFFPRECTOKEN
+                           {
+			     temp_node = implementpoly($2,$4,$8,$12,$14,$18,1,tools_precision);
+			     if (temp_node != NULL) {
 			       printMessage(2,"Information: the implementation has succeeded.\n"); 
-			     else 
+			     } else {
 			       printMessage(1,"Warning: the implementation has not succeeded. The code may be incomplete.\n"); 
-			     $$ = NULL;
+			       temp_node = copyTree($2);
+			     }
+			     free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     mpfr_clear(*($8));
+			     free($8);
+			     fclose($14);
+			     free($18);
+			     $$ = temp_node;
 			   }
 ;
 
@@ -1492,6 +1516,10 @@ primary:			variable
 			     free($2.a);
 			     free($2.b);
 			     $$ = temp_node;
+			   }
+                        |       LEFTANGLETOKEN implementpoly RIGHTANGLETOKEN
+                           {
+			     $$ = $2;
 			   }
 ;
 

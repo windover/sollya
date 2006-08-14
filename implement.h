@@ -9,7 +9,9 @@
 
 #define CODESIZE 4000000
 
-int implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecision, FILE *fd, char *name, mp_prec_t prec);
+
+node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecision, 
+		    FILE *fd, char *name, int honorCoeffPrec, mp_prec_t prec);
 
 
 

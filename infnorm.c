@@ -2054,13 +2054,15 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
     if (mpfr_sgn(y1) != mpfr_sgn(y2)) {
       newtonWorked = newtonMPFR(z, deriv, derivsecond, x1, x2, prec);
       if (!newtonWorked) {
-	printMessage(1,"Warning: zero-search by Newton's method did not converge for the function\n");
-	if (verbosity >= 1) printTree(deriv);
-	printMessage(1,"\non the interval\n[");
-	if (verbosity >= 1) printValue(&x1,prec);
-	printMessage(1,";");
-	if (verbosity >= 1) printValue(&x2,prec);
-	printMessage(1,"]\nThis (possibly maximum) point will be excluded from the infnorm result.\n");
+	printMessage(1,"Warning: zero-search by Newton's method did not converge\n");
+	printMessage(2,"The function was\n");
+	if (verbosity >= 2) printTree(deriv);
+	printMessage(2,"\nThe interval was\n[");
+	if (verbosity >= 2) printValue(&x1,prec);
+	printMessage(2,";");
+	if (verbosity >= 2) printValue(&x2,prec);
+	printMessage(2,"]\n");
+	printMessage(1,"This (possibly maximum) point will be excluded from the infnorm result.\n");
       } else {
 	if (!(mpfr_number_p(z))) {
 	  printMessage(1,"Warning: zero-search by Newton's method produces infinity or NaN.\n");
