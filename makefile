@@ -71,6 +71,11 @@ doc: Manuel_fr.tex
 	latex Manuel_fr.tex
 	dvips Manuel_fr.dvi -o Manuel_fr.ps
 
+pdf: Manuel_fr.tex
+	latex Manuel_fr.tex
+	pdflatex Manuel_fr.tex
+
+
 clean:
 	rm -rf *~
 	rm -rf *.o
@@ -78,4 +83,5 @@ clean:
 	rm -rf parser.tab.c
 	rm -rf parser.tab.h
 	rm -rf tools
-	rm -rf Manuel_fr.log Manuel_fr.aux Manuel_fr.dvi Manuel_fr.out Manuel_fr.toc
+	rm -rf Manuel_fr.log Manuel_fr.aux Manuel_fr.dvi Manuel_fr.out Manuel_fr.toc Manuel_fr.pdf 
+

@@ -23,6 +23,8 @@
 \usepackage{xspace}
 \usepackage{stmaryrd}
 
+\renewcommand{\epsilon}{\varepsilon}
+
 \newcommand{\punct}[1]{\textrm{\quad #1}}
 \newcommand{\tq}{\textrm{ such that\xspace}}
 \newcommand{\apriori}{\emph{a priori}\xspace}
@@ -52,12 +54,34 @@
 
 
 \section{Présentation}
-Le logiciel \ap propose une interface unifiée pour un certain nombre de commandes utilisée lors de l'implémentation logicielle de fonctions mathématiques. Les fonctionnalités les plus notables sont les suivantes :
+Le logiciel \ap propose une interface unifiée pour un certain nombre
+de commandes utilisée lors de l'implémentation logicielle de fonctions
+mathématiques. Les fonctionnalités les plus notables sont les
+suivantes :
 \begin{itemize}
-\item une commande \com{plot} équivalente à celle de \com{Maple} mais sensible à la précision des calculs. Ceci autorise de tracer une fonction de la forme $f-p$ où $f$ et $p$ sont très proches, et ce sans que la cancellation du calcul conduise à ne tracer uniquement que du bruit ;
-\item une commande \com{infnorm} qui calcule la norme infinie d'une fonction $f$ sur un intervalle $[a,\,b]$ (c'est-à-dire $\ninf{f} = \max \{|f(x)|,\, x\in [a,\,b]\}$). Cette commande existe en deux modes : un mode sécurisé qui renvoie un intervalle dans lequel se trouve avec certitude la vraie valeur de la norme infinie et un mode plus rapide qui renvoie uniquement une valeur approchée de bonne qualité de la norme infinie ;
-\item une commande \com{remez} qui permet de calculer le polynôme de meilleure approximation de degré $n$ d'une fonction $f$ sur un intervalle $[a,\,b]$ (c'est-à-dire le polynôme de degré inférieur ou égal à $n$ tel que $\ninf{f-p}$ soit minimal) ;
-\item une commande \com{integral} qui calcule l'intégrale d'une fonction sur un intervalle. Cette commande existe elle aussi en deux modes : sécurisé ou rapide.
+\item une commande \com{plot} équivalente à celle de \com{Maple} mais
+  sensible à la précision des calculs. Ceci autorise de tracer une
+  fonction de la forme $f-p$ où $f$ et $p$ sont très proches, et ce
+  sans que la cancellation du calcul conduise à ne tracer uniquement
+  que du bruit ;
+\item une commande \com{infnorm} qui calcule la norme infinie d'une
+  fonction $f$ sur un intervalle $[a,\,b]$ (c'est-à-dire $\ninf{f} =
+  \max \{|f(x)|,\, x\in [a,\,b]\}$). Cette commande existe en deux
+  modes : un mode sécurisé qui renvoie un intervalle dans lequel se
+  trouve avec certitude la vraie valeur de la norme infinie et un mode
+  plus rapide qui renvoie uniquement une valeur approchée de bonne
+  qualité de la norme infinie ;
+\item une commande \com{remez} qui permet de calculer le polynôme de
+  meilleure approximation de degré $n$ d'une fonction $f$ sur un
+  intervalle $[a,\,b]$ (c'est-à-dire le polynôme de degré inférieur ou
+  égal à $n$ tel que $\ninf{f-p}$ soit minimal) ;
+\item une commande \com{integral} qui calcule l'intégrale d'une
+  fonction sur un intervalle. Cette commande existe elle aussi en deux
+  modes : sécurisé ou rapide.
+\item Une commande \com{implementpoly} qui produit du code \texttt{C}
+  double précision pour l'évaluation d'un polynôme donné. L'algorithme
+  utilisé infère automatiquement les précisions intermédiaires
+  nécessaires pour l'évaluation avec une erreur maximale donnée.
 \end{itemize}
 
 \section{Compilation}
@@ -71,7 +95,9 @@ Puis faites simplement :
 \com{make}
 \end{center}
 
-Nous conseillons d'utiliser le logiciel \com{rlwrap} qui permet de disposer des fonctionnalités d'édition de la ligne de commande à l'intérieur d'\com{arenaireplot} :
+Nous conseillons d'utiliser le logiciel \com{rlwrap} qui permet de
+disposer des fonctionnalités d'édition de la ligne de commande à
+l'intérieur d'\com{arenaireplot} :
 \begin{center}
 \com{rlwrap ./tools}
 \end{center}
@@ -83,96 +109,299 @@ Par la suite, nous noterons $x$ la variable libre, mais n'importe quel nom de va
 
 \subsection{Liste des fonctions}
 \begin{itemize}
-\item \com{arenaireplot} reconnaît les constantes \com{pi} et \com{e} qui désignent respectivement $\pi$ et l'exponentielle. Les nombres peuvent être écrits sous forme habituelle (par exemple \com{23.45}), sous forme scientifique (par exemple \com{8.21e1} désigne le nombre $82.1$) ou bien sous forme binaire (c'est-à-dire sous la forme d'un entier multiplié par une puissance entière de $2$ : par exemple \com{3b5} désigne le nombre $3 \cdot 2^5$).
-\item Les fonctions mathématiques les plus usuelles sont reconnues : \com{+}, \com{-}, \com{*}, \com{/}, \com{\^} sont infixes et désignent l'addition, la soustraction, la multiplication, la division et la puissance. La puissance à la précédence sur la multiplication et la division, qui ont la précédence sur l'addition et la soustraction. Les fonctions préfixes suivantes au nom explicite sont reconnues : \com{sqrt}, \com{cos}, \com{sin}, \com{tan}, \com{acos}, \com{asin}, \com{atan}, \com{exp}, \com{log} (logarithme népérien), \com{log2} (logarithme en base $2$), \com{log10} (logarithme en base $10$), \com{sinh}, \com{cosh}, \com{tanh}, \com{asinh}, \com{acosh}, \com{atanh}, \com{abs} (la valeur absolue). On peut utiliser le signe moins $-$ comme préfixe pour la négation.
-\item \com{arenaireplot} permet d'arrondir un nombre au double le plus proche à l'aide des fonctions préfixes \com{D} ou \com{double} ; au double-double le plus proche avec les fonctions \com{DD} ou \com{doubledouble} ; au triple-double le plus proche avec les fonctions \com{TD} ou \com{tripledouble}.
+\item \com{arenaireplot} reconnaît les constantes \com{pi} et \com{e}
+  qui désignent respectivement $\pi$ et l'exponentielle; rencontrés
+  dans une expression, il sont remplacés par leur correspondant
+  flottant arrondi\footnote{Les expressions \com{e\^~x} et \com{exp(x)}
+    sont donc différentes à cause de l'arrondi qui a lieu pour
+    \com{e}.} Les nombres peuvent être écrits sous forme habituelle
+  (par exemple \com{23.45}), sous forme scientifique (par exemple
+  \com{8.21e1} désigne le nombre $82.1$) ou bien sous forme binaire
+  (c'est-à-dire sous la forme d'un entier multiplié par une puissance
+  entière de $2$ : par exemple \com{3b5} désigne le nombre $3 \cdot
+  2^5$).
+\item Les fonctions mathématiques les plus usuelles sont reconnues :
+  \com{+}, \com{-}, \com{*}, \com{/}, \com{\^} sont infixes et
+  désignent l'addition, la soustraction, la multiplication, la
+  division et la puissance. La puissance a la précédence sur la
+  multiplication et la division, qui ont la précédence sur l'addition
+  et la soustraction. Les fonctions préfixes suivantes au nom
+  explicite sont reconnues : \com{sqrt}, \com{cos}, \com{sin},
+  \com{tan}, \com{acos}, \com{asin}, \com{atan}, \com{exp}, \com{log}
+  (logarithme népérien), \com{log2} (logarithme en base $2$),
+  \com{log10} (logarithme en base $10$), \com{sinh}, \com{cosh},
+  \com{tanh}, \com{asinh}, \com{acosh}, \com{atanh}, \com{abs} (la
+  valeur absolue). On peut utiliser le signe moins $-$ comme préfixe
+  pour la négation.
+\item \com{arenaireplot} permet d'arrondir un nombre au double le plus
+  proche à l'aide des fonctions préfixes \com{D} ou \com{double} ; au
+  double-double le plus proche avec les fonctions \com{DD} ou
+  \com{doubledouble} ; au triple-double le plus proche avec les
+  fonctions \com{TD} ou \com{tripledouble}.
 \item On peut bien sûr utiliser des parenthèses.
-\item \com{arenaireplot} comprend aussi des opérateurs fonctionnels (dans la suite \com{expr} désigne une expression fonctionnelle et \com{const} désigne une expression s'évaluant en une constante) :
+\item \com{arenaireplot} comprend aussi des opérateurs fonctionnels
+  (dans la suite \com{expr} désigne une expression fonctionnelle et
+  \com{const} désigne une expression s'évaluant en une constante) :
   \begin{itemize}
     \item \com{expand(expr)} : développe toutes les sous-expressions polynômiales de \com{expr}.
-    \item \com{horner(expr)} : met sous forme de Hörner toutes les sous-expressions polynômiales de \com{expr}.
+    \item \com{horner(expr)} : met sous forme de Horner toutes les sous-expressions polynômiales de \com{expr}.
     \item \com{taylor(expr, n, const)} : développe \com{expr} sous forme de Taylor à l'ordre $n$ au point \com{const}.
     \item \com{simplify(expr)} : simplifie \com{expr} autant que faire se peut.
-    \item \com{simplifysafe(expr)} : idem, mais ne fait pas de simplification lorsque cela imposerait un arrondit.
+    \item \com{simplifysafe(expr)} : idem, mais ne fait pas de simplification lorsque cela imposerait un arrondi.
     \item \com{numerator(expr)} : si \com{expr} est une division, renvoie le numérateur. Sinon, renvoie \com{expr}.
     \item \com{denominator(expr)} : si \com{expr} est une division, renvoie le dénominateur. Sinon, renvoie $1$.
     \item \com{degree(expr)} : si \com{expr} est un polynôme, renvoie son degré. Sinon, renvoie $-1$.
     \item \com{diff(expr)} : dérive formellement \com{expr} en fonction de la variable libre.
-    \item \com{substitute(expr1, expr2)} : renvoie une expression dans laquelle chaque occurrence de la variable libre de \com{expr1} est remplacée par \com{expr2}.
-    \item \com{remez(expr, monomes, intervalle)} : renvoie le polynôme de meilleure approximation de \com{expr} sur l'intervalle \com{intervalle}. Un intervalle est donné sous la forme \com{[const; const]} ou bien \com{[const, const]}. \com{monomes} peut être un entier (auquel cas il s'agit du degré du polynôme visé) ou bien une liste d'entier qui indique les monômes que l'on autorise à être non nuls. Ainsi, si \com{monomes = [0,2,4,6]}, le polynôme renvoyé sera pair et de degré $6$ au plus. On peut utiliser des ellipses de la façon suivante : \com{[0, 2...4, 6...10]} désigne la liste de monômes \com{[0,~2,~3,~4,~6,~7,~8,~9,~10]}.
+    \item \com{substitute(expr1, expr2)} : renvoie une expression dans
+      laquelle chaque occurrence de la variable libre de \com{expr1}
+      est remplacée par \com{expr2}.
+    \item \com{remez(expr, monomes, intervalle)} : renvoie le polynôme
+      de meilleure approximation de \com{expr} sur l'intervalle
+      \com{intervalle}. Un intervalle est donné sous la forme
+      \com{[const; const]} ou bien \com{[const, const]}. \com{monomes}
+      peut être un entier (auquel cas il s'agit du degré du polynôme
+      visé) ou bien une liste d'entier qui indique les monômes que
+      l'on autorise à être non nuls. Ainsi, si \com{monomes =
+        [0,2,4,6]}, le polynôme renvoyé sera pair et de degré $6$ au
+      plus. On peut utiliser des ellipses de la façon suivante :
+      \com{[0, 2...4, 6...10]} désigne la liste de monômes
+      \com{[0,~2,~3,~4,~6,~7,~8,~9,~10]}.
     \item \com{fpminimax()} : à venir.
   \end{itemize}
 \end{itemize}
 
 \subsection{Liste des commandes}
-Chaque commande est doit se terminer par un point-virgule. L'utilisateur peut jouer sur cinq variables globales du logiciel :
+Chaque commande est doit se terminer par un point-virgule.
+L'utilisateur peut jouer sur cinq variables globales du logiciel :
 \begin{itemize}
-\item \com{verbosity = n} : fixe le niveau de précision des messages. Par défaut, la valeur est $1$. La valeur $0$ désactive tout affichage à part les messages d'erreur. Plus la valeur est grande plus les messages sont détaillés.
-\item \com{points = n} : fixe le nombre de points à utiliser lors de l'usage des commandes \com{plot}, \com{integral} et \com{infnorm}. Le nombre minimal de points est $3$. La valeur par défaut est $300$.
-\item \com{prec = n} : fixe le nombre de bits à utiliser dans le format flottant utilisé par \com{arenaireplot}. La valeur par défaut est $120$.
-\item \com{diam = val} : fixe la taille relative des diamètres des intervalles utilisés par les commandes \com{integral} et \com{infnorm}. Plus la valeur est petite, plus précises seront ces commandes. La valeur par défaut est~$10^{-4}$
-\item \com{dyadic = on} / \com{dyadic = off} : active ou désactive l'affichage des valeurs en base $2$. Lorsque l'option est activée, toutes les valeurs sont affichées sous la forme binaire. L'affichage est moins facilement compréhensible, mais ainsi, aucune erreur d'arrondi n'est faite lors de l'affichage d'une valeur. On peut alors copier-coller sans perte de précision un résultat d'une commande à l'intérieur d'une autre commande, par exemple.
+\item \com{verbosity = n} : fixe le niveau de précision des messages.
+  Par défaut, la valeur est $1$. La valeur $0$ désactive tout
+  affichage à part les messages d'erreur. Plus la valeur est grande
+  plus les messages sont détaillés.
+\item \com{points = n} : fixe le nombre de points à utiliser lors de
+  l'usage des commandes \com{plot}, \com{integral} et \com{infnorm}.
+  Le nombre minimal de points est $3$. La valeur par défaut est $500$.
+  La commande \com{infnorm} est utilisée comme sous-routine par
+  d'autres commandes.
+\item \com{prec = n} : fixe le nombre de bits à utiliser dans le
+  format flottant utilisé par \com{arenaireplot}. La valeur par défaut
+  est $160$.
+\item \com{dyadic = on} / \com{dyadic = off} : active ou désactive
+  l'affichage des valeurs en base $2$. Lorsque l'option est activée,
+  toutes les valeurs sont affichées sous la forme binaire. L'affichage
+  est moins facilement compréhensible, mais ainsi, aucune erreur
+  d'arrondi n'est faite lors de l'affichage d'une valeur. On peut
+  alors copier-coller sans perte de précision un résultat d'une
+  commande à l'intérieur d'une autre commande, par exemple.
+\item \com{taylorrecursions = n} : fixe le niveau de développement par
+  le théorème de Taylor lors d'une évaluation par intervalles d'une
+  expression. Plusieurs routines se servent de cette fonction. Il est
+  ainsi possible d'influencer sur leur comportement en termes de
+  diamètre relatif de l'encadrement calculé. La valeur par défaut est
+  $0$, c'est-à-dire la fonction ne recurse pas ce qui correspond à un
+  développement linéaire de l'expression donnée.
 \end{itemize}
 
-On peut utiliser des variables pour stocker des fonctions. La commande d'affectation est \com{var = expr} ; la variable ne doit pas avoir été précédemment utilisée dans la session, ni comme variable libre, ni pour une affectation.
+On peut utiliser des variables pour stocker des expressions. La
+commande d'affectation est \com{var = expr} ; la variable ne doit pas
+avoir été précédemment utilisée dans la session, ni comme variable
+libre, ni pour une affectation d'expression. De la même façon, il
+existe une table d'affectations pour intervalles. On peut affecter une
+valeur comme suit : \com{var = [a ; b]}. Les portées des variables
+d'expressions et d'intervalles sont disjointes; il peut y avoir alors
+deux variables ayant le même nom dont l'une remplace une expression et
+l'une un intervalle. La syntaxe de l'outil permet en tout cas la
+distinction entre les deux portées. Pour les variables d'intervalles
+aucune déréferentiation n'est possible lors d'une affectation.
 
 Pour évaluer une fonction, on dispose de la commande \com{evaluate}. Deux syntaxes sont possibles :
 \begin{itemize}
 \item \com{evaluate expr in intervalle} affiche un intervalle $I$ tel que $\com{expr(intervalle)} \subseteq I$.
 \item \com{evaluate expr at const} affiche un intervalle $I$ contenant la valeur exacte de \com{expr(const)}.
 \end{itemize}
+Cette commande se sert de la routine d'évaluation par théorème de
+Taylor.
 
-Pour afficher la valeur d'une fonction, on dispose de la fonction \com{print}. \com{print(expr)} affiche simplement la fonction représentée par \com{expr}. Si \com{expr} contient des opérateurs fonctionnels, ils sont évalués. On peut aussi déclencher l'affichage d'une chaîne de caractères via \com{print chaine}. \com{chaine} peut être n'importe quelle chaîne de caractères respectant la norme \com{C}.
+Pour afficher la valeur d'une fonction, on dispose de la fonction
+\com{print}. \com{print expr} affiche simplement la fonction
+représentée par \com{expr}. Si \com{expr} contient des opérateurs
+fonctionnels, ils sont évalués. On peut aussi déclencher l'affichage
+d'une chaîne de caractères via \com{print chaine}. \com{chaine} peut
+être n'importe quelle chaîne de caractères respectant la norme
+\com{C}. La commande \com{printhexa} permet d'afficher une valeur
+double précision sous forme hexadécimale. L'expression donnée est
+évaluée avec la précision de l'outil avant qu'un arrondi se fasse vers
+la double précision. Un affichage supplémentaire indique s'il y a eu
+arrondi ou non.
 
-On peut tracer le graphe d'une fonction sur un intervalle de la façon suivante (les crochets indiquent un paramètre optionnel) :
+On peut tracer le graphe d'une fonction sur un intervalle de la façon
+suivante (les crochets indiquent un paramètre optionnel) :
 \begin{center}
 \com{plot expr in intervalle [, prec=n] [, points=p]}
 \end{center}
-La commande \com{plot} tient compte de la variable globale \com{prec} pour faire les calculs. Si le paramètre optionnel correspondant est donné, il prend le pas sur la variable globale pendant l'exécution de la commande. La valeur de la variable globale n'est pas modifiée. Il en est de même pour le paramètre \com{points} qui commande le nombre de points où la fonction sera évaluée pour le tracé. 
+La commande \com{plot} tient compte de la variable globale \com{prec}
+pour faire les calculs. Si le paramètre optionnel correspondant est
+donné, il prend le pas sur la variable globale pendant l'exécution de
+la commande. La valeur de la variable globale n'est pas modifiée. Il
+en est de même pour le paramètre \com{points} qui commande le nombre
+de points où la fonction sera évaluée pour le tracé.
 
-La commande \com{findzeros} permet de lister les zéros d'une fonction sur un intervalle. Plus précisément, la syntaxe est la suivante (les crochets indiquent un paramètre optionnel) :
+La commande \com{findzeros} permet de lister les zéros d'une fonction
+sur un intervalle. Plus précisément, la syntaxe est la suivante (les
+crochets indiquent un paramètre optionnel) :
 \begin{center}
 \com{findzeros expr in intervalle [, diam=const]}
 \end{center}
-Cette commande affiche une liste d'intervalles tels que chaque zero de \com{expr} est dans l'un des intervalles. Il faut noter que la liste d'intervalles peut contenir des intervalles dans lesquels il n'y a pas de zéro ; de même un intervalle de la liste peut contenir plusieurs zéros. La variable globale \com{diam} fixe la taille relative des intervalles au-delà de laquelle la commande n'essaie plus de discriminer des zéros. Si le paramètre optionnel \com{diam} est passé à la commande, il prend le pas sur le variable globale pour l'exécution de la commande. Le paramètre global reste inchangé.
+Cette commande affiche une liste d'intervalles tels que chaque zero de
+\com{expr} est dans l'un des intervalles. Il faut noter que la liste
+d'intervalles peut contenir des intervalles dans lesquels il n'y a pas
+de zéro ; de même un intervalle de la liste peut contenir plusieurs
+zéros. La variable globale \com{diam} fixe la taille relative des
+intervalles au-delà de laquelle la commande n'essaie plus de
+discriminer des zéros. Si le paramètre optionnel \com{diam} est passé
+à la commande, il prend le pas sur le variable globale pour
+l'exécution de la commande. Le paramètre global reste inchangé.
 
-La commande \com{worstcase} permet de détecter les pires cas d'une fonction vis-à-vis du dilemme du fabricant de tables. La syntaxe est la suivante (les crochets indiquent un paramètre optionnel) :
-
-\com{worstcase expr with inputprec=n, inputexpo=[p,q], outputprec=r, epsilon=const [,output=filename]}
+La commande \com{worstcase} permet de détecter les pires cas d'une
+fonction vis-à-vis du dilemme du fabricant de tables. La syntaxe est
+la suivante (les crochets indiquent un paramètre optionnel) :
 
 \begin{center}
-\%\%\%\%\%\%\%\%\%\%\%\%TODO : Christoph doit documennter\%\%\%\%\%\%\%\%\%\%\%\%
+\com{worstcase expr with inputprec=n, inputexpo=[p,q], outputprec=r, epsilon=const [,output=filename]}
 \end{center}
 
-\com{arenaireplot} comprend deux commandes pour calculer la norme infinie d'une fonction : l'une est sûre mais un peu lente ; l'autre est rapide mais ne fournit pas de garantie.
+Pour la fonction $f$ donnée par l'expression \com{expr}, cette
+commande affiche la liste de tous les flottants sur $n$ bits avec un
+exposant entre $p$ et $q$, c'est-à-dire $x = 2^E \cdot m$, $E \in
+\left[ p ; q \right] \cap \N$, $m \cdot 2^n \in \left[ 2^n ; 2^{n+1} -
+  1 \right] \cap \N$, dont les images par $f$, arrondies vers un
+format flottant sur $r$ bits sont relativement plus proches de la
+valeur réelle de $f(x)$ que le paramètre $\epsilon=$\com{const} donné.
+Formellement, ces valeurs images satisfont $y = 2^F \cdot t =
+\circ\left( f\left( x \right) \right)$, $F \in \N$, $t \cdot 2^r \in
+\left[ 2^r ; 2^{r+1} - 1 \right] \cap \N$ et  $\left \vert \frac{y
+    - f(x)}{f(x)} \right \vert \leq \epsilon$.
+
+
+\com{arenaireplot} comprend deux commandes pour calculer la norme
+infinie d'une fonction : l'une est sûre mais un peu lente ; l'autre
+est rapide mais ne fournit pas de garantie.
 \begin{itemize}
-\item \com{dirtyinfnorm expr in intervalle [,points=n]} est la version rapide. Elle affiche une valeur approchée de la norme infinie de \com{expr}. Le paramètre optionnel permet de passer outre la variable globale \com{points}. L'algorithme utilisé par cette commande consiste simplement à calculer des valeurs approchées de la fonction en de nombreux points de l'intervalle et à considérer le maximum en valeur absolue. La variable \com{points} fixe le nombre de points utilisée.
-\item \com{infnorm expr in intervalle [without intervalle1, intervalle2, \dots , intervallek] [,diam = const] [,proof=filename]} est la version certifiée. Les paramètres optionnels permettent les choses suivantes :
+\item \com{dirtyinfnorm expr in intervalle [,points=n]} est la version
+  rapide. Elle affiche une valeur approchée de la norme infinie de
+  \com{expr}. Le paramètre optionnel permet de passer outre la
+  variable globale \com{points}. L'algorithme utilisé par cette
+  commande consiste simplement à calculer des valeurs approchées de la
+  fonction en de nombreux points de l'intervalle et à considérer le
+  maximum en valeur absolue. La variable \com{points} fixe le nombre
+  de points utilisés.
+\item \com{infnorm expr in intervalle [without intervalle1,
+    intervalle2, \dots , intervallek] [,diam = const]
+    [,proof=filename]} est la version certifiée. Les paramètres
+  optionnels permettent les choses suivantes :
   \begin{itemize}
-    \item \com{without} permet d'exclure une liste d'intervalles de la recherche. Ce paramètre est utile lorsqu'on constate que la commande échoue à donner une borne précise à cause d'un ou plusieurs points particuliers (généralement des faux-pôles, ou des points de grande cancellation). On peut ainsi les exclure et faire une analyse manuellement sur les intervalles exclus.
+  \item \com{without} permet d'exclure une liste d'intervalles de la
+    recherche. Ce paramètre est utile lorsqu'on constate que la
+    commande échoue à donner une borne précise à cause d'un ou
+    plusieurs points particuliers (généralement des faux-pôles, ou des
+    points de grande cancellation). On peut ainsi les exclure et faire
+    une analyse manuellement sur les intervalles exclus.
     \item \com{diam} permet de passer outre la valeur de la variable globale correspondante.
     \item \com{proof} permet de sauvegarder dans un fichier une preuve en anglais de la correction de la borne renvoyée.
     \end{itemize}
-La commande \com{infnorm} affiche un majorant de la norme infinie ainsi qu'un indice de confiance en pourcents (en d'autres termes, il s'agit d'un intervalle contenant la  valeur exacte de la norme infinie).
+    La commande \com{infnorm} affiche un majorant de la norme infinie
+    ainsi qu'un indice de confiance (en d'autres termes,
+    il s'agit d'un intervalle contenant la valeur exacte de la norme
+    infinie).
 \end{itemize}
 
-\com{arenaireplot} comprend deux commandes pour calculer l'intégrale d'une fonction : l'une est sûre mais un peu lente ; l'autre est rapide mais ne fournit pas de garantie.
+\com{arenaireplot} comprend deux commandes pour calculer l'intégrale
+d'une fonction : l'une est sûre mais un peu lente ; l'autre est rapide
+mais ne fournit pas de garantie.
 \begin{itemize}
-\item \com{dirtyintegral expr in intervalle [,points=n]} est la version rapide. Elle affiche une valeur approchée de l'intégrale de \com{expr}. Le paramètre optionnel permet de passer outre la variable globale \com{points}. L'algorithme utilisé par cette commande est la méthode des trapèzes. La variable \com{points} fixe le nombre de points utilisée.
-\item \com{integral expr in intervalle [,points=n]} est la version certifiée. L'algorithme est le même mais en utilisant des évaluations par intervalles.
+\item \com{dirtyintegral expr in intervalle [,points=n]} est la
+  version rapide. Elle affiche une valeur approchée de l'intégrale de
+  \com{expr}. Le paramètre optionnel permet de passer outre la
+  variable globale \com{points}. L'algorithme utilisé par cette
+  commande est la méthode des trapèzes. La variable \com{points} fixe
+  le nombre de points utilisée.
+\item \com{integral expr in intervalle [,points=n]} est la version
+  certifiée. L'algorithme est le même mais en utilisant des
+  évaluations par intervalles.
 
-La commande \com{integral} affiche un majorant de l'intégrale ainsi qu'un indice de confiance en pourcents (en d'autres termes, il s'agit d'un intervalle contenant la  valeur exacte de l'intégrale).
+  La commande \com{integral} affiche un majorant de l'intégrale ainsi
+  qu'un indice de confiance (en d'autres termes, il
+  s'agit d'un intervalle contenant la valeur exacte de l'intégrale).
 \end{itemize}
 
-Pour quitter \com{arenaireplot}, il suffit d'utiliser la commande \com{quit}. On peut aussi utiliser les raccourcis \com{control+D} ou \com{control+C}.
+\com{arenaireplot} permet de vérifier d'une façon sure qu'une valeur
+borne la norme infinie d'une fonction dans un intervalle. La commande correspondante est la suivante : 
+\begin{center}
+\com{checkinfnorm expr in intervalle bounded by const [, diam = const ]}
+\end{center}
+La commande vérifie par évaluation en arithmétique d'intervalle et
+dichotomie que la fonction donnée par l'expression \com{expr} dans
+l'intervalle \com{intervalle} est bornée en valeur absolue par
+\com{const}. Le paramètre \com{diam}, si donné, prend le dessus sur la
+variable globale correspondante sans la modifier. Pour cette
+procédure, il indique la taille relative des intervalles pour lesquels
+la verification échoue si la borne ne peut être vérifiée.
+
+L'outil \com{arenaireplot} peut aussi être une aide pour
+l'implémentation en double, double-double et triple-double précision
+d'un polynôme donné. La commande correspondante est la suivante:
+\begin{center}
+  \com{implementpoly expr in intervalle with epsilon = const with
+    variable as format in fichier with name = chaine [, honorcoeffprec ]}
+\end{center}
+
+Cette commande implémente dans le fichier \com{fichier} une fonction
+\texttt{C} s'appelant \com{chaine} prenant en paramètre - dépendamment
+de \com{format} qui peut être un des mot-clefs \com{double},
+\com{doubledouble} ou \com{tripledouble} - une, deux ou trois nombres
+double précision nommés comme la variable libre de l'expression
+\com{expr} (avec - au besoin - un suffixe \com{h}, \com{m} ou \com{l})
+et un, deux ou trois pointeurs sur des variables double precision
+indiquant les endroits mémoire où le résultat de l'évaluation sera à
+stocker. Cette fonction permettra d'évaluer le polynôme donné par
+\com{expr} dans l'intervalle \com{intervalle} d'une façon telle que
+l'erreur d'arrondi relative sera de l'ordre de \com{const}. Le
+polynôme implémenté peut mathématiquement différer du polynôme donné.
+Dans ce cas, un avertissement sera affiché. L'algorithme d'évaluation
+utilisé est le schema de Horner avec un précalcul des puissances
+nécessaires si quelques coefficients du polynôme sont $0$. Pour que
+l'implémentation réussisse, le polynôme doit satisfaire certaines
+conditions, en particulier pour aucune valeur dans l'intervalle
+\com{intervalle} et pour aucune étape de Horner aucune cancellation ne
+devra avoir lieu. La procédure d'implémentation vérifie ces conditions
+aussi précisement que possible. Le paramètre global \com{points} a une
+certaine influence sur cette procédure parce que celle-ci utilise le
+calcul d'une norme infinie ainsi paramétré comme sous-fonction.
+
+
+Pour quitter \com{arenaireplot}, il suffit d'utiliser la commande
+\com{quit}. On peut aussi utiliser les raccourcis \com{control+D} ou
+\com{control+C}.
 
 \subsection{Astuces}
-Les commandes ne renvoie pas de valeur : elles se contentent de changer l'état interne du logiciel ou encore d'afficher un résultat sur la sortie standard. Dans le cas où la commande affiche un résultat, on peut vouloir réutiliser ce résultat par la suite. \com{arenaireplot} fournit donc une astuce pour transformer une commande en fonction lorque ça a un sens. Si \com{commande} désigne une commande ayant pour effet d'afficher un résultat sous forme d'un nombre ou d'un intervalle, on peut utiliser au sein d'une expression les expressions suivantes :
+Les commandes ne renvoient pas de valeur : elles se contentent de
+changer l'état interne du logiciel ou encore d'afficher un résultat
+sur la sortie standard. Dans le cas où la commande affiche un
+résultat, on peut vouloir réutiliser ce résultat par la suite.
+\com{arenaireplot} fournit donc une astuce pour transformer une
+commande en fonction lorque ça a un sens. Si \com{commande} désigne
+une commande ayant pour effet d'afficher un résultat sous forme d'un
+nombre ou d'un intervalle, on peut utiliser au sein d'une expression
+les expressions suivantes :
 \begin{itemize}
 \item \com{<commande>} renvoie la borne supérieure de l'intervalle qu'afficherait la commande \com{commande}.
 \item \com{<commande>.} renvoie le milieu de l'intervalle qu'afficherait la commande \com{commande}.
 \item \com{<commande>\_} renvoie la borne inférieure de l'intervalle qu'afficherait la commande \com{commande}.
 \end{itemize}
+Si \com{commande} désigne la commande \com{implementpoly}, on peut
+utiliser au sein d'une expression l'expression \com{<commande>} qui
+renvoie le polynôme implémenté par \com{commande} quant aux
+coefficients arrondis.
 
 En outre, si \com{var} désigne une variable à laquelle on a affecté une expression \com{expr1}, la notation \com{var(expr2)} est équivalente à \com{substitute(expr1,expr2)}. 
 \end{document}
