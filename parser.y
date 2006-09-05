@@ -424,6 +424,8 @@ restart:     RESTARTTOKEN
 			     defaultpoints = DEFAULTPOINTS;
 			     tools_precision = DEFAULTPRECISION;
 			     taylorrecursions = DEFAULTTAYLORRECURSIONS;
+			     verbosity = 1;
+			     dyadic = 0;
 			     avma = ltop;
 			     printf("System restarted.\n");
 			     $$ = NULL;
