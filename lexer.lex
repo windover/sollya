@@ -171,6 +171,8 @@ ROUNDCOEFFICIENTS "roundcoefficients"
 
 HONORCOEFFPREC  "honorcoeffprec"
 
+RESTART         "restart"
+
 %%
 
 %{
@@ -289,6 +291,7 @@ HONORCOEFFPREC  "honorcoeffprec"
 {PRINTHEXA}              {     promptToBePrinted = 0; return PRINTHEXATOKEN; }                    
 {ROUNDCOEFFICIENTS}      {     promptToBePrinted = 0; return ROUNDCOEFFICIENTSTOKEN; }                    
 {HONORCOEFFPREC}         {     promptToBePrinted = 0; return HONORCOEFFPRECTOKEN; }                    
+{RESTART}                {     promptToBePrinted = 0; return RESTARTTOKEN; }                    
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

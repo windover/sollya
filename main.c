@@ -15,6 +15,7 @@
 #include "infnorm.h"
 #include "assignment.h"
 
+#define PARIMEMSIZE 3000000
 
 char *variablename = NULL;
 char *currentVariable = NULL;
@@ -223,7 +224,7 @@ void printPrompt(void) {
 
 int main(int argc, char *argv[]) {
   
-  pari_init(3000000, 2);
+  pari_init(PARIMEMSIZE, 2);
   ltop = avma;
   
   if (setjmp(environnement)) {
@@ -257,6 +258,7 @@ int main(int argc, char *argv[]) {
   freeSymbolTable(symbolTable2,freeRangetypePtr);
   if(currentVariable != NULL) free(currentVariable);
   if(variablename != NULL) free(variablename);
+  free((void *) (ltop - PARIMEMSIZE));
 
   fclose(yyin);
   return 0;

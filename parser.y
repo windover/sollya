@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <pari/pari.h>
 #include "expression.h"
 #include "chain.h"
 #include "main.h"
@@ -20,6 +21,7 @@ int yylex();
 
 extern FILE *yyin;
 extern char *yytext;
+extern ulong ltop;
 
 void yyerror(char *message) {
   if ((!feof(yyin)) && (!handlingError)) {
@@ -154,6 +156,7 @@ void yyerror(char *message) {
 %token  PRINTHEXATOKEN
 %token  ROUNDCOEFFICIENTSTOKEN
 %token  HONORCOEFFPRECTOKEN
+%token  RESTARTTOKEN
 
 %type <other> commands
 %type <other> command
@@ -211,6 +214,7 @@ void yyerror(char *message) {
 %type <aChain> expansionFormats
 %type <anInteger> expansionFormat
 %type <aChain> expansionFormatList
+%type <other> restart
 
 %%
 
@@ -394,11 +398,36 @@ command:     plot
 			     }
 			     $$ = NULL;
 			   }
+           | restart SEMICOLONTOKEN
+                           {
+			     $$ = NULL;
+			   }
            | error SEMICOLONTOKEN
                            {
 			     handlingError = 0;
 			     $$ = NULL;
                            }
+;
+
+
+restart:     RESTARTTOKEN
+                           {
+			     freeSymbolTable(symbolTable,freeMemoryOnVoid);
+			     freeSymbolTable(symbolTable2,freeRangetypePtr);
+			     if(currentVariable != NULL) free(currentVariable);
+			     if(variablename != NULL) free(variablename);
+			     symbolTable = NULL;
+			     symbolTable2 = NULL;
+			     currentVariable = NULL;
+			     variablename = NULL;
+			     defaultprecision = DEFAULTPRECISION;
+			     defaultpoints = DEFAULTPOINTS;
+			     tools_precision = DEFAULTPRECISION;
+			     taylorrecursions = DEFAULTTAYLORRECURSIONS;
+			     avma = ltop;
+			     printf("System restarted.\n");
+			     $$ = NULL;
+			   }
 ;
 
 dyadic:      DYADICTOKEN EQUALTOKEN ONTOKEN 

@@ -11,6 +11,7 @@
 #include "infnorm.h"
 
 
+#define MIN(a,b) (a > b ? b : a)
 
 int determinePowers(mpfr_t *coefficients, int degree, int *mulPrec, int *powPrec) {
   int i,k;
@@ -321,8 +322,8 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
 }
 
 
-int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, char *name) {
-  int i, k, l, res, issuedCode, issuedVariables, c;
+int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, char *name, int *overlaps) {
+  int i, k, l, res, issuedCode, issuedVariables, c, t;
   int *powers, *operand1, *operand2;
   char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2; 
 
@@ -375,6 +376,9 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	    switch (variablePrecision) {
 	    case 1:
 	      /* Produce an exact double-double x^2 instead of a triple-double */
+
+	      /* The operation's precision is always infinite because of the operator */
+
 	      c = snprintf(buffer1,CODESIZE,
 			   "Mul12(&%s_%s_pow2h,&%s_%s_pow2m,%s,%s);",
 			   name,variablename,name,variablename,variablename,variablename);
@@ -383,9 +387,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			   "double %s_%s_pow2h, %s_%s_pow2m;",
 			   name,variablename,name,variablename);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      overlaps[i] = 53;
 	      break;
 	    case 2:
 	      /* Produce a triple-double x^2 out of two double-double x's */
+
+	      /* The operation's precision is fixed because of the operands */
+
 	      c = snprintf(buffer1,CODESIZE,
 			   "Mul23(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%sh,%sm,%sh,%sm);",
 			   name,variablename,name,variablename,name,variablename,
@@ -395,9 +403,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			   "double %s_%s_pow2h, %s_%s_pow2m, %s_%s_pow2l;",
 			   name,variablename,name,variablename,name,variablename);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	      
+	      overlaps[i] = 49;
 	      break;
 	    case 3:
 	      /* Produce a triple-double x^2 out of two triple-double x's */
+
+	      /* The operation's precision is fixed because the operands are renormalized x's */
+
 	      c = snprintf(buffer1,CODESIZE,
 			   "Mul33(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%sh,%sm,%sl,%sh,%sm,%sl);",
 			   name,variablename,name,variablename,name,variablename,
@@ -407,6 +419,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			   "double %s_%s_pow2h, %s_%s_pow2m, %s_%s_pow2l;",
 			   name,variablename,name,variablename,name,variablename);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      overlaps[i] = 48;
 	      break;
 	    default: 
 	      res = 0;
@@ -417,6 +430,9 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	    case 1:
 	      if (operand2[i] == 1) {
 		/* Produce a triple-double out if a double x and an exact double-double x^2 */
+
+		/* The operation's precision is fixed because of the operands */
+
 		c = snprintf(buffer1,CODESIZE,
 			     "Mul123(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s,%s_%s_pow2h,%s_%s_pow2m);",
 			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
@@ -426,46 +442,123 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			     "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
 			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		overlaps[i] = 47;
 	      } else {
 		/* Produce a triple-double out of a double x and a triple-double x^? */
-		c = snprintf(buffer1,CODESIZE,
+
+		/* The operation's precision depends on the overlap of the triple-double x^? 
+		   We must check if this value must be renormalized.
+
+		   The precision is roughly 100 + overlap bits. 
+		*/
+
+		c = 0;
+		if (overlaps[operand2[i]] + 100 < powers[i]) {
+		  /* If we are here, we must renormalize the operand */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			       name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  overlaps[operand2[i]] = 52;
+		}
+
+		t = c;
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul133(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
 			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
 			     variablename,name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
 			     name,variablename,operand2[i]+1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
 			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);		
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		overlaps[i] = overlaps[operand2[i]] - 5;
+		if (overlaps[i] > 47) overlaps[i] = 47;
 	      }
 	      break;
 	    case 2:
 	      /* Produce a triple-double out of a double-double x and a triple-double x^? */
-	      c = snprintf(buffer1,CODESIZE,
+
+	      /* The operation's precision depends on the overlap of the triple-double x^? 
+		 We must check if this value must be renormalized.
+		 
+		 The precision is roughly 96 + overlap bits. 
+	      */
+	      
+	      c = 0;
+	      if (overlaps[operand2[i]] + 96 < powers[i]) {
+		/* If we are here, we must renormalize the operand */
+		c = snprintf(buffer1,CODESIZE,
+			     "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			     name,variablename,operand2[i]+1,
+			     name,variablename,operand2[i]+1,
+			     name,variablename,operand2[i]+1,
+			     name,variablename,operand2[i]+1,
+			     name,variablename,operand2[i]+1,
+			     name,variablename,operand2[i]+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		overlaps[operand2[i]] = 52;
+	      }
+	      
+	      t = c;
+	      c = snprintf(buffer1+t,CODESIZE-t,
 			   "Mul233(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%sh,%sm,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
 			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
 			   variablename,variablename,name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
 			   name,variablename,operand2[i]+1);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
 			   "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
 			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      overlaps[i] = overlaps[operand2[i]] - 4;
+	      if (overlaps[i] > 48) overlaps[i] = 48;
 	      break;
 	    case 3:
 	      /* Produce a triple-double out of a triple-double x and a triple-double x^? */
-	      c = snprintf(buffer1,CODESIZE,
+	      
+	      /* The operation's precision depends on the overlap of the triple-double x^? 
+		 The triple-double x is supposed to be renormalized anytime.
+		 We must check if this value must be renormalized.
+		 
+		 The precision is roughly 98 + overlap bits. 
+	      */
+	      
+	      c = 0;
+	      if (overlaps[operand2[i]] + 98 < powers[i]) {
+		/* If we are here, we must renormalize the operand */
+		c = snprintf(buffer1,CODESIZE,
+			     "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			     name,variablename,operand2[i]+1,
+			     name,variablename,operand2[i]+1,
+			     name,variablename,operand2[i]+1,
+			     name,variablename,operand2[i]+1,
+			     name,variablename,operand2[i]+1,
+			     name,variablename,operand2[i]+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		overlaps[operand2[i]] = 52;
+	      }
+
+	      t = c;
+	      c = snprintf(buffer1+t,CODESIZE-t,
 			   "Mul33(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%sh,%sm,%sl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
 			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
 			   variablename,variablename,variablename,
 			   name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
 			   name,variablename,operand2[i]+1);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
 			   "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
 			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      overlaps[i] = overlaps[operand2[i]] - 4;
+	      if (overlaps[i] > 48) overlaps[i] = 48;
 	      break;
 	    default: 
 	      res = 0;
@@ -479,6 +572,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	    case 1:
 	      if (operand1[i] == 1) {
 		/* Produce a triple-double out an exact double-double x^2 and a double x */
+		/* The operation's precision is fixed because of the operands */
 		c = snprintf(buffer1,CODESIZE,
 			     "Mul123(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s,%s_%s_pow2h,%s_%s_pow2m);",
 			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
@@ -488,46 +582,118 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			     "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
 			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		overlaps[i] = 47;
 	      } else {
 		/* Produce a triple-double out of a triple-double x^? and a double x*/
-		c = snprintf(buffer1,CODESIZE,
+
+		/* The operation's precision depends on the overlap of the triple-double x^? 
+		   We must check if this value must be renormalized.
+
+		   The precision is roughly 100 + overlap bits. 
+		*/
+		c = 0;
+		if (overlaps[operand1[i]] + 100 < powers[i]) {
+		  /* If we are here, we must renormalize the operand */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  overlaps[operand1[i]] = 52;
+		}
+
+		t = c;
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul133(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
 			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
 			     variablename,name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
 			     name,variablename,operand1[i]+1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
 			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);		
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		overlaps[i] = overlaps[operand1[i]] - 5;
+		if (overlaps[i] > 47) overlaps[i] = 47;
 	      }
 	      break;
 	    case 2:
 	      /* Produce a triple-double out of a triple-double x^? and a double-double x */
-	      c = snprintf(buffer1,CODESIZE,
+
+	      /* The operation's precision depends on the overlap of the triple-double x^? 
+		 We must check if this value must be renormalized.
+		 
+		 The precision is roughly 96 + overlap bits. 
+	      */
+	      c = 0;
+	      if (overlaps[operand1[i]] + 96 < powers[i]) {
+		/* If we are here, we must renormalize the operand */
+		c = snprintf(buffer1,CODESIZE,
+			     "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			     name,variablename,operand1[i]+1,
+			     name,variablename,operand1[i]+1,
+			     name,variablename,operand1[i]+1,
+			     name,variablename,operand1[i]+1,
+			     name,variablename,operand1[i]+1,
+			     name,variablename,operand1[i]+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		overlaps[operand1[i]] = 52;
+	      }
+	      
+	      t = c;
+	      c = snprintf(buffer1+t,CODESIZE-t,
 			   "Mul233(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%sh,%sm,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
 			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
 			   variablename,variablename,name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
 			   name,variablename,operand1[i]+1);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
 			   "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
 			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      overlaps[i] = overlaps[operand1[i]] - 4;
+	      if (overlaps[i] > 48) overlaps[i] = 48;
 	      break;
 	    case 3:
 	      /* Produce a triple-double out of a triple-double x^? and a triple-double x */
-	      c = snprintf(buffer1,CODESIZE,
+	      /* The operation's precision depends on the overlap of the triple-double x^? 
+		 We must check if this value must be renormalized.
+		 
+		 The precision is roughly 98 + overlap bits. 
+	      */
+	      c = 0;
+	      if (overlaps[operand1[i]] + 98 < powers[i]) {
+		/* If we are here, we must renormalize the operand */
+		c = snprintf(buffer1,CODESIZE,
+			     "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			     name,variablename,operand1[i]+1,
+			     name,variablename,operand1[i]+1,
+			     name,variablename,operand1[i]+1,
+			     name,variablename,operand1[i]+1,
+			     name,variablename,operand1[i]+1,
+			     name,variablename,operand1[i]+1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		overlaps[operand1[i]] = 52;
+	      }
+
+	      t = c;
+	      c = snprintf(buffer1+t,CODESIZE-t,
 			   "Mul33(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%sh,%sm,%sl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
 			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
 			   variablename,variablename,variablename,
 			   name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
 			   name,variablename,operand1[i]+1);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
 			   "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
 			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      overlaps[i] = overlaps[operand1[i]] - 4;
+	      if (overlaps[i] > 48) overlaps[i] = 48;
 	      break;
 	    default: 
 	      res = 0;
@@ -540,6 +706,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if (operand2[i] == 1) {
 		  /* The second operand is a double-double x^2 */
 		  /* Produce a triple-double x^4 out of two double-double x^2 */
+		  /* The operation's precision is fixed because of the operands */
 		  c = snprintf(buffer1,CODESIZE,
 			       "Mul23(&%s_%s_pow4h,&%s_%s_pow4m,&%s_%s_pow4l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2h,%s_%s_pow2m);",
 			       name,variablename,name,variablename,name,variablename,
@@ -549,71 +716,270 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			       "double %s_%s_pow4h, %s_%s_pow4m, %s_%s_pow4l;",
 			       name,variablename,name,variablename,name,variablename);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  overlaps[i] = 49;
 		} else {
 		  /* Produce a triple-double out of a double-double x^2 and a triple-double x^? */
-		  c = snprintf(buffer1,CODESIZE,
+
+		  /* The operation's precision depends on the overlap of the triple-double x^? 
+		     We must check if this value must be renormalized.
+		     
+		     The precision is roughly 96 + overlap bits. 
+		  */
+		  c = 0;
+		  if (overlaps[operand2[i]] + 96 < powers[i]) {
+		    /* If we are here, we must renormalize the operand */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    overlaps[operand2[i]] = 52;
+		  }
+
+		  t = c;
+		  c = snprintf(buffer1+t,CODESIZE-t,
 			       "Mul233(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
 			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
 			       name,variablename,name,variablename,
 			       name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
 			       name,variablename,operand2[i]+1);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
 			       "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
 			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  overlaps[i] = overlaps[operand2[i]] - 4;
+		  if (overlaps[i] > 48) overlaps[i] = 48;
 		}
 	      } else {
 		/* The first operand is surely a triple-double */
 		if (operand2[i] == 1) {
 		  /* The second operand is a double-double x^2 */
 		  /* Produce a triple-double out of a triple-double x^? and a double-double x^2 */
-		  c = snprintf(buffer1,CODESIZE,
+
+		  /* The operation's precision depends on the overlap of the triple-double x^? 
+		     We must check if this value must be renormalized.
+		     
+		     The precision is roughly 96 + overlap bits. 
+		  */
+		  c = 0;
+		  if (overlaps[operand1[i]] + 96 < powers[i]) {
+		    /* If we are here, we must renormalize the operand */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    overlaps[operand1[i]] = 52;
+		  }
+
+		  t = c;
+		  c = snprintf(buffer1+t,CODESIZE-t,
 			       "Mul233(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
 			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
 			       name,variablename,name,variablename,
 			       name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
 			       name,variablename,operand1[i]+1);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
 			       "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
 			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  overlaps[i] = overlaps[operand1[i]] - 4;
+		  if (overlaps[i] > 48) overlaps[i] = 48;
 		} else {
 		  /* Both operands are surely triple-doubles; we produce a triple-double */
-		  c = snprintf(buffer1,CODESIZE,
+
+		  /* The operation's precision depends on the overlap of *both* triple-double x^? 
+		     We must check if one or two of the values must be renormalized.
+		     
+		     The precision is roughly 97 + min(overlaps of both)
+		     
+		  */
+		  t = 0;
+		  if (MIN(overlaps[operand1[i]],overlaps[operand2[i]]) + 97 < powers[i]) {
+		    /* We renormalize first the operand with the higher overlap (i.e. lower value) */
+		    if (overlaps[operand1[i]] < overlaps[operand2[i]]) {
+		      /* Renormalize first opernand1[i] */
+		      c = snprintf(buffer1,CODESIZE,
+				   "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				   name,variablename,operand1[i]+1,
+				   name,variablename,operand1[i]+1,
+				   name,variablename,operand1[i]+1,
+				   name,variablename,operand1[i]+1,
+				   name,variablename,operand1[i]+1,
+				   name,variablename,operand1[i]+1);
+		      if ((c < 0) || (c >= CODESIZE)) res = 0;
+		      overlaps[operand1[i]] = 52;
+		    } else {
+		      /* Renormalize first opernand2[i] */
+		      c = snprintf(buffer1,CODESIZE,
+				   "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				   name,variablename,operand2[i]+1,
+				   name,variablename,operand2[i]+1,
+				   name,variablename,operand2[i]+1,
+				   name,variablename,operand2[i]+1,
+				   name,variablename,operand2[i]+1,
+				   name,variablename,operand2[i]+1);
+		      if ((c < 0) || (c >= CODESIZE)) res = 0;
+		      overlaps[operand2[i]] = 52;
+		    }
+		    t += c;
+		    
+		    /* Check once again the precision */
+		    if (MIN(overlaps[operand1[i]],overlaps[operand2[i]]) + 97 < powers[i]) {
+		      /* If we are here, we must renormalize also the other operand.
+			 Since the overlap value of the other is now greater, we renormalize the
+			 operand with the higher overlap as before.
+		      */
+		      if (overlaps[operand1[i]] < overlaps[operand2[i]]) {
+			/* Renormalize first opernand1[i] */
+			c = snprintf(buffer1+t,CODESIZE-t,
+				     "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				     name,variablename,operand1[i]+1,
+				     name,variablename,operand1[i]+1,
+				     name,variablename,operand1[i]+1,
+				     name,variablename,operand1[i]+1,
+				     name,variablename,operand1[i]+1,
+				     name,variablename,operand1[i]+1);
+			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+			overlaps[operand1[i]] = 52;
+		      } else {
+			/* Renormalize first opernand2[i] */
+			c = snprintf(buffer1+t,CODESIZE-t,
+				     "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				     name,variablename,operand2[i]+1,
+				     name,variablename,operand2[i]+1,
+				     name,variablename,operand2[i]+1,
+				     name,variablename,operand2[i]+1,
+				     name,variablename,operand2[i]+1,
+				     name,variablename,operand2[i]+1);
+			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+			overlaps[operand2[i]] = 52;
+		      }
+		      t += c;
+		    }
+		  }
+		  
+		  c = snprintf(buffer1+t,CODESIZE-t,
 			       "Mul33(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
 			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
 			       name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
 			       name,variablename,operand1[i]+1,
 			       name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
 			       name,variablename,operand2[i]+1);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
 			       "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
 			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  overlaps[i] = overlaps[operand1[i]] - 4;
+		  if (overlaps[i] > overlaps[operand2[i]] - 4) overlaps[i] = overlaps[operand2[i]] - 4;
+		  if (overlaps[i] > 48) overlaps[i] = 48;
 		}
 	      }
 	    } else {
 	      /* Both operands are surely triple-doubles; we produce a triple-double */
-	      c = snprintf(buffer1,CODESIZE,
+	      /* The operation's precision depends on the overlap of *both* triple-double x^? 
+		 We must check if one or two of the values must be renormalized.
+		 
+		 The precision is roughly 97 + min(overlaps of both)
+		 
+	      */
+	      t = 0;
+	      if (MIN(overlaps[operand1[i]],overlaps[operand2[i]]) + 97 < powers[i]) {
+		/* We renormalize first the operand with the higher overlap (i.e. lower value) */
+		if (overlaps[operand1[i]] < overlaps[operand2[i]]) {
+		  /* Renormalize first opernand1[i] */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  overlaps[operand1[i]] = 52;
+		} else {
+		  /* Renormalize first opernand2[i] */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			       name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  overlaps[operand2[i]] = 52;
+		}
+		t += c;
+		
+		/* Check once again the precision */
+		if (MIN(overlaps[operand1[i]],overlaps[operand2[i]]) + 97 < powers[i]) {
+		  /* If we are here, we must renormalize also the other operand.
+		     Since the overlap value of the other is now greater, we renormalize the
+		     operand with the higher overlap as before.
+		  */
+		  if (overlaps[operand1[i]] < overlaps[operand2[i]]) {
+		    /* Renormalize first opernand1[i] */
+		    c = snprintf(buffer1+t,CODESIZE-t,
+				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1);
+		    if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+		    overlaps[operand1[i]] = 52;
+		  } else {
+		    /* Renormalize first opernand2[i] */
+		    c = snprintf(buffer1+t,CODESIZE-t,
+				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1);
+		    if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+		    overlaps[operand2[i]] = 52;
+		  }
+		  t += c;
+		}
+	      }
+	      
+	      c = snprintf(buffer1+t,CODESIZE-t,
 			   "Mul33(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
 			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
 			   name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
 			   name,variablename,operand1[i]+1,
 			   name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
 			   name,variablename,operand2[i]+1);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
 			   "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
 			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      overlaps[i] = overlaps[operand1[i]] - 4;
+	      if (overlaps[i] > overlaps[operand2[i]] - 4) overlaps[i] = overlaps[operand2[i]] - 4;
+	      if (overlaps[i] > 48) overlaps[i] = 48;
 	    }
 	  }
 	}
       } else {
 	if (powers[i] > 53) {
+	  overlaps[i] = 53;
 	  /* Produce a double-double */
 	  if (operand1[i] == 0) {
 	    /* The first operand is x */
@@ -647,15 +1013,40 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		res = 0;
 	      }
 	    } else {
-	      /* The first operand is x and the second is x^2 as a double-double or better */
+	      /* The first operand is x and the second is x^? as a double-double or better */
 	      switch (variablePrecision) {
 	      case 1:
-		/* Produce a double-double out of a double x and a double-double x^? */
-		c = snprintf(buffer1,CODESIZE,
+		/* Produce a double-double out of a double x and a double-double or better x^? */
+		
+		/* If x^? is actually a triple-double, its higher overlap affects the precision of the
+		   operation. We check if overlap[operand] is less than 53 (only triple-doubles can be like that)
+		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
+		   is less than powers[i]. 
+		*/
+		c = 0;
+		if (overlaps[operand2[i]] < 53) {
+		  /* We must perhaps renormalize */
+		  if (overlaps[operand2[i]] + 53 < powers[i]) {
+		    /* We renormalize */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    overlaps[operand2[i]] = 52;
+		  }
+		}
+		
+		t = c;
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul122(&%s_%s_pow%dh,&%s_%s_pow%dm,%s,%s_%s_pow%dh,%s_%s_pow%dm);",
 			     name,variablename,i+1,name,variablename,i+1,
 			     variablename,name,variablename,operand2[i]+1,name,variablename,operand2[i]+1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_%s_pow%dh, %s_%s_pow%dm;",
 			     name,variablename,i+1,name,variablename,i+1);
@@ -664,12 +1055,39 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      case 2:
 	      case 3:
 		/* Produce a double-double out of a double-double or better x and a double-double or better x^? */
-		c = snprintf(buffer1,CODESIZE,
+		
+		/* If x^? is actually a triple-double, its higher overlap affects the precision of the
+		   operation. We check if overlap[operand] is less than 53 (only triple-doubles can be like that)
+		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
+		   is less than powers[i].
+		   The usage of a triple-double x as a double-double is not critical because
+		   x is supposed to be renormalized in this case.
+		*/
+		c = 0;
+		if (overlaps[operand2[i]] < 53) {
+		  /* We must perhaps renormalize */
+		  if (overlaps[operand2[i]] + 53 < powers[i]) {
+		    /* We renormalize */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1,
+				 name,variablename,operand2[i]+1);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    overlaps[operand2[i]] = 52;
+		  }
+		}
+
+		t = c;
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul22(&%s_%s_pow%dh,&%s_%s_pow%dm,%sh,%sm,%s_%s_pow%dh,%s_%s_pow%dm);",
 			     name,variablename,i+1,name,variablename,i+1,
 			     variablename,variablename,
 			     name,variablename,operand2[i]+1,name,variablename,operand2[i]+1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_%s_pow%dh, %s_%s_pow%dm;",
 			     name,variablename,i+1,name,variablename,i+1);
@@ -685,12 +1103,36 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      /* The second operand is x */
 	      switch (variablePrecision) {
 	      case 1:
-		/* Produce a double-double out of a double-double x^? and a double x */
-		c = snprintf(buffer1,CODESIZE,
+		/* Produce a double-double out of a double-double or better x^? and a double x */
+		/* If x^? is actually a triple-double, its higher overlap affects the precision of the
+		   operation. We check if overlap[operand] is less than 53 (only triple-doubles can be like that)
+		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
+		   is less than powers[i]. 
+		*/
+		c = 0;
+		if (overlaps[operand1[i]] < 53) {
+		  /* We must perhaps renormalize */
+		  if (overlaps[operand1[i]] + 53 < powers[i]) {
+		    /* We renormalize */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    overlaps[operand1[i]] = 52;
+		  }
+		}
+		
+		t = c;
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul122(&%s_%s_pow%dh,&%s_%s_pow%dm,%s,%s_%s_pow%dh,%s_%s_pow%dm);",
 			     name,variablename,i+1,name,variablename,i+1,
 			     variablename,name,variablename,operand1[i]+1,name,variablename,operand1[i]+1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_%s_pow%dh, %s_%s_pow%dm;",
 			     name,variablename,i+1,name,variablename,i+1);
@@ -699,12 +1141,39 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      case 2:
 	      case 3:
 		/* Produce a double-double out of a double-double or better x^? and a double-double or better x */
-		c = snprintf(buffer1,CODESIZE,
+
+		/* If x^? is actually a triple-double, its higher overlap affects the precision of the
+		   operation. We check if overlap[operand] is less than 53 (only triple-doubles can be like that)
+		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
+		   is less than powers[i].
+		   The usage of a triple-double x as a double-double is not critical because
+		   x is supposed to be renormalized in this case.
+		*/
+		c = 0;
+		if (overlaps[operand1[i]] < 53) {
+		  /* We must perhaps renormalize */
+		  if (overlaps[operand1[i]] + 53 < powers[i]) {
+		    /* We renormalize */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1,
+				 name,variablename,operand1[i]+1);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    overlaps[operand1[i]] = 52;
+		  }
+		}
+		
+		t = c;
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul22(&%s_%s_pow%dh,&%s_%s_pow%dm,%sh,%sm,%s_%s_pow%dh,%s_%s_pow%dm);",
 			     name,variablename,i+1,name,variablename,i+1,
 			     variablename,variablename,
 			     name,variablename,operand1[i]+1,name,variablename,operand1[i]+1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_%s_pow%dh, %s_%s_pow%dm;",
 			     name,variablename,i+1,name,variablename,i+1);
@@ -716,12 +1185,58 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	    } else {
 	      /* None of the operands is x and thus both double-doubles or better */
 	      /* Produce a double-double out of two double-doubles or better */
-	      c = snprintf(buffer1,CODESIZE,
+
+	      /* If operands are actually triple-doubles, their higher overlaps affect the precision of the
+		   operation. We check if overlap[operand] is less than 53 (only triple-doubles can be like that)
+		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
+		   is less than powers[i]. We do this for both one after the other.
+	      */
+
+	      t = 0;
+	      c = 0;
+	      if (overlaps[operand1[i]] < 53) {
+		/* We must perhaps renormalize */
+		if (overlaps[operand1[i]] + 53 < powers[i]) {
+		  /* We renormalize */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  overlaps[operand1[i]] = 52;
+		}
+	      }
+	      t += c;
+	      
+	      c = 0;
+	      if (overlaps[operand2[i]] < 53) {
+		/* We must perhaps renormalize */
+		if (overlaps[operand2[i]] + 53 < powers[i]) {
+		  /* We renormalize */
+		  c = snprintf(buffer1+t,CODESIZE-t,
+			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			       name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1);
+		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+		  overlaps[operand2[i]] = 52;
+		}
+	      }
+	      t += c;
+	      
+	      c = snprintf(buffer1+t,CODESIZE-t,
 			   "Mul22(&%s_%s_pow%dh,&%s_%s_pow%dm,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dh,%s_%s_pow%dm);",
 			   name,variablename,i+1,name,variablename,i+1,
 			   name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
 			   name,variablename,operand2[i]+1,name,variablename,operand2[i]+1);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
 			   "double %s_%s_pow%dh, %s_%s_pow%dm;",
 			   name,variablename,i+1,name,variablename,i+1);
@@ -730,6 +1245,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	  }
 	} else {
 	  /* Produce a double */
+	  overlaps[i] = 53;
 	  if (operand1[i] == 0) {
 	    /* The first operand is x */
 	    if (operand2[i] == 0) {
@@ -746,6 +1262,9 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      } else {
 		/* Produce x^2 as a double out of x as a double-double or better */
+		/* Here the usage of a triple-double x as a double is 
+		   not critical because we suppose that x is renormalized. 
+		*/
 		c = snprintf(buffer1,CODESIZE,
 			     "%s_%s_pow2h = %sh * %sh;",
 			     name,variablename,variablename,variablename);
@@ -759,9 +1278,24 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      /* The first operand is x, the second is x^? as a double or better */
 	      if (variablePrecision == 1) {
 		/* Produce a double out of a double x and a double or better x^? */
-		c = snprintf(buffer1,CODESIZE,
-			     "%s_%s_pow%dh = %s * %s_%s_pow%dh;",
-			     name,variablename,i+1,variablename,name,variablename,operand2[i]+1);
+
+		/* If x^? is a triple-double (overlaps[operand] < 53) that we want to 
+		   use as a double, we must check if overlaps[operand] is not less than
+		   the precision needed (powers[i]). If this is the case, since we do not
+		   want to renormalize the whole triple-double, we use a rounded sum of 
+		   the higher and middle value.
+		*/
+
+		if ((overlaps[operand2[i]] < 53) && (overlaps[operand2[i]] < powers[i])) {
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_%s_pow%dh = %s * (%s_%s_pow%dh + %s_%s_pow%dm);",
+			       name,variablename,i+1,variablename,name,variablename,operand2[i]+1,
+			       name,variablename,operand2[i]+1);
+		} else {
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_%s_pow%dh = %s * %s_%s_pow%dh;",
+			       name,variablename,i+1,variablename,name,variablename,operand2[i]+1);
+		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_%s_pow%dh;",
@@ -785,9 +1319,23 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      /* The second operand is x */
 	      if (variablePrecision == 1) {
 		/* Produce a double out of a double or better x^? and a double x */
-		c = snprintf(buffer1,CODESIZE,
-			     "%s_%s_pow%dh = %s * %s_%s_pow%dh;",
-			     name,variablename,i+1,variablename,name,variablename,operand1[i]+1);
+
+		/* If x^? is a triple-double (overlaps[operand] < 53) that we want to 
+		   use as a double, we must check if overlaps[operand] is not less than
+		   the precision needed (powers[i]). If this is the case, since we do not
+		   want to renormalize the whole triple-double, we use a rounded sum of 
+		   the higher and middle value.
+		*/
+		if ((overlaps[operand1[i]] < 53) && (overlaps[operand1[i]] < powers[i])) {
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_%s_pow%dh = %s * (%s_%s_pow%dh + %s_%s_pow%dm);",
+			       name,variablename,i+1,variablename,name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1);
+		} else {
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_%s_pow%dh = %s * %s_%s_pow%dh;",
+			       name,variablename,i+1,variablename,name,variablename,operand1[i]+1);
+		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_%s_pow%dh;",
@@ -795,9 +1343,25 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      } else {
 		/* Produce a double out of a double or better x^? and a double-double or better x */
-		c = snprintf(buffer1,CODESIZE,
-			     "%s_%s_pow%dh = %sh * %s_%s_pow%dh;",
-			     name,variablename,i+1,variablename,name,variablename,operand1[i]+1);
+
+		/* If x^? is a triple-double (overlaps[operand] < 53) that we want to 
+		   use as a double, we must check if overlaps[operand] is not less than
+		   the precision needed (powers[i]). If this is the case, since we do not
+		   want to renormalize the whole triple-double, we use a rounded sum of 
+		   the higher and middle value.
+		   The usage of a triple-double x as a double is not a problem because 
+		   this value is supposed to be renormalized in this case.
+		*/
+		if ((overlaps[operand1[i]] < 53) && (overlaps[operand1[i]] < powers[i])) {
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_%s_pow%dh = %sh * (%s_%s_pow%dh + %s_%s_pow%dm);",
+			       name,variablename,i+1,variablename,name,variablename,operand1[i]+1,
+			       name,variablename,operand1[i]+1);
+		} else {
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_%s_pow%dh = %sh * %s_%s_pow%dh;",
+			       name,variablename,i+1,variablename,name,variablename,operand1[i]+1);
+		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_%s_pow%dh;",
@@ -806,9 +1370,44 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      }
 	    } else {
 	      /* Produce a double out of two doubles or better */
-	      c = snprintf(buffer1,CODESIZE,
-			   "%s_%s_pow%dh = %s_%s_pow%dh * %s_%s_pow%dh;",
-			   name,variablename,i+1,name,variablename,operand1[i]+1,name,variablename,operand2[i]+1);
+	      /* If one of the operands is a triple-double (overlaps[operand] < 53) that we want to 
+		 use as a double, we must check if overlaps[operand] is not less than
+		 the precision needed (powers[i]). If this is the case, since we do not
+		 want to renormalize the whole triple-double, we use a rounded sum of 
+		 the higher and middle value.
+	      */
+
+	      if ((overlaps[operand1[i]] < 53) && (overlaps[operand1[i]] < powers[i])) {
+		if ((overlaps[operand2[i]] < 53) && (overlaps[operand2[i]] < powers[i])) {
+		  /* Both operands are low precision triple-doubles */
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_%s_pow%dh = (%s_%s_pow%dh + %s_%s_pow%dm) * (%s_%s_pow%dh + %s_%s_pow%dm);",
+			       name,variablename,i+1,
+			       name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
+			       name,variablename,operand2[i]+1,name,variablename,operand2[i]+1);
+		} else {
+		  /* Only the first operand is a low precision triple-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_%s_pow%dh = (%s_%s_pow%dh + %s_%s_pow%dm) * %s_%s_pow%dh;",
+			       name,variablename,i+1,
+			       name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
+			       name,variablename,operand2[i]+1);
+		}
+	      } else {
+		if ((overlaps[operand2[i]] < 53) && (overlaps[operand2[i]] < powers[i])) {
+		  /* Only the second operand is a low precision triple-double */
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_%s_pow%dh = (%s_%s_pow%dh + %s_%s_pow%dm) * %s_%s_pow%dh;",
+			       name,variablename,i+1,
+			       name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
+			       name,variablename,operand1[i]+1);
+		} else {
+		  /* Both operands can be truncated to a double without problems */
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_%s_pow%dh = %s_%s_pow%dh * %s_%s_pow%dh;",
+			       name,variablename,i+1,name,variablename,operand1[i]+1,name,variablename,operand2[i]+1);
+		}
+	      }
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
 			   "double %s_%s_pow%dh;",
@@ -818,7 +1417,8 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	  }
 	}
       }
-            
+      
+      /* Issue the buffers to code and variable buffers */
       c = snprintf(codeIssue,CODESIZE-issuedCode,"%s\n",buffer1);
       if (c < 0) {
 	res = 0;
@@ -841,8 +1441,9 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
       }
       issuedVariables += c;
       variablesIssue += c;    
-    }
-  }
+
+    } /* end if powers[i] >= 0 */
+  } /* end loop */
 
 
   /* Issue the variable definitions and the code */
@@ -922,7 +1523,7 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 }
 
 int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec, 
-		    int degree, int variablePrecision, FILE *fd, char *name) {
+		    int degree, int variablePrecision, FILE *fd, char *name, int *powerOverlaps) {
   int res, i, k, variableNumber, comingFormat, producedFormat, issuedCode, issuedVariables, c, coeffFormat;
   char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2; 
   
@@ -2533,9 +3134,10 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   node **coefficients;
   node *tempTree;
   mpfr_t *fpCoefficients;
-  int *addPrec, *mulPrec, *powPrec;
+  int *addPrec, *mulPrec, *powPrec, *overlapsPowers;
   int *fpCoeffRoundAutomatically;
   int targetPrec;
+
 
   if (prec < 159) {
     printMessage(1,"Warning: the current tool's precision (%d bits) is not sufficient for implementing triple-double code.\n",prec);
@@ -2641,6 +3243,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   }
 
   powPrec = (int *) safeCalloc(degree,sizeof(int));
+  overlapsPowers = (int *) safeCalloc(degree+1,sizeof(int));
 
   if (!determinePowers(fpCoefficients, degree, mulPrec, powPrec)) {
     printMessage(1,"Warning: a problem has been encountered during the determination of the powers needed.\n");
@@ -2687,13 +3290,13 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
     printMessage(1,"The implementation will be wrong.\n");
   }
 
-  if (!implementPowers(powPrec, degree, variablePrecision, fd, name)) {
+  if (!implementPowers(powPrec, degree, variablePrecision, fd, name, overlapsPowers)) {
     printMessage(1,"Warning: a problem has been encountered during the generation of the code for the powers of %s.\n",
 		 variablename);
     printMessage(1,"The produced implementation may be incorrect.\n");
   }
 
-  if (!implementHorner(fpCoefficients, addPrec, mulPrec, degree, variablePrecision, fd, name)) {
+  if (!implementHorner(fpCoefficients, addPrec, mulPrec, degree, variablePrecision, fd, name, overlapsPowers)) {
     printMessage(1,"Warning: a problem has been encountered during the generation of the code for the horner scheme.\n");
     printMessage(1,"The produced implementation may be incorrect.\n");
   }
@@ -2706,6 +3309,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   free(addPrec);
   free(mulPrec);
   free(powPrec);
+  free(overlapsPowers);
   free_memory(simplifiedFunc);
   mpfr_clear(temp);
 

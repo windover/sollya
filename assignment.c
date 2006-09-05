@@ -62,5 +62,6 @@ void freeSymbolTable(chain *symTbl, void (*f) (void *)) {
   if (symTbl != NULL) {
     if (symTbl->next != NULL) freeSymbolTable(symTbl->next,f);
     freeEntry(symTbl->value,f);
+    free(symTbl);
   }
 }
