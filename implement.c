@@ -1524,7 +1524,8 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 
 int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec, 
 		    int degree, int variablePrecision, FILE *fd, char *name, int *powerOverlaps) {
-  int res, i, k, variableNumber, comingFormat, producedFormat, issuedCode, issuedVariables, c, coeffFormat;
+  int res, i, k, variableNumber, comingFormat, producedFormat, issuedCode, issuedVariables, c;
+  int coeffFormat, currOverlap, t;
   char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2; 
   
   res = 1; 
@@ -1538,7 +1539,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
   variablesIssue = variables;
   issuedCode = 0;
   issuedVariables = 0;
-
+  
+  currOverlap = 53;
 
   /* Initialise with the first step */
 
@@ -1559,6 +1561,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		 name,variableNumber);
     if ((c < 0) || (c >= CODESIZE)) res = 0;	    
     variableNumber++;
+    /* The overlap is 53 since we have correctly rounded coefficients */
+    currOverlap = 53; 
     break;
   case 2:
     c = snprintf(buffer1,CODESIZE,
@@ -1572,6 +1576,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		 name,variableNumber);
     if ((c < 0) || (c >= CODESIZE)) res = 0;	    
     variableNumber++;
+    /* The overlap is 53 since we have correctly rounded coefficients */
+    currOverlap = 53; 
     break;
   case 1:
     c = snprintf(buffer1,CODESIZE,
@@ -1583,6 +1589,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		 name,variableNumber);
     if ((c < 0) || (c >= CODESIZE)) res = 0;	    
     variableNumber++;
+    /* The overlap is 53 since we have correctly rounded coefficients */
+    currOverlap = 53; 
     break;
   default:
     printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
@@ -1719,6 +1727,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	}
 	issuedVariables += c;
 	variablesIssue += c;    
+
+	/* The overlap is 53 since we have always double-double operations */
+	currOverlap = 53; 
+
       } else {
 	/* General case: multiplication followed by addition */
 
@@ -1739,19 +1751,45 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      switch (comingFormat) {
 	      case 3:
 		/* Multiply the triple-double temporary by a triple-double x, produce a triple-double */
-		c = snprintf(buffer1,CODESIZE,
+		
+		/* We have to check the precision of the operation which depends
+		   on the overlap of the entering triple-double operands.
+		   The overlap of x is fixed by hypothesis, so the precision
+		   depends only on the overlap of the entering temporary.
+		   If the precision is not sufficient, we renormalize.
+		*/
+		t = 0;
+		if (mulPrec[i] > (97 + currOverlap)) {
+		  /* We must renormalize the temporary */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = 52;
+		  t = c;
+		}
+
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%sl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     variablename,variablename,variablename,
 			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = MIN(48,currOverlap-4);
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a triple-double x, produce a triple-double */
+
+		/* The precision is fixed because of the operands' formats:
+		   - x is supposed to be non-overlapping by hypothesis
+		   - the other operand is a double-double
+		*/
+
 		c = snprintf(buffer1,CODESIZE,
 			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%sh,%sm,%sl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
@@ -1762,9 +1800,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = 48;
 		break;
 	      default:
 		/* Multiply the double temporary by a triple-double x, produce a triple-double */
+		
+		/* The precision is fixed because of the operands' formats:
+		   - x is supposed to be non-overlapping by hypothesis
+		   - the other operand is a double
+		*/
+
 		c = snprintf(buffer1,CODESIZE,
 			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%sh,%sm,%sl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
@@ -1775,6 +1820,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = 47;
 	      }
 	      break;
 	    case 2:
@@ -1782,19 +1828,44 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      switch (comingFormat) {
 	      case 3:
 		/* Multiply the triple-double temporary by a double-double x, produce a triple-double */
-		c = snprintf(buffer1,CODESIZE,
+
+		/* We have to check the precision of the operation which depends
+		   on the overlap of the entering triple-double operands.
+		   The overlap of x is fixed by hypothesis, so the precision
+		   depends only on the overlap of the entering temporary.
+		   If the precision is not sufficient, we renormalize.
+		*/
+		t = 0;
+		if (mulPrec[i] > (97 + currOverlap)) {
+		  /* We must renormalize the temporary */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = 52;
+		  t = c;
+		}
+
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     variablename,variablename,
 			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE+t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = MIN(48,currOverlap-4);
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a double-double x, produce a triple-double */
+
+		/* The precision is fixed because of the operands' formats:
+		   both operands are double-doubles
+		*/
+
 		c = snprintf(buffer1,CODESIZE,
 			     "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%s_t_%dh,%s_t_%dm);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
@@ -1805,9 +1876,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = 49;
 		break;
 	      default:
 		/* Multiply the double temporary by a double-double x, produce a triple-double */
+		
+		/* The precision is fixed because of the operands' formats:
+		   the operands are double and double-double
+		*/
+
 		c = snprintf(buffer1,CODESIZE,
 			     "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%sh,%sm);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
@@ -1818,26 +1895,52 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = 47;
 	      }
 	      break;
 	    case 1:
 	      switch (comingFormat) {
 	      case 3:
 		/* Multiply the triple-double temporary by a double x, produce a triple-double */
+
+		/* We have to check the precision of the operation which depends
+		   on the overlap of the entering triple-double operands.
+		   The overlap of x is fixed by hypothesis, so the precision
+		   depends only on the overlap of the entering temporary.
+		   If the precision is not sufficient, we renormalize.
+		*/
+		t = 0;
+		if (mulPrec[i] > (100 + currOverlap)) {
+		  /* We must renormalize the temporary */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = 52;
+		  t = c;
+		}
+
 		producedFormat = 3;
-		c = snprintf(buffer1,CODESIZE,
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     variablename,
 			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = MIN(47,currOverlap-5);
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a double x, produce a triple-double */
+
+		/* The precision is fixed because of the operands' formats:
+		   the operands are double and double-double
+		*/
+
 		producedFormat = 3;
 		c = snprintf(buffer1,CODESIZE,
 			     "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s,%s_t_%dh,%s_t_%dm);",
@@ -1849,9 +1952,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = 47;
 		break;
 	      default:
 		/* Multiply the double temporary by a double x, produce a double-double */
+		
+		/* The precision is fixed because of the operands' formats:
+		   both operands are doubles, we produce an exact double-double
+		*/
+
 		producedFormat = 2;
 		c = snprintf(buffer1,CODESIZE,
 			     "Mul12(&%s_t_%dh,&%s_t_%dm,%s,%s_t_%dh);",
@@ -1863,6 +1972,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%dh, %s_t_%dm;",
 			     name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = 53;
 	      }
 	      break;
 	    default:
@@ -1880,19 +1990,44 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		switch (comingFormat) {
 		case 3:
 		  /* Multiply the triple-double temporary by a double-double x^2, produce a triple-double */
-		  c = snprintf(buffer1,CODESIZE,
+
+		  /* We have to check the precision of the operation which depends
+		     on the overlap of the entering triple-double operands.
+		     The second operand is x^2 as a double-double, so the precision
+		     depends only on the overlap of the entering temporary.
+		     If the precision is not sufficient, we renormalize.
+		  */
+		  t = 0;
+		  if (mulPrec[i] > (97 + currOverlap)) {
+		    /* We must renormalize the temporary */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    currOverlap = 52;
+		    t = c;
+		  }
+		  
+		  c = snprintf(buffer1+t,CODESIZE-t,
 			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
 			       name,variablename,name,variablename,
 			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = MIN(48,currOverlap-4);
 		  break;
 		case 2:
 		  /* Multiply the double-double temporary by a double-double x^2, produce a triple-double */
+
+		  /* The precision is fixed because of the operands' formats:
+		     both operands are double-doubles
+		  */
+
 		  c = snprintf(buffer1,CODESIZE,
 			       "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_t_%dh,%s_t_%dm);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
@@ -1903,9 +2038,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = 49;
 		  break;
 		default:
 		  /* Multiply the double temporary by a double-double x^2, produce a triple-double */
+
+		  /* The precision is fixed because of the operands' formats:
+		     the operands are a double and a double-double
+		  */
+
 		  c = snprintf(buffer1,CODESIZE,
 			       "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow2h,%s_%s_pow2m);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
@@ -1916,48 +2057,146 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = 47;
 		}
 	      } else {
 		/* Multiply comingFormat by a triple-double x^2, produce a triple-double */
 		switch (comingFormat) {
 		case 3:
 		  /* Multiply the triple-double temporary by a triple-double x^2, produce a triple-double */
-		  c = snprintf(buffer1,CODESIZE,
+
+		  /* We have to check the precision of the operation which depends
+		     on the overlap of the entering triple-double operands.
+		     
+		     The precision is roughly 97 + min(overlaps) bits. 
+		     If it is not sufficient, we renormalize first the operands with 
+		     the higher overlap (lower value), check again and renormalize once
+		     again if needed.
+		  */
+
+		  t = 0;
+		  if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[1]))) {
+		    /* The precision is not sufficient, we have to renormalize at least one operand */
+		    if (currOverlap < powerOverlaps[1]) {
+		      /* We have to renormalize first the temporary */
+		      c = snprintf(buffer1,CODESIZE,
+				   "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		      if ((c < 0) || (c >= CODESIZE)) res = 0;
+		      t = c;
+		      currOverlap = 52;
+		    } else {
+		      /* We have to renormalize first x^2 */
+		      c = snprintf(buffer1,CODESIZE,
+				   "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
+				   name,variablename,name,variablename,name,variablename,
+				   name,variablename,name,variablename,name,variablename);
+		      if ((c < 0) || (c >= CODESIZE)) res = 0;
+		      t = c;
+		      powerOverlaps[1] = 52;
+		    }
+		    if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[1]))) {
+		      /* The precision is still not sufficient, we have to renormalize the other operand */
+		      if (currOverlap < powerOverlaps[1]) {
+			/* We have to renormalize the temporary */
+			c = snprintf(buffer1+t,CODESIZE-t,
+				     "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+				     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+				     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+			t += c;
+			currOverlap = 52;
+		      } else {
+			/* We have to renormalize x^2 */
+			c = snprintf(buffer1+t,CODESIZE-t,
+				     "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
+				     name,variablename,name,variablename,name,variablename,
+				     name,variablename,name,variablename,name,variablename);
+			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+			t += c;
+			powerOverlaps[1] = 52;
+		      }
+		    } 
+		  }
+
+		  c = snprintf(buffer1+t,CODESIZE-t,
 			       "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
 			       name,variablename,name,variablename,name,variablename,
 			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = MIN(48,currOverlap-4);
 		  break;
 		case 2:
 		  /* Multiply the double-double temporary by a triple-double x^2, produce a triple-double */
-		  c = snprintf(buffer1,CODESIZE,
+
+		  /* We have to check the precision of the operation which depends
+		     on the overlap of the entering triple-double operands.
+		     The temporary is a double-double, so the precision only depends 
+		     on the triple-double x^2
+		     If the precision is not sufficient, we renormalize.
+		  */
+		  t = 0;
+		  if (mulPrec[i] > (97 + powerOverlaps[1])) {
+		    /* We must renormalize the power */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
+				     name,variablename,name,variablename,name,variablename,
+				     name,variablename,name,variablename,name,variablename);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    powerOverlaps[1] = 52;
+		    t = c;
+		  }
+		  
+		  c = snprintf(buffer1+t,CODESIZE-t,
 			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
 			       name,variableNumber-1,name,variableNumber-1,
 			       name,variablename,name,variablename,name,variablename);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = MIN(48,currOverlap-4);
 		  break;
 		default:
 		  /* Multiply the double temporary by a triple-double x^2, produce a triple-double */
-		  c = snprintf(buffer1,CODESIZE,
+
+		  /* We have to check the precision of the operation which depends
+		     on the overlap of the entering triple-double operands.
+		     The temporary is a double, so the precision only depends 
+		     on the triple-double x^2
+		     If the precision is not sufficient, we renormalize.
+		  */
+		  t = 0;
+		  if (mulPrec[i] > (100 + powerOverlaps[1])) {
+		    /* We must renormalize the power */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
+				     name,variablename,name,variablename,name,variablename,
+				     name,variablename,name,variablename,name,variablename);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    powerOverlaps[1] = 52;
+		    t = c;
+		  }
+
+		  c = snprintf(buffer1+t,CODESIZE-t,
 			       "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
 			       name,variableNumber-1,
 			       name,variablename,name,variablename,name,variablename);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = MIN(47,currOverlap - 5);
 		}
 	      }
 	    } else {
@@ -1965,7 +2204,63 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      switch (comingFormat) {
 	      case 3:
 		/* Multiply the triple-double temporary by a triple-double x^k, produce a triple-double */
-		c = snprintf(buffer1,CODESIZE,
+
+		/* We have to check the precision of the operation which depends
+		   on the overlap of the entering triple-double operands.
+		   
+		   The precision is roughly 97 + min(overlaps) bits. 
+		   If it is not sufficient, we renormalize first the operands with 
+		   the higher overlap (lower value), check again and renormalize once
+		   again if needed.
+		*/
+		
+		t = 0;
+		if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[k-1]))) {
+		  /* The precision is not sufficient, we have to renormalize at least one operand */
+		  if (currOverlap < powerOverlaps[k-1]) {
+		    /* We have to renormalize first the temporary */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    t = c;
+		    currOverlap = 52;
+		  } else {
+		    /* We have to renormalize first x^k */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				 name,variablename,k,name,variablename,k,name,variablename,k,
+				 name,variablename,k,name,variablename,k,name,variablename,k);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    t = c;
+		    powerOverlaps[k-1] = 52;
+		  }
+		  if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[k-1]))) {
+		    /* The precision is still not sufficient, we have to renormalize the other operand */
+		    if (currOverlap < powerOverlaps[k-1]) {
+		      /* We have to renormalize the temporary */
+		      c = snprintf(buffer1+t,CODESIZE-t,
+				   "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+		      t += c;
+		      currOverlap = 52;
+		    } else {
+		      /* We have to renormalize x^k */
+		      c = snprintf(buffer1+t,CODESIZE-t,
+				   "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				   name,variablename,k,name,variablename,k,name,variablename,k,
+				   name,variablename,k,name,variablename,k,name,variablename,k);
+		      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+		      t += c;
+		      powerOverlaps[k-1] = 52;
+		    }
+		  } 
+		}
+		
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     name,variablename,k,name,variablename,k,name,variablename,k,
@@ -1975,32 +2270,73 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = MIN(48,currOverlap-4);
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a triple-double x^k, produce a triple-double */
-		c = snprintf(buffer1,CODESIZE,
+
+		/* We have to check the precision of the operation which depends
+		   on the overlap of the entering triple-double operands.
+		   The temporary is a double-double, so the precision only depends 
+		   on the triple-double x^k
+		   If the precision is not sufficient, we renormalize.
+		*/
+		t = 0;
+		if (mulPrec[i] > (97 + powerOverlaps[k-1])) {
+		  /* We must renormalize the power */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			       name,variablename,k,name,variablename,k,name,variablename,k,
+			       name,variablename,k,name,variablename,k,name,variablename,k);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  powerOverlaps[k-1] = 52;
+		  t = c;
+		}
+		
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,name,variableNumber-1,
 			     name,variablename,k,name,variablename,k,name,variablename,k);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = MIN(48,currOverlap-4);
 		break;
 	      default:
 		/* Multiply the double temporary by a triple-double x^k, produce a triple-double */
-		c = snprintf(buffer1,CODESIZE,
+
+		/* We have to check the precision of the operation which depends
+		   on the overlap of the entering triple-double operands.
+		   The temporary is a double-double, so the precision only depends 
+		   on the triple-double x^k
+		   If the precision is not sufficient, we renormalize.
+		*/
+		t = 0;
+		if (mulPrec[i] > (100 + powerOverlaps[k-1])) {
+		  /* We must renormalize the power */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			       name,variablename,k,name,variablename,k,name,variablename,k,
+			       name,variablename,k,name,variablename,k,name,variablename,k);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  powerOverlaps[k-1] = 52;
+		  t = c;
+		}
+
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,
 			     name,variablename,k,name,variablename,k,name,variablename,k);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = MIN(47,currOverlap-5);
 	      }
 	    }
 	  }
@@ -2008,6 +2344,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  if (mulPrec[i] > 53) {
 	    /* Produce a double-double */
 	    producedFormat = 2;
+	    currOverlap = 53;
 	    if (k == 1) {
 	      /* Multiply comingFormat by x as a double or double-double (or better), produce a double-double */
 	      switch (variablePrecision) {
@@ -2097,12 +2434,31 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by x^k as double-double, produce a double-double */
-		c = snprintf(buffer1,CODESIZE,
+
+		/* We have to check that if x^k is actually a triple-double that is read as a double-double
+		   that the precision obtained is sufficient regardless of the overlap in the triple-double 
+		   The obtained precision is roughly 53 + overlap value. If it is not sufficient, 
+		   we renormalize the whole triple-double value. 
+		*/
+
+		t = 0;
+		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
+		  /* We must renormalize the power */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			       name,variablename,k,name,variablename,k,name,variablename,k,
+			       name,variablename,k,name,variablename,k,name,variablename,k);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  powerOverlaps[k-1] = 52;
+		  t = c;
+		}
+
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul22(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_t_%dm,%s_%s_pow%dh,%s_%s_pow%dm);",
 			     name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,name,variableNumber-1,
 			     name,variablename,k,name,variablename,k);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh, %s_t_%dm;",
 			     name,variableNumber,name,variableNumber);
@@ -2110,12 +2466,31 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		break;
 	      default:
 		/* Multiply the double temporary by x^k as a double-double, produce a double-double */
-		c = snprintf(buffer1,CODESIZE,
+
+		/* We have to check that if x^k is actually a triple-double that is read as a double-double
+		   that the precision obtained is sufficient regardless of the overlap in the triple-double 
+		   The obtained precision is roughly 53 + overlap value. If it is not sufficient, 
+		   we renormalize the whole triple-double value. 
+		*/
+
+		t = 0;
+		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
+		  /* We must renormalize the power */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			       name,variablename,k,name,variablename,k,name,variablename,k,
+			       name,variablename,k,name,variablename,k,name,variablename,k);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  powerOverlaps[k-1] = 52;
+		  t = c;
+		}
+
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul122(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_%s_pow%dh,%s_%s_pow%dm);",
 			     name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,
 			     name,variablename,k,name,variablename,k);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh, %s_t_%dm;",
 			     name,variableNumber,name,variableNumber);
@@ -2125,6 +2500,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  } else {
 	    /* Produce a double */
 	    producedFormat = 1;
+	    currOverlap = 53;
 	    if (k == 1) {
 	      /* Multiply by x as a double (or better) */
 	      if (comingFormat == 1) {
@@ -2171,11 +2547,27 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    } else {
 	      if (comingFormat == 1) {
 		/* Multiply the double temporary by x^k as a double (or better) */
-		c = snprintf(buffer1,CODESIZE,
-			     "%s_t_%dh = %s_t_%dh * %s_%s_pow%dh;",
-			     name,variableNumber,
-			     name,variableNumber-1,
-			     name,variablename,k);
+
+		/* We have to check that if x^k is actually a triple-double that is read as a double
+		   that the precision obtained is sufficient regardless of the overlap in the triple-double 
+		   The obtained precision is roughly the overlap value. If it is not sufficient, 
+		   we use valueh + valuem instead of valueh.
+		*/
+		  
+		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) { 
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_t_%dh = %s_t_%dh * (%s_%s_pow%dh + %s_%s_pow%dm);",
+			       name,variableNumber,
+			       name,variableNumber-1,
+			       name,variablename,k,
+			       name,variablename,k);
+		} else {
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_t_%dh = %s_t_%dh * %s_%s_pow%dh;",
+			       name,variableNumber,
+			       name,variableNumber-1,
+			       name,variablename,k);
+		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh;",
@@ -2234,42 +2626,102 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    switch (coeffFormat) {
 	    case 3:
 	      /* Add the triple-double coefficient to the triple-double temporary, produce a triple-double */
-	      c = snprintf(buffer1,CODESIZE,
+
+	      /* We have to check the precision of the operation which depends
+		 on the overlap of the entering triple-double operands.
+		 The overlap of the coefficient is zero because the coefficient is correctly rounded.
+		 The precision depends thus only on the overlap of the coming temporary value.
+		 If the precision is not sufficient, we renormalize.
+	      */
+	      t = 0;
+	      if (addPrec[i] > (97 + currOverlap)) {
+		/* We must renormalize the temporary */
+		c = snprintf(buffer1,CODESIZE,
+			     "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = 52;
+		t = c;
+	      }
+
+	      c = snprintf(buffer1+t,CODESIZE-t,
 			   "Add33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			   name,variableNumber,name,variableNumber,name,variableNumber,
 			   name,i,name,i,name,i,
 			   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
 			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			   name,variableNumber,name,variableNumber,name,variableNumber);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      currOverlap = currOverlap - 5;
 	      break;
 	    case 2:
 	      /* Add the double-double coefficient to the triple-double temporary, produce a triple-double */
-	      c = snprintf(buffer1,CODESIZE,
+
+	      /* We have to check the precision of the operation which depends
+		 on the overlap of the entering triple-double operands.
+		 The overlap of the coefficient is zero because the coefficient is correctly rounded.
+		 The precision depends thus only on the overlap of the coming temporary value.
+		 If the precision is not sufficient, we renormalize.
+	      */
+	      t = 0;
+	      if (addPrec[i] > (103 + currOverlap)) {
+		/* We must renormalize the temporary */
+		c = snprintf(buffer1,CODESIZE,
+			     "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = 52;
+		t = c;
+	      }
+
+	      c = snprintf(buffer1+t,CODESIZE-t,
 			   "Add233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			   name,variableNumber,name,variableNumber,name,variableNumber,
 			   name,i,name,i,
 			   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      if ((c < 0) || (c >= CODESIZE+t)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
 			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			   name,variableNumber,name,variableNumber,name,variableNumber);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      currOverlap = MIN(45,currOverlap - 5);
 	      break;
 	    case 1:
 	      /* Add the double coefficient to the triple-double temporary, produce a triple-double */
-	      c = snprintf(buffer1,CODESIZE,
+
+	      /* We have to check the precision of the operation which depends
+		 on the overlap of the entering triple-double operands.
+		 The overlap of the coefficient is zero because the coefficient is correctly rounded.
+		 The precision depends thus only on the overlap of the coming temporary value.
+		 If the precision is not sufficient, we renormalize.
+	      */
+	      t = 0;
+	      if (addPrec[i] > (104 + currOverlap)) {
+		/* We must renormalize the temporary */
+		c = snprintf(buffer1,CODESIZE,
+			     "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = 52;
+		t = c;
+	      }
+
+	      c = snprintf(buffer1+t,CODESIZE-t,
 			   "Add133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			   name,variableNumber,name,variableNumber,name,variableNumber,
 			   name,i,
 			   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
 			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			   name,variableNumber,name,variableNumber,name,variableNumber);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      currOverlap = MIN(47,currOverlap - 2);
 	      break;
 	    default:
 	      printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
@@ -2282,6 +2734,11 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    switch (coeffFormat) {
 	    case 3:
 	      /* Add the triple-double coefficient to the double-double temporary, produce a triple-double */
+
+	      /* The precision of the following operation is fixed because the temporary is a double-double
+		 and the coefficient is correctly rounded.
+	      */
+
 	      c = snprintf(buffer1,CODESIZE,
 			   "Add233Cond(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl);",
 			   name,variableNumber,name,variableNumber,name,variableNumber,
@@ -2292,10 +2749,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			   name,variableNumber,name,variableNumber,name,variableNumber);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      currOverlap = 45; /* TODO: Verify this value */
 	      break;
 	    case 2:
 	      /* Add the double-double coefficient to the double-double temporary, produce a triple-double */
-	      
+
+	      /* The precision of the following operation is fixed because the temporary is a double-double
+		 and the coefficient is correctly rounded.
+	      */
+
 	      /* REMARK/ TODO: We have no Add23, we expand the temporary to triple-double */
 	      
 	      c = snprintf(buffer1,CODESIZE,
@@ -2307,10 +2769,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      c = snprintf(buffer2,CODESIZE,
 			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			   name,variableNumber,name,variableNumber,name,variableNumber);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    	
+	      currOverlap = 45;
 	      break;
 	    case 1:
 	      /* Add the double coefficient to the double-double temporary, produce a triple-double */
+	      
+	      /* The precision of the following operation is fixed because the temporary is a double-double
+		 and the coefficient is a double.
+	      */
+
 	      c = snprintf(buffer1,CODESIZE,
 			   "Add123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_t_%dh,%s_t_%dm);",
 			   name,variableNumber,name,variableNumber,name,variableNumber,
@@ -2321,6 +2789,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			   name,variableNumber,name,variableNumber,name,variableNumber);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      currOverlap = 52;
 	      break;
 	    default:
 	      printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
@@ -2332,6 +2801,11 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    switch (coeffFormat) {
 	    case 3:
 	      /* Add the triple-double coefficient to the double temporary, produce a triple-double */
+
+	      /* The precision of the following operation is fixed because the temporary is a double-double
+		 and the coefficient is correctly rounded.
+	      */
+
 	      producedFormat = 3;
 	      c = snprintf(buffer1,CODESIZE,
 			   "Add133Cond(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl);",
@@ -2343,11 +2817,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			   name,variableNumber,name,variableNumber,name,variableNumber);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	      currOverlap = 47; /* TODO: Verify this value */
 	      break;
 	    case 2:
 	      /* Add the double-double coefficient to the double temporary, produce a triple-double */
 	      producedFormat = 3;
-	      
+
+	      /* The precision of the following operation is fixed because the temporary is a double
+		 and the coefficient is correctly rounded.
+	      */
+
 	      /* REMARK/ TODO: We have no Add213, we expand the coefficient to triple-double */
 	      
 	      c = snprintf(buffer1,CODESIZE,
@@ -2359,10 +2838,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      c = snprintf(buffer2,CODESIZE,
 			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			   name,variableNumber,name,variableNumber,name,variableNumber);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      currOverlap = 47; /* TODO: Verify this value */
 	      break;
 	    case 1:
 	      /* Add the double coefficient to the double temporary, produce a double-double */
+
+	      /* The precision of the following operation is fixed because it is exact. */
+
 	      producedFormat = 2;
 	      c = snprintf(buffer1,CODESIZE,
 			   "Add12(%s_t_%dh,%s_t_%dm,%s_coeff_%dh,%s_t_%dh);",
@@ -2373,7 +2856,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      c = snprintf(buffer2,CODESIZE,
 			   "double %s_t_%dh, %s_t_%dm;",
 			   name,variableNumber,name,variableNumber);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      currOverlap = 53; 
 	      break;
 	    default:
 	      printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
@@ -2383,6 +2867,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	} else {
 	  if (addPrec[i] > 53) {
 	    producedFormat = 2;
+	    currOverlap = 53;
 	    /* Produce a double-double */
 	    switch (comingFormat) {
 	    case 3:
@@ -2477,6 +2962,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  } else {
 	    /* Produce a double */
 	    producedFormat = 1;
+	    currOverlap = 53;
 	    if (comingFormat == 1) {
 	      if (coeffFormat == 1) {
 		/* Add the double coefficient to the double temporary, produce a double */
@@ -2536,7 +3022,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
       k--;
       if (k > 0) {
 	/* The evaluation ends with the last multiplication by x or a power */	
-	if (mulPrec[0] > 102) {
+	i = 0;
+
+	if (mulPrec[i] > 102) {
 	  /* Produce a triple-double (or a double-double exactly if comingFormat = 1 and x as a double */
 	  if (k == 1) {
 	    /* Multiply by pure x as a double, double-double or triple-double */
@@ -2547,19 +3035,45 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      switch (comingFormat) {
 	      case 3:
 		/* Multiply the triple-double temporary by a triple-double x, produce a triple-double */
-		c = snprintf(buffer1,CODESIZE,
+		
+		/* We have to check the precision of the operation which depends
+		   on the overlap of the entering triple-double operands.
+		   The overlap of x is fixed by hypothesis, so the precision
+		   depends only on the overlap of the entering temporary.
+		   If the precision is not sufficient, we renormalize.
+		*/
+		t = 0;
+		if (mulPrec[i] > (97 + currOverlap)) {
+		  /* We must renormalize the temporary */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = 52;
+		  t = c;
+		}
+
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%sl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     variablename,variablename,variablename,
 			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = MIN(48,currOverlap-4);
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a triple-double x, produce a triple-double */
+
+		/* The precision is fixed because of the operands' formats:
+		   - x is supposed to be non-overlapping by hypothesis
+		   - the other operand is a double-double
+		*/
+
 		c = snprintf(buffer1,CODESIZE,
 			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%sh,%sm,%sl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
@@ -2570,9 +3084,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = 48;
 		break;
 	      default:
 		/* Multiply the double temporary by a triple-double x, produce a triple-double */
+		
+		/* The precision is fixed because of the operands' formats:
+		   - x is supposed to be non-overlapping by hypothesis
+		   - the other operand is a double
+		*/
+
 		c = snprintf(buffer1,CODESIZE,
 			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%sh,%sm,%sl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
@@ -2583,6 +3104,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = 47;
 	      }
 	      break;
 	    case 2:
@@ -2590,19 +3112,44 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      switch (comingFormat) {
 	      case 3:
 		/* Multiply the triple-double temporary by a double-double x, produce a triple-double */
-		c = snprintf(buffer1,CODESIZE,
+
+		/* We have to check the precision of the operation which depends
+		   on the overlap of the entering triple-double operands.
+		   The overlap of x is fixed by hypothesis, so the precision
+		   depends only on the overlap of the entering temporary.
+		   If the precision is not sufficient, we renormalize.
+		*/
+		t = 0;
+		if (mulPrec[i] > (97 + currOverlap)) {
+		  /* We must renormalize the temporary */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = 52;
+		  t = c;
+		}
+
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     variablename,variablename,
 			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE+t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = MIN(48,currOverlap-4);
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a double-double x, produce a triple-double */
+
+		/* The precision is fixed because of the operands' formats:
+		   both operands are double-doubles
+		*/
+
 		c = snprintf(buffer1,CODESIZE,
 			     "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%s_t_%dh,%s_t_%dm);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
@@ -2613,9 +3160,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = 49;
 		break;
 	      default:
 		/* Multiply the double temporary by a double-double x, produce a triple-double */
+		
+		/* The precision is fixed because of the operands' formats:
+		   the operands are double and double-double
+		*/
+
 		c = snprintf(buffer1,CODESIZE,
 			     "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%sh,%sm);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
@@ -2626,26 +3179,52 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = 47;
 	      }
 	      break;
 	    case 1:
 	      switch (comingFormat) {
 	      case 3:
 		/* Multiply the triple-double temporary by a double x, produce a triple-double */
+
+		/* We have to check the precision of the operation which depends
+		   on the overlap of the entering triple-double operands.
+		   The overlap of x is fixed by hypothesis, so the precision
+		   depends only on the overlap of the entering temporary.
+		   If the precision is not sufficient, we renormalize.
+		*/
+		t = 0;
+		if (mulPrec[i] > (100 + currOverlap)) {
+		  /* We must renormalize the temporary */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = 52;
+		  t = c;
+		}
+
 		producedFormat = 3;
-		c = snprintf(buffer1,CODESIZE,
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     variablename,
 			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = MIN(47,currOverlap-5);
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a double x, produce a triple-double */
+
+		/* The precision is fixed because of the operands' formats:
+		   the operands are double and double-double
+		*/
+
 		producedFormat = 3;
 		c = snprintf(buffer1,CODESIZE,
 			     "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s,%s_t_%dh,%s_t_%dm);",
@@ -2657,9 +3236,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = 47;
 		break;
 	      default:
 		/* Multiply the double temporary by a double x, produce a double-double */
+		
+		/* The precision is fixed because of the operands' formats:
+		   both operands are doubles, we produce an exact double-double
+		*/
+
 		producedFormat = 2;
 		c = snprintf(buffer1,CODESIZE,
 			     "Mul12(&%s_t_%dh,&%s_t_%dm,%s,%s_t_%dh);",
@@ -2671,6 +3256,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%dh, %s_t_%dm;",
 			     name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = 53;
 	      }
 	      break;
 	    default:
@@ -2688,19 +3274,44 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		switch (comingFormat) {
 		case 3:
 		  /* Multiply the triple-double temporary by a double-double x^2, produce a triple-double */
-		  c = snprintf(buffer1,CODESIZE,
+
+		  /* We have to check the precision of the operation which depends
+		     on the overlap of the entering triple-double operands.
+		     The second operand is x^2 as a double-double, so the precision
+		     depends only on the overlap of the entering temporary.
+		     If the precision is not sufficient, we renormalize.
+		  */
+		  t = 0;
+		  if (mulPrec[i] > (97 + currOverlap)) {
+		    /* We must renormalize the temporary */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    currOverlap = 52;
+		    t = c;
+		  }
+		  
+		  c = snprintf(buffer1+t,CODESIZE-t,
 			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
 			       name,variablename,name,variablename,
 			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = MIN(48,currOverlap-4);
 		  break;
 		case 2:
 		  /* Multiply the double-double temporary by a double-double x^2, produce a triple-double */
+
+		  /* The precision is fixed because of the operands' formats:
+		     both operands are double-doubles
+		  */
+
 		  c = snprintf(buffer1,CODESIZE,
 			       "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_t_%dh,%s_t_%dm);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
@@ -2711,9 +3322,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = 49;
 		  break;
 		default:
 		  /* Multiply the double temporary by a double-double x^2, produce a triple-double */
+
+		  /* The precision is fixed because of the operands' formats:
+		     the operands are a double and a double-double
+		  */
+
 		  c = snprintf(buffer1,CODESIZE,
 			       "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow2h,%s_%s_pow2m);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
@@ -2724,48 +3341,146 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = 47;
 		}
 	      } else {
 		/* Multiply comingFormat by a triple-double x^2, produce a triple-double */
 		switch (comingFormat) {
 		case 3:
 		  /* Multiply the triple-double temporary by a triple-double x^2, produce a triple-double */
-		  c = snprintf(buffer1,CODESIZE,
+
+		  /* We have to check the precision of the operation which depends
+		     on the overlap of the entering triple-double operands.
+		     
+		     The precision is roughly 97 + min(overlaps) bits. 
+		     If it is not sufficient, we renormalize first the operands with 
+		     the higher overlap (lower value), check again and renormalize once
+		     again if needed.
+		  */
+
+		  t = 0;
+		  if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[1]))) {
+		    /* The precision is not sufficient, we have to renormalize at least one operand */
+		    if (currOverlap < powerOverlaps[1]) {
+		      /* We have to renormalize first the temporary */
+		      c = snprintf(buffer1,CODESIZE,
+				   "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		      if ((c < 0) || (c >= CODESIZE)) res = 0;
+		      t = c;
+		      currOverlap = 52;
+		    } else {
+		      /* We have to renormalize first x^2 */
+		      c = snprintf(buffer1,CODESIZE,
+				   "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
+				   name,variablename,name,variablename,name,variablename,
+				   name,variablename,name,variablename,name,variablename);
+		      if ((c < 0) || (c >= CODESIZE)) res = 0;
+		      t = c;
+		      powerOverlaps[1] = 52;
+		    }
+		    if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[1]))) {
+		      /* The precision is still not sufficient, we have to renormalize the other operand */
+		      if (currOverlap < powerOverlaps[1]) {
+			/* We have to renormalize the temporary */
+			c = snprintf(buffer1+t,CODESIZE-t,
+				     "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+				     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+				     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+			t += c;
+			currOverlap = 52;
+		      } else {
+			/* We have to renormalize x^2 */
+			c = snprintf(buffer1+t,CODESIZE-t,
+				     "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
+				     name,variablename,name,variablename,name,variablename,
+				     name,variablename,name,variablename,name,variablename);
+			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+			t += c;
+			powerOverlaps[1] = 52;
+		      }
+		    } 
+		  }
+
+		  c = snprintf(buffer1+t,CODESIZE-t,
 			       "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
 			       name,variablename,name,variablename,name,variablename,
 			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = MIN(48,currOverlap-4);
 		  break;
 		case 2:
 		  /* Multiply the double-double temporary by a triple-double x^2, produce a triple-double */
-		  c = snprintf(buffer1,CODESIZE,
+
+		  /* We have to check the precision of the operation which depends
+		     on the overlap of the entering triple-double operands.
+		     The temporary is a double-double, so the precision only depends 
+		     on the triple-double x^2
+		     If the precision is not sufficient, we renormalize.
+		  */
+		  t = 0;
+		  if (mulPrec[i] > (97 + powerOverlaps[1])) {
+		    /* We must renormalize the power */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
+				     name,variablename,name,variablename,name,variablename,
+				     name,variablename,name,variablename,name,variablename);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    powerOverlaps[1] = 52;
+		    t = c;
+		  }
+		  
+		  c = snprintf(buffer1+t,CODESIZE-t,
 			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
 			       name,variableNumber-1,name,variableNumber-1,
 			       name,variablename,name,variablename,name,variablename);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = MIN(48,currOverlap-4);
 		  break;
 		default:
 		  /* Multiply the double temporary by a triple-double x^2, produce a triple-double */
-		  c = snprintf(buffer1,CODESIZE,
+
+		  /* We have to check the precision of the operation which depends
+		     on the overlap of the entering triple-double operands.
+		     The temporary is a double, so the precision only depends 
+		     on the triple-double x^2
+		     If the precision is not sufficient, we renormalize.
+		  */
+		  t = 0;
+		  if (mulPrec[i] > (100 + powerOverlaps[1])) {
+		    /* We must renormalize the power */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
+				     name,variablename,name,variablename,name,variablename,
+				     name,variablename,name,variablename,name,variablename);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    powerOverlaps[1] = 52;
+		    t = c;
+		  }
+
+		  c = snprintf(buffer1+t,CODESIZE-t,
 			       "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
 			       name,variableNumber-1,
 			       name,variablename,name,variablename,name,variablename);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  currOverlap = MIN(47,currOverlap - 5);
 		}
 	      }
 	    } else {
@@ -2773,7 +3488,63 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      switch (comingFormat) {
 	      case 3:
 		/* Multiply the triple-double temporary by a triple-double x^k, produce a triple-double */
-		c = snprintf(buffer1,CODESIZE,
+
+		/* We have to check the precision of the operation which depends
+		   on the overlap of the entering triple-double operands.
+		   
+		   The precision is roughly 97 + min(overlaps) bits. 
+		   If it is not sufficient, we renormalize first the operands with 
+		   the higher overlap (lower value), check again and renormalize once
+		   again if needed.
+		*/
+		
+		t = 0;
+		if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[k-1]))) {
+		  /* The precision is not sufficient, we have to renormalize at least one operand */
+		  if (currOverlap < powerOverlaps[k-1]) {
+		    /* We have to renormalize first the temporary */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    t = c;
+		    currOverlap = 52;
+		  } else {
+		    /* We have to renormalize first x^k */
+		    c = snprintf(buffer1,CODESIZE,
+				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				 name,variablename,k,name,variablename,k,name,variablename,k,
+				 name,variablename,k,name,variablename,k,name,variablename,k);
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    t = c;
+		    powerOverlaps[k-1] = 52;
+		  }
+		  if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[k-1]))) {
+		    /* The precision is still not sufficient, we have to renormalize the other operand */
+		    if (currOverlap < powerOverlaps[k-1]) {
+		      /* We have to renormalize the temporary */
+		      c = snprintf(buffer1+t,CODESIZE-t,
+				   "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
+				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
+				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+		      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+		      t += c;
+		      currOverlap = 52;
+		    } else {
+		      /* We have to renormalize x^k */
+		      c = snprintf(buffer1+t,CODESIZE-t,
+				   "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+				   name,variablename,k,name,variablename,k,name,variablename,k,
+				   name,variablename,k,name,variablename,k,name,variablename,k);
+		      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+		      t += c;
+		      powerOverlaps[k-1] = 52;
+		    }
+		  } 
+		}
+		
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     name,variablename,k,name,variablename,k,name,variablename,k,
@@ -2783,39 +3554,81 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = MIN(48,currOverlap-4);
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a triple-double x^k, produce a triple-double */
-		c = snprintf(buffer1,CODESIZE,
+
+		/* We have to check the precision of the operation which depends
+		   on the overlap of the entering triple-double operands.
+		   The temporary is a double-double, so the precision only depends 
+		   on the triple-double x^k
+		   If the precision is not sufficient, we renormalize.
+		*/
+		t = 0;
+		if (mulPrec[i] > (97 + powerOverlaps[k-1])) {
+		  /* We must renormalize the power */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			       name,variablename,k,name,variablename,k,name,variablename,k,
+			       name,variablename,k,name,variablename,k,name,variablename,k);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  powerOverlaps[k-1] = 52;
+		  t = c;
+		}
+		
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,name,variableNumber-1,
 			     name,variablename,k,name,variablename,k,name,variablename,k);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = MIN(48,currOverlap-4);
 		break;
 	      default:
 		/* Multiply the double temporary by a triple-double x^k, produce a triple-double */
-		c = snprintf(buffer1,CODESIZE,
+
+		/* We have to check the precision of the operation which depends
+		   on the overlap of the entering triple-double operands.
+		   The temporary is a double-double, so the precision only depends 
+		   on the triple-double x^k
+		   If the precision is not sufficient, we renormalize.
+		*/
+		t = 0;
+		if (mulPrec[i] > (100 + powerOverlaps[k-1])) {
+		  /* We must renormalize the power */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			       name,variablename,k,name,variablename,k,name,variablename,k,
+			       name,variablename,k,name,variablename,k,name,variablename,k);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  powerOverlaps[k-1] = 52;
+		  t = c;
+		}
+
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,
 			     name,variablename,k,name,variablename,k,name,variablename,k);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		currOverlap = MIN(47,currOverlap-5);
 	      }
 	    }
 	  }
 	} else {
-	  if (mulPrec[0] > 53) {
+	  if (mulPrec[i] > 53) {
 	    /* Produce a double-double */
 	    producedFormat = 2;
+	    currOverlap = 53;
 	    if (k == 1) {
 	      /* Multiply comingFormat by x as a double or double-double (or better), produce a double-double */
 	      switch (variablePrecision) {
@@ -2905,12 +3718,31 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by x^k as double-double, produce a double-double */
-		c = snprintf(buffer1,CODESIZE,
+
+		/* We have to check that if x^k is actually a triple-double that is read as a double-double
+		   that the precision obtained is sufficient regardless of the overlap in the triple-double 
+		   The obtained precision is roughly 53 + overlap value. If it is not sufficient, 
+		   we renormalize the whole triple-double value. 
+		*/
+
+		t = 0;
+		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
+		  /* We must renormalize the power */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			       name,variablename,k,name,variablename,k,name,variablename,k,
+			       name,variablename,k,name,variablename,k,name,variablename,k);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  powerOverlaps[k-1] = 52;
+		  t = c;
+		}
+
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul22(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_t_%dm,%s_%s_pow%dh,%s_%s_pow%dm);",
 			     name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,name,variableNumber-1,
 			     name,variablename,k,name,variablename,k);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh, %s_t_%dm;",
 			     name,variableNumber,name,variableNumber);
@@ -2918,12 +3750,31 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		break;
 	      default:
 		/* Multiply the double temporary by x^k as a double-double, produce a double-double */
-		c = snprintf(buffer1,CODESIZE,
+
+		/* We have to check that if x^k is actually a triple-double that is read as a double-double
+		   that the precision obtained is sufficient regardless of the overlap in the triple-double 
+		   The obtained precision is roughly 53 + overlap value. If it is not sufficient, 
+		   we renormalize the whole triple-double value. 
+		*/
+
+		t = 0;
+		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
+		  /* We must renormalize the power */
+		  c = snprintf(buffer1,CODESIZE,
+			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
+			       name,variablename,k,name,variablename,k,name,variablename,k,
+			       name,variablename,k,name,variablename,k,name,variablename,k);
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  powerOverlaps[k-1] = 52;
+		  t = c;
+		}
+
+		c = snprintf(buffer1+t,CODESIZE-t,
 			     "Mul122(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_%s_pow%dh,%s_%s_pow%dm);",
 			     name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,
 			     name,variablename,k,name,variablename,k);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh, %s_t_%dm;",
 			     name,variableNumber,name,variableNumber);
@@ -2933,6 +3784,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  } else {
 	    /* Produce a double */
 	    producedFormat = 1;
+	    currOverlap = 53;
 	    if (k == 1) {
 	      /* Multiply by x as a double (or better) */
 	      if (comingFormat == 1) {
@@ -2979,11 +3831,27 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    } else {
 	      if (comingFormat == 1) {
 		/* Multiply the double temporary by x^k as a double (or better) */
-		c = snprintf(buffer1,CODESIZE,
-			     "%s_t_%dh = %s_t_%dh * %s_%s_pow%dh;",
-			     name,variableNumber,
-			     name,variableNumber-1,
-			     name,variablename,k);
+
+		/* We have to check that if x^k is actually a triple-double that is read as a double
+		   that the precision obtained is sufficient regardless of the overlap in the triple-double 
+		   The obtained precision is roughly the overlap value. If it is not sufficient, 
+		   we use valueh + valuem instead of valueh.
+		*/
+		  
+		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) { 
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_t_%dh = %s_t_%dh * (%s_%s_pow%dh + %s_%s_pow%dm);",
+			       name,variableNumber,
+			       name,variableNumber-1,
+			       name,variablename,k,
+			       name,variablename,k);
+		} else {
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_t_%dh = %s_t_%dh * %s_%s_pow%dh;",
+			       name,variableNumber,
+			       name,variableNumber-1,
+			       name,variablename,k);
+		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%dh;",
@@ -2997,7 +3865,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    }
 	  }
 	}
-	
+
 	variableNumber++;
 	comingFormat = producedFormat;
 
@@ -3029,11 +3897,21 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	
 	switch (comingFormat) {
 	case 3:
-	  c = snprintf(buffer1,CODESIZE,
-		       "*%s_resh = %s_t_%dh; *%s_resm = %s_t_%dm; *%s_resl = %s_t_%dl;",
-		       name,name,variableNumber-1,
-		       name,name,variableNumber-1,
-		       name,name,variableNumber-1);
+	  /* If we are not renormalized, we renormalize, otherwise we copy */
+	  if (currOverlap < 52) {
+	    c = snprintf(buffer1,CODESIZE,
+			 "Renormalize3(%s_resh,%s_resm,%s_resl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			 name,name,name,
+			 name,variableNumber-1,
+			 name,variableNumber-1,
+			 name,variableNumber-1);
+	  } else {
+	    c = snprintf(buffer1,CODESIZE,
+			 "*%s_resh = %s_t_%dh; *%s_resm = %s_t_%dm; *%s_resl = %s_t_%dl;",
+			 name,name,variableNumber-1,
+			 name,name,variableNumber-1,
+			 name,name,variableNumber-1);
+	  }
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = snprintf(buffer2,CODESIZE," ");
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
@@ -3061,11 +3939,21 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 	switch (comingFormat) {
 	case 3:
-	  c = snprintf(buffer1,CODESIZE,
-		       "*%s_resh = %s_t_%dh; *%s_resm = %s_t_%dm; *%s_resl = %s_t_%dl;",
-		       name,name,variableNumber-1,
-		       name,name,variableNumber-1,
-		       name,name,variableNumber-1);
+	  /* If we are not renormalized, we renormalize, otherwise we copy */
+	  if (currOverlap < 52) {
+	    c = snprintf(buffer1,CODESIZE,
+			 "Renormalize3(%s_resh,%s_resm,%s_resl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			 name,name,name,
+			 name,variableNumber-1,
+			 name,variableNumber-1,
+			 name,variableNumber-1);
+	  } else {
+	    c = snprintf(buffer1,CODESIZE,
+			 "*%s_resh = %s_t_%dh; *%s_resm = %s_t_%dm; *%s_resl = %s_t_%dl;",
+			 name,name,variableNumber-1,
+			 name,name,variableNumber-1,
+			 name,name,variableNumber-1);
+	  }
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = snprintf(buffer2,CODESIZE," ");
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
