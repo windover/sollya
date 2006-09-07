@@ -141,6 +141,9 @@ void free_memory(node *tree) {
   return;
 }
 
+
+
+
 void fprintHeadFunction(FILE *fd,node *tree, char *x, char *y) {
   if (tree == NULL) return;
   switch (tree->nodeType) {
@@ -5400,4 +5403,102 @@ node *makePolynomial(mpfr_t *coefficients, int degree) {
   tempTree2 = horner(tempTree);
   free_memory(tempTree);
   return tempTree2;
+}
+
+
+int treeSize(node *tree) {
+  if (tree == NULL) return 0;
+  switch (tree->nodeType) {
+  case VARIABLE:
+    return 1;
+    break;
+  case CONSTANT:
+    return 1;
+    break;
+  case ADD:
+    return treeSize(tree->child1) + treeSize(tree->child2) + 1;
+    break;
+  case SUB:
+    return treeSize(tree->child1) + treeSize(tree->child2) + 1;
+    break;
+  case MUL:
+    return treeSize(tree->child1) + treeSize(tree->child2) + 1;
+    break;
+  case DIV:
+    return treeSize(tree->child1) + treeSize(tree->child2) + 1;
+    break;
+  case SQRT:
+    return treeSize(tree->child1) + 1;
+    break;
+  case EXP:
+    return treeSize(tree->child1) + 1;
+    break;
+  case LOG:
+    return treeSize(tree->child1) + 1;
+    break;
+  case LOG_2:
+    return treeSize(tree->child1) + 1;
+    break;
+  case LOG_10:
+    return treeSize(tree->child1) + 1;
+    break;
+  case SIN:
+    return treeSize(tree->child1) + 1;
+    break;
+  case COS:
+    return treeSize(tree->child1) + 1;
+    break;
+  case TAN:
+    return treeSize(tree->child1) + 1;
+    break;
+  case ASIN:
+    return treeSize(tree->child1) + 1;
+    break;
+  case ACOS:
+    return treeSize(tree->child1) + 1;
+    break;
+  case ATAN:
+    return treeSize(tree->child1) + 1;
+    break;
+  case SINH:
+    return treeSize(tree->child1) + 1;
+    break;
+  case COSH:
+    return treeSize(tree->child1) + 1;
+    break;
+  case TANH:
+    return treeSize(tree->child1) + 1;
+    break;
+  case ASINH:
+    return treeSize(tree->child1) + 1;
+    break;
+  case ACOSH:
+    return treeSize(tree->child1) + 1;
+    break;
+  case ATANH:
+    return treeSize(tree->child1) + 1;
+    break;
+  case POW:
+    return treeSize(tree->child1) + treeSize(tree->child2) + 1;
+    break;
+  case NEG:
+    return treeSize(tree->child1) + 1;
+    break;
+  case ABS:
+    return treeSize(tree->child1) + 1;
+    break;
+  case DOUBLE:
+    return treeSize(tree->child1) + 1;
+    break;
+  case DOUBLEDOUBLE:
+    return treeSize(tree->child1) + 1;
+    break;
+  case TRIPLEDOUBLE:
+    return treeSize(tree->child1) + 1;
+    break;
+  default:
+   fprintf(stderr,"Error: treeSize: unknown identifier (%d) in the tree\n",tree->nodeType);
+   exit(1);
+  }
+  return -1;
 }

@@ -14,6 +14,7 @@
 #define DEBUG 0
 #define DEBUGMPFI 0
 
+#define DIFFSIZE 5000000
 
 
 void printInterval(mpfi_t interval);
@@ -1182,6 +1183,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   chain *excludes, *directExcludes, *taylorExcludes, *taylorExcludesLinear, *taylorExcludesConstant;
   exprBoundTheo *constantTheo, *linearTheo, *directTheo;
   node *nextderiv;
+  int size;
 
   printMessage(9,"Information: evaluating a function in interval arithmetic using Taylor's formula.\n");
   if (verbosity >= 12) {
@@ -1239,7 +1241,18 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   taylorExcludesConstant = evaluateI(constantTerm, func, xZI, prec, 1, 2, constantTheo);
   if (recurse > 0) {
     nextderiv = differentiate(deriv);
-    taylorExcludesLinear = evaluateITaylor(linearTerm, deriv, nextderiv, x, prec, recurse - 1, linearTheo);
+    size = treeSize(nextderiv);
+
+    if (size > DIFFSIZE) {
+	printMessage(1,"Waring: during recursive Taylor evaluation the expression of a derivative has become\n");
+	printMessage(1,"as great that it contains more than %d nodes.\n",DIFFSIZE);
+	printMessage(1,"Will now stop recursive Taylor evaluation on this expression.\n");
+	printMessage(2,"Information: the size of the derivative is %d, we had %d recursion(s) left.\n",size,recurse-1);
+	taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, 2, linearTheo);
+    } else {
+      taylorExcludesLinear = evaluateITaylor(linearTerm, deriv, nextderiv, x, prec, recurse - 1, linearTheo);
+    }
+    
     free_memory(nextderiv);
   } else {
     taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, 2, linearTheo);
