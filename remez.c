@@ -27,31 +27,31 @@ node *convert_poly(int first_index, int last_index, GEN tab, chain *monomials, m
   mpfr_t *value2;
 
   if (lengthChain(monomials) != (last_index-first_index)+1) {
-    printf("Error : in Remez, trying to convert an array of coefficients with respect to a list of monomials with different length.\n");
+    fprintf(stderr,"Error : in Remez, trying to convert an array of coefficients with respect to a list of monomials with different length.\n");
     recoverFromError();
   }
 
   if (first_index == last_index) {
-    tree = malloc(sizeof(node));
+    tree = safeMalloc(sizeof(node));
     tree->nodeType = MUL;
 
-    temp1 = malloc(sizeof(node));
+    temp1 = safeMalloc(sizeof(node));
     temp1->nodeType = CONSTANT;
-    value = malloc(sizeof(mpfr_t));
+    value = safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value, prec);
     PARI_to_mpfr(*value, (GEN)(tab[first_index]), GMP_RNDN);
     temp1->value = value;
     tree->child1 = temp1;
 
-    temp2 = malloc(sizeof(node));
+    temp2 = safeMalloc(sizeof(node));
     temp2->nodeType = POW;
-    temp3 = malloc(sizeof(node));
+    temp3 = safeMalloc(sizeof(node));
     temp3->nodeType = VARIABLE;
     temp2->child1 = temp3;
 
-    temp4 = malloc(sizeof(node));
+    temp4 = safeMalloc(sizeof(node));
     temp4->nodeType = CONSTANT;
-    value2 = malloc(sizeof(mpfr_t));
+    value2 = safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value2, prec);
     mpfr_set_si(*value2, *((int *) monomials->value), GMP_RNDN);
     temp4->value = value2;
@@ -61,29 +61,29 @@ node *convert_poly(int first_index, int last_index, GEN tab, chain *monomials, m
   else {
     temp1 = convert_poly(first_index+1, last_index, tab, monomials->next, prec);
 
-    tree = malloc(sizeof(node));
+    tree = safeMalloc(sizeof(node));
     tree->nodeType = ADD;
     tree->child2 = temp1;
 
-    temp2 = malloc(sizeof(node));
+    temp2 = safeMalloc(sizeof(node));
     temp2->nodeType = MUL;
 
-    temp3 = malloc(sizeof(node));
+    temp3 = safeMalloc(sizeof(node));
     temp3->nodeType = CONSTANT;
-    value = malloc(sizeof(mpfr_t));
+    value = safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value, prec);
     PARI_to_mpfr(*value, (GEN)(tab[first_index]), GMP_RNDN);
     temp3->value = value;
 
-    temp4 = malloc(sizeof(node));
+    temp4 = safeMalloc(sizeof(node));
     temp4->nodeType = POW;
     
-    temp5 = malloc(sizeof(node));
+    temp5 = safeMalloc(sizeof(node));
     temp5->nodeType = VARIABLE;
 
-    temp6 = malloc(sizeof(node));
+    temp6 = safeMalloc(sizeof(node));
     temp6->nodeType = CONSTANT;
-    value2 = malloc(sizeof(mpfr_t));
+    value2 = safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value2, prec);
     mpfr_set_si(*value2, *((int *) monomials->value), GMP_RNDN);
     temp6->value = value2;
@@ -160,7 +160,7 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
     if (mpfr_sgn(y1) != mpfr_sgn(y2)) {
       i++;
       if(i>deg+2)
-	printf("The function oscillates too much. Nevertheless, we try to continue.\n");
+	printMessage(1,"Warning: the function oscillates too much. Nevertheless, we try to continue.\n");
       else res[i] = (long)(newton(tree, diff_tree, x1, x2, prec));       
     }
     mpfr_set(x1,x2,GMP_RNDN);
@@ -170,7 +170,7 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
   }
   
   if (i<deg) {
-    printf("The function fails to oscillate enough.\n");
+    printMessage(1,"Warning: the function fails to oscillate enough.\n");
     *crash_report = -1;
   }
   else {
@@ -282,7 +282,7 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   node *tree;
   node *tree_diff;
   node *tree_diff2;
-  node *res;
+  node *res = NULL;
   int test=1, crash_report;
   int deg, deg_diff, deg_diff2;
   chain *monomials_diff;
@@ -292,21 +292,21 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   sortChain(monomials,cmpIntPtr);
 
   if (!testMonomials(monomials)) {
-    printf("Error: monomial degree is given twice in argument to Remez algorithm.\n");
+    fprintf(stderr,"Error: monomial degree is given twice in argument to Remez algorithm.\n");
     recoverFromError();
   }
 
   deg = lengthChain(monomials) - 1;
  
-  tree = malloc(sizeof(node));
+  tree = safeMalloc(sizeof(node));
   tree->nodeType = SUB;
   tree->child1 = copyTree(func);
 
-  tree_diff = malloc(sizeof(node));
+  tree_diff = safeMalloc(sizeof(node));
   tree_diff->nodeType = SUB;
   tree_diff->child1 = differentiate(func);
 
-  tree_diff2 = malloc(sizeof(node));
+  tree_diff2 = safeMalloc(sizeof(node));
   tree_diff2->nodeType = SUB;
   tree_diff2->child1 = differentiate(tree_diff->child1);
 
@@ -428,9 +428,13 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     }
 
     // DEBUG
-    printf("Step %d ; quality of the approximation : %e. Computed value of epsilon : ",test,computeRatio(tree, x, prec));output((GEN)(temp[deg+2]));
-    //plotTree(tree,a,b,500,prec);
-    //for(i=0;i<100000;i++){}
+    printMessage(4,"Step %d ; quality of the approximation : %e. Computed value of epsilon : ",test,computeRatio(tree, x, prec)); 
+    if (verbosity >= 4) {
+      output((GEN)(temp[deg+2]));
+      //plotTree(tree,a,b,500,prec);
+      //for(i=0;i<100000;i++){}
+    }
+
     test++;
     if (computeRatio(tree, x, prec)<0.0001) {
       test = 0;

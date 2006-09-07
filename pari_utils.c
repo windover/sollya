@@ -22,7 +22,7 @@ GEN mpfr_to_PARI(mpfr_t x) {
   q = prec/BITS_IN_LONG;
 
   if (!mpfr_number_p(x)) {
-    printf("Error: cannot convert Inf or Nan to PARI.\n");
+    fprintf(stderr,"Error: cannot convert Inf or Nan to PARI.\n");
     recoverFromError();
   }
   if (mpfr_zero_p(x)) {
@@ -43,13 +43,13 @@ GEN mpfr_to_PARI(mpfr_t x) {
   mpz_export(&(res[2]),NULL,1,BITS_IN_LONG/8,0,0,m);
 
   if ((long int)(prec)+e-1 < 3-HIGHEXPOBIT) {
-    printf("Warning: an underflow occured during a conversion.\n");
+    printMessage(1,"Warning: an underflow occured during a conversion.\n");
     setsigne(res,0);
     res[2]=0;
   }
   else {
     if ((long int)(prec)+e-1 >= HIGHEXPOBIT) {
-      printf("Error: an overflow occured during a conversion.\n");
+      fprintf(stderr,"Error: an overflow occured during a conversion.\n");
       recoverFromError();
     }
     else {
@@ -77,13 +77,13 @@ void PARI_to_mpfr(mpfr_t y, GEN x, mp_rnd_t rnd) {
   }
 
   if (gexpo(x)+1 > mpfr_get_emax()) {
-    printf("Warning: generating Inf in a conversion.\n");
+    printMessage(1,"Warning: generating Inf in a conversion.\n");
     mpfr_set_inf(y, s);
     return;
   }
 
   if (gexpo(x)+1 < mpfr_get_emin()) {
-    printf("Warning: generating zero in a conversion.\n");
+    printMessage(1,"Warning: generating zero in a conversion.\n");
     mpfr_set_d(y,0.,GMP_RNDN);
     return;
   }
