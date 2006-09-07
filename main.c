@@ -14,6 +14,7 @@
 #include "remez.h"
 #include "infnorm.h"
 #include "assignment.h"
+#include <pari/paripriv.h>
 
 #define PARIMEMSIZE 3000000
 
@@ -55,7 +56,7 @@ formatType *formatTypeTemp;
 errorType *errorTypeTemp;
 pointsType *pointsTypeTemp;
 
-extern jmp_buf environnement;
+extern gp_data *GP_DATA;
 
 extern int yyparse();
 extern FILE *yyin;
@@ -227,7 +228,7 @@ int main(int argc, char *argv[]) {
   pari_init(PARIMEMSIZE, 2);
   ltop = avma;
   
-  if (setjmp(environnement)) {
+  if (setjmp(GP_DATA->env)) {
     fprintf(stderr,"Error: an error occured in the PARI subsystem.\n");
     recoverFromError();
   }
