@@ -270,6 +270,11 @@ void testPari(void) {
   fprintf(stderr, "-2 : sign %d, exponent %ld, corresponding long %lx ",gsigne(x),gexpo(x), x[1]);
   fprintf(stderr, "\n");
 
+  x = gp_read_str("2.");
+  setsigne(x, (long int)(HIGHEXPOBIT));
+  fprintf(stderr, "x = 2^HEB : "); outbeaut(x);
+  gmulz(x, gen_2, ep);
+
   mpz_clear(m);
   mpfr_clear(am);
   mpfr_clear(bm);
