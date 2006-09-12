@@ -42,7 +42,7 @@ GEN mpfr_to_PARI(mpfr_t x) {
   res = cgetr(q+3);
   mpz_export(&(res[2]),NULL,1,BITS_IN_LONG/8,0,0,m);
 
-  if ((long int)(prec)+e-1 < 3-(long int)(HIGHEXPOBIT)) {
+  if ((long int)(prec)+e-1 < 94-(long int)(HIGHEXPOBIT)) {
     printMessage(1,"Warning: an underflow occured during a conversion.\n");
     setsigne(res,0);
     res[2]=0;
@@ -121,10 +121,9 @@ GEN evaluate_to_PARI(node *tree, GEN x, mp_prec_t prec) {
 
 void testPari(void) {
   mp_exp_t e;
-  mp_prec_t prec;
   mpz_t m;
   int s, i;
-  mpfr_t am, bm, cm, dm, em;
+  mpfr_t am, bm, cm, dm, em, y, z;
   GEN ap, bp, cp, dp, ep, x;
 
   mpfr_init2(am, 5);
@@ -132,6 +131,8 @@ void testPari(void) {
   mpfr_init2(cm, 64);
   mpfr_init2(dm, 100);
   mpfr_init2(em, 100);
+  mpfr_init2(y, 1000);
+  mpfr_init2(z, 1000);
 
   /* em is set to the number 110.0110...01 with 60 zeros between the ones */
   mpfr_set_ui(em, 51, GMP_RNDN); //exact
@@ -271,9 +272,38 @@ void testPari(void) {
   fprintf(stderr, "\n");
 
   x = gp_read_str("2.");
-  setsigne(x, (long int)(HIGHEXPOBIT));
+  setexpo(x, (long int)(HIGHEXPOBIT)-1);
   fprintf(stderr, "x = 2^HEB : "); outbeaut(x);
-  gmulz(x, gen_2, ep);
+  //gmulz(x, gen_2, ep);
+
+  x = gp_read_str("2.");
+  setexpo(x, (long int)(94)-(long int)(HIGHEXPOBIT));
+  fprintf(stderr, "x = 2^(-HEB+3) : "); outbeaut(x);printf("\n");
+  // gdivz(x, gen_2, ep);
+  // fprintf(stderr, "x = 2^(-HEB+3) : "); outbeaut(ep);printf("\n");
+
+  /* Verifying that the functions work well */
+  x = mppi(12);
+  PARI_to_mpfr(y, x, GMP_RNDN);
+  if (gequal(mpfr_to_PARI(y), x)) fprintf(stderr, "Test 1 : OK\n");
+  else fprintf(stderr, "Test 1 : FAILED\n");
+
+  setsigne(x, -1);
+  PARI_to_mpfr(y, x, GMP_RNDN);
+  if (gequal(mpfr_to_PARI(y), x)) fprintf(stderr, "Test 2 : OK\n");
+  else fprintf(stderr, "Test 2 : FAILED\n");
+
+  mpfr_const_pi(y, GMP_RNDN);
+  x = mpfr_to_PARI(y);
+  PARI_to_mpfr(z, x, GMP_RNDN);
+  if (mpfr_equal_p(y,z)) fprintf(stderr, "Test 3 : OK \n");
+  else fprintf(stderr, "Test 3 : FAILED !\n");
+
+  mpfr_neg(y, y, GMP_RNDN);
+  x = mpfr_to_PARI(y);
+  PARI_to_mpfr(z, x, GMP_RNDN);
+  if (mpfr_equal_p(y,z)) fprintf(stderr, "Test 4 : OK \n");
+  else fprintf(stderr, "Test 4 : FAILED !\n");
 
   mpz_clear(m);
   mpfr_clear(am);
@@ -281,5 +311,7 @@ void testPari(void) {
   mpfr_clear(cm);
   mpfr_clear(dm);
   mpfr_clear(em);
+  mpfr_clear(y);
+  mpfr_clear(z);
 }
 
