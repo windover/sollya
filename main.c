@@ -82,6 +82,20 @@ void *safeMalloc (size_t size) {
   return ptr;
 }
 
+void *safeRealloc (void *ptr, size_t size) {
+  void *newPtr;
+  newPtr = realloc(ptr,size);
+  if ((size != 0) && (newPtr == NULL)) {
+    fprintf(stderr,"Error: realloc could not succeed. No more memory left.\n");
+    exit(1);
+  }
+  return newPtr;
+}
+
+/* The gp signature for realloc is strange, we have to wrap our function */
+void *wrapSafeRealloc(void *ptr, size_t old_size, size_t new_size) {
+   return (void *) safeRealloc(ptr,new_size);
+}
 
 
 void demaskString(char *dest, char *src) {
@@ -227,6 +241,7 @@ int main(int argc, char *argv[]) {
   
   
   pari_init(PARIMEMSIZE, 2);
+  mp_set_memory_functions(safeMalloc,wrapSafeRealloc,NULL);
   ltop = avma;
   
   
