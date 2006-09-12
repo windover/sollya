@@ -16,6 +16,7 @@
 #include "fpminimax.h"
 #include "implement.h"
 #include "double.h"
+#include "pari_utils.h"
 
 int yylex();
 
@@ -157,6 +158,7 @@ void yyerror(char *message) {
 %token  ROUNDCOEFFICIENTSTOKEN
 %token  HONORCOEFFPRECTOKEN
 %token  RESTARTTOKEN
+%token  TESTPARITOKEN
 
 %type <other> commands
 %type <other> command
@@ -215,6 +217,7 @@ void yyerror(char *message) {
 %type <anInteger> expansionFormat
 %type <aChain> expansionFormatList
 %type <other> restart
+%type <other> testpari
 
 %%
 
@@ -402,6 +405,10 @@ command:     plot
                            {
 			     $$ = NULL;
 			   }
+           | testpari SEMICOLONTOKEN
+                           {
+			     $$ = NULL;
+			   }
            | error SEMICOLONTOKEN
                            {
 			     handlingError = 0;
@@ -431,6 +438,32 @@ restart:     RESTARTTOKEN
 			     $$ = NULL;
 			   }
 ;
+
+testpari:     TESTPARITOKEN
+                           {
+			     printf("Will now test the PARI subsystem.\n");
+			     testPari();
+			     printf("PARI test completed. We did not crash. Will now restart the system.\n");
+			     freeSymbolTable(symbolTable,freeMemoryOnVoid);
+			     freeSymbolTable(symbolTable2,freeRangetypePtr);
+			     if(currentVariable != NULL) free(currentVariable);
+			     if(variablename != NULL) free(variablename);
+			     symbolTable = NULL;
+			     symbolTable2 = NULL;
+			     currentVariable = NULL;
+			     variablename = NULL;
+			     defaultprecision = DEFAULTPRECISION;
+			     defaultpoints = DEFAULTPOINTS;
+			     tools_precision = DEFAULTPRECISION;
+			     taylorrecursions = DEFAULTTAYLORRECURSIONS;
+			     verbosity = 1;
+			     dyadic = 0;
+			     avma = ltop;
+			     printf("System restarted.\n");
+			     $$ = NULL;
+			   }
+;
+
 
 dyadic:      DYADICTOKEN EQUALTOKEN ONTOKEN 
                            {

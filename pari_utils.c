@@ -117,3 +117,9 @@ GEN evaluate_to_PARI(node *tree, GEN x, mp_prec_t prec) {
   mpfr_clear(res_mpfr);
   return res;
 }
+
+
+void testPari(void) {
+
+  printf("Coucou\n");
+}

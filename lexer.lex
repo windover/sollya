@@ -173,6 +173,8 @@ HONORCOEFFPREC  "honorcoeffprec"
 
 RESTART         "restart"
 
+TESTPARI        "testpari"
+
 %%
 
 %{
@@ -292,6 +294,8 @@ RESTART         "restart"
 {ROUNDCOEFFICIENTS}      {     promptToBePrinted = 0; return ROUNDCOEFFICIENTSTOKEN; }                    
 {HONORCOEFFPREC}         {     promptToBePrinted = 0; return HONORCOEFFPRECTOKEN; }                    
 {RESTART}                {     promptToBePrinted = 0; return RESTARTTOKEN; }                    
+{TESTPARI}               {     promptToBePrinted = 0; return TESTPARITOKEN; }                    
+
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);
