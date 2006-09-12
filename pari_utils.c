@@ -148,7 +148,7 @@ void testPari(void) {
   mpfr_const_pi(dm, GMP_RNDN);
 
   /* LOGS */
-  fprintf(stderr, "Bits in long : %ld\nSize of long : %d\nHig expo bit : %ld\n\n", BITS_IN_LONG, sizeof(long), HIGHEXPOBIT);
+  fprintf(stderr, "Bits in long : %ld\nSize of long : %ld\nHig expo bit : %ld\n\n", (long int) BITS_IN_LONG, sizeof(long), (long int) HIGHEXPOBIT);
   
   /* Value of pi in PARI */
   x = mppi(10);
