@@ -225,15 +225,17 @@ void printPrompt(void) {
 
 int main(int argc, char *argv[]) {
   
+  
   pari_init(PARIMEMSIZE, 2);
   ltop = avma;
+  
   
   if (setjmp(GP_DATA->env)) {
     fprintf(stderr,"Error: an error occured in the PARI subsystem.\n");
     recoverFromError();
   }
   
-
+ 
   signal(SIGINT,signalHandler);
   signal(SIGSEGV,signalHandler);
   signal(SIGBUS,signalHandler);
@@ -259,7 +261,7 @@ int main(int argc, char *argv[]) {
   freeSymbolTable(symbolTable2,freeRangetypePtr);
   if(currentVariable != NULL) free(currentVariable);
   if(variablename != NULL) free(variablename);
-  free((void *) (ltop - PARIMEMSIZE));
+  
 
   fclose(yyin);
   return 0;

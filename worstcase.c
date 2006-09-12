@@ -49,6 +49,8 @@ void printWorstCases(node *func,
   double eps;
   long long int i;
 
+  printf("prec = %d\n",(int) prec);
+
   if (!(mpfrToInt(&inputprecision, inputprec) &&
 	mpfrToInt(&outputprecision, outputprec) &&
 	mpfrToInt(&firstexponent, *(inputExponRange.a)) &&
@@ -66,13 +68,6 @@ void printWorstCases(node *func,
   if ((prec < (mp_prec_t) inputprecision) || (prec < (mp_prec_t) outputprecision)) {
     printMessage(1,"Warning: the internal precision is less than the input or output precision.\n");
     printMessage(1,"Try to increase the tool's precision.\n");
-    printMessage(1,"Warning: an error occured. The last command will not succeed. This is harmless.\n");
-    return;
-  }
-
-  if ((firstexponent <= 0) != (lastexponent <= 0)) {
-    printMessage(1,"Warning: the minimum and maximum search range exponent are not of the same sign.\n");
-    printMessage(1,"Split the exponent search range into two parts.\n");
     printMessage(1,"Warning: an error occured. The last command will not succeed. This is harmless.\n");
     return;
   }
@@ -122,7 +117,9 @@ void printWorstCases(node *func,
     }
 
     mpfr_set(temp,x,GMP_RNDN);
+
     evaluate(y,func,temp,prec);
+
     mpfr_set(yR,y,GMP_RNDN);
     mpfr_sub(temp2,y,yR,GMP_RNDN);
     mpfr_abs(temp2,temp2,GMP_RNDN);
