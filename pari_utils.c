@@ -42,19 +42,19 @@ GEN mpfr_to_PARI(mpfr_t x) {
   res = cgetr(q+3);
   mpz_export(&(res[2]),NULL,1,BITS_IN_LONG/8,0,0,m);
 
-  if ((long int)(prec)+e-1 < 3-HIGHEXPOBIT) {
+  if ((long int)(prec)+e-1 < 3-(long int)(HIGHEXPOBIT)) {
     printMessage(1,"Warning: an underflow occured during a conversion.\n");
     setsigne(res,0);
     res[2]=0;
   }
   else {
-    if ((long int)(prec)+e-1 >= HIGHEXPOBIT) {
+    if ((long int)(prec)+e-1 >= (long int)(HIGHEXPOBIT)) {
       fprintf(stderr,"Error: an overflow occured during a conversion.\n");
       recoverFromError();
     }
     else {
       setexpo(res,prec+e-1);
-      setsigne(res,s);
+      if (s>0) setsigne(res,1); else setsigne(res,-1);
     }
   }
 
@@ -120,6 +120,161 @@ GEN evaluate_to_PARI(node *tree, GEN x, mp_prec_t prec) {
 
 
 void testPari(void) {
+  mp_exp_t e;
+  mp_prec_t prec;
+  mpz_t m;
+  int s, i;
+  mpfr_t am, bm, cm, dm, em;
+  GEN ap, bp, cp, dp, ep, x;
 
-  printf("Coucou\n");
+  mpfr_init2(am, 5);
+  mpfr_init2(bm, 8);
+  mpfr_init2(cm, 64);
+  mpfr_init2(dm, 100);
+  mpfr_init2(em, 100);
+
+  /* em is set to the number 110.0110...01 with 60 zeros between the ones */
+  mpfr_set_ui(em, 51, GMP_RNDN); //exact
+  mpfr_div_2ui(em, em, 3, GMP_RNDN); //exact
+  mpfr_set_ui(am, 1, GMP_RNDN); //exact
+  mpfr_div_2ui(am, am, 64, GMP_RNDN); //exact
+  mpfr_add(em, em, am, GMP_RNDN); //exact
+
+  /* other variable are set to several approximations of pi */
+  mpfr_const_pi(am, GMP_RNDN);
+  mpfr_const_pi(bm, GMP_RNDN);
+  mpfr_const_pi(cm, GMP_RNDN);
+  mpfr_const_pi(dm, GMP_RNDN);
+
+  /* LOGS */
+  fprintf(stderr, "Bits in long : %ld\nSize of long : %d\nHig expo bit : %ld\n\n", BITS_IN_LONG, sizeof(long), HIGHEXPOBIT);
+  
+  /* Value of pi in PARI */
+  x = mppi(10);
+  fprintf(stderr, "Pi in PARI : sign %d, exponent %ld, mantissa : ",gsigne(x),gexpo(x));
+  for(i=2;i<=lg(x)-1;i++) fprintf(stderr, "%lx ", x[i]);
+
+  fprintf(stderr, "\n");
+  outbeaut(x);
+  fprintf(stderr, "\n");
+  /* end */
+  
+
+  /* am */
+  ap = mpfr_to_PARI(am);
+  mpz_init(m);
+  s = mpfr_sgn(am);
+  e = mpfr_get_z_exp(m,am);
+  fprintf(stderr, "am : sign %d, exponent %d, mantissa : ",s,(int)e);
+  mpz_out_str(stderr, 2, m);
+  fprintf(stderr, "\n");
+  fprintf(stderr, "ap : sign %d, exponent %ld, mantissa : ",gsigne(ap),gexpo(ap));
+  for(i=2;i<=lg(ap)-1;i++) fprintf(stderr, "%lx ", ap[i]);
+
+  fprintf(stderr, "\n");
+  outbeaut(ap);
+  fprintf(stderr, "\n");
+  /* end */
+
+  /* bm */
+  bp = mpfr_to_PARI(bm);
+  mpz_init(m);
+  s = mpfr_sgn(bm);
+  e = mpfr_get_z_exp(m,bm);
+  fprintf(stderr, "bm : sign %d, exponent %d, mantissa : ",s,(int)e);
+  mpz_out_str(stderr, 2, m);
+  fprintf(stderr, "\n");
+  fprintf(stderr, "bp : sign %d, exponent %ld, mantissa : ",gsigne(bp),gexpo(bp));
+  for(i=2;i<=lg(bp)-1;i++) fprintf(stderr, "%lx ", bp[i]);
+
+  fprintf(stderr, "\n");
+  outbeaut(bp);
+  fprintf(stderr, "\n");
+  /* end */
+
+  /* cm */
+  cp = mpfr_to_PARI(cm);
+  mpz_init(m);
+  s = mpfr_sgn(cm);
+  e = mpfr_get_z_exp(m,cm);
+  fprintf(stderr, "cm : sign %d, exponent %d, mantissa : ",s,(int)e);
+  mpz_out_str(stderr, 2, m);
+  fprintf(stderr, "\n");
+  fprintf(stderr, "cp : sign %d, exponent %ld, mantissa : ",gsigne(cp),gexpo(cp));
+  for(i=2;i<=lg(cp)-1;i++) fprintf(stderr, "%lx ", cp[i]);
+
+  fprintf(stderr, "\n");
+  outbeaut(cp);
+  fprintf(stderr, "\n");
+  /* end */
+
+  /* dm */
+  dp = mpfr_to_PARI(dm);
+  mpz_init(m);
+  s = mpfr_sgn(dm);
+  e = mpfr_get_z_exp(m,dm);
+  fprintf(stderr, "dm : sign %d, exponent %d, mantissa : ",s,(int)e);
+  mpz_out_str(stderr, 2, m);
+  fprintf(stderr, "\n");
+  fprintf(stderr, "dp : sign %d, exponent %ld, mantissa : ",gsigne(dp),gexpo(dp));
+  for(i=2;i<=lg(dp)-1;i++) fprintf(stderr, "%lx ", dp[i]);
+
+  fprintf(stderr, "\n");
+  outbeaut(dp);
+  fprintf(stderr, "\n");
+  /* end */
+
+  /* em */
+  ep = mpfr_to_PARI(em);
+  mpz_init(m);
+  s = mpfr_sgn(em);
+  e = mpfr_get_z_exp(m,em);
+  fprintf(stderr, "em : sign %d, exponent %d, mantissa : ",s,(int)e);
+  mpz_out_str(stderr, 2, m);
+  fprintf(stderr, "\n");
+  fprintf(stderr, "ep : sign %d, exponent %ld, mantissa : ",gsigne(ep),gexpo(ep));
+  for(i=2;i<=lg(ep)-1;i++) fprintf(stderr, "%lx ", ep[i]);
+
+  fprintf(stderr, "\n");
+  outbeaut(ep);
+  fprintf(stderr, "\n");
+  /* end */
+
+  /* Over- and under- flow in PARI */
+  x = gp_read_str("0.5");
+  fprintf(stderr, "1/2: sign %d, exponent %ld, corresponding long %lx ",gsigne(x),gexpo(x), x[1]);
+  fprintf(stderr, "\n");
+
+  x = gp_read_str("1.");
+  fprintf(stderr, "+1 : sign %d, exponent %ld, corresponding long %lx ",gsigne(x),gexpo(x), x[1]);
+  fprintf(stderr, "\n");
+
+  x = gp_read_str("2.");
+  fprintf(stderr, "+2 : sign %d, exponent %ld, corresponding long %lx ",gsigne(x),gexpo(x), x[1]);
+  fprintf(stderr, "\n");
+
+  x = gp_read_str("0.");
+  setexpo(x,0);  
+  fprintf(stderr, "+0 : sign %d, exponent %ld, corresponding long %lx ",gsigne(x),gexpo(x), x[1]);
+  fprintf(stderr, "\n");
+
+  x = gp_read_str("-0.5");
+  fprintf(stderr, "-0.5 sign %d, exponent %ld, corresponding long %lx ",gsigne(x),gexpo(x), x[1]);
+  fprintf(stderr, "\n");
+
+  x = gp_read_str("-1.");
+  fprintf(stderr, "-1 : sign %d, exponent %ld, corresponding long %lx ",gsigne(x),gexpo(x), x[1]);
+  fprintf(stderr, "\n");
+
+  x = gp_read_str("-2.");
+  fprintf(stderr, "-2 : sign %d, exponent %ld, corresponding long %lx ",gsigne(x),gexpo(x), x[1]);
+  fprintf(stderr, "\n");
+
+  mpz_clear(m);
+  mpfr_clear(am);
+  mpfr_clear(bm);
+  mpfr_clear(cm);
+  mpfr_clear(dm);
+  mpfr_clear(em);
 }
+
