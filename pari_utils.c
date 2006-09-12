@@ -9,6 +9,7 @@
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
 
+#define ESTIMED_MIN_EXP 257
 
 GEN mpfr_to_PARI(mpfr_t x) {
   mp_exp_t e;
@@ -42,7 +43,7 @@ GEN mpfr_to_PARI(mpfr_t x) {
   res = cgetr(q+3);
   mpz_export(&(res[2]),NULL,1,BITS_IN_LONG/8,0,0,m);
 
-  if ((long int)(prec)+e-1 < 94-(long int)(HIGHEXPOBIT)) {
+  if ((long int)(prec)+e-1 < ESTIMED_MIN_EXP-(long int)(HIGHEXPOBIT)) {
     printMessage(1,"Warning: an underflow occured during a conversion.\n");
     setsigne(res,0);
     res[2]=0;
@@ -277,7 +278,7 @@ void testPari(void) {
   //gmulz(x, gen_2, ep);
 
   x = gp_read_str("2.");
-  setexpo(x, (long int)(94)-(long int)(HIGHEXPOBIT));
+  setexpo(x, (long int)(ESTIMED_MIN_EXP)-(long int)(HIGHEXPOBIT));
   fprintf(stderr, "x = 2^(-HEB+3) : "); outbeaut(x);printf("\n");
   // gdivz(x, gen_2, ep);
   // fprintf(stderr, "x = 2^(-HEB+3) : "); outbeaut(ep);printf("\n");
@@ -296,13 +297,13 @@ void testPari(void) {
   mpfr_const_pi(y, GMP_RNDN);
   x = mpfr_to_PARI(y);
   PARI_to_mpfr(z, x, GMP_RNDN);
-  if (mpfr_equal_p(y,z)) fprintf(stderr, "Test 3 : OK \n");
+  if (mpfr_equal_p(y,z)) fprintf(stderr, "Test 3 : OK\n");
   else fprintf(stderr, "Test 3 : FAILED !\n");
 
   mpfr_neg(y, y, GMP_RNDN);
   x = mpfr_to_PARI(y);
   PARI_to_mpfr(z, x, GMP_RNDN);
-  if (mpfr_equal_p(y,z)) fprintf(stderr, "Test 4 : OK \n");
+  if (mpfr_equal_p(y,z)) fprintf(stderr, "Test 4 : OK\n");
   else fprintf(stderr, "Test 4 : FAILED !\n");
 
   mpz_clear(m);
