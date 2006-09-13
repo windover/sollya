@@ -121,7 +121,7 @@ GEN evaluate_to_PARI(node *tree, GEN x, mp_prec_t prec) {
 void testPari(void) {
   mp_exp_t e;
   mpz_t m;
-  int s, i, j;
+  int s, i;
   mpfr_t am, bm, cm, dm, em, y, z;
   GEN ap, bp, cp, dp, ep, x;
 
@@ -270,7 +270,9 @@ void testPari(void) {
   fprintf(stderr, "-2 : sign %d, exponent %ld, corresponding long %lx ",gsigne(x),gexpo(x), x[1]);
   fprintf(stderr, "\n");
 
-  /*  x = gp_read_str("2.");
+  /*
+  int j;
+  x = gp_read_str("2.");
   setexpo(x, (long int)(HIGHEXPOBIT)-5);
     for(i=0;i<=500;i++) {
     fprintf(stderr, "HEB-%d : ", 5-i);
