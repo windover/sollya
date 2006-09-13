@@ -123,7 +123,7 @@ GEN evaluate_to_PARI(node *tree, GEN x, mp_prec_t prec) {
 void testPari(void) {
   mp_exp_t e;
   mpz_t m;
-  int s, i;
+  int s, i, j;
   mpfr_t am, bm, cm, dm, em, y, z;
   GEN ap, bp, cp, dp, ep, x;
 
@@ -273,15 +273,25 @@ void testPari(void) {
   fprintf(stderr, "\n");
 
   x = gp_read_str("2.");
-  setexpo(x, (long int)(HIGHEXPOBIT)-1);
-  fprintf(stderr, "x = 2^HEB : "); outbeaut(x);
-  //gmulz(x, gen_2, ep);
+  printf("x : %ld\n",lg(x));
+  setexpo(x, (long int)(HIGHEXPOBIT)-5);
+  for(i=0;i<=500;i++) {
+    fprintf(stderr, "HEB-%d : ", 5-i);
+    for(j=0;j<=2;j++) fprintf(stderr, "%lx ", x[j]);
+    fprintf(stderr, "\n");
+    gmulz(x, gen_2, ep);
+    gaffect(ep, x);
+  }
 
   x = gp_read_str("2.");
-  setexpo(x, 257-(long int)(HIGHEXPOBIT));
-  fprintf(stderr, "x = 2^(-HEB+3) : "); outbeaut(x);printf("\n");
-  // gdivz(x, gen_2, ep);
-  // fprintf(stderr, "x = 2^(-HEB+3) : "); outbeaut(ep);printf("\n");
+  setexpo(x, 5-(long int)(HIGHEXPOBIT));
+  for(i=0;i<=500;i++) {
+    fprintf(stderr, "%d-HEB : ", 5-i);
+    for(j=0;j<=2;j++) fprintf(stderr, "%lx ", x[j]);
+    fprintf(stderr, "\n");
+    gdivz(x, gen_2, ep);
+    gaffect(ep, x);
+  }
 
   /* Verifying that the functions work well */
   x = mppi(12);
