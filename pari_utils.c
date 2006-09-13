@@ -9,8 +9,6 @@
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
 
-#define ESTIMATED_MIN_EXP 257
-
 GEN mpfr_to_PARI(mpfr_t x) {
   mp_exp_t e;
   mp_prec_t prec,q,r;
@@ -43,7 +41,7 @@ GEN mpfr_to_PARI(mpfr_t x) {
   res = cgetr(q+3);
   mpz_export(&(res[2]),NULL,1,BITS_IN_LONG/8,0,0,m);
 
-  if ((long int)(prec)+e-1 < ESTIMATED_MIN_EXP-(long int)(HIGHEXPOBIT)) {
+  if ((long int)(prec)+e-1 < -(long int)(HIGHEXPOBIT)) {
     printMessage(1,"Warning: an underflow occured during a conversion.\n");
     setsigne(res,0);
     res[2]=0;
@@ -272,10 +270,9 @@ void testPari(void) {
   fprintf(stderr, "-2 : sign %d, exponent %ld, corresponding long %lx ",gsigne(x),gexpo(x), x[1]);
   fprintf(stderr, "\n");
 
-  x = gp_read_str("2.");
-  printf("x : %ld\n",lg(x));
+  /*  x = gp_read_str("2.");
   setexpo(x, (long int)(HIGHEXPOBIT)-5);
-  for(i=0;i<=500;i++) {
+    for(i=0;i<=500;i++) {
     fprintf(stderr, "HEB-%d : ", 5-i);
     for(j=0;j<=2;j++) fprintf(stderr, "%lx ", x[j]);
     fprintf(stderr, "\n");
@@ -291,7 +288,7 @@ void testPari(void) {
     fprintf(stderr, "\n");
     gdivz(x, gen_2, ep);
     gaffect(ep, x);
-  }
+    }*/
 
   /* Verifying that the functions work well */
   x = mppi(12);
