@@ -3933,6 +3933,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  c = snprintf(buffer2,CODESIZE," ");
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
 	}
+
+	i = -1;
 	
       } else {
 	/* The evaluation is already complete, issue code for copying to the result variables */
