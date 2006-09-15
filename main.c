@@ -194,10 +194,14 @@ void signalHandler(int i) {
   fflush(stdout);
   promptToBePrinted = 1;
   switch (i) {
-  case SIGINT:   
+  case SIGINT: 
+    free(endptr);
+    freeSymbolTable(symbolTable,freeMemoryOnVoid);
+    freeSymbolTable(symbolTable2,freeRangetypePtr);
     if(currentVariable != NULL) free(currentVariable);
     if(variablename != NULL) free(variablename);
     exit(0);
+    break;
   case SIGSEGV:
     fprintf(stderr,"Warning: handling signal SIGSEGV\n");
     break;
@@ -263,7 +267,7 @@ int main(int argc, char *argv[]) {
   printPrompt();
   while (!feof(yyin)) {
     if (setjmp(recoverEnvironment)) {
-      fprintf(stderr,"Warning: an error occured on internal computation. The last command could not be executed. May leak memory.\n");
+      printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
     }
     if (yyparse()) break;    
     promptToBePrinted = 1;
