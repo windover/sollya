@@ -13,7 +13,6 @@
 
 #define DEBUG 0
 #define DEBUGMPFI 0
-
 #define DIFFSIZE 5000000
 
 
@@ -693,6 +692,13 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	freeChain(rightExcludes,freeMpfiPtr);
 
 	printMessage(8,"Information: using Hopital's rule on point division.\n");
+	if (verbosity >= 9) {
+	  printf("Information: entering interval was \n");
+	  printInterval(x);
+	  printf("\n");
+
+	}
+
 	if (verbosity >= 12) {
 	  printf("Hopital's rule is used on function\n");
 	  printTree(tree);
