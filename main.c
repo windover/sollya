@@ -225,6 +225,10 @@ void signalHandler(int i) {
 void recoverFromError(void) {
   handlingError = 1;
   avma = ltop;
+  if (promptToBePrinted) {
+    printPrompt();
+    promptToBePrinted = 0;
+  }
   longjmp(recoverEnvironment,1);
   return;
 }

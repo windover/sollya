@@ -218,6 +218,7 @@ void yyerror(char *message) {
 %type <aChain> expansionFormatList
 %type <other> restart
 %type <other> testpari
+%type <other> autoprint
 
 %%
 
@@ -241,6 +242,10 @@ command:     plot
                            {
                              $$ = NULL;
                            }  
+           | autoprint   
+                           {
+			     $$ = NULL;
+			   }
            | printHexa 
                            {
 			     $$ = NULL;
@@ -926,6 +931,26 @@ dirtyintegral: DIRTYINTEGRALTOKEN function INTOKEN range
 			     $$ = mpfr_temp;
 			   }
 ;
+
+autoprint:   function SEMICOLONTOKEN
+                           {
+			     temp_node = horner($1);
+			     temp_node2 = simplifyTree(temp_node);
+			     if (!isSyntacticallyEqual(temp_node,temp_node2)) {
+			       printMessage(1,"Warning: the displayed function is affected by rounding error.\n");
+			     }
+			     prec_temp = tools_precision;
+			     tools_precision = defaultprecision;
+                             printTree(temp_node2);
+			     tools_precision = prec_temp;
+			     printf("\n");
+			     free_memory($1);
+			     free_memory(temp_node);
+			     free_memory(temp_node2);
+			     $$ = NULL;
+			   }
+;
+
 
 
 print:       PRINTTOKEN function SEMICOLONTOKEN

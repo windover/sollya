@@ -10,7 +10,7 @@
 #include "expression.h"
 #include "main.h"
 
-#define MAX_VALUE_GNUPLOT 1000
+#define MAX_VALUE_GNUPLOT 0.898846567431157854072637118658521783990352837629224983e308
 
 void plotTree(node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec) {
   mpfr_t x, y, step;
