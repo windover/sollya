@@ -2488,3 +2488,59 @@ int checkInfnorm(node *func, rangetype range, mpfr_t infnormval, mpfr_t diam, mp
 
   return result;
 }
+
+
+void evaluateConstantWithErrorEstimate(mpfr_t res, mpfr_t err, node *func, mpfr_t x, mp_prec_t prec) {
+  rangetype xrange, yrange;
+  mpfr_t temp;
+
+  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+
+  mpfr_init2(*(xrange.a), prec);
+  mpfr_init2(*(xrange.b), prec);
+  mpfr_init2(*(yrange.a), prec);
+  mpfr_init2(*(yrange.b), prec);
+  mpfr_init2(temp,prec + 10);
+  
+  mpfr_set(*(xrange.a),x,GMP_RNDD);
+  mpfr_set(*(xrange.b),x,GMP_RNDU);
+  
+  evaluateRangeFunction(yrange, func, xrange, prec);
+
+  mpfr_add(temp,*(yrange.a),*(yrange.b),GMP_RNDN);
+  mpfr_div_2ui(temp,temp,1,GMP_RNDN);
+  mpfr_set(res,temp,GMP_RNDN);
+
+  if (mpfr_zero_p(res)) {
+    if (mpfr_zero_p(*(yrange.a)) && mpfr_zero_p(*(yrange.b))) {
+      mpfr_set_d(err,0.0,GMP_RNDN);
+    } else {
+      mpfr_set_d(temp,1.0,GMP_RNDN);
+      mpfr_div(temp,temp,res,GMP_RNDN);
+      mpfr_set(err,temp,GMP_RNDU);
+    }
+  } else {
+    mpfr_abs(*(yrange.a),*(yrange.a),GMP_RNDN);
+    mpfr_abs(*(yrange.b),*(yrange.b),GMP_RNDN);
+    if (mpfr_cmp(*(yrange.b),*(yrange.a)) > 0) {
+      mpfr_set(*(yrange.a),*(yrange.b),GMP_RNDN);
+    }
+    mpfr_abs(temp,temp,GMP_RNDN);
+    mpfr_sub(*(yrange.a),*(yrange.a),temp,GMP_RNDU);
+    mpfr_div(err,*(yrange.a),temp,GMP_RNDU);
+  }
+
+
+  mpfr_clear(*(xrange.a));
+  mpfr_clear(*(xrange.b));
+  mpfr_clear(*(yrange.a));
+  mpfr_clear(*(yrange.b));
+  mpfr_init2(temp,prec);
+  free(xrange.a);
+  free(xrange.b);
+  free(yrange.a);
+  free(yrange.b);
+}

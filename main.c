@@ -30,6 +30,7 @@ char **endptr;
 unsigned long int points;
 mpfr_t *mpfr_temp;
 mpfr_t *mpfr_temp2;
+mpfr_t *mpfr_temp3;
 rangetype range_temp;
 rangetype range_temp2;
 node *temp_node; 

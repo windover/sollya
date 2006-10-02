@@ -935,18 +935,55 @@ dirtyintegral: DIRTYINTEGRALTOKEN function INTOKEN range
 autoprint:   function SEMICOLONTOKEN
                            {
 			     temp_node = horner($1);
-			     temp_node2 = simplifyTree(temp_node);
-			     if (!isSyntacticallyEqual(temp_node,temp_node2)) {
-			       printMessage(1,"Warning: the displayed function is affected by rounding error.\n");
+			     if (isConstant(temp_node)) {
+			       if (temp_node->nodeType == CONSTANT) {
+				 prec_temp = tools_precision;
+				 tools_precision = defaultprecision;
+				 printTree(temp_node);
+				 tools_precision = prec_temp;
+				 printf("\n");
+			       } else {
+				 mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+				 mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+				 mpfr_temp3 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+				 mpfr_init2(*mpfr_temp,defaultprecision);
+				 mpfr_init2(*mpfr_temp2,defaultprecision);
+				 mpfr_init2(*mpfr_temp3,defaultprecision);
+				 mpfr_set_d(*mpfr_temp3,0.0,GMP_RNDN);
+				 evaluateConstantWithErrorEstimate(*mpfr_temp, 
+								   *mpfr_temp2, temp_node, *mpfr_temp3, defaultprecision);
+				 mpfr_log2(*mpfr_temp2,*mpfr_temp2,GMP_RNDD);
+				 double_temp = mpfr_get_d(*mpfr_temp2,GMP_RNDD);
+				 if (mpfr_number_p(*mpfr_temp)) {
+				   printMessage(1,
+						"Warning: the displayed value is affected by a relative error of approximately 2^(%f).\n",
+						double_temp);
+				 } else {
+				   printMessage(1,"Warning: the expression is mathematically undefined or numerically unstable.\n");
+				 }
+				 printValue(mpfr_temp, defaultprecision);
+				 printf("\n");
+				 mpfr_clear(*mpfr_temp);
+				 mpfr_clear(*mpfr_temp2);
+				 mpfr_clear(*mpfr_temp3);
+				 free(mpfr_temp);
+				 free(mpfr_temp2);
+				 free(mpfr_temp3);
+			       }
+			     } else {
+			       temp_node2 = simplifyTree(temp_node);
+			       if (!isSyntacticallyEqual(temp_node,temp_node2)) {
+				 printMessage(1,"Warning: the displayed function is affected by rounding error.\n");
+			       }
+			       prec_temp = tools_precision;
+			       tools_precision = defaultprecision;
+			       printTree(temp_node2);
+			       tools_precision = prec_temp;
+			       printf("\n");
+			       free_memory(temp_node2);
 			     }
-			     prec_temp = tools_precision;
-			     tools_precision = defaultprecision;
-                             printTree(temp_node2);
-			     tools_precision = prec_temp;
-			     printf("\n");
 			     free_memory($1);
 			     free_memory(temp_node);
-			     free_memory(temp_node2);
 			     $$ = NULL;
 			   }
 ;

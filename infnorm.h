@@ -19,5 +19,6 @@ void freeMpfiPtr(void *i);
 void *copyMpfiPtr(void *ptr);
 chain *joinAdjacentIntervalsMaximally(chain *intervals);
 int checkInfnorm(node *func, rangetype range, mpfr_t infnormval, mpfr_t diam, mp_prec_t prec);
+void evaluateConstantWithErrorEstimate(mpfr_t res, mpfr_t err, node *func, mpfr_t x, mp_prec_t prec);
 
 #endif /* ifdef INFNORM_H*/

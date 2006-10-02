@@ -29,6 +29,7 @@ extern char **endptr;
 extern unsigned long int points;
 extern mpfr_t *mpfr_temp;
 extern mpfr_t *mpfr_temp2;
+extern mpfr_t *mpfr_temp3;
 extern rangetype range_temp;
 extern rangetype range_temp2;
 extern rangetype *rangeTempPtr;

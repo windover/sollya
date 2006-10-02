@@ -6,7 +6,6 @@
 #include <stdio.h>
 
 
-
 #define VARIABLE 0
 #define CONSTANT 1
 #define ADD 2
