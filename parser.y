@@ -975,9 +975,11 @@ autoprint:   function SEMICOLONTOKEN
 			       if (!isSyntacticallyEqual(temp_node,temp_node2)) {
 				 printMessage(1,"Warning: the displayed function is affected by rounding error.\n");
 			       }
+			       free_memory(temp_node);
+			       temp_node = horner(temp_node2);
 			       prec_temp = tools_precision;
 			       tools_precision = defaultprecision;
-			       printTree(temp_node2);
+			       printTree(temp_node);
 			       tools_precision = prec_temp;
 			       printf("\n");
 			       free_memory(temp_node2);
