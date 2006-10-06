@@ -15,6 +15,7 @@
 #include "infnorm.h"
 #include "assignment.h"
 #include <pari/paripriv.h>
+#include <termios.h>
 
 #define PARIMEMSIZE 3000000
 
@@ -56,6 +57,7 @@ doubleChain *doubleChainTemp;
 formatType *formatTypeTemp;
 errorType *errorTypeTemp;
 pointsType *pointsTypeTemp;
+int eliminatePrompt;
 
 extern gp_data *GP_DATA;
 
@@ -236,6 +238,7 @@ void recoverFromError(void) {
 
 
 void printPrompt(void) {
+  if (eliminatePrompt) return;
   fflush(stdout);
   fflush(stdin);
   fflush(stderr);
@@ -247,7 +250,11 @@ void printPrompt(void) {
 
 
 int main(int argc, char *argv[]) {
+  struct termios termAttr;
   
+  eliminatePrompt = 0;
+  if (tcgetattr(0,&termAttr) == -1) eliminatePrompt = 1;
+  yyin = stdin;
   
   pari_init(PARIMEMSIZE, 2);
   mp_set_memory_functions(safeMalloc,wrapSafeRealloc,NULL);
@@ -267,14 +274,13 @@ int main(int argc, char *argv[]) {
   signal(SIGPIPE,signalHandler);
 
   endptr = (char**) safeMalloc(sizeof(char*));
-  yyin = stdin;
 
   printPrompt();
-  while (!feof(yyin)) {
+  while (1) {
     if (setjmp(recoverEnvironment)) {
       printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
     }
-    if (yyparse()) break;    
+    if (yyparse()) break;  
     promptToBePrinted = 1;
   }
 

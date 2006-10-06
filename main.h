@@ -57,7 +57,7 @@ extern doubleChain *doubleChainTemp;
 extern formatType *formatTypeTemp;
 extern errorType *errorTypeTemp;
 extern pointsType *pointsTypeTemp;
-
+extern int eliminatePrompt;
 
 
 void printPrompt(void);
