@@ -324,6 +324,20 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
 }
 
 
+void printMpfr(mpfr_t x) {
+  mpfr_t tmp;
+  mp_prec_t prec;
+
+  prec = mpfr_get_prec(x);
+  mpfr_init2(tmp,prec);
+  mpfr_set(tmp,x,GMP_RNDN);
+
+  printValue(&tmp,prec);
+
+  mpfr_clear(tmp);
+}
+
+
 
 void fprintValue(FILE *fd, mpfr_t value) {
   mpfr_t y;
