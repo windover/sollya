@@ -333,6 +333,7 @@ void printMpfr(mpfr_t x) {
   mpfr_set(tmp,x,GMP_RNDN);
 
   printValue(&tmp,prec);
+  printf("\n");
 
   mpfr_clear(tmp);
 }
