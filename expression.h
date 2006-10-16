@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 
+
 #define VARIABLE 0
 #define CONSTANT 1
 #define ADD 2
@@ -88,6 +89,7 @@ void *copyRangetypePtr(void *ptr);
 node *makePolynomial(mpfr_t *coefficients, int degree);
 int treeSize(node *tree);
 void printMpfr(mpfr_t x);
+
 
 
 #endif /* ifdef EXPRESSION_H*/

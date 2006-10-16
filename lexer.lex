@@ -99,6 +99,7 @@ SIMPLIFYSAFE    ({SIMPLIFYSAFE1}|{SIMPLIFYSAFE2})
 TAYLOR          "taylor"
 
 FINDZEROS       "findzeros"
+FPFINDZEROS     "fpfindzeros"
 DIRTYINFNORM    "dirtyinfnorm"
 
 EVALUATE        "evaluate"
@@ -121,7 +122,7 @@ OCTALCHAR       [01234567]
 OCTAL           ({OCTALCHAR})(({OCTALCHAR})?)(({OCTALCHAR})?)
 HEXACHAR        [0123456789ABCDEFabcdef]
 HEXA            ({HEXACHAR})(({HEXACHAR})?)
-STRING          ({STRINGDELIMITER})((("\\\\")|(("\\")[\"\'\?ntabfrv])|(("\\")({OCTAL}))|(("\\x")({HEXA}))|([^\"^\\]))*)({STRINGDELIMITER})
+STRING          ({STRINGDELIMITER})((("\\\\")|(("\\")[\"\'\?ntabfrv])|(("\\")({OCTAL}))|(("\\x")({HEXA}))|([^\"\\]))*)({STRINGDELIMITER})
 
 PROOF           "proof"
 
@@ -295,7 +296,7 @@ TESTPARI        "testpari"
 {HONORCOEFFPREC}         {     promptToBePrinted = 0; return HONORCOEFFPRECTOKEN; }                    
 {RESTART}                {     promptToBePrinted = 0; return RESTARTTOKEN; }                    
 {TESTPARI}               {     promptToBePrinted = 0; return TESTPARITOKEN; }                    
-
+{FPFINDZEROS}            {     promptToBePrinted = 0; return FPFINDZEROSTOKEN; }                    
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

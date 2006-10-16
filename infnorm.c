@@ -184,7 +184,7 @@ void mpfi_round_to_tripledouble(mpfi_t rop, mpfi_t op) {
 int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_t x, temp1, temp2;
   unsigned long int n=1;
-  int okay, lucky;
+  int okay, lucky, hasZero;
 
   mpfr_init2(x,prec);
   mpfr_init2(temp1,prec);
@@ -202,6 +202,9 @@ int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_p
       mpfr_set(res,b,GMP_RNDN);
       okay = 1;
     } else {
+
+      mpfr_mul(temp1,temp1,temp2,GMP_RNDN);
+      hasZero = (mpfr_sgn(temp1) <= 0);
       
       mpfr_add(x,a,b,GMP_RNDN);
       mpfr_div_2ui(x,x,1,GMP_RNDN);
@@ -221,11 +224,35 @@ int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_p
 
       if (mpfr_cmp(x,a) < 0) {
 	mpfr_set(res,a,GMP_RNDN);
-	okay = 0;
+	if (hasZero) {
+	  okay = 1;
+	} else {
+	  evaluate(temp1, tree, x, prec);
+	  evaluate(temp2, diff_tree, x, prec);
+	  mpfr_div(temp1, temp1, temp2, GMP_RNDN);
+	  mpfr_sub(x, x, temp1, GMP_RNDN);
+	  if (mpfr_cmp(x,a) >= 0) {
+	    okay = 1;
+	  } else {
+	    okay = 0;
+	  }
+	}
       } else {
 	if (mpfr_cmp(b,x) < 0) {
 	  mpfr_set(res,b,GMP_RNDN);
-	  okay = 0;
+	  if (hasZero) {
+	    okay = 1;
+	  } else {
+	    evaluate(temp1, tree, x, prec);
+	    evaluate(temp2, diff_tree, x, prec);
+	    mpfr_div(temp1, temp1, temp2, GMP_RNDN);
+	    mpfr_sub(x, x, temp1, GMP_RNDN);
+	    if (mpfr_cmp(b,x) >= 0) {
+	      okay = 1;
+	    } else {
+	      okay = 0;
+	    }
+	  }
 	} else {
 	  mpfr_set(res,x,GMP_RNDN);
 	  if (!lucky) {
@@ -705,6 +732,15 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	  printf("\n");
 	}
 
+	if (verbosity >= 15) {
+	  printf("The derivative of the numerator is\n");
+	  printTree(derivNumerator);
+	  printf("\n");
+	  printf("The derivative of the denominator is\n");
+	  printTree(derivDenominator);
+	  printf("\n");
+	}
+
 	if (internalTheo != NULL) {
 	  internalTheo->simplificationUsed = HOPITAL_ON_POINT;
 	  internalTheo->leftDerivative = copyTree(derivNumerator);
@@ -832,6 +868,11 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		printf("\n");
 	      }
 
+	      if (verbosity >= 15) {
+		printf("The simplified function is\n");
+		printTree(tempNode);
+		printf("\n");
+	      }
 
 	      excludes = evaluateI(stack3, tempNode, x, prec, simplifiesA, simplifiesB-1, leftTheoLinear);
 
@@ -912,6 +953,12 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		  if (verbosity >= 12) {
 		    printf("Hopital's rule is used on function\n");
 		    printTree(tree);
+		    printf("\n");
+		  }
+
+		  if (verbosity >= 15) {
+		    printf("The simplified function is\n");
+		    printTree(tempNode);
 		    printf("\n");
 		  }
 
@@ -2544,3 +2591,115 @@ void evaluateConstantWithErrorEstimate(mpfr_t res, mpfr_t err, node *func, mpfr_
   free(yrange.a);
   free(yrange.b);
 }
+
+chain* findZerosByNewton(node *func, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+  node *deriv;
+  mpfr_t resNewtonStep, ap, bp, step;
+  int newtonOkay;
+  mpfr_t *newZero;
+  chain *fpZeros;
+
+  fpZeros = NULL;
+  deriv = differentiate(func);
+  mpfr_init2(resNewtonStep,prec);
+  mpfr_init2(ap,prec);
+  mpfr_init2(bp,prec);
+  mpfr_init2(step,prec);
+  
+  mpfr_sub(step,b,a,GMP_RNDU);
+  if (mpfr_zero_p(step)) {
+    evaluate(resNewtonStep,func,a,prec);
+    newZero = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*newZero,prec);
+    mpfr_set(*newZero,resNewtonStep,GMP_RNDN);
+    fpZeros = addElement(fpZeros,newZero);
+  } else {
+    mpfr_div_ui(step,step,defaultpoints,GMP_RNDU);    
+    mpfr_set(ap,a,GMP_RNDD);
+    while (mpfr_cmp(ap,b) < 0) {
+      mpfr_add(bp,ap,step,GMP_RNDN);
+      mpfr_min(bp,bp,b,GMP_RNDU);
+      
+      newtonOkay = newtonMPFR(resNewtonStep, func, deriv, ap, bp, prec);
+      
+      if (newtonOkay) {
+	newZero = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*newZero,prec);
+	mpfr_set(*newZero,resNewtonStep,GMP_RNDN);
+	fpZeros = addElement(fpZeros,newZero);
+      }
+      
+      mpfr_set(ap,bp,GMP_RNDN);
+    }
+  }
+  mpfr_clear(step);
+  mpfr_clear(bp);
+  mpfr_clear(ap);
+  mpfr_clear(resNewtonStep);
+  free_memory(deriv);
+  return fpZeros;
+}
+
+
+
+chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
+  mpfr_t diam;
+  chain *intervalZeros, *fpZeros, *temp, *fpZerosOnInterval, *fpZeros2, *curr;
+  mpfr_t *newZero;
+
+  mpfr_init2(diam,prec+50);
+  mpfr_set_d(diam,DEFAULTDIAM,GMP_RNDN);
+
+  intervalZeros = findZerosFunction(func, range, prec, diam);
+  
+  mpfr_clear(diam);
+
+  fpZeros = NULL;
+
+  while (intervalZeros != NULL) {
+    fpZerosOnInterval = findZerosByNewton(func, 
+					  *(((rangetype *) (intervalZeros->value))->a), 
+					  *(((rangetype *) (intervalZeros->value))->b), 
+					  prec+50);
+    fpZeros = concatChains(fpZeros, fpZerosOnInterval);
+    mpfr_clear(*(((rangetype *) (intervalZeros->value))->a));
+    mpfr_clear(*(((rangetype *) (intervalZeros->value))->b));
+    free(((rangetype *) (intervalZeros->value))->a);
+    free(((rangetype *) (intervalZeros->value))->b);
+    free(intervalZeros->value);
+    temp = intervalZeros->next;
+    free(intervalZeros);
+    intervalZeros = temp;
+  }
+  
+  fpZeros2 = NULL;
+  curr = fpZeros;
+  while (curr != NULL) {
+    while ((curr->next != NULL) && (mpfr_cmp(*((mpfr_t *) (curr->value)),*((mpfr_t *) (curr->next->value))) == 0))
+      curr = curr->next;
+    newZero = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*newZero,prec);
+    mpfr_set(*newZero,*((mpfr_t *) (curr->value)),GMP_RNDN);
+    fpZeros2 = addElement(fpZeros2,newZero);
+    curr = curr->next;
+  }
+
+  while (fpZeros != NULL) {
+    mpfr_clear(*((mpfr_t*) (fpZeros->value)));
+    free((fpZeros->value));
+    temp = fpZeros->next;
+    free(fpZeros);
+    fpZeros = temp;
+  }
+
+  fpZeros = NULL;
+  while (fpZeros2 != NULL) {
+    fpZeros = addElement(fpZeros,fpZeros2->value);
+    temp = fpZeros2->next;
+    free(fpZeros2);
+    fpZeros2 = temp;
+  }
+
+  return fpZeros;
+}
+

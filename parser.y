@@ -159,6 +159,7 @@ void yyerror(char *message) {
 %token  HONORCOEFFPRECTOKEN
 %token  RESTARTTOKEN
 %token  TESTPARITOKEN
+%token  FPFINDZEROSTOKEN
 
 %type <other> commands
 %type <other> command
@@ -183,6 +184,7 @@ void yyerror(char *message) {
 %type <aString> lvariable
 %type <other> assignment
 %type <other> findzeros
+%type <other> fpfindzeros
 %type <constantval> dirtyinfnorm
 %type <constantval> dirtyintegral
 %type <aString> variableWorkAround
@@ -219,6 +221,8 @@ void yyerror(char *message) {
 %type <other> restart
 %type <other> testpari
 %type <other> autoprint
+%type <other> printlist
+%type <other> printelem
 
 %%
 
@@ -372,6 +376,9 @@ command:     plot
 	                     $$ = NULL;
 	                   }
            | findzeros     {
+	                     $$ = NULL;
+	                   }
+           | fpfindzeros   {
 	                     $$ = NULL;
 	                   }
 	   | precision SEMICOLONTOKEN 
@@ -695,6 +702,34 @@ findzeros:   FINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
                            }
 ;
 
+fpfindzeros:   FPFINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
+                           {
+			     chain_temp = fpFindZerosFunction($2,$4,defaultprecision);
+			     if (chain_temp == NULL) {
+			       printf("The function seems to have no zeros in the interval.\n");
+			     } else {
+			       printf("The approximated zeros of the function are:\n");
+			       while (chain_temp != NULL) {
+				 printMpfr(*((mpfr_t *) (chain_temp->value)));
+				 mpfr_clear(*((mpfr_t *) (chain_temp->value)));
+				 free(chain_temp->value);
+				 chain_temp2 = chain_temp->next;
+				 free(chain_temp);
+				 chain_temp = chain_temp2;
+			       }
+
+			     }
+			     free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     $$ = NULL;
+                           }
+;
+
+
+
 
 infnorm:     INFNORMTOKEN function INTOKEN range 
                            {
@@ -991,21 +1026,38 @@ autoprint:   function SEMICOLONTOKEN
 ;
 
 
+print:       PRINTTOKEN printlist SEMICOLONTOKEN
+                           {
+			     printf("\n");
+			     $$ = NULL;
+			   }
+;
 
-print:       PRINTTOKEN function SEMICOLONTOKEN
+
+printlist:   printelem     {
+                             $$ = NULL;
+                           }
+           | printelem COMMATOKEN printlist
+                           {
+			     $$ = NULL;
+			   }
+;
+
+
+printelem:   function
                            {
 			     prec_temp = tools_precision;
 			     tools_precision = defaultprecision;
-                             printTree($2);
+                             printTree($1);
+			     printf(" ");
 			     tools_precision = prec_temp;
-			     printf("\n");
-			     free_memory($2);
+			     free_memory($1);
 			     $$ = NULL;
                            }
-           | PRINTTOKEN string SEMICOLONTOKEN
+           | string 
                            {
-			     printf("%s\n",($2));
-			     free(($2));
+			     printf("%s ",($1));
+			     free(($1));
                              $$ = NULL;
 			   }
 ;
