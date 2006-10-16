@@ -160,6 +160,8 @@ void yyerror(char *message) {
 %token  RESTARTTOKEN
 %token  TESTPARITOKEN
 %token  FPFINDZEROSTOKEN
+%token  ZERODENOMINATORSTOKEN
+%token  ISEVALUABLETOKEN
 
 %type <other> commands
 %type <other> command
@@ -185,6 +187,7 @@ void yyerror(char *message) {
 %type <other> assignment
 %type <other> findzeros
 %type <other> fpfindzeros
+%type <other> zerodenominators
 %type <constantval> dirtyinfnorm
 %type <constantval> dirtyintegral
 %type <aString> variableWorkAround
@@ -223,6 +226,7 @@ void yyerror(char *message) {
 %type <other> autoprint
 %type <other> printlist
 %type <other> printelem
+%type <other> isevaluable
 
 %%
 
@@ -363,6 +367,10 @@ command:     plot
 			      free($1.b);
 			      $$ = NULL;
 	                   }
+           | isevaluable SEMICOLONTOKEN 
+                           {
+			     $$ = NULL;
+			   }
            | worstcase     {
 	                     $$ = NULL;
 	                   }
@@ -379,6 +387,9 @@ command:     plot
 	                     $$ = NULL;
 	                   }
            | fpfindzeros   {
+	                     $$ = NULL;
+	                   }
+           | zerodenominators {
 	                     $$ = NULL;
 	                   }
 	   | precision SEMICOLONTOKEN 
@@ -630,6 +641,38 @@ worstcase:   WORSTCASETOKEN function WITHTOKEN INPUTPRECTOKEN EQUALTOKEN constan
 ;
 
 
+isevaluable: ISEVALUABLETOKEN function ATTOKEN constantfunction
+                           {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     switch (isEvaluable($2, *($4), mpfr_temp, defaultprecision)) {
+			     case ISFLOATINGPOINTEVALUABLE:
+			       printf("The given function can be evaluated in floating-point at the given point.\n");
+			       printf("An approximate value is: ");
+			       printValue(mpfr_temp,defaultprecision);
+			       printf("\n");
+			       break;
+			     case ISHOPITALEVALUABLE:
+			       printf("The given function can be evaluated in interval arithmetic with Hopital's rule at the given point.\n");
+			       printf("An approximate value is: ");
+			       printValue(mpfr_temp,defaultprecision);
+			       printf("\n");
+			       break;
+			     case ISNOTEVALUABLE:
+			       printf("The given function cannot be evaluated at the given point by this tool.\n");
+			       break;
+			     default:
+			       fprintf(stderr,"On processing parser input. A function returned an unspecified value.\n");
+			       exit(1);
+			     }
+			     mpfr_clear(*mpfr_temp);
+			     free(mpfr_temp);
+			     free_memory($2);
+			     mpfr_clear(*($4));
+			     free($4);
+			     $$ = NULL;
+			   }
+;
 
 findzeros:   FINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
                            {
@@ -728,6 +771,31 @@ fpfindzeros:   FPFINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
                            }
 ;
 
+zerodenominators:   ZERODENOMINATORSTOKEN function INTOKEN range SEMICOLONTOKEN
+                           {
+			     chain_temp = uncertifiedZeroDenominators($2,*($4.a),*($4.b),defaultprecision);
+			     if (chain_temp == NULL) {
+			       printf("The function seems to have no denominator vanishing in the interval.\n");
+			     } else {
+			       printf("The function has denominators vanishing at:\n");
+			       while (chain_temp != NULL) {
+				 printMpfr(*((mpfr_t *) (chain_temp->value)));
+				 mpfr_clear(*((mpfr_t *) (chain_temp->value)));
+				 free(chain_temp->value);
+				 chain_temp2 = chain_temp->next;
+				 free(chain_temp);
+				 chain_temp = chain_temp2;
+			       }
+
+			     }
+			     free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     $$ = NULL;
+                           }
+;
 
 
 

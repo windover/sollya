@@ -2716,3 +2716,172 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
   return fpZeros;
 }
 
+
+chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+  chain *leftPoles, *rightPoles, *newZeros;
+  rangetype range;
+
+  if (tree == NULL) return NULL;
+  switch (tree->nodeType) {
+  case VARIABLE:
+    return NULL;
+    break;
+  case CONSTANT:
+    return NULL;
+    break;
+  case ADD:
+    leftPoles = uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    rightPoles = uncertifiedZeroDenominators(tree->child2,a,b,prec);
+    return concatChains(leftPoles,rightPoles);
+    break;
+  case SUB:
+    leftPoles = uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    rightPoles = uncertifiedZeroDenominators(tree->child2,a,b,prec);
+    return concatChains(leftPoles,rightPoles);
+    break;
+  case MUL:
+    leftPoles = uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    rightPoles = uncertifiedZeroDenominators(tree->child2,a,b,prec);
+    return concatChains(leftPoles,rightPoles);
+    break;
+  case DIV:
+    leftPoles = uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    rightPoles = uncertifiedZeroDenominators(tree->child2,a,b,prec);
+    range.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+    range.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*(range.a),prec);
+    mpfr_init2(*(range.b),prec);
+    mpfr_set(*(range.a),a,GMP_RNDD);
+    mpfr_set(*(range.b),b,GMP_RNDU);
+    newZeros = fpFindZerosFunction(tree->child2, range, prec);
+    mpfr_clear(*(range.a));
+    mpfr_clear(*(range.b));
+    free(range.a);
+    free(range.b);
+    leftPoles = concatChains(leftPoles,rightPoles);
+    return concatChains(leftPoles,newZeros);
+    break;
+  case SQRT:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case EXP:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case LOG:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case LOG_2:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case LOG_10:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case SIN:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case COS:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case TAN:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case ASIN:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case ACOS:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case ATAN:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case SINH:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case COSH:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case TANH:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case ASINH:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case ACOSH:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case ATANH:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case POW:
+    leftPoles = uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    rightPoles = uncertifiedZeroDenominators(tree->child2,a,b,prec);
+    return concatChains(leftPoles,rightPoles);
+    break;
+  case NEG:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case ABS:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case DOUBLE:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case DOUBLEDOUBLE:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case TRIPLEDOUBLE:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  default:
+   fprintf(stderr,"Error: uncertifiedZeroDenominators: unknown identifier (%d) in the tree\n",tree->nodeType);
+   exit(1);
+  }
+  return NULL;
+}
+
+
+int isEvaluable(node *func, mpfr_t x, mpfr_t *y, mp_prec_t prec) {
+  mpfr_t val;
+  rangetype xrange, yrange;
+
+  mpfr_init2(val,prec);
+  evaluate(val,func,x,prec);
+  if (mpfr_number_p(val)) {
+    if (y != NULL) {
+      mpfr_set(*y,val,GMP_RNDN);
+    }
+    mpfr_clear(val);
+    return ISFLOATINGPOINTEVALUABLE;
+  }
+
+  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+
+  mpfr_init2(*(xrange.a),prec);
+  mpfr_init2(*(xrange.b),prec);
+  mpfr_init2(*(yrange.a),prec);
+  mpfr_init2(*(yrange.b),prec);
+
+  mpfr_set(*(xrange.a),x,GMP_RNDD);
+  mpfr_set(*(xrange.b),x,GMP_RNDU);
+
+  evaluateRangeFunction(yrange, func, xrange, prec);
+
+  if (mpfr_number_p(*(yrange.a)) && mpfr_number_p(*(yrange.b))) {
+    mpfr_add(val,*(yrange.a),*(yrange.b),GMP_RNDN);
+    mpfr_div_2ui(val,val,1,GMP_RNDN);
+    if (!mpfr_number_p(val)) {
+      mpfr_clear(val);
+      return ISNOTEVALUABLE;
+    }
+    if (y != NULL) {
+      mpfr_set(*y,val,GMP_RNDN);
+    }
+    mpfr_clear(val);
+    return ISHOPITALEVALUABLE;
+  } 
+  
+  return ISNOTEVALUABLE;
+}

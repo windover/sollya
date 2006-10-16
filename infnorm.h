@@ -9,6 +9,10 @@
 #include "chain.h"
 
 
+#define ISFLOATINGPOINTEVALUABLE 0
+#define ISHOPITALEVALUABLE 1
+#define ISNOTEVALUABLE 2
+
 rangetype infnorm(node *func, rangetype range, chain *excludes, mp_prec_t prec, mpfr_t diam, FILE *proof);
 chain* findZerosFunction(node *func, rangetype range, mp_prec_t prec, mpfr_t diam);
 void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec);
@@ -21,6 +25,7 @@ chain *joinAdjacentIntervalsMaximally(chain *intervals);
 int checkInfnorm(node *func, rangetype range, mpfr_t infnormval, mpfr_t diam, mp_prec_t prec);
 void evaluateConstantWithErrorEstimate(mpfr_t res, mpfr_t err, node *func, mpfr_t x, mp_prec_t prec);
 chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec);
-
+chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec);
+int isEvaluable(node *func, mpfr_t x, mpfr_t *y, mp_prec_t prec);
 
 #endif /* ifdef INFNORM_H*/

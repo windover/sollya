@@ -176,6 +176,9 @@ RESTART         "restart"
 
 TESTPARI        "testpari"
 
+ZERODENOMINATORS "zerodenominators"
+ISEVALUABLE     "isevaluable"
+
 %%
 
 %{
@@ -297,6 +300,8 @@ TESTPARI        "testpari"
 {RESTART}                {     promptToBePrinted = 0; return RESTARTTOKEN; }                    
 {TESTPARI}               {     promptToBePrinted = 0; return TESTPARITOKEN; }                    
 {FPFINDZEROS}            {     promptToBePrinted = 0; return FPFINDZEROSTOKEN; }                    
+{ZERODENOMINATORS}       {     promptToBePrinted = 0; return ZERODENOMINATORSTOKEN; }                    
+{ISEVALUABLE}            {     promptToBePrinted = 0; return ISEVALUABLETOKEN; }                    
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);
