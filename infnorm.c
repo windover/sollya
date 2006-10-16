@@ -2874,14 +2874,139 @@ int isEvaluable(node *func, mpfr_t x, mpfr_t *y, mp_prec_t prec) {
     mpfr_div_2ui(val,val,1,GMP_RNDN);
     if (!mpfr_number_p(val)) {
       mpfr_clear(val);
+      mpfr_clear(*(xrange.a));
+      mpfr_clear(*(xrange.b));
+      mpfr_clear(*(yrange.a));
+      mpfr_clear(*(yrange.b));
+      free(xrange.a);
+      free(xrange.b);
+      free(yrange.a);
+      free(yrange.b);
       return ISNOTEVALUABLE;
     }
     if (y != NULL) {
       mpfr_set(*y,val,GMP_RNDN);
     }
     mpfr_clear(val);
+    mpfr_clear(*(xrange.a));
+    mpfr_clear(*(xrange.b));
+    mpfr_clear(*(yrange.a));
+    mpfr_clear(*(yrange.b));
+    free(xrange.a);
+    free(xrange.b);
+    free(yrange.a);
+    free(yrange.b);
     return ISHOPITALEVALUABLE;
   } 
-  
+
+  mpfr_clear(*(xrange.a));
+  mpfr_clear(*(xrange.b));
+  mpfr_clear(*(yrange.a));
+  mpfr_clear(*(yrange.b));
+  free(xrange.a);
+  free(xrange.b);
+  free(yrange.a);
+  free(yrange.b);
   return ISNOTEVALUABLE;
+}
+
+int evaluateWithAccuracyEstimate(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, mp_prec_t prec) {
+  rangetype xrange, yrange;
+
+  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+
+  mpfr_init2(*(xrange.a),prec);
+  mpfr_init2(*(xrange.b),prec);
+  mpfr_init2(*(yrange.a),prec);
+  mpfr_init2(*(yrange.b),prec);
+
+  mpfr_set(*(xrange.a),x,GMP_RNDD);
+  mpfr_set(*(xrange.b),x,GMP_RNDU);
+
+  evaluateRangeFunction(yrange, func, xrange, prec);
+
+  mpfr_add(*(xrange.a),*(yrange.a),*(yrange.b),GMP_RNDN);
+  mpfr_div_2ui(*(xrange.a),*(xrange.a),1,GMP_RNDN);
+  mpfr_set(y,*(xrange.a),GMP_RNDN);
+
+  if (mpfr_zero_p(y) || (!mpfr_number_p(y))) {
+    mpfr_clear(*(xrange.a));
+    mpfr_clear(*(xrange.b));
+    mpfr_clear(*(yrange.a));
+    mpfr_clear(*(yrange.b));
+    free(xrange.a);
+    free(xrange.b);
+    free(yrange.a);
+    free(yrange.b);
+    return 0;
+  }
+
+  mpfr_abs(*(xrange.a),y,GMP_RNDD);
+  mpfr_sub(*(xrange.b),*(yrange.b),*(yrange.a),GMP_RNDU);
+  mpfr_abs(*(xrange.b),*(xrange.b),GMP_RNDU);
+  mpfr_div(*(xrange.b),*(xrange.b),*(xrange.a),GMP_RNDU);
+  mpfr_mul_2ui(*(xrange.b),*(xrange.b),1,GMP_RNDU);
+  mpfr_set(accur,*(xrange.b),GMP_RNDU);
+
+  mpfr_clear(*(xrange.a));
+  mpfr_clear(*(xrange.b));
+  mpfr_clear(*(yrange.a));
+  mpfr_clear(*(yrange.b));
+  free(xrange.a);
+  free(xrange.b);
+  free(yrange.a);
+  free(yrange.b);
+
+  return 1;
+}
+
+
+int evaluateWithAccuracy(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, mp_prec_t minprec, mp_prec_t maxprec) {
+  mpfr_t temp, currY, currX, currAccur, resY;
+  mp_prec_t p;
+  int res;
+
+  if (mpfr_sgn(accur) <= 0) return 0;
+
+  mpfr_init2(temp,minprec);
+  mpfr_set_d(temp,1.0,GMP_RNDN);
+  p = mpfr_get_prec(y);
+  if (maxprec < p) p = maxprec;
+  mpfr_div_2ui(temp,temp,p,GMP_RNDN);
+  if (mpfr_cmp(accur,temp) < 0) {
+    mpfr_clear(temp);
+    return 0;
+  }
+  mpfr_clear(temp);
+
+  mpfr_init2(currAccur,mpfr_get_prec(accur));
+
+  p = minprec;
+  if ((mpfr_get_prec(y) + 10) > minprec) minprec = mpfr_get_prec(y) + 10;
+
+  res = 0;
+  while (p <= maxprec) {
+    mpfr_init2(currY,p);
+    mpfr_init2(currX,p);
+    mpfr_set(currX,x,GMP_RNDN);
+    res = evaluateWithAccuracyEstimate(func, currX, currY, currAccur, p);
+    mpfr_clear(currX);
+    if ((mpfr_cmp(currAccur,accur) <= 0) && res) {
+      mpfr_init2(resY,mpfr_get_prec(currY));
+      mpfr_set(resY,currY,GMP_RNDN);
+      res = 1;
+      break;
+    }
+    mpfr_clear(currY);
+    p *= 2;
+  }
+  
+  if (res) {
+    mpfr_set(y,currY,GMP_RNDN);
+  }
+  
+  return res;
 }

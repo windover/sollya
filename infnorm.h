@@ -27,5 +27,6 @@ void evaluateConstantWithErrorEstimate(mpfr_t res, mpfr_t err, node *func, mpfr_
 chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec);
 chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec);
 int isEvaluable(node *func, mpfr_t x, mpfr_t *y, mp_prec_t prec);
+int evaluateWithAccuracy(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, mp_prec_t minprec, mp_prec_t maxprec);
 
 #endif /* ifdef INFNORM_H*/

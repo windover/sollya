@@ -179,6 +179,8 @@ TESTPARI        "testpari"
 ZERODENOMINATORS "zerodenominators"
 ISEVALUABLE     "isevaluable"
 
+EVALUATEACCURATE "evaluateaccurate"
+
 %%
 
 %{
@@ -302,6 +304,7 @@ ISEVALUABLE     "isevaluable"
 {FPFINDZEROS}            {     promptToBePrinted = 0; return FPFINDZEROSTOKEN; }                    
 {ZERODENOMINATORS}       {     promptToBePrinted = 0; return ZERODENOMINATORSTOKEN; }                    
 {ISEVALUABLE}            {     promptToBePrinted = 0; return ISEVALUABLETOKEN; }                    
+{EVALUATEACCURATE}       {     promptToBePrinted = 0; return EVALUATEACCURATETOKEN; }                    
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);
