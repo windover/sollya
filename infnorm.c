@@ -2123,8 +2123,10 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   evaluate(y2,deriv,x2,prec);
   while(mpfr_less_p(x1,b)) {
     evaluate(s,tree,x1,prec);
-    mpfr_abs(s,s,GMP_RNDN);
-    mpfr_max(max2,max2,s,GMP_RNDU);
+    if (mpfr_number_p(s)) {
+      mpfr_abs(s,s,GMP_RNDN);
+      mpfr_max(max2,max2,s,GMP_RNDU);
+    }
     if (mpfr_sgn(y1) != mpfr_sgn(y2)) {
       newtonWorked = newtonMPFR(z, deriv, derivsecond, x1, x2, prec);
       if (!newtonWorked) {
