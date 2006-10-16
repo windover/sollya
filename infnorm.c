@@ -2044,7 +2044,7 @@ int isTrivialInfnormCase(rangetype result, node *func) {
 
 
 void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec) {
-  mpfr_t z, max, temp, x1, x2, y1, y2, step;
+  mpfr_t z, max, temp, x1, x2, y1, y2, step, max2, s;
   node *deriv;
   node *derivsecond;
   int newtonWorked;
@@ -2054,7 +2054,10 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   mpfr_init2(step, prec);
   mpfr_init2(y1, prec);
   mpfr_init2(y2, prec);
+  mpfr_init2(max2, prec);
+  mpfr_init2(s, prec);
 
+  mpfr_set_d(max2,0.0,GMP_RNDU);
 
   mpfr_sub(step, b, a, GMP_RNDN);
   mpfr_div_ui(step, step, points, GMP_RNDN);
@@ -2091,6 +2094,7 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   evaluate(temp, tree, a, prec);
   if (!mpfr_nan_p(temp)) {
     mpfr_abs(max, temp, GMP_RNDU);
+    mpfr_abs(max2, temp, GMP_RNDU);
   } else {
     printMessage(1,"Warning: the evaluation of the given function in ");
     mpfr_set(z,a,GMP_RNDN);
@@ -2103,6 +2107,7 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   if (!mpfr_nan_p(temp)) {
       mpfr_abs(temp, temp, GMP_RNDU);
       mpfr_max(max, max, temp, GMP_RNDU);
+      mpfr_max(max2, max2, temp, GMP_RNDU);
   } else {
     printMessage(1,"Warning: the evaluation of the given function in ");
     mpfr_set(z,b,GMP_RNDN);
@@ -2117,6 +2122,9 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   evaluate(y1,deriv,x1,prec);
   evaluate(y2,deriv,x2,prec);
   while(mpfr_less_p(x1,b)) {
+    evaluate(s,tree,x1,prec);
+    mpfr_abs(s,s,GMP_RNDN);
+    mpfr_max(max2,max2,s,GMP_RNDU);
     if (mpfr_sgn(y1) != mpfr_sgn(y2)) {
       newtonWorked = newtonMPFR(z, deriv, derivsecond, x1, x2, prec);
       if (!newtonWorked) {
@@ -2157,7 +2165,10 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
     mpfr_add(x2,x1,step, GMP_RNDU);
     if (mpfr_cmp(x2,b)>0) mpfr_set(x2,b,GMP_RNDN);
     evaluate(y2,deriv,x2,prec);
+
   }
+  
+  mpfr_max(max,max,max2,GMP_RNDU);
 
   mpfr_set(result,max,GMP_RNDU);
 
