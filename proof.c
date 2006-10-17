@@ -165,7 +165,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
   if (theo->theoLeftLinear != NULL) nextnumber = fprintExprBoundTheo(fd,theo->theoLeftLinear, nextnumber);
   if (theo->theoRightLinear != NULL) nextnumber = fprintExprBoundTheo(fd,theo->theoRightLinear,nextnumber);
   theo->number = nextnumber; nextnumber++; 
-  if (theo->simplificationUsed == TAYLOR) {
+  if ((theo->simplificationUsed == TAYLOR) || (theo->simplificationUsed == MONOTONOCITY)) {
     fprintDerivativeLemma(fd, theo->function, theo->leftDerivative, theo->number, 1);
   }
   if ((theo->simplificationUsed == DECORRELATE) || 
@@ -497,6 +497,35 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
 	}
 	fprintInterval(fd,*(theo->boundRight));
 	fprintf(fd,"\nUsing these bounds for the arguments f(%s) and g(%s) of ",variablename,variablename);
+	break;
+      case MONOTONOCITY: 
+	fprintf(fd,"Lemma %d.%d shows that the derivative of the given expression is ",
+		theo->number,1);
+	fprintTree(fd,theo->leftDerivative);
+	fprintf(fd,".\nOn the given domain, the values taken by this derivative are bounded by ");
+	fprintInterval(fd,*(theo->boundLeftLinear));
+	if (!exprBoundTheoIsTrivial(theo->theoLeftLinear)) {
+	  fprintf(fd," as shown by theorem %d.\n",theo->theoLeftLinear->number);
+	} else {
+	  fprintf(fd," as is trivially clear.\n");
+	}
+	fprintf(fd,"Zero does not lie in this interval and the function is thus monotone on this interval.\n");
+	fprintf(fd,"On the left endpoint of the interval, the function is bounded by ");
+	fprintInterval(fd,*(theo->boundLeft));
+	if (!exprBoundTheoIsTrivial(theo->theoLeft)) {
+	  fprintf(fd," as shown by theorem %d.\n",theo->theoLeft->number);
+	} else {
+	  fprintf(fd," as is trivially clear.\n");
+	}
+	fprintf(fd,"On the right endpoint of the interval, the function is bounded by ");
+	fprintInterval(fd,*(theo->boundRight));
+	if (!exprBoundTheoIsTrivial(theo->theoRight)) {
+	  fprintf(fd," as shown by theorem %d.\n",theo->theoRight->number);
+	} else {
+	  fprintf(fd," as is trivially clear.\n");
+	}
+	fprintf(fd,"The given interval is the convex hull of these two intervals bounding the function on the endpoints.\n");
+
 	break;
       default:
 	fprintf(fd,"The expression is a constant. Its bounding is trivial. Using this constant value\n");

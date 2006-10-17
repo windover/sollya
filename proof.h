@@ -15,6 +15,7 @@
 #define HOPITAL 4
 #define IMPLICATION 5
 #define DECORRELATE 6
+#define MONOTONOCITY 7
 
 typedef struct exprBoundTheoStruct exprBoundTheo;
 

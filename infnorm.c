@@ -1231,8 +1231,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 }
 
 chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t prec, int recurse, exprBoundTheo *theo) {
-  mpfr_t xZ, rTl, rTr;
-  mpfi_t xZI, constantTerm, linearTerm, resultTaylor, resultDirect, temp, temp2;
+  mpfr_t xZ, rTl, rTr, leftX, rightX;
+  mpfi_t xZI, xZI2, constantTerm, linearTerm, resultTaylor, resultDirect, temp, temp2;
   chain *excludes, *directExcludes, *taylorExcludes, *taylorExcludesLinear, *taylorExcludesConstant;
   exprBoundTheo *constantTheo, *linearTheo, *directTheo;
   node *nextderiv;
@@ -1291,7 +1291,8 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   mpfi_mid(xZ,x);
   mpfi_set_fr(xZI,xZ);
 
-  taylorExcludesConstant = evaluateI(constantTerm, func, xZI, prec, 1, 2, constantTheo);
+
+
   if (recurse > 0) {
     nextderiv = differentiate(deriv);
     size = treeSize(nextderiv);
@@ -1310,75 +1311,129 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   } else {
     taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, 2, linearTheo);
   }
-  mpfi_sub(temp, x, xZI);
-  mpfi_mul(temp2, temp, linearTerm);
-  mpfi_add(resultTaylor, constantTerm, temp2);
-  taylorExcludes = concatChains(taylorExcludesConstant, taylorExcludesLinear);
-  
-  directExcludes = evaluateI(resultDirect, func, x, prec, 0, 2, directTheo);
 
-  if (verbosity >= 12) {
-    printf("Information: Taylor evaluation: domain:\n");
-    printInterval(x);
-    printf("\nconstant term:\n");
-    printInterval(constantTerm);
-    printf("\nlinear term:\n");
-    printInterval(linearTerm);
-    printf("\ntranslated interval:\n");
-    printInterval(temp);
-    printf("\nmultiplied linear term:\n");
-    printInterval(temp2);
-    printf("\ndirect evaluation:\n");
-    printInterval(resultDirect);
-    printf("\n");
-  }
+  if (!mpfi_has_zero(linearTerm)) {
 
-  mpfi_get_left(rTl,resultTaylor);
-  mpfi_get_right(rTr,resultTaylor);
-  
-  if (mpfr_number_p(rTl) && mpfr_number_p(rTr)) {
-    mpfi_intersect(result,resultTaylor,resultDirect);
-    excludes = concatChains(directExcludes,taylorExcludes);
+    printMessage(8,"Information: the linear term during Taylor evaluation does not change its sign.\n");
+    printMessage(8,"Simplifying by taking the convex hull of the evaluations on the endpoints.\n");
+
+    mpfr_init2(leftX,mpfi_get_prec(x));
+    mpfr_init2(rightX,mpfi_get_prec(x));
+
+    mpfi_get_left(leftX,x);
+    mpfi_get_right(rightX,x);
+
+    mpfi_init2(xZI2,prec);
+    
+    mpfi_set_fr(xZI,leftX);
+    mpfi_set_fr(xZI2,rightX);
+
+    directExcludes = evaluateI(resultDirect, func, xZI, prec, 0, 2, directTheo);
+    taylorExcludesConstant = evaluateI(constantTerm, func, xZI2, prec, 1, 2, constantTheo);
+
+    mpfi_union(result,resultDirect,constantTerm);
+    
     if (theo != NULL) {
       if (theo->functionType != POLYNOMIAL) {
-	theo->simplificationUsed = TAYLOR;
+	theo->simplificationUsed = MONOTONOCITY;
 	theo->theoLeft = directTheo;
-	theo->theoLeftConstant = constantTheo;
+	theo->theoRight = constantTheo;
 	theo->theoLeftLinear = linearTheo;
 	theo->leftDerivative = copyTree(deriv);
 	theo->boundLeft = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
 	mpfi_init2(*(theo->boundLeft),prec);
 	mpfi_set(*(theo->boundLeft),resultDirect);
+	theo->theoRight = constantTheo;
 	theo->boundRight = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
 	mpfi_init2(*(theo->boundRight),prec);
-	mpfi_set(*(theo->boundRight),resultTaylor);
-	theo->boundLeftConstant = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
-	mpfi_init2(*(theo->boundLeftConstant),prec);
-	mpfi_set(*(theo->boundLeftConstant),constantTerm);
+	mpfi_set(*(theo->boundRight),constantTerm);
 	theo->boundLeftLinear = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
 	mpfi_init2(*(theo->boundLeftLinear),prec);
 	mpfi_set(*(theo->boundLeftLinear),linearTerm);
-	theo->xZ = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
-	mpfi_init2(*(theo->xZ),prec);
-	mpfi_set(*(theo->xZ),xZI);
-	theo->xMXZ = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
-	mpfi_init2(*(theo->xMXZ),prec);
-	mpfi_set(*(theo->xMXZ),temp);
       }
     }
+
+      excludes = concatChains(directExcludes,taylorExcludesConstant);
+      excludes = concatChains(taylorExcludesLinear,excludes);
+
+      mpfi_clear(xZI2);
+      mpfr_clear(leftX);
+      mpfr_clear(rightX);
+
   } else {
-    mpfi_set(result,resultDirect);
-    freeChain(taylorExcludes,freeMpfiPtr);
-    excludes = directExcludes;
-    if (theo != NULL) {
-      if (theo->functionType != POLYNOMIAL) {
-	theo->simplificationUsed = IMPLICATION;
-	theo->theoLeft = directTheo;
-	theo->boundLeft = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
-	mpfi_init2(*(theo->boundLeft),prec);
-	mpfi_set(*(theo->boundLeft),resultDirect);
-	freeExprBoundTheo(constantTheo);
-	freeExprBoundTheo(linearTheo);
+
+    taylorExcludesConstant = evaluateI(constantTerm, func, xZI, prec, 1, 2, constantTheo);
+    
+    mpfi_sub(temp, x, xZI);
+    mpfi_mul(temp2, temp, linearTerm);
+    mpfi_add(resultTaylor, constantTerm, temp2);
+    taylorExcludes = concatChains(taylorExcludesConstant, taylorExcludesLinear);
+  
+    directExcludes = evaluateI(resultDirect, func, x, prec, 0, 2, directTheo);
+
+    if (verbosity >= 12) {
+      printf("Information: Taylor evaluation: domain:\n");
+      printInterval(x);
+      printf("\nconstant term:\n");
+      printInterval(constantTerm);
+      printf("\nlinear term:\n");
+      printInterval(linearTerm);
+      printf("\ntranslated interval:\n");
+      printInterval(temp);
+      printf("\nmultiplied linear term:\n");
+      printInterval(temp2);
+      printf("\ndirect evaluation:\n");
+      printInterval(resultDirect);
+      printf("\n");
+    }
+
+    mpfi_get_left(rTl,resultTaylor);
+    mpfi_get_right(rTr,resultTaylor);
+    
+    if (mpfr_number_p(rTl) && mpfr_number_p(rTr)) {
+      mpfi_intersect(result,resultTaylor,resultDirect);
+      excludes = concatChains(directExcludes,taylorExcludes);
+      if (theo != NULL) {
+	if (theo->functionType != POLYNOMIAL) {
+	  theo->simplificationUsed = TAYLOR;
+	  theo->theoLeft = directTheo;
+	  theo->theoLeftConstant = constantTheo;
+	  theo->theoLeftLinear = linearTheo;
+	  theo->leftDerivative = copyTree(deriv);
+	  theo->boundLeft = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
+	  mpfi_init2(*(theo->boundLeft),prec);
+	  mpfi_set(*(theo->boundLeft),resultDirect);
+	  theo->boundRight = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
+	  mpfi_init2(*(theo->boundRight),prec);
+	  mpfi_set(*(theo->boundRight),resultTaylor);
+	  theo->boundLeftConstant = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
+	  mpfi_init2(*(theo->boundLeftConstant),prec);
+	  mpfi_set(*(theo->boundLeftConstant),constantTerm);
+	  theo->boundLeftLinear = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
+	  mpfi_init2(*(theo->boundLeftLinear),prec);
+	  mpfi_set(*(theo->boundLeftLinear),linearTerm);
+	  theo->xZ = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
+	  mpfi_init2(*(theo->xZ),prec);
+	  mpfi_set(*(theo->xZ),xZI);
+	  theo->xMXZ = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
+	  mpfi_init2(*(theo->xMXZ),prec);
+	  mpfi_set(*(theo->xMXZ),temp);
+	}
+      }
+    } else {
+      mpfi_set(result,resultDirect);
+      freeChain(taylorExcludes,freeMpfiPtr);
+      excludes = directExcludes;
+      if (theo != NULL) {
+	if (theo->functionType != POLYNOMIAL) {
+	  theo->simplificationUsed = IMPLICATION;
+	  theo->theoLeft = directTheo;
+	  theo->boundLeft = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
+	  mpfi_init2(*(theo->boundLeft),prec);
+	  mpfi_set(*(theo->boundLeft),resultDirect);
+	  freeExprBoundTheo(constantTheo);
+	  freeExprBoundTheo(linearTheo);
+	}
       }
     }
   }
@@ -2384,15 +2439,38 @@ void evaluateRangeFunctionFast(rangetype yrange, node *func, node *deriv, ranget
 }
 
 void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_prec_t prec) {
-  node *deriv, *temp, *temp2;
+  node *deriv, *temp, *temp2, *numerator, *denominator, *f;
 
   temp = differentiate(func);
   deriv = horner(temp);
   temp2 = horner(func);
-  evaluateRangeFunctionFast(yrange,func,deriv,xrange,prec);
+
+  f = NULL;
+
+  if (getNumeratorDenominator(&numerator,&denominator,temp2)) {
+    if (isSyntacticallyEqual(numerator, denominator)) {
+      mpfr_set_d(*(yrange.a),1.0,GMP_RNDD);
+      mpfr_set_d(*(yrange.b),1.0,GMP_RNDU);
+      free_memory(numerator);
+      free_memory(denominator);
+      free_memory(deriv);
+      free_memory(temp);
+      free_memory(temp2);
+      return;
+    } else {
+      f = copyTree(temp2);
+    }
+    free_memory(numerator);
+    free_memory(denominator);
+  } else {
+    f = numerator;
+  }
+
+  evaluateRangeFunctionFast(yrange,f,deriv,xrange,prec);
   free_memory(deriv);
   free_memory(temp);
   free_memory(temp2);
+  free_memory(f);
 }
 
 
