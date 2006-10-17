@@ -58,7 +58,7 @@ extern formatType *formatTypeTemp;
 extern errorType *errorTypeTemp;
 extern pointsType *pointsTypeTemp;
 extern int eliminatePrompt;
-
+extern mp_prec_t tempPrec;
 
 void printPrompt(void);
 void recoverFromError(void);

@@ -2932,7 +2932,8 @@ int evaluateWithAccuracyEstimate(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, m
   mpfr_div_2ui(*(xrange.a),*(xrange.a),1,GMP_RNDN);
   mpfr_set(y,*(xrange.a),GMP_RNDN);
 
-  if (mpfr_zero_p(y) || (!mpfr_number_p(y))) {
+  /* We have a zero in the output interval or are not a number */
+  if ((mpfr_sgn(*(yrange.a)) != mpfr_sgn(*(yrange.b))) || (!mpfr_number_p(y))) {
     mpfr_clear(*(xrange.a));
     mpfr_clear(*(xrange.b));
     mpfr_clear(*(yrange.a));
@@ -2944,9 +2945,21 @@ int evaluateWithAccuracyEstimate(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, m
     return 0;
   }
 
-  mpfr_abs(*(xrange.a),y,GMP_RNDD);
-  mpfr_sub(*(xrange.b),*(yrange.b),*(yrange.a),GMP_RNDU);
-  mpfr_abs(*(xrange.b),*(xrange.b),GMP_RNDU);
+  if (mpfr_cmp(y,*(yrange.b)) > 0) {
+    mpfr_set(*(yrange.b),y,GMP_RNDU);
+  }
+
+  if (mpfr_cmp(y,*(yrange.a)) < 0) {
+    mpfr_set(*(yrange.a),y,GMP_RNDD);
+  }
+
+  mpfr_abs(*(yrange.a),*(yrange.a),GMP_RNDD);
+  mpfr_abs(*(yrange.b),*(yrange.b),GMP_RNDD);
+  mpfr_min(*(xrange.a),*(yrange.a),*(yrange.b),GMP_RNDD);
+  mpfr_max(*(xrange.b),*(yrange.a),*(yrange.b),GMP_RNDU);
+
+  mpfr_sub(*(xrange.b),*(xrange.b),*(xrange.a),GMP_RNDU);
+
   mpfr_div(*(xrange.b),*(xrange.b),*(xrange.a),GMP_RNDU);
   mpfr_mul_2ui(*(xrange.b),*(xrange.b),1,GMP_RNDU);
   mpfr_set(accur,*(xrange.b),GMP_RNDU);
@@ -2964,10 +2977,11 @@ int evaluateWithAccuracyEstimate(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, m
 }
 
 
-int evaluateWithAccuracy(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, mp_prec_t minprec, mp_prec_t maxprec) {
+int evaluateWithAccuracy(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, 
+			 mp_prec_t minprec, mp_prec_t maxprec, mp_prec_t *needPrec) {
   mpfr_t temp, currY, currX, currAccur, resY;
   mp_prec_t p;
-  int res;
+  int res, okay;
 
   if (mpfr_sgn(accur) <= 0) return 0;
 
@@ -2987,26 +3001,32 @@ int evaluateWithAccuracy(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, mp_prec_t
   p = minprec;
   if ((mpfr_get_prec(y) + 10) > minprec) minprec = mpfr_get_prec(y) + 10;
 
-  res = 0;
+  res = 0; okay = 0;
   while (p <= maxprec) {
     mpfr_init2(currY,p);
     mpfr_init2(currX,p);
     mpfr_set(currX,x,GMP_RNDN);
     res = evaluateWithAccuracyEstimate(func, currX, currY, currAccur, p);
     mpfr_clear(currX);
-    if ((mpfr_cmp(currAccur,accur) <= 0) && res) {
+
+    if (res && (mpfr_cmp(currAccur,accur) <= 0)) {
       mpfr_init2(resY,mpfr_get_prec(currY));
       mpfr_set(resY,currY,GMP_RNDN);
-      res = 1;
+      mpfr_clear(currY);
+      okay = 1;
       break;
     }
     mpfr_clear(currY);
     p *= 2;
   }
   
-  if (res) {
-    mpfr_set(y,currY,GMP_RNDN);
+  if (okay) {
+    mpfr_set(y,resY,GMP_RNDN);
+    mpfr_clear(resY);
+    if (needPrec != NULL) {
+      *needPrec = p;
+    }
   }
-  
-  return res;
+
+  return okay;
 }

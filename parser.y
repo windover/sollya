@@ -163,6 +163,7 @@ void yyerror(char *message) {
 %token  ZERODENOMINATORSTOKEN
 %token  ISEVALUABLETOKEN
 %token  EVALUATEACCURATETOKEN                   
+%token  EXCLAMATIONTOKEN
 
 %type <other> commands
 %type <other> command
@@ -513,6 +514,11 @@ verbosityset:  VERBOSITYTOKEN EQUALTOKEN verbosity
 			     verbosity = ($3);
 			     $$ = NULL;
                            }
+             | VERBOSITYTOKEN EQUALTOKEN verbosity EXCLAMATIONTOKEN
+                           {
+			     verbosity = ($3);
+			     $$ = NULL;
+                           }
 ;
 
 taylorrecursions: TAYLORRECURSIONSTOKEN EQUALTOKEN taylorrecursionsvalue
@@ -567,9 +573,10 @@ evaluateaccurate: EVALUATEACCURATETOKEN function ATTOKEN constantfunction
 			     mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
 			     mpfr_div_2ui(*mpfr_temp2,*mpfr_temp2,defaultprecision,GMP_RNDN);
 			     int_temp = evaluateWithAccuracy($2, *($4), *mpfr_temp, *mpfr_temp2, 
-							     defaultprecision, 256 * defaultprecision);
+							     defaultprecision, 256 * defaultprecision, &tempPrec);
 			     if (int_temp) {
 			       printMpfr(*mpfr_temp);
+			       printMessage(2,"Information: intermediate precision of %d bits.\n",tempPrec);
 			     } else {
 			       printf("Could not evaluate the function sufficiently exactly.\n");
 			     }

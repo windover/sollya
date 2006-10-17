@@ -58,6 +58,7 @@ formatType *formatTypeTemp;
 errorType *errorTypeTemp;
 pointsType *pointsTypeTemp;
 int eliminatePrompt;
+mp_prec_t tempPrec;
 
 extern gp_data *GP_DATA;
 
