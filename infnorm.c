@@ -3044,3 +3044,24 @@ int evaluateWithAccuracy(node *func, mpfr_t x, mpfr_t y, mpfr_t accur,
 
   return okay;
 }
+
+
+int evaluateFaithfulOrFail(node *func, mpfr_t x, mpfr_t y, unsigned int precFactor, mp_prec_t *needPrec) {
+  mp_prec_t startPrec, endPrec, p;
+  mpfr_t accur;
+  int res;
+
+  p = mpfr_get_prec(y);
+  startPrec = p + 10;
+  endPrec = startPrec * precFactor;
+
+  mpfr_init2(accur,startPrec);
+  mpfr_set_d(accur,1.0,GMP_RNDN);
+  mpfr_div_2ui(accur,accur,p,GMP_RNDD);
+
+  res = evaluateWithAccuracy(func, x, y, accur, startPrec, endPrec, needPrec);
+  
+  mpfr_clear(accur);
+  
+  return res;
+}

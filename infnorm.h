@@ -29,5 +29,6 @@ chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t pre
 int isEvaluable(node *func, mpfr_t x, mpfr_t *y, mp_prec_t prec);
 int evaluateWithAccuracy(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, 
 			 mp_prec_t minprec, mp_prec_t maxprec, mp_prec_t *needPrec);
+int evaluateFaithfulOrFail(node *func, mpfr_t x, mpfr_t y, unsigned int precFactor, mp_prec_t *needPrec);
 
 #endif /* ifdef INFNORM_H*/

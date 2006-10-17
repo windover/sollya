@@ -567,13 +567,8 @@ assignment:  lvariable EQUALTOKEN function
 evaluateaccurate: EVALUATEACCURATETOKEN function ATTOKEN constantfunction 
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-			     mpfr_temp2 = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
-			     mpfr_init2(*mpfr_temp2,defaultprecision);
-			     mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
-			     mpfr_div_2ui(*mpfr_temp2,*mpfr_temp2,defaultprecision,GMP_RNDN);
-			     int_temp = evaluateWithAccuracy($2, *($4), *mpfr_temp, *mpfr_temp2, 
-							     defaultprecision, 256 * defaultprecision, &tempPrec);
+			     int_temp = evaluateFaithfulOrFail($2, *($4), *mpfr_temp, 256, &tempPrec);
 			     if (int_temp) {
 			       printMpfr(*mpfr_temp);
 			       printMessage(2,"Information: intermediate precision of %d bits.\n",tempPrec);
@@ -581,10 +576,8 @@ evaluateaccurate: EVALUATEACCURATETOKEN function ATTOKEN constantfunction
 			       printf("Could not evaluate the function sufficiently exactly.\n");
 			     }
 			     mpfr_clear(*mpfr_temp);
-			     mpfr_clear(*mpfr_temp2);
 			     mpfr_clear(*($4));
 			     free(mpfr_temp);
-			     free(mpfr_temp2);
 			     free($4);
 			     free_memory($2);
 			     $$ = NULL;
