@@ -2944,6 +2944,20 @@ int evaluateWithAccuracyEstimate(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, m
     free(yrange.b);
     return 0;
   }
+  
+  /* We have the exact interval [0;0] with an error of 0 */
+  if (mpfr_zero_p(*(yrange.a)) && mpfr_zero_p(*(yrange.b))) {
+    mpfr_set_d(accur,0.0,GMP_RNDN);
+    mpfr_clear(*(xrange.a));
+    mpfr_clear(*(xrange.b));
+    mpfr_clear(*(yrange.a));
+    mpfr_clear(*(yrange.b));
+    free(xrange.a);
+    free(xrange.b);
+    free(yrange.a);
+    free(yrange.b);
+    return 1;
+  }
 
   if (mpfr_cmp(y,*(yrange.b)) > 0) {
     mpfr_set(*(yrange.b),y,GMP_RNDU);
