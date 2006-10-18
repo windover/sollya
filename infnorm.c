@@ -1314,8 +1314,8 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
 
   if (!mpfi_has_zero(linearTerm)) {
 
-    printMessage(8,"Information: the linear term during Taylor evaluation does not change its sign.\n");
-    printMessage(8,"Simplifying by taking the convex hull of the evaluations on the endpoints.\n");
+    printMessage(12,"Information: the linear term during Taylor evaluation does not change its sign.\n");
+    printMessage(12,"Simplifying by taking the convex hull of the evaluations on the endpoints.\n");
 
     mpfr_init2(leftX,mpfi_get_prec(x));
     mpfr_init2(rightX,mpfi_get_prec(x));
@@ -3146,8 +3146,11 @@ int evaluateFaithfulOrFail(node *func, mpfr_t x, mpfr_t y, unsigned int precFact
 
 void evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
   int res;
+  mp_prec_t endPrec;
   
-  res = evaluateFaithfulOrFail(tree, x, result, 256, NULL);
+  res = evaluateFaithfulOrFail(tree, x, result, 256, &endPrec);
+
+  printMessage(10,"Information: evaluateFaithful needed %d bits to guarantee faithful evaluation.\n",endPrec);
 
   if (!res) {
     mpfr_set_nan(result);
