@@ -3143,3 +3143,14 @@ int evaluateFaithfulOrFail(node *func, mpfr_t x, mpfr_t y, unsigned int precFact
   
   return res;
 }
+
+void evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
+  int res;
+  
+  res = evaluateFaithfulOrFail(tree, x, result, 256, NULL);
+
+  if (!res) {
+    mpfr_set_nan(result);
+  }
+
+}

@@ -30,5 +30,6 @@ int isEvaluable(node *func, mpfr_t x, mpfr_t *y, mp_prec_t prec);
 int evaluateWithAccuracy(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, 
 			 mp_prec_t minprec, mp_prec_t maxprec, mp_prec_t *needPrec);
 int evaluateFaithfulOrFail(node *func, mpfr_t x, mpfr_t y, unsigned int precFactor, mp_prec_t *needPrec);
+void evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec);
 
 #endif /* ifdef INFNORM_H*/
