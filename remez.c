@@ -6,6 +6,7 @@
 #include "expression.h"
 #include "chain.h"
 #include "remez.h"
+#include "infnorm.h"
 
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
@@ -119,8 +120,8 @@ GEN newton(node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_div_2ui(x,x,1,GMP_RNDN);
   
   while(n<=test) {
-    evaluate(temp1, tree, x, prec);
-    evaluate(temp2, diff_tree, x, prec);
+    evaluateFaithful(temp1, tree, x, prec);
+    evaluateFaithful(temp2, diff_tree, x, prec);
     mpfr_div(temp1, temp1, temp2, GMP_RNDN);
     mpfr_sub(x, x, temp1, GMP_RNDN);
     n = 2*n;
@@ -154,8 +155,8 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
 
   mpfr_set(x1,a,GMP_RNDN);
   mpfr_add(x2,a,h,GMP_RNDN);
-  evaluate(y1, tree, x1, prec);
-  evaluate(y2, tree, x2, prec);
+  evaluateFaithful(y1, tree, x1, prec);
+  evaluateFaithful(y2, tree, x2, prec);
   while(mpfr_lessequal_p(x2,b)) {
     if (mpfr_sgn(y1) != mpfr_sgn(y2)) {
       i++;
@@ -166,7 +167,7 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
     mpfr_set(x1,x2,GMP_RNDN);
     mpfr_add(x2,x2,h,GMP_RNDN);
     mpfr_set(y1,y2,GMP_RNDN);
-    evaluate(y2, tree, x2, prec);
+    evaluateFaithful(y2, tree, x2, prec);
   }
   
   if (i<deg) {
@@ -176,8 +177,8 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
   else {
     if (i==deg) { res[deg+1] = (long)(mpfr_to_PARI(a)); res[deg+2] = (long)(mpfr_to_PARI(b)); }
     else { // i = deg +1
-      evaluate(y1, tree, a, prec);
-      evaluate(y2, tree, b, prec);
+      evaluateFaithful(y1, tree, a, prec);
+      evaluateFaithful(y2, tree, b, prec);
       if (mpfr_greater_p(a,b)) res[deg+2] = (long)(mpfr_to_PARI(a));
       else res[deg+2] = (long)(mpfr_to_PARI(b));
       res = sort(res);
@@ -200,13 +201,13 @@ double computeRatio(node *tree, GEN x, mp_prec_t prec) {
   mpfr_init2(temp,prec);
 
   PARI_to_mpfr(temp, (GEN)(x[1]), GMP_RNDN);
-  evaluate(min, tree, temp, prec);
+  evaluateFaithful(min, tree, temp, prec);
   mpfr_abs(min,min,GMP_RNDN);
   mpfr_set(max,min,GMP_RNDN);
 
   for(i=0;i<lg(x)-1;i++) {
     PARI_to_mpfr(temp, (GEN)(x[i+1]), GMP_RNDN);
-    evaluate(temp, tree, temp, prec);
+    evaluateFaithful(temp, tree, temp, prec);
     mpfr_abs(temp,temp,GMP_RNDN);
     if (mpfr_greater_p(min,temp)) mpfr_set(min,temp,GMP_RNDN);
     if (mpfr_greater_p(temp,max)) mpfr_set(max,temp,GMP_RNDN);

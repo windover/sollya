@@ -4,6 +4,7 @@
 
 #include "main.h"
 #include "pari_utils.h"
+#include "infnorm.h"
 
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
@@ -109,7 +110,7 @@ GEN evaluate_to_PARI(node *tree, GEN x, mp_prec_t prec) {
   mpfr_init2(res_mpfr, prec);
 
   PARI_to_mpfr(x_mpfr, x, GMP_RNDN);
-  evaluate(res_mpfr, tree, x_mpfr, prec);
+  evaluateFaithful(res_mpfr, tree, x_mpfr, prec);
   res = mpfr_to_PARI(res_mpfr);
 
   mpfr_clear(x_mpfr);

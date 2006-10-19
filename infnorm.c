@@ -3157,6 +3157,7 @@ void evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
   printMessage(10,"Information: evaluateFaithful needed %d bits to guarantee faithful evaluation.\n",endPrec);
 
   if (!res) {
+    printMessage(4,"Warning: evaluateFaithful returned NaN\n");
     mpfr_set_nan(result);
   }
 

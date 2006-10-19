@@ -6,6 +6,7 @@
 #include <mpfr.h>
 
 #include "main.h"
+#include "infnorm.h"
 
 GEN mpfr_to_PARI(mpfr_t x);
 
