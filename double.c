@@ -356,3 +356,25 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
   mpfr_clear(tempMpfr);
   return roundedPoly;
 }
+
+int mpfr_round_to_doubleextended(mpfr_t rop, mpfr_t op) {
+  mpfr_t intermediate;
+  int res;
+
+  if (mpfr_get_prec(op) < 64) {
+    printMessage(1,"Warning: rounding a value computed on less than 64 bits to doubleextended precision.\n");
+  }
+
+  mpfr_init2(intermediate,64);
+  mpfr_set(intermediate,op,GMP_RNDN);
+  if (mpfr_set(rop,intermediate,GMP_RNDN) != 0) {
+    printMessage(1,"Warning: double rounding occured on invoking the doubleextended precision rounding operator.\n");
+    printMessage(1,"Try to increase the working precision.\n");
+  }
+  
+  mpfr_clear(intermediate);
+
+  res = mpfr_cmp(rop,op);
+
+  return res;
+}

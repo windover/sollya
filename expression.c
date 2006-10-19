@@ -134,6 +134,26 @@ void free_memory(node *tree) {
     free_memory(tree->child1);
     free(tree);
     break;
+  case ERF: 
+    free_memory(tree->child1);
+    free(tree);
+    break;
+  case ERFC:
+    free_memory(tree->child1);
+    free(tree);
+    break;
+  case LOG_1P:
+    free_memory(tree->child1);
+    free(tree);
+    break;
+  case EXP_M1:
+    free_memory(tree->child1);
+    free(tree);
+    break;
+  case DOUBLEEXTENDED:
+    free_memory(tree->child1);
+    free(tree);
+    break;
   default:
    fprintf(stderr,"Error: free_memory: unknown identifier (%d) in the tree\n",tree->nodeType);
    exit(1);
@@ -233,6 +253,21 @@ void fprintHeadFunction(FILE *fd,node *tree, char *x, char *y) {
     break;
   case TRIPLEDOUBLE:
     fprintf(fd,"tripledouble(%s)",x);
+    break;
+  case ERF: 
+    fprintf(fd,"erf(%s)",x);
+    break;
+  case ERFC:
+    fprintf(fd,"erfc(%s)",x);
+    break;
+  case LOG_1P:
+    fprintf(fd,"log1p(%s)",x);
+    break;
+  case EXP_M1:
+    fprintf(fd,"expm1(%s)",x);
+    break;
+  case DOUBLEEXTENDED:
+    fprintf(fd,"doubleextended(%s)",x);
     break;
   default:
    fprintf(stderr,"fprintHeadFunction: unknown identifier (%d) in the tree\n",tree->nodeType);
@@ -567,6 +602,31 @@ void printTree(node *tree) {
     printTree(tree->child1);
     printf(")");
     break;
+  case ERF: 
+    printf("erf(");
+    printTree(tree->child1);
+    printf(")");
+    break;
+  case ERFC:
+    printf("erfc(");
+    printTree(tree->child1);
+    printf(")");
+    break;
+  case LOG_1P:
+    printf("log1p(");
+    printTree(tree->child1);
+    printf(")");
+    break;
+  case EXP_M1:
+    printf("expm1(");
+    printTree(tree->child1);
+    printf(")");
+    break;
+  case DOUBLEEXTENDED:
+    printf("doubleextended(");
+    printTree(tree->child1);
+    printf(")");
+    break;
   default:
    fprintf(stderr,"Error: printTree: unknown identifier in the tree\n");
    exit(1);
@@ -758,6 +818,31 @@ void fprintTree(FILE *fd, node *tree) {
     fprintTree(fd,tree->child1);
     fprintf(fd,")");
     break;
+  case ERF: 
+    fprintf(fd,"erf(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case ERFC:
+    fprintf(fd,"erfc(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case LOG_1P:
+    fprintf(fd,"log1p(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case EXP_M1:
+    fprintf(fd,"expm1(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case DOUBLEEXTENDED:
+    fprintf(fd,"doubleextended(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
   default:
    fprintf(stderr,"Error: fprintTree: unknown identifier in the tree\n");
    exit(1);
@@ -922,6 +1007,31 @@ node* copyTree(node *tree) {
   case TRIPLEDOUBLE:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = TRIPLEDOUBLE;
+    copy->child1 = copyTree(tree->child1);
+    break;
+  case ERF: 
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ERF;
+    copy->child1 = copyTree(tree->child1);
+    break;
+  case ERFC:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ERFC;
+    copy->child1 = copyTree(tree->child1);
+    break;
+  case LOG_1P:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LOG_1P;
+    copy->child1 = copyTree(tree->child1);
+    break;
+  case EXP_M1:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = EXP_M1;
+    copy->child1 = copyTree(tree->child1);
+    break;
+  case DOUBLEEXTENDED:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = DOUBLEEXTENDED;
     copy->child1 = copyTree(tree->child1);
     break;
   default:
@@ -1634,6 +1744,116 @@ node* simplifyTreeErrorfree(node *tree) {
       simplified->child1 = simplChild1;
     }
     break;
+  case ERF: 
+    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      if ((mpfr_erf(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
+	simplified->nodeType = ERF;
+	simplified->child1 = simplChild1;
+	mpfr_clear(*value);
+	free(value);
+      } else {
+	free_memory(simplChild1);
+      }
+    } else {
+      simplified->nodeType = ERF;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case ERFC:
+    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      if ((mpfr_erfc(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
+	simplified->nodeType = ERFC;
+	simplified->child1 = simplChild1;
+	mpfr_clear(*value);
+	free(value);
+      } else {
+	free_memory(simplChild1);
+      }
+    } else {
+      simplified->nodeType = ERFC;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case LOG_1P:
+    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      if ((mpfr_log1p(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
+	simplified->nodeType = LOG_1P;
+	simplified->child1 = simplChild1;
+	mpfr_clear(*value);
+	free(value);
+      } else {
+	free_memory(simplChild1);
+      }
+    } else {
+      simplified->nodeType = LOG_1P;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case EXP_M1:
+    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      if ((mpfr_expm1(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
+	  (!mpfr_number_p(*value))) {
+	simplified->nodeType = EXP_M1;
+	simplified->child1 = simplChild1;
+	mpfr_clear(*value);
+	free(value);
+      } else {
+	free_memory(simplChild1);
+      }
+    } else {
+      simplified->nodeType = EXP_M1;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case DOUBLEEXTENDED:
+    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      if ((mpfr_round_to_doubleextended(*value, *(simplChild1->value)) != 0) || 
+	  (!mpfr_number_p(*value))) {
+	simplified->nodeType = DOUBLEEXTENDED;
+	simplified->child1 = simplChild1;
+	mpfr_clear(*value);
+	free(value);
+      } else {
+	free_memory(simplChild1);
+      }
+    } else {
+      simplified->nodeType = DOUBLEEXTENDED;
+      simplified->child1 = simplChild1;
+    }
+    break;
   default:
     fprintf(stderr,"Error: simplifyTreeErrorfree: unknown identifier in the tree\n");
     exit(1);
@@ -2326,6 +2546,143 @@ node* differentiateUnsimplified(node *tree) {
 	temp_node->value = mpfr_temp;
 	derivative = temp_node;
 	break;
+      case ERF: 
+	g_copy = copyTree(tree->child1);
+	g_diff = differentiateUnsimplified(tree->child1);
+	temp_node = (node*) safeMalloc(sizeof(node));
+	temp_node->nodeType = MUL;
+	temp_node->child2 = g_diff;
+	temp_node2 = (node*) safeMalloc(sizeof(node));
+	temp_node2->nodeType = DIV;
+	temp_node3 = (node *) safeMalloc(sizeof(node));
+	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*mpfr_temp,tools_precision);
+	mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
+	temp_node3->nodeType = CONSTANT;
+	temp_node3->value = mpfr_temp;
+	temp_node4 = (node *) safeMalloc(sizeof(node));
+	temp_node4->nodeType = ATAN;
+	temp_node4->child1 = temp_node3;
+	temp_node3 = (node *) safeMalloc(sizeof(node));
+	temp_node3->nodeType = SQRT;
+	temp_node3->child1 = temp_node4;
+	temp_node2->child2 = temp_node3;
+	temp_node3 = (node *) safeMalloc(sizeof(node));
+	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*mpfr_temp,tools_precision);
+	mpfr_set_d(*mpfr_temp,2.0,GMP_RNDN);
+	temp_node3->nodeType = CONSTANT;
+	temp_node3->value = mpfr_temp;
+	temp_node4 = (node *) safeMalloc(sizeof(node));
+	temp_node4->nodeType = POW;
+	temp_node4->child1 = g_copy;
+	temp_node4->child2 = temp_node3;
+	temp_node3 = (node *) safeMalloc(sizeof(node));
+	temp_node3->nodeType = NEG;
+	temp_node3->child1 = temp_node4;
+	temp_node4 = (node *) safeMalloc(sizeof(node));
+	temp_node4->nodeType = EXP;
+	temp_node4->child1 = temp_node3;
+	temp_node2->child1 = temp_node4;
+	temp_node->child1 = temp_node2;
+	derivative = temp_node;
+	break;
+      case ERFC:
+	g_copy = copyTree(tree->child1);
+	g_diff = differentiateUnsimplified(tree->child1);
+	temp_node = (node*) safeMalloc(sizeof(node));
+	temp_node->nodeType = MUL;
+	temp_node->child2 = g_diff;
+	temp_node2 = (node*) safeMalloc(sizeof(node));
+	temp_node2->nodeType = DIV;
+	temp_node3 = (node *) safeMalloc(sizeof(node));
+	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*mpfr_temp,tools_precision);
+	mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
+	temp_node3->nodeType = CONSTANT;
+	temp_node3->value = mpfr_temp;
+	temp_node4 = (node *) safeMalloc(sizeof(node));
+	temp_node4->nodeType = ATAN;
+	temp_node4->child1 = temp_node3;
+	temp_node3 = (node *) safeMalloc(sizeof(node));
+	temp_node3->nodeType = SQRT;
+	temp_node3->child1 = temp_node4;
+	temp_node2->child2 = temp_node3;
+	temp_node3 = (node *) safeMalloc(sizeof(node));
+	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*mpfr_temp,tools_precision);
+	mpfr_set_d(*mpfr_temp,2.0,GMP_RNDN);
+	temp_node3->nodeType = CONSTANT;
+	temp_node3->value = mpfr_temp;
+	temp_node4 = (node *) safeMalloc(sizeof(node));
+	temp_node4->nodeType = POW;
+	temp_node4->child1 = g_copy;
+	temp_node4->child2 = temp_node3;
+	temp_node3 = (node *) safeMalloc(sizeof(node));
+	temp_node3->nodeType = NEG;
+	temp_node3->child1 = temp_node4;
+	temp_node4 = (node *) safeMalloc(sizeof(node));
+	temp_node4->nodeType = EXP;
+	temp_node4->child1 = temp_node3;
+	temp_node3 = (node *) safeMalloc(sizeof(node));
+	temp_node3->nodeType = NEG;
+	temp_node3->child1 = temp_node4;
+	temp_node2->child1 = temp_node3;
+	temp_node->child1 = temp_node2;
+	derivative = temp_node;
+	break;
+      case LOG_1P:
+	g_copy = copyTree(tree->child1);
+	g_diff = differentiateUnsimplified(tree->child1);
+	temp_node = (node*) safeMalloc(sizeof(node));
+	temp_node->nodeType = MUL;
+	temp_node->child2 = g_diff;
+	temp_node2 = (node*) safeMalloc(sizeof(node));
+	temp_node2->nodeType = DIV;
+	temp_node->child1 = temp_node2;
+	temp_node3 = (node*) safeMalloc(sizeof(node));
+	temp_node3->nodeType = CONSTANT;
+	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*mpfr_temp,tools_precision);
+	mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
+	temp_node3->value = mpfr_temp;
+	temp_node4 = (node*) safeMalloc(sizeof(node));
+	temp_node4->nodeType = ADD;
+	temp_node4->child1 = temp_node3;
+	temp_node4->child2 = g_copy;
+	temp_node2->child2 = temp_node4;    
+	temp_node3 = (node*) safeMalloc(sizeof(node));
+	temp_node3->nodeType = CONSTANT;
+	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*mpfr_temp,tools_precision);
+	mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
+	temp_node3->value = mpfr_temp;
+	temp_node2->child1 = temp_node3;
+	derivative = temp_node;
+	break;
+      case EXP_M1:
+	g_copy = copyTree(tree->child1);
+	g_diff = differentiateUnsimplified(tree->child1);
+	temp_node = (node*) safeMalloc(sizeof(node));
+	temp_node->nodeType = MUL;
+	temp_node->child2 = g_diff;
+	temp_node2 = (node*) safeMalloc(sizeof(node));
+	temp_node2->nodeType = EXP;
+	temp_node->child1 = temp_node2;
+	temp_node2->child1 = g_copy;    
+	derivative = temp_node;
+	break;
+      case DOUBLEEXTENDED:
+	printMessage(1,
+		     "Warning: the double-extended rounding operator is not differentiable.\nRemplacing it by a constant function when differentiating.\n");
+	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*mpfr_temp,tools_precision);
+	mpfr_set_d(*mpfr_temp,0.0,GMP_RNDN);
+	temp_node = (node*) safeMalloc(sizeof(node));
+	temp_node->nodeType = CONSTANT;
+	temp_node->value = mpfr_temp;
+	derivative = temp_node;
+	break;
       default:
 	fprintf(stderr,"Error: differentiateUnsimplified: unknown identifier in the tree\n");
 	exit(1);
@@ -2508,6 +2865,31 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
     mpfr_round_to_tripledouble(result, stack1);
+    break;
+  case ERF:
+    isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
+    if (!isConstant) break;
+    mpfr_erf(result, stack1, GMP_RNDN);
+    break;
+  case ERFC:
+    isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
+    if (!isConstant) break;
+    mpfr_erfc(result, stack1, GMP_RNDN);
+    break;
+  case LOG_1P:
+    isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
+    if (!isConstant) break;
+    mpfr_log1p(result, stack1, GMP_RNDN);
+    break;
+  case EXP_M1:
+    isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
+    if (!isConstant) break;
+    mpfr_expm1(result, stack1, GMP_RNDN);
+    break;
+  case DOUBLEEXTENDED:
+    isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
+    if (!isConstant) break;
+    mpfr_round_to_doubleextended(result, stack1);
     break;
   default:
     fprintf(stderr,"Error: evaluateConstantExpression: unknown identifier in the tree\n");
@@ -3025,6 +3407,81 @@ node* simplifyTree(node *tree) {
       simplified->child1 = simplChild1;
     }
     break;
+  case ERF:
+    simplChild1 = simplifyTree(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      mpfr_erf(*value, *(simplChild1->value), GMP_RNDN);
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = ERF;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case ERFC:
+    simplChild1 = simplifyTree(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      mpfr_erfc(*value, *(simplChild1->value), GMP_RNDN);
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = ERFC;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case LOG_1P:
+    simplChild1 = simplifyTree(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      mpfr_log1p(*value, *(simplChild1->value), GMP_RNDN);
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = LOG_1P;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case EXP_M1:
+    simplChild1 = simplifyTree(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      mpfr_expm1(*value, *(simplChild1->value), GMP_RNDN);
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = EXP_M1;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case DOUBLEEXTENDED:
+    simplChild1 = simplifyTree(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      mpfr_round_to_doubleextended(*value, *(simplChild1->value));
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = DOUBLEEXTENDED;
+      simplified->child1 = simplChild1;
+    }
+    break;
   default:
     fprintf(stderr,"Error: simplifyTree: unknown identifier in the tree\n");
     exit(1);
@@ -3160,6 +3617,26 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
     evaluate(stack1, tree->child1, x, prec);
     mpfr_round_to_tripledouble(result, stack1);
     break;
+  case ERF:
+    evaluate(stack1, tree->child1, x, prec);
+    mpfr_erf(result, stack1, GMP_RNDN);
+    break;
+  case ERFC:
+    evaluate(stack1, tree->child1, x, prec);
+    mpfr_erfc(result, stack1, GMP_RNDN);
+    break;
+  case LOG_1P:
+    evaluate(stack1, tree->child1, x, prec);
+    mpfr_log1p(result, stack1, GMP_RNDN);
+    break;
+  case EXP_M1:
+    evaluate(stack1, tree->child1, x, prec);
+    mpfr_expm1(result, stack1, GMP_RNDN);
+    break;
+  case DOUBLEEXTENDED:
+    evaluate(stack1, tree->child1, x, prec);
+    mpfr_round_to_doubleextended(result, stack1);
+    break;
   default:
     fprintf(stderr,"Error: evaluate: unknown identifier in the tree\n");
     exit(1);
@@ -3257,6 +3734,21 @@ int arity(node *tree) {
     return 1;
     break;
   case TRIPLEDOUBLE:
+    return 1;
+    break;
+  case ERF:
+    return 1;
+    break;
+  case ERFC:
+    return 1;
+    break;
+  case LOG_1P:
+    return 1;
+    break;
+  case EXP_M1:
+    return 1;
+    break;
+  case DOUBLEEXTENDED:
     return 1;
     break;
   default:
@@ -3401,6 +3893,21 @@ int isPolynomial(node *tree) {
     res = 0;
     break;
   case TRIPLEDOUBLE:
+    res = 0;
+    break;
+  case ERF:
+    res = 0;
+    break;
+  case ERFC:
+    res = 0;
+    break;
+  case LOG_1P:
+    res = 0;
+    break;
+  case EXP_M1:
+    res = 0;
+    break;
+  case DOUBLEEXTENDED:
     res = 0;
     break;
   default:
@@ -3940,6 +4447,31 @@ node* expandDivision(node *tree) {
     copy->nodeType = TRIPLEDOUBLE;
     copy->child1 = expandDivision(tree->child1);
     break;
+  case ERF:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ERF;
+    copy->child1 = expandDivision(tree->child1);
+    break;
+  case ERFC:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ERFC;
+    copy->child1 = expandDivision(tree->child1);
+    break;
+  case LOG_1P:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LOG_1P;
+    copy->child1 = expandDivision(tree->child1);
+    break;
+  case EXP_M1:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = EXP_M1;
+    copy->child1 = expandDivision(tree->child1);
+    break;
+  case DOUBLEEXTENDED:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = DOUBLEEXTENDED;
+    copy->child1 = expandDivision(tree->child1);
+    break;
   default:
    fprintf(stderr,"Error: expandDivision: unknown identifier in the tree\n");
    exit(1);
@@ -4401,6 +4933,31 @@ node* expandUnsimplified(node *tree) {
     copy->nodeType = TRIPLEDOUBLE;
     copy->child1 = expand(tree->child1);
     break;
+  case ERF:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ERF;
+    copy->child1 = expand(tree->child1);
+    break;
+  case ERFC:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ERFC;
+    copy->child1 = expand(tree->child1);
+    break;
+  case LOG_1P:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LOG_1P;
+    copy->child1 = expand(tree->child1);
+    break;
+  case EXP_M1:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = EXP_M1;
+    copy->child1 = expand(tree->child1);
+    break;
+  case DOUBLEEXTENDED:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = DOUBLEEXTENDED;
+    copy->child1 = expand(tree->child1);
+    break;
   default:
    fprintf(stderr,"Error: expand: unknown identifier in the tree\n");
    exit(1);
@@ -4508,6 +5065,21 @@ int isConstant(node *tree) {
     return isConstant(tree->child1);
     break;
   case TRIPLEDOUBLE:
+    return isConstant(tree->child1);
+    break;
+  case ERF:
+    return isConstant(tree->child1);
+    break;
+  case ERFC:
+    return isConstant(tree->child1);
+    break;
+  case LOG_1P:
+    return isConstant(tree->child1);
+    break;
+  case EXP_M1:
+    return isConstant(tree->child1);
+    break;
+  case DOUBLEEXTENDED:
     return isConstant(tree->child1);
     break;
   default:
@@ -4933,6 +5505,31 @@ node* hornerUnsimplified(node *tree) {
     copy->nodeType = TRIPLEDOUBLE;
     copy->child1 = horner(tree->child1);
     break;
+  case ERF:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ERF;
+    copy->child1 = horner(tree->child1);
+    break;
+  case ERFC:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ERFC;
+    copy->child1 = horner(tree->child1);
+    break;
+  case LOG_1P:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LOG_1P;
+    copy->child1 = horner(tree->child1);
+    break;
+  case EXP_M1:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = EXP_M1;
+    copy->child1 = horner(tree->child1);
+    break;
+  case DOUBLEEXTENDED:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = DOUBLEEXTENDED;
+    copy->child1 = horner(tree->child1);
+    break;
   default:
    fprintf(stderr,"Error: horner: unknown identifier in the tree\n");
    exit(1);
@@ -5296,6 +5893,31 @@ node *substitute(node* tree, node *t) {
     copy->nodeType = TRIPLEDOUBLE;
     copy->child1 = substitute(tree->child1,t);
     break;
+  case ERF:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ERF;
+    copy->child1 = substitute(tree->child1,t);
+    break;
+  case ERFC:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ERFC;
+    copy->child1 = substitute(tree->child1,t);
+    break;
+  case LOG_1P:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LOG_1P;
+    copy->child1 = substitute(tree->child1,t);
+    break;
+  case EXP_M1:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = EXP_M1;
+    copy->child1 = substitute(tree->child1,t);
+    break;
+  case DOUBLEEXTENDED:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = DOUBLEEXTENDED;
+    copy->child1 = substitute(tree->child1,t);
+    break;
   default:
    fprintf(stderr,"Error: substitute: unknown identifier in the tree\n");
    exit(1);
@@ -5519,6 +6141,21 @@ int treeSize(node *tree) {
     return treeSize(tree->child1) + 1;
     break;
   case TRIPLEDOUBLE:
+    return treeSize(tree->child1) + 1;
+    break;
+  case ERF:
+    return treeSize(tree->child1) + 1;
+    break;
+  case ERFC:
+    return treeSize(tree->child1) + 1;
+    break;
+  case LOG_1P:
+    return treeSize(tree->child1) + 1;
+    break;
+  case EXP_M1:
+    return treeSize(tree->child1) + 1;
+    break;
+  case DOUBLEEXTENDED:
     return treeSize(tree->child1) + 1;
     break;
   default:

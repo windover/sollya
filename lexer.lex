@@ -57,6 +57,11 @@ ASINH           "asinh"
 ACOSH           "acosh"
 ATANH           "atanh"
 ABS             "abs"
+ERF             "erf"
+ERFC            "erfc"
+LOG1P           "log1p"
+EXPM1           "expm1"
+
 	       	
 COLON           ":"
 EQUAL           "="
@@ -78,15 +83,19 @@ DIAM            "diam"
 DOUBLELONG       "double"
 DOUBLEDOUBLELONG "doubledouble"
 TRIPLEDOUBLELONG "tripledouble"
+DOUBLEEXTENDEDLONG "doubleextended"
+
 
 DOUBLESHORT      "D"
 DOUBLEDOUBLESHORT "DD"
 TRIPLEDOUBLESHORT "TD"
+DOUBLEEXTENDEDSHORT "DE"
 
 
 DOUBLE          ({DOUBLELONG}|{DOUBLESHORT})
 DOUBLEDOUBLE    ({DOUBLEDOUBLELONG}|{DOUBLEDOUBLESHORT})
 TRIPLEDOUBLE    ({TRIPLEDOUBLELONG}|{TRIPLEDOUBLESHORT})
+DOUBLEEXTENDED  ({DOUBLEEXTENDEDLONG}|{DOUBLEEXTENDEDSHORT})
 
 HORNER          "horner"
 DEGREE          "degree"
@@ -238,6 +247,10 @@ BITS            "bits"
 {ACOSH}         {     promptToBePrinted = 0; return ACOSHTOKEN    ;    }          
 {ATANH}         {     promptToBePrinted = 0; return ATANHTOKEN    ;    }          
 {ABS}           {     promptToBePrinted = 0; return ABSTOKEN      ;    }            
+{ERF}           {     promptToBePrinted = 0; return ERFTOKEN      ;    }            
+{ERFC}          {     promptToBePrinted = 0; return ERFCTOKEN     ;    }            
+{LOG1P}         {     promptToBePrinted = 0; return LOG1PTOKEN    ;    }            
+{EXPM1}         {     promptToBePrinted = 0; return EXPM1TOKEN    ;    }            
 {COLON}         {     promptToBePrinted = 0; return COLONTOKEN    ;    }          
 {EQUAL}         {     promptToBePrinted = 0; return EQUALTOKEN    ;    }          
 {COMMA}         {     promptToBePrinted = 0; return COMMATOKEN    ;    }          
@@ -255,6 +268,7 @@ BITS            "bits"
 {DOUBLE}        {     promptToBePrinted = 0; return DOUBLETOKEN;       }
 {DOUBLEDOUBLE}  {     promptToBePrinted = 0; return DOUBLEDOUBLETOKEN; }
 {TRIPLEDOUBLE}  {     promptToBePrinted = 0; return TRIPLEDOUBLETOKEN; }
+{DOUBLEEXTENDED} {     promptToBePrinted = 0; return DOUBLEEXTENDEDTOKEN; }
 {HORNER}        {     promptToBePrinted = 0; return HORNERTOKEN;       }
 {DEGREE}        {     promptToBePrinted = 0; return DEGREETOKEN;       }
 {EXPAND}        {     promptToBePrinted = 0; return EXPANDTOKEN;       }

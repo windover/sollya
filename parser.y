@@ -88,6 +88,10 @@ void yyerror(char *message) {
 %token	ACOSHTOKEN       
 %token	ATANHTOKEN       
 %token	ABSTOKEN         
+%token	ERFTOKEN         
+%token	ERFCTOKEN         
+%token	LOG1PTOKEN         
+%token	EXPM1TOKEN         
 %token	COLONTOKEN       
 %token	EQUALTOKEN       
 %token	COMMATOKEN       
@@ -105,6 +109,7 @@ void yyerror(char *message) {
 %token  DOUBLETOKEN
 %token  DOUBLEDOUBLETOKEN
 %token  TRIPLEDOUBLETOKEN
+%token  DOUBLEEXTENDEDTOKEN
 %token  HORNERTOKEN
 %token  DEGREETOKEN
 %token  EXPANDTOKEN
@@ -1709,6 +1714,34 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
+                        |       ERFTOKEN LPARTOKEN function RPARTOKEN     						
+                           {
+                             temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = ERF;
+			     temp_node->child1 = $3;
+			     $$ = temp_node;
+                           }		
+                        |       ERFCTOKEN LPARTOKEN function RPARTOKEN     						
+                           {
+                             temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = ERFC;
+			     temp_node->child1 = $3;
+			     $$ = temp_node;
+                           }		
+                        |       LOG1PTOKEN LPARTOKEN function RPARTOKEN     						
+                           {
+                             temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = LOG_1P;
+			     temp_node->child1 = $3;
+			     $$ = temp_node;
+                           }		
+                        |       EXPM1TOKEN LPARTOKEN function RPARTOKEN     						
+                           {
+                             temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = EXP_M1;
+			     temp_node->child1 = $3;
+			     $$ = temp_node;
+                           }		
                         |       DOUBLETOKEN LPARTOKEN function RPARTOKEN     						
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
@@ -1727,6 +1760,13 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = TRIPLEDOUBLE;
+			     temp_node->child1 = $3;
+			     $$ = temp_node;
+                           }		
+                        |       DOUBLEEXTENDEDTOKEN LPARTOKEN function RPARTOKEN     			   	
+                           {
+                             temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = DOUBLEEXTENDED;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		

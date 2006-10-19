@@ -37,6 +37,11 @@
 #define DOUBLEDOUBLE 27
 #define TRIPLEDOUBLE 28
 #define POLYNOMIAL 29
+#define ERF 30
+#define ERFC 31
+#define LOG_1P 32
+#define EXP_M1 33
+#define DOUBLEEXTENDED 34
 
 
 typedef struct nodeStruct node;

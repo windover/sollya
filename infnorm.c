@@ -180,6 +180,82 @@ void mpfi_round_to_tripledouble(mpfi_t rop, mpfi_t op) {
   mpfr_clear(rres);
 }
 
+void mpfi_round_to_doubleextended(mpfi_t rop, mpfi_t op) {
+  mpfr_t l,r, lres, rres;
+  mp_prec_t prec;
+
+  prec = mpfi_get_prec(op) + 10;
+  mpfr_init2(l,prec);
+  mpfr_init2(r,prec);
+  mpfr_init2(lres,prec);
+  mpfr_init2(rres,prec);
+
+  mpfi_get_left(l,op);
+  mpfi_get_right(r,op);
+
+  mpfr_round_to_doubleextended(lres,l);
+  mpfr_round_to_doubleextended(rres,r);
+
+  mpfi_interv_fr(rop,lres,rres);
+
+  mpfr_clear(l);
+  mpfr_clear(r);
+  mpfr_clear(lres);
+  mpfr_clear(rres);
+}
+
+
+void mpfi_erf(mpfi_t rop, mpfi_t op) {
+  mpfr_t opl, opr, ropl, ropr;
+
+  mpfr_init2(opl,mpfi_get_prec(op));
+  mpfr_init2(opr,mpfi_get_prec(op));
+
+  mpfr_init2(ropl,mpfi_get_prec(rop));
+  mpfr_init2(ropr,mpfi_get_prec(rop));
+  
+  mpfi_get_left(opl,op);
+  mpfi_get_right(opr,op);
+  
+  mpfr_erf(ropl,opl,GMP_RNDD);
+  mpfr_erf(ropr,opr,GMP_RNDU);
+
+  mpfi_interv_fr(rop,ropl,ropr);
+  mpfi_revert_if_needed(rop);
+
+  mpfr_clear(opl);
+  mpfr_clear(opr);
+  mpfr_clear(ropl);
+  mpfr_clear(ropr);
+}
+
+void mpfi_erfc(mpfi_t rop, mpfi_t op) {
+  mpfr_t opl, opr, ropl, ropr;
+
+  mpfr_init2(opl,mpfi_get_prec(op));
+  mpfr_init2(opr,mpfi_get_prec(op));
+
+  mpfr_init2(ropl,mpfi_get_prec(rop));
+  mpfr_init2(ropr,mpfi_get_prec(rop));
+  
+  mpfi_get_left(opl,op);
+  mpfi_get_right(opr,op);
+  
+  mpfr_erf(ropl,opr,GMP_RNDD);
+  mpfr_erf(ropr,opl,GMP_RNDU);
+
+  mpfi_interv_fr(rop,ropl,ropr);
+  mpfi_revert_if_needed(rop);
+
+  mpfr_clear(opl);
+  mpfr_clear(opr);
+  mpfr_clear(ropl);
+  mpfr_clear(ropr);
+}
+
+
+
+
 
 int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_t x, temp1, temp2;
@@ -1202,6 +1278,41 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   case TRIPLEDOUBLE:
     excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
     mpfi_round_to_tripledouble(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
+    break;
+  case ERF:
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    mpfi_erf(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
+    break;
+  case ERFC:
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    mpfi_erfc(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
+    break;
+  case LOG_1P:
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    mpfi_log1p(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
+    break;
+  case EXP_M1:
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    mpfi_expm1(stack3, stack1);  
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
+    break;
+  case DOUBLEEXTENDED:
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    mpfi_round_to_doubleextended(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
@@ -2912,6 +3023,21 @@ chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t pre
     return uncertifiedZeroDenominators(tree->child1,a,b,prec);
     break;
   case TRIPLEDOUBLE:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case ERF:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case ERFC:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case LOG_1P:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case EXP_M1:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case DOUBLEEXTENDED:
     return uncertifiedZeroDenominators(tree->child1,a,b,prec);
     break;
   default:
