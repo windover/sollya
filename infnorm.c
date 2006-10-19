@@ -3172,9 +3172,9 @@ int determineHeuristicTaylorRecursions(node *func) {
 
   temp = differentiate(func);
   sizeOfCurrDeriv = treeSize(temp);
-  i = 0;
+  i = -1;
 
-  while ((highestDegree > 1) && (sizeOfCurrDeriv <= 512 * sizeOfFunc)) {
+  while ((highestDegree >= 0) && (((double) sizeOfCurrDeriv) <= ((double) 1.28125) * ((double) sizeOfFunc))) {
     temp2 = differentiate(temp);
     free_memory(temp);
     temp = temp2;
@@ -3185,7 +3185,7 @@ int determineHeuristicTaylorRecursions(node *func) {
   
   free_memory(temp);
 
-  return i;
+  return i < 0 ? 0 : i;
 }
 
 
@@ -3321,7 +3321,7 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
   mpfr_init2(currDiameter, prec);
   mpfr_init2(stopDiameter, prec);
 
-  mpfr_div_2ui(stopDiameter,rangeDiameter,9,GMP_RNDD);
+  mpfr_div_2ui(stopDiameter,rangeDiameter,6,GMP_RNDD);
 
   okay = 0;
 
