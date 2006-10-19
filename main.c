@@ -19,6 +19,8 @@
 
 #define PARIMEMSIZE 3000000
 
+
+
 char *variablename = NULL;
 char *currentVariable = NULL;
 char *currentString = NULL;
@@ -60,7 +62,19 @@ pointsType *pointsTypeTemp;
 int eliminatePrompt;
 mp_prec_t tempPrec;
 
+#define NEWPARIVERSION
+
+#ifdef NEWPARIVERSION 
+
+#define PARIENVIRONMENT GP_DATA->env
 extern gp_data *GP_DATA;
+
+#else 
+
+#define PARIENVIRONMENT environnement
+extern jmp_buf environnement;
+
+#endif
 
 extern int yyparse();
 extern FILE *yyin;
@@ -262,7 +276,7 @@ int main(int argc, char *argv[]) {
   ltop = avma;
   
 
-  if (setjmp(GP_DATA->env)) {
+  if (setjmp(PARIENVIRONMENT)) {
     fprintf(stderr,"Error: an error occured in the PARI subsystem.\n");
     recoverFromError();
   }

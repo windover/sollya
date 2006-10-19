@@ -5529,3 +5529,7 @@ int treeSize(node *tree) {
 }
 
 
+
+int highestDegreeOfPolynomialSubexpression(node *tree) {
+  return 0;
+}
