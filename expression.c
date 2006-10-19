@@ -5531,5 +5531,26 @@ int treeSize(node *tree) {
 
 
 int highestDegreeOfPolynomialSubexpression(node *tree) {
-  return 0;
+  int l, r;
+
+  if (isPolynomial(tree)) return getDegree(tree);
+
+  switch (arity(tree)) {
+  case 2:
+    l = highestDegreeOfPolynomialSubexpression(tree->child1);
+    r = highestDegreeOfPolynomialSubexpression(tree->child2);
+    return l > r ? l : r;
+    break;
+  case 1:
+    return highestDegreeOfPolynomialSubexpression(tree->child1);
+    break;
+  case 0:
+    return getDegree(tree);
+    break;
+  default: 
+    fprintf(stderr,"Error: unknown arity of an operator.\n");
+    exit(1);
+  }
+
+  return -1;
 }

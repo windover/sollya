@@ -3162,6 +3162,33 @@ void evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
 
 }
 
+int determineHeuristicTaylorRecursions(node *func) {
+  int highestDegree, sizeOfFunc, sizeOfCurrDeriv, i;
+  node *temp, *temp2;
+
+  highestDegree = highestDegreeOfPolynomialSubexpression(func);
+
+  sizeOfFunc = treeSize(func);
+
+  temp = differentiate(func);
+  sizeOfCurrDeriv = treeSize(temp);
+  i = 0;
+
+  while ((highestDegree > 1) && (sizeOfCurrDeriv <= 512 * sizeOfFunc)) {
+    temp2 = differentiate(temp);
+    free_memory(temp);
+    temp = temp2;
+    sizeOfCurrDeriv = treeSize(temp);
+    i++;
+    highestDegree--;
+  }
+  
+  free_memory(temp);
+
+  return i;
+}
+
+
 
 int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes, mp_prec_t startPrec) {
   rangetype res;
@@ -3204,8 +3231,9 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
 
   oldtaylorrecursions = taylorrecursions;
 
+  taylorrecursions = determineHeuristicTaylorRecursions(func);
 
-
+  printMessage(3,"Information: the number of Taylor recursions has temporarily been set to %d.\n",taylorrecursions);
 
   curr = excludes;
   initialExcludes = NULL;
@@ -3293,11 +3321,11 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
   mpfr_init2(currDiameter, prec);
   mpfr_init2(stopDiameter, prec);
 
-  mpfr_div_2ui(stopDiameter,rangeDiameter,8,GMP_RNDD);
+  mpfr_div_2ui(stopDiameter,rangeDiameter,9,GMP_RNDD);
 
   okay = 0;
 
-  while (prec <= 256 * startPrec) {
+  while (prec <= 512 * startPrec) {
 
     mpfr_set(currDiameter,rangeDiameter,GMP_RNDD);
 
@@ -3323,11 +3351,21 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
       }
     
       mpfr_div_2ui(currDiameter,currDiameter,1,GMP_RNDD);
+
+      printMessage(4,"Information: the absolute diameter is now ");
+      if (verbosity >= 4) {
+	printMpfr(currDiameter);
+      }
+      printMessage(4,"The current intermediate precision is %d bits.\n",(int) prec);
+
     }
 
     if (okay) break;
 
     prec *= 2;
+
+    printMessage(4,"Information: the intermediate precision is now %d bits.\n",(int) prec);
+
   }
 
   if (okay) mpfr_set(result,resultUp,GMP_RNDU);

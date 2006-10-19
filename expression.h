@@ -89,7 +89,7 @@ void *copyRangetypePtr(void *ptr);
 node *makePolynomial(mpfr_t *coefficients, int degree);
 int treeSize(node *tree);
 void printMpfr(mpfr_t x);
-
+int highestDegreeOfPolynomialSubexpression(node *tree);
 
 
 #endif /* ifdef EXPRESSION_H*/
