@@ -164,6 +164,8 @@ void yyerror(char *message) {
 %token  ISEVALUABLETOKEN
 %token  EVALUATEACCURATETOKEN                   
 %token  EXCLAMATIONTOKEN
+%token  ACCURATEINFNORMTOKEN
+%token  BITSTOKEN
 
 %type <other> commands
 %type <other> command
@@ -230,6 +232,8 @@ void yyerror(char *message) {
 %type <other> printelem
 %type <other> isevaluable
 %type <other> evaluateaccurate
+%type <constantval> accurateinfnorm
+%type <constantval> evaluateaccuratecommandfunction
 
 %%
 
@@ -273,6 +277,17 @@ command:     plot
 	                     printf("uncertified integral result: ");
 			     printValue(($1),defaultprecision);
 			     printf("\n");
+			     mpfr_clear(*($1));
+			     free(($1));
+			     $$ = NULL;
+	                   }
+           | accurateinfnorm  SEMICOLONTOKEN {
+	                     if (!mpfr_number_p(*($1))) {
+			       printf("The infnorm value could not be computed exactly enough.\n");
+	                     } else {
+	                       printf("Faithful rounded-up infnorm result on %d bits:\n",(int) mpfr_get_prec(*($1)));
+			       printMpfr(*($1));
+			     } 
 			     mpfr_clear(*($1));
 			     free(($1));
 			     $$ = NULL;
@@ -1018,6 +1033,51 @@ integral:     INTEGRALTOKEN function INTOKEN range
 			     $$ = range_temp;
                            }
 ;
+
+accurateinfnorm: ACCURATEINFNORMTOKEN function INTOKEN range WITHTOKEN integer BITSTOKEN 
+                           {
+			     int_temp = $6;
+			     if (int_temp < 12) {
+			       printMessage(1,"Warning: the demanded precision must be at least 12 bits.\nIncreased the precision to 12 bits.\n");
+			       int_temp = 12;
+			     }
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,int_temp);
+
+			     int_temp = accurateInfnorm(*mpfr_temp, $2, $4, NULL, defaultprecision);
+			     if (!int_temp) {
+			       mpfr_set_nan(*mpfr_temp);
+			     }
+			     free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     $$ = mpfr_temp;
+			   }
+               | ACCURATEINFNORMTOKEN function INTOKEN range WITHOUTTOKEN rangelist WITHTOKEN integer BITSTOKEN 
+                           {
+			     int_temp = $8;
+			     if (int_temp < 12) {
+			       printMessage(1,"Warning: the demanded precision must be at least 12 bits.\nIncreased the precision to 12 bits.\n");
+			       int_temp = 12;
+			     }
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,int_temp);
+
+			     int_temp = accurateInfnorm(*mpfr_temp, $2, $4, $6, defaultprecision);
+			     if (!int_temp) {
+			       mpfr_set_nan(*mpfr_temp);
+			     }
+			     free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     $$ = mpfr_temp;
+			   }
+;
+
 
 dirtyinfnorm: DIRTYINFNORMTOKEN function INTOKEN range 
                            {
@@ -1804,6 +1864,22 @@ primary:			variable
 ;
 
 
+evaluateaccuratecommandfunction: EVALUATEACCURATETOKEN function ATTOKEN constantfunction 
+                           {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     int_temp = evaluateFaithfulOrFail($2, *($4), *mpfr_temp, 256, NULL);
+			     if (!int_temp) {
+			       mpfr_set_nan(*(mpfr_temp));
+			     }
+			     mpfr_clear(*($4));
+			     free(mpfr_temp);
+			     free($4);
+			     free_memory($2);
+			     $$ = mpfr_temp;
+                           }
+
+
 commandfunction:          infnorm
                            {
 			     $$ = $1;
@@ -1838,6 +1914,25 @@ commandfunction:          infnorm
 			     range_temp.b = mpfr_temp;
 			     $$ = range_temp;
 			   }
+                        | accurateinfnorm
+                           {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,mpfr_get_prec(*($1)));
+			     mpfr_set(*mpfr_temp,*($1),GMP_RNDN);
+			     range_temp.a = $1;
+			     range_temp.b = mpfr_temp;
+			     $$ = range_temp;
+			   }
+                        | evaluateaccuratecommandfunction
+                           {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,mpfr_get_prec(*($1)));
+			     mpfr_set(*mpfr_temp,*($1),GMP_RNDN);
+			     range_temp.a = $1;
+			     range_temp.b = mpfr_temp;
+			     $$ = range_temp;
+			   }
+
 ;
 
 variableWorkAround: VARIABLETOKEN 

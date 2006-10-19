@@ -2035,7 +2035,11 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
     mpfi_revert_if_needed(infnormval);
   }
 
-  *mightExcludes = excludes;
+  if (mightExcludes == NULL) {
+    freeChain(excludes,freeMpfiPtr);
+  } else {
+    *mightExcludes = excludes;
+  }
 
   if (theo != NULL) {
     mpfi_set(*(theo->infnorm),infnormval);
@@ -2552,7 +2556,7 @@ int checkInfnormI(node *func, node *deriv, mpfi_t infnormval, mpfi_t range, mpfr
   if (mpfr_cmp(diamRange,diam) <= 0) {
     /* Simple end case: the range to test is already smaller than diam but we could not check */
     if (verbosity >= 2) {
-      printf("Infnormation: could not check the infinite norm on the domain\n");
+      printf("Information: could not check the infinite norm on the domain\n");
       printInterval(range);
       printf("\nThe function evaluates here to\n");
       printInterval(evaluateOnRange);
@@ -3157,3 +3161,191 @@ void evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
   }
 
 }
+
+
+int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes, mp_prec_t startPrec) {
+  rangetype res;
+  mpfi_t rangeI, resI;
+  mpfi_t *excludeI;
+  node *deriv, *numeratorDeriv, *derivNumeratorDeriv, *denominatorDeriv, *derivDenominatorDeriv;
+  mpfr_t rangeDiameter, z, ya,yb;
+  chain *curr, *initialExcludes;
+  int newtonWorked;
+  mp_prec_t p, p2, prec;
+  mpfr_t startDiam, currDiameter, resultUp, resultDown, stopDiameter;
+  int okay, oldtaylorrecursions;
+
+  
+  prec = startPrec;
+  p = mpfr_get_prec(result);
+
+  mpfr_init2(resultUp,p);
+  mpfr_init2(resultDown,p);
+
+  if (p > prec) {
+    prec = p;
+    printMessage(1,"Warning: starting intermediate precision increased to %d bits.\n",prec);
+  }
+
+  res.a = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+  res.b = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*(res.a),prec);
+  mpfr_init2(*(res.b),prec);
+
+  if (isTrivialInfnormCase(res, func)) {
+    printMessage(2,"Information: the infnorm on the given function is trivially calculable.\n");
+    mpfr_set(result,*(res.a),GMP_RNDU);
+    mpfr_clear(*(res.a));
+    mpfr_clear(*(res.b));
+    free(res.a);
+    free(res.b);
+    return 1;
+  }
+
+  oldtaylorrecursions = taylorrecursions;
+
+
+
+
+  curr = excludes;
+  initialExcludes = NULL;
+  while (curr != NULL) {
+    excludeI = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
+    p = mpfr_get_prec(*(((rangetype *) curr->value)->a));
+    p2 = mpfr_get_prec(*(((rangetype *) curr->value)->b));
+    if (p2 > p) p = p2;
+    if (prec > p) p = prec;
+    mpfi_init2(*excludeI,p);
+    mpfi_interv_fr(*excludeI,*(((rangetype *) curr->value)->a),*(((rangetype *) curr->value)->b));
+    initialExcludes = addElement(initialExcludes,(void *) excludeI);
+    curr = curr->next;
+  }
+
+  mpfi_init2(rangeI,prec);
+  mpfi_init2(resI,prec);
+  mpfr_init2(rangeDiameter,prec);
+  mpfr_sub(rangeDiameter,*(range.b),*(range.a),GMP_RNDD);
+
+  mpfr_init2(startDiam,prec);
+  mpfr_set_d(startDiam,DEFAULTDIAM,GMP_RNDD);
+
+  mpfr_mul(rangeDiameter,rangeDiameter,startDiam,GMP_RNDD);
+  
+  mpfr_clear(startDiam);
+
+  mpfi_interv_fr(rangeI,*(range.a),*(range.b));
+  deriv = differentiate(func);
+
+  if (getNumeratorDenominator(&numeratorDeriv,&denominatorDeriv,deriv)) {
+    printMessage(1,"Warning: the derivative of the function is a quotient, thus possibly not continuous in the interval.\n");
+    printMessage(1,"Only the zeros of the numerator will be searched and pole detection may fail.\n");
+    printMessage(1,"Be sure that the function is twice continuously differentiable if trusting the infnorm result.\n");
+
+    mpfr_init2(z,prec);
+    mpfr_init2(ya,prec);
+    mpfr_init2(yb,prec);
+
+    derivDenominatorDeriv = differentiate(denominatorDeriv);
+
+    newtonWorked = newtonMPFR(z, denominatorDeriv, derivDenominatorDeriv, *(range.a), *(range.b), prec);
+
+    if (newtonWorked && mpfr_number_p(z)) {
+      evaluate(ya,numeratorDeriv,z,prec);
+      evaluate(yb,denominatorDeriv,z,prec);
+
+      mpfr_abs(ya,ya,GMP_RNDN);
+      mpfr_abs(yb,yb,GMP_RNDN);
+
+      mpfr_mul_ui(yb,yb,2,GMP_RNDN);
+
+      if (mpfr_cmp(ya,yb) <= 0) {
+	printMessage(1,"Warning: the derivative of the function seems to have a extensible singularity in ");
+	if (verbosity >= 1) printValue(&z,prec);
+	printMessage(1,".\n");
+	printMessage(1,"The infnorm result might not be trustful if the derivative cannot actually\n");
+	printMessage(1,"be extended in this point.\n");
+      } else {
+	printMessage(1,"Warning: the derivative of the function seems to have a singularity in ");
+	if (verbosity >= 1) printValue(&z,prec);
+	printMessage(1,".\n");
+	printMessage(1,"The infnorm result is likely to be wrong.\n");
+      }
+    } else {
+      evaluate(ya,denominatorDeriv,*(range.a),prec);
+      evaluate(yb,denominatorDeriv,*(range.b),prec);
+
+      if (mpfr_sgn(ya) != mpfr_sgn(yb)) {
+	printMessage(1,"Warning: the derivative of the function seems to have a (extensible) singularity in the considered interval.\n");
+	printMessage(1,"The infnorm result might be not trustful if the function is not continuously differentiable.\n");
+      } else {
+	printMessage(2,"Information: the derivative seems to have no (false) pole in the considered interval.\n");
+      }
+    }
+
+    mpfr_clear(z);
+    mpfr_clear(ya);
+    mpfr_clear(yb);
+    free_memory(derivDenominatorDeriv);
+    free_memory(denominatorDeriv);
+  }
+  derivNumeratorDeriv = differentiate(numeratorDeriv);
+
+  mpfr_init2(currDiameter, prec);
+  mpfr_init2(stopDiameter, prec);
+
+  mpfr_div_2ui(stopDiameter,rangeDiameter,8,GMP_RNDD);
+
+  okay = 0;
+
+  while (prec <= 256 * startPrec) {
+
+    mpfr_set(currDiameter,rangeDiameter,GMP_RNDD);
+
+    while (mpfr_cmp(currDiameter,stopDiameter) >= 0) {
+
+      infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,
+	       prec,currDiameter,initialExcludes,NULL,NULL);
+    
+      mpfi_revert_if_needed(resI);
+      mpfi_get_left(resultDown,resI);
+      mpfi_get_right(resultUp,resI);
+
+      if (mpfr_cmp(resultDown,resultUp) == 0) {
+	okay = 1;
+	break;
+      }
+
+      mpfr_nextabove(resultDown);
+
+      if (mpfr_cmp(resultDown,resultUp) == 0) {
+	okay = 1;
+	break;
+      }
+    
+      mpfr_div_2ui(currDiameter,currDiameter,1,GMP_RNDD);
+    }
+
+    if (okay) break;
+
+    prec *= 2;
+  }
+
+  if (okay) mpfr_set(result,resultUp,GMP_RNDU);
+
+  mpfr_clear(stopDiameter);
+  mpfr_clear(currDiameter);
+  free_memory(deriv);
+  free_memory(numeratorDeriv);
+  free_memory(derivNumeratorDeriv);
+  mpfi_clear(rangeI);
+  mpfi_clear(resI);
+  mpfr_clear(rangeDiameter);
+  mpfr_clear(resultUp);
+  mpfr_clear(resultDown);
+
+  taylorrecursions = oldtaylorrecursions;
+
+  return okay;
+}
+
+

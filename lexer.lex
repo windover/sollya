@@ -182,6 +182,11 @@ ISEVALUABLE     "isevaluable"
 
 EVALUATEACCURATE "evaluateaccurate"
 
+ACCURATEINFNORM  "accurateinfnorm"
+
+BITS            "bits"
+
+
 %%
 
 %{
@@ -307,7 +312,8 @@ EVALUATEACCURATE "evaluateaccurate"
 {ISEVALUABLE}            {     promptToBePrinted = 0; return ISEVALUABLETOKEN; }                    
 {EVALUATEACCURATE}       {     promptToBePrinted = 0; return EVALUATEACCURATETOKEN; }                    
 {EXCLAMATION}            {     promptToBePrinted = 0; return EXCLAMATIONTOKEN; }                    
-
+{ACCURATEINFNORM}        {     promptToBePrinted = 0; return ACCURATEINFNORMTOKEN; }                    
+{BITS}                   {     promptToBePrinted = 0; return BITSTOKEN; }                    
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

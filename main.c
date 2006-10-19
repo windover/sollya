@@ -261,12 +261,11 @@ int main(int argc, char *argv[]) {
   mp_set_memory_functions(safeMalloc,wrapSafeRealloc,NULL);
   ltop = avma;
   
-  
+
   if (setjmp(GP_DATA->env)) {
     fprintf(stderr,"Error: an error occured in the PARI subsystem.\n");
     recoverFromError();
   }
-  
  
   signal(SIGINT,signalHandler);
   signal(SIGSEGV,signalHandler);
