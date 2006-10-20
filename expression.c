@@ -307,9 +307,9 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
   if (mpfr_get_prec(*value) < prec) {
     printMessage(1,"Warning: on printing a value, the default printing precision is less than the precision of the value.\n");
     printMessage(1,"Will adapt the precision to the precision of the value.\n");
-    prec = mpfr_get_prec(*value) + 1;
   }
-  mpfr_init2(y,prec+10);
+  prec = mpfr_get_prec(*value);
+  mpfr_init2(y,prec);
   v = mpfr_get_d(*value,GMP_RNDN);
   t = (int) v;
   v = (double) t;
@@ -327,10 +327,10 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
 	printf("%s",str);
       } else {
 	expo = mpfr_get_exp(y);
-	if (mpfr_set_exp(y,prec+10)) {
-	  printMessage(1,"\nWarning: %d is not in the current exponent range of a variable. Values displayed may be wrong.\n",(int)(prec+10));
+	if (mpfr_set_exp(y,prec)) {
+	  printMessage(1,"\nWarning: %d is not in the current exponent range of a variable. Values displayed may be wrong.\n",(int)(prec));
 	}
-	expo -= prec+10;
+	expo -= prec;
 	while (mpfr_integer_p(y)) {
 	  mpfr_div_2ui(y,y,1,GMP_RNDN);
 	  expo += 1;

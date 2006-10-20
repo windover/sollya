@@ -3448,7 +3448,7 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
   mpfr_init2(currDiameter, prec);
   mpfr_init2(stopDiameter, prec);
 
-  mpfr_div_2ui(stopDiameter,rangeDiameter,4,GMP_RNDD);
+  mpfr_div_2ui(stopDiameter,rangeDiameter,8,GMP_RNDD);
 
   okay = 0;
 
