@@ -3301,7 +3301,7 @@ int determineHeuristicTaylorRecursions(node *func) {
   sizeOfCurrDeriv = treeSize(temp);
   i = -1;
 
-  while ((highestDegree >= 0) && (((double) sizeOfCurrDeriv) <= ((double) 1.28125) * ((double) sizeOfFunc))) {
+  while ((highestDegree >= 0) && (((double) sizeOfCurrDeriv) <= ((double) 4) * ((double) sizeOfFunc))) {
     temp2 = differentiate(temp);
     free_memory(temp);
     temp = temp2;
@@ -3327,7 +3327,7 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
   int newtonWorked;
   mp_prec_t p, p2, prec;
   mpfr_t startDiam, currDiameter, resultUp, resultDown, stopDiameter;
-  int okay, oldtaylorrecursions;
+  int okay, oldtaylorrecursions, t;
 
   
   prec = startPrec;
@@ -3357,10 +3357,11 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
   }
 
   oldtaylorrecursions = taylorrecursions;
-
-  taylorrecursions = determineHeuristicTaylorRecursions(func);
-
-  printMessage(3,"Information: the number of Taylor recursions has temporarily been set to %d.\n",taylorrecursions);
+  t = determineHeuristicTaylorRecursions(func);
+  if ((t > oldtaylorrecursions) && (t < ((oldtaylorrecursions + 1) * 2))) {
+    taylorrecursions = t;
+    printMessage(3,"Information: the number of Taylor recursions has temporarily been set to %d.\n",taylorrecursions);
+  }
 
   curr = excludes;
   initialExcludes = NULL;
@@ -3448,7 +3449,7 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
   mpfr_init2(currDiameter, prec);
   mpfr_init2(stopDiameter, prec);
 
-  mpfr_div_2ui(stopDiameter,rangeDiameter,8,GMP_RNDD);
+  mpfr_div_2ui(stopDiameter,rangeDiameter,20,GMP_RNDD);
 
   okay = 0;
 
@@ -3477,7 +3478,7 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
 	break;
       }
     
-      mpfr_div_2ui(currDiameter,currDiameter,1,GMP_RNDD);
+      mpfr_div_2ui(currDiameter,currDiameter,2,GMP_RNDD);
 
       printMessage(4,"Information: the absolute diameter is now ");
       if (verbosity >= 4) {

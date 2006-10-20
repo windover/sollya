@@ -425,10 +425,21 @@ command:     plot
 			     printf("Default precision has been set to %d bits.\n",(int) defaultprecision);
                              $$ = NULL;
                            }
+	   | precision EXCLAMATIONTOKEN SEMICOLONTOKEN 
+                           {
+			     tools_precision = $1;
+			     defaultprecision = $1;
+                             $$ = NULL;
+                           }
 	   | points SEMICOLONTOKEN 
                            {
 			     defaultpoints = $1;
 			     printf("Default point number has been set to %d.\n",(int) defaultpoints);
+                             $$ = NULL;
+                           }
+	   | points EXCLAMATIONTOKEN SEMICOLONTOKEN 
+                           {
+			     defaultpoints = $1;
                              $$ = NULL;
                            }
            | assignment SEMICOLONTOKEN
@@ -544,6 +555,11 @@ verbosityset:  VERBOSITYTOKEN EQUALTOKEN verbosity
 taylorrecursions: TAYLORRECURSIONSTOKEN EQUALTOKEN taylorrecursionsvalue
                            {
 			     printf("The number of recursions for the Taylor evaluation is set to %d.\n",($3));
+			     taylorrecursions = ($3);
+			     $$ = NULL;
+			   }
+                | TAYLORRECURSIONSTOKEN EQUALTOKEN taylorrecursionsvalue EXCLAMATIONTOKEN
+                           {
 			     taylorrecursions = ($3);
 			     $$ = NULL;
 			   }
