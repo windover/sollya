@@ -44,8 +44,9 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
   
   mpfr_t temp, temp2;
   int precOfAccur, res;
-  node *q, *tempNode, *tempNode2;
+  node *q, *tempNode, *tempNode2, *qCopy;
 
+  qCopy = NULL;
 
   mpfr_init2(temp,prec);
   mpfr_log2(temp,accuracy,GMP_RNDN);
@@ -102,6 +103,11 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
   addPrec[0] = precOfAccur;
 
   q = makePolynomial(coefficients+1,degree-1);
+
+  if (verbosity >= 3) {
+    qCopy = copyTree(q);
+  }
+
   tempNode = (node *) safeMalloc(sizeof(node));
   tempNode->nodeType = VARIABLE;
   tempNode2 = (node *) safeMalloc(sizeof(node));
@@ -131,11 +137,21 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
   if (mpfr_cmp(temp,temp2) >= 0) {
     printMessage(1,"Warning: a coefficient is not at least 2 times greater than a already evaluated sub-polynomial.\n");
     printMessage(1,"This procedure is not able to implement the polynomial correctly in this case.\n");
+    if (verbosity >= 3) {
+      printf("Information: the subpolynomial q(%s) that has already been handled is\n",variablename);
+      printTree(qCopy);
+      printf("\nThe current coefficient is c = \n");
+      printMpfr(coefficients[0]);
+      printf("|| %s * q(%s) / c || is approximately ",variablename,variablename);
+      printMpfr(temp);
+    }
     mpfr_set_d(temp,1.0,GMP_RNDN);
     res = 0;
   } else {
     res = 1;
   }
+
+  if (verbosity >= 3) free_memory(qCopy);
 
   mpfr_div(temp2,accuracy,temp,GMP_RNDN);
   mpfr_set_d(temp,0.5,GMP_RNDN);
