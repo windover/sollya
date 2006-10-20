@@ -241,8 +241,8 @@ void mpfi_erfc(mpfi_t rop, mpfi_t op) {
   mpfi_get_left(opl,op);
   mpfi_get_right(opr,op);
   
-  mpfr_erf(ropl,opr,GMP_RNDD);
-  mpfr_erf(ropr,opl,GMP_RNDU);
+  mpfr_erfc(ropl,opr,GMP_RNDD);
+  mpfr_erfc(ropr,opl,GMP_RNDU);
 
   mpfi_interv_fr(rop,ropl,ropr);
   mpfi_revert_if_needed(rop);
