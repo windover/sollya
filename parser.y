@@ -240,6 +240,7 @@ void yyerror(char *message) {
 %type <other> evaluateaccurate
 %type <constantval> accurateinfnorm
 %type <constantval> evaluateaccuratecommandfunction
+%type <aChain> functionlist
 
 %%
 
@@ -1274,10 +1275,10 @@ printHexa:  PRINTHEXATOKEN constantfunction SEMICOLONTOKEN
 			   }
 ;
 
-plot:        PLOTTOKEN function INTOKEN range SEMICOLONTOKEN 
+plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN 
                            {
 			     plotTree($2, *($4.a), *($4.b), defaultpoints, tools_precision);
-			     free_memory($2);
+			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
 			     free($4.a);
@@ -1285,10 +1286,10 @@ plot:        PLOTTOKEN function INTOKEN range SEMICOLONTOKEN
 			     tools_precision = defaultprecision;
 			     $$ = NULL;
 			   }
-           | PLOTTOKEN function INTOKEN range COMMATOKEN precision SEMICOLONTOKEN 
+           | PLOTTOKEN functionlist INTOKEN range COMMATOKEN precision SEMICOLONTOKEN 
                            {
 			     plotTree($2, *($4.a), *($4.b), defaultpoints, ($6));
-			     free_memory($2);
+			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
 			     free($4.a);
@@ -1296,10 +1297,10 @@ plot:        PLOTTOKEN function INTOKEN range SEMICOLONTOKEN
 			     tools_precision = defaultprecision;
 			     $$ = NULL;
 			   }
-           | PLOTTOKEN function INTOKEN range COMMATOKEN points SEMICOLONTOKEN 
+           | PLOTTOKEN functionlist INTOKEN range COMMATOKEN points SEMICOLONTOKEN 
                            {
 			     plotTree($2, *($4.a), *($4.b), ($6), tools_precision);
-			     free_memory($2);
+			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
 			     free($4.a);
@@ -1307,10 +1308,10 @@ plot:        PLOTTOKEN function INTOKEN range SEMICOLONTOKEN
 			     tools_precision = defaultprecision;
 			     $$ = NULL;
 			   }
-           | PLOTTOKEN function INTOKEN range COMMATOKEN precision COMMATOKEN points SEMICOLONTOKEN 
+           | PLOTTOKEN functionlist INTOKEN range COMMATOKEN precision COMMATOKEN points SEMICOLONTOKEN 
                            {
 			     plotTree($2, *($4.a), *($4.b), ($8), ($6));
-			     free_memory($2);
+			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
 			     free($4.a);
@@ -1319,6 +1320,17 @@ plot:        PLOTTOKEN function INTOKEN range SEMICOLONTOKEN
 			     $$ = NULL;
 			   }
 ;
+
+functionlist:       function {
+	                       chain_temp = addElement(NULL,$1);
+			       $$ = chain_temp;
+                             }
+                  | function COMMATOKEN functionlist {
+		               chain_temp = addElement($3,$1);
+			       $$ = chain_temp;
+		             }
+;
+
 
 variableformat:     DOUBLETOKEN 
                            {
