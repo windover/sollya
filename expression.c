@@ -4079,8 +4079,6 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
   mpfr_t temp;
   mpfr_t *value;
 
-  if (isConstant(tree)) return copyTree(tree);
-
   switch (tree->nodeType) {
   case VARIABLE:
     return copyTree(tree);
@@ -4243,6 +4241,8 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	  }
 	  break;
 	default:
+	  if (isConstant(tree)) return copyTree(tree);
+
 	  fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occured on handling the expanded expression subtree\n");
 	  exit(1);
 	}
@@ -4271,6 +4271,9 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
     return copy;
     break;
   default:
+
+    if (isConstant(tree)) return copyTree(tree);
+
     fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occured on handling the expression tree\n");
     exit(1);
   }
