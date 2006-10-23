@@ -4633,8 +4633,12 @@ node* expandPolynomialUnsafe(node *tree) {
       }      
       break;
     default:
-      fprintf(stderr,"Error: expandPolynomialUnsafe: an error occured on handling the MUL left rewritten expression subtree\n");
-      exit(1);
+      if (isConstant(tree)) {
+	return copyTree(tree);
+      } else {
+	fprintf(stderr,"Error: expandPolynomialUnsafe: an error occured on handling the MUL left rewritten expression subtree\n");
+	exit(1);
+      }
     }
     return copy;
     break;
@@ -4747,8 +4751,12 @@ node* expandPolynomialUnsafe(node *tree) {
       free_memory(tempNode);      
       break;
     default: 
-      fprintf(stderr,"Error: expandPolynomialUnsafe: an error occured on handling the DIV left rewritten expression subtree\n");
-      exit(1);
+      if (isConstant(tree)) {
+	return copyTree(tree);
+      } else {
+	fprintf(stderr,"Error: expandPolynomialUnsafe: an error occured on handling the DIV left rewritten expression subtree\n");
+	exit(1);
+      }
     }
     return copy;
     break;
