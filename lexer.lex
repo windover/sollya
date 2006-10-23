@@ -198,9 +198,7 @@ BITS            "bits"
 
 FILE            "file"
 POSTSCRIPT      "postscript"
-PDF             "pdf"
 POSTSCRIPTFILE  "postscriptfile"
-PDFFILE         "pdffile"
 
 
 %%
@@ -338,9 +336,7 @@ PDFFILE         "pdffile"
 {BITS}                   {     promptToBePrinted = 0; return BITSTOKEN; }                    
 {FILE}                   {     promptToBePrinted = 0; return FILETOKEN;           }                    
 {POSTSCRIPT}             {     promptToBePrinted = 0; return POSTSCRIPTTOKEN;     }                    
-{PDF}                    {     promptToBePrinted = 0; return PDFTOKEN;            }                    
 {POSTSCRIPTFILE}         {     promptToBePrinted = 0; return POSTSCRIPTFILETOKEN; }                    
-{PDFFILE}                {     promptToBePrinted = 0; return PDFFILETOKEN;        }                    
 
 
 

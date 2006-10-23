@@ -1405,14 +1405,8 @@ plottype:           FILETOKEN {
                   | POSTSCRIPTTOKEN {
                                 $$ = PLOTPOSTSCRIPT;
                               }
-                  | PDFTOKEN {
-                                $$ = PLOTPDF;
-                              }
                   | POSTSCRIPTFILETOKEN {
                                 $$ = PLOTPOSTSCRIPTFILE;
-                              }
-                  | PDFFILETOKEN {
-                                $$ = PLOTPDFFILE;
                               }
 ;
 
