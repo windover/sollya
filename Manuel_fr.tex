@@ -239,14 +239,32 @@ arrondi ou non.
 On peut tracer le graphe d'une fonction sur un intervalle de la façon
 suivante (les crochets indiquent un paramètre optionnel) :
 \begin{center}
-\com{plot expr in intervalle [, prec=n] [, points=p]}
+\com{plot expr1, expr2, ..., exprn in intervalle [, prec=n] [, points=p], [\emph{commande de sauvegarde}]}
 \end{center}
 La commande \com{plot} tient compte de la variable globale \com{prec}
 pour faire les calculs. Si le paramètre optionnel correspondant est
 donné, il prend le pas sur la variable globale pendant l'exécution de
 la commande. La valeur de la variable globale n'est pas modifiée. Il
 en est de même pour le paramètre \com{points} qui commande le nombre
-de points où la fonction sera évaluée pour le tracé.
+de points où la fonction sera évaluée pour le tracé. Le graphique est
+fidèle au sens où, en chaque point où la fonction a été échantillonnée,
+la valeur calculée de la fonction est un arrondi fidèle de la véritable
+valeur dans le format double. Une liste d'expressions peut être donnée
+auquel cas les fonctions seront toutes affichées sur le même graphique.
+Les commandes de sauvegarde sont les suivantes (une seule peut être 
+utilisée à la fois) :
+\begin{itemize}
+  \item \com{file=filename} : les fichiers de données et d'instructions
+    gnuplot sont sauvegardé dans les fichiers \texttt{filename.dat} et
+    \texttt{filename.p}. Le graphique est affiché à l'écran.
+  \item \com{postscript=filename} : le graphique n'est pas affiché mais
+    est sauvegardé dans le fichier \texttt{filename.eps}.
+  \item \com{postscriptfile=filename} : le graphique n'est pas affiché
+    mais est sauvegardé dans le fichier \texttt{filename.eps}. En outre
+    les fichiers de données et d'instructions gnuplot correspondants
+    sont enregistrés dans les fichiers  \texttt{filename.dat} et
+    \texttt{filename.p}
+\end{itemize}
 
 La commande \com{findzeros} permet de lister les zéros d'une fonction
 sur un intervalle. Plus précisément, la syntaxe est la suivante (les
