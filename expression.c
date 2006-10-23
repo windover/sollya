@@ -304,10 +304,6 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
   int t;
 
 
-  if (mpfr_get_prec(*value) < prec) {
-    printMessage(1,"Warning: on printing a value, the default printing precision is less than the precision of the value.\n");
-    printMessage(1,"Will adapt the precision to the precision of the value.\n");
-  }
   prec = mpfr_get_prec(*value);
   mpfr_init2(y,prec);
   v = mpfr_get_d(*value,GMP_RNDN);
