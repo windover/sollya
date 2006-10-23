@@ -17,6 +17,7 @@
 #include "implement.h"
 #include "double.h"
 #include "pari_utils.h"
+#include "plot.h"
 
 int yylex();
 
@@ -1245,7 +1246,12 @@ printlist:   printelem     {
                            {
 			     $$ = NULL;
 			   }
+           | LBRACKETTOKEN printlist RBRACKETTOKEN
+                           {
+			     $$ = $2;
+			   }
 ;
+
 
 
 printelem:   function
@@ -1329,6 +1335,10 @@ functionlist:       function {
 		               chain_temp = addElement($3,$1);
 			       $$ = chain_temp;
 		             }
+                  | LBRACKETTOKEN functionlist RBRACKETTOKEN 
+                             {
+			       $$ = $2;
+			     }
 ;
 
 
