@@ -125,6 +125,7 @@ void yyerror(char *message) {
 %token  DYADICTOKEN
 %token  ONTOKEN
 %token  OFFTOKEN
+%token  POWERSTOKEN
 %token  INTEGRALTOKEN
 %token  DIRTYINTEGRALTOKEN
 %token  STRINGTOKEN
@@ -535,6 +536,27 @@ dyadic:      DYADICTOKEN EQUALTOKEN ONTOKEN
                            {
 			     printf("Dyadic number output deactivated.\n");
 			     dyadic = 0;
+			     $$ = NULL;
+                           }
+           | DYADICTOKEN EQUALTOKEN POWERSTOKEN
+                           {
+			     printf("Dyadic number output activated with power of 2 notation.\n");
+			     dyadic = 2;
+			     $$ = NULL;
+                           }
+           | DYADICTOKEN EQUALTOKEN ONTOKEN EXCLAMATIONTOKEN
+                           {
+			     dyadic = 1;
+			     $$ = NULL;
+                           }
+           | DYADICTOKEN EQUALTOKEN OFFTOKEN EXCLAMATIONTOKEN
+                           {
+			     dyadic = 0;
+			     $$ = NULL;
+                           }
+           | DYADICTOKEN EQUALTOKEN POWERSTOKEN EXCLAMATIONTOKEN
+                           {
+			     dyadic = 2;
 			     $$ = NULL;
                            }
 ;

@@ -321,7 +321,7 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
     if (mpfr_sgn(y) < 0) {
       printf("-"); mpfr_neg(y,y,GMP_RNDN);
     }
-    if (dyadic) {
+    if ((dyadic == 1) || (dyadic == 2)) {
       if (!mpfr_number_p(*value)) {
 	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
 	printf("%s",str);
@@ -342,7 +342,10 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
 	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
 	str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
 	strncpy(str2,str,e);
-	printf("%sb%d",str2,(int)expo);
+	if (dyadic == 1) 
+	  printf("%sb%d",str2,(int)expo);
+	else
+	  printf("%s * 2^(%d)",str2,(int)expo);
 	free(str2);
       }
       mpfr_free_str(str);      

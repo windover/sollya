@@ -123,6 +123,7 @@ WITHOUT         "without"
 DYADIC          "dyadic"
 ON              "on"
 OFF             "off"
+POWERS          "powers"
 
 INTEGRAL        "integral"
 DIRTYINTEGRAL   "dirtyintegral"
@@ -284,6 +285,7 @@ BITS            "bits"
 {DYADIC}        {     promptToBePrinted = 0; return DYADICTOKEN; }
 {ON}            {     promptToBePrinted = 0; return ONTOKEN; }
 {OFF}           {     promptToBePrinted = 0; return OFFTOKEN; }
+{POWERS}        {     promptToBePrinted = 0; return POWERSTOKEN; }
 {INTEGRAL}      {     promptToBePrinted = 0; return INTEGRALTOKEN; }
 {DIRTYINTEGRAL} {     promptToBePrinted = 0; return DIRTYINTEGRALTOKEN; }
 {PROOF}         {     promptToBePrinted = 0; return PROOFTOKEN; }
