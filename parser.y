@@ -173,6 +173,11 @@ void yyerror(char *message) {
 %token  EXCLAMATIONTOKEN
 %token  ACCURATEINFNORMTOKEN
 %token  BITSTOKEN
+%token  FILETOKEN
+%token  POSTSCRIPTTOKEN
+%token  PDFTOKEN     
+%token  POSTSCRIPTFILETOKEN
+%token  PDFFILETOKEN       
 
 %type <other> commands
 %type <other> command
@@ -242,6 +247,7 @@ void yyerror(char *message) {
 %type <constantval> accurateinfnorm
 %type <constantval> evaluateaccuratecommandfunction
 %type <aChain> functionlist
+%type <anInteger> plottype
 
 %%
 
@@ -1283,7 +1289,7 @@ printHexa:  PRINTHEXATOKEN constantfunction SEMICOLONTOKEN
 
 plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN 
                            {
-			     plotTree($2, *($4.a), *($4.b), defaultpoints, tools_precision);
+			     plotTree($2, *($4.a), *($4.b), defaultpoints, tools_precision, NULL, -1);
 			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -1294,7 +1300,7 @@ plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN
 			   }
            | PLOTTOKEN functionlist INTOKEN range COMMATOKEN precision SEMICOLONTOKEN 
                            {
-			     plotTree($2, *($4.a), *($4.b), defaultpoints, ($6));
+			     plotTree($2, *($4.a), *($4.b), defaultpoints, ($6), NULL, -1);
 			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -1305,7 +1311,7 @@ plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN
 			   }
            | PLOTTOKEN functionlist INTOKEN range COMMATOKEN points SEMICOLONTOKEN 
                            {
-			     plotTree($2, *($4.a), *($4.b), ($6), tools_precision);
+			     plotTree($2, *($4.a), *($4.b), ($6), tools_precision, NULL, -1);
 			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -1316,7 +1322,73 @@ plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN
 			   }
            | PLOTTOKEN functionlist INTOKEN range COMMATOKEN precision COMMATOKEN points SEMICOLONTOKEN 
                            {
-			     plotTree($2, *($4.a), *($4.b), ($8), ($6));
+			     plotTree($2, *($4.a), *($4.b), ($8), ($6), NULL, -1);
+			     freeChain($2,freeMemoryOnVoid);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     tools_precision = defaultprecision;
+			     $$ = NULL;
+			   }
+           | PLOTTOKEN functionlist INTOKEN range COMMATOKEN points COMMATOKEN precision SEMICOLONTOKEN 
+                           {
+			     plotTree($2, *($4.a), *($4.b), ($6), ($8), NULL, -1);
+			     freeChain($2,freeMemoryOnVoid);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     tools_precision = defaultprecision;
+			     $$ = NULL;
+			   }
+           | PLOTTOKEN functionlist INTOKEN range COMMATOKEN plottype EQUALTOKEN string SEMICOLONTOKEN 
+                           {
+			     plotTree($2, *($4.a), *($4.b), defaultpoints, tools_precision, ($8), ($6));
+			     freeChain($2,freeMemoryOnVoid);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     tools_precision = defaultprecision;
+			     $$ = NULL;
+			   }
+           | PLOTTOKEN functionlist INTOKEN range COMMATOKEN precision COMMATOKEN plottype EQUALTOKEN string SEMICOLONTOKEN 
+                           {
+			     plotTree($2, *($4.a), *($4.b), defaultpoints, ($6), ($10), ($8));
+			     freeChain($2,freeMemoryOnVoid);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     tools_precision = defaultprecision;
+			     $$ = NULL;
+			   }
+           | PLOTTOKEN functionlist INTOKEN range COMMATOKEN points COMMATOKEN plottype EQUALTOKEN string SEMICOLONTOKEN 
+                           {
+			     plotTree($2, *($4.a), *($4.b), ($6), tools_precision, ($10), ($8));
+			     freeChain($2,freeMemoryOnVoid);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     tools_precision = defaultprecision;
+			     $$ = NULL;
+			   }
+           | PLOTTOKEN functionlist INTOKEN range COMMATOKEN precision COMMATOKEN points COMMATOKEN plottype EQUALTOKEN string SEMICOLONTOKEN 
+                           {
+			     plotTree($2, *($4.a), *($4.b), ($8), ($6), ($12), ($10));
+			     freeChain($2,freeMemoryOnVoid);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     tools_precision = defaultprecision;
+			     $$ = NULL;
+			   }
+           | PLOTTOKEN functionlist INTOKEN range COMMATOKEN points COMMATOKEN precision COMMATOKEN plottype EQUALTOKEN string SEMICOLONTOKEN 
+                           {
+			     plotTree($2, *($4.a), *($4.b), ($6), ($8), ($12), ($10));
 			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -1326,6 +1398,24 @@ plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN
 			     $$ = NULL;
 			   }
 ;
+
+plottype:           FILETOKEN {
+                                $$ = PLOTFILE;
+                              }
+                  | POSTSCRIPTTOKEN {
+                                $$ = PLOTPOSTSCRIPT;
+                              }
+                  | PDFTOKEN {
+                                $$ = PLOTPDF;
+                              }
+                  | POSTSCRIPTFILETOKEN {
+                                $$ = PLOTPOSTSCRIPTFILE;
+                              }
+                  | PDFFILETOKEN {
+                                $$ = PLOTPDFFILE;
+                              }
+;
+
 
 functionlist:       function {
 	                       chain_temp = addElement(NULL,$1);
