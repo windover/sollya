@@ -63,7 +63,6 @@ struct rangetypeStruct
 };
 
 
-void plotTree(node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec);
 void printTree(node *tree);
 node* differentiate(node *tree);
 node* simplifyTree(node *tree); 

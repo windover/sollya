@@ -10,10 +10,14 @@
 #include "expression.h"
 #include "main.h"
 #include "infnorm.h"
+#include "chain.h"
 
 #define MAX_VALUE_GNUPLOT 0.898846567431157854072637118658521783990352837629224983e308
 
-void plotTree(node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec) {
+void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec, char *name, int type) {
+  int test, i;
+  chain *list;
+  node *tree;
   mpfr_t x, y, step;
   double xd, yd, ad, bd;
   FILE *file;
@@ -34,7 +38,17 @@ void plotTree(node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_
   if (bd-bd != 0)
     bd = MAX_VALUE_GNUPLOT;
   fprintf(file, "set xrange [%1.50e:%1.50e]\n",  ad, bd);
-  fprintf(file, "plot \"/tmp/arenairetools-0001.dat\" using 1:2 with lines t \"\"\n");
+
+  fprintf(file, "plot ");
+  i=2;
+  list = treeList;
+  while(list != NULL) {
+    fprintf(file,"\"/tmp/arenairetools-0001.dat\" using 1:%d with lines t \"\"",i);
+    if(list->next != NULL) fprintf(file,",");
+    i++;
+    list = list->next;
+  }
+  fprintf(file,"\n");
   fclose(file);
 
   file = fopen("/tmp/arenairetools-0001.dat", "w");
@@ -42,12 +56,18 @@ void plotTree(node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_
   mpfr_div_ui(step, step, points, GMP_RNDN);
  
   if (mpfr_sgn(step) == 0) {
-    evaluateFaithful(y,tree,a,prec);
-    if (!mpfr_number_p(y)) {
-      printMessage(1,"Warning: this function not evaluable by this tool on this point.\n");
-    } 
-    printValue(&y,prec);
-    printf("\n");
+    list = treeList;
+    mpfr_set_prec(y,prec);
+    while(list != NULL) {
+      tree = (node *)(list->value);
+      evaluateFaithful(y,tree,a,prec);
+      if (!mpfr_number_p(y)) {
+	printMessage(1,"Warning: this constant function is not evaluable by this tool.\n");
+      } 
+      printValue(&y,prec);
+      printf("\n");
+      list = list->next;
+    }
     mpfr_clear(x); mpfr_clear(y); mpfr_clear(step);
     return;
   }
@@ -58,33 +78,55 @@ void plotTree(node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_
     return;
   }
 
-  if (isConstant(tree)) {
+  test=1;
+  list = treeList;
+  while(list != NULL && (test==1)) {
+    tree = (node *)(list->value);
+    if(!isConstant(tree)) test=0;
+    list = list->next;
+  }
+ 
+  if (test) {
+    mpfr_set_prec(y,prec);
     mpfr_set_d(x,1.0,GMP_RNDN);
-    evaluateFaithful(y,tree,x,prec);
-    if (!mpfr_number_p(y)) {
-      printMessage(1,"Warning: this constant function is not evaluable by this tool.\n");
-    } 
-    printValue(&y,prec);
-    printf("\n");
+    list = treeList;
+    while(list != NULL && (test==1)) {
+      tree = (node *)(list->value);
+      evaluateFaithful(y,tree,x,prec);
+      if (!mpfr_number_p(y)) {
+	printMessage(1,"Warning: this constant function is not evaluable by this tool.\n");
+      } 
+      printValue(&y,prec);
+      printf("\n");
+      list = list->next;
+    }
     mpfr_clear(x); mpfr_clear(y); mpfr_clear(step);
     return;
   }
  
   for(mpfr_set(x,a,GMP_RNDN); mpfr_lessequal_p(x,b); mpfr_add(x,x,step,GMP_RNDN)) {
-    evaluateFaithful(y,tree,x,prec);
-    if (!mpfr_number_p(y)) {
-      printMessage(2,"Information: function undefined or not evaluable in point %s = ",variablename);
-      if (verbosity >= 2) printValue(&x,prec);
-      printMessage(2,"\nThis point will not be plotted.\n");
-    } else {
-      xd =  mpfr_get_d(x, GMP_RNDN);
+    xd =  mpfr_get_d(x, GMP_RNDN);
+    if (xd >= MAX_VALUE_GNUPLOT) xd = MAX_VALUE_GNUPLOT;
+    if (xd <= -MAX_VALUE_GNUPLOT) xd = -MAX_VALUE_GNUPLOT;
+    fprintf(file, "%1.50e",xd);
+
+    list = treeList;
+    while(list != NULL) {
+      tree = (node *)(list->value);
+      evaluateFaithful(y,tree,x,prec);
+      if (!mpfr_number_p(y)) {
+	printMessage(2,"Information: function undefined or not evaluable in point %s = ",variablename);
+	if (verbosity >= 2) printValue(&x,prec);
+	printMessage(2,"\nThis point will not be plotted.\n");
+      }
       yd = mpfr_get_d(y, GMP_RNDN);
-      if (xd >= MAX_VALUE_GNUPLOT) xd = MAX_VALUE_GNUPLOT;
-      if (xd <= -MAX_VALUE_GNUPLOT) xd = -MAX_VALUE_GNUPLOT;
       if (yd >= MAX_VALUE_GNUPLOT) yd = MAX_VALUE_GNUPLOT;
       if (yd <= -MAX_VALUE_GNUPLOT) yd = -MAX_VALUE_GNUPLOT;
-      fprintf(file, "%1.50e\t%1.50e\n",xd, yd);
+      fprintf(file, "\t%1.50e", yd);
+      
+      list = list->next;
     }
+    fprintf(file,"\n");
   }
  
   fclose(file);
