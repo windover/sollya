@@ -32,7 +32,7 @@ RBRACKET        "]"
 
 IN              "in"
 	       	
-PI              "pi"
+PI              ("pi")|("Pi")
 E               "e"
 PLUS            "+"
 MINUS           "-"
