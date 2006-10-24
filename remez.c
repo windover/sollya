@@ -7,6 +7,7 @@
 #include "chain.h"
 #include "remez.h"
 #include "infnorm.h"
+#include "plot.h"
 
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
@@ -30,6 +31,16 @@ node *convert_poly(int first_index, int last_index, GEN tab, chain *monomials, m
   if (lengthChain(monomials) != (last_index-first_index)+1) {
     fprintf(stderr,"Error : in Remez, trying to convert an array of coefficients with respect to a list of monomials with different length.\n");
     recoverFromError();
+  }
+
+  if(lengthChain(monomials) == 0) {
+    tree = safeMalloc(sizeof(node));
+    tree->nodeType = CONSTANT;    
+    value = safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*value, prec);
+    mpfr_set_d(*value, 0., GMP_RNDN);
+    tree->value = value;
+    return tree;
   }
 
   if (first_index == last_index) {
@@ -432,7 +443,9 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     printMessage(4,"Step %d ; quality of the approximation : %e. Computed value of epsilon : ",test,computeRatio(tree, x, prec)); 
     if (verbosity >= 4) {
       output((GEN)(temp[deg+2]));
-      //plotTree(tree,a,b,500,prec);
+      struct chainStruct c = {tree,NULL};
+      plotTree(&c,a,b,500,prec,NULL,0);
+      //printTree(tree);
       //for(i=0;i<100000;i++){}
     }
 
