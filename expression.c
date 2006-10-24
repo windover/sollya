@@ -3923,6 +3923,8 @@ int getDegreeUnsafe(node *tree) {
   int l, r;
   mpfr_t temp;
 
+  if (isConstant(tree)) return 0;
+
   switch (tree->nodeType) {
   case VARIABLE:
     return 1;
