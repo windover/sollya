@@ -126,7 +126,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   i=2;
   list = treeList;
   while(list != NULL) {
-    fprintf(file,"\"/tmp/arenairetools-0001.dat\" using 1:%d with lines t \"\"",i);
+    fprintf(file,"\"%s\" using 1:%d with lines t \"\"",dataname,i);
     if(list->next != NULL) fprintf(file,",");
     i++;
     list = list->next;
