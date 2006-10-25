@@ -7,7 +7,7 @@
 #include "chain.h"
 #include "fpminimax.h"
 
-#define DEFAULTPOINTS 500
+#define DEFAULTPOINTS 501
 #define DEFAULTPRECISION 165
 #define DEFAULTDIAM 1e-4
 #define DEFAULTTAYLORRECURSIONS 0

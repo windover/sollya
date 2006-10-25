@@ -258,95 +258,135 @@ void mpfi_erfc(mpfi_t rop, mpfi_t op) {
 
 
 int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
-  mpfr_t x, temp1, temp2;
+  mpfr_t x, x2, temp1, temp2;
   unsigned long int n=1;
-  int okay, lucky, hasZero;
+  int okay, lucky, hasZero, i, freeTrees;
+  node *myTree, *myDiffTree;
+
+  freeTrees = 0;
+  if (tree->nodeType == DIV) {
+    freeTrees = 1;
+    myTree = copyTree(tree->child1);
+    myDiffTree = differentiate(myTree);
+  } else {
+    myTree = tree;
+    myDiffTree = diff_tree;
+  }
 
   mpfr_init2(x,prec);
+  mpfr_init2(x2,prec);
   mpfr_init2(temp1,prec);
   mpfr_init2(temp2,prec);
 
   okay = 0;
 
-  evaluate(temp1, tree, a, prec);
-  if (mpfr_zero_p(temp1)) {
-    mpfr_set(res,a,GMP_RNDN);
-    okay = 1;
-  } else {
-    evaluate(temp2, tree, b, prec);
-    if (mpfr_zero_p(temp2)) {
-      mpfr_set(res,b,GMP_RNDN);
+  if (mpfr_sgn(a) != mpfr_sgn(b)) {
+    mpfr_set_d(x,0.0,GMP_RNDN);
+    evaluate(temp1, myTree, x, prec);
+    if (mpfr_zero_p(temp1)) {
+      mpfr_set(res,x,GMP_RNDN);
+      okay = 1;
+    }
+  }
+
+  if (!okay) {
+    evaluate(temp1, myTree, a, prec);
+    if (mpfr_zero_p(temp1)) {
+      mpfr_set(res,a,GMP_RNDN);
       okay = 1;
     } else {
-
-      mpfr_mul(temp1,temp1,temp2,GMP_RNDN);
-      hasZero = (mpfr_sgn(temp1) <= 0);
-      
-      mpfr_add(x,a,b,GMP_RNDN);
-      mpfr_div_2ui(x,x,1,GMP_RNDN);
-      lucky = 0;
-
-      while((n<=prec+10) && (mpfr_cmp(a,x) <= 0) && (mpfr_cmp(x,b) <= 0)) {
-	evaluate(temp1, tree, x, prec);
-	if (mpfr_zero_p(temp1)) {
-	  lucky = 1;
-	  break;
-	}
-	evaluate(temp2, diff_tree, x, prec);
-	mpfr_div(temp1, temp1, temp2, GMP_RNDN);
-	mpfr_sub(x, x, temp1, GMP_RNDN);
-	n = 2*n;
-      }
-
-      if (mpfr_cmp(x,a) < 0) {
-	mpfr_set(res,a,GMP_RNDN);
-	if (hasZero) {
-	  okay = 1;
-	} else {
-	  evaluate(temp1, tree, x, prec);
-	  evaluate(temp2, diff_tree, x, prec);
-	  mpfr_div(temp1, temp1, temp2, GMP_RNDN);
-	  mpfr_sub(x, x, temp1, GMP_RNDN);
-	  if (mpfr_cmp(x,a) >= 0) {
-	    okay = 1;
-	  } else {
-	    okay = 0;
-	  }
-	}
+      evaluate(temp2, myTree, b, prec);
+      if (mpfr_zero_p(temp2)) {
+	mpfr_set(res,b,GMP_RNDN);
+	okay = 1;
       } else {
-	if (mpfr_cmp(b,x) < 0) {
-	  mpfr_set(res,b,GMP_RNDN);
+	
+	mpfr_mul(temp1,temp1,temp2,GMP_RNDN);
+	hasZero = (mpfr_sgn(temp1) <= 0);
+	
+	mpfr_add(x,a,b,GMP_RNDN);
+	mpfr_div_2ui(x,x,1,GMP_RNDN);
+	lucky = 0;
+	
+	i = 1000;
+	while((n<=prec+10) && (mpfr_cmp(a,x) <= 0) && (mpfr_cmp(x,b) <= 0) && (i > 0)) {
+	  evaluate(temp1, myTree, x, prec);
+	  if (mpfr_zero_p(temp1)) {
+	    lucky = 1;
+	    break;
+	  }
+	  evaluate(temp2, myDiffTree, x, prec);
+	  mpfr_div(temp1, temp1, temp2, GMP_RNDN);
+	  mpfr_sub(x2, x, temp1, GMP_RNDN);
+	  if (mpfr_cmp(x2,x) == 0) break;
+	  if (mpfr_zero_p(x) || mpfr_zero_p(x2)) {
+	    n *= 2;
+	  } else {
+	    if (mpfr_get_exp(x) == mpfr_get_exp(x2)) {
+	      n *= 2;
+	    } else {
+	      i--;
+	    }
+	  }
+	  mpfr_set(x,x2,GMP_RNDN);
+	}
+	
+	if (mpfr_cmp(x,a) < 0) {
+	  mpfr_set(res,a,GMP_RNDN);
 	  if (hasZero) {
 	    okay = 1;
 	  } else {
-	    evaluate(temp1, tree, x, prec);
-	    evaluate(temp2, diff_tree, x, prec);
+	    evaluate(temp1, myTree, x, prec);
+	    evaluate(temp2, myDiffTree, x, prec);
 	    mpfr_div(temp1, temp1, temp2, GMP_RNDN);
 	    mpfr_sub(x, x, temp1, GMP_RNDN);
-	    if (mpfr_cmp(b,x) >= 0) {
+	    if (mpfr_cmp(x,a) >= 0) {
 	      okay = 1;
 	    } else {
 	      okay = 0;
 	    }
 	  }
 	} else {
-	  mpfr_set(res,x,GMP_RNDN);
-	  if (!lucky) {
-	    evaluate(temp1, tree, x, prec);
-	    evaluate(temp2, diff_tree, x, prec);
-	    mpfr_div(temp1, temp1, temp2, GMP_RNDN);
-	    mpfr_abs(temp1,temp1,GMP_RNDN);
-	    mpfr_abs(x,x,GMP_RNDN);
-	    mpfr_div_ui(x,x,1,GMP_RNDN);
-	    okay = (mpfr_cmp(temp1,x) <= 0);
+	  if (mpfr_cmp(b,x) < 0) {
+	    mpfr_set(res,b,GMP_RNDN);
+	    if (hasZero) {
+	      okay = 1;
+	    } else {
+	      evaluate(temp1, myTree, x, prec);
+	      evaluate(temp2, myDiffTree, x, prec);
+	      mpfr_div(temp1, temp1, temp2, GMP_RNDN);
+	      mpfr_sub(x, x, temp1, GMP_RNDN);
+	      if (mpfr_cmp(b,x) >= 0) {
+		okay = 1;
+	      } else {
+		okay = 0;
+	      }
+	    }
 	  } else {
-	    okay = 1;
+	    mpfr_set(res,x,GMP_RNDN);
+	    if (!lucky) {
+	      evaluate(temp1, myTree, x, prec);
+	      evaluate(temp2, myDiffTree, x, prec);
+	      mpfr_div(temp1, temp1, temp2, GMP_RNDN);
+	      mpfr_abs(temp1,temp1,GMP_RNDN);
+	      mpfr_abs(x,x,GMP_RNDN);
+	      mpfr_div_ui(x,x,1,GMP_RNDN);
+	      okay = (mpfr_cmp(temp1,x) <= 0);
+	    } else {
+	      okay = 1;
+	    }
 	  }
 	}
       }
-    }
+    } 
   }
-  mpfr_clear(x); mpfr_clear(temp1); mpfr_clear(temp2);
+
+  if (freeTrees) {
+    free_memory(myTree);
+    free_memory(myDiffTree);
+  }
+
+  mpfr_clear(x); mpfr_clear(temp1); mpfr_clear(temp2); mpfr_clear(x2);
   return okay;
 }
 

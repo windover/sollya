@@ -38,7 +38,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
 
   mpfr_init2(x, prec);
   mpfr_init2(step, prec);
-  mpfr_init2(y, 64);
+  mpfr_init2(y, 12);
  
   mpfr_sub(step, b, a, GMP_RNDN);
   mpfr_div_ui(step, step, points, GMP_RNDN);

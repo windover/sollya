@@ -845,13 +845,19 @@ findzeros:   FINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
 
 fpfindzeros:   FPFINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
                            {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     chain_temp = fpFindZerosFunction($2,$4,defaultprecision);
 			     if (chain_temp == NULL) {
 			       printf("The function seems to have no zeros in the interval.\n");
 			     } else {
-			       printf("The approximated zeros of the function are:\n");
+			       printf("The approximated zeros of the function (and their images) are:\n");
 			       while (chain_temp != NULL) {
-				 printMpfr(*((mpfr_t *) (chain_temp->value)));
+				 evaluateFaithful(*mpfr_temp, $2, *((mpfr_t *) (chain_temp->value)), defaultprecision);
+				 printValue(((mpfr_t *) (chain_temp->value)),defaultprecision);
+				 printf(" ( ");
+				 printValue(mpfr_temp,defaultprecision);
+				 printf(" )\n");
 				 mpfr_clear(*((mpfr_t *) (chain_temp->value)));
 				 free(chain_temp->value);
 				 chain_temp2 = chain_temp->next;
@@ -860,6 +866,8 @@ fpfindzeros:   FPFINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
 			       }
 
 			     }
+			     mpfr_clear(*mpfr_temp);
+			     free(mpfr_temp);
 			     free_memory($2);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
