@@ -258,7 +258,7 @@ void mpfi_erfc(mpfi_t rop, mpfi_t op) {
 
 
 int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
-  mpfr_t x, x2, temp1, temp2;
+  mpfr_t x, x2, temp1, temp2, am, bm;
   unsigned long int n=1;
   int okay, lucky, hasZero, i, freeTrees;
   node *myTree, *myDiffTree;
@@ -277,6 +277,14 @@ int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_p
   mpfr_init2(x2,prec);
   mpfr_init2(temp1,prec);
   mpfr_init2(temp2,prec);
+  mpfr_init2(am,prec/2);
+  mpfr_init2(bm,prec/2);
+  mpfr_set(am,a,GMP_RNDN);
+  mpfr_nextbelow(am);
+  mpfr_nextbelow(am);
+  mpfr_set(bm,b,GMP_RNDN);
+  mpfr_nextabove(am);
+  mpfr_nextabove(bm);
 
   okay = 0;
 
@@ -309,7 +317,7 @@ int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_p
 	lucky = 0;
 	
 	i = 1000;
-	while((n<=prec+10) && (mpfr_cmp(a,x) <= 0) && (mpfr_cmp(x,b) <= 0) && (i > 0)) {
+	while((n<=prec+25) && (mpfr_cmp(am,x) <= 0) && (mpfr_cmp(x,bm) <= 0) && (i > 0)) {
 	  evaluate(temp1, myTree, x, prec);
 	  if (mpfr_zero_p(temp1)) {
 	    lucky = 1;
@@ -386,7 +394,7 @@ int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_p
     free_memory(myDiffTree);
   }
 
-  mpfr_clear(x); mpfr_clear(temp1); mpfr_clear(temp2); mpfr_clear(x2);
+  mpfr_clear(x); mpfr_clear(temp1); mpfr_clear(temp2); mpfr_clear(x2); mpfr_clear(am); mpfr_clear(bm);
   return okay;
 }
 
