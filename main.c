@@ -61,6 +61,8 @@ errorType *errorTypeTemp;
 pointsType *pointsTypeTemp;
 int eliminatePrompt;
 mp_prec_t tempPrec;
+int handlingCtrlC;
+
 
 #define NEWPARIVERSION
 
@@ -78,7 +80,7 @@ extern jmp_buf environnement;
 
 extern int yyparse();
 extern FILE *yyin;
-
+extern void yyrestart(FILE *);
 
 void *safeCalloc (size_t nmemb, size_t size) {
   void *ptr;
@@ -208,17 +210,11 @@ int printMessage(int verb, const char *format, ...) {
 
 
 void signalHandler(int i) {
-  printf("\n\n");
-  fflush(stdout);
-  promptToBePrinted = 1;
+  fflush(stdout); fflush(stderr);
   switch (i) {
   case SIGINT: 
-    free(endptr);
-    freeSymbolTable(symbolTable,freeMemoryOnVoid);
-    freeSymbolTable(symbolTable2,freeRangetypePtr);
-    if(currentVariable != NULL) free(currentVariable);
-    if(variablename != NULL) free(variablename);
-    exit(0);
+    handlingCtrlC = 1;
+    yyrestart(yyin);
     break;
   case SIGSEGV:
     fprintf(stderr,"Warning: handling signal SIGSEGV\n");
@@ -236,6 +232,7 @@ void signalHandler(int i) {
     fprintf(stderr,"Error: must handle an unknown signal.\n");
     exit(1);
   }
+  promptToBePrinted = 1;
   recoverFromError();
 }
 
@@ -243,10 +240,6 @@ void signalHandler(int i) {
 void recoverFromError(void) {
   handlingError = 1;
   avma = ltop;
-  if (promptToBePrinted) {
-    printPrompt();
-    promptToBePrinted = 0;
-  }
   longjmp(recoverEnvironment,1);
   return;
 }
@@ -266,6 +259,7 @@ void printPrompt(void) {
 
 int main(int argc, char *argv[]) {
   struct termios termAttr;
+  sigset_t mask;
   
   eliminatePrompt = 0;
   if (tcgetattr(0,&termAttr) == -1) eliminatePrompt = 1;
@@ -281,18 +275,46 @@ int main(int argc, char *argv[]) {
     recoverFromError();
   }
  
+  sigemptyset(&mask);
+  sigaddset(&mask,SIGINT);
+  sigaddset(&mask,SIGSEGV);
+  sigaddset(&mask,SIGBUS);
+  sigaddset(&mask,SIGFPE);
+  sigaddset(&mask,SIGPIPE);
+  sigprocmask(SIG_UNBLOCK, &mask, NULL);
   signal(SIGINT,signalHandler);
   signal(SIGSEGV,signalHandler);
   signal(SIGBUS,signalHandler);
   signal(SIGFPE,signalHandler);
   signal(SIGPIPE,signalHandler);
-
+  handlingCtrlC = 0;
+  
   endptr = (char**) safeMalloc(sizeof(char*));
 
   printPrompt();
   while (1) {
     if (setjmp(recoverEnvironment)) {
-      printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
+      if (handlingCtrlC) 
+	printMessage(1,"Warning: the last command has been interrupted. May leak memory.\n");
+      else 
+	printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
+      handlingCtrlC = 0;
+      sigemptyset(&mask);
+      sigaddset(&mask,SIGINT);
+      sigaddset(&mask,SIGSEGV);
+      sigaddset(&mask,SIGBUS);
+      sigaddset(&mask,SIGFPE);
+      sigaddset(&mask,SIGPIPE);
+      sigprocmask(SIG_UNBLOCK, &mask, NULL);
+      signal(SIGINT,signalHandler);
+      signal(SIGSEGV,signalHandler);
+      signal(SIGBUS,signalHandler);
+      signal(SIGFPE,signalHandler);
+      signal(SIGPIPE,signalHandler);
+      if (promptToBePrinted) {
+	printPrompt();
+	promptToBePrinted = 0;
+      }
     }
     if (yyparse()) break;  
     promptToBePrinted = 1;

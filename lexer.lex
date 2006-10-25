@@ -13,6 +13,7 @@
 %}
 
 %option noyywrap
+%option always-interactive
 
 
 CHAR		[a-zA-Z]
