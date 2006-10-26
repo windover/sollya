@@ -2773,11 +2773,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      /* The precision of the following operation is fixed because the temporary is a double-double
 		 and the coefficient is correctly rounded.
 	      */
-
-	      /* REMARK/ TODO: We have no Add23, we expand the temporary to triple-double */
 	      
 	      c = snprintf(buffer1,CODESIZE,
-			   "Add233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%dh,%s_t_%dm,0.0); /* THIS IS TOO EXACT */",
+			   "Add23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%dh,%s_t_%dm);",
 			   name,variableNumber,name,variableNumber,name,variableNumber,
 			   name,i,name,i,
 			   name,variableNumber-1,name,variableNumber-1);
@@ -2842,14 +2840,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      /* The precision of the following operation is fixed because the temporary is a double
 		 and the coefficient is correctly rounded.
 	      */
-
-	      /* REMARK/ TODO: We have no Add213, we expand the coefficient to triple-double */
 	      
 	      c = snprintf(buffer1,CODESIZE,
-			   "Add133Cond(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_coeff_%dh,%s_coeff_%dm,0.0); /* THIS IS TOO EXACT */",
+			   "Add213(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%dh);",
 			   name,variableNumber,name,variableNumber,name,variableNumber,
-			   name,variableNumber-1,
-			   name,i,name,i);
+			   name,i,name,i,
+			   name,variableNumber-1);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
 			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
@@ -2914,11 +2910,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		break;
 	      case 1:
 		/* Add the double coefficient to the double-double temporary, produce a double-double */
-		
-		/* REMARK/ TODO: We have still no Add122, we expand the coefficient to double-double */
-		
+				
 		c = snprintf(buffer1,CODESIZE,
-			     "Add22(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,0.0,%s_t_%dh,%s_t_%dm); /* THIS IS TOO EXACT */",
+			     "Add122(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_t_%dh,%s_t_%dm);",
 			     name,variableNumber,name,variableNumber,
 			     name,i,
 			     name,variableNumber-1,name,variableNumber-1);
@@ -2943,11 +2937,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		break;
 	      case 2:
 		/* Add the double-double coefficient to the double temporary, produce a double-double */
-		
-		/* REMARK/ TODO: We have no Add212, we expand the temporary to double-double */
-		
+				
 		c = snprintf(buffer1,CODESIZE,
-			     "Add22(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_t_%dh,0.0); /* THIS IS TOO EXACT */",
+			     "Add212(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_t_%dh);",
 			     name,variableNumber,name,variableNumber,
 			     name,i,name,i,
 			     name,variableNumber-1);
