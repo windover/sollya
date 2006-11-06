@@ -2902,7 +2902,7 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
   mpfr_t *newZero;
 
   mpfr_init2(diam,prec+50);
-  mpfr_set_d(diam,DEFAULTDIAM,GMP_RNDN);
+  mpfr_set_d(diam,DEFAULTDIAM2,GMP_RNDN);
 
   intervalZeros = findZerosFunction(func, range, prec, diam);
   
