@@ -3323,15 +3323,27 @@ int evaluateFaithfulOrFail(node *func, mpfr_t x, mpfr_t y, unsigned int precFact
 }
 
 void evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
+  mp_prec_t startPrec, endPrec, p, needPrec;
+  mpfr_t accur;
   int res;
-  mp_prec_t endPrec;
-  
-  res = evaluateFaithfulOrFail(tree, x, result, 256, &endPrec);
 
-  printMessage(10,"Information: evaluateFaithful needed %d bits to guarantee faithful evaluation.\n",endPrec);
+  p = mpfr_get_prec(result);
+  startPrec = p + 10;
+  if (prec > startPrec) startPrec = prec;
+  endPrec = startPrec * 256;
+
+  mpfr_init2(accur,startPrec);
+  mpfr_set_d(accur,1.0,GMP_RNDN);
+  mpfr_div_2ui(accur,accur,p,GMP_RNDD);
+
+  res = evaluateWithAccuracy(tree, x, result, accur, startPrec, endPrec, &needPrec);
+  
+  mpfr_clear(accur);
+
+  printMessage(10,"Information: evaluateFaithful needed %d bits to guarantee faithful evaluation.\n",needPrec);
 
   if (!res) {
-    printMessage(4,"Warning: evaluateFaithful returned NaN\n");
+    printMessage(4,"Warning: evaluateFaithful returned NaN.\n");
     mpfr_set_nan(result);
   }
 
