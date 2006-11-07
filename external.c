@@ -24,7 +24,7 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
   void *myFunction;
   char *error;
 
-  /*  descr = dlopen(library, RTLD_LAZY);
+  descr = dlopen(library, RTLD_LAZY);
   if (descr==NULL) {
     fprintf(stderr, "Error: the given library (%s) is not available!\n",library);
     return;
@@ -34,7 +34,8 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
   if (myFunction==NULL) {
     fprintf(stderr, "Error: the function f cannot be found in library %s!\n",library);
     return;
-    }*/
+    }
+
   return;
 
   

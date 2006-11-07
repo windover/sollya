@@ -3,7 +3,7 @@ LIB=-L/sw/lib
 CFLAGS=-O3 -Wall
 
 tools: parser.tab.o lex.yy.o plot.o expression.o infnorm.o pari_utils.o remez.o main.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o
-	gcc $(LIB) $(CFLAGS) -o tools lex.yy.o plot.o parser.tab.o expression.o infnorm.o pari_utils.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o main.o -lfl -lmpfi -lpari -lmpfr -lgmp
+	gcc $(LIB) $(CFLAGS) -o tools lex.yy.o plot.o parser.tab.o expression.o infnorm.o pari_utils.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o main.o -lfl -lmpfi -lpari -lmpfr -lgmp -ldl
 
 parser.tab.o: parser.tab.h parser.tab.c expression.h main.h infnorm.h remez.h chain.h assignment.h taylor.h
 
