@@ -183,6 +183,7 @@ void yyerror(char *message) {
 %token  BASHEXECUTETOKEN
 %token  EXTERNALPLOTTOKEN
 %token  PERTURBTOKEN
+%token  TOTOKEN
 
 %type <other> commands
 %type <other> command
@@ -256,6 +257,7 @@ void yyerror(char *message) {
 %type <other> printexpansion
 %type <anInteger> bashexecute
 %type <other> externalplot
+%type <anInteger> externalplotmode
 
 %%
 
@@ -2972,10 +2974,37 @@ bashexecute:               BASHEXECUTETOKEN string
 			   }
 ;
 
-
-externalplot:              EXTERNALPLOTTOKEN 
+externalplotmode:          ABSOLUTETOKEN
                            {
+			     $$ = ABSOLUTE;
+                           }
+                         | RELATIVETOKEN
+                           {
+			     $$ = RELATIVE;
+			   }
+;
 
+
+externalplot:              EXTERNALPLOTTOKEN string externalplotmode TOTOKEN function INTOKEN range WITHTOKEN integer BITSTOKEN 
+                           {
+			     externalPlot($2, *($7.a), *($7.b), (mp_prec_t) $9, 0, $5, $3, defaultprecision);
+			     free($2);
+			     free_memory($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);			    
+			     free($7.b);
+			     $$ = NULL;
+                           }
+                         | EXTERNALPLOTTOKEN string externalplotmode TOTOKEN function INTOKEN range WITHTOKEN integer BITSTOKEN COMMATOKEN PERTURBTOKEN
+                           {
+			     externalPlot($2, *($7.a), *($7.b), (mp_prec_t) $9, 1, $5, $3, defaultprecision);
+			     free($2);
+			     free_memory($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);			    
+			     free($7.b);
 			     $$ = NULL;
                            }
 ;

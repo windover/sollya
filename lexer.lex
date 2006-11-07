@@ -206,7 +206,7 @@ PRINTEXPANSION  "printexpansion"
 BASHEXECUTE     "bashexecute"
 EXTERNALPLOT    "externalplot"
 PERTURB         "perturb"
-
+TO              "to"
 
 %%
 
@@ -348,7 +348,7 @@ PERTURB         "perturb"
 {BASHEXECUTE}            {     promptToBePrinted = 0; return BASHEXECUTETOKEN; }                    
 {EXTERNALPLOT}           {     promptToBePrinted = 0; return EXTERNALPLOTTOKEN; }                    
 {PERTURB}                {     promptToBePrinted = 0; return PERTURBTOKEN; }                    
-
+{TO}                     {     promptToBePrinted = 0; return TOTOKEN; }                    
 
 
 {VARIABLE}      {     			     
