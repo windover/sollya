@@ -89,7 +89,7 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
     mpfr_set(x, x_h, GMP_RNDN); // exact
     
     if (mpfr_zero_p(x_h)) {
-      mpfr_set(x_h, min_value, GMP_RNDN);
+      mpfr_set(x_h, min_value, GMP_RNDU);
     }
     else {
       if (mpfr_cmpabs(x_h, min_value) < 0) mpfr_set_d(x_h, 0., GMP_RNDN);
