@@ -1,3 +1,4 @@
+#include<stdlib.h>
 #include <gmp.h>
 #include <mpfr.h>
 #include "expression.h"
@@ -7,9 +8,10 @@
 
 
 int bashExecute(char *command) {
+  int i;
+  i = system(command);
 
-
-  return 1;
+  return WEXITSTATUS(i);
 }
 
 
