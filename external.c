@@ -47,7 +47,7 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
   }
 
   dlerror(); /* Clear any existing error */
-  *(void **) (&myFunction) = dlsym(descr, "f");
+  myFunction = (void (*)(mpfr_t, mpfr_t)) dlsym(descr, "f");
   if ((error = dlerror()) != NULL) {
     fprintf(stderr, "Error: the function f cannot be found in library %s (%s)\n",library,error);
     return;
