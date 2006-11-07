@@ -4,8 +4,11 @@
 #include <mpfr.h>
 #include "expression.h"
 
+#define RELATIVE 0
+#define ABSOLUTE 1
+
 int bashExecute(char *command);
-void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision, int random, mp_prec_t prec);
+void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision, int random, node *func, int mode, mp_prec_t prec);
 
 
 #endif /* ifdef EXTERNAL_H*/
