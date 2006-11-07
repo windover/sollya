@@ -1,4 +1,4 @@
-CPPFLAGS=-I/sw/include
+CPPFLAGS=-I/sw/include -rdynamic
 LIB=-L/sw/lib
 CFLAGS=-O3 -Wall
 

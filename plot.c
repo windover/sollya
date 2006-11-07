@@ -13,7 +13,6 @@
 #include "infnorm.h"
 #include "chain.h"
 
-#define MAX_VALUE_GNUPLOT 0.898846567431157854072637118658521783990352837629224983e308
 
 void checkFileDescriptor(FILE *fd, char *s) {
   if (fd == NULL) {
