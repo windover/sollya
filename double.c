@@ -378,3 +378,141 @@ int mpfr_round_to_doubleextended(mpfr_t rop, mpfr_t op) {
 
   return res;
 }
+
+
+int printDoubleExpansion(mpfr_t x) {
+  double d;
+  mpfr_t temp, rest;
+  db_number xdb, endianessdb;
+  int noBrackets, roundingOccured;
+
+  mpfr_init2(temp,mpfr_get_prec(x));
+  mpfr_init2(rest,mpfr_get_prec(x));
+
+  mpfr_set(rest,x,GMP_RNDN);
+
+  roundingOccured = 0;
+  noBrackets = 0;
+  d = mpfr_get_d(x,GMP_RNDN);
+  if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
+    printMessage(1,"Warning: rounding occured unexpectedly on reconverting a double value.\n");
+    roundingOccured = 1;
+  }
+  if (mpfr_cmp(temp,x) == 0) 
+    noBrackets = 1;
+
+  if (!noBrackets) 
+    printf("(");
+
+  do {
+    d = mpfr_get_d(rest,GMP_RNDN);
+    if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
+      printMessage(1,"Warning: rounding occured unexpectedly on reconverting a double value.\n");
+      roundingOccured = 1;
+    }
+    
+    xdb.d = d;
+    endianessdb.d = 1.0;
+    if ((endianessdb.i[1] == 0x3ff00000) && (endianessdb.i[0] == 0)) {
+      printf("0x%08x%08x",xdb.i[1],xdb.i[0]);
+    } else {
+      if ((endianessdb.i[0] == 0x3ff00000) && (endianessdb.i[1] == 0)) {
+	printf("0x%08x%08x",xdb.i[0],xdb.i[1]);
+      } else {
+	printMessage(1,"Warning: could not figure out the endianess of the system. Will print 1.0 instead of the value.\n");
+	printf("0x3ff0000000000000\n");
+	roundingOccured = 1;
+      }
+    }
+
+    if (mpfr_sub(rest,rest,temp,GMP_RNDN) != 0) {
+      printMessage(1,"Warning: rounding occured unexpectedly on subtracting.\n");
+      roundingOccured = 1;
+    }
+    
+    if ((d != 0.0) && (!mpfr_zero_p(rest))) {
+      printf(" + ");
+    }
+
+  } while ((d != 0.0) && (!mpfr_zero_p(rest)));
+
+  if (!noBrackets) 
+    printf(")");
+
+
+  if (!mpfr_zero_p(rest)) {
+    printMessage(1,"\nWarning: the expansion is not complete because of the limited exponent range of double precision.");
+    roundingOccured = 1;
+  }
+
+  mpfr_clear(temp);
+  mpfr_clear(rest);
+  return roundingOccured;
+}
+
+int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
+  int degree, roundingOccured, i, res;
+  node **coefficients;
+  node *tempNode, *simplifiedTreeSafe, *simplifiedTree, *myTree;
+  mpfr_t tempValue;
+
+  roundingOccured = 0;
+
+  tempNode = horner(poly);
+  simplifiedTreeSafe = simplifyTreeErrorfree(tempNode);
+  free_memory(tempNode);
+  simplifiedTree = simplifyTree(simplifiedTreeSafe);
+
+  if (!isPolynomial(simplifiedTreeSafe)) {
+    if (!isPolynomial(simplifiedTree)) {
+      printMessage(1,"Warning: the given expression is not a polynomial.");
+      free_memory(simplifiedTree);
+      free_memory(simplifiedTreeSafe);
+      return -1;
+    } else {
+      printMessage(1,"Warning: rounding occured while simplifying to a polynomial form.\n");
+      roundingOccured = 1;
+      myTree = simplifiedTree;
+      free_memory(simplifiedTreeSafe);
+    }
+  } else {
+    myTree = simplifiedTreeSafe;
+    free_memory(simplifiedTree);
+  }
+
+  getCoefficients(&degree, &coefficients, myTree);
+
+  mpfr_init2(tempValue,prec);
+
+
+  for (i=0;i<=degree;i++) {
+    if (coefficients[i] != NULL) {
+      tempNode = simplifyTreeErrorfree(coefficients[i]);
+      if (tempNode->nodeType == CONSTANT) {
+	roundingOccured |=  printDoubleExpansion(*(tempNode->value));
+      } else {
+	res = evaluateConstantExpression(tempValue, tempNode, prec);
+	if (!res) {
+	  printMessage(1,"Error: a coefficient of a polynomial is not constant.\n");
+	  recoverFromError();
+	}
+	printDoubleExpansion(tempValue);
+	roundingOccured = 1;
+      }
+      free_memory(tempNode);
+      free_memory(coefficients[i]);
+    } else {
+      printf("0x0000000000000000");
+    }
+    if (i < degree - 1) printf(" + %s * (",variablename);
+    if (i == degree - 1) printf(" + %s * ",variablename);
+  }
+  for (i=0;i<degree-1;i++) 
+    printf(")");
+
+  free(coefficients);
+  mpfr_clear(tempValue);
+  free_memory(myTree);
+
+  return roundingOccured;
+}

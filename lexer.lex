@@ -201,6 +201,8 @@ FILE            "file"
 POSTSCRIPT      "postscript"
 POSTSCRIPTFILE  "postscriptfile"
 
+PRINTEXPANSION  "printexpansion"
+
 
 %%
 
@@ -338,7 +340,7 @@ POSTSCRIPTFILE  "postscriptfile"
 {FILE}                   {     promptToBePrinted = 0; return FILETOKEN;           }                    
 {POSTSCRIPT}             {     promptToBePrinted = 0; return POSTSCRIPTTOKEN;     }                    
 {POSTSCRIPTFILE}         {     promptToBePrinted = 0; return POSTSCRIPTFILETOKEN; }                    
-
+{PRINTEXPANSION}         {     promptToBePrinted = 0; return PRINTEXPANSIONTOKEN; }                    
 
 
 

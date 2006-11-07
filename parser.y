@@ -178,6 +178,7 @@ void yyerror(char *message) {
 %token  PDFTOKEN     
 %token  POSTSCRIPTFILETOKEN
 %token  PDFFILETOKEN       
+%token  PRINTEXPANSIONTOKEN
 
 %type <other> commands
 %type <other> command
@@ -248,6 +249,7 @@ void yyerror(char *message) {
 %type <constantval> evaluateaccuratecommandfunction
 %type <aChain> functionlist
 %type <anInteger> plottype
+%type <other> printexpansion
 
 %%
 
@@ -276,6 +278,10 @@ command:     plot
 			     $$ = NULL;
 			   }
            | printHexa 
+                           {
+			     $$ = NULL;
+			   }
+           | printexpansion 
                            {
 			     $$ = NULL;
 			   }
@@ -1291,6 +1297,38 @@ printHexa:  PRINTHEXATOKEN constantfunction SEMICOLONTOKEN
 			     printDoubleInHexa(*($2));
 			     mpfr_clear(*($2));
 			     free($2);
+			     $$ = NULL;
+			   }
+;
+
+printexpansion: PRINTEXPANSIONTOKEN function SEMICOLONTOKEN
+                           {
+			     if (0) {
+			     //if (isConstant($2)) {
+			       temp_node = simplifyTreeErrorfree($2);
+			       if (temp_node->nodeType == CONSTANT) {
+				 if (printDoubleExpansion(*(temp_node->value)) != 0) {
+				   printMessage(1,"\nWarning: rounding occured while printing.");
+				 }
+			       } else {
+				 printMessage(1,"Warning: the constant expression is not a constant but must be evaluated.\n");
+				 mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+				 mpfr_init2(*mpfr_temp,defaultprecision);
+				 evaluateConstantExpression(*mpfr_temp, temp_node, defaultprecision);
+				 if (printDoubleExpansion(*mpfr_temp) != 0) {
+				   printMessage(1,"\nWarning: rounding occured while printing.");
+				 }
+				 mpfr_clear(*mpfr_temp);
+				 free(mpfr_temp);
+			       }
+			       free_memory(temp_node);
+			     } else {
+			       if (printPolynomialAsDoubleExpansion($2, defaultprecision) == 1) {
+				 printMessage(1,"\nWarning: rounding occured while printing.");
+			       }
+			     }
+			     printf("\n");
+			     free_memory($2);
 			     $$ = NULL;
 			   }
 ;
