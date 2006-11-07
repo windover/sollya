@@ -398,6 +398,15 @@ int printDoubleExpansion(mpfr_t x) {
     printMessage(1,"Warning: rounding occured unexpectedly on reconverting a double value.\n");
     roundingOccured = 1;
   }
+
+  if (!mpfr_number_p(temp)) {
+    printMessage(1,"Warning: will not print a number that is not real as a double expansion.\n");
+    printValue(&temp,mpfr_get_prec(temp));
+    mpfr_clear(temp);
+    mpfr_clear(rest);
+    return 1;
+  }
+
   if (mpfr_cmp(temp,x) == 0) 
     noBrackets = 1;
 
