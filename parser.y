@@ -1303,8 +1303,7 @@ printHexa:  PRINTHEXATOKEN constantfunction SEMICOLONTOKEN
 
 printexpansion: PRINTEXPANSIONTOKEN function SEMICOLONTOKEN
                            {
-			     if (0) {
-			     //if (isConstant($2)) {
+			     if (isConstant($2)) {
 			       temp_node = simplifyTreeErrorfree($2);
 			       if (temp_node->nodeType == CONSTANT) {
 				 if (printDoubleExpansion(*(temp_node->value)) != 0) {
