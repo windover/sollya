@@ -18,6 +18,7 @@
 #include "double.h"
 #include "pari_utils.h"
 #include "plot.h"
+#include "external.h"
 
 int yylex();
 
@@ -179,6 +180,9 @@ void yyerror(char *message) {
 %token  POSTSCRIPTFILETOKEN
 %token  PDFFILETOKEN       
 %token  PRINTEXPANSIONTOKEN
+%token  BASHEXECUTETOKEN
+%token  EXTERNALPLOTTOKEN
+%token  PERTURBTOKEN
 
 %type <other> commands
 %type <other> command
@@ -250,6 +254,8 @@ void yyerror(char *message) {
 %type <aChain> functionlist
 %type <anInteger> plottype
 %type <other> printexpansion
+%type <anInteger> bashexecute
+%type <other> externalplot
 
 %%
 
@@ -484,6 +490,16 @@ command:     plot
                            {
 			     $$ = NULL;
 			   }
+           | bashexecute SEMICOLONTOKEN
+                           {
+			     int_temp = $1;
+			     printMessage(2,"Information: the returned value is %d.\n",int_temp);
+			     $$ = NULL;
+			   }
+           | externalplot SEMICOLONTOKEN 
+	                   {
+			     $$ = NULL;
+	                   }
            | error SEMICOLONTOKEN
                            {
 			     handlingError = 0;
@@ -2946,4 +2962,20 @@ roundcoefficients:         ROUNDCOEFFICIENTSTOKEN LPARTOKEN function COMMATOKEN 
 			     freeChain($5,freeIntPtr);
 			     $$ = temp_node;
 			   }
+;
+
+bashexecute:               BASHEXECUTETOKEN string 
+                           {
+			     int_temp = bashExecute($2);
+			     free($2);
+			     $$ = int_temp;
+			   }
+;
+
+
+externalplot:              EXTERNALPLOTTOKEN 
+                           {
+
+			     $$ = NULL;
+                           }
 ;

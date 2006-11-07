@@ -203,6 +203,10 @@ POSTSCRIPTFILE  "postscriptfile"
 
 PRINTEXPANSION  "printexpansion"
 
+BASHEXECUTE     "bashexecute"
+EXTERNALPLOT    "externalplot"
+PERTURB         "perturb"
+
 
 %%
 
@@ -341,6 +345,9 @@ PRINTEXPANSION  "printexpansion"
 {POSTSCRIPT}             {     promptToBePrinted = 0; return POSTSCRIPTTOKEN;     }                    
 {POSTSCRIPTFILE}         {     promptToBePrinted = 0; return POSTSCRIPTFILETOKEN; }                    
 {PRINTEXPANSION}         {     promptToBePrinted = 0; return PRINTEXPANSIONTOKEN; }                    
+{BASHEXECUTE}            {     promptToBePrinted = 0; return BASHEXECUTETOKEN; }                    
+{EXTERNALPLOT}           {     promptToBePrinted = 0; return EXTERNALPLOTTOKEN; }                    
+{PERTURB}                {     promptToBePrinted = 0; return PERTURBTOKEN; }                    
 
 
 
