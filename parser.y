@@ -2120,7 +2120,6 @@ evaluateaccuratecommandfunction: EVALUATEACCURATETOKEN function ATTOKEN constant
 			       mpfr_set_nan(*(mpfr_temp));
 			     }
 			     mpfr_clear(*($4));
-			     free(mpfr_temp);
 			     free($4);
 			     free_memory($2);
 			     $$ = mpfr_temp;
