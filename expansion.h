@@ -9,6 +9,22 @@ void mpfr_to_tripledouble(double *dh, double *dm, double *dl, mpfr_t op);
 void double_to_mpfr(mpfr_t rop, double dh);
 void doubledouble_to_mpfr(mpfr_t rop, double dh, double dm);
 void tripledouble_to_mpfr(mpfr_t rop, double dh, double dm, double dl);
+void f(mpfr_t y, mpfr_t xMpfr);
+
+#if defined(D_TO_D)
+void p(double *p_resh, double x);
+#elif defined(D_TO_DD)
+void p(double *p_resh, double *p_resm, double x);
+#elif defined(D_TO_TD)
+void p(double *p_resh, double *p_resm, double *p_resl, double x);
+#elif defined(DD_TO_DD)
+void p(double *p_resh, double *p_resm, double xh, double xm);
+#elif defined(DD_TO_TD) 
+void p(double *p_resh, double *p_resm, double *p_resl, double xh, double xm);
+#elif defined(TD_TO_TD)
+void p(double *p_resh, double *p_resm, double *p_resl, double xh, double xm, double xl);
+#endif
+
 
 
 #define Add12(s, r, a, b)          \
