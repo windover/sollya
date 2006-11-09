@@ -3786,6 +3786,8 @@ int isPolynomial(node *tree) {
   int res;
   node *temp;
   
+  if (isConstant(tree)) return 1;
+
   switch (tree->nodeType) {
   case VARIABLE:
     res = 1;
@@ -4239,7 +4241,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	  }
 	  break;
 	default:
-	  if (isConstant(tree)) return copyTree(tree);
+	  if (isConstant(left)) return copyTree(tree);
 
 	  fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occured on handling the expanded expression subtree\n");
 	  exit(1);
@@ -4637,7 +4639,7 @@ node* expandPolynomialUnsafe(node *tree) {
       }      
       break;
     default:
-      if (isConstant(tree)) {
+      if (isConstant(left)) {
 	return copyTree(tree);
       } else {
 	fprintf(stderr,"Error: expandPolynomialUnsafe: an error occured on handling the MUL left rewritten expression subtree\n");
@@ -4755,7 +4757,7 @@ node* expandPolynomialUnsafe(node *tree) {
       free_memory(tempNode);      
       break;
     default: 
-      if (isConstant(tree)) {
+      if (isConstant(left)) {
 	return copyTree(tree);
       } else {
 	fprintf(stderr,"Error: expandPolynomialUnsafe: an error occured on handling the DIV left rewritten expression subtree\n");
@@ -6208,4 +6210,41 @@ int highestDegreeOfPolynomialSubexpression(node *tree) {
   }
 
   return -1;
+}
+
+
+
+node *getIthCoefficient(node *poly, int i) {
+  node *tempNode;
+  node **coefficients;
+  int degree, k;
+
+  if ((!isPolynomial(poly)) || (i < 0)) {
+    tempNode = (node *) safeMalloc(sizeof(node));
+    tempNode->nodeType = CONSTANT;
+    tempNode->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*(tempNode->value),10);
+    mpfr_set_d(*(tempNode->value),0.0,GMP_RNDN);
+    return tempNode;
+  } 
+
+  getCoefficients(&degree, &coefficients, poly);
+
+  if ((i > degree) || (coefficients[i] == NULL)) {
+    tempNode = (node *) safeMalloc(sizeof(node));
+    tempNode->nodeType = CONSTANT;
+    tempNode->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*(tempNode->value),10);
+    mpfr_set_d(*(tempNode->value),0.0,GMP_RNDN);
+  } else {
+    tempNode = copyTree(coefficients[i]);
+  }
+  
+  for (k=0;k<=degree;k++) {
+    if (coefficients[k] != NULL) free_memory(coefficients[k]);
+  }
+
+  free(coefficients);
+
+  return tempNode;
 }

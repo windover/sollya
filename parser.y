@@ -184,6 +184,8 @@ void yyerror(char *message) {
 %token  EXTERNALPLOTTOKEN
 %token  PERTURBTOKEN
 %token  TOTOKEN
+%token  COEFFTOKEN
+%token  ROUNDTOKEN
 
 %type <other> commands
 %type <other> command
@@ -1732,6 +1734,12 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			      freeChain($5,freeIntPtr);
 			      $$ = temp_node;
                            }
+                        |       COEFFTOKEN LPARTOKEN function COMMATOKEN integer RPARTOKEN
+                           {
+			      temp_node = getIthCoefficient(($3), ($5));
+			      free_memory(($3));
+			      $$ = temp_node;
+			   }
 			|       fpminimax
                            {
 			      temp_node = $1;
