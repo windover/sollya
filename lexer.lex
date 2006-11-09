@@ -209,7 +209,6 @@ PERTURB         "perturb"
 TO              "to"
 
 COEFF           "coeff"
-ROUND           "round"
 
 
 %%
@@ -354,7 +353,7 @@ ROUND           "round"
 {PERTURB}                {     promptToBePrinted = 0; return PERTURBTOKEN; }                    
 {TO}                     {     promptToBePrinted = 0; return TOTOKEN; }                    
 {COEFF}                  {     promptToBePrinted = 0; return COEFFTOKEN; }                    
-{ROUND}                  {     promptToBePrinted = 0; return ROUNDTOKEN; }                    
+
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

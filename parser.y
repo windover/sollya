@@ -185,7 +185,6 @@ void yyerror(char *message) {
 %token  PERTURBTOKEN
 %token  TOTOKEN
 %token  COEFFTOKEN
-%token  ROUNDTOKEN
 
 %type <other> commands
 %type <other> command
