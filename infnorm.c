@@ -2900,6 +2900,8 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
   mpfr_t diam;
   chain *intervalZeros, *fpZeros, *temp, *fpZerosOnInterval, *fpZeros2, *curr;
   mpfr_t *newZero;
+  mpfr_t before, after, yBefore, yAfter, y;
+  int addToList, removedFromList;
 
   mpfr_init2(diam,prec+50);
   mpfr_set_d(diam,DEFAULTDIAM2,GMP_RNDN);
@@ -2914,7 +2916,7 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
     fpZerosOnInterval = findZerosByNewton(func, 
 					  *(((rangetype *) (intervalZeros->value))->a), 
 					  *(((rangetype *) (intervalZeros->value))->b), 
-					  prec+50);
+					  2*prec);
     fpZeros = concatChains(fpZeros, fpZerosOnInterval);
     mpfr_clear(*(((rangetype *) (intervalZeros->value))->a));
     mpfr_clear(*(((rangetype *) (intervalZeros->value))->b));
@@ -2946,13 +2948,67 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
     fpZeros = temp;
   }
 
+  mpfr_init2(before,prec);
+  mpfr_init2(after,prec);
+  mpfr_init2(yAfter,prec);
+  mpfr_init2(yBefore,prec);
+  mpfr_init2(y,prec);
+
+  removedFromList = 0;
   fpZeros = NULL;
   while (fpZeros2 != NULL) {
-    fpZeros = addElement(fpZeros,fpZeros2->value);
+    
+    addToList = 0;
+
+    evaluateFaithful(y, func, *((mpfr_t *) (fpZeros2->value)), prec);
+
+    if (mpfr_zero_p(y)) {
+      addToList = 1;
+    } else {
+
+      mpfr_set(before,*((mpfr_t *) (fpZeros2->value)),GMP_RNDN);
+      mpfr_set(after,*((mpfr_t *) (fpZeros2->value)),GMP_RNDN);
+      mpfr_nextabove(after);
+      mpfr_nextbelow(before);
+      
+      evaluateFaithful(yAfter, func, after, prec);
+      evaluateFaithful(yBefore, func, before, prec);
+      
+      if ((!mpfr_number_p(yAfter)) || (!mpfr_number_p(yBefore))) {
+	addToList = 1;
+      } else {
+	if (mpfr_sgn(yAfter) != mpfr_sgn(yBefore)) {
+	  addToList = 1;
+	} else {
+	  if (mpfr_number_p(y)) {
+	    if (mpfr_sgn(y) != mpfr_sgn(yAfter)) {
+	      addToList = 1;
+	    } else {
+	      removedFromList = 1;
+	    }
+	  } else {
+	    removedFromList = 1;
+	  }
+	}
+      }
+    }
+
+    if (addToList) 
+      fpZeros = addElement(fpZeros,fpZeros2->value);
     temp = fpZeros2->next;
     free(fpZeros2);
     fpZeros2 = temp;
   }
+
+  if (removedFromList) {
+    printMessage(1,"Warning: actual zero filter has removed at least one possible zero of higher order.\n");
+  }
+
+  mpfr_clear(before);
+  mpfr_clear(after);
+  mpfr_clear(yBefore);
+  mpfr_clear(yAfter);
+  mpfr_clear(y);
 
   return fpZeros;
 }
