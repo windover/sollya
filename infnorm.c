@@ -2916,7 +2916,7 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
     fpZerosOnInterval = findZerosByNewton(func, 
 					  *(((rangetype *) (intervalZeros->value))->a), 
 					  *(((rangetype *) (intervalZeros->value))->b), 
-					  2*prec);
+					  4*prec);
     fpZeros = concatChains(fpZeros, fpZerosOnInterval);
     mpfr_clear(*(((rangetype *) (intervalZeros->value))->a));
     mpfr_clear(*(((rangetype *) (intervalZeros->value))->b));
@@ -2969,6 +2969,8 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
       mpfr_set(before,*((mpfr_t *) (fpZeros2->value)),GMP_RNDN);
       mpfr_set(after,*((mpfr_t *) (fpZeros2->value)),GMP_RNDN);
       mpfr_nextabove(after);
+      mpfr_nextabove(after);
+      mpfr_nextbelow(before);
       mpfr_nextbelow(before);
       
       evaluateFaithful(yAfter, func, after, prec);

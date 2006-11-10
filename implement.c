@@ -1668,13 +1668,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
   int res, i, k, variableNumber, comingFormat, producedFormat, issuedCode, issuedVariables, c, c2, t2;
   int coeffFormat, currOverlap, t;
   char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2; 
-  
+  int *tempVarNum;
+
   res = 1; 
   
   code = (char *) safeCalloc(CODESIZE,sizeof(char));
   variables = (char *) safeCalloc(CODESIZE,sizeof(char));
   buffer1 = (char *) safeCalloc(CODESIZE,sizeof(char));
   buffer2 = (char *) safeCalloc(CODESIZE,sizeof(char));
+
+  tempVarNum = (int *) safeCalloc(degree + 3,sizeof(int));
   
   codeIssue = code;
   variablesIssue = variables;
@@ -1690,16 +1693,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
   switch (producedFormat = determineCoefficientFormat(coefficients[i])) {
   case 3:
     c = snprintf(buffer1,CODESIZE,
-		 "%s_t_%dh = %s_coeff_%dh; %s_t_%dm = %s_coeff_%dm; %s_t_%dl = %s_coeff_%dl;",
-		 name,variableNumber,name,i,
-		 name,variableNumber,name,i,
-		 name,variableNumber,name,i);
+		 "%s_t_%d_%dh = %s_coeff_%dh; %s_t_%d_%dm = %s_coeff_%dm; %s_t_%d_%dl = %s_coeff_%dl;",
+		 name,variableNumber,tempVarNum[variableNumber],name,i,
+		 name,variableNumber,tempVarNum[variableNumber],name,i,
+		 name,variableNumber,tempVarNum[variableNumber],name,i);
     if ((c < 0) || (c >= CODESIZE)) res = 0;
     c = snprintf(buffer2,CODESIZE,
-		 "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-		 name,variableNumber,
-		 name,variableNumber,
-		 name,variableNumber);
+		 "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+		 name,variableNumber,tempVarNum[variableNumber],
+		 name,variableNumber,tempVarNum[variableNumber],
+		 name,variableNumber,tempVarNum[variableNumber]);
     if ((c < 0) || (c >= CODESIZE)) res = 0;	    
     variableNumber++;
     /* The overlap is 53 since we have correctly rounded coefficients */
@@ -1707,14 +1710,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
     break;
   case 2:
     c = snprintf(buffer1,CODESIZE,
-		 "%s_t_%dh = %s_coeff_%dh; %s_t_%dm = %s_coeff_%dm;",
-		 name,variableNumber,name,i,
-		 name,variableNumber,name,i);
+		 "%s_t_%d_%dh = %s_coeff_%dh; %s_t_%d_%dm = %s_coeff_%dm;",
+		 name,variableNumber,tempVarNum[variableNumber],name,i,
+		 name,variableNumber,tempVarNum[variableNumber],name,i);
     if ((c < 0) || (c >= CODESIZE)) res = 0;
     c = snprintf(buffer2,CODESIZE,
-		 "double %s_t_%dh, %s_t_%dm;",
-		 name,variableNumber,
-		 name,variableNumber);
+		 "double %s_t_%d_%dh, %s_t_%d_%dm;",
+		 name,variableNumber,tempVarNum[variableNumber],
+		 name,variableNumber,tempVarNum[variableNumber]);
     if ((c < 0) || (c >= CODESIZE)) res = 0;	    
     variableNumber++;
     /* The overlap is 53 since we have correctly rounded coefficients */
@@ -1722,12 +1725,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
     break;
   case 1:
     c = snprintf(buffer1,CODESIZE,
-		 "%s_t_%dh = %s_coeff_%dh;",
-		 name,variableNumber,name,i);
+		 "%s_t_%d_%dh = %s_coeff_%dh;",
+		 name,variableNumber,tempVarNum[variableNumber],name,i);
     if ((c < 0) || (c >= CODESIZE)) res = 0;
     c = snprintf(buffer2,CODESIZE,
-		 "double %s_t_%dh;",
-		 name,variableNumber);
+		 "double %s_t_%d_%dh;",
+		 name,variableNumber,tempVarNum[variableNumber]);
     if ((c < 0) || (c >= CODESIZE)) res = 0;	    
     variableNumber++;
     /* The overlap is 53 since we have correctly rounded coefficients */
@@ -1803,43 +1806,66 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  if (variablePrecision == 1) {
 	    /* Multiplication by x stored as a double */
 	    c = snprintf(buffer1,CODESIZE,
-			 "MulAdd212(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%s,%s_t_%dh,%s_t_%dm);",
-			 name,variableNumber,name,variableNumber,
+			 "MulAdd212(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s,%s_t_%d_%dh,%s_t_%d_%dm);",
+			 name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			 name,i,name,i,
 			 variablename,
-			 name,variableNumber-1,name,variableNumber-1);
+			 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 	    if ((c < 0) || (c >= CODESIZE)) res = 0;
 	    c = snprintf(buffer2,CODESIZE,
-			 "double %s_t_%dh, %s_t_%dm;",
-			 name,variableNumber,name,variableNumber);
+			 "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			 name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	  } else {
 	    /* Multiplication by x stored as a double-double (or better) */
 	    c = snprintf(buffer1,CODESIZE,
-			 "MulAdd22(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%sh,%sm,%s_t_%dh,%s_t_%dm);",
-			 name,variableNumber,name,variableNumber,
+			 "MulAdd22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%sh,%sm,%s_t_%d_%dh,%s_t_%d_%dm);",
+			 name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			 name,i,name,i,
 			 variablename,variablename,
-			 name,variableNumber-1,name,variableNumber-1);
+			 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 	    if ((c < 0) || (c >= CODESIZE)) res = 0;
 	    c = snprintf(buffer2,CODESIZE,
-			 "double %s_t_%dh, %s_t_%dm;",
-			 name,variableNumber,name,variableNumber);
+			 "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			 name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	  }
 	} else {
 	  /* Multiplication by x^k, which will be in any case at least a double-double */
-	  c = snprintf(buffer1,CODESIZE,
-		       "MulAdd22(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_t_%dh,%s_t_%dm);",
-		       name,variableNumber,name,variableNumber,
+
+	  /* We have to check that if x^k is actually a triple-double that is read as a double-double
+	     that the precision obtained is sufficient regardless of the overlap in the triple-double 
+	     The obtained precision is roughly 53 + overlap value. If it is not sufficient, 
+	     we renormalize the whole triple-double value. 
+	  */
+	  
+	  t = 0; t2 = 0;
+	  if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
+	    /* We must renormalize the power */
+	    c = snprintf(buffer1,CODESIZE,
+			 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			 name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,
+			 name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
+	    powVarNum[k-1]++;
+	    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	    c2 = snprintf(buffer2,CODESIZE,
+			  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+			  name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
+	    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
+	    powerOverlaps[k-1] = 52;
+	    t = c; t2 = c2;
+	  }
+	  c = snprintf(buffer1+t,CODESIZE-t,
+		       "MulAdd22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_t_%d_%dh,%s_t_%d_%dm);",
+		       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 		       name,i,name,i,
 		       name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,
-		       name,variableNumber-1,name,variableNumber-1);
-	  if ((c < 0) || (c >= CODESIZE)) res = 0;
-	  c = snprintf(buffer2,CODESIZE,
-		       "double %s_t_%dh, %s_t_%dm;",
-		       name,variableNumber,name,variableNumber);
-	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+	  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+	  c = snprintf(buffer2+t2,CODESIZE-t2,
+		       "double %s_t_%d_%dh, %s_t_%d_%dm;",
+		       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+	  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 	}
 
 	variableNumber++;
@@ -1903,23 +1929,23 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (97 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 52;
 		  t = c;
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%sl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%sl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     variablename,variablename,variablename,
-			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = MIN(48,currOverlap-4);
 		break;
@@ -1932,14 +1958,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%sh,%sm,%sl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
-			     name,variableNumber-1,name,variableNumber-1,
+			     "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm,%sl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
 			     variablename,variablename,variablename);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 48;
 		break;
@@ -1952,14 +1978,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%sh,%sm,%sl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
-			     name,variableNumber-1,name,variableNumber-1,
+			     "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm,%sl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
 			     variablename,variablename,variablename);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
 	      }
@@ -1980,23 +2006,23 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (97 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 52;
 		  t = c;
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     variablename,variablename,
-			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE+t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = MIN(48,currOverlap-4);
 		break;
@@ -2008,14 +2034,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%s_t_%dh,%s_t_%dm);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     "Mul23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%s_t_%d_%dh,%s_t_%d_%dm);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     variablename,variablename,
-			     name,variableNumber-1,name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 49;
 		break;
@@ -2027,14 +2053,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%sh,%sm);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
-			     name,variableNumber-1,
+			     "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%sh,%sm);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],
 			     variablename,variablename);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
 	      }
@@ -2054,9 +2080,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (100 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 52;
 		  t = c;
@@ -2064,14 +2090,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		producedFormat = 3;
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     variablename,
-			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = MIN(47,currOverlap-5);
 		break;
@@ -2084,14 +2110,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		producedFormat = 3;
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s,%s_t_%dh,%s_t_%dm);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s,%s_t_%d_%dh,%s_t_%d_%dm);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     variablename,
-			     name,variableNumber-1,name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
 		break;
@@ -2104,14 +2130,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		producedFormat = 2;
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul12(&%s_t_%dh,&%s_t_%dm,%s,%s_t_%dh);",
-			     name,variableNumber,name,variableNumber,
+			     "Mul12(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     variablename,
-			     name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm;",
-			     name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 53;
 	      }
@@ -2142,23 +2168,23 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if (mulPrec[i] > (97 + currOverlap)) {
 		    /* We must renormalize the temporary */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+				 "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+				 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+				 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		    currOverlap = 52;
 		    t = c;
 		  }
 		  
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
-			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			       name,variableNumber,name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = MIN(48,currOverlap-4);
 		  break;
@@ -2170,14 +2196,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  */
 
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%dh,%s_t_%dm);",
-			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       "Mul23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%d_%dh,%s_t_%d_%dm);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],
-			       name,variableNumber-1,name,variableNumber-1);
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			       name,variableNumber,name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 49;
 		  break;
@@ -2189,14 +2215,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  */
 
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
-			       name,variableNumber,name,variableNumber,name,variableNumber,
-			       name,variableNumber-1,
+			       "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			       name,variableNumber,name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 47;
 		}
@@ -2221,9 +2247,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if (currOverlap < powerOverlaps[1]) {
 		      /* We have to renormalize first the temporary */
 		      c = snprintf(buffer1,CODESIZE,
-				   "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+				   "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+				   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+				   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
 		      t = c;
 		      currOverlap = 52;
@@ -2247,9 +2273,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if (currOverlap < powerOverlaps[1]) {
 			/* We have to renormalize the temporary */
 			c = snprintf(buffer1+t,CODESIZE-t,
-				     "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-				     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-				     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+				     "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+				     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+				     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 			t += c;
 			currOverlap = 52;
@@ -2272,14 +2298,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
-			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1],
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			       name,variableNumber,name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  currOverlap = MIN(48,currOverlap-4);
 		  break;
@@ -2310,14 +2336,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 		  
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
-			       name,variableNumber,name,variableNumber,name,variableNumber,
-			       name,variableNumber-1,name,variableNumber-1,
+			       "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
 			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			       name,variableNumber,name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  currOverlap = MIN(48,currOverlap-4);
 		  break;
@@ -2348,14 +2374,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
-			       name,variableNumber,name,variableNumber,name,variableNumber,
-			       name,variableNumber-1,
+			       "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			       name,variableNumber,name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  currOverlap = MIN(47,currOverlap - 5);
 		}
@@ -2381,9 +2407,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if (currOverlap < powerOverlaps[k-1]) {
 		    /* We have to renormalize first the temporary */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+				 "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+				 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+				 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    t = c;
 		    currOverlap = 52;
@@ -2407,9 +2433,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if (currOverlap < powerOverlaps[k-1]) {
 		      /* We have to renormalize the temporary */
 		      c = snprintf(buffer1+t,CODESIZE-t,
-				   "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+				   "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+				   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+				   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		      t += c;
 		      currOverlap = 52;
@@ -2432,14 +2458,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 		
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,
-			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(48,currOverlap-4);
 		break;
@@ -2470,14 +2496,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 		
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
-			     name,variableNumber-1,name,variableNumber-1,
+			     "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
 			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(48,currOverlap-4);
 		break;
@@ -2508,14 +2534,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
-			     name,variableNumber-1,
+			     "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],
 			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(47,currOverlap-5);
 	      }
@@ -2541,27 +2567,27 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		case 2:
 		  /* Multiply the double-double temporary by x as double-double (or better), produce a double-double */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul22(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_t_%dm,%sh,%sm);",
-			       name,variableNumber,name,variableNumber,
-			       name,variableNumber-1,name,variableNumber-1,
+			       "Mul22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
 			       variablename,variablename);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh, %s_t_%dm;",
-			       name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  break;
 		default:
 		  /* Multiply the double temporary by x as a double-double (or better), produce a double-double */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul122(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%sh,%sm);",
-			       name,variableNumber,name,variableNumber,
-			       name,variableNumber-1,
+			       "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%sh,%sm);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       variablename,variablename);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh, %s_t_%dm;",
-			       name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		}
 		break;
@@ -2576,27 +2602,27 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		case 2:
 		  /* Multiply the double-double temporary by x as double, produce a double-double */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul122(&%s_t_%dh,&%s_t_%dm,%s,%s_t_%dh,%s_t_%dm);",
-			       name,variableNumber,name,variableNumber,
+			       "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh,%s_t_%d_%dm);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			       variablename,
-			       name,variableNumber-1,name,variableNumber-1);
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh, %s_t_%dm;",
-			       name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  break;
 		default:
 		  /* Multiply the double temporary by x as a double, produce a double-double */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul12(&%s_t_%dh,&%s_t_%dm,%s,%s_t_%dh);",
-			       name,variableNumber,name,variableNumber,
+			       "Mul12(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			       variablename,
-			       name,variableNumber-1);
+			       name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh, %s_t_%dm;",
-			       name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		}
 		break;
@@ -2640,14 +2666,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul22(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_t_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
-			     name,variableNumber,name,variableNumber,
-			     name,variableNumber-1,name,variableNumber-1,
+			     "Mul22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
 			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%dh, %s_t_%dm;",
-			     name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
 		break;
 	      default:
@@ -2677,14 +2703,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul122(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
-			     name,variableNumber,name,variableNumber,
-			     name,variableNumber-1,
+			     "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],
 			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%dh, %s_t_%dm;",
-			     name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
 	      }
 	    }
@@ -2702,27 +2728,27 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		     produce a double 
 		  */
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_t_%dh = %s_t_%dh * %sh;",
-			       name,variableNumber,
-			       name,variableNumber-1,
+			       "%s_t_%d_%dh = %s_t_%d_%dh * %sh;",
+			       name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       variablename);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh;",
-			       name,variableNumber);
+			       "double %s_t_%d_%dh;",
+			       name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 		  break;
 		case 1:
 		  /* Multiply the double temporary by x as a double, produce a double */
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_t_%dh = %s_t_%dh * %s;",
-			       name,variableNumber,
-			       name,variableNumber-1,
+			       "%s_t_%d_%dh = %s_t_%d_%dh * %s;",
+			       name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       variablename);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh;",
-			       name,variableNumber);
+			       "double %s_t_%d_%dh;",
+			       name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 		  break;
 		default:
@@ -2747,22 +2773,22 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  
 		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) { 
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_t_%dh = %s_t_%dh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
-			       name,variableNumber,
-			       name,variableNumber-1,
+			       "%s_t_%d_%dh = %s_t_%d_%dh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
+			       name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       name,variablename,powVarNum[k-1],k,
 			       name,variablename,powVarNum[k-1],k);
 		} else {
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_t_%dh = %s_t_%dh * %s_%s_%d_pow%dh;",
-			       name,variableNumber,
-			       name,variableNumber-1,
+			       "%s_t_%d_%dh = %s_t_%d_%dh * %s_%s_%d_pow%dh;",
+			       name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       name,variablename,powVarNum[k-1],k);
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh;",
-			     name,variableNumber);
+			     "double %s_t_%d_%dh;",
+			     name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 	      } else {
 		printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
@@ -2828,23 +2854,23 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      if (addPrec[i] > (97 + currOverlap)) {
 		/* We must renormalize the temporary */
 		c = snprintf(buffer1,CODESIZE,
-			     "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			     "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 52;
 		t = c;
 	      }
 
 	      c = snprintf(buffer1+t,CODESIZE-t,
-			   "Add33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
-			   name,variableNumber,name,variableNumber,name,variableNumber,
+			   "Add33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			   name,i,name,i,name,i,
-			   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			   name,variableNumber,name,variableNumber,name,variableNumber);
+			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 	      currOverlap = currOverlap - 5;
 	      break;
@@ -2861,23 +2887,23 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      if (addPrec[i] > (103 + currOverlap)) {
 		/* We must renormalize the temporary */
 		c = snprintf(buffer1,CODESIZE,
-			     "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			     "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 52;
 		t = c;
 	      }
 
 	      c = snprintf(buffer1+t,CODESIZE-t,
-			   "Add233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
-			   name,variableNumber,name,variableNumber,name,variableNumber,
+			   "Add233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			   name,i,name,i,
-			   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      if ((c < 0) || (c >= CODESIZE+t)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			   name,variableNumber,name,variableNumber,name,variableNumber);
+			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 	      currOverlap = MIN(45,currOverlap - 5);
 	      break;
@@ -2894,23 +2920,23 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      if (addPrec[i] > (104 + currOverlap)) {
 		/* We must renormalize the temporary */
 		c = snprintf(buffer1,CODESIZE,
-			     "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			     "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 52;
 		t = c;
 	      }
 
 	      c = snprintf(buffer1+t,CODESIZE-t,
-			   "Add133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
-			   name,variableNumber,name,variableNumber,name,variableNumber,
+			   "Add133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			   name,i,
-			   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			   name,variableNumber,name,variableNumber,name,variableNumber);
+			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 	      currOverlap = MIN(47,currOverlap - 2);
 	      break;
@@ -2931,14 +2957,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      */
 
 	      c = snprintf(buffer1,CODESIZE,
-			   "Add233Cond(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl);",
-			   name,variableNumber,name,variableNumber,name,variableNumber,
-			   name,variableNumber-1,name,variableNumber-1,
+			   "Add233Cond(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl);",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
 			   name,i,name,i,name,i);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			   name,variableNumber,name,variableNumber,name,variableNumber);
+			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 	      currOverlap = 45; /* TODO: Verify this value */
 	      break;
@@ -2950,14 +2976,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      */
 	      
 	      c = snprintf(buffer1,CODESIZE,
-			   "Add23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%dh,%s_t_%dm);",
-			   name,variableNumber,name,variableNumber,name,variableNumber,
+			   "Add23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh,%s_t_%d_%dm);",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			   name,i,name,i,
-			   name,variableNumber-1,name,variableNumber-1);
+			   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			   name,variableNumber,name,variableNumber,name,variableNumber);
+			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    	
 	      currOverlap = 45;
 	      break;
@@ -2969,14 +2995,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      */
 
 	      c = snprintf(buffer1,CODESIZE,
-			   "Add123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_t_%dh,%s_t_%dm);",
-			   name,variableNumber,name,variableNumber,name,variableNumber,
+			   "Add123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_t_%d_%dh,%s_t_%d_%dm);",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			   name,i,
-			   name,variableNumber-1,name,variableNumber-1);
+			   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			   name,variableNumber,name,variableNumber,name,variableNumber);
+			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 	      currOverlap = 52;
 	      break;
@@ -2997,14 +3023,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 	      producedFormat = 3;
 	      c = snprintf(buffer1,CODESIZE,
-			   "Add133Cond(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl);",
-			   name,variableNumber,name,variableNumber,name,variableNumber,
-			   name,variableNumber-1,
+			   "Add133Cond(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl);",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			   name,variableNumber-1,tempVarNum[variableNumber-1],
 			   name,i,name,i,name,i);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			   name,variableNumber,name,variableNumber,name,variableNumber);
+			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
 	      currOverlap = 47; /* TODO: Verify this value */
 	      break;
@@ -3017,14 +3043,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      */
 	      
 	      c = snprintf(buffer1,CODESIZE,
-			   "Add213(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%dh);",
-			   name,variableNumber,name,variableNumber,name,variableNumber,
+			   "Add213(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh);",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			   name,i,name,i,
-			   name,variableNumber-1);
+			   name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			   name,variableNumber,name,variableNumber,name,variableNumber);
+			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      currOverlap = 47; /* TODO: Verify this value */
 	      break;
@@ -3035,14 +3061,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 	      producedFormat = 2;
 	      c = snprintf(buffer1,CODESIZE,
-			   "Add12(%s_t_%dh,%s_t_%dm,%s_coeff_%dh,%s_t_%dh);",
-			   name,variableNumber,name,variableNumber,
+			   "Add12(%s_t_%d_%dh,%s_t_%d_%dm,%s_coeff_%dh,%s_t_%d_%dh);",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			   name,i,
-			   name,variableNumber-1);
+			   name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_t_%dh, %s_t_%dm;",
-			   name,variableNumber,name,variableNumber);
+			   "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      currOverlap = 53; 
 	      break;
@@ -3073,28 +3099,28 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      case 2:
 		/* Add the double-double coefficient to the double-double temporary, produce a double-double */
 		c = snprintf(buffer1,CODESIZE,
-			     "Add22(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_t_%dh,%s_t_%dm);",
-			     name,variableNumber,name,variableNumber,
+			     "Add22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh,%s_t_%d_%dm);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     name,i,name,i,
-			     name,variableNumber-1,name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm;",
-			     name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
 		break;
 	      case 1:
 		/* Add the double coefficient to the double-double temporary, produce a double-double */
 				
 		c = snprintf(buffer1,CODESIZE,
-			     "Add122(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_t_%dh,%s_t_%dm);",
-			     name,variableNumber,name,variableNumber,
+			     "Add122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_t_%d_%dh,%s_t_%d_%dm);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     name,i,
-			     name,variableNumber-1,name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm;",
-			     name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
 		break;
 	      default:
@@ -3114,27 +3140,27 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		/* Add the double-double coefficient to the double temporary, produce a double-double */
 				
 		c = snprintf(buffer1,CODESIZE,
-			     "Add212(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_t_%dh);",
-			     name,variableNumber,name,variableNumber,
+			     "Add212(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     name,i,name,i,
-			     name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm;",
-			     name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
 		break;
 	      case 1:
 		/* Add the double coefficient to the double temporary, produce a double-double */
 		c = snprintf(buffer1,CODESIZE,
-			     "Add12(%s_t_%dh,%s_t_%dm,%s_coeff_%dh,%s_t_%dh);",
-			     name,variableNumber,name,variableNumber,
+			     "Add12(%s_t_%d_%dh,%s_t_%d_%dm,%s_coeff_%dh,%s_t_%d_%dh);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     name,i,
-			     name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm;",
-			     name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
 		break;
 	      default:
@@ -3150,14 +3176,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      if (coeffFormat == 1) {
 		/* Add the double coefficient to the double temporary, produce a double */
 		c = snprintf(buffer1,CODESIZE,
-			     "%s_t_%dh = %s_coeff_%dh + %s_t_%dh;",
-			     name,variableNumber,
+			     "%s_t_%d_%dh = %s_coeff_%dh + %s_t_%d_%dh;",
+			     name,variableNumber,tempVarNum[variableNumber],
 			     name,i,
-			     name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh;",
-			     name,variableNumber);
+			     "double %s_t_%d_%dh;",
+			     name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
 	      } else {
 		printMessage(1,"Warning: error in the management of precisions in coefficient rounding. This should not occur.\n");
@@ -3229,23 +3255,23 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (97 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 52;
 		  t = c;
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%sl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%sl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     variablename,variablename,variablename,
-			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = MIN(48,currOverlap-4);
 		break;
@@ -3258,14 +3284,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%sh,%sm,%sl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
-			     name,variableNumber-1,name,variableNumber-1,
+			     "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm,%sl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
 			     variablename,variablename,variablename);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 48;
 		break;
@@ -3278,14 +3304,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%sh,%sm,%sl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
-			     name,variableNumber-1,name,variableNumber-1,
+			     "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm,%sl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
 			     variablename,variablename,variablename);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
 	      }
@@ -3306,23 +3332,23 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (97 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 52;
 		  t = c;
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     variablename,variablename,
-			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE+t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = MIN(48,currOverlap-4);
 		break;
@@ -3334,14 +3360,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%sh,%sm,%s_t_%dh,%s_t_%dm);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     "Mul23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%s_t_%d_%dh,%s_t_%d_%dm);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     variablename,variablename,
-			     name,variableNumber-1,name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 49;
 		break;
@@ -3353,14 +3379,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%sh,%sm);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
-			     name,variableNumber-1,
+			     "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%sh,%sm);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],
 			     variablename,variablename);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
 	      }
@@ -3380,9 +3406,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (100 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 52;
 		  t = c;
@@ -3390,14 +3416,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		producedFormat = 3;
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     variablename,
-			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = MIN(47,currOverlap-5);
 		break;
@@ -3410,14 +3436,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		producedFormat = 3;
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s,%s_t_%dh,%s_t_%dm);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s,%s_t_%d_%dh,%s_t_%d_%dm);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     variablename,
-			     name,variableNumber-1,name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
 		break;
@@ -3430,14 +3456,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		producedFormat = 2;
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul12(&%s_t_%dh,&%s_t_%dm,%s,%s_t_%dh);",
-			     name,variableNumber,name,variableNumber,
+			     "Mul12(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     variablename,
-			     name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh, %s_t_%dm;",
-			     name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 53;
 	      }
@@ -3468,23 +3494,23 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if (mulPrec[i] > (97 + currOverlap)) {
 		    /* We must renormalize the temporary */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+				 "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+				 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+				 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		    currOverlap = 52;
 		    t = c;
 		  }
 		  
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
-			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			       name,variableNumber,name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = MIN(48,currOverlap-4);
 		  break;
@@ -3496,14 +3522,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  */
 
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%dh,%s_t_%dm);",
-			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       "Mul23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%d_%dh,%s_t_%d_%dm);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],
-			       name,variableNumber-1,name,variableNumber-1);
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			       name,variableNumber,name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 49;
 		  break;
@@ -3515,14 +3541,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  */
 
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
-			       name,variableNumber,name,variableNumber,name,variableNumber,
-			       name,variableNumber-1,
+			       "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			       name,variableNumber,name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 47;
 		}
@@ -3547,9 +3573,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if (currOverlap < powerOverlaps[1]) {
 		      /* We have to renormalize first the temporary */
 		      c = snprintf(buffer1,CODESIZE,
-				   "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+				   "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+				   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+				   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
 		      t = c;
 		      currOverlap = 52;
@@ -3573,9 +3599,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if (currOverlap < powerOverlaps[1]) {
 			/* We have to renormalize the temporary */
 			c = snprintf(buffer1+t,CODESIZE-t,
-				     "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-				     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-				     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+				     "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+				     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+				     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 			t += c;
 			currOverlap = 52;
@@ -3598,14 +3624,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
-			       name,variableNumber,name,variableNumber,name,variableNumber,
+			       "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1],
-			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			       name,variableNumber,name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  currOverlap = MIN(48,currOverlap-4);
 		  break;
@@ -3636,14 +3662,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 		  
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
-			       name,variableNumber,name,variableNumber,name,variableNumber,
-			       name,variableNumber-1,name,variableNumber-1,
+			       "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
 			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			       name,variableNumber,name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = MIN(48,currOverlap-4);
 		  break;
@@ -3674,14 +3700,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
-			       name,variableNumber,name,variableNumber,name,variableNumber,
-			       name,variableNumber-1,
+			       "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			       name,variableNumber,name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  currOverlap = MIN(47,currOverlap - 5);
 		}
@@ -3707,9 +3733,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if (currOverlap < powerOverlaps[k-1]) {
 		    /* We have to renormalize first the temporary */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-				 name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+				 "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+				 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+				 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    t = c;
 		    currOverlap = 52;
@@ -3733,9 +3759,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if (currOverlap < powerOverlaps[k-1]) {
 		      /* We have to renormalize the temporary */
 		      c = snprintf(buffer1+t,CODESIZE-t,
-				   "Renormalize3(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);\n",
-				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1,
-				   name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+				   "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+				   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+				   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		      t += c;
 		      currOverlap = 52;
@@ -3758,14 +3784,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 		
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
+			     "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,
-			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(48,currOverlap-4);
 		break;
@@ -3796,14 +3822,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 		
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
-			     name,variableNumber-1,name,variableNumber-1,
+			     "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
 			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(48,currOverlap-4);
 		break;
@@ -3834,14 +3860,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			     name,variableNumber,name,variableNumber,name,variableNumber,
-			     name,variableNumber-1,
+			     "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],
 			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
-			     name,variableNumber,name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(47,currOverlap-5);
 	      }
@@ -3867,27 +3893,27 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		case 2:
 		  /* Multiply the double-double temporary by x as double-double (or better), produce a double-double */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul22(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_t_%dm,%sh,%sm);",
-			       name,variableNumber,name,variableNumber,
-			       name,variableNumber-1,name,variableNumber-1,
+			       "Mul22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
 			       variablename,variablename);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh, %s_t_%dm;",
-			       name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  break;
 		default:
 		  /* Multiply the double temporary by x as a double-double (or better), produce a double-double */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul122(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%sh,%sm);",
-			       name,variableNumber,name,variableNumber,
-			       name,variableNumber-1,
+			       "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%sh,%sm);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       variablename,variablename);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh, %s_t_%dm;",
-			       name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		}
 		break;
@@ -3902,27 +3928,27 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		case 2:
 		  /* Multiply the double-double temporary by x as double, produce a double-double */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul122(&%s_t_%dh,&%s_t_%dm,%s,%s_t_%dh,%s_t_%dm);",
-			       name,variableNumber,name,variableNumber,
+			       "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh,%s_t_%d_%dm);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			       variablename,
-			       name,variableNumber-1,name,variableNumber-1);
+			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh, %s_t_%dm;",
-			       name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  break;
 		default:
 		  /* Multiply the double temporary by x as a double, produce a double-double */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul12(&%s_t_%dh,&%s_t_%dm,%s,%s_t_%dh);",
-			       name,variableNumber,name,variableNumber,
+			       "Mul12(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh);",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
 			       variablename,
-			       name,variableNumber-1);
+			       name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh, %s_t_%dm;",
-			       name,variableNumber,name,variableNumber);
+			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		}
 		break;
@@ -3966,14 +3992,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul22(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_t_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
-			     name,variableNumber,name,variableNumber,
-			     name,variableNumber-1,name,variableNumber-1,
+			     "Mul22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
 			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%dh, %s_t_%dm;",
-			     name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
 		break;
 	      default:
@@ -4003,14 +4029,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul122(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
-			     name,variableNumber,name,variableNumber,
-			     name,variableNumber-1,
+			     "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+			     name,variableNumber-1,tempVarNum[variableNumber-1],
 			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%dh, %s_t_%dm;",
-			     name,variableNumber,name,variableNumber);
+			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
+			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
 	      }
 	    }
@@ -4028,27 +4054,27 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		     produce a double 
 		  */
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_t_%dh = %s_t_%dh * %sh;",
-			       name,variableNumber,
-			       name,variableNumber-1,
+			       "%s_t_%d_%dh = %s_t_%d_%dh * %sh;",
+			       name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       variablename);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh;",
-			       name,variableNumber);
+			       "double %s_t_%d_%dh;",
+			       name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 		  break;
 		case 1:
 		  /* Multiply the double temporary by x as a double, produce a double */
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_t_%dh = %s_t_%dh * %s;",
-			       name,variableNumber,
-			       name,variableNumber-1,
+			       "%s_t_%d_%dh = %s_t_%d_%dh * %s;",
+			       name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       variablename);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_t_%dh;",
-			       name,variableNumber);
+			       "double %s_t_%d_%dh;",
+			       name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 		  break;
 		default:
@@ -4073,22 +4099,22 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  
 		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) { 
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_t_%dh = %s_t_%dh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
-			       name,variableNumber,
-			       name,variableNumber-1,
+			       "%s_t_%d_%dh = %s_t_%d_%dh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
+			       name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       name,variablename,powVarNum[k-1],k,
 			       name,variablename,powVarNum[k-1],k);
 		} else {
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_t_%dh = %s_t_%dh * %s_%s_%d_pow%dh;",
-			       name,variableNumber,
-			       name,variableNumber-1,
+			       "%s_t_%d_%dh = %s_t_%d_%dh * %s_%s_%d_pow%dh;",
+			       name,variableNumber,tempVarNum[variableNumber],
+			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       name,variablename,powVarNum[k-1],k);
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_t_%dh;",
-			     name,variableNumber);
+			     "double %s_t_%d_%dh;",
+			     name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 	      } else {
 		printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
@@ -4133,17 +4159,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  /* If we are not renormalized, we renormalize, otherwise we copy */
 	  if (currOverlap < 52) {
 	    c = snprintf(buffer1,CODESIZE,
-			 "Renormalize3(%s_resh,%s_resm,%s_resl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			 "Renormalize3(%s_resh,%s_resm,%s_resl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
 			 name,name,name,
-			 name,variableNumber-1,
-			 name,variableNumber-1,
-			 name,variableNumber-1);
+			 name,variableNumber-1,tempVarNum[variableNumber-1],
+			 name,variableNumber-1,tempVarNum[variableNumber-1],
+			 name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  } else {
 	    c = snprintf(buffer1,CODESIZE,
-			 "*%s_resh = %s_t_%dh; *%s_resm = %s_t_%dm; *%s_resl = %s_t_%dl;",
-			 name,name,variableNumber-1,
-			 name,name,variableNumber-1,
-			 name,name,variableNumber-1);
+			 "*%s_resh = %s_t_%d_%dh; *%s_resm = %s_t_%d_%dm; *%s_resl = %s_t_%d_%dl;",
+			 name,name,variableNumber-1,tempVarNum[variableNumber-1],
+			 name,name,variableNumber-1,tempVarNum[variableNumber-1],
+			 name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  }
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = snprintf(buffer2,CODESIZE," ");
@@ -4151,17 +4177,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  break;
 	case 2:
 	  c = snprintf(buffer1,CODESIZE,
-		       "*%s_resh = %s_t_%dh; *%s_resm = %s_t_%dm;",
-		       name,name,variableNumber-1,
-		       name,name,variableNumber-1);
+		       "*%s_resh = %s_t_%d_%dh; *%s_resm = %s_t_%d_%dm;",
+		       name,name,variableNumber-1,tempVarNum[variableNumber-1],
+		       name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = snprintf(buffer2,CODESIZE," ");
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
 	  break;
 	default:
 	  c = snprintf(buffer1,CODESIZE,
-		       "*%s_resh = %s_t_%dh;",
-		       name,name,variableNumber-1);
+		       "*%s_resh = %s_t_%d_%dh;",
+		       name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = snprintf(buffer2,CODESIZE," ");
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
@@ -4177,17 +4203,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  /* If we are not renormalized, we renormalize, otherwise we copy */
 	  if (currOverlap < 52) {
 	    c = snprintf(buffer1,CODESIZE,
-			 "Renormalize3(%s_resh,%s_resm,%s_resl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			 "Renormalize3(%s_resh,%s_resm,%s_resl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
 			 name,name,name,
-			 name,variableNumber-1,
-			 name,variableNumber-1,
-			 name,variableNumber-1);
+			 name,variableNumber-1,tempVarNum[variableNumber-1],
+			 name,variableNumber-1,tempVarNum[variableNumber-1],
+			 name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  } else {
 	    c = snprintf(buffer1,CODESIZE,
-			 "*%s_resh = %s_t_%dh; *%s_resm = %s_t_%dm; *%s_resl = %s_t_%dl;",
-			 name,name,variableNumber-1,
-			 name,name,variableNumber-1,
-			 name,name,variableNumber-1);
+			 "*%s_resh = %s_t_%d_%dh; *%s_resm = %s_t_%d_%dm; *%s_resl = %s_t_%d_%dl;",
+			 name,name,variableNumber-1,tempVarNum[variableNumber-1],
+			 name,name,variableNumber-1,tempVarNum[variableNumber-1],
+			 name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  }
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = snprintf(buffer2,CODESIZE," ");
@@ -4195,17 +4221,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  break;
 	case 2:
 	  c = snprintf(buffer1,CODESIZE,
-		       "*%s_resh = %s_t_%dh; *%s_resm = %s_t_%dm;",
-		       name,name,variableNumber-1,
-		       name,name,variableNumber-1);
+		       "*%s_resh = %s_t_%d_%dh; *%s_resm = %s_t_%d_%dm;",
+		       name,name,variableNumber-1,tempVarNum[variableNumber-1],
+		       name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = snprintf(buffer2,CODESIZE," ");
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
 	  break;
 	default:
 	  c = snprintf(buffer1,CODESIZE,
-		       "*%s_resh = %s_t_%dh;",
-		       name,name,variableNumber-1);
+		       "*%s_resh = %s_t_%d_%dh;",
+		       name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = snprintf(buffer2,CODESIZE," ");
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
@@ -4244,6 +4270,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
   free(variables);
   free(buffer1);
   free(buffer2);
+
+  free(tempVarNum);
 
   return res;
 }
