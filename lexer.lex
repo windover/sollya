@@ -209,6 +209,9 @@ PERTURB         "perturb"
 TO              "to"
 
 COEFF           "coeff"
+SUBPOLY         "subpoly"
+
+
 
 
 %%
@@ -353,6 +356,7 @@ COEFF           "coeff"
 {PERTURB}                {     promptToBePrinted = 0; return PERTURBTOKEN; }                    
 {TO}                     {     promptToBePrinted = 0; return TOTOKEN; }                    
 {COEFF}                  {     promptToBePrinted = 0; return COEFFTOKEN; }                    
+{SUBPOLY}                {     promptToBePrinted = 0; return SUBPOLYTOKEN; }                    
 
 
 {VARIABLE}      {     			     

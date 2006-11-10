@@ -185,6 +185,7 @@ void yyerror(char *message) {
 %token  PERTURBTOKEN
 %token  TOTOKEN
 %token  COEFFTOKEN
+%token  SUBPOLYTOKEN
 
 %type <other> commands
 %type <other> command
@@ -259,7 +260,7 @@ void yyerror(char *message) {
 %type <anInteger> bashexecute
 %type <other> externalplot
 %type <anInteger> externalplotmode
-
+%type <aChain> integerlist
 %%
 
 commands:    QUITTOKEN SEMICOLONTOKEN
@@ -1739,6 +1740,14 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			      free_memory(($3));
 			      $$ = temp_node;
 			   }
+
+                        |       SUBPOLYTOKEN LPARTOKEN function COMMATOKEN LBRACKETTOKEN integerlist RBRACKETTOKEN RPARTOKEN
+                           {
+			      temp_node = getSubpolynomial(($3), ($6), tools_precision);
+			      free_memory(($3));
+			      freeChain(($6),freeIntPtr);
+			      $$ = temp_node;
+			   }
 			|       fpminimax
                            {
 			      temp_node = $1;
@@ -3014,3 +3023,20 @@ externalplot:              EXTERNALPLOTTOKEN string externalplotmode TOTOKEN fun
 			     $$ = NULL;
                            }
 ;
+
+
+integerlist:               integer 
+                           {
+			     intTempPtr = (int *) safeMalloc(sizeof(int));
+			     *intTempPtr = $1;
+			     $$ = addElement(NULL,(void *) intTempPtr);
+                           }
+                         | integerlist COMMATOKEN integer
+                           {
+			     intTempPtr = (int *) safeMalloc(sizeof(int));
+			     *intTempPtr = $3;
+			     $$ = addElement($1,(void *) intTempPtr);
+			   }
+;
+
+

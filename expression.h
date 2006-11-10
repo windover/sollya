@@ -5,6 +5,7 @@
 #include <mpfr.h>
 #include <stdio.h>
 
+#include "chain.h"
 
 
 #define VARIABLE 0
@@ -95,5 +96,6 @@ int treeSize(node *tree);
 void printMpfr(mpfr_t x);
 int highestDegreeOfPolynomialSubexpression(node *tree);
 node *getIthCoefficient(node *poly, int i);
+node *getSubpolynomial(node *poly, chain *monomials, mp_prec_t prec);
 
 #endif /* ifdef EXPRESSION_H*/
