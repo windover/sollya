@@ -2980,21 +2980,14 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
 	if (mpfr_sgn(yAfter) != mpfr_sgn(yBefore)) {
 	  addToList = 1;
 	} else {
-	  if (mpfr_number_p(y)) {
-	    if (mpfr_sgn(y) != mpfr_sgn(yAfter)) {
-	      addToList = 1;
-	    } else {
-	      removedFromList = 1;
-	    }
-	  } else {
-	    removedFromList = 1;
-	  }
+	  removedFromList = 1;
 	}
       }
     }
 
-    if (addToList) 
+    if (addToList) {
       fpZeros = addElement(fpZeros,fpZeros2->value);
+    }
     temp = fpZeros2->next;
     free(fpZeros2);
     fpZeros2 = temp;

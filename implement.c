@@ -338,8 +338,8 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
 }
 
 
-int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, char *name, int *overlaps) {
-  int i, k, l, res, issuedCode, issuedVariables, c, t;
+int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, char *name, int *overlaps, int *varNum) {
+  int i, k, l, res, issuedCode, issuedVariables, c, t, c2, t2;
   int *powers, *operand1, *operand2;
   char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2; 
 
@@ -396,12 +396,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      /* The operation's precision is always infinite because of the operator */
 
 	      c = snprintf(buffer1,CODESIZE,
-			   "Mul12(&%s_%s_pow2h,&%s_%s_pow2m,%s,%s);",
-			   name,variablename,name,variablename,variablename,variablename);
+			   "Mul12(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,%s,%s);",
+			   name,variablename,varNum[1],name,variablename,varNum[1],variablename,variablename);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_%s_pow2h, %s_%s_pow2m;",
-			   name,variablename,name,variablename);
+			   "double %s_%s_%d_pow2h, %s_%s_%d_pow2m;",
+			   name,variablename,varNum[1],name,variablename,varNum[1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      overlaps[i] = 53;
 	      break;
@@ -411,13 +411,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      /* The operation's precision is fixed because of the operands */
 
 	      c = snprintf(buffer1,CODESIZE,
-			   "Mul23(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%sh,%sm,%sh,%sm);",
-			   name,variablename,name,variablename,name,variablename,
+			   "Mul23(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%sh,%sm,%sh,%sm);",
+			   name,variablename,varNum[1],name,variablename,varNum[1],name,variablename,varNum[1],
 			   variablename,variablename,variablename,variablename);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_%s_pow2h, %s_%s_pow2m, %s_%s_pow2l;",
-			   name,variablename,name,variablename,name,variablename);
+			   "double %s_%s_%d_pow2h, %s_%s_%d_pow2m, %s_%s_%d_pow2l;",
+			   name,variablename,varNum[1],name,variablename,varNum[1],name,variablename,varNum[1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	      
 	      overlaps[i] = 49;
 	      break;
@@ -427,13 +427,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      /* The operation's precision is fixed because the operands are renormalized x's */
 
 	      c = snprintf(buffer1,CODESIZE,
-			   "Mul33(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%sh,%sm,%sl,%sh,%sm,%sl);",
-			   name,variablename,name,variablename,name,variablename,
+			   "Mul33(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%sh,%sm,%sl,%sh,%sm,%sl);",
+			   name,variablename,varNum[1],name,variablename,varNum[1],name,variablename,varNum[1],
 			   variablename,variablename,variablename,variablename,variablename,variablename);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_%s_pow2h, %s_%s_pow2m, %s_%s_pow2l;",
-			   name,variablename,name,variablename,name,variablename);
+			   "double %s_%s_%d_pow2h, %s_%s_%d_pow2m, %s_%s_%d_pow2l;",
+			   name,variablename,varNum[1],name,variablename,varNum[1],name,variablename,varNum[1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      overlaps[i] = 48;
 	      break;
@@ -450,13 +450,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		/* The operation's precision is fixed because of the operands */
 
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul123(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s,%s_%s_pow2h,%s_%s_pow2m);",
-			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
-			     variablename,name,variablename,name,variablename);
+			     "Mul123(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
+			     variablename,name,variablename,varNum[i],name,variablename,varNum[i]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
-			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
+			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		overlaps[i] = 47;
 	      } else {
@@ -468,32 +468,37 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		   The precision is roughly 100 + overlap bits. 
 		*/
 
-		c = 0;
+		c = 0; c2 = 0;
 		if (overlaps[operand2[i]] + 100 < powers[i]) {
 		  /* If we are here, we must renormalize the operand */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			       name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1);
+			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			       name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+			       name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+			       name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1);
+		  varNum[operand2[i]]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c2 = snprintf(buffer2,CODESIZE,
+				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
+		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand2[i]] = 52;
 		}
 
-		t = c;
+		t = c; t2 = c2;
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul133(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
-			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
-			     variablename,name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
-			     name,variablename,operand2[i]+1);
+			     "Mul133(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
+			     variablename,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,
+			     name,variablename,varNum[operand2[i]],operand2[i]+1);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
-			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);		
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2+t2,CODESIZE-t2,
+			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);		
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		overlaps[i] = overlaps[operand2[i]] - 5;
 		if (overlaps[i] > 47) overlaps[i] = 47;
 	      }
@@ -507,32 +512,37 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		 The precision is roughly 96 + overlap bits. 
 	      */
 	      
-	      c = 0;
+	      c = 0; c2 = 0;
 	      if (overlaps[operand2[i]] + 96 < powers[i]) {
 		/* If we are here, we must renormalize the operand */
 		c = snprintf(buffer1,CODESIZE,
-			     "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			     name,variablename,operand2[i]+1,
-			     name,variablename,operand2[i]+1,
-			     name,variablename,operand2[i]+1,
-			     name,variablename,operand2[i]+1,
-			     name,variablename,operand2[i]+1,
-			     name,variablename,operand2[i]+1);
+			     "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			     name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+			     name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+			     name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+			     name,variablename,varNum[operand2[i]],operand2[i]+1,
+			     name,variablename,varNum[operand2[i]],operand2[i]+1,
+			     name,variablename,varNum[operand2[i]],operand2[i]+1);
+		varNum[operand2[i]]++;
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c2 = snprintf(buffer2,CODESIZE,
+			      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+			      name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
+		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand2[i]] = 52;
 	      }
 	      
-	      t = c;
+	      t = c; t2 = c2;
 	      c = snprintf(buffer1+t,CODESIZE-t,
-			   "Mul233(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%sh,%sm,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
-			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
-			   variablename,variablename,name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
-			   name,variablename,operand2[i]+1);
+			   "Mul233(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%sh,%sm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+			   name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
+			   variablename,variablename,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,
+			   name,variablename,varNum[operand2[i]],operand2[i]+1);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
-			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2+t2,CODESIZE-t2,
+			   "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+			   name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
+	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	      overlaps[i] = overlaps[operand2[i]] - 4;
 	      if (overlaps[i] > 48) overlaps[i] = 48;
 	      break;
@@ -546,33 +556,38 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		 The precision is roughly 98 + overlap bits. 
 	      */
 	      
-	      c = 0;
+	      c = 0; c2 = 0;
 	      if (overlaps[operand2[i]] + 98 < powers[i]) {
 		/* If we are here, we must renormalize the operand */
 		c = snprintf(buffer1,CODESIZE,
-			     "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			     name,variablename,operand2[i]+1,
-			     name,variablename,operand2[i]+1,
-			     name,variablename,operand2[i]+1,
-			     name,variablename,operand2[i]+1,
-			     name,variablename,operand2[i]+1,
-			     name,variablename,operand2[i]+1);
+			     "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			     name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+			     name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+			     name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+			     name,variablename,varNum[operand2[i]],operand2[i]+1,
+			     name,variablename,varNum[operand2[i]],operand2[i]+1,
+			     name,variablename,varNum[operand2[i]],operand2[i]+1);
+		varNum[operand2[i]]++;
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c2 = snprintf(buffer2,CODESIZE,
+			      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+			      name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
+		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand2[i]] = 52;
 	      }
 
-	      t = c;
+	      t = c; t2 = c2;
 	      c = snprintf(buffer1+t,CODESIZE-t,
-			   "Mul33(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%sh,%sm,%sl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
-			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
+			   "Mul33(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%sh,%sm,%sl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+			   name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
 			   variablename,variablename,variablename,
-			   name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
-			   name,variablename,operand2[i]+1);
+			   name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,
+			   name,variablename,varNum[operand2[i]],operand2[i]+1);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
-			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2+t2,CODESIZE-t2,
+			   "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+			   name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
+	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	      overlaps[i] = overlaps[operand2[i]] - 4;
 	      if (overlaps[i] > 48) overlaps[i] = 48;
 	      break;
@@ -590,13 +605,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		/* Produce a triple-double out an exact double-double x^2 and a double x */
 		/* The operation's precision is fixed because of the operands */
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul123(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s,%s_%s_pow2h,%s_%s_pow2m);",
-			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
-			     variablename,name,variablename,name,variablename);
+			     "Mul123(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
+			     variablename,name,variablename,varNum[1],name,variablename,varNum[1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
-			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
+			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		overlaps[i] = 47;
 	      } else {
@@ -607,32 +622,37 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 
 		   The precision is roughly 100 + overlap bits. 
 		*/
-		c = 0;
+		c = 0; c2 = 0;
 		if (overlaps[operand1[i]] + 100 < powers[i]) {
 		  /* If we are here, we must renormalize the operand */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1);
+			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			       name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+			       name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+			       name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1);
+		  varNum[operand1[i]]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c2 = snprintf(buffer2,CODESIZE,
+				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
+		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand1[i]] = 52;
 		}
 
-		t = c;
+		t = c; t2 = c2;
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul133(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
-			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
-			     variablename,name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
-			     name,variablename,operand1[i]+1);
+			     "Mul133(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
+			     variablename,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,
+			     name,variablename,varNum[operand1[i]],operand1[i]+1);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
-			     name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);		
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2+t2,CODESIZE-t2,
+			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);		
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		overlaps[i] = overlaps[operand1[i]] - 5;
 		if (overlaps[i] > 47) overlaps[i] = 47;
 	      }
@@ -645,32 +665,37 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		 
 		 The precision is roughly 96 + overlap bits. 
 	      */
-	      c = 0;
+	      c = 0; c2 = 0;
 	      if (overlaps[operand1[i]] + 96 < powers[i]) {
 		/* If we are here, we must renormalize the operand */
 		c = snprintf(buffer1,CODESIZE,
-			     "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			     name,variablename,operand1[i]+1,
-			     name,variablename,operand1[i]+1,
-			     name,variablename,operand1[i]+1,
-			     name,variablename,operand1[i]+1,
-			     name,variablename,operand1[i]+1,
-			     name,variablename,operand1[i]+1);
+			     "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			     name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+			     name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+			     name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+			     name,variablename,varNum[operand1[i]],operand1[i]+1,
+			     name,variablename,varNum[operand1[i]],operand1[i]+1,
+			     name,variablename,varNum[operand1[i]],operand1[i]+1);
+		varNum[operand1[i]]++;
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c2 = snprintf(buffer2,CODESIZE,
+			      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+			      name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
+		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand1[i]] = 52;
 	      }
 	      
-	      t = c;
+	      t = c; t2 = c2;
 	      c = snprintf(buffer1+t,CODESIZE-t,
-			   "Mul233(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%sh,%sm,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
-			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
-			   variablename,variablename,name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
-			   name,variablename,operand1[i]+1);
+			   "Mul233(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%sh,%sm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+			   name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
+			   variablename,variablename,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,
+			   name,variablename,varNum[operand1[i]],operand1[i]+1);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
-			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2+t2,CODESIZE-t2,
+			   "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+			   name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
+	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	      overlaps[i] = overlaps[operand1[i]] - 4;
 	      if (overlaps[i] > 48) overlaps[i] = 48;
 	      break;
@@ -681,32 +706,37 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		 
 		 The precision is roughly 98 + overlap bits. 
 	      */
-	      c = 0;
+	      c = 0; c2 = 0;
 	      if (overlaps[operand1[i]] + 98 < powers[i]) {
 		/* If we are here, we must renormalize the operand */
 		c = snprintf(buffer1,CODESIZE,
-			     "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			     name,variablename,operand1[i]+1,
-			     name,variablename,operand1[i]+1,
-			     name,variablename,operand1[i]+1,
-			     name,variablename,operand1[i]+1,
-			     name,variablename,operand1[i]+1,
-			     name,variablename,operand1[i]+1);
+			     "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			     name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+			     name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+			     name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+			     name,variablename,varNum[operand1[i]],operand1[i]+1,
+			     name,variablename,varNum[operand1[i]],operand1[i]+1,
+			     name,variablename,varNum[operand1[i]],operand1[i]+1);
+		varNum[operand1[i]]++;
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c2 = snprintf(buffer2,CODESIZE,
+			      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+			      name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
+		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand1[i]] = 52;
 	      }
 
-	      t = c;
+	      t = c; t2 = c2;
 	      c = snprintf(buffer1+t,CODESIZE-t,
-			   "Mul33(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%sh,%sm,%sl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
-			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
+			   "Mul33(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%sh,%sm,%sl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+			   name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
 			   variablename,variablename,variablename,
-			   name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
-			   name,variablename,operand1[i]+1);
+			   name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,
+			   name,variablename,varNum[operand1[i]],operand1[i]+1);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
-			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
+	      c = snprintf(buffer2+t2,CODESIZE-t2,
+			   "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+			   name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      overlaps[i] = overlaps[operand1[i]] - 4;
 	      if (overlaps[i] > 48) overlaps[i] = 48;
@@ -724,13 +754,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  /* Produce a triple-double x^4 out of two double-double x^2 */
 		  /* The operation's precision is fixed because of the operands */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul23(&%s_%s_pow4h,&%s_%s_pow4m,&%s_%s_pow4l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2h,%s_%s_pow2m);",
-			       name,variablename,name,variablename,name,variablename,
-			       name,variablename,name,variablename,name,variablename,name,variablename);
+			       "Mul23(&%s_%s_%d_pow4h,&%s_%s_%d_pow4m,&%s_%s_%d_pow4l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
+			       name,variablename,varNum[3],name,variablename,varNum[3],name,variablename,varNum[3],
+			       name,variablename,varNum[1],name,variablename,varNum[1],name,variablename,varNum[1],name,variablename,varNum[1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_%s_pow4h, %s_%s_pow4m, %s_%s_pow4l;",
-			       name,variablename,name,variablename,name,variablename);
+			       "double %s_%s_%d_pow4h, %s_%s_%d_pow4m, %s_%s_%d_pow4l;",
+			       name,variablename,varNum[3],name,variablename,varNum[3],name,variablename,varNum[3]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  overlaps[i] = 49;
 		} else {
@@ -741,33 +771,38 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		     
 		     The precision is roughly 96 + overlap bits. 
 		  */
-		  c = 0;
+		  c = 0; c2 = 0;
 		  if (overlaps[operand2[i]] + 96 < powers[i]) {
 		    /* If we are here, we must renormalize the operand */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1);
+				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				 name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				 name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				 name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				 name,variablename,varNum[operand2[i]],operand2[i]+1,
+				 name,variablename,varNum[operand2[i]],operand2[i]+1,
+				 name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    varNum[operand2[i]]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    c2 = snprintf(buffer2,CODESIZE,
+				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				  name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
+		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand2[i]] = 52;
 		  }
 
-		  t = c;
+		  t = c; t2 = c2;
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
-			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
-			       name,variablename,name,variablename,
-			       name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1);
+			       "Mul233(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+			       name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
+			       name,variablename,varNum[1],name,variablename,varNum[1],
+			       name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
-			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2+t2,CODESIZE-t2,
+			       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+			       name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
+		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		  overlaps[i] = overlaps[operand2[i]] - 4;
 		  if (overlaps[i] > 48) overlaps[i] = 48;
 		}
@@ -782,33 +817,38 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		     
 		     The precision is roughly 96 + overlap bits. 
 		  */
-		  c = 0;
+		  c = 0; c2 = 0;
 		  if (overlaps[operand1[i]] + 96 < powers[i]) {
 		    /* If we are here, we must renormalize the operand */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1);
+				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				 name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				 name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				 name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				 name,variablename,varNum[operand1[i]],operand1[i]+1,
+				 name,variablename,varNum[operand1[i]],operand1[i]+1,
+				 name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    varNum[operand1[i]]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    c2 = snprintf(buffer2,CODESIZE,
+				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				  name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
+		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand1[i]] = 52;
 		  }
 
-		  t = c;
+		  t = c; t2 = c2;
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
-			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
-			       name,variablename,name,variablename,
-			       name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1);
+			       "Mul233(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+			       name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
+			       name,variablename,varNum[1],name,variablename,varNum[1],
+			       name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
-			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2+t2,CODESIZE-t2,
+			       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+			       name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
+		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		  overlaps[i] = overlaps[operand1[i]] - 4;
 		  if (overlaps[i] > 48) overlaps[i] = 48;
 		} else {
@@ -820,35 +860,45 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		     The precision is roughly 97 + min(overlaps of both)
 		     
 		  */
-		  t = 0;
+		  t = 0; c2 = 0; t2 = 0;
 		  if (MIN(overlaps[operand1[i]],overlaps[operand2[i]]) + 97 < powers[i]) {
 		    /* We renormalize first the operand with the higher overlap (i.e. lower value) */
 		    if (overlaps[operand1[i]] < overlaps[operand2[i]]) {
 		      /* Renormalize first opernand1[i] */
 		      c = snprintf(buffer1,CODESIZE,
-				   "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				   name,variablename,operand1[i]+1,
-				   name,variablename,operand1[i]+1,
-				   name,variablename,operand1[i]+1,
-				   name,variablename,operand1[i]+1,
-				   name,variablename,operand1[i]+1,
-				   name,variablename,operand1[i]+1);
+				   "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				   name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				   name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				   name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				   name,variablename,varNum[operand1[i]],operand1[i]+1,
+				   name,variablename,varNum[operand1[i]],operand1[i]+1,
+				   name,variablename,varNum[operand1[i]],operand1[i]+1);
+		      varNum[operand1[i]]++;
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
+		      c2 = snprintf(buffer2,CODESIZE,
+				    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				    name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
+		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      overlaps[operand1[i]] = 52;
 		    } else {
 		      /* Renormalize first opernand2[i] */
 		      c = snprintf(buffer1,CODESIZE,
-				   "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				   name,variablename,operand2[i]+1,
-				   name,variablename,operand2[i]+1,
-				   name,variablename,operand2[i]+1,
-				   name,variablename,operand2[i]+1,
-				   name,variablename,operand2[i]+1,
-				   name,variablename,operand2[i]+1);
+				   "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				   name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				   name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				   name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				   name,variablename,varNum[operand2[i]],operand2[i]+1,
+				   name,variablename,varNum[operand2[i]],operand2[i]+1,
+				   name,variablename,varNum[operand2[i]],operand2[i]+1);
+		      varNum[operand2[i]]++;
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
+		      c2 = snprintf(buffer2,CODESIZE,
+				    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				    name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
+		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      overlaps[operand2[i]] = 52;
 		    }
-		    t += c;
+		    t += c; t2 += c2;
 		    
 		    /* Check once again the precision */
 		    if (MIN(overlaps[operand1[i]],overlaps[operand2[i]]) + 97 < powers[i]) {
@@ -859,44 +909,54 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		      if (overlaps[operand1[i]] < overlaps[operand2[i]]) {
 			/* Renormalize first opernand1[i] */
 			c = snprintf(buffer1+t,CODESIZE-t,
-				     "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				     name,variablename,operand1[i]+1,
-				     name,variablename,operand1[i]+1,
-				     name,variablename,operand1[i]+1,
-				     name,variablename,operand1[i]+1,
-				     name,variablename,operand1[i]+1,
-				     name,variablename,operand1[i]+1);
+				     "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				     name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				     name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				     name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				     name,variablename,varNum[operand1[i]],operand1[i]+1,
+				     name,variablename,varNum[operand1[i]],operand1[i]+1,
+				     name,variablename,varNum[operand1[i]],operand1[i]+1);
+			varNum[operand1[i]]++;
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+			c2 = snprintf(buffer2+t2,CODESIZE-t2,
+				      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				      name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
+			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			overlaps[operand1[i]] = 52;
 		      } else {
 			/* Renormalize first opernand2[i] */
 			c = snprintf(buffer1+t,CODESIZE-t,
-				     "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				     name,variablename,operand2[i]+1,
-				     name,variablename,operand2[i]+1,
-				     name,variablename,operand2[i]+1,
-				     name,variablename,operand2[i]+1,
-				     name,variablename,operand2[i]+1,
-				     name,variablename,operand2[i]+1);
+				     "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				     name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				     name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				     name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				     name,variablename,varNum[operand2[i]],operand2[i]+1,
+				     name,variablename,varNum[operand2[i]],operand2[i]+1,
+				     name,variablename,varNum[operand2[i]],operand2[i]+1);
+			varNum[operand2[i]]++;
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+			c2 = snprintf(buffer2+t2,CODESIZE-t2,
+				      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				      name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
+			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			overlaps[operand2[i]] = 52;
 		      }
-		      t += c;
+		      t += c; t2 += c2;
 		    }
 		  }
 		  
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul33(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
-			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
-			       name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1);
+			       "Mul33(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+			       name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		  c = snprintf(buffer2,CODESIZE,
-			       "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
-			       name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c = snprintf(buffer2+t2,CODESIZE-t2,
+			       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+			       name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
+		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		  overlaps[i] = overlaps[operand1[i]] - 4;
 		  if (overlaps[i] > overlaps[operand2[i]] - 4) overlaps[i] = overlaps[operand2[i]] - 4;
 		  if (overlaps[i] > 48) overlaps[i] = 48;
@@ -910,35 +970,45 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		 The precision is roughly 97 + min(overlaps of both)
 		 
 	      */
-	      t = 0;
+	      t = 0; t2 = 0;
 	      if (MIN(overlaps[operand1[i]],overlaps[operand2[i]]) + 97 < powers[i]) {
 		/* We renormalize first the operand with the higher overlap (i.e. lower value) */
 		if (overlaps[operand1[i]] < overlaps[operand2[i]]) {
 		  /* Renormalize first opernand1[i] */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1);
+			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			       name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+			       name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+			       name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1);
+		  varNum[operand1[i]]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c2 = snprintf(buffer2,CODESIZE,
+				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
+		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand1[i]] = 52;
 		} else {
 		  /* Renormalize first opernand2[i] */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			       name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1);
+			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			       name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+			       name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+			       name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1);
+		  varNum[operand2[i]]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c2 = snprintf(buffer2,CODESIZE,
+				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
+		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand2[i]] = 52;
 		}
-		t += c;
+		t += c; t2 += c2;
 		
 		/* Check once again the precision */
 		if (MIN(overlaps[operand1[i]],overlaps[operand2[i]]) + 97 < powers[i]) {
@@ -949,44 +1019,54 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if (overlaps[operand1[i]] < overlaps[operand2[i]]) {
 		    /* Renormalize first opernand1[i] */
 		    c = snprintf(buffer1+t,CODESIZE-t,
-				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1);
+				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				 name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				 name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				 name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				 name,variablename,varNum[operand1[i]],operand1[i]+1,
+				 name,variablename,varNum[operand1[i]],operand1[i]+1,
+				 name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    varNum[operand1[i]]++;
 		    if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+		    c2 = snprintf(buffer2+t2,CODESIZE-t2,
+				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				  name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
+		    if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		    overlaps[operand1[i]] = 52;
 		  } else {
 		    /* Renormalize first opernand2[i] */
 		    c = snprintf(buffer1+t,CODESIZE-t,
-				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1);
+				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				 name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				 name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				 name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				 name,variablename,varNum[operand2[i]],operand2[i]+1,
+				 name,variablename,varNum[operand2[i]],operand2[i]+1,
+				 name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    varNum[operand2[i]]++;
 		    if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+		    c2 = snprintf(buffer2+t2,CODESIZE-t2,
+				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				  name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
+		    if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		    overlaps[operand2[i]] = 52;
 		  }
-		  t += c;
+		  t += c; t2 += c2;
 		}
 	      }
 	      
 	      c = snprintf(buffer1+t,CODESIZE-t,
-			   "Mul33(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
-			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1,
-			   name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
-			   name,variablename,operand1[i]+1,
-			   name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
-			   name,variablename,operand2[i]+1);
+			   "Mul33(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+			   name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
+			   name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,
+			   name,variablename,varNum[operand1[i]],operand1[i]+1,
+			   name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,
+			   name,variablename,varNum[operand2[i]],operand2[i]+1);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_%s_pow%dh, %s_%s_pow%dm, %s_%s_pow%dl;",
-			   name,variablename,i+1,name,variablename,i+1,name,variablename,i+1);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      c = snprintf(buffer2+t2,CODESIZE-t2,
+			   "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+			   name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
+	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	      overlaps[i] = overlaps[operand1[i]] - 4;
 	      if (overlaps[i] > overlaps[operand2[i]] - 4) overlaps[i] = overlaps[operand2[i]] - 4;
 	      if (overlaps[i] > 48) overlaps[i] = 48;
@@ -1005,24 +1085,24 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      case 1:
 		/* Produce a double-double x^2 out of a double x and a double x */
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul12(&%s_%s_pow2h,&%s_%s_pow2m,%s,%s);",
-			     name,variablename,name,variablename,variablename,variablename);
+			     "Mul12(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,%s,%s);",
+			     name,variablename,varNum[1],name,variablename,varNum[1],variablename,variablename);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow2h, %s_%s_pow2m;",
-			     name,variablename,name,variablename);
+			     "double %s_%s_%d_pow2h, %s_%s_%d_pow2m;",
+			     name,variablename,varNum[1],name,variablename,varNum[1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		break;
 	      case 2:
 	      case 3:
 		/* Produce a double-double x^2 out of a double-double or better x and a double-double or better x */
 		c = snprintf(buffer1,CODESIZE,
-			     "Mul22(&%s_%s_pow2h,&%s_%s_pow2m,%sh,%sm,%sh,%sm);",
-			     name,variablename,name,variablename,variablename,variablename,variablename,variablename);
+			     "Mul22(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,%sh,%sm,%sh,%sm);",
+			     name,variablename,varNum[1],name,variablename,varNum[1],variablename,variablename,variablename,variablename);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow2h, %s_%s_pow2m;",
-			     name,variablename,name,variablename);
+			     "double %s_%s_%d_pow2h, %s_%s_%d_pow2m;",
+			     name,variablename,varNum[1],name,variablename,varNum[1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		break;
 	      default:
@@ -1039,34 +1119,39 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
 		   is less than powers[i]. 
 		*/
-		c = 0;
+		c = 0; c2 = 0;
 		if (overlaps[operand2[i]] < 53) {
 		  /* We must perhaps renormalize */
 		  if (overlaps[operand2[i]] + 53 < powers[i]) {
 		    /* We renormalize */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1);
+				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				 name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				 name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				 name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				 name,variablename,varNum[operand2[i]],operand2[i]+1,
+				 name,variablename,varNum[operand2[i]],operand2[i]+1,
+				 name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    varNum[operand2[i]]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    c2 = snprintf(buffer2,CODESIZE,
+				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				  name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
+		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand2[i]] = 52;
 		  }
 		}
 		
-		t = c;
+		t = c; t2 = c2;
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul122(&%s_%s_pow%dh,&%s_%s_pow%dm,%s,%s_%s_pow%dh,%s_%s_pow%dm);",
-			     name,variablename,i+1,name,variablename,i+1,
-			     variablename,name,variablename,operand2[i]+1,name,variablename,operand2[i]+1);
+			     "Mul122(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%s,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
+			     variablename,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow%dh, %s_%s_pow%dm;",
-			     name,variablename,i+1,name,variablename,i+1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2+t2,CODESIZE-t2,
+			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		break;
 	      case 2:
 	      case 3:
@@ -1079,35 +1164,40 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		   The usage of a triple-double x as a double-double is not critical because
 		   x is supposed to be renormalized in this case.
 		*/
-		c = 0;
+		c = 0; c2 = 0;
 		if (overlaps[operand2[i]] < 53) {
 		  /* We must perhaps renormalize */
 		  if (overlaps[operand2[i]] + 53 < powers[i]) {
 		    /* We renormalize */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1,
-				 name,variablename,operand2[i]+1);
+				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				 name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				 name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				 name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+				 name,variablename,varNum[operand2[i]],operand2[i]+1,
+				 name,variablename,varNum[operand2[i]],operand2[i]+1,
+				 name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    varNum[operand2[i]]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    c2 = snprintf(buffer2,CODESIZE,
+				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				  name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
+		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand2[i]] = 52;
 		  }
 		}
 
-		t = c;
+		t = c; t2 = c2;
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul22(&%s_%s_pow%dh,&%s_%s_pow%dm,%sh,%sm,%s_%s_pow%dh,%s_%s_pow%dm);",
-			     name,variablename,i+1,name,variablename,i+1,
+			     "Mul22(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%sh,%sm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
 			     variablename,variablename,
-			     name,variablename,operand2[i]+1,name,variablename,operand2[i]+1);
+			     name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow%dh, %s_%s_pow%dm;",
-			     name,variablename,i+1,name,variablename,i+1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2+t2,CODESIZE-t2,
+			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		break;
 	      default:
 		res = 0;
@@ -1125,34 +1215,39 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
 		   is less than powers[i]. 
 		*/
-		c = 0;
+		c = 0; c2 = 0;
 		if (overlaps[operand1[i]] < 53) {
 		  /* We must perhaps renormalize */
 		  if (overlaps[operand1[i]] + 53 < powers[i]) {
 		    /* We renormalize */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1);
+				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				 name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				 name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				 name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				 name,variablename,varNum[operand1[i]],operand1[i]+1,
+				 name,variablename,varNum[operand1[i]],operand1[i]+1,
+				 name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    varNum[operand1[i]]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    c2 = snprintf(buffer2,CODESIZE,
+				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				  name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
+		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand1[i]] = 52;
 		  }
 		}
 		
-		t = c;
+		t = c; t2 = c2;
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul122(&%s_%s_pow%dh,&%s_%s_pow%dm,%s,%s_%s_pow%dh,%s_%s_pow%dm);",
-			     name,variablename,i+1,name,variablename,i+1,
-			     variablename,name,variablename,operand1[i]+1,name,variablename,operand1[i]+1);
+			     "Mul122(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%s,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
+			     variablename,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow%dh, %s_%s_pow%dm;",
-			     name,variablename,i+1,name,variablename,i+1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2+t2,CODESIZE-t2,
+			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		break;
 	      case 2:
 	      case 3:
@@ -1165,35 +1260,40 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		   The usage of a triple-double x as a double-double is not critical because
 		   x is supposed to be renormalized in this case.
 		*/
-		c = 0;
+		c = 0; c2 = 0;
 		if (overlaps[operand1[i]] < 53) {
 		  /* We must perhaps renormalize */
 		  if (overlaps[operand1[i]] + 53 < powers[i]) {
 		    /* We renormalize */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1,
-				 name,variablename,operand1[i]+1);
+				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				 name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				 name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				 name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+				 name,variablename,varNum[operand1[i]],operand1[i]+1,
+				 name,variablename,varNum[operand1[i]],operand1[i]+1,
+				 name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    varNum[operand1[i]]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
+		    c2 = snprintf(buffer2,CODESIZE,
+				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				  name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
+		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand1[i]] = 52;
 		  }
 		}
 		
-		t = c;
+		t = c; t2 = c2;
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul22(&%s_%s_pow%dh,&%s_%s_pow%dm,%sh,%sm,%s_%s_pow%dh,%s_%s_pow%dm);",
-			     name,variablename,i+1,name,variablename,i+1,
+			     "Mul22(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%sh,%sm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
 			     variablename,variablename,
-			     name,variablename,operand1[i]+1,name,variablename,operand1[i]+1);
+			     name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow%dh, %s_%s_pow%dm;",
-			     name,variablename,i+1,name,variablename,i+1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		c = snprintf(buffer2+t2,CODESIZE-t2,
+			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
+			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		break;
 	      default:
 		res = 0;
@@ -1208,55 +1308,65 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		   is less than powers[i]. We do this for both one after the other.
 	      */
 
-	      t = 0;
-	      c = 0;
+	      t = 0; t2 = 0;
+	      c = 0; c2 = 0;
 	      if (overlaps[operand1[i]] < 53) {
 		/* We must perhaps renormalize */
 		if (overlaps[operand1[i]] + 53 < powers[i]) {
 		  /* We renormalize */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1);
+			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			       name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+			       name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+			       name,variablename,varNum[operand1[i]]+1,operand1[i]+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1);
+		  varNum[operand1[i]]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
+		  c2 = snprintf(buffer2,CODESIZE,
+				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
+		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand1[i]] = 52;
 		}
 	      }
-	      t += c;
+	      t += c; t2 += c2;
 	      
-	      c = 0;
+	      c = 0; c2 = 0;
 	      if (overlaps[operand2[i]] < 53) {
 		/* We must perhaps renormalize */
 		if (overlaps[operand2[i]] + 53 < powers[i]) {
 		  /* We renormalize */
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			       name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1);
+			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			       name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+			       name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+			       name,variablename,varNum[operand2[i]]+1,operand2[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1);
+		  varNum[operand2[i]]++;
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
+		  c2 = snprintf(buffer2+t2,CODESIZE-t2,
+				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
+		  if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		  overlaps[operand2[i]] = 52;
 		}
 	      }
-	      t += c;
+	      t += c; t2 += c2;
 	      
 	      c = snprintf(buffer1+t,CODESIZE-t,
-			   "Mul22(&%s_%s_pow%dh,&%s_%s_pow%dm,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dh,%s_%s_pow%dm);",
-			   name,variablename,i+1,name,variablename,i+1,
-			   name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
-			   name,variablename,operand2[i]+1,name,variablename,operand2[i]+1);
+			   "Mul22(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+			   name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
+			   name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,
+			   name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_%s_pow%dh, %s_%s_pow%dm;",
-			   name,variablename,i+1,name,variablename,i+1);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      c = snprintf(buffer2+t2,CODESIZE-t2,
+			   "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
+			   name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
+	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 	    }
 	  }
 	} else {
@@ -1269,12 +1379,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if (variablePrecision == 1) {
 		/* Produce x^2 as a double out of x as a double */
 		c = snprintf(buffer1,CODESIZE,
-			     "%s_%s_pow2h = %s * %s;",
-			     name,variablename,variablename,variablename);
+			     "%s_%s_%d_pow2h = %s * %s;",
+			     name,variablename,varNum[1],variablename,variablename);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow2h;",
-			     name,variablename);
+			     "double %s_%s_%d_pow2h;",
+			     name,variablename,varNum[i]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      } else {
 		/* Produce x^2 as a double out of x as a double-double or better */
@@ -1282,12 +1392,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		   not critical because we suppose that x is renormalized. 
 		*/
 		c = snprintf(buffer1,CODESIZE,
-			     "%s_%s_pow2h = %sh * %sh;",
-			     name,variablename,variablename,variablename);
+			     "%s_%s_%d_pow2h = %sh * %sh;",
+			     name,variablename,varNum[i],variablename,variablename);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow2h;",
-			     name,variablename);
+			     "double %s_%s_%d_pow2h;",
+			     name,variablename,varNum[i]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      }
 	    } else {
@@ -1304,28 +1414,43 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 
 		if ((overlaps[operand2[i]] < 53) && (overlaps[operand2[i]] < powers[i])) {
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_%s_pow%dh = %s * (%s_%s_pow%dh + %s_%s_pow%dm);",
-			       name,variablename,i+1,variablename,name,variablename,operand2[i]+1,
-			       name,variablename,operand2[i]+1);
+			       "%s_%s_%d_pow%dh = %s * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
+			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand2[i]],operand2[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1);
 		} else {
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_%s_pow%dh = %s * %s_%s_pow%dh;",
-			       name,variablename,i+1,variablename,name,variablename,operand2[i]+1);
+			       "%s_%s_%d_pow%dh = %s * %s_%s_%d_pow%dh;",
+			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand2[i]],operand2[i]+1);
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow%dh;",
-			     name,variablename,i+1);
+			     "double %s_%s_%d_pow%dh;",
+			     name,variablename,varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      } else {
 		/* Produce a double out of a double-double or better x and a double or better x^? */
-		c = snprintf(buffer1,CODESIZE,
-			     "%s_%s_pow%dh = %sh * %s_%s_pow%dh;",
-			     name,variablename,i+1,variablename,name,variablename,operand2[i]+1);
+
+		/* If x^? is a triple-double (overlaps[operand] < 53) that we want to 
+		   use as a double, we must check if overlaps[operand] is not less than
+		   the precision needed (powers[i]). If this is the case, since we do not
+		   want to renormalize the whole triple-double, we use a rounded sum of 
+		   the higher and middle value.
+		*/
+
+		if ((overlaps[operand2[i]] < 53) && (overlaps[operand2[i]] < powers[i])) {
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_%s_%d_pow%dh = %sh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
+			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand2[i]],operand2[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1);
+		} else {
+		  c = snprintf(buffer1,CODESIZE,
+			       "%s_%s_%d_pow%dh = %sh * %s_%s_%d_pow%dh;",
+			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand2[i]],operand2[i]+1);
+		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow%dh;",
-			     name,variablename,i+1);
+			     "double %s_%s_%d_pow%dh;",
+			     name,variablename,varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      }
 	    }
@@ -1344,18 +1469,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		*/
 		if ((overlaps[operand1[i]] < 53) && (overlaps[operand1[i]] < powers[i])) {
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_%s_pow%dh = %s * (%s_%s_pow%dh + %s_%s_pow%dm);",
-			       name,variablename,i+1,variablename,name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1);
+			       "%s_%s_%d_pow%dh = %s * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
+			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand1[i]],operand1[i]+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1);
 		} else {
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_%s_pow%dh = %s * %s_%s_pow%dh;",
-			       name,variablename,i+1,variablename,name,variablename,operand1[i]+1);
+			       "%s_%s_%d_pow%dh = %s * %s_%s_%d_pow%dh;",
+			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand1[i]],operand1[i]+1);
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow%dh;",
-			     name,variablename,i+1);
+			     "double %s_%s_%d_pow%dh;",
+			     name,variablename,varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      } else {
 		/* Produce a double out of a double or better x^? and a double-double or better x */
@@ -1370,18 +1495,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		*/
 		if ((overlaps[operand1[i]] < 53) && (overlaps[operand1[i]] < powers[i])) {
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_%s_pow%dh = %sh * (%s_%s_pow%dh + %s_%s_pow%dm);",
-			       name,variablename,i+1,variablename,name,variablename,operand1[i]+1,
-			       name,variablename,operand1[i]+1);
+			       "%s_%s_%d_pow%dh = %sh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
+			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand1[i]],operand1[i]+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1);
 		} else {
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_%s_pow%dh = %sh * %s_%s_pow%dh;",
-			       name,variablename,i+1,variablename,name,variablename,operand1[i]+1);
+			       "%s_%s_%d_pow%dh = %sh * %s_%s_%d_pow%dh;",
+			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand1[i]],operand1[i]+1);
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
-			     "double %s_%s_pow%dh;",
-			     name,variablename,i+1);
+			     "double %s_%s_%d_pow%dh;",
+			     name,variablename,varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      }
 	    } else {
@@ -1397,37 +1522,37 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if ((overlaps[operand2[i]] < 53) && (overlaps[operand2[i]] < powers[i])) {
 		  /* Both operands are low precision triple-doubles */
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_%s_pow%dh = (%s_%s_pow%dh + %s_%s_pow%dm) * (%s_%s_pow%dh + %s_%s_pow%dm);",
-			       name,variablename,i+1,
-			       name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
-			       name,variablename,operand2[i]+1,name,variablename,operand2[i]+1);
+			       "%s_%s_%d_pow%dh = (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm) * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
+			       name,variablename,varNum[i],i+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);
 		} else {
 		  /* Only the first operand is a low precision triple-double */
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_%s_pow%dh = (%s_%s_pow%dh + %s_%s_pow%dm) * %s_%s_pow%dh;",
-			       name,variablename,i+1,
-			       name,variablename,operand1[i]+1,name,variablename,operand1[i]+1,
-			       name,variablename,operand2[i]+1);
+			       "%s_%s_%d_pow%dh = (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm) * %s_%s_%d_pow%dh;",
+			       name,variablename,varNum[i],i+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1);
 		}
 	      } else {
 		if ((overlaps[operand2[i]] < 53) && (overlaps[operand2[i]] < powers[i])) {
 		  /* Only the second operand is a low precision triple-double */
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_%s_pow%dh = (%s_%s_pow%dh + %s_%s_pow%dm) * %s_%s_pow%dh;",
-			       name,variablename,i+1,
-			       name,variablename,operand2[i]+1,name,variablename,operand2[i]+1,
-			       name,variablename,operand1[i]+1);
+			       "%s_%s_%d_pow%dh = (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm) * %s_%s_%d_pow%dh;",
+			       name,variablename,varNum[i],i+1,
+			       name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,
+			       name,variablename,varNum[operand1[i]],operand1[i]+1);
 		} else {
 		  /* Both operands can be truncated to a double without problems */
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_%s_pow%dh = %s_%s_pow%dh * %s_%s_pow%dh;",
-			       name,variablename,i+1,name,variablename,operand1[i]+1,name,variablename,operand2[i]+1);
+			       "%s_%s_%d_pow%dh = %s_%s_%d_pow%dh * %s_%s_%d_pow%dh;",
+			       name,variablename,varNum[i],i+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);
 		}
 	      }
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = snprintf(buffer2,CODESIZE,
-			   "double %s_%s_pow%dh;",
-			   name,variablename,i+1);
+			   "double %s_%s_%d_pow%dh;",
+			   name,variablename,varNum[i],i+1);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	    }
 	  }
@@ -1539,8 +1664,8 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 }
 
 int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec, 
-		    int degree, int variablePrecision, FILE *fd, char *name, int *powerOverlaps) {
-  int res, i, k, variableNumber, comingFormat, producedFormat, issuedCode, issuedVariables, c;
+		    int degree, int variablePrecision, FILE *fd, char *name, int *powerOverlaps, int *powVarNum) {
+  int res, i, k, variableNumber, comingFormat, producedFormat, issuedCode, issuedVariables, c, c2, t2;
   int coeffFormat, currOverlap, t;
   char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2; 
   
@@ -1703,12 +1828,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	  }
 	} else {
-	  /* Multiplication by x^k, which we be in any case at least a double-double */
+	  /* Multiplication by x^k, which will be in any case at least a double-double */
 	  c = snprintf(buffer1,CODESIZE,
-		       "MulAdd22(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_%s_pow%dh,%s_%s_pow%dm,%s_t_%dh,%s_t_%dm);",
+		       "MulAdd22(&%s_t_%dh,&%s_t_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_t_%dh,%s_t_%dm);",
 		       name,variableNumber,name,variableNumber,
 		       name,i,name,i,
-		       name,variablename,k,name,variablename,k,
+		       name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,
 		       name,variableNumber-1,name,variableNumber-1);
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = snprintf(buffer2,CODESIZE,
@@ -1774,7 +1899,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   depends only on the overlap of the entering temporary.
 		   If the precision is not sufficient, we renormalize.
 		*/
-		t = 0;
+		t = 0; t2 = 0;
 		if (mulPrec[i] > (97 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = snprintf(buffer1,CODESIZE,
@@ -1851,7 +1976,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   depends only on the overlap of the entering temporary.
 		   If the precision is not sufficient, we renormalize.
 		*/
-		t = 0;
+		t = 0; t2 = 0;
 		if (mulPrec[i] > (97 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = snprintf(buffer1,CODESIZE,
@@ -1925,7 +2050,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   depends only on the overlap of the entering temporary.
 		   If the precision is not sufficient, we renormalize.
 		*/
-		t = 0;
+		t = 0; t2 = 0;
 		if (mulPrec[i] > (100 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = snprintf(buffer1,CODESIZE,
@@ -2013,7 +2138,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		     depends only on the overlap of the entering temporary.
 		     If the precision is not sufficient, we renormalize.
 		  */
-		  t = 0;
+		  t = 0; t2 = 0;
 		  if (mulPrec[i] > (97 + currOverlap)) {
 		    /* We must renormalize the temporary */
 		    c = snprintf(buffer1,CODESIZE,
@@ -2026,9 +2151,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 		  
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
-			       name,variablename,name,variablename,
+			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],
 			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
@@ -2045,9 +2170,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  */
 
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_t_%dh,%s_t_%dm);",
+			       "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%dh,%s_t_%dm);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
-			       name,variablename,name,variablename,
+			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],
 			       name,variableNumber-1,name,variableNumber-1);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
@@ -2064,10 +2189,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  */
 
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow2h,%s_%s_pow2m);",
+			       "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
 			       name,variableNumber-1,
-			       name,variablename,name,variablename);
+			       name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
@@ -2090,7 +2215,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		     again if needed.
 		  */
 
-		  t = 0;
+		  t = 0; t2 = 0;
 		  if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[1]))) {
 		    /* The precision is not sufficient, we have to renormalize at least one operand */
 		    if (currOverlap < powerOverlaps[1]) {
@@ -2105,11 +2230,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    } else {
 		      /* We have to renormalize first x^2 */
 		      c = snprintf(buffer1,CODESIZE,
-				   "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
-				   name,variablename,name,variablename,name,variablename,
-				   name,variablename,name,variablename,name,variablename);
+				   "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+				   name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,
+				   name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
+		      powVarNum[1]++;
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
-		      t = c;
+		      c2 = snprintf(buffer2,CODESIZE,
+				    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				    name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2);		
+		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
+		      t = c; t2 = c2;
 		      powerOverlaps[1] = 52;
 		    }
 		    if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[1]))) {
@@ -2126,26 +2256,31 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      } else {
 			/* We have to renormalize x^2 */
 			c = snprintf(buffer1+t,CODESIZE-t,
-				     "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
-				     name,variablename,name,variablename,name,variablename,
-				     name,variablename,name,variablename,name,variablename);
+				     "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+				     name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,
+				     name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
+			powVarNum[1]++;
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-			t += c;
+			c2 = snprintf(buffer2+t2,CODESIZE-t2,
+				      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				      name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2);		
+			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
+			t += c; t2 += c2;
 			powerOverlaps[1] = 52;
 		      }
 		    } 
 		  }
 
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			       "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
-			       name,variablename,name,variablename,name,variablename,
+			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1],
 			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		  c = snprintf(buffer2,CODESIZE,
+		  c = snprintf(buffer2+t2,CODESIZE-t2,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  currOverlap = MIN(48,currOverlap-4);
 		  break;
 		case 2:
@@ -2157,28 +2292,33 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		     on the triple-double x^2
 		     If the precision is not sufficient, we renormalize.
 		  */
-		  t = 0;
+		  t = 0; t2 = 0;
 		  if (mulPrec[i] > (97 + powerOverlaps[1])) {
 		    /* We must renormalize the power */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
-				     name,variablename,name,variablename,name,variablename,
-				     name,variablename,name,variablename,name,variablename);
+				 "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+				     name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,
+				     name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
+		    powVarNum[1]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    c2 = snprintf(buffer2,CODESIZE,
+				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				  name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2);		
+		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
-		    t = c;
+		    t = c; t2 = c2;
 		  }
 		  
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);",
+			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
 			       name,variableNumber-1,name,variableNumber-1,
-			       name,variablename,name,variablename,name,variablename);
+			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		  c = snprintf(buffer2,CODESIZE,
+		  c = snprintf(buffer2+t2,CODESIZE-t2,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  currOverlap = MIN(48,currOverlap-4);
 		  break;
 		default:
@@ -2190,28 +2330,33 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		     on the triple-double x^2
 		     If the precision is not sufficient, we renormalize.
 		  */
-		  t = 0;
+		  t = 0; t2 = 0;
 		  if (mulPrec[i] > (100 + powerOverlaps[1])) {
 		    /* We must renormalize the power */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
-				     name,variablename,name,variablename,name,variablename,
-				     name,variablename,name,variablename,name,variablename);
+				 "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+				     name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,
+				     name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
+		    powVarNum[1]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    c2 = snprintf(buffer2,CODESIZE,
+				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				  name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2);		
+		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
-		    t = c;
+		    t = c; t2 = c2;
 		  }
 
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);",
+			       "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
 			       name,variableNumber-1,
-			       name,variablename,name,variablename,name,variablename);
+			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		  c = snprintf(buffer2,CODESIZE,
+		  c = snprintf(buffer2+t2,CODESIZE-t2,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  currOverlap = MIN(47,currOverlap - 5);
 		}
 	      }
@@ -2230,7 +2375,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   again if needed.
 		*/
 		
-		t = 0;
+		t = 0; t2 = 0;
 		if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[k-1]))) {
 		  /* The precision is not sufficient, we have to renormalize at least one operand */
 		  if (currOverlap < powerOverlaps[k-1]) {
@@ -2245,11 +2390,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  } else {
 		    /* We have to renormalize first x^k */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				 name,variablename,k,name,variablename,k,name,variablename,k,
-				 name,variablename,k,name,variablename,k,name,variablename,k);
+				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				 name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,
+				 name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
+		    powVarNum[k-1]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
-		    t = c;
+		    c2 = snprintf(buffer2,CODESIZE,
+				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				  name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
+		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
+		    t = c; t2 = c2;
 		    powerOverlaps[k-1] = 52;
 		  }
 		  if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[k-1]))) {
@@ -2266,26 +2416,31 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    } else {
 		      /* We have to renormalize x^k */
 		      c = snprintf(buffer1+t,CODESIZE-t,
-				   "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				   name,variablename,k,name,variablename,k,name,variablename,k,
-				   name,variablename,k,name,variablename,k,name,variablename,k);
+				   "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				   name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,
+				   name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
+		      powVarNum[k-1]++;
 		      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		      t += c;
+		      c2 = snprintf(buffer2,CODESIZE,
+				    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				    name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
+		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
+		      t += c; t2 += c2;
 		      powerOverlaps[k-1] = 52;
 		    }
 		  } 
 		}
 		
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
-			     name,variablename,k,name,variablename,k,name,variablename,k,
+			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,
 			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
+		c = snprintf(buffer2+t2,CODESIZE-t2,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(48,currOverlap-4);
 		break;
 	      case 2:
@@ -2297,28 +2452,33 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   on the triple-double x^k
 		   If the precision is not sufficient, we renormalize.
 		*/
-		t = 0;
+		t = 0; t2 = 0;
 		if (mulPrec[i] > (97 + powerOverlaps[k-1])) {
 		  /* We must renormalize the power */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			       name,variablename,k,name,variablename,k,name,variablename,k,
-			       name,variablename,k,name,variablename,k,name,variablename,k);
+			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			       name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,
+			       name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
+		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  c2 = snprintf(buffer2,CODESIZE,
+				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
+		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
-		  t = c;
+		  t = c; t2 = c2;
 		}
 		
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,name,variableNumber-1,
-			     name,variablename,k,name,variablename,k,name,variablename,k);
+			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
+		c = snprintf(buffer2+t2,CODESIZE-t2,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(48,currOverlap-4);
 		break;
 	      default:
@@ -2330,28 +2490,33 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   on the triple-double x^k
 		   If the precision is not sufficient, we renormalize.
 		*/
-		t = 0;
+		t = 0; t2 = 0;
 		if (mulPrec[i] > (100 + powerOverlaps[k-1])) {
 		  /* We must renormalize the power */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			       name,variablename,k,name,variablename,k,name,variablename,k,
-			       name,variablename,k,name,variablename,k,name,variablename,k);
+			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			       name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,
+			       name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
+		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  c2 = snprintf(buffer2,CODESIZE,
+				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
+		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
-		  t = c;
+		  t = c; t2 = c2;
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,
-			     name,variablename,k,name,variablename,k,name,variablename,k);
+			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
+		c = snprintf(buffer2+t2,CODESIZE-t2,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(47,currOverlap-5);
 	      }
 	    }
@@ -2457,28 +2622,33 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   we renormalize the whole triple-double value. 
 		*/
 
-		t = 0;
+		t = 0; t2 = 0;
 		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
 		  /* We must renormalize the power */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			       name,variablename,k,name,variablename,k,name,variablename,k,
-			       name,variablename,k,name,variablename,k,name,variablename,k);
+			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			       name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,
+			       name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
+		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  c2 = snprintf(buffer2,CODESIZE,
+				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
+		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
-		  t = c;
+		  t = c; t2 = c2;
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul22(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_t_%dm,%s_%s_pow%dh,%s_%s_pow%dm);",
+			     "Mul22(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_t_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
 			     name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,name,variableNumber-1,
-			     name,variablename,k,name,variablename,k);
+			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
+		c = snprintf(buffer2+t2,CODESIZE-t2,
 			     "double %s_t_%dh, %s_t_%dm;",
 			     name,variableNumber,name,variableNumber);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
 		break;
 	      default:
 		/* Multiply the double temporary by x^k as a double-double, produce a double-double */
@@ -2489,28 +2659,33 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   we renormalize the whole triple-double value. 
 		*/
 
-		t = 0;
+		t = 0; t2 = 0;
 		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
 		  /* We must renormalize the power */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			       name,variablename,k,name,variablename,k,name,variablename,k,
-			       name,variablename,k,name,variablename,k,name,variablename,k);
+			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			       name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,
+			       name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
+		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  powerOverlaps[k-1] = 52;
-		  t = c;
+		  c2 = snprintf(buffer2,CODESIZE,
+				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
+		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
+		  t = c; t2 = c2;
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul122(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_%s_pow%dh,%s_%s_pow%dm);",
+			     "Mul122(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
 			     name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,
-			     name,variablename,k,name,variablename,k);
+			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
+		c = snprintf(buffer2+t2,CODESIZE-t2,
 			     "double %s_t_%dh, %s_t_%dm;",
 			     name,variableNumber,name,variableNumber);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
 	      }
 	    }
 	  } else {
@@ -2572,17 +2747,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  
 		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) { 
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_t_%dh = %s_t_%dh * (%s_%s_pow%dh + %s_%s_pow%dm);",
+			       "%s_t_%dh = %s_t_%dh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
 			       name,variableNumber,
 			       name,variableNumber-1,
-			       name,variablename,k,
-			       name,variablename,k);
+			       name,variablename,powVarNum[k-1],k,
+			       name,variablename,powVarNum[k-1],k);
 		} else {
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_t_%dh = %s_t_%dh * %s_%s_pow%dh;",
+			       "%s_t_%dh = %s_t_%dh * %s_%s_%d_pow%dh;",
 			       name,variableNumber,
 			       name,variableNumber-1,
-			       name,variablename,k);
+			       name,variablename,powVarNum[k-1],k);
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
@@ -2649,7 +2824,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		 The precision depends thus only on the overlap of the coming temporary value.
 		 If the precision is not sufficient, we renormalize.
 	      */
-	      t = 0;
+	      t = 0; t2 = 0;
 	      if (addPrec[i] > (97 + currOverlap)) {
 		/* We must renormalize the temporary */
 		c = snprintf(buffer1,CODESIZE,
@@ -2682,7 +2857,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		 The precision depends thus only on the overlap of the coming temporary value.
 		 If the precision is not sufficient, we renormalize.
 	      */
-	      t = 0;
+	      t = 0; t2 = 0;
 	      if (addPrec[i] > (103 + currOverlap)) {
 		/* We must renormalize the temporary */
 		c = snprintf(buffer1,CODESIZE,
@@ -2715,7 +2890,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		 The precision depends thus only on the overlap of the coming temporary value.
 		 If the precision is not sufficient, we renormalize.
 	      */
-	      t = 0;
+	      t = 0; t2 = 0;
 	      if (addPrec[i] > (104 + currOverlap)) {
 		/* We must renormalize the temporary */
 		c = snprintf(buffer1,CODESIZE,
@@ -3050,7 +3225,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   depends only on the overlap of the entering temporary.
 		   If the precision is not sufficient, we renormalize.
 		*/
-		t = 0;
+		t = 0; t2 = 0;
 		if (mulPrec[i] > (97 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = snprintf(buffer1,CODESIZE,
@@ -3127,7 +3302,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   depends only on the overlap of the entering temporary.
 		   If the precision is not sufficient, we renormalize.
 		*/
-		t = 0;
+		t = 0; t2 = 0;
 		if (mulPrec[i] > (97 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = snprintf(buffer1,CODESIZE,
@@ -3201,7 +3376,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   depends only on the overlap of the entering temporary.
 		   If the precision is not sufficient, we renormalize.
 		*/
-		t = 0;
+		t = 0; t2 = 0;
 		if (mulPrec[i] > (100 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = snprintf(buffer1,CODESIZE,
@@ -3289,7 +3464,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		     depends only on the overlap of the entering temporary.
 		     If the precision is not sufficient, we renormalize.
 		  */
-		  t = 0;
+		  t = 0; t2 = 0;
 		  if (mulPrec[i] > (97 + currOverlap)) {
 		    /* We must renormalize the temporary */
 		    c = snprintf(buffer1,CODESIZE,
@@ -3302,9 +3477,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 		  
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
-			       name,variablename,name,variablename,
+			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],
 			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
@@ -3321,9 +3496,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  */
 
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_t_%dh,%s_t_%dm);",
+			       "Mul23(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%dh,%s_t_%dm);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
-			       name,variablename,name,variablename,
+			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],
 			       name,variableNumber-1,name,variableNumber-1);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
@@ -3340,10 +3515,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  */
 
 		  c = snprintf(buffer1,CODESIZE,
-			       "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow2h,%s_%s_pow2m);",
+			       "Mul123(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
 			       name,variableNumber-1,
-			       name,variablename,name,variablename);
+			       name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = snprintf(buffer2,CODESIZE,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
@@ -3366,7 +3541,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		     again if needed.
 		  */
 
-		  t = 0;
+		  t = 0; t2 = 0;
 		  if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[1]))) {
 		    /* The precision is not sufficient, we have to renormalize at least one operand */
 		    if (currOverlap < powerOverlaps[1]) {
@@ -3381,11 +3556,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    } else {
 		      /* We have to renormalize first x^2 */
 		      c = snprintf(buffer1,CODESIZE,
-				   "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
-				   name,variablename,name,variablename,name,variablename,
-				   name,variablename,name,variablename,name,variablename);
+				   "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+				   name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,
+				   name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
+		      powVarNum[1]++;
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
-		      t = c;
+		      c2 = snprintf(buffer2,CODESIZE,
+				    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				    name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2);		
+		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
+		      t = c; t2 = c2;
 		      powerOverlaps[1] = 52;
 		    }
 		    if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[1]))) {
@@ -3402,26 +3582,31 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      } else {
 			/* We have to renormalize x^2 */
 			c = snprintf(buffer1+t,CODESIZE-t,
-				     "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
-				     name,variablename,name,variablename,name,variablename,
-				     name,variablename,name,variablename,name,variablename);
+				     "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+				     name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,
+				     name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
+			powVarNum[1]++;
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-			t += c;
+			c2 = snprintf(buffer2+t2,CODESIZE-t2,
+				      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				      name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2);		
+			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
+			t += c; t2 += c2;
 			powerOverlaps[1] = 52;
 		      }
 		    } 
 		  }
 
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			       "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
-			       name,variablename,name,variablename,name,variablename,
+			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1],
 			       name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		  c = snprintf(buffer2,CODESIZE,
+		  c = snprintf(buffer2+t2,CODESIZE-t2,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  currOverlap = MIN(48,currOverlap-4);
 		  break;
 		case 2:
@@ -3433,25 +3618,30 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		     on the triple-double x^2
 		     If the precision is not sufficient, we renormalize.
 		  */
-		  t = 0;
+		  t = 0; t2 = 0;
 		  if (mulPrec[i] > (97 + powerOverlaps[1])) {
 		    /* We must renormalize the power */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
-				     name,variablename,name,variablename,name,variablename,
-				     name,variablename,name,variablename,name,variablename);
+				 "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+				     name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,
+				     name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
+		    powVarNum[1]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    c2 = snprintf(buffer2,CODESIZE,
+				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				  name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2);		
+		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
-		    t = c;
+		    t = c; t2 = c2;
 		  }
 		  
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);",
+			       "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
 			       name,variableNumber-1,name,variableNumber-1,
-			       name,variablename,name,variablename,name,variablename);
+			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		  c = snprintf(buffer2,CODESIZE,
+		  c = snprintf(buffer2+t2,CODESIZE-t2,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
@@ -3466,28 +3656,33 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		     on the triple-double x^2
 		     If the precision is not sufficient, we renormalize.
 		  */
-		  t = 0;
+		  t = 0; t2 = 0;
 		  if (mulPrec[i] > (100 + powerOverlaps[1])) {
 		    /* We must renormalize the power */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_pow2h,&%s_%s_pow2m,&%s_%s_pow2l,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);\n",
-				     name,variablename,name,variablename,name,variablename,
-				     name,variablename,name,variablename,name,variablename);
+				 "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+				     name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,name,variablename,powVarNum[1]+1,
+				     name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
+		    powVarNum[1]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    c2 = snprintf(buffer2,CODESIZE,
+				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				  name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2,name,variablename,powVarNum[1],2);		
+		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
-		    t = c;
+		    t = c; t2 = c2;
 		  }
 
 		  c = snprintf(buffer1+t,CODESIZE-t,
-			       "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow2h,%s_%s_pow2m,%s_%s_pow2l);",
+			       "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
 			       name,variableNumber,name,variableNumber,name,variableNumber,
 			       name,variableNumber-1,
-			       name,variablename,name,variablename,name,variablename);
+			       name,variablename,powVarNum[1],name,variablename,powVarNum[1],name,variablename,powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		  c = snprintf(buffer2,CODESIZE,
+		  c = snprintf(buffer2+t2,CODESIZE-t2,
 			       "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			       name,variableNumber,name,variableNumber,name,variableNumber);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  currOverlap = MIN(47,currOverlap - 5);
 		}
 	      }
@@ -3506,7 +3701,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   again if needed.
 		*/
 		
-		t = 0;
+		t = 0; t2 = 0;
 		if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[k-1]))) {
 		  /* The precision is not sufficient, we have to renormalize at least one operand */
 		  if (currOverlap < powerOverlaps[k-1]) {
@@ -3521,11 +3716,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  } else {
 		    /* We have to renormalize first x^k */
 		    c = snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				 name,variablename,k,name,variablename,k,name,variablename,k,
-				 name,variablename,k,name,variablename,k,name,variablename,k);
+				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				 name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,
+				 name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
+		    powVarNum[k-1]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
-		    t = c;
+		    c2 = snprintf(buffer2,CODESIZE,
+				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				  name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
+		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
+		    t = c; t2 = c2;
 		    powerOverlaps[k-1] = 52;
 		  }
 		  if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[k-1]))) {
@@ -3542,26 +3742,31 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    } else {
 		      /* We have to renormalize x^k */
 		      c = snprintf(buffer1+t,CODESIZE-t,
-				   "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-				   name,variablename,k,name,variablename,k,name,variablename,k,
-				   name,variablename,k,name,variablename,k,name,variablename,k);
+				   "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+				   name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,
+				   name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
+		      powVarNum[k-1]++;
 		      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		      t += c;
+		      c2 = snprintf(buffer2+t2,CODESIZE-t2,
+				    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				    name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
+		      if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
+		      t += c; t2 += c2;
 		      powerOverlaps[k-1] = 52;
 		    }
 		  } 
 		}
 		
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
+			     "Mul33(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_t_%dh,%s_t_%dm,%s_t_%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
-			     name,variablename,k,name,variablename,k,name,variablename,k,
+			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,
 			     name,variableNumber-1,name,variableNumber-1,name,variableNumber-1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
+		c = snprintf(buffer2+t2,CODESIZE-t2,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(48,currOverlap-4);
 		break;
 	      case 2:
@@ -3573,28 +3778,33 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   on the triple-double x^k
 		   If the precision is not sufficient, we renormalize.
 		*/
-		t = 0;
+		t = 0; t2 = 0;
 		if (mulPrec[i] > (97 + powerOverlaps[k-1])) {
 		  /* We must renormalize the power */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			       name,variablename,k,name,variablename,k,name,variablename,k,
-			       name,variablename,k,name,variablename,k,name,variablename,k);
+			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			       name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,
+			       name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
+		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  c2 = snprintf(buffer2,CODESIZE,
+				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
+		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
-		  t = c;
+		  t = c; t2 = c2;
 		}
 		
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			     "Mul233(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_t_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,name,variableNumber-1,
-			     name,variablename,k,name,variablename,k,name,variablename,k);
+			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
+		c = snprintf(buffer2+t2,CODESIZE-t2,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(48,currOverlap-4);
 		break;
 	      default:
@@ -3606,28 +3816,33 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   on the triple-double x^k
 		   If the precision is not sufficient, we renormalize.
 		*/
-		t = 0;
+		t = 0; t2 = 0;
 		if (mulPrec[i] > (100 + powerOverlaps[k-1])) {
 		  /* We must renormalize the power */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			       name,variablename,k,name,variablename,k,name,variablename,k,
-			       name,variablename,k,name,variablename,k,name,variablename,k);
+			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			       name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,
+			       name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
+		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  c2 = snprintf(buffer2,CODESIZE,
+				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
+		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
-		  t = c;
+		  t = c; t2 = c2;
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);",
+			     "Mul133(&%s_t_%dh,&%s_t_%dm,&%s_t_%dl,%s_t_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
 			     name,variableNumber,name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,
-			     name,variablename,k,name,variablename,k,name,variablename,k);
+			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
+		c = snprintf(buffer2+t2,CODESIZE-t2,
 			     "double %s_t_%dh, %s_t_%dm, %s_t_%dl;",
 			     name,variableNumber,name,variableNumber,name,variableNumber);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(47,currOverlap-5);
 	      }
 	    }
@@ -3733,28 +3948,33 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   we renormalize the whole triple-double value. 
 		*/
 
-		t = 0;
+		t = 0; t2 = 0;
 		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
 		  /* We must renormalize the power */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			       name,variablename,k,name,variablename,k,name,variablename,k,
-			       name,variablename,k,name,variablename,k,name,variablename,k);
+			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			       name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,
+			       name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
+		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  powerOverlaps[k-1] = 52;
-		  t = c;
+		  c2 = snprintf(buffer2,CODESIZE,
+				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
+		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
+		  t = c; t2 = c2;
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul22(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_t_%dm,%s_%s_pow%dh,%s_%s_pow%dm);",
+			     "Mul22(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_t_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
 			     name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,name,variableNumber-1,
-			     name,variablename,k,name,variablename,k);
+			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
+		c = snprintf(buffer2+t2,CODESIZE-t2,
 			     "double %s_t_%dh, %s_t_%dm;",
 			     name,variableNumber,name,variableNumber);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
 		break;
 	      default:
 		/* Multiply the double temporary by x^k as a double-double, produce a double-double */
@@ -3765,28 +3985,33 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		   we renormalize the whole triple-double value. 
 		*/
 
-		t = 0;
+		t = 0; t2 = 0;
 		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
 		  /* We must renormalize the power */
 		  c = snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_pow%dh,&%s_%s_pow%dm,&%s_%s_pow%dl,%s_%s_pow%dh,%s_%s_pow%dm,%s_%s_pow%dl);\n",
-			       name,variablename,k,name,variablename,k,name,variablename,k,
-			       name,variablename,k,name,variablename,k,name,variablename,k);
+			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+			       name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,name,variablename,powVarNum[k-1]+1,k,
+			       name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
+		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  powerOverlaps[k-1] = 52;
-		  t = c;
+		  c2 = snprintf(buffer2,CODESIZE,
+				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+				name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
+		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
+		  t = c; t2 = c2;
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
-			     "Mul122(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_%s_pow%dh,%s_%s_pow%dm);",
+			     "Mul122(&%s_t_%dh,&%s_t_%dm,%s_t_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
 			     name,variableNumber,name,variableNumber,
 			     name,variableNumber-1,
-			     name,variablename,k,name,variablename,k);
+			     name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
-		c = snprintf(buffer2,CODESIZE,
+		c = snprintf(buffer2+t2,CODESIZE-t2,
 			     "double %s_t_%dh, %s_t_%dm;",
 			     name,variableNumber,name,variableNumber);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
 	      }
 	    }
 	  } else {
@@ -3848,17 +4073,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  
 		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) { 
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_t_%dh = %s_t_%dh * (%s_%s_pow%dh + %s_%s_pow%dm);",
+			       "%s_t_%dh = %s_t_%dh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
 			       name,variableNumber,
 			       name,variableNumber-1,
-			       name,variablename,k,
-			       name,variablename,k);
+			       name,variablename,powVarNum[k-1],k,
+			       name,variablename,powVarNum[k-1],k);
 		} else {
 		  c = snprintf(buffer1,CODESIZE,
-			       "%s_t_%dh = %s_t_%dh * %s_%s_pow%dh;",
+			       "%s_t_%dh = %s_t_%dh * %s_%s_%d_pow%dh;",
 			       name,variableNumber,
 			       name,variableNumber-1,
-			       name,variablename,k);
+			       name,variablename,powVarNum[k-1],k);
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
@@ -4032,7 +4257,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   node **coefficients;
   node *tempTree;
   mpfr_t *fpCoefficients;
-  int *addPrec, *mulPrec, *powPrec, *overlapsPowers;
+  int *addPrec, *mulPrec, *powPrec, *overlapsPowers, *powVarNum;
   int *fpCoeffRoundAutomatically;
   int targetPrec;
 
@@ -4142,6 +4367,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
 
   powPrec = (int *) safeCalloc(degree,sizeof(int));
   overlapsPowers = (int *) safeCalloc(degree+1,sizeof(int));
+  powVarNum = (int *) safeCalloc(degree+1,sizeof(int));
 
   if (!determinePowers(fpCoefficients, degree, mulPrec, powPrec)) {
     printMessage(1,"Warning: a problem has been encountered during the determination of the powers needed.\n");
@@ -4188,13 +4414,13 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
     printMessage(1,"The implementation will be wrong.\n");
   }
 
-  if (!implementPowers(powPrec, degree, variablePrecision, fd, name, overlapsPowers)) {
+  if (!implementPowers(powPrec, degree, variablePrecision, fd, name, overlapsPowers, powVarNum)) {
     printMessage(1,"Warning: a problem has been encountered during the generation of the code for the powers of %s.\n",
 		 variablename);
     printMessage(1,"The produced implementation may be incorrect.\n");
   }
 
-  if (!implementHorner(fpCoefficients, addPrec, mulPrec, degree, variablePrecision, fd, name, overlapsPowers)) {
+  if (!implementHorner(fpCoefficients, addPrec, mulPrec, degree, variablePrecision, fd, name, overlapsPowers, powVarNum)) {
     printMessage(1,"Warning: a problem has been encountered during the generation of the code for the horner scheme.\n");
     printMessage(1,"The produced implementation may be incorrect.\n");
   }
@@ -4208,6 +4434,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   free(mulPrec);
   free(powPrec);
   free(overlapsPowers);
+  free(powVarNum);
   free_memory(simplifiedFunc);
   mpfr_clear(temp);
 
