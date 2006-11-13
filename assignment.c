@@ -50,13 +50,39 @@ void *getEntry(chain *symTbl, char *name, void * (*copyValue) (void *)) {
   return result;
 }
 
-
-
 void freeEntry(void *e, void (*f) (void *)) {
   f(((entry *) e)->value);
   free(((entry *) e)->name);
   free(e);
 }
+
+
+chain *removeEntry(chain *symTbl, char *name, void (*f) (void *)) {
+  chain *curr, *prev, *newSymTbl;
+
+  curr = symTbl; prev = NULL;
+  while (curr != NULL) {
+    if (strcmp(((entry *) (curr->value))->name,name) == 0) {
+      if ((prev == NULL) && (curr->next == NULL)) {
+	newSymTbl = NULL;
+      } else {
+	if (prev == NULL) {
+	  newSymTbl = curr->next;
+	} else {
+	  prev->next = curr->next;
+	  newSymTbl = symTbl;
+	}
+      }
+      freeEntry(((entry *) curr->value),f);
+      return newSymTbl;
+    }
+    prev = curr;
+    curr = curr->next;
+  }
+
+  return symTbl;
+}
+
 
 void freeSymbolTable(chain *symTbl, void (*f) (void *)) {
   if (symTbl != NULL) {

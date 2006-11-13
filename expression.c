@@ -6250,10 +6250,10 @@ node *getIthCoefficient(node *poly, int i) {
 }
 
 
-node *getSubpolynomial(node *poly, chain *monomials, mp_prec_t prec) {
+node *getSubpolynomial(node *poly, chain *monomials, int fillDegrees, mp_prec_t prec) {
   node *tempNode, *tempNode2, *tempNode3;
   node **coefficients;
-  int degree, k, currDeg;
+  int degree, k, currDeg, maxDegree;
   chain *curr;
 
   tempNode = (node *) safeMalloc(sizeof(node));
@@ -6276,8 +6276,11 @@ node *getSubpolynomial(node *poly, chain *monomials, mp_prec_t prec) {
   mpfr_init2(*(tempNode->value),prec);
   mpfr_set_d(*(tempNode->value),0.0,GMP_RNDN);  
 
+  maxDegree = -1;
+
   while (curr != NULL) {
     currDeg = *((int *) (curr->value));
+    if (currDeg > maxDegree) maxDegree = currDeg;
     if ((currDeg >= 0) && (currDeg <= degree) && (coefficients[currDeg] != NULL)) {
       tempNode2 = (node *) safeMalloc(sizeof(node));
       tempNode2->nodeType = POW;
@@ -6304,6 +6307,36 @@ node *getSubpolynomial(node *poly, chain *monomials, mp_prec_t prec) {
     }
     curr = curr->next;
   }
+
+  if (fillDegrees) {
+    for (k=maxDegree+1;k<=degree;k++) {
+      if (coefficients[k] != NULL) {
+	tempNode2 = (node *) safeMalloc(sizeof(node));
+	tempNode2->nodeType = POW;
+	tempNode3 = (node *) safeMalloc(sizeof(node));
+	tempNode3->nodeType = CONSTANT;
+	tempNode3->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*(tempNode3->value),prec);
+	if (mpfr_set_si(*(tempNode3->value),k,GMP_RNDN) != 0) {
+	  printMessage(1,"Warning: during subpolynomial extraction, the exponent of a power could not be represented exactly on with the given precision.\n");
+	}
+	tempNode2->child2 = tempNode3;
+	tempNode3 = (node *) safeMalloc(sizeof(node));
+	tempNode3->nodeType = VARIABLE;
+	tempNode2->child1 = tempNode3;
+	tempNode3 = (node *) safeMalloc(sizeof(node));
+	tempNode3->nodeType = MUL;
+	tempNode3->child2 = tempNode2;
+	tempNode3->child1 = copyTree(coefficients[k]);
+	tempNode2 = (node *) safeMalloc(sizeof(node));
+	tempNode2->nodeType = ADD;
+	tempNode2->child2 = tempNode3;
+	tempNode2->child1 = tempNode;
+	tempNode = tempNode2;
+      }
+    }
+  }
+
 
   for (k=0;k<=degree;k++) {
     if (coefficients[k] != NULL) free_memory(coefficients[k]);

@@ -17,6 +17,7 @@ struct entryStruct
 chain *addEntry(chain *symTbl, char *name, void *value, void * (*copyValue) (void *));
 int containsEntry(chain *symTbl, char *name);
 void *getEntry(chain *symTbl, char *name, void * (*copyValue) (void *));
+chain *removeEntry(chain *symTbl, char *name, void (*f) (void *));
 void freeSymbolTable(chain *symTbl, void (*f) (void *));
 
 

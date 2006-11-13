@@ -211,7 +211,7 @@ TO              "to"
 COEFF           "coeff"
 SUBPOLY         "subpoly"
 
-
+QUESTIONMARK    "?"
 
 
 %%
@@ -357,7 +357,7 @@ SUBPOLY         "subpoly"
 {TO}                     {     promptToBePrinted = 0; return TOTOKEN; }                    
 {COEFF}                  {     promptToBePrinted = 0; return COEFFTOKEN; }                    
 {SUBPOLY}                {     promptToBePrinted = 0; return SUBPOLYTOKEN; }                    
-
+{QUESTIONMARK}           {     promptToBePrinted = 0; return QUESTIONMARKTOKEN; }                    
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

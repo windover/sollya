@@ -96,6 +96,6 @@ int treeSize(node *tree);
 void printMpfr(mpfr_t x);
 int highestDegreeOfPolynomialSubexpression(node *tree);
 node *getIthCoefficient(node *poly, int i);
-node *getSubpolynomial(node *poly, chain *monomials, mp_prec_t prec);
+node *getSubpolynomial(node *poly, chain *monomials, int fillDegrees, mp_prec_t prec);
 
 #endif /* ifdef EXPRESSION_H*/

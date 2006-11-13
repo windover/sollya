@@ -186,6 +186,7 @@ void yyerror(char *message) {
 %token  TOTOKEN
 %token  COEFFTOKEN
 %token  SUBPOLYTOKEN
+%token  QUESTIONMARKTOKEN
 
 %type <other> commands
 %type <other> command
@@ -261,6 +262,9 @@ void yyerror(char *message) {
 %type <other> externalplot
 %type <anInteger> externalplotmode
 %type <aChain> integerlist
+%type <rangeval> printableRange
+%type <rangeval> symbolRange
+
 %%
 
 commands:    QUITTOKEN SEMICOLONTOKEN
@@ -428,12 +432,37 @@ command:     plot
            | dyadic SEMICOLONTOKEN  {
 	                     $$ = NULL;
 	                   }
+           | DYADICTOKEN EQUALTOKEN QUESTIONMARKTOKEN SEMICOLONTOKEN  {
+	                     switch (dyadic) {	     
+			     case 0:
+			       printf("Dyadic number output is deactivated.\n");
+			       break;
+			     case 1:
+			       printf("Dyadic number output is activated.\n");
+			       break;
+			     case 2:
+			       printf("Dyadic number output is activated with power of 2 notation.\n");
+			       break;
+			     default:
+			       printf("Dyadic number output in unknown state.\n");
+			     }
+	                     $$ = NULL;	                   
+	                   }
            | taylorrecursions SEMICOLONTOKEN {
+	                     $$ = NULL;
+	                   }
+           | TAYLORRECURSIONSTOKEN EQUALTOKEN QUESTIONMARKTOKEN SEMICOLONTOKEN {
+			     printf("The number of recursions for the Taylor evaluation is set to %d.\n",taylorrecursions);	                     
 	                     $$ = NULL;
 	                   }
            | verbosityset SEMICOLONTOKEN {
 	                     $$ = NULL;
 	                   }
+           | VERBOSITYTOKEN EQUALTOKEN QUESTIONMARKTOKEN SEMICOLONTOKEN
+                           {
+			     printf("Verbosity set to level %d.\n",verbosity);
+			     $$ = NULL;
+                           }
            | findzeros     {
 	                     $$ = NULL;
 	                   }
@@ -456,6 +485,11 @@ command:     plot
 			     defaultprecision = $1;
                              $$ = NULL;
                            }
+	   | PRECTOKEN EQUALTOKEN QUESTIONMARKTOKEN SEMICOLONTOKEN 
+                           {
+			     printf("Default precision is set to %d bits.\n",(int) defaultprecision);
+                             $$ = NULL;
+                           }
 	   | points SEMICOLONTOKEN 
                            {
 			     defaultpoints = $1;
@@ -465,6 +499,11 @@ command:     plot
 	   | points EXCLAMATIONTOKEN SEMICOLONTOKEN 
                            {
 			     defaultpoints = $1;
+                             $$ = NULL;
+                           }
+	   | POINTSTOKEN EQUALTOKEN QUESTIONMARKTOKEN SEMICOLONTOKEN 
+                           {
+			     printf("Default point number is set to %d points.\n",(int) defaultpoints);
                              $$ = NULL;
                            }
            | assignment SEMICOLONTOKEN
@@ -643,6 +682,41 @@ assignment:  lvariable EQUALTOKEN function
 			     if (containsEntry(symbolTable2,($1))) {
 			       printMessage(1,"Warning: the identifier \"%s\" is already assigned. It cannot be reassigned.\n",($1));
 			       printMessage(1,"The last command will have no effect.\n");
+			     } else {
+			       symbolTable2 = addEntry(symbolTable2,($1),&($3),copyRangetypePtr);
+			     }
+			     free($1);
+			     mpfr_clear(*(($3).a));
+			     mpfr_clear(*(($3).b));			     
+			     free(($3).a);
+			     free(($3).b);
+			     $$ = NULL;
+			   }
+           | lvariable EQUALTOKEN function EXCLAMATIONTOKEN
+                           {
+			     if ((variablename != NULL) && (strcmp(variablename,($1)) == 0)) {
+			       printMessage(1,"Warning: the identifer \"%s\" is already bound as the current variable. It cannot be assigned.\n",($1));
+			       printMessage(1,"The last command will have no effect.\n");
+			     } else {
+			       if (containsEntry(symbolTable,($1))) {
+				 printMessage(1,"Warning: the identifier \"%s\" is already assigned. It will be reassigned as forced.\n",($1));
+				 symbolTable = removeEntry(symbolTable, ($1), freeMemoryOnVoid);
+				 symbolTable = addEntry(symbolTable, ($1), ($3), copyTreeOnVoid);
+			       } else {
+				 symbolTable = addEntry(symbolTable,($1),($3),copyTreeOnVoid);
+			       }
+			     }
+			     free(($1));
+			     free_memory(($3));
+			     $$ = NULL;
+                           }
+           | lvariable EQUALTOKEN directrange EXCLAMATIONTOKEN
+                           {
+			     if (containsEntry(symbolTable2,($1))) {
+			       printMessage(1,"Warning: the identifier \"%s\" is already assigned. It will be reassigned as forced.\n",($1));
+			       symbolTable2 = removeEntry(symbolTable2, ($1), freeRangetypePtr);
+			       symbolTable2 = addEntry(symbolTable2, ($1), &($3), copyRangetypePtr);
+
 			     } else {
 			       symbolTable2 = addEntry(symbolTable2,($1),&($3),copyRangetypePtr);
 			     }
@@ -1232,12 +1306,16 @@ autoprint:   function SEMICOLONTOKEN
 				 mpfr_set_d(*mpfr_temp3,0.0,GMP_RNDN);
 				 evaluateConstantWithErrorEstimate(*mpfr_temp, 
 								   *mpfr_temp2, temp_node, *mpfr_temp3, defaultprecision);
-				 mpfr_log2(*mpfr_temp2,*mpfr_temp2,GMP_RNDD);
-				 double_temp = mpfr_get_d(*mpfr_temp2,GMP_RNDD);
+				 mpfr_log2(*mpfr_temp3,*mpfr_temp2,GMP_RNDD);
+				 double_temp = mpfr_get_d(*mpfr_temp3,GMP_RNDD);
 				 if (mpfr_number_p(*mpfr_temp)) {
-				   printMessage(1,
-						"Warning: the displayed value is affected by a relative error of approximately 2^(%f).\n",
-						double_temp);
+				   if (!mpfr_zero_p(*mpfr_temp2)) {
+				     printMessage(1,
+						  "Warning: the displayed value is affected by a relative error of approximately 2^(%f).\n",
+						  double_temp);
+				   } else {
+				     printMessage(1,"Warning: rounding has happened.\n");
+				   }
 				 } else {
 				   printMessage(1,"Warning: the expression is mathematically undefined or numerically unstable.\n");
 				 }
@@ -1268,6 +1346,18 @@ autoprint:   function SEMICOLONTOKEN
 			     free_memory(temp_node);
 			     $$ = NULL;
 			   }
+           | printableRange SEMICOLONTOKEN {
+                             printf("[");
+                             printValue(($1).a,tools_precision);
+			     printf(";");
+			     printValue(($1).b,tools_precision);
+			     printf("]\n");
+			     mpfr_clear(*(($1).a));
+			     mpfr_clear(*(($1).b));
+			     free($1.a);
+			     free($1.b);
+                             $$ = NULL;
+	                    }
 ;
 
 
@@ -1285,10 +1375,6 @@ printlist:   printelem     {
            | printelem COMMATOKEN printlist
                            {
 			     $$ = NULL;
-			   }
-           | LBRACKETTOKEN printlist RBRACKETTOKEN
-                           {
-			     $$ = $2;
 			   }
 ;
 
@@ -1310,6 +1396,18 @@ printelem:   function
 			     free(($1));
                              $$ = NULL;
 			   }
+           | printableRange {
+                             printf("[");
+                             printValue(($1).a,tools_precision);
+			     printf(";");
+			     printValue(($1).b,tools_precision);
+			     printf("] ");
+			     mpfr_clear(*(($1).a));
+			     mpfr_clear(*(($1).b));
+			     free($1.a);
+			     free($1.b);
+                             $$ = NULL;
+	                    }
 ;
 
 printHexa:  PRINTHEXATOKEN constantfunction SEMICOLONTOKEN 
@@ -1743,7 +1841,14 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 
                         |       SUBPOLYTOKEN LPARTOKEN function COMMATOKEN LBRACKETTOKEN integerlist RBRACKETTOKEN RPARTOKEN
                            {
-			      temp_node = getSubpolynomial(($3), ($6), tools_precision);
+			      temp_node = getSubpolynomial(($3), ($6), 0, tools_precision);
+			      free_memory(($3));
+			      freeChain(($6),freeIntPtr);
+			      $$ = temp_node;
+			   }
+                        |       SUBPOLYTOKEN LPARTOKEN function COMMATOKEN LBRACKETTOKEN integerlist DOTSTOKEN RBRACKETTOKEN RPARTOKEN
+                           {
+			      temp_node = getSubpolynomial(($3), ($6), 1, tools_precision);
 			      free_memory(($3));
 			      freeChain(($6),freeIntPtr);
 			      $$ = temp_node;
@@ -2301,7 +2406,7 @@ range:        directrange
             | variableWorkAround 
                            {
 			     if (!containsEntry(symbolTable2,$1)) {
-			       printMessage(1,"Warning: the identifier \"%s\" is not bound be assignment.\n",$1);
+			       printMessage(1,"Warning: the identifier \"%s\" is not bound by assignment.\n",$1);
 			       printMessage(1,"Will take [-1;1] for \"%s\".\n",$1);
 			       range_temp.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			       range_temp.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
@@ -2320,6 +2425,36 @@ range:        directrange
 	                   }
 ;
 
+printableRange: directrange {
+	                     $$ = $1;
+                           }
+              | symbolRange {
+                             $$ = $1;
+	                   }
+;
+
+
+symbolRange: LBRACKETTOKEN variableWorkAround RBRACKETTOKEN
+                           {
+			     if (!containsEntry(symbolTable2,$2)) {
+			       printMessage(1,"Warning: the identifier \"%s\" is not bound by assignment.\n",$2);
+			       printMessage(1,"Will take [-1;1] for \"%s\".\n",$2);
+			       range_temp.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			       range_temp.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			       mpfr_init2(*(range_temp.a),defaultprecision);
+			       mpfr_init2(*(range_temp.b),defaultprecision);
+			       mpfr_set_d(*(range_temp.a),-1.0,GMP_RNDN);
+			       mpfr_set_d(*(range_temp.b),1.0,GMP_RNDN);
+			     } else {
+			       rangeTempPtr = getEntry(symbolTable2,$2,copyRangetypePtr);
+			       range_temp.a = rangeTempPtr->a;
+			       range_temp.b = rangeTempPtr->b;
+			       free(rangeTempPtr);
+			     }
+			     free($2);
+			     $$ = range_temp;
+	                   }
+;
 
 
 directrange:  LBRACKETTOKEN rangeconstant SEMICOLONTOKEN rangeconstant RBRACKETTOKEN
