@@ -9,7 +9,7 @@
 #include "expression.h"
 #include "double.h"
 #include "infnorm.h"
-
+#include "proof.h"
 
 #define MIN(a,b) (a > b ? b : a)
 
@@ -338,10 +338,10 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
 }
 
 
-int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, char *name, int *overlaps, int *varNum) {
+int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, char *name, int *overlaps, int *varNum, chain **gappaAssign) {
   int i, k, l, res, issuedCode, issuedVariables, c, t, c2, t2;
   int *powers, *operand1, *operand2;
-  char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2; 
+  char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2, *operand1Name, *operand2Name, *resultName; 
 
   res = 1; 
   
@@ -349,6 +349,15 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
   variables = (char *) safeCalloc(CODESIZE,sizeof(char));
   buffer1 = (char *) safeCalloc(CODESIZE,sizeof(char));
   buffer2 = (char *) safeCalloc(CODESIZE,sizeof(char));
+
+  resultName = NULL;
+  operand1Name = NULL;
+  operand2Name = NULL;
+  if (gappaAssign != NULL) {
+    resultName = (char *) safeCalloc(CODESIZE,sizeof(char));
+    operand1Name = (char *) safeCalloc(CODESIZE,sizeof(char));
+    operand2Name = (char *) safeCalloc(CODESIZE,sizeof(char));
+  } 
   
   codeIssue = code;
   variablesIssue = variables;
@@ -404,6 +413,9 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			   name,variablename,varNum[1],name,variablename,varNum[1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      overlaps[i] = 53;
+	      if (gappaAssign != NULL) {
+
+	      }
 	      break;
 	    case 2:
 	      /* Produce a triple-double x^2 out of two double-double x's */
@@ -1597,13 +1609,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
   free(variables);
   free(buffer1);
   free(buffer2);
+  free(operand1Name);
+  free(operand2Name);
+  free(resultName);
   return res;
 }
 
-int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name, mp_prec_t prec) {
-  int res, i;
-  double current;
+int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name, mp_prec_t prec, chain **gappaAssign) {
+  int res, i, format;
+  double current, constHi, constMi, constLo;
   mpfr_t temp, temp2;
+  gappaAssignment *newAssignment;
+  char *resultVariable;
 
   res = 1;
   mpfr_init2(temp,prec);
@@ -1611,9 +1628,13 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 
   for (i=0;i<=degree;i++) {
     if (!mpfr_zero_p(coefficients[i])) {
-      if (determineCoefficientFormat(coefficients[i]) > 3) {
+      constHi = 0.0;
+      constMi = 0.0;
+      constLo = 0.0;
+      if ((format = determineCoefficientFormat(coefficients[i])) > 3) {
 	printMessage(1,"Warning: tried to implement a coefficient that cannot even be written on a triple-double.\n");
 	printMessage(1,"This should not occur. The coefficient will be rounded to a triple-double.\n");
+	format = 3;
       }
       if (mpfr_set(temp,coefficients[i],GMP_RNDN) != 0) {
 	printMessage(1,"Warning: a rounding occured on internal handling (on copying) of the %dth coefficient.\n");
@@ -1629,6 +1650,7 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 	res = 0;
       }
       fprintf(fd,"#define %s_coeff_%dh %1.80e\n",name,i,current);
+      constHi = current;
       current = mpfr_get_d(temp,GMP_RNDN);
       if (current != 0.0) {
 	if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
@@ -1640,6 +1662,7 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 	  res = 0;
 	}
 	fprintf(fd,"#define %s_coeff_%dm %1.80e\n",name,i,current);
+	constMi = current;
 	current = mpfr_get_d(temp,GMP_RNDN);
 	if (current != 0.0) {
 	  if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
@@ -1651,7 +1674,16 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 	    res = 0;
 	  }
 	  fprintf(fd,"#define %s_coeff_%dl %1.80e\n",name,i,current); 
+	  constLo = current;
 	}
+      }
+      
+      if (gappaAssign != NULL) {
+	resultVariable = (char *) safeCalloc(CODESIZE,sizeof(char));
+	sprintf(resultVariable,"%s_coeff_%d",name,i);
+	newAssignment = newGappaConstant(format, resultVariable, constHi, constMi, constLo);
+	free(resultVariable);
+	*gappaAssign = addElement(*gappaAssign,newAssignment);
       }
     }
   }
@@ -1664,7 +1696,7 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 }
 
 int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec, 
-		    int degree, int variablePrecision, FILE *fd, char *name, int *powerOverlaps, int *powVarNum) {
+		    int degree, int variablePrecision, FILE *fd, char *name, int *powerOverlaps, int *powVarNum, chain **gappaAssign) {
   int res, i, k, variableNumber, comingFormat, producedFormat, issuedCode, issuedVariables, c, c2, t2;
   int coeffFormat, currOverlap, t;
   char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2; 
@@ -1677,7 +1709,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
   buffer1 = (char *) safeCalloc(CODESIZE,sizeof(char));
   buffer2 = (char *) safeCalloc(CODESIZE,sizeof(char));
 
-  tempVarNum = (int *) safeCalloc(degree + 3,sizeof(int));
+  tempVarNum = (int *) safeCalloc((2* degree) + 3,sizeof(int));
   
   codeIssue = code;
   variablesIssue = variables;
@@ -4379,7 +4411,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 
 node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecision, 
-		    FILE *fd, char *name, int honorCoeffPrec, mp_prec_t prec) {
+		    FILE *fd, char *name, int honorCoeffPrec, mp_prec_t prec, FILE *gappaFD) {
   mpfr_t temp;
   node *simplifiedFunc, *implementedPoly;
   int degree, i;
@@ -4389,7 +4421,11 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   int *addPrec, *mulPrec, *powPrec, *overlapsPowers, *powVarNum;
   int *fpCoeffRoundAutomatically;
   int targetPrec;
+  gappaProof *proof;
+  chain *assignments;
+  chain **assignmentsPtr;
 
+  proof = NULL;
 
   if (prec < 159) {
     printMessage(1,"Warning: the current tool's precision (%d bits) is not sufficient for implementing triple-double code.\n",prec);
@@ -4422,6 +4458,22 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   }
 
   simplifiedFunc = simplifyTreeErrorfree(func);
+
+  if (gappaFD != NULL) {
+    proof = (gappaProof *) safeCalloc(1,sizeof(gappaProof));
+    proof->variableName = (char *) safeCalloc(strlen(variablename)+1,sizeof(char));
+    strcpy(proof->variableName,variablename);
+    proof->variableType = variablePrecision;
+    proof->polynomToImplement = copyTree(simplifiedFunc);
+    mpfr_init2(proof->a,mpfr_get_prec(*(range.a)));
+    mpfr_init2(proof->b,mpfr_get_prec(*(range.b)));
+    mpfr_set(proof->a,*(range.a),GMP_RNDD);
+    mpfr_set(proof->b,*(range.b),GMP_RNDU);
+    assignments = NULL;
+    assignmentsPtr = &assignments;
+  } else {
+    assignmentsPtr = NULL;
+  }
 
   getCoefficients(&degree,&coefficients,simplifiedFunc);
 
@@ -4503,7 +4555,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
     printMessage(1,"The produced implementation may be incorrect.\n");
   }
 
-  if (!implementCoefficients(fpCoefficients, degree, fd, name, prec)) {
+  if (!implementCoefficients(fpCoefficients, degree, fd, name, prec, assignmentsPtr)) {
     printMessage(1,"Warning: a problem has been encountered during the generation of the code for the coefficients.\n");
     printMessage(1,"The produced implementation may be incorrect.\n");
   }
@@ -4515,13 +4567,16 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   if (targetPrec > 102) {
     if (fprintf(fd,"double *%s_resh, double *%s_resm, double *%s_resl, ",name,name,name) < 0) 
       printMessage(1,"Warning: could not write to the file for the implementation.\n");
+    if (gappaFD != NULL) proof->resultType = 3;
   } else {
     if (targetPrec > 53) {
       if (fprintf(fd,"double *%s_resh, double *%s_resm, ",name,name) < 0)
 	printMessage(1,"Warning: could not write to the file for the implementation.\n");
+      if (gappaFD != NULL) proof->resultType = 2;
     } else {
       if (fprintf(fd,"double *%s_resh, ",name) < 0) 
 	printMessage(1,"Warning: could not write to the file for the implementation.\n");
+      if (gappaFD != NULL) proof->resultType = 1;
     }
   }
 
@@ -4543,19 +4598,28 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
     printMessage(1,"The implementation will be wrong.\n");
   }
 
-  if (!implementPowers(powPrec, degree, variablePrecision, fd, name, overlapsPowers, powVarNum)) {
+  if (!implementPowers(powPrec, degree, variablePrecision, fd, name, overlapsPowers, powVarNum, assignmentsPtr)) {
     printMessage(1,"Warning: a problem has been encountered during the generation of the code for the powers of %s.\n",
 		 variablename);
     printMessage(1,"The produced implementation may be incorrect.\n");
   }
 
-  if (!implementHorner(fpCoefficients, addPrec, mulPrec, degree, variablePrecision, fd, name, overlapsPowers, powVarNum)) {
+  if (!implementHorner(fpCoefficients, addPrec, mulPrec, degree, variablePrecision, fd, name, overlapsPowers, powVarNum, assignmentsPtr)) {
     printMessage(1,"Warning: a problem has been encountered during the generation of the code for the horner scheme.\n");
     printMessage(1,"The produced implementation may be incorrect.\n");
   }
 
   if (fprintf(fd,"}\n") < 0) 
     printMessage(1,"Warning: could not write to the file for the implementation.\n");
+
+  if (gappaFD != NULL) {
+    proof->polynomImplemented = copyTree(implementedPoly);
+    proof->gappaAssignments = assignments;
+
+    if (fprintGappaProof(gappaFD, proof) < 0) 
+      printMessage(1,"Warning: could not write the Gappa proof.\n");
+    freeGappaProof(proof);
+  }
 
   for (i=0;i<=degree;i++) mpfr_clear(fpCoefficients[i]);
   free(fpCoefficients);

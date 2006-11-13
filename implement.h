@@ -11,7 +11,7 @@
 
 
 node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecision, 
-		    FILE *fd, char *name, int honorCoeffPrec, mp_prec_t prec);
+		    FILE *fd, char *name, int honorCoeffPrec, mp_prec_t prec, FILE *gappaFD);
 
 
 

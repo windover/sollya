@@ -1605,7 +1605,7 @@ variableformat:     DOUBLETOKEN
 
 implementpoly:        IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction WITHTOKEN VARIABLEMETATOKEN ASTOKEN variableformat INTOKEN writefile WITHTOKEN NAMETOKEN EQUALTOKEN string 
                            {
-			     temp_node = implementpoly($2,$4,$8,$12,$14,$18,0,tools_precision);
+			     temp_node = implementpoly($2,$4,$8,$12,$14,$18,0,tools_precision,NULL);
 			     if (temp_node != NULL) {
 			       printMessage(2,"Information: the implementation has succeeded.\n"); 
 			     } else {
@@ -1625,7 +1625,7 @@ implementpoly:        IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILO
 			   }
                     | IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction WITHTOKEN VARIABLEMETATOKEN ASTOKEN variableformat INTOKEN writefile WITHTOKEN NAMETOKEN EQUALTOKEN string COMMATOKEN HONORCOEFFPRECTOKEN
                            {
-			     temp_node = implementpoly($2,$4,$8,$12,$14,$18,1,tools_precision);
+			     temp_node = implementpoly($2,$4,$8,$12,$14,$18,1,tools_precision,NULL);
 			     if (temp_node != NULL) {
 			       printMessage(2,"Information: the implementation has succeeded.\n"); 
 			     } else {
@@ -1640,6 +1640,48 @@ implementpoly:        IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILO
 			     mpfr_clear(*($8));
 			     free($8);
 			     fclose($14);
+			     free($18);
+			     $$ = temp_node;
+			   }
+                    | IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction WITHTOKEN VARIABLEMETATOKEN ASTOKEN variableformat INTOKEN writefile WITHTOKEN NAMETOKEN EQUALTOKEN string COMMATOKEN PROOFTOKEN EQUALTOKEN writefile
+                           {
+			     temp_node = implementpoly($2,$4,$8,$12,$14,$18,0,tools_precision,$22);
+			     if (temp_node != NULL) {
+			       printMessage(2,"Information: the implementation has succeeded.\n"); 
+			     } else {
+			       printMessage(1,"Warning: the implementation has not succeeded. The code may be incomplete.\n"); 
+			       temp_node = copyTree($2);
+			     }
+			     free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     mpfr_clear(*($8));
+			     free($8);
+			     fclose($14);
+			     fclose($22);
+			     free($18);
+			     $$ = temp_node;
+			   }
+                    | IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction WITHTOKEN VARIABLEMETATOKEN ASTOKEN variableformat INTOKEN writefile WITHTOKEN NAMETOKEN EQUALTOKEN string COMMATOKEN HONORCOEFFPRECTOKEN COMMATOKEN PROOFTOKEN EQUALTOKEN writefile
+                           {
+			     temp_node = implementpoly($2,$4,$8,$12,$14,$18,1,tools_precision,$24);
+			     if (temp_node != NULL) {
+			       printMessage(2,"Information: the implementation has succeeded.\n"); 
+			     } else {
+			       printMessage(1,"Warning: the implementation has not succeeded. The code may be incomplete.\n"); 
+			       temp_node = copyTree($2);
+			     }
+			     free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     mpfr_clear(*($8));
+			     free($8);
+			     fclose($14);
+			     fclose($24);
 			     free($18);
 			     $$ = temp_node;
 			   }

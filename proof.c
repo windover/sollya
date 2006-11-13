@@ -959,3 +959,77 @@ void freeInfnormTheo(infnormTheo *theo) {
   freeChain(theo->evalOnZeros,freeExprBoundTheoOnVoid);
   free(theo);
 }
+
+
+gappaAssignment *newGappaOperation(int opType, int relErrBits, 
+				   int resultType, int resultOverlap, char *resultVariable,
+				   int operand1UsedType, int operand1ComingType, char *operand1Variable,
+				   int operand2UsedType, int operand2ComingType, char *operand2Variable) {
+  gappaAssignment *newAssignment;
+
+  newAssignment = (gappaAssignment *) safeCalloc(1,sizeof(gappaAssignment));
+  
+  newAssignment->opType = opType;
+  newAssignment->relErrBits = relErrBits;
+  newAssignment->resultType = resultType;
+  newAssignment->resultOverlap = resultOverlap;
+  newAssignment->resultVariable = (char *) safeCalloc(strlen(resultVariable)+1,sizeof(char));
+  strcpy(newAssignment->resultVariable,resultVariable);
+  newAssignment->operand1UsedType = operand1UsedType;
+  newAssignment->operand1ComingType = operand1ComingType;
+  newAssignment->operand1Variable = (char *) safeCalloc(strlen(operand1Variable)+1,sizeof(char));
+  strcpy(newAssignment->operand1Variable,operand1Variable);
+  newAssignment->operand2UsedType = operand2UsedType;
+  newAssignment->operand2ComingType = operand2ComingType;
+  newAssignment->operand2Variable = (char *) safeCalloc(strlen(operand2Variable)+1,sizeof(char));
+  strcpy(newAssignment->operand2Variable,operand2Variable);
+
+  return newAssignment;
+}
+
+gappaAssignment *newGappaConstant(int resultType, char *resultVariable, double constHi, double constMi, double constLo) {
+  gappaAssignment *newAssignment;
+
+  newAssignment = (gappaAssignment *) safeCalloc(1,sizeof(gappaAssignment));
+  
+  newAssignment->opType = GAPPA_CONST;
+  newAssignment->resultType = resultType;
+  newAssignment->resultOverlap = 53;
+  newAssignment->resultVariable = (char *) safeCalloc(strlen(resultVariable)+1,sizeof(char));
+  strcpy(newAssignment->resultVariable,resultVariable);
+  newAssignment->constHi = constHi;
+  newAssignment->constMi = constMi;
+  newAssignment->constLo = constLo;
+
+  return newAssignment;
+}
+
+
+void freeGappaAssignment(gappaAssignment *assign) {
+  if (assign == NULL) return;
+  free(assign->resultVariable);
+  free(assign->operand1Variable);
+  free(assign->operand2Variable);
+  free(assign);
+}
+
+void freeGappaAssignmentOnVoid(void *assign) {
+  freeGappaAssignment((gappaAssignment *) assign);
+}
+
+void freeGappaProof(gappaProof *proof) {
+  if (proof == NULL) return;
+  mpfr_clear(proof->a);
+  mpfr_clear(proof->b);
+  free(proof->variableName);
+  free_memory(proof->polynomToImplement);
+  free_memory(proof->polynomImplemented);
+  freeChain(proof->gappaAssignments, freeGappaAssignmentOnVoid);
+  free(proof);
+}
+
+int fprintGappaProof(FILE *fd, gappaProof *proof) {
+
+
+  return 1;
+}

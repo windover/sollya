@@ -85,6 +85,52 @@ struct infnormTheoStruct
 };
 
 
+#define GAPPA_CONST 1
+#define GAPPA_ADD_EXACT 2
+#define GAPPA_MUL_EXACT 3
+#define GAPPA_ADD_DOUBLE 4
+#define GAPPA_MUL_DOUBLE 5
+#define GAPPA_RENORMALIZE 6
+#define GAPPA_ADD_REL 7
+#define GAPPA_MUL_REL 8
+#define GAPPA_FMA_REL 9
+#define GAPPA_COPY 10
+
+typedef struct gappaAssignmentStruct gappaAssignment;
+
+struct gappaAssignmentStruct
+{
+  int opType;
+  int relErrBits;
+  int resultType;
+  int resultOverlap;
+  char *resultVariable;
+  int operand1UsedType;
+  int operand1ComingType;
+  char *operand1Variable;
+  int operand2UsedType;
+  int operand2ComingType;
+  char *operand2Variable;
+  double constHi;
+  double constMi;
+  double constLo;
+};
+
+typedef struct gappaProofStruct gappaProof;
+
+struct gappaProofStruct
+{
+  char *variableName;
+  mpfr_t a, b;
+  int variableType;
+  int resultType;
+  node *polynomToImplement;
+  node *polynomImplemented;
+  chain *gappaAssignments;
+};
+
+
+
 
 int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start);
 void freeExprBoundTheo(exprBoundTheo *theo);
@@ -93,5 +139,16 @@ int fprintNoZeroTheo(FILE *fd, noZeroTheo *theo, int start);
 void freeNoZeroTheo(noZeroTheo *theo);
 int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start);
 void freeInfnormTheo(infnormTheo *theo);
+
+gappaAssignment *newGappaOperation(int opType, int relErrBits, 
+				   int resultType, int resultOverlap, char *resultVariable,
+				   int operand1UsedType, int operand1ComingType, char *operand1Variable,
+				   int operand2UsedType, int operand2ComingType, char *operand2Variable);
+gappaAssignment *newGappaConstant(int resultType, char *resultVariable, double constHi, double constMi, double constLo);
+
+void freeGappaProof(gappaProof *proof);
+int fprintGappaProof(FILE *fd, gappaProof *proof);
+
+
 
 #endif /* ifdef PROOF_H*/

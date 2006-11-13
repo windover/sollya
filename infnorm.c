@@ -2881,6 +2881,13 @@ chain* findZerosByNewton(node *func, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 	mpfr_init2(*newZero,prec);
 	mpfr_set(*newZero,resNewtonStep,GMP_RNDN);
 	fpZeros = addElement(fpZeros,newZero);
+      } else {
+	if (mpfr_sgn(ap) != mpfr_sgn(bp)) {
+	  newZero = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  mpfr_init2(*newZero,prec);
+	  mpfr_set_d(*newZero,0.0,GMP_RNDN);
+	  fpZeros = addElement(fpZeros,newZero);
+	}
       }
       
       mpfr_set(ap,bp,GMP_RNDN);
@@ -2962,17 +2969,15 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
 
     evaluateFaithful(y, func, *((mpfr_t *) (fpZeros2->value)), prec);
 
-    if (mpfr_zero_p(y)) {
+    if (mpfr_zero_p(y) || (!mpfr_number_p(y)) || mpfr_zero_p(*((mpfr_t *) (fpZeros2->value)))) {
       addToList = 1;
     } else {
 
       mpfr_set(before,*((mpfr_t *) (fpZeros2->value)),GMP_RNDN);
       mpfr_set(after,*((mpfr_t *) (fpZeros2->value)),GMP_RNDN);
       mpfr_nextabove(after);
-      mpfr_nextabove(after);
       mpfr_nextbelow(before);
-      mpfr_nextbelow(before);
-      
+
       evaluateFaithful(yAfter, func, after, prec);
       evaluateFaithful(yBefore, func, before, prec);
       
@@ -2982,7 +2987,23 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
 	if (mpfr_sgn(yAfter) != mpfr_sgn(yBefore)) {
 	  addToList = 1;
 	} else {
-	  removedFromList = 1;
+	  if (mpfr_number_p(y)) {
+	    if (mpfr_sgn(y) != mpfr_sgn(yAfter)) {
+	      addToList = 1;
+	    } else {
+	      removedFromList = 1;
+	      if (verbosity >= 2) {
+		printMessage(2,"Information: removing possible zero in ");
+		printMpfr(*((mpfr_t *) (fpZeros2->value)));
+	      }
+	    }
+	  } else {
+	    removedFromList = 1;
+	    if (verbosity >= 2) {
+	      printMessage(2,"Information: removing possible zero in ");
+	      printMpfr(*((mpfr_t *) (fpZeros2->value)));
+	    }
+	  }
 	}
       }
     }
@@ -3004,6 +3025,8 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
   mpfr_clear(yBefore);
   mpfr_clear(yAfter);
   mpfr_clear(y);
+
+  sortChain(fpZeros,  cmpMpfrPtr);
 
   return fpZeros;
 }
