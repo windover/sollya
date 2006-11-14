@@ -342,6 +342,11 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
   int i, k, l, res, issuedCode, issuedVariables, c, t, c2, t2;
   int *powers, *operand1, *operand2;
   char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2, *operand1Name, *operand2Name, *resultName; 
+  gappaAssignment *newAssign;
+  int op1format, op2format;
+
+  op1format = -1;
+  op2format = -1;
 
   res = 1; 
   
@@ -414,7 +419,11 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      overlaps[i] = 53;
 	      if (gappaAssign != NULL) {
-
+		snprintf(resultName,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[1]);
+		snprintf(operand1Name,CODESIZE,"%s",variablename);
+		snprintf(operand2Name,CODESIZE,"%s",variablename);
+		newAssign = newGappaOperation(GAPPA_MUL_EXACT, -1, 2, 53, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
 	      }
 	      break;
 	    case 2:
@@ -432,6 +441,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			   name,variablename,varNum[1],name,variablename,varNum[1],name,variablename,varNum[1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	      
 	      overlaps[i] = 49;
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[1]);
+		snprintf(operand1Name,CODESIZE,"%s",variablename);
+		snprintf(operand2Name,CODESIZE,"%s",variablename);
+		newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, overlaps[i], resultName, 2, 2, operand1Name, 2, 2, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      }
 	      break;
 	    case 3:
 	      /* Produce a triple-double x^2 out of two triple-double x's */
@@ -448,6 +464,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			   name,variablename,varNum[1],name,variablename,varNum[1],name,variablename,varNum[1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      overlaps[i] = 48;
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[1]);
+		snprintf(operand1Name,CODESIZE,"%s",variablename);
+		snprintf(operand2Name,CODESIZE,"%s",variablename);
+		newAssign = newGappaOperation(GAPPA_MUL_REL, 140, 3, overlaps[i], resultName, 3, 3, operand1Name, 3, 3, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      }
 	      break;
 	    default: 
 	      res = 0;
@@ -471,6 +494,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		overlaps[i] = 47;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[1]);
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, overlaps[i], resultName, 1, 1, operand1Name, 2, 2, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 	      } else {
 		/* Produce a triple-double out of a double x and a triple-double x^? */
 
@@ -498,6 +528,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand2[i]] = 52;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]]-1,operand2[i]+1);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand2[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 
 		t = c; t2 = c2;
@@ -513,6 +549,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		overlaps[i] = overlaps[operand2[i]] - 5;
 		if (overlaps[i] > 47) overlaps[i] = 47;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, overlaps[operand2[i]] + 100, 3, overlaps[i], resultName, 1, 1, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 	      }
 	      break;
 	    case 2:
@@ -542,6 +585,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			      name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand2[i]] = 52;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		  snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]]-1,operand2[i]+1);
+		  newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand2[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 	      }
 	      
 	      t = c; t2 = c2;
@@ -557,6 +606,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	      overlaps[i] = overlaps[operand2[i]] - 4;
 	      if (overlaps[i] > 48) overlaps[i] = 48;
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		snprintf(operand1Name,CODESIZE,"%s",variablename);
+		snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		newAssign = newGappaOperation(GAPPA_MUL_REL, overlaps[operand2[i]] + 96, 3, overlaps[i], resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      }
 	      break;
 	    case 3:
 	      /* Produce a triple-double out of a triple-double x and a triple-double x^? */
@@ -586,6 +642,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			      name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand2[i]] = 52;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		  snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]]-1,operand2[i]+1);
+		  newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand2[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 	      }
 
 	      t = c; t2 = c2;
@@ -602,6 +664,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	      overlaps[i] = overlaps[operand2[i]] - 4;
 	      if (overlaps[i] > 48) overlaps[i] = 48;
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		snprintf(operand1Name,CODESIZE,"%s",variablename);
+		snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		newAssign = newGappaOperation(GAPPA_MUL_REL, overlaps[operand2[i]] + 98, 3, overlaps[i], resultName, 3, 3, operand1Name, 3, 3, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      }
 	      break;
 	    default: 
 	      res = 0;
@@ -626,6 +695,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		overlaps[i] = 47;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[1]);
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, overlaps[i], resultName, 1, 1, operand1Name, 2, 2, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 	      } else {
 		/* Produce a triple-double out of a triple-double x^? and a double x*/
 
@@ -652,6 +728,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand1[i]] = 52;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]]-1,operand1[i]+1);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand1[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 
 		t = c; t2 = c2;
@@ -667,6 +749,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		overlaps[i] = overlaps[operand1[i]] - 5;
 		if (overlaps[i] > 47) overlaps[i] = 47;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]);
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, overlaps[operand1[i]] + 100, 3, overlaps[i], resultName, 1, 1, operand1Name, 2, 2, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 	      }
 	      break;
 	    case 2:
@@ -695,6 +784,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			      name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand1[i]] = 52;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		  snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]]-1,operand1[i]+1);
+		  newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand1[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 	      }
 	      
 	      t = c; t2 = c2;
@@ -710,6 +805,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	      overlaps[i] = overlaps[operand1[i]] - 4;
 	      if (overlaps[i] > 48) overlaps[i] = 48;
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		snprintf(operand1Name,CODESIZE,"%s",variablename);
+		snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]);
+		newAssign = newGappaOperation(GAPPA_MUL_REL, overlaps[operand1[i]] + 96, 3, overlaps[i], resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      }
 	      break;
 	    case 3:
 	      /* Produce a triple-double out of a triple-double x^? and a triple-double x */
@@ -736,6 +838,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			      name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand1[i]] = 52;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		  snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]]-1,operand1[i]+1);
+		  newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand1[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 	      }
 
 	      t = c; t2 = c2;
@@ -752,6 +860,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      overlaps[i] = overlaps[operand1[i]] - 4;
 	      if (overlaps[i] > 48) overlaps[i] = 48;
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		snprintf(operand1Name,CODESIZE,"%s",variablename);
+		snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]);
+		newAssign = newGappaOperation(GAPPA_MUL_REL, overlaps[operand1[i]] + 98, 3, overlaps[i], resultName, 3, 3, operand1Name, 3, 3, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      }
 	      break;
 	    default: 
 	      res = 0;
@@ -775,6 +890,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			       name,variablename,varNum[3],name,variablename,varNum[3],name,variablename,varNum[3]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  overlaps[i] = 49;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow4",name,variablename,varNum[3]);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[1]);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[1]);
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, overlaps[i], resultName, 2, 2, operand1Name, 2, 2, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		} else {
 		  /* Produce a triple-double out of a double-double x^2 and a triple-double x^? */
 
@@ -801,6 +923,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				  name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand2[i]] = 52;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		      snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]]-1,operand2[i]+1);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand2[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  }
 
 		  t = c; t2 = c2;
@@ -817,6 +945,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		  overlaps[i] = overlaps[operand2[i]] - 4;
 		  if (overlaps[i] > 48) overlaps[i] = 48;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[1]);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, overlaps[operand2[i]] + 96, 3, overlaps[i], resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 	      } else {
 		/* The first operand is surely a triple-double */
@@ -847,6 +982,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				  name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand1[i]] = 52;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		      snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]]-1,operand1[i]+1);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand1[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  }
 
 		  t = c; t2 = c2;
@@ -863,6 +1004,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		  overlaps[i] = overlaps[operand1[i]] - 4;
 		  if (overlaps[i] > 48) overlaps[i] = 48;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[1]);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, overlaps[operand1[i]] + 96, 3, overlaps[i], resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		} else {
 		  /* Both operands are surely triple-doubles; we produce a triple-double */
 
@@ -892,6 +1040,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				    name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      overlaps[operand1[i]] = 52;
+		      if (gappaAssign != NULL) {
+			snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+			snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]]-1,operand1[i]+1);
+			newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand1[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+			*gappaAssign = addElement(*gappaAssign,newAssign);
+		      }
 		    } else {
 		      /* Renormalize first opernand2[i] */
 		      c = snprintf(buffer1,CODESIZE,
@@ -909,6 +1063,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				    name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      overlaps[operand2[i]] = 52;
+		      if (gappaAssign != NULL) {
+			snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+			snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]]-1,operand2[i]+1);
+			newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand2[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+			*gappaAssign = addElement(*gappaAssign,newAssign);
+		      }
 		    }
 		    t += c; t2 += c2;
 		    
@@ -935,6 +1095,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				      name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			overlaps[operand1[i]] = 52;
+			if (gappaAssign != NULL) {
+			  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+			  snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]]-1,operand1[i]+1);
+			  newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand1[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+			  *gappaAssign = addElement(*gappaAssign,newAssign);
+			}
 		      } else {
 			/* Renormalize first opernand2[i] */
 			c = snprintf(buffer1+t,CODESIZE-t,
@@ -952,6 +1118,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				      name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			overlaps[operand2[i]] = 52;
+			if (gappaAssign != NULL) {
+			  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+			  snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]]-1,operand2[i]+1);
+			  newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand2[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+			  *gappaAssign = addElement(*gappaAssign,newAssign);
+			}
 		      }
 		      t += c; t2 += c2;
 		    }
@@ -972,6 +1144,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  overlaps[i] = overlaps[operand1[i]] - 4;
 		  if (overlaps[i] > overlaps[operand2[i]] - 4) overlaps[i] = overlaps[operand2[i]] - 4;
 		  if (overlaps[i] > 48) overlaps[i] = 48;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, MIN(overlaps[operand1[i]],overlaps[operand2[i]]) + 97, 3, overlaps[i], resultName, 3, 3, operand1Name, 3, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 	      }
 	    } else {
@@ -1002,6 +1181,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand1[i]] = 52;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]]-1,operand1[i]+1);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand1[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		} else {
 		  /* Renormalize first opernand2[i] */
 		  c = snprintf(buffer1,CODESIZE,
@@ -1019,6 +1204,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand2[i]] = 52;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]]-1,operand2[i]+1);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand2[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 		t += c; t2 += c2;
 		
@@ -1045,6 +1236,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				  name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		    overlaps[operand1[i]] = 52;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		      snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]]-1,operand1[i]+1);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand1[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  } else {
 		    /* Renormalize first opernand2[i] */
 		    c = snprintf(buffer1+t,CODESIZE-t,
@@ -1062,6 +1259,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				  name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		    overlaps[operand2[i]] = 52;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		      snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]]-1,operand2[i]+1);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand2[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  }
 		  t += c; t2 += c2;
 		}
@@ -1082,6 +1285,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      overlaps[i] = overlaps[operand1[i]] - 4;
 	      if (overlaps[i] > overlaps[operand2[i]] - 4) overlaps[i] = overlaps[operand2[i]] - 4;
 	      if (overlaps[i] > 48) overlaps[i] = 48;
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		newAssign = newGappaOperation(GAPPA_MUL_REL, MIN(overlaps[operand1[i]],overlaps[operand2[i]]) + 97, 3, overlaps[i], resultName, 3, 3, operand1Name, 3, 3, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      }
 	    }
 	  }
 	}
@@ -1104,6 +1314,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			     "double %s_%s_%d_pow2h, %s_%s_%d_pow2m;",
 			     name,variablename,varNum[1],name,variablename,varNum[1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[1]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s",variablename);
+		  newAssign = newGappaOperation(GAPPA_MUL_EXACT, -1, 2, 53, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 		break;
 	      case 2:
 	      case 3:
@@ -1116,6 +1333,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			     "double %s_%s_%d_pow2h, %s_%s_%d_pow2m;",
 			     name,variablename,varNum[1],name,variablename,varNum[1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[1]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s",variablename);
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 2, variablePrecision, operand1Name, 2, variablePrecision, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 		break;
 	      default:
 		res = 0;
@@ -1131,8 +1355,9 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
 		   is less than powers[i]. 
 		*/
-		c = 0; c2 = 0;
+		c = 0; c2 = 0; op2format = 2;
 		if (overlaps[operand2[i]] < 53) {
+		  op2format = 3;
 		  /* We must perhaps renormalize */
 		  if (overlaps[operand2[i]] + 53 < powers[i]) {
 		    /* We renormalize */
@@ -1151,6 +1376,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				  name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand2[i]] = 52;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		      snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]]-1,operand2[i]+1);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand2[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  }
 		}
 		
@@ -1164,6 +1395,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
 			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 1, 1, operand1Name, 2, op2format, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 		break;
 	      case 2:
 	      case 3:
@@ -1176,8 +1414,9 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		   The usage of a triple-double x as a double-double is not critical because
 		   x is supposed to be renormalized in this case.
 		*/
-		c = 0; c2 = 0;
+		c = 0; c2 = 0; op2format = 2;
 		if (overlaps[operand2[i]] < 53) {
+		  op2format = 3;
 		  /* We must perhaps renormalize */
 		  if (overlaps[operand2[i]] + 53 < powers[i]) {
 		    /* We renormalize */
@@ -1196,6 +1435,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				  name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand2[i]] = 52;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		      snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]]-1,operand2[i]+1);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand2[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  }
 		}
 
@@ -1210,6 +1455,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
 			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 2, variablePrecision, operand1Name, 2, op2format, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 		break;
 	      default:
 		res = 0;
@@ -1227,8 +1479,9 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
 		   is less than powers[i]. 
 		*/
-		c = 0; c2 = 0;
+		c = 0; c2 = 0; op2format = 2;
 		if (overlaps[operand1[i]] < 53) {
+		  op2format = 3;
 		  /* We must perhaps renormalize */
 		  if (overlaps[operand1[i]] + 53 < powers[i]) {
 		    /* We renormalize */
@@ -1247,6 +1500,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				  name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand1[i]] = 52;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		      snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]]-1,operand1[i]+1);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand1[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  }
 		}
 		
@@ -1260,6 +1519,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
 			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 1, 1, operand1Name, 2, op2format, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 		break;
 	      case 2:
 	      case 3:
@@ -1272,8 +1538,9 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		   The usage of a triple-double x as a double-double is not critical because
 		   x is supposed to be renormalized in this case.
 		*/
-		c = 0; c2 = 0;
+		c = 0; c2 = 0; op2format = 2;
 		if (overlaps[operand1[i]] < 53) {
+		  op2format = 3;
 		  /* We must perhaps renormalize */
 		  if (overlaps[operand1[i]] + 53 < powers[i]) {
 		    /* We renormalize */
@@ -1292,6 +1559,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				  name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand1[i]] = 52;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		      snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]]-1,operand1[i]+1);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand1[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  }
 		}
 		
@@ -1306,6 +1579,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
 			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 2, variablePrecision, operand1Name, 2, op2format, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 		break;
 	      default:
 		res = 0;
@@ -1320,9 +1600,10 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		   is less than powers[i]. We do this for both one after the other.
 	      */
 
-	      t = 0; t2 = 0;
-	      c = 0; c2 = 0;
+	      t = 0; t2 = 0; op1format = 2;
+	      c = 0; c2 = 0; op2format = 2;
 	      if (overlaps[operand1[i]] < 53) {
+		op1format = 3;
 		/* We must perhaps renormalize */
 		if (overlaps[operand1[i]] + 53 < powers[i]) {
 		  /* We renormalize */
@@ -1341,12 +1622,19 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand1[i]] = 52;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]]-1,operand1[i]+1);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand1[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 	      }
 	      t += c; t2 += c2;
 	      
 	      c = 0; c2 = 0;
 	      if (overlaps[operand2[i]] < 53) {
+		op2format = 3;
 		/* We must perhaps renormalize */
 		if (overlaps[operand2[i]] + 53 < powers[i]) {
 		  /* We renormalize */
@@ -1365,6 +1653,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 				name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);		
 		  if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		  overlaps[operand2[i]] = 52;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]]-1,operand2[i]+1);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, overlaps[operand2[i]], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 	      }
 	      t += c; t2 += c2;
@@ -1379,6 +1673,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			   "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
 			   name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1);
 	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 2, op1format, operand1Name, 2, op2format, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      }
 	    }
 	  }
 	} else {
@@ -1398,6 +1699,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			     "double %s_%s_%d_pow2h;",
 			     name,variablename,varNum[i]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[1]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s",variablename);
+		  newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, variablePrecision, operand1Name, 1, variablePrecision, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 	      } else {
 		/* Produce x^2 as a double out of x as a double-double or better */
 		/* Here the usage of a triple-double x as a double is 
@@ -1411,6 +1719,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			     "double %s_%s_%d_pow2h;",
 			     name,variablename,varNum[i]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[1]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s",variablename);
+		  newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, variablePrecision, operand1Name, 1, variablePrecision, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 	      }
 	    } else {
 	      /* The first operand is x, the second is x^? as a double or better */
@@ -1423,16 +1738,29 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		   want to renormalize the whole triple-double, we use a rounded sum of 
 		   the higher and middle value.
 		*/
-
 		if ((overlaps[operand2[i]] < 53) && (overlaps[operand2[i]] < powers[i])) {
 		  c = snprintf(buffer1,CODESIZE,
 			       "%s_%s_%d_pow%dh = %s * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
 			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand2[i]],operand2[i]+1,
 			       name,variablename,varNum[operand2[i]],operand2[i]+1);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		    snprintf(operand1Name,CODESIZE,"%s",variablename);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		} else {
 		  c = snprintf(buffer1,CODESIZE,
 			       "%s_%s_%d_pow%dh = %s * %s_%s_%d_pow%dh;",
 			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand2[i]],operand2[i]+1);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		    snprintf(operand1Name,CODESIZE,"%s",variablename);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, 2, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
@@ -1454,10 +1782,24 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			       "%s_%s_%d_pow%dh = %sh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
 			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand2[i]],operand2[i]+1,
 			       name,variablename,varNum[operand2[i]],operand2[i]+1);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		    snprintf(operand1Name,CODESIZE,"%s",variablename);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, variablePrecision, operand1Name, 1, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		} else {
 		  c = snprintf(buffer1,CODESIZE,
 			       "%s_%s_%d_pow%dh = %sh * %s_%s_%d_pow%dh;",
 			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand2[i]],operand2[i]+1);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		    snprintf(operand1Name,CODESIZE,"%s",variablename);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, variablePrecision, operand1Name, 1, 2, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
@@ -1484,10 +1826,24 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			       "%s_%s_%d_pow%dh = %s * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
 			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand1[i]],operand1[i]+1,
 			       name,variablename,varNum[operand1[i]],operand1[i]+1);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		    snprintf(operand1Name,CODESIZE,"%s",variablename);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		} else {
 		  c = snprintf(buffer1,CODESIZE,
 			       "%s_%s_%d_pow%dh = %s * %s_%s_%d_pow%dh;",
 			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand1[i]],operand1[i]+1);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		    snprintf(operand1Name,CODESIZE,"%s",variablename);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, 2, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
@@ -1510,10 +1866,24 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			       "%s_%s_%d_pow%dh = %sh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
 			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand1[i]],operand1[i]+1,
 			       name,variablename,varNum[operand1[i]],operand1[i]+1);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		    snprintf(operand1Name,CODESIZE,"%s",variablename);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, variablePrecision, operand1Name, 1, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		} else {
 		  c = snprintf(buffer1,CODESIZE,
 			       "%s_%s_%d_pow%dh = %sh * %s_%s_%d_pow%dh;",
 			       name,variablename,varNum[i],i+1,variablename,name,variablename,varNum[operand1[i]],operand1[i]+1);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		    snprintf(operand1Name,CODESIZE,"%s",variablename);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, variablePrecision, operand1Name, 1, 2, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
@@ -1538,6 +1908,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			       name,variablename,varNum[i],i+1,
 			       name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,
 			       name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 3, operand1Name, 1, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		} else {
 		  /* Only the first operand is a low precision triple-double */
 		  c = snprintf(buffer1,CODESIZE,
@@ -1545,6 +1922,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			       name,variablename,varNum[i],i+1,
 			       name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand1[i]],operand1[i]+1,
 			       name,variablename,varNum[operand2[i]],operand2[i]+1);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 3, operand1Name, 1, 2, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 	      } else {
 		if ((overlaps[operand2[i]] < 53) && (overlaps[operand2[i]] < powers[i])) {
@@ -1554,11 +1938,25 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			       name,variablename,varNum[i],i+1,
 			       name,variablename,varNum[operand2[i]],operand2[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1,
 			       name,variablename,varNum[operand1[i]],operand1[i]+1);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 2, operand1Name, 1, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		} else {
 		  /* Both operands can be truncated to a double without problems */
 		  c = snprintf(buffer1,CODESIZE,
 			       "%s_%s_%d_pow%dh = %s_%s_%d_pow%dh * %s_%s_%d_pow%dh;",
 			       name,variablename,varNum[i],i+1,name,variablename,varNum[operand1[i]],operand1[i]+1,name,variablename,varNum[operand2[i]],operand2[i]+1);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 2, operand1Name, 1, 2, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 	      }
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
@@ -1701,6 +2099,24 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
   int coeffFormat, currOverlap, t;
   char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2; 
   int *tempVarNum;
+  char *resultName, *operand1Name, *operand2Name, *operand3Name;
+  int op1format, op2format, op3format;
+  gappaAssignment *newAssign;
+
+  op1format = -1;
+  op2format = -1;
+  op3format = -1;
+
+  resultName = NULL;
+  operand1Name = NULL;
+  operand2Name = NULL;
+  operand3Name = NULL;
+  if (gappaAssign != NULL) {
+    resultName = (char *) safeCalloc(CODESIZE,sizeof(char));
+    operand1Name = (char *) safeCalloc(CODESIZE,sizeof(char));
+    operand2Name = (char *) safeCalloc(CODESIZE,sizeof(char));
+    operand3Name = (char *) safeCalloc(CODESIZE,sizeof(char));
+  } 
 
   res = 1; 
   
@@ -1735,10 +2151,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		 name,variableNumber,tempVarNum[variableNumber],
 		 name,variableNumber,tempVarNum[variableNumber],
 		 name,variableNumber,tempVarNum[variableNumber]);
-    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+    if ((c < 0) || (c >= CODESIZE)) res = 0;	 
     variableNumber++;
     /* The overlap is 53 since we have correctly rounded coefficients */
     currOverlap = 53; 
+    if (gappaAssign != NULL) {
+      snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+      snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+      newAssign = newGappaOperation(GAPPA_COPY, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+      *gappaAssign = addElement(*gappaAssign,newAssign);
+    } 
     break;
   case 2:
     c = snprintf(buffer1,CODESIZE,
@@ -1754,6 +2176,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
     variableNumber++;
     /* The overlap is 53 since we have correctly rounded coefficients */
     currOverlap = 53; 
+    if (gappaAssign != NULL) {
+      snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+      snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+      newAssign = newGappaOperation(GAPPA_COPY, -1, 2, currOverlap, resultName, 2, 2, operand1Name, 0, 0, NULL);
+      *gappaAssign = addElement(*gappaAssign,newAssign);
+    } 
     break;
   case 1:
     c = snprintf(buffer1,CODESIZE,
@@ -1767,6 +2195,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
     variableNumber++;
     /* The overlap is 53 since we have correctly rounded coefficients */
     currOverlap = 53; 
+    if (gappaAssign != NULL) {
+      snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+      snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+      newAssign = newGappaOperation(GAPPA_COPY, -1, 1, -1, resultName, 1, 1, operand1Name, 0, 0, NULL);
+      *gappaAssign = addElement(*gappaAssign,newAssign);
+    } 
     break;
   default:
     printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
@@ -1848,6 +2282,18 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			 "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			 name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	    if (gappaAssign != NULL) {
+	      snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+	      snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+	      snprintf(operand2Name,CODESIZE,"%s",variablename);
+	      snprintf(operand3Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+	      newAssign = newGappaOperation(GAPPA_FMA_REL, 100, 2, 53, resultName, 2, 2, operand1Name, 1, 1, operand2Name);
+	      newAssign->operand3UsedType = 2;
+	      newAssign->operand3ComingType = 2;
+	      newAssign->operand3Variable = (char *) safeCalloc(strlen(operand3Name)+1,sizeof(char));
+	      strcpy(newAssign->operand3Variable,operand3Name);
+	      *gappaAssign = addElement(*gappaAssign,newAssign);
+	    } 
 	  } else {
 	    /* Multiplication by x stored as a double-double (or better) */
 	    c = snprintf(buffer1,CODESIZE,
@@ -1861,6 +2307,18 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			 "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			 name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	    if (gappaAssign != NULL) {
+	      snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+	      snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+	      snprintf(operand2Name,CODESIZE,"%s",variablename);
+	      snprintf(operand3Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+	      newAssign = newGappaOperation(GAPPA_FMA_REL, 100, 2, 53, resultName, 2, 2, operand1Name, 2, variablePrecision, operand2Name);
+	      newAssign->operand3UsedType = 2;
+	      newAssign->operand3ComingType = 2;
+	      newAssign->operand3Variable = (char *) safeCalloc(strlen(operand3Name)+1,sizeof(char));
+	      strcpy(newAssign->operand3Variable,operand3Name);
+	      *gappaAssign = addElement(*gappaAssign,newAssign);
+	    } 
 	  }
 	} else {
 	  /* Multiplication by x^k, which will be in any case at least a double-double */
@@ -1871,7 +2329,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	     we renormalize the whole triple-double value. 
 	  */
 	  
-	  t = 0; t2 = 0;
+	  t = 0; t2 = 0; 
 	  if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
 	    /* We must renormalize the power */
 	    c = snprintf(buffer1,CODESIZE,
@@ -1886,6 +2344,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 	    powerOverlaps[k-1] = 52;
 	    t = c; t2 = c2;
+	    if (gappaAssign != NULL) {
+	      snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+	      snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1]-1,k);
+	      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[k-1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+	      *gappaAssign = addElement(*gappaAssign,newAssign);
+	    }
 	  }
 	  c = snprintf(buffer1+t,CODESIZE-t,
 		       "MulAdd22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_t_%d_%dh,%s_t_%d_%dm);",
@@ -1898,6 +2362,19 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		       "double %s_t_%d_%dh, %s_t_%d_%dm;",
 		       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+	  if (gappaAssign != NULL) {
+	    if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
+	    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+	    snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+	    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+	    snprintf(operand3Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+	    newAssign = newGappaOperation(GAPPA_FMA_REL, 100, 2, 53, resultName, 2, 2, operand1Name, 2, op2format, operand2Name);
+	    newAssign->operand3UsedType = 2;
+	    newAssign->operand3ComingType = 2;
+	    newAssign->operand3Variable = (char *) safeCalloc(strlen(operand3Name)+1,sizeof(char));
+	    strcpy(newAssign->operand3Variable,operand3Name);
+	    *gappaAssign = addElement(*gappaAssign,newAssign);
+	  } 
 	}
 
 	variableNumber++;
@@ -1972,6 +2449,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 				name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
+
+		  // TODO : Start inserting Gappa code here.
+
+
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
@@ -2324,6 +2805,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      t = c; t2 = c2;
 		      powerOverlaps[1] = 52;
+		      if (gappaAssign != NULL) {
+			snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1],2);
+			snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1]-1,2);
+			newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+			*gappaAssign = addElement(*gappaAssign,newAssign);
+		      }
 		    }
 		    if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[1]))) {
 		      /* The precision is still not sufficient, we have to renormalize the other operand */
@@ -2356,6 +2843,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			t += c; t2 += c2;
 			powerOverlaps[1] = 52;
+			if (gappaAssign != NULL) {
+			  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1],2);
+			  snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1]-1,2);
+			  newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+			  *gappaAssign = addElement(*gappaAssign,newAssign);
+			}
 		      }
 		    } 
 		  }
@@ -2396,6 +2889,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
 		    t = c; t2 = c2;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1],2);
+		      snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1]-1,2);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  }
 		  
 		  c = snprintf(buffer1+t,CODESIZE-t,
@@ -2434,6 +2933,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
 		    t = c; t2 = c2;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1],2);
+		      snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1]-1,2);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  }
 
 		  c = snprintf(buffer1+t,CODESIZE-t,
@@ -2496,6 +3001,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t = c; t2 = c2;
 		    powerOverlaps[k-1] = 52;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		      snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1]-1,k);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[k-1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  }
 		  if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[k-1]))) {
 		    /* The precision is still not sufficient, we have to renormalize the other operand */
@@ -2528,6 +3039,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		      t += c; t2 += c2;
 		      powerOverlaps[k-1] = 52;
+		      if (gappaAssign != NULL) {
+			snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+			snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1]-1,k);
+			newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[k-1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+			*gappaAssign = addElement(*gappaAssign,newAssign);
+		      }
 		    }
 		  } 
 		}
@@ -2568,6 +3085,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  t = c; t2 = c2;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1]-1,k);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[k-1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 		
 		c = snprintf(buffer1+t,CODESIZE-t,
@@ -2606,6 +3129,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  t = c; t2 = c2;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1]-1,k);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[k-1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
@@ -2738,6 +3267,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  t = c; t2 = c2;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1]-1,k);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[k-1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
@@ -2775,6 +3310,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 				name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1]-1,k);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[k-1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
@@ -3709,6 +4250,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      t = c; t2 = c2;
 		      powerOverlaps[1] = 52;
+		      if (gappaAssign != NULL) {
+			snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1],2);
+			snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1]-1,2);
+			newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+			*gappaAssign = addElement(*gappaAssign,newAssign);
+		      }
 		    }
 		    if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[1]))) {
 		      /* The precision is still not sufficient, we have to renormalize the other operand */
@@ -3741,6 +4288,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			t += c; t2 += c2;
 			powerOverlaps[1] = 52;
+			if (gappaAssign != NULL) {
+			  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1],2);
+			  snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1]-1,2);
+			  newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+			  *gappaAssign = addElement(*gappaAssign,newAssign);
+			}
 		      }
 		    } 
 		  }
@@ -3781,6 +4334,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
 		    t = c; t2 = c2;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1],2);
+		      snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1]-1,2);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  }
 		  
 		  c = snprintf(buffer1+t,CODESIZE-t,
@@ -3819,6 +4378,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
 		    t = c; t2 = c2;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1],2);
+		      snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[1]-1,2);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  }
 
 		  c = snprintf(buffer1+t,CODESIZE-t,
@@ -3880,6 +4445,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t = c; t2 = c2;
 		    powerOverlaps[k-1] = 52;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		      snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1]-1,k);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[k-1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  }
 		  if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[k-1]))) {
 		    /* The precision is still not sufficient, we have to renormalize the other operand */
@@ -3912,6 +4483,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		      t += c; t2 += c2;
 		      powerOverlaps[k-1] = 52;
+		      if (gappaAssign != NULL) {
+			snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+			snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1]-1,k);
+			newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[k-1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+			*gappaAssign = addElement(*gappaAssign,newAssign);
+		      }
 		    }
 		  } 
 		}
@@ -3952,6 +4529,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  t = c; t2 = c2;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1]-1,k);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[k-1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 		
 		c = snprintf(buffer1+t,CODESIZE-t,
@@ -3990,6 +4573,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  t = c; t2 = c2;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1]-1,k);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[k-1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
@@ -4122,6 +4711,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 				name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1]-1,k);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[k-1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
@@ -4159,6 +4754,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 				name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k,name,variablename,powVarNum[k-1],k);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1]-1,k);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, powerOverlaps[k-1], resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
@@ -4405,6 +5006,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
   free(buffer2);
 
   free(tempVarNum);
+
+  if (gappaAssign != NULL) {
+    free(resultName);
+    free(operand1Name);
+    free(operand2Name);
+    free(operand3Name);
+  } 
 
   return res;
 }

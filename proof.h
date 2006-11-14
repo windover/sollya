@@ -111,6 +111,9 @@ struct gappaAssignmentStruct
   int operand2UsedType;
   int operand2ComingType;
   char *operand2Variable;
+  int operand3UsedType;
+  int operand3ComingType;
+  char *operand3Variable;
   double constHi;
   double constMi;
   double constLo;

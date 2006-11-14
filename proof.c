@@ -984,6 +984,7 @@ gappaAssignment *newGappaOperation(int opType, int relErrBits,
   newAssignment->operand2Variable = (char *) safeCalloc(strlen(operand2Variable)+1,sizeof(char));
   strcpy(newAssignment->operand2Variable,operand2Variable);
 
+
   return newAssignment;
 }
 
@@ -1010,6 +1011,7 @@ void freeGappaAssignment(gappaAssignment *assign) {
   free(assign->resultVariable);
   free(assign->operand1Variable);
   free(assign->operand2Variable);
+  free(assign->operand3Variable);
   free(assign);
 }
 
