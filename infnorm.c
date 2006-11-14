@@ -316,7 +316,7 @@ int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_p
 	mpfr_div_2ui(x,x,1,GMP_RNDN);
 	lucky = 0;
 	
-	i = 1000;
+	i = 5000;
 	while((n<=prec+25) && (mpfr_cmp(am,x) <= 0) && (mpfr_cmp(x,bm) <= 0) && (i > 0)) {
 	  evaluate(temp1, myTree, x, prec);
 	  if (mpfr_zero_p(temp1)) {
@@ -2848,7 +2848,7 @@ void evaluateConstantWithErrorEstimate(mpfr_t res, mpfr_t err, node *func, mpfr_
 
 chain* findZerosByNewton(node *func, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   node *deriv;
-  mpfr_t resNewtonStep, ap, bp, step;
+  mpfr_t resNewtonStep, ap, bp, step, yAp, yBp;
   int newtonOkay;
   mpfr_t *newZero;
   chain *fpZeros;
@@ -2859,6 +2859,8 @@ chain* findZerosByNewton(node *func, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_init2(ap,prec);
   mpfr_init2(bp,prec);
   mpfr_init2(step,prec);
+  mpfr_init2(yAp,prec);
+  mpfr_init2(yBp,prec);
   
   mpfr_sub(step,b,a,GMP_RNDU);
   if (mpfr_zero_p(step)) {
@@ -2882,10 +2884,15 @@ chain* findZerosByNewton(node *func, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 	mpfr_set(*newZero,resNewtonStep,GMP_RNDN);
 	fpZeros = addElement(fpZeros,newZero);
       } else {
-	if (mpfr_sgn(ap) != mpfr_sgn(bp)) {
+	evaluateFaithful(yAp, func, ap, prec);
+	evaluateFaithful(yBp, func, bp, prec);
+	if (mpfr_number_p(yAp) && mpfr_number_p(yBp) &&
+	    (mpfr_sgn(yAp) != mpfr_sgn(yBp))) {
 	  newZero = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*newZero,prec);
-	  mpfr_set_d(*newZero,0.0,GMP_RNDN);
+	  mpfr_set(*newZero,ap,GMP_RNDN);
+	  mpfr_add(*newZero,*newZero,bp,GMP_RNDN);
+	  mpfr_div_2ui(*newZero,*newZero,1,GMP_RNDN);
 	  fpZeros = addElement(fpZeros,newZero);
 	}
       }
@@ -2896,6 +2903,8 @@ chain* findZerosByNewton(node *func, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_clear(step);
   mpfr_clear(bp);
   mpfr_clear(ap);
+  mpfr_clear(yAp);
+  mpfr_clear(yBp);
   mpfr_clear(resNewtonStep);
   free_memory(deriv);
   return fpZeros;
@@ -2907,7 +2916,7 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
   mpfr_t diam;
   chain *intervalZeros, *fpZeros, *temp, *fpZerosOnInterval, *fpZeros2, *curr;
   mpfr_t *newZero;
-  mpfr_t before, after, yBefore, yAfter, y;
+  mpfr_t before, after, yBefore, yAfter, y, compare;
   int addToList, removedFromList;
 
   mpfr_init2(diam,prec+50);
@@ -2935,6 +2944,10 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
     intervalZeros = temp;
   }
   
+
+  mpfr_init2(compare,prec);
+  mpfr_set_d(compare,1.0,GMP_RNDN);
+  mpfr_div_ui(compare,compare,prec,GMP_RNDN);
   fpZeros2 = NULL;
   curr = fpZeros;
   while (curr != NULL) {
@@ -2944,8 +2957,15 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
     mpfr_init2(*newZero,prec);
     mpfr_set(*newZero,*((mpfr_t *) (curr->value)),GMP_RNDN);
     fpZeros2 = addElement(fpZeros2,newZero);
+    if ((!mpfr_zero_p(*newZero)) && (mpfr_cmpabs(*newZero,compare) <= 0)) {
+      newZero = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*newZero,prec);
+      mpfr_set_d(*newZero,0.0,GMP_RNDN);
+      fpZeros2 = addElement(fpZeros2,newZero);
+    }
     curr = curr->next;
   }
+  mpfr_clear(compare);
 
   while (fpZeros != NULL) {
     mpfr_clear(*((mpfr_t*) (fpZeros->value)));
@@ -2995,6 +3015,7 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
 	      if (verbosity >= 2) {
 		printMessage(2,"Information: removing possible zero in ");
 		printMpfr(*((mpfr_t *) (fpZeros2->value)));
+		printMessage(3,"Information: removing because all signs are equal.\n");
 	      }
 	    }
 	  } else {
@@ -3002,6 +3023,7 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
 	    if (verbosity >= 2) {
 	      printMessage(2,"Information: removing possible zero in ");
 	      printMpfr(*((mpfr_t *) (fpZeros2->value)));
+	      printMessage(3,"Information: removing because predecessor and successor signs are equal.\n");
 	    }
 	  }
 	}
@@ -3028,7 +3050,27 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
 
   sortChain(fpZeros,  cmpMpfrPtr);
 
-  return fpZeros;
+  fpZeros2 = NULL;
+  curr = fpZeros;
+  while (curr != NULL) {
+    while ((curr->next != NULL) && (mpfr_cmp(*((mpfr_t *) (curr->value)),*((mpfr_t *) (curr->next->value))) == 0))
+      curr = curr->next;
+    newZero = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*newZero,mpfr_get_prec(*((mpfr_t *) (curr->value))));
+    mpfr_set(*newZero,*((mpfr_t *) (curr->value)),GMP_RNDN);
+    fpZeros2 = addElement(fpZeros2,newZero);
+    curr = curr->next;
+  }
+
+  while (fpZeros != NULL) {
+    mpfr_clear(*((mpfr_t*) (fpZeros->value)));
+    free((fpZeros->value));
+    temp = fpZeros->next;
+    free(fpZeros);
+    fpZeros = temp;
+  }
+
+  return fpZeros2;
 }
 
 

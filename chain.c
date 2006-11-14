@@ -137,6 +137,6 @@ int cmpIntPtr(void *a, void *b) {
 
 int cmpMpfrPtr(void *a, void *b) {
   int res;
-  res = mpfr_cmp(*((mpfr_t *) a), *((mpfr_t *) b));
+  res = -mpfr_cmp(*((mpfr_t *) a), *((mpfr_t *) b));
   return res; 
 }

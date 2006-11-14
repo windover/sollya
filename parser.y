@@ -951,11 +951,12 @@ fpfindzeros:   FPFINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
 			     if (chain_temp == NULL) {
 			       printf("The function seems to have no zeros in the interval.\n");
 			     } else {
-			       printf("The approximated zeros of the function (and their images) are:\n");
+			       printf("The %d approximated zeros of the function (and their images) are:\n",
+				      lengthChain(chain_temp));
 			       while (chain_temp != NULL) {
 				 evaluateFaithful(*mpfr_temp, $2, *((mpfr_t *) (chain_temp->value)), defaultprecision);
 				 printValue(((mpfr_t *) (chain_temp->value)),defaultprecision);
-				 printf(" ( ");
+				 printf(" \t( ");
 				 printValue(mpfr_temp,defaultprecision);
 				 printf(" )\n");
 				 mpfr_clear(*((mpfr_t *) (chain_temp->value)));
