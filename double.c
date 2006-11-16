@@ -460,7 +460,7 @@ int printDoubleExpansion(mpfr_t x) {
 }
 
 int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
-  int degree, roundingOccured, i, res;
+  int degree, roundingOccured, i, res, k, l;
   node **coefficients;
   node *tempNode, *simplifiedTreeSafe, *simplifiedTree, *myTree;
   mpfr_t tempValue;
@@ -493,9 +493,22 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
 
   mpfr_init2(tempValue,prec);
 
-
+  k = 0; l = 0;
   for (i=0;i<=degree;i++) {
     if (coefficients[i] != NULL) {
+      if (k > 0) {
+	if (k == 1) {
+	  printf("%s * ",variablename);
+	} else {
+	  printf("%s^%d * ",variablename,k);
+	}
+      }
+
+      if ((i != degree) && (i != 0)) {
+	printf("(");
+	l++;
+      }
+
       tempNode = simplifyTreeErrorfree(coefficients[i]);
       if (tempNode->nodeType == CONSTANT) {
 	roundingOccured |=  printDoubleExpansion(*(tempNode->value));
@@ -510,13 +523,16 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
       }
       free_memory(tempNode);
       free_memory(coefficients[i]);
+      k = 1;
+
+      if (i != degree) {
+	printf(" + ");
+      }
     } else {
-      printf("0x0000000000000000");
+      k++;
     }
-    if (i < degree - 1) printf(" + %s * (",variablename);
-    if (i == degree - 1) printf(" + %s * ",variablename);
   }
-  for (i=0;i<degree-1;i++) 
+  for (i=0;i<l;i++) 
     printf(")");
 
   free(coefficients);

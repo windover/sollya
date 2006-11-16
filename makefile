@@ -1,6 +1,6 @@
 CPPFLAGS=-I/sw/include -rdynamic
 LIB=-L/sw/lib
-CFLAGS=-O3 -Wall
+CFLAGS=-O3 -Wall -g
 
 tools: parser.tab.o lex.yy.o plot.o expression.o infnorm.o pari_utils.o remez.o main.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o
 	gcc $(LIB) $(CFLAGS) -o tools lex.yy.o plot.o parser.tab.o expression.o infnorm.o pari_utils.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o main.o -lfl -lmpfi -lpari -lmpfr -lgmp -ldl

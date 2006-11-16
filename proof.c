@@ -973,16 +973,28 @@ gappaAssignment *newGappaOperation(int opType, int relErrBits,
   newAssignment->relErrBits = relErrBits;
   newAssignment->resultType = resultType;
   newAssignment->resultOverlap = resultOverlap;
-  newAssignment->resultVariable = (char *) safeCalloc(strlen(resultVariable)+1,sizeof(char));
-  strcpy(newAssignment->resultVariable,resultVariable);
+  if (resultVariable != NULL) {
+    newAssignment->resultVariable = (char *) safeCalloc(strlen(resultVariable)+1,sizeof(char));
+    strcpy(newAssignment->resultVariable,resultVariable);
+  } else {
+    newAssignment->resultVariable = NULL;
+  }
   newAssignment->operand1UsedType = operand1UsedType;
   newAssignment->operand1ComingType = operand1ComingType;
-  newAssignment->operand1Variable = (char *) safeCalloc(strlen(operand1Variable)+1,sizeof(char));
-  strcpy(newAssignment->operand1Variable,operand1Variable);
+  if (operand1Variable != NULL) {
+    newAssignment->operand1Variable = (char *) safeCalloc(strlen(operand1Variable)+1,sizeof(char));
+    strcpy(newAssignment->operand1Variable,operand1Variable);
+  } else {
+    newAssignment->operand1Variable = NULL;
+  }
   newAssignment->operand2UsedType = operand2UsedType;
   newAssignment->operand2ComingType = operand2ComingType;
-  newAssignment->operand2Variable = (char *) safeCalloc(strlen(operand2Variable)+1,sizeof(char));
-  strcpy(newAssignment->operand2Variable,operand2Variable);
+  if (operand2Variable != NULL) {
+    newAssignment->operand2Variable = (char *) safeCalloc(strlen(operand2Variable)+1,sizeof(char));
+    strcpy(newAssignment->operand2Variable,operand2Variable);
+  } else {
+    newAssignment->operand2Variable = NULL;
+  }
 
 
   return newAssignment;

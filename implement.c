@@ -2096,7 +2096,7 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec, 
 		    int degree, int variablePrecision, FILE *fd, char *name, int *powerOverlaps, int *powVarNum, chain **gappaAssign) {
   int res, i, k, variableNumber, comingFormat, producedFormat, issuedCode, issuedVariables, c, c2, t2;
-  int coeffFormat, currOverlap, t;
+  int coeffFormat, currOverlap, t, oldCurrOverlap;
   char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2; 
   int *tempVarNum;
   char *resultName, *operand1Name, *operand2Name, *operand3Name;
@@ -2449,10 +2449,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 				name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
-
-		  // TODO : Start inserting Gappa code here.
-
-
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
@@ -2465,7 +2467,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,currOverlap-4);
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + oldCurrOverlap, 3, currOverlap, resultName, 3, 3, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a triple-double x, produce a triple-double */
@@ -2486,6 +2497,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 48;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand2Name,CODESIZE,"%s",variablename);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      default:
 		/* Multiply the double temporary by a triple-double x, produce a triple-double */
@@ -2506,6 +2525,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand2Name,CODESIZE,"%s",variablename);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 152, 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 	      }
 	      break;
 	    case 2:
@@ -2535,6 +2562,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 				name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
@@ -2547,7 +2580,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,currOverlap-4);
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + oldCurrOverlap, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a double-double x, produce a triple-double */
@@ -2567,6 +2609,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 49;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, currOverlap, resultName, 2, 2, operand1Name, 2, 2, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      default:
 		/* Multiply the double temporary by a double-double x, produce a triple-double */
@@ -2586,6 +2636,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand2Name,CODESIZE,"%s",variablename);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 	      }
 	      break;
 	    case 1:
@@ -2614,6 +2672,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 				name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 
 		producedFormat = 3;
@@ -2627,7 +2691,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(47,currOverlap-5);
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 100 + oldCurrOverlap, 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a double x, produce a triple-double */
@@ -2648,6 +2721,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      default:
 		/* Multiply the double temporary by a double x, produce a double-double */
@@ -2668,6 +2749,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 53;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  newAssign = newGappaOperation(GAPPA_MUL_EXACT, -1, 2, 53, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 	      }
 	      break;
 	    default:
@@ -2707,6 +2795,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 				  name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t = c; t2 = c2;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		      snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  }
 		  
 		  c = snprintf(buffer1+t,CODESIZE-t,
@@ -2719,7 +2813,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		  oldCurrOverlap = currOverlap;
 		  currOverlap = MIN(48,currOverlap-4);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,powVarNum[1]);
+		    snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + oldCurrOverlap, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		case 2:
 		  /* Multiply the double-double temporary by a double-double x^2, produce a triple-double */
@@ -2739,6 +2842,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 49;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,powVarNum[1]);
+		    snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, currOverlap, resultName, 2, 2, operand1Name, 2, 2, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		default:
 		  /* Multiply the double temporary by a double-double x^2, produce a triple-double */
@@ -2758,6 +2869,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 47;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,powVarNum[1]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		}
 	      } else {
 		/* Multiply comingFormat by a triple-double x^2, produce a triple-double */
@@ -2791,6 +2910,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      t = c; t2 = c2;
 		      currOverlap = 52;
+		      if (gappaAssign != NULL) {
+			snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+			snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+			newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+			*gappaAssign = addElement(*gappaAssign,newAssign);
+		      }
 		    } else {
 		      /* We have to renormalize first x^2 */
 		      c = snprintf(buffer1,CODESIZE,
@@ -2829,6 +2954,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 				      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			t2 += c2;
+			if (gappaAssign != NULL) {
+			  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+			  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+			  newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+			  *gappaAssign = addElement(*gappaAssign,newAssign);
+			}
 		      } else {
 			/* We have to renormalize x^2 */
 			c = snprintf(buffer1+t,CODESIZE-t,
@@ -2863,7 +2994,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
-		  currOverlap = MIN(48,currOverlap-4);
+		  oldCurrOverlap = currOverlap;
+		  currOverlap = MIN(48,MIN(currOverlap,powerOverlaps[1])-4);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,powVarNum[1]);
+		    snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, (97 + MIN(oldCurrOverlap,powerOverlaps[1])), 3, currOverlap, resultName, 3, 3, operand1Name, 3, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		case 2:
 		  /* Multiply the double-double temporary by a triple-double x^2, produce a triple-double */
@@ -2907,7 +3047,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
-		  currOverlap = MIN(48,currOverlap-4);
+		  currOverlap = MIN(48,powerOverlaps[1]-4);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,powVarNum[1]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + powerOverlaps[1], 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		default:
 		  /* Multiply the double temporary by a triple-double x^2, produce a triple-double */
@@ -2951,7 +3099,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
-		  currOverlap = MIN(47,currOverlap - 5);
+		  currOverlap = MIN(47,powerOverlaps[1] - 5);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,powVarNum[1]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 100 + powerOverlaps[1], 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		}
 	      }
 	    } else {
@@ -2987,6 +3143,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t2 = c2;
 		    currOverlap = 52;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		      snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  } else {
 		    /* We have to renormalize first x^k */
 		    c = snprintf(buffer1,CODESIZE,
@@ -3025,6 +3187,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		      t2 += c2;
 		      currOverlap = 52;
+		      if (gappaAssign != NULL) {
+			snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+			snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+			newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+			*gappaAssign = addElement(*gappaAssign,newAssign);
+		      }
 		    } else {
 		      /* We have to renormalize x^k */
 		      c = snprintf(buffer1+t,CODESIZE-t,
@@ -3059,7 +3227,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
-		currOverlap = MIN(48,currOverlap-4);
+		oldCurrOverlap = currOverlap;
+		currOverlap = MIN(48,MIN(currOverlap,powerOverlaps[k-1])-4);
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + MIN(oldCurrOverlap,powerOverlaps[k-1]), 3, currOverlap, resultName, 3, 3, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a triple-double x^k, produce a triple-double */
@@ -3103,7 +3280,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
-		currOverlap = MIN(48,currOverlap-4);
+		currOverlap = MIN(48,powerOverlaps[k-1]-4);
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + powerOverlaps[k-1], 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      default:
 		/* Multiply the double temporary by a triple-double x^k, produce a triple-double */
@@ -3147,7 +3332,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
-		currOverlap = MIN(47,currOverlap-5);
+		currOverlap = MIN(47,powerOverlaps[k-1]-5);
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 100 + powerOverlaps[k-1], 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 	      }
 	    }
 	  }
@@ -3180,6 +3373,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand2Name,CODESIZE,"%s",variablename);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 2, 2, operand1Name, 2, variablePrecision, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		default:
 		  /* Multiply the double temporary by x as a double-double (or better), produce a double-double */
@@ -3193,6 +3394,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand2Name,CODESIZE,"%s",variablename);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 1, 1, operand1Name, 2, variablePrecision, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		}
 		break;
 	      case 1:
@@ -3215,6 +3424,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s",variablename);
+		    snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		default:
 		  /* Multiply the double temporary by x as a double, produce a double-double */
@@ -3228,6 +3445,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s",variablename);
+		    snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    newAssign = newGappaOperation(GAPPA_MUL_EXACT, -1, 2, 53, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 		break;
 	      default:
@@ -3285,6 +3509,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
+		if (gappaAssign != NULL) {
+		  if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 2, 2, operand1Name, 2, op2format, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      default:
 		/* Multiply the double temporary by x^k as a double-double, produce a double-double */
@@ -3328,6 +3561,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
+		if (gappaAssign != NULL) {
+		  if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 1, 1, operand1Name, 2, op2format, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 	      }
 	    }
 	  } else {
@@ -3353,6 +3595,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh;",
 			       name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    snprintf(operand2Name,CODESIZE,"%s",variablename);
+		    
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, variablePrecision, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		case 1:
 		  /* Multiply the double temporary by x as a double, produce a double */
@@ -3366,6 +3616,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh;",
 			       name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    snprintf(operand2Name,CODESIZE,"%s",variablename);
+		    
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		default:
 		  printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",variablename);
@@ -3394,12 +3652,29 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       name,variablename,powVarNum[k-1],k,
 			       name,variablename,powVarNum[k-1],k);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		    
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 2, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		} else {
 		  c = snprintf(buffer1,CODESIZE,
 			       "%s_t_%d_%dh = %s_t_%d_%dh * %s_%s_%d_pow%dh;",
 			       name,variableNumber,tempVarNum[variableNumber],
 			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       name,variablename,powVarNum[k-1],k);
+		  if (gappaAssign != NULL) {
+		    if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		    
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, op2format, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
@@ -3481,6 +3756,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		t = c; t2 = c2;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+		  newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 	      }
 
 	      c = snprintf(buffer1+t,CODESIZE-t,
@@ -3492,8 +3773,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      c = snprintf(buffer2+t2,CODESIZE-t2,
 			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
+	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
+	      oldCurrOverlap = currOverlap;
 	      currOverlap = currOverlap - 5;
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+		snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		newAssign = newGappaOperation(GAPPA_ADD_REL, 97 + oldCurrOverlap, 3, currOverlap, resultName, 3, 3, operand1Name, 3, 3, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      } 
 	      break;
 	    case 2:
 	      /* Add the double-double coefficient to the triple-double temporary, produce a triple-double */
@@ -3519,6 +3808,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		t = c; t2 = c2;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+		  newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 	      }
 
 	      c = snprintf(buffer1+t,CODESIZE-t,
@@ -3531,7 +3826,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
+	      oldCurrOverlap = currOverlap;
 	      currOverlap = MIN(45,currOverlap - 5);
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+		snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		newAssign = newGappaOperation(GAPPA_ADD_REL, 103 + oldCurrOverlap, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      } 
 	      break;
 	    case 1:
 	      /* Add the double coefficient to the triple-double temporary, produce a triple-double */
@@ -3557,6 +3860,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		t = c; t2 = c2;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+		  newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 	      }
 
 	      c = snprintf(buffer1+t,CODESIZE-t,
@@ -3569,7 +3878,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
+	      oldCurrOverlap = currOverlap;
 	      currOverlap = MIN(47,currOverlap - 2);
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+		snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		newAssign = newGappaOperation(GAPPA_ADD_REL, 104 + oldCurrOverlap, 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      } 
+
 	      break;
 	    default:
 	      printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
@@ -3598,6 +3916,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 	      currOverlap = 45; /* TODO: Verify this value */
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		snprintf(operand2Name,CODESIZE,"%s_coeff_%d",name,i);
+		snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		newAssign = newGappaOperation(GAPPA_ADD_REL, 152, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      } 
+
 	      break;
 	    case 2:
 	      /* Add the double-double coefficient to the double-double temporary, produce a triple-double */
@@ -3616,7 +3942,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    	
-	      currOverlap = 45;
+	      currOverlap = 45; /* TODO: verify this value and precision bound below */
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+		snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		newAssign = newGappaOperation(GAPPA_ADD_REL, 140, 3, currOverlap, resultName, 2, 2, operand1Name, 2, 2, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      } 
 	      break;
 	    case 1:
 	      /* Add the double coefficient to the double-double temporary, produce a triple-double */
@@ -3636,6 +3969,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 	      currOverlap = 52;
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+		snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		newAssign = newGappaOperation(GAPPA_ADD_REL, 159, 3, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      } 	     
 	      break;
 	    default:
 	      printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
@@ -3663,7 +4003,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
-	      currOverlap = 47; /* TODO: Verify this value */
+	      currOverlap = 47; /* TODO: Verify this value and the precision bound below */
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		snprintf(operand2Name,CODESIZE,"%s_coeff_%d",name,i);
+		snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		newAssign = newGappaOperation(GAPPA_ADD_REL, 140, 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      } 
 	      break;
 	    case 2:
 	      /* Add the double-double coefficient to the double temporary, produce a triple-double */
@@ -3684,6 +4031,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      currOverlap = 47; /* TODO: Verify this value */
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+		snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		newAssign = newGappaOperation(GAPPA_ADD_REL, 159, 3, currOverlap, resultName, 2, 2, operand1Name, 1, 1, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      } 
 	      break;
 	    case 1:
 	      /* Add the double coefficient to the double temporary, produce a double-double */
@@ -3702,6 +4056,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      currOverlap = 53; 
+	      if (gappaAssign != NULL) {
+		snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+		snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		newAssign = newGappaOperation(GAPPA_ADD_EXACT, -1, 2, currOverlap, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
+		*gappaAssign = addElement(*gappaAssign,newAssign);
+	      } 
 	      break;
 	    default:
 	      printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
@@ -3739,6 +4100,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  newAssign = newGappaOperation(GAPPA_ADD_REL, 102, 2, currOverlap, resultName, 2, 2, operand1Name, 2, 2, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      case 1:
 		/* Add the double coefficient to the double-double temporary, produce a double-double */
@@ -3753,6 +4121,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+		/* TODO: verify the following precision bound */
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  newAssign = newGappaOperation(GAPPA_ADD_REL, 102, 2, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      default:
 		printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
@@ -3779,7 +4155,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	
+		/* TODO: verify the following precision bound */
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  newAssign = newGappaOperation(GAPPA_ADD_REL, 102, 2, currOverlap, resultName, 2, 2, operand1Name, 1, 1, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}     			    
 		break;
 	      case 1:
 		/* Add the double coefficient to the double temporary, produce a double-double */
@@ -3792,7 +4176,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;	
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  newAssign = newGappaOperation(GAPPA_ADD_EXACT, -1, 2, currOverlap, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}     			    
 		break;
 	      default:
 		printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
@@ -3816,6 +4207,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh;",
 			     name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  newAssign = newGappaOperation(GAPPA_ADD_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 	      } else {
 		printMessage(1,"Warning: error in the management of precisions in coefficient rounding. This should not occur.\n");
 		printMessage(1,"The implementation will be wrong.\n");
@@ -3897,6 +4295,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 				name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
@@ -3909,7 +4313,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,currOverlap-4);
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + oldCurrOverlap, 3, currOverlap, resultName, 3, 3, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a triple-double x, produce a triple-double */
@@ -3930,6 +4343,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 48;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand2Name,CODESIZE,"%s",variablename);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      default:
 		/* Multiply the double temporary by a triple-double x, produce a triple-double */
@@ -3950,6 +4371,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand2Name,CODESIZE,"%s",variablename);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 	      }
 	      break;
 	    case 2:
@@ -3979,6 +4408,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 				name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 
 		c = snprintf(buffer1+t,CODESIZE-t,
@@ -3991,7 +4426,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,currOverlap-4);
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + oldCurrOverlap, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a double-double x, produce a triple-double */
@@ -4011,6 +4455,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 49;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, currOverlap, resultName, 2, 2, operand1Name, 2, 2, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      default:
 		/* Multiply the double temporary by a double-double x, produce a triple-double */
@@ -4030,6 +4482,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand2Name,CODESIZE,"%s",variablename);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 	      }
 	      break;
 	    case 1:
@@ -4058,6 +4518,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 				name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+		    newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 
 		producedFormat = 3;
@@ -4071,7 +4537,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(47,currOverlap-5);
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 100 + oldCurrOverlap, 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a double x, produce a triple-double */
@@ -4092,6 +4567,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      default:
 		/* Multiply the double temporary by a double x, produce a double-double */
@@ -4112,6 +4595,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 53;
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s",variablename);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  newAssign = newGappaOperation(GAPPA_MUL_EXACT, -1, 2, 53, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		}
 	      }
 	      break;
 	    default:
@@ -4151,6 +4641,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 				  name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t = c; t2 = c2;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		      snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  }
 		  
 		  c = snprintf(buffer1+t,CODESIZE-t,
@@ -4163,7 +4659,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		  oldCurrOverlap = currOverlap;
 		  currOverlap = MIN(48,currOverlap-4);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,powVarNum[1]);
+		    snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + oldCurrOverlap, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		case 2:
 		  /* Multiply the double-double temporary by a double-double x^2, produce a triple-double */
@@ -4183,6 +4688,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 49;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,powVarNum[1]);
+		    snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, currOverlap, resultName, 2, 2, operand1Name, 2, 2, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		default:
 		  /* Multiply the double temporary by a double-double x^2, produce a triple-double */
@@ -4202,6 +4715,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 47;
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,powVarNum[1]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		}
 	      } else {
 		/* Multiply comingFormat by a triple-double x^2, produce a triple-double */
@@ -4236,6 +4757,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      t2 = c2;
 		      currOverlap = 52;
+		      if (gappaAssign != NULL) {
+			snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+			snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+			newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+			*gappaAssign = addElement(*gappaAssign,newAssign);
+		      }
 		    } else {
 		      /* We have to renormalize first x^2 */
 		      c = snprintf(buffer1,CODESIZE,
@@ -4274,6 +4801,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			currOverlap = 52;
 			t2 += c2;
+			if (gappaAssign != NULL) {
+			  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+			  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+			  newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+			  *gappaAssign = addElement(*gappaAssign,newAssign);
+			}
 		      } else {
 			/* We have to renormalize x^2 */
 			c = snprintf(buffer1+t,CODESIZE-t,
@@ -4308,7 +4841,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
-		  currOverlap = MIN(48,currOverlap-4);
+		  oldCurrOverlap = currOverlap;
+		  currOverlap = MIN(48,MIN(currOverlap,powerOverlaps[1])-4);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,powVarNum[1]);
+		    snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, (97 + MIN(oldCurrOverlap,powerOverlaps[1])), 3, currOverlap, resultName, 3, 3, operand1Name, 3, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		case 2:
 		  /* Multiply the double-double temporary by a triple-double x^2, produce a triple-double */
@@ -4352,7 +4894,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
-		  currOverlap = MIN(48,currOverlap-4);
+		  currOverlap = MIN(48,powerOverlaps[1]-4);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,powVarNum[1]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + powerOverlaps[1], 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		default:
 		  /* Multiply the double temporary by a triple-double x^2, produce a triple-double */
@@ -4396,7 +4946,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
-		  currOverlap = MIN(47,currOverlap - 5);
+		  currOverlap = MIN(48,powerOverlaps[1]-4);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,powVarNum[1]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + powerOverlaps[1], 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
+
 		}
 	      }
 	    } else {
@@ -4431,6 +4990,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t = c; t2 = c2;
 		    currOverlap = 52;
+		    if (gappaAssign != NULL) {
+		      snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		      snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+		      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+		      *gappaAssign = addElement(*gappaAssign,newAssign);
+		    }
 		  } else {
 		    /* We have to renormalize first x^k */
 		    c = snprintf(buffer1,CODESIZE,
@@ -4469,6 +5034,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		      t2 += c2;
 		      currOverlap = 52;
+		      if (gappaAssign != NULL) {
+			snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+			snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]-1);
+			newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
+			*gappaAssign = addElement(*gappaAssign,newAssign);
+		      }
 		    } else {
 		      /* We have to renormalize x^k */
 		      c = snprintf(buffer1+t,CODESIZE-t,
@@ -4503,7 +5074,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
-		currOverlap = MIN(48,currOverlap-4);
+		oldCurrOverlap = currOverlap;
+		currOverlap = MIN(48,MIN(currOverlap,powerOverlaps[k-1])-4);
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		  snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + MIN(oldCurrOverlap,powerOverlaps[k-1]), 3, currOverlap, resultName, 3, 3, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a triple-double x^k, produce a triple-double */
@@ -4547,7 +5127,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
-		currOverlap = MIN(48,currOverlap-4);
+		currOverlap = MIN(48,powerOverlaps[k-1]-4);
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + powerOverlaps[k-1], 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
+
 		break;
 	      default:
 		/* Multiply the double temporary by a triple-double x^k, produce a triple-double */
@@ -4591,7 +5180,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
-		currOverlap = MIN(47,currOverlap-5);
+		currOverlap = MIN(47,powerOverlaps[k-1]-5);
+		if (gappaAssign != NULL) {
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 100 + powerOverlaps[k-1], 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 	      }
 	    }
 	  }
@@ -4624,6 +5221,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand2Name,CODESIZE,"%s",variablename);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 2, 2, operand1Name, 2, variablePrecision, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		default:
 		  /* Multiply the double temporary by x as a double-double (or better), produce a double-double */
@@ -4637,6 +5242,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand2Name,CODESIZE,"%s",variablename);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 1, 1, operand1Name, 2, variablePrecision, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		}
 		break;
 	      case 1:
@@ -4659,6 +5272,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s",variablename);
+		    snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		    newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		default:
 		  /* Multiply the double temporary by x as a double, produce a double-double */
@@ -4672,6 +5293,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s",variablename);
+		    snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    newAssign = newGappaOperation(GAPPA_MUL_EXACT, -1, 2, 53, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  }
 		}
 		break;
 	      default:
@@ -4729,6 +5357,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
+		if (gappaAssign != NULL) {
+		  if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 2, 2, operand1Name, 2, op2format, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 		break;
 	      default:
 		/* Multiply the double temporary by x^k as a double-double, produce a double-double */
@@ -4772,6 +5409,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
 			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
+		if (gappaAssign != NULL) {
+		  if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
+		  snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		  snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		  
+		  newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 1, 1, operand1Name, 2, op2format, operand2Name);
+		  *gappaAssign = addElement(*gappaAssign,newAssign);
+		} 
 	      }
 	    }
 	  } else {
@@ -4797,6 +5443,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh;",
 			       name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    snprintf(operand2Name,CODESIZE,"%s",variablename);
+		    
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, variablePrecision, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		case 1:
 		  /* Multiply the double temporary by x as a double, produce a double */
@@ -4810,6 +5464,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       "double %s_t_%d_%dh;",
 			       name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    snprintf(operand2Name,CODESIZE,"%s",variablename);
+		    
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		  break;
 		default:
 		  printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",variablename);
@@ -4838,12 +5500,29 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       name,variablename,powVarNum[k-1],k,
 			       name,variablename,powVarNum[k-1],k);
+		  if (gappaAssign != NULL) {
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		    
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 2, 3, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		} else {
 		  c = snprintf(buffer1,CODESIZE,
 			       "%s_t_%d_%dh = %s_t_%d_%dh * %s_%s_%d_pow%dh;",
 			       name,variableNumber,tempVarNum[variableNumber],
 			       name,variableNumber-1,tempVarNum[variableNumber-1],
 			       name,variablename,powVarNum[k-1],k);
+		  if (gappaAssign != NULL) {
+		    if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
+		    snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
+		    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,powVarNum[k-1],k);
+		    
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, op2format, operand2Name);
+		    *gappaAssign = addElement(*gappaAssign,newAssign);
+		  } 
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
@@ -4898,12 +5577,24 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			 name,variableNumber-1,tempVarNum[variableNumber-1],
 			 name,variableNumber-1,tempVarNum[variableNumber-1],
 			 name,variableNumber-1,tempVarNum[variableNumber-1]);
+	    if (gappaAssign != NULL) {
+	      snprintf(resultName,CODESIZE,"%s_res",name);
+	      snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+	      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, 52, resultName, 3, 3, operand1Name, 0, 0, NULL);
+	      *gappaAssign = addElement(*gappaAssign,newAssign);
+	    }
 	  } else {
 	    c = snprintf(buffer1,CODESIZE,
 			 "*%s_resh = %s_t_%d_%dh; *%s_resm = %s_t_%d_%dm; *%s_resl = %s_t_%d_%dl;",
 			 name,name,variableNumber-1,tempVarNum[variableNumber-1],
 			 name,name,variableNumber-1,tempVarNum[variableNumber-1],
 			 name,name,variableNumber-1,tempVarNum[variableNumber-1]);
+	    if (gappaAssign != NULL) {
+	      snprintf(resultName,CODESIZE,"%s_res",name);
+	      snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+	      newAssign = newGappaOperation(GAPPA_COPY, -1, 3, -1, resultName, 3, 3, operand1Name, 0, 0, NULL);
+	      *gappaAssign = addElement(*gappaAssign,newAssign);
+	    } 
 	  }
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = snprintf(buffer2,CODESIZE," ");
@@ -4917,6 +5608,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = snprintf(buffer2,CODESIZE," ");
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	  if (gappaAssign != NULL) {
+	    snprintf(resultName,CODESIZE,"%s_res",name);
+	    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+	    newAssign = newGappaOperation(GAPPA_COPY, -1, 2, -1, resultName, 2, 2, operand1Name, 0, 0, NULL);
+	    *gappaAssign = addElement(*gappaAssign,newAssign);
+	  } 
 	  break;
 	default:
 	  c = snprintf(buffer1,CODESIZE,
@@ -4924,7 +5621,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		       name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = snprintf(buffer2,CODESIZE," ");
-	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			 
+	  if (gappaAssign != NULL) {
+	    snprintf(resultName,CODESIZE,"%s_res",name);
+	    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+	    newAssign = newGappaOperation(GAPPA_COPY, -1, 1, -1, resultName, 1, 1, operand1Name, 0, 0, NULL);
+	    *gappaAssign = addElement(*gappaAssign,newAssign);
+	  } 
 	}
 
 	i = -1;
@@ -4942,12 +5645,24 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			 name,variableNumber-1,tempVarNum[variableNumber-1],
 			 name,variableNumber-1,tempVarNum[variableNumber-1],
 			 name,variableNumber-1,tempVarNum[variableNumber-1]);
+	    if (gappaAssign != NULL) {
+	      snprintf(resultName,CODESIZE,"%s_res",name);
+	      snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+	      newAssign = newGappaOperation(GAPPA_RENORMALIZE, -1, 3, 52, resultName, 3, 3, operand1Name, 0, 0, NULL);
+	      *gappaAssign = addElement(*gappaAssign,newAssign);
+	    }
 	  } else {
 	    c = snprintf(buffer1,CODESIZE,
 			 "*%s_resh = %s_t_%d_%dh; *%s_resm = %s_t_%d_%dm; *%s_resl = %s_t_%d_%dl;",
 			 name,name,variableNumber-1,tempVarNum[variableNumber-1],
 			 name,name,variableNumber-1,tempVarNum[variableNumber-1],
 			 name,name,variableNumber-1,tempVarNum[variableNumber-1]);
+	    if (gappaAssign != NULL) {
+	      snprintf(resultName,CODESIZE,"%s_res",name);
+	      snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+	      newAssign = newGappaOperation(GAPPA_COPY, -1, 3, -1, resultName, 3, 3, operand1Name, 0, 0, NULL);
+	      *gappaAssign = addElement(*gappaAssign,newAssign);
+	    } 
 	  }
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = snprintf(buffer2,CODESIZE," ");
@@ -4961,6 +5676,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = snprintf(buffer2,CODESIZE," ");
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	  if (gappaAssign != NULL) {
+	    snprintf(resultName,CODESIZE,"%s_res",name);
+	    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+	    newAssign = newGappaOperation(GAPPA_COPY, -1, 2, -1, resultName, 2, 2, operand1Name, 0, 0, NULL);
+	    *gappaAssign = addElement(*gappaAssign,newAssign);
+	  } 
 	  break;
 	default:
 	  c = snprintf(buffer1,CODESIZE,
@@ -4969,6 +5690,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = snprintf(buffer2,CODESIZE," ");
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	  if (gappaAssign != NULL) {
+	    snprintf(resultName,CODESIZE,"%s_res",name);
+	    snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
+	    newAssign = newGappaOperation(GAPPA_COPY, -1, 1, -1, resultName, 1, 1, operand1Name, 0, 0, NULL);
+	    *gappaAssign = addElement(*gappaAssign,newAssign);
+	  } 
 	}
       }
       /* Issue the buffers to memory */

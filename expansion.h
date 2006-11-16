@@ -521,7 +521,7 @@ double mh, ml;                                        \
 		    
 		    \gamma >= 52
 
-		    resh+resm+resl=(a + (bh+bm+bl)) exactly
+		    resh+resm+resl=(a + (bh+bl)) exactly
 		    
 
    Details:         resh, resm and resl are considered to be pointers
