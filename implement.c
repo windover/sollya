@@ -5757,8 +5757,9 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   int *fpCoeffRoundAutomatically;
   int targetPrec;
   gappaProof *proof;
-  chain *assignments;
+  chain *assignments, *tempChain;
   chain **assignmentsPtr;
+  char resultnamebuf[80];
 
   proof = NULL;
 
@@ -5798,6 +5799,9 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
     proof = (gappaProof *) safeCalloc(1,sizeof(gappaProof));
     proof->variableName = (char *) safeCalloc(strlen(variablename)+1,sizeof(char));
     strcpy(proof->variableName,variablename);
+    sprintf(resultnamebuf,"%s_res",name);
+    proof->resultName = (char *) safeCalloc(strlen(resultnamebuf)+1,sizeof(char));
+    strcpy(proof->resultName,resultnamebuf);
     proof->variableType = variablePrecision;
     proof->polynomToImplement = copyTree(simplifiedFunc);
     mpfr_init2(proof->a,mpfr_get_prec(*(range.a)));
@@ -5949,10 +5953,17 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
 
   if (gappaFD != NULL) {
     proof->polynomImplemented = copyTree(implementedPoly);
-    proof->gappaAssignments = assignments;
-
-    if (fprintGappaProof(gappaFD, proof) < 0) 
-      printMessage(1,"Warning: could not write the Gappa proof.\n");
+    proof->assignmentsNumber = lengthChain(assignments);
+    proof->assignments = (gappaAssignment **) safeCalloc(proof->assignmentsNumber,sizeof(gappaAssignment *));
+    i = proof->assignmentsNumber - 1;
+    while (assignments != NULL) {
+      proof->assignments[i] = ((gappaAssignment *) (assignments->value));
+      i--;
+      tempChain = assignments->next;
+      free(assignments);
+      assignments = tempChain;
+    }
+    fprintGappaProof(gappaFD, proof);
     freeGappaProof(proof);
   }
 

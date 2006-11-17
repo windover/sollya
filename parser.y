@@ -2520,6 +2520,10 @@ directrange:  LBRACKETTOKEN rangeconstant SEMICOLONTOKEN rangeconstant RBRACKETT
 		             }
 			     $$ = range_temp;
                            }
+      | LEFTANGLETOKEN LBRACKETTOKEN commandfunction RBRACKETTOKEN RIGHTANGLETOKEN
+                           {
+			     $$ = $3;
+			   }
 ;
 
 constantfunction:  function

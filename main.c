@@ -213,8 +213,19 @@ void signalHandler(int i) {
   fflush(stdout); fflush(stderr);
   switch (i) {
   case SIGINT: 
-    handlingCtrlC = 1;
-    yyrestart(yyin);
+    if (eliminatePrompt == 1) {
+      printf("\n");
+      free(endptr);
+      freeSymbolTable(symbolTable,freeMemoryOnVoid);
+      freeSymbolTable(symbolTable2,freeRangetypePtr);
+      if(currentVariable != NULL) free(currentVariable);
+      if(variablename != NULL) free(variablename);
+      fclose(yyin);
+      exit(0);
+    } else {
+      handlingCtrlC = 1;
+      yyrestart(yyin);
+    }
     break;
   case SIGSEGV:
     fprintf(stderr,"Warning: handling signal SIGSEGV\n");

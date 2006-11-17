@@ -124,12 +124,14 @@ typedef struct gappaProofStruct gappaProof;
 struct gappaProofStruct
 {
   char *variableName;
+  char *resultName;
   mpfr_t a, b;
   int variableType;
   int resultType;
   node *polynomToImplement;
   node *polynomImplemented;
-  chain *gappaAssignments;
+  int assignmentsNumber;
+  gappaAssignment **assignments;
 };
 
 
@@ -150,7 +152,7 @@ gappaAssignment *newGappaOperation(int opType, int relErrBits,
 gappaAssignment *newGappaConstant(int resultType, char *resultVariable, double constHi, double constMi, double constLo);
 
 void freeGappaProof(gappaProof *proof);
-int fprintGappaProof(FILE *fd, gappaProof *proof);
+void fprintGappaProof(FILE *fd, gappaProof *proof);
 
 
 
