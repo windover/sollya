@@ -1747,7 +1747,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
 		    snprintf(operand1Name,CODESIZE,"%s",variablename);
 		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
-		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, 3, operand2Name);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 2, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
 		  }
 		} else {
@@ -1786,7 +1786,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
 		    snprintf(operand1Name,CODESIZE,"%s",variablename);
 		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
-		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, variablePrecision, operand1Name, 1, 3, operand2Name);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, variablePrecision, operand1Name, 2, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
 		  }
 		} else {
@@ -1830,7 +1830,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
 		    snprintf(operand1Name,CODESIZE,"%s",variablename);
 		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
-		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, 3, operand2Name);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 2, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
 		  }
 		} else {
@@ -1870,7 +1870,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
 		    snprintf(operand1Name,CODESIZE,"%s",variablename);
 		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
-		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, variablePrecision, operand1Name, 1, 3, operand2Name);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, variablePrecision, operand1Name, 2, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
 		  }
 		} else {
@@ -1912,7 +1912,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
 		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
 		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
-		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 3, operand1Name, 1, 3, operand2Name);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 2, 3, operand1Name, 2, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
 		  }
 		} else {
@@ -1926,7 +1926,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
 		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
 		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
-		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 3, operand1Name, 1, 2, operand2Name);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 2, 3, operand1Name, 1, 2, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
 		  }
 		}
@@ -1942,7 +1942,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
 		    snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
 		    snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
-		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 2, operand1Name, 1, 3, operand2Name);
+		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 2, 2, operand1Name, 1, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
 		  }
 		} else {

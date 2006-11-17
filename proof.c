@@ -1145,36 +1145,67 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
     fprintExpansionSuffix(fd,assign->operand1UsedType);
     fprintf(fd," + %s",assign->operand2Variable);
     fprintExpansionSuffix(fd,assign->operand2UsedType);
-    fprintf(fd,";\n\n");
-
+    fprintf(fd,";\n");
+    fprintf(fd,"%sh = double(%shm);\n",assign->resultVariable,assign->resultVariable);
+    fprintf(fd,"%sm = %shm - %sh;\n\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
     break;
   case GAPPA_MUL_EXACT: 
     fprintf(fd,"%shm = %s",assign->resultVariable,assign->operand1Variable);
     fprintExpansionSuffix(fd,assign->operand1UsedType);
     fprintf(fd," * %s",assign->operand2Variable);
     fprintExpansionSuffix(fd,assign->operand2UsedType);
-    fprintf(fd,";\n\n");
-
+    fprintf(fd,";\n");
+    fprintf(fd,"%sh = double(%shm);\n",assign->resultVariable,assign->resultVariable);
+    fprintf(fd,"%sm = %shm - %sh;\n\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
     break;
   case GAPPA_ADD_DOUBLE: 
-    fprintf(fd,"%sh = double(%s",assign->resultVariable,assign->operand1Variable);
-    fprintExpansionSuffix(fd,assign->operand1UsedType);
-    fprintf(fd," + %s",assign->operand2Variable);
-    fprintExpansionSuffix(fd,assign->operand2UsedType);
-    fprintf(fd,");\n\n");
+    if ((assign->operand1UsedType == 2) && (assign->operand2UsedType == 2)) {
+      fprintf(fd,"%sh double= (%sh + %sm) + (%sh + %sm);\n",
+	      assign->resultVariable,
+	      assign->operand1Variable,assign->operand1Variable,
+	      assign->operand2Variable,assign->operand2Variable);
+    } else {
+      if (assign->operand1UsedType == 2) {
+	fprintf(fd,"%sh double= (%sh + %sm) + %sm;\n",
+		assign->resultVariable,assign->operand1Variable,assign->operand1Variable,assign->operand2Variable);
+      } else {
+	if (assign->operand2UsedType == 2) {
+	  fprintf(fd,"%sh double= %sh + (%sh + %sm);\n",
+		  assign->resultVariable,assign->operand1Variable,assign->operand2Variable,assign->operand2Variable);
+	} else {
+	  fprintf(fd,"%sh = double(%sh + %sh);\n",
+		  assign->resultVariable,assign->operand1Variable,assign->operand2Variable);
+	}
+      }
+    }
     break;
   case GAPPA_MUL_DOUBLE: 
-    fprintf(fd,"%sh = double(%s",assign->resultVariable,assign->operand1Variable);
-    fprintExpansionSuffix(fd,assign->operand1UsedType);
-    fprintf(fd," * %s",assign->operand2Variable);
-    fprintExpansionSuffix(fd,assign->operand2UsedType);
-    fprintf(fd,");\n\n");
+    if ((assign->operand1UsedType == 2) && (assign->operand2UsedType == 2)) {
+      fprintf(fd,"%sh double= (%sh + %sm) * (%sh + %sm);\n",
+	      assign->resultVariable,
+	      assign->operand1Variable,assign->operand1Variable,
+	      assign->operand2Variable,assign->operand2Variable);
+    } else {
+      if (assign->operand1UsedType == 2) {
+	fprintf(fd,"%sh double= (%sh + %sm) * %sm;\n",
+		assign->resultVariable,assign->operand1Variable,assign->operand1Variable,assign->operand2Variable);
+      } else {
+	if (assign->operand2UsedType == 2) {
+	  fprintf(fd,"%sh double= %sh * (%sh + %sm);\n",
+		  assign->resultVariable,assign->operand1Variable,assign->operand2Variable,assign->operand2Variable);
+	} else {
+	  fprintf(fd,"%sh = double(%sh * %sh);\n",
+		  assign->resultVariable,assign->operand1Variable,assign->operand2Variable);
+	}
+      }
+    }
     break;
   case GAPPA_RENORMALIZE: 
-    fprintf(fd,"%shml = %shml;\n\n",assign->resultVariable,assign->operand1Variable);
+    fprintf(fd,"%shml = %shml;\n",assign->resultVariable,assign->operand1Variable);
     fprintf(fd,"%sml = %shml - %sh;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
     fprintf(fd,"%sm = double(%sml);\n",assign->resultVariable,assign->resultVariable);
     fprintf(fd,"%sl = %sml - %sm;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
+    fprintf(fd,"%shm = %sh + %sm;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
     fprintf(fd,"overlap_%s = %sm / %sh;\n\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
     break;
   case GAPPA_ADD_REL: 
@@ -1184,12 +1215,13 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
     fprintExpansionSuffix(fd,assign->operand1UsedType);
     fprintf(fd,",%s",assign->operand2Variable);
     fprintExpansionSuffix(fd,assign->operand2UsedType);
-    fprintf(fd,");\n\n");
+    fprintf(fd,");\n");
     switch (assign->resultType) {
     case 3:
       fprintf(fd,"%sml = %shml - %sh;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
       fprintf(fd,"%sm = double(%sml);\n",assign->resultVariable,assign->resultVariable);
       fprintf(fd,"%sl = %sml - %sm;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%shm = %sh + %sm;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
       fprintf(fd,"overlap_%s = %sm / %sh;\n\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
       break;
     case 2:
@@ -1208,12 +1240,13 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
     fprintExpansionSuffix(fd,assign->operand1UsedType);
     fprintf(fd,",%s",assign->operand2Variable);
     fprintExpansionSuffix(fd,assign->operand2UsedType);
-    fprintf(fd,");\n\n");
+    fprintf(fd,");\n");
     switch (assign->resultType) {
     case 3:
       fprintf(fd,"%sml = %shml - %sh;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
       fprintf(fd,"%sm = double(%sml);\n",assign->resultVariable,assign->resultVariable);
       fprintf(fd,"%sl = %sml - %sm;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%shm = %sh + %sm;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
       fprintf(fd,"overlap_%s = %sm / %sh;\n\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
       break;
     case 2:
@@ -1234,12 +1267,13 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
     fprintExpansionSuffix(fd,assign->operand2UsedType);
     fprintf(fd,",%s",assign->operand1Variable);
     fprintExpansionSuffix(fd,assign->operand1UsedType);
-    fprintf(fd,");\n\n");
+    fprintf(fd,");\n");
     switch (assign->resultType) {
     case 3:
       fprintf(fd,"%sml = %shml - %sh;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
       fprintf(fd,"%sm = double(%sml);\n",assign->resultVariable,assign->resultVariable);
       fprintf(fd,"%sl = %sml - %sm;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%shm = %sh + %sm;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
       fprintf(fd,"overlap_%s = %sm / %sh;\n\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
       break;
     case 2:
@@ -1254,7 +1288,7 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
   case GAPPA_COPY: 
     switch (assign->resultType) {
     case 3:
-      fprintf(fd,"%shml = %shml;\n\n",assign->resultVariable,assign->operand1Variable);
+      fprintf(fd,"%shml = %shml;\n",assign->resultVariable,assign->operand1Variable);
       fprintf(fd,"%shm = %shm;\n",assign->resultVariable,assign->operand1Variable);
       fprintf(fd,"%sml = %sml;\n",assign->resultVariable,assign->operand1Variable);
       fprintf(fd,"%sh = %sh;\n",assign->resultVariable,assign->operand1Variable);
@@ -1263,7 +1297,7 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
       fprintf(fd,"overlap_%s = overlap_%s;\n\n",assign->resultVariable,assign->operand1Variable);
       break;
     case 2:
-      fprintf(fd,"%shm = %shm;\n\n",assign->resultVariable,assign->operand1Variable);
+      fprintf(fd,"%shm = %shm;\n",assign->resultVariable,assign->operand1Variable);
       fprintf(fd,"%sh = %sh;\n",assign->resultVariable,assign->operand1Variable);
       fprintf(fd,"%sm = %sm;\n\n",assign->resultVariable,assign->operand1Variable);
       break;
@@ -1280,6 +1314,234 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
     exit(1);
   }
 }
+
+void fprintGappaAssignmentAsHint(FILE *fd, gappaAssignment *assign) {
+  switch (assign->opType) {
+  case GAPPA_CONST:   
+    break;
+  case GAPPA_ADD_EXACT: 
+    fprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
+    break;
+  case GAPPA_MUL_EXACT: 
+    fprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
+    break;
+  case GAPPA_ADD_DOUBLE: 
+    break;
+  case GAPPA_MUL_DOUBLE: 
+    break;
+  case GAPPA_RENORMALIZE: 
+    fprintf(fd,"%shm ~ %shml;\n",assign->resultVariable,assign->resultVariable);
+    fprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
+    fprintf(fd,"%sh ~ %shml;\n",assign->resultVariable,assign->resultVariable);
+    fprintf(fd,"%sm -> %sh * overlap_%s;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
+    fprintf(fd,"%sl / %sm -> - ((%sm - %sml) / %sml) / (1 + ((%sm - %sml) / %sml));\n",
+	    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+    fprintf(fd,"(%shm - %shml) / %shml -> - (%sl / %sm) * (1 / (1 / overlap_%s + 1 + (%sl / %sm)));\n",
+	    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+    fprintf(fd,"%sml -> %shml / ((1 + ((%sm - %sml) / %sml)) / overlap_%s + 1);\n",
+	    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	    assign->resultVariable,assign->resultVariable);
+    fprintf(fd,"(%sh - %shm) / %shm -> - 1 / (1 / overlap_%s + 1);\n",
+	    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+    break;
+  case GAPPA_ADD_REL: 
+    switch (assign->resultType) {
+    case 3:
+      fprintf(fd,"%shm ~ %shml;\n",assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sh ~ %shml;\n",assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sm -> %sh * overlap_%s;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sl / %sm -> - ((%sm - %sml) / %sml) / (1 + ((%sm - %sml) / %sml));\n",
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"(%shm - %shml) / %shml -> - (%sl / %sm) * (1 / (1 / overlap_%s + 1 + (%sl / %sm)));\n",
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sml -> %shml / ((1 + ((%sm - %sml) / %sml)) / overlap_%s + 1);\n",
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	      assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"(%sh - %shm) / %shm -> - 1 / (1 / overlap_%s + 1);\n",
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      break;
+    case 2:
+      fprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
+      break;
+    default:
+      fprintf(stderr,"Error: fprintGappaAssignmentAsHint: unhandlable result type (%d) in the assignment\n",assign->resultType);
+      exit(1);
+    }
+    break;
+  case GAPPA_MUL_REL: 
+    switch (assign->resultType) {
+    case 3:
+      fprintf(fd,"%shm ~ %shml;\n",assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sh ~ %shml;\n",assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sm -> %sh * overlap_%s;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sl / %sm -> - ((%sm - %sml) / %sml) / (1 + ((%sm - %sml) / %sml));\n",
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"(%shm - %shml) / %shml -> - (%sl / %sm) * (1 / (1 / overlap_%s + 1 + (%sl / %sm)));\n",
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sml -> %shml / ((1 + ((%sm - %sml) / %sml)) / overlap_%s + 1);\n",
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	      assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"(%sh - %shm) / %shm -> - 1 / (1 / overlap_%s + 1);\n",
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      break;
+    case 2:
+      fprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
+      break;
+    default:
+      fprintf(stderr,"Error: fprintGappaAssignmentAsHint: unhandlable result type (%d) in the assignment\n",assign->resultType);
+      exit(1);
+    }
+    break;
+  case GAPPA_FMA_REL: 
+    switch (assign->resultType) {
+    case 3:
+      fprintf(fd,"%shm ~ %shml;\n",assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sh ~ %shml;\n",assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sm -> %sh * overlap_%s;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sl / %sm -> - ((%sm - %sml) / %sml) / (1 + ((%sm - %sml) / %sml));\n",
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"(%shm - %shml) / %shml -> - (%sl / %sm) * (1 / (1 / overlap_%s + 1 + (%sl / %sm)));\n",
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sml -> %shml / ((1 + ((%sm - %sml) / %sml)) / overlap_%s + 1);\n",
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	      assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"(%sh - %shm) / %shm -> - 1 / (1 / overlap_%s + 1);\n",
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      break;
+    case 2:
+      fprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
+      break;
+    default:
+      fprintf(stderr,"Error: fprintGappaAssignmentAsHint: unhandlable result type (%d) in the assignment\n",assign->resultType);
+      exit(1);
+    }
+    break;
+  case GAPPA_COPY: 
+    break;
+  default:
+    fprintf(stderr,"Error: fprintGappaAssignmentAsHint: unknown operation type (%d) in the assignment\n",assign->opType);
+    exit(1);
+  }
+}
+
+void fprintGappaAssignmentAsDichotomy(FILE *fd, gappaAssignment *assign) {
+  switch (assign->opType) {
+  case GAPPA_CONST:   
+    break;
+  case GAPPA_ADD_EXACT: 
+    break;
+  case GAPPA_MUL_EXACT: 
+    break;
+  case GAPPA_ADD_DOUBLE: 
+    break;
+  case GAPPA_MUL_DOUBLE: 
+    break;
+  case GAPPA_RENORMALIZE: 
+    fprintf(fd,"$ %shml in (0);\n",assign->resultVariable);
+    break;
+  case GAPPA_ADD_REL: 
+    switch (assign->resultType) {
+    case 3:
+      fprintf(fd,"$ %shml in (0);\n",assign->resultVariable);
+      break;
+    case 2:
+      break;
+    default:
+      fprintf(stderr,"Error: fprintGappaAssignmentAsDichotomy: unhandlable result type (%d) in the assignment\n",assign->resultType);
+      exit(1);
+    }
+    break;
+  case GAPPA_MUL_REL: 
+    switch (assign->resultType) {
+    case 3:
+      fprintf(fd,"$ %shml in (0);\n",assign->resultVariable);
+      break;
+    case 2:
+      break;
+    default:
+      fprintf(stderr,"Error: fprintGappaAssignmentAsDichotomy: unhandlable result type (%d) in the assignment\n",assign->resultType);
+      exit(1);
+    }
+    break;
+  case GAPPA_FMA_REL: 
+    switch (assign->resultType) {
+    case 3:
+      fprintf(fd,"$ %shml in (0);\n",assign->resultVariable);
+      break;
+    case 2:
+      break;
+    default:
+      fprintf(stderr,"Error: fprintGappaAssignmentAsDichotomy: unhandlable result type (%d) in the assignment\n",assign->resultType);
+      exit(1);
+    }
+    break;
+  case GAPPA_COPY: 
+    break;
+  default:
+    fprintf(stderr,"Error: fprintGappaAssignmentAsDichtomy: unknown operation type (%d) in the assignment\n",assign->opType);
+    exit(1);
+  }
+}
+
+
+
+void fprintGappaAssignmentAsMetaHint(FILE *fd, gappaAssignment *assign) {
+  switch (assign->opType) {
+  case GAPPA_CONST:   
+
+    break;
+  case GAPPA_ADD_EXACT: 
+    fprintf(fd,"%shm ~ M%s;\n",assign->resultVariable,assign->resultVariable);
+    break;
+  case GAPPA_MUL_EXACT: 
+    fprintf(fd,"%shm ~ M%s;\n",assign->resultVariable,assign->resultVariable);
+    break;
+  case GAPPA_ADD_DOUBLE: 
+    fprintf(fd,"%sh ~ M%s;\n",assign->resultVariable,assign->resultVariable);
+    break;
+  case GAPPA_MUL_DOUBLE: 
+    fprintf(fd,"%sh ~ M%s;\n",assign->resultVariable,assign->resultVariable);
+    break;
+  case GAPPA_RENORMALIZE: 
+    fprintf(fd,"%shml ~ M%s;\n",assign->resultVariable,assign->resultVariable);
+    break;
+  case GAPPA_ADD_REL: 
+    fprintf(fd,"%s",assign->resultVariable);
+    fprintExpansionSuffix(fd,assign->resultType);
+    fprintf(fd," ~ M%s;\n",assign->resultVariable);
+    break;
+  case GAPPA_MUL_REL: 
+    fprintf(fd,"%s",assign->resultVariable);
+    fprintExpansionSuffix(fd,assign->resultType);
+    fprintf(fd," ~ M%s;\n",assign->resultVariable);
+    break;
+  case GAPPA_FMA_REL: 
+    fprintf(fd,"%s",assign->resultVariable);
+    fprintExpansionSuffix(fd,assign->resultType);
+    fprintf(fd," ~ M%s;\n",assign->resultVariable);
+    break;
+  case GAPPA_COPY: 
+    fprintf(fd,"%s",assign->resultVariable);
+    fprintExpansionSuffix(fd,assign->resultType);
+    fprintf(fd," ~ M%s;\n",assign->resultVariable);
+    break;
+  default:
+    fprintf(stderr,"Error: fprintGappaAssignmentAsMetaHint: unknown operation type (%d) in the assignment\n",assign->opType);
+    exit(1);
+  }
+}
+
 
 
 void fprintGappaAssignmentAsOverlapBound(FILE *fd, gappaAssignment *assign) {
@@ -1377,6 +1639,7 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
     fprintf(fd,"%sml = %shml - %sh;\n",proof->variableName,proof->variableName,proof->variableName);
     fprintf(fd,"%sm = double(%sml);\n",proof->variableName,proof->variableName);
     fprintf(fd,"%sl = %sml - %sm;\n",proof->variableName,proof->variableName,proof->variableName);
+    fprintf(fd,"%shm = %sh + %sm;\n",proof->variableName,proof->variableName,proof->variableName);
     fprintf(fd,"overlap_%s = %sm / %sh;\n",proof->variableName,proof->variableName,proof->variableName);
     break;
   case 2:
@@ -1468,7 +1731,65 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
 
   fprintf(fd,")\n->\n(\n   epsilon in ?\n)}\n\n");
   
+  fprintf(fd,"# Hints and Meta-Hints for expansion decomposition\n");
 
 
+  switch (proof->variableType) {
+  case 3:
+    fprintf(fd,"%sh ~ %shm;\n",proof->variableName,proof->variableName);
+    fprintf(fd,"%shm ~ %shml;\n",proof->variableName,proof->variableName);
+    fprintf(fd,"%sm -> %sh * overlap_%s;\n",proof->variableName,proof->variableName,proof->variableName);
+    fprintf(fd,"%sl / %sm -> - ((%sm - %sml) / %sml) / (1 + ((%sm - %sml) / %sml));\n",
+	    proof->variableName,proof->variableName,proof->variableName,proof->variableName,
+	    proof->variableName,proof->variableName,proof->variableName,proof->variableName);
+    fprintf(fd,"(%shm - %shml) / %shml -> - (%sl / %sm) * (1 / (1 / overlap_%s + 1 + (%sl / %sm)));\n",
+	    proof->variableName,proof->variableName,proof->variableName,proof->variableName,
+	    proof->variableName,proof->variableName,proof->variableName,proof->variableName);
+    fprintf(fd,"%sml -> %shml / ((1 + ((%sm - %sml) / %sml)) / overlap_%s + 1);\n",
+	    proof->variableName,proof->variableName,proof->variableName,proof->variableName,
+	    proof->variableName,proof->variableName);
+    fprintf(fd,"(%sh - %shm) / %shm -> - 1 / (1 / overlap_%s + 1);\n",
+	    proof->variableName,proof->variableName,proof->variableName,proof->variableName);
+    break;
+  case 2:
+    fprintf(fd,"%sh ~ %shm;\n",proof->variableName,proof->variableName);
+    break;
+  case 1:
+    break;
+  default:
+    fprintf(stderr,"Error: fprintGappaProof: unknown variable type (%d) in the proof\n",proof->variableType);
+    exit(1);
+  }
+  fprintf(fd,"\n");
+
+  for (i=0;i<proof->assignmentsNumber;i++) {
+    fprintGappaAssignmentAsHint(fd, proof->assignments[i]);
+  }  
+  fprintf(fd,"\n");
+
+  fprintf(fd,"# Meta-Hints for Horner scheme\n");
+
+  for (i=0;i<proof->assignmentsNumber;i++) {
+    fprintGappaAssignmentAsMetaHint(fd, proof->assignments[i]);
+  }
+
+  fprintf(fd,"\n");
+
+  fprintf(fd,"Dichotomies for triple-double decomposition\n");
+
+  if (proof->variableType == 3) {
+    fprintf(fd,"$ %shml in (0);\n",proof->variableName);
+    fprintf(fd,"\n");
+  }
+
+  for (i=0;i<proof->assignmentsNumber;i++) {
+    fprintGappaAssignmentAsDichotomy(fd, proof->assignments[i]);
+  }
+  fprintf(fd,"\n");
+
+  fprintf(fd,"Dichotomy for the error bound\n");
+  fprintf(fd,"epsilon $ %s",proof->variableName);
+  fprintExpansionSuffix(fd,proof->resultType);
+  fprintf(fd,";\n\n");
 
 }
