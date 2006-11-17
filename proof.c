@@ -1557,24 +1557,24 @@ void fprintGappaAssignmentAsOverlapBound(FILE *fd, gappaAssignment *assign) {
   case GAPPA_MUL_DOUBLE: 
     break;
   case GAPPA_RENORMALIZE: 
-    fprintf(fd,"/\\ |overlap_%s| in [1b-400;1b-%d]    # Verify the lower bound\n",
+    fprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
 	    assign->resultVariable,assign->resultOverlap);
     break;
   case GAPPA_ADD_REL: 
     if (assign->resultType == 3) {
-      fprintf(fd,"/\\ |overlap_%s| in [1b-400;1b-%d]    # Verify the lower bound\n",
+      fprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
 	      assign->resultVariable,assign->resultOverlap);
     }
     break;
   case GAPPA_MUL_REL: 
     if (assign->resultType == 3) {
-      fprintf(fd,"/\\ |overlap_%s| in [1b-400;1b-%d]    # Verify the lower bound\n",
+      fprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
 	      assign->resultVariable,assign->resultOverlap);
     }
     break;
   case GAPPA_FMA_REL: 
     if (assign->resultType == 3) {
-      fprintf(fd,"/\\ |overlap_%s| in [1b-400;1b-%d]    # Verify the lower bound\n",
+      fprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
 	      assign->resultVariable,assign->resultOverlap);
     }
     break;
@@ -1719,11 +1719,11 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
   }
   fprintf(fd," in [");
   fprintValue(fd, proof->a);
-  fprintf(fd,";");
+  fprintf(fd,",");
   fprintValue(fd, proof->b);
   fprintf(fd,"]\n");
   if (proof->variableType == 3) {
-	fprintf(fd,"/\\ |overlap_%s| in [-1b-400; -1b-52]  # Verify the lower bound for the overlap interval\n",proof->variableName);
+	fprintf(fd,"/\\ |overlap_%s| in [-1b-400, -1b-52]  # Verify the lower bound for the overlap interval\n",proof->variableName);
   }
   for (i=0;i<proof->assignmentsNumber;i++) {
     fprintGappaAssignmentAsOverlapBound(fd, proof->assignments[i]);
@@ -1775,7 +1775,7 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
 
   fprintf(fd,"\n");
 
-  fprintf(fd,"Dichotomies for triple-double decomposition\n");
+  fprintf(fd,"# Dichotomies for triple-double decomposition\n");
 
   if (proof->variableType == 3) {
     fprintf(fd,"$ %shml in (0);\n",proof->variableName);
@@ -1787,7 +1787,7 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
   }
   fprintf(fd,"\n");
 
-  fprintf(fd,"Dichotomy for the error bound\n");
+  fprintf(fd,"# Dichotomy for the error bound\n");
   fprintf(fd,"epsilon $ %s",proof->variableName);
   fprintExpansionSuffix(fd,proof->resultType);
   fprintf(fd,";\n\n");
