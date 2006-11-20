@@ -3184,7 +3184,7 @@ externalplotmode:          ABSOLUTETOKEN
 
 externalplot:              EXTERNALPLOTTOKEN string externalplotmode TOTOKEN function INTOKEN range WITHTOKEN integer BITSTOKEN 
                            {
-			     externalPlot($2, *($7.a), *($7.b), (mp_prec_t) $9, 0, $5, $3, defaultprecision);
+			     externalPlot($2, *($7.a), *($7.b), (mp_prec_t) $9, 0, $5, $3, defaultprecision, NULL, -1);
 			     free($2);
 			     free_memory($5);
 			     mpfr_clear(*($7.a));
@@ -3195,7 +3195,7 @@ externalplot:              EXTERNALPLOTTOKEN string externalplotmode TOTOKEN fun
                            }
                          | EXTERNALPLOTTOKEN string externalplotmode TOTOKEN function INTOKEN range WITHTOKEN integer BITSTOKEN COMMATOKEN PERTURBTOKEN
                            {
-			     externalPlot($2, *($7.a), *($7.b), (mp_prec_t) $9, 1, $5, $3, defaultprecision);
+			     externalPlot($2, *($7.a), *($7.b), (mp_prec_t) $9, 1, $5, $3, defaultprecision, NULL, -1);
 			     free($2);
 			     free_memory($5);
 			     mpfr_clear(*($7.a));
@@ -3204,7 +3204,44 @@ externalplot:              EXTERNALPLOTTOKEN string externalplotmode TOTOKEN fun
 			     free($7.b);
 			     $$ = NULL;
                            }
+                         | EXTERNALPLOTTOKEN string externalplotmode TOTOKEN function INTOKEN range WITHTOKEN integer BITSTOKEN COMMATOKEN PERTURBTOKEN COMMATOKEN plottype EQUALTOKEN string
+                           {
+			     externalPlot($2, *($7.a), *($7.b), (mp_prec_t) $9, 1, $5, $3, defaultprecision, $16, $14);
+			     free($2);
+			     free_memory($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);			    
+			     free($7.b);
+			     free($16);
+			     $$ = NULL;
+                           }
+                         | EXTERNALPLOTTOKEN string externalplotmode TOTOKEN function INTOKEN range WITHTOKEN integer BITSTOKEN COMMATOKEN plottype EQUALTOKEN string
+                           {
+			     externalPlot($2, *($7.a), *($7.b), (mp_prec_t) $9, 0, $5, $3, defaultprecision, $14, $12);
+			     free($2);
+			     free_memory($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);			    
+			     free($7.b);
+			     free($14);
+			     $$ = NULL;
+                           }
+                         | EXTERNALPLOTTOKEN string externalplotmode TOTOKEN function INTOKEN range WITHTOKEN integer BITSTOKEN COMMATOKEN plottype EQUALTOKEN string COMMATOKEN PERTURBTOKEN 
+                           {
+			     externalPlot($2, *($7.a), *($7.b), (mp_prec_t) $9, 1, $5, $3, defaultprecision, $14, $12);
+			     free($2);
+			     free_memory($5);
+			     mpfr_clear(*($7.a));
+			     mpfr_clear(*($7.b));
+			     free($7.a);			    
+			     free($7.b);
+			     free($14);
+			     $$ = NULL;
+                           }
 ;
+
 
 
 integerlist:               integer 

@@ -14,6 +14,8 @@
 #include "chain.h"
 
 
+extern int fileNumber;
+
 void checkFileDescriptor(FILE *fd, char *s) {
   if (fd == NULL) {
     fprintf(stderr,"Error: the file %s requested by plot could not be opened for writing: ",s);
@@ -193,4 +195,8 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   free(outputname);
   return;
 
+}
+
+void removePlotFiles(void) {
+  printf("Removing plot files\n");
 }

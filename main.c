@@ -62,7 +62,7 @@ pointsType *pointsTypeTemp;
 int eliminatePrompt;
 mp_prec_t tempPrec;
 int handlingCtrlC;
-
+int fileNumber = 0;
 
 #define NEWPARIVERSION
 
@@ -220,6 +220,7 @@ void signalHandler(int i) {
       freeSymbolTable(symbolTable2,freeRangetypePtr);
       if(currentVariable != NULL) free(currentVariable);
       if(variablename != NULL) free(variablename);
+      removePlotFiles();
       fclose(yyin);
       exit(0);
     } else {
@@ -339,7 +340,7 @@ int main(int argc, char *argv[]) {
   if(currentVariable != NULL) free(currentVariable);
   if(variablename != NULL) free(variablename);
   
-
+  removePlotFiles();
   fclose(yyin);
   return 0;
 }

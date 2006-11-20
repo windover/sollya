@@ -14,7 +14,7 @@
 #include "infnorm.h"
 #include "main.h"
 
-
+extern int fileNumber;
 
 int bashExecute(char *command) {
   int i;
@@ -24,7 +24,7 @@ int bashExecute(char *command) {
 }
 
 
-void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision, int random, node *func, int mode, mp_prec_t prec) {
+void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision, int random, node *func, int mode, mp_prec_t prec, char *name, int type) {
   void *descr;
   void  (*myFunction)(mpfr_t, mpfr_t);
   char *error;
@@ -32,6 +32,8 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
   double xd, yd;
   FILE *file;
   gmp_randstate_t state;
+
+  if (name != NULL) printf("name = \"%s\", type = %d\n",name,type);
 
   gmp_randinit_default (state);
 
