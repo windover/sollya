@@ -5793,6 +5793,8 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
     return NULL;
   }
 
+  mpfr_div_2ui(*accur,*accur,1,GMP_RNDN);
+
   simplifiedFunc = simplifyTreeErrorfree(func);
 
   if (gappaFD != NULL) {

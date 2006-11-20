@@ -1591,6 +1591,14 @@ void fprintGappaAssignmentAsOverlapBound(FILE *fd, gappaAssignment *assign) {
 
 void fprintGappaProof(FILE *fd, gappaProof *proof) {
   int i;
+  mpfr_t temp;
+  mp_prec_t prec, p;
+
+  prec = mpfr_get_prec(proof->a);
+  p = mpfr_get_prec(proof->b);
+  if (p > prec) prec = p;
+
+  mpfr_init2(temp,prec);
 
   fprintf(fd,"# The polynomial to implement is: ");
   fprintTree(fd, proof->polynomToImplement);
@@ -1632,6 +1640,7 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
   fprintf(fd,"# The code produces %d intermediate and final arithmetical approximations.\n\n",proof->assignmentsNumber);
 
   fprintf(fd,"# Double precision rounding operator:\n@double = float<ieee_64,ne>;\n\n");
+  fprintf(fd,"# Disable some annoying warnings:\n#@-Wno-dichotomy-failure\n\n");
 
   fprintf(fd,"# Helper definitions for decomposing the free variable\n");
   switch (proof->variableType) {
@@ -1702,34 +1711,101 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
   fprintf(fd,"\n");
 
   fprintf(fd,"# Implication to prove\n");
-  fprintf(fd,"{(\n");
-  switch (proof->variableType) {
-  case 3:
-    fprintf(fd,"   %shml",proof->variableName);
-    break;
-  case 2:
-    fprintf(fd,"   %shm",proof->variableName);
-    break;
-  case 1:
-    fprintf(fd,"   %s",proof->variableName);
-    break;
-  default:
-    fprintf(stderr,"Error: fprintGappaProof: unknown variable type (%d) in the proof\n",proof->variableType);
-    exit(1);
-  }
-  fprintf(fd," in [");
-  fprintValue(fd, proof->a);
-  fprintf(fd,",");
-  fprintValue(fd, proof->b);
-  fprintf(fd,"]\n");
-  if (proof->variableType == 3) {
-	fprintf(fd,"/\\ |overlap_%s| in [-1b-400, -1b-52]  # Verify the lower bound for the overlap interval\n",proof->variableName);
-  }
-  for (i=0;i<proof->assignmentsNumber;i++) {
-    fprintGappaAssignmentAsOverlapBound(fd, proof->assignments[i]);
-  }
 
-  fprintf(fd,")\n->\n(\n   epsilon in ?\n)}\n\n");
+  if (mpfr_sgn(proof->a) != mpfr_sgn(proof->b)) {
+    
+
+    fprintf(fd,"{((\n");
+    switch (proof->variableType) {
+    case 3:
+      fprintf(fd,"   %shml",proof->variableName);
+      break;
+    case 2:
+      fprintf(fd,"   %shm",proof->variableName);
+      break;
+    case 1:
+      fprintf(fd,"   %s",proof->variableName);
+      break;
+    default:
+      fprintf(stderr,"Error: fprintGappaProof: unknown variable type (%d) in the proof\n",proof->variableType);
+      exit(1);
+    }
+    fprintf(fd," in [");
+    fprintValue(fd, proof->a);
+    fprintf(fd,",");
+    mpfr_set(temp,proof->a,GMP_RNDN);
+    mpfr_div_2ui(temp,temp,400,GMP_RNDN);
+    fprintValue(fd, temp);
+    fprintf(fd,"]\n");
+    if (proof->variableType == 3) {
+      fprintf(fd,"/\\ |overlap_%s| in [1b-400, 1b-52]  # Verify the lower bound for the overlap interval\n",proof->variableName);
+    }
+    for (i=0;i<proof->assignmentsNumber;i++) {
+      fprintGappaAssignmentAsOverlapBound(fd, proof->assignments[i]);
+    }
+
+    fprintf(fd,") \\/ (\n");
+
+    switch (proof->variableType) {
+    case 3:
+      fprintf(fd,"   %shml",proof->variableName);
+      break;
+    case 2:
+      fprintf(fd,"   %shm",proof->variableName);
+      break;
+    case 1:
+      fprintf(fd,"   %s",proof->variableName);
+      break;
+    default:
+      fprintf(stderr,"Error: fprintGappaProof: unknown variable type (%d) in the proof\n",proof->variableType);
+      exit(1);
+    }
+    fprintf(fd," in [");
+    mpfr_set(temp,proof->b,GMP_RNDN);
+    mpfr_div_2ui(temp,temp,400,GMP_RNDN);
+    fprintValue(fd, temp);
+    fprintf(fd,",");
+    fprintValue(fd, proof->b);
+    fprintf(fd,"]\n");
+    if (proof->variableType == 3) {
+      fprintf(fd,"/\\ |overlap_%s| in [1b-400, 1b-52]  # Verify the lower bound for the overlap interval\n",proof->variableName);
+    }
+    for (i=0;i<proof->assignmentsNumber;i++) {
+      fprintGappaAssignmentAsOverlapBound(fd, proof->assignments[i]);
+    }
+    
+    fprintf(fd,"))\n->\n(\n   epsilon in ?\n)}\n");
+  } else {
+    fprintf(fd,"{(\n");
+    switch (proof->variableType) {
+    case 3:
+      fprintf(fd,"   %shml",proof->variableName);
+      break;
+    case 2:
+      fprintf(fd,"   %shm",proof->variableName);
+      break;
+    case 1:
+      fprintf(fd,"   %s",proof->variableName);
+      break;
+    default:
+      fprintf(stderr,"Error: fprintGappaProof: unknown variable type (%d) in the proof\n",proof->variableType);
+      exit(1);
+    }
+    fprintf(fd," in [");
+    fprintValue(fd, proof->a);
+    fprintf(fd,",");
+    fprintValue(fd, proof->b);
+    fprintf(fd,"]\n");
+    if (proof->variableType == 3) {
+      fprintf(fd,"/\\ |overlap_%s| in [1b-400, 1b-52]  # Verify the lower bound for the overlap interval\n",proof->variableName);
+    }
+    for (i=0;i<proof->assignmentsNumber;i++) {
+      fprintGappaAssignmentAsOverlapBound(fd, proof->assignments[i]);
+    }
+    
+    fprintf(fd,")\n->\n(\n   epsilon in ?\n)}\n");
+  }
+  fprintf(fd,"\n");
   
   fprintf(fd,"# Hints and Meta-Hints for expansion decomposition\n");
 
@@ -1791,5 +1867,7 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
   fprintf(fd,"epsilon $ %s",proof->variableName);
   fprintExpansionSuffix(fd,proof->resultType);
   fprintf(fd,";\n\n");
+
+  mpfr_clear(temp);
 
 }
