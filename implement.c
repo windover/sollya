@@ -487,7 +487,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		c = snprintf(buffer1,CODESIZE,
 			     "Mul123(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
 			     name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,name,variablename,varNum[i],i+1,
-			     variablename,name,variablename,varNum[i],name,variablename,varNum[i]);
+			     variablename,name,variablename,varNum[operand2[i]],name,variablename,varNum[operand2[i]]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = snprintf(buffer2,CODESIZE,
 			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
@@ -497,7 +497,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if (gappaAssign != NULL) {
 		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
 		  snprintf(operand1Name,CODESIZE,"%s",variablename);
-		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[1]);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[operand2[i]]);
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, overlaps[i], resultName, 1, 1, operand1Name, 2, 2, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
 		}
@@ -552,7 +552,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if (gappaAssign != NULL) {
 		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
 		  snprintf(operand1Name,CODESIZE,"%s",variablename);
-		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, overlaps[operand2[i]] + 100, 3, overlaps[i], resultName, 1, 1, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
 		}
@@ -609,7 +609,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if (gappaAssign != NULL) {
 		snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
 		snprintf(operand1Name,CODESIZE,"%s",variablename);
-		snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
 		newAssign = newGappaOperation(GAPPA_MUL_REL, overlaps[operand2[i]] + 96, 3, overlaps[i], resultName, 2, 2, operand1Name, 3, 3, operand2Name);
 		*gappaAssign = addElement(*gappaAssign,newAssign);
 	      }
@@ -667,7 +667,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if (gappaAssign != NULL) {
 		snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
 		snprintf(operand1Name,CODESIZE,"%s",variablename);
-		snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
+		snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand2[i]],operand2[i]+1);
 		newAssign = newGappaOperation(GAPPA_MUL_REL, overlaps[operand2[i]] + 98, 3, overlaps[i], resultName, 3, 3, operand1Name, 3, 3, operand2Name);
 		*gappaAssign = addElement(*gappaAssign,newAssign);
 	      }
@@ -698,7 +698,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if (gappaAssign != NULL) {
 		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
 		  snprintf(operand1Name,CODESIZE,"%s",variablename);
-		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[1]);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,variablename,varNum[operand1[i]]);
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, overlaps[i], resultName, 1, 1, operand1Name, 2, 2, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
 		}
@@ -752,7 +752,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if (gappaAssign != NULL) {
 		  snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
 		  snprintf(operand1Name,CODESIZE,"%s",variablename);
-		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]);
+		  snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, overlaps[operand1[i]] + 100, 3, overlaps[i], resultName, 1, 1, operand1Name, 2, 2, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
 		}
@@ -808,7 +808,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if (gappaAssign != NULL) {
 		snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
 		snprintf(operand1Name,CODESIZE,"%s",variablename);
-		snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]);
+		snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
 		newAssign = newGappaOperation(GAPPA_MUL_REL, overlaps[operand1[i]] + 96, 3, overlaps[i], resultName, 2, 2, operand1Name, 3, 3, operand2Name);
 		*gappaAssign = addElement(*gappaAssign,newAssign);
 	      }
@@ -863,7 +863,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if (gappaAssign != NULL) {
 		snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[i],i+1);
 		snprintf(operand1Name,CODESIZE,"%s",variablename);
-		snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]);
+		snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,variablename,varNum[operand1[i]],operand1[i]+1);
 		newAssign = newGappaOperation(GAPPA_MUL_REL, overlaps[operand1[i]] + 98, 3, overlaps[i], resultName, 3, 3, operand1Name, 3, 3, operand2Name);
 		*gappaAssign = addElement(*gappaAssign,newAssign);
 	      }
@@ -5744,6 +5744,25 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
   return res;
 }
 
+int accurToVarType(mpfr_t accur) {
+  mpfr_t temp;
+  int res;
+
+  mpfr_init2(temp,mpfr_get_prec(accur));
+  mpfr_set_d(temp,1.0,GMP_RNDN);
+  mpfr_div_2ui(temp,temp,52,GMP_RNDN);
+
+  res = 1;
+
+  if (mpfr_less_p(accur,temp)) res++;
+
+  mpfr_div_2ui(temp,temp,50,GMP_RNDN);
+
+  if (mpfr_less_p(accur,temp)) res++;
+
+  return res;
+}
+
 
 node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecision, 
 		    FILE *fd, char *name, int honorCoeffPrec, mp_prec_t prec, FILE *gappaFD) {
@@ -5794,6 +5813,13 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   }
 
   mpfr_div_2ui(*accur,*accur,1,GMP_RNDN);
+
+  if (accurToVarType(*accur) < variablePrecision) {
+    printMessage(1,"Warning: the infered output expansion type is less from the given variable type.\n");
+    printMessage(1,"Implementation cannot handle this case.\n");
+    mpfr_clear(temp);
+    return NULL;
+  }
 
   simplifiedFunc = simplifyTreeErrorfree(func);
 

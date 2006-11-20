@@ -1345,6 +1345,9 @@ void fprintGappaAssignmentAsHint(FILE *fd, gappaAssignment *assign) {
 	    assign->resultVariable,assign->resultVariable);
     fprintf(fd,"(%sh - %shm) / %shm -> - 1 / (1 / overlap_%s + 1);\n",
 	    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+    fprintf(fd,"%sh -> %shml / (overlap_%s / (1 + ((%sm - %sml) / %sml)) + 1);\n",
+	    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	    assign->resultVariable,assign->resultVariable);
     break;
   case GAPPA_ADD_REL: 
     switch (assign->resultType) {
@@ -1364,6 +1367,9 @@ void fprintGappaAssignmentAsHint(FILE *fd, gappaAssignment *assign) {
 	      assign->resultVariable,assign->resultVariable);
       fprintf(fd,"(%sh - %shm) / %shm -> - 1 / (1 / overlap_%s + 1);\n",
 	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sh -> %shml / (overlap_%s / (1 + ((%sm - %sml) / %sml)) + 1);\n",
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	      assign->resultVariable,assign->resultVariable);
       break;
     case 2:
       fprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
@@ -1391,6 +1397,9 @@ void fprintGappaAssignmentAsHint(FILE *fd, gappaAssignment *assign) {
 	      assign->resultVariable,assign->resultVariable);
       fprintf(fd,"(%sh - %shm) / %shm -> - 1 / (1 / overlap_%s + 1);\n",
 	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sh -> %shml / (overlap_%s / (1 + ((%sm - %sml) / %sml)) + 1);\n",
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	      assign->resultVariable,assign->resultVariable);
       break;
     case 2:
       fprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
@@ -1418,6 +1427,9 @@ void fprintGappaAssignmentAsHint(FILE *fd, gappaAssignment *assign) {
 	      assign->resultVariable,assign->resultVariable);
       fprintf(fd,"(%sh - %shm) / %shm -> - 1 / (1 / overlap_%s + 1);\n",
 	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+      fprintf(fd,"%sh -> %shml / (overlap_%s / (1 + ((%sm - %sml) / %sml)) + 1);\n",
+	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+	      assign->resultVariable,assign->resultVariable);
       break;
     case 2:
       fprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
@@ -1449,11 +1461,13 @@ void fprintGappaAssignmentAsDichotomy(FILE *fd, gappaAssignment *assign) {
     break;
   case GAPPA_RENORMALIZE: 
     fprintf(fd,"$ %shml in (0);\n",assign->resultVariable);
+    fprintf(fd,"$ %sml in (0);\n",assign->resultVariable);
     break;
   case GAPPA_ADD_REL: 
     switch (assign->resultType) {
     case 3:
       fprintf(fd,"$ %shml in (0);\n",assign->resultVariable);
+      fprintf(fd,"$ %sml in (0);\n",assign->resultVariable);
       break;
     case 2:
       break;
@@ -1466,6 +1480,7 @@ void fprintGappaAssignmentAsDichotomy(FILE *fd, gappaAssignment *assign) {
     switch (assign->resultType) {
     case 3:
       fprintf(fd,"$ %shml in (0);\n",assign->resultVariable);
+      fprintf(fd,"$ %sml in (0);\n",assign->resultVariable);
       break;
     case 2:
       break;
@@ -1478,6 +1493,7 @@ void fprintGappaAssignmentAsDichotomy(FILE *fd, gappaAssignment *assign) {
     switch (assign->resultType) {
     case 3:
       fprintf(fd,"$ %shml in (0);\n",assign->resultVariable);
+      fprintf(fd,"$ %sml in (0);\n",assign->resultVariable);
       break;
     case 2:
       break;
@@ -1559,23 +1575,31 @@ void fprintGappaAssignmentAsOverlapBound(FILE *fd, gappaAssignment *assign) {
   case GAPPA_RENORMALIZE: 
     fprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
 	    assign->resultVariable,assign->resultOverlap);
+    fprintf(fd,"/\\ |%sml| in [1b-1021,1b1023]\n",
+	    assign->resultVariable);
     break;
   case GAPPA_ADD_REL: 
     if (assign->resultType == 3) {
       fprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
 	      assign->resultVariable,assign->resultOverlap);
+      fprintf(fd,"/\\ |%sml| in [1b-1021,1b1023]\n",
+	      assign->resultVariable);
     }
     break;
   case GAPPA_MUL_REL: 
     if (assign->resultType == 3) {
       fprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
 	      assign->resultVariable,assign->resultOverlap);
+      fprintf(fd,"/\\ |%sml| in [1b-1021,1b1023]\n",
+	      assign->resultVariable);
     }
     break;
   case GAPPA_FMA_REL: 
     if (assign->resultType == 3) {
       fprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
 	      assign->resultVariable,assign->resultOverlap);
+      fprintf(fd,"/\\ |%sml| in [1b-1021,1b1023]\n",
+	      assign->resultVariable);
     }
     break;
   case GAPPA_COPY: 
@@ -1712,9 +1736,8 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
 
   fprintf(fd,"# Implication to prove\n");
 
-  if (mpfr_sgn(proof->a) != mpfr_sgn(proof->b)) {
+  if ((mpfr_sgn(proof->a) != mpfr_sgn(proof->b)) && (!mpfr_zero_p(proof->a)) && (!mpfr_zero_p(proof->b))) {
     
-
     fprintf(fd,"{((\n");
     switch (proof->variableType) {
     case 3:
@@ -1739,6 +1762,7 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
     fprintf(fd,"]\n");
     if (proof->variableType == 3) {
       fprintf(fd,"/\\ |overlap_%s| in [1b-400, 1b-52]  # Verify the lower bound for the overlap interval\n",proof->variableName);
+      fprintf(fd,"/\\ |%sml| in [1b-1021, 1b1023]\n",proof->variableName);
     }
     for (i=0;i<proof->assignmentsNumber;i++) {
       fprintGappaAssignmentAsOverlapBound(fd, proof->assignments[i]);
@@ -1769,6 +1793,7 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
     fprintf(fd,"]\n");
     if (proof->variableType == 3) {
       fprintf(fd,"/\\ |overlap_%s| in [1b-400, 1b-52]  # Verify the lower bound for the overlap interval\n",proof->variableName);
+      fprintf(fd,"/\\ |%sml| in [1b-1021, 1b1023]\n",proof->variableName);
     }
     for (i=0;i<proof->assignmentsNumber;i++) {
       fprintGappaAssignmentAsOverlapBound(fd, proof->assignments[i]);
@@ -1798,6 +1823,7 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
     fprintf(fd,"]\n");
     if (proof->variableType == 3) {
       fprintf(fd,"/\\ |overlap_%s| in [1b-400, 1b-52]  # Verify the lower bound for the overlap interval\n",proof->variableName);
+      fprintf(fd,"/\\ |%sml| in [1b-1021, 1b1023]\n",proof->variableName);
     }
     for (i=0;i<proof->assignmentsNumber;i++) {
       fprintGappaAssignmentAsOverlapBound(fd, proof->assignments[i]);
@@ -1826,6 +1852,9 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
 	    proof->variableName,proof->variableName);
     fprintf(fd,"(%sh - %shm) / %shm -> - 1 / (1 / overlap_%s + 1);\n",
 	    proof->variableName,proof->variableName,proof->variableName,proof->variableName);
+    fprintf(fd,"%sh -> %shml / (overlap_%s / (1 + ((%sm - %sml) / %sml)) + 1);\n",
+	    proof->variableName,proof->variableName,proof->variableName,proof->variableName,
+	    proof->variableName,proof->variableName);
     break;
   case 2:
     fprintf(fd,"%sh ~ %shm;\n",proof->variableName,proof->variableName);
@@ -1855,6 +1884,7 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
 
   if (proof->variableType == 3) {
     fprintf(fd,"$ %shml in (0);\n",proof->variableName);
+    fprintf(fd,"$ %sml in (0);\n",proof->variableName);
     fprintf(fd,"\n");
   }
 
