@@ -276,6 +276,31 @@ void fprintHeadFunction(FILE *fd,node *tree, char *x, char *y) {
   return;
 }
 
+int precedence(node *tree) {
+  switch (tree->nodeType) {
+  case CONSTANT:
+  case VARIABLE:
+    return 1;
+    break;
+  case ADD:
+  case SUB:
+    return 2;
+    break;
+  case MUL:
+    return 3;
+    break;
+  case DIV:
+    return 4;
+    break;
+  case POW:
+    return 5;
+    break;
+  default:
+    return 6; 
+  }
+  return 0;
+}
+
 
 int isInfix(node *tree) {
   switch(tree->nodeType) {
@@ -419,6 +444,10 @@ void fprintValue(FILE *fd, mpfr_t value) {
 
 
 void printTree(node *tree) {
+  int pred;
+
+  pred = precedence(tree);
+
   switch (tree->nodeType) {
   case VARIABLE:
     printf("%s",variablename);
@@ -427,55 +456,55 @@ void printTree(node *tree) {
     printValue(tree->value,mpfr_get_prec(*(tree->value)));
     break;
   case ADD:
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       printf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       printf(")");
     printf(" + ");
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
       printf("(");
     printTree(tree->child2);
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
       printf(")");
     break;
   case SUB:
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       printf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       printf(")");
     printf(" - ");
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
       printf("(");
     printTree(tree->child2);
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
       printf(")");
     break;
   case MUL:
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       printf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       printf(")");
     printf(" * ");
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
       printf("(");
     printTree(tree->child2);
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
       printf(")");
     break;
   case DIV:
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       printf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       printf(")");
     printf(" / ");
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
       printf("(");
     printTree(tree->child2);
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
       printf(")");
     break;
   case SQRT:
@@ -564,14 +593,19 @@ void printTree(node *tree) {
     printf(")");
     break;
   case POW:
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
       printf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
       printf(")");
-    printf("^(");
+    printf("^");
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) {
+      printf("(");
+    }
     printTree(tree->child2);
-    printf(")");
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) {
+      printf(")");
+    }
     break;
   case NEG:
     printf("-");
@@ -6365,28 +6399,50 @@ node *makeCanonicalPolyUnsafe(node *poly, mp_prec_t prec) {
   mpfr_set_d(*(tempNode->value),0.0,GMP_RNDN);
   for (k=0;k<=degree;k++) {
     if (coefficients[k] != NULL) {
-      tempNode2 = (node *) safeMalloc(sizeof(node));
-      tempNode2->nodeType = POW;
-      tempNode3 = (node *) safeMalloc(sizeof(node));
-      tempNode3->nodeType = CONSTANT;
-      tempNode3->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*(tempNode3->value),prec);
-      if (mpfr_set_si(*(tempNode3->value),k,GMP_RNDN) != 0) {
-	printMessage(1,"Warning: during transformation to canonical form, the exponent of a power could not be represented exactly on with the given precision.\n");
+      if (k == 0) {
+	tempNode2 = (node *) safeMalloc(sizeof(node));
+	  tempNode2->nodeType = ADD;
+	  tempNode2->child2 = coefficients[k];
+	  tempNode2->child1 = tempNode;
+	  tempNode = tempNode2;
+      } else {
+	if (k == 1) {
+	  tempNode3 = (node *) safeMalloc(sizeof(node));
+	  tempNode3->nodeType = VARIABLE;
+	  tempNode2 = (node *) safeMalloc(sizeof(node));
+	  tempNode2->nodeType = MUL;
+	  tempNode2->child2 = tempNode3;
+	  tempNode2->child1 = coefficients[k];
+	  tempNode3 = (node *) safeMalloc(sizeof(node));
+	  tempNode3->nodeType = ADD;
+	  tempNode3->child2 = tempNode2;
+	  tempNode3->child1 = tempNode;
+	  tempNode = tempNode3;
+	} else {
+	  tempNode2 = (node *) safeMalloc(sizeof(node));
+	  tempNode2->nodeType = POW;
+	  tempNode3 = (node *) safeMalloc(sizeof(node));
+	  tempNode3->nodeType = CONSTANT;
+	  tempNode3->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  mpfr_init2(*(tempNode3->value),prec);
+	  if (mpfr_set_si(*(tempNode3->value),k,GMP_RNDN) != 0) {
+	    printMessage(1,"Warning: during transformation to canonical form, the exponent of a power could not be represented exactly on with the given precision.\n");
+	  }
+	  tempNode2->child2 = tempNode3;
+	  tempNode3 = (node *) safeMalloc(sizeof(node));
+	  tempNode3->nodeType = VARIABLE;
+	  tempNode2->child1 = tempNode3;
+	  tempNode3 = (node *) safeMalloc(sizeof(node));
+	  tempNode3->nodeType = MUL;
+	  tempNode3->child2 = tempNode2;
+	  tempNode3->child1 = coefficients[k];
+	  tempNode2 = (node *) safeMalloc(sizeof(node));
+	  tempNode2->nodeType = ADD;
+	  tempNode2->child2 = tempNode3;
+	  tempNode2->child1 = tempNode;
+	  tempNode = tempNode2;
+	}
       }
-      tempNode2->child2 = tempNode3;
-      tempNode3 = (node *) safeMalloc(sizeof(node));
-      tempNode3->nodeType = VARIABLE;
-      tempNode2->child1 = tempNode3;
-      tempNode3 = (node *) safeMalloc(sizeof(node));
-      tempNode3->nodeType = MUL;
-      tempNode3->child2 = tempNode2;
-      tempNode3->child1 = coefficients[k];
-      tempNode2 = (node *) safeMalloc(sizeof(node));
-      tempNode2->nodeType = ADD;
-      tempNode2->child2 = tempNode3;
-      tempNode2->child1 = tempNode;
-      tempNode = tempNode2;
     }
   }
 

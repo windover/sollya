@@ -60,6 +60,7 @@ extern errorType *errorTypeTemp;
 extern pointsType *pointsTypeTemp;
 extern int eliminatePrompt;
 extern mp_prec_t tempPrec;
+extern int canonical;
 
 void printPrompt(void);
 void recoverFromError(void);

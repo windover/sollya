@@ -324,6 +324,9 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
       mpfr_set_d(fpcoefficients[i],0.0,GMP_RNDN);
     }
     switch (formatsArray[i]) {
+    case 4:
+      if (mpfr_round_to_doubleextended(tempMpfr, fpcoefficients[i]) != 0) res = 1;
+      break;
     case 3:
       if (mpfr_round_to_tripledouble(tempMpfr, fpcoefficients[i]) != 0) res = 1;
       break;

@@ -34,7 +34,7 @@ void yyerror(char *message) {
 
 %}
 
-
+%expect 1
 
 %union {
 	char *value;
@@ -104,6 +104,7 @@ void yyerror(char *message) {
 %token  PRINTTOKEN
 %token  DIFFTOKEN
 %token  SIMPLIFYTOKEN
+%token  CANONICALTOKEN
 %token  PLOTTOKEN
 %token  INFNORMTOKEN
 %token  REMEZTOKEN
@@ -219,6 +220,7 @@ void yyerror(char *message) {
 %type <rangeval> evaluate
 %type <aChain> rangelist
 %type <other> dyadic
+%type <other> canonical
 %type <rangeval> integral
 %type <aString> string
 %type <aFile> writefile
@@ -264,6 +266,7 @@ void yyerror(char *message) {
 %type <aChain> integerlist
 %type <rangeval> printableRange
 %type <rangeval> symbolRange
+
 
 %%
 
@@ -445,6 +448,17 @@ command:     plot
 			       break;
 			     default:
 			       printf("Dyadic number output in unknown state.\n");
+			     }
+	                     $$ = NULL;	                   
+	                   }
+           | canonical SEMICOLONTOKEN  {
+	                     $$ = NULL;
+	                   }
+           | CANONICALTOKEN EQUALTOKEN QUESTIONMARKTOKEN SEMICOLONTOKEN  {
+	                     if (canonical) {
+			       printf("Canonical autoprint output is activated.\n");
+			     } else {
+			       printf("Canonical autoprint output is deactivated.\n");
 			     }
 	                     $$ = NULL;	                   
 	                   }
@@ -634,6 +648,31 @@ dyadic:      DYADICTOKEN EQUALTOKEN ONTOKEN
                            }
 ;
 
+canonical:   CANONICALTOKEN EQUALTOKEN ONTOKEN 
+                           {
+			     printf("Canonical autoprint output activated.\n");
+			     canonical = 1;
+			     $$ = NULL;
+                           }
+           | CANONICALTOKEN EQUALTOKEN OFFTOKEN
+                           {
+			     printf("Canonical autoprint output deactivated.\n");
+			     canonical = 0;
+			     $$ = NULL;
+                           }
+           | CANONICALTOKEN EQUALTOKEN ONTOKEN EXCLAMATIONTOKEN
+                           {
+			     canonical = 1;
+			     $$ = NULL;
+                           }
+           | CANONICALTOKEN EQUALTOKEN OFFTOKEN EXCLAMATIONTOKEN
+                           {
+			     canonical = 0;
+			     $$ = NULL;
+                           }
+;
+
+
 verbosityset:  VERBOSITYTOKEN EQUALTOKEN verbosity
                            {
 			     printf("Verbosity set to level %d.\n",($3));
@@ -660,7 +699,59 @@ taylorrecursions: TAYLORRECURSIONSTOKEN EQUALTOKEN taylorrecursionsvalue
 			   }
 ;
 
-assignment:  lvariable EQUALTOKEN function 
+assignment:  lvariable EQUALTOKEN variableWorkAround EXCLAMATIONTOKEN {
+			     if ((variablename != NULL) && (strcmp(variablename,($1)) == 0)) {
+			       if (containsEntry(symbolTable,($3))) {
+				 printMessage(1,"Warning: the identifier \"%s\" is already assigned. The free variable cannot be named like an assigned identifier.\n",($3));
+				 printMessage(1,"The last command will have no effect.\n");
+			       } else {
+				 printMessage(1,"Warning: the identifier \"%s\" is bound as the current variable. It will be renamed as \"%s\" as forced.\n",($1),($3));
+				 free(variablename);
+				 variablename = (char *) safeCalloc(strlen(($3))+1,sizeof(char));
+				 strcpy(variablename,($3));
+			       }
+			     } else {
+			       if (containsEntry(symbolTable,($1))) {
+				 printMessage(1,"Warning: the identifier \"%s\" is already assigned. It will be reassigned as forced.\n",($1));
+				 symbolTable = removeEntry(symbolTable, ($1), freeMemoryOnVoid);
+				 if (!containsEntry(symbolTable,$3)) {
+				   if (variablename==NULL) {
+				     variablename = (char *) safeCalloc(strlen($3)+1,sizeof(char));
+				     strcpy(variablename,$3);
+				   }
+				   if (strcmp(variablename,$3)!=0) {
+				     printMessage(1,"Warning: the identifier \"%s\" is neither bound by assignment nor equal to the bound current variable.\n",$3);
+				     printMessage(1,"Will interpret \"%s\" as \"%s\".\n",$3,variablename);
+				   }
+				   temp_node = (node*) safeMalloc(sizeof(node));
+				   temp_node->nodeType = VARIABLE;
+				 } else {
+				   temp_node = getEntry(symbolTable,$3,copyTreeOnVoid);
+				 }
+				 symbolTable = addEntry(symbolTable, ($1), temp_node, copyTreeOnVoid);
+			       } else {
+				 if (!containsEntry(symbolTable,$3)) {
+				   if (variablename==NULL) {
+				     variablename = (char *) safeCalloc(strlen($3)+1,sizeof(char));
+				     strcpy(variablename,$3);
+				   }
+				   if (strcmp(variablename,$3)!=0) {
+				     printMessage(1,"Warning: the identifier \"%s\" is neither bound by assignment nor equal to the bound current variable.\n",$3);
+				     printMessage(1,"Will interpret \"%s\" as \"%s\".\n",$3,variablename);
+				   }
+				   temp_node = (node*) safeMalloc(sizeof(node));
+				   temp_node->nodeType = VARIABLE;
+				 } else {
+				   temp_node = getEntry(symbolTable,$3,copyTreeOnVoid);
+				 }
+				 symbolTable = addEntry(symbolTable,($1),temp_node,copyTreeOnVoid);
+			       }
+			     }
+			     free(($1));
+			     free(($3));
+			     $$ = NULL;
+                           }
+           | lvariable EQUALTOKEN function 
                            {
 			     if ((variablename != NULL) && (strcmp(variablename,($1)) == 0)) {
 			       printMessage(1,"Warning: the identifer \"%s\" is already bound as the current variable. It cannot be assigned.\n",($1));
@@ -1335,7 +1426,7 @@ autoprint:   function SEMICOLONTOKEN
 				 printMessage(1,"Warning: the displayed function is affected by rounding error.\n");
 			       }
 			       free_memory(temp_node);
-			       temp_node = horner(temp_node2);
+			       if (canonical) temp_node = makeCanonical(temp_node2,tools_precision); else temp_node = horner(temp_node2);
 			       prec_temp = tools_precision;
 			       tools_precision = defaultprecision;
 			       printTree(temp_node);
@@ -1889,7 +1980,7 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			      freeChain(($6),freeIntPtr);
 			      $$ = temp_node;
 			   }
-                        |       SUBPOLYTOKEN LPARTOKEN function COMMATOKEN LBRACKETTOKEN integerlist DOTSTOKEN RBRACKETTOKEN RPARTOKEN
+                        |       SUBPOLYTOKEN LPARTOKEN function COMMATOKEN LBRACKETTOKEN integerlist COMMATOKEN DOTSTOKEN RBRACKETTOKEN RPARTOKEN
                            {
 			      temp_node = getSubpolynomial(($3), ($6), 1, tools_precision);
 			      free_memory(($3));
@@ -1919,6 +2010,12 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                         |       SIMPLIFYTOKEN LPARTOKEN function RPARTOKEN
                            {
 			     temp_node = simplifyTree($3);
+			     free_memory($3);
+			     $$ = temp_node;
+			   }
+                        |       CANONICALTOKEN LPARTOKEN function RPARTOKEN
+                           {
+			     temp_node = makeCanonical($3,tools_precision);
 			     free_memory($3);
 			     $$ = temp_node;
 			   }
@@ -3126,6 +3223,10 @@ expansionFormat:           DOUBLETOKEN
                            {
 			     $$ = 3;
 			   }
+                         | DOUBLEEXTENDEDTOKEN
+                           {
+			     $$ = 4;
+			   }
 ;
 
 expansionFormatList:       expansionFormat
@@ -3146,7 +3247,7 @@ expansionFormats:          LBRACKETTOKEN expansionFormatList RBRACKETTOKEN
                            {
 			     $$ = $2;
 			   }
-                         | LBRACKETTOKEN expansionFormatList DOTSTOKEN RBRACKETTOKEN
+                         | LBRACKETTOKEN expansionFormatList COMMATOKEN DOTSTOKEN RBRACKETTOKEN
                            {
 			     intTempPtr = (int *) safeMalloc(sizeof(int));
 			     *intTempPtr = -1;
@@ -3243,7 +3344,6 @@ externalplot:              EXTERNALPLOTTOKEN string externalplotmode TOTOKEN fun
 ;
 
 
-
 integerlist:               integer 
                            {
 			     intTempPtr = (int *) safeMalloc(sizeof(int));
@@ -3255,6 +3355,14 @@ integerlist:               integer
 			     intTempPtr = (int *) safeMalloc(sizeof(int));
 			     *intTempPtr = $3;
 			     $$ = addElement($1,(void *) intTempPtr);
+			   }
+                         |     integer DOTSTOKEN integer
+                           {
+			     if (($1) > ($3)) {
+			       printMessage(1,"Warning: the bounds given for a elliptic list are not in ascending order.\nThis list or sublist will not be taken into account.\n");
+			     }
+			     chain_temp = makeIntPtrChainFromTo(($1),($3));
+			     $$ = chain_temp;
 			   }
 ;
 

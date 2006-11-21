@@ -76,6 +76,7 @@ QUIT            "quit"
 PRINT           "print"
 DIFF            "diff"
 SIMPLIFY        "simplify"
+CANONICAL       "canonical"
 PLOT            "plot"
 REMEZ           "remez"
 INFNORM         "infnorm"
@@ -291,6 +292,7 @@ QUESTIONMARK    "?"
 {DEGREE}        {     promptToBePrinted = 0; return DEGREETOKEN;       }
 {EXPAND}        {     promptToBePrinted = 0; return EXPANDTOKEN;       }
 {SIMPLIFYSAFE}  {     promptToBePrinted = 0; return SIMPLIFYSAFETOKEN; }
+{CANONICAL}     {     promptToBePrinted = 0; return CANONICALTOKEN; }
 {TAYLOR}        {     promptToBePrinted = 0; return TAYLORTOKEN; }
 {FINDZEROS}     {     promptToBePrinted = 0; return FINDZEROSTOKEN; }
 {DIRTYINFNORM}  {     promptToBePrinted = 0; return DIRTYINFNORMTOKEN; }

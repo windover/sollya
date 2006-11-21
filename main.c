@@ -63,6 +63,7 @@ int eliminatePrompt;
 mp_prec_t tempPrec;
 int handlingCtrlC;
 int fileNumber = 0;
+int canonical = 0;
 
 #define NEWPARIVERSION
 

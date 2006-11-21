@@ -198,5 +198,5 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
 }
 
 void removePlotFiles(void) {
-  printf("Removing plot files\n");
+
 }
