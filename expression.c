@@ -6350,3 +6350,239 @@ node *getSubpolynomial(node *poly, chain *monomials, int fillDegrees, mp_prec_t 
   
   return tempNode2;
 }
+
+node *makeCanonicalPolyUnsafe(node *poly, mp_prec_t prec) {
+  node **coefficients;
+  int degree, k;
+  node *tempNode, *tempNode2, *tempNode3;
+
+  getCoefficients(&degree, &coefficients, poly);
+
+  tempNode = (node *) safeMalloc(sizeof(node));
+  tempNode->nodeType = CONSTANT;
+  tempNode->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*(tempNode->value),prec);
+  mpfr_set_d(*(tempNode->value),0.0,GMP_RNDN);
+  for (k=0;k<=degree;k++) {
+    if (coefficients[k] != NULL) {
+      tempNode2 = (node *) safeMalloc(sizeof(node));
+      tempNode2->nodeType = POW;
+      tempNode3 = (node *) safeMalloc(sizeof(node));
+      tempNode3->nodeType = CONSTANT;
+      tempNode3->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*(tempNode3->value),prec);
+      if (mpfr_set_si(*(tempNode3->value),k,GMP_RNDN) != 0) {
+	printMessage(1,"Warning: during transformation to canonical form, the exponent of a power could not be represented exactly on with the given precision.\n");
+      }
+      tempNode2->child2 = tempNode3;
+      tempNode3 = (node *) safeMalloc(sizeof(node));
+      tempNode3->nodeType = VARIABLE;
+      tempNode2->child1 = tempNode3;
+      tempNode3 = (node *) safeMalloc(sizeof(node));
+      tempNode3->nodeType = MUL;
+      tempNode3->child2 = tempNode2;
+      tempNode3->child1 = coefficients[k];
+      tempNode2 = (node *) safeMalloc(sizeof(node));
+      tempNode2->nodeType = ADD;
+      tempNode2->child2 = tempNode3;
+      tempNode2->child1 = tempNode;
+      tempNode = tempNode2;
+    }
+  }
+
+  tempNode2 = simplifyTreeErrorfree(tempNode);
+
+  return tempNode2;
+}
+
+node *makeCanonical(node *tree, mp_prec_t prec) {
+  node *copy;
+  mpfr_t *value;
+
+  if (isPolynomial(tree)) return makeCanonicalPolyUnsafe(tree,prec);
+
+  switch (tree->nodeType) {
+  case VARIABLE:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = VARIABLE;
+    break;
+  case CONSTANT:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = CONSTANT;
+    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*value,tools_precision);
+    mpfr_set(*value,*(tree->value),GMP_RNDN);
+    copy->value = value;
+    break;
+  case ADD:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ADD;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    copy->child2 = makeCanonical(tree->child2,prec);
+    break;
+  case SUB:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = SUB;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    copy->child2 = makeCanonical(tree->child2,prec);
+    break;
+  case MUL:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = MUL;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    copy->child2 = makeCanonical(tree->child2,prec);
+    break;
+  case DIV:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = DIV;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    copy->child2 = makeCanonical(tree->child2,prec);
+    break;
+  case SQRT:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = SQRT;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case EXP:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = EXP;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case LOG:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LOG;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case LOG_2:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LOG_2;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case LOG_10:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LOG_10;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case SIN:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = SIN;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case COS:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = COS;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case TAN:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = TAN;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case ASIN:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ASIN;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case ACOS:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ACOS;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case ATAN:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ATAN;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case SINH:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = SINH;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case COSH:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = COSH;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case TANH:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = TANH;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case ASINH:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ASINH;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case ACOSH:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ACOSH;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case ATANH:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ATANH;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case POW:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = POW;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    copy->child2 = makeCanonical(tree->child2,prec);
+    break;
+  case NEG:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = NEG;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case ABS:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ABS;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case DOUBLE:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = DOUBLE;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case DOUBLEDOUBLE:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = DOUBLEDOUBLE;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case TRIPLEDOUBLE:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = TRIPLEDOUBLE;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case ERF: 
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ERF;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case ERFC:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = ERFC;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case LOG_1P:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LOG_1P;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case EXP_M1:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = EXP_M1;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case DOUBLEEXTENDED:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = DOUBLEEXTENDED;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  default:
+   fprintf(stderr,"Error: makeCanonical: unknown identifier in the tree\n");
+   exit(1);
+  }
+  return copy;
+}
+
