@@ -544,3 +544,24 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
 
   return roundingOccured;
 }
+
+
+void mpfr_round_to_format(mpfr_t rop, mpfr_t op, int format) {
+  switch (format) {
+  case 4:
+    mpfr_round_to_doubleextended(rop, op);
+    break;
+  case 3:
+    mpfr_round_to_tripledouble(rop, op);
+    break;
+  case 2:
+    mpfr_round_to_doubledouble(rop, op);
+    break;
+  case 1:
+    mpfr_round_to_double(rop, op);
+    break;
+  default:
+    fprintf(stderr,"Error: mpfr_round_to_format: unknown format type.\n");
+    exit(1);
+  }
+}

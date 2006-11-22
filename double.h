@@ -14,5 +14,6 @@ int readHexa(mpfr_t res, char *c);
 node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec);
 int printDoubleExpansion(mpfr_t x);
 int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec);
+void mpfr_round_to_format(mpfr_t rop, mpfr_t op, int format);
 
 #endif /* ifdef DOUBLE_H*/

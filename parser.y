@@ -188,6 +188,8 @@ void yyerror(char *message) {
 %token  COEFFTOKEN
 %token  SUBPOLYTOKEN
 %token  QUESTIONMARKTOKEN
+%token  SEARCHGALTOKEN
+%token  STEPSTOKEN
 
 %type <other> commands
 %type <other> command
@@ -266,7 +268,7 @@ void yyerror(char *message) {
 %type <aChain> integerlist
 %type <rangeval> printableRange
 %type <rangeval> symbolRange
-
+%type <constantval> searchGal
 
 %%
 
@@ -402,6 +404,17 @@ command:     plot
 			     mpfr_clear(*($1.b));
 			     free($1.a);
 			     free($1.b);
+	                     $$ = NULL;
+	                   }
+           | searchGal SEMICOLONTOKEN {
+	                     if (!mpfr_number_p(*($1))) {
+			       printf("The Gal good approximation search has given no result.\n");
+			     } else { 
+			       printf("Found the following appropriate well approximating point:\n");
+			       printMpfr(*($1));
+			     }
+			     mpfr_clear(*($1));
+			     free($1);
 	                     $$ = NULL;
 	                   }
            | evaluate SEMICOLONTOKEN      
@@ -1325,6 +1338,19 @@ accurateinfnorm: ACCURATEINFNORMTOKEN function INTOKEN range WITHTOKEN integer B
 			     mpfr_clear(*($4.b));
 			     free($4.a);
 			     free($4.b);
+			     $$ = mpfr_temp;
+			   }
+;
+
+
+searchGal:    SEARCHGALTOKEN function ATTOKEN constantfunction WITHTOKEN integer BITSTOKEN INTOKEN integer STEPSTOKEN INTOKEN expansionFormat WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction 
+                           {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,tools_precision);
+			     int_temp = searchGalValue($2, *mpfr_temp, *($4), $6, $9, $12, *($16), tools_precision);
+			     if (!int_temp) {
+			       mpfr_set_nan(*mpfr_temp);
+			     }
 			     $$ = mpfr_temp;
 			   }
 ;
@@ -2413,6 +2439,15 @@ commandfunction:          infnorm
 			     $$ = $1;
                            }
                         | dirtyinfnorm
+                           {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,mpfr_get_prec(*($1)));
+			     mpfr_set(*mpfr_temp,*($1),GMP_RNDN);
+			     range_temp.a = $1;
+			     range_temp.b = mpfr_temp;
+			     $$ = range_temp;
+			   }
+                        | searchGal
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,mpfr_get_prec(*($1)));

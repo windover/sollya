@@ -214,6 +214,10 @@ SUBPOLY         "subpoly"
 
 QUESTIONMARK    "?"
 
+SEARCHGAL       "searchgal"
+
+STEPS           "steps"
+
 
 %%
 
@@ -360,6 +364,8 @@ QUESTIONMARK    "?"
 {COEFF}                  {     promptToBePrinted = 0; return COEFFTOKEN; }                    
 {SUBPOLY}                {     promptToBePrinted = 0; return SUBPOLYTOKEN; }                    
 {QUESTIONMARK}           {     promptToBePrinted = 0; return QUESTIONMARKTOKEN; }                    
+{SEARCHGAL}              {     promptToBePrinted = 0; return SEARCHGALTOKEN; }                    
+{STEPS}                  {     promptToBePrinted = 0; return STEPSTOKEN; }                    
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

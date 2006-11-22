@@ -6,7 +6,8 @@
 #include <string.h>
 #include <errno.h>
 #include "main.h"
-
+#include "infnorm.h"
+#include "double.h"
 
 int mpfrToInt(int *res, mpfr_t val) {
   mpfr_t verg;
@@ -165,4 +166,82 @@ void printWorstCases(node *func,
   mpfr_clear(xL);
   mpfr_clear(y);
   mpfr_clear(yR);
+}
+
+
+int searchGalValue(node *func, mpfr_t foundValue, mpfr_t startValue, mp_prec_t searchPrec, int steps, 
+		    int imageFormat, mpfr_t epsilon, mp_prec_t prec) {
+  mpfr_t currLeft, currRight;
+  mpfr_t yCurrLeft, yCurrRight;
+  mpfr_t yCurrLeftRound, yCurrRightRound;
+  mpfr_t errorLeft, errorRight;
+  mp_prec_t p;
+  unsigned long long int t;
+  int res;
+
+  p = prec;
+  if (searchPrec > p) p = searchPrec;
+  if (p < 165) p = 165;
+
+  if (mpfr_get_prec(foundValue) < searchPrec) {
+    printMessage(1,"Warning: the search precision is higher than the current precision of the tool.\nNo search is possible.\n");
+    return 0;
+  }
+
+  mpfr_init2(currLeft, searchPrec);
+  mpfr_init2(currRight, searchPrec);
+  mpfr_init2(yCurrLeft, p);
+  mpfr_init2(yCurrRight, p);
+  mpfr_init2(yCurrLeftRound, p);
+  mpfr_init2(yCurrRightRound, p);
+  mpfr_init2(errorLeft, p);
+  mpfr_init2(errorRight, p);
+
+
+  if ((mpfr_set(currLeft,startValue,GMP_RNDN) != 0) ||
+      (mpfr_set(currRight,startValue,GMP_RNDN) != 0)) {
+    printMessage(1,"Warning: the given start point is too precise for the given search precision.\n");
+    printMessage(1,"It has been rounded to: ");
+    if (verbosity >= 1) {
+      printMpfr(currLeft);
+    }
+  }
+
+  t = 1;
+  t <<= steps;
+  res = 0;
+  while (t > 0) {
+    evaluateFaithful(yCurrLeft, func, currLeft, p);
+    evaluateFaithful(yCurrRight, func, currRight, p);
+    mpfr_round_to_format(yCurrLeftRound, yCurrLeft, imageFormat);
+    mpfr_round_to_format(yCurrRightRound, yCurrRight, imageFormat);
+    mpfr_sub(errorLeft,yCurrLeftRound,yCurrLeft,GMP_RNDN);
+    mpfr_sub(errorRight,yCurrRightRound,yCurrRight,GMP_RNDN);
+    mpfr_div(errorLeft,errorLeft,yCurrLeft,GMP_RNDN);
+    mpfr_div(errorRight,errorRight,yCurrRight,GMP_RNDN);
+    if (mpfr_number_p(errorLeft) && (mpfr_cmpabs(errorLeft,epsilon) <= 0)) {
+      mpfr_set(foundValue, currLeft, GMP_RNDN);
+      res = 1;
+      break;
+    }
+    if (mpfr_number_p(errorRight) && (mpfr_cmpabs(errorRight,epsilon) <= 0)) {
+      mpfr_set(foundValue, currRight, GMP_RNDN);
+      res = 1;
+      break;
+    }
+    mpfr_nextbelow(currLeft);
+    mpfr_nextabove(currRight);
+    t--;
+  }
+  
+  mpfr_clear(currLeft);
+  mpfr_clear(currRight);
+  mpfr_clear(yCurrLeft);
+  mpfr_clear(yCurrRight);
+  mpfr_clear(yCurrLeftRound);
+  mpfr_clear(yCurrRightRound);
+  mpfr_clear(errorLeft);
+  mpfr_clear(errorRight);
+
+  return res;
 }
