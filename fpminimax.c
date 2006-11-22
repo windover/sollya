@@ -20,11 +20,11 @@ node *rationalApprox(mpfr_t x, int n) {
 
   numerator = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*numerator,10);
-  mpfr_set_d(*value,1.,GMP_RNDN);
+  mpfr_set_d(*numerator,1.,GMP_RNDN);
 
   denominator = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*denominator,10);
-  mpfr_set_d(*value,2.,GMP_RNDN);
+  mpfr_set_d(*denominator,2.,GMP_RNDN);
 
   tree = safeMalloc(sizeof(node));
   tree->nodeType = DIV;
