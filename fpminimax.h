@@ -51,7 +51,7 @@ struct pointsStruct
 };
 
 
-node *rationalApprox(mpfr_t x, int n);
+node *rationalApprox(mpfr_t x, unsigned int n);
 node *fpminimax(node *expr, chain *monomials, chain *formats, mpfr_t a, mpfr_t b, 
 		errorType *error, pointsType *points, int quality, FILE *fd);
 
