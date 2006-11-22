@@ -5,6 +5,8 @@
 #include "expression.h"
 #include "chain.h"
 
+#define NUMBEROFFILES 10
+
 #define PLOTFILE 0
 #define PLOTPOSTSCRIPT 1
 #define PLOTPOSTSCRIPTFILE 2

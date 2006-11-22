@@ -95,10 +95,12 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
 
   if(name==NULL) {
     gplotname = (char *)safeCalloc(26, sizeof(char));
-    sprintf(gplotname,"/tmp/arenairetools-0001.p");
+    sprintf(gplotname,"/tmp/arenairetools-%04d.p",fileNumber);
     dataname = (char *)safeCalloc(28, sizeof(char));
-    sprintf(dataname,"/tmp/arenairetools-0001.dat");
+    sprintf(dataname,"/tmp/arenairetools-%04d.dat",fileNumber);
     outputname = (char *)safeCalloc(1, sizeof(char));
+    fileNumber++;
+    if (fileNumber >= NUMBEROFFILES) fileNumber=0;
   }
   else {
     gplotname = (char *)safeCalloc(strlen(name)+3,sizeof(char));
@@ -198,5 +200,17 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
 }
 
 void removePlotFiles(void) {
+  int i;
+  char *name;
+  name = (char *)safeCalloc(40, sizeof(char));
 
+  for(i=0;i<NUMBEROFFILES;i++) {
+    sprintf(name,"/tmp/arenairetools-%04d.p",i);
+    remove(name);
+    sprintf(name,"/tmp/arenairetools-%04d.dat",i);
+    remove(name);
+  }
+
+  free(name);
+  return;
 }
