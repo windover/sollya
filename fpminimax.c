@@ -11,6 +11,35 @@
 #include <errno.h>
 
 
+node *rationalApprox(mpfr_t x, int n) {
+  node *tree;
+  node *num;
+  node *denom;
+  mpfr_t *numerator;
+  mpfr_t *denominator;
+
+  numerator = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*numerator,10);
+  mpfr_set_d(*value,1.,GMP_RNDN);
+
+  denominator = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*denominator,10);
+  mpfr_set_d(*value,2.,GMP_RNDN);
+
+  tree = safeMalloc(sizeof(node));
+  tree->nodeType = DIV;
+  num = safeMalloc(sizeof(node));
+  denom = safeMalloc(sizeof(node));
+  num->nodeType = CONSTANT;
+  denom->nodeType = CONSTANT;
+  num->value = numerator;
+  denom->value = denominator;
+  tree->child1 = num;
+  tree->child2 = denom;
+  return tree;
+}
+
+
 void freeFormatTypePtr(void *ptr) {
 
   if (ptr == NULL) return;
