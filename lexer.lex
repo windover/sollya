@@ -218,6 +218,8 @@ SEARCHGAL       "searchgal"
 
 STEPS           "steps"
 
+RATIONALAPPROX  "rationalapprox"
+
 
 %%
 
@@ -366,6 +368,7 @@ STEPS           "steps"
 {QUESTIONMARK}           {     promptToBePrinted = 0; return QUESTIONMARKTOKEN; }                    
 {SEARCHGAL}              {     promptToBePrinted = 0; return SEARCHGALTOKEN; }                    
 {STEPS}                  {     promptToBePrinted = 0; return STEPSTOKEN; }                    
+{RATIONALAPPROX}         {     promptToBePrinted = 0; return RATIONALAPPROXTOKEN; }                    
 
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);

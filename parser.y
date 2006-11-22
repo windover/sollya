@@ -190,6 +190,7 @@ void yyerror(char *message) {
 %token  QUESTIONMARKTOKEN
 %token  SEARCHGALTOKEN
 %token  STEPSTOKEN
+%token  RATIONALAPPROXTOKEN
 
 %type <other> commands
 %type <other> command
@@ -1990,6 +1991,13 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			      free($7.a);
 			      free($7.b);
 			      freeChain($5,freeIntPtr);
+			      $$ = temp_node;
+                           }
+                        |       RATIONALAPPROXTOKEN LPARTOKEN constantfunction COMMATOKEN integer RPARTOKEN
+                           {
+			      temp_node = rationalApprox($3, $5);
+			      mpfr_clear(*($3));
+			      free($3);
 			      $$ = temp_node;
                            }
                         |       COEFFTOKEN LPARTOKEN function COMMATOKEN integer RPARTOKEN
