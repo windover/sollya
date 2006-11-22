@@ -105,7 +105,7 @@ l'intérieur d'\com{arenaireplot} :
 \end{center}
 
 \section{Description du logiciel}
-Le logiciel fonctionne sous la forme d'une console interactive dans laquelle on tape des \com{commandes}. En général, une commande prend en argument une \com{fonction}. Dans \com{arenaireplot}, il ne peut y avoir qu'une seule variable libre tout au long de la session : la première fois que le logiciel rencontre une variable qui n'a pas été précédemment liée, ce nom de variable devient l'identifiant de la variable libre. Le nom devient protégé et on ne peut plus rien lui affecter. L'usage de toute autre variable non précédemment liée déclenchera un message d'erreur.
+Le logiciel fonctionne sous la forme d'une console interactive dans laquelle on tape des \com{commandes}. En général, une commande prend en argument une \com{fonction}. Dans \com{arenaireplot}, il ne peut y avoir qu'une seule variable libre tout au long de la session : la première fois que le logiciel rencontre une variable qui n'a pas été précédemment liée, ce nom de variable devient l'identifiant de la variable libre. Le nom devient protégé et on ne peut plus rien lui affecter. L'usage de toute autre variable non précédemment liée déclenchera un warning. La variable en question sera alors interprétée comme la variable libre.
 
 Par la suite, nous noterons $x$ la variable libre, mais n'importe quel nom de variable ne correspondant pas à un mot clé du langage pourrait être utilisé.
 
@@ -129,14 +129,14 @@ Par la suite, nous noterons $x$ la variable libre, mais n'importe quel nom de va
   multiplication et la division, qui ont la précédence sur l'addition
   et la soustraction. Les fonctions préfixes suivantes au nom
   explicite sont reconnues : \com{sqrt}, \com{cos}, \com{sin},
-  \com{tan}, \com{acos}, \com{asin}, \com{atan}, \com{exp}, \com{log}
+  \com{tan}, \com{acos}, \com{asin}, \com{atan}, \com{exp}, \com{expm1} (la fonction $x \mapsto exp(x)-1$), \com{log}, \com{log1p} (la fonction $x \mapsto log(1+x)$)
   (logarithme népérien), \com{log2} (logarithme en base $2$),
   \com{log10} (logarithme en base $10$), \com{sinh}, \com{cosh},
-  \com{tanh}, \com{asinh}, \com{acosh}, \com{atanh}, \com{abs} (la
+  \com{tanh}, \com{asinh}, \com{acosh}, \com{atanh}, \com{erf}, \com{erfc}, \com{abs} (la
   valeur absolue). On peut utiliser le signe moins $-$ comme préfixe
   pour la négation.
 \item \com{arenaireplot} permet d'arrondir un nombre au double le plus
-  proche à l'aide des fonctions préfixes \com{D} ou \com{double} ; au
+  proche à l'aide des fonctions préfixes \com{D} ou \com{double} ; au double étendu le plus proche avec \com{doubleextended} ou \com{DE}; au
   double-double le plus proche avec les fonctions \com{DD} ou
   \com{doubledouble} ; au triple-double le plus proche avec les
   fonctions \com{TD} ou \com{tripledouble}.
@@ -147,6 +147,7 @@ Par la suite, nous noterons $x$ la variable libre, mais n'importe quel nom de va
   \begin{itemize}
     \item \com{expand(expr)} : développe toutes les sous-expressions polynômiales de \com{expr}.
     \item \com{horner(expr)} : met sous forme de Horner toutes les sous-expressions polynômiales de \com{expr}.
+    \item \com{coeff(expr, n)} : si \com{expr} est un polynôme, renvoie son coefficient de degré n. Renvoie 0 sinon.
     \item \com{taylor(expr, n, const)} : développe \com{expr} sous forme de Taylor à l'ordre $n$ au point \com{const}.
     \item \com{simplify(expr)} : simplifie \com{expr} autant que faire se peut.
     \item \com{simplifysafe(expr)} : idem, mais ne fait pas de simplification lorsque cela imposerait un arrondi.
@@ -166,14 +167,16 @@ Par la suite, nous noterons $x$ la variable libre, mais n'importe quel nom de va
       l'on autorise à être non nuls. Ainsi, si \com{monomes =
         [0,2,4,6]}, le polynôme renvoyé sera pair et de degré $6$ au
       plus. On peut utiliser des ellipses de la façon suivante :
-      \com{[0, 2...4, 6...10]} désigne la liste de monômes
-      \com{[0,~2,~3,~4,~6,~7,~8,~9,~10]}.
+      \com{[0, 2...4, 6...8, 10]} désigne la liste de monômes
+      \com{[0,~2,~3,~4,~6,~7,~8,~10]}.
+    \item \com{subpoly(expr, monomes)} : si \com{expr} est un polynôme, renvoie le sous-polynôme correspondant aux monômes indiqués dans la liste. La liste \com{monomes} vérifie la même syntaxe que pour la fonction \com{remez}. En outre, on peut utiliser une ellipse finale : \com{[0,2,...]} permet de renvoyer le sous-polynôme correspondant au terme constant plus tous les termes à partir du degré 2. Cette fonction renvoie 0 si \com{expr} n'est pas un polynôme.
+    \item \com{roundcoefficients(expr, liste)} : si \com{expr} est un polynôme, renvoie le polynôme dont les coefficients ont été arrondis suivant les indications de \com{liste}. \com{liste} est une liste contenant les mots clés \com{D}, \com{double}, \com{DD}, \com{doubledouble}, \com{DE}, \com{doubleextended}, \com{TD}, \com{tripledouble}. Le premier mot clé correspond au monôme de degré 0, le suivant au monôme de degré 1, etc. On peut utiliser une ellipse à la fin de la liste pour signifier que tous les monômes à partir d'un certain rang doivent être arrondis au même format (exemple \com{[DD, DD, D,...]} arrondit les coefficients de degré 0 et 1 au double-double le plus proche, puis tous les autres en double). Si \com{expr} n'est pas un polynôme, un warning est affiché et la valeur renvoyée est \com{expr}.
     \item \com{fpminimax()} : à venir.
   \end{itemize}
 \end{itemize}
 
 \subsection{Liste des commandes}
-Chaque commande est doit se terminer par un point-virgule.
+Chaque commande doit se terminer par un point-virgule.
 L'utilisateur peut jouer sur cinq variables globales du logiciel :
 \begin{itemize}
 \item \com{verbosity = n} : fixe le niveau de précision des messages.
@@ -182,27 +185,44 @@ L'utilisateur peut jouer sur cinq variables globales du logiciel :
   plus les messages sont détaillés.
 \item \com{points = n} : fixe le nombre de points à utiliser lors de
   l'usage des commandes \com{plot}, \com{integral} et \com{infnorm}.
-  Le nombre minimal de points est $3$. La valeur par défaut est $500$.
+  Le nombre minimal de points est $3$. La valeur par défaut est $501$.
   La commande \com{infnorm} est utilisée comme sous-routine par
   d'autres commandes.
 \item \com{prec = n} : fixe le nombre de bits à utiliser dans le
   format flottant utilisé par \com{arenaireplot}. La valeur par défaut
-  est $160$.
-\item \com{dyadic = on} / \com{dyadic = off} : active ou désactive
-  l'affichage des valeurs en base $2$. Lorsque l'option est activée,
-  toutes les valeurs sont affichées sous la forme binaire. L'affichage
+  est $165$.
+\item \com{dyadic = [on | off | powers]} : active ou désactive
+  l'affichage des valeurs en base $2$. Lorsque l'option est désactivée (off), l'affichage se fait normalement, c'est-à-dire sous forme d'écriture décimale approchée. Lorsque l'option est activée (on),
+  toutes les valeurs sont affichées sous la forme binaire exacte, correspondant au contenu effectivement stocké en mémoir. L'affichage
   est moins facilement compréhensible, mais ainsi, aucune erreur
   d'arrondi n'est faite lors de l'affichage d'une valeur. On peut
   alors copier-coller sans perte de précision un résultat d'une
-  commande à l'intérieur d'une autre commande, par exemple.
+  commande à l'intérieur d'une autre commande, par exemple. Lorsque l'option est en mode powers, l'affichage se fait sous la forme d'un entier divisé par une puissance de 2. Ainsi, la valeur affichée est un rationnel et peut être copié exactement dans un outil externe tel que Maple, par exemple. La valeur par défaut est off.
 \item \com{taylorrecursions = n} : fixe le niveau de développement par
   le théorème de Taylor lors d'une évaluation par intervalles d'une
   expression. Plusieurs routines se servent de cette fonction. Il est
   ainsi possible d'influencer sur leur comportement en termes de
   diamètre relatif de l'encadrement calculé. La valeur par défaut est
   $0$, c'est-à-dire la fonction ne recurse pas ce qui correspond à un
-  développement linéaire de l'expression donnée.
+  développement linéaire de l'expression donnée. La valeur par défaut est 0.
+\item \com{canonical = [on | off]} : lorsque cette option est activée, l'affichage des polynômes se fait sous forme canonique (combinaison linéaire de monômes). Lorsqu'elle est désactivée, l'affichage se fait sous forme de schéma de Hörner. Cela ne concerne que l'affichage d'expressions données directement à l'invite du logiciel (voir plus loin, pour une description de cette fonctionnalité). La valeur par défaut est \com{off}. 
 \end{itemize}
+
+Par défaut, ces affectations de variables globales affichent un message pour signaler que la variable globale a bien été mise à jour. Si vous préférez une affectation silencieuse (par exemple parce que la commande sera exécutée dans un script), vous pouvez utiliser un point d'exclamation (exemple \com{prec=23!;}).
+
+Pour connaître la valeur actuelle d'une variable globale, vous pouvez utiliser le point d'interrogation (exemple \com{prec=?;}).
+
+Après que le symbole désignant la variable libre a été fixé, on peut le modifier avec la syntaxe donnée dans l'exemple suivant :
+\begin{center}
+\begin{tabular}{l}
+\com{> print sin(x);}\\
+\com{sin(x)}\\
+\com{> x = y!;}\\
+\com{Warning: the identifier "x" is bound as the current variable. It will be renamed as "y" as forced.}
+\end{tabular}
+\end{center}
+
+Dans cet exemple, la variable libre est d'abord identifiée à \com{x} (après la première instruction), puis, elle devient identifiée à \com{y} (après la seconde instruction). \com{y} ne doit évidemment pas désigner une variable d'expression déjà affectée.
 
 On peut utiliser des variables pour stocker des expressions. La
 commande d'affectation est \com{var = expr} ; la variable ne doit pas
@@ -212,9 +232,10 @@ existe une table d'affectations pour intervalles. On peut affecter une
 valeur comme suit : \com{var = [a ; b]}. Les portées des variables
 d'expressions et d'intervalles sont disjointes; il peut y avoir alors
 deux variables ayant le même nom dont l'une remplace une expression et
-l'une un intervalle. La syntaxe de l'outil permet en tout cas la
-distinction entre les deux portées. Pour les variables d'intervalles
-aucune déréferentiation n'est possible lors d'une affectation.
+l'une un intervalle. On ne peut pas réaffecter une variable d'intervalle à l'intérieur d'une autre variable (par exemple, la séquence d'instructions suivante n'est pas permise : \com{a=[-1;1]; b=a;}). L'outil interprète les variables correctement en fonction du contexte. Lorsqu'il y a ambiguïté (par exemple avec la commande print), on doit indiquer explicitement à \com{arenairetools} que l'on souhaite parler d'une variable d'intervalle. Pour ce faire, on l'encadre par des crochets (exemple : \com{a=[-1;1];print [a];}).
+
+Pour réinitialiser \com{arenairetools}, vous pouvez utiliser la commande \com{restart;} qui a pour effet de libérer toutes les variables affectées (variables d'expression et variables d'intervalle), de remettre les variables globales à leur valeur par défaut, et de désaffecter le nom de la variable libre.
+
 
 Pour évaluer une fonction, on dispose de la commande \com{evaluate}. Deux syntaxes sont possibles :
 \begin{itemize}
@@ -222,19 +243,27 @@ Pour évaluer une fonction, on dispose de la commande \com{evaluate}. Deux syntax
 \item \com{evaluate expr at const} affiche un intervalle $I$ contenant la valeur exacte de \com{expr(const)}.
 \end{itemize}
 Cette commande se sert de la routine d'évaluation par théorème de
-Taylor.
+Taylor et utilise la précision courante pour effectuer ses calculs.
 
-Pour afficher la valeur d'une fonction, on dispose de la fonction
+La commande \com{evaluateaccurate expr at const} calcule un arrondi fidèle à la précision courante de la valeur réel de \com{expr} au point \com{const}. Dans le cas où la valeur réelle est trop proche de $0$, \com{arenairetools} peut éventuellement échouer avec un message d'erreur.
+
+Pour afficher une expression, on dispose de la fonction
 \com{print}. \com{print expr} affiche simplement la fonction
 représentée par \com{expr}. Si \com{expr} contient des opérateurs
-fonctionnels, ils sont évalués. On peut aussi déclencher l'affichage
+fonctionnels, ils sont évalués. En revanche, les fonctions elles-mêmes ne sont pas évaluées et \com{print} affiche juste l'arbre d'expression mémorisé. Par exemple \com{print sin(2)+1;} affiche juste ``sin(2)+1''. On peut aussi déclencher l'affichage
 d'une chaîne de caractères via \com{print chaine}. \com{chaine} peut
 être n'importe quelle chaîne de caractères respectant la norme
-\com{C}. La commande \com{printhexa} permet d'afficher une valeur
+\com{C}. On peut mélanger des expressions et des chaînes de caractères en les séparant par des virgules (exemple \com{print ``La valeur de sin(2.) est'',<evaluate sin(x) at 2>,''.'';}).
+
+Lorsqu'une expression est tapée directement à l'invite de \com{arenairetools}, elle est comprise comme un calcul à évaluer puis à afficher. Ainsi, tous les calculs et simplifications qui peuvent être faits sont effectués, puis le résultat est affiché. Pour reprendre l'exemple précédent, si vous tapez \com{sin(2)+1} directement à l'invite, une valeur approchée calculée à la précision courante sera affichée. Vous pouvez bien entendu afficher ainsi des intervalles ou le contenu de variables d'intervalle en utilisant la syntaxe avec des crochets précédemment décrite.
+
+La commande \com{printhexa} permet d'afficher une valeur
 double précision sous forme hexadécimale. L'expression donnée est
 évaluée avec la précision de l'outil avant qu'un arrondi se fasse vers
 la double précision. Un affichage supplémentaire indique s'il y a eu
 arrondi ou non.
+
+Si \com{expr} désigne un polynôme, la commande \com{printexpansion expr} affiche ce polynôme sous forme de Hörner, où chaque coefficient est affiché sous la forme d'une somme de nombre hexadécimaux correspondant à des doubles. Si \com{expr} n'est pas un polynôme, un warning est affiché et rien ne se passe.
 
 On peut tracer le graphe d'une fonction sur un intervalle de la façon
 suivante (les crochets indiquent un paramètre optionnel) :
@@ -242,9 +271,9 @@ suivante (les crochets indiquent un paramètre optionnel) :
 \com{plot expr1, expr2, ..., exprn in intervalle [, prec=n] [, points=p], [\emph{commande de sauvegarde}]}
 \end{center}
 La commande \com{plot} tient compte de la variable globale \com{prec}
-pour faire les calculs. Si le paramètre optionnel correspondant est
+pour faire les calculs ([cette option tend à disparaître : son influence réelle sur les calculs est à présent minime]). Si le paramètre optionnel correspondant est
 donné, il prend le pas sur la variable globale pendant l'exécution de
-la commande. La valeur de la variable globale n'est pas modifiée. Il
+la commande. Dans ce cas, la valeur de la variable globale n'est pas modifiée. Il
 en est de même pour le paramètre \com{points} qui commande le nombre
 de points où la fonction sera évaluée pour le tracé. Le graphique est
 fidèle au sens où, en chaque point où la fonction a été échantillonnée,
@@ -266,6 +295,17 @@ utilisée à la fois) :
     \texttt{filename.p}
 \end{itemize}
 
+Il peut être utile parfois de tracer le graphe correspondant à l'erreur d'évaluation faite par un bout de code. Il existe pour cela la commande \com{externalplot}. La syntaxe est la suivante :
+
+\begin{center}
+\com{externalplot chaine \emph{mode} to expr in intervalle with n bits [,perturb] [\emph{commande de sauvegarde}]}
+\end{center}
+\emph{mode} peut prendre la valeur \com{absolute} ou \com{relative} suivant le type d'erreur que l'on souhaite afficher. Les commandes de sauvegarde sont les mêmes que pour la commande \com{plot}. \com{chaine} est une chaîne de caractères représentant un chemin d'accès vers une librairie dynamique (par exemple ``./monProg''). Cette librairie doit contenir une fonction appelée \com{f} et dont la signature est \com{void f(mpfr\_t result, mpfr\_t x)}.
+
+La commande procède ainsi : elle utilise un format de nombre flottant sur \com{n} bits (où \com{n} est le paramètre passé à la fonction \com{externalplot}). Avec ce format, elle avance d'un ulp en un ulp en partant de la borne gauche de l'intervalle et évalue en chaque point \com{expr-f} ou \com{expr/f-1} suivant le mode choisi. La fonction \com{f} est donc appelée avec la valeur corresondante stockée dans \com{x}. Le point \com{(x, expr-f)} est ajouté au graphe. Si l'intervalle donné comprend $0$, la commande ignore les points tellement proche de $0$ qu'ils ne seraient pas visible sur le graphe. Le graphe affiché correspond donc à tous les nombres flottants sur \com{n} bits dans un ensemble de la forme $(I \backslash [-a;a]) \cup \{0\}$ où $a$ est déterminé par \com{externalplot} en fonction de $I$.
+
+Si l'option \com{perturb} est donnée, la commande ne fait pas exactement le calcul d'erreur sur les flottants d'un format \com{n} bits. En réalité, \com{externalplot} se déplace alors effectivement de un ulp à chaque fois, mais le point où l'erreur va être calculée est ensuite aléatoirement légèrement perturbé. Ainsi, on ne risque pas d'observer des régularités fantômes dues à la régularité des points d'échantillonnage.
+
 La commande \com{findzeros} permet de lister les zéros d'une fonction
 sur un intervalle. Plus précisément, la syntaxe est la suivante (les
 crochets indiquent un paramètre optionnel) :
@@ -281,6 +321,10 @@ intervalles au-delà de laquelle la commande n'essaie plus de
 discriminer des zéros. Si le paramètre optionnel \com{diam} est passé
 à la commande, il prend le pas sur le variable globale pour
 l'exécution de la commande. Le paramètre global reste inchangé.
+
+La commande \com{fpfindzeros} est un raffinement autour de \com{findzeros}. La syntaxe est la même que pour \com{findzeros}, sans le paramètre optionnel \com{diam}. Les résultats ne sont pas garantis (la commande peut oublier de lister des zéros, ou lister des points qui ne sont pas des zéros) mais sont satisfaisant des les cas pratiques pas trop complexes. La commande renvoie une liste ordonnée de nombre à la précision courante, qui approchent assez bien les vrais zéros de la fonction.
+
+La commande \com{zerodenominators expr in intervalle} applique la commande \com{fpfindzeros} à toutes les sous-expressions de \com{expr} qui sont le dénominateur d'une division.
 
 La commande \com{worstcase} permet de détecter les pires cas d'une
 fonction vis-à-vis du dilemme du fabricant de tables. La syntaxe est
@@ -313,7 +357,7 @@ est rapide mais ne fournit pas de garantie.
   variable globale \com{points}. L'algorithme utilisé par cette
   commande consiste simplement à calculer des valeurs approchées de la
   fonction en de nombreux points de l'intervalle et à considérer le
-  maximum en valeur absolue. La variable \com{points} fixe le nombre
+  maximum en valeur absolue. En outre, dans la mesure du possible, les extrema locaux de la fonctions sont déterminés de façon approchée au cours de l'algorithme et sont inclus dans l'ensemble des points d'échantillonnage. Ainsi, pour des fonctions raisonnablement simples, cette commande renvoie une valeur très fiable de la norme infinie. La variable \com{points} fixe le nombre
   de points utilisés.
 \item \com{infnorm expr in intervalle [without intervalle1,
     intervalle2, \dots , intervallek] [,diam = const]
@@ -398,11 +442,7 @@ aussi précisement que possible. Le paramètre global \com{points} a une
 certaine influence sur cette procédure parce que celle-ci utilise le
 calcul d'une norme infinie ainsi paramétré comme sous-fonction.
 
-Les affectations de variables, y compris la définition du nom de la
-variable libre globale, peuvent être mises à zero par la commande
-\com{restart}. Cette commande mettra également aux valeurs par défaut
-la précision, le nombre de points, le nombre de récursions pour
-l'évaluation par Taylor, l'affichage dyadique et la verbosité.
+Enfin la commande \com{bashexecute chaine} interprète la chaîne de caractères dans un shell, ce qui permet d'exécuter, à l'intérieur de \com{arenairetools}, des commandes externes (exemple \com{bashexecute ``cvs up''} met à jour les sources du logiciel, à l'intérieur même de \com{arenairetools}).
 
 Pour quitter \com{arenaireplot}, il suffit d'utiliser la commande
 \com{quit}. On peut aussi utiliser les raccourcis \com{control+D} ou
@@ -419,14 +459,14 @@ une commande ayant pour effet d'afficher un résultat sous forme d'un
 nombre ou d'un intervalle, on peut utiliser au sein d'une expression
 les expressions suivantes :
 \begin{itemize}
-\item \com{<commande>} renvoie la borne supérieure de l'intervalle qu'afficherait la commande \com{commande}.
-\item \com{<commande>.} renvoie le milieu de l'intervalle qu'afficherait la commande \com{commande}.
-\item \com{<commande>\_} renvoie la borne inférieure de l'intervalle qu'afficherait la commande \com{commande}.
+\item \com{<[commande]>} renvoie l'intervalle qu'afficherait la commande \com{commande}.
+\item \com{<commande>} renvoie la borne supérieure de l'intervalle qu'afficherait la commande \com{commande}. Dans ce cas, \com{commande} peut simplement être un nom de variable d'intervalle.
+\item \com{<commande>.} renvoie le milieu de l'intervalle qu'afficherait la commande \com{commande}. Même remarque que pour le point précédent.
+\item \com{<commande>\_} renvoie la borne inférieure de l'intervalle qu'afficherait la commande \com{commande}. Même remarque.
 \end{itemize}
-Si \com{commande} désigne la commande \com{implementpoly}, on peut
-utiliser au sein d'une expression l'expression \com{<commande>} qui
-renvoie le polynôme implémenté par \com{commande} quant aux
-coefficients arrondis.
+De manière générale, si \com{commande} désigne une commande qui affiche un résultat qu'il est raisonnable de stocker dans une variable (un intervalle, une expression, une valeur), on peut utiliser au sein d'une expression l'expression \com{<commande>} qui désigne le résultat de cette commande.
+
+Cas un peu spécial : on peut obtenir le polynôme effectivement implémenté par \com{implementpoly} en utilisant cette syntaxe.
 
 En outre, si \com{var} désigne une variable à laquelle on a affecté une expression \com{expr1}, la notation \com{var(expr2)} est équivalente à \com{substitute(expr1,expr2)}. 
 \end{document}
