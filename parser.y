@@ -2257,11 +2257,11 @@ degreelist:                     degree
 			     chain_temp = addElement(NULL,intTempPtr);
 			     $$ = chain_temp;
 			   }
-                         |      degreelist COMMATOKEN degree
+                         |      degree COMMATOKEN degreelist
                            {
 			     intTempPtr = (int *) safeMalloc(sizeof(int));
-			     *intTempPtr = ($3);
-			     chain_temp = addElement(($1),intTempPtr);
+			     *intTempPtr = ($1);
+			     chain_temp = addElement(($3),intTempPtr);
 			     $$ = chain_temp;
 			   }
                          |      degree DOTSTOKEN degree
@@ -2270,6 +2270,15 @@ degreelist:                     degree
 			       printMessage(1,"Warning: the bounds given for a elliptic degree list are not in ascending order.\nThis list or sublist will not be taken into account.\n");
 			     }
 			     chain_temp = makeIntPtrChainFromTo(($1),($3));
+			     $$ = chain_temp;
+			   }
+                         |      degree DOTSTOKEN degree COMMATOKEN degreelist
+                           {
+			     if (($1) > ($3)) {
+			       printMessage(1,"Warning: the bounds given for a elliptic degree list are not in ascending order.\nThis list or sublist will not be taken into account.\n");
+			     }
+			     chain_temp = makeIntPtrChainFromTo(($1),($3));
+			     chain_temp = concatChains(chain_temp,($5));
 			     $$ = chain_temp;
 			   }
 ;
@@ -3364,6 +3373,14 @@ integerlist:               integer
 			     chain_temp = makeIntPtrChainFromTo(($1),($3));
 			     $$ = chain_temp;
 			   }
+                         |     integerlist COMMATOKEN integer DOTSTOKEN integer 
+                           {
+			     if (($3) > ($5)) {
+			       printMessage(1,"Warning: the bounds given for a elliptic list are not in ascending order.\nThis list or sublist will not be taken into account.\n");
+			     }
+			     chain_temp = makeIntPtrChainFromTo(($3),($5));
+			     chain_temp = concatChains(($1),chain_temp);
+			     $$ = chain_temp;
+			   }
 ;
-
 
