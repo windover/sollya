@@ -300,6 +300,7 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   chain *monomials_diff;
   chain *monomials_diff2;
   chain *curr;
+  mpfr_t aprime, bprime;
 
   sortChain(monomials,cmpIntPtr);
 
@@ -325,9 +326,12 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   monomials_diff = deriveMonomials(monomials);
   monomials_diff2 = deriveMonomials(monomials_diff);
 
-
-  u = mpfr_to_PARI(a);
-  v = mpfr_to_PARI(b);
+  mpfr_init2(aprime,prec);
+  mpfr_init2(bprime,prec);
+  mpfr_set(aprime,a,GMP_RNDN);
+  mpfr_set(bprime,b,GMP_RNDN);
+  u = mpfr_to_PARI(aprime);
+  v = mpfr_to_PARI(bprime);
 
   // Definition of the array x of the n+2 Chebychev points
   x = cgetg(deg+3, t_COL);
