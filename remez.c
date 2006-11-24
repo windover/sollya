@@ -190,7 +190,7 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
     else { // i = deg +1
       evaluateFaithful(y1, tree, a, prec);
       evaluateFaithful(y2, tree, b, prec);
-      if (mpfr_greater_p(a,b)) res[deg+2] = (long)(mpfr_to_PARI(a));
+      if (mpfr_cmpabs(y1,y2)>=0) res[deg+2] = (long)(mpfr_to_PARI(a));
       else res[deg+2] = (long)(mpfr_to_PARI(b));
       res = sort(res);
     }
@@ -432,7 +432,7 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 
     // Searching the zeros of f'-p'
     crash_report = 0;
-    x = quickFindZeros(tree_diff, tree_diff2, deg,a,b,prec,&crash_report);
+    x = quickFindZeros(tree_diff, tree_diff2, deg,aprime,bprime,prec,&crash_report);
     if (crash_report == -1) {
       free_memory(tree);
       free_memory(tree_diff);
@@ -475,5 +475,7 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   freeChain(monomials_diff,freeIntPtr);
   freeChain(monomials_diff2,freeIntPtr);
   avma = ltop;
+  mpfr_clear(aprime);
+  mpfr_clear(bprime);
   return res;
 }
