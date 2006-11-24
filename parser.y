@@ -1995,7 +1995,7 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                            }
                         |       RATIONALAPPROXTOKEN LPARTOKEN constantfunction COMMATOKEN integer RPARTOKEN
                            {
-			      temp_node = rationalApprox($3, $5);
+			      temp_node = rationalApprox(*($3), $5);
 			      mpfr_clear(*($3));
 			      free($3);
 			      $$ = temp_node;
