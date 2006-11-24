@@ -328,8 +328,8 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 
   mpfr_init2(aprime,prec);
   mpfr_init2(bprime,prec);
-  mpfr_set(aprime,a,GMP_RNDN);
-  mpfr_set(bprime,b,GMP_RNDN);
+  mpfr_set(aprime,a,GMP_RNDD);
+  mpfr_set(bprime,b,GMP_RNDU);
   u = mpfr_to_PARI(aprime);
   v = mpfr_to_PARI(bprime);
 
