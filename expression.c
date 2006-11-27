@@ -4113,6 +4113,8 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
   mpfr_t temp;
   mpfr_t *value;
 
+  if (isConstant(tree)) return copyTree(tree);
+
   switch (tree->nodeType) {
   case VARIABLE:
     return copyTree(tree);
