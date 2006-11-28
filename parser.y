@@ -191,6 +191,7 @@ void yyerror(char *message) {
 %token  SEARCHGALTOKEN
 %token  STEPSTOKEN
 %token  RATIONALAPPROXTOKEN
+%token  FALSEQUITTOKEN
 
 %type <other> commands
 %type <other> command
@@ -271,12 +272,19 @@ void yyerror(char *message) {
 %type <rangeval> symbolRange
 %type <constantval> searchGal
 
+
+
 %%
 
 commands:    QUITTOKEN SEMICOLONTOKEN
                            {
 			     $$ = NULL;
 			     YYABORT;
+                           }
+           | FALSEQUITTOKEN SEMICOLONTOKEN
+                           {
+			     $$ = NULL;
+			     YYACCEPT;
                            }
            | command 
                            {

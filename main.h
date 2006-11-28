@@ -25,6 +25,12 @@ struct doubleChainStruct {
 extern char *variablename;
 extern char *currentVariable;
 extern char *currentString;
+extern char *newReadFilename;
+extern char *newReadFilenameTemp;
+extern chain *readStack;
+extern chain *readStack2;
+extern FILE **tempFDPtr;
+extern chain *readStackTemp;
 extern mp_prec_t tools_precision;
 extern char **endptr;
 extern unsigned long int points;
@@ -59,6 +65,7 @@ extern formatType *formatTypeTemp;
 extern errorType *errorTypeTemp;
 extern pointsType *pointsTypeTemp;
 extern int eliminatePrompt;
+extern int eliminatePromptBackup;
 extern mp_prec_t tempPrec;
 extern int canonical;
 

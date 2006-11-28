@@ -24,6 +24,12 @@
 char *variablename = NULL;
 char *currentVariable = NULL;
 char *currentString = NULL;
+char *newReadFilename = NULL;
+char *newReadFilenameTemp = NULL;
+chain *readStack = NULL;
+chain *readStackTemp = NULL;
+chain *readStack2 = NULL;
+FILE **tempFDPtr;
 mp_prec_t defaultprecision = DEFAULTPRECISION;
 int defaultpoints = DEFAULTPOINTS;
 mp_prec_t tools_precision = DEFAULTPRECISION;
@@ -60,6 +66,7 @@ formatType *formatTypeTemp;
 errorType *errorTypeTemp;
 pointsType *pointsTypeTemp;
 int eliminatePrompt;
+int eliminatePromptBackup;
 mp_prec_t tempPrec;
 int handlingCtrlC;
 int fileNumber = 0;
@@ -214,13 +221,26 @@ void signalHandler(int i) {
   fflush(stdout); fflush(stderr);
   switch (i) {
   case SIGINT: 
-    if (eliminatePrompt == 1) {
+    if (eliminatePromptBackup == 1) {
       printf("\n");
       free(endptr);
       freeSymbolTable(symbolTable,freeMemoryOnVoid);
       freeSymbolTable(symbolTable2,freeRangetypePtr);
       if(currentVariable != NULL) free(currentVariable);
       if(variablename != NULL) free(variablename);
+      if(newReadFilename != NULL) free(newReadFilename);
+      while ((readStack != NULL) && (readStack2 != NULL)) {
+	temp_fd = *((FILE **) (readStack2->value));
+	fclose(temp_fd);
+	free(readStack2->value);
+	readStackTemp = readStack2->next;
+	free(readStack2);
+	readStack2 = readStackTemp;
+	free(readStack->value);
+	readStackTemp = readStack->next;
+	free(readStack);
+	readStack = readStackTemp;
+      }
       fclose(yyin);
       exit(0);
     } else {
@@ -273,8 +293,11 @@ int main(int argc, char *argv[]) {
   struct termios termAttr;
   sigset_t mask;
   
-  eliminatePrompt = 0;
-  if (tcgetattr(0,&termAttr) == -1) eliminatePrompt = 1;
+  eliminatePrompt = 0; eliminatePromptBackup = 0;
+  if (tcgetattr(0,&termAttr) == -1) {
+    eliminatePrompt = 1;
+    eliminatePromptBackup = 1;
+  }
   yyin = stdin;
   
   pari_init(PARIMEMSIZE, 2);
@@ -339,9 +362,23 @@ int main(int argc, char *argv[]) {
   freeSymbolTable(symbolTable2,freeRangetypePtr);
   if(currentVariable != NULL) free(currentVariable);
   if(variablename != NULL) free(variablename);
+  if(newReadFilename != NULL) free(newReadFilename);
   
-  if (!(eliminatePrompt == 1)) {
+  if (!(eliminatePromptBackup == 1)) {
     removePlotFiles();
+  }
+
+  while ((readStack != NULL) && (readStack2 != NULL)) {
+    temp_fd = *((FILE **) (readStack2->value));
+    fclose(temp_fd);
+    free(readStack2->value);
+    readStackTemp = readStack2->next;
+    free(readStack2);
+    readStack2 = readStackTemp;
+    free(readStack->value);
+    readStackTemp = readStack->next;
+    free(readStack);
+    readStack = readStackTemp;
   }
   fclose(yyin);
   return 0;

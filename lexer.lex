@@ -5,7 +5,7 @@
 #include "expression.h"
 #include "parser.tab.h"
 #include "main.h"
-
+#include "chain.h"
 
 #define YY_NO_UNPUT 1
 
@@ -15,6 +15,8 @@
 %option noyywrap
 %option always-interactive
 
+%x readstate
+%x readstate2
 
 CHAR		[a-zA-Z]
 NUMBER		[0-9]
@@ -220,13 +222,14 @@ STEPS           "steps"
 
 RATIONALAPPROX  "rationalapprox"
 
+READ            "read"
+
 
 %%
 
 %{
-
+  YY_BUFFER_STATE *currStatePtr;
 %}
-
 
 {DOTS}          {     promptToBePrinted = 0; return DOTSTOKEN;              }     
 {CONSTANT}      {     
@@ -282,7 +285,13 @@ RATIONALAPPROX  "rationalapprox"
 {PREC}          {     promptToBePrinted = 0; return PRECTOKEN     ;    }           
 {POINTS}        {     promptToBePrinted = 0; return POINTSTOKEN   ;    }         
 {SEMICOLON}     {     promptToBePrinted = 0; return SEMICOLONTOKEN;    }      
-{QUIT}          {     promptToBePrinted = 0; return QUITTOKEN;         }
+{QUIT}          {     
+                      promptToBePrinted = 0; 
+                      if (readStack != NULL) {
+			return FALSEQUITTOKEN;
+                      }
+                      return QUITTOKEN;         
+                }
 {PRINT}         {     promptToBePrinted = 0; return PRINTTOKEN;        }
 {DIFF}          {     promptToBePrinted = 0; return DIFFTOKEN;         }
 {SIMPLIFY}      {     promptToBePrinted = 0; return SIMPLIFYTOKEN;     }    
@@ -370,6 +379,10 @@ RATIONALAPPROX  "rationalapprox"
 {STEPS}                  {     promptToBePrinted = 0; return STEPSTOKEN; }                    
 {RATIONALAPPROX}         {     promptToBePrinted = 0; return RATIONALAPPROXTOKEN; }                    
 
+{READ}          {
+                      BEGIN(readstate);
+                }
+
 {VARIABLE}      {     			     
                       if (currentVariable != NULL) free(currentVariable);
 		      currentVariable = NULL;
@@ -387,6 +400,76 @@ RATIONALAPPROX  "rationalapprox"
                 }
 
 
+<readstate>{STRING}  {
+                       if (newReadFilename != NULL) free(newReadFilename);
+		       newReadFilename = NULL;
+		       newReadFilename = (char*) safeCalloc(yyleng - 1,sizeof(char));
+		       strncpy(newReadFilename,yytext+1,yyleng-2);
+		       BEGIN(readstate2);
+                }
+
+<readstate>[ \t]     { /* Eat up spaces and tabulators */
+		}
+
+<readstate>.         { /* otherwise */
+			fprintf(stderr,"The character \"%s\" cannot be recognized. Will ignore it.\n",
+				yytext);
+		}
+
+<readstate2>{SEMICOLON} {
+                      newReadFilenameTemp = (char *) safeCalloc(strlen(newReadFilename),sizeof(char));
+		      demaskString(newReadFilenameTemp,newReadFilename);
+		      temp_fd = fopen(newReadFilenameTemp,"r");
+		      if (temp_fd == NULL) {
+			printMessage(1,"Warning: the file \"%s\" could not be opened for reading: ",newReadFilenameTemp);
+			printMessage(1,"\"%s\".\n",strerror(errno));
+			printMessage(1,"The last command will have no effect. No memory will be lost.\n");
+			promptToBePrinted = 1;
+		      } else {
+			eliminatePrompt = 1;
+			currStatePtr = (YY_BUFFER_STATE *) safeMalloc(sizeof(YY_BUFFER_STATE));
+			*currStatePtr = YY_CURRENT_BUFFER;
+			readStack = addElement(readStack, (void *) currStatePtr);
+			tempFDPtr = (FILE **) safeMalloc(sizeof(FILE *));
+			*tempFDPtr = yyin;
+			readStack2 = addElement(readStack2, (void *) tempFDPtr);
+			yyin = temp_fd;
+			yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
+		      }
+		      free(newReadFilenameTemp);
+		      BEGIN(INITIAL);
+                }
+
+<readstate2>[ \t]     { /* Eat up spaces and tabulators */
+		}
+
+<readstate2>.         { /* otherwise */
+			fprintf(stderr,"The character \"%s\" cannot be recognized. Will ignore it.\n",
+				yytext);
+		}
+
+<<EOF>>         {
+                      if (readStack == NULL) {
+			printf("\n");
+			yyterminate();
+		      } else {
+			fclose(yyin);
+			yyin = *((FILE **) (readStack2->value));
+			free(readStack2->value);
+			readStackTemp = readStack2->next;
+			free(readStack2);
+			readStack2 = readStackTemp;
+			yy_delete_buffer(YY_CURRENT_BUFFER);
+			yy_switch_to_buffer(*((YY_BUFFER_STATE *) (readStack->value)));
+			free(readStack->value);
+			readStackTemp = readStack->next;
+			free(readStack);
+			readStack = readStackTemp;
+			if (readStack == NULL) {
+			  eliminatePrompt = eliminatePromptBackup;
+			}
+		      }
+                }
 
 [ \t]		{ /* Eat up spaces and tabulators */
 		}
