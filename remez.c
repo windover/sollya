@@ -186,7 +186,11 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
     *crash_report = -1;
   }
   else {
-    if (i==deg) { res[deg+1] = (long)(mpfr_to_PARI(a)); res[deg+2] = (long)(mpfr_to_PARI(b)); }
+    if (i==deg) { 
+      res[deg+1] = (long)(mpfr_to_PARI(a));
+      res[deg+2] = (long)(mpfr_to_PARI(b));
+      res = sort(res);
+    }
     else { // i = deg +1
       evaluateFaithful(y1, tree, a, prec);
       evaluateFaithful(y2, tree, b, prec);
