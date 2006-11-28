@@ -2919,6 +2919,7 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
   mpfr_t before, after, yBefore, yAfter, y, compare;
   int addToList, removedFromList;
 
+  
   mpfr_init2(diam,prec+50);
   mpfr_set_d(diam,DEFAULTDIAM2,GMP_RNDN);
 

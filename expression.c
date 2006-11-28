@@ -4560,21 +4560,28 @@ node* expandPolynomialUnsafe(node *tree) {
     switch (left->nodeType) {
     case VARIABLE:
     case CONSTANT:
-      switch (right->nodeType) {
-      case VARIABLE:
-      case CONSTANT:
+      if (isConstant(right)) {
 	copy = (node*) safeMalloc(sizeof(node));
 	copy->nodeType = MUL;
 	copy->child1 = left;
 	copy->child2 = right;
-	break;  
-      default:
-	tempNode = (node*) safeMalloc(sizeof(node));
-	tempNode->nodeType = MUL;
-	tempNode->child1 = right;
-	tempNode->child2 = left;
-	copy = expandPolynomialUnsafe(tempNode);
-	free_memory(tempNode);
+      } else {
+	switch (right->nodeType) {
+	case VARIABLE:
+	case CONSTANT:
+	  copy = (node*) safeMalloc(sizeof(node));
+	  copy->nodeType = MUL;
+	  copy->child1 = left;
+	  copy->child2 = right;
+	  break;  
+	default:
+	  tempNode = (node*) safeMalloc(sizeof(node));
+	  tempNode->nodeType = MUL;
+	  tempNode->child1 = right;
+	  tempNode->child2 = left;
+	  copy = expandPolynomialUnsafe(tempNode);
+	  free_memory(tempNode);
+	}
       }
       break;
     case MUL:
@@ -4676,7 +4683,17 @@ node* expandPolynomialUnsafe(node *tree) {
       break;
     default:
       if (isConstant(left)) {
-	return copyTree(tree);
+	if (isConstant(right)) {
+	  return copyTree(tree);
+	} else {
+	  tempNode = (node*) safeMalloc(sizeof(node));
+	  tempNode->nodeType = MUL;
+	  tempNode->child1 = right;
+	  tempNode->child2 = left;
+	  copy = expandPolynomialUnsafe(tempNode);
+	  free_memory(tempNode);
+	  return copy;
+	}
       } else {
 	fprintf(stderr,"Error: expandPolynomialUnsafe: an error occured on handling the MUL left rewritten expression subtree\n");
 	exit(1);
@@ -5262,6 +5279,8 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
     return;
   }
 
+  printTree(polynom);
+
   fprintf(stderr,"Error: getCoefficientsUnsafe: an error occured. The given polynomial is neither a monomial nor a sum of monomials\n");
   exit(1);
 }
@@ -5615,6 +5634,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
   mpfr_t *value;
 
   simplifiedTemp = expandPowerInPolynomialUnsafe(tree);
+
   simplified = expandPolynomialUnsafe(simplifiedTemp);
 
   degree = getDegree(simplified);
