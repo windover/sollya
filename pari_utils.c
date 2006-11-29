@@ -68,6 +68,7 @@ void PARI_to_mpfr(mpfr_t y, GEN x, mp_rnd_t rnd) {
   long length;
   mpz_t m;
   int s;
+  mpfr_t(z);
 
   s = gsigne(x);
 
@@ -93,10 +94,15 @@ void PARI_to_mpfr(mpfr_t y, GEN x, mp_rnd_t rnd) {
   length = lg(x)-2;
   mpz_import(m,length,1,BITS_IN_LONG/8,0,0,&(x[2]));
 
-  mpfr_set_z(y,m,rnd);
-  mpfr_set_exp(y,(mp_prec_t)(gexpo(x)+1));
-  if (s<0) mpfr_neg(y,y,GMP_RNDN);
+  mpfr_init2(z,length*BITS_IN_LONG+1);
 
+  mpfr_set_z(z,m,GMP_RNDN);//exact
+  mpfr_set_exp(z,(mp_prec_t)(gexpo(x)+1));
+  if (s<0) mpfr_neg(z,z,GMP_RNDN);//exact
+
+  mpfr_set(y,z,rnd);
+  
+  mpfr_clear(z);
   mpz_clear(m);
   return;
 }

@@ -375,7 +375,9 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
       temp[i+1] = (long)stoi((i % 2)*2-1);
     }
     M[deg+2] = lcopy(temp);
-    
+    //DEBUG
+    output(M);
+    //...
     
     // Definition of the array f(x)
     for(i=0;i<deg+2;i++) {
