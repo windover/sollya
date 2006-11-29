@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include "expression.h"
 #include "parser.tab.h"
 #include "main.h"
