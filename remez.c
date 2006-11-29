@@ -183,6 +183,8 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
   
   if (i<deg) {
     printMessage(1,"Warning: the function fails to oscillate enough.\n");
+    //DEBUG
+    printf("i vaut : %d\n",i);
     *crash_report = -1;
   }
   else {
