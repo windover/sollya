@@ -5931,12 +5931,12 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   mpfr_log2(temp,*accur,GMP_RNDD);
   targetPrec = -mpfr_get_si(temp,GMP_RNDN);
   
-  if (targetPrec > 102) {
+  if (targetPrec >= 102) {
     if (fprintf(fd,"double *%s_resh, double *%s_resm, double *%s_resl, ",name,name,name) < 0) 
       printMessage(1,"Warning: could not write to the file for the implementation.\n");
     if (gappaFD != NULL) proof->resultType = 3;
   } else {
-    if (targetPrec > 53) {
+    if (targetPrec >= 53) {
       if (fprintf(fd,"double *%s_resh, double *%s_resm, ",name,name) < 0)
 	printMessage(1,"Warning: could not write to the file for the implementation.\n");
       if (gappaFD != NULL) proof->resultType = 2;
