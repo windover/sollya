@@ -279,6 +279,22 @@ chain *deriveMonomials(chain *m) {
   return res;
 }
 
+GEN gMyadd(GEN x, GEN y) {
+  if (gsigne(x) == 0) return y;
+  //else...
+  if(gsigne(y) == 0) return x;
+  //else...
+  return gadd(x,y);
+
+}
+
+GEN gMysub(GEN x, GEN y) {
+  if (gsigne(x) == 0) return gneg(y);
+  //else...
+  if(gsigne(y) == 0) return x;
+  //else...
+  return gsub(x,y);
+}
 
 long lMypowgs(GEN x, long i) {
   if (gsigne(x) == 0) {
@@ -340,21 +356,21 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   // Definition of the array x of the n+2 Chebychev points
   x = cgetg(deg+3, t_COL);
   for (i=0;i<deg+2;i++) {
-    x[i+1] = lsub(gdivgs(gadd(u,v),2),
-    		  gmul(gdivgs(gsub(v,u),2),
+    x[i+1] = lsub(gdivgs(gMyadd(u,v),2),
+    		  gmul(gdivgs(gMysub(v,u),2),
     		       gcos(gdivgs(gmulgs(mppi(prec_pari),2*i+1),
     				   2*deg+4),prec_pari)
     		       )
     		  );
     // To get evenly distributed points, choose the following points :
-    // x[i+1] = ladd(u, gdivgs(gmulgs(gsub(v,u),i),(deg+1)));
+    // x[i+1] = ladd(u, gdivgs(gmulgs(gMysub(v,u),i),(deg+1)));
   }
 
   M = cgetg(deg+3,t_MAT);
   temp = cgetg(deg+3, t_COL);
   temp_diff = cgetg(deg+3, t_COL);
   temp_diff2 = cgetg(deg+3, t_COL);
- 
+
  // Main loop
   while(test) {
 
@@ -375,7 +391,7 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
       temp[i+1] = (long)stoi((i % 2)*2-1);
     }
     M[deg+2] = lcopy(temp);
-    
+
     // Definition of the array f(x)
     for(i=0;i<deg+2;i++) {
       temp[i+1] = (long)evaluate_to_PARI(func, (GEN)(x[i+1]), prec);
