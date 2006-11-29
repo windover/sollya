@@ -18,6 +18,7 @@
 
 %x readstate
 %x readstate2
+%x commentstate
 
 CHAR		[a-zA-Z]
 NUMBER		[0-9]
@@ -225,12 +226,29 @@ RATIONALAPPROX  "rationalapprox"
 
 READ            "read"
 
+COMMENTSTART    "/*"
+COMMENTEND      "*/"
+
+ONELINECOMMENT  "//"([^\n])*"\n"
+
 
 %%
 
 %{
   YY_BUFFER_STATE *currStatePtr;
 %}
+
+
+{COMMENTSTART}  {     BEGIN(commentstate); }
+
+<commentstate>{COMMENTEND} { BEGIN(INITIAL); }
+
+<commentstate>. { // Eat up comments 
+                 }
+
+{ONELINECOMMENT} {  // Eat up comments
+                      printPrompt();
+                 }
 
 {DOTS}          {     promptToBePrinted = 0; return DOTSTOKEN;              }     
 {CONSTANT}      {     

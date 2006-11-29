@@ -734,7 +734,7 @@ assignment:  lvariable EQUALTOKEN variableWorkAround EXCLAMATIONTOKEN {
 			       }
 			     } else {
 			       if (containsEntry(symbolTable,($1))) {
-				 printMessage(1,"Warning: the identifier \"%s\" is already assigned. It will be reassigned as forced.\n",($1));
+				 printMessage(2,"Information: the identifier \"%s\" is already assigned. This is a reassignment.\n",($1));
 				 symbolTable = removeEntry(symbolTable, ($1), freeMemoryOnVoid);
 				 if (!containsEntry(symbolTable,$3)) {
 				   if (variablename==NULL) {
@@ -780,8 +780,9 @@ assignment:  lvariable EQUALTOKEN variableWorkAround EXCLAMATIONTOKEN {
 			       printMessage(1,"The last command will have no effect.\n");
 			     } else {
 			       if (containsEntry(symbolTable,($1))) {
-				 printMessage(1,"Warning: the identifier \"%s\" is already assigned. It cannot be reassigned.\n",($1));
-				 printMessage(1,"The last command will have no effect.\n");
+				 printMessage(1,"Warning: the identifier \"%s\" is already assigned. This is a reassignment.\n",($1));
+				 symbolTable = removeEntry(symbolTable, ($1), freeMemoryOnVoid);
+				 symbolTable = addEntry(symbolTable, ($1), ($3), copyTreeOnVoid);
 			       } else {
 				 symbolTable = addEntry(symbolTable,($1),($3),copyTreeOnVoid);
 			       }
@@ -793,8 +794,10 @@ assignment:  lvariable EQUALTOKEN variableWorkAround EXCLAMATIONTOKEN {
            | lvariable EQUALTOKEN directrange
                            {
 			     if (containsEntry(symbolTable2,($1))) {
-			       printMessage(1,"Warning: the identifier \"%s\" is already assigned. It cannot be reassigned.\n",($1));
-			       printMessage(1,"The last command will have no effect.\n");
+			       printMessage(1,"Warning: the identifier \"%s\" is already assigned. This is a reassignment.\n",($1));
+			       symbolTable2 = removeEntry(symbolTable2, ($1), freeRangetypePtr);
+			       symbolTable2 = addEntry(symbolTable2, ($1), &($3), copyRangetypePtr);
+
 			     } else {
 			       symbolTable2 = addEntry(symbolTable2,($1),&($3),copyRangetypePtr);
 			     }
@@ -812,7 +815,7 @@ assignment:  lvariable EQUALTOKEN variableWorkAround EXCLAMATIONTOKEN {
 			       printMessage(1,"The last command will have no effect.\n");
 			     } else {
 			       if (containsEntry(symbolTable,($1))) {
-				 printMessage(1,"Warning: the identifier \"%s\" is already assigned. It will be reassigned as forced.\n",($1));
+				 printMessage(2,"Information: the identifier \"%s\" is already assigned. This is a reassignment.\n",($1));
 				 symbolTable = removeEntry(symbolTable, ($1), freeMemoryOnVoid);
 				 symbolTable = addEntry(symbolTable, ($1), ($3), copyTreeOnVoid);
 			       } else {
@@ -826,7 +829,7 @@ assignment:  lvariable EQUALTOKEN variableWorkAround EXCLAMATIONTOKEN {
            | lvariable EQUALTOKEN directrange EXCLAMATIONTOKEN
                            {
 			     if (containsEntry(symbolTable2,($1))) {
-			       printMessage(1,"Warning: the identifier \"%s\" is already assigned. It will be reassigned as forced.\n",($1));
+			       printMessage(2,"Information: the identifier \"%s\" is already assigned. This is a reassignment.\n",($1));
 			       symbolTable2 = removeEntry(symbolTable2, ($1), freeRangetypePtr);
 			       symbolTable2 = addEntry(symbolTable2, ($1), &($3), copyRangetypePtr);
 
