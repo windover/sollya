@@ -29,7 +29,7 @@ GEN mpfr_to_PARI(mpfr_t x) {
     res = cgetr(q+3);
     setsigne(res,0);
     res[2] = 0;
-    setexpo(res,0);
+    setexpo(res,-prec);
     return res;
   }  
 
