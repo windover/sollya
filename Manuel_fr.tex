@@ -227,13 +227,14 @@ Dans cet exemple, la variable libre est d'abord identifiée à \com{x} (après la p
 
 On peut utiliser des variables pour stocker des expressions. La
 commande d'affectation est \com{var = expr} ; la variable ne doit pas
-avoir été précédemment utilisée dans la session, ni comme variable
-libre, ni pour une affectation d'expression. De la même façon, il
+être la variable libre. De la même façon, il
 existe une table d'affectations pour intervalles. On peut affecter une
 valeur comme suit : \com{var = [a ; b]}. Les portées des variables
 d'expressions et d'intervalles sont disjointes; il peut y avoir alors
 deux variables ayant le même nom dont l'une remplace une expression et
 l'une un intervalle. On ne peut pas réaffecter une variable d'intervalle à l'intérieur d'une autre variable (par exemple, la séquence d'instructions suivante n'est pas permise : \com{a=[-1;1]; b=a;}). L'outil interprète les variables correctement en fonction du contexte. Lorsqu'il y a ambiguïté (par exemple avec la commande print), on doit indiquer explicitement à \com{arenairetools} que l'on souhaite parler d'une variable d'intervalle. Pour ce faire, on l'encadre par des crochets (exemple : \com{a=[-1;1];print [a];}).
+
+Les variables (d'expression ou d'intervalle) peuvent être réaffectées. Lorsqu'une variable déjà affectée est réaffectée, un message d'avertissement est affiché. Pour effectuer une réaffectation sans le message d'avertissement, utilisez la syntaxe \com{a=3!;}
 
 Pour réinitialiser \com{arenairetools}, vous pouvez utiliser la commande \com{restart;} qui a pour effet de libérer toutes les variables affectées (variables d'expression et variables d'intervalle), de remettre les variables globales à leur valeur par défaut, et de désaffecter le nom de la variable libre.
 

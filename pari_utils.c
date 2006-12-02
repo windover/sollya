@@ -26,11 +26,7 @@ GEN mpfr_to_PARI(mpfr_t x) {
     recoverFromError();
   }
   if (mpfr_zero_p(x)) {
-    res = cgetr(q+3);
-    setsigne(res,0);
-    res[2] = 0;
-    setexpo(res,-prec);
-    return res;
+    return gcopy(gen_0);
   }  
 
 
@@ -65,11 +61,15 @@ GEN mpfr_to_PARI(mpfr_t x) {
 
 
 // No check of the type of x is made (t_REAL or t_INT)
-void PARI_to_mpfr(mpfr_t y, GEN x, mp_rnd_t rnd) {
+void PARI_to_mpfr(mpfr_t y, GEN xx, mp_rnd_t rnd) {
   long length;
   mpz_t m;
   int s;
-  mpfr_t(z);
+  mpfr_t z;
+  GEN x;
+
+  if(typ(xx) == t_INT) x = mulri(real_1((mpfr_get_prec(y)/BITS_IN_LONG)+1),xx);
+  else x=xx;
 
   s = gsigne(x);
 
