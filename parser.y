@@ -194,6 +194,7 @@ void yyerror(char *message) {
 %token  FALSEQUITTOKEN
 %token  WRITETOKEN
 %token  ASCIIPLOTTOKEN
+%token  DOLLARTOKEN
 
 %type <other> commands
 %type <other> command
@@ -280,7 +281,7 @@ void yyerror(char *message) {
 %type <rangeval> printableRange
 %type <rangeval> symbolRange
 %type <constantval> searchGal
-
+%type <aString> directString
 
 
 %%
@@ -825,6 +826,20 @@ assignment:  lvariable EQUALTOKEN variableWorkAround EXCLAMATIONTOKEN {
 			     free(($3).b);
 			     $$ = NULL;
 			   }
+           | lvariable EQUALTOKEN directString
+                           {
+			     if (containsEntry(symbolTable3,($1))) {
+			       printMessage(1,"Warning: the identifier \"%s\" is already assigned. This is a reassignment.\n",($1));
+			       symbolTable3 = removeEntry(symbolTable3, ($1), freeStringPtr);
+			       symbolTable3 = addEntry(symbolTable3, ($1), $3, copyString);
+
+			     } else {
+			       symbolTable3 = addEntry(symbolTable3,($1),$3,copyString);
+			     }
+			     free($1);
+			     free($3);
+			     $$ = NULL;
+			   }
            | lvariable EQUALTOKEN function EXCLAMATIONTOKEN
                            {
 			     if ((variablename != NULL) && (strcmp(variablename,($1)) == 0)) {
@@ -858,6 +873,20 @@ assignment:  lvariable EQUALTOKEN variableWorkAround EXCLAMATIONTOKEN {
 			     mpfr_clear(*(($3).b));			     
 			     free(($3).a);
 			     free(($3).b);
+			     $$ = NULL;
+			   }
+           | lvariable EQUALTOKEN directString EXCLAMATIONTOKEN
+                           {
+			     if (containsEntry(symbolTable3,($1))) {
+			       printMessage(2,"Information: the identifier \"%s\" is already assigned. This is a reassignment.\n",($1));
+			       symbolTable3 = removeEntry(symbolTable3, ($1), freeStringPtr);
+			       symbolTable3 = addEntry(symbolTable3, ($1), $3, copyString);
+
+			     } else {
+			       symbolTable3 = addEntry(symbolTable3,($1),$3,copyString);
+			     }
+			     free($1);
+			     free($3);
 			     $$ = NULL;
 			   }
 ;     
@@ -1505,6 +1534,11 @@ autoprint:   function SEMICOLONTOKEN
 			     free($1.b);
                              $$ = NULL;
 	                    }
+           | directString SEMICOLONTOKEN {
+	                     printf("%s\n",$1);
+			     free($1);
+	                     $$ = NULL;
+	                    }
 ;
 
 write:       WRITETOKEN writelist SEMICOLONTOKEN
@@ -1550,7 +1584,7 @@ writeelem:   function
 			     free_memory($1);
 			     $$ = NULL;
                            }
-           | string 
+           | directString 
                            {
 			     printf("%s",($1));
 			     free(($1));
@@ -1594,7 +1628,7 @@ fwriteelem:   function
 			     free_memory($1);
 			     $$ = temp_string;
                            }
-           | string 
+           | directString 
                            {
                              $$ = $1;
 			   }
@@ -1644,7 +1678,7 @@ printelem:   function
 			     free_memory($1);
 			     $$ = NULL;
                            }
-           | string 
+           | directString 
                            {
 			     printf("%s ",($1));
 			     free(($1));
@@ -2701,12 +2735,42 @@ lvariable: VARIABLETOKEN
                            }
 ;
 
-string: STRINGTOKEN
+string:     directString   {
+                             $$ = $1;
+                           }
+          | variableWorkAround {
+  			     if (!containsEntry(symbolTable3,$1)) {
+			       printMessage(1,"Warning: the identifier \"%s\" is not bound by assignment.\n",$1);
+			       printMessage(1,"Will take \"$%s\" as content of \"%s\".\n",$1,$1);
+			       temp_string = (char *) safeCalloc(strlen($1) + 2,sizeof(char));
+			       sprintf(temp_string,"$%s",$1);
+			     } else {
+			       temp_string = getEntry(symbolTable3,$1,copyString);
+			     }
+			     free($1);
+			     $$ = temp_string;
+	                   }
+;
+
+
+directString: STRINGTOKEN
                            {
 			     temp_string = (char *) safeCalloc(strlen(currentString)+1,sizeof(char));
 			     demaskString(temp_string,currentString);
 			     $$ = temp_string;
-                           }
+                           } 
+          | DOLLARTOKEN variableWorkAround {
+  			     if (!containsEntry(symbolTable3,$2)) {
+			       printMessage(1,"Warning: the identifier \"%s\" is not bound by assignment.\n",$2);
+			       printMessage(1,"Will take \"$%s\" as content of \"%s\".\n",$2,$2);
+			       temp_string = (char *) safeCalloc(strlen($2) + 2,sizeof(char));
+			       sprintf(temp_string,"$%s",$2);
+			     } else {
+			       temp_string = getEntry(symbolTable3,$2,copyString);
+			     }
+			     free($2);
+			     $$ = temp_string;
+	                   }
 ;
 
 writefile: string     

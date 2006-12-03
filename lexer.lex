@@ -235,6 +235,8 @@ WRITE           "write"
 
 ASCIIPLOT       "asciiplot"
 
+DOLLAR           "$"
+
 %%
 
 %{
@@ -407,6 +409,7 @@ ASCIIPLOT       "asciiplot"
 {RATIONALAPPROX}         {     promptToBePrinted = 0; return RATIONALAPPROXTOKEN; }                    
 {WRITE}                  {     promptToBePrinted = 0; return WRITETOKEN; }                    
 {ASCIIPLOT}              {     promptToBePrinted = 0; return ASCIIPLOTTOKEN; }                    
+{DOLLAR}                  {     promptToBePrinted = 0; return DOLLARTOKEN; }                    
 
 {READ}          {
                       BEGIN(readstate);

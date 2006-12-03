@@ -91,3 +91,15 @@ void freeSymbolTable(chain *symTbl, void (*f) (void *)) {
     free(symTbl);
   }
 }
+
+void *copyString(void *oldString) {
+  char *newString;
+
+  newString = (char *) safeCalloc(strlen((char *) oldString) + 1,sizeof(char));
+  strcpy(newString,(char *) oldString);
+  return (void *) newString;
+}
+
+void freeStringPtr(void *aString) {
+  free((char *) aString);
+}

@@ -54,6 +54,7 @@ extern int promptToBePrinted;
 extern int handlingError;
 extern chain *symbolTable;
 extern chain *symbolTable2;
+extern chain *symbolTable3;
 extern char *temp_string;
 extern char *temp_string2;
 extern char *temp_string3;

@@ -53,6 +53,7 @@ jmp_buf recoverEnvironment;
 int handlingError;
 chain *symbolTable = NULL;
 chain *symbolTable2 = NULL;
+chain *symbolTable3 = NULL;
 char *temp_string;
 char *temp_string2;
 char *temp_string3;
@@ -249,6 +250,7 @@ void signalHandler(int i) {
       free(endptr);
       freeSymbolTable(symbolTable,freeMemoryOnVoid);
       freeSymbolTable(symbolTable2,freeRangetypePtr);
+      freeSymbolTable(symbolTable3,freeStringPtr);
       if(currentVariable != NULL) free(currentVariable);
       if(variablename != NULL) free(variablename);
       if(newReadFilename != NULL) free(newReadFilename);
@@ -311,6 +313,9 @@ void printPrompt(void) {
   fflush(stdin);
   fflush(stderr);
 }
+
+
+
 
 
 int main(int argc, char *argv[]) {
@@ -384,6 +389,7 @@ int main(int argc, char *argv[]) {
   free(endptr);
   freeSymbolTable(symbolTable,freeMemoryOnVoid);
   freeSymbolTable(symbolTable2,freeRangetypePtr);
+  freeSymbolTable(symbolTable3,freeStringPtr);
   if(currentVariable != NULL) free(currentVariable);
   if(variablename != NULL) free(variablename);
   if(newReadFilename != NULL) free(newReadFilename);
