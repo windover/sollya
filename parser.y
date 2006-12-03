@@ -193,10 +193,12 @@ void yyerror(char *message) {
 %token  RATIONALAPPROXTOKEN
 %token  FALSEQUITTOKEN
 %token  WRITETOKEN
+%token  ASCIIPLOTTOKEN
 
 %type <other> commands
 %type <other> command
 %type <other> plot
+%type <other> asciiplot
 %type <other> print
 %type <other> write
 %type <precisionval> precision
@@ -301,6 +303,10 @@ commands:    QUITTOKEN SEMICOLONTOKEN
 ;
 
 command:     plot
+                           {
+			     $$ = NULL;
+			   }
+           | asciiplot
                            {
 			     $$ = NULL;
 			   }
@@ -1696,6 +1702,18 @@ printexpansion: PRINTEXPANSIONTOKEN function SEMICOLONTOKEN
 			     free_memory($2);
 			     $$ = NULL;
 			   }
+;
+
+asciiplot:   ASCIIPLOTTOKEN function INTOKEN range SEMICOLONTOKEN {
+                             asciiPlotTree($2, *($4.a), *($4.b), tools_precision);
+                             free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     tools_precision = defaultprecision;
+                             $$ = NULL;
+                           }
 ;
 
 plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN 

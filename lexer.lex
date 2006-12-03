@@ -233,6 +233,7 @@ ONELINECOMMENT  "//"([^\n])*"\n"
 
 WRITE           "write"
 
+ASCIIPLOT       "asciiplot"
 
 %%
 
@@ -405,6 +406,7 @@ WRITE           "write"
 {STEPS}                  {     promptToBePrinted = 0; return STEPSTOKEN; }                    
 {RATIONALAPPROX}         {     promptToBePrinted = 0; return RATIONALAPPROXTOKEN; }                    
 {WRITE}                  {     promptToBePrinted = 0; return WRITETOKEN; }                    
+{ASCIIPLOT}              {     promptToBePrinted = 0; return ASCIIPLOTTOKEN; }                    
 
 {READ}          {
                       BEGIN(readstate);

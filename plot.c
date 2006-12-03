@@ -7,6 +7,7 @@
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
 #include <string.h>
+#include <sys/ioctl.h>
 #include "plot.h"
 #include "expression.h"
 #include "main.h"
@@ -212,5 +213,146 @@ void removePlotFiles(void) {
   }
 
   free(name);
+  return;
+}
+
+
+void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+  mpfr_t y, x, step, minValue, maxValue;
+  int sizeX, sizeY, i, k, drawXAxis, drawYAxis, xAxis, yAxis;
+  struct winsize {
+        unsigned short  ws_row;     /* rows in characters */
+        unsigned short  ws_col;     /* columns in characters */
+        unsigned short  ws_xpixel;  /* horizontal size in pixels (not used) */
+        unsigned short  ws_ypixel;  /* vertical size in pixels (not used) */
+  } size;
+  mpfr_t *values;
+  char **lines;
+
+  mpfr_init2(y,prec);
+  if ((mpfr_cmp(a,b) == 0) || isConstant(tree)) {
+    evaluateFaithful(y,tree,a,prec);
+    if (!mpfr_number_p(y)) {
+      printMessage(1,"Warning: this constant function is not evaluable by this tool.\n");
+    } 
+    printValue(&y,prec);
+    printf("\n");
+    mpfr_clear(y);
+    return;
+  }
+
+  if (eliminatePromptBackup == 1) {
+    sizeX = 77;
+    sizeY = 25;
+  } else {
+    ioctl(STDIN_FILENO, TIOCGWINSZ, (char *) &size);
+    sizeX = size.ws_col;
+    sizeY = size.ws_row;
+  }
+
+  values = (mpfr_t *) safeCalloc(sizeX-1,sizeof(mpfr_t));
+  for (i=0;i<sizeX-1;i++) {
+    mpfr_init2(values[i],2*prec);
+  }
+
+  mpfr_init2(x,prec);
+  mpfr_init2(step,prec);
+  mpfr_sub(step,b,a,GMP_RNDN);
+  mpfr_set_si(x,sizeX-2,GMP_RNDN);
+  mpfr_div(step,step,x,GMP_RNDN);
+  for (i=0;i<sizeX-1;i++) {
+    mpfr_set_si(x,i,GMP_RNDN);
+    mpfr_mul(x,x,step,GMP_RNDN);
+    mpfr_add(x,x,a,GMP_RNDN);
+    evaluateFaithful(values[i],tree,x,prec);
+    if (!mpfr_number_p(values[i])) {
+      mpfr_set_d(values[i],0.0,GMP_RNDN);
+    }
+  }
+
+  mpfr_init2(minValue,prec);
+  mpfr_init2(maxValue,prec);
+  mpfr_set(minValue,values[0],GMP_RNDN);
+  mpfr_set(maxValue,values[0],GMP_RNDN);
+  for (i=1;i<sizeX-1;i++) {
+    if (mpfr_cmp(values[i],minValue) < 0) {
+      mpfr_set(minValue, values[i], GMP_RNDN);
+    }
+    if (mpfr_cmp(values[i],maxValue) > 0) {
+      mpfr_set(maxValue, values[i], GMP_RNDN);
+    }
+  }
+
+  drawXAxis = 0; drawYAxis = 0; xAxis = 0; yAxis = 0;
+  if (mpfr_sgn(minValue) != mpfr_sgn(maxValue)) {
+    drawXAxis = 1;
+    mpfr_neg(x,minValue,GMP_RNDN);
+    mpfr_sub(y,maxValue,minValue,GMP_RNDN);
+    mpfr_div(x,x,y,GMP_RNDN);
+    mpfr_mul_si(x,x,sizeY-2,GMP_RNDN);
+    xAxis = mpfr_get_si(x,GMP_RNDN);
+    if (xAxis < 0) xAxis = 0;
+    if (xAxis > (sizeY - 2)) xAxis = sizeY - 2;
+  }
+
+  if (mpfr_sgn(a) != mpfr_sgn(b)) {
+    drawYAxis = 1;
+    mpfr_neg(x,a,GMP_RNDN);
+    mpfr_div(x,x,step,GMP_RNDN);
+    yAxis = mpfr_get_si(x,GMP_RNDN);
+    if (yAxis < 0) yAxis = 0;
+    if (yAxis > (sizeX - 2)) yAxis = 2;
+  }
+
+  for (i=0;i<sizeX-1;i++) {
+    mpfr_sub(values[i],values[i],minValue,GMP_RNDN);
+  }
+  mpfr_sub(maxValue,maxValue,minValue,GMP_RNDN);
+  for (i=0;i<sizeX-1;i++) {
+    mpfr_div(values[i],values[i],maxValue,GMP_RNDN);
+    mpfr_mul_si(values[i],values[i],sizeY-2,GMP_RNDN);
+  }
+
+  lines = (char **) safeCalloc(sizeY,sizeof(char *));
+  for (k=0;k<sizeY-1;k++) {
+    lines[k] = (char *) safeCalloc(sizeX,sizeof(char));
+    for (i=0;i<sizeX-1;i++) 
+      lines[k][i] = ' ';
+  }
+
+  if (drawXAxis) {
+    for (i=0;i<sizeX-1;i++) 
+      lines[(sizeY - 2) - xAxis][i] = '-';
+  }
+
+  if (drawYAxis) {
+    for (k=0;k<sizeY-1;k++) 
+      lines[k][yAxis] = '|';
+  }
+
+  if (drawXAxis && drawYAxis) {
+    lines[(sizeY - 2) - xAxis][yAxis] = '+';
+  }
+
+  for (i=0;i<sizeX-1;i++) {
+    k = mpfr_get_si(values[i],GMP_RNDN);
+    if (k < 0) k = 0;
+    if (k > (sizeY - 2)) k = sizeY - 2;
+    lines[(sizeY - 2) - k][i] = 'x'; 
+  }
+
+  for (k=0;k<sizeY-1;k++) 
+    printf("%s\n",lines[k]);
+
+  for (k=0;k<sizeY-1;k++) free(lines[k]);
+  free(lines);
+  mpfr_clear(minValue);
+  mpfr_clear(maxValue);
+  mpfr_clear(y);
+  mpfr_clear(x);
+  mpfr_clear(step);
+  for (i=0;i<sizeX-1;i++) {
+    mpfr_clear(values[i]);
+  }
   return;
 }

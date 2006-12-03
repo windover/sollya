@@ -15,6 +15,6 @@
 
 void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec, char *name, int type);
 void removePlotFiles(void);
-
+void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec);
 
 #endif /* ifdef PLOT_H*/
