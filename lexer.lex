@@ -24,7 +24,7 @@ CHAR		[a-zA-Z]
 NUMBER		[0-9]
 HEXNUMBER       (([0-9])|([ABCDEFabcdef]))
 
-CONSTANT        ({NUMBER}+|({NUMBER}*"."{NUMBER}+))((([eE]([+-])?{NUMBER}+)?))
+CONSTANT        ({NUMBER}+|({NUMBER}*"."{NUMBER}+))(((((" ")*)[eE]([+-])?{NUMBER}+)?))
 DYADICCONSTANT  ({NUMBER}+)([bB])([+-]?)({NUMBER}+)
 HEXCONSTANT     ("0x"){HEXNUMBER}{16}
 VARIABLE        {CHAR}({CHAR}|{NUMBER})*
@@ -231,6 +231,8 @@ COMMENTEND      "*/"
 
 ONELINECOMMENT  "//"([^\n])*"\n"
 
+WRITE           "write"
+
 
 %%
 
@@ -252,7 +254,12 @@ ONELINECOMMENT  "//"([^\n])*"\n"
 
 {DOTS}          {     promptToBePrinted = 0; return DOTSTOKEN;              }     
 {CONSTANT}      {     
-                      yylval.value = yytext;
+                      if (constBuffer != NULL) free(constBuffer);
+		      constBuffer = (char *) safeCalloc(strlen(yytext)+1,sizeof(char));
+		      if (removeSpaces(constBuffer,yytext)) {
+			printMessage(2,"Information: removed spaces in scientific notation constant \"%s\", it will be considered as \"%s\"\n",yytext,constBuffer);
+		      }
+                      yylval.value = constBuffer;
                       promptToBePrinted = 0; return CONSTTOKEN;
                 }
 {DYADICCONSTANT} {     
@@ -397,6 +404,7 @@ ONELINECOMMENT  "//"([^\n])*"\n"
 {SEARCHGAL}              {     promptToBePrinted = 0; return SEARCHGALTOKEN; }                    
 {STEPS}                  {     promptToBePrinted = 0; return STEPSTOKEN; }                    
 {RATIONALAPPROX}         {     promptToBePrinted = 0; return RATIONALAPPROXTOKEN; }                    
+{WRITE}                  {     promptToBePrinted = 0; return WRITETOKEN; }                    
 
 {READ}          {
                       BEGIN(readstate);

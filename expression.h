@@ -98,5 +98,7 @@ int highestDegreeOfPolynomialSubexpression(node *tree);
 node *getIthCoefficient(node *poly, int i);
 node *getSubpolynomial(node *poly, chain *monomials, int fillDegrees, mp_prec_t prec);
 node *makeCanonical(node *func, mp_prec_t prec);
+char *sprintTree(node *tree);
+char *sprintValue(mpfr_t *value, mp_prec_t prec);
 
 #endif /* ifdef EXPRESSION_H*/

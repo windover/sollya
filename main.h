@@ -27,6 +27,7 @@ extern char *currentVariable;
 extern char *currentString;
 extern char *newReadFilename;
 extern char *newReadFilenameTemp;
+extern char *constBuffer;
 extern chain *readStack;
 extern chain *readStack2;
 extern FILE **tempFDPtr;
@@ -54,6 +55,8 @@ extern int handlingError;
 extern chain *symbolTable;
 extern chain *symbolTable2;
 extern char *temp_string;
+extern char *temp_string2;
+extern char *temp_string3;
 extern chain *chain_temp;
 extern chain *chain_temp2;
 extern int dyadic;
@@ -75,5 +78,6 @@ void demaskString(char*, char*);
 void *safeCalloc (size_t nmemb, size_t size);
 void *safeMalloc (size_t size);
 int printMessage(int verb, const char *format, ...);
+int removeSpaces(char *outbuf, char *inbuf);
 
 #endif /* ifdef MAIN_H*/

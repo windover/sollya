@@ -192,11 +192,13 @@ void yyerror(char *message) {
 %token  STEPSTOKEN
 %token  RATIONALAPPROXTOKEN
 %token  FALSEQUITTOKEN
+%token  WRITETOKEN
 
 %type <other> commands
 %type <other> command
 %type <other> plot
 %type <other> print
+%type <other> write
 %type <precisionval> precision
 %type <pointsnum> points
 %type <tree> function
@@ -228,6 +230,7 @@ void yyerror(char *message) {
 %type <rangeval> integral
 %type <aString> string
 %type <aFile> writefile
+%type <aFile> appendfile
 %type <aChain> monomials
 %type <aChain> degreelist
 %type <verbval> verbosity
@@ -257,6 +260,10 @@ void yyerror(char *message) {
 %type <other> autoprint
 %type <other> printlist
 %type <other> printelem
+%type <other> writelist
+%type <other> writeelem
+%type <aString> fwritelist
+%type <aString> fwriteelem
 %type <other> isevaluable
 %type <other> evaluateaccurate
 %type <constantval> accurateinfnorm
@@ -298,6 +305,10 @@ command:     plot
 			     $$ = NULL;
 			   }
            | print        
+                           {
+                             $$ = NULL;
+                           }  
+           | write        
                            {
                              $$ = NULL;
                            }  
@@ -1490,6 +1501,113 @@ autoprint:   function SEMICOLONTOKEN
 	                    }
 ;
 
+write:       WRITETOKEN writelist SEMICOLONTOKEN
+                           {
+			     $$ = NULL;
+			   }
+           | WRITETOKEN RIGHTANGLETOKEN writefile fwritelist SEMICOLONTOKEN
+                           {
+			     int_temp = fprintf($3,"%s",$4);
+			     printMessage(2,"Information: wrote %d byte(s) to the newly created file.\n",int_temp);
+			     free($4);
+			     fclose($3);
+			     $$ = NULL;
+			   }
+           | WRITETOKEN RIGHTANGLETOKEN RIGHTANGLETOKEN appendfile fwritelist SEMICOLONTOKEN
+                           {
+			     int_temp = fprintf($4,"%s",$5);
+			     printMessage(2,"Information: wrote %d byte(s) to the file opened for appending.\n",int_temp);
+			     free($5);
+			     fclose($4);
+			     $$ = NULL;
+			   }
+;
+
+
+writelist:   writeelem     {
+                             $$ = NULL;
+                           }
+           | writeelem COMMATOKEN writelist
+                           {
+			     $$ = NULL;
+			   }
+;
+
+
+
+writeelem:   function
+                           {
+			     prec_temp = tools_precision;
+			     tools_precision = defaultprecision;
+                             printTree($1);
+			     tools_precision = prec_temp;
+			     free_memory($1);
+			     $$ = NULL;
+                           }
+           | string 
+                           {
+			     printf("%s",($1));
+			     free(($1));
+                             $$ = NULL;
+			   }
+           | printableRange {
+                             printf("[");
+                             printValue(($1).a,tools_precision);
+			     printf(";");
+			     printValue(($1).b,tools_precision);
+			     printf("]");
+			     mpfr_clear(*(($1).a));
+			     mpfr_clear(*(($1).b));
+			     free($1.a);
+			     free($1.b);
+                             $$ = NULL;
+	                    }
+;
+
+fwritelist:   fwriteelem     {
+                             $$ = $1;
+                           }
+           | fwriteelem COMMATOKEN fwritelist
+                           {
+			     temp_string = (char *) safeCalloc(strlen($1) + strlen($3) + 1,sizeof(char));
+			     sprintf(temp_string,"%s%s",$1,$3);
+			     free($1);
+			     free($3);
+			     $$ = temp_string;
+			   }
+;
+
+
+
+fwriteelem:   function
+                           {
+			     prec_temp = tools_precision;
+			     tools_precision = defaultprecision;
+                             temp_string = sprintTree($1);
+			     tools_precision = prec_temp;
+			     free_memory($1);
+			     $$ = temp_string;
+                           }
+           | string 
+                           {
+                             $$ = $1;
+			   }
+           | printableRange {
+	                     temp_string = sprintValue(($1).a,tools_precision);
+	                     temp_string2 = sprintValue(($1).a,tools_precision);
+	                     temp_string3 = (char *) safeCalloc(strlen(temp_string) + strlen(temp_string2) + 4,sizeof(char));
+			     sprintf(temp_string3,"[%s;%s]",temp_string,temp_string2);
+			     free(temp_string);
+			     free(temp_string2);
+			     mpfr_clear(*(($1).a));
+			     mpfr_clear(*(($1).b));
+			     free($1.a);
+			     free($1.b);
+                             $$ = temp_string3;
+	                    }
+;
+
+
 
 print:       PRINTTOKEN printlist SEMICOLONTOKEN
                            {
@@ -2578,6 +2696,20 @@ writefile: string
 			     temp_fd = fopen(($1),"w");
 			     if (temp_fd == NULL) {
 			       fprintf(stderr,"Error: the file \"%s\" could not be opened for writing: ",($1));
+			       fprintf(stderr,"\"%s\".\n",strerror(errno));
+			       free(($1));
+			       recoverFromError();
+			     }
+			     free(($1));
+			     $$ = temp_fd;
+                           }
+;
+
+appendfile: string     
+                           {
+			     temp_fd = fopen(($1),"a");
+			     if (temp_fd == NULL) {
+			       fprintf(stderr,"Error: the file \"%s\" could not be opened for appending: ",($1));
 			       fprintf(stderr,"\"%s\".\n",strerror(errno));
 			       free(($1));
 			       recoverFromError();

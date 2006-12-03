@@ -29,6 +29,7 @@ char *newReadFilenameTemp = NULL;
 chain *readStack = NULL;
 chain *readStackTemp = NULL;
 chain *readStack2 = NULL;
+char *constBuffer = NULL;
 FILE **tempFDPtr;
 mp_prec_t defaultprecision = DEFAULTPRECISION;
 int defaultpoints = DEFAULTPOINTS;
@@ -53,6 +54,8 @@ int handlingError;
 chain *symbolTable = NULL;
 chain *symbolTable2 = NULL;
 char *temp_string;
+char *temp_string2;
+char *temp_string3;
 chain *chain_temp;
 chain *chain_temp2;
 ulong ltop;
@@ -204,6 +207,26 @@ void demaskString(char *dest, char *src) {
   }
 }
 
+int removeSpaces(char *outbuf, char *inbuf) {
+  char *temp, *temp2;
+  int removed;
+
+  removed = 0;
+  temp = inbuf; temp2 = outbuf;
+  while ((temp != NULL) && (*temp != '\0')) {
+    if (*temp != ' ') {
+      *temp2 = *temp;
+      temp2++;
+    } else {
+      removed = 1;
+    }
+    temp++;
+  }
+
+  return removed;
+}
+
+
 
 int printMessage(int verb, const char *format, ...) {
   va_list varlist;
@@ -229,6 +252,7 @@ void signalHandler(int i) {
       if(currentVariable != NULL) free(currentVariable);
       if(variablename != NULL) free(variablename);
       if(newReadFilename != NULL) free(newReadFilename);
+      if (constBuffer != NULL) free(constBuffer);
       while ((readStack != NULL) && (readStack2 != NULL)) {
 	temp_fd = *((FILE **) (readStack2->value));
 	fclose(temp_fd);
@@ -363,6 +387,7 @@ int main(int argc, char *argv[]) {
   if(currentVariable != NULL) free(currentVariable);
   if(variablename != NULL) free(variablename);
   if(newReadFilename != NULL) free(newReadFilename);
+  if (constBuffer != NULL) free(constBuffer);
   
   if (!(eliminatePromptBackup == 1)) {
     removePlotFiles();

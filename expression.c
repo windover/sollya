@@ -320,14 +320,28 @@ int isInfix(node *tree) {
   return 0;
 }
 
+void removeTrailingZeros(char *outbuf, char *inbuf) {
+  char *temp, *temp2, *temp3;
+
+  temp = inbuf; temp2 = outbuf; temp3 = outbuf;
+  while ((temp != NULL) && (*temp != '\0')) {
+    *temp2 = *temp;
+    if (*temp2 != '0') {
+      temp3 = temp2;
+    }
+    temp2++;
+    temp++;
+  }
+  temp3++;
+  *temp3 = '\0';
+}
 
 void printValue(mpfr_t *value, mp_prec_t prec) {
   mpfr_t y;
-  char *str, *str2;
+  char *str, *str2, *str3;
   mp_exp_t e, expo;
   double v;
   int t;
-
 
   prec = mpfr_get_prec(*value);
   mpfr_init2(y,prec);
@@ -372,14 +386,98 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
       mpfr_free_str(str);      
     } else {
       str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
-      if (mpfr_number_p(*value)) 
-	printf("0.%se%d",str,(int)e); 
-      else 
+      if (mpfr_number_p(*value)) {
+	str3 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
+	removeTrailingZeros(str3,str);
+	if (e == 0) {
+	  printf("0.%s",str3);
+	} else {
+	  printf("0.%se%d",str3,(int)e); 
+	}
+	free(str3);
+      } else {
 	printf("%s",str);
+      }
       mpfr_free_str(str);      
     }
   }
   mpfr_clear(y);
+}
+
+char *sprintValue(mpfr_t *value, mp_prec_t prec) {
+  mpfr_t y;
+  char *str, *str2, *str3;
+  mp_exp_t e, expo;
+  double v;
+  int t;
+  char *buffer, *tempBuf, *finalBuffer;
+
+  prec = mpfr_get_prec(*value);
+  buffer = safeCalloc(prec + 7 + (sizeof(mp_exp_t) * 4) + 1, sizeof(char));
+  tempBuf = buffer;
+  mpfr_init2(y,prec);
+  v = mpfr_get_d(*value,GMP_RNDN);
+  t = (int) v;
+  v = (double) t;
+  mpfr_set_d(y,v,GMP_RNDN);
+  if ((mpfr_cmp(y,*value) == 0) && (mpfr_number_p(*value))) {
+    tempBuf += sprintf(tempBuf,"%d",t);
+  } else { 
+    mpfr_set(y,*value,GMP_RNDN);
+    if (mpfr_sgn(y) < 0) {
+      tempBuf += sprintf(tempBuf,"-"); mpfr_neg(y,y,GMP_RNDN);
+    }
+    if ((dyadic == 1) || (dyadic == 2)) {
+      if (!mpfr_number_p(*value)) {
+	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
+	tempBuf += sprintf(tempBuf,"%s",str);
+      } else {
+	expo = mpfr_get_exp(y);
+	if (mpfr_set_exp(y,prec)) {
+	  printMessage(1,"\nWarning: %d is not in the current exponent range of a variable. Values displayed may be wrong.\n",(int)(prec));
+	}
+	expo -= prec;
+	while (mpfr_integer_p(y)) {
+	  mpfr_div_2ui(y,y,1,GMP_RNDN);
+	  expo += 1;
+	}
+	expo--;
+	if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
+	  printMessage(1,"\nWarning: rounding occured during displaying a value. Values displayed may be wrong.\n");
+	}
+	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
+	str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
+	strncpy(str2,str,e);
+	if (dyadic == 1) 
+	  tempBuf += sprintf(tempBuf,"%sb%d",str2,(int)expo);
+	else
+	  tempBuf += sprintf(tempBuf,"%s * 2^(%d)",str2,(int)expo);
+	free(str2);
+      }
+      mpfr_free_str(str);      
+    } else {
+      str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
+      if (mpfr_number_p(*value)) {
+	str3 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
+	removeTrailingZeros(str3,str);
+	if (e == 0) {
+	  tempBuf += sprintf(tempBuf,"0.%s",str3);
+	} else {
+	  tempBuf += sprintf(tempBuf,"0.%se%d",str3,(int)e); 
+	}
+	free(str3);
+      } else {
+	tempBuf += sprintf(tempBuf,"%s",str);
+      }
+      mpfr_free_str(str);      
+    }
+  }
+  mpfr_clear(y);
+  
+  finalBuffer = (char *) safeCalloc(strlen(buffer)+1,sizeof(char));
+  sprintf(finalBuffer,"%s",buffer);
+  free(buffer);
+  return finalBuffer;
 }
 
 
@@ -666,6 +764,255 @@ void printTree(node *tree) {
   }
   return;
 }
+
+char *sprintTree(node *tree) {
+  int pred;
+  char *buffer, *buffer1, *buffer2, *finalBuffer, *tempBuf;
+
+  buffer1 = NULL;
+  buffer2 = NULL;
+  pred = precedence(tree);
+  switch (tree->nodeType) {
+  case VARIABLE:
+    buffer = (char *) safeCalloc(strlen(variablename)+1,sizeof(char));
+    sprintf(buffer,"%s",variablename);
+    break;
+  case CONSTANT:
+    buffer = sprintValue(tree->value,mpfr_get_prec(*(tree->value)));
+    break;
+  case ADD:
+    buffer1 = sprintTree(tree->child1);
+    buffer2 = sprintTree(tree->child2);
+    buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 9, sizeof(char));
+    tempBuf = buffer;
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+      tempBuf += sprintf(tempBuf,"(");
+    tempBuf += sprintf(tempBuf,"%s",buffer1);
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+      tempBuf += sprintf(tempBuf,")");
+    tempBuf += sprintf(tempBuf," + ");
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+      tempBuf += sprintf(tempBuf,"(");
+    tempBuf += sprintf(tempBuf,"%s",buffer2);
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+      tempBuf += sprintf(tempBuf,")");
+    break;
+  case SUB:
+    buffer1 = sprintTree(tree->child1);
+    buffer2 = sprintTree(tree->child2);
+    buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 9, sizeof(char));
+    tempBuf = buffer;
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+      tempBuf += sprintf(tempBuf,"(");
+    tempBuf += sprintf(tempBuf,"%s",buffer1);
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+      tempBuf += sprintf(tempBuf,")");
+    tempBuf += sprintf(tempBuf," - ");
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+      tempBuf += sprintf(tempBuf,"(");
+    tempBuf += sprintf(tempBuf,"%s",buffer2);
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+      tempBuf += sprintf(tempBuf,")");
+    break;
+  case MUL:
+    buffer1 = sprintTree(tree->child1);
+    buffer2 = sprintTree(tree->child2);
+    buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 9, sizeof(char));
+    tempBuf = buffer;
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+      tempBuf += sprintf(tempBuf,"(");
+    tempBuf += sprintf(tempBuf,"%s",buffer1);
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+      tempBuf += sprintf(tempBuf,")");
+    tempBuf += sprintf(tempBuf," * ");
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+      tempBuf += sprintf(tempBuf,"(");
+    tempBuf += sprintf(tempBuf,"%s",buffer2);
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+      tempBuf += sprintf(tempBuf,")");
+    break;
+  case DIV:
+    buffer1 = sprintTree(tree->child1);
+    buffer2 = sprintTree(tree->child2);
+    buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 9, sizeof(char));
+    tempBuf = buffer;
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+      tempBuf += sprintf(tempBuf,"(");
+    tempBuf += sprintf(tempBuf,"%s",buffer1);
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+      tempBuf += sprintf(tempBuf,")");
+    tempBuf += sprintf(tempBuf," / ");
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+      tempBuf += sprintf(tempBuf,"(");
+    tempBuf += sprintf(tempBuf,"%s",buffer2);
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+      tempBuf += sprintf(tempBuf,")");
+    break;
+  case SQRT:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"sqrt(%s)",buffer1);
+    break;
+  case EXP:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"exp(%s)",buffer1);
+    break;
+  case LOG:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"log(%s)",buffer1);
+    break;
+  case LOG_2:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"log2(%s)",buffer1);
+    break;
+  case LOG_10:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 9, sizeof(char));
+    sprintf(buffer,"log10(%s)",buffer1);
+    break;
+  case SIN:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"sin(%s)",buffer1);
+    break;
+  case COS:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"cos(%s)",buffer1);
+    break;
+  case TAN:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"tan(%s)",buffer1);
+    break;
+  case ASIN:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"asin(%s)",buffer1);
+    break;
+  case ACOS:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"acos(%s)",buffer1);
+    break;
+  case ATAN:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"atan(%s)",buffer1);
+    break;
+  case SINH:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"sinh(%s)",buffer1);
+    break;
+  case COSH:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"cosh(%s)",buffer1);
+    break;
+  case TANH:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"tanh(%s)",buffer1);
+    break;
+  case ASINH:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 9, sizeof(char));
+    sprintf(buffer,"asinh(%s)",buffer1);
+    break;
+  case ACOSH:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 9, sizeof(char));
+    sprintf(buffer,"acosh(%s)",buffer1);
+    break;
+  case ATANH:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 9, sizeof(char));
+    sprintf(buffer,"atanh(%s)",buffer1);
+    break;
+  case POW:
+    buffer1 = sprintTree(tree->child1);
+    buffer2 = sprintTree(tree->child2);
+    buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 9, sizeof(char));
+    tempBuf = buffer;
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+      tempBuf += sprintf(tempBuf,"(");
+    tempBuf += sprintf(tempBuf,"%s",buffer1);
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+      tempBuf += sprintf(tempBuf,")");
+    tempBuf += sprintf(tempBuf,"^");
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+      tempBuf += sprintf(tempBuf,"(");
+    tempBuf += sprintf(tempBuf,"%s",buffer2);
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+      tempBuf += sprintf(tempBuf,")");
+    break;
+  case NEG:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 4, sizeof(char));
+    if (isInfix(tree->child1)) sprintf(buffer,"-(%s)",buffer1); else sprintf(buffer,"-%s",buffer1);
+    break;
+  case ABS:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"abs(%s)",buffer1);
+    break;
+  case DOUBLE:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 10, sizeof(char));
+    sprintf(buffer,"double(%s)",buffer1);
+    break;
+  case DOUBLEDOUBLE:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 16, sizeof(char));
+    sprintf(buffer,"doubledouble(%s)",buffer1);
+    break;
+  case TRIPLEDOUBLE:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 16, sizeof(char));
+    sprintf(buffer,"tripledouble(%s)",buffer1);
+    break;
+  case ERF: 
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"erf(%s)",buffer1);
+    break;
+  case ERFC:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"erfc(%s)",buffer1);
+    break;
+  case LOG_1P:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 9, sizeof(char));
+    sprintf(buffer,"log1p(%s)",buffer1);
+    break;
+  case EXP_M1:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 9, sizeof(char));
+    sprintf(buffer,"expm1(%s)",buffer1);
+    break;
+  case DOUBLEEXTENDED:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 19, sizeof(char));
+    sprintf(buffer,"doubleextended(%s)",buffer1);
+    break;
+  default:
+   fprintf(stderr,"Error: sprintTree: unknown identifier in the tree\n");
+   exit(1);
+  }
+
+  finalBuffer = (char *) safeCalloc(strlen(buffer)+1,sizeof(char));
+  sprintf(finalBuffer,"%s",buffer);
+  free(buffer);
+  if (buffer1 != NULL) free(buffer1);
+  if (buffer2 != NULL) free(buffer2);
+  return finalBuffer;
+}
+
 
 void fprintTree(FILE *fd, node *tree) {
   if (tree == NULL) return;
