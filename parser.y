@@ -3159,9 +3159,9 @@ formatlist:                format
                            {
 			     $$ = addElement(NULL,(void *) $1);
 			   }
-                         | formatlist COMMATOKEN format
+                         | format COMMATOKEN formatlist
                            {
-			     $$ = addElement($1,(void *) $3);
+			     $$ = addElement($3,(void *) $1);
 			   }
 ;
 

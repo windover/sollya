@@ -80,7 +80,7 @@ chain *makeIntPtrChainFromTo(int m, int n) {
   chain *c;
   
   c = NULL;
-  for (i=m;i<=n;i++) {
+  for (i=n;i>=m;i--) {
     elem = (int *) safeMalloc(sizeof(int));
     *elem = i;
     c = addElement(c,elem);
