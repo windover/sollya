@@ -2126,13 +2126,6 @@ function:			term
 			     temp_node->child2 = $3;
 			     $$ = temp_node;
                            }				   			
-			|	MINUSTOKEN term			
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = NEG;
-			     temp_node->child1 = $2;
-			     $$ = temp_node;
-                           }
 ;
 
 		
@@ -2503,7 +2496,14 @@ degreelist:                     degree
 term:				subterm						
 			   {
 			     $$ = $1;
-                           }												
+                           }			
+			|	MINUSTOKEN subterm			
+                           {
+                             temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = NEG;
+			     temp_node->child1 = $2;
+			     $$ = temp_node;
+                           }									
 			|	term MULTOKEN subterm				
 			   {
                              temp_node = (node*) safeMalloc(sizeof(node));
