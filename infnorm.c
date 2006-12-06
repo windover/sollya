@@ -1389,6 +1389,71 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   return excludes;
 }
 
+chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t prec, int recurse, exprBoundTheo *theo);
+
+chain* evaluateITaylorOnDiv(mpfi_t result, node *func, mpfi_t x, mp_prec_t prec, int recurse, exprBoundTheo *theo) {
+  node *numerator, *denominator, *derivNumerator, *derivDenominator;
+  chain *excludes, *numeratorExcludes, *denominatorExcludes;
+  exprBoundTheo *numeratorTheo, *denominatorTheo;
+  mpfi_t resultNumerator, resultDenominator, resultIndirect;
+
+  if (func->nodeType == DIV) {
+    numerator = func->child1;
+    denominator = func->child2;
+    derivNumerator = differentiate(numerator);
+    derivDenominator = differentiate(denominator);
+    mpfi_init2(resultNumerator, prec);
+    mpfi_init2(resultDenominator, prec);
+    mpfi_init2(resultIndirect, prec);
+
+    if (theo != NULL) {
+      numeratorTheo = (exprBoundTheo *) safeCalloc(1,sizeof(exprBoundTheo));
+      denominatorTheo = (exprBoundTheo *) safeCalloc(1,sizeof(exprBoundTheo));
+    } else {
+      numeratorTheo = NULL;
+      denominatorTheo = NULL;
+    }
+    
+    numeratorExcludes = evaluateITaylor(resultNumerator, numerator, derivNumerator, x, prec, recurse, numeratorTheo);
+    denominatorExcludes = evaluateITaylor(resultDenominator, denominator, derivDenominator, x, prec, recurse, denominatorTheo);
+    excludes = concatChains(numeratorExcludes,denominatorExcludes);    
+    mpfi_div(resultIndirect, resultNumerator, resultDenominator);
+    if (mpfi_bounded_p(resultIndirect)) {
+      mpfi_set(result, resultIndirect);
+      if (theo != NULL) {
+	theo->functionType = func->nodeType;
+	theo->boundLeft = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
+	mpfi_init2(*(theo->boundLeft),prec);
+	theo->boundRight = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
+	mpfi_init2(*(theo->boundRight),prec);
+	theo->theoLeft = numeratorTheo;
+	theo->theoRight = denominatorTheo;
+	theo->x = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
+	mpfi_init2(*(theo->x),mpfi_get_prec(x));
+	mpfi_set(*(theo->x),x);
+	theo->function = copyTree(func);
+	theo->y = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
+	mpfi_init2(*(theo->y),mpfi_get_prec(result));
+	mpfi_set(*(theo->y),result);
+      }
+    } else {
+      freeChain(excludes,freeMpfiPtr); 
+      if (theo != NULL) {
+	freeExprBoundTheo(numeratorTheo);
+	freeExprBoundTheo(denominatorTheo);
+      }
+      excludes = evaluateI(result, func, x, prec, 0, 2, theo);
+    }
+    
+    mpfi_clear(resultNumerator);
+    mpfi_clear(resultDenominator);
+    mpfi_clear(resultIndirect);     
+    return excludes;
+  } else {
+    return evaluateI(result, func, x, prec, 0, 2, theo);
+  }
+}
+
 chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec_t prec, int recurse, exprBoundTheo *theo) {
   mpfr_t xZ, rTl, rTr, leftX, rightX;
   mpfi_t xZI, xZI2, constantTerm, linearTerm, resultTaylor, resultDirect, temp, temp2;
@@ -1451,8 +1516,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   mpfi_set_fr(xZI,xZ);
 
 
-
-  if (recurse > 0) {
+  if ((recurse > 0) && (func->nodeType != DIV)) {
     nextderiv = differentiate(deriv);
     size = treeSize(nextderiv);
 
@@ -1528,7 +1592,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
     mpfi_add(resultTaylor, constantTerm, temp2);
     taylorExcludes = concatChains(taylorExcludesConstant, taylorExcludesLinear);
   
-    directExcludes = evaluateI(resultDirect, func, x, prec, 0, 2, directTheo);
+    directExcludes = evaluateITaylorOnDiv(resultDirect, func, x, prec, recurse, directTheo);
 
     if (verbosity >= 12) {
       printf("Information: Taylor evaluation: domain:\n");
