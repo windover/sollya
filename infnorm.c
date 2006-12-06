@@ -1448,6 +1448,8 @@ chain* evaluateITaylorOnDiv(mpfi_t result, node *func, mpfi_t x, mp_prec_t prec,
     mpfi_clear(resultNumerator);
     mpfi_clear(resultDenominator);
     mpfi_clear(resultIndirect);     
+    free_memory(derivNumerator);
+    free_memory(derivDenominator);
     return excludes;
   } else {
     return evaluateI(result, func, x, prec, 0, 2, theo);
