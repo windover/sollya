@@ -5,6 +5,7 @@
 #include "main.h"
 #include "expression.h"
 #include "chain.h"
+#include "remez.h"
 #include "fpminimax.h"
 
 #include <stdio.h> /* fprintf, fopen, fclose, */
@@ -179,20 +180,230 @@ void affiche_format(formatType *f) {
   }
 }
 
+node *createPoly(chain *monomials, chain *coefficients) {
+  node *result;
+  node *temp;
+  chain *list1=monomials;
+  chain *list2=coefficients;
+  mpfr_t *a;
+  mpfr_t *n;
+
+  /* Handling improbable special cases to make C. Lauter happy */
+  if(list1==NULL) {
+    fprintf(stderr,"Error : if somebody can read that, I was wrong!\n");
+    recoverFromError();
+  }
+  if(list2==NULL) {
+    fprintf(stderr,"Error : if somebody can read that, I was wrong!\n");
+    recoverFromError();
+  }
+  if(list1->next==NULL && list2->next!=NULL) {
+    fprintf(stderr,"Error : if somebody can read that, I was wrong!\n");
+    recoverFromError();
+  }
+  if(list2->next==NULL && list1->next!=NULL) {
+    fprintf(stderr,"Error : if somebody can read that, I was wrong!\n");
+    recoverFromError();
+  }
+
+  
+  /* Now the interesting part */
+  if(list1->next==NULL && list2->next==NULL) {
+    result = safeMalloc(sizeof(node));
+    result->nodeType=MUL;
+
+    result->child1=safeMalloc(sizeof(node));
+    result->child1->nodeType=CONSTANT;
+
+    a = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*a, mpfr_get_prec(*(mpfr_t *)(list2->value)));
+    mpfr_set(*a, *(mpfr_t *)(list2->value), GMP_RNDN); //exact
+    result->child1->value=a;
+
+    result->child2=safeMalloc(sizeof(node));
+    result->child2->nodeType=POW;
+    result->child2->child1=safeMalloc(sizeof(node));
+    result->child2->child1->nodeType=VARIABLE;
+    result->child2->child2=safeMalloc(sizeof(node));
+    result->child2->child2->nodeType=CONSTANT;
+
+    n = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*n, 53);
+    mpfr_set_si(*n, *(int *)(list1->value), GMP_RNDN); //exact
+    result->child2->child2->value=n;
+  }
+  else {
+    result = safeMalloc(sizeof(node));
+    result->nodeType=ADD;
+    result->child2 = createPoly(list1->next, list2->next);
+
+    result->child1 = safeMalloc(sizeof(node));
+    temp = result->child1;
+    temp->nodeType=MUL;
+
+    temp->child1=safeMalloc(sizeof(node));
+    temp->child1->nodeType=CONSTANT;
+
+    a = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*a, mpfr_get_prec(*(mpfr_t *)(list2->value)));
+    mpfr_set(*a, *(mpfr_t *)(list2->value), GMP_RNDN); //exact
+    temp->child1->value=a;
+
+    temp->child2=safeMalloc(sizeof(node));
+    temp->child2->nodeType=POW;
+    temp->child2->child1=safeMalloc(sizeof(node));
+    temp->child2->child1->nodeType=VARIABLE;
+    temp->child2->child2=safeMalloc(sizeof(node));
+    temp->child2->child2->nodeType=CONSTANT;
+
+    n = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*n, 53);
+    mpfr_set_si(*n, *(int *)(list1->value), GMP_RNDN); //exact
+    temp->child2->child2->value=n;
+  }
+
+  return result;
+}
+
 node *fpminimax(node *expr, chain *monomials, chain *formats, mpfr_t a, mpfr_t b, 
 		errorType *error, pointsType *points, int quality, FILE *fd) {
+  mpfr_t aprime, bprime;
+  mpfr_t *temp;
+  node *Pstar=NULL;
+  node *f;
+  node *g;
+  node *h;
+  node *ptr;
 
-  /* Preconditions encore a tester sur les arguments:
+  chain *list1;
+  chain *list2;
+  chain *monomialRemez = NULL;
+  chain *constantMonomials = NULL;
+  chain *degreeMonomials = NULL;
+  GEN x;
 
-     (i) Il n'y a pas de doublons dans les monomes demandes (comme dans Remez)
-     (ii) La fonction de poids est bien definie
-     (iii) Le nombre de points donnes par l utilisateur est le bon
-     
-     Deja teste
+  mpfr_init2(aprime, tools_precision);
+  mpfr_init2(bprime, tools_precision);
+  
+  mpfr_set(aprime, a, GMP_RNDD);
+  mpfr_set(bprime, b, GMP_RNDU);
 
-     Le nombre de formats donnes est egal au nombre de monomes donnes.
+  list1 = monomials;
+  list2 = formats;
 
-  */
+  while(list1!=NULL) {
+    if (((formatType *)(list2->value))->formatType == TI_FORMAT) {
+      constantMonomials = addElement(constantMonomials, ((formatType *)(list2->value))->tiValue);
+      degreeMonomials = addElement(degreeMonomials, (int *)(list1->value));
+    }
+    else{
+      monomialRemez = addElement(monomialRemez,(int *)(list1->value));
+    }
+    list1 = list1->next;
+    if (list2==NULL) {
+      fprintf(stderr,"Error : in fpminimax, monomials and formats list do not have the same length!\n");
+      mpfr_clear(aprime);
+      mpfr_clear(bprime);
+      recoverFromError();
+    }
+    list2 = list2->next;
+  }
+  if (list2!=NULL) {
+      fprintf(stderr,"Error : in fpminimax, monomials and formats list do not have the same length!\n");
+      mpfr_clear(aprime);
+      mpfr_clear(bprime);
+      recoverFromError();
+  }
+
+  if (degreeMonomials != NULL){
+    g = createPoly(degreeMonomials, constantMonomials);
+  }
+  else {
+    g = safeMalloc(sizeof(node));
+    g->nodeType = CONSTANT;
+    temp = safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*temp, 53);
+    mpfr_set_si(*temp, 0, GMP_RNDN); //exact
+    g->value = temp;
+  }
+  if((error!=NULL) && (error->errorType != ABSOLUTE_ERROR)) {
+    if (error->errorType==RELATIVE_ERROR) {
+      h = safeMalloc(sizeof(node));
+      h->nodeType = DIV;
+      h->child1 = g;
+      h->child2 = copyTree(expr);
+      f = safeMalloc(sizeof(node));
+      f->nodeType = SUB;
+      f->child1 = safeMalloc(sizeof(node));
+      f->child1->nodeType = CONSTANT;
+      temp = safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*temp, 53);
+      mpfr_set_si(*temp, 1, GMP_RNDN); //exact
+      f->child1->value = temp;
+      f->child2 = h;
+    }
+    else { //error->errorType==WEIGHTFUNCTION_ERROR
+      if ((error->errorType!=WEIGHTFUNCTION_ERROR) || (error->weightFunction==NULL)) {
+	fprintf(stderr, "Error: in fpminimax, invalid error argument\n");
+	recoverFromError();
+      }
+      //else
+      h = safeMalloc(sizeof(node));
+      h->nodeType = MUL;
+      h->child1 = g;
+      h->child2 = copyTree(error->weightFunction);
+      f = safeMalloc(sizeof(node));
+      f->nodeType = SUB;
+      f->child1 = copyTree(expr);
+      f->child2 = h;
+    }
+  }
+  else {
+    f = safeMalloc(sizeof(node));
+    f->nodeType = SUB;
+    f->child1 = copyTree(expr);
+    f->child2 = g;
+  }
+
+  if((error!=NULL) && (error->errorType != ABSOLUTE_ERROR)) {
+    if (error->errorType==RELATIVE_ERROR) {
+      ptr = safeMalloc(sizeof(node));
+      ptr->nodeType = DIV;
+      ptr->child1 = safeMalloc(sizeof(node));
+      ptr->child1->nodeType = CONSTANT;
+      temp = safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*temp, 53);
+      mpfr_set_si(*temp, 1, GMP_RNDN); //exact
+      ptr->child1->value = temp;
+      ptr->child2 = copyTree(expr);
+      Pstar =  remezWithWeight(f, ptr, monomialRemez, a, b, tools_precision);
+      free_memory(ptr);
+    }
+    else { //error->errorType==WEIGHTFUNCTION_ERROR
+      Pstar =  remezWithWeight(f, error->weightFunction, monomialRemez, a, b, tools_precision);
+    }
+  }
+  else Pstar =  remezWithWeight(f, NULL, monomialRemez, a, b, tools_precision);
+  
+  printf("Second membre calculé :");
+  printTree(f);
+  printf("\nPstar calculé :");
+  printTree(Pstar);
+  printf("\nListe des monômes : [");
+  list1=monomialRemez;
+  while(list1!=NULL) {
+    printf("%d ",*(int *)(list1->value));
+    list1=list1->next;
+  }
+  printf("]\n");
+
+  if (Pstar!=NULL) free_memory(Pstar);
+  mpfr_clear(aprime);
+  mpfr_clear(bprime);
+  free_memory(f);
+  /*
+
+
   chain *toto;
   mpfr_t titi;
   mpfr_init2(titi,tools_precision);
@@ -282,7 +493,7 @@ node *fpminimax(node *expr, chain *monomials, chain *formats, mpfr_t a, mpfr_t b
   if(fd==NULL) printf("no file\n");
   else fprintf(fd,"Coucou\n");
 
-  mpfr_clear(titi);
+  mpfr_clear(titi);*/
   return copyTree(expr);
 }
 

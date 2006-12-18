@@ -152,7 +152,7 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
   long int n = 50*(deg+2);
   long int i=0;
   mpfr_t h, x1, x2, y1, y2;
-
+  
   mpfr_init2(h,prec);
   mpfr_init2(y1,prec);
   mpfr_init2(y2,prec);
@@ -191,12 +191,14 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
       res[deg+2] = (long)(mpfr_to_PARI(b));
       res = sort(res);
     }
-    else { // i = deg +1
-      evaluateFaithful(y1, tree, a, prec);
-      evaluateFaithful(y2, tree, b, prec);
-      if (mpfr_cmpabs(y1,y2)>=0) res[deg+2] = (long)(mpfr_to_PARI(a));
-      else res[deg+2] = (long)(mpfr_to_PARI(b));
-      res = sort(res);
+    else {
+      if (i==deg +1) {
+	evaluateFaithful(y1, tree, a, prec);
+	evaluateFaithful(y2, tree, b, prec);
+	if (mpfr_cmpabs(y1,y2)>=0) res[deg+2] = (long)(mpfr_to_PARI(a));
+	else res[deg+2] = (long)(mpfr_to_PARI(b));
+	res = sort(res);
+      }
     }
   }
 
@@ -296,21 +298,21 @@ GEN gMysub(GEN x, GEN y) {
   return gsub(x,y);
 }
 
-long lMypowgs(GEN x, long i) {
+GEN Mypowgs(GEN x, long i) {
   if (gsigne(x) == 0) {
-    if (i==0) return (long)(gun);
-    else return (long)(gzero);
+    if (i==0) return gun;
+    else return gzero;
   }
   // else...
-  return lpowgs(x,i);
+  return gpowgs(x,i);
 }
 
 
-node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+node* remezWithWeight(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   ulong ltop=avma;
   long prec_pari = 2 + (prec + BITS_IN_LONG - 1)/BITS_IN_LONG;
   int i,j,k;
-  GEN u, v, x, y, temp, temp_diff, temp_diff2, M;
+  GEN u, v, x, y, wVector, temp, temp_diff, temp_diff2, M;
   node *tree;
   node *tree_diff;
   node *tree_diff2;
@@ -377,13 +379,34 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     // Definition of the Remez matrix M with respect to the point x_i
     curr = monomials;
     temp = gcopy(x);
+    
+    printMessage(2,"Points:\n");
+    if (verbosity >= 2) {
+      for(i=0;i<deg+2;i++) {
+	output((GEN)(x[i+1]));
+      }
+    }
 
+
+    wVector = cgetg(deg+3, t_COL);
+    if (weight!=NULL) {
+      for(i=0;i<deg+2;i++) {
+	wVector[i+1] = (long)evaluate_to_PARI(weight, (GEN)(x[i+1]), prec);
+      }
+    }
+    else {
+      for(i=0;i<deg+2;i++) {
+	wVector[i+1] = (long)(gun);
+      }
+    }
+    
     j=1;
     while(curr != NULL) {
       M[j] = lcopy(temp);
       for(i=0;i<=deg+1;i++) {
-	coeff(M,i+1,j) = lMypowgs(gcoeff(M,i+1,j),(long)(*((int *)(curr->value))));
+	coeff(M,i+1,j) = (long)mpmul((GEN)wVector[i+1],Mypowgs(gcoeff(M,i+1,j),(long)(*((int *)(curr->value)))));
       }
+      
       j++;
       curr = curr->next;
     }
@@ -391,6 +414,11 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
       temp[i+1] = (long)stoi((i % 2)*2-1);
     }
     M[deg+2] = lcopy(temp);
+
+
+    printMessage(3,"Matrix:\n");
+    if (verbosity >= 3) {output(M);}
+
 
     // Definition of the array f(x)
     for(i=0;i<deg+2;i++) {
@@ -416,7 +444,7 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     deg_diff = 0;
     k = 1;
     while(curr!=NULL) {
-      j = (*((int *)(curr->value)));
+      j = *((int *)(curr->value));
       if (j!=0) {
 	deg_diff++;
 	temp_diff[deg_diff] = lmulrs((GEN)(temp[k]),(long)(j));
@@ -497,4 +525,8 @@ node* remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_clear(aprime);
   mpfr_clear(bprime);
   return res;
+}
+
+node *remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+  return remezWithWeight(func, NULL, monomials, a, b, prec);
 }

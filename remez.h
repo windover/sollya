@@ -10,6 +10,6 @@
 #include "infnorm.h"
 
 node* remez(node *func, chain* monom, mpfr_t a, mpfr_t b, mp_prec_t prec);
-
+node* remezWithWeight(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec);
 
 #endif /* ifdef REMEZ_H*/
