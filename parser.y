@@ -446,7 +446,7 @@ command:     plot
 	                   }
            | evaluate SEMICOLONTOKEN      
                             {
-			      if (mpfr_cmp(*($1.a),*($1.b)) == 0) {
+			      if ((mpfr_cmp(*($1.a),*($1.b)) == 0) && (mpfr_number_p(*($1.a)))) {
 				printValue($1.a,defaultprecision);
 				printf("\n");
 			      } else {

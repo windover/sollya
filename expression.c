@@ -573,10 +573,10 @@ void printTree(node *tree) {
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       printf(")");
     printf(" - ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
       printf("(");
     printTree(tree->child2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
       printf(")");
     break;
   case MUL:
@@ -599,10 +599,10 @@ void printTree(node *tree) {
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       printf(")");
     printf(" / ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
       printf("(");
     printTree(tree->child2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
       printf(")");
     break;
   case SQRT:
@@ -808,10 +808,10 @@ char *sprintTree(node *tree) {
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       tempBuf += sprintf(tempBuf,")");
     tempBuf += sprintf(tempBuf," - ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
       tempBuf += sprintf(tempBuf,")");
     break;
   case MUL:
@@ -842,10 +842,10 @@ char *sprintTree(node *tree) {
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       tempBuf += sprintf(tempBuf,")");
     tempBuf += sprintf(tempBuf," / ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
       tempBuf += sprintf(tempBuf,")");
     break;
   case SQRT:
