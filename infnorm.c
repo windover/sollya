@@ -1722,7 +1722,7 @@ chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t pr
     freeChain(excludes,freeMpfiPtr);
     if (!mpfi_bounded_p(y)) {
       printMessage(1,"Warning: during zero-search the derivative of the function evaluated to NaN or Inf in the interval ");
-      if (verbosity >= 1) printInterval(y);
+      if (verbosity >= 1) printInterval(range);
       printMessage(1,".\nThe function might not be continuously differentiable in this interval.\n");
     }
     if ((!mpfi_bounded_p(y)) || mpfi_has_zero(y)) {
