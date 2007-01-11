@@ -436,7 +436,7 @@ void printBinary(mpfr_t x) {
     removeTrailingZeros(str3,formatted);    
     if (!mpfr_zero_p(x)) {
       if (mpfr_number_p(x)) {
-       printf("%s 2^(%d)",str3,((int)expo)-1); 
+       printf("%s_2 * 2^(%d)",str3,((int)expo)-1); 
       } else {
 	if (negative) printf("-");
 	printf("%s",raw);

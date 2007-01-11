@@ -27,6 +27,10 @@ HEXNUMBER       (([0-9])|([ABCDEFabcdef]))
 CONSTANT        ({NUMBER}+|({NUMBER}*"."{NUMBER}+))(((((" ")*)[eE]([+-])?{NUMBER}+)?))
 DYADICCONSTANT  ({NUMBER}+)([bB])([+-]?)({NUMBER}+)
 HEXCONSTANT     ("0x"){HEXNUMBER}{16}
+
+BINARYCONSTANT  (([0-1])+|(([0-1])*"."([0-1])+))"_2"
+
+
 VARIABLE        {CHAR}({CHAR}|{NUMBER})*
 
 LPAR            "("
@@ -257,6 +261,16 @@ DOLLAR           "$"
                  }
 
 {DOTS}          {     promptToBePrinted = 0; return DOTSTOKEN;              }     
+
+{BINARYCONSTANT} {
+                      if (constBuffer != NULL) free(constBuffer);
+		      constBuffer = (char *) safeCalloc(strlen(yytext)-1,sizeof(char));
+		      strncpy(constBuffer,yytext,strlen(yytext)-2);
+                      yylval.value = constBuffer;
+                      promptToBePrinted = 0; return BINARYCONSTTOKEN;
+                 }
+
+
 {CONSTANT}      {     
                       if (constBuffer != NULL) free(constBuffer);
 		      constBuffer = (char *) safeCalloc(strlen(yytext)+1,sizeof(char));

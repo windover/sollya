@@ -58,6 +58,7 @@ void yyerror(char *message) {
 
 %token  <value> CONSTTOKEN
 %token  <value> DYADICCONSTTOKEN
+%token  <value> BINARYCONSTTOKEN
 %token  <value> HEXCONSTTOKEN
 %token  INTOKEN
 %token  LBRACKETTOKEN
@@ -3029,6 +3030,24 @@ constant: CONSTTOKEN
 			  "Error: overflow occured during the conversion of the dyadic constant \"%s\". Will abort the computation.\n",$1);
 			       recoverFromError();
 			     }
+			     $$ = mpfr_temp;
+	                   }
+        | BINARYCONSTTOKEN {
+			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,tools_precision);
+			     mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp2,tools_precision);
+			     mpfr_set_str(*mpfr_temp,$1,2,GMP_RNDD);
+			     mpfr_set_str(*mpfr_temp2,$1,2,GMP_RNDU);
+			     if (mpfr_cmp(*mpfr_temp,*mpfr_temp2) != 0) {
+			       printMessage(1,
+                            "Warning: Rounding occured when converting constant \"%s_2\" to floating-point with %d bits.\n",
+				      $1,(int) tools_precision);
+			       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+			       mpfr_set_str(*mpfr_temp,$1,10,GMP_RNDN);
+			     } 
+			     mpfr_clear(*mpfr_temp2);
+			     free(mpfr_temp2);
 			     $$ = mpfr_temp;
 	                   }
         | HEXCONSTTOKEN    {
