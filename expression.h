@@ -100,5 +100,6 @@ node *getSubpolynomial(node *poly, chain *monomials, int fillDegrees, mp_prec_t 
 node *makeCanonical(node *func, mp_prec_t prec);
 char *sprintTree(node *tree);
 char *sprintValue(mpfr_t *value, mp_prec_t prec);
+void printBinary(mpfr_t x);
 
 #endif /* ifdef EXPRESSION_H*/

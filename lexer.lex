@@ -184,6 +184,7 @@ BY              "by"
 TAYLORRECURSIONS "taylorrecursions"
 
 PRINTHEXA       "printhexa"
+PRINTBINARY     "printbinary"
 
 ROUNDCOEFFICIENTS "roundcoefficients"
 
@@ -382,6 +383,7 @@ DOLLAR           "$"
 {BY}                     {     promptToBePrinted = 0; return BYTOKEN;               }                    
 {TAYLORRECURSIONS}       {     promptToBePrinted = 0; return TAYLORRECURSIONSTOKEN; }                    
 {PRINTHEXA}              {     promptToBePrinted = 0; return PRINTHEXATOKEN; }                    
+{PRINTBINARY}            {     promptToBePrinted = 0; return PRINTBINARYTOKEN; }                    
 {ROUNDCOEFFICIENTS}      {     promptToBePrinted = 0; return ROUNDCOEFFICIENTSTOKEN; }                    
 {HONORCOEFFPREC}         {     promptToBePrinted = 0; return HONORCOEFFPRECTOKEN; }                    
 {RESTART}                {     promptToBePrinted = 0; return RESTARTTOKEN; }                    

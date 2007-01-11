@@ -404,6 +404,54 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
   mpfr_clear(y);
 }
 
+void printBinary(mpfr_t x) {
+  mpfr_t xx;
+  int negative;
+  mp_prec_t prec;
+  mp_exp_t expo;
+  char *raw, *formatted, *temp1, *temp2, *str3;
+
+  prec = mpfr_get_prec(x);
+  mpfr_init2(xx,prec);
+  mpfr_abs(xx,x,GMP_RNDN);
+  negative = 0;
+  if (mpfr_sgn(x) < 0) negative = 1;
+  raw = mpfr_get_str(NULL,&expo,2,0,xx,GMP_RNDN);
+  if (raw == NULL) {
+    printf("Error: unable to get a string for the given number.\n");
+  } else {
+    formatted = safeCalloc(strlen(raw) + 2, sizeof(char));
+    temp1 = raw; temp2 = formatted;
+    if (negative) {
+      *temp2 = '-';
+      temp2++;
+    }
+    *temp2 = *temp1; temp2++; temp1++;
+    *temp2 = '.'; temp2++;
+    while (*temp1 != '\0') {
+      *temp2 = *temp1;
+      temp2++; temp1++;
+    }
+    str3 = (char *) safeCalloc(strlen(formatted)+1,sizeof(char));
+    removeTrailingZeros(str3,formatted);    
+    if (!mpfr_zero_p(x)) {
+      if (mpfr_number_p(x)) {
+       printf("%s 2^(%d)",str3,((int)expo)-1); 
+      } else {
+	if (negative) printf("-");
+	printf("%s",raw);
+      }
+    }
+    else 
+      printf("0");
+    free(formatted);
+    free(str3);
+  }
+  mpfr_free_str(raw);  
+  mpfr_clear(xx);
+}
+
+
 char *sprintValue(mpfr_t *value, mp_prec_t prec) {
   mpfr_t y;
   char *str, *str2, *str3;

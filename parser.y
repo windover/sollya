@@ -164,6 +164,7 @@ void yyerror(char *message) {
 %token	BYTOKEN          
 %token  TAYLORRECURSIONSTOKEN
 %token  PRINTHEXATOKEN
+%token  PRINTBINARYTOKEN
 %token  ROUNDCOEFFICIENTSTOKEN
 %token  HONORCOEFFPRECTOKEN
 %token  RESTARTTOKEN
@@ -254,6 +255,7 @@ void yyerror(char *message) {
 %type <anInteger> checkinfnorm
 %type <other> taylorrecursions
 %type <other> printHexa
+%type <other> printBinary
 %type <tree> roundcoefficients
 %type <aChain> expansionFormats
 %type <anInteger> expansionFormat
@@ -324,6 +326,10 @@ command:     plot
 			     $$ = NULL;
 			   }
            | printHexa 
+                           {
+			     $$ = NULL;
+			   }
+           | printBinary 
                            {
 			     $$ = NULL;
 			   }
@@ -1706,6 +1712,17 @@ printHexa:  PRINTHEXATOKEN constantfunction SEMICOLONTOKEN
 			     $$ = NULL;
 			   }
 ;
+
+printBinary:  PRINTBINARYTOKEN constantfunction SEMICOLONTOKEN 
+                           {
+			     printBinary(*($2));
+			     printf("\n");
+			     mpfr_clear(*($2));
+			     free($2);
+			     $$ = NULL;
+			   }
+;
+
 
 printexpansion: PRINTEXPANSIONTOKEN function SEMICOLONTOKEN
                            {
