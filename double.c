@@ -203,8 +203,8 @@ int readHexa(mpfr_t res, char *c) {
     c++;
   }
 
-  msb = strtol(msbstr,NULL,16);
-  lsb = strtol(lsbstr,NULL,16);
+  msb = strtoll(msbstr,NULL,16);
+  lsb = strtoll(lsbstr,NULL,16);
 
   endianessdb.d = 1.0;
   if ((endianessdb.i[1] == 0x3ff00000) && (endianessdb.i[0] == 0)) {
