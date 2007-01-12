@@ -2134,8 +2134,6 @@ node* simplifyTreeErrorfree(node *tree) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      mpfr_round_to_doubledouble(*value, *(simplChild1->value));
-      free_memory(simplChild1);
       if ((mpfr_round_to_doubledouble(*value, *(simplChild1->value)) != 0) || 
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = DOUBLEDOUBLE;
