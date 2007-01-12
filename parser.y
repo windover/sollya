@@ -1729,7 +1729,7 @@ printexpansion: PRINTEXPANSIONTOKEN function SEMICOLONTOKEN
                            {
 			     if (isConstant($2)) {
 			       temp_node = simplifyTreeErrorfree($2);
-			       if (temp_node->nodeType == CONSTANT) {
+			       if (temp_node->nodeType == CONSTANT) {			       
 				 if (printDoubleExpansion(*(temp_node->value)) != 0) {
 				   printMessage(1,"\nWarning: rounding occured while printing.");
 				 }
