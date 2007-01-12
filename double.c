@@ -182,7 +182,8 @@ int printDoubleInHexa(mpfr_t x) {
 
 
 int readHexa(mpfr_t res, char *c) {
-  int ret, msb, lsb, i;
+  int ret, i;
+  int32_t msb, lsb;
   double x;
   char msbstr[9], lsbstr[9];
   db_number xdb, endianessdb;
