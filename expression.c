@@ -2112,8 +2112,8 @@ node* simplifyTreeErrorfree(node *tree) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_round_to_double(*value, *(simplChild1->value)) != 0) || 
-	  (!mpfr_number_p(*value))) {
+      mpfr_round_to_double(*value, *(simplChild1->value)); 
+      if (!mpfr_number_p(*value)) {
 	simplified->nodeType = DOUBLE;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -2134,8 +2134,8 @@ node* simplifyTreeErrorfree(node *tree) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_round_to_doubledouble(*value, *(simplChild1->value)) != 0) || 
-	  (!mpfr_number_p(*value))) {
+      mpfr_round_to_doubledouble(*value, *(simplChild1->value)); 
+      if (!mpfr_number_p(*value)) {
 	simplified->nodeType = DOUBLEDOUBLE;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -2156,8 +2156,8 @@ node* simplifyTreeErrorfree(node *tree) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_round_to_tripledouble(*value, *(simplChild1->value)) != 0) || 
-	  (!mpfr_number_p(*value))) {
+      mpfr_round_to_tripledouble(*value, *(simplChild1->value)); 
+      if (!mpfr_number_p(*value)) {
 	simplified->nodeType = TRIPLEDOUBLE;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -2266,8 +2266,8 @@ node* simplifyTreeErrorfree(node *tree) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_round_to_doubleextended(*value, *(simplChild1->value)) != 0) || 
-	  (!mpfr_number_p(*value))) {
+      mpfr_round_to_doubleextended(*value, *(simplChild1->value)); 
+      if (!mpfr_number_p(*value)) {
 	simplified->nodeType = DOUBLEEXTENDED;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
