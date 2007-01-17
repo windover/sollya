@@ -130,6 +130,7 @@ void yyerror(char *message) {
 %token  ONTOKEN
 %token  OFFTOKEN
 %token  POWERSTOKEN
+%token  BINARYTOKEN
 %token  INTEGRALTOKEN
 %token  DIRTYINTEGRALTOKEN
 %token  STRINGTOKEN
@@ -493,6 +494,9 @@ command:     plot
 			     case 2:
 			       printf("Dyadic number output is activated with power of 2 notation.\n");
 			       break;
+			     case 3:
+			       printf("Dyadic number output is activated with binary notation.\n");
+			       break;
 			     default:
 			       printf("Dyadic number output in unknown state.\n");
 			     }
@@ -678,6 +682,12 @@ dyadic:      DYADICTOKEN EQUALTOKEN ONTOKEN
 			     dyadic = 2;
 			     $$ = NULL;
                            }
+           | DYADICTOKEN EQUALTOKEN BINARYTOKEN
+                           {
+			     printf("Dyadic number output activated with binary notation.\n");
+			     dyadic = 3;
+			     $$ = NULL;
+                           }
            | DYADICTOKEN EQUALTOKEN ONTOKEN EXCLAMATIONTOKEN
                            {
 			     dyadic = 1;
@@ -691,6 +701,11 @@ dyadic:      DYADICTOKEN EQUALTOKEN ONTOKEN
            | DYADICTOKEN EQUALTOKEN POWERSTOKEN EXCLAMATIONTOKEN
                            {
 			     dyadic = 2;
+			     $$ = NULL;
+                           }
+           | DYADICTOKEN EQUALTOKEN BINARYTOKEN EXCLAMATIONTOKEN
+                           {
+			     dyadic = 3;
 			     $$ = NULL;
                            }
 ;

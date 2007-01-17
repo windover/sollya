@@ -343,6 +343,11 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
   double v;
   int t;
 
+  if (dyadic == 3) {
+    printBinary(*value);
+    return;
+  }
+
   prec = mpfr_get_prec(*value);
   mpfr_init2(y,prec);
   v = mpfr_get_d(*value,GMP_RNDN);
@@ -404,12 +409,16 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
   mpfr_clear(y);
 }
 
-void printBinary(mpfr_t x) {
+
+
+
+char *sPrintBinary(mpfr_t x) {
   mpfr_t xx;
   int negative;
   mp_prec_t prec;
   mp_exp_t expo;
   char *raw, *formatted, *temp1, *temp2, *str3;
+  char *temp3, *resultStr;
 
   prec = mpfr_get_prec(x);
   mpfr_init2(xx,prec);
@@ -419,6 +428,7 @@ void printBinary(mpfr_t x) {
   raw = mpfr_get_str(NULL,&expo,2,0,xx,GMP_RNDN);
   if (raw == NULL) {
     printf("Error: unable to get a string for the given number.\n");
+    recoverFromError();
   } else {
     formatted = safeCalloc(strlen(raw) + 2, sizeof(char));
     temp1 = raw; temp2 = formatted;
@@ -436,19 +446,37 @@ void printBinary(mpfr_t x) {
     removeTrailingZeros(str3,formatted);    
     if (!mpfr_zero_p(x)) {
       if (mpfr_number_p(x)) {
-       printf("%s_2 * 2^(%d)",str3,((int)expo)-1); 
+	temp3 = (char *) safeCalloc(strlen(str3)+74,sizeof(char));
+	sprintf(temp3,"%s_2 * 2^(%d)",str3,((int)expo)-1); 
       } else {
-	if (negative) printf("-");
-	printf("%s",raw);
+	temp3 = (char *) safeCalloc(strlen(raw) + 2,sizeof(char));
+	if (negative) 
+	  sprintf(temp3,"-%s",raw); 
+	else 
+	  sprintf(temp3,"%s",raw); 
       }
     }
-    else 
-      printf("0");
+    else {
+      temp3 = (char *) safeCalloc(2,sizeof(char));
+      sprintf(temp3,"0");
+    }
     free(formatted);
     free(str3);
   }
   mpfr_free_str(raw);  
   mpfr_clear(xx);
+  resultStr = (char *) safeCalloc(strlen(temp3) + 1,sizeof(char));
+  sprintf(resultStr,"%s",temp3);
+  free(temp3);
+  return resultStr;
+}
+
+void printBinary(mpfr_t x) {
+  char *str;
+
+  str = sPrintBinary(x);
+  printf("%s",str);
+  free(str);
 }
 
 
@@ -459,6 +487,9 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
   double v;
   int t;
   char *buffer, *tempBuf, *finalBuffer;
+
+  if (dyadic == 3) 
+    return sPrintBinary(*value);
 
   prec = mpfr_get_prec(*value);
   buffer = safeCalloc(prec + 7 + (sizeof(mp_exp_t) * 4) + 1, sizeof(char));
