@@ -28,19 +28,21 @@ void checkFileDescriptor(FILE *fd, char *s) {
 }
 
 void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec, char *name, int type) {
-  int test, i;
+  int test, i, flush;
   chain *list;
   node *tree;
-  mpfr_t x, y, step;
+  mpfr_t x, y, step, cutoff;
   double xd, yd, ad, bd;
   FILE *file;
   char *gplotname;
   char *dataname;
   char *outputname;
+  int tern;
+  mp_prec_t p;
 
   mpfr_init2(x, prec);
   mpfr_init2(step, prec);
-  mpfr_init2(y, 64);
+  mpfr_init2(y, 128);
  
   mpfr_sub(step, b, a, GMP_RNDN);
   mpfr_div_ui(step, step, points, GMP_RNDN);
@@ -140,7 +142,14 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
 
   file = fopen(dataname, "w");
   checkFileDescriptor(file, dataname);
+
+  mpfr_init2(cutoff, prec);
+  mpfr_set_d(cutoff,1.0,GMP_RNDN);
+  p = prec;
+  if (p < 128) p = 128;
+  mpfr_div_2ui(cutoff,cutoff,p,GMP_RNDN);
  
+  flush = 0;
   for(mpfr_set(x,a,GMP_RNDN); mpfr_lessequal_p(x,b); mpfr_add(x,x,step,GMP_RNDN)) {
     xd =  mpfr_get_d(x, GMP_RNDN);
     if (xd >= MAX_VALUE_GNUPLOT) xd = MAX_VALUE_GNUPLOT;
@@ -150,7 +159,13 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
     list = treeList;
     while(list != NULL) {
       tree = (node *)(list->value);
-      evaluateFaithful(y,tree,x,prec);
+      tern = evaluateFaithfulWithCutOff(y, tree, x, cutoff, prec);
+      if (tern == 2) {
+	flush = 1;
+	printMessage(2,"Information: function image proven to be less than 2^(-%d) on point %s = ",p,variablename);
+	if (verbosity >= 2) printValue(&x,prec);
+	printMessage(2,"\nThis point will be plotted as the midpoint of the proof interval.\n");
+      }
       if (!mpfr_number_p(y)) {
 	printMessage(2,"Information: function undefined or not evaluable in point %s = ",variablename);
 	if (verbosity >= 2) printValue(&x,prec);
@@ -165,9 +180,15 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
     }
     fprintf(file,"\n");
   }
+
+  mpfr_clear(cutoff);
  
   fclose(file);
   mpfr_clear(x); mpfr_clear(y); mpfr_clear(step);
+
+  if (flush) {
+    printMessage(1,"Warning: the image of at least one point of at least one function has been flushed to 0.\n");
+  }
 
   if ((name==NULL) || (type==PLOTFILE)) {
     if (fork()==0) {

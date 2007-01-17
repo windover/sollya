@@ -3758,3 +3758,76 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
 }
 
 
+int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec) {
+  mp_prec_t p, prec;
+  rangetype xrange, yrange;
+  int okay;
+  mpfr_t resUp, resDown;
+  node *deriv;
+
+  prec = mpfr_get_prec(result);
+  p = mpfr_get_prec(x);
+  if (p > prec) prec = p;
+  if (startprec > prec) prec = startprec;
+
+  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  
+  mpfr_init2(resUp,prec);
+  mpfr_init2(resDown,prec);
+
+  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+
+  deriv = differentiate(func);
+
+  p = 2 * prec;
+  okay = 0;
+  while (p < prec * 512) {
+    mpfr_init2(*(yrange.a),p);
+    mpfr_init2(*(yrange.b),p);
+    mpfr_init2(*(xrange.a),p);
+    mpfr_init2(*(xrange.b),p);
+    mpfr_set(*(xrange.a),x,GMP_RNDD);
+    mpfr_set(*(xrange.b),x,GMP_RNDU);
+    evaluateRangeFunctionFast(yrange, func, deriv, xrange, p);
+    mpfr_set(resDown,*(yrange.a),GMP_RNDN);
+    mpfr_set(resUp,*(yrange.b),GMP_RNDN);
+    if (mpfr_cmp(resDown,resUp) == 0) 
+      okay = 1;
+    mpfr_nextabove(resDown);
+    if (mpfr_cmp(resDown,resUp) == 0) 
+      okay = 1;
+    if (okay == 0) {
+      if ((mpfr_cmpabs(*(yrange.a),cutoff) < 0) && (mpfr_cmpabs(*(yrange.b),cutoff) < 0)) {
+	mpfr_add(*(yrange.a),*(yrange.b),*(yrange.a),GMP_RNDN);
+	mpfr_div_2ui(*(yrange.a),*(yrange.a),1,GMP_RNDN);
+	mpfr_set(resUp,*(yrange.a),GMP_RNDN);
+	okay = 2;
+      } 
+    }
+    mpfr_clear(*(yrange.a));
+    mpfr_clear(*(yrange.b));
+    mpfr_clear(*(xrange.a));
+    mpfr_clear(*(xrange.b));
+    if (okay > 0) break;
+    p *= 2;
+  }
+
+  if (okay > 0) {
+    mpfr_set(result,resUp,GMP_RNDN);
+  } else {
+    mpfr_set_nan(result);
+  }
+  
+  free(yrange.a);
+  free(yrange.b);
+  free(xrange.a);
+  free(xrange.b);
+
+  mpfr_clear(resUp);
+  mpfr_clear(resDown);
+  free_memory(deriv);
+
+  return okay;
+}
