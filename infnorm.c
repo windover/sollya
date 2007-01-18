@@ -2402,10 +2402,10 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   mpfr_set(x1,a,GMP_RNDN);
   mpfr_add(x2,x1,step,GMP_RNDU);
   if (mpfr_cmp(x2,b)>0) mpfr_set(x2,b,GMP_RNDN);
-  evaluateFaithfulWithCutOff(y1,deriv,x1,derivCutOff,prec);
-  evaluateFaithfulWithCutOff(y2,deriv,x2,derivCutOff,prec);
+  evaluateFaithfulWithCutOffFast(y1,deriv,derivsecond,x1,derivCutOff,prec);
+  evaluateFaithfulWithCutOffFast(y2,deriv,derivsecond,x2,derivCutOff,prec);
   while(mpfr_less_p(x1,b)) {
-    evaluateFaithfulWithCutOff(s,tree,x1,max,prec);
+    evaluateFaithfulWithCutOffFast(s,tree,deriv,x1,max,prec);
     if (mpfr_number_p(s)) {
       mpfr_abs(s,s,GMP_RNDN);
       mpfr_max(max,max,s,GMP_RNDU);
@@ -3756,12 +3756,11 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
 }
 
 
-int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec) {
+int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec) {
   mp_prec_t p, prec, oldPrec, oldPrec2;
   rangetype xrange, yrange;
   int okay;
   mpfr_t resUp, resDown;
-  node *deriv;
 
 
   prec = mpfr_get_prec(result);
@@ -3783,8 +3782,6 @@ int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutof
 
   yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
   yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-
-  deriv = differentiate(func);
 
   p = 4 * prec;
   okay = 0;
@@ -3832,10 +3829,20 @@ int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutof
 
   mpfr_clear(resUp);
   mpfr_clear(resDown);
-  free_memory(deriv);
+
 
   tools_precision = oldPrec;
   defaultprecision = oldPrec2;
 
   return okay;
+}
+
+int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec) {
+  node *deriv;
+  int res;
+
+  deriv = differentiate(func);
+  res = evaluateFaithfulWithCutOffFast(result, func, deriv, x, cutoff, startprec);
+  free_memory(deriv);
+  return res;
 }
