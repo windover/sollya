@@ -249,6 +249,8 @@ PLUSWORD        "P"
 ZEROWORD        "Z"
 NEAREST         "N"
 
+FINISH          "&"
+
 %%
 
 %{
@@ -532,6 +534,31 @@ NEAREST         "N"
 			}
 		      }
                 }
+
+{FINISH}        {
+                      if (readStack == NULL) {
+			fprintf(stderr,"Error: unallowed character in this context.\n");
+		      } else {
+			printMessage(1,"Warning: closing file included using the read macro.\n");
+			fclose(yyin);
+			yyin = *((FILE **) (readStack2->value));
+			free(readStack2->value);
+			readStackTemp = readStack2->next;
+			free(readStack2);
+			readStack2 = readStackTemp;
+			yy_delete_buffer(YY_CURRENT_BUFFER);
+			yy_switch_to_buffer(*((YY_BUFFER_STATE *) (readStack->value)));
+			free(readStack->value);
+			readStackTemp = readStack->next;
+			free(readStack);
+			readStack = readStackTemp;
+			if (readStack == NULL) {
+			  eliminatePrompt = eliminatePromptBackup;
+			}
+		      }
+                }
+
+
 
 [ \t]		{ /* Eat up spaces and tabulators */
 		}

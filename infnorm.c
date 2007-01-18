@@ -3786,7 +3786,7 @@ int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutof
 
   deriv = differentiate(func);
 
-  p = 2 * prec;
+  p = 4 * prec;
   okay = 0;
   while (p < prec * 512) {
     mpfr_init2(*(yrange.a),p);

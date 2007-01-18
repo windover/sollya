@@ -242,7 +242,7 @@ int printMessage(int verb, const char *format, ...) {
   return vprintf(format,varlist);
 }
 
-extern int yyterminate(void);
+extern int yylex(void);
 
 void signalHandler(int i) {
   fflush(stdout); fflush(stderr);
@@ -275,13 +275,25 @@ void signalHandler(int i) {
     } else {
       handlingCtrlC = 1;
       fflush(stdout); fflush(stderr); fflush(stdin);
-      if ((!handledCtrlC) || (eliminatePrompt)) {
-	printMessage(1,"Warning: Handling Ctrl-C requires discarding all input until next newline. Start of next token was \"%s\".\n",yytext);
-	ungetc('#',yyin); 
+      if (readStack != NULL) {
+	yyrestart(yyin);
+	fflush(yyin);
+	ungetc('&',yyin);
+	fflush(yyin);
+	yylex();
+	fflush(stdout); fflush(stderr); fflush(stdin); fflush(yyin);
+	yyrestart(yyin);
+	ungetc(';',yyin);
+	yyrestart(yyin);
+      } else {
+	if ((!handledCtrlC) || (eliminatePrompt)) {
+	  printMessage(1,"Warning: Handling Ctrl-C requires discarding all input until next newline. Start of next token was \"%s\".\n",yytext);
+	  ungetc('#',yyin); 
+	}
+	yyrestart(yyin);
+	handledCtrlC = 1;
+	if (verbosity == 0) printf("\n");
       }
-      yyrestart(yyin);
-      handledCtrlC = 1;
-      if (verbosity == 0) printf("\n");
     }
     break;
   case SIGSEGV:
