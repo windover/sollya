@@ -280,7 +280,7 @@ node *fpminimax(node *expr, chain *monomials, chain *formats, mpfr_t a, mpfr_t b
   chain *monomialRemez = NULL;
   chain *constantMonomials = NULL;
   chain *degreeMonomials = NULL;
-  GEN x;
+  //GEN x;
 
   mpfr_init2(aprime, tools_precision);
   mpfr_init2(bprime, tools_precision);

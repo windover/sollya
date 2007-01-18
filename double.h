@@ -5,6 +5,7 @@
 #include "expression.h"
 #include "chain.h"
 
+int round_to_format(mpfr_t rop, mpfr_t op, int prec, mp_rnd_t mode);
 int mpfr_round_to_double(mpfr_t rop, mpfr_t op);
 int mpfr_round_to_doubledouble(mpfr_t rop, mpfr_t op);
 int mpfr_round_to_tripledouble(mpfr_t rop, mpfr_t op);

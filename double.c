@@ -15,7 +15,21 @@ typedef union {
 } db_number;
 
 
+int round_to_format(mpfr_t rop, mpfr_t op, int prec, mp_rnd_t mode) {
+  mpfr_t res;
+  int round_dir;
 
+  mpfr_init2(res,(mp_prec_t)prec);
+  
+  round_dir = mpfr_set(res,op, mode);
+  if (mpfr_set(rop, res, GMP_RNDN) != 0) {
+    printMessage(1,"Warning: an undesired rounding occured on invoking round_to_format.\n");
+    printMessage(1,"Try to increase the working precision.\n");
+  }
+
+  mpfr_clear(res);
+  return round_dir;
+}
 
 int mpfr_round_to_double(mpfr_t rop, mpfr_t op) {
   double d;
