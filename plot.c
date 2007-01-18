@@ -38,10 +38,13 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   char *dataname;
   char *outputname;
   int tern;
-  mp_prec_t p;
+  mp_prec_t p, pp;
 
-  mpfr_init2(x, prec);
-  mpfr_init2(step, prec);
+  pp = prec;
+  if (prec < 128) pp = 128;
+
+  mpfr_init2(x, pp);
+  mpfr_init2(step, pp);
   mpfr_init2(y, 128);
  
   mpfr_sub(step, b, a, GMP_RNDN);
@@ -143,7 +146,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   file = fopen(dataname, "w");
   checkFileDescriptor(file, dataname);
 
-  mpfr_init2(cutoff, prec);
+  mpfr_init2(cutoff, pp);
   mpfr_set_d(cutoff,1.0,GMP_RNDN);
   p = prec;
   if (p < 128) p = 128;
@@ -187,7 +190,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   mpfr_clear(x); mpfr_clear(y); mpfr_clear(step);
 
   if (flush) {
-    printMessage(1,"Warning: the image of at least one point of at least one function has been flushed to 0.\n");
+    printMessage(1,"Warning: the evaluation of the image on at least one point of at least one function has not been faithfully accurate.\n");
   }
 
   if ((name==NULL) || (type==PLOTFILE)) {

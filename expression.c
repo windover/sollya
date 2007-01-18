@@ -1314,6 +1314,7 @@ void fprintTree(FILE *fd, node *tree) {
 node* copyTree(node *tree) {
   node *copy;
   mpfr_t *value;
+  mp_prec_t prec, p;
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -1324,7 +1325,10 @@ node* copyTree(node *tree) {
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*value,tools_precision);
+    prec = tools_precision;
+    p = mpfr_get_prec(*(tree->value));
+    if (p > prec) prec = p;
+    mpfr_init2(*value,prec);
     mpfr_set(*value,*(tree->value),GMP_RNDN);
     copy->value = value;
     break;
