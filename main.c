@@ -77,6 +77,7 @@ int handledCtrlC = 1;
 int fileNumber = 0;
 int canonical = 0;
 
+
 #define NEWPARIVERSION
 
 #ifdef NEWPARIVERSION 
@@ -241,7 +242,7 @@ int printMessage(int verb, const char *format, ...) {
   return vprintf(format,varlist);
 }
 
-extern int yylex(void);
+extern int yyterminate(void);
 
 void signalHandler(int i) {
   fflush(stdout); fflush(stderr);
@@ -274,7 +275,7 @@ void signalHandler(int i) {
     } else {
       handlingCtrlC = 1;
       fflush(stdout); fflush(stderr); fflush(stdin);
-      if (!handledCtrlC) {
+      if ((!handledCtrlC) || (eliminatePrompt)) {
 	printMessage(1,"Warning: Handling Ctrl-C requires discarding all input until next newline. Start of next token was \"%s\".\n",yytext);
 	ungetc('#',yyin); 
       }
