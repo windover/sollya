@@ -73,6 +73,7 @@ int eliminatePrompt;
 int eliminatePromptBackup;
 mp_prec_t tempPrec;
 int handlingCtrlC;
+int handledCtrlC = 1;
 int fileNumber = 0;
 int canonical = 0;
 
@@ -93,6 +94,7 @@ extern jmp_buf environnement;
 extern int yyparse();
 extern FILE *yyin;
 extern void yyrestart(FILE *);
+extern char *yytext;
 
 void *safeCalloc (size_t nmemb, size_t size) {
   void *ptr;
@@ -239,7 +241,7 @@ int printMessage(int verb, const char *format, ...) {
   return vprintf(format,varlist);
 }
 
-
+extern int yylex(void);
 
 void signalHandler(int i) {
   fflush(stdout); fflush(stderr);
@@ -271,7 +273,14 @@ void signalHandler(int i) {
       exit(0);
     } else {
       handlingCtrlC = 1;
+      fflush(stdout); fflush(stderr); fflush(stdin);
+      if (!handledCtrlC) {
+	printMessage(1,"Warning: Handling Ctrl-C requires discarding all input until next newline. Start of next token was \"%s\".\n",yytext);
+	ungetc('#',yyin); 
+      }
       yyrestart(yyin);
+      handledCtrlC = 1;
+      if (verbosity == 0) printf("\n");
     }
     break;
   case SIGSEGV:
@@ -312,6 +321,7 @@ void printPrompt(void) {
   fflush(stdout);
   fflush(stdin);
   fflush(stderr);
+  handledCtrlC = 1;
 }
 
 
@@ -381,6 +391,7 @@ int main(int argc, char *argv[]) {
       }
     }
     if (yyparse()) break;  
+    handledCtrlC = 0;
     promptToBePrinted = 1;
   }
 

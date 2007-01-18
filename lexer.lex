@@ -235,7 +235,7 @@ READ            "read"
 COMMENTSTART    "/*"
 COMMENTEND      "*/"
 
-ONELINECOMMENT  "//"([^\n])*"\n"
+ONELINECOMMENT  ("//"|"#")([^\n])*"\n"
 
 WRITE           "write"
 

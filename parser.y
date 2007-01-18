@@ -56,6 +56,7 @@ void yyerror(char *message) {
 	void *other;
 };
 
+
 %token  <value> CONSTTOKEN
 %token  <value> DYADICCONSTTOKEN
 %token  <value> BINARYCONSTTOKEN
