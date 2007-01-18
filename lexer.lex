@@ -243,6 +243,12 @@ ASCIIPLOT       "asciiplot"
 
 DOLLAR           "$"
 
+ROUNDTOFORMAT   "round"
+MINUSWORD       "M"
+PLUSWORD        "P"
+ZEROWORD        "Z"
+NEAREST         "N"
+
 %%
 
 %{
@@ -427,7 +433,13 @@ DOLLAR           "$"
 {RATIONALAPPROX}         {     promptToBePrinted = 0; return RATIONALAPPROXTOKEN; }                    
 {WRITE}                  {     promptToBePrinted = 0; return WRITETOKEN; }                    
 {ASCIIPLOT}              {     promptToBePrinted = 0; return ASCIIPLOTTOKEN; }                    
-{DOLLAR}                  {     promptToBePrinted = 0; return DOLLARTOKEN; }                    
+{DOLLAR}                 {     promptToBePrinted = 0; return DOLLARTOKEN; }                    
+{ROUNDTOFORMAT}          {     promptToBePrinted = 0; return ROUNDTOFORMATTOKEN; }                    
+{MINUSWORD}              {     promptToBePrinted = 0; return MINUSWORDTOKEN; }                    	
+{PLUSWORD}               {     promptToBePrinted = 0; return PLUSWORDTOKEN; }                    	
+{ZEROWORD}               {     promptToBePrinted = 0; return ZEROWORDTOKEN; }                    	
+{NEAREST}                {     promptToBePrinted = 0; return NEARESTTOKEN; }                    
+
 
 {READ}          {
                       BEGIN(readstate);

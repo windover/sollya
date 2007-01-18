@@ -198,6 +198,11 @@ void yyerror(char *message) {
 %token  WRITETOKEN
 %token  ASCIIPLOTTOKEN
 %token  DOLLARTOKEN
+%token  ROUNDTOFORMATTOKEN
+%token  MINUSWORDTOKEN               	
+%token  PLUSWORDTOKEN
+%token  ZEROWORDTOKEN                    	
+%token  NEARESTTOKEN
 
 %type <other> commands
 %type <other> command
@@ -2478,7 +2483,115 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			     temp_node->nodeType = DOUBLEEXTENDED;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
-                           }		
+                           }
+                        |       ROUNDTOFORMATTOKEN LPARTOKEN constantfunction COMMATOKEN integer COMMATOKEN NEARESTTOKEN RPARTOKEN  
+                           {
+			     temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = CONSTANT;
+			     temp_node->value = (mpfr_t *) safeMalloc(sizeof(node));
+			     mpfr_init2(*(temp_node->value),tools_precision);
+			     if (($5) < 0) {
+			       printMessage(1,"Warning: rounding to negative precision impossible. Will round to current precision.\n");
+			       int_temp = mpfr_set(*(temp_node->value),*($3),GMP_RNDN);
+			     } else {
+			       int_temp = round_to_format(*(temp_node->value), *($3), ($5), GMP_RNDN);
+			     }
+			     if (verbosity >= 2) {
+			       if (int_temp == 0) {
+				 printf("Information: no rounding occured.\n");
+			       } else {
+				 if (int_temp < 0) {
+				   printf("Information: rounding down occured.\n");
+				 } else {
+				   printf("Information: rounding up occured.\n");
+				 }
+			       }
+			     }
+			     mpfr_clear(*($3));
+			     free($3);
+			     $$ = temp_node;
+			   }     			   	
+                        |       ROUNDTOFORMATTOKEN LPARTOKEN constantfunction COMMATOKEN integer COMMATOKEN MINUSWORDTOKEN RPARTOKEN  
+                           {
+			     temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = CONSTANT;
+			     temp_node->value = (mpfr_t *) safeMalloc(sizeof(node));
+			     mpfr_init2(*(temp_node->value),tools_precision);
+			     if (($5) < 0) {
+			       printMessage(1,"Warning: rounding to negative precision impossible. Will round to current precision.\n");
+			       int_temp = mpfr_set(*(temp_node->value),*($3),GMP_RNDD);
+			     } else {
+			       int_temp = round_to_format(*(temp_node->value), *($3), ($5), GMP_RNDD);
+			     }
+			     if (verbosity >= 2) {
+			       if (int_temp == 0) {
+				 printf("Information: no rounding occured.\n");
+			       } else {
+				 if (int_temp < 0) {
+				   printf("Information: rounding down occured.\n");
+				 } else {
+				   printf("Information: rounding up occured.\n");
+				 }
+			       }
+			     }
+			     mpfr_clear(*($3));
+			     free($3);
+			     $$ = temp_node;
+			   }     			   	
+                        |       ROUNDTOFORMATTOKEN LPARTOKEN constantfunction COMMATOKEN integer COMMATOKEN PLUSWORDTOKEN RPARTOKEN  
+                           {
+			     temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = CONSTANT;
+			     temp_node->value = (mpfr_t *) safeMalloc(sizeof(node));
+			     mpfr_init2(*(temp_node->value),tools_precision);
+			     if (($5) < 0) {
+			       printMessage(1,"Warning: rounding to negative precision impossible. Will round to current precision.\n");
+			       int_temp = mpfr_set(*(temp_node->value),*($3),GMP_RNDU);
+			     } else {
+			       int_temp = round_to_format(*(temp_node->value), *($3), ($5), GMP_RNDU);
+			     }
+			     if (verbosity >= 2) {
+			       if (int_temp == 0) {
+				 printf("Information: no rounding occured.\n");
+			       } else {
+				 if (int_temp < 0) {
+				   printf("Information: rounding down occured.\n");
+				 } else {
+				   printf("Information: rounding up occured.\n");
+				 }
+			       }
+			     }
+			     mpfr_clear(*($3));
+			     free($3);
+			     $$ = temp_node;
+			   }     			   	
+                        |       ROUNDTOFORMATTOKEN LPARTOKEN constantfunction COMMATOKEN integer COMMATOKEN ZEROWORDTOKEN RPARTOKEN  
+                           {
+			     temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = CONSTANT;
+			     temp_node->value = (mpfr_t *) safeMalloc(sizeof(node));
+			     mpfr_init2(*(temp_node->value),tools_precision);
+			     if (($5) < 0) {
+			       printMessage(1,"Warning: rounding to negative precision impossible. Will round to current precision.\n");
+			       int_temp = mpfr_set(*(temp_node->value),*($3),GMP_RNDZ);
+			     } else {
+			       int_temp = round_to_format(*(temp_node->value), *($3), ($5), GMP_RNDZ);
+			     }
+			     if (verbosity >= 2) {
+			       if (int_temp == 0) {
+				 printf("Information: no rounding occured.\n");
+			       } else {
+				 if (int_temp < 0) {
+				   printf("Information: rounding down occured.\n");
+				 } else {
+				   printf("Information: rounding up occured.\n");
+				 }
+			       }
+			     }
+			     mpfr_clear(*($3));
+			     free($3);
+			     $$ = temp_node;
+			   }     			   	
 ;
 
 monomials:                      degree
