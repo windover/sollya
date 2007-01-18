@@ -479,7 +479,7 @@ NEAREST         "N"
 		}
 
 <readstate2>{SEMICOLON} {
-                      newReadFilenameTemp = (char *) safeCalloc(strlen(newReadFilename),sizeof(char));
+                      newReadFilenameTemp = (char *) safeCalloc(strlen(newReadFilename)+1,sizeof(char));
 		      demaskString(newReadFilenameTemp,newReadFilename);
 		      temp_fd = fopen(newReadFilenameTemp,"r");
 		      if (temp_fd == NULL) {
