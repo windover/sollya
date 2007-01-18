@@ -2402,10 +2402,13 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   mpfr_set(x1,a,GMP_RNDN);
   mpfr_add(x2,x1,step,GMP_RNDU);
   if (mpfr_cmp(x2,b)>0) mpfr_set(x2,b,GMP_RNDN);
-  evaluateFaithfulWithCutOffFast(y1,deriv,derivsecond,x1,derivCutOff,prec);
-  evaluateFaithfulWithCutOffFast(y2,deriv,derivsecond,x2,derivCutOff,prec);
+  evaluate(y1,deriv,x1,prec);
+  evaluate(y2,deriv,x2,prec);
   while(mpfr_less_p(x1,b)) {
-    evaluateFaithfulWithCutOffFast(s,tree,deriv,x1,max,prec);
+    evaluate(s,tree,x1,2 * prec);
+    if ((mpfr_cmpabs(s,max) > 0) || (!mpfr_number_p(s))) {
+      evaluateFaithfulWithCutOffFast(s,tree,deriv,x1,max,prec);
+    }
     if (mpfr_number_p(s)) {
       mpfr_abs(s,s,GMP_RNDN);
       mpfr_max(max,max,s,GMP_RNDU);
@@ -2449,7 +2452,7 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
     mpfr_set(y1,y2,GMP_RNDN);
     mpfr_add(x2,x1,step, GMP_RNDU);
     if (mpfr_cmp(x2,b)>0) mpfr_set(x2,b,GMP_RNDN);
-    evaluateFaithfulWithCutOff(y2,deriv,x2,derivCutOff,prec);
+    evaluate(y2,deriv,x2,prec);
 
   }
   
