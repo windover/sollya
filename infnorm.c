@@ -834,7 +834,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     if (mpfr_zero_p(al) &&
 	mpfr_zero_p(ar)) {
       if (mpfr_zero_p(bl) &&
-	  mpfr_zero_p(br)) {
+	  mpfr_zero_p(br) &&
+	  (simplifiesB > 0)) {
 	/* [0;0] / [0;0] */
 	derivNumerator = differentiate(tree->child1);
 	derivDenominator = differentiate(tree->child2);
@@ -878,8 +879,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	  rightTheoLinear = NULL;
 	}
 
-	leftExcludes = evaluateI(stack1, derivNumerator, x, prec, simplifiesA, simplifiesB, leftTheoLinear);
-	rightExcludes = evaluateI(stack2, derivDenominator, x, prec, simplifiesA, simplifiesB, rightTheoLinear);
+	leftExcludes = evaluateI(stack1, derivNumerator, x, prec, simplifiesA, simplifiesB-1, leftTheoLinear);
+	rightExcludes = evaluateI(stack2, derivDenominator, x, prec, simplifiesA, simplifiesB-1, rightTheoLinear);
 	
 	free_memory(derivNumerator);
 	free_memory(derivDenominator);
@@ -1464,6 +1465,24 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   node *nextderiv;
   int size;
 
+  mpfr_init2(leftX,mpfi_get_prec(x));
+  mpfr_init2(rightX,mpfi_get_prec(x));
+  
+  mpfi_get_left(leftX,x);
+  mpfi_get_right(rightX,x);
+
+  if (mpfr_cmp(leftX,rightX) == 0) {
+    printMessage(9,"Information: avoiding using Taylor's formula on a point interval.\n");
+
+    excludes = evaluateI(result, func, x, prec, 1, 2, theo);
+
+    mpfr_clear(leftX);
+    mpfr_clear(rightX);
+    
+    return excludes;
+  }
+
+
   printMessage(9,"Information: evaluating a function in interval arithmetic using Taylor's formula.\n");
   if (verbosity >= 12) {
     printf("Information: the function is\n");
@@ -1542,12 +1561,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
     printMessage(12,"Information: the linear term during Taylor evaluation does not change its sign.\n");
     printMessage(12,"Simplifying by taking the convex hull of the evaluations on the endpoints.\n");
 
-    mpfr_init2(leftX,mpfi_get_prec(x));
-    mpfr_init2(rightX,mpfi_get_prec(x));
-
-    mpfi_get_left(leftX,x);
-    mpfi_get_right(rightX,x);
-
+ 
     mpfi_init2(xZI2,prec);
     
     mpfi_set_fr(xZI,leftX);
@@ -1582,8 +1596,6 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
       excludes = concatChains(taylorExcludesLinear,excludes);
 
       mpfi_clear(xZI2);
-      mpfr_clear(leftX);
-      mpfr_clear(rightX);
 
   } else {
 
@@ -1677,6 +1689,8 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   mpfi_clear(linearTerm);
   mpfi_clear(resultTaylor);
   mpfi_clear(resultDirect);
+  mpfr_clear(leftX);
+  mpfr_clear(rightX);
 
   return excludes;
 }
