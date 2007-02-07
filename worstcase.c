@@ -169,8 +169,8 @@ void printWorstCases(node *func,
 }
 
 
-int searchGalValue(node *func, mpfr_t foundValue, mpfr_t startValue, mp_prec_t searchPrec, int steps, 
-		    int imageFormat, mpfr_t epsilon, mp_prec_t prec) {
+int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t searchPrec, int steps, 
+		    chain *imageFormats, chain *epsilons, mp_prec_t prec) {
   mpfr_t currLeft, currRight;
   mpfr_t yCurrLeft, yCurrRight;
   mpfr_t yCurrLeftRound, yCurrRightRound;
@@ -178,6 +178,14 @@ int searchGalValue(node *func, mpfr_t foundValue, mpfr_t startValue, mp_prec_t s
   mp_prec_t p;
   unsigned long long int t;
   int res;
+  int numberFuncs, numberFormats, numberEpsilons;
+  chain *myFuncs;
+  chain *currFunc, *currFormat, *currEpsilon;
+
+  if (steps > 63) {
+    printMessage(1,"Warning: cannot perform more than 63 steps. Will decrease step number to 63.\n");
+    steps = 63;
+  }
 
   p = prec;
   if (searchPrec > p) p = searchPrec;
@@ -188,6 +196,18 @@ int searchGalValue(node *func, mpfr_t foundValue, mpfr_t startValue, mp_prec_t s
     return 0;
   }
 
+  numberFuncs = lengthChain(funcs);
+  numberFormats = lengthChain(imageFormats);
+  numberEpsilons = lengthChain(epsilons);
+
+  if ((numberFuncs != numberFormats) ||
+      (numberFuncs != numberEpsilons)) {
+    printMessage(1,"Warning: the numbers of the given functions, formats and accuracies differ.\nNo search is possible.\n");
+    return 0;
+  }
+
+  myFuncs = copyChain(funcs, copyTreeOnVoid);
+ 
   mpfr_init2(currLeft, searchPrec);
   mpfr_init2(currRight, searchPrec);
   mpfr_init2(yCurrLeft, p);
@@ -209,24 +229,47 @@ int searchGalValue(node *func, mpfr_t foundValue, mpfr_t startValue, mp_prec_t s
 
   t = 1;
   t <<= steps;
-  res = 0;
   while (t > 0) {
-    evaluateFaithful(yCurrLeft, func, currLeft, p);
-    evaluateFaithful(yCurrRight, func, currRight, p);
-    mpfr_round_to_format(yCurrLeftRound, yCurrLeft, imageFormat);
-    mpfr_round_to_format(yCurrRightRound, yCurrRight, imageFormat);
-    mpfr_sub(errorLeft,yCurrLeftRound,yCurrLeft,GMP_RNDN);
-    mpfr_sub(errorRight,yCurrRightRound,yCurrRight,GMP_RNDN);
-    mpfr_div(errorLeft,errorLeft,yCurrLeft,GMP_RNDN);
-    mpfr_div(errorRight,errorRight,yCurrRight,GMP_RNDN);
-    if (mpfr_number_p(errorLeft) && (mpfr_cmpabs(errorLeft,epsilon) <= 0)) {
-      mpfr_set(foundValue, currLeft, GMP_RNDN);
-      res = 1;
+    res = 1;
+    currFunc = myFuncs;
+    currFormat = imageFormats;
+    currEpsilon = epsilons;
+    while ((currFunc != NULL) && (currFormat != NULL) && (currEpsilon != NULL)) {
+      evaluateFaithful(yCurrLeft, (node *) (currFunc->value), currLeft, p);
+      mpfr_round_to_format(yCurrLeftRound, yCurrLeft, *((int *) (currFormat->value)));
+      mpfr_sub(errorLeft,yCurrLeftRound,yCurrLeft,GMP_RNDN);
+      mpfr_div(errorLeft,errorLeft,yCurrLeft,GMP_RNDN);
+      if (!(mpfr_number_p(errorLeft) && (mpfr_cmpabs(errorLeft,*((mpfr_t *) (currEpsilon->value))) <= 0))) {
+	res = 0;
+	break;
+      }
+      currFunc = currFunc->next;
+      currFormat = currFormat->next;
+      currEpsilon = currEpsilon->next;
+    }
+    if (res) {
+      mpfr_set(foundValue,currLeft,GMP_RNDN);
       break;
     }
-    if (mpfr_number_p(errorRight) && (mpfr_cmpabs(errorRight,epsilon) <= 0)) {
-      mpfr_set(foundValue, currRight, GMP_RNDN);
-      res = 1;
+    res = 1;
+    currFunc = myFuncs;
+    currFormat = imageFormats;
+    currEpsilon = epsilons;
+    while ((currFunc != NULL) && (currFormat != NULL) && (currEpsilon != NULL)) {
+      evaluateFaithful(yCurrRight, (node *) (currFunc->value), currRight, p);
+      mpfr_round_to_format(yCurrRightRound, yCurrRight, *((int *) (currFormat->value)));
+      mpfr_sub(errorRight,yCurrRightRound,yCurrRight,GMP_RNDN);
+      mpfr_div(errorRight,errorRight,yCurrRight,GMP_RNDN);
+      if (!(mpfr_number_p(errorRight) && (mpfr_cmpabs(errorRight,*((mpfr_t *) (currEpsilon->value))) <= 0))) {
+	res = 0;
+	break;
+      }
+      currFunc = currFunc->next;
+      currFormat = currFormat->next;
+      currEpsilon = currEpsilon->next;
+    }
+    if (res) {
+      mpfr_set(foundValue,currRight,GMP_RNDN);
       break;
     }
     mpfr_nextbelow(currLeft);
@@ -242,6 +285,8 @@ int searchGalValue(node *func, mpfr_t foundValue, mpfr_t startValue, mp_prec_t s
   mpfr_clear(yCurrRightRound);
   mpfr_clear(errorLeft);
   mpfr_clear(errorRight);
+
+  freeChain(myFuncs, freeMemoryOnVoid);
 
   return res;
 }

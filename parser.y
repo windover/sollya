@@ -1429,14 +1429,17 @@ accurateinfnorm: ACCURATEINFNORMTOKEN function INTOKEN range WITHTOKEN integer B
 ;
 
 
-searchGal:    SEARCHGALTOKEN function ATTOKEN constantfunction WITHTOKEN integer BITSTOKEN INTOKEN integer STEPSTOKEN INTOKEN expansionFormat WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction 
+searchGal:    SEARCHGALTOKEN functionlist ATTOKEN constantfunction WITHTOKEN integer BITSTOKEN INTOKEN integer STEPSTOKEN INTOKEN expansionFormatList WITHTOKEN EPSILONTOKEN EQUALTOKEN pointslist 
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
-			     int_temp = searchGalValue($2, *mpfr_temp, *($4), $6, $9, $12, *($16), tools_precision);
+			     int_temp = searchGalValue($2, *mpfr_temp, *($4), $6, $9, $12, $16, tools_precision);
 			     if (!int_temp) {
 			       mpfr_set_nan(*mpfr_temp);
 			     }
+			     freeChain($2, freeMemoryOnVoid);
+			     freeChain($12, freeIntPtr);
+			     freeChain($16, freeMpfrPtr);
 			     $$ = mpfr_temp;
 			   }
 ;
