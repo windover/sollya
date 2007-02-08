@@ -2102,12 +2102,22 @@ points:  POINTSTOKEN EQUALTOKEN CONSTTOKEN
                            }
 ;
 
-degree:  CONSTTOKEN
+degree:  constantfunction
                            {
-			     int_temp = (int) strtol($1,endptr,10);
-                             if (**endptr != '\0') {
+                             if (!mpfr_integer_p(*($1))) {
 			       printMessage(1,"Warning: the degree of a polynomial must be integer. Will do degree 3.\n");
 			       int_temp = 3;
+			     } else {
+			       int_temp = mpfr_get_si(*($1),GMP_RNDN);
+			       mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			       mpfr_init2(*mpfr_temp,mpfr_get_prec(*($1)));
+			       mpfr_set_si(*mpfr_temp,int_temp,GMP_RNDN);
+			       if (mpfr_cmp(*mpfr_temp,*($1)) != 0) {
+				 printMessage(1,"Warning: the given degree is not representable on a machine integer. Will do degree 3.\n");
+				 int_temp = 3;
+			       }
+			       mpfr_clear(*mpfr_temp);
+			       free(mpfr_temp);
 			     }
 			     if (int_temp < 0) {
 			       printMessage(1,"The degree of a polynomial must be a positive number. Will do degree 3.\n");
@@ -3220,7 +3230,7 @@ constant: CONSTTOKEN
 ;
 
 
-integer:                   CONSTTOKEN 
+integer:                   CONSTTOKEN
                            {  
 			     int_temp = (unsigned long int) strtol($1,endptr,10);
                              if (**endptr != '\0') {
