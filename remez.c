@@ -111,6 +111,58 @@ node *convert_poly(int first_index, int last_index, GEN tab, chain *monomials, m
 }
 
 
+// Convert an array [a0,..,an] of PARI REAL_t values
+// into a tree representing the polynomial sum(ai*x^i)
+node *simple_convert_poly(GEN tab, mp_prec_t prec) {
+  node *tree;
+  node *temp1;
+  node *temp2;
+  node *temp3;
+  node *temp4;
+  mpfr_t *value;
+  GEN tab2;
+  int i;
+
+  if (matsize(tab)[1] == 1) {
+    tree = safeMalloc(sizeof(node));
+    tree->nodeType = CONSTANT;
+    value = safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*value, prec);
+    PARI_to_mpfr(*value, (GEN)(tab[1]), GMP_RNDN);
+    tree->value = value;
+  }
+  else {
+    tab2 = cgetg(matsize(tab)[1], t_COL);
+    for (i=1;i<=matsize(tab)[1]-1;i++) {
+      tab2[i] = tab[i+1];
+    }
+
+    temp1 = simple_convert_poly(tab2, prec);
+
+    temp2 =  safeMalloc(sizeof(node));
+    temp2->nodeType = CONSTANT;
+    value = safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*value, prec);
+    PARI_to_mpfr(*value, (GEN)(tab[1]), GMP_RNDN);
+    temp2->value = value;
+
+    temp3 = safeMalloc(sizeof(node));
+    temp3->nodeType = VARIABLE;
+
+    temp4 = safeMalloc(sizeof(node));
+    temp4->nodeType = MUL;
+    temp4->child1 = temp3;
+    temp4->child2 = temp1;
+
+    tree = safeMalloc(sizeof(node));
+    tree->nodeType = ADD;
+    tree->child1 = temp2;
+    tree->child2 = temp4;
+  }
+
+  return tree;
+}
+
 // Find the unique root of tree in [a;b]
 GEN newton(node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_t x, temp1, temp2;
@@ -307,6 +359,82 @@ GEN Mypowgs(GEN x, long i) {
   return gpowgs(x,i);
 }
 
+// int whichPoly 
+
+rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) {
+  mp_prec_t prec = defaultprecision;
+  long prec_pari = 2 + (prec + BITS_IN_LONG - 1)/BITS_IN_LONG;
+  int deg=10;
+  int i,j;
+  GEN x,u,v,M,temp;
+  mpfr_t aprime, bprime;
+  node *poly;
+  node *tree;
+  node *temp1;
+  chain *list;
+  rangetype range;
+
+  mpfr_init2(aprime,prec);
+  mpfr_init2(bprime,prec);
+  mpfr_set(aprime,a,GMP_RNDD);
+  mpfr_set(bprime,b,GMP_RNDU);
+  u = mpfr_to_PARI(aprime);
+  v = mpfr_to_PARI(bprime);
+
+  // Definition of the array x of the n+2 Chebychev points
+  x = cgetg(deg+3, t_COL);
+  for (i=0;i<deg+2;i++) {
+    x[i+1] = lsub(gdivgs(gMyadd(u,v),2),
+    		  gmul(gdivgs(gMysub(v,u),2),
+    		       gcos(gdivgs(gmulgs(mppi(prec_pari),2*i+1),
+    				   2*deg+4),prec_pari)
+    		       )
+    		  );
+  }
+
+  M = cgetg(deg+3,t_MAT);
+  for(i=1;i<=deg+2;i++) {
+    for(j=1;j<=deg+1;j++) {
+      coeff(M,i,j) = lmul(Mypowgs((GEN)(x[i]),(long)(j-1)), evaluate_to_PARI(weight, (GEN)(x[i]), prec));
+    }
+  }
+  for(i=1;i<=deg+2;i++) {
+    coeff(M,i,deg+2) = (long)stoi((i % 2)*2-1);
+  }
+
+
+  temp = cgetg(deg+3, t_COL);
+  for (i=1;i<=deg+2;i++) {
+    temp[i] = (long)evaluate_to_PARI(func,(GEN)x[i],prec);
+  }
+  
+  // Solves the system
+  temp = gauss(M,temp);
+  x = cgetg(deg+2, t_COL);
+  for (i=1;i<=deg+1;i++) {
+    x[i] = temp[i];
+  }
+
+  poly = simple_convert_poly(x, prec);
+  
+  temp1 =  safeMalloc(sizeof(node));
+  temp1->nodeType = MUL;
+  temp1->child1 = poly;
+  temp1->child2 = weight;
+  
+  tree = safeMalloc(sizeof(node));
+  tree->nodeType = SUB;
+  tree->child1 = temp1;
+  tree->child2 = func;
+  
+  range.a = (mpfr_t *)(&a);
+  range.b = (mpfr_t *)(&b);
+  list = fpFindZerosFunction(differentiate(func),range,prec);
+
+  mpfr_clear(aprime);
+  mpfr_clear(bprime);
+  return range;
+}
 
 node* remezWithWeight(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   ulong ltop=avma;
