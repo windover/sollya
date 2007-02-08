@@ -251,6 +251,8 @@ NEAREST         "N"
 
 FINISH          "&"
 
+GUESSDEGREE     "guessdegree"
+
 %%
 
 %{
@@ -441,6 +443,7 @@ FINISH          "&"
 {PLUSWORD}               {     promptToBePrinted = 0; return PLUSWORDTOKEN; }                    	
 {ZEROWORD}               {     promptToBePrinted = 0; return ZEROWORDTOKEN; }                    	
 {NEAREST}                {     promptToBePrinted = 0; return NEARESTTOKEN; }                    
+{GUESSDEGREE}            {     promptToBePrinted = 0; return GUESSDEGREETOKEN; }                    
 
 
 {READ}          {

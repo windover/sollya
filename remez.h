@@ -11,5 +11,7 @@
 
 node* remez(node *func, chain* monom, mpfr_t a, mpfr_t b, mp_prec_t prec);
 node* remezWithWeight(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec);
+rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps);
+
 
 #endif /* ifdef REMEZ_H*/

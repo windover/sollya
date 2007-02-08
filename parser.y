@@ -204,6 +204,7 @@ void yyerror(char *message) {
 %token  PLUSWORDTOKEN
 %token  ZEROWORDTOKEN                    	
 %token  NEARESTTOKEN
+%token  GUESSDEGREETOKEN
 
 %type <other> commands
 %type <other> command
@@ -290,6 +291,7 @@ void yyerror(char *message) {
 %type <aChain> integerlist
 %type <rangeval> printableRange
 %type <rangeval> symbolRange
+%type <rangeval> guessDegree
 %type <constantval> searchGal
 %type <aString> directString
 
@@ -446,6 +448,27 @@ command:     plot
 			     free($1.a);
 			     free($1.b);
 	                     $$ = NULL;
+	                   }
+           | guessDegree SEMICOLONTOKEN {
+	                     if (mpfr_cmp(*($1.a),*($1.b)) == 0) {
+			       int_temp = mpfr_get_si(*($1.b),GMP_RNDN);
+			       printf("The best degree for the given approximation problem is %d.\n",int_temp);
+	                     } else {
+			       if (mpfr_number_p(*($1.b))) {
+				 int_temp = mpfr_get_si(*($1.a),GMP_RNDN);
+				 printf("Unable to give an unique degree. Possible degrees are %d to ",int_temp);
+				 int_temp = mpfr_get_si(*($1.b),GMP_RNDN);
+				 printf("%d.\n",int_temp);
+			       } else {
+				 int_temp = mpfr_get_si(*($1.a),GMP_RNDN);
+				 printf("Unable to give an upper bounding for the degree. The least degree is %d.\n",int_temp);
+			       }
+	                     }
+	                     mpfr_clear(*($1.a));
+			     mpfr_clear(*($1.b));
+			     free($1.a);
+			     free($1.b);
+	                     $$ = NULL; 
 	                   }
            | searchGal SEMICOLONTOKEN {
 	                     if (!mpfr_number_p(*($1))) {
@@ -2787,6 +2810,10 @@ commandfunction:          infnorm
                            {
 			     $$ = $1;
                            }
+                        | guessDegree
+                           {
+			     $$ = $1;
+                           }
                         | dirtyinfnorm
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
@@ -3830,3 +3857,35 @@ integerlist:               integer
 			   }
 ;
 
+guessDegree:              GUESSDEGREETOKEN function INTOKEN range WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction
+                        {
+			  temp_node = (node *) safeMalloc(sizeof(node));
+			  temp_node->nodeType = CONSTANT;
+			  temp_node->value = (mpfr_t *) safeMalloc(sizeof(node));
+			  mpfr_init2(*(temp_node->value),tools_precision);
+			  mpfr_set_d(*(temp_node->value),1.0,GMP_RNDN);
+			  range_temp = guessDegree($2,temp_node,*($4.a),*($4.b),*($8));
+			  free_memory(temp_node);
+			  free_memory($2);
+			  mpfr_clear(*($4.a));
+			  mpfr_clear(*($4.b));
+			  free($4.a);
+			  free($4.b);
+			  mpfr_clear(*($8));
+			  free($8);
+			  $$ = range_temp;
+                        }
+                        | GUESSDEGREETOKEN function INTOKEN range WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction COMMATOKEN WEIGHTTOKEN EQUALTOKEN function
+                        {
+			  range_temp = guessDegree($2,$12,*($4.a),*($4.b),*($8));
+			  free_memory($12);
+			  free_memory($2);
+			  mpfr_clear(*($4.a));
+			  mpfr_clear(*($4.b));
+			  free($4.a);
+			  free($4.b);
+			  mpfr_clear(*($8));
+			  free($8);
+			  $$ = range_temp;
+                        }
+;
