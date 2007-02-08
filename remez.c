@@ -8,6 +8,7 @@
 #include "remez.h"
 #include "infnorm.h"
 #include "plot.h"
+#include "fpminimax.h"
 
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
@@ -122,8 +123,7 @@ node *simple_convert_poly(GEN tab, mp_prec_t prec) {
   mpfr_t *value;
   GEN tab2;
   int i;
-
-  if (matsize(tab)[1] == 1) {
+  if (itos((GEN)(matsize(tab)[1])) == 1) {
     tree = safeMalloc(sizeof(node));
     tree->nodeType = CONSTANT;
     value = safeMalloc(sizeof(mpfr_t));
@@ -132,8 +132,8 @@ node *simple_convert_poly(GEN tab, mp_prec_t prec) {
     tree->value = value;
   }
   else {
-    tab2 = cgetg(matsize(tab)[1], t_COL);
-    for (i=1;i<=matsize(tab)[1]-1;i++) {
+    tab2 = cgetg(itos((GEN)(matsize(tab)[1])), t_COL);
+    for (i=1;i<=itos((GEN)(matsize(tab)[1]))-1;i++) {
       tab2[i] = tab[i+1];
     }
 
@@ -359,23 +359,34 @@ GEN Mypowgs(GEN x, long i) {
   return gpowgs(x,i);
 }
 
-// int whichPoly 
 
-rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) {
+
+// returns 1 if deg is sufficient to approximate rhe function to eps
+// returns -1 if deg is not sufficient
+// 0 if we cannot determine.
+int whichPoly(int deg, node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) {
   mp_prec_t prec = defaultprecision;
   long prec_pari = 2 + (prec + BITS_IN_LONG - 1)/BITS_IN_LONG;
-  int deg=10;
-  int i,j;
+  int i,j, res;
   GEN x,u,v,M,temp;
   mpfr_t aprime, bprime;
   node *poly;
   node *tree;
+  node *diff_tree;
   node *temp1;
   chain *list;
   rangetype range;
+  mpfr_t y,min,max;
 
   mpfr_init2(aprime,prec);
   mpfr_init2(bprime,prec);
+  mpfr_init2(y,53);
+  mpfr_init2(min,53);
+  mpfr_init2(max,53);
+
+  mpfr_set_inf(min,1);
+  mpfr_set_d(max,0.,GMP_RNDN);
+
   mpfr_set(aprime,a,GMP_RNDD);
   mpfr_set(bprime,b,GMP_RNDU);
   u = mpfr_to_PARI(aprime);
@@ -393,11 +404,13 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   }
 
   M = cgetg(deg+3,t_MAT);
-  for(i=1;i<=deg+2;i++) {
-    for(j=1;j<=deg+1;j++) {
+  for(j=1;j<=deg+1;j++) {
+    M[j] = (long)(cgetg(deg+3,t_COL));
+    for(i=1;i<=deg+2;i++) {
       coeff(M,i,j) = lmul(Mypowgs((GEN)(x[i]),(long)(j-1)), evaluate_to_PARI(weight, (GEN)(x[i]), prec));
     }
   }
+  M[deg+2] = (long)(cgetg(deg+3,t_COL));
   for(i=1;i<=deg+2;i++) {
     coeff(M,i,deg+2) = (long)stoi((i % 2)*2-1);
   }
@@ -407,7 +420,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   for (i=1;i<=deg+2;i++) {
     temp[i] = (long)evaluate_to_PARI(func,(GEN)x[i],prec);
   }
-  
+
   // Solves the system
   temp = gauss(M,temp);
   x = cgetg(deg+2, t_COL);
@@ -420,21 +433,138 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   temp1 =  safeMalloc(sizeof(node));
   temp1->nodeType = MUL;
   temp1->child1 = poly;
-  temp1->child2 = weight;
+  temp1->child2 = copyTree(weight);
   
   tree = safeMalloc(sizeof(node));
   tree->nodeType = SUB;
   tree->child1 = temp1;
-  tree->child2 = func;
+  tree->child2 = copyTree(func);
   
-  range.a = (mpfr_t *)(&a);
-  range.b = (mpfr_t *)(&b);
-  list = fpFindZerosFunction(differentiate(func),range,prec);
+  range.a = (mpfr_t *)(&aprime);
+  range.b = (mpfr_t *)(&bprime);
+
+  diff_tree = differentiate(tree);
+  list = fpFindZerosFunction(diff_tree,range,prec);
+  free_memory(diff_tree);
+
+  while(list != NULL) {
+    evaluateFaithful(y,tree,*(mpfr_t *)(list->value),prec);
+    if(mpfr_cmpabs(y,min)<0) mpfr_set(min,y,GMP_RNDD);
+    if(mpfr_cmpabs(y,max)>0) mpfr_set(max,y,GMP_RNDU);
+    list = list->next;
+  }
+
+  freeChain(list, freeMpfrPtr);
+
+  evaluateFaithful(y,tree,aprime,prec);
+  if(mpfr_cmpabs(y,min)<0) mpfr_set(min,y,GMP_RNDD);
+  if(mpfr_cmpabs(y,max)>0) mpfr_set(max,y,GMP_RNDU);
+
+  evaluateFaithful(y,tree,bprime,prec);
+  if(mpfr_cmpabs(y,min)<0) mpfr_set(min,y,GMP_RNDD);
+  if(mpfr_cmpabs(y,max)>0) mpfr_set(max,y,GMP_RNDU);
+  
+  mpfr_abs(min,min,GMP_RNDN);
+  mpfr_abs(max,max,GMP_RNDN);
+  if(mpfr_cmp(eps,max) >= 0) res=1;
+  else {
+    if(mpfr_cmp(eps,min) < 0) res=-1;
+    else res=0;
+  }
 
   mpfr_clear(aprime);
   mpfr_clear(bprime);
+  mpfr_clear(y);
+  mpfr_clear(min);
+  mpfr_clear(max);
+  free_memory(tree);
+  return res;
+}
+
+rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) {
+  int n_min=1;
+  int n_max=10;
+  int res=-1;
+  int test=1;
+  rangetype range;
+  mpfr_t *u;
+  mpfr_t *v;
+  
+  int number_points = defaultpoints;
+  defaultpoints = 5;
+
+  while(res==-1 && (n_max < 100)) {
+    res = whichPoly(n_max, func, weight, a, b, eps);
+    if(res==-1) {
+      n_min=n_max;
+      n_max = n_max*2;
+    }
+    else {
+      if(res==0) {
+	n_max=n_max*2;
+      }
+    }
+  }
+  
+  // This case shouldn't happen...
+  if (n_max >=100) {
+    res = -1;
+    while(res<0) {
+      n_min++;
+      res = whichPoly(n_min,func,weight,a,b,eps);
+    }
+
+    u = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
+    v = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*u,defaultprecision);
+    mpfr_init2(*v,defaultprecision);
+    mpfr_set_ui(*u, n_min, GMP_RNDN);
+    mpfr_set_inf(*v, 1);
+    range.a = u;
+    range.b = v;
+    defaultpoints=number_points;
+    return range;
+  }
+  // else...
+
+  while(test && (n_max-n_min > 1)) {
+    res = whichPoly((n_min+n_max)/2, func, weight, a, b, eps);
+    if(res==1) n_max=(n_min+n_max)/2;
+    else {
+      if(res==-1) n_min=(n_min+n_max)/2;
+      else test=0;
+    }
+  }
+
+  if(test) n_min=n_max;
+  else {
+    res=0;
+    n_min = (n_min+n_max)/2;
+    n_max = n_min;
+    while(res==0) {
+      n_min--;
+      res = whichPoly(n_min,func,weight,a,b,eps);
+    }
+    n_min = n_min + 1;
+    res=0;
+    while(res==0) {
+      n_max++;
+      res = whichPoly(n_max,func,weight,a,b,eps);
+    }
+  }
+  
+  u = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
+  v = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*u,defaultprecision);
+  mpfr_init2(*v,defaultprecision);
+  mpfr_set_ui(*u, n_min, GMP_RNDN);
+  mpfr_set_ui(*v, n_max, GMP_RNDN);
+  range.a = u;
+  range.b = v;
+  defaultpoints=number_points;
   return range;
 }
+
 
 node* remezWithWeight(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   ulong ltop=avma;
