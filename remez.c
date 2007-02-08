@@ -259,6 +259,26 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
 }
 
 
+chain *quickFindZeros2(node *tree, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+  node *diff_tree;
+  mpfr_t *x;
+  int crash=0;
+  int i;
+  GEN list;
+  chain *res=NULL;
+
+  diff_tree = differentiate(tree);
+  list = quickFindZeros(tree, diff_tree, deg, a, b, prec, &crash);
+  for(i=1;i<=itos((GEN)(matsize(list)[1]));i++) {
+    x = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*x,prec);
+    PARI_to_mpfr(*x,(GEN)(list[i]),GMP_RNDN);
+    res = addElement(res, x);
+  }
+ 
+  free_memory(diff_tree);
+  return res;
+}
 
 double computeRatio(node *tree, GEN x, mp_prec_t prec) {
   int i;
@@ -429,7 +449,7 @@ int whichPoly(int deg, node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps)
   }
 
   poly = simple_convert_poly(x, prec);
-  
+
   temp1 =  safeMalloc(sizeof(node));
   temp1->nodeType = MUL;
   temp1->child1 = poly;
@@ -444,7 +464,9 @@ int whichPoly(int deg, node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps)
   range.b = (mpfr_t *)(&bprime);
 
   diff_tree = differentiate(tree);
-  list = fpFindZerosFunction(diff_tree,range,prec);
+
+  /*  list = fpFindZerosFunction(diff_tree,range,prec); */
+  list = quickFindZeros2(diff_tree, deg, aprime, bprime, defaultprecision);
   free_memory(diff_tree);
 
   while(list != NULL) {
@@ -478,6 +500,7 @@ int whichPoly(int deg, node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps)
   mpfr_clear(min);
   mpfr_clear(max);
   free_memory(tree);
+
   return res;
 }
 
