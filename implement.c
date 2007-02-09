@@ -5936,7 +5936,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
       printMessage(1,"Warning: could not write to the file for the implementation.\n");
     if (gappaFD != NULL) proof->resultType = 3;
   } else {
-    if (targetPrec >= 53) {
+    if (targetPrec >= 54) {
       if (fprintf(fd,"double *%s_resh, double *%s_resm, ",name,name) < 0)
 	printMessage(1,"Warning: could not write to the file for the implementation.\n");
       if (gappaFD != NULL) proof->resultType = 2;
