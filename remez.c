@@ -400,6 +400,7 @@ GEN Mypowgs(GEN x, long i) {
 // returns -1 if deg is not sufficient
 // 0 if we cannot determine.
 int whichPoly(int deg, node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) {
+  ulong ltop=avma;
   mp_prec_t prec = defaultprecision;
   long prec_pari = 2 + (prec + BITS_IN_LONG - 1)/BITS_IN_LONG;
   int i,j, res;
@@ -410,6 +411,7 @@ int whichPoly(int deg, node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps)
   node *diff_tree;
   node *temp1;
   chain *list;
+  chain *rememberList;
   rangetype range;
   mpfr_t y,min,max;
   mpfr_t mpfrTemp;
@@ -490,10 +492,10 @@ int whichPoly(int deg, node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps)
 
   diff_tree = differentiate(tree);
 
-  /*  list = fpFindZerosFunction(diff_tree,range,prec); */
   list = quickFindZeros2(diff_tree, deg, aprime, bprime, defaultprecision);
   free_memory(diff_tree);
 
+  rememberList = list;
   while(list != NULL) {
     evaluateFaithful(y,tree,*(mpfr_t *)(list->value),prec);
     if(mpfr_cmpabs(y,min)<0) mpfr_set(min,y,GMP_RNDD);
@@ -501,7 +503,7 @@ int whichPoly(int deg, node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps)
     list = list->next;
   }
 
-  freeChain(list, freeMpfrPtr);
+  freeChain(rememberList, freeMpfrPtr);
 
   evaluateFaithful(y,tree,aprime,prec);
   if(mpfr_cmpabs(y,min)<0) mpfr_set(min,y,GMP_RNDD);
@@ -525,6 +527,8 @@ int whichPoly(int deg, node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps)
   mpfr_clear(min);
   mpfr_clear(max);
   free_memory(tree);
+
+  avma = ltop;
 
   return res;
 }
@@ -558,7 +562,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   // This case shouldn't happen...
   if (n_max >=100) {
     res = -1;
-    while(res<0) {
+    while(res<0 && (n_min <= 100)) {
       n_min++;
       res = whichPoly(n_min,func,weight,a,b,eps);
     }
@@ -567,7 +571,8 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
     v = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*u,defaultprecision);
     mpfr_init2(*v,defaultprecision);
-    mpfr_set_ui(*u, n_min, GMP_RNDN);
+    if (res<0) mpfr_set_inf(*u,1);
+    else mpfr_set_ui(*u, n_min, GMP_RNDN);
     mpfr_set_inf(*v, 1);
     range.a = u;
     range.b = v;

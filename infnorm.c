@@ -3496,6 +3496,7 @@ int evaluateWithAccuracy(node *func, mpfr_t x, mpfr_t y, mpfr_t accur,
     }
   }
 
+  mpfr_clear(currAccur);
   return okay;
 }
 
