@@ -266,14 +266,29 @@ chain *quickFindZeros2(node *tree, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec) 
   int i;
   GEN list;
   chain *res=NULL;
+  rangetype range;
 
   diff_tree = differentiate(tree);
   list = quickFindZeros(tree, diff_tree, deg, a, b, prec, &crash);
-  for(i=1;i<=itos((GEN)(matsize(list)[1]));i++) {
-    x = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*x,prec);
-    PARI_to_mpfr(*x,(GEN)(list[i]),GMP_RNDN);
-    res = addElement(res, x);
+  if (crash) {
+    range.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+    range.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*(range.a),prec);
+    mpfr_init2(*(range.b),prec);
+    mpfr_set(*(range.a),a,GMP_RNDD);
+    mpfr_set(*(range.b),b,GMP_RNDU);
+    res = fpFindZerosFunction(tree,range,prec);
+    mpfr_clear(*(range.a));
+    mpfr_clear(*(range.b));
+    free(range.a);
+    free(range.b);
+  } else {
+    for(i=1;i<=itos((GEN)(matsize(list)[1]));i++) {
+      x = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*x,prec);
+      PARI_to_mpfr(*x,(GEN)(list[i]),GMP_RNDN);
+      res = addElement(res, x);
+    }
   }
  
   free_memory(diff_tree);
@@ -397,6 +412,16 @@ int whichPoly(int deg, node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps)
   chain *list;
   rangetype range;
   mpfr_t y,min,max;
+  mpfr_t mpfrTemp;
+  mp_prec_t p;
+  
+  mpfr_init2(mpfrTemp,mpfr_get_prec(eps));
+  mpfr_abs(mpfrTemp,eps,GMP_RNDN);
+  mpfr_log2(mpfrTemp,mpfrTemp,GMP_RNDU);
+  p = ((mp_prec_t) (-mpfr_get_si(mpfrTemp,GMP_RNDU))) + 10;
+  mpfr_clear(mpfrTemp);
+  
+  if (p > prec) prec = p;
 
   mpfr_init2(aprime,prec);
   mpfr_init2(bprime,prec);
@@ -512,7 +537,8 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   rangetype range;
   mpfr_t *u;
   mpfr_t *v;
-  
+  int old_verbosity = verbosity;
+  verbosity = 0;
   int number_points = defaultpoints;
   defaultpoints = 5;
 
@@ -546,6 +572,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
     range.a = u;
     range.b = v;
     defaultpoints=number_points;
+    verbosity = old_verbosity;
     return range;
   }
   // else...
@@ -585,6 +612,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   range.a = u;
   range.b = v;
   defaultpoints=number_points;
+  verbosity = old_verbosity;
   return range;
 }
 
