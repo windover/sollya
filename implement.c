@@ -5766,7 +5766,7 @@ int accurToVarType(mpfr_t accur) {
 
 node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecision, 
 		    FILE *fd, char *name, int honorCoeffPrec, mp_prec_t prec, FILE *gappaFD) {
-  mpfr_t temp;
+  mpfr_t temp, tempValue;
   node *simplifiedFunc, *implementedPoly;
   int degree, i;
   node **coefficients;
@@ -5852,6 +5852,9 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   fpCoefficients = (mpfr_t *) safeCalloc(degree+1,sizeof(mpfr_t));
   fpCoeffRoundAutomatically = (int *) safeCalloc(degree+1,sizeof(int));
 
+  mpfr_init2(tempValue,prec);
+  mpfr_set_d(tempValue,1.0,GMP_RNDN);
+
   for (i=0;i<=degree;i++) {
     mpfr_init2(fpCoefficients[i],prec);
     fpCoeffRoundAutomatically[i] = 0;
@@ -5868,7 +5871,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
 	printMessage(1,"constant nor is able to be evaluated without rounding to a floating point constant.\n");
 	printMessage(1,"Will evaluate it in round-to-nearest with the current precision (%d bits) before rounding to\n",prec);
 	printMessage(1,"the target precision. A double rounding issue may occur.\n");
-	evaluateConstantExpression(fpCoefficients[i], tempTree, prec);
+	evaluateFaithful(fpCoefficients[i], tempTree, tempValue, prec);
 	fpCoeffRoundAutomatically[i] = 1;
       } else {
 	if (mpfr_set(fpCoefficients[i],*(tempTree->value),GMP_RNDN) != 0) {
@@ -5882,6 +5885,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
     }
   }
   free(coefficients);
+  mpfr_clear(tempValue);
 
   if (honorCoeffPrec) {
     for (i=0;i<=degree;i++) {

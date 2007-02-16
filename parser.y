@@ -1784,7 +1784,12 @@ printexpansion: PRINTEXPANSIONTOKEN function SEMICOLONTOKEN
 				 printMessage(1,"Warning: the constant expression is not a constant but must be evaluated.\n");
 				 mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 				 mpfr_init2(*mpfr_temp,defaultprecision);
-				 evaluateConstantExpression(*mpfr_temp, temp_node, defaultprecision);
+				 mpfr_temp2 = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+				 mpfr_init2(*mpfr_temp2,defaultprecision);
+				 mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
+				 evaluateFaithful(*mpfr_temp, temp_node, *mpfr_temp2, defaultprecision);
+				 mpfr_clear(*mpfr_temp2);
+				 free(mpfr_temp2);
 				 if (printDoubleExpansion(*mpfr_temp) != 0) {
 				   printMessage(1,"\nWarning: rounding occured while printing.");
 				 }
@@ -3096,70 +3101,31 @@ constantfunction:  function
 			       printMessage(1,
                       "Warning: the function given is not a floating-point constant but an expression to evaluate.\n");
 			     }
-			     if (!evaluateConstantExpression(*mpfr_temp,temp_node,tools_precision)) {
+			     if (!isConstant(temp_node)) {
 			       printMessage(1,"Warning: functions in this context must be expressions that evaluate to constants.\n");
 			       printMessage(1,"Setting %s = 0 when evaluating the given variable expression.\n",variablename);
-			       mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-			       mpfr_init2(*mpfr_temp2,tools_precision);
-			       mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
-			       evaluate(*mpfr_temp, ($1), *mpfr_temp2, tools_precision);
-			       mpfr_clear(*mpfr_temp2);
-			       free(mpfr_temp2);
 			     }
+			     mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp2,tools_precision);
+			     mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
+			     evaluateFaithful(*mpfr_temp, ($1), *mpfr_temp2, tools_precision);
+			     mpfr_clear(*mpfr_temp2);
+			     free(mpfr_temp2);
 			     free_memory(temp_node);
 			     free_memory($1);
 			     $$ = mpfr_temp;
                            }
 ;
 
-rangeconstant:     function
+rangeconstant:    constantfunction
                            {
-			     temp_node = simplifyTreeErrorfree($1);
-			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,tools_precision);
-			     if (temp_node->nodeType != CONSTANT) {
-			       printMessage(1,
-                      "Warning: the range bound given is not a floating-point constant but an expression to evaluate.\n");
-			     }
-			     if (!evaluateConstantExpression(*mpfr_temp,temp_node,tools_precision)) {
-			       printMessage(1,"Warning: range bounds must be expressions that evaluate to constants.\n");
-			       printMessage(1,"Setting %s = 0 when evaluating the given variable expression.\n",variablename);
-			       mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-			       mpfr_init2(*mpfr_temp2,tools_precision);
-			       mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
-			       evaluate(*mpfr_temp, ($1), *mpfr_temp2, tools_precision);
-			       mpfr_clear(*mpfr_temp2);
-			       free(mpfr_temp2);
-			     }
-			     free_memory(temp_node);
-			     free_memory($1);
-			     $$ = mpfr_temp;
-                           }
+			     $$ = $1;
+			   }
 ;
 
-
-diamconstant:     function
+diamconstant:     constantfunction
                            {
-			     temp_node = simplifyTreeErrorfree($1);
-			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,tools_precision);
-			     if (temp_node->nodeType != CONSTANT) {
-			       printMessage(1,
-                      "Warning: the diameter given is not a floating-point constant but an expression to evaluate.\n");
-			     }
-			     if (!evaluateConstantExpression(*mpfr_temp,temp_node,tools_precision)) {
-			       printMessage(1,"Warning: diameters must be expressions that evaluate to constants.\n");
-			       printMessage(1,"Setting %s = 0 when evaluating the given variable expression.\n",variablename);
-			       mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-			       mpfr_init2(*mpfr_temp2,tools_precision);
-			       mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
-			       evaluate(*mpfr_temp, ($1), *mpfr_temp2, tools_precision);
-			       mpfr_clear(*mpfr_temp2);
-			       free(mpfr_temp2);
-			     }
-			     free_memory(temp_node);
-			     free_memory($1);
-			     $$ = mpfr_temp;
+			     $$ = $1;
                            }
 ;
 

@@ -7,7 +7,7 @@
 #include "expression.h"
 #include "double.h"
 #include "main.h"
-
+#include "infnorm.h"
 
 typedef union {
   int32_t i[2]; 
@@ -478,10 +478,10 @@ int printDoubleExpansion(mpfr_t x) {
 }
 
 int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
-  int degree, roundingOccured, i, res, k, l;
+  int degree, roundingOccured, i, k, l;
   node **coefficients;
   node *tempNode, *simplifiedTreeSafe, *simplifiedTree, *myTree;
-  mpfr_t tempValue;
+  mpfr_t tempValue, tempValue2;
 
   roundingOccured = 0;
 
@@ -510,6 +510,8 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
   getCoefficients(&degree, &coefficients, myTree);
 
   mpfr_init2(tempValue,prec);
+  mpfr_init2(tempValue2,prec);
+  mpfr_set_d(tempValue2,1.0,GMP_RNDN);
 
   k = 0; l = 0;
   for (i=0;i<=degree;i++) {
@@ -531,11 +533,11 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
       if (tempNode->nodeType == CONSTANT) {
 	roundingOccured |=  printDoubleExpansion(*(tempNode->value));
       } else {
-	res = evaluateConstantExpression(tempValue, tempNode, prec);
-	if (!res) {
+	if (!isConstant(tempNode)) {
 	  printMessage(1,"Error: a coefficient of a polynomial is not constant.\n");
 	  recoverFromError();
 	}
+	evaluateFaithful(tempValue, tempNode, tempValue2, GMP_RNDN);
 	printDoubleExpansion(tempValue);
 	roundingOccured = 1;
       }
@@ -555,6 +557,7 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
 
   free(coefficients);
   mpfr_clear(tempValue);
+  mpfr_clear(tempValue2);
   free_memory(myTree);
 
   return roundingOccured;
