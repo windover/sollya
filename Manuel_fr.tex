@@ -141,7 +141,8 @@ ou bien sous forme binaire comme par exemple $1.1011\_2$.
   proche à l'aide des fonctions préfixes \com{D} ou \com{double} ; au double étendu le plus proche avec \com{doubleextended} ou \com{DE}; au
   double-double le plus proche avec les fonctions \com{DD} ou
   \com{doubledouble} ; au triple-double le plus proche avec les
-  fonctions \com{TD} ou \com{tripledouble}.
+  fonctions \com{TD} ou \com{tripledouble}. En outre, la fonction \com{round} permet d'arrondir n'importe quel nombre dans un format flottant arbitraire. La syntaxe est \com{round(x, t, mode)} où $x$ est le nombre à arrondir, $t$ est un entier représentant la précision du format visé (par exemple 53 pour de la double) et \com{mode} est l'une des valeurs \com{P}, \com{M}, \com{N} ou \com{Z} indiquant respectivement un arrondi vers $+\infty$, $-\infty$, au plus près ou vers zéro. L'arrondi se fait dans un format idéal, c'est-à-dire sans dépassement de capacité, et donc sans dénormalisé. Ainsi, \com{round(x,53,D)} n'est pas totalement équivalente à \com{D(x)}.
+  
 \item On peut bien sûr utiliser des parenthèses.
 \item \com{arenaireplot} comprend aussi des opérateurs fonctionnels
   (dans la suite \com{expr} désigne une expression fonctionnelle et
@@ -284,6 +285,8 @@ double précision sous forme hexadécimale. L'expression donnée est
 la double précision. Un affichage supplémentaire indique s'il y a eu
 arrondi ou non.
 
+La commande \com{printbinary} permet d'afficher une valeur quelconque sous forme binaire.
+
 Si \com{expr} désigne un polynôme, la commande \com{printexpansion expr} affiche ce polynôme sous forme de Hörner, où chaque coefficient est affiché sous la forme d'une somme de nombre hexadécimaux correspondant à des doubles. Si \com{expr} n'est pas un polynôme, un warning est affiché et rien ne se passe.
 
 On peut tracer le graphe d'une fonction sur un intervalle de la façon
@@ -326,6 +329,12 @@ Il peut être utile parfois de tracer le graphe correspondant à l'erreur d'évalua
 La commande procède ainsi : elle utilise un format de nombre flottant sur \com{n} bits (où \com{n} est le paramètre passé à la fonction \com{externalplot}). Avec ce format, elle avance d'un ulp en un ulp en partant de la borne gauche de l'intervalle et évalue en chaque point \com{expr-f} ou \com{expr/f-1} suivant le mode choisi. La fonction \com{f} est donc appelée avec la valeur corresondante stockée dans \com{x}. Le point \com{(x, expr-f)} est ajouté au graphe. Si l'intervalle donné comprend $0$, la commande ignore les points tellement proche de $0$ qu'ils ne seraient pas visible sur le graphe. Le graphe affiché correspond donc à tous les nombres flottants sur \com{n} bits dans un ensemble de la forme $(I \backslash [-a;a]) \cup \{0\}$ où $a$ est déterminé par \com{externalplot} en fonction de $I$.
 
 Si l'option \com{perturb} est donnée, la commande ne fait pas exactement le calcul d'erreur sur les flottants d'un format \com{n} bits. En réalité, \com{externalplot} se déplace alors effectivement de un ulp à chaque fois, mais le point où l'erreur va être calculée est ensuite aléatoirement légèrement perturbé. Ainsi, on ne risque pas d'observer des régularités fantômes dues à la régularité des points d'échantillonnage.
+
+La commande \com{guessdegree} permet de déterminer le degré nécessaire pour qu'un polynôme approche une fonction à une précision donnée. Cette commande procède par dichotomie en testant différent degrés jusqu'à trouver un degré satisfaisant. Comme il s'agit simplement d'un indicateur, la commande ne calcule pas précisément des minimax, mais elle en calcule une estimation pour connaître l'ordre de grandeur de l'erreur optimale associée à un degré $n$. Il peut donc arriver que la commande ne sâche pas déterminer si un certain degré sera suffisant ou non car son estimation n'est pas assez précise.  Par conséquent, il y a deux retours possibles : ou bien la commande donne effectivement le degré adapté, et dans ce cas, ce degré est effectivement optimal ; ou bien la commande donne un intervalle $[n_1,\,n2]$ tel que $n_1$ est la plus petite valeur pour laquelle il y a hésitation et $n_2$ est la plus petite valeur pour laquelle on est sûr que la précision sera atteinte. En général, on aura $n_2 = n_1 + 1$. La syntaxe est la suivante :
+\begin{center}
+\com{guessdegree expr1 in range with epsilon=const [, weight=expr2]}
+\end{center}
+La fonction à approcher est \com{expr1} en utilisant le cas échéant la fonction de poids \com{expr2} (i.e. on cherche à approcher \com{expr1} par une fonction de la forme \com{expr2} fois un polynôme). L'intervalle considéré est \com{range} et l'erreur visée est l'expression constante \com{const}.
 
 La commande \com{findzeros} permet de lister les zéros d'une fonction
 sur un intervalle. Plus précisément, la syntaxe est la suivante (les
