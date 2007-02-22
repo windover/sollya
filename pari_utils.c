@@ -60,7 +60,6 @@ GEN mpfr_to_PARI(mpfr_t x) {
 }
 
 
-// No check of the type of x is made (t_REAL or t_INT)
 void PARI_to_mpfr(mpfr_t y, GEN xx, mp_rnd_t rnd) {
   long length;
   mpz_t m;

@@ -841,6 +841,363 @@ node* remezWithWeight(node *func, node *weight, chain *monomials, mpfr_t a, mpfr
   return res;
 }
 
-node *remez(node *func, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
-  return remezWithWeight(func, NULL, monomials, a, b, prec);
+
+
+
+
+
+
+// Constructs the tree corresponding to p = sum(coeff(i) X^monomials[i])
+node *constructPolynomial(GEN coeff, chain *monomials, mp_prec_t prec) {
+  int i=1;
+  chain *curr;
+  node *temp1;
+  node *temp2;
+  node *temp3;
+  node *temp4;
+  node *temp5;
+  node *temp6;
+  node *poly;
+  mpfr_t *mpfr_ptr;
+
+  if (lengthChain(monomials) != itos((GEN)(matsize(coeff)[1]))) {
+    fprintf(stderr,"Error : inconsistant lengths in function constructPolynomial.\n");
+    recoverFromError();
+  }
+
+  poly =  safeMalloc(sizeof(node));
+  poly->nodeType = CONSTANT;
+  mpfr_ptr = safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*mpfr_ptr, prec);
+  mpfr_set_d(*mpfr_ptr, 0., GMP_RNDN);
+  poly->value = mpfr_ptr;
+
+  curr = monomials;
+  while(curr != NULL) {
+    temp1 = safeMalloc(sizeof(node));
+    temp1->nodeType = ADD;
+
+    temp2 = safeMalloc(sizeof(node));
+    temp2->nodeType = MUL;
+
+    temp3 = safeMalloc(sizeof(node));
+    temp3->nodeType = CONSTANT;
+    mpfr_ptr = safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*mpfr_ptr, prec);
+    PARI_to_mpfr(*mpfr_ptr, (GEN)(coeff[i]), GMP_RNDN);
+    temp3->value = mpfr_ptr;
+
+    temp4 = safeMalloc(sizeof(node));
+    temp4->nodeType = POW;
+
+    temp5 = safeMalloc(sizeof(node));
+    temp5->nodeType = VARIABLE;
+
+    temp6 = safeMalloc(sizeof(node));
+    temp6->nodeType = CONSTANT;
+    mpfr_ptr = safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*mpfr_ptr, prec);
+    mpfr_set(*mpfr_ptr, *((mpfr_t *)(curr->value)), GMP_RNDN);
+    temp6->value = mpfr_ptr;
+
+    temp4->child1 = temp5;
+    temp4->child2 = temp6;
+    temp2->child1 = temp3;
+    temp2->child2 = temp4;
+    temp1->child1 = temp2;
+    temp1->child2 = poly;
+    poly = temp1;
+
+    i++;
+    curr = curr->next;
+  }
+  
+  return poly;
+}
+
+
+// This function finds the local extrema of a the error function poly*w-f.
+// It uses the derivative and the second derivative of these functions to
+// search the zeros of (poly*w-f)' by Newton's algorithm
+// It expects to find at least freeDegrees+1 alternates extrema and
+// returns it as a result. An intial estimation of these points is given
+// in the vector x.
+// Moreover, the quality of the approximation
+// (defined by abs(err_max)/abs(err_min) - 1 where err_min and err_max 
+// denote the minimal and maximal extrema in absolute value) is stored
+// in computedQuality.
+GEN qualityOfError(mpfr_t computedQuality, GEN x,
+		   node *poly, node *poly_diff, node *poly_diff2,
+		   node *f, node *f_diff, node *f_diff2,
+		   node *w, node *w_diff, node *w_diff2,
+		   int freeDegrees, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+  /*  int i, s, n, test;
+  mpfr_t var1, dummy_mpfr;
+  mpfr_t *y;
+  node *err_diff;
+  node *err_diff2;
+  node *temp1;
+  node *temp2;
+  node *temp3;
+
+  mpfr_init2(var1, prec);
+  mpfr_init2(dummy_mpfr, 5);
+
+  // Construction of the trees corresponding to (poly*w-f)' and (poly*w-f)''
+  err_diff = safeMalloc(sizeof(node));
+  err_diff->nodeType = SUB;
+  temp1 = safeMalloc(sizeof(node));
+  temp1->nodeType = ADD;
+  temp2 = safeMalloc(sizeof(node));
+  temp2->nodeType = MUL;
+  temp3 = safeMalloc(sizeof(node));
+  temp3->nodeType = MUL;
+
+  temp3->child1 = poly_diff;
+  temp3->child2 = w;
+  temp2->child1 = poly;
+  temp2->child2 = w_diff;
+  temp1->child1 = temp3;
+  temp1->child2 = temp2;
+  err_diff->child1 = temp1
+  err_diff->child2 = f_diff;
+
+  err_diff2 = differentiate(err_diff);
+  
+
+  // If x = [x1 ... xn], we construct [y0 y1 ... yn] by
+  // y0 = a, yn = b and yi = (xi + x(i+1))/2
+  n = itos((GEN)(matsize(coeff)[1]));
+  y = (mpfr_t *)safeMalloc((n+1)*sizeof(mpfr_t));
+  mpfr_init2(y[0], prec);
+  mpfr_set(y[0], a, GMP_RNDN);
+  for(i=1; i<n; i++) {
+    mpfr_init2(y[i], prec);
+    PARI_to_mpfr(var1, (GEN)(x[i]));
+    PARI_to_mpfr(y[i], (GEN)(x[i+1]));
+    mpfr_add(y[i], var1, y[i], GMP_RNDN);
+    mpfr_div_2ui(y[i], y[i], 1, GMP_RNDN);
+  }
+  mpfr_init2(y[n], prec);
+  mpfr_set(y[n], n, GMP_RNDN);
+  
+
+  // Tests if we can say that there is at least one zero between each y[i]
+  s = 0;
+  test = 1;
+  i=0;
+  mpfr_set_d(var1, 0., GMP_RNDN);
+
+  while(test && i<=n) {
+    if(evaluateFaithfulWithCutOffFast(dummy_mpfr, err_diff, err_diff2, y[0], var1, prec)) {
+      // we may assume that err_diff(y[i]) == 0
+    }
+    else { 
+      if( (s<0 && mpfr_sgn(dummy_mpfr)<0) || (s>0 && mpfr_sgn(dummy_mpfr)>0) ) test=0;
+    i++;
+    }
+*/
+
+  node *error;
+  node *error_diff;
+  node *error_diff2;
+  node *temp1;
+  GEN y;
+  int crash_report=0;
+  int i,n;
+  mpfr_t var, max_val, min_val;
+
+  mpfr_init2(var, prec);
+  mpfr_init2(max_val, prec);
+  mpfr_init2(min_val, prec);
+
+  mpfr_set_d(max_val, 0., GMP_RNDN);
+  mpfr_set_inf(min_val, 1);
+
+  safeMalloc(sizeof(node));
+  error->nodeType = SUB;
+  temp1 = safeMalloc(sizeof(node));
+  temp1->nodeType = MUL;
+  temp1->child1 = poly;
+  temp1->child2 = w;
+  error->child1 = temp1;
+  error->child2 = f;
+
+  error_diff = differentiate(error);
+  error_diff2 = differentiate(error_diff);
+
+  
+  y = quickFindZeros(error_diff, error_diff2, freeDegrees-1, a, b, prec, &crash_report);
+  if (crash_report == -1) {
+    free_memory(error);
+    free_memory(error_diff);
+    free_memory(error_diff2);
+    mpfr_clear(var);
+    mpfr_clear(max_val);
+    mpfr_clear(min_val);
+    fprintf(stderr,"Error : in Remez, curves fails to oscillate sufficiently.");
+    recoverFromError();
+  }
+
+  n = itos((GEN)(matsize(x)[1]));
+  for(i=1;i<=n;i++) {
+    PARI_to_mpfr(var, (GEN)y[i], GMP_RNDN);
+    evaluateFaithful(var, error, var, prec);
+    mpfr_abs(var, var, GMP_RNDN);
+    if(mpfr_cmp(var, max_val) > 0) mpfr_set(max_val, var, GMP_RNDU);
+    if(mpfr_cmp(var, min_val) < 0) mpfr_set(min_val, var, GMP_RNDD);
+  }
+
+  mpfr_div(var, max_val, min_val, GMP_RNDU);
+  mpfr_sub_ui(var, var, 1, GMP_RNDU);
+  mpfr_set(computedQuality, var, GMP_RNDU);
+
+  free_memory(error);
+  free_memory(error_diff);
+  free_memory(error_diff2);
+  mpfr_clear(var);
+  mpfr_clear(max_val);
+  mpfr_clear(min_val);
+  return y;
+
+}
+
+node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec, mpfr_t quality) {
+  ulong ltop=avma;
+  int freeDegrees = lengthChain(monomials);
+  int i,j;
+  long exponent;
+  GEN x, M, temp;
+  mpfr_t var1, var2, var3, var4, computedQuality;
+  node *temp_tree;
+  node *poly;
+  node *poly_diff;
+  node *poly_diff2;
+  node *f_diff;
+  node *f_diff2;
+  node *w_diff;
+  node *w_diff2;
+  chain *curr;
+
+  // Initialisations and precomputations
+  mpfr_init2(var1, prec);
+  mpfr_init2(var2, prec);
+  mpfr_init2(var3, prec);
+  mpfr_init2(var4, prec);
+
+  mpfr_init2(computedQuality, mpfr_get_prec(quality));
+  mpfr_set_d(computedQuality, 1., GMP_RNDN);
+
+  f_diff = differentiate(f);
+  f_diff2 = differentiate(f_diff);
+  w_diff = differentiate(w);
+  w_diff2 = differentiate(w_diff);
+
+
+  // Definition of the array x of the n+2 Chebychev points
+  x = cgetg(freeDegrees + 2, t_COL);
+  mpfr_const_pi(var1, GMP_RNDN);
+  mpfr_div_si(var1, var1, (long)freeDegrees, GMP_RNDN); // var1 = Pi/freeDegrees
+  mpfr_sub(var2, a, b, GMP_RNDN);
+  mpfr_div_2ui(var2, var2, 1, GMP_RNDN); // var2 = (a-b)/2
+  mpfr_add(var3, a, b, GMP_RNDN);
+  mpfr_div_2ui(var3, var3, 1, GMP_RNDN); // var3 = (a+b)/2
+
+  for (i=1 ; i <= freeDegrees+1 ; i++) {
+    mpfr_mul_si(var4, var1, i-1, GMP_RNDN);
+    mpfr_cos(var4, var4, GMP_RNDN);
+    mpfr_fma(var4, var4, var2, var3, GMP_RNDN); // var4 = [cos((i-1)*Pi/freeDegrees)]*(a-b)/2 + (a+b)/2
+    x[i] = (long)(mpfr_to_PARI(var4));
+  }
+
+
+  while(mpfr_cmp(computedQuality, quality)>1) {
+
+    // Definition of the matrix M of Remez algorithm
+    M = cgetg(freeDegrees+1, t_MAT);
+    temp = cgetg(freeDegrees+1, t_COL);
+    curr = monomials;
+    for (j=1 ; j <= freeDegrees ; j++) {
+      exponent = (long) (*((int *)(curr->value)));
+      for (i=1 ; i <= freeDegrees+1 ; i++) {
+	PARI_to_mpfr(var1, (GEN)(x[i]), GMP_RNDN);
+	evaluateFaithful(var2, w, var1, prec); // var2 = w(x[i])
+	mpfr_pow_si(var1, var1, exponent, GMP_RNDN);
+	mpfr_mul(var1, var1, var2, GMP_RNDN); // var1 = w(x[i])*x[i]^(curr->value)
+	temp[i] = (long)(mpfr_to_PARI(var1));
+      }
+      M[j] = lcopy(temp);
+      curr = curr->next;
+    }
+    for (i=1 ; i <= freeDegrees+1 ; i++) {
+      temp[i] = (long)stoi((i % 2)*2-1);  // temp = [1, -1, 1, -1 ... ]~
+    }
+    M[freeDegrees+1] = lcopy(temp);
+    // Note that a simple optimization would be to precompute the w(x[i])
+    // instead of computing it (freeDegrees+1) times
+    
+    
+    // Determination of the polynomial corresponding to M and x
+    for (i=1 ; i <= freeDegrees+1 ; i++) {
+      PARI_to_mpfr(var1, (GEN)(x[i]), GMP_RNDN);
+      evaluateFaithful(var1, f, var1, GMP_RNDN); // var1 = f(x[i])
+      temp[i] = (long)(mpfr_to_PARI(var1));
+    }
+    temp = gauss(M,temp);
+    poly = constructPolynomial(temp, monomials, prec);
+
+
+    // Computing the useful derivatives of functions
+    poly_diff = differentiate(poly);
+    poly_diff2 = differentiate(poly_diff);
+    
+    temp_tree = horner(poly);
+    free_memory(poly);
+    poly = temp_tree;
+    
+    temp_tree = horner(poly_diff);
+    free_memory(poly_diff);
+    poly_diff = temp_tree;
+    
+    temp_tree = horner(poly_diff2);
+    free_memory(poly_diff2);
+    poly_diff2 = temp_tree;
+    
+    
+    // Find extremas and tests the quality of the current approximation
+    x = qualityOfError(computedQuality, x,
+		       poly, poly_diff, poly_diff2,
+		       f, f_diff, f_diff2,
+		       w, w_diff, w_diff2,
+		       freeDegrees, a, b, prec);
+
+    free_memory(poly_diff);
+    free_memory(poly_diff2);
+  }
+
+  
+  mpfr_clear(var1);
+  mpfr_clear(var2);
+  mpfr_clear(var3);
+  mpfr_clear(var4);
+  mpfr_clear(computedQuality);
+  free_memory(f_diff);
+  free_memory(f_diff2);
+  free_memory(w_diff);
+  free_memory(w_diff2);
+
+  avma=ltop;
+  return poly;
+}
+
+
+node *remez(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+  //  return remezWithWeight(func, NULL, monomials, a, b, prec);
+  mpfr_t quality;
+  node *res;
+  mpfr_init2(quality, 53);
+  mpfr_set_d(quality, 0.00001, GMP_RNDN);
+  res = newRemez(func, weight, monomials, a, b, prec, quality);
+  mpfr_clear(quality);
+  return res;
 }
