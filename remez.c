@@ -858,19 +858,19 @@ node *constructPolynomial(GEN coeff, chain *monomials, mp_prec_t prec) {
   node *temp5;
   node *temp6;
   node *poly;
-  mpfr_t *mpfr_ptr;
+  mpfr_t *ptr;
 
-  if (lengthChain(monomials) != itos((GEN)(matsize(coeff)[1]))) {
+  if (lengthChain(monomials) != itos((GEN)(matsize(coeff)[1]))-1) {
     fprintf(stderr,"Error : inconsistant lengths in function constructPolynomial.\n");
     recoverFromError();
   }
 
   poly =  safeMalloc(sizeof(node));
   poly->nodeType = CONSTANT;
-  mpfr_ptr = safeMalloc(sizeof(mpfr_t));
-  mpfr_init2(*mpfr_ptr, prec);
-  mpfr_set_d(*mpfr_ptr, 0., GMP_RNDN);
-  poly->value = mpfr_ptr;
+  ptr = safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*ptr, prec);
+  mpfr_set_d(*ptr, 0., GMP_RNDN);
+  poly->value = ptr;
 
   curr = monomials;
   while(curr != NULL) {
@@ -882,10 +882,10 @@ node *constructPolynomial(GEN coeff, chain *monomials, mp_prec_t prec) {
 
     temp3 = safeMalloc(sizeof(node));
     temp3->nodeType = CONSTANT;
-    mpfr_ptr = safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_ptr, prec);
-    PARI_to_mpfr(*mpfr_ptr, (GEN)(coeff[i]), GMP_RNDN);
-    temp3->value = mpfr_ptr;
+    ptr = safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*ptr, prec);
+    PARI_to_mpfr(*ptr, (GEN)(coeff[i]), GMP_RNDN);
+    temp3->value = ptr;
 
     temp4 = safeMalloc(sizeof(node));
     temp4->nodeType = POW;
@@ -895,10 +895,10 @@ node *constructPolynomial(GEN coeff, chain *monomials, mp_prec_t prec) {
 
     temp6 = safeMalloc(sizeof(node));
     temp6->nodeType = CONSTANT;
-    mpfr_ptr = safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*mpfr_ptr, prec);
-    mpfr_set(*mpfr_ptr, *((mpfr_t *)(curr->value)), GMP_RNDN);
-    temp6->value = mpfr_ptr;
+    ptr = safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*ptr, prec);
+    mpfr_set_si(*ptr, *((int *)(curr->value)), GMP_RNDN);
+    temp6->value = ptr;
 
     temp4->child1 = temp5;
     temp4->child2 = temp6;
@@ -907,11 +907,10 @@ node *constructPolynomial(GEN coeff, chain *monomials, mp_prec_t prec) {
     temp1->child1 = temp2;
     temp1->child2 = poly;
     poly = temp1;
-
     i++;
     curr = curr->next;
   }
-  
+
   return poly;
 }
 
@@ -1014,14 +1013,14 @@ GEN qualityOfError(mpfr_t computedQuality, GEN x,
   mpfr_set_d(max_val, 0., GMP_RNDN);
   mpfr_set_inf(min_val, 1);
 
-  safeMalloc(sizeof(node));
+  error = safeMalloc(sizeof(node));
   error->nodeType = SUB;
   temp1 = safeMalloc(sizeof(node));
   temp1->nodeType = MUL;
-  temp1->child1 = poly;
-  temp1->child2 = w;
+  temp1->child1 = copyTree(poly);
+  temp1->child2 = copyTree(w);
   error->child1 = temp1;
-  error->child2 = f;
+  error->child2 = copyTree(f);
 
   error_diff = differentiate(error);
   error_diff2 = differentiate(error_diff);
@@ -1035,7 +1034,6 @@ GEN qualityOfError(mpfr_t computedQuality, GEN x,
     mpfr_clear(var);
     mpfr_clear(max_val);
     mpfr_clear(min_val);
-    fprintf(stderr,"Error : in Remez, curves fails to oscillate sufficiently.");
     recoverFromError();
   }
 
@@ -1079,6 +1077,11 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
   node *w_diff2;
   chain *curr;
 
+  if(verbosity>=3) {
+    printf("Entering in Remez function...\n");
+    printf("Required quality :"); printMpfr(quality);
+  }
+
   // Initialisations and precomputations
   mpfr_init2(var1, prec);
   mpfr_init2(var2, prec);
@@ -1088,6 +1091,10 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
   mpfr_init2(computedQuality, mpfr_get_prec(quality));
   mpfr_set_d(computedQuality, 1., GMP_RNDN);
 
+  if(verbosity>=3) {
+    printf("Differentiating functions...\n");
+  }
+
   f_diff = differentiate(f);
   f_diff2 = differentiate(f_diff);
   w_diff = differentiate(w);
@@ -1095,6 +1102,11 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
 
 
   // Definition of the array x of the n+2 Chebychev points
+
+  if(verbosity>=3) {
+    printf("Computing an initial points set...\n");
+  }
+
   x = cgetg(freeDegrees + 2, t_COL);
   mpfr_const_pi(var1, GMP_RNDN);
   mpfr_div_si(var1, var1, (long)freeDegrees, GMP_RNDN); // var1 = Pi/freeDegrees
@@ -1110,12 +1122,19 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
     x[i] = (long)(mpfr_to_PARI(var4));
   }
 
-
-  while(mpfr_cmp(computedQuality, quality)>1) {
+  if(verbosity>=4) {
+    printf("Computed points set :"); output(x);
+  }
+  
+  while(mpfr_cmp(computedQuality, quality)>0) {
 
     // Definition of the matrix M of Remez algorithm
-    M = cgetg(freeDegrees+1, t_MAT);
-    temp = cgetg(freeDegrees+1, t_COL);
+    if(verbosity>=3) {
+      printf("Computing the matrix...\n");
+    }
+
+    M = cgetg(freeDegrees+2, t_MAT);
+    temp = cgetg(freeDegrees+2, t_COL);
     curr = monomials;
     for (j=1 ; j <= freeDegrees ; j++) {
       exponent = (long) (*((int *)(curr->value)));
@@ -1133,6 +1152,11 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
       temp[i] = (long)stoi((i % 2)*2-1);  // temp = [1, -1, 1, -1 ... ]~
     }
     M[freeDegrees+1] = lcopy(temp);
+
+    if(verbosity>=5) {
+      printf("The computed matrix is "); output(M);
+    }
+    
     // Note that a simple optimization would be to precompute the w(x[i])
     // instead of computing it (freeDegrees+1) times
     
@@ -1146,8 +1170,15 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
     temp = gauss(M,temp);
     poly = constructPolynomial(temp, monomials, prec);
 
+    if(verbosity>=4) {
+      printf("The computed polynomial is "); printTree(poly); printf("\n");
+    }
 
     // Computing the useful derivatives of functions
+    if(verbosity>=3) {
+      printf("Differentiating the computed polynomial...\n");
+    }
+    
     poly_diff = differentiate(poly);
     poly_diff2 = differentiate(poly_diff);
     
@@ -1163,6 +1194,9 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
     free_memory(poly_diff2);
     poly_diff2 = temp_tree;
     
+    if(verbosity>=3) {
+      printf("Searching extrema of the error function...\n");
+    }
     
     // Find extremas and tests the quality of the current approximation
     x = qualityOfError(computedQuality, x,
@@ -1170,6 +1204,13 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
 		       f, f_diff, f_diff2,
 		       w, w_diff, w_diff2,
 		       freeDegrees, a, b, prec);
+
+    if(verbosity>=4) {    
+      printf("New points set :"); output(x);
+    }
+    if(verbosity>=3) {
+      printf("Current quality :"); printMpfr(computedQuality);
+    }
 
     free_memory(poly_diff);
     free_memory(poly_diff2);
