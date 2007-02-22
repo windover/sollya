@@ -2151,6 +2151,8 @@ degree:  constantfunction
 			       printMessage(1,"The degree of a polynomial must be a positive number. Will do degree 3.\n");
 			       int_temp = 3;
 			     }
+			     mpfr_clear(*($1));
+			     free($1);
 			     $$ = int_temp;                           
                            }
 ;
