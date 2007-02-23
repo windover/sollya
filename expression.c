@@ -5621,6 +5621,8 @@ int isMonomial(node *tree) {
   case VARIABLE:
     return 1;
     break;
+  case DIV:
+    return (isConstant(tree->child2)) & isMonomial(tree->child1);
   default: 
     return isConstant(tree);
   }
@@ -5650,6 +5652,27 @@ node* getCoefficientsInMonomialUnsafe(node *polynom) {
     return coeffs;
   }
 
+  if (polynom->nodeType == DIV) {
+    leftSub = getCoefficientsInMonomialUnsafe(polynom->child1);
+    if (leftSub == NULL) {
+      coeffs = (node*) safeMalloc(sizeof(node));
+      coeffs->nodeType = DIV;
+      coeffs->child1 = (node *) safeMalloc(sizeof(node));
+      coeffs->child1->nodeType = CONSTANT;
+      coeffs->child1->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*(coeffs->child1->value),10);
+      mpfr_set_d(*(coeffs->child1->value),1.0,GMP_RNDN);
+      coeffs->child2 = copyTree(polynom->child2);
+    } else {
+      coeffs = (node*) safeMalloc(sizeof(node));
+      coeffs->nodeType = DIV;
+      coeffs->child1 = leftSub;
+      coeffs->child2 = copyTree(polynom->child2);
+    }
+    return coeffs;
+  }
+
+
   if (polynom->nodeType == NEG) {
     leftSub = getCoefficientsInMonomialUnsafe(polynom->child1);
     rightSub = (node *) safeMalloc(sizeof(node));
@@ -5676,6 +5699,7 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
   int degree;
   node *temp, *coeff, *temp2;
   mpfr_t *value;
+
  
   if (isMonomial(polynom)) {
     degree = getDegree(polynom);
