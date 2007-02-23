@@ -1639,9 +1639,27 @@ node* simplifyTreeErrorfree(node *tree) {
 	    free(simplified);
 	    simplified = simplChild1;
 	  } else {
-	    simplified->nodeType = MUL;
-	    simplified->child1 = simplChild1;
-	    simplified->child2 = simplChild2;
+	    if ((simplChild1->nodeType == DIV) &&
+		(simplChild1->child1->nodeType == CONSTANT) &&
+		(mpfr_cmp_d(*(simplChild1->child1->value),1.0) == 0)) {
+	      simplified->nodeType = DIV;
+	      simplified->child1 = simplChild2;
+	      simplified->child2 = copyTree(simplChild1->child2);
+	      free_memory(simplChild1);
+	    } else {
+	      if ((simplChild2->nodeType == DIV) &&
+		  (simplChild2->child1->nodeType == CONSTANT) &&
+		  (mpfr_cmp_d(*(simplChild2->child1->value),1.0) == 0)) {
+		simplified->nodeType = DIV;
+		simplified->child1 = simplChild1;
+		simplified->child2 = copyTree(simplChild2->child2);
+		free_memory(simplChild2);
+	      } else {
+		simplified->nodeType = MUL;
+		simplified->child1 = simplChild1;
+		simplified->child2 = simplChild2;
+	      }
+	    }
 	  }
 	}
       }
@@ -7091,4 +7109,5 @@ node *makeCanonical(node *tree, mp_prec_t prec) {
   }
   return copy;
 }
+
 
