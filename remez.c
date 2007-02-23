@@ -247,7 +247,7 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
       if (i==deg +1) {
 	evaluateFaithful(y1, tree, a, prec);
 	evaluateFaithful(y2, tree, b, prec);
-	if (mpfr_cmpabs(y1,y2)>=0) res[deg+2] = (long)(mpfr_to_PARI(a));
+	if (mpfr_cmpabs(y1,y2)>0) res[deg+2] = (long)(mpfr_to_PARI(a));
 	else res[deg+2] = (long)(mpfr_to_PARI(b));
 	res = sort(res);
       }
@@ -1021,9 +1021,19 @@ GEN qualityOfError(mpfr_t computedQuality, GEN x,
   temp1->child2 = copyTree(w);
   error->child1 = temp1;
   error->child2 = copyTree(f);
+  temp1 = simplifyTreeErrorfree(error);
+  free_memory(error);
+  error = temp1;
 
   error_diff = differentiate(error);
+  temp1 = simplifyTreeErrorfree(error_diff);
+  free_memory(error_diff);
+  error_diff = temp1;
+
   error_diff2 = differentiate(error_diff);
+  temp1 = simplifyTreeErrorfree(error_diff2);
+  free_memory(error_diff2);
+  error_diff2 = temp1;
 
   
   y = quickFindZeros(error_diff, error_diff2, freeDegrees-1, a, b, prec, &crash_report);
@@ -1063,11 +1073,13 @@ GEN qualityOfError(mpfr_t computedQuality, GEN x,
 node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec, mpfr_t quality) {
   ulong ltop=avma;
   int freeDegrees = lengthChain(monomials);
-  int i,j;
-  long exponent;
+  int i,j, count;
   GEN x, M, temp;
   mpfr_t var1, var2, var3, var4, computedQuality;
+  mpfr_t *ptr;
   node *temp_tree;
+  node *temp_tree2;
+  node *temp_tree3;
   node *poly;
   node *poly_diff;
   node *poly_diff2;
@@ -1100,6 +1112,7 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
   w_diff = differentiate(w);
   w_diff2 = differentiate(w_diff);
 
+  count = 0;
 
   // Definition of the array x of the n+2 Chebychev points
 
@@ -1107,6 +1120,7 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
     printf("Computing an initial points set...\n");
   }
 
+  /*************************************************************/
   x = cgetg(freeDegrees + 2, t_COL);
   mpfr_const_pi(var1, GMP_RNDN);
   mpfr_div_si(var1, var1, (long)freeDegrees, GMP_RNDN); // var1 = Pi/freeDegrees
@@ -1121,15 +1135,50 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
     mpfr_fma(var4, var4, var2, var3, GMP_RNDN); // var4 = [cos((i-1)*Pi/freeDegrees)]*(a-b)/2 + (a+b)/2
     x[i] = (long)(mpfr_to_PARI(var4));
   }
+  /*************************************************************/
+
+
+  /*************************************************************/
+  /*                 Evenly distributed points                 */
+  //x = cgetg(freeDegrees + 2, t_COL);
+  //mpfr_sub(var1, b, a, GMP_RNDN);
+  //mpfr_div_si(var1, var1, (long)(freeDegrees), GMP_RNDN); // var1 = (b-a)/freeDegrees
+  //
+  //for (i=1 ; i <= freeDegrees+1 ; i++) {
+  //  mpfr_mul_si(var1, var1, i-1, GMP_RNDN);
+  //  mpfr_add(var1, var1, a, GMP_RNDN);
+  //  x[i] = (long)(mpfr_to_PARI(var1));
+  //}
+  /*************************************************************/
+
+
+  /*************************************************************/
+  /*                  Alternative Cheb points                  */
+  //x = cgetg(freeDegrees + 2, t_COL);
+  //mpfr_const_pi(var1, GMP_RNDN);
+  //mpfr_div_si(var1, var1, 2*((long)freeDegrees+1), GMP_RNDN); // var1 = Pi/(2*freeDegrees+2)
+  //mpfr_sub(var2, a, b, GMP_RNDN);
+  //mpfr_div_2ui(var2, var2, 1, GMP_RNDN); // var2 = (a-b)/2
+  //mpfr_add(var3, a, b, GMP_RNDN);
+  //mpfr_div_2ui(var3, var3, 1, GMP_RNDN); // var3 = (a+b)/2
+
+  //for (i=1 ; i <= freeDegrees+1 ; i++) {
+  //  mpfr_mul_si(var4, var1, 2*i-1, GMP_RNDN);
+  //  mpfr_cos(var4, var4, GMP_RNDN);
+  //  mpfr_fma(var4, var4, var2, var3, GMP_RNDN); // var4=[cos((2i-1)*Pi/(2freeDegrees+2))]*(a-b)/2 + (a+b)/2
+  //  x[i] = (long)(mpfr_to_PARI(var4));
+  //}
+  /*************************************************************/
 
   if(verbosity>=4) {
     printf("Computed points set :"); output(x);
   }
   
-  while(mpfr_cmp(computedQuality, quality)>0) {
+  while((mpfr_cmp(computedQuality, quality)>0) && (count<1000)) {
 
     // Definition of the matrix M of Remez algorithm
     if(verbosity>=3) {
+      printf("STEP %d\n",count);
       printf("Computing the matrix...\n");
     }
 
@@ -1137,17 +1186,39 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
     temp = cgetg(freeDegrees+2, t_COL);
     curr = monomials;
     for (j=1 ; j <= freeDegrees ; j++) {
-      exponent = (long) (*((int *)(curr->value)));
+      temp_tree = safeMalloc(sizeof(node));
+      temp_tree->nodeType = VARIABLE;
+      temp_tree2 = safeMalloc(sizeof(node));
+      temp_tree2->nodeType = CONSTANT;
+      ptr = safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*ptr, prec);
+      mpfr_set_si(*ptr, (long) (*((int *)(curr->value))), GMP_RNDN);
+      temp_tree2->value = ptr;
+
+      temp_tree3 = safeMalloc(sizeof(node));
+      temp_tree3->nodeType = POW;
+      temp_tree3->child1 = temp_tree;
+      temp_tree3->child2 = temp_tree2;
+
+      temp_tree = safeMalloc(sizeof(node));
+      temp_tree->nodeType = MUL;
+      temp_tree->child1 = temp_tree3;
+      temp_tree->child2 = copyTree(w);
+
+      temp_tree2 = simplifyTreeErrorfree(temp_tree);
+      free_memory(temp_tree);
+      temp_tree = temp_tree2; // temp_tree = x^(monomials[j])*w(x)
+      
       for (i=1 ; i <= freeDegrees+1 ; i++) {
 	PARI_to_mpfr(var1, (GEN)(x[i]), GMP_RNDN);
-	evaluateFaithful(var2, w, var1, prec); // var2 = w(x[i])
-	mpfr_pow_si(var1, var1, exponent, GMP_RNDN);
-	mpfr_mul(var1, var1, var2, GMP_RNDN); // var1 = w(x[i])*x[i]^(curr->value)
+	evaluateFaithful(var1, temp_tree, var1, prec);
 	temp[i] = (long)(mpfr_to_PARI(var1));
       }
       M[j] = lcopy(temp);
+      free_memory(temp_tree);
       curr = curr->next;
     }
+
     for (i=1 ; i <= freeDegrees+1 ; i++) {
       temp[i] = (long)stoi((i % 2)*2-1);  // temp = [1, -1, 1, -1 ... ]~
     }
@@ -1212,11 +1283,12 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
       printf("Current quality :"); printMpfr(computedQuality);
     }
 
+    count++;
+
     free_memory(poly_diff);
     free_memory(poly_diff2);
   }
 
-  
   mpfr_clear(var1);
   mpfr_clear(var2);
   mpfr_clear(var3);
@@ -1228,6 +1300,11 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
   free_memory(w_diff2);
 
   avma=ltop;
+  if (mpfr_cmp(computedQuality, quality)>0) {
+    fprintf(stderr, "Error in Remez: the algorithm does not converge.\n");
+    recoverFromError();
+  }
+
   return poly;
 }
 
