@@ -215,6 +215,7 @@ void yyerror(char *message) {
 %type <precisionval> precision
 %type <pointsnum> points
 %type <tree> function
+%type <tree> fun
 %type <tree> prefixfunction
 %type <rangeval> range
 %type <rangeval> directrange
@@ -2187,12 +2188,19 @@ taylorrecursionsvalue:  CONSTTOKEN
                            }
 ;
 
+function:                       fun
+                           {
+			     temp_node = simplifyTreeErrorfree($1);
+			     free_memory($1);
+			     $$ = temp_node;
+			   }
+;
 
-function:			term						
+fun:     			term						
                            {
 			     $$ = $1;
                            }   									
-      			|	function PLUSTOKEN term			
+      			|	fun PLUSTOKEN term			
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ADD;
@@ -2200,7 +2208,7 @@ function:			term
 			     temp_node->child2 = $3;
 			     $$ = temp_node;
                            }										
-			|	function MINUSTOKEN term			
+			|	fun MINUSTOKEN term			
 		           {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = SUB;
@@ -2327,7 +2335,7 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			     free_memory($3);
 			     $$ = temp_node;
 			   }
-                        |       SIMPLIFYSAFETOKEN LPARTOKEN function RPARTOKEN
+                        |       SIMPLIFYSAFETOKEN LPARTOKEN fun RPARTOKEN
                            {
 			     temp_node = simplifyTreeErrorfree($3);
 			     free_memory($3);
@@ -2364,182 +2372,182 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			     free_memory($3);
 			     $$ = temp_node;
 			   }
-			|       SQRTTOKEN LPARTOKEN function RPARTOKEN    
+			|       SQRTTOKEN LPARTOKEN fun RPARTOKEN    
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = SQRT;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       EXPTOKEN LPARTOKEN function RPARTOKEN    
+                        |       EXPTOKEN LPARTOKEN fun RPARTOKEN    
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = EXP;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       LOGTOKEN LPARTOKEN function RPARTOKEN
+                        |       LOGTOKEN LPARTOKEN fun RPARTOKEN
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = LOG;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       LOG2TOKEN LPARTOKEN function RPARTOKEN
+                        |       LOG2TOKEN LPARTOKEN fun RPARTOKEN
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = LOG_2;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       LOG10TOKEN LPARTOKEN function RPARTOKEN
+                        |       LOG10TOKEN LPARTOKEN fun RPARTOKEN
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = LOG_10;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       SINTOKEN LPARTOKEN function RPARTOKEN
+                        |       SINTOKEN LPARTOKEN fun RPARTOKEN
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = SIN;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       COSTOKEN LPARTOKEN function RPARTOKEN
+                        |       COSTOKEN LPARTOKEN fun RPARTOKEN
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = COS;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       TANTOKEN LPARTOKEN function RPARTOKEN
+                        |       TANTOKEN LPARTOKEN fun RPARTOKEN
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = TAN;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       ASINTOKEN LPARTOKEN function RPARTOKEN
+                        |       ASINTOKEN LPARTOKEN fun RPARTOKEN
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ASIN;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       ACOSTOKEN LPARTOKEN function RPARTOKEN    
+                        |       ACOSTOKEN LPARTOKEN fun RPARTOKEN    
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ACOS;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       ATANTOKEN LPARTOKEN function RPARTOKEN    
+                        |       ATANTOKEN LPARTOKEN fun RPARTOKEN    
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ATAN;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       SINHTOKEN LPARTOKEN function RPARTOKEN    
+                        |       SINHTOKEN LPARTOKEN fun RPARTOKEN    
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = SINH;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       COSHTOKEN LPARTOKEN function RPARTOKEN    
+                        |       COSHTOKEN LPARTOKEN fun RPARTOKEN    
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = COSH;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       TANHTOKEN LPARTOKEN function RPARTOKEN    
+                        |       TANHTOKEN LPARTOKEN fun RPARTOKEN    
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = TANH;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       ASINHTOKEN LPARTOKEN function RPARTOKEN   
+                        |       ASINHTOKEN LPARTOKEN fun RPARTOKEN   
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ASINH;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       ACOSHTOKEN LPARTOKEN function RPARTOKEN   
+                        |       ACOSHTOKEN LPARTOKEN fun RPARTOKEN   
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ACOSH;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       ATANHTOKEN LPARTOKEN function RPARTOKEN   
+                        |       ATANHTOKEN LPARTOKEN fun RPARTOKEN   
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ATANH;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       ABSTOKEN LPARTOKEN function RPARTOKEN     						
+                        |       ABSTOKEN LPARTOKEN fun RPARTOKEN     						
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ABS;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       ERFTOKEN LPARTOKEN function RPARTOKEN     						
+                        |       ERFTOKEN LPARTOKEN fun RPARTOKEN     						
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ERF;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       ERFCTOKEN LPARTOKEN function RPARTOKEN     						
+                        |       ERFCTOKEN LPARTOKEN fun RPARTOKEN     						
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = ERFC;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       LOG1PTOKEN LPARTOKEN function RPARTOKEN     						
+                        |       LOG1PTOKEN LPARTOKEN fun RPARTOKEN     						
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = LOG_1P;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       EXPM1TOKEN LPARTOKEN function RPARTOKEN     						
+                        |       EXPM1TOKEN LPARTOKEN fun RPARTOKEN     						
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = EXP_M1;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       DOUBLETOKEN LPARTOKEN function RPARTOKEN     						
+                        |       DOUBLETOKEN LPARTOKEN fun RPARTOKEN     						
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = DOUBLE;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       DOUBLEDOUBLETOKEN LPARTOKEN function RPARTOKEN     			  		
+                        |       DOUBLEDOUBLETOKEN LPARTOKEN fun RPARTOKEN     			  		
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = DOUBLEDOUBLE;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       TRIPLEDOUBLETOKEN LPARTOKEN function RPARTOKEN     			   	
+                        |       TRIPLEDOUBLETOKEN LPARTOKEN fun RPARTOKEN     			   	
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = TRIPLEDOUBLE;
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }		
-                        |       DOUBLEEXTENDEDTOKEN LPARTOKEN function RPARTOKEN     			   	
+                        |       DOUBLEEXTENDEDTOKEN LPARTOKEN fun RPARTOKEN     			   	
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = DOUBLEEXTENDED;
@@ -2756,7 +2764,7 @@ primary:			variable
 			     temp_node->value = $1;
 			     $$ = temp_node;
                            }									
-			|	LPARTOKEN function RPARTOKEN			
+			|	LPARTOKEN fun RPARTOKEN			
 			   {
 			     $$ = $2;
                            }	

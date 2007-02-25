@@ -1505,8 +1505,8 @@ node* copyTree(node *tree) {
 }
 
 
-node* simplifyTreeErrorfree(node *tree) {
-  node *simplChild1, *simplChild2, *simplified;
+node* simplifyTreeErrorfreeInner(node *tree, int rec) {
+  node *simplChild1, *simplChild2, *simplified, *recsimplified;
   mpfr_t *value;
 
   switch (tree->nodeType) {
@@ -1523,8 +1523,8 @@ node* simplifyTreeErrorfree(node *tree) {
     simplified->value = value;
     break;
   case ADD:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplChild2 = simplifyTreeErrorfree(tree->child2);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
+    simplChild2 = simplifyTreeErrorfreeInner(tree->child2,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
@@ -1553,16 +1553,56 @@ node* simplifyTreeErrorfree(node *tree) {
 	  free(simplified);
 	  simplified = simplChild1;
 	} else {
-	  simplified->nodeType = ADD;
-	  simplified->child1 = simplChild1;
-	  simplified->child2 = simplChild2;
+	  if (simplChild1->nodeType == NEG) {
+	    simplified->nodeType = SUB;
+	    simplified->child1 = simplChild2;
+	    simplified->child2 = copyTree(simplChild1->child1);
+	    free_memory(simplChild1);
+	    if (rec > 0) {
+	      recsimplified = simplifyTreeErrorfreeInner(simplified,rec-1);
+	      free_memory(simplified);
+	      simplified = recsimplified;
+	    }
+	  } else {
+	    if (simplChild2->nodeType == NEG) {
+	      simplified->nodeType = SUB;
+	      simplified->child1 = simplChild1;
+	      simplified->child2 = copyTree(simplChild2->child1);
+	      free_memory(simplChild2);
+	      if (rec > 0) {
+		recsimplified = simplifyTreeErrorfreeInner(simplified,rec-1);
+		free_memory(simplified);
+		simplified = recsimplified;
+	      }
+	    } else {
+	      if (isSyntacticallyEqual(simplChild1,simplChild2)) {
+		simplified->nodeType = MUL;
+		simplified->child1 = (node *) safeMalloc(sizeof(node));
+		simplified->child1->nodeType = CONSTANT;
+		simplified->child1->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+		mpfr_init2(*(simplified->child1->value),tools_precision);
+		mpfr_set_d(*(simplified->child1->value),2.0,GMP_RNDN);
+		simplified->child2 = simplChild1;
+		free_memory(simplChild2);
+		if (rec > 0) {
+		  recsimplified = simplifyTreeErrorfreeInner(simplified,rec-1);
+		  free_memory(simplified);
+		  simplified = recsimplified;
+		}
+	      } else {
+		simplified->nodeType = ADD;
+		simplified->child1 = simplChild1;
+		simplified->child2 = simplChild2;
+	      }
+	    }
+	  }
 	}
       }
     }
     break;
   case SUB:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplChild2 = simplifyTreeErrorfree(tree->child2);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
+    simplChild2 = simplifyTreeErrorfreeInner(tree->child2,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
@@ -1591,16 +1631,40 @@ node* simplifyTreeErrorfree(node *tree) {
 	  free(simplified);
 	  simplified = simplChild1;
 	} else {
-	  simplified->nodeType = SUB;
-	  simplified->child1 = simplChild1;
-	  simplified->child2 = simplChild2;
+	  if (isSyntacticallyEqual(simplChild1,simplChild2)) {
+	    simplified->nodeType = CONSTANT;
+	    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	    mpfr_init2(*value,tools_precision);
+	    simplified->value = value;
+	    mpfr_set_d(*value,0.0,GMP_RNDN);
+	  } else {
+	    if (simplChild2->nodeType == NEG) {
+	      simplified->nodeType = ADD;
+	      simplified->child1 = simplChild1;
+	      simplified->child2 = copyTree(simplChild2->child1);
+	      free_memory(simplChild2);
+	    } else {
+	      if ((simplChild1->nodeType == EXP) &&
+		  (simplChild2->nodeType == CONSTANT) &&
+		  (mpfr_cmp_d(*(simplChild2->value),1.0) == 0)) {
+		simplified->nodeType = EXP_M1;
+		simplified->child1 = copyTree(simplChild1->child1);
+		free_memory(simplChild1);
+		free_memory(simplChild2);
+	      } else {
+		simplified->nodeType = SUB;
+		simplified->child1 = simplChild1;
+		simplified->child2 = simplChild2;
+	      }
+	    }
+	  }
 	}
       }
     }
     break;
   case MUL:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplChild2 = simplifyTreeErrorfree(tree->child2);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
+    simplChild2 = simplifyTreeErrorfreeInner(tree->child2,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
@@ -1655,9 +1719,104 @@ node* simplifyTreeErrorfree(node *tree) {
 		simplified->child2 = copyTree(simplChild2->child2);
 		free_memory(simplChild2);
 	      } else {
-		simplified->nodeType = MUL;
-		simplified->child1 = simplChild1;
-		simplified->child2 = simplChild2;
+		if ((simplChild1->nodeType == NEG) &&
+		    (simplChild2->nodeType == NEG)) {
+		  simplified->nodeType = MUL;
+		  simplified->child1 = copyTree(simplChild1->child1);
+		  simplified->child2 = copyTree(simplChild2->child1);
+		  free_memory(simplChild1);
+		  free_memory(simplChild2);
+		} else {
+		  if (simplChild1->nodeType == NEG) {
+		    simplified->nodeType = NEG;
+		    simplified->child1 = (node *) safeMalloc(sizeof(node));
+		    simplified->child1->nodeType = MUL;
+		    simplified->child1->child1 = copyTree(simplChild1->child1);
+		    simplified->child1->child2 = simplChild2;
+		    free_memory(simplChild1);
+		  } else {
+		    if (simplChild2->nodeType == NEG) {
+		      simplified->nodeType = NEG;
+		      simplified->child1 = (node *) safeMalloc(sizeof(node));
+		      simplified->child1->nodeType = MUL;
+		      simplified->child1->child2 = copyTree(simplChild2->child1);
+		      simplified->child1->child1 = simplChild1;
+		      free_memory(simplChild2);
+		    } else {
+		      if ((simplChild1->nodeType == MUL) &&
+			  (isConstant(simplChild2)) &&
+			  (isConstant(simplChild1->child1))) {
+			simplified->nodeType = MUL;
+			simplified->child2 = simplChild1->child2;
+			simplified->child1 = simplChild1;
+			simplChild1->child2 = simplChild2;
+			if (rec > 0) {
+			  recsimplified = simplifyTreeErrorfreeInner(simplified,rec-1);
+			  free_memory(simplified);
+			  simplified = recsimplified;
+			}
+		      } else {
+			if ((simplChild1->nodeType == MUL) &&
+			    (isConstant(simplChild2)) &&
+			    (isConstant(simplChild1->child2))) {
+			  simplified->nodeType = MUL;
+			  simplified->child2 = simplChild1->child1;
+			  simplified->child1 = simplChild1;
+			  simplChild1->child1 = simplChild2;
+			  if (rec > 0) {
+			    recsimplified = simplifyTreeErrorfreeInner(simplified,rec-1);
+			    free_memory(simplified);
+			    simplified = recsimplified;
+			  }
+			} else {
+			  if ((simplChild2->nodeType == MUL) &&
+			      (isConstant(simplChild1)) &&
+			      (isConstant(simplChild2->child1))) {
+			    simplified->nodeType = MUL;
+			    simplified->child1 = simplChild2->child2;
+			    simplified->child2 = simplChild2;
+			    simplChild2->child2 = simplChild1;
+			    if (rec > 0) {
+			      recsimplified = simplifyTreeErrorfreeInner(simplified,rec-1);
+			      free_memory(simplified);
+			      simplified = recsimplified;
+			    }
+			  } else {
+			    if ((simplChild2->nodeType == MUL) &&
+				(isConstant(simplChild1)) &&
+				(isConstant(simplChild2->child2))) {
+			      simplified->nodeType = MUL;
+			      simplified->child1 = simplChild2->child1;
+			      simplified->child2 = simplChild2;
+			      simplChild2->child1 = simplChild1;
+			      if (rec > 0) {
+				recsimplified = simplifyTreeErrorfreeInner(simplified,rec-1);
+				free_memory(simplified);
+				simplified = recsimplified;
+			      }
+			    } else {
+			      if ((simplChild2->nodeType == DIV) && 
+				  (isSyntacticallyEqual(simplChild1,simplChild2->child2))) {
+				free(simplified);
+				simplified = simplChild2->child1;
+			      } else {
+				if ((simplChild1->nodeType == DIV) && 
+				    (isSyntacticallyEqual(simplChild2,simplChild1->child2))) {
+				  free(simplified);
+				  simplified = simplChild1->child1;
+				} else {
+				  simplified->nodeType = MUL;
+				  simplified->child1 = simplChild1;
+				  simplified->child2 = simplChild2;
+				}
+			      }
+			    }
+			  }
+			}
+		      }
+		    }
+		  }
+		}
 	      }
 	    }
 	  }
@@ -1666,8 +1825,8 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case DIV:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplChild2 = simplifyTreeErrorfree(tree->child2);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
+    simplChild2 = simplifyTreeErrorfreeInner(tree->child2,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
@@ -1700,15 +1859,86 @@ node* simplifyTreeErrorfree(node *tree) {
 	  free(simplified);
 	  simplified = simplChild1;
 	} else {
-	  simplified->nodeType = DIV;
-	  simplified->child1 = simplChild1;
-	  simplified->child2 = simplChild2;
+	  if (isSyntacticallyEqual(simplChild1,simplChild2)) {
+	    simplified->nodeType = CONSTANT;
+	    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	    mpfr_init2(*value,tools_precision);
+	    simplified->value = value;
+	    mpfr_set_d(*value,1.0,GMP_RNDN);
+	  } else {
+	    if ((simplChild1->nodeType == NEG) &&
+		(simplChild2->nodeType == NEG)) {
+	      simplified->nodeType = DIV;
+	      simplified->child1 = copyTree(simplChild1->child1);
+	      simplified->child2 = copyTree(simplChild2->child1);
+	      free_memory(simplChild1);
+	      free_memory(simplChild2);
+	    } else {
+	      if (simplChild1->nodeType == NEG) {
+		simplified->nodeType = NEG;
+		simplified->child1 = (node *) safeMalloc(sizeof(node));
+		simplified->child1->nodeType = DIV;
+		simplified->child1->child1 = copyTree(simplChild1->child1);
+		simplified->child1->child2 = simplChild2;
+		free_memory(simplChild1);
+	      } else {
+		if (simplChild2->nodeType == NEG) {
+		  simplified->nodeType = NEG;
+		  simplified->child1 = (node *) safeMalloc(sizeof(node));
+		  simplified->child1->nodeType = DIV;
+		  simplified->child1->child2 = copyTree(simplChild2->child1);
+		  simplified->child1->child1 = simplChild1;
+		  free_memory(simplChild2);
+		} else {
+		  if (simplChild2->nodeType == DIV) {
+		    simplified->nodeType = MUL;
+		    simplified->child1 = simplChild1;
+		    simplified->child2 = simplChild2->child2;
+		    simplChild2->child2 = simplChild2->child1;
+		    simplChild2->child1 = simplified->child2;
+		    simplified->child2 = simplChild2;
+		    if (rec > 0) {
+		      recsimplified = simplifyTreeErrorfreeInner(simplified,rec);
+		      free_memory(simplified);
+		      simplified = recsimplified;
+		    }
+		  } else {
+		    if (simplChild1->nodeType == DIV) {
+		      simplified->nodeType = DIV;
+		      simplified->child1 = simplChild1->child1;
+		      simplified->child2 = simplChild1;
+		      simplChild1->nodeType = MUL;
+		      simplChild1->child1 = simplChild2;
+		      if (rec > 0) {
+			recsimplified = simplifyTreeErrorfreeInner(simplified,rec);
+			free_memory(simplified);
+			simplified = recsimplified;
+		      }
+		    } else {
+		      if ((simplChild1->nodeType == SIN) &&
+			  (simplChild2->nodeType == COS) &&
+			  (isSyntacticallyEqual(simplChild1->child1,simplChild2->child1))) {
+			simplified->nodeType = TAN;
+			simplified->child1 = copyTree(simplChild1->child1);
+			free_memory(simplChild1);
+			free_memory(simplChild2);
+		      } else {
+			simplified->nodeType = DIV;
+			simplified->child1 = simplChild1;
+			simplified->child2 = simplChild2;
+		      }
+		    }
+		  }
+		}
+	      }
+	    }
+	  }
 	}
       }
     }
     break;
   case SQRT:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1725,12 +1955,20 @@ node* simplifyTreeErrorfree(node *tree) {
 	free_memory(simplChild1);
       }
     } else {
-      simplified->nodeType = SQRT;
-      simplified->child1 = simplChild1;
+      if ((simplChild1->nodeType == POW) &&
+	  (simplChild1->child2->nodeType == CONSTANT) &&
+	  (mpfr_cmp_d(*(simplChild1->child2->value),2.0) == 0.0)) {
+	simplified->nodeType = ABS;
+	simplified->child1 = copyTree(simplChild1->child1);
+	free_memory(simplChild1);
+      } else {
+	simplified->nodeType = SQRT;
+	simplified->child1 = simplChild1;
+      }
     }
     break;
   case EXP:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1752,7 +1990,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case LOG:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1769,12 +2007,34 @@ node* simplifyTreeErrorfree(node *tree) {
 	free_memory(simplChild1);
       }
     } else {
-      simplified->nodeType = LOG;
-      simplified->child1 = simplChild1;
+      if ((simplChild1->nodeType == ADD) &&
+	  (simplChild1->child1->nodeType == CONSTANT) &&
+	  (mpfr_cmp_d(*(simplChild1->child1->value),1.0) == 0.0)) {
+	simplified->nodeType = LOG_1P;
+	simplified->child1 = copyTree(simplChild1->child2);
+	free_memory(simplChild1);
+      } else {
+	if ((simplChild1->nodeType == ADD) &&
+	    (simplChild1->child2->nodeType == CONSTANT) &&
+	    (mpfr_cmp_d(*(simplChild1->child2->value),1.0) == 0.0)) {
+	  simplified->nodeType = LOG_1P;
+	  simplified->child1 = copyTree(simplChild1->child1);
+	  free_memory(simplChild1);
+	} else {
+	  if (simplChild1->nodeType == EXP) {
+	    free(simplified);
+	    simplified = copyTree(simplChild1->child1);
+	    free_memory(simplChild1);
+	  } else {
+	    simplified->nodeType = LOG;
+	    simplified->child1 = simplChild1;
+	  }
+	}
+      }
     }
     break;
   case LOG_2:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1796,7 +2056,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case LOG_10:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1818,7 +2078,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case SIN:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1840,7 +2100,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case COS:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1862,7 +2122,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case TAN:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1884,7 +2144,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case ASIN:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1906,7 +2166,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case ACOS:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1928,7 +2188,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case ATAN:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1950,7 +2210,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case SINH:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1972,7 +2232,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case COSH:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -1994,7 +2254,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case TANH:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -2016,7 +2276,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case ASINH:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -2038,7 +2298,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case ACOSH:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -2060,7 +2320,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case ATANH:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -2082,8 +2342,8 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case POW:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
-    simplChild2 = simplifyTreeErrorfree(tree->child2);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
+    simplChild2 = simplifyTreeErrorfreeInner(tree->child2,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
@@ -2107,14 +2367,37 @@ node* simplifyTreeErrorfree(node *tree) {
 	free_memory(simplChild2);
 	simplified = simplChild1;
       } else {
-	simplified->nodeType = POW;
-	simplified->child1 = simplChild1;
-	simplified->child2 = simplChild2;
+	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*value,tools_precision);
+	if ((simplChild2->nodeType == CONSTANT) &&
+	    (simplChild1->nodeType == POW) && 
+	    (simplChild1->child2->nodeType == CONSTANT) &&
+	    (mpfr_mul(*value,*(simplChild2->value),*(simplChild1->child2->value),GMP_RNDN) == 0)) {
+	  simplified = simplChild1;
+	  mpfr_clear(*(simplified->child2->value));
+	  free(simplified->child2->value);
+	  simplified->child2->value = value;
+	  free_memory(simplChild2);
+	} else {
+	  mpfr_clear(*value);
+	  free(value);
+	  if ((simplChild2->nodeType == CONSTANT) &&
+	      (mpfr_cmp_d(*(simplChild2->value),2.0) == 0) &&
+	      (simplChild1->nodeType == SQRT)) {	    
+	    simplified = copyTree(simplChild1->child1);
+	    free_memory(simplChild1);
+	    free_memory(simplChild2);
+	  } else {
+	    simplified->nodeType = POW;
+	    simplified->child1 = simplChild1;
+	    simplified->child2 = simplChild2;
+	  }
+	}
       }
     }
     break;
   case NEG:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -2131,12 +2414,17 @@ node* simplifyTreeErrorfree(node *tree) {
 	free_memory(simplChild1);
       }
     } else {
-      simplified->nodeType = NEG;
-      simplified->child1 = simplChild1;
+      if (simplChild1->nodeType == NEG) {
+	simplified = copyTree(simplChild1->child1);
+	free_memory(simplChild1);
+      } else {
+	simplified->nodeType = NEG;
+	simplified->child1 = simplChild1;
+      }
     }
     break;
   case ABS:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -2153,12 +2441,18 @@ node* simplifyTreeErrorfree(node *tree) {
 	free_memory(simplChild1);
       }
     } else {
-      simplified->nodeType = ABS;
-      simplified->child1 = simplChild1;
+      if (simplChild1->nodeType == ABS) {
+	simplified->nodeType = ABS;
+	simplified->child1 = copyTree(simplChild1->child1);
+	free_memory(simplChild1);
+      } else {
+	simplified->nodeType = ABS;
+	simplified->child1 = simplChild1;
+      }
     }
     break;
   case DOUBLE:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -2180,7 +2474,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case DOUBLEDOUBLE:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -2202,7 +2496,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case TRIPLEDOUBLE:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -2224,7 +2518,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case ERF: 
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -2246,7 +2540,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case ERFC:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -2268,7 +2562,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case LOG_1P:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -2290,7 +2584,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case EXP_M1:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -2312,7 +2606,7 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   case DOUBLEEXTENDED:
-    simplChild1 = simplifyTreeErrorfree(tree->child1);
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -2334,11 +2628,30 @@ node* simplifyTreeErrorfree(node *tree) {
     }
     break;
   default:
-    fprintf(stderr,"Error: simplifyTreeErrorfree: unknown identifier in the tree\n");
+    fprintf(stderr,"Error: simplifyTreeErrorfreeInner: unknown identifier in the tree\n");
     exit(1);
   }
 
   return simplified;
+}
+
+node *simplifyTreeErrorfree(node *tree) {
+  node *temp;
+  temp = simplifyTreeErrorfreeInner(tree,1);
+  if (verbosity >= 5) {
+    if (!isSyntacticallyEqual(temp,tree)) {
+      if (verbosity < 7) {
+	printMessage(5,"Information: an expression has been simplified.\n");
+      } else {
+	printMessage(7,"Information: expression '");
+	printTree(tree);
+	printMessage(7,"' has been simplified to expression '");
+	printTree(temp);
+	printMessage(7,"'.\n");
+      }
+    }
+  }
+  return temp;
 }
 
 
@@ -3173,16 +3486,14 @@ node* differentiateUnsimplified(node *tree) {
 
 
 node* differentiate(node *tree) {
-  node *temp, *temp2, *temp3;
+  node *temp, *temp3;
 
   printMessage(12,"Information: formally differentiating a function.\n");
 
   temp3 = simplifyTreeErrorfree(tree);
   temp = differentiateUnsimplified(temp3);
-  temp2 = simplifyTreeErrorfree(temp);
-  free_memory(temp);
   free_memory(temp3);
-  return temp2;
+  return temp;
 }
 
 
@@ -3380,7 +3691,7 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
 } 
 
 
-node* simplifyTree(node *tree) {
+node* simplifyTreeInner(node *tree) {
   node *simplChild1, *simplChild2, *simplified;
   mpfr_t *value;
 
@@ -3398,8 +3709,8 @@ node* simplifyTree(node *tree) {
     simplified->value = value;
     break;
   case ADD:
-    simplChild1 = simplifyTree(tree->child1);
-    simplChild2 = simplifyTree(tree->child2);
+    simplChild1 = simplifyTreeInner(tree->child1);
+    simplChild2 = simplifyTreeInner(tree->child2);
     simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
@@ -3428,8 +3739,8 @@ node* simplifyTree(node *tree) {
     }
     break;
   case SUB:
-    simplChild1 = simplifyTree(tree->child1);
-    simplChild2 = simplifyTree(tree->child2);
+    simplChild1 = simplifyTreeInner(tree->child1);
+    simplChild2 = simplifyTreeInner(tree->child2);
     simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
@@ -3458,8 +3769,8 @@ node* simplifyTree(node *tree) {
     }
     break;
   case MUL:
-    simplChild1 = simplifyTree(tree->child1);
-    simplChild2 = simplifyTree(tree->child2);
+    simplChild1 = simplifyTreeInner(tree->child1);
+    simplChild2 = simplifyTreeInner(tree->child2);
     simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
@@ -3499,8 +3810,8 @@ node* simplifyTree(node *tree) {
     }
     break;
   case DIV:
-    simplChild1 = simplifyTree(tree->child1);
-    simplChild2 = simplifyTree(tree->child2);
+    simplChild1 = simplifyTreeInner(tree->child1);
+    simplChild2 = simplifyTreeInner(tree->child2);
     simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
@@ -3533,7 +3844,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case SQRT:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3548,7 +3859,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case EXP:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3563,7 +3874,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case LOG:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3578,7 +3889,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case LOG_2:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3593,7 +3904,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case LOG_10:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3608,7 +3919,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case SIN:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3623,7 +3934,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case COS:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3638,7 +3949,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case TAN:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3653,7 +3964,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case ASIN:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3668,7 +3979,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case ACOS:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3683,7 +3994,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case ATAN:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3698,7 +4009,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case SINH:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3713,7 +4024,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case COSH:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3728,7 +4039,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case TANH:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3743,7 +4054,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case ASINH:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3758,7 +4069,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case ACOSH:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3773,7 +4084,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case ATANH:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3788,8 +4099,8 @@ node* simplifyTree(node *tree) {
     }
     break;
   case POW:
-    simplChild1 = simplifyTree(tree->child1);
-    simplChild2 = simplifyTree(tree->child2);
+    simplChild1 = simplifyTreeInner(tree->child1);
+    simplChild2 = simplifyTreeInner(tree->child2);
     simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
@@ -3812,7 +4123,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case NEG:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3827,7 +4138,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case ABS:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3842,7 +4153,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case DOUBLE:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3857,7 +4168,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case DOUBLEDOUBLE:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3872,7 +4183,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case TRIPLEDOUBLE:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3887,7 +4198,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case ERF:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3902,7 +4213,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case ERFC:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3917,7 +4228,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case LOG_1P:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3932,7 +4243,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case EXP_M1:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3947,7 +4258,7 @@ node* simplifyTree(node *tree) {
     }
     break;
   case DOUBLEEXTENDED:
-    simplChild1 = simplifyTree(tree->child1);
+    simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
@@ -3962,11 +4273,20 @@ node* simplifyTree(node *tree) {
     }
     break;
   default:
-    fprintf(stderr,"Error: simplifyTree: unknown identifier in the tree\n");
+    fprintf(stderr,"Error: simplifyTreeInner: unknown identifier in the tree\n");
     exit(1);
   }
 
   return simplified;
+}
+
+node *simplifyTree(node *tree) {
+  node *temp, *temp2;
+
+  temp = simplifyTreeErrorfree(tree);
+  temp2 = simplifyTreeInner(temp);
+  free_memory(temp);
+  return temp2;
 }
 
 
