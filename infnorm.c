@@ -1471,8 +1471,12 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   mpfi_get_left(leftX,x);
   mpfi_get_right(rightX,x);
 
-  if (mpfr_cmp(leftX,rightX) == 0) {
-    printMessage(9,"Information: avoiding using Taylor's formula on a point interval.\n");
+  if ((mpfr_cmp(leftX,rightX) == 0) || (deriv == NULL)) {
+    if (deriv != NULL) 
+      printMessage(9,"Information: avoiding using Taylor's formula on a point interval.\n");
+    else 
+      printMessage(9,"Warning: no Taylor evaluation is possible because no derivative has been given.\n");
+    
 
     excludes = evaluateI(result, func, x, prec, 1, 2, theo);
 
