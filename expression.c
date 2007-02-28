@@ -2373,6 +2373,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
 	    (simplChild1->nodeType == POW) && 
 	    (simplChild1->child2->nodeType == CONSTANT) &&
 	    (mpfr_mul(*value,*(simplChild2->value),*(simplChild1->child2->value),GMP_RNDN) == 0)) {
+	  free(simplified);
 	  simplified = simplChild1;
 	  mpfr_clear(*(simplified->child2->value));
 	  free(simplified->child2->value);
@@ -2384,6 +2385,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
 	  if ((simplChild2->nodeType == CONSTANT) &&
 	      (mpfr_cmp_d(*(simplChild2->value),2.0) == 0) &&
 	      (simplChild1->nodeType == SQRT)) {	    
+	    free(simplified);
 	    simplified = copyTree(simplChild1->child1);
 	    free_memory(simplChild1);
 	    free_memory(simplChild2);
@@ -2415,6 +2417,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
       }
     } else {
       if (simplChild1->nodeType == NEG) {
+	free(simplified);
 	simplified = copyTree(simplChild1->child1);
 	free_memory(simplChild1);
       } else {
