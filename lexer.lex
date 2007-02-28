@@ -262,10 +262,15 @@ GUESSDEGREE     "guessdegree"
 
 {COMMENTSTART}  {     BEGIN(commentstate); }
 
-<commentstate>{COMMENTEND} { BEGIN(INITIAL); }
+<commentstate>{COMMENTEND} { printPrompt(); BEGIN(INITIAL); }
 
 <commentstate>. { // Eat up comments 
                  }
+
+<commentstate>[\n] { // Eat up newlines in comments
+		}
+
+
 
 {ONELINECOMMENT} {  // Eat up comments
                       printPrompt();
