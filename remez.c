@@ -165,34 +165,13 @@ node *simple_convert_poly(GEN tab, mp_prec_t prec) {
 
 // Find the unique root of tree in [a;b]
 GEN newton(node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
-  mpfr_t x, temp1, temp2;
-  mpfr_t d;
+  mpfr_t x;
   GEN res;
-  unsigned long int n=1;
-  int test=0;
-
-  mpfr_init2(x,prec);
-  mpfr_init2(temp1,prec);
-  mpfr_init2(temp2,prec);
-  mpfr_init2(d,53);
-
-  mpfr_sub(d,b,a,GMP_RNDN);
-  test = 1 + (mpfr_get_exp(b)-prec)/mpfr_get_exp(d);
-
-  mpfr_add(x,a,b,GMP_RNDN);
-  mpfr_div_2ui(x,x,1,GMP_RNDN);
   
-  while(n<=test) {
-    evaluateFaithful(temp1, tree, x, prec);
-    evaluateFaithful(temp2, diff_tree, x, prec);
-    mpfr_div(temp1, temp1, temp2, GMP_RNDN);
-    mpfr_sub(x, x, temp1, GMP_RNDN);
-    n = 2*n;
-  }
-
+  mpfr_init2(x,prec);
+  newtonMPFR(x,tree,diff_tree,a,b,prec);
   res = mpfr_to_PARI(x);
-  mpfr_clear(x); mpfr_clear(temp1); mpfr_clear(temp2);
-  mpfr_clear(d);
+  mpfr_clear(x);
   return res;
 }
 
@@ -915,6 +894,104 @@ node *constructPolynomial(GEN coeff, chain *monomials, mp_prec_t prec) {
 }
 
 
+
+// This function finds an approximate zero of a function f
+// (which derivative if f_diff) in the interval [a;b]
+// using x0 as an initial guess of the zero
+// If n=0 the algorithm stops when the computed zero is
+// a precise estimation of the real zero.
+// If n<>0, n steps are computed.
+// The algorithm uses Newton's method
+// It is assumed that f(a)f(b)<=0 and x0 in [a;b]
+GEN findZero(node *f, node *f_diff, mpfr_t a, mpfr_t b, GEN x0, int n, mp_prec_t prec) {
+  node *iterator;
+  node *temp1;
+  mpfr_t x, y, zero_mpfr;
+  int r, nbr_iter,test;
+  GEN res;
+
+  mpfr_init2(x,prec);
+  mpfr_init2(y,prec);
+  mpfr_init2(zero_mpfr,53);
+
+  if(x0!=NULL) PARI_to_mpfr(x,x0,GMP_RNDN);
+  else {
+    mpfr_add(x,a,b,GMP_RNDN);
+    mpfr_div_2ui(x,x,1,GMP_RNDN);
+  }
+
+  if(verbosity>=4) {
+    printf("Newton's call with parameters :"); printTree(f); printf("\n");
+    printMpfr(a); printMpfr(b);
+    printMpfr(x); evaluateFaithful(y,f,x,prec); printMpfr(y);
+  }
+
+  mpfr_set_d(zero_mpfr,0.,GMP_RNDN);
+
+  iterator = safeMalloc(sizeof(node));
+  iterator->nodeType = SUB;
+  temp1 = safeMalloc(sizeof(node));
+  temp1->nodeType = VARIABLE;
+  iterator->child1 = temp1;
+  
+  temp1 = safeMalloc(sizeof(node));
+  temp1->nodeType = DIV;
+  temp1->child1 = copyTree(f);
+  temp1->child2 = copyTree(f_diff);
+  iterator->child2 = temp1;
+
+  nbr_iter=1;
+  test=1;
+  while(test) {
+    r = evaluateFaithfulWithCutOffFast(y, iterator, NULL, x, zero_mpfr, prec);
+    if((!mpfr_number_p(y)) && (r==1)) {
+      fprintf(stderr,"Warning in Remez: Newton algorithm encountered numerical problems\n");
+      return x0;
+    }
+    
+    if((mpfr_cmp(a,y)>=0) || (mpfr_cmp(y,b)>=0)) {
+      if(verbosity>=4) {
+	printf("Entering in a rescue case of Newton's algorithm\n");
+	printMpfr(y);
+      }
+      r = evaluateFaithfulWithCutOffFast(y, f, NULL, x, zero_mpfr, prec);
+      if((!mpfr_number_p(y)) && (r==1)) {
+	fprintf(stderr,"Warning in Remez: Newton algorithm encountered numerical problems\n");
+	return x0;
+      }
+      if(mpfr_sgn(a)==mpfr_sgn(y)) {
+	mpfr_add(y,x,b,GMP_RNDN);
+	mpfr_div_2ui(y,y,1,GMP_RNDN);
+      }
+      else {
+	mpfr_add(y,a,x,GMP_RNDN);
+	mpfr_div_2ui(y,y,1,GMP_RNDN);
+      }
+    }
+  
+    if(n!=0) {if(nbr_iter==n) test=0; else nbr_iter++;}
+    else {
+      // un test malin de différence entre y et x pour arrêter test
+    }
+    mpfr_set(x,y,GMP_RNDN);
+  }
+
+  if(verbosity>=4) {
+    printf("Newton's result :");
+    printMpfr(x); evaluateFaithful(y,f,x,prec); printMpfr(y);
+  }
+
+  res = mpfr_to_PARI(x);
+
+  free_memory(iterator);
+  mpfr_clear(x);
+  mpfr_clear(y);
+  mpfr_clear(zero_mpfr);
+  return res;
+}
+
+
+
 // This function finds the local extrema of a the error function poly*w-f.
 // It uses the derivative and the second derivative of these functions to
 // search the zeros of (poly*w-f)' by Newton's algorithm
@@ -930,89 +1007,25 @@ GEN qualityOfError(mpfr_t computedQuality, GEN x,
 		   node *f, node *f_diff, node *f_diff2,
 		   node *w, node *w_diff, node *w_diff2,
 		   int freeDegrees, mpfr_t a, mpfr_t b, mp_prec_t prec) {
-  /*  int i, s, n, test;
-  mpfr_t var1, dummy_mpfr;
-  mpfr_t *y;
-  node *err_diff;
-  node *err_diff2;
+  node *error;
   node *temp1;
-  node *temp2;
-  node *temp3;
-
-  mpfr_init2(var1, prec);
+  node *error_diff;
+  node *error_diff2;
+  int n, test, i, r;
+  int case1, case2, case2b, case3;
+  int *s;
+  mpfr_t *y;
+  mpfr_t var_mpfr, dummy_mpfr, max_val, min_val;
+  GEN z;
+  
+  int crash_report=0;
+  
+  mpfr_init2(var_mpfr, prec);
+  mpfr_init2(max_val, prec);
+  mpfr_init2(min_val, prec);
   mpfr_init2(dummy_mpfr, 5);
 
   // Construction of the trees corresponding to (poly*w-f)' and (poly*w-f)''
-  err_diff = safeMalloc(sizeof(node));
-  err_diff->nodeType = SUB;
-  temp1 = safeMalloc(sizeof(node));
-  temp1->nodeType = ADD;
-  temp2 = safeMalloc(sizeof(node));
-  temp2->nodeType = MUL;
-  temp3 = safeMalloc(sizeof(node));
-  temp3->nodeType = MUL;
-
-  temp3->child1 = poly_diff;
-  temp3->child2 = w;
-  temp2->child1 = poly;
-  temp2->child2 = w_diff;
-  temp1->child1 = temp3;
-  temp1->child2 = temp2;
-  err_diff->child1 = temp1
-  err_diff->child2 = f_diff;
-
-  err_diff2 = differentiate(err_diff);
-  
-
-  // If x = [x1 ... xn], we construct [y0 y1 ... yn] by
-  // y0 = a, yn = b and yi = (xi + x(i+1))/2
-  n = itos((GEN)(matsize(coeff)[1]));
-  y = (mpfr_t *)safeMalloc((n+1)*sizeof(mpfr_t));
-  mpfr_init2(y[0], prec);
-  mpfr_set(y[0], a, GMP_RNDN);
-  for(i=1; i<n; i++) {
-    mpfr_init2(y[i], prec);
-    PARI_to_mpfr(var1, (GEN)(x[i]));
-    PARI_to_mpfr(y[i], (GEN)(x[i+1]));
-    mpfr_add(y[i], var1, y[i], GMP_RNDN);
-    mpfr_div_2ui(y[i], y[i], 1, GMP_RNDN);
-  }
-  mpfr_init2(y[n], prec);
-  mpfr_set(y[n], n, GMP_RNDN);
-  
-
-  // Tests if we can say that there is at least one zero between each y[i]
-  s = 0;
-  test = 1;
-  i=0;
-  mpfr_set_d(var1, 0., GMP_RNDN);
-
-  while(test && i<=n) {
-    if(evaluateFaithfulWithCutOffFast(dummy_mpfr, err_diff, err_diff2, y[0], var1, prec)) {
-      // we may assume that err_diff(y[i]) == 0
-    }
-    else { 
-      if( (s<0 && mpfr_sgn(dummy_mpfr)<0) || (s>0 && mpfr_sgn(dummy_mpfr)>0) ) test=0;
-    i++;
-    }
-*/
-
-  node *error;
-  node *error_diff;
-  node *error_diff2;
-  node *temp1;
-  GEN y;
-  int crash_report=0;
-  int i,n;
-  mpfr_t var, max_val, min_val;
-
-  mpfr_init2(var, prec);
-  mpfr_init2(max_val, prec);
-  mpfr_init2(min_val, prec);
-
-  mpfr_set_d(max_val, 0., GMP_RNDN);
-  mpfr_set_inf(min_val, 1);
-
   error = safeMalloc(sizeof(node));
   error->nodeType = SUB;
   temp1 = safeMalloc(sizeof(node));
@@ -1034,39 +1047,191 @@ GEN qualityOfError(mpfr_t computedQuality, GEN x,
   temp1 = simplifyTreeErrorfree(error_diff2);
   free_memory(error_diff2);
   error_diff2 = temp1;
-
   
-  y = quickFindZeros(error_diff, error_diff2, freeDegrees-1, a, b, prec, &crash_report);
-  if (crash_report == -1) {
-    free_memory(error);
-    free_memory(error_diff);
-    free_memory(error_diff2);
-    mpfr_clear(var);
-    mpfr_clear(max_val);
-    mpfr_clear(min_val);
-    recoverFromError();
-  }
 
+  // If x = [x1 ... xn], we construct [y0 y1 ... yn] by
+  // y0 = (a+x1)/2, yn = (xn+b)/2 and yi = (xi + x(i+1))/2
   n = itos((GEN)(matsize(x)[1]));
-  for(i=1;i<=n;i++) {
-    PARI_to_mpfr(var, (GEN)y[i], GMP_RNDN);
-    evaluateFaithful(var, error, var, prec);
-    mpfr_abs(var, var, GMP_RNDN);
-    if(mpfr_cmp(var, max_val) > 0) mpfr_set(max_val, var, GMP_RNDU);
-    if(mpfr_cmp(var, min_val) < 0) mpfr_set(min_val, var, GMP_RNDD);
+  y = (mpfr_t *)safeMalloc((n+1)*sizeof(mpfr_t));
+  mpfr_init2(y[0], prec);
+  PARI_to_mpfr(var_mpfr, (GEN)(x[1]), GMP_RNDN);
+  mpfr_set(y[0], a, GMP_RNDN);
+  mpfr_add(y[0], var_mpfr, y[0], GMP_RNDN);
+  mpfr_div_2ui(y[0], y[0], 1, GMP_RNDN);
+  
+  for(i=1; i<n; i++) {
+    mpfr_init2(y[i], prec);
+    PARI_to_mpfr(var_mpfr, (GEN)(x[i]), GMP_RNDN);
+    PARI_to_mpfr(y[i], (GEN)(x[i+1]), GMP_RNDN);
+    mpfr_add(y[i], var_mpfr, y[i], GMP_RNDN);
+    mpfr_div_2ui(y[i], y[i], 1, GMP_RNDN);
+  }
+  mpfr_init2(y[n], prec);
+  PARI_to_mpfr(var_mpfr, (GEN)(x[n]), GMP_RNDN);
+  mpfr_set(y[n], b, GMP_RNDN);
+  mpfr_add(y[n], var_mpfr, y[n], GMP_RNDN);
+  mpfr_div_2ui(y[n], y[n], 1, GMP_RNDN);
+
+  if(verbosity>=3) {
+    printf("The computed yi are : ");
+    for(i=0;i<=n;i++) {printMpfr(y[i]); printf(" ");}
+    printf("\n");
+  }
+  
+
+  // We call *case 1* the case where x1=a and xn=b
+  // We call *case 2* the case where x1<>a and xn=b
+  // and *case 2bis* the symetrical case
+  // We call *case 3* the case where x1<>a and xn<>b
+
+
+  if (mpfr_equal_p(y[0], a) &&  mpfr_equal_p(y[n],b)) {
+    case1 = 1; case2 = 0; case2b = 0; case3 = 0;
+  }
+  else {
+    if ((! mpfr_equal_p(y[0], a)) &&  mpfr_equal_p(y[n],b)) {
+      case1 = 0; case2 = 1; case2b = 0; case3 = 0;
+    }
+    else {      
+      if (mpfr_equal_p(y[0], a) &&  (! mpfr_equal_p(y[n],b))) {
+	case1 = 0; case2 = 0; case2b = 1; case3 = 0;
+      }
+      else {
+	case1 = 0; case2 = 0; case2b = 0; case3 = 1;
+      }
+    }
   }
 
-  mpfr_div(var, max_val, min_val, GMP_RNDU);
-  mpfr_sub_ui(var, var, 1, GMP_RNDU);
-  mpfr_set(computedQuality, var, GMP_RNDU);
+  if(verbosity>=3) {
+    printf("We are in case : ");
+    if(case1) printf("1\n");
+    if(case2) printf("2\n");
+    if(case2b) printf("2bis\n");
+    if(case3) printf("3\n");
+  }
+
+
+
+  // If one of error_diff(y0) .... error_diff(yn) is a real NaN
+  // (i.e. if evaluateFaithfulWithCutOffFast returns 1 and store a NaN)
+  // this leads to numerical problems -> we use quikFindZeros
+
+  // If sgn(error_diff(yi))*sgn(error_diff(y(i+1))) > 0 for some i=1..n-2
+  // If we are in case 2 and sgn(error_diff(y0))*sgn(error_diff(y1)) > 0
+  // If we are in case 2bis and sgn(error_diff(y(n-1)))*sgn(error_diff(yn)) > 0
+  // If we are in case 3 and one of this two last condition is not fulfilled
+  // this means the hypothesis (xi ~ zeros of error_diff) is false -> quickFindZeros
+
+  // If we are in case 1 : if sgn(error_diff(y0))*sgn(error_diff(y1)) > 0 (the most probable)
+  // we have a problem if error(y0) is a real NaN or if sgn(error(y0))*sgn(error_diff(y0))>0
+  // if sgn(error_diff(y(n-1)))*sgn(error_diff(yn)) > 0 (the most probable)
+  // we have a problem if error(yn) is a real NaN or if sgn(error(yn))*sgn(error_diff(yn))<0
+
+  // If we are in case 2 if sgn(error_diff(y(n-1)))*sgn(error_diff(yn)) > 0 (the most probable)
+  // we have a problem if error(yn) is a real NaN or if sgn(error(yn))*sgn(error_diff(yn))<0
+  
+  // If we are in case 2bis, if sgn(error_diff(y0))*sgn(error_diff(y1)) > 0 (the most probable)
+  // we have a problem if error(y0) is a real NaN or if sgn(error(y0))*sgn(error_diff(y0))>0
+  
+
+  s = (int *)safeMalloc((n+1)*sizeof(int));
+  test = 1;
+  i = 0;
+  while(test && (i<=n)) {
+    r = evaluateFaithfulWithCutOffFast(dummy_mpfr, error_diff, error_diff2, y[i], var_mpfr, prec);
+    if((!mpfr_number_p(dummy_mpfr)) && (r==1)) test=0;
+    else { 
+      if(r==0) s[i]=0;
+      else s[i] = mpfr_sgn(dummy_mpfr);
+    }
+    i++;
+  }
+
+  if(verbosity>=3) {
+    if(test) {
+      printf("The computed signs are : ");
+      for(i=0;i<=n;i++) printf("%d  ",s[i]);
+      printf("\n");
+    }
+    else printf("Test is false because signs could not be evaluated\n");
+  }
+  
+
+  if(test) {
+    i = 1;
+    while(test && (i<=n-2)) {
+      if(s[i]*s[i+1] > 0) test=0;
+      i++;
+    }
+  }
+  if(test && case2 && (s[0]*s[1]>0)) test=0;
+  if(test && case2b && (s[n-1]*s[n]>0)) test=0;
+  if(test && case3 && ((s[0]*s[1]>0) || (s[n-1]*s[n]>0))) test=0;
+
+  if(test && (case1 || case2b) && (s[0]*s[1]>0)) {
+    r = evaluateFaithfulWithCutOffFast(dummy_mpfr, error, error_diff, y[0], var_mpfr, prec);
+    if((!mpfr_number_p(dummy_mpfr)) && (r==1)) test=0;
+    else { 
+      if((r!=0) && (mpfr_sgn(dummy_mpfr)*s[0] > 0)) test=0;
+    }
+  }
+
+  if(test && (case1 || case2) && (s[n-1]*s[n]>0)) {
+    r = evaluateFaithfulWithCutOffFast(dummy_mpfr, error, error_diff, y[n], var_mpfr, prec);
+    if((!mpfr_number_p(dummy_mpfr)) && (r==1)) test=0;
+    else { 
+      if((r!=0) && (mpfr_sgn(dummy_mpfr)*s[n] < 0)) test=0;
+    }
+  }
+
+  if(test) {
+    z = cgetg(n+1, t_COL);
+    if((case1 || case2b) && (s[0]*s[1]<=0)) z[1] = (long)findZero(error_diff, error_diff2,y[0],y[1],NULL,4,prec);
+    if((case1 || case2b) && (s[0]*s[1]>0)) z[1] = (long)mpfr_to_PARI(a);
+    if(case2 || case3) z[1] = (long)findZero(error_diff, error_diff2, y[0], y[1], (GEN)(x[1]), 4, prec);
+    
+    for(i=1;i<=n-2;i++) z[i+1] = (long)findZero(error_diff, error_diff2, y[i], y[i+1], (GEN)(x[i+1]), 4, prec);
+
+    if((case1 || case2) && (s[n-1]*s[n]<=0)) z[n] = (long)findZero(error_diff, error_diff2, y[n-1], y[n], NULL, 4, prec);
+    if((case1 || case2) && (s[n-1]*s[n]>0)) z[n] = (long)mpfr_to_PARI(b);
+    if(case2b || case3) z[n] = (long)findZero(error_diff, error_diff2, y[n-1], y[n], (GEN)(x[n]), 4, prec);
+  }
+  else {
+    printMessage(1,"Warning in Remez: a slower algorithm is used for this step\n");
+    z = quickFindZeros(error_diff, error_diff2, freeDegrees-1, a, b, prec, &crash_report);
+  }
+
+  if(verbosity>=3) {
+    printf("The new points are : "); output(z);
+  }
+
+  // Test the quality of the current error
+
+  mpfr_set_d(max_val, 0., GMP_RNDN);
+  mpfr_set_inf(min_val, 1);
+
+  for(i=1;i<=n;i++) {
+    PARI_to_mpfr(var_mpfr, (GEN)z[i], GMP_RNDN);
+    evaluateFaithful(var_mpfr, error, var_mpfr, prec);
+    mpfr_abs(var_mpfr, var_mpfr, GMP_RNDN);
+    if(mpfr_cmp(var_mpfr, max_val) > 0) mpfr_set(max_val, var_mpfr, GMP_RNDU);
+    if(mpfr_cmp(var_mpfr, min_val) < 0) mpfr_set(min_val, var_mpfr, GMP_RNDD);
+  }
+
+  mpfr_div(var_mpfr, max_val, min_val, GMP_RNDU);
+  mpfr_sub_ui(var_mpfr, var_mpfr, 1, GMP_RNDU);
+  mpfr_set(computedQuality, var_mpfr, GMP_RNDU);
 
   free_memory(error);
   free_memory(error_diff);
   free_memory(error_diff2);
-  mpfr_clear(var);
+  mpfr_clear(var_mpfr);
+  mpfr_clear(dummy_mpfr);
   mpfr_clear(max_val);
   mpfr_clear(min_val);
-  return y;
+  free(s);
+
+  return z;
 
 }
 
@@ -1175,7 +1340,6 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
   }
   
   while((mpfr_cmp(computedQuality, quality)>0) && (count<1000)) {
-
     // Definition of the matrix M of Remez algorithm
     if(verbosity>=3) {
       printf("STEP %d\n",count);
@@ -1285,15 +1449,14 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
 
     count++;
 
-    free_memory(poly_diff);
-    free_memory(poly_diff2);
+    //free_memory(poly_diff);
+    //free_memory(poly_diff2);
   }
 
   mpfr_clear(var1);
   mpfr_clear(var2);
   mpfr_clear(var3);
   mpfr_clear(var4);
-  mpfr_clear(computedQuality);
   free_memory(f_diff);
   free_memory(f_diff2);
   free_memory(w_diff);
@@ -1302,9 +1465,11 @@ node *newRemez(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
   avma=ltop;
   if (mpfr_cmp(computedQuality, quality)>0) {
     fprintf(stderr, "Error in Remez: the algorithm does not converge.\n");
+    mpfr_clear(computedQuality);
     recoverFromError();
   }
 
+  mpfr_clear(computedQuality);
   return poly;
 }
 
