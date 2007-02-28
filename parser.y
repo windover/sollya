@@ -295,7 +295,7 @@ void yyerror(char *message) {
 %type <rangeval> guessDegree
 %type <constantval> searchGal
 %type <aString> directString
-
+%type <other> autoprintelem
 
 %%
 
@@ -1517,7 +1517,19 @@ dirtyintegral: DIRTYINTEGRALTOKEN function INTOKEN range
 			   }
 ;
 
-autoprint:   function SEMICOLONTOKEN
+autoprint:       autoprintelem SEMICOLONTOKEN
+                           {
+			     printf("\n");
+			     $$ = NULL;
+			   }
+               | autoprintelem COMMATOKEN autoprint
+                           {
+			     $$ = NULL;
+			   }
+;
+
+
+autoprintelem:   function 
                            {
 			     temp_node = horner($1);
 			     if (isConstant(temp_node)) {
@@ -1525,8 +1537,8 @@ autoprint:   function SEMICOLONTOKEN
 				 prec_temp = tools_precision;
 				 tools_precision = defaultprecision;
 				 printTree(temp_node);
+				 printf(" ");
 				 tools_precision = prec_temp;
-				 printf("\n");
 			       } else {
 				 mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 				 mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
@@ -1551,7 +1563,7 @@ autoprint:   function SEMICOLONTOKEN
 				   printMessage(1,"Warning: the expression is mathematically undefined or numerically unstable.\n");
 				 }
 				 printValue(mpfr_temp, defaultprecision);
-				 printf("\n");
+				 printf(" ");
 				 mpfr_clear(*mpfr_temp);
 				 mpfr_clear(*mpfr_temp2);
 				 mpfr_clear(*mpfr_temp3);
@@ -1569,28 +1581,28 @@ autoprint:   function SEMICOLONTOKEN
 			       prec_temp = tools_precision;
 			       tools_precision = defaultprecision;
 			       printTree(temp_node);
+			       printf(" ");
 			       tools_precision = prec_temp;
-			       printf("\n");
 			       free_memory(temp_node2);
 			     }
 			     free_memory($1);
 			     free_memory(temp_node);
 			     $$ = NULL;
 			   }
-           | printableRange SEMICOLONTOKEN {
+           | printableRange {
                              printf("[");
                              printValue(($1).a,tools_precision);
 			     printf(";");
 			     printValue(($1).b,tools_precision);
-			     printf("]\n");
+			     printf("] ");
 			     mpfr_clear(*(($1).a));
 			     mpfr_clear(*(($1).b));
 			     free($1.a);
 			     free($1.b);
                              $$ = NULL;
 	                    }
-           | directString SEMICOLONTOKEN {
-	                     printf("%s\n",$1);
+           | directString {
+	                     printf("%s ",$1);
 			     free($1);
 	                     $$ = NULL;
 	                    }
