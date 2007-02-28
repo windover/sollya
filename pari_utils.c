@@ -101,7 +101,7 @@ void PARI_to_mpfr(mpfr_t y, GEN xx, mp_rnd_t rnd) {
   if (s<0) mpfr_neg(z,z,GMP_RNDN);//exact
 
   mpfr_set(y,z,rnd);
-  
+
   mpfr_clear(z);
   mpz_clear(m);
   return;
