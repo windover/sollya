@@ -20,6 +20,8 @@
 #include "plot.h"
 #include "external.h"
 
+#define YYERROR_VERBOSE 1
+
 int yylex();
 
 extern FILE *yyin;

@@ -7,6 +7,7 @@
 #include "chain.h"
 #include "fpminimax.h"
 
+
 #define DEFAULTPOINTS 501
 #define DEFAULTPRECISION 165
 #define DEFAULTDIAM 1e-4
@@ -72,6 +73,7 @@ extern int eliminatePrompt;
 extern int eliminatePromptBackup;
 extern mp_prec_t tempPrec;
 extern int canonical;
+
 
 void printPrompt(void);
 void recoverFromError(void);

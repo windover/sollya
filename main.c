@@ -243,6 +243,8 @@ int printMessage(int verb, const char *format, ...) {
 }
 
 extern int yylex(void);
+extern int yylex_destroy();
+
 
 void signalHandler(int i) {
   fflush(stdout); fflush(stderr);
@@ -270,7 +272,9 @@ void signalHandler(int i) {
 	free(readStack);
 	readStack = readStackTemp;
       }
-      fclose(yyin);
+      avma = ltop;
+      pari_close();
+      yylex_destroy();
       exit(0);
     } else {
       handlingCtrlC = 1;
@@ -344,7 +348,7 @@ void printPrompt(void) {
 int main(int argc, char *argv[]) {
   struct termios termAttr;
   sigset_t mask;
-  
+
   eliminatePrompt = 0; eliminatePromptBackup = 0;
   if (tcgetattr(0,&termAttr) == -1) {
     eliminatePrompt = 1;
@@ -435,7 +439,9 @@ int main(int argc, char *argv[]) {
     free(readStack);
     readStack = readStackTemp;
   }
-  fclose(yyin);
+  avma = ltop;
+  pari_close();
+  yylex_destroy();
   return 0;
 }
 

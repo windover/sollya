@@ -16,6 +16,8 @@
 %option noyywrap
 %option always-interactive
 
+%array
+
 %x readstate
 %x readstate2
 %x commentstate
