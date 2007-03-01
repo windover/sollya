@@ -19,24 +19,30 @@
 #include "pari_utils.h"
 #include "plot.h"
 #include "external.h"
+#include "parser.tab.h"
 
 #define YYERROR_VERBOSE 1
+#define YYPARSE_PARAM scanner
+#define YYLEX_PARAM   scanner
 
-int yylex();
+extern int yylex(YYSTYPE *lvalp, void *scanner);
+extern FILE *yyget_in(void *scanner);
 
-extern FILE *yyin;
-extern char *yytext;
+
 extern ulong ltop;
 
 void yyerror(char *message) {
-  if ((!feof(yyin)) && (!handlingError)) {
-    fprintf(stderr,"Warning: %s on token \"%s\". Will try to continue parsing (expecting \";\"). May leak memory.\n",message,yytext);
+  if ((!feof(yyget_in(scanner))) && (!handlingError)) {
+    fprintf(stderr,"Warning: %s. Will try to continue parsing (expecting \";\"). May leak memory.\n",message);
   }
+  handlingError = 0;
 }
 
 %}
 
 %expect 1
+
+%pure_parser
 
 %union {
 	char *value;

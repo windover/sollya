@@ -14,6 +14,7 @@
 #include "remez.h"
 #include "infnorm.h"
 #include "assignment.h"
+#include "parser.tab.h"
 #include <pari/paripriv.h>
 #include <termios.h>
 
@@ -76,6 +77,12 @@ int handlingCtrlC;
 int handledCtrlC = 1;
 int fileNumber = 0;
 int canonical = 0;
+void *scanner = NULL;
+
+extern int yyparse();
+extern void yylex_destroy(void *);
+extern int yylex_init(void **);
+extern int yylex(void *);
 
 
 #define NEWPARIVERSION
@@ -92,10 +99,7 @@ extern jmp_buf environnement;
 
 #endif
 
-extern int yyparse();
-extern FILE *yyin;
-extern void yyrestart(FILE *);
-extern char *yytext;
+
 
 void *safeCalloc (size_t nmemb, size_t size) {
   void *ptr;
@@ -242,12 +246,10 @@ int printMessage(int verb, const char *format, ...) {
   return vprintf(format,varlist);
 }
 
-extern int yylex(void);
-extern int yylex_destroy();
 
 
 void signalHandler(int i) {
-  fflush(stdout); fflush(stderr);
+  promptToBePrinted = 1;
   switch (i) {
   case SIGINT: 
     if (eliminatePromptBackup == 1) {
@@ -260,6 +262,9 @@ void signalHandler(int i) {
       if(variablename != NULL) free(variablename);
       if(newReadFilename != NULL) free(newReadFilename);
       if (constBuffer != NULL) free(constBuffer);
+      if (!(eliminatePromptBackup == 1)) {
+	removePlotFiles();
+      }
       while ((readStack != NULL) && (readStack2 != NULL)) {
 	temp_fd = *((FILE **) (readStack2->value));
 	fclose(temp_fd);
@@ -274,30 +279,29 @@ void signalHandler(int i) {
       }
       avma = ltop;
       pari_close();
-      yylex_destroy();
+      yylex_destroy(scanner);
       exit(0);
     } else {
       handlingCtrlC = 1;
-      fflush(stdout); fflush(stderr); fflush(stdin);
-      if (readStack != NULL) {
-	yyrestart(yyin);
-	fflush(yyin);
-	ungetc('&',yyin);
-	fflush(yyin);
-	yylex();
-	fflush(stdout); fflush(stderr); fflush(stdin); fflush(yyin);
-	yyrestart(yyin);
-	ungetc(';',yyin);
-	yyrestart(yyin);
-      } else {
-	if ((!handledCtrlC) || (eliminatePrompt)) {
-	  printMessage(1,"Warning: Handling Ctrl-C requires discarding all input until next newline. Start of next token was \"%s\".\n",yytext);
-	  ungetc('#',yyin); 
-	}
-	yyrestart(yyin);
-	handledCtrlC = 1;
-	if (verbosity == 0) printf("\n");
+      yylex_destroy(scanner);
+      if (readStack == NULL) {
+	handlingError = 1;
+	promptToBePrinted = 0;
       }
+      while ((readStack != NULL) && 
+	     (readStack2 != NULL)) {
+	temp_fd = *((FILE **) (readStack2->value));
+	while (readStack2->next != NULL) fclose(temp_fd);
+	free(readStack2->value);
+	readStackTemp = readStack2->next;
+	free(readStack2);
+	readStack2 = readStackTemp;
+	free(readStack->value);
+	readStackTemp = readStack->next;
+	free(readStack);
+	readStack = readStackTemp;
+      }
+      yylex_init(&scanner);
     }
     break;
   case SIGSEGV:
@@ -316,7 +320,6 @@ void signalHandler(int i) {
     fprintf(stderr,"Error: must handle an unknown signal.\n");
     exit(1);
   }
-  promptToBePrinted = 1;
   recoverFromError();
 }
 
@@ -331,13 +334,7 @@ void recoverFromError(void) {
 
 void printPrompt(void) {
   if (eliminatePrompt) return;
-  fflush(stdout);
-  fflush(stdin);
-  fflush(stderr);
   printf("> ");
-  fflush(stdout);
-  fflush(stdin);
-  fflush(stderr);
   handledCtrlC = 1;
 }
 
@@ -348,13 +345,14 @@ void printPrompt(void) {
 int main(int argc, char *argv[]) {
   struct termios termAttr;
   sigset_t mask;
+  
+  yylex_init(&scanner);
 
   eliminatePrompt = 0; eliminatePromptBackup = 0;
   if (tcgetattr(0,&termAttr) == -1) {
     eliminatePrompt = 1;
     eliminatePromptBackup = 1;
   }
-  yyin = stdin;
   
   pari_init(PARIMEMSIZE, 2);
   mp_set_memory_functions(safeMalloc,wrapSafeRealloc,NULL);
@@ -385,11 +383,19 @@ int main(int argc, char *argv[]) {
   printPrompt();
   while (1) {
     if (setjmp(recoverEnvironment)) {
-      if (handlingCtrlC) 
-	printMessage(1,"Warning: the last command has been interrupted. May leak memory.\n");
-      else 
-	printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
+      if (readStack == NULL) {
+	eliminatePrompt = eliminatePromptBackup;
+      }
+      if (handlingCtrlC) {
+	  printMessage(1,"Warning: the last command has been interrupted. May leak memory.\n");
+      }
+      else {
+	  printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
+      }
+      if (verbosity == 0) printf("\n");
+      fflush(stdout);
       handlingCtrlC = 0;
+      printPrompt();
       sigemptyset(&mask);
       sigaddset(&mask,SIGINT);
       sigaddset(&mask,SIGSEGV);
@@ -402,12 +408,8 @@ int main(int argc, char *argv[]) {
       signal(SIGBUS,signalHandler);
       signal(SIGFPE,signalHandler);
       signal(SIGPIPE,signalHandler);
-      if (promptToBePrinted) {
-	printPrompt();
-	promptToBePrinted = 0;
-      }
     }
-    if (yyparse()) break;  
+    if (yyparse(scanner)) break;  
     handledCtrlC = 0;
     promptToBePrinted = 1;
   }
@@ -441,7 +443,7 @@ int main(int argc, char *argv[]) {
   }
   avma = ltop;
   pari_close();
-  yylex_destroy();
+  yylex_destroy(scanner);
   return 0;
 }
 

@@ -10,11 +10,13 @@
 
 #define YY_NO_UNPUT 1
 
-
 %}
 
 %option noyywrap
 %option always-interactive
+%option reentrant
+%option bison-bridge
+%option nounput
 
 %x readstate
 %x readstate2
@@ -282,7 +284,7 @@ GUESSDEGREE     "guessdegree"
                       if (constBuffer != NULL) free(constBuffer);
 		      constBuffer = (char *) safeCalloc(strlen(yytext)-1,sizeof(char));
 		      strncpy(constBuffer,yytext,strlen(yytext)-2);
-                      yylval.value = constBuffer;
+                      yylval->value = constBuffer;
                       promptToBePrinted = 0; return BINARYCONSTTOKEN;
                  }
 
@@ -293,15 +295,15 @@ GUESSDEGREE     "guessdegree"
 		      if (removeSpaces(constBuffer,yytext)) {
 			printMessage(2,"Information: removed spaces in scientific notation constant \"%s\", it will be considered as \"%s\"\n",yytext,constBuffer);
 		      }
-                      yylval.value = constBuffer;
+                      yylval->value = constBuffer;
                       promptToBePrinted = 0; return CONSTTOKEN;
                 }
 {DYADICCONSTANT} {     
-                      yylval.value = yytext;
+                      yylval->value = yytext;
                       promptToBePrinted = 0; return DYADICCONSTTOKEN;
                 }
 {HEXCONSTANT}   {     
-                      yylval.value = yytext;
+                      yylval->value = yytext;
                       promptToBePrinted = 0; return HEXCONSTTOKEN;
                 }
 {IN}            {     promptToBePrinted = 0; return INTOKEN; }
@@ -506,7 +508,7 @@ GUESSDEGREE     "guessdegree"
 			*tempFDPtr = yyin;
 			readStack2 = addElement(readStack2, (void *) tempFDPtr);
 			yyin = temp_fd;
-			yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE));
+			yy_switch_to_buffer(yy_create_buffer(yyin, YY_BUF_SIZE, scanner), scanner);
 		      }
 		      free(newReadFilenameTemp);
 		      BEGIN(INITIAL);
@@ -531,8 +533,8 @@ GUESSDEGREE     "guessdegree"
 			readStackTemp = readStack2->next;
 			free(readStack2);
 			readStack2 = readStackTemp;
-			yy_delete_buffer(YY_CURRENT_BUFFER);
-			yy_switch_to_buffer(*((YY_BUFFER_STATE *) (readStack->value)));
+			yy_delete_buffer(YY_CURRENT_BUFFER, scanner);
+			yy_switch_to_buffer(*((YY_BUFFER_STATE *) (readStack->value)),scanner);
 			free(readStack->value);
 			readStackTemp = readStack->next;
 			free(readStack);
@@ -554,8 +556,8 @@ GUESSDEGREE     "guessdegree"
 			readStackTemp = readStack2->next;
 			free(readStack2);
 			readStack2 = readStackTemp;
-			yy_delete_buffer(YY_CURRENT_BUFFER);
-			yy_switch_to_buffer(*((YY_BUFFER_STATE *) (readStack->value)));
+			yy_delete_buffer(YY_CURRENT_BUFFER,scanner);
+			yy_switch_to_buffer(*((YY_BUFFER_STATE *) (readStack->value)),scanner);
 			free(readStack->value);
 			readStackTemp = readStack->next;
 			free(readStack);
@@ -581,6 +583,5 @@ GUESSDEGREE     "guessdegree"
 		}
 
 %%
-
 
 
