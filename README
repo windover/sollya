@@ -1,0 +1,21 @@
+ARENAIREPLOT:
+
+In order to compile the software you will need the following packages installed:
+
+- gcc
+- bison
+- flex
+- gnuplot
+- mpfr
+- mpfi
+- pari version 2.3.0
+
+
+In order to compile, use the makefile by invoking it using the following command:
+
+make
+
+You can then use the software typing
+
+./tools
+
