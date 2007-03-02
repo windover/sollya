@@ -1036,6 +1036,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t a, mpfr_t b, mpfr_t eps) {
 
   if(x==NULL) res=0;
   
+  free_memory(poly);
   free_memory(poly_diff);
   free_memory(poly_diff2);
   mpfr_clear(zero_mpfr);
