@@ -7,7 +7,7 @@
 #include <errno.h>
 #include "main.h"
 #include "double.h"
-
+#include "miniparser.tab.h"
 
 
 void free_memory(node *tree) {
@@ -7458,3 +7458,164 @@ node *makeCanonical(node *tree, mp_prec_t prec) {
 }
 
 
+node *makeVariable() {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = VARIABLE;
+
+  return res;
+}
+
+node *makeConstant(mpfr_t x) {
+  node *res;
+  
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = CONSTANT;
+  res->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*(res->value),mpfr_get_prec(x));
+  mpfr_set(*(res->value),x,GMP_RNDN);
+
+  return res;
+}
+
+node *makeBinary(node *op1, node *op2, int opType) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = opType;
+  res->child1 = op1;
+  res->child2 = op2;
+
+  return res;
+}
+
+node *makeUnary(node *op1, int opType) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = opType;
+  res->child1 = op1;
+
+  return res;
+}
+
+
+node *makeAdd(node *op1, node *op2) {
+  return makeBinary(op1,op2,ADD);
+}
+
+node *makeSub(node *op1, node *op2) {
+  return makeBinary(op1,op2,SUB);
+}
+
+node *makeMul(node *op1, node *op2) {
+  return makeBinary(op1,op2,MUL);
+}
+
+node *makeDiv(node *op1, node *op2) {
+  return makeBinary(op1,op2,DIV);
+}
+
+node *makeSqrt(node *op1) {
+  return makeUnary(op1,SQRT);
+}
+
+node *makeExp(node *op1) {
+  return makeUnary(op1,EXP);
+}
+
+node *makeLog(node *op1) {
+  return makeUnary(op1,LOG);
+}
+
+node *makeLog2(node *op1) {
+  return makeUnary(op1,LOG_2);
+}
+
+node *makeLog10(node *op1) {
+  return makeUnary(op1,LOG_10);
+}
+
+node *makeSin(node *op1) {
+  return makeUnary(op1,SIN);
+}
+
+node *makeCos(node *op1) {
+  return makeUnary(op1,COS);
+}
+
+node *makeTan(node *op1) {
+  return makeUnary(op1,TAN);
+}
+
+node *makeAsin(node *op1) {
+  return makeUnary(op1,ASIN);
+}
+
+node *makeAcos(node *op1) {
+  return makeUnary(op1,ACOS);
+}
+
+node *makeAtan(node *op1) {
+  return makeUnary(op1,ATAN);
+}
+
+node *makePow(node *op1, node *op2) {
+  return makeBinary(op1,op2,POW);
+}
+
+node *makeNeg(node *op1) {
+  return makeUnary(op1,NEG);
+}
+
+node *makeAbs(node *op1) {
+  return makeUnary(op1,ABS);
+}
+
+node *makeDouble(node *op1) {
+  return makeUnary(op1,DOUBLE);
+}
+
+node *makeDoubledouble(node *op1) {
+  return makeUnary(op1,DOUBLEDOUBLE);
+}
+
+node *makeTripledouble(node *op1) {
+  return makeUnary(op1,TRIPLEDOUBLE);
+}
+
+node *makeErf(node *op1 ) {
+  return makeUnary(op1,ERF);
+}
+
+node *makeErfc(node *op1) {
+  return makeUnary(op1,ERFC);
+}
+
+node *makeLog1p(node *op1) {
+  return makeUnary(op1,LOG_1P);
+}
+
+node *makeExpm1(node *op1) {
+  return makeUnary(op1,EXP_M1);
+}
+
+node *makeDoubleextended(node *op1) {
+  return makeUnary(op1,DOUBLEEXTENDED);
+}
+
+
+node *parseString(char *str) {
+  node *result;
+
+  startBuffer(str);
+  if (!miniyyparse()) {
+    result = minitree;
+  } else {
+    result = NULL;
+  }
+  endBuffer();
+
+  return result;
+}

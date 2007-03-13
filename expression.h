@@ -4,9 +4,11 @@
 
 #include <mpfr.h>
 #include <stdio.h>
-
 #include "chain.h"
 
+extern int miniyyparse();
+extern void startBuffer(char *str);
+extern void endBuffer(void);
 
 #define VARIABLE 0
 #define CONSTANT 1
@@ -101,5 +103,37 @@ node *makeCanonical(node *func, mp_prec_t prec);
 char *sprintTree(node *tree);
 char *sprintValue(mpfr_t *value, mp_prec_t prec);
 void printBinary(mpfr_t x);
+
+node *makeVariable();
+node *makeConstant(mpfr_t x);
+node *makeAdd(node *op1, node *op2);
+node *makeSub(node *op1, node *op2);
+node *makeMul(node *op1, node *op2);
+node *makeDiv(node *op1, node *op2);
+node *makeSqrt(node *op1);
+node *makeExp(node *op1);
+node *makeLog(node *op1);
+node *makeLog2(node *op1);
+node *makeLog10(node *op1);
+node *makeSin(node *op1);
+node *makeCos(node *op1);
+node *makeTan(node *op1);
+node *makeAsin(node *op1);
+node *makeAcos(node *op1);
+node *makeAtan(node *op1);
+node *makePow(node *op1, node *op2);
+node *makeNeg(node *op1);
+node *makeAbs(node *op1);
+node *makeDouble(node *op1);
+node *makeDoubledouble(node *op1);
+node *makeTripledouble(node *op1);
+node *makeErf(node *op1);
+node *makeErfc(node *op1);
+node *makeLog1p(node *op1);
+node *makeExpm1(node *op1);
+node *makeDoubleextended(node *op1);
+
+node *parseString(char *str); 
+
 
 #endif /* ifdef EXPRESSION_H*/

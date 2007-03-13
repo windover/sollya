@@ -74,6 +74,8 @@ extern int eliminatePromptBackup;
 extern mp_prec_t tempPrec;
 extern int canonical;
 extern void *scanner;
+extern node *minitree;
+
 
 void printPrompt(void);
 void recoverFromError(void);

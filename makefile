@@ -2,8 +2,8 @@ CPPFLAGS=-I/sw/include -rdynamic
 LIB=-L/sw/lib
 CFLAGS=-Wall -g
 
-tools: parser.tab.o lex.yy.o plot.o expression.o infnorm.o pari_utils.o remez.o main.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o
-	gcc $(LIB) $(CFLAGS) -o tools lex.yy.o plot.o parser.tab.o expression.o infnorm.o pari_utils.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o main.o -lfl -lmpfi -lpari -lmpfr -lgmp -ldl
+tools: parser.tab.o lex.yy.o plot.o miniparser.tab.o lex.miniyy.o expression.o infnorm.o pari_utils.o remez.o main.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o
+	gcc $(LIB) $(CFLAGS) -o tools lex.yy.o plot.o miniparser.tab.o lex.miniyy.o parser.tab.o expression.o infnorm.o pari_utils.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o main.o -lfl -lmpfi -lpari -lmpfr -lgmp -ldl
 
 parser.tab.o: parser.tab.h parser.tab.c expression.h main.h infnorm.h remez.h chain.h assignment.h taylor.h
 
@@ -20,7 +20,7 @@ parser.tab.h: parser.y expression.h infnorm.h remez.h main.h
 
 plot.o: plot.h plot.c expression.h main.h
 
-expression.o: expression.h expression.c main.h
+expression.o: expression.h expression.c main.h miniparser.tab.h miniparser.tab.c
 
 main.o: plot.h expression.h infnorm.h remez.h main.h main.c assignment.h chain.h
 
@@ -50,6 +50,21 @@ worstcase.o: worstcase.h worstcase.c expression.h
 
 implement.o: implement.h implement.c expression.h main.h
 
+lex.miniyy.c: minilexer.lex miniparser.tab.h main.h expression.h
+	flex -I -Pminiyy minilexer.lex
+
+miniparser.tab.c: miniparser.y expression.h main.h double.h
+	bison -d -p miniyy miniparser.y
+
+miniparser.tab.h: miniparser.y expression.h main.h double.h
+	bison -d -p miniyy miniparser.y
+
+miniparser.tab.o: miniparser.tab.h miniparser.tab.c expression.h main.h double.h
+
+lex.miniyy.o: lex.miniyy.c expression.h main.h
+
+
+
 doc: Manuel_fr.tex
 	latex Manuel_fr.tex
 	dvips Manuel_fr.dvi -o Manuel_fr.ps
@@ -65,6 +80,9 @@ clean:
 	rm -rf lex.yy.c
 	rm -rf parser.tab.c
 	rm -rf parser.tab.h
+	rm -rf miniparser.tab.h
+	rm -rf miniparser.tab.c
+	rm -rf lex.miniyy.c
 	rm -rf tools
 	rm -rf Manuel_fr.log Manuel_fr.aux Manuel_fr.dvi Manuel_fr.out Manuel_fr.toc Manuel_fr.pdf 
 

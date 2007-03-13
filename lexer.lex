@@ -255,6 +255,8 @@ FINISH          "&"
 
 GUESSDEGREE     "guessdegree"
 
+PARSE           "parse"
+
 %%
 
 %{
@@ -451,7 +453,7 @@ GUESSDEGREE     "guessdegree"
 {ZEROWORD}               {     promptToBePrinted = 0; return ZEROWORDTOKEN; }                    	
 {NEAREST}                {     promptToBePrinted = 0; return NEARESTTOKEN; }                    
 {GUESSDEGREE}            {     promptToBePrinted = 0; return GUESSDEGREETOKEN; }                    
-
+{PARSE}                  {     promptToBePrinted = 0; return PARSETOKEN; }                    
 
 {READ}          {
                       BEGIN(readstate);

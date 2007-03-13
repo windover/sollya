@@ -213,6 +213,7 @@ void yyerror(char *message) {
 %token  ZEROWORDTOKEN                    	
 %token  NEARESTTOKEN
 %token  GUESSDEGREETOKEN
+%token  PARSETOKEN
 
 %type <other> commands
 %type <other> command
@@ -2243,6 +2244,12 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                            {
 			      temp_node = expand($3);
 			      free_memory($3);
+			      $$ = temp_node;
+                           } 
+                        | PARSETOKEN LPARTOKEN string RPARTOKEN
+                           {
+			      temp_node = parseString($3);
+			      free($3);
 			      $$ = temp_node;
                            } 
 			|      DEGREETOKEN LPARTOKEN function RPARTOKEN
