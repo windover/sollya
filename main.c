@@ -18,7 +18,7 @@
 #include <pari/paripriv.h>
 #include <termios.h>
 
-#define PARIMEMSIZE 3000000
+#define PARIMEMSIZE 30000000
 
 
 

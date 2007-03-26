@@ -3859,8 +3859,8 @@ int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutof
   node *deriv;
   int res;
 
-  deriv = differentiate(func);
+  if (startprec < (mpfr_get_prec(x) + 10)) deriv = differentiate(func); else deriv = NULL;
   res = evaluateFaithfulWithCutOffFast(result, func, deriv, x, cutoff, startprec);
-  free_memory(deriv);
+  if (deriv != NULL) free_memory(deriv);
   return res;
 }
