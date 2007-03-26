@@ -563,6 +563,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       leftExcludesConstant = evaluateI(leftConstantTerm, tree->child1, zI, prec, simplifiesA-1, simplifiesB, leftTheoConstant);
       rightExcludesConstant = evaluateI(rightConstantTerm, tree->child2, zI, prec, simplifiesA-1, simplifiesB, rightTheoConstant);
 
+      printMessage(12,"Information: Differentiating while evaluating for decorrelation.\n");
+
       derivLeft = differentiate(tree->child1);
       derivRight = differentiate(tree->child2);
 
@@ -711,6 +713,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       leftExcludesConstant = evaluateI(leftConstantTerm, tree->child1, zI, prec, simplifiesA-1, simplifiesB, leftTheoConstant);
       rightExcludesConstant = evaluateI(rightConstantTerm, tree->child2, zI, prec, simplifiesA-1, simplifiesB, rightTheoConstant);
 
+      printMessage(12,"Information: Differentiating while evaluating for decorrelation.\n");
+
       derivLeft = differentiate(tree->child1);
       derivRight = differentiate(tree->child2);
 
@@ -837,6 +841,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	  mpfr_zero_p(br) &&
 	  (simplifiesB > 0)) {
 	/* [0;0] / [0;0] */
+
+	printMessage(12,"Information: Differentiating while evaluating for Hopital's rule.\n");
 	derivNumerator = differentiate(tree->child1);
 	derivDenominator = differentiate(tree->child2);
 	
@@ -920,6 +926,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	if (mpfr_cmp(xl,xr) != 0) {
 	  mpfr_init2(z,prec);
 	  
+	  printMessage(12,"Information: Differentiating while evaluating for Hopital's rule.\n");
 	  derivDenominator = differentiate(tree->child2);
 	  
 	  newtonMPFR(z,tree->child2,derivDenominator,xl,xr,prec);
@@ -951,7 +958,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	    
 	    if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
 	      /* Hopital's rule can be applied */
-
+	      printMessage(12,"Information: Differentiating while evaluating for Hopital's rule.\n");
 	      derivNumerator = differentiate(tree->child1);
 	      
 	      tempNode = (node *) safeMalloc(sizeof(node));
@@ -1012,7 +1019,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	      }
   
 	      mpfr_init2(z2,prec);
-
+	      printMessage(12,"Information: Differentiating while evaluating for Hopital's rule.\n");
 	      derivNumerator = differentiate(tree->child1);
 
 	      newtonMPFR(z2,tree->child1,derivNumerator,xl,xr,prec);
@@ -3859,7 +3866,10 @@ int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutof
   node *deriv;
   int res;
 
-  if (startprec < (mpfr_get_prec(x) + 10)) deriv = differentiate(func); else deriv = NULL;
+  if (startprec < (mpfr_get_prec(result) + 10)) {
+    printMessage(12,"Information: Differentiating while evaluating because start precision too low.\n");
+    deriv = differentiate(func); 
+  }else deriv = NULL;
   res = evaluateFaithfulWithCutOffFast(result, func, deriv, x, cutoff, startprec);
   if (deriv != NULL) free_memory(deriv);
   return res;
