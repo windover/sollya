@@ -85,7 +85,7 @@ node *constructPolynomial(GEN coeff, chain *monomials, mp_prec_t prec) {
 // If n<>0, n steps are computed.
 // The algorithm uses Newton's method
 // It is assumed that f(a)f(b)<=0 and x0 in [a;b]
-GEN findZero(node *f, node *f_diff, mpfr_t a, mpfr_t b, GEN x0, int n, mp_prec_t prec) {
+GEN findZero(node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, GEN x0, int n, mp_prec_t prec) {
   node *iterator;
   node *temp1;
   mpfr_t x, y, zero_mpfr;
@@ -96,6 +96,7 @@ GEN findZero(node *f, node *f_diff, mpfr_t a, mpfr_t b, GEN x0, int n, mp_prec_t
   mpfr_init2(x,prec);
   mpfr_init2(y,prec);
   mpfr_init2(zero_mpfr,53);
+
 
   if(x0!=NULL) PARI_to_mpfr(x,x0,GMP_RNDN);
   else {
@@ -146,6 +147,7 @@ GEN findZero(node *f, node *f_diff, mpfr_t a, mpfr_t b, GEN x0, int n, mp_prec_t
 	printMpfr(y);
       }
       
+      // Since Newton go out of the interval, we make a step of binary search
       r = evaluateFaithfulWithCutOffFast(y, f, f_diff, x, zero_mpfr, prec);
 
       if((!mpfr_number_p(y)) && (r==1)) {
@@ -159,7 +161,7 @@ GEN findZero(node *f, node *f_diff, mpfr_t a, mpfr_t b, GEN x0, int n, mp_prec_t
       }
       if(r==0) mpfr_set_d(y,0,GMP_RNDN);
     
-      if(mpfr_sgn(a)==mpfr_sgn(y)) {
+      if(sgnfa==mpfr_sgn(y)) {
 	mpfr_add(y,x,b,GMP_RNDN);
 	mpfr_div_2ui(y,y,1,GMP_RNDN);
       }
@@ -215,8 +217,8 @@ GEN findZero(node *f, node *f_diff, mpfr_t a, mpfr_t b, GEN x0, int n, mp_prec_t
 }
 
 // Just a wrapper
-GEN newton(node *f, node *f_diff, mpfr_t a, mpfr_t b, mp_prec_t prec) {
-  return findZero(f, f_diff, a, b, NULL, 0, prec);
+GEN newton(node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, mp_prec_t prec) {
+  return findZero(f, f_diff, a, b, sgnfa, NULL, 0, prec);
 }
 
 
@@ -252,7 +254,7 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
       i++;
       if(i>deg+2)
 	printMessage(1,"Warning: the function oscillates too much. Nevertheless, we try to continue.\n");
-      else res[i] = (long)(newton(tree, diff_tree, x1, x2, prec));       
+      else res[i] = (long)(newton(tree, diff_tree, x1, x2, mpfr_sgn(y1), prec));       
     }
     mpfr_set(x1,x2,GMP_RNDN);
     mpfr_add(x2,x2,h,GMP_RNDN);
@@ -486,15 +488,15 @@ GEN qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, GEN x,
 
   if(test) {
     z = cgetg(n+1, t_COL);
-    if((case1 || case2b) && (s[0]*s[1]<=0)) z[1] = (long)findZero(error_diff, error_diff2,y[0],y[1],NULL,2,prec);
+    if((case1 || case2b) && (s[0]*s[1]<=0)) z[1] = (long)findZero(error_diff, error_diff2,y[0],y[1],s[0],NULL,2,prec);
     if((case1 || case2b) && (s[0]*s[1]>0)) z[1] = (long)mpfr_to_PARI(a);
-    if(case2 || case3) z[1] = (long)findZero(error_diff, error_diff2, y[0], y[1], (GEN)(x[1]), 2, prec);
+    if(case2 || case3) z[1] = (long)findZero(error_diff, error_diff2, y[0], y[1], s[0], (GEN)(x[1]), 2, prec);
     
-    for(i=1;i<=n-2;i++) z[i+1] = (long)findZero(error_diff, error_diff2, y[i], y[i+1], (GEN)(x[i+1]), 2, prec);
+    for(i=1;i<=n-2;i++) z[i+1] = (long)findZero(error_diff, error_diff2, y[i], y[i+1], s[i], (GEN)(x[i+1]), 2, prec);
 
-    if((case1 || case2) && (s[n-1]*s[n]<=0)) z[n] = (long)findZero(error_diff, error_diff2, y[n-1], y[n], NULL, 2, prec);
+    if((case1 || case2) && (s[n-1]*s[n]<=0)) z[n] = (long)findZero(error_diff, error_diff2, y[n-1], y[n], s[n-1], NULL, 2, prec);
     if((case1 || case2) && (s[n-1]*s[n]>0)) z[n] = (long)mpfr_to_PARI(b);
-    if(case2b || case3) z[n] = (long)findZero(error_diff, error_diff2, y[n-1], y[n], (GEN)(x[n]), 2, prec);
+    if(case2b || case3) z[n] = (long)findZero(error_diff, error_diff2, y[n-1], y[n], s[n-1], (GEN)(x[n]), 2, prec);
   }
   else {
     printMessage(1,"Warning in Remez: a slower algorithm is used for this step\n");
