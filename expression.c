@@ -6078,6 +6078,138 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
   exit(1);
 }
 
+int isPowerOfVariable(node *);
+
+void getCoefficientsHornerUnsafe(node **coefficients, node *poly, int offset, int sign) {
+  int deg, newSign;
+  node *newCoeff, *temp;
+
+  if (isConstant(poly)) {
+    newCoeff = copyTree(poly);
+  } else {
+    if (poly->nodeType == SUB) newSign = -1; else newSign = 1;
+    newCoeff = copyTree(poly->child1);
+    if (isPowerOfVariable(poly->child2)) {
+      deg = getDegree(poly->child2);
+      temp = (node *) safeMalloc(sizeof(node));
+      temp->nodeType = CONSTANT;
+      temp->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*(temp->value),17);
+      mpfr_set_d(*(temp->value),1.0,GMP_RNDN);
+      getCoefficientsHornerUnsafe(coefficients,temp,offset+deg,sign*newSign);
+      free_memory(temp);
+    } else {
+      deg = getDegree(poly->child2->child1);
+      getCoefficientsHornerUnsafe(coefficients,poly->child2->child2,offset+deg,sign*newSign);
+    }
+  }
+  
+  if (coefficients[offset] == NULL) {
+    if (sign == -1) {
+      temp = (node *) safeMalloc(sizeof(node));
+      temp->nodeType = NEG;
+      temp->child1 = newCoeff;
+      coefficients[offset] = temp;
+    } else {
+      coefficients[offset] = newCoeff;
+    }
+  } else {
+    temp = (node *) safeMalloc(sizeof(node));
+    if (sign == 1) temp->nodeType = ADD; else temp->nodeType = SUB;
+    temp->child1 = coefficients[offset];
+    temp->child2 = newCoeff;
+    coefficients[offset] = temp;
+  }
+
+}
+
+void getCoefficientsHorner(node **coefficients, node *poly) {
+  int offset;
+
+  printMessage(3,"Information: extraction of coefficient terms from a polynomial uses a special algorithm for Horner forms.\n");
+
+  if (poly->nodeType == MUL) {
+    offset = getDegree(poly->child1);
+    getCoefficientsHornerUnsafe(coefficients,poly->child2,offset,1);
+    return;
+  }
+  getCoefficientsHornerUnsafe(coefficients,poly,0,1);
+}
+
+int isPowerOfVariable(node *);
+int isCanonicalMonomial(node *);
+
+void getCoefficientsCanonicalUnsafe(node **coefficients, node *poly) {
+  int deg, sign;
+  node *newCoeff, *temp;
+
+  if (isConstant(poly)) {
+    sign = 1;
+    deg = 0;
+    newCoeff = copyTree(poly);
+  } else {
+    if (isCanonicalMonomial(poly)) {
+      deg = getDegree(poly);
+      if (isPowerOfVariable(poly)) {
+	  newCoeff = (node *) safeMalloc(sizeof(node));
+	  newCoeff->nodeType = CONSTANT;
+	  newCoeff->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  mpfr_init2(*(newCoeff->value),17);
+	  mpfr_set_d(*(newCoeff->value),1.0,GMP_RNDN);
+      } else {
+	newCoeff = copyTree(poly->child1);
+      }
+    } else {
+      getCoefficientsCanonicalUnsafe(coefficients,poly->child1);
+      if (poly->nodeType == ADD) sign = 1; else sign = -1;
+      if (isConstant(poly->child2)) {
+	deg = 0;
+	newCoeff = copyTree(poly->child2);
+      } else {
+	deg = getDegree(poly->child2);
+	if (isPowerOfVariable(poly->child2)) {
+	  newCoeff = (node *) safeMalloc(sizeof(node));
+	  newCoeff->nodeType = CONSTANT;
+	  newCoeff->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  mpfr_init2(*(newCoeff->value),17);
+	  mpfr_set_d(*(newCoeff->value),1.0,GMP_RNDN);
+	} else {
+	  newCoeff = copyTree(poly->child2->child1);
+	}
+      }
+    }
+  }
+
+  if (coefficients[deg] == NULL) {
+    if (sign == -1) {
+      temp = (node *) safeMalloc(sizeof(node));
+      temp->nodeType = NEG;
+      temp->child1 = newCoeff;
+      coefficients[deg] = temp;
+    } else {
+      coefficients[deg] = newCoeff;
+    }
+  } else {
+    temp = (node *) safeMalloc(sizeof(node));
+    if (sign == 1) temp->nodeType = ADD; else temp->nodeType = SUB;
+    temp->child1 = coefficients[deg];
+    temp->child2 = newCoeff;
+    coefficients[deg] = temp;
+  }
+
+}
+
+void getCoefficientsCanonical(node **coefficients, node *poly) {
+
+  printMessage(3,"Information: extraction of coefficient terms from a polynomial uses a special algorithm for canonical forms.\n");
+
+  getCoefficientsCanonicalUnsafe(coefficients, poly);
+}
+
+
+int isHorner(node *);
+int isCanonical(node *);
+
 
 void getCoefficients(int *degree, node ***coefficients, node *poly) {
   node *temp, *temp2, *temp3, *temp4;
@@ -6089,13 +6221,25 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
     return;
   }
 
+  *coefficients = (node**) safeCalloc((*degree + 1),sizeof(node*));
+  for (i=0;i<=*degree;i++) (*coefficients)[i] = NULL;
+
+  if (isHorner(poly)) {
+    getCoefficientsHorner(*coefficients,poly);
+    return;
+  }
+
+  if (isCanonical(poly)) {
+    getCoefficientsCanonical(*coefficients,poly);
+    return;
+  }
+
+
   temp = simplifyTreeErrorfree(poly);
   temp2 = expandPowerInPolynomialUnsafe(temp);
   temp3 = expandPolynomialUnsafe(temp2);
   temp4 = simplifyTreeErrorfree(temp3);
 
-  *coefficients = (node**) safeCalloc((*degree + 1),sizeof(node*));
-  for (i=0;i<=*degree;i++) (*coefficients)[i] = NULL;
 
   getCoefficientsUnsafe(*coefficients,temp4,1);
 
@@ -6118,8 +6262,16 @@ node* hornerPolynomialUnsafe(node *tree) {
   degree = getDegree(simplified);
   monomials = (node**) safeCalloc((degree + 1),sizeof(node*));
   for (i=0;i<=degree;i++) monomials[i] = NULL;
-  
-  getCoefficientsUnsafe(monomials,simplified,1);
+
+  if (isHorner(simplified)) {
+    getCoefficientsHorner(monomials,simplified);
+  } else {
+    if (isCanonical(simplified)) {
+      getCoefficientsCanonical(monomials,simplified);
+    } else {
+      getCoefficientsUnsafe(monomials,simplified,1);
+    }
+  }
 
   if (monomials[degree] == NULL) {
     fprintf(stderr,
@@ -6201,12 +6353,20 @@ node* hornerPolynomialUnsafe(node *tree) {
 
 node* hornerPolynomial(node *tree) {
   node *temp, *temp2, *temp3, *temp4;
+  temp = NULL;
+  temp2 = NULL;
+  temp3 = NULL;
+  temp4 = NULL;
   if (isConstant(tree)) return copyTree(tree);
   if (getDegree(tree) < 0) return copyTree(tree);
-  temp4 = simplifyTreeErrorfree(tree);
-  temp = expandPowerInPolynomialUnsafe(temp4);
-  temp2 = expandPolynomialUnsafe(temp);
-  temp3 = hornerPolynomialUnsafe(temp2);
+  if (isHorner(tree) || isCanonical(tree)) {
+    temp3 = hornerPolynomialUnsafe(tree);
+  } else {
+    temp4 = simplifyTreeErrorfree(tree);
+    temp = expandPowerInPolynomialUnsafe(temp4);
+    temp2 = expandPolynomialUnsafe(temp);
+    temp3 = hornerPolynomialUnsafe(temp2);
+  }
   free_memory(temp);
   free_memory(temp2);
   free_memory(temp4);
@@ -6406,8 +6566,45 @@ node* hornerUnsimplified(node *tree) {
 }
 
 
+int isPowerOfVariable(node *tree) {
+  if (tree->nodeType == VARIABLE) return 1;
+  if ((tree->nodeType == POW) &&
+      (tree->child1->nodeType == VARIABLE) &&
+      (tree->child2->nodeType == CONSTANT) && 
+      mpfr_integer_p(*(tree->child2->value))) return 1;
+  return 0;
+}
+
+int isHornerUnsafe(node *tree) {
+  if (isConstant(tree)) return 1;
+  if (((tree->nodeType == ADD) || (tree->nodeType == SUB)) &&
+      isConstant(tree->child1) &&
+      (tree->child2->nodeType == MUL) &&
+      isPowerOfVariable(tree->child2->child1) &&
+      isHornerUnsafe(tree->child2->child2)) return 1;
+  if (((tree->nodeType == ADD) || (tree->nodeType == SUB)) &&
+      isConstant(tree->child1) &&
+      isPowerOfVariable(tree->child2)) return 1;
+  return 0;
+}
+
+int isHorner(node *tree) {
+  if ((tree->nodeType == ADD) || (tree->nodeType == SUB)) 
+    return isHornerUnsafe(tree);
+  if (tree->nodeType == MUL) {
+    return isPowerOfVariable(tree->child1) && isHornerUnsafe(tree->child2);
+  }
+  return 0;
+}
+
+
 node* horner(node *tree) {
   node *temp, *temp2, *temp3;
+
+  if (isHorner(tree)) {
+    printMessage(2,"Information: no Horner simplification will be performed because the given tree is already in Horner form.\n");
+    return copyTree(tree);
+  }
 
   temp3 = simplifyTreeErrorfree(tree);
   temp = hornerUnsimplified(temp3);
@@ -7266,9 +7463,53 @@ node *makeCanonicalPolyUnsafe(node *poly, mp_prec_t prec) {
   return tempNode2;
 }
 
+
+int isCanonicalMonomial(node *tree) {
+
+  if (isConstant(tree)) return 1;
+
+  if (isPowerOfVariable(tree)) return 1;
+  
+  if ((tree->nodeType == MUL) && 
+      isConstant(tree->child1) &&
+      isPowerOfVariable(tree->child2)) return 1;
+
+  return 0;
+}
+
+
+int isCanonicalUnsafe(node *tree) {
+  int deg1, deg2;
+  
+  if (isConstant(tree) || isCanonicalMonomial(tree)) return 1;
+
+  if ((tree->nodeType == ADD) || (tree->nodeType == SUB)) {
+    if (!isCanonicalUnsafe(tree->child1)) return 0;
+    if (!isCanonicalMonomial(tree->child2)) return 0;
+    deg1 = getDegree(tree->child1);
+    deg2 = getDegree(tree->child2);
+    if (deg1 >= deg2) return 0;
+    return 1;
+  }
+
+  return 0;
+}
+
+
+int isCanonical(node *tree) {
+  return isCanonicalUnsafe(tree);
+}
+
+
+
 node *makeCanonical(node *tree, mp_prec_t prec) {
   node *copy;
   mpfr_t *value;
+
+  if (isCanonical(tree)) {
+    printMessage(2,"Information: no canonical form simplification will be performed because the given tree is already canonical.\n");
+    return copyTree(tree);
+  }
 
   if (isPolynomial(tree)) return makeCanonicalPolyUnsafe(tree,prec);
 
