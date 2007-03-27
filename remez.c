@@ -329,6 +329,8 @@ GEN qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, GEN x,
   mpfr_set_d(zero_mpfr, 0., GMP_RNDN);
   
   // Construction of the trees corresponding to (poly*w-f)' and (poly*w-f)''
+  if(verbosity>=3) printf("Constructing the error tree... \n");
+
   error = safeMalloc(sizeof(node));
   error->nodeType = SUB;
   temp1 = safeMalloc(sizeof(node));
@@ -341,11 +343,13 @@ GEN qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, GEN x,
   free_memory(error);
   error = temp1;
 
+  if(verbosity>=3) printf("Constructing the error' trees... \n");
   error_diff = differentiate(error);
   temp1 = simplifyTreeErrorfree(error_diff);
   free_memory(error_diff);
   error_diff = temp1;
 
+  if(verbosity>=3) printf("Constructing the error'' trees... \n");
   error_diff2 = differentiate(error_diff);
   temp1 = simplifyTreeErrorfree(error_diff2);
   free_memory(error_diff2);
@@ -362,12 +366,7 @@ GEN qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, GEN x,
   mpfr_add(y[0], var_mpfr, y[0], GMP_RNDN);
   mpfr_div_2ui(y[0], y[0], 1, GMP_RNDN);
   
-  if(verbosity >= 3) {
-    printf("Computing the yi: ");
-  }
-
   for(i=1; i<n; i++) {
-    if(verbosity>=3) printf(".");
     mpfr_init2(y[i], prec);
     PARI_to_mpfr(var_mpfr, (GEN)(x[i]), GMP_RNDN);
     PARI_to_mpfr(y[i], (GEN)(x[i+1]), GMP_RNDN);
@@ -375,7 +374,6 @@ GEN qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, GEN x,
     mpfr_div_2ui(y[i], y[i], 1, GMP_RNDN);
   }
 
-  if(verbosity>=3) printf(".\n");
   mpfr_init2(y[n], prec);
   PARI_to_mpfr(var_mpfr, (GEN)(x[n]), GMP_RNDN);
   mpfr_set(y[n], b, GMP_RNDN);
