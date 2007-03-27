@@ -314,7 +314,7 @@ GEN qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, GEN x,
   int case1, case2, case2b, case3;
   int *s;
   mpfr_t *y;
-  mpfr_t var_mpfr, dummy_mpfr, max_val, min_val, zero_mpfr;
+  mpfr_t var_mpfr, dummy_mpfr, dummy_mpfr2, max_val, min_val, zero_mpfr;
   GEN z;
   
   int crash_report=0;
@@ -324,6 +324,7 @@ GEN qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, GEN x,
   mpfr_init2(max_val, prec);
   mpfr_init2(min_val, prec);
   mpfr_init2(dummy_mpfr, 5);
+  mpfr_init2(dummy_mpfr2, 53);
 
   mpfr_set_d(zero_mpfr, 0., GMP_RNDN);
   
@@ -361,13 +362,20 @@ GEN qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, GEN x,
   mpfr_add(y[0], var_mpfr, y[0], GMP_RNDN);
   mpfr_div_2ui(y[0], y[0], 1, GMP_RNDN);
   
+  if(verbosity >= 3) {
+    printf("Computing the yi: ");
+  }
+
   for(i=1; i<n; i++) {
+    if(verbosity>=3) printf(".");
     mpfr_init2(y[i], prec);
     PARI_to_mpfr(var_mpfr, (GEN)(x[i]), GMP_RNDN);
     PARI_to_mpfr(y[i], (GEN)(x[i+1]), GMP_RNDN);
     mpfr_add(y[i], var_mpfr, y[i], GMP_RNDN);
     mpfr_div_2ui(y[i], y[i], 1, GMP_RNDN);
   }
+
+  if(verbosity>=3) printf(".\n");
   mpfr_init2(y[n], prec);
   PARI_to_mpfr(var_mpfr, (GEN)(x[n]), GMP_RNDN);
   mpfr_set(y[n], b, GMP_RNDN);
@@ -532,12 +540,22 @@ GEN qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, GEN x,
   if(computedQuality!=NULL) mpfr_set(computedQuality, var_mpfr, GMP_RNDU);
   if(infiniteNorm!=NULL) mpfr_set(infiniteNorm, max_val, GMP_RNDU);
 
+  if(verbosity>=3) {
+    mpfr_set(dummy_mpfr2,max_val,GMP_RNDN);
+    printf("Current norm: "); printValue(&dummy_mpfr2, 5) ;
+    mpfr_set(dummy_mpfr2,var_mpfr,GMP_RNDN);
+    printf(" (1 +/- "); printValue(&dummy_mpfr2, 5);
+    printf(")\n");
+  }
+
+
   free_memory(error);
   free_memory(error_diff);
   free_memory(error_diff2);
   mpfr_clear(var_mpfr);
   mpfr_clear(zero_mpfr);
   mpfr_clear(dummy_mpfr);
+  mpfr_clear(dummy_mpfr2);
   mpfr_clear(max_val);
   mpfr_clear(min_val);
   free(s);

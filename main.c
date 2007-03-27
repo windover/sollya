@@ -18,8 +18,7 @@
 #include <pari/paripriv.h>
 #include <termios.h>
 
-#define PARIMEMSIZE 30000000
-
+#define PARIMEMSIZE 300000000
 
 
 char *variablename = NULL;
