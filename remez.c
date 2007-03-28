@@ -339,23 +339,26 @@ GEN qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, GEN x,
   temp1->child2 = copyTree(w);
   error->child1 = temp1;
   error->child2 = copyTree(f);
+  if(verbosity>=3) printf("Simplifying the error tree... \n");
   temp1 = simplifyTreeErrorfree(error);
   free_memory(error);
   error = temp1;
 
-  if(verbosity>=3) printf("Constructing the error' trees... \n");
+  if(verbosity>=3) printf("Constructing the error' tree... \n");
   error_diff = differentiate(error);
+  if(verbosity>=3) printf("Simplifying the error' tree... \n");
   temp1 = simplifyTreeErrorfree(error_diff);
   free_memory(error_diff);
   error_diff = temp1;
 
   if(verbosity>=3) printf("Constructing the error'' trees... \n");
   error_diff2 = differentiate(error_diff);
+  if(verbosity>=3) printf("Simplifying the error'' tree... \n");
   temp1 = simplifyTreeErrorfree(error_diff2);
   free_memory(error_diff2);
   error_diff2 = temp1;
   
-
+  if(verbosity>=3) printf("Computing the yi... \n");
   // If x = [x1 ... xn], we construct [y0 y1 ... yn] by
   // y0 = (a+x1)/2, yn = (xn+b)/2 and yi = (xi + x(i+1))/2
   n = itos((GEN)(matsize(x)[1]));
