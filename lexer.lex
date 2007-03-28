@@ -257,6 +257,8 @@ GUESSDEGREE     "guessdegree"
 
 PARSE           "parse"
 
+AUTOSIMPLIFY    "autosimplify"
+
 %%
 
 %{
@@ -454,6 +456,7 @@ PARSE           "parse"
 {NEAREST}                {     promptToBePrinted = 0; return NEARESTTOKEN; }                    
 {GUESSDEGREE}            {     promptToBePrinted = 0; return GUESSDEGREETOKEN; }                    
 {PARSE}                  {     promptToBePrinted = 0; return PARSETOKEN; }                    
+{AUTOSIMPLIFY}           {     promptToBePrinted = 0; return AUTOSIMPLIFYTOKEN; }                    
 
 {READ}          {
                       BEGIN(readstate);

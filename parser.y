@@ -214,6 +214,7 @@ void yyerror(char *message) {
 %token  NEARESTTOKEN
 %token  GUESSDEGREETOKEN
 %token  PARSETOKEN
+%token  AUTOSIMPLIFYTOKEN
 
 %type <other> commands
 %type <other> command
@@ -610,6 +611,36 @@ command:     plot
 			     printf("Default point number is set to %d points.\n",(int) defaultpoints);
                              $$ = NULL;
                            }
+           | AUTOSIMPLIFYTOKEN EQUALTOKEN QUESTIONMARKTOKEN SEMICOLONTOKEN 
+                           {
+			     if (autosimplify) 
+			       printf("Automatic simplification of expressions is activated.\n");
+			     else 
+			       printf("Automatic simplification of expressions is deactivated.\n");
+			     $$ = NULL;
+			   }
+           | AUTOSIMPLIFYTOKEN EQUALTOKEN ONTOKEN SEMICOLONTOKEN 
+                           {
+			     autosimplify = 1;
+			     printf("Automatic simplification of expressions has been activated.\n");
+			     $$ = NULL;
+			   }
+           | AUTOSIMPLIFYTOKEN EQUALTOKEN ONTOKEN EXCLAMATIONTOKEN SEMICOLONTOKEN 
+                           {
+			     autosimplify = 1;
+			     $$ = NULL;
+			   }
+           | AUTOSIMPLIFYTOKEN EQUALTOKEN OFFTOKEN SEMICOLONTOKEN 
+                           {
+			     autosimplify = 0;
+			     printf("Automatic simplification of expressions has been deactivated.\n");
+			     $$ = NULL;
+			   }
+           | AUTOSIMPLIFYTOKEN EQUALTOKEN OFFTOKEN EXCLAMATIONTOKEN SEMICOLONTOKEN 
+                           {
+			     autosimplify = 0;
+			     $$ = NULL;
+			   }
            | assignment SEMICOLONTOKEN
                            {
 			     $$ = NULL;
@@ -1540,7 +1571,7 @@ autoprint:       autoprintelem SEMICOLONTOKEN
 
 autoprintelem:   function 
                            {
-			     temp_node = horner($1);
+			     temp_node = $1;
 			     if (isConstant(temp_node)) {
 			       if (temp_node->nodeType == CONSTANT) {
 				 prec_temp = tools_precision;
@@ -1583,10 +1614,22 @@ autoprintelem:   function
 			     } else {
 			       temp_node2 = simplifyTree(temp_node);
 			       if (!isSyntacticallyEqual(temp_node,temp_node2)) {
-				 printMessage(1,"Warning: the displayed function is affected by rounding error.\n");
+				 if (autosimplify) {
+				   printMessage(1,"Warning: the displayed function is affected by rounding error.\n");
+				 } else {
+				   printMessage(1,"Warning: the displayed function may be affected by rounding error.\n");
+				 }
 			       }
 			       free_memory(temp_node);
-			       if (canonical) temp_node = makeCanonical(temp_node2,tools_precision); else temp_node = horner(temp_node2);
+			       if (treeSize(temp_node2) > MAXHORNERTREESIZE) {
+				 if (canonical) 
+				   printMessage(1,"Warning: the expression is too big for being written in canonical form.\n");
+				 else 
+				   printMessage(1,"Warning: the expression is too big for being written in Horner form.\n");
+				 temp_node = copyTree(temp_node2);
+			       } else {
+				 if (canonical) temp_node = makeCanonical(temp_node2,tools_precision); else temp_node = horner(temp_node2);
+			       }
 			       prec_temp = tools_precision;
 			       tools_precision = defaultprecision;
 			       printTree(temp_node);
@@ -1594,7 +1637,6 @@ autoprintelem:   function
 			       tools_precision = prec_temp;
 			       free_memory(temp_node2);
 			     }
-			     free_memory($1);
 			     free_memory(temp_node);
 			     $$ = NULL;
 			   }
@@ -2211,8 +2253,17 @@ taylorrecursionsvalue:  CONSTTOKEN
 
 function:                       fun
                            {
-			     temp_node = simplifyTreeErrorfree($1);
-			     free_memory($1);
+			     if (autosimplify) {
+			       if (treeSize($1) > MAXAUTOSIMPLSIZE) {
+				 printMessage(1,"Warning: will no simplify automatically an intermediate expression because it is too big.\n");
+				 temp_node = $1;
+			       } else {
+				 temp_node = simplifyTreeErrorfree($1);
+				 free_memory($1);
+			       }
+			     } else {
+			       temp_node = $1;
+			     }
 			     $$ = temp_node;
 			   }
 ;

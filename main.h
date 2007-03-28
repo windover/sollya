@@ -13,8 +13,8 @@
 #define DEFAULTDIAM 1e-4
 #define DEFAULTDIAM2 2e-3
 #define DEFAULTTAYLORRECURSIONS 0
-
-
+#define MAXHORNERTREESIZE 8500
+#define MAXAUTOSIMPLSIZE 10000
 
 typedef struct doubleChainStruct doubleChain;
 
@@ -75,6 +75,7 @@ extern mp_prec_t tempPrec;
 extern int canonical;
 extern void *scanner;
 extern node *minitree;
+extern int autosimplify;
 
 
 void printPrompt(void);

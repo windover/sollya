@@ -78,6 +78,7 @@ int fileNumber = 0;
 int canonical = 0;
 void *scanner = NULL;
 node *minitree = NULL;
+int autosimplify = 1;
 
 extern int yyparse();
 extern void yylex_destroy(void *);

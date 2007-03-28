@@ -9,6 +9,7 @@
 #include "double.h"
 #include "miniparser.tab.h"
 
+#define MAXDIFFSIMPLSIZE 10000
 
 void free_memory(node *tree) {
   if (tree == NULL) return;
@@ -3487,15 +3488,26 @@ node* differentiateUnsimplified(node *tree) {
   return derivative;
 }
 
+int isHorner(node *);
+int isCanonical(node *);
 
 node* differentiate(node *tree) {
   node *temp, *temp3;
 
   printMessage(12,"Information: formally differentiating a function.\n");
 
-  temp3 = simplifyTreeErrorfree(tree);
-  temp = differentiateUnsimplified(temp3);
-  free_memory(temp3);
+  if (isPolynomial(tree) && (isHorner(tree) || isCanonical(tree))) {
+    temp = differentiateUnsimplified(tree);
+  } else {
+    if (treeSize(tree) > MAXDIFFSIMPLSIZE) {
+      printMessage(2,"Information: will not simplify the given expression before differentiating because it is too big.\n");
+      temp = differentiateUnsimplified(tree);
+    } else {
+      temp3 = simplifyTreeErrorfree(tree);
+      temp = differentiateUnsimplified(temp3);
+      free_memory(temp3);
+    }
+  }
   return temp;
 }
 
@@ -6359,7 +6371,11 @@ node* hornerPolynomial(node *tree) {
   temp4 = NULL;
   if (isConstant(tree)) return copyTree(tree);
   if (getDegree(tree) < 0) return copyTree(tree);
-  if (isHorner(tree) || isCanonical(tree)) {
+  if (isHorner(tree)) {
+    printMessage(3,"Information: no Horner simplification will be performed because the given tree is already in Horner form.\n");
+    return copyTree(tree);
+  }
+  if (isCanonical(tree)) {
     temp3 = hornerPolynomialUnsafe(tree);
   } else {
     temp4 = simplifyTreeErrorfree(tree);
@@ -6615,13 +6631,126 @@ node* horner(node *tree) {
 }
 
 
+node *differentiatePolynomialHornerUnsafe(node *tree) {
+  int degree, i, k, e;
+  node **monomials;
+  node *temp, *temp2, *temp3, *temp4, *copy;
+  mpfr_t *value;
 
+  getCoefficients(&degree,&monomials,tree);
+
+  if (monomials[0] != NULL) free_memory(monomials[0]);
+
+  for (i=1;i<=degree;i++) {
+    if (monomials[i] != NULL) {
+      if (monomials[i]->nodeType == CONSTANT) {
+	value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*value,mpfr_get_prec(*(monomials[i]->value))+(sizeof(int)*8));
+	if (mpfr_mul_si(*value,*(monomials[i]->value),i,GMP_RNDN) != 0)
+	  printMessage(1,"Warning: rounding occured while differentiating a polynomial in Horner form.\n");
+	mpfr_clear(*(monomials[i]->value));
+	free(monomials[i]->value);
+	monomials[i]->value = value;
+	temp = monomials[i];
+      } else {
+	temp = (node *) safeMalloc(sizeof(node));
+	temp->nodeType = MUL;
+	temp->child1 = (node *) safeMalloc(sizeof(node));
+	temp->child1->nodeType = CONSTANT;
+	temp->child1->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*(temp->child1->value),tools_precision);
+	if (mpfr_set_si(*(temp->child1->value),i,GMP_RNDN) != 0) 
+	  printMessage(1,"Warning: on differentiating a polynomial in Horner form rounding occured while representing the degree of a monomial on a constant of the given precision\n");
+	temp->child2 = monomials[i];
+      }
+      monomials[i-1] = temp;
+    } else {
+      monomials[i-1] = NULL;
+    }
+  }
+  
+  degree--;
+
+  copy = copyTree(monomials[degree]);
+
+  for (i=degree-1;i>=0;i--) {
+    if (monomials[i] == NULL) {
+      if ((i == 0)) {
+	temp = (node *) safeMalloc(sizeof(node));
+	temp->nodeType = MUL;
+	temp2 = (node *) safeMalloc(sizeof(node));
+	temp2->nodeType = VARIABLE;
+	temp->child1 = temp2;
+	temp->child2 = copy;
+	copy = temp;
+      } else {
+	for (k=i-1;((monomials[k]==NULL) && (k > 0));k--);
+	e = (i - k) + 1;
+	temp = (node *) safeMalloc(sizeof(node));
+	temp->nodeType = MUL;
+	temp2 = (node *) safeMalloc(sizeof(node));
+	temp2->nodeType = VARIABLE;
+	temp3 = (node *) safeMalloc(sizeof(node));
+	temp3->nodeType = CONSTANT;
+	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*value,tools_precision);
+	if (mpfr_set_si(*value,e,GMP_RNDN) != 0) {
+	  printMessage(1,"Warning: rounding occured on representing a monomial power exponent with %d bits.\n",
+		 (int) tools_precision);
+	  printMessage(1,"Try to increase the precision.\n");
+	}
+	temp3->value = value;
+	temp4 = (node *) safeMalloc(sizeof(node));
+	temp4->nodeType = POW;
+	temp4->child1 = temp2;
+	temp4->child2 = temp3;
+	temp->child1 = temp4;
+	temp->child2 = copy;
+	copy = temp;
+	if (monomials[k] != NULL) {
+	  temp = (node *) safeMalloc(sizeof(node));
+	  temp->nodeType = ADD;
+	  temp->child1 = copyTree(monomials[k]);
+	  temp->child2 = copy;
+	  copy = temp;
+	}
+	i = k;
+      }
+    } else {
+      temp = (node *) safeMalloc(sizeof(node));
+      temp->nodeType = MUL;
+      temp2 = (node *) safeMalloc(sizeof(node));
+      temp2->nodeType = VARIABLE;
+      temp->child1 = temp2;
+      temp->child2 = copy;
+      copy = temp;
+      temp = (node *) safeMalloc(sizeof(node));
+      temp->nodeType = ADD;
+      temp->child1 = copyTree(monomials[i]);
+      temp->child2 = copy;
+      copy = temp;
+    }
+  }
+  
+
+  for (i=0;i<=degree;i++) {
+    if (monomials[i] != NULL) free_memory(monomials[i]);
+  }
+  free(monomials);
+
+  return copy;
+}
 
 node *differentiatePolynomialUnsafe(node *tree) {
   node *simplifiedTemp, *simplified, *copy, *temp, *temp2, *temp3, *temp4, *temp5;
   int degree, i;
   node **monomials;
   mpfr_t *value;
+
+  if (isHorner(tree)) {
+    printMessage(3,"Information: differentiating a polynomial in Horner form uses a special algorithm.\n");
+    return differentiatePolynomialHornerUnsafe(tree);
+  }
 
   simplifiedTemp = expandPowerInPolynomialUnsafe(tree);
 
