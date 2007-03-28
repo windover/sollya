@@ -330,7 +330,6 @@ GEN qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, GEN x,
   
   // Construction of the trees corresponding to (poly*w-f)' and (poly*w-f)''
   if(verbosity>=3) printf("Constructing the error tree... \n");
-
   error = safeMalloc(sizeof(node));
   error->nodeType = SUB;
   temp1 = safeMalloc(sizeof(node));
@@ -340,21 +339,48 @@ GEN qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, GEN x,
   error->child1 = temp1;
   error->child2 = copyTree(f);
   if(verbosity>=3) printf("Simplifying the error tree... \n");
+
+  fprintf(stderr, "Error:\n");
+  fprintTree(stderr, error);
+
+
   temp1 = simplifyTreeErrorfree(error);
+
+  fprintf(stderr, "Simplified error:\n");
+  fprintTree(stderr, temp1);
+
   free_memory(error);
   error = temp1;
 
   if(verbosity>=3) printf("Constructing the error' tree... \n");
   error_diff = differentiate(error);
   if(verbosity>=3) printf("Simplifying the error' tree... \n");
+
+  fprintf(stderr, "Error':\n");
+  fprintTree(stderr, error_diff);
+
   temp1 = simplifyTreeErrorfree(error_diff);
+
+  fprintf(stderr, "Simplified error':\n");
+  fprintTree(stderr, temp1);
+
   free_memory(error_diff);
   error_diff = temp1;
 
   if(verbosity>=3) printf("Constructing the error'' trees... \n");
   error_diff2 = differentiate(error_diff);
+
+  fprintf(stderr, "Error'':\n");
+  fprintTree(stderr, error_diff2);
+
+
   if(verbosity>=3) printf("Simplifying the error'' tree... \n");
   temp1 = simplifyTreeErrorfree(error_diff2);
+
+  fprintf(stderr, "Simplified error'':\n");
+  fprintTree(stderr, temp1);
+
+
   free_memory(error_diff2);
   error_diff2 = temp1;
   
