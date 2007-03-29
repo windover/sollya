@@ -745,6 +745,9 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
 
       temp[i] = (long)(mpfr_to_PARI(var1));
     }
+
+    if(verbosity>=3) printf("Resolving the system...\n");
+
     temp = gauss(M,temp);
     poly = constructPolynomial(temp, monomials, prec);
 
