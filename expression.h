@@ -103,6 +103,8 @@ node *makeCanonical(node *func, mp_prec_t prec);
 char *sprintTree(node *tree);
 char *sprintValue(mpfr_t *value, mp_prec_t prec);
 void printBinary(mpfr_t x);
+int isHorner(node *tree);
+int isCanonical(node *tree);
 
 node *makeVariable();
 node *makeConstant(mpfr_t x);
