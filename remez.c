@@ -737,6 +737,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
 	  }
 	}
 	if((test==0) || (r==0) || (!mpfr_number_p(var2))) {
+	  printMessage(2,"Information: the construction of M[%d,%d] uses a slower algorithm\n",i,j);
 	  temp_tree = safeMalloc(sizeof(node));
 	  temp_tree->nodeType = MUL;
 	  temp_tree->child1 = copyTree(monomials_tree[j-1]);
@@ -764,8 +765,6 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
       printf("The computed matrix is "); output(M);
     }
     
-    // Note that a simple optimization would be to precompute the w(x[i])
-    // instead of computing it (freeDegrees+1) times
     
     
     // Determination of the polynomial corresponding to M and x
@@ -792,20 +791,12 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
       printf("Differentiating the computed polynomial...\n");
     }
     
-    poly_diff = differentiate(poly);
-    poly_diff2 = differentiate(poly_diff);
-    
     temp_tree = horner(poly);
     free_memory(poly);
     poly = temp_tree;
-    
-    temp_tree = horner(poly_diff);
-    free_memory(poly_diff);
-    poly_diff = temp_tree;
-    
-    temp_tree = horner(poly_diff2);
-    free_memory(poly_diff2);
-    poly_diff2 = temp_tree;
+
+    poly_diff = differentiate(poly);
+    poly_diff2 = differentiate(poly_diff);
     
     if(verbosity>=3) {
       printf("Searching extrema of the error function...\n");
@@ -956,7 +947,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t a, mpfr_t b, mpfr_t eps) {
   ulong ltop=avma;
   mp_prec_t prec = defaultprecision;
   int freeDegrees = deg+1;
-  int i,j,r, res;
+  int i,j,r, res, test;
   int *var;
   GEN x, M, temp;
   mpfr_t zero_mpfr, var1, var2, var3, var4, computedQuality, infiniteNorm;
@@ -973,6 +964,8 @@ int whichPoly(int deg, node *f, node *w, mpfr_t a, mpfr_t b, mpfr_t eps) {
   node *w_diff2;
   chain *monomials;
   chain *curr;
+  node **monomials_tree;
+  mpfr_t *x_mpfr;
 
   // Initialisations and precomputations
   mpfr_init2(var1, prec);
@@ -999,6 +992,36 @@ int whichPoly(int deg, node *f, node *w, mpfr_t a, mpfr_t b, mpfr_t eps) {
     monomials = addElement(monomials, (void *)var);
   }
 
+  if(verbosity>=3)  printf("Computing monomials...\n");
+
+  monomials_tree = safeMalloc(freeDegrees*sizeof(node *));
+  curr = monomials;
+  for(j=0;j<freeDegrees;j++) {
+    temp_tree = safeMalloc(sizeof(node));
+    temp_tree->nodeType = VARIABLE;
+    temp_tree2 = safeMalloc(sizeof(node));
+    temp_tree2->nodeType = CONSTANT;
+    ptr = safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*ptr, prec);
+    mpfr_set_si(*ptr, (long) (*((int *)(curr->value))), GMP_RNDN);
+    temp_tree2->value = ptr;
+    
+    temp_tree3 = safeMalloc(sizeof(node));
+    temp_tree3->nodeType = POW;
+    temp_tree3->child1 = temp_tree;
+    temp_tree3->child2 = temp_tree2;
+
+    monomials_tree[j] = temp_tree3;
+    curr=curr->next;
+  }
+
+  x_mpfr = safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
+  for(i=0; i<=freeDegrees; i++) {
+    mpfr_init2(x_mpfr[i], prec);
+  }
+
+
+
   // Definition of the array x of the n+2 Chebychev points
   x = cgetg(freeDegrees + 2, t_COL);
   mpfr_const_pi(var1, GMP_RNDN);
@@ -1016,63 +1039,65 @@ int whichPoly(int deg, node *f, node *w, mpfr_t a, mpfr_t b, mpfr_t eps) {
   }
   /*************************************************************/
 
-    // Definition of the matrix M of Remez algorithm
-    if(verbosity>=3) {
-      printf("Computing the matrix...\n");
-    }
+  // Definition of the matrix M of Remez algorithm
+  if(verbosity>=3) {
+    printf("Computing the matrix...\n");
+  }
 
-    M = cgetg(freeDegrees+2, t_MAT);
-    temp = cgetg(freeDegrees+2, t_COL);
-    curr = monomials;
+  M = cgetg(freeDegrees+2, t_MAT);
+  temp = cgetg(freeDegrees+2, t_COL);
+  for(j=1; j <= freeDegrees ; j++) {
+    for(i=1; i<= freeDegrees+1; i++) temp[i] = (long)gzero;
+    M[j] = lcopy(temp);
+  }
+
+  for(i=1; i <= freeDegrees+1 ; i++) {
+    PARI_to_mpfr(x_mpfr[i-1], (GEN)(x[i]), GMP_RNDN);
+  }
+
+  for (i=1 ; i <= freeDegrees+1 ; i++) {
+    r = evaluateFaithfulWithCutOffFast(var1, w, NULL, x_mpfr[i-1], zero_mpfr, prec);
+    if((r==1) && (mpfr_number_p(var1))) test=1;
+    else test=0;
+		 
     for (j=1 ; j <= freeDegrees ; j++) {
-      temp_tree = safeMalloc(sizeof(node));
-      temp_tree->nodeType = VARIABLE;
-      temp_tree2 = safeMalloc(sizeof(node));
-      temp_tree2->nodeType = CONSTANT;
-      ptr = safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*ptr, prec);
-      mpfr_set_si(*ptr, (long) (*((int *)(curr->value))), GMP_RNDN);
-      temp_tree2->value = ptr;
-
-      temp_tree3 = safeMalloc(sizeof(node));
-      temp_tree3->nodeType = POW;
-      temp_tree3->child1 = temp_tree;
-      temp_tree3->child2 = temp_tree2;
-
-      temp_tree = safeMalloc(sizeof(node));
-      temp_tree->nodeType = MUL;
-      temp_tree->child1 = temp_tree3;
-      temp_tree->child2 = copyTree(w);
-
-      temp_tree2 = simplifyTreeErrorfree(temp_tree);
-      free_memory(temp_tree);
-      temp_tree = temp_tree2; // temp_tree = x^(monomials[j])*w(x)
-      
-      for (i=1 ; i <= freeDegrees+1 ; i++) {
-	PARI_to_mpfr(var1, (GEN)(x[i]), GMP_RNDN);
-
-	r = evaluateFaithfulWithCutOffFast(var1, temp_tree, NULL, var1, zero_mpfr, prec);
-	if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
-
-	temp[i] = (long)(mpfr_to_PARI(var1));
+      if(test==1) {
+	r = evaluateFaithfulWithCutOffFast(var2, monomials_tree[j-1], NULL, x_mpfr[i-1], zero_mpfr, prec);
+	if((r==1) && (mpfr_number_p(var2))) {
+	  mpfr_mul(var2, var1, var2, GMP_RNDN);
+	  ((GEN)(M[j]))[i] = (long)(mpfr_to_PARI(var2));
+	}
       }
-      M[j] = lcopy(temp);
-      free_memory(temp_tree);
-      curr = curr->next;
-    }
+      if((test==0) || (r==0) || (!mpfr_number_p(var2))) {
+	printMessage(2,"Information: the construction of M[%d,%d] uses a slower algorithm\n",i,j);
+	temp_tree = safeMalloc(sizeof(node));
+	temp_tree->nodeType = MUL;
+	temp_tree->child1 = copyTree(monomials_tree[j-1]);
+	temp_tree->child2 = copyTree(w);
+	  
+	temp_tree2 = simplifyTreeErrorfree(temp_tree);
+	free_memory(temp_tree);
+	temp_tree = temp_tree2; // temp_tree = x^(monomials[j])*w(x)
+	  
+	r = evaluateFaithfulWithCutOffFast(var1, temp_tree, NULL, x_mpfr[i-1], zero_mpfr, prec);
+	if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
+	((GEN)(M[j]))[i] = (long)(mpfr_to_PARI(var1));
 
-    for (i=1 ; i <= freeDegrees+1 ; i++) {
-      temp[i] = (long)stoi((i % 2)*2-1);  // temp = [1, -1, 1, -1 ... ]~
+	free_memory(temp_tree);
+      }
     }
-    M[freeDegrees+1] = lcopy(temp);
+  }
 
-    if(verbosity>=5) {
-      printf("The computed matrix is "); output(M);
-    }
+  for (i=1 ; i <= freeDegrees+1 ; i++) {
+    temp[i] = (long)stoi((i % 2)*2-1);  // temp = [1, -1, 1, -1 ... ]~
+  }
+  M[freeDegrees+1] = lcopy(temp);
+
+  if(verbosity>=5) {
+    printf("The computed matrix is "); output(M);
+  }
     
-    // Note that a simple optimization would be to precompute the w(x[i])
-    // instead of computing it (freeDegrees+1) times
-
+ 
 
   // Determination of the polynomial corresponding to M and x
   for (i=1 ; i <= freeDegrees+1 ; i++) {
@@ -1122,6 +1147,16 @@ int whichPoly(int deg, node *f, node *w, mpfr_t a, mpfr_t b, mpfr_t eps) {
 
   if(x==NULL) res=0;
   
+  for(j=0;j<freeDegrees;j++) {
+    free_memory(monomials_tree[j]);
+  }
+  free(monomials_tree);
+
+  for(i=0; i<=freeDegrees; i++) {
+    mpfr_clear(x_mpfr[i]);
+  }
+
+  free(x_mpfr);
   free_memory(poly);
   free_memory(poly_diff);
   free_memory(poly_diff2);
