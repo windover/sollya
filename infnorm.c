@@ -2357,6 +2357,7 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   node *deriv;
   node *derivsecond;
   int newtonWorked;
+  int i,k;
 
   mpfr_init2(x1, prec);
   mpfr_init2(x2, prec);
@@ -2429,7 +2430,14 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   if (mpfr_cmp(x2,b)>0) mpfr_set(x2,b,GMP_RNDN);
   evaluate(y1,deriv,x1,prec);
   evaluate(y2,deriv,x2,prec);
+  i = 0; k = 0;
   while(mpfr_less_p(x1,b)) {
+    i++; k++;
+    if (i == 100) {
+      i = 0;
+      printMessage(2,"Information: %d out of %d points have been handled.\n",k,points);
+    }
+    
     evaluate(s,tree,x1,2 * prec);
     if ((mpfr_cmpabs(s,max) > 0) || (!mpfr_number_p(s))) {
       evaluateFaithfulWithCutOffFast(s,tree,deriv,x1,max,prec);
