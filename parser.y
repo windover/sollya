@@ -2353,6 +2353,20 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			      freeChain($5,freeIntPtr);
 			      $$ = temp_node;
                            }
+			|       REMEZTOKEN LPARTOKEN function COMMATOKEN monomials COMMATOKEN range COMMATOKEN function COMMATOKEN constantfunction RPARTOKEN
+                           {
+			      temp_node = remez($3, $9, $5, *($7.a), *($7.b), $11, tools_precision);
+			      free_memory($9);
+			      free_memory($3);
+			      mpfr_clear(*($7.a));
+			      mpfr_clear(*($7.b));
+			      mpfr_clear(*($11));
+			      free($11);
+			      free($7.a);
+			      free($7.b);
+			      freeChain($5,freeIntPtr);
+			      $$ = temp_node;
+                           }
                         |       RATIONALAPPROXTOKEN LPARTOKEN constantfunction COMMATOKEN integer RPARTOKEN
                            {
 			      temp_node = rationalApprox(*($3), $5);
