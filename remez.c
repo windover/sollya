@@ -915,13 +915,14 @@ void *copyInt(void *n) {
   return n2;
 }
   
-node *remez(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+node *remez(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mpfr_t *requestedQuality, mp_prec_t prec) {
   mpfr_t quality;
   node *res;
   chain *monomials2;
 
   mpfr_init2(quality, 53);
-  mpfr_set_d(quality, 0.00001, GMP_RNDN);
+  if (requestedQuality==NULL) mpfr_set_d(quality, 0.00001, GMP_RNDN);
+  else mpfr_abs(quality, *requestedQuality, GMP_RNDN);
   
   monomials2 = copyChain(monomials, &copyInt);
 

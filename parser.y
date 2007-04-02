@@ -2331,7 +2331,7 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			      temp_node2->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			      mpfr_init2(*(temp_node2->value),tools_precision);
 			      mpfr_set_d(*(temp_node2->value),1.0,GMP_RNDN);
-			      temp_node = remez($3, temp_node2, $5, *($7.a), *($7.b), tools_precision);
+			      temp_node = remez($3, temp_node2, $5, *($7.a), *($7.b), NULL, tools_precision);
 			      free_memory(temp_node2);
 			      free_memory($3);
 			      mpfr_clear(*($7.a));
@@ -2343,7 +2343,7 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                            }
 			|       REMEZTOKEN LPARTOKEN function COMMATOKEN monomials COMMATOKEN range COMMATOKEN function RPARTOKEN
                            {
-			      temp_node = remez($3, $9, $5, *($7.a), *($7.b), tools_precision);
+			      temp_node = remez($3, $9, $5, *($7.a), *($7.b), NULL, tools_precision);
 			      free_memory($9);
 			      free_memory($3);
 			      mpfr_clear(*($7.a));
