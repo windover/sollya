@@ -259,6 +259,8 @@ PARSE           "parse"
 
 AUTOSIMPLIFY    "autosimplify"
 
+TIMING          "timing"
+
 %%
 
 %{
@@ -457,6 +459,7 @@ AUTOSIMPLIFY    "autosimplify"
 {GUESSDEGREE}            {     promptToBePrinted = 0; return GUESSDEGREETOKEN; }                    
 {PARSE}                  {     promptToBePrinted = 0; return PARSETOKEN; }                    
 {AUTOSIMPLIFY}           {     promptToBePrinted = 0; return AUTOSIMPLIFYTOKEN; }                    
+{TIMING}                 {     promptToBePrinted = 0; return TIMINGTOKEN; }                    
 
 {READ}          {
                       BEGIN(readstate);

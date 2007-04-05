@@ -285,6 +285,10 @@ void popTimeCounter(char *s) {
 
     seconds = buf_final->tv_sec - buf_init->tv_sec;
     microseconds = buf_final->tv_usec - buf_init->tv_usec;
+    if (microseconds < 0) {
+      microseconds += 1000000;
+      seconds--;
+    }
 
     printMessage(1, "Information: %s spent ", s);
     if(seconds!=0) {
@@ -350,6 +354,7 @@ void signalHandler(int i) {
       avma = ltop;
       pari_close();
       yylex_destroy(scanner);
+      freeCounter();
       exit(0);
     } else {
       handlingCtrlC = 1;
@@ -397,6 +402,7 @@ void signalHandler(int i) {
 void recoverFromError(void) {
   handlingError = 1;
   avma = ltop;
+  freeCounter();
   longjmp(recoverEnvironment,1);
   return;
 }
@@ -514,6 +520,7 @@ int main(int argc, char *argv[]) {
   avma = ltop;
   pari_close();
   yylex_destroy(scanner);
+  freeCounter();
   return 0;
 }
 

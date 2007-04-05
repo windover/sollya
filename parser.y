@@ -32,6 +32,7 @@ extern FILE *yyget_in(void *scanner);
 extern ulong ltop;
 
 void yyerror(char *message) {
+  freeCounter();
   if ((!feof(yyget_in(scanner))) && (!handlingError)) {
     fprintf(stderr,"Warning: %s. Will try to continue parsing (expecting \";\"). May leak memory.\n",message);
   }
@@ -215,6 +216,7 @@ void yyerror(char *message) {
 %token  GUESSDEGREETOKEN
 %token  PARSETOKEN
 %token  AUTOSIMPLIFYTOKEN
+%token  TIMINGTOKEN
 
 %type <other> commands
 %type <other> command
@@ -641,6 +643,36 @@ command:     plot
 			     autosimplify = 0;
 			     $$ = NULL;
 			   }
+           | TIMINGTOKEN EQUALTOKEN QUESTIONMARKTOKEN SEMICOLONTOKEN 
+                           {
+			     if (timecounting) 
+			       printf("Timing is activated.\n");
+			     else 
+			       printf("Timing is deactivated.\n");
+			     $$ = NULL;
+			   }
+           | TIMINGTOKEN EQUALTOKEN ONTOKEN SEMICOLONTOKEN 
+                           {
+			     timecounting = 1;
+			     printf("Timing has been activated.\n");
+			     $$ = NULL;
+			   }
+           | TIMINGTOKEN EQUALTOKEN ONTOKEN EXCLAMATIONTOKEN SEMICOLONTOKEN 
+                           {
+			     timecounting = 1;
+			     $$ = NULL;
+			   }
+           | TIMINGTOKEN EQUALTOKEN OFFTOKEN SEMICOLONTOKEN 
+                           {
+			     timecounting = 0;
+			     printf("Timing has been deactivated.\n");
+			     $$ = NULL;
+			   }
+           | TIMINGTOKEN EQUALTOKEN OFFTOKEN EXCLAMATIONTOKEN SEMICOLONTOKEN 
+                           {
+			     timecounting = 0;
+			     $$ = NULL;
+			   }
            | assignment SEMICOLONTOKEN
                            {
 			     $$ = NULL;
@@ -988,7 +1020,9 @@ evaluateaccurate: EVALUATEACCURATETOKEN function ATTOKEN constantfunction
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     pushTimeCounter();
 			     int_temp = evaluateFaithfulOrFail($2, *($4), *mpfr_temp, 256, &tempPrec);
+			     popTimeCounter("evaluateaccurate");
 			     if (int_temp) {
 			       printMpfr(*mpfr_temp);
 			       printMessage(2,"Information: intermediate precision of %d bits.\n",tempPrec);
@@ -1010,7 +1044,9 @@ evaluate:    EVALUATETOKEN function INTOKEN range
 			     range_temp.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*(range_temp.a),defaultprecision);
 			     mpfr_init2(*(range_temp.b),defaultprecision);
+			     pushTimeCounter();
 			     evaluateRangeFunction(range_temp, ($2), ($4), defaultprecision);
+			     popTimeCounter("evaluate");
 			     mpfr_clear(*(($4).a));
 			     mpfr_clear(*(($4).b));
 			     free(($4).a);
@@ -1030,7 +1066,9 @@ evaluate:    EVALUATETOKEN function INTOKEN range
 			     mpfr_init2(*(range_temp2.b),defaultprecision);
 			     mpfr_set(*(range_temp2.a),*($4),GMP_RNDD);
 			     mpfr_set(*(range_temp2.b),*($4),GMP_RNDU);
+			     pushTimeCounter();
 			     evaluateRangeFunction(range_temp, ($2), range_temp2, defaultprecision);
+			     popTimeCounter("evaluate");
 			     mpfr_clear(*(range_temp2.a));
 			     mpfr_clear(*(range_temp2.b));
 			     free(range_temp2.a);
@@ -1052,7 +1090,9 @@ worstcase:   WORSTCASETOKEN function WITHTOKEN INPUTPRECTOKEN EQUALTOKEN constan
 				inputexpo $10
 				epsilon $18
 			     */
+			     pushTimeCounter();
 			     printWorstCases(($2), *($6), ($10), *($14), *($18), tools_precision, NULL);
+			     popTimeCounter("worstcase");
 			     free_memory($2);
 			     mpfr_clear(*($6));
 			     mpfr_clear(*($14));
@@ -1075,7 +1115,9 @@ worstcase:   WORSTCASETOKEN function WITHTOKEN INPUTPRECTOKEN EQUALTOKEN constan
 				epsilon $18
 				file $22
 			     */
+			     pushTimeCounter();
 			     printWorstCases(($2), *($6), ($10), *($14), *($18), tools_precision, ($22));
+			     popTimeCounter("worstcase");
 			     free_memory($2);
 			     mpfr_clear(*($6));
 			     mpfr_clear(*($14));
@@ -1131,7 +1173,9 @@ findzeros:   FINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
+			     pushTimeCounter();
 			     chain_temp = findZerosFunction($2,$4,defaultprecision,*mpfr_temp);
+			     popTimeCounter("findzeros");
 			     mpfr_clear(*mpfr_temp);
 			     free(mpfr_temp);
 			     if (chain_temp == NULL) {
@@ -1164,7 +1208,9 @@ findzeros:   FINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
                            }
                  | FINDZEROSTOKEN function INTOKEN range COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant SEMICOLONTOKEN
                            {
+			     pushTimeCounter();
 			     chain_temp = findZerosFunction($2,$4,defaultprecision,*($8));
+			     popTimeCounter("findzeros");
 			     mpfr_clear(*($8));
 			     free($8);
 			     if (chain_temp == NULL) {
@@ -1201,7 +1247,9 @@ fpfindzeros:   FPFINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     pushTimeCounter();
 			     chain_temp = fpFindZerosFunction($2,$4,defaultprecision);
+			     popTimeCounter("fpfindzeros");
 			     if (chain_temp == NULL) {
 			       printf("The function seems to have no zeros in the interval.\n");
 			     } else {
@@ -1265,7 +1313,9 @@ infnorm:     INFNORMTOKEN function INTOKEN range
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
+			     pushTimeCounter();
 			     range_temp = infnorm($2,$4,NULL,defaultprecision,*mpfr_temp,NULL);
+			     popTimeCounter("infnorm");
 			     mpfr_clear(*mpfr_temp);
 			     free(mpfr_temp);
 			     free_memory($2);
@@ -1277,7 +1327,9 @@ infnorm:     INFNORMTOKEN function INTOKEN range
                            }
            | INFNORMTOKEN function INTOKEN range COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant 
 	                   {
+			     pushTimeCounter();
 			     range_temp = infnorm($2,$4,NULL,defaultprecision,*($8),NULL);
+			     popTimeCounter("infnorm");
 			     mpfr_clear(*($8));
 			     free($8);
 			     free_memory($2);
@@ -1292,7 +1344,9 @@ infnorm:     INFNORMTOKEN function INTOKEN range
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
+			     pushTimeCounter();
 			     range_temp = infnorm($2,$4,$6,defaultprecision,*mpfr_temp,NULL);
+			     popTimeCounter("infnorm");
 			     mpfr_clear(*mpfr_temp);
 			     free(mpfr_temp);
 			     free_memory($2);
@@ -1315,7 +1369,9 @@ infnorm:     INFNORMTOKEN function INTOKEN range
                            }
            | INFNORMTOKEN function INTOKEN range WITHOUTTOKEN rangelist COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant 
 	                   {
+			     pushTimeCounter();
 			     range_temp = infnorm($2,$4,$6,defaultprecision,*($10),NULL);
+			     popTimeCounter("infnorm");
 			     mpfr_clear(*($10));
 			     free($10);
 			     free_memory($2);
@@ -1341,7 +1397,9 @@ infnorm:     INFNORMTOKEN function INTOKEN range
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
+			     pushTimeCounter();
 			     range_temp = infnorm($2,$4,NULL,defaultprecision,*mpfr_temp,($8));
+			     popTimeCounter("infnorm");
 			     fclose(($8));
 			     mpfr_clear(*mpfr_temp);
 			     free(mpfr_temp);
@@ -1354,7 +1412,9 @@ infnorm:     INFNORMTOKEN function INTOKEN range
                            }
            | INFNORMTOKEN function INTOKEN range COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant COMMATOKEN PROOFTOKEN EQUALTOKEN writefile 
 	                   {
+			     pushTimeCounter();
 			     range_temp = infnorm($2,$4,NULL,defaultprecision,*($8),($12));
+			     popTimeCounter("infnorm");
 			     mpfr_clear(*($8));
 			     fclose(($12));
 			     free($8);
@@ -1370,7 +1430,9 @@ infnorm:     INFNORMTOKEN function INTOKEN range
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
+			     pushTimeCounter();
 			     range_temp = infnorm($2,$4,$6,defaultprecision,*mpfr_temp,($10));
+			     popTimeCounter("infnorm");
 			     fclose(($10));
 			     mpfr_clear(*mpfr_temp);
 			     free(mpfr_temp);
@@ -1394,7 +1456,9 @@ infnorm:     INFNORMTOKEN function INTOKEN range
                            }
            | INFNORMTOKEN function INTOKEN range WITHOUTTOKEN rangelist COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant COMMATOKEN PROOFTOKEN EQUALTOKEN writefile
 	                   {
+			     pushTimeCounter();
 			     range_temp = infnorm($2,$4,$6,defaultprecision,*($10),($14));
+			     popTimeCounter("infnorm");
 			     fclose(($14));
 			     mpfr_clear(*($10));
 			     free($10);
@@ -1424,7 +1488,9 @@ integral:     INTEGRALTOKEN function INTOKEN range
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
 			     mpfr_set_d(*mpfr_temp,DEFAULTDIAM,GMP_RNDN);
+			     pushTimeCounter();
 			     range_temp = integral($2,$4,defaultprecision,*mpfr_temp);
+			     popTimeCounter("integral");
 			     mpfr_clear(*mpfr_temp);
 			     free(mpfr_temp);
 			     free_memory($2);
@@ -1436,7 +1502,9 @@ integral:     INTEGRALTOKEN function INTOKEN range
                            }
            | INTEGRALTOKEN function INTOKEN range COMMATOKEN DIAMTOKEN EQUALTOKEN diamconstant 
 	                   {
+			     pushTimeCounter();
 			     range_temp = integral($2,$4,defaultprecision,*($8));
+			     popTimeCounter("integral");
 			     mpfr_clear(*($8));
 			     free($8);
 			     free_memory($2);
@@ -1458,7 +1526,9 @@ accurateinfnorm: ACCURATEINFNORMTOKEN function INTOKEN range WITHTOKEN integer B
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,int_temp);
 
+			     pushTimeCounter();
 			     int_temp = accurateInfnorm(*mpfr_temp, $2, $4, NULL, defaultprecision);
+			     popTimeCounter("accurateinform");
 			     if (!int_temp) {
 			       mpfr_set_nan(*mpfr_temp);
 			     }
@@ -1479,7 +1549,9 @@ accurateinfnorm: ACCURATEINFNORMTOKEN function INTOKEN range WITHTOKEN integer B
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,int_temp);
 
+			     pushTimeCounter();
 			     int_temp = accurateInfnorm(*mpfr_temp, $2, $4, $6, defaultprecision);
+			     popTimeCounter("accurateinform");
 			     if (!int_temp) {
 			       mpfr_set_nan(*mpfr_temp);
 			     }
@@ -1497,7 +1569,9 @@ searchGal:    SEARCHGALTOKEN functionlist ATTOKEN constantfunction WITHTOKEN int
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
+			     pushTimeCounter();
 			     int_temp = searchGalValue($2, *mpfr_temp, *($4), $6, $9, $12, $16, tools_precision);
+			     popTimeCounter("searchgal");
 			     if (!int_temp) {
 			       mpfr_set_nan(*mpfr_temp);
 			     }
@@ -1513,7 +1587,9 @@ dirtyinfnorm: DIRTYINFNORMTOKEN function INTOKEN range
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     pushTimeCounter();
 			     uncertifiedInfnorm(*mpfr_temp,($2),*(($4).a),*(($4).b),defaultpoints,defaultprecision);
+			     popTimeCounter("dirtyinfnorm");
 			     mpfr_clear(*(($4).a));
 			     mpfr_clear(*(($4).b));
 			     free(($4).a);
@@ -1524,7 +1600,9 @@ dirtyinfnorm: DIRTYINFNORMTOKEN function INTOKEN range
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     pushTimeCounter();
 			     uncertifiedInfnorm(*mpfr_temp,($2),*(($4).a),*(($4).b),($6),defaultprecision);
+			     popTimeCounter("dirtyinfnorm");
 			     mpfr_clear(*(($4).a));
 			     mpfr_clear(*(($4).b));
 			     free(($4).a);
@@ -1537,7 +1615,9 @@ dirtyintegral: DIRTYINTEGRALTOKEN function INTOKEN range
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     pushTimeCounter();
 			     uncertifiedIntegral(*mpfr_temp,($2),*(($4).a),*(($4).b),defaultpoints,defaultprecision);
+			     popTimeCounter("dirtyintegral");
 			     mpfr_clear(*(($4).a));
 			     mpfr_clear(*(($4).b));
 			     free(($4).a);
@@ -1548,7 +1628,9 @@ dirtyintegral: DIRTYINTEGRALTOKEN function INTOKEN range
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     pushTimeCounter();
 			     uncertifiedIntegral(*mpfr_temp,($2),*(($4).a),*(($4).b),($6),defaultprecision);
+			     popTimeCounter("dirtyintegral");
 			     mpfr_clear(*(($4).a));
 			     mpfr_clear(*(($4).b));
 			     free(($4).a);
@@ -1571,6 +1653,7 @@ autoprint:       autoprintelem SEMICOLONTOKEN
 
 autoprintelem:   function 
                            {
+			     pushTimeCounter();
 			     temp_node = $1;
 			     if (isConstant(temp_node)) {
 			       if (temp_node->nodeType == CONSTANT) {
@@ -1638,6 +1721,7 @@ autoprintelem:   function
 			       free_memory(temp_node2);
 			     }
 			     free_memory(temp_node);
+			     popTimeCounter("autoprint");
 			     $$ = NULL;
 			   }
            | printableRange {
@@ -1665,18 +1749,22 @@ write:       WRITETOKEN writelist SEMICOLONTOKEN
 			   }
            | WRITETOKEN RIGHTANGLETOKEN writefile fwritelist SEMICOLONTOKEN
                            {
+			     pushTimeCounter();
 			     int_temp = fprintf($3,"%s",$4);
 			     printMessage(2,"Information: wrote %d byte(s) to the newly created file.\n",int_temp);
 			     free($4);
 			     fclose($3);
+			     popTimeCounter("write");
 			     $$ = NULL;
 			   }
            | WRITETOKEN RIGHTANGLETOKEN RIGHTANGLETOKEN appendfile fwritelist SEMICOLONTOKEN
                            {
+			     pushTimeCounter();
 			     int_temp = fprintf($4,"%s",$5);
 			     printMessage(2,"Information: wrote %d byte(s) to the file opened for appending.\n",int_temp);
 			     free($5);
 			     fclose($4);
+			     popTimeCounter("write");
 			     $$ = NULL;
 			   }
 ;
@@ -1886,7 +1974,9 @@ asciiplot:   ASCIIPLOTTOKEN function INTOKEN range SEMICOLONTOKEN {
 
 plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN 
                            {
+			     pushTimeCounter();
 			     plotTree($2, *($4.a), *($4.b), defaultpoints, tools_precision, NULL, -1);
+			     popTimeCounter("plot");
 			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -1897,7 +1987,9 @@ plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN
 			   }
            | PLOTTOKEN functionlist INTOKEN range COMMATOKEN precision SEMICOLONTOKEN 
                            {
+			     pushTimeCounter();
 			     plotTree($2, *($4.a), *($4.b), defaultpoints, ($6), NULL, -1);
+			     popTimeCounter("plot");
 			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -1908,7 +2000,9 @@ plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN
 			   }
            | PLOTTOKEN functionlist INTOKEN range COMMATOKEN points SEMICOLONTOKEN 
                            {
+			     pushTimeCounter();
 			     plotTree($2, *($4.a), *($4.b), ($6), tools_precision, NULL, -1);
+			     popTimeCounter("plot");
 			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -1919,7 +2013,9 @@ plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN
 			   }
            | PLOTTOKEN functionlist INTOKEN range COMMATOKEN precision COMMATOKEN points SEMICOLONTOKEN 
                            {
+			     pushTimeCounter();
 			     plotTree($2, *($4.a), *($4.b), ($8), ($6), NULL, -1);
+			     popTimeCounter("plot");
 			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -1930,7 +2026,9 @@ plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN
 			   }
            | PLOTTOKEN functionlist INTOKEN range COMMATOKEN points COMMATOKEN precision SEMICOLONTOKEN 
                            {
+			     pushTimeCounter();
 			     plotTree($2, *($4.a), *($4.b), ($6), ($8), NULL, -1);
+			     popTimeCounter("plot");
 			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -1941,7 +2039,9 @@ plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN
 			   }
            | PLOTTOKEN functionlist INTOKEN range COMMATOKEN plottype EQUALTOKEN string SEMICOLONTOKEN 
                            {
+			     pushTimeCounter();
 			     plotTree($2, *($4.a), *($4.b), defaultpoints, tools_precision, ($8), ($6));
+			     popTimeCounter("plot");
 			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -1952,7 +2052,9 @@ plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN
 			   }
            | PLOTTOKEN functionlist INTOKEN range COMMATOKEN precision COMMATOKEN plottype EQUALTOKEN string SEMICOLONTOKEN 
                            {
+			     pushTimeCounter();
 			     plotTree($2, *($4.a), *($4.b), defaultpoints, ($6), ($10), ($8));
+			     popTimeCounter("plot");
 			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -1963,7 +2065,9 @@ plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN
 			   }
            | PLOTTOKEN functionlist INTOKEN range COMMATOKEN points COMMATOKEN plottype EQUALTOKEN string SEMICOLONTOKEN 
                            {
+			     pushTimeCounter();
 			     plotTree($2, *($4.a), *($4.b), ($6), tools_precision, ($10), ($8));
+			     popTimeCounter("plot");
 			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -1974,7 +2078,9 @@ plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN
 			   }
            | PLOTTOKEN functionlist INTOKEN range COMMATOKEN precision COMMATOKEN points COMMATOKEN plottype EQUALTOKEN string SEMICOLONTOKEN 
                            {
+			     pushTimeCounter();
 			     plotTree($2, *($4.a), *($4.b), ($8), ($6), ($12), ($10));
+			     popTimeCounter("plot");
 			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -1985,7 +2091,9 @@ plot:        PLOTTOKEN functionlist INTOKEN range SEMICOLONTOKEN
 			   }
            | PLOTTOKEN functionlist INTOKEN range COMMATOKEN points COMMATOKEN precision COMMATOKEN plottype EQUALTOKEN string SEMICOLONTOKEN 
                            {
+			     pushTimeCounter();
 			     plotTree($2, *($4.a), *($4.b), ($6), ($8), ($12), ($10));
+			     popTimeCounter("plot");
 			     freeChain($2,freeMemoryOnVoid);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -2039,7 +2147,9 @@ variableformat:     DOUBLETOKEN
 
 implementpoly:        IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction WITHTOKEN VARIABLEMETATOKEN ASTOKEN variableformat INTOKEN writefile WITHTOKEN NAMETOKEN EQUALTOKEN string 
                            {
+			     pushTimeCounter();
 			     temp_node = implementpoly($2,$4,$8,$12,$14,$18,0,tools_precision,NULL);
+			     popTimeCounter("implementpoly");
 			     if (temp_node != NULL) {
 			       printMessage(2,"Information: the implementation has succeeded.\n"); 
 			     } else {
@@ -2059,7 +2169,9 @@ implementpoly:        IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILO
 			   }
                     | IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction WITHTOKEN VARIABLEMETATOKEN ASTOKEN variableformat INTOKEN writefile WITHTOKEN NAMETOKEN EQUALTOKEN string COMMATOKEN HONORCOEFFPRECTOKEN
                            {
+			     pushTimeCounter();
 			     temp_node = implementpoly($2,$4,$8,$12,$14,$18,1,tools_precision,NULL);
+			     popTimeCounter("implementpoly");
 			     if (temp_node != NULL) {
 			       printMessage(2,"Information: the implementation has succeeded.\n"); 
 			     } else {
@@ -2079,7 +2191,9 @@ implementpoly:        IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILO
 			   }
                     | IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction WITHTOKEN VARIABLEMETATOKEN ASTOKEN variableformat INTOKEN writefile WITHTOKEN NAMETOKEN EQUALTOKEN string COMMATOKEN PROOFTOKEN EQUALTOKEN writefile
                            {
+			     pushTimeCounter();
 			     temp_node = implementpoly($2,$4,$8,$12,$14,$18,0,tools_precision,$22);
+			     popTimeCounter("implementpoly");
 			     if (temp_node != NULL) {
 			       printMessage(2,"Information: the implementation has succeeded.\n"); 
 			     } else {
@@ -2100,7 +2214,9 @@ implementpoly:        IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILO
 			   }
                     | IMPLEMENTPOLYTOKEN function INTOKEN range WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction WITHTOKEN VARIABLEMETATOKEN ASTOKEN variableformat INTOKEN writefile WITHTOKEN NAMETOKEN EQUALTOKEN string COMMATOKEN HONORCOEFFPRECTOKEN COMMATOKEN PROOFTOKEN EQUALTOKEN writefile
                            {
+			     pushTimeCounter();
 			     temp_node = implementpoly($2,$4,$8,$12,$14,$18,1,tools_precision,$24);
+			     popTimeCounter("implementpoly");
 			     if (temp_node != NULL) {
 			       printMessage(2,"Information: the implementation has succeeded.\n"); 
 			     } else {
@@ -2130,7 +2246,9 @@ checkinfnorm:        CHECKINFNORMTOKEN function INTOKEN range BOUNDEDTOKEN BYTOK
 			       printMessage(1,"Warning: the given bound evaluates to a negative value. Infinite norms are by definition positive.\nWill take the opposite of the given bound.\n");
 			       mpfr_neg(*($7),*($7),GMP_RNDN);
 			     } 
+			     pushTimeCounter();
 			     int_temp = checkInfnorm($2, $4, *($7), *mpfr_temp, defaultprecision);
+			     popTimeCounter("checkinfnorm");
 			     free_memory($2);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -2148,7 +2266,9 @@ checkinfnorm:        CHECKINFNORMTOKEN function INTOKEN range BOUNDEDTOKEN BYTOK
 			       printMessage(1,"Warning: the given bound evaluates to a negative value. Infinite norms are by definition positive.\nWill take the opposite of the given bound.\n");
 			       mpfr_neg(*($7),*($7),GMP_RNDN);
 			     } 
+			     pushTimeCounter();
 			     int_temp = checkInfnorm($2, $4, *($7), *($11), defaultprecision);
+			     popTimeCounter("checkinfnorm");
 			     free_memory($2);
 			     mpfr_clear(*($4.a));
 			     mpfr_clear(*($4.b));
@@ -2258,7 +2378,9 @@ function:                       fun
 				 printMessage(1,"Warning: will no simplify automatically an intermediate expression because it is too big.\n");
 				 temp_node = $1;
 			       } else {
+				 pushTimeCounter();
 				 temp_node = simplifyTreeErrorfree($1);
+				 popTimeCounter("autosimplify");
 				 free_memory($1);
 			       }
 			     } else {
@@ -2293,13 +2415,17 @@ fun:     			term
 		
 prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                            {
+ 			      pushTimeCounter();
 			      temp_node = expand($3);
+			      popTimeCounter("expand");
 			      free_memory($3);
 			      $$ = temp_node;
                            } 
                         | PARSETOKEN LPARTOKEN string RPARTOKEN
                            {
+ 			      pushTimeCounter();			     
 			      temp_node = parseString($3);
+			      popTimeCounter("parse");
 			      free($3);
 			      $$ = temp_node;
                            } 
@@ -2316,7 +2442,9 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                            }
                         |       HORNERTOKEN LPARTOKEN function RPARTOKEN
                            {
+ 			      pushTimeCounter();
 			      temp_node = horner($3);
+			      popTimeCounter("horner");
 			      free_memory($3);
 			      $$ = temp_node;
                            }
@@ -2331,7 +2459,9 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			      temp_node2->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			      mpfr_init2(*(temp_node2->value),tools_precision);
 			      mpfr_set_d(*(temp_node2->value),1.0,GMP_RNDN);
+ 			      pushTimeCounter();
 			      temp_node = remez($3, temp_node2, $5, *($7.a), *($7.b), NULL, tools_precision);
+			      popTimeCounter("remez");
 			      free_memory(temp_node2);
 			      free_memory($3);
 			      mpfr_clear(*($7.a));
@@ -2343,7 +2473,9 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                            }
 			|       REMEZTOKEN LPARTOKEN function COMMATOKEN monomials COMMATOKEN range COMMATOKEN function RPARTOKEN
                            {
+ 			      pushTimeCounter();
 			      temp_node = remez($3, $9, $5, *($7.a), *($7.b), NULL, tools_precision);
+			      popTimeCounter("remez");
 			      free_memory($9);
 			      free_memory($3);
 			      mpfr_clear(*($7.a));
@@ -2355,7 +2487,9 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                            }
 			|       REMEZTOKEN LPARTOKEN function COMMATOKEN monomials COMMATOKEN range COMMATOKEN function COMMATOKEN constantfunction RPARTOKEN
                            {
+ 			      pushTimeCounter();
 			      temp_node = remez($3, $9, $5, *($7.a), *($7.b), $11, tools_precision);
+			      popTimeCounter("remez");
 			      free_memory($9);
 			      free_memory($3);
 			      mpfr_clear(*($7.a));
@@ -2369,28 +2503,36 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                            }
                         |       RATIONALAPPROXTOKEN LPARTOKEN constantfunction COMMATOKEN integer RPARTOKEN
                            {
+ 			      pushTimeCounter();
 			      temp_node = rationalApprox(*($3), $5);
+			      popTimeCounter("rationalapprox");
 			      mpfr_clear(*($3));
 			      free($3);
 			      $$ = temp_node;
                            }
                         |       COEFFTOKEN LPARTOKEN function COMMATOKEN integer RPARTOKEN
                            {
+ 			      pushTimeCounter();
 			      temp_node = getIthCoefficient(($3), ($5));
+			      popTimeCounter("coeff");
 			      free_memory(($3));
 			      $$ = temp_node;
 			   }
 
                         |       SUBPOLYTOKEN LPARTOKEN function COMMATOKEN LBRACKETTOKEN integerlist RBRACKETTOKEN RPARTOKEN
                            {
+ 			      pushTimeCounter();
 			      temp_node = getSubpolynomial(($3), ($6), 0, tools_precision);
+			      popTimeCounter("subpoly");
 			      free_memory(($3));
 			      freeChain(($6),freeIntPtr);
 			      $$ = temp_node;
 			   }
                         |       SUBPOLYTOKEN LPARTOKEN function COMMATOKEN LBRACKETTOKEN integerlist COMMATOKEN DOTSTOKEN RBRACKETTOKEN RPARTOKEN
                            {
+ 			      pushTimeCounter();
 			      temp_node = getSubpolynomial(($3), ($6), 1, tools_precision);
+			      popTimeCounter("subpoly");
 			      free_memory(($3));
 			      freeChain(($6),freeIntPtr);
 			      $$ = temp_node;
@@ -2402,7 +2544,9 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
                            }
                         |       TAYLORTOKEN LPARTOKEN function COMMATOKEN degree COMMATOKEN function RPARTOKEN
                            {
+ 			      pushTimeCounter();
 			      temp_node = taylor(($3),($5),($7),tools_precision);
+			      popTimeCounter("taylor");
 			      free_memory(($3));
 			      free_memory(($7));
 			      $$ = temp_node;
@@ -2417,19 +2561,25 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 
                         |       SIMPLIFYTOKEN LPARTOKEN function RPARTOKEN
                            {
+			     pushTimeCounter();
 			     temp_node = simplifyTree($3);
+			     popTimeCounter("simplify");
 			     free_memory($3);
 			     $$ = temp_node;
 			   }
                         |       CANONICALTOKEN LPARTOKEN function RPARTOKEN
                            {
+			     pushTimeCounter();
 			     temp_node = makeCanonical($3,tools_precision);
+			     popTimeCounter("canonical");
 			     free_memory($3);
 			     $$ = temp_node;
 			   }
                         |       SIMPLIFYSAFETOKEN LPARTOKEN fun RPARTOKEN
                            {
+			     pushTimeCounter();
 			     temp_node = simplifyTreeErrorfree($3);
+			     popTimeCounter("simplifysafe");
 			     free_memory($3);
 			     $$ = temp_node;
 			   }
@@ -2460,7 +2610,9 @@ prefixfunction:                EXPANDTOKEN LPARTOKEN function RPARTOKEN
 			   }
 			|       DIFFTOKEN LPARTOKEN function RPARTOKEN
                            {
+			     pushTimeCounter();
 			     temp_node = differentiate($3);
+			     popTimeCounter("diff");
 			     free_memory($3);
 			     $$ = temp_node;
 			   }
@@ -2908,7 +3060,9 @@ evaluateaccuratecommandfunction: EVALUATEACCURATETOKEN function ATTOKEN constant
                            {
 			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     pushTimeCounter();
 			     int_temp = evaluateFaithfulOrFail($2, *($4), *mpfr_temp, 256, NULL);
+			     popTimeCounter("evaluate");
 			     if (!int_temp) {
 			       mpfr_set_nan(*(mpfr_temp));
 			     }
@@ -3214,12 +3368,16 @@ directrange:  LBRACKETTOKEN rangeconstant SEMICOLONTOKEN rangeconstant RBRACKETT
 
 constantfunction:  function
                            {
+			     pushTimeCounter();
 			     temp_node = simplifyTreeErrorfree($1);
 			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
+			     int_temp = timecounting;
+			     timecounting = 0;
 			     if (temp_node->nodeType != CONSTANT) {
 			       printMessage(1,
                       "Warning: the function given is not a floating-point constant but an expression to evaluate.\n");
+			       timecounting = int_temp;
 			     }
 			     if (!isConstant(temp_node)) {
 			       printMessage(1,"Warning: functions in this context must be expressions that evaluate to constants.\n");
@@ -3229,10 +3387,12 @@ constantfunction:  function
 			     mpfr_init2(*mpfr_temp2,tools_precision);
 			     mpfr_set_d(*mpfr_temp2,1.0,GMP_RNDN);
 			     evaluateFaithful(*mpfr_temp, ($1), *mpfr_temp2, tools_precision);
+			     popTimeCounter("evaluation of a constant");
 			     mpfr_clear(*mpfr_temp2);
 			     free(mpfr_temp2);
 			     free_memory(temp_node);
 			     free_memory($1);
+			     timecounting = int_temp;
 			     $$ = mpfr_temp;
                            }
 ;
@@ -3521,7 +3681,9 @@ pointslist:                constantfunction
 
 fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range RPARTOKEN
                            {
+			     pushTimeCounter();
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, NULL, -1, NULL);
+			     popTimeCounter("fpminimax");
 			     free_memory($3);
 			     freeChain($5->a,freeIntPtr);
 			     freeChain($5->b,freeFormatTypePtr);
@@ -3534,7 +3696,9 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			   }
                          | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition RPARTOKEN 
                            {
+			     pushTimeCounter();
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, NULL, -1, NULL);
+			     popTimeCounter("fpminimax");
 			     free_memory($3);
 			     freeChain($5->a,freeIntPtr);
 			     freeChain($5->b,freeFormatTypePtr);
@@ -3548,7 +3712,9 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			   }
                          | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN pointsdefinition RPARTOKEN 
                            {
+			     pushTimeCounter();
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, $9, -1, NULL);
+			     popTimeCounter("fpminimax");
 			     free_memory($3);
 			     freeChain($5->a,freeIntPtr);
 			     freeChain($5->b,freeFormatTypePtr);
@@ -3567,7 +3733,9 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
 			       int_temp = -1;
 			     } 
+			     pushTimeCounter();
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, NULL, int_temp, NULL);
+			     popTimeCounter("fpminimax");
 			     free_memory($3);
 			     freeChain($5->a,freeIntPtr);
 			     freeChain($5->b,freeFormatTypePtr);
@@ -3580,7 +3748,9 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			   }
                          | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN writefile RPARTOKEN 
                            {
+			     pushTimeCounter();
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, NULL, -1, $9);
+			     popTimeCounter("fpminimax");
 			     free_memory($3);
 			     freeChain($5->a,freeIntPtr);
 			     freeChain($5->b,freeFormatTypePtr);
@@ -3594,7 +3764,9 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			   }
                          | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN pointsdefinition RPARTOKEN 
                            {
+			     pushTimeCounter();
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, $11, -1, NULL);
+			     popTimeCounter("fpminimax");
 			     free_memory($3);
 			     freeChain($5->a,freeIntPtr);
 			     freeChain($5->b,freeFormatTypePtr);
@@ -3614,7 +3786,9 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
 			       int_temp = -1;
 			     } 
+			     pushTimeCounter();
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, NULL, int_temp, NULL);
+			     popTimeCounter("fpminimax");
 			     free_memory($3);
 			     freeChain($5->a,freeIntPtr);
 			     freeChain($5->b,freeFormatTypePtr);
@@ -3628,7 +3802,9 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			   }
                          | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN errordefinition COMMATOKEN writefile RPARTOKEN 
                            {
+			     pushTimeCounter();
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, NULL, -1, $11);
+			     popTimeCounter("fpminimax");
 			     free_memory($3);
 			     freeChain($5->a,freeIntPtr);
 			     freeChain($5->b,freeFormatTypePtr);
@@ -3648,7 +3824,9 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
 			       int_temp = -1;
 			     } 
+			     pushTimeCounter();
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, $9, int_temp, NULL);
+			     popTimeCounter("fpminimax");
 			     free_memory($3);
 			     freeChain($5->a,freeIntPtr);
 			     freeChain($5->b,freeFormatTypePtr);
@@ -3662,7 +3840,9 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			   }
                          | FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomialsAndPrecision COMMATOKEN range COMMATOKEN pointsdefinition COMMATOKEN writefile RPARTOKEN 
                            {
+			     pushTimeCounter();
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, $9, -1, $11);
+			     popTimeCounter("fpminimax");
 			     free_memory($3);
 			     freeChain($5->a,freeIntPtr);
 			     freeChain($5->b,freeFormatTypePtr);
@@ -3682,7 +3862,9 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
 			       int_temp = -1;
 			     } 
+			     pushTimeCounter();
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, NULL, int_temp, $11);
+			     popTimeCounter("fpminimax");
 			     free_memory($3);
 			     freeChain($5->a,freeIntPtr);
 			     freeChain($5->b,freeFormatTypePtr);
@@ -3701,7 +3883,9 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
 			       int_temp = -1;
 			     } 
+			     pushTimeCounter();
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, $11, int_temp, NULL);
+			     popTimeCounter("fpminimax");
 			     free_memory($3);
 			     freeChain($5->a,freeIntPtr);
 			     freeChain($5->b,freeFormatTypePtr);
@@ -3721,7 +3905,9 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
 			       int_temp = -1;
 			     } 
+			     pushTimeCounter();
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, NULL, int_temp, $13);
+			     popTimeCounter("fpminimax");
 			     free_memory($3);
 			     freeChain($5->a,freeIntPtr);
 			     freeChain($5->b,freeFormatTypePtr);
@@ -3741,7 +3927,9 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
 			       int_temp = -1;
 			     } 
+			     pushTimeCounter();
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), NULL, $9, int_temp, $13);
+			     popTimeCounter("fpminimax");
 			     free_memory($3);
 			     freeChain($5->a,freeIntPtr);
 			     freeChain($5->b,freeFormatTypePtr);
@@ -3761,7 +3949,9 @@ fpminimax:                 FPMINIMAXTOKEN LPARTOKEN function COMMATOKEN monomial
 			       printMessage(1,"The quality parameter must be a non-zero positive integer. Will do default quality.\n");
 			       int_temp = -1;
 			     } 
+			     pushTimeCounter();
 			     temp_node = fpminimax($3, $5->a, $5->b, *($7.a), *($7.b), $9, $11, int_temp, $15);
+			     popTimeCounter("fpminimax");
 			     free_memory($3);
 			     freeChain($5->a,freeIntPtr);
 			     freeChain($5->b,freeFormatTypePtr);
@@ -3825,7 +4015,9 @@ expansionFormats:          LBRACKETTOKEN expansionFormatList RBRACKETTOKEN
 
 roundcoefficients:         ROUNDCOEFFICIENTSTOKEN LPARTOKEN function COMMATOKEN expansionFormats RPARTOKEN
                            {
+			     pushTimeCounter();
 			     temp_node = roundPolynomialCoefficients($3, $5, defaultprecision);
+			     popTimeCounter("roundcoefficients");
 			     free_memory($3);
 			     freeChain($5,freeIntPtr);
 			     $$ = temp_node;
@@ -3834,7 +4026,9 @@ roundcoefficients:         ROUNDCOEFFICIENTSTOKEN LPARTOKEN function COMMATOKEN 
 
 bashexecute:               BASHEXECUTETOKEN string 
                            {
+			     pushTimeCounter();
 			     int_temp = bashExecute($2);
+			     popTimeCounter("bashexecute");
 			     free($2);
 			     $$ = int_temp;
 			   }
@@ -3853,7 +4047,9 @@ externalplotmode:          ABSOLUTETOKEN
 
 externalplot:              EXTERNALPLOTTOKEN string externalplotmode TOTOKEN function INTOKEN range WITHTOKEN integer BITSTOKEN 
                            {
+			     pushTimeCounter();
 			     externalPlot($2, *($7.a), *($7.b), (mp_prec_t) $9, 0, $5, $3, defaultprecision, NULL, -1);
+			     popTimeCounter("externalplot");
 			     free($2);
 			     free_memory($5);
 			     mpfr_clear(*($7.a));
@@ -3864,7 +4060,9 @@ externalplot:              EXTERNALPLOTTOKEN string externalplotmode TOTOKEN fun
                            }
                          | EXTERNALPLOTTOKEN string externalplotmode TOTOKEN function INTOKEN range WITHTOKEN integer BITSTOKEN COMMATOKEN PERTURBTOKEN
                            {
+			     pushTimeCounter();
 			     externalPlot($2, *($7.a), *($7.b), (mp_prec_t) $9, 1, $5, $3, defaultprecision, NULL, -1);
+			     popTimeCounter("externalplot");
 			     free($2);
 			     free_memory($5);
 			     mpfr_clear(*($7.a));
@@ -3875,7 +4073,9 @@ externalplot:              EXTERNALPLOTTOKEN string externalplotmode TOTOKEN fun
                            }
                          | EXTERNALPLOTTOKEN string externalplotmode TOTOKEN function INTOKEN range WITHTOKEN integer BITSTOKEN COMMATOKEN PERTURBTOKEN COMMATOKEN plottype EQUALTOKEN string
                            {
+			     pushTimeCounter();
 			     externalPlot($2, *($7.a), *($7.b), (mp_prec_t) $9, 1, $5, $3, defaultprecision, $16, $14);
+			     popTimeCounter("externalplot");
 			     free($2);
 			     free_memory($5);
 			     mpfr_clear(*($7.a));
@@ -3887,7 +4087,9 @@ externalplot:              EXTERNALPLOTTOKEN string externalplotmode TOTOKEN fun
                            }
                          | EXTERNALPLOTTOKEN string externalplotmode TOTOKEN function INTOKEN range WITHTOKEN integer BITSTOKEN COMMATOKEN plottype EQUALTOKEN string
                            {
+			     pushTimeCounter();
 			     externalPlot($2, *($7.a), *($7.b), (mp_prec_t) $9, 0, $5, $3, defaultprecision, $14, $12);
+			     popTimeCounter("externalplot");
 			     free($2);
 			     free_memory($5);
 			     mpfr_clear(*($7.a));
@@ -3899,7 +4101,9 @@ externalplot:              EXTERNALPLOTTOKEN string externalplotmode TOTOKEN fun
                            }
                          | EXTERNALPLOTTOKEN string externalplotmode TOTOKEN function INTOKEN range WITHTOKEN integer BITSTOKEN COMMATOKEN plottype EQUALTOKEN string COMMATOKEN PERTURBTOKEN 
                            {
+			     pushTimeCounter();
 			     externalPlot($2, *($7.a), *($7.b), (mp_prec_t) $9, 1, $5, $3, defaultprecision, $14, $12);
+			     popTimeCounter("externalplot");
 			     free($2);
 			     free_memory($5);
 			     mpfr_clear(*($7.a));
@@ -3950,7 +4154,9 @@ guessDegree:              GUESSDEGREETOKEN function INTOKEN range WITHTOKEN EPSI
 			  temp_node->value = (mpfr_t *) safeMalloc(sizeof(node));
 			  mpfr_init2(*(temp_node->value),tools_precision);
 			  mpfr_set_d(*(temp_node->value),1.0,GMP_RNDN);
+			  pushTimeCounter();
 			  range_temp = guessDegree($2,temp_node,*($4.a),*($4.b),*($8));
+			  popTimeCounter("guessdegree");
 			  free_memory(temp_node);
 			  free_memory($2);
 			  mpfr_clear(*($4.a));
@@ -3963,7 +4169,9 @@ guessDegree:              GUESSDEGREETOKEN function INTOKEN range WITHTOKEN EPSI
                         }
                         | GUESSDEGREETOKEN function INTOKEN range WITHTOKEN EPSILONTOKEN EQUALTOKEN constantfunction COMMATOKEN WEIGHTTOKEN EQUALTOKEN function
                         {
+			  pushTimeCounter();
 			  range_temp = guessDegree($2,$12,*($4.a),*($4.b),*($8));
+			  popTimeCounter("guessdegree");
 			  free_memory($12);
 			  free_memory($2);
 			  mpfr_clear(*($4.a));
