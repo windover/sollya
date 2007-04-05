@@ -2405,6 +2405,10 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   evaluateFaithful(temp, tree, a, prec);
   if (!mpfr_nan_p(temp)) {
     mpfr_abs(max, temp, GMP_RNDU);
+    if (verbosity >= 3) { 
+      printf("Information: current max is "); printValue(&max,prec);
+      printf(" and is reached at "); printMpfr(a);
+    }
   } else {
     printMessage(1,"Warning: the evaluation of the given function in ");
     mpfr_set(z,a,GMP_RNDN);
@@ -2416,6 +2420,10 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   evaluateFaithful(temp, tree, b, prec);
   if (!mpfr_nan_p(temp)) {
       mpfr_abs(temp, temp, GMP_RNDU);
+      if ((verbosity >= 3) && (mpfr_cmp(b, max) > 0)) { 
+	printf("Information: current max is "); printValue(&temp,prec);
+	printf(" and is reached at "); printMpfr(b);
+      }
       mpfr_max(max, max, temp, GMP_RNDU);
   } else {
     printMessage(1,"Warning: the evaluation of the given function in ");
@@ -2444,6 +2452,10 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
     }
     if (mpfr_number_p(s)) {
       mpfr_abs(s,s,GMP_RNDN);
+      if ((verbosity >= 3) && (mpfr_cmp(s, max) > 0)) { 
+	printf("Information: current max is "); printValue(&s,prec);
+	printf(" and is reached at "); printMpfr(x1);
+      }
       mpfr_max(max,max,s,GMP_RNDU);
     }
     if (mpfr_sgn(y1) != mpfr_sgn(y2)) {
@@ -2472,6 +2484,10 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
 	evaluateFaithfulWithCutOff(temp,tree,z,max,prec);
 	if (!mpfr_nan_p(temp)) {
 	  mpfr_abs(temp, temp, GMP_RNDU);
+	  if ((verbosity >= 3) && (mpfr_cmp(temp, max) > 0)) { 
+	    printf("Information: current max is "); printValue(&temp,prec);
+	    printf(" and is reached at "); printMpfr(z);
+	  }
 	  mpfr_max(max, max, temp, GMP_RNDU);
 	} else {
 	  printMessage(1,"Warning: the evaluation of the given function in ");

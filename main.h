@@ -76,7 +76,7 @@ extern int canonical;
 extern void *scanner;
 extern node *minitree;
 extern int autosimplify;
-
+extern int timecounting;
 
 void printPrompt(void);
 void recoverFromError(void);
@@ -85,5 +85,8 @@ void *safeCalloc (size_t nmemb, size_t size);
 void *safeMalloc (size_t size);
 int printMessage(int verb, const char *format, ...);
 int removeSpaces(char *outbuf, char *inbuf);
+void freeCounter(void);
+void pushTimeCounter(void);
+void popTimeCounter(char *s);
 
 #endif /* ifdef MAIN_H*/

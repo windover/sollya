@@ -17,6 +17,8 @@
 #include "parser.tab.h"
 #include <pari/paripriv.h>
 #include <termios.h>
+#include <sys/time.h>
+#include <time.h>
 
 #define PARIMEMSIZE 300000000
 
@@ -79,6 +81,8 @@ int canonical = 0;
 void *scanner = NULL;
 node *minitree = NULL;
 int autosimplify = 1;
+int timecounting = 0;
+chain *timeStack=NULL;
 
 extern int yyparse();
 extern void yylex_destroy(void *);
@@ -247,6 +251,71 @@ int printMessage(int verb, const char *format, ...) {
   return vprintf(format,varlist);
 }
 
+
+void freeCounter(void) {
+  freeChain(timeStack, free);
+  timeStack=NULL;
+  return;
+}
+
+void pushTimeCounter(void) {
+  struct timeval *buf;
+  if(timecounting==1) {
+    buf = safeMalloc(sizeof(struct timeval));
+    if(gettimeofday(buf,NULL)!=0)
+      fprintf(stderr, "Error: unable to use the timer. Measures may be untrustable\n");
+    timeStack = addElement(timeStack, buf);
+  }
+  return;
+}
+
+void popTimeCounter(char *s) {
+  struct timeval *buf_init;
+  struct timeval *buf_final;
+  time_t seconds;
+  suseconds_t microseconds;
+  long int days, hours, minutes, milliseconds;
+
+  chain *prev;
+  if((timecounting==1)&&(timeStack!=NULL)) {
+    buf_final = safeMalloc(sizeof(struct timeval));
+    if(gettimeofday(buf_final,NULL)!=0)
+      fprintf(stderr, "Error: unable to use the timer. Measures may be untrustable\n");
+    buf_init = timeStack->value;
+
+    seconds = buf_final->tv_sec - buf_init->tv_sec;
+    microseconds = buf_final->tv_usec - buf_init->tv_usec;
+
+    printMessage(1, "%s : spent ", s);
+    if(seconds!=0) {
+      minutes = seconds % 60;
+      seconds = seconds - (60 * minutes) ;
+      hours = minutes % 60;
+      minutes = minutes - (60 * hours);
+      days = hours % 24;
+      hours = hours - (24 * hours);
+
+      if(days!=0) printMessage(1, "%d days, ", days);
+      if(hours!=0) printMessage(1, "%d hours, ", hours);
+      if(minutes!=0) printMessage(1, "%d minutes, ", minutes);
+      if(seconds!=0) printMessage(1, "%d seconds, ", seconds);
+    }
+    if(microseconds!=0) {
+      milliseconds = microseconds % 1000;
+      microseconds = microseconds - (1000 * milliseconds) ;
+
+      if(milliseconds!=0) printMessage(1, "%d ms, ", milliseconds);
+    }
+    printMessage(1, "%d microseconds\n", microseconds);
+
+    prev = timeStack;
+    timeStack = timeStack->next;
+    free(prev);
+    free(buf_init);
+    free(buf_final);
+  }
+  return;
+}
 
 
 void signalHandler(int i) {
