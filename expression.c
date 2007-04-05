@@ -2642,16 +2642,16 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
 node *simplifyTreeErrorfree(node *tree) {
   node *temp;
   temp = simplifyTreeErrorfreeInner(tree,1);
-  if (verbosity >= 5) {
+  if (verbosity >= 7) {
     if (!isSyntacticallyEqual(temp,tree)) {
-      if (verbosity < 7) {
-	printMessage(5,"Information: an expression has been simplified.\n");
+      if (verbosity < 9) {
+	printMessage(7,"Information: an expression has been simplified.\n");
       } else {
-	printMessage(7,"Information: expression '");
+	printMessage(9,"Information: expression '");
 	printTree(tree);
-	printMessage(7,"' has been simplified to expression '");
+	printMessage(9,"' has been simplified to expression '");
 	printTree(temp);
-	printMessage(7,"'.\n");
+	printMessage(9,"'.\n");
       }
     }
   }
@@ -3494,7 +3494,13 @@ int isCanonical(node *);
 node* differentiate(node *tree) {
   node *temp, *temp3;
 
-  printMessage(12,"Information: formally differentiating a function.\n");
+  printMessage(5,"Information: formally differentiating a function.\n");
+  
+  if (verbosity >= 6) {
+    printMessage(6,"Information: differentiating the expression '");
+    printTree(tree);
+    printf("'\n");
+  }
 
   if (isPolynomial(tree) && (isHorner(tree) || isCanonical(tree))) {
     temp = differentiateUnsimplified(tree);
