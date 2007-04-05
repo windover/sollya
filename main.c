@@ -272,9 +272,8 @@ void pushTimeCounter(void) {
 void popTimeCounter(char *s) {
   struct timeval *buf_init;
   struct timeval *buf_final;
-  time_t seconds;
-  suseconds_t microseconds;
-  long int days, hours, minutes, milliseconds;
+
+  long int days, hours, minutes, seconds, milliseconds, microseconds;
 
   chain *prev;
   if((timecounting==1)&&(timeStack!=NULL)) {
@@ -283,34 +282,33 @@ void popTimeCounter(char *s) {
       fprintf(stderr, "Error: unable to use the timer. Measures may be untrustable\n");
     buf_init = timeStack->value;
 
-    seconds = buf_final->tv_sec - buf_init->tv_sec;
-    microseconds = buf_final->tv_usec - buf_init->tv_usec;
+    seconds = (long int)(buf_final->tv_sec) - (long int)(buf_init->tv_sec);
+    microseconds = (long int)(buf_final->tv_usec) - (long int)(buf_init->tv_usec);
+
     if (microseconds < 0) {
-      microseconds += 1000000;
+      microseconds += 1000000l;
       seconds--;
     }
 
-    printMessage(1, "Information: %s spent ", s);
-    if(seconds!=0) {
-      minutes = seconds % 60;
-      seconds = seconds - (60 * minutes) ;
-      hours = minutes % 60;
-      minutes = minutes - (60 * hours);
-      days = hours % 24;
-      hours = hours - (24 * hours);
+    milliseconds = microseconds / 1000;
 
-      if(days!=0) printMessage(1, "%d days, ", days);
-      if(hours!=0) printMessage(1, "%d hours, ", hours);
-      if(minutes!=0) printMessage(1, "%d minutes, ", minutes);
-      if(seconds!=0) printMessage(1, "%d seconds, ", seconds);
+    if((milliseconds>0)||(seconds>0)) {
+      printMessage(1, "Information: %s spent ", s);
+      if(seconds!=0) {
+	minutes = seconds / 60;
+	seconds = seconds % 60;
+	hours = minutes / 60;
+	minutes = minutes % 60;
+	days = hours / 24;
+	hours = hours % 24;
+	
+	if(days!=0) printMessage(1, "%d days, ", days);
+	if(hours!=0) printMessage(1, "%d hours, ", hours);
+	if(minutes!=0) printMessage(1, "%d minutes, ", minutes);
+	if(seconds!=0) printMessage(1, "%d seconds, ", seconds);
+      }
+      printMessage(1, "%d ms\n", milliseconds);
     }
-    if(microseconds!=0) {
-      milliseconds = microseconds % 1000;
-      microseconds = microseconds - (1000 * milliseconds) ;
-
-      if(milliseconds!=0) printMessage(1, "%d ms, ", milliseconds);
-    }
-    printMessage(1, "%d microseconds\n", microseconds);
 
     prev = timeStack;
     timeStack = timeStack->next;
