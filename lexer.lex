@@ -548,6 +548,8 @@ TIMING          "timing"
 			free(readStack);
 			readStack = readStackTemp;
 			if (readStack == NULL) {
+			  if (!promptToBePrinted && !eliminatePromptBackup)
+			    printMessage(1,"Warning: read macro may have ended on an unfinished line.\n");
 			  eliminatePrompt = eliminatePromptBackup;
 			}
 		      }
@@ -571,6 +573,8 @@ TIMING          "timing"
 			free(readStack);
 			readStack = readStackTemp;
 			if (readStack == NULL) {
+			  if (!promptToBePrinted && !eliminatePromptBackup)
+			    printMessage(1,"Warning: read macro may have ended on an unfinished line.\n");
 			  eliminatePrompt = eliminatePromptBackup;
 			}
 		      }
