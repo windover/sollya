@@ -286,7 +286,7 @@ void popTimeCounter(char *s) {
     seconds = buf_final->tv_sec - buf_init->tv_sec;
     microseconds = buf_final->tv_usec - buf_init->tv_usec;
 
-    printMessage(1, "%s : spent ", s);
+    printMessage(1, "Information: %s spent ", s);
     if(seconds!=0) {
       minutes = seconds % 60;
       seconds = seconds - (60 * minutes) ;
