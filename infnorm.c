@@ -446,6 +446,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   exprBoundTheo *leftTheo, *rightTheo, *internalTheo; 
   exprBoundTheo *leftTheoConstant, *rightTheoConstant, *leftTheoLinear, *rightTheoLinear;
   int isPolynom;
+  int xIsPoint;
 
   excludes = NULL;
 
@@ -505,6 +506,12 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   mpfr_init2(bl,prec);
   mpfr_init2(br,prec);
 
+  mpfi_diam_abs(al,x);
+
+  if (mpfr_zero_p(al)) xIsPoint = 1; else xIsPoint = 0;
+
+  if (xIsPoint) printMessage(12,"Information: while evaluating no decorrelation test will be performed because the ordinate interval is point.\n");
+
   switch (tree->nodeType) {
   case VARIABLE:
     mpfi_set(stack3,x);
@@ -522,7 +529,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       mpfi_set(*(internalTheo->boundLeft),stack1);
       mpfi_set(*(internalTheo->boundRight),stack2);
     }
-    if ((simplifiesA > 0) && (mpfi_has_zero(stack3)) && (!mpfi_has_zero(stack1)) && (!mpfi_has_zero(stack2))) {
+    if ((simplifiesA > 0) && (mpfi_has_zero(stack3)) && (!mpfi_has_zero(stack1)) && (!mpfi_has_zero(stack2)) && !xIsPoint) {
 
       if (internalTheo != NULL) {
 	internalTheo->simplificationUsed = DECORRELATE;
@@ -671,7 +678,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       mpfi_set(*(internalTheo->boundLeft),stack1);
       mpfi_set(*(internalTheo->boundRight),stack2);
     }
-    if ((simplifiesA > 0) && (mpfi_has_zero(stack3)) && (!mpfi_has_zero(stack1)) && (!mpfi_has_zero(stack2))) {
+    if ((simplifiesA > 0) && (mpfi_has_zero(stack3)) && (!mpfi_has_zero(stack1)) && (!mpfi_has_zero(stack2)) && !xIsPoint) {
 
       if (internalTheo != NULL) {
 	internalTheo->simplificationUsed = DECORRELATE;
