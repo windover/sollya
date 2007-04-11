@@ -250,11 +250,23 @@ GEN quickFindZeros(node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_
   evaluateFaithfulWithCutOffFast(y1, tree, diff_tree, x1, zero_mpfr, prec);
   evaluateFaithfulWithCutOffFast(y2, tree, diff_tree, x2, zero_mpfr, prec);
   while(mpfr_lessequal_p(x2,b)) {
-    if (mpfr_sgn(y1) != mpfr_sgn(y2)) {
+    if((mpfr_sgn(y1)==0) || (mpfr_sgn(y2)==0) || (mpfr_sgn(y1) != mpfr_sgn(y2))) {
       i++;
       if(i>deg+2)
 	printMessage(1,"Warning: the function oscillates too much. Nevertheless, we try to continue.\n");
-      else res[i] = (long)(newton(tree, diff_tree, x1, x2, mpfr_sgn(y1), prec));       
+      else {
+	if (mpfr_sgn(y1)==0) {
+	  res[i] = (long)mpfr_to_PARI(x1);
+	  if(mpfr_sgn(y2)==0) {
+	    i++;
+	    res[i] = (long)mpfr_to_PARI(x2);
+	  }
+	}
+	else {
+	  if (mpfr_sgn(y2)==0) res[i] = (long)mpfr_to_PARI(x2);
+	  else res[i] = (long)(newton(tree, diff_tree, x1, x2, mpfr_sgn(y1), prec));
+	}
+      }
     }
     mpfr_set(x1,x2,GMP_RNDN);
     mpfr_add(x2,x2,h,GMP_RNDN);
@@ -494,13 +506,20 @@ GEN qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, GEN x,
 
   if(test) {
     z = cgetg(n+1, t_COL);
-    if((case1 || case2b) && (s[0]*s[1]<=0)) z[1] = (long)findZero(error_diff, error_diff2,y[0],y[1],s[0],NULL,2,prec);
+    if((case1 || case2b) && (s[0]*s[1]<=0)) {
+      if(s[0]==0) z[1] = (long)mpfr_to_PARI(a);
+      else z[1] = (long)findZero(error_diff, error_diff2,y[0],y[1],s[0],NULL,2,prec);
+    }
     if((case1 || case2b) && (s[0]*s[1]>0)) z[1] = (long)mpfr_to_PARI(a);
     if(case2 || case3) z[1] = (long)findZero(error_diff, error_diff2, y[0], y[1], s[0], (GEN)(x[1]), 2, prec);
     
     for(i=1;i<=n-2;i++) z[i+1] = (long)findZero(error_diff, error_diff2, y[i], y[i+1], s[i], (GEN)(x[i+1]), 2, prec);
 
-    if((case1 || case2) && (s[n-1]*s[n]<=0)) z[n] = (long)findZero(error_diff, error_diff2, y[n-1], y[n], s[n-1], NULL, 2, prec);
+    if((case1 || case2) && (s[n-1]*s[n]<=0)) {
+      if(s[n]==0) z[n] = (long)mpfr_to_PARI(b);
+      else z[n] = (long)findZero(error_diff, error_diff2, y[n-1], y[n], s[n-1], NULL, 2, prec);
+    }
+
     if((case1 || case2) && (s[n-1]*s[n]>0)) z[n] = (long)mpfr_to_PARI(b);
     if(case2b || case3) z[n] = (long)findZero(error_diff, error_diff2, y[n-1], y[n], s[n-1], (GEN)(x[n]), 2, prec);
   }

@@ -293,7 +293,7 @@ void popTimeCounter(char *s) {
     milliseconds = microseconds / 1000;
 
     if((milliseconds>0)||(seconds>0)) {
-      printMessage(1, "Information: %s spent ", s);
+      printMessage(0, "Information: %s spent ", s);
       if(seconds!=0) {
 	minutes = seconds / 60;
 	seconds = seconds % 60;
@@ -302,12 +302,12 @@ void popTimeCounter(char *s) {
 	days = hours / 24;
 	hours = hours % 24;
 	
-	if(days!=0) printMessage(1, "%d days, ", days);
-	if(hours!=0) printMessage(1, "%d hours, ", hours);
-	if(minutes!=0) printMessage(1, "%d minutes, ", minutes);
-	if(seconds!=0) printMessage(1, "%d seconds, ", seconds);
+	if(days!=0) printMessage(0, "%d days, ", days);
+	if(hours!=0) printMessage(0, "%d hours, ", hours);
+	if(minutes!=0) printMessage(0, "%d minutes, ", minutes);
+	if(seconds!=0) printMessage(0, "%d seconds, ", seconds);
       }
-      printMessage(1, "%d ms\n", milliseconds);
+      printMessage(0, "%d ms\n", milliseconds);
     }
 
     prev = timeStack;
