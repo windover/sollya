@@ -624,7 +624,7 @@ void fprintValue(FILE *fd, mpfr_t value) {
 void printTree(node *tree) {
   int pred;
 
-  pred = precedence(tree);
+  if (fullParentheses) pred = 100; else pred = precedence(tree);
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -851,7 +851,7 @@ char *sprintTree(node *tree) {
 
   buffer1 = NULL;
   buffer2 = NULL;
-  pred = precedence(tree);
+  if (fullParentheses) pred = 100; else pred = precedence(tree);
   switch (tree->nodeType) {
   case VARIABLE:
     buffer = (char *) safeCalloc(strlen(variablename)+1,sizeof(char));

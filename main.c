@@ -83,6 +83,7 @@ node *minitree = NULL;
 int autosimplify = 1;
 int timecounting = 0;
 chain *timeStack=NULL;
+int fullParentheses=0;
 
 extern int yyparse();
 extern void yylex_destroy(void *);

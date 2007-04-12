@@ -77,6 +77,7 @@ extern void *scanner;
 extern node *minitree;
 extern int autosimplify;
 extern int timecounting;
+extern int fullParentheses;
 
 void printPrompt(void);
 void recoverFromError(void);
