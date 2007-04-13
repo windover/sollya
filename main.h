@@ -15,6 +15,7 @@
 #define DEFAULTTAYLORRECURSIONS 0
 #define MAXHORNERTREESIZE 5000
 #define MAXAUTOSIMPLSIZE 5500
+#define CHEAPSIMPLIFYSIZE 4000
 
 typedef struct doubleChainStruct doubleChain;
 

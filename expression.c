@@ -6194,18 +6194,39 @@ void getCoefficientsHornerUnsafe(node **coefficients, node *poly, int offset, in
   } else {
     if (poly->nodeType == SUB) newSign = -1; else newSign = 1;
     newCoeff = copyTree(poly->child1);
-    if (isPowerOfVariable(poly->child2)) {
-      deg = getDegree(poly->child2);
-      temp = (node *) safeMalloc(sizeof(node));
-      temp->nodeType = CONSTANT;
-      temp->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*(temp->value),17);
-      mpfr_set_d(*(temp->value),1.0,GMP_RNDN);
-      getCoefficientsHornerUnsafe(coefficients,temp,offset+deg,sign*newSign);
-      free_memory(temp);
+    if ((poly->child2->nodeType == MUL) &&
+	isConstant(poly->child2->child1) &&
+	isPowerOfVariable(poly->child2->child2)) {
+      deg = getDegree(poly->child2->child2);
+      getCoefficientsHornerUnsafe(coefficients,poly->child2->child1,offset+deg,sign*newSign);
     } else {
-      deg = getDegree(poly->child2->child1);
-      getCoefficientsHornerUnsafe(coefficients,poly->child2->child2,offset+deg,sign*newSign);
+      if ((poly->child2->nodeType == MUL) && 
+	  (poly->child2->child1->nodeType == MUL) &&
+	  isPowerOfVariable(poly->child2->child1->child1) &&
+	  isConstant(poly->child2->child1->child2) &&
+	  isConstant(poly->child2->child2)) {
+	deg = getDegree(poly->child2->child1->child1);
+	temp = (node *) safeMalloc(sizeof(node));
+	temp->nodeType = MUL;
+	temp->child1 = copyTree(poly->child2->child1->child2);
+	temp->child2 = copyTree(poly->child2->child2);
+	getCoefficientsHornerUnsafe(coefficients,temp,offset+deg,sign*newSign);
+	free_memory(temp);
+      } else {
+	if (isPowerOfVariable(poly->child2)) {
+	  deg = getDegree(poly->child2);
+	  temp = (node *) safeMalloc(sizeof(node));
+	  temp->nodeType = CONSTANT;
+	  temp->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  mpfr_init2(*(temp->value),17);
+	  mpfr_set_d(*(temp->value),1.0,GMP_RNDN);
+	  getCoefficientsHornerUnsafe(coefficients,temp,offset+deg,sign*newSign);
+	  free_memory(temp);
+	} else {
+	  deg = getDegree(poly->child2->child1);
+	  getCoefficientsHornerUnsafe(coefficients,poly->child2->child2,offset+deg,sign*newSign);
+	}
+      }
     }
   }
   
@@ -6694,6 +6715,18 @@ int isHornerUnsafe(node *tree) {
   if (((tree->nodeType == ADD) || (tree->nodeType == SUB)) &&
       isConstant(tree->child1) &&
       isPowerOfVariable(tree->child2)) return 1;
+  if (((tree->nodeType == ADD) || (tree->nodeType == SUB)) &&
+      isConstant(tree->child1) &&
+      (tree->child2->nodeType == MUL) &&
+      (tree->child2->child1->nodeType == MUL) &&
+      isPowerOfVariable(tree->child2->child1->child1) &&
+      isConstant(tree->child2->child1->child2) &&
+      isConstant(tree->child2->child2)) return 1;
+  if (((tree->nodeType == ADD) || (tree->nodeType == SUB)) &&
+      isConstant(tree->child1) &&
+      (tree->child2->nodeType == MUL) &&
+      isConstant(tree->child2->child1) &&
+      isPowerOfVariable(tree->child2->child2)) return 1;
   return 0;
 }
 

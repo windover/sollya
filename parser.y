@@ -1715,9 +1715,14 @@ autoprint:       autoprintelem SEMICOLONTOKEN
 
 autoprintelem:   function 
                            {
-			     printf("isHorner = %d\n",isHorner($1));
 			     pushTimeCounter();
-			     temp_node = $1;
+			     if ((!autosimplify) && (isConstant($1) || (treeSize($1) <= CHEAPSIMPLIFYSIZE))){
+			       temp_node = simplifyTreeErrorfree($1); 
+			       int_temp = 1;
+			     } else {
+			       temp_node = $1;
+			       int_temp = 0;
+			     }
 			     if (isConstant(temp_node)) {
 			       if (temp_node->nodeType == CONSTANT) {
 				 prec_temp = tools_precision;
@@ -1784,6 +1789,7 @@ autoprintelem:   function
 			       free_memory(temp_node2);
 			     }
 			     free_memory(temp_node);
+			     if (int_temp) free_memory($1);
 			     popTimeCounter("autoprint");
 			     $$ = NULL;
 			   }
