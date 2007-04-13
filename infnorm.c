@@ -3900,8 +3900,9 @@ int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutof
   node *deriv;
   int res;
 
-  if (startprec < (mpfr_get_prec(result) + 10)) {
-    printMessage(12,"Information: Differentiating while evaluating because start precision too low.\n");
+  if ((2*startprec) < (mpfr_get_prec(result) + 10)) {
+    printMessage(12,"Information: Differentiating while evaluating because start precision (%d bits) too low.\n",
+		 (int)startprec);
     deriv = differentiate(func); 
   }else deriv = NULL;
   res = evaluateFaithfulWithCutOffFast(result, func, deriv, x, cutoff, startprec);
