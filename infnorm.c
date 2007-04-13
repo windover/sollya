@@ -1624,7 +1624,10 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
     mpfi_add(resultTaylor, constantTerm, temp2);
     taylorExcludes = concatChains(taylorExcludesConstant, taylorExcludesLinear);
   
-    directExcludes = evaluateITaylorOnDiv(resultDirect, func, x, prec, recurse, directTheo);
+    if (deriv != NULL) 
+      directExcludes = evaluateITaylorOnDiv(resultDirect, func, x, prec, recurse, directTheo);
+    else 
+      directExcludes = evaluateI(resultDirect, func, x, prec, 0, 2, directTheo);
 
     if (verbosity >= 12) {
       printf("Information: Taylor evaluation: domain:\n");
