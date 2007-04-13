@@ -32,6 +32,7 @@ chain *readStack = NULL;
 chain *readStackTemp = NULL;
 chain *readStack2 = NULL;
 char *constBuffer = NULL;
+char *constBuffer2 = NULL;
 FILE **tempFDPtr;
 mp_prec_t defaultprecision = DEFAULTPRECISION;
 int defaultpoints = DEFAULTPOINTS;
@@ -84,6 +85,7 @@ int autosimplify = 1;
 int timecounting = 0;
 chain *timeStack=NULL;
 int fullParentheses=0;
+int midpointMode = 0;
 
 extern int yyparse();
 extern void yylex_destroy(void *);
@@ -240,6 +242,30 @@ int removeSpaces(char *outbuf, char *inbuf) {
   return removed;
 }
 
+int removeMidpointMode(char *outbuf, char *inbuf) {
+  char *temp, *temp2;
+  int removed;
+
+  removed = 0;
+
+  temp = inbuf;
+  temp2 = outbuf;
+
+  while (*temp != '\0') {
+    if (*temp != '~') {
+      *temp2 = *temp;
+      temp2++;
+      temp++;
+    } else {
+      temp++;
+      while ((*temp != '\0') && (*temp != '~')) temp++;
+      if (*temp != '\0') temp++;
+      removed = 1;
+    }
+  }
+
+  return removed;
+}
 
 
 int printMessage(int verb, const char *format, ...) {

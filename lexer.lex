@@ -26,7 +26,7 @@ CHAR		[a-zA-Z]
 NUMBER		[0-9]
 HEXNUMBER       (([0-9])|([ABCDEFabcdef]))
 
-CONSTANT        ({NUMBER}+|({NUMBER}*"."{NUMBER}+))(((((" ")*)[eE]([+-])?{NUMBER}+)?))
+CONSTANT        ({NUMBER}+|({NUMBER}*"."{NUMBER}+))(("~"{NUMBER}"/"{NUMBER}"~")?)(((((" ")*)(([eE]))([+-])?{NUMBER}+)?))
 DYADICCONSTANT  ({NUMBER}+)([bB])([+-]?)({NUMBER}+)
 HEXCONSTANT     ("0x"){HEXNUMBER}{16}
 
@@ -260,6 +260,8 @@ PARSE           "parse"
 AUTOSIMPLIFY    "autosimplify"
 
 TIMING          "timing"
+FULLPARENTHESES "fullparentheses"
+MIDPOINTMODE "midpointmode"
 
 %%
 
@@ -298,9 +300,14 @@ TIMING          "timing"
 {CONSTANT}      {     
                       if (constBuffer != NULL) free(constBuffer);
 		      constBuffer = (char *) safeCalloc(strlen(yytext)+1,sizeof(char));
-		      if (removeSpaces(constBuffer,yytext)) {
-			printMessage(2,"Information: removed spaces in scientific notation constant \"%s\", it will be considered as \"%s\"\n",yytext,constBuffer);
+		      constBuffer2 = (char *) safeCalloc(strlen(yytext)+1,sizeof(char));
+		      if (removeSpaces(constBuffer2,yytext)) {
+			printMessage(2,"Information: removed spaces in scientific notation constant \"%s\", it will be considered as \"%s\"\n",yytext,constBuffer2);
 		      }
+		      if (removeMidpointMode(constBuffer,constBuffer2)) {
+			printMessage(2,"Information: removed midpoint information in scientific notation constant \"%s\", it will be considered as \"%s\"\n",constBuffer2,constBuffer);
+		      }
+		      free(constBuffer2);
                       yylval->value = constBuffer;
                       promptToBePrinted = 0; return CONSTTOKEN;
                 }
@@ -460,6 +467,8 @@ TIMING          "timing"
 {PARSE}                  {     promptToBePrinted = 0; return PARSETOKEN; }                    
 {AUTOSIMPLIFY}           {     promptToBePrinted = 0; return AUTOSIMPLIFYTOKEN; }                    
 {TIMING}                 {     promptToBePrinted = 0; return TIMINGTOKEN; }                    
+{FULLPARENTHESES}        {     promptToBePrinted = 0; return FULLPARENTHESESTOKEN; }                    
+{MIDPOINTMODE}           {     promptToBePrinted = 0; return MIDPOINTMODETOKEN; }                    
 
 {READ}          {
                       BEGIN(readstate);

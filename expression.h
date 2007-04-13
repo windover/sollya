@@ -105,6 +105,7 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec);
 void printBinary(mpfr_t x);
 int isHorner(node *tree);
 int isCanonical(node *tree);
+char *sprintMidpointMode(mpfr_t a, mpfr_t b);
 
 node *makeVariable();
 node *makeConstant(mpfr_t x);

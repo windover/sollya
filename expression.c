@@ -410,8 +410,95 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
   mpfr_clear(y);
 }
 
+char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
+  mp_exp_t e1, e2;
+  char *str1, *str2, *str, *str3;
+  mpfr_t aP, bP;
+  int sign, len1, len2, len, i;
+  mp_prec_t prec, p;
 
+  if (mpfr_sgn(a) != mpfr_sgn(b)) return NULL;
+  
+  prec = mpfr_get_prec(a);
+  p = mpfr_get_prec(b);
 
+  if (p > prec) prec = p;
+
+  mpfr_init2(aP,prec);
+  mpfr_init2(bP,prec);
+
+  if (mpfr_cmp(a,b) == 0) {
+    mpfr_set(aP,a,GMP_RNDN);
+    str = sprintValue(&aP,prec);
+    mpfr_clear(aP);
+    mpfr_clear(bP);
+    return str;
+  }
+
+  sign = mpfr_sgn(a);
+  mpfr_abs(aP,a,GMP_RNDN);
+  mpfr_abs(bP,b,GMP_RNDN);
+  
+  str1 = mpfr_get_str(NULL,&e1,10,0,aP,GMP_RNDN);  
+  str2 = mpfr_get_str(NULL,&e2,10,0,bP,GMP_RNDN);  
+
+  if (e1 == e2) {
+    if (str1[0] == str2[0]) {
+      len1 = strlen(str1);
+      len2 = strlen(str2);
+      len = len1; 
+      if (len2 < len) len = len2;
+      str = safeCalloc(len + 6,sizeof(char));
+      i = 0;
+      while ((i < len) && (str1[i] == str2[i])) {
+	str[i] = str1[i];
+	i++;
+      }
+      if (i < len) {
+	str[i] = '~';
+	str[i+1] = str1[i];
+	str[i+2] = '/';
+	str[i+3] = str2[i];
+	str[i+4] = '~';
+      }
+      str3 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
+      removeTrailingZeros(str3,str);
+      free(str);
+      str = str3;
+      str3 = (char *) safeCalloc(strlen(str)+69,sizeof(char));
+      if (sign < 0) {
+	if (e1 == 0) {
+	  sprintf(str3,"-0.%s",str);
+	} else {
+	  sprintf(str3,"-0.%se%d",str,(int)e1);
+	}
+      } else {
+	if (e1 == 0) {
+	  sprintf(str3,"0.%s",str);
+	} else {
+	  sprintf(str3,"0.%se%d",str,(int)e1);
+	}
+      }
+      free(str);
+      str = str3;
+      str3 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
+      sprintf(str3,"%s",str);
+      free(str);
+      str = str3;
+    } else {
+      str = NULL;
+    }
+  } else {
+    str = NULL;
+  }
+
+  mpfr_free_str(str1);      
+  mpfr_free_str(str2);      
+
+  mpfr_clear(aP);
+  mpfr_clear(bP);
+  return str;
+}
 
 char *sPrintBinary(mpfr_t x) {
   mpfr_t xx;

@@ -217,6 +217,8 @@ void yyerror(char *message) {
 %token  PARSETOKEN
 %token  AUTOSIMPLIFYTOKEN
 %token  TIMINGTOKEN
+%token  FULLPARENTHESESTOKEN
+%token  MIDPOINTMODETOKEN
 
 %type <other> commands
 %type <other> command
@@ -671,6 +673,66 @@ command:     plot
            | TIMINGTOKEN EQUALTOKEN OFFTOKEN EXCLAMATIONTOKEN SEMICOLONTOKEN 
                            {
 			     timecounting = 0;
+			     $$ = NULL;
+			   }
+           | FULLPARENTHESESTOKEN EQUALTOKEN QUESTIONMARKTOKEN SEMICOLONTOKEN 
+                           {
+			     if (fullParentheses) 
+			       printf("Fully parenthesing mode is activated.\n");
+			     else 
+			       printf("Fully parenthesing mode is deactivated.\n");
+			     $$ = NULL;
+			   }
+           | FULLPARENTHESESTOKEN EQUALTOKEN ONTOKEN SEMICOLONTOKEN 
+                           {
+			     fullParentheses = 1;
+			     printf("Fully parenthesing mode has been activated.\n");
+			     $$ = NULL;
+			   }
+           | FULLPARENTHESESTOKEN EQUALTOKEN ONTOKEN EXCLAMATIONTOKEN SEMICOLONTOKEN 
+                           {
+			     fullParentheses = 1;
+			     $$ = NULL;
+			   }
+           | FULLPARENTHESESTOKEN EQUALTOKEN OFFTOKEN SEMICOLONTOKEN 
+                           {
+			     fullParentheses = 0;
+			     printf("Fully parenthesing mode has been deactivated.\n");
+			     $$ = NULL;
+			   }
+           | FULLPARENTHESESTOKEN EQUALTOKEN OFFTOKEN EXCLAMATIONTOKEN SEMICOLONTOKEN 
+                           {
+			     fullParentheses = 0;
+			     $$ = NULL;
+			   }
+           | MIDPOINTMODETOKEN EQUALTOKEN QUESTIONMARKTOKEN SEMICOLONTOKEN 
+                           {
+			     if (midpointMode) 
+			       printf("Midpoint mode is activated.\n");
+			     else 
+			       printf("Midpoint mode is deactivated.\n");
+			     $$ = NULL;
+			   }
+           | MIDPOINTMODETOKEN EQUALTOKEN ONTOKEN SEMICOLONTOKEN 
+                           {
+			     midpointMode = 1;
+			     printf("Midpoint mode has been activated.\n");
+			     $$ = NULL;
+			   }
+           | MIDPOINTMODETOKEN EQUALTOKEN ONTOKEN EXCLAMATIONTOKEN SEMICOLONTOKEN 
+                           {
+			     midpointMode = 1;
+			     $$ = NULL;
+			   }
+           | MIDPOINTMODETOKEN EQUALTOKEN OFFTOKEN SEMICOLONTOKEN 
+                           {
+			     midpointMode = 0;
+			     printf("Midpoint mode has been deactivated.\n");
+			     $$ = NULL;
+			   }
+           | MIDPOINTMODETOKEN EQUALTOKEN OFFTOKEN EXCLAMATIONTOKEN SEMICOLONTOKEN 
+                           {
+			     midpointMode = 0;
 			     $$ = NULL;
 			   }
            | assignment SEMICOLONTOKEN
@@ -1653,6 +1715,7 @@ autoprint:       autoprintelem SEMICOLONTOKEN
 
 autoprintelem:   function 
                            {
+			     printf("isHorner = %d\n",isHorner($1));
 			     pushTimeCounter();
 			     temp_node = $1;
 			     if (isConstant(temp_node)) {
@@ -1730,6 +1793,13 @@ autoprintelem:   function
 			     printf(";");
 			     printValue(($1).b,tools_precision);
 			     printf("] ");
+			     if ((dyadic == 0) && (midpointMode == 1)) {
+			       temp_string = sprintMidpointMode(*(($1).a), *($1).b);
+			       if (temp_string != NULL) {
+				 printf("(= %s) ",temp_string);
+				 free(temp_string);
+			       }
+			     }
 			     mpfr_clear(*(($1).a));
 			     mpfr_clear(*(($1).b));
 			     free($1.a);

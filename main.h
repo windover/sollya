@@ -13,8 +13,8 @@
 #define DEFAULTDIAM 1e-4
 #define DEFAULTDIAM2 2e-3
 #define DEFAULTTAYLORRECURSIONS 0
-#define MAXHORNERTREESIZE 8500
-#define MAXAUTOSIMPLSIZE 10000
+#define MAXHORNERTREESIZE 5000
+#define MAXAUTOSIMPLSIZE 5500
 
 typedef struct doubleChainStruct doubleChain;
 
@@ -29,6 +29,7 @@ extern char *currentString;
 extern char *newReadFilename;
 extern char *newReadFilenameTemp;
 extern char *constBuffer;
+extern char *constBuffer2;
 extern chain *readStack;
 extern chain *readStack2;
 extern FILE **tempFDPtr;
@@ -78,6 +79,7 @@ extern node *minitree;
 extern int autosimplify;
 extern int timecounting;
 extern int fullParentheses;
+extern int midpointMode;
 
 void printPrompt(void);
 void recoverFromError(void);
@@ -86,6 +88,7 @@ void *safeCalloc (size_t nmemb, size_t size);
 void *safeMalloc (size_t size);
 int printMessage(int verb, const char *format, ...);
 int removeSpaces(char *outbuf, char *inbuf);
+int removeMidpointMode(char *outbuf, char *inbuf);
 void freeCounter(void);
 void pushTimeCounter(void);
 void popTimeCounter(char *s);
