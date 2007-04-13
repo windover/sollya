@@ -12,6 +12,7 @@ struct chainStruct
 
 void freeChain(chain *c, void (*f) (void *));
 chain *addElement(chain *c, void *elem);
+chain *removeInt(chain *c, int n);
 void *first(chain *c);
 chain *tail(chain *c);
 chain *copyChain(chain *c, void * (*f) (void *));

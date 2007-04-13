@@ -7,6 +7,110 @@
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
 
+#define mat_coeff(i,j,n) (i-1)*n+(j-1)
+
+void system_solve(mpfr_t *res, mpfr_t *M, mpfr_t *b, int n, mp_prec_t prec) {
+  chain *i_list=NULL;
+  chain *j_list=NULL;
+  chain *curri;
+  chain *currj;
+  int i0, j0, i, j, k;
+  int *var;
+  mpfr_t max,lambda;
+  int *order_i = safeMalloc(n*sizeof(int));
+  int *order_j = safeMalloc(n*sizeof(int));
+
+  mpfr_init2(max, 53);
+  mpfr_set_inf(max,-1);
+  mpfr_init2(lambda, prec);
+
+  for(i=1;i<=n;i++) {
+    var = safeMalloc(sizeof(int));
+    *var = i;
+    i_list = addElement(i_list, (void *)var);
+  }
+  for(j=1;j<=n;j++) {
+    var = safeMalloc(sizeof(int));
+    *var = j;
+    j_list = addElement(j_list, (void *)var);
+  }
+
+  // Triangulation by Gaussian elimination
+  for(k=1;k<=n;k++) {
+
+    // In this part, we search for the bigger element of the matrix
+    curri = i_list;
+    while(curri!=NULL) {
+      currj = j_list;
+      while(currj!=NULL) {
+	i = *(int *)(curri->value);
+	j = *(int *)(currj->value);
+	if(mpfr_cmp_abs(max, M[mat_coeff(i,j,n)])>0) {
+	  i0 = i;
+	  j0 = j;
+	  mpfr_set(max, M[mat_coeff(i,j,n)], GMP_RNDN);
+	}
+	currj = currj->next;
+      }
+      curri = curri->next;
+    }
+    
+    i_list = removeInt(i_list, i0);
+    j_list = removeInt(j_list, j0);
+    order_i[k-1] = i0;
+    order_j[k-1] = j0;
+
+    // Here we update the matrix and the second member
+    curri = i_list;
+    while(curri!=NULL) {
+      mpfr_div(lambda, M[mat_coeff(i,j0,n)], M[mat_coeff(i0,j0,n)], GMP_RNDN);
+      mpfr_neg(lambda, lambda, GMP_RNDN);
+      currj = j_list;
+      while(currj!=NULL) {
+	i = *(int *)(curri->value);
+	j = *(int *)(currj->value);
+	mpfr_fma(M[mat_coeff(i,j,n)], lambda, M[mat_coeff(i0,j,n)], M[mat_coeff(i,j,n)], GMP_RNDN);
+	currj = currj->next;
+      }
+
+      mpfr_fma(b[i-1], lambda, b[i0-1], b[i-1], GMP_RNDN);
+      mpfr_set_d(M[mat_coeff(i,j0,n)], 0., GMP_RNDN); // this line is not useful strictly speaking
+      curri = curri->next;
+    }
+  }
+  /*********************************************************************/
+
+
+  // Resolution of the system itself
+  for(i=1;i<=n;i++) {
+    var = safeMalloc(sizeof(int));
+    *var = i;
+    i_list = addElement(i_list, (void *)var);
+  }
+
+  for(k=n;k>=1;k--) {
+    i0 = order_i[k-1];
+    j0 = order_j[k-1];
+    mpfr_div(res[j0-1], b[i0-1], M[mat_coeff(i0,j0,n)], GMP_RNDN);
+
+    i_list = removeInt(i_list, i0);
+
+    curri = i_list;
+    while(curri!=NULL) {
+      i = *(int *)(curri->value);
+      mpfr_neg(M[mat_coeff(i,j0,n)], M[mat_coeff(i,j0,n)], GMP_RNDN);
+      mpfr_fma(b[i-1], M[mat_coeff(i,j0,n)], res[j0-1], b[i-1], GMP_RNDN);
+      curri=curri->next;
+    }
+  }
+
+  free(order_i);
+  free(order_j);
+  mpfr_clear(max);
+  mpfr_clear(lambda);
+  return;
+}
+
 
 // Constructs the tree corresponding to p = sum(coeff(i) X^monomials[i])
 node *constructPolynomial(GEN coeff, chain *monomials, mp_prec_t prec) {
@@ -508,7 +612,10 @@ GEN qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, GEN x,
     z = cgetg(n+1, t_COL);
     if((case1 || case2b) && (s[0]*s[1]<=0)) {
       if(s[0]==0) z[1] = (long)mpfr_to_PARI(a);
-      else z[1] = (long)findZero(error_diff, error_diff2,y[0],y[1],s[0],NULL,2,prec);
+      else {
+	if(s[1]==0) z[1] = (long)mpfr_to_PARI(y[1]);
+	else z[1] = (long)findZero(error_diff, error_diff2,y[0],y[1],s[0],NULL,2,prec);
+      }
     }
     if((case1 || case2b) && (s[0]*s[1]>0)) z[1] = (long)mpfr_to_PARI(a);
     if(case2 || case3) z[1] = (long)findZero(error_diff, error_diff2, y[0], y[1], s[0], (GEN)(x[1]), 2, prec);
@@ -517,7 +624,10 @@ GEN qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, GEN x,
 
     if((case1 || case2) && (s[n-1]*s[n]<=0)) {
       if(s[n]==0) z[n] = (long)mpfr_to_PARI(b);
-      else z[n] = (long)findZero(error_diff, error_diff2, y[n-1], y[n], s[n-1], NULL, 2, prec);
+      else {
+	if(s[n-1]==0) z[n] = (long)mpfr_to_PARI(y[n-1]);
+	else z[n] = (long)findZero(error_diff, error_diff2, y[n-1], y[n], s[n-1], NULL, 2, prec);
+      }
     }
 
     if((case1 || case2) && (s[n-1]*s[n]>0)) z[n] = (long)mpfr_to_PARI(b);
@@ -604,6 +714,19 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
   chain *curr;
   node **monomials_tree;
   mpfr_t *x_mpfr;
+
+
+
+  /* TESTING PART : new GAUSS */
+  mpfr_t *N=safeMalloc((freeDegrees+1)*(freeDegrees+1)*sizeof(mpfr_t));
+  mpfr_t *B=safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
+  mpfr_t *unknown_vect=safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
+  /****************************/
+
+
+
+
+
 
   if(verbosity>=3) {
     printf("Entering in Remez function...\n");
@@ -753,6 +876,12 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
 	  if((r==1) && (mpfr_number_p(var2))) {
 	    mpfr_mul(var2, var1, var2, GMP_RNDN);
 	    ((GEN)(M[j]))[i] = (long)(mpfr_to_PARI(var2));
+
+	    /* TESTING PART : new GAUSS */
+	    mpfr_init2(N[mat_coeff(i,j,freeDegrees+1)],prec);
+	    mpfr_set(N[mat_coeff(i,j,freeDegrees+1)],var2,GMP_RNDN);
+	    /****************************/
+
 	  }
 	}
 	if((test==0) || (r==0) || (!mpfr_number_p(var2))) {
@@ -794,11 +923,25 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
       if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
 
       temp[i] = (long)(mpfr_to_PARI(var1));
+
+      /* TESTING PART : new GAUSS */
+      mpfr_init2(B[i-1],prec);
+      mpfr_init2(unknown_vect[i-1],prec);
+      mpfr_set(B[i-1],var1,GMP_RNDN);
+      /****************************/
+
     }
 
     if(verbosity>=3) printf("Resolving the system...\n");
 
+    pushTimeCounter();
     temp = gauss(M,temp);
+    popTimeCounter("Gauss resolution with PARI");
+
+    /* TESTING PART : new GAUSS */
+    //system_solve(unknown_vect, M, B, freeDegrees+1, prec);
+    /****************************/
+
     poly = constructPolynomial(temp, monomials, prec);
 
     if(verbosity>=4) {
