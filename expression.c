@@ -1,4 +1,5 @@
 #include <mpfr.h>
+#include <mpfi.h>
 #include <gmp.h>
 #include "expression.h"
 #include <stdio.h> /* fprinft, fopen, fclose, */
@@ -10,6 +11,22 @@
 #include "miniparser.tab.h"
 
 #define MAXDIFFSIMPLSIZE 10000
+
+
+void mpfr_from_mpfi(mpfr_t rop, mpfr_t op, int n, int (*mpfifun)(mpfi_t, mpfi_t, int)) {
+  mpfi_t opI, ropI;
+
+  mpfi_init2(opI,mpfr_get_prec(op));
+  mpfi_init2(ropI,mpfr_get_prec(rop)+2);
+  mpfi_set_fr(opI,op);
+
+  mpfifun(ropI,opI,n);
+  
+  mpfi_mid(rop,ropI);
+
+  mpfi_clear(opI);
+  mpfi_clear(ropI);
+}
 
 void free_memory(node *tree) {
   if (tree == NULL) return;
@@ -155,6 +172,10 @@ void free_memory(node *tree) {
     free_memory(tree->child1);
     free(tree);
     break;
+  case LIBRARYFUNCTION:
+    free_memory(tree->child1);
+    free(tree);
+    break;
   default:
    fprintf(stderr,"Error: free_memory: unknown identifier (%d) in the tree\n",tree->nodeType);
    exit(1);
@@ -166,6 +187,8 @@ void free_memory(node *tree) {
 
 
 void fprintHeadFunction(FILE *fd,node *tree, char *x, char *y) {
+  int i;
+
   if (tree == NULL) return;
   switch (tree->nodeType) {
   case VARIABLE:
@@ -269,6 +292,17 @@ void fprintHeadFunction(FILE *fd,node *tree, char *x, char *y) {
     break;
   case DOUBLEEXTENDED:
     fprintf(fd,"doubleextended(%s)",x);
+    break;
+  case LIBRARYFUNCTION:
+    {
+      for (i=1;i<=tree->libFunDeriv;i++) {
+	fprintf(fd,"diff(");
+      }
+      fprintf(fd,"%s(%s)",tree->libFun->functionName,x);
+      for (i=1;i<=tree->libFunDeriv;i++) {
+	fprintf(fd,")");
+      }
+    }
     break;
   default:
    fprintf(stderr,"fprintHeadFunction: unknown identifier (%d) in the tree\n",tree->nodeType);
@@ -709,7 +743,7 @@ void fprintValue(FILE *fd, mpfr_t value) {
 
 
 void printTree(node *tree) {
-  int pred;
+  int pred, i;
 
   if (fullParentheses) pred = 100; else pred = precedence(tree);
 
@@ -925,6 +959,19 @@ void printTree(node *tree) {
     printTree(tree->child1);
     printf(")");
     break;
+  case LIBRARYFUNCTION:
+    {
+      for (i=1;i<=tree->libFunDeriv;i++) {
+	printf("diff(");
+      }
+      printf("%s(",tree->libFun->functionName);
+      printTree(tree->child1);
+      printf(")");
+      for (i=1;i<=tree->libFunDeriv;i++) {
+	printf(")");
+      }
+    }
+    break;
   default:
    fprintf(stderr,"Error: printTree: unknown identifier in the tree\n");
    exit(1);
@@ -933,7 +980,7 @@ void printTree(node *tree) {
 }
 
 char *sprintTree(node *tree) {
-  int pred;
+  int pred, i;
   char *buffer, *buffer1, *buffer2, *finalBuffer, *tempBuf;
 
   buffer1 = NULL;
@@ -1167,6 +1214,20 @@ char *sprintTree(node *tree) {
     buffer = (char *) safeCalloc(strlen(buffer1) + 19, sizeof(char));
     sprintf(buffer,"doubleextended(%s)",buffer1);
     break;
+  case LIBRARYFUNCTION:
+    {
+      buffer1 = sprintTree(tree->child1);
+      buffer = (char *) safeCalloc(strlen(buffer1) + strlen(tree->libFun->functionName) + 4 + (6 * tree->libFunDeriv),sizeof(char));
+      tempBuf = buffer;
+      for (i=1;i<=tree->libFunDeriv;i++) {
+	tempBuf += sprintf(tempBuf,"diff(");
+      }
+      tempBuf += sprintf(tempBuf,"%s(%s)",tree->libFun->functionName,buffer1);
+      for (i=1;i<=tree->libFunDeriv;i++) {
+	tempBuf += sprintf(tempBuf,")");
+      }
+    }
+    break;
   default:
    fprintf(stderr,"Error: sprintTree: unknown identifier in the tree\n");
    exit(1);
@@ -1182,6 +1243,8 @@ char *sprintTree(node *tree) {
 
 
 void fprintTree(FILE *fd, node *tree) {
+  int i;
+
   if (tree == NULL) return;
   switch (tree->nodeType) {
   case VARIABLE:
@@ -1390,6 +1453,19 @@ void fprintTree(FILE *fd, node *tree) {
     fprintTree(fd,tree->child1);
     fprintf(fd,")");
     break;
+  case LIBRARYFUNCTION:
+    {
+      for (i=1;i<=tree->libFunDeriv;i++) {
+	fprintf(fd,"diff(");
+      }
+      fprintf(fd,"%s(",tree->libFun->functionName);
+      fprintTree(fd,tree->child1);
+      fprintf(fd,")");
+      for (i=1;i<=tree->libFunDeriv;i++) {
+	fprintf(fd,")");
+      }
+    }
+    break;
   default:
    fprintf(stderr,"Error: fprintTree: unknown identifier in the tree\n");
    exit(1);
@@ -1583,6 +1659,13 @@ node* copyTree(node *tree) {
   case DOUBLEEXTENDED:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLEEXTENDED;
+    copy->child1 = copyTree(tree->child1);
+    break;
+  case LIBRARYFUNCTION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LIBRARYFUNCTION;
+    copy->libFun = tree->libFun;
+    copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = copyTree(tree->child1);
     break;
   default:
@@ -2718,6 +2801,13 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
       simplified->child1 = simplChild1;
     }
     break;
+  case LIBRARYFUNCTION:
+    simplified = (node*) safeMalloc(sizeof(node));
+    simplified->nodeType = LIBRARYFUNCTION;
+    simplified->libFun = tree->libFun;
+    simplified->libFunDeriv = tree->libFunDeriv;
+    simplified->child1 = simplifyTreeErrorfreeInner(tree->child1,rec);
+    break;
   default:
     fprintf(stderr,"Error: simplifyTreeErrorfreeInner: unknown identifier in the tree\n");
     exit(1);
@@ -3566,6 +3656,20 @@ node* differentiateUnsimplified(node *tree) {
 	temp_node->value = mpfr_temp;
 	derivative = temp_node;
 	break;
+      case LIBRARYFUNCTION:
+	g_copy = copyTree(tree->child1);
+	g_diff = differentiateUnsimplified(tree->child1);
+	temp_node = (node*) safeMalloc(sizeof(node));
+	temp_node->nodeType = MUL;
+	temp_node->child2 = g_diff;
+	temp_node2 = (node*) safeMalloc(sizeof(node));
+	temp_node2->nodeType = LIBRARYFUNCTION;
+	temp_node2->libFun = tree->libFun;
+	temp_node2->libFunDeriv = tree->libFunDeriv + 1;
+	temp_node->child1 = temp_node2;
+	temp_node2->child1 = g_copy;    
+	derivative = temp_node;
+	break;
       default:
 	fprintf(stderr,"Error: differentiateUnsimplified: unknown identifier in the tree\n");
 	exit(1);
@@ -3788,6 +3892,11 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
     mpfr_round_to_doubleextended(result, stack1);
+    break;
+  case LIBRARYFUNCTION:
+    isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
+    if (!isConstant) break;
+    mpfr_from_mpfi(result, stack1, tree->libFunDeriv, tree->libFun->code);
     break;
   default:
     fprintf(stderr,"Error: evaluateConstantExpression: unknown identifier in the tree\n");
@@ -4380,8 +4489,25 @@ node* simplifyTreeInner(node *tree) {
       simplified->child1 = simplChild1;
     }
     break;
+  case LIBRARYFUNCTION:
+    simplChild1 = simplifyTreeInner(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      mpfr_from_mpfi(*value, *(simplChild1->value), tree->libFunDeriv, tree->libFun->code);
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = LIBRARYFUNCTION;
+      simplified->child1 = simplChild1;
+      simplified->libFun = tree->libFun;
+      simplified->libFunDeriv = tree->libFunDeriv;
+    }
+    break;
   default:
-    fprintf(stderr,"Error: simplifyTreeInner: unknown identifier in the tree\n");
+    fprintf(stderr,"Error: simplifyTreeInner: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);
   }
 
@@ -4544,6 +4670,10 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
     evaluate(stack1, tree->child1, x, prec);
     mpfr_round_to_doubleextended(result, stack1);
     break;
+  case LIBRARYFUNCTION:
+    evaluate(stack1, tree->child1, x, prec);
+    mpfr_from_mpfi(result, stack1, tree->libFunDeriv, tree->libFun->code);
+    break;
   default:
     fprintf(stderr,"Error: evaluate: unknown identifier in the tree\n");
     exit(1);
@@ -4658,6 +4788,9 @@ int arity(node *tree) {
   case DOUBLEEXTENDED:
     return 1;
     break;
+  case LIBRARYFUNCTION:
+    return 1;
+    break;
   default:
     fprintf(stderr,"Error: arity: unknown identifier in the tree\n");
     exit(1);
@@ -4668,6 +4801,9 @@ int arity(node *tree) {
 int isSyntacticallyEqual(node *tree1, node *tree2) {
 
   if (tree1->nodeType != tree2->nodeType) return 0;
+  if ((tree1->nodeType == LIBRARYFUNCTION) && 
+      ((tree1->libFun != tree2->libFun) ||
+       (tree1->libFunDeriv != tree2->libFunDeriv))) return 0;
   if (tree1->nodeType == CONSTANT) {
     if (mpfr_equal_p(*(tree1->value),*(tree2->value))) 
       return 1;
@@ -4817,6 +4953,9 @@ int isPolynomial(node *tree) {
     res = 0;
     break;
   case DOUBLEEXTENDED:
+    res = 0;
+    break;
+  case LIBRARYFUNCTION:
     res = 0;
     break;
   default:
@@ -5390,6 +5529,13 @@ node* expandDivision(node *tree) {
     copy->nodeType = DOUBLEEXTENDED;
     copy->child1 = expandDivision(tree->child1);
     break;
+  case LIBRARYFUNCTION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LIBRARYFUNCTION;
+    copy->libFun = tree->libFun;
+    copy->libFunDeriv = tree->libFunDeriv;
+    copy->child1 = expandDivision(tree->child1);
+    break;
   default:
    fprintf(stderr,"Error: expandDivision: unknown identifier in the tree\n");
    exit(1);
@@ -5905,6 +6051,13 @@ node* expandUnsimplified(node *tree) {
     copy->nodeType = DOUBLEEXTENDED;
     copy->child1 = expand(tree->child1);
     break;
+  case LIBRARYFUNCTION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LIBRARYFUNCTION;
+    copy->libFun = tree->libFun;
+    copy->libFunDeriv = tree->libFunDeriv;
+    copy->child1 = expand(tree->child1);
+    break;
   default:
    fprintf(stderr,"Error: expand: unknown identifier in the tree\n");
    exit(1);
@@ -6027,6 +6180,9 @@ int isConstant(node *tree) {
     return isConstant(tree->child1);
     break;
   case DOUBLEEXTENDED:
+    return isConstant(tree->child1);
+    break;
+  case LIBRARYFUNCTION:
     return isConstant(tree->child1);
     break;
   default:
@@ -6688,6 +6844,13 @@ node* hornerUnsimplified(node *tree) {
     copy->nodeType = DOUBLEEXTENDED;
     copy->child1 = horner(tree->child1);
     break;
+  case LIBRARYFUNCTION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LIBRARYFUNCTION;
+    copy->libFun = tree->libFun;
+    copy->libFunDeriv = tree->libFunDeriv;
+    copy->child1 = horner(tree->child1);
+    break;
   default:
    fprintf(stderr,"Error: horner: unknown identifier in the tree\n");
    exit(1);
@@ -7239,6 +7402,13 @@ node *substitute(node* tree, node *t) {
     copy->nodeType = DOUBLEEXTENDED;
     copy->child1 = substitute(tree->child1,t);
     break;
+  case LIBRARYFUNCTION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LIBRARYFUNCTION;
+    copy->libFun = tree->libFun;
+    copy->libFunDeriv = tree->libFunDeriv;
+    copy->child1 = substitute(tree->child1,t);
+    break;
   default:
    fprintf(stderr,"Error: substitute: unknown identifier in the tree\n");
    exit(1);
@@ -7477,6 +7647,9 @@ int treeSize(node *tree) {
     return treeSize(tree->child1) + 1;
     break;
   case DOUBLEEXTENDED:
+    return treeSize(tree->child1) + 1;
+    break;
+  case LIBRARYFUNCTION:    
     return treeSize(tree->child1) + 1;
     break;
   default:
@@ -7944,6 +8117,13 @@ node *makeCanonical(node *tree, mp_prec_t prec) {
   case DOUBLEEXTENDED:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLEEXTENDED;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case LIBRARYFUNCTION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LIBRARYFUNCTION;
+    copy->libFun = tree->libFun;
+    copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = makeCanonical(tree->child1,prec);
     break;
   default:

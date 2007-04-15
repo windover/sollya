@@ -2,8 +2,8 @@ CPPFLAGS=-I/sw/include -rdynamic
 LIB=-L/sw/lib
 CFLAGS=-Wall -g
 
-tools: parser.tab.o lex.yy.o plot.o miniparser.tab.o lex.miniyy.o expression.o infnorm.o pari_utils.o remez.o main.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o
-	gcc $(LIB) $(CFLAGS) -o tools lex.yy.o plot.o miniparser.tab.o lex.miniyy.o parser.tab.o expression.o infnorm.o pari_utils.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o main.o -lfl -lmpfi -lpari -lmpfr -lgmp -ldl
+tools: parser.tab.o lex.yy.o plot.o miniparser.tab.o lex.miniyy.o expression.o infnorm.o pari_utils.o remez.o main.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o
+	gcc $(LIB) $(CFLAGS) -o tools lex.yy.o plot.o miniparser.tab.o lex.miniyy.o parser.tab.o expression.o infnorm.o pari_utils.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o main.o -lfl -lmpfi -lpari -lmpfr -lgmp -ldl
 
 parser.tab.o: parser.tab.h parser.tab.c expression.h main.h infnorm.h remez.h chain.h assignment.h taylor.h
 
@@ -20,7 +20,9 @@ parser.tab.h: parser.y expression.h infnorm.h remez.h main.h
 
 plot.o: plot.h plot.c expression.h main.h
 
-expression.o: expression.h expression.c main.h miniparser.tab.h miniparser.tab.c
+library.o: library.h library.c expression.h main.h chain.h 
+
+expression.o: expression.h expression.c main.h miniparser.tab.h miniparser.tab.c library.h
 
 main.o: plot.h expression.h infnorm.h remez.h main.h main.c assignment.h chain.h
 

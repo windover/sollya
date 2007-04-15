@@ -86,6 +86,7 @@ int timecounting = 0;
 chain *timeStack=NULL;
 int fullParentheses=0;
 int midpointMode = 0;
+libraryFunction *tempLibraryFunction = NULL;
 
 extern int yyparse();
 extern void yylex_destroy(void *);
@@ -379,6 +380,7 @@ void signalHandler(int i) {
       avma = ltop;
       pari_close();
       yylex_destroy(scanner);
+      freeLibraries();
       freeCounter();
       exit(0);
     } else {
@@ -545,6 +547,7 @@ int main(int argc, char *argv[]) {
   avma = ltop;
   pari_close();
   yylex_destroy(scanner);
+  freeLibraries();
   freeCounter();
   return 0;
 }

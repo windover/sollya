@@ -261,7 +261,9 @@ AUTOSIMPLIFY    "autosimplify"
 
 TIMING          "timing"
 FULLPARENTHESES "fullparentheses"
-MIDPOINTMODE "midpointmode"
+MIDPOINTMODE    "midpointmode"
+
+LIBRARY         "library"
 
 %%
 
@@ -469,6 +471,7 @@ MIDPOINTMODE "midpointmode"
 {TIMING}                 {     promptToBePrinted = 0; return TIMINGTOKEN; }                    
 {FULLPARENTHESES}        {     promptToBePrinted = 0; return FULLPARENTHESESTOKEN; }                    
 {MIDPOINTMODE}           {     promptToBePrinted = 0; return MIDPOINTMODETOKEN; }                    
+{LIBRARY}                {     promptToBePrinted = 0; return LIBRARYTOKEN; }                    
 
 {READ}          {
                       BEGIN(readstate);

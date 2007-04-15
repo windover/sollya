@@ -219,6 +219,7 @@ void yyerror(char *message) {
 %token  TIMINGTOKEN
 %token  FULLPARENTHESESTOKEN
 %token  MIDPOINTMODETOKEN
+%token  LIBRARYTOKEN
 
 %type <other> commands
 %type <other> command
@@ -796,7 +797,14 @@ restart:     RESTARTTOKEN
 			     taylorrecursions = DEFAULTTAYLORRECURSIONS;
 			     verbosity = 1;
 			     dyadic = 0;
+			     fullParentheses = 0;
+			     midpointMode = 0;
+			     timecounting = 0;
+			     autosimplify = 1;
+			     canonical = 0;
 			     avma = ltop;
+			     freeLibraries();
+			     freeCounter();
 			     printf("System restarted.\n");
 			     $$ = NULL;
 			   }
@@ -925,52 +933,85 @@ taylorrecursions: TAYLORRECURSIONSTOKEN EQUALTOKEN taylorrecursionsvalue
 			   }
 ;
 
-assignment:  lvariable EQUALTOKEN variableWorkAround EXCLAMATIONTOKEN {
+assignment:       lvariable EQUALTOKEN LIBRARYTOKEN LPARTOKEN string RPARTOKEN 
+                           {
+			     if ((variablename != NULL) && (strcmp(variablename,($1)) == 0)) {
+			       printMessage(1,"Warning: the identifier \"%s\" is already bound as the current variable. It cannot be bound to a library function.\n",$1);
+			       printMessage(1,"The last command will have no effect.\n");
+			     } else {
+			       if (containsEntry(symbolTable,($1))) {
+				 printMessage(1,"Warning: the identifier \"%s\" is already assigned. It cannot be bound to a library function.\n",$1);
+				 printMessage(1,"The last command will have no effect.\n");
+			       } else {
+				 printMessage(3,"Information: binding function \"%s\" in library \"%s\" to symbol %s\n",$1,$5,$1);
+				 pushTimeCounter();
+				 tempLibraryFunction = bindFunction($5, $1);
+				 popTimeCounter("binding a library function");
+				 if(tempLibraryFunction == NULL) {
+				   printMessage(1,"Warning: an error occured. The last command will have no effect.\n");
+				 }
+			       }
+			     }
+			     free($1);
+			     free($5);
+			     $$ = NULL;
+                           }
+		| lvariable EQUALTOKEN variableWorkAround EXCLAMATIONTOKEN {
 			     if ((variablename != NULL) && (strcmp(variablename,($1)) == 0)) {
 			       if (containsEntry(symbolTable,($3))) {
 				 printMessage(1,"Warning: the identifier \"%s\" is already assigned. The free variable cannot be named like an assigned identifier.\n",($3));
 				 printMessage(1,"The last command will have no effect.\n");
 			       } else {
-				 printMessage(1,"Warning: the identifier \"%s\" is bound as the current variable. It will be renamed as \"%s\" as forced.\n",($1),($3));
-				 free(variablename);
-				 variablename = (char *) safeCalloc(strlen(($3))+1,sizeof(char));
-				 strcpy(variablename,($3));
+				 if (getFunction($3) != NULL) {
+				   printMessage(1,"Warning: the identifier \"%s\" is already bound to a library function. The free variable cannot be named like a library function.\n",($3));
+				   printMessage(1,"The last command will have no effect.\n");
+				 } else {
+				   printMessage(1,"Warning: the identifier \"%s\" is bound as the current variable. It will be renamed as \"%s\" as forced.\n",($1),($3));
+				   free(variablename);
+				   variablename = (char *) safeCalloc(strlen(($3))+1,sizeof(char));
+				   strcpy(variablename,($3));
+				 }
 			       }
 			     } else {
-			       if (containsEntry(symbolTable,($1))) {
-				 printMessage(2,"Information: the identifier \"%s\" is already assigned. This is a reassignment.\n",($1));
-				 symbolTable = removeEntry(symbolTable, ($1), freeMemoryOnVoid);
-				 if (!containsEntry(symbolTable,$3)) {
-				   if (variablename==NULL) {
-				     variablename = (char *) safeCalloc(strlen($3)+1,sizeof(char));
-				     strcpy(variablename,$3);
-				   }
-				   if (strcmp(variablename,$3)!=0) {
-				     printMessage(1,"Warning: the identifier \"%s\" is neither bound by assignment nor equal to the bound current variable.\n",$3);
-				     printMessage(1,"Will interpret \"%s\" as \"%s\".\n",$3,variablename);
-				   }
-				   temp_node = (node*) safeMalloc(sizeof(node));
-				   temp_node->nodeType = VARIABLE;
-				 } else {
-				   temp_node = getEntry(symbolTable,$3,copyTreeOnVoid);
-				 }
-				 symbolTable = addEntry(symbolTable, ($1), temp_node, copyTreeOnVoid);
+			       if (getFunction($1) != NULL) {
+				   printMessage(1,"Warning: the identifier \"%s\" is already bound to a library function. No assignment can be done to an identifier representing a library function.\n",($1));
+				   printMessage(1,"The last command will have no effect.\n");
 			       } else {
-				 if (!containsEntry(symbolTable,$3)) {
-				   if (variablename==NULL) {
-				     variablename = (char *) safeCalloc(strlen($3)+1,sizeof(char));
-				     strcpy(variablename,$3);
+				 if (containsEntry(symbolTable,($1))) {
+				   printMessage(2,"Information: the identifier \"%s\" is already assigned. This is a reassignment.\n",($1));
+				   symbolTable = removeEntry(symbolTable, ($1), freeMemoryOnVoid);
+				   if (!containsEntry(symbolTable,$3)) {
+				     if (variablename==NULL) {
+				       variablename = (char *) safeCalloc(strlen($3)+1,sizeof(char));
+				       strcpy(variablename,$3);
+				     }
+				     if (strcmp(variablename,$3)!=0) {
+				       printMessage(1,"Warning: the identifier \"%s\" is neither bound by assignment nor equal to the bound current variable.\n",$3);
+				       printMessage(1,"Will interpret \"%s\" as \"%s\".\n",$3,variablename);
+				     }
+				     temp_node = (node*) safeMalloc(sizeof(node));
+				     temp_node->nodeType = VARIABLE;
+				   } else {
+				     temp_node = getEntry(symbolTable,$3,copyTreeOnVoid);
 				   }
-				   if (strcmp(variablename,$3)!=0) {
-				     printMessage(1,"Warning: the identifier \"%s\" is neither bound by assignment nor equal to the bound current variable.\n",$3);
-				     printMessage(1,"Will interpret \"%s\" as \"%s\".\n",$3,variablename);
-				   }
-				   temp_node = (node*) safeMalloc(sizeof(node));
-				   temp_node->nodeType = VARIABLE;
+				   symbolTable = addEntry(symbolTable, ($1), temp_node, copyTreeOnVoid);
 				 } else {
-				   temp_node = getEntry(symbolTable,$3,copyTreeOnVoid);
+				   if (!containsEntry(symbolTable,$3)) {
+				     if (variablename==NULL) {
+				       variablename = (char *) safeCalloc(strlen($3)+1,sizeof(char));
+				       strcpy(variablename,$3);
+				     }
+				     if (strcmp(variablename,$3)!=0) {
+				       printMessage(1,"Warning: the identifier \"%s\" is neither bound by assignment nor equal to the bound current variable.\n",$3);
+				       printMessage(1,"Will interpret \"%s\" as \"%s\".\n",$3,variablename);
+				     }
+				     temp_node = (node*) safeMalloc(sizeof(node));
+				     temp_node->nodeType = VARIABLE;
+				   } else {
+				     temp_node = getEntry(symbolTable,$3,copyTreeOnVoid);
+				   }
+				   symbolTable = addEntry(symbolTable,($1),temp_node,copyTreeOnVoid);
 				 }
-				 symbolTable = addEntry(symbolTable,($1),temp_node,copyTreeOnVoid);
 			       }
 			     }
 			     free(($1));
@@ -979,16 +1020,21 @@ assignment:  lvariable EQUALTOKEN variableWorkAround EXCLAMATIONTOKEN {
                            }
            | lvariable EQUALTOKEN function 
                            {
-			     if ((variablename != NULL) && (strcmp(variablename,($1)) == 0)) {
-			       printMessage(1,"Warning: the identifer \"%s\" is already bound as the current variable. It cannot be assigned.\n",($1));
+			     if (getFunction($1) != NULL) {
+			       printMessage(1,"Warning: the identifier \"%s\" is already bound to a library function. No assignment can be done to an identifier representing a library function.\n",($1));
 			       printMessage(1,"The last command will have no effect.\n");
 			     } else {
-			       if (containsEntry(symbolTable,($1))) {
-				 printMessage(1,"Warning: the identifier \"%s\" is already assigned. This is a reassignment.\n",($1));
-				 symbolTable = removeEntry(symbolTable, ($1), freeMemoryOnVoid);
-				 symbolTable = addEntry(symbolTable, ($1), ($3), copyTreeOnVoid);
+			       if ((variablename != NULL) && (strcmp(variablename,($1)) == 0)) {
+				 printMessage(1,"Warning: the identifer \"%s\" is already bound as the current variable. It cannot be assigned.\n",($1));
+				 printMessage(1,"The last command will have no effect.\n");
 			       } else {
-				 symbolTable = addEntry(symbolTable,($1),($3),copyTreeOnVoid);
+				 if (containsEntry(symbolTable,($1))) {
+				   printMessage(1,"Warning: the identifier \"%s\" is already assigned. This is a reassignment.\n",($1));
+				   symbolTable = removeEntry(symbolTable, ($1), freeMemoryOnVoid);
+				   symbolTable = addEntry(symbolTable, ($1), ($3), copyTreeOnVoid);
+				 } else {
+				   symbolTable = addEntry(symbolTable,($1),($3),copyTreeOnVoid);
+				 }
 			       }
 			     }
 			     free(($1));
@@ -3228,19 +3274,34 @@ variableWorkAround: VARIABLETOKEN
 
 variable: variableWorkAround
                            {
-			     if (!containsEntry(symbolTable,$1)) {
+			     if ((tempLibraryFunction = getFunction($1)) != NULL) {
 			       if (variablename==NULL) {
-				 variablename = (char *) safeCalloc(strlen($1)+1,sizeof(char));
-				 strcpy(variablename,$1);
+				 printMessage(1,"Warning: the current free variable is not bound to an identifier. Dereferencing a library function without an argument requires this binding.\n");
+				 printMessage(1,"Will bind the current free variable to the identifier \"x\".\n");
+				 variablename = (char *) safeCalloc(2,sizeof(char));
+				 variablename[0] = 'x';
 			       }
-			       if (strcmp(variablename,$1)!=0) {
-				 printMessage(1,"Warning: the identifier \"%s\" is neither bound by assignment nor equal to the bound current variable.\n",$1);
-				 printMessage(1,"Will interpret \"%s\" as \"%s\".\n",$1,variablename);
-			       }
-			       temp_node = (node*) safeMalloc(sizeof(node));
-			       temp_node->nodeType = VARIABLE;
+			       temp_node = (node *) safeMalloc(sizeof(node));
+			       temp_node->nodeType = LIBRARYFUNCTION;
+			       temp_node->libFun = tempLibraryFunction;
+			       temp_node->libFunDeriv = 0;
+			       temp_node->child1 = (node *) safeMalloc(sizeof(node));
+			       temp_node->child1->nodeType = VARIABLE;
 			     } else {
-			       temp_node = getEntry(symbolTable,$1,copyTreeOnVoid);
+			       if (!containsEntry(symbolTable,$1)) {
+				 if (variablename==NULL) {
+				   variablename = (char *) safeCalloc(strlen($1)+1,sizeof(char));
+				   strcpy(variablename,$1);
+				 }
+				 if (strcmp(variablename,$1)!=0) {
+				   printMessage(1,"Warning: the identifier \"%s\" is neither bound by assignment nor equal to the bound current variable.\n",$1);
+				   printMessage(1,"Will interpret \"%s\" as \"%s\".\n",$1,variablename);
+				 }
+				 temp_node = (node*) safeMalloc(sizeof(node));
+				 temp_node->nodeType = VARIABLE;
+			       } else {
+				 temp_node = getEntry(symbolTable,$1,copyTreeOnVoid);
+			       }
 			     }
 			     free($1);
 			     $$ = temp_node;
@@ -3253,15 +3314,23 @@ variable: variableWorkAround
 			       printMessage(1,"Will interpret \"%s()\" as the identity function.\n",($1));
 			       temp_node = ($3);
 			     } else {
-			       if (!containsEntry(symbolTable,($1))) {
-				 printMessage(1,"Warning: the identifier \"%s\" is not bound by assignment.\n",($1));
-				 printMessage(1,"Will interpret \"%s()\" as the identity function.\n",($1));
-				 temp_node = ($3);
+			       if ((tempLibraryFunction = getFunction($1)) != NULL) {
+				 temp_node = (node *) safeMalloc(sizeof(node));
+				 temp_node->nodeType = LIBRARYFUNCTION;
+				 temp_node->libFun = tempLibraryFunction;
+				 temp_node->libFunDeriv = 0;
+				 temp_node->child1 = $3;
 			       } else {
-				 temp_node2 = getEntry(symbolTable,($1),copyTreeOnVoid);
-				 temp_node = substitute(temp_node2,($3));
-				 free_memory(temp_node2);
-				 free_memory(($3));
+				 if (!containsEntry(symbolTable,($1))) {
+				   printMessage(1,"Warning: the identifier \"%s\" is not bound by assignment.\n",($1));
+				   printMessage(1,"Will interpret \"%s()\" as the identity function.\n",($1));
+				   temp_node = ($3);
+				 } else {
+				   temp_node2 = getEntry(symbolTable,($1),copyTreeOnVoid);
+				   temp_node = substitute(temp_node2,($3));
+				   free_memory(temp_node2);
+				   free_memory(($3));
+				 }
 			       }
 			     }
 			     free(($1));

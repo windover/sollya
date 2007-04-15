@@ -1380,6 +1380,13 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
+  case LIBRARYFUNCTION:
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    tree->libFun->code(stack3, stack1, tree->libFunDeriv);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
+    break;
   default:
     fprintf(stderr,"Error: evaluateI: unknown identifier in the tree\n");
     exit(1);
@@ -3329,6 +3336,9 @@ chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t pre
     return uncertifiedZeroDenominators(tree->child1,a,b,prec);
     break;
   case DOUBLEEXTENDED:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case LIBRARYFUNCTION:
     return uncertifiedZeroDenominators(tree->child1,a,b,prec);
     break;
   default:

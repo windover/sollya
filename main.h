@@ -6,7 +6,7 @@
 #include "expression.h"
 #include "chain.h"
 #include "fpminimax.h"
-
+#include "library.h"
 
 #define DEFAULTPOINTS 501
 #define DEFAULTPRECISION 165
@@ -81,6 +81,8 @@ extern int autosimplify;
 extern int timecounting;
 extern int fullParentheses;
 extern int midpointMode;
+extern libraryFunction *tempLibraryFunction;
+
 
 void printPrompt(void);
 void recoverFromError(void);

@@ -5,6 +5,7 @@
 #include <mpfr.h>
 #include <stdio.h>
 #include "chain.h"
+#include "library.h"
 
 extern int miniyyparse();
 extern void startBuffer(char *str);
@@ -45,7 +46,7 @@ extern void endBuffer(void);
 #define LOG_1P 32
 #define EXP_M1 33
 #define DOUBLEEXTENDED 34
-
+#define LIBRARYFUNCTION 35
 
 typedef struct nodeStruct node;
 
@@ -55,6 +56,8 @@ struct nodeStruct
   mpfr_t *value;
   node *child1;
   node *child2;
+  libraryFunction *libFun;
+  int libFunDeriv;
 };
 
 typedef struct rangetypeStruct rangetype;
