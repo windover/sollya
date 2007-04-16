@@ -7,7 +7,31 @@
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
 
-#define mat_coeff(i,j,n) (i-1)*n+(j-1)
+#define mat_c(i,j,n) ((i)-1)*(n)+(j)-1
+
+void printMatrix(mpfr_t *M, int n) {
+  int i,j;
+  printf("[");
+  for(i=1;i<=n;i++) {
+    for(j=1;j<=n;j++) {
+      printValue(&M[mat_c(i,j,n)],53); if(j!=n)printf(", ");
+    }
+    if(i!=n) printf(";\n");
+  }
+  printf("]\n");
+  return;
+}
+
+void printChain(chain *c) {
+  chain *curr=c;
+  printf("[");
+  while(curr!=NULL) {
+    printf(" %d ", *(int *)(curr->value));
+    curr=curr->next;
+  }
+  printf("]\n");
+  return;
+}
 
 void system_solve(mpfr_t *res, mpfr_t *M, mpfr_t *b, int n, mp_prec_t prec) {
   chain *i_list=NULL;
@@ -21,7 +45,6 @@ void system_solve(mpfr_t *res, mpfr_t *M, mpfr_t *b, int n, mp_prec_t prec) {
   int *order_j = safeMalloc(n*sizeof(int));
 
   mpfr_init2(max, 53);
-  mpfr_set_inf(max,-1);
   mpfr_init2(lambda, prec);
 
   for(i=1;i<=n;i++) {
@@ -35,8 +58,10 @@ void system_solve(mpfr_t *res, mpfr_t *M, mpfr_t *b, int n, mp_prec_t prec) {
     j_list = addElement(j_list, (void *)var);
   }
 
+
   // Triangulation by Gaussian elimination
   for(k=1;k<=n;k++) {
+    mpfr_set_d(max, 0., GMP_RNDN); //exact
 
     // In this part, we search for the bigger element of the matrix
     curri = i_list;
@@ -45,10 +70,10 @@ void system_solve(mpfr_t *res, mpfr_t *M, mpfr_t *b, int n, mp_prec_t prec) {
       while(currj!=NULL) {
 	i = *(int *)(curri->value);
 	j = *(int *)(currj->value);
-	if(mpfr_cmp_abs(max, M[mat_coeff(i,j,n)])>0) {
+	if(mpfr_cmpabs(M[mat_c(i,j,n)],max)>0) {
 	  i0 = i;
 	  j0 = j;
-	  mpfr_set(max, M[mat_coeff(i,j,n)], GMP_RNDN);
+	  mpfr_set(max, M[mat_c(i,j,n)], GMP_RNDN);
 	}
 	currj = currj->next;
       }
@@ -57,24 +82,26 @@ void system_solve(mpfr_t *res, mpfr_t *M, mpfr_t *b, int n, mp_prec_t prec) {
     
     i_list = removeInt(i_list, i0);
     j_list = removeInt(j_list, j0);
+
     order_i[k-1] = i0;
     order_j[k-1] = j0;
 
     // Here we update the matrix and the second member
     curri = i_list;
     while(curri!=NULL) {
-      mpfr_div(lambda, M[mat_coeff(i,j0,n)], M[mat_coeff(i0,j0,n)], GMP_RNDN);
+      i = *(int *)(curri->value);
+      mpfr_div(lambda, M[mat_c(i,j0,n)], M[mat_c(i0,j0,n)], GMP_RNDN);
       mpfr_neg(lambda, lambda, GMP_RNDN);
+
       currj = j_list;
       while(currj!=NULL) {
-	i = *(int *)(curri->value);
 	j = *(int *)(currj->value);
-	mpfr_fma(M[mat_coeff(i,j,n)], lambda, M[mat_coeff(i0,j,n)], M[mat_coeff(i,j,n)], GMP_RNDN);
+	mpfr_fma(M[mat_c(i,j,n)], lambda, M[mat_c(i0,j,n)], M[mat_c(i,j,n)], GMP_RNDN);
 	currj = currj->next;
       }
 
       mpfr_fma(b[i-1], lambda, b[i0-1], b[i-1], GMP_RNDN);
-      mpfr_set_d(M[mat_coeff(i,j0,n)], 0., GMP_RNDN); // this line is not useful strictly speaking
+      mpfr_set_d(M[mat_c(i,j0,n)], 0., GMP_RNDN); // this line is not useful strictly speaking
       curri = curri->next;
     }
   }
@@ -91,21 +118,22 @@ void system_solve(mpfr_t *res, mpfr_t *M, mpfr_t *b, int n, mp_prec_t prec) {
   for(k=n;k>=1;k--) {
     i0 = order_i[k-1];
     j0 = order_j[k-1];
-    mpfr_div(res[j0-1], b[i0-1], M[mat_coeff(i0,j0,n)], GMP_RNDN);
-
+    mpfr_div(res[j0-1], b[i0-1], M[mat_c(i0,j0,n)], GMP_RNDN);
     i_list = removeInt(i_list, i0);
 
     curri = i_list;
     while(curri!=NULL) {
       i = *(int *)(curri->value);
-      mpfr_neg(M[mat_coeff(i,j0,n)], M[mat_coeff(i,j0,n)], GMP_RNDN);
-      mpfr_fma(b[i-1], M[mat_coeff(i,j0,n)], res[j0-1], b[i-1], GMP_RNDN);
+      mpfr_neg(M[mat_c(i,j0,n)], M[mat_c(i,j0,n)], GMP_RNDN);
+      mpfr_fma(b[i-1], M[mat_c(i,j0,n)], res[j0-1], b[i-1], GMP_RNDN);
       curri=curri->next;
     }
   }
 
   free(order_i);
   free(order_j);
+  freeChain(i_list, freeIntPtr);
+  freeChain(j_list, freeIntPtr);
   mpfr_clear(max);
   mpfr_clear(lambda);
   return;
@@ -721,6 +749,13 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
   mpfr_t *N=safeMalloc((freeDegrees+1)*(freeDegrees+1)*sizeof(mpfr_t));
   mpfr_t *B=safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
   mpfr_t *unknown_vect=safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
+  for(j=1; j <= freeDegrees+1 ; j++) {
+    for(i=1; i<= freeDegrees+1; i++) {
+      mpfr_init2(N[mat_c(i,j,freeDegrees+1)],prec);
+    }
+    mpfr_init2(B[j-1], prec);
+    mpfr_init2(unknown_vect[j-1], prec);
+  }
   /****************************/
 
 
@@ -878,8 +913,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
 	    ((GEN)(M[j]))[i] = (long)(mpfr_to_PARI(var2));
 
 	    /* TESTING PART : new GAUSS */
-	    mpfr_init2(N[mat_coeff(i,j,freeDegrees+1)],prec);
-	    mpfr_set(N[mat_coeff(i,j,freeDegrees+1)],var2,GMP_RNDN);
+	    mpfr_set(N[mat_c(i,j,freeDegrees+1)],var2,GMP_RNDN);
 	    /****************************/
 
 	  }
@@ -899,6 +933,10 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
 	  if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
 	  ((GEN)(M[j]))[i] = (long)(mpfr_to_PARI(var1));
 
+	  /* TESTING PART : new GAUSS */
+	  mpfr_set(N[mat_c(i,j,freeDegrees+1)],var2,GMP_RNDN);
+	  /****************************/
+
 	  free_memory(temp_tree);
 	}
       }
@@ -906,6 +944,10 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
 
     for (i=1 ; i <= freeDegrees+1 ; i++) {
       temp[i] = (long)stoi((i % 2)*2-1);  // temp = [1, -1, 1, -1 ... ]~
+
+      /* TESTING PART : new GAUSS */
+      mpfr_set_si(N[mat_c(i, freeDegrees+1, freeDegrees+1)], (i % 2)*2-1,GMP_RNDN);
+      /****************************/
     }
     M[freeDegrees+1] = lcopy(temp);
 
@@ -925,8 +967,6 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
       temp[i] = (long)(mpfr_to_PARI(var1));
 
       /* TESTING PART : new GAUSS */
-      mpfr_init2(B[i-1],prec);
-      mpfr_init2(unknown_vect[i-1],prec);
       mpfr_set(B[i-1],var1,GMP_RNDN);
       /****************************/
 
@@ -934,13 +974,16 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
 
     if(verbosity>=3) printf("Resolving the system...\n");
 
+    /* TESTING PART : new GAUSS */
+    pushTimeCounter();
+    system_solve(unknown_vect, N, B, freeDegrees+1, prec);
+    popTimeCounter("Gauss resolution with the new algorithm");
+    // for(j=1;j<=freeDegrees+1;j++) printMpfr(unknown_vect[j-1]);
+    /****************************/
+
     pushTimeCounter();
     temp = gauss(M,temp);
     popTimeCounter("Gauss resolution with PARI");
-
-    /* TESTING PART : new GAUSS */
-    //system_solve(unknown_vect, M, B, freeDegrees+1, prec);
-    /****************************/
 
     poly = constructPolynomial(temp, monomials, prec);
 
@@ -995,6 +1038,20 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
       free_memory(w_diff2);
       mpfr_clear(computedQuality);
       mpfr_clear(infiniteNorm);
+
+      /* TESTING PART : new GAUSS */
+      for(j=1; j <= freeDegrees+1 ; j++) {
+	for(i=1; i<= freeDegrees+1; i++) {
+	  mpfr_clear(N[mat_c(i,j,freeDegrees+1)]);
+	}
+	mpfr_clear(B[j-1]);
+	mpfr_clear(unknown_vect[j-1]);
+      }
+      free(N);
+      free(B);
+      free(unknown_vect);
+      /****************************/
+
       avma=ltop;
       recoverFromError();
     }
@@ -1040,6 +1097,19 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t
   free_memory(f_diff2);
   free_memory(w_diff);
   free_memory(w_diff2);
+
+  /* TESTING PART : new GAUSS */
+  for(j=1; j <= freeDegrees+1 ; j++) {
+    for(i=1; i<= freeDegrees+1; i++) {
+      mpfr_clear(N[mat_c(i,j,freeDegrees+1)]);
+    }
+    mpfr_clear(B[j-1]);
+    mpfr_clear(unknown_vect[j-1]);
+  }
+  free(N);
+  free(B);
+  free(unknown_vect);
+  /****************************/
 
   avma=ltop;
   if (mpfr_cmp(computedQuality, quality)>0) {

@@ -29,29 +29,6 @@ chain *addElement(chain *c, void *elem) {
   return newChain;
 }
 
-// Removes the first occurence of n in a chain containing int values
-// The chain c is modified.
-// If n is not the first element of the chain, the returned pointer
-// points at the same place as chain
-chain *removeInt(chain *c, int n) {
-  chain *curr;
-  int i;
-
-  curr = c;
-  i = *(int *)(curr->value);
-  if(i==n) {
-    curr=c->next;
-    free(curr->value);
-    free(c);
-    return curr;
-  }
-  else {
-    curr = removeInt(c->next, n);
-    c->next=curr;
-    return c;
-  }
-}
-
 void *first(chain *c) {
   return c->value;
 }
@@ -87,6 +64,55 @@ chain* concatChains(chain *c1, chain *c2) {
 
   return c1;
 }
+
+
+// Removes the first occurence of n in a chain containing int values
+// The chain c is modified.
+// If n is not the first element of the chain, the returned pointer
+// points at the same place as chain
+chain *removeInt(chain *c, int n) {
+  chain *curr;
+  int i;
+
+  if(c==NULL) return c;
+  //else
+
+  curr = c;
+  i = *(int *)(curr->value);
+  if(i==n) {
+    curr=c->next;
+    free(c->value);
+    free(c);
+    return curr;
+  }
+  else {
+    curr = removeInt(c->next, n);
+    c->next=curr;
+    return c;
+  }
+}
+
+/*chain *removeInt(chain *c, int n) {
+  chain *curr;
+  chain *temp;
+  int i;
+  int *var;
+
+  temp = NULL;
+  curr = c;
+  while(curr!=NULL) {
+    i = *(int *)(curr->value);
+    if(i!=n) {
+      var = safeMalloc(sizeof(int));
+      *var = i;
+      newChain = addElement(newChain, (void *)var);
+    }
+    temp=curr;
+    curr=curr->next;
+  }
+  return newChain;
+  }*/
+
 
 void freeIntPtr(void *ptr) {
   if (ptr == NULL) return;
