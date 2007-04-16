@@ -69,7 +69,7 @@ chain* concatChains(chain *c1, chain *c2) {
 // Removes the first occurence of n in a chain containing int values
 // The chain c is modified.
 // If n is not the first element of the chain, the returned pointer
-// points at the same place as chain
+// points at the same place as c
 chain *removeInt(chain *c, int n) {
   chain *curr;
   int i;
@@ -91,27 +91,6 @@ chain *removeInt(chain *c, int n) {
     return c;
   }
 }
-
-/*chain *removeInt(chain *c, int n) {
-  chain *curr;
-  chain *temp;
-  int i;
-  int *var;
-
-  temp = NULL;
-  curr = c;
-  while(curr!=NULL) {
-    i = *(int *)(curr->value);
-    if(i!=n) {
-      var = safeMalloc(sizeof(int));
-      *var = i;
-      newChain = addElement(newChain, (void *)var);
-    }
-    temp=curr;
-    curr=curr->next;
-  }
-  return newChain;
-  }*/
 
 
 void freeIntPtr(void *ptr) {
@@ -188,4 +167,15 @@ int cmpMpfrPtr(void *a, void *b) {
   int res;
   res = -mpfr_cmp(*((mpfr_t *) a), *((mpfr_t *) b));
   return res; 
+}
+
+void printIntChain(chain *c) {
+  chain *curr=c;
+  printf("[");
+  while(curr!=NULL) {
+    printf(" %d ", *(int *)(curr->value));
+    curr=curr->next;
+  }
+  printf("]\n");
+  return;
 }

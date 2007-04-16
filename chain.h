@@ -24,5 +24,6 @@ int lengthChain(chain *c);
 void sortChain(chain *c,  int (*f) (void *, void *));
 int cmpIntPtr(void *a, void *b);
 int cmpMpfrPtr(void *a, void *b);
+void printIntChain(chain *c);
 
 #endif /* ifdef CHAIN_H*/
