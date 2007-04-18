@@ -27,7 +27,7 @@ libraryHandle *getLibraryHandle(char *libraryName) {
   }
 
   dlerror(); 
-  dlfcnHandle = dlopen(libraryName, RTLD_GLOBAL | RTLD_LAZY);
+  dlfcnHandle = dlopen(libraryName, RTLD_LOCAL | RTLD_NOW);
   if (dlfcnHandle == NULL) 
     return NULL;
 
