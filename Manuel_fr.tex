@@ -176,10 +176,10 @@ ou bien sous forme binaire comme par exemple $1.1011\_2$.
     \item \com{roundcoefficients(expr, liste)} : si \com{expr} est un polynôme, renvoie le polynôme dont les coefficients ont été arrondis suivant les indications de \com{liste}. \com{liste} est une liste contenant les mots clés \com{D}, \com{double}, \com{DD}, \com{doubledouble}, \com{DE}, \com{doubleextended}, \com{TD}, \com{tripledouble}. Le premier mot clé correspond au monôme de degré 0, le suivant au monôme de degré 1, etc. On peut utiliser une ellipse à la fin de la liste pour signifier que tous les monômes à partir d'un certain rang doivent être arrondis au même format (exemple \com{[DD, DD, D,...]} arrondit les coefficients de degré 0 et 1 au double-double le plus proche, puis tous les autres en double). Si \com{expr} n'est pas un polynôme, un warning est affiché et la valeur renvoyée est \com{expr}.
     \item \com{rationalapprox(const, n)} : renvoie un arbre de la forme $a/b$, où $a$ et $b$ sont des entiers et qui approche \com{const} avec une précision de l'ordre de n bits. Le procédé utilise un développement en fraction continue de façon à ce que la fraction offre le plus petit dénominateur possible. 
     \item \com{fpminimax()} : à venir.
-    \item Il est possible de lier des fonctions implémentés en \com{MPFI} à
-      l'exterieur d'\com{arenaireplot} à des symboles de
-      fonction. Dans la suite, il est possible d'utiliser ces
-      fonctions comme les fonctions prédéfinies comme \com{exp} ou
+    \item Il est possible de lier des fonctions implémentées à
+      l'exterieur d'\com{arenaireplot} en \com{MPFI} à des symboles de
+      fonction d'\come{arenaireplot}. Ensuite, il est possible d'utiliser ces
+      fonctions comme les fonctions prédéfinies comme par exemple \com{exp} ou
       \com{sin}. Pour cela, il est necessaire de disposer d'une
       bibliothèque dynamique qui déclare une fonction du type {\tt int
       name(mpfi\_t rop, mpfi\_t op, int n)}. La commande \com{name =
