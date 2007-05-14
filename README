@@ -3,8 +3,8 @@ ARENAIREPLOT:
 In order to compile the software you will need the following packages installed:
 
 - gcc
-- bison
-- flex
+- bison version 2.3 or later
+- flex version 2.5.33 or later
 - gnuplot
 - mpfr
 - mpfi
