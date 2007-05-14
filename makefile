@@ -87,5 +87,5 @@ clean:
 	rm -rf miniparser.tab.c
 	rm -rf lex.miniyy.c
 	rm -rf tools
-	rm -rf Manuel_fr.log Manuel_fr.aux Manuel_fr.dvi Manuel_fr.out Manuel_fr.toc Manuel_fr.pdf 
+	rm -rf Manuel_fr.log Manuel_fr.aux Manuel_fr.dvi Manuel_fr.out Manuel_fr.toc Manuel_fr.pdf Manuel_fr.ps
 
