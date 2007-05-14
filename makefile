@@ -69,6 +69,7 @@ lex.miniyy.o: lex.miniyy.c expression.h main.h
 
 doc: Manuel_fr.tex
 	latex Manuel_fr.tex
+	latex Manuel_fr.tex
 	dvips Manuel_fr.dvi -o Manuel_fr.ps
 
 pdf: Manuel_fr.tex
