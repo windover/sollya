@@ -785,10 +785,12 @@ restart:     RESTARTTOKEN
                            {
 			     freeSymbolTable(symbolTable,freeMemoryOnVoid);
 			     freeSymbolTable(symbolTable2,freeRangetypePtr);
+			     freeSymbolTable(symbolTable3,freeStringPtr);
 			     if(currentVariable != NULL) free(currentVariable);
 			     if(variablename != NULL) free(variablename);
 			     symbolTable = NULL;
 			     symbolTable2 = NULL;
+			     symbolTable3 = NULL;
 			     currentVariable = NULL;
 			     variablename = NULL;
 			     defaultprecision = DEFAULTPRECISION;
