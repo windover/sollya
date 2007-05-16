@@ -310,6 +310,7 @@ void yyerror(char *message) {
 %type <rangeval> guessDegree
 %type <constantval> searchGal
 %type <aString> directString
+%type <aString> directString2
 %type <other> autoprintelem
 
 %%
@@ -3365,8 +3366,20 @@ string:     directString   {
 	                   }
 ;
 
+directString:  directString2 {
+	                     $$ = $1;
+                            }
+             | directString2 PLUSTOKEN directString {
+	                     temp_string = safeCalloc(strlen($1)+strlen($3)+1,sizeof(char));
+			     sprintf(temp_string,"%s%s",$1,$3);
+			     free($1);
+			     free($3);
+			     $$ = temp_string;
+                           }
+;
 
-directString: STRINGTOKEN
+
+directString2: STRINGTOKEN
                            {
 			     temp_string = (char *) safeCalloc(strlen(currentString)+1,sizeof(char));
 			     demaskString(temp_string,currentString);
