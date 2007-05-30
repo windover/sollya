@@ -963,8 +963,15 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	    mpfi_get_left(bl,denominatorInZI);
 	    mpfi_get_right(br,denominatorInZI);
 	    
-	    if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
+	    if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br) && 
+		(simplifiesB != (hopitalrecursions + 1))) {
+	      printMessage(1,"Warning: the given result could be improved using Hopital's rule if a particular theorem could be proven.\n");
+	    }
+
+	    if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br) && 
+		(simplifiesB == (hopitalrecursions + 1))) {
 	      /* Hopital's rule can be applied */
+
 	      printMessage(12,"Information: Differentiating while evaluating for Hopital's rule.\n");
 	      derivNumerator = differentiate(tree->child1);
 	      
@@ -975,7 +982,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	      
 	      freeChain(leftExcludes,freeMpfiPtr);
 	      freeChain(rightExcludes,freeMpfiPtr);
-
+	      
 	      if (internalTheo != NULL) {
 		leftTheoLinear = (exprBoundTheo *) safeCalloc(1,sizeof(exprBoundTheo));
 		nullifyExprBoundTheo(leftTheoLinear); 
@@ -999,27 +1006,27 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	      } else {
 		leftTheoLinear = NULL;
 	      }
-
+	      
 	      printMessage(8,"Information: using Hopital's rule (general case) on denominator zero.\n");
 	      if (verbosity >= 12) {
 		printf("Hopital's rule is used on function\n");
 		printTree(tree);
-		printf("\n");
+		printf(" in point ");
+		printMpfr(z);
 	      }
-
+	      
 	      if (verbosity >= 15) {
 		printf("The simplified function is\n");
 		printTree(tempNode);
 		printf("\n");
 	      }
-
+	      
 	      excludes = evaluateI(stack3, tempNode, x, prec, simplifiesA, simplifiesB-1, leftTheoLinear);
-
+	      
 	      if (internalTheo != NULL) mpfi_set(*(internalTheo->boundLeftLinear),stack3);
 	      
 	      free_memory(tempNode);
 	    } else {
-	    
 	      if (internalTheo != NULL) {
 		freeExprBoundTheo(leftTheoConstant);
 		freeExprBoundTheo(rightTheoConstant);
@@ -1052,10 +1059,15 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		mpfi_get_right(ar,numeratorInZI);
 		mpfi_get_left(bl,denominatorInZI);
 		mpfi_get_right(br,denominatorInZI);
+
+		if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br) && 
+		    (simplifiesB != (hopitalrecursions + 1))) {
+		  printMessage(1,"Warning: the given result could be improved using Hopital's rule if a particular theorem could be proven.\n");
+		}
 		
-		if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
-		  /* Hopital's rule can be applied */
-		  
+		if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br) && 
+		    (simplifiesB == (hopitalrecursions + 1))) {
+
 		  tempNode = (node *) safeMalloc(sizeof(node));
 		  tempNode->nodeType = DIV;
 		  tempNode->child1 = derivNumerator;
@@ -1092,7 +1104,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		  if (verbosity >= 12) {
 		    printf("Hopital's rule is used on function\n");
 		    printTree(tree);
-		    printf("\n");
+		    printf(" in point ");
+		    printMpfr(z);
 		  }
 
 		  if (verbosity >= 15) {
@@ -1464,7 +1477,7 @@ chain* evaluateITaylorOnDiv(mpfi_t result, node *func, mpfi_t x, mp_prec_t prec,
 	freeExprBoundTheo(numeratorTheo);
 	freeExprBoundTheo(denominatorTheo);
       }
-      excludes = evaluateI(result, func, x, prec, 0, 2, theo);
+      excludes = evaluateI(result, func, x, prec, 0, hopitalrecursions+1, theo);
     }
     
     mpfi_clear(resultNumerator);
@@ -1474,7 +1487,7 @@ chain* evaluateITaylorOnDiv(mpfi_t result, node *func, mpfi_t x, mp_prec_t prec,
     free_memory(derivDenominator);
     return excludes;
   } else {
-    return evaluateI(result, func, x, prec, 0, 2, theo);
+    return evaluateI(result, func, x, prec, 0, hopitalrecursions+1, theo);
   }
 }
 
@@ -1499,7 +1512,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
       printMessage(9,"Warning: no Taylor evaluation is possible because no derivative has been given.\n");
     
 
-    excludes = evaluateI(result, func, x, prec, 1, 2, theo);
+    excludes = evaluateI(result, func, x, prec, 1, hopitalrecursions+1, theo);
 
     mpfr_clear(leftX);
     mpfr_clear(rightX);
@@ -1571,14 +1584,14 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
 	printMessage(1,"as great that it contains more than %d nodes.\n",DIFFSIZE);
 	printMessage(1,"Will now stop recursive Taylor evaluation on this expression.\n");
 	printMessage(2,"Information: the size of the derivative is %d, we had %d recursion(s) left.\n",size,recurse-1);
-	taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, 2, linearTheo);
+	taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, hopitalrecursions+1, linearTheo);
     } else {
       taylorExcludesLinear = evaluateITaylor(linearTerm, deriv, nextderiv, x, prec, recurse - 1, linearTheo);
     }
     
     free_memory(nextderiv);
   } else {
-    taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, 2, linearTheo);
+    taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, hopitalrecursions+1, linearTheo);
   }
 
   if (!mpfi_has_zero(linearTerm)) {
@@ -1592,8 +1605,8 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
     mpfi_set_fr(xZI,leftX);
     mpfi_set_fr(xZI2,rightX);
 
-    directExcludes = evaluateI(resultDirect, func, xZI, prec, 0, 2, directTheo);
-    taylorExcludesConstant = evaluateI(constantTerm, func, xZI2, prec, 1, 2, constantTheo);
+    directExcludes = evaluateI(resultDirect, func, xZI, prec, 0, hopitalrecursions+1, directTheo);
+    taylorExcludesConstant = evaluateI(constantTerm, func, xZI2, prec, 1, hopitalrecursions+1, constantTheo);
 
     mpfi_union(result,resultDirect,constantTerm);
     
@@ -1624,7 +1637,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
 
   } else {
 
-    taylorExcludesConstant = evaluateI(constantTerm, func, xZI, prec, 1, 2, constantTheo);
+    taylorExcludesConstant = evaluateI(constantTerm, func, xZI, prec, 1, hopitalrecursions+1, constantTheo);
     
     mpfi_sub(temp, x, xZI);
     mpfi_mul(temp2, temp, linearTerm);
@@ -1634,7 +1647,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
     if (deriv != NULL) 
       directExcludes = evaluateITaylorOnDiv(resultDirect, func, x, prec, recurse, directTheo);
     else 
-      directExcludes = evaluateI(resultDirect, func, x, prec, 0, 2, directTheo);
+      directExcludes = evaluateI(resultDirect, func, x, prec, 0, hopitalrecursions+1, directTheo);
 
     if (verbosity >= 12) {
       printf("Information: Taylor evaluation: domain:\n");

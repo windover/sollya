@@ -265,6 +265,8 @@ MIDPOINTMODE    "midpointmode"
 
 LIBRARY         "library"
 
+HOPITALRECURSIONS "hopitalrecursions"
+
 %%
 
 %{
@@ -472,6 +474,7 @@ LIBRARY         "library"
 {FULLPARENTHESES}        {     promptToBePrinted = 0; return FULLPARENTHESESTOKEN; }                    
 {MIDPOINTMODE}           {     promptToBePrinted = 0; return MIDPOINTMODETOKEN; }                    
 {LIBRARY}                {     promptToBePrinted = 0; return LIBRARYTOKEN; }                    
+{HOPITALRECURSIONS}      {     promptToBePrinted = 0; return HOPITALRECURSIONSTOKEN; }                    
 
 {READ}          {
                       BEGIN(readstate);

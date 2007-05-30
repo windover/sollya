@@ -175,6 +175,7 @@ void yyerror(char *message) {
 %token	BOUNDEDTOKEN     
 %token	BYTOKEN          
 %token  TAYLORRECURSIONSTOKEN
+%token  HOPITALRECURSIONSTOKEN
 %token  PRINTHEXATOKEN
 %token  PRINTBINARYTOKEN
 %token  ROUNDCOEFFICIENTSTOKEN
@@ -264,6 +265,7 @@ void yyerror(char *message) {
 %type <aChain> degreelist
 %type <verbval> verbosity
 %type <anInteger> taylorrecursionsvalue
+%type <anInteger> hopitalrecursionsvalue
 %type <other> verbosityset
 %type <other> worstcase
 %type <rangeval> commandfunction
@@ -279,6 +281,7 @@ void yyerror(char *message) {
 %type <anInteger> variableformat
 %type <anInteger> checkinfnorm
 %type <other> taylorrecursions
+%type <other> hopitalrecursions
 %type <other> printHexa
 %type <other> printBinary
 %type <tree> roundcoefficients
@@ -566,6 +569,15 @@ command:     plot
 			     printf("The number of recursions for the Taylor evaluation is set to %d.\n",taylorrecursions);	                     
 	                     $$ = NULL;
 	                   }
+           | hopitalrecursions SEMICOLONTOKEN {
+	                     $$ = NULL;
+	                   }
+           | HOPITALRECURSIONSTOKEN EQUALTOKEN QUESTIONMARKTOKEN SEMICOLONTOKEN {
+			     printf("The number of recursions for Hopital's rule is set to %d.\n",hopitalrecursions);	  
+			     if (hopitalrecursions != 0) 
+			       printMessage(1,"Warning: allowing recursion on Hopital's rule means assuming a particular theorem.\n");
+	                     $$ = NULL;
+	                   }
            | verbosityset SEMICOLONTOKEN {
 	                     $$ = NULL;
 	                   }
@@ -798,6 +810,7 @@ restart:     RESTARTTOKEN
 			     defaultpoints = DEFAULTPOINTS;
 			     tools_precision = DEFAULTPRECISION;
 			     taylorrecursions = DEFAULTTAYLORRECURSIONS;
+			     hopitalrecursions = DEFAULTHOPITALRECURSIONS;
 			     verbosity = 1;
 			     dyadic = 0;
 			     fullParentheses = 0;
@@ -830,6 +843,7 @@ testpari:     TESTPARITOKEN
 			     defaultpoints = DEFAULTPOINTS;
 			     tools_precision = DEFAULTPRECISION;
 			     taylorrecursions = DEFAULTTAYLORRECURSIONS;
+			     hopitalrecursions = DEFAULTHOPITALRECURSIONS;
 			     verbosity = 1;
 			     dyadic = 0;
 			     avma = ltop;
@@ -935,6 +949,25 @@ taylorrecursions: TAYLORRECURSIONSTOKEN EQUALTOKEN taylorrecursionsvalue
 			     $$ = NULL;
 			   }
 ;
+
+hopitalrecursions: HOPITALRECURSIONSTOKEN EQUALTOKEN hopitalrecursionsvalue
+                           {
+			     printf("The number of recursions for Hopital's rule is set to %d.\n",($3));
+			     hopitalrecursions = ($3);
+			     if (hopitalrecursions != 0) 
+			       printMessage(1,"Warning: allowing recursion on Hopital's rule means assuming a particular theorem.\n");
+			     $$ = NULL;
+			   }
+                | HOPITALRECURSIONSTOKEN EQUALTOKEN hopitalrecursionsvalue EXCLAMATIONTOKEN
+                           {
+			     hopitalrecursions = ($3);
+			     if (hopitalrecursions != 0) 
+			       printMessage(2,"Informational warning: allowing recursion on Hopital's rule means assuming a particular theorem.\n");
+			     $$ = NULL;
+			   }
+;
+
+
 
 assignment:       lvariable EQUALTOKEN LIBRARYTOKEN LPARTOKEN string RPARTOKEN 
                            {
@@ -2495,6 +2528,23 @@ taylorrecursionsvalue:  CONSTTOKEN
 			     $$ = int_temp;                           
                            }
 ;
+
+hopitalrecursionsvalue:  CONSTTOKEN
+                           {
+			     int_temp = (int) strtol($1,endptr,10);
+                             if (**endptr != '\0') {
+			       printMessage(1,"Warning: the number of recursions for Hopital's rule must be an integer. Will set the value to 0.\n");
+			       int_temp = 0;
+			     }
+			     if (int_temp < 0) {
+			       printMessage(1,"Warning: the number of recursions for Hopital's rule must be positive or zero. Will set the value to 0.\n");
+			       int_temp = 0;
+			     }
+			     $$ = int_temp;                           
+                           }
+;
+
+
 
 function:                       fun
                            {

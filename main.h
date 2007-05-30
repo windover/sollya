@@ -13,6 +13,7 @@
 #define DEFAULTDIAM 1e-4
 #define DEFAULTDIAM2 2e-3
 #define DEFAULTTAYLORRECURSIONS 0
+#define DEFAULTHOPITALRECURSIONS 0
 #define MAXHORNERTREESIZE 5000
 #define MAXAUTOSIMPLSIZE 5500
 #define CHEAPSIMPLIFYSIZE 4000
@@ -82,6 +83,7 @@ extern int timecounting;
 extern int fullParentheses;
 extern int midpointMode;
 extern libraryFunction *tempLibraryFunction;
+extern int hopitalrecursions;
 
 
 void printPrompt(void);

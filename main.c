@@ -87,6 +87,7 @@ chain *timeStack=NULL;
 int fullParentheses=0;
 int midpointMode = 0;
 libraryFunction *tempLibraryFunction = NULL;
+int hopitalrecursions = DEFAULTHOPITALRECURSIONS;
 
 extern int yyparse();
 extern void yylex_destroy(void *);
