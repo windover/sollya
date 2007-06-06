@@ -6905,6 +6905,7 @@ int isHorner(node *tree) {
 
 node* horner(node *tree) {
   node *temp, *temp2, *temp3;
+  int i;
 
   if (isHorner(tree)) {
     printMessage(2,"Information: no Horner simplification will be performed because the given tree is already in Horner form.\n");
@@ -6912,11 +6913,18 @@ node* horner(node *tree) {
   }
 
   temp3 = simplifyTreeErrorfree(tree);
-  temp = hornerUnsimplified(temp3);
-  temp2 = simplifyTreeErrorfree(temp);
-  free_memory(temp);
-  free_memory(temp3);
-  return temp2;
+
+  i = 0;
+  do {
+    temp = hornerUnsimplified(temp3);
+    temp2 = simplifyTreeErrorfree(temp);
+    free_memory(temp);
+    free_memory(temp3);
+    temp3 = temp2;
+    i++;
+  } while ((!isHorner(temp3)) && (i < 5));
+
+  return temp3;
 }
 
 

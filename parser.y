@@ -221,6 +221,7 @@ void yyerror(char *message) {
 %token  FULLPARENTHESESTOKEN
 %token  MIDPOINTMODETOKEN
 %token  LIBRARYTOKEN
+%token  HELPTOKEN 
 
 %type <other> commands
 %type <other> command
@@ -315,6 +316,7 @@ void yyerror(char *message) {
 %type <aString> directString
 %type <aString> directString2
 %type <other> autoprintelem
+%type <other> help
 
 %%
 
@@ -335,7 +337,10 @@ commands:    QUITTOKEN SEMICOLONTOKEN
                            }
 ;
 
-command:     plot
+command:     HELPTOKEN help SEMICOLONTOKEN {
+	                     $$ = NULL;
+                           }
+	   | plot
                            {
 			     $$ = NULL;
 			   }
@@ -574,8 +579,6 @@ command:     plot
 	                   }
            | HOPITALRECURSIONSTOKEN EQUALTOKEN QUESTIONMARKTOKEN SEMICOLONTOKEN {
 			     printf("The number of recursions for Hopital's rule is set to %d.\n",hopitalrecursions);	  
-			     if (hopitalrecursions != 0) 
-			       printMessage(1,"Warning: allowing recursion on Hopital's rule means assuming a particular theorem.\n");
 	                     $$ = NULL;
 	                   }
            | verbosityset SEMICOLONTOKEN {
@@ -954,15 +957,11 @@ hopitalrecursions: HOPITALRECURSIONSTOKEN EQUALTOKEN hopitalrecursionsvalue
                            {
 			     printf("The number of recursions for Hopital's rule is set to %d.\n",($3));
 			     hopitalrecursions = ($3);
-			     if (hopitalrecursions != 0) 
-			       printMessage(1,"Warning: allowing recursion on Hopital's rule means assuming a particular theorem.\n");
 			     $$ = NULL;
 			   }
                 | HOPITALRECURSIONSTOKEN EQUALTOKEN hopitalrecursionsvalue EXCLAMATIONTOKEN
                            {
 			     hopitalrecursions = ($3);
-			     if (hopitalrecursions != 0) 
-			       printMessage(2,"Informational warning: allowing recursion on Hopital's rule means assuming a particular theorem.\n");
 			     $$ = NULL;
 			   }
 ;
@@ -4393,3 +4392,784 @@ guessDegree:              GUESSDEGREETOKEN function INTOKEN range WITHTOKEN EPSI
 			  $$ = range_temp;
                         }
 ;
+
+help: 
+   CONSTTOKEN {
+  printf("\"%s\" is recognized as a base 10 constant.\n",$1);
+  $$ = NULL;
+}
+|  DYADICCONSTTOKEN {
+  printf("\"%s\" is recognized as a dyadic constant.\n",$1);
+  $$ = NULL;
+}
+|  BINARYCONSTTOKEN {
+  printf("\"%s\" is recognized as a base 2 constant.\n",$1);
+  $$ = NULL;
+}
+|  HEXCONSTTOKEN {
+  printf("\"%s\" is recognized as hexadecimal integer corresponding to a double precision number.\n",$1);
+  $$ = NULL;
+}
+|  INTOKEN {
+  printf("Keyword \"in\" is used for indicating the range for the free variable in the given expression.\n");
+  $$ = NULL;
+}
+|  LBRACKETTOKEN {
+  printf("The opening bracket keyword \"[\" is used in indicating ranges.\n");
+  $$ = NULL;
+}
+|  RBRACKETTOKEN {
+  printf("The closing bracket keyword \"]\" is used in indicating ranges.\n");
+  $$ = NULL;
+}
+|  PITOKEN {
+  printf("Keyword \"pi\" stands for the floating point number in the given precision nearest to the circle constant.\n");
+  $$ = NULL;
+}
+|  ETOKEN {
+  printf("Keyword \"e\" stands for the floating point number in the given precision nearest to Euler's constant.\n");
+  $$ = NULL;
+}
+|  VARIABLETOKEN {
+  printf("\"%s\" stands for identifies of different types.\n",currentVariable);
+  $$ = NULL;
+}
+|  LPARTOKEN {
+  printf("Opening parenthesis\n");
+  $$ = NULL;
+}        
+|  RPARTOKEN {
+  printf("Closing parenthesis\n");
+  $$ = NULL;
+}        
+|  PLUSTOKEN {
+  printf("Addition\n");
+  $$ = NULL;
+}        
+|  MINUSTOKEN {
+  printf("Substraction\n");
+  $$ = NULL;
+}       
+|  MULTOKEN {
+  printf("Multiplication\n");
+  $$ = NULL;
+}             
+|  DIVTOKEN {
+  printf("Division\n");
+  $$ = NULL;
+}         
+|  POWTOKEN {
+  printf("Exponentiation\n");
+  $$ = NULL;
+}         
+|  SQRTTOKEN {
+  printf("Square root\n");
+  $$ = NULL;
+}        
+|  EXPTOKEN {
+  printf("Exponential function\n");
+  $$ = NULL;
+}         
+|  LOGTOKEN {
+  printf("Logarithm function in the natural base\n");
+  $$ = NULL;
+}         
+|  LOG2TOKEN {
+  printf("Logarithm function in base 2\n");
+  $$ = NULL;
+}        
+|  LOG10TOKEN {
+  printf("Logarithm function in base 10\n");
+  $$ = NULL;
+}       
+|  SINTOKEN {
+  printf("Sine function\n");
+  $$ = NULL;
+}             
+|  COSTOKEN {
+  printf("Cosine function\n");
+  $$ = NULL;
+}         
+|  TANTOKEN {
+  printf("Tangent function\n");
+  $$ = NULL;
+}         
+|  ASINTOKEN {
+  printf("Arcsine function\n");
+  $$ = NULL;
+}        
+|  ACOSTOKEN {
+  printf("Arccosine function\n");
+  $$ = NULL;
+}        
+|  ATANTOKEN {
+  printf("Arctangent function\n");
+  $$ = NULL;
+}        
+|  SINHTOKEN {
+  printf("Hyperbolic sine function\n");
+  $$ = NULL;
+}        
+|  COSHTOKEN {
+  printf("Hyperbolic cosine function\n");
+  $$ = NULL;
+}        
+|  TANHTOKEN {
+  printf("Hyperbolic tangent function\n");
+  $$ = NULL;
+}        
+|  ASINHTOKEN {
+  printf("Hyperbolic arcsine function\n");
+  $$ = NULL;
+}       
+|  ACOSHTOKEN {
+  printf("Hyperbolic arccosine function\n");
+  $$ = NULL;
+}       
+|  ATANHTOKEN {
+  printf("Hyperbolic arctangent function\n");
+  $$ = NULL;
+}       
+|  ABSTOKEN {
+  printf("Absolute value\n");
+  $$ = NULL;
+}         
+|  ERFTOKEN {
+  printf("Error function, i.e. normalized integral on e^(-t^2) \n");
+  $$ = NULL;
+}         
+|  ERFCTOKEN {
+  printf("Complementary error function, i.e. 1 - erf\n");
+  $$ = NULL;
+}         
+|  LOG1PTOKEN {
+  printf("log - 1\n");
+  $$ = NULL;
+}         
+|  EXPM1TOKEN {
+  printf("exp - 1");
+  $$ = NULL;
+}         
+|  COLONTOKEN {
+  printf("Keyword \":\" no longer used but reserved for further use.");
+  $$ = NULL;
+}       
+|  EQUALTOKEN {
+  printf("Keyword \"=\" is used as a (pseudo-)assignment operator.");
+  $$ = NULL;
+}       
+|  COMMATOKEN {
+  printf("Keyword \",\" is used as a separator in lists and ranges.\n");
+  $$ = NULL;
+}       
+|  PRECTOKEN {
+  printf("Keyword \"prec\" is used for fixing and checking the current precision\n");
+  printf("Examples: prec = 100; prec = 120!; prec = ?;\n");
+  $$ = NULL;
+}        
+|  POINTSTOKEN {
+  printf("Keyword \"points\" is used for specifiying non-default values for the number of sampling points.\n");
+  $$ = NULL;
+}      		
+|  SEMICOLONTOKEN {
+  printf("Keyword \";\" is used as a command separator and for specifying ranges.\n");
+  $$ = NULL;
+}   
+|  QUITTOKEN {
+  printf("Keyword \"quit\" is used for quitting the tool.\nExample: quit;\n");
+  $$ = NULL;
+}
+|  PRINTTOKEN {
+  printf("Keyword \"print\" is used for unsimplified printing of expressions, strings and ranges.\n");
+  $$ = NULL;
+}
+|  DIFFTOKEN {
+  printf("Differentiation operator\nExample diff(exp(sin(x))) is equal to exp(sin(x)) * cos(x)");
+  $$ = NULL;
+}
+|  SIMPLIFYTOKEN {
+  printf("Simplification operator\n");
+  $$ = NULL;
+}
+|  CANONICALTOKEN {
+  printf("Keyword \"canonical\" is used for activating and desactivating canonical polynomial autoprint output.\n");
+  printf("Example: canonical = on; canonical = off; canonical = ?;\n");
+  $$ = NULL;
+}
+|  PLOTTOKEN {
+  printf("Plot command\nExample: plot exp(x) in [-1;1];\n");
+  $$ = NULL;
+}
+|  INFNORMTOKEN {
+  printf("Infinite norm command\nExample: infnorm exp(x)-x in [-1;1];");
+  $$ = NULL;
+}
+|  REMEZTOKEN {
+  printf("Remez operator\n");
+  $$ = NULL;
+}
+|  DIAMTOKEN {
+  printf("Keyword \"diam\" is used for specifying a non-default diameter in a interval boxing process\n");
+  $$ = NULL;
+}
+|  DOUBLETOKEN {
+  printf("Double precision rounding function or keyword for specifying its usage.\n");
+  $$ = NULL;
+}
+|  DOUBLEDOUBLETOKEN {
+  printf("Double-double precision rounding function or keyword for specifying its usage.\n");
+  $$ = NULL;
+}
+|  TRIPLEDOUBLETOKEN {
+  printf("Triple-double precision rounding function or keyword for specifying its usage.\n");
+  $$ = NULL;
+}
+|  DOUBLEEXTENDEDTOKEN {
+  printf("Double-extended precision rounding function\n");
+  $$ = NULL;
+}
+|  HORNERTOKEN {
+  printf("Horner operator for bringing an expression in Horner's form\n");
+  $$ = NULL;
+}
+|  DEGREETOKEN {
+  printf("Operator for computing the degree of a polynomial\n");
+  $$ = NULL;
+}
+|  EXPANDTOKEN {
+  printf("Expansion operator for expanding an expression\n");
+  $$ = NULL;
+}
+|  SIMPLIFYSAFETOKEN {
+  printf("Error-free simplification operator\n");
+  $$ = NULL;
+}
+|  TAYLORTOKEN {
+  printf("Taylor development operator\n");
+  $$ = NULL;
+}
+|  FINDZEROSTOKEN {
+  printf("Command for boxing the zeros on an expression in a given domain\n");
+  $$ = NULL;
+}
+|  DIRTYINFNORMTOKEN {
+  printf("Uncertified infinite norm command\n");
+  $$ = NULL;
+}
+|  EVALUATETOKEN {
+  printf("Interval evaluation command\n");
+  $$ = NULL;
+}
+|  ATTOKEN {
+  printf("Keyword \"at\" is used in evaluation commands.\n");
+  $$ = NULL;
+}
+|  NUMERATORTOKEN {
+  printf("Numerator operator giving the numerator of a fractional expression\n");
+  $$ = NULL;
+}
+|  DENOMINATORTOKEN {
+  printf("Denominator operator giving the denominator of a fractional expression\n");
+  $$ = NULL;
+}
+|  WITHOUTTOKEN {
+  printf("Keyword \"without\" is used for the infinite norm command\n");
+  $$ = NULL;
+}
+|  DYADICTOKEN {
+  printf("Keyword \"dyadic\" is used for activating and checking normal, simplified dyadic, dyadic and binary notation output.\n");
+  $$ = NULL;
+}
+|  ONTOKEN {
+  printf("Keyword \"on\" is used for activating a functionality.\n");
+  $$ = NULL;
+}
+|  OFFTOKEN {
+  printf("Keyword \"off\" is used for deactivating a functionality.\n");
+  $$ = NULL;
+}
+|  POWERSTOKEN {
+  printf("Keyword \"powers\" is used for activating dyadic notation output.\n");
+  $$ = NULL;
+}
+|  BINARYTOKEN {
+  printf("Keyword \"binary\" is used for activating binary notation output.\n");
+  $$ = NULL;
+}
+|  INTEGRALTOKEN {
+  printf("Interval integration command\n");
+  $$ = NULL;
+}
+|  DIRTYINTEGRALTOKEN {
+  printf("Uncertified integration command\n");
+  $$ = NULL;
+}
+|  STRINGTOKEN {
+  printf("\"\"%s\"\" stands for the character sequence \"%s\".\n",currentString,currentString);
+  $$ = NULL;
+}
+|  PROOFTOKEN {
+  printf("Keyword \"proof\" is used for activating proof generation.\n");
+  $$ = NULL;
+}
+|  VERBOSITYTOKEN {
+  printf("Keyword \"verbosity\" is used for setting a verbosity level.\n");
+  $$ = NULL;
+}
+|  WORSTCASETOKEN {
+  printf("Worstcase search command\n");
+  $$ = NULL;
+}
+|  WITHTOKEN {
+  printf("Keyword \"with\" is used in the worstcase, accurateinfnorm, searchgal, implementpoly, externalplot and guessdegree functionalities.\n");
+  $$ = NULL;
+}
+|  INPUTPRECTOKEN {
+  printf("Keyword \"inputprec\" is used in the worstcase command.\n");
+  $$ = NULL;
+}
+|  OUTPUTPRECTOKEN {
+  printf("Keyword \"outputprec\" is used in the worstcase command.\n");
+  $$ = NULL;
+}
+|  INPUTEXPOTOKEN {
+  printf("Keyword \"inputexpo\" is used in the worstcase command.\n");
+  $$ = NULL;
+}
+|  EPSILONTOKEN {
+  printf("Keyword \"epsilon\" is used for specifying relative error bounds.\n");
+  $$ = NULL;
+}
+|  OUTPUTTOKEN {
+  printf("Keyword \"output\" is used in the worstcase command.\n");
+  $$ = NULL;
+}
+|  LEFTANGLETOKEN {
+  printf("Special keyword \"<\" is used for using a command as an operator.\n");
+  $$ = NULL;
+}
+|  RIGHTANGLEUNDERSCORETOKEN {
+  printf("Special keyword \">_\" is used for using a command as an operator and taking the lower endpoint of the returned interval.\n");
+  $$ = NULL;
+}
+|  RIGHTANGLEDOTTOKEN {
+  printf("Special keyword \">.\" is used for using a command as an operator and taking the midpoint of the returned interval.\n");
+  $$ = NULL;
+}
+|  RIGHTANGLETOKEN {
+  printf("Special keyword \">\" is used for using a command as an operator\n");
+  $$ = NULL;
+}
+|  SUBSTITUTETOKEN {
+  printf("Substitute operator substituting the free variable in an expression by another expression\n");
+  $$ = NULL;
+}
+|  FPMINIMAXTOKEN {
+  printf("Minimax command giving polynomials on floating-point coefficients\n");
+  $$ = NULL;
+}
+|  MITOKEN {
+  printf("Keyword \"mi\" is used in the fpminimax command\n");
+  $$ = NULL;
+}        
+|  TITOKEN {
+  printf("Keyword \"ti\" is used in the fpminimax command\n");
+  $$ = NULL;
+}        
+|  ABSOLUTETOKEN {
+  printf("Keyword \"absolute\" is used for indicating that an absolute error shall be considered.\n");
+  $$ = NULL;
+}
+|  RELATIVETOKEN {
+  printf("Keyword \"relative\" is used for indicating that an absolute error shall be considered.\n");
+  $$ = NULL;
+}  
+|  WEIGHTTOKEN {
+  printf("Keyword \"weight\" is used in pseudo-assignments for indicating a weight function.\n");
+  $$ = NULL;
+}    
+|  EQUITOKEN {
+  printf("Keyword \"equi\" is used in the fpminimax command.\n");
+  $$ = NULL;
+}      
+|  CHEBTOKEN {
+  printf("Keyword \"cheb\" is used in the fpminimax command.\n");
+  $$ = NULL;
+}      
+|  DOTSTOKEN {
+  printf("Keyword \"...\" is used for indicating elliptic ranges of integer values or rounding functions.\n");
+  $$ = NULL;
+}      
+|  IMPLEMENTPOLYTOKEN {
+  printf("Command for implementing polynomials.\n");
+  $$ = NULL;
+}      
+|  NAMETOKEN {
+  printf("Keyword \"name\" is used for specifying names in outputs of commands.\n");
+  $$ = NULL;
+}
+|  VARIABLEMETATOKEN {
+  printf("Keyword \"variable\" is used for representing variables in outputs of commands.\n");
+  $$ = NULL;
+}      
+|  ASTOKEN {
+  printf("Keyword \"as\" is used for specifying types in outputs of commands.\n");
+  $$ = NULL;
+}
+|  CHECKINFNORMTOKEN {
+  printf("Command for checking whether a value is an upper bound for the infinite norm of an expression in a range\n");
+  $$ = NULL;
+}
+|  BOUNDEDTOKEN {
+  printf("Keyword \"bounded\" is used in the checkinfnorm command.\n");
+  $$ = NULL;
+}     
+|  BYTOKEN {
+  printf("Keyword \"by\" is used in the checkinfnorm command.\n");
+  $$ = NULL;
+}          
+|  TAYLORRECURSIONSTOKEN {
+  printf("Keyword \"taylorrecursions\" is used for setting and checking the level of recursion in interval Taylor.\n");
+  $$ = NULL;
+}
+|  HOPITALRECURSIONSTOKEN {
+  printf("Keyword \"hopitalrecursions\" is used for setting and checking the level of recursion for use of Hopital's rule.\n");
+  $$ = NULL;
+}
+|  PRINTHEXATOKEN {
+  printf("Command for printing a double precision number as a hexadecimal integer\n");
+  $$ = NULL;
+}
+|  PRINTBINARYTOKEN {
+  printf("Command for printing a value in binary notation\n");
+  $$ = NULL;
+}
+|  ROUNDCOEFFICIENTSTOKEN {
+  printf("Operator rounding all coefficients of a polynomial to a precision using an indicated rounding function\n");
+  $$ = NULL;
+}
+|  HONORCOEFFPRECTOKEN {
+  printf("Keyword \"honorcoeffprec\" is used in the implementpoly command\n");
+  $$ = NULL;
+}
+|  RESTARTTOKEN {
+  printf("Keyword \"restart\" is used for restarting the tool.\n");
+  $$ = NULL;
+}
+|  TESTPARITOKEN {
+  printf("Keyword \"testpari\" is used for testing the interface to PARI/GP and restarting the tool.\n");
+  $$ = NULL;
+}
+|  FPFINDZEROSTOKEN {
+  printf("Command for searching floating-point approximations for the zeros of an expression in a range\n");
+  $$ = NULL;
+}
+|  ZERODENOMINATORSTOKEN {
+  printf("Command for searching floating-point approximations for zeros of any denominator in an expression in a range\n");
+  $$ = NULL;
+}
+|  ISEVALUABLETOKEN {
+  printf("Command for checking whether an expression can be evaluated by the tool in a given point\n");
+  $$ = NULL;
+}
+|  EVALUATEACCURATETOKEN {
+  printf("Faithful rounded floating-point evaluation command\n");
+  $$ = NULL;
+}                   
+|  EXCLAMATIONTOKEN {
+  printf("Keyword \"!\" is used for suppressing the output of the tool in a setting command.\n");
+  $$ = NULL;
+}
+|  ACCURATEINFNORMTOKEN {
+  printf("Command for computing a faithful rounded floating-point approximation to the infinite norm of an expression\n");
+  $$ = NULL;
+}
+|  BITSTOKEN {
+  printf("Keyword \"bits\" is used for specifying the number of bits to be considered in a command.\n");
+  $$ = NULL;
+}
+|  FILETOKEN {
+  printf("Keyword \"file\" is used for specifying a filename for the output of a command.\n");
+  $$ = NULL;
+}
+|  POSTSCRIPTTOKEN {
+  printf("Keyword \"postscript\" is used for specifying Postscript output in a plot command.\n");
+  $$ = NULL;
+}
+|  PDFTOKEN {
+  printf("Keyword \"pdf\" is used for specifying PDF output in a plot command.\n");
+  $$ = NULL;
+}     
+|  POSTSCRIPTFILETOKEN {
+  printf("Keyword \"postscriptfile\" is used for specifying Postscript output in a plot command and suppressing file removal.\n");
+  $$ = NULL;
+}
+|  PDFFILETOKEN {
+  printf("Keyword \"pdffile\" is used for specifying PDF output in a plot command and suppressing file removal.\n");
+  $$ = NULL;
+}       
+|  PRINTEXPANSIONTOKEN {
+  printf("Command for printing a polynomial with coefficients displayed as an expansion of double precision numbers\n");
+  $$ = NULL;
+}
+|  BASHEXECUTETOKEN {
+  printf("Command for executing a given string as command in a bash\n");
+  $$ = NULL;
+}
+|  EXTERNALPLOTTOKEN {
+  printf("Command for plotting the (relative) difference of a function w.r.t. an external floating-point procedure\n");
+  $$ = NULL;
+}
+|  PERTURBTOKEN {
+  printf("Keyword \"perturb\" is used for activating pseudo-random perturbations around sampling points.\n");
+  $$ = NULL;
+}
+|  TOTOKEN {
+  printf("Keyword \"to\" is used in the externalplot command.\n");
+  $$ = NULL;
+}
+|  COEFFTOKEN {
+  printf("Operator for extracting the i-th coefficient of a polynomial\n");
+  $$ = NULL;
+}
+|  SUBPOLYTOKEN {
+  printf("Operator for extracting a polynomial with the given monomials out of a polynomial");
+  $$ = NULL;
+}
+|  QUESTIONMARKTOKEN {
+  printf("Keyword \"?\" is used for checking set environment variables.\n");
+  $$ = NULL;
+}
+|  SEARCHGALTOKEN {
+  printf("Command for searching values for Gal's accurate tables\n");
+  $$ = NULL;
+}
+|  STEPSTOKEN {
+  printf("Keyword \"steps\" is used in the searchgal command.\n");
+  $$ = NULL;
+}
+|  RATIONALAPPROXTOKEN {
+  printf("Operator for computing a fraction approximating a value better than a specified relative error.\n");
+  $$ = NULL;
+}
+|  FALSEQUITTOKEN {
+  printf("This functionality is internally used for recovering on errors or Ctrl-C.\n");
+  $$ = NULL;
+}
+|  WRITETOKEN {
+  printf("Command for writing expressions, strings and ranges into files or to standard output.\n");
+  $$ = NULL;
+}
+|  ASCIIPLOTTOKEN {
+  printf("Command for plotting an expression in a range using a ASCII-Art output.\n");
+  $$ = NULL;
+}
+|  DOLLARTOKEN {
+  printf("Keyword \"$\" is used for specifying that an identifier represents a character sequence.\n");
+  $$ = NULL;
+}
+|  ROUNDTOFORMATTOKEN {
+  printf("Operator for rounding a constant into a given format\n");
+  $$ = NULL;
+}
+|  MINUSWORDTOKEN {
+  printf("Keyword \"M\" is used in the round operator for specifying rounding towards minus infinity.\n");
+  $$ = NULL;
+}               	
+|  PLUSWORDTOKEN {
+  printf("Keyword \"P\" is used in the round operator for specifying rounding towards plus infinity.\n");
+  $$ = NULL;
+}
+|  ZEROWORDTOKEN {
+  printf("Keyword \"Z\" is used in the round operator for specifying rounding towards zero.\n");
+  $$ = NULL;
+}                    	
+|  NEARESTTOKEN {
+  printf("Keyword \"N\" is used in the round operator for specifying rounding to nearest.\n");
+  $$ = NULL;
+}
+|  GUESSDEGREETOKEN {
+  printf("Command for guessing the degree of a Remez approximation polynomial to get under a specified error bound\n");
+  $$ = NULL;
+}
+|  PARSETOKEN {
+  printf("Operator for parsing a simple expression given as a character sequence.\n");
+  $$ = NULL;
+}
+|  AUTOSIMPLIFYTOKEN {
+  printf("Keyword \"autosimplify\" is used for activating and deactivating automatic simplification of expressions.\n");
+  $$ = NULL;
+}
+|  TIMINGTOKEN {
+  printf("Keyword \"timing\" is used for activating and deactivating the timing of the execution of functionalities.\n");
+  $$ = NULL;
+}
+|  FULLPARENTHESESTOKEN {
+  printf("Keyword \"fullparentheses\" is used for activating and deactivating the full parenthesing of expressions on output.\n");
+  $$ = NULL;
+}
+|  MIDPOINTMODETOKEN {
+  printf("Keyword \"midpointmode\" is used for activating and deactivating midpoint mode output on decimal range output.\n");
+  $$ = NULL;
+}
+|  LIBRARYTOKEN {
+  printf("Keyword \"library\" is used for binding a function implemented in a external library to a function symbol.\n");
+  $$ = NULL;
+}
+|  HELPTOKEN {
+  printf("Keyword \"help\" is used for getting help on a keyword of the grammar of the tool.\n");
+  printf("The keywords of the tool are:\n");
+
+  printf(" -   ^\n");         
+  printf(" -   <\n");
+  printf(" -   =\n");       
+  printf(" -   >_\n");
+  printf(" -   >.\n");
+  printf(" -   >\n");
+  printf(" -   -\n");       
+  printf(" -   ,\n");       
+  printf(" -   ;\n");   
+  printf(" -   :\n");       
+  printf(" -   !\n");
+  printf(" -   ?\n");
+  printf(" -   /\n");         
+  printf(" -   ...\n");      
+  printf(" -   (\n");        
+  printf(" -   )\n");        
+  printf(" -   [\n");
+  printf(" -   ]\n");
+  printf(" -   $\n");
+  printf(" -   *\n");             
+  printf(" -   +\n");        
+  printf(" -   abs\n");         
+  printf(" -   absolute\n");
+  printf(" -   accurateinfnorm\n");
+  printf(" -   acos\n");        
+  printf(" -   acosh\n");       
+  printf(" -   as\n");
+  printf(" -   asciiplot\n");
+  printf(" -   asin\n");     
+  printf(" -   asinh\n");       
+  printf(" -   atan\n");           
+  printf(" -   atanh\n");       
+  printf(" -   at\n");
+  printf(" -   autosimplify\n");
+  printf(" -   bashexecute\n");
+  printf(" -   binary\n");
+  printf(" -   bits\n");
+  printf(" -   bounded\n");     
+  printf(" -   by\n");          
+  printf(" -   canonical\n");
+  printf(" -   cheb\n");      
+  printf(" -   checkinfnorm\n");
+  printf(" -   coeff\n");
+  printf(" -   cos\n");   
+  printf(" -   cosh\n");              
+  printf(" -   degree\n");
+  printf(" -   denominator\n");
+  printf(" -   diam\n");
+  printf(" -   diff\n");
+  printf(" -   dirtyinfnorm\n");
+  printf(" -   dirtyintegral\n");
+  printf(" -   double\n");
+  printf(" -   doubledouble\n");
+  printf(" -   doubleextended\n");
+  printf(" -   dyadic\n");
+  printf(" -   e\n");
+  printf(" -   epsilon\n");
+  printf(" -   equi\n");      
+  printf(" -   erf\n");         
+  printf(" -   erfc\n");         
+  printf(" -   evaluate\n");
+  printf(" -   evaluateaccurate\n");                   
+  printf(" -   expand\n");
+  printf(" -   exp\n");         
+  printf(" -   expm1\n");         
+  printf(" -   externalplot\n");
+  printf(" -   file\n");
+  printf(" -   findzeros\n");
+  printf(" -   fpfindzeros\n");
+  printf(" -   fpminimax\n");
+  printf(" -   fullparentheses\n");
+  printf(" -   guessdegree\n");
+  printf(" -   help\n"); 
+  printf(" -   honorcoeffprec\n");
+  printf(" -   hopitalrecursions\n");
+  printf(" -   horner\n");
+  printf(" -   implementpoly\n");      
+  printf(" -   in\n");
+  printf(" -   infnorm\n");
+  printf(" -   inputexpo\n");
+  printf(" -   inputprec\n");
+  printf(" -   integral\n");
+  printf(" -   isevaluable\n");
+  printf(" -   library\n");
+  printf(" -   log\n");       
+  printf(" -   log10\n");       
+  printf(" -   log1p\n");         
+  printf(" -   log2\n");        
+  printf(" -   M\n");     
+  printf(" -   midpointmode\n");
+  printf(" -   mi\n");        
+  printf(" -   N\n");            	
+  printf(" -   name\n");
+  printf(" -   numerator\n");
+  printf(" -   off\n");
+  printf(" -   on\n");
+  printf(" -   output\n");
+  printf(" -   outputprec\n");
+  printf(" -   P\n");
+  printf(" -   parse\n");
+  printf(" -   pdf\n");  
+  printf(" -   pdffile\n");          
+  printf(" -   perturb\n");
+  printf(" -   pi\n");
+  printf(" -   plot\n");
+  printf(" -   points\n");      	
+  printf(" -   postscript\n");	
+  printf(" -   postscriptfile\n");
+  printf(" -   powers\n");
+  printf(" -   prec\n");     
+  printf(" -   print\n");   
+  printf(" -   printbinary\n");
+  printf(" -   printexpansion\n");
+  printf(" -   printhexa\n");
+  printf(" -   proof\n");
+  printf(" -   quit\n");
+  printf(" -   rationalapprox\n");
+  printf(" -   relative\n");  
+  printf(" -   remez\n");
+  printf(" -   restart\n");
+  printf(" -   round\n");
+  printf(" -   roundcoefficients\n");
+  printf(" -   searchgal\n");
+  printf(" -   simplify\n");
+  printf(" -   simplifysafe\n");
+  printf(" -   sin\n");       
+  printf(" -   sinh\n");              
+  printf(" -   sqrt\n");        
+  printf(" -   steps\n");
+  printf(" -   string\n");
+  printf(" -   subpoly\n");
+  printf(" -   substitute\n");       
+  printf(" -   tan\n");       
+  printf(" -   tanh\n");   
+  printf(" -   taylor\n");
+  printf(" -   taylorrecursions\n");
+  printf(" -   timing\n");
+  printf(" -   ti\n");        
+  printf(" -   to\n");
+  printf(" -   tripledouble\n");
+  printf(" -   variable\n");      
+  printf(" -   verbosity\n");
+  printf(" -   weight\n");    
+  printf(" -   with\n");
+  printf(" -   without\n");
+  printf(" -   worstcase\n");
+  printf(" -   write\n");
+  printf(" -   Z\n");    
+  printf(" -   zerodenominators\n");                	
+  $$ = NULL;
+} 
+;
+

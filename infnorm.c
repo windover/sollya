@@ -431,13 +431,14 @@ void makeMpfiAroundMpfr(mpfi_t res, mpfr_t x, unsigned int thousandUlps) {
 
 
 
-chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simplifiesA, int simplifiesB, exprBoundTheo *theo) {
+chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simplifiesA, int simplifiesB, mpfr_t *hopitalPoint, exprBoundTheo *theo) {
   mpfi_t stack1, stack2;
   mpfi_t stack3, zI, numeratorInZI, denominatorInZI, newExcludeTemp, xMXZ, temp1, temp2, tempA, tempB;
   mpfi_t *newExclude;
   mpfi_t leftConstantTerm, rightConstantTerm;
   mpfi_t leftLinearTerm, rightLinearTerm;
   mpfr_t al, ar, bl, br, xl, xr, z, z2;
+  mpfr_t *newHopitalPoint;
   node *derivNumerator, *derivDenominator, *tempNode;
   node *derivLeft, *derivRight;
   chain *leftExcludes, *rightExcludes, *excludes, *t1, *t2;
@@ -522,8 +523,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     excludes = NULL;
     break;
   case ADD:
-    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
-    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifiesA, simplifiesB, rightTheo);
+    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
+    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifiesA, simplifiesB, NULL, rightTheo);
     mpfi_add(stack3, stack1, stack2);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
@@ -567,16 +568,16 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       mpfi_mid(z,x);
       mpfi_set_fr(zI,z);
 
-      leftExcludesConstant = evaluateI(leftConstantTerm, tree->child1, zI, prec, simplifiesA-1, simplifiesB, leftTheoConstant);
-      rightExcludesConstant = evaluateI(rightConstantTerm, tree->child2, zI, prec, simplifiesA-1, simplifiesB, rightTheoConstant);
+      leftExcludesConstant = evaluateI(leftConstantTerm, tree->child1, zI, prec, simplifiesA-1, simplifiesB, NULL, leftTheoConstant);
+      rightExcludesConstant = evaluateI(rightConstantTerm, tree->child2, zI, prec, simplifiesA-1, simplifiesB, NULL, rightTheoConstant);
 
       printMessage(12,"Information: Differentiating while evaluating for decorrelation.\n");
 
       derivLeft = differentiate(tree->child1);
       derivRight = differentiate(tree->child2);
 
-      leftExcludesLinear = evaluateI(leftLinearTerm, derivLeft, x, prec, simplifiesA-1, simplifiesB, leftTheoLinear);
-      rightExcludesLinear = evaluateI(rightLinearTerm, derivRight, x, prec, simplifiesA-1, simplifiesB, rightTheoLinear);
+      leftExcludesLinear = evaluateI(leftLinearTerm, derivLeft, x, prec, simplifiesA-1, simplifiesB, NULL, leftTheoLinear);
+      rightExcludesLinear = evaluateI(rightLinearTerm, derivRight, x, prec, simplifiesA-1, simplifiesB, NULL, rightTheoLinear);
 
       mpfi_add(tempA,leftConstantTerm,rightConstantTerm);
       mpfi_add(tempB,leftLinearTerm,rightLinearTerm);
@@ -671,8 +672,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     }
     break;
   case SUB:
-    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
-    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifiesA, simplifiesB, rightTheo);
+    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
+    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifiesA, simplifiesB, NULL, rightTheo);
     mpfi_sub(stack3, stack1, stack2);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
@@ -717,16 +718,16 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       mpfi_mid(z,x);
       mpfi_set_fr(zI,z);
 
-      leftExcludesConstant = evaluateI(leftConstantTerm, tree->child1, zI, prec, simplifiesA-1, simplifiesB, leftTheoConstant);
-      rightExcludesConstant = evaluateI(rightConstantTerm, tree->child2, zI, prec, simplifiesA-1, simplifiesB, rightTheoConstant);
+      leftExcludesConstant = evaluateI(leftConstantTerm, tree->child1, zI, prec, simplifiesA-1, simplifiesB, NULL, leftTheoConstant);
+      rightExcludesConstant = evaluateI(rightConstantTerm, tree->child2, zI, prec, simplifiesA-1, simplifiesB, NULL, rightTheoConstant);
 
       printMessage(12,"Information: Differentiating while evaluating for decorrelation.\n");
 
       derivLeft = differentiate(tree->child1);
       derivRight = differentiate(tree->child2);
 
-      leftExcludesLinear = evaluateI(leftLinearTerm, derivLeft, x, prec, simplifiesA-1, simplifiesB, leftTheoLinear);
-      rightExcludesLinear = evaluateI(rightLinearTerm, derivRight, x, prec, simplifiesA-1, simplifiesB, rightTheoLinear);
+      leftExcludesLinear = evaluateI(leftLinearTerm, derivLeft, x, prec, simplifiesA-1, simplifiesB, NULL, leftTheoLinear);
+      rightExcludesLinear = evaluateI(rightLinearTerm, derivRight, x, prec, simplifiesA-1, simplifiesB, NULL, rightTheoLinear);
 
       mpfi_sub(tempA,leftConstantTerm,rightConstantTerm);
       mpfi_sub(tempB,leftLinearTerm,rightLinearTerm);
@@ -820,8 +821,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     }
     break;
   case MUL:
-    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
-    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifiesA, simplifiesB, rightTheo);
+    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
+    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifiesA, simplifiesB, NULL, rightTheo);
     mpfi_mul(stack3, stack1, stack2);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
@@ -830,8 +831,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     excludes = concatChains(leftExcludes,rightExcludes);
     break;
   case DIV:
-    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
-    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifiesA, simplifiesB, rightTheo);
+    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
+    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifiesA, simplifiesB, NULL, rightTheo);
 
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
@@ -892,8 +893,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	  rightTheoLinear = NULL;
 	}
 
-	leftExcludes = evaluateI(stack1, derivNumerator, x, prec, simplifiesA, simplifiesB-1, leftTheoLinear);
-	rightExcludes = evaluateI(stack2, derivDenominator, x, prec, simplifiesA, simplifiesB-1, rightTheoLinear);
+	leftExcludes = evaluateI(stack1, derivNumerator, x, prec, simplifiesA, simplifiesB-1, NULL, leftTheoLinear);
+	rightExcludes = evaluateI(stack2, derivDenominator, x, prec, simplifiesA, simplifiesB-1, NULL, rightTheoLinear);
 	
 	free_memory(derivNumerator);
 	free_memory(derivDenominator);
@@ -931,12 +932,19 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	mpfi_get_right(xr,x);
 
 	if (mpfr_cmp(xl,xr) != 0) {
-	  mpfr_init2(z,prec);
 	  
 	  printMessage(12,"Information: Differentiating while evaluating for Hopital's rule.\n");
 	  derivDenominator = differentiate(tree->child2);
 	  
-	  newtonMPFR(z,tree->child2,derivDenominator,xl,xr,prec);
+	  if (simplifiesB == (hopitalrecursions + 1)) {
+	    mpfr_init2(z,prec);
+	    newtonMPFR(z,tree->child2,derivDenominator,xl,xr,prec);
+	    newHopitalPoint = &z;
+	  } else {
+	    mpfr_init2(z,mpfr_get_prec(*hopitalPoint));
+	    mpfr_set(z,*hopitalPoint,GMP_RNDN);
+	    newHopitalPoint = hopitalPoint;
+	  }
 	  
 	  if (mpfr_number_p(z)) {
 	    mpfi_init2(zI,prec);
@@ -952,8 +960,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	      rightTheoConstant = NULL;
 	    }
 
-	    t1 = evaluateI(numeratorInZI, tree->child1, zI, prec, simplifiesA, simplifiesB-1, leftTheoConstant);
-	    t2 = evaluateI(denominatorInZI, tree->child2, zI, prec, simplifiesA, simplifiesB-1, rightTheoConstant);
+	    t1 = evaluateI(numeratorInZI, tree->child1, zI, prec, simplifiesA, simplifiesB-1, NULL, leftTheoConstant);
+	    t2 = evaluateI(denominatorInZI, tree->child2, zI, prec, simplifiesA, simplifiesB-1, NULL, rightTheoConstant);
 	  
 	    freeChain(t1,freeMpfiPtr);
 	    freeChain(t2,freeMpfiPtr);
@@ -963,13 +971,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	    mpfi_get_left(bl,denominatorInZI);
 	    mpfi_get_right(br,denominatorInZI);
 	    
-	    if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br) && 
-		(simplifiesB != (hopitalrecursions + 1))) {
-	      printMessage(1,"Warning: the given result could be improved using Hopital's rule if a particular theorem could be proven.\n");
-	    }
-
-	    if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br) && 
-		(simplifiesB == (hopitalrecursions + 1))) {
+	    if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
 	      /* Hopital's rule can be applied */
 
 	      printMessage(12,"Information: Differentiating while evaluating for Hopital's rule.\n");
@@ -1006,22 +1008,32 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	      } else {
 		leftTheoLinear = NULL;
 	      }
-	      
-	      printMessage(8,"Information: using Hopital's rule (general case) on denominator zero.\n");
-	      if (verbosity >= 12) {
-		printf("Hopital's rule is used on function\n");
-		printTree(tree);
-		printf(" in point ");
-		printMpfr(z);
+
+	      if (simplifiesB == (hopitalrecursions + 1)) {
+		printMessage(8,"Information: using Hopital's rule (general case) on denominator zero.\n");
+		if (verbosity >= 10) {
+		  printf("Hopital's rule is used on function\n");
+		  printTree(tree);
+		  printf(" in point ");
+		  printMpfr(z);
+		}
 	      }
-	      
+
+	      if (simplifiesB != (hopitalrecursions + 1)) {
+		printMessage(8,"Information: recursion on use of Hopital's rule\n");
+		if (verbosity >= 10) {
+		  printf("Reused Hopital's rule point is ");
+		  printMpfr(*hopitalPoint);
+		}
+	      }
+
 	      if (verbosity >= 15) {
-		printf("The simplified function is\n");
+		printf("Information in Hopital: The simplified function is\n");
 		printTree(tempNode);
 		printf("\n");
 	      }
 	      
-	      excludes = evaluateI(stack3, tempNode, x, prec, simplifiesA, simplifiesB-1, leftTheoLinear);
+	      excludes = evaluateI(stack3, tempNode, x, prec, simplifiesA, simplifiesB-1, newHopitalPoint, leftTheoLinear);
 	      
 	      if (internalTheo != NULL) mpfi_set(*(internalTheo->boundLeftLinear),stack3);
 	      
@@ -1032,11 +1044,18 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		freeExprBoundTheo(rightTheoConstant);
 	      }
   
-	      mpfr_init2(z2,prec);
 	      printMessage(12,"Information: Differentiating while evaluating for Hopital's rule.\n");
 	      derivNumerator = differentiate(tree->child1);
 
-	      newtonMPFR(z2,tree->child1,derivNumerator,xl,xr,prec);
+	      if (simplifiesB == (hopitalrecursions + 1)) {
+		mpfr_init2(z2,prec);
+		newtonMPFR(z2,tree->child1,derivNumerator,xl,xr,prec);
+		newHopitalPoint = &z2;
+	      } else {
+		mpfr_init2(z2,mpfr_get_prec(*hopitalPoint));
+		mpfr_set(z2,*hopitalPoint,GMP_RNDN);
+		newHopitalPoint = hopitalPoint;
+	      }
 
 	      if (mpfr_number_p(z2)) {
 		mpfi_set_fr(zI,z2);
@@ -1049,8 +1068,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		  rightTheoConstant = NULL;
 		}
 	    
-		t1 = evaluateI(numeratorInZI, tree->child1, zI, prec, simplifiesA, simplifiesB-1, leftTheoConstant);
-		t2 = evaluateI(denominatorInZI, tree->child2, zI, prec, simplifiesA, simplifiesB-1, rightTheoConstant);
+		t1 = evaluateI(numeratorInZI, tree->child1, zI, prec, simplifiesA, simplifiesB-1, NULL, leftTheoConstant);
+		t2 = evaluateI(denominatorInZI, tree->child2, zI, prec, simplifiesA, simplifiesB-1, NULL, rightTheoConstant);
 
 		freeChain(t1,freeMpfiPtr);
 		freeChain(t2,freeMpfiPtr);
@@ -1059,14 +1078,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		mpfi_get_right(ar,numeratorInZI);
 		mpfi_get_left(bl,denominatorInZI);
 		mpfi_get_right(br,denominatorInZI);
-
-		if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br) && 
-		    (simplifiesB != (hopitalrecursions + 1))) {
-		  printMessage(1,"Warning: the given result could be improved using Hopital's rule if a particular theorem could be proven.\n");
-		}
 		
-		if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br) && 
-		    (simplifiesB == (hopitalrecursions + 1))) {
+		if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
 
 		  tempNode = (node *) safeMalloc(sizeof(node));
 		  tempNode->nodeType = DIV;
@@ -1100,22 +1113,32 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		    leftTheoLinear = NULL;
 		  }
 
-		  printMessage(8,"Information: using Hopital's rule (general case) on numerator zero.\n");
-		  if (verbosity >= 12) {
-		    printf("Hopital's rule is used on function\n");
-		    printTree(tree);
-		    printf(" in point ");
-		    printMpfr(z);
+		  if (simplifiesB == (hopitalrecursions + 1)) {
+		    printMessage(8,"Information: using Hopital's rule (general case) on numerator zero.\n");
+		    if (verbosity >= 10) {
+		      printf("Hopital's rule is used on function\n");
+		      printTree(tree);
+		      printf(" in point ");
+		      printMpfr(z);
+		    }
 		  }
 
+		  if (simplifiesB != (hopitalrecursions + 1)) {
+		    printMessage(8,"Information: recursion on use of Hopital's rule\n");
+		    if (verbosity >= 10) {
+		      printf("Reused Hopital's rule point is ");
+		      printMpfr(*hopitalPoint);
+		    }
+		  }
+		  
 		  if (verbosity >= 15) {
-		    printf("The simplified function is\n");
+		    printf("Information in Hopital: The simplified function is\n");
 		    printTree(tempNode);
 		    printf("\n");
 		  }
 
 
-		  excludes = evaluateI(stack3, tempNode, x, prec, simplifiesA, simplifiesB-1, leftTheoLinear);
+		  excludes = evaluateI(stack3, tempNode, x, prec, simplifiesA, simplifiesB-1, newHopitalPoint, leftTheoLinear);
 
 		  if (internalTheo != NULL) mpfi_set(*(internalTheo->boundLeftLinear),stack3);
 	      
@@ -1177,42 +1200,42 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     }
     break;
   case SQRT:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_sqrt(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case EXP:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_exp(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case LOG:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_log(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case LOG_2:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_log2(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case LOG_10:
-    evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_log10(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case SIN:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_sin(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
@@ -1228,7 +1251,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 
     break;
   case COS:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_cos(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
@@ -1244,78 +1267,78 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 
     break;
   case TAN:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_tan(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case ASIN:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_asin(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case ACOS:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_acos(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case ATAN:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_atan(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case SINH:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_sinh(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case COSH:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_cosh(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case TANH:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_tanh(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case ASINH:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_asinh(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case ACOSH:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_acosh(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case ATANH:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_atanh(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case POW:
-    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
-    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifiesA, simplifiesB, rightTheo);
+    leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
+    rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifiesA, simplifiesB, NULL, rightTheo);
     mpfi_pow(stack3, stack1, stack2);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
@@ -1324,77 +1347,77 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     excludes = concatChains(leftExcludes,rightExcludes);
     break;
   case NEG:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_neg(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case ABS:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_abs(stack3, stack1);  
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case DOUBLE:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_round_to_double(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case DOUBLEDOUBLE:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_round_to_doubledouble(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case TRIPLEDOUBLE:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_round_to_tripledouble(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case ERF:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_erf(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case ERFC:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_erfc(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case LOG_1P:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_log1p(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case EXP_M1:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_expm1(stack3, stack1);  
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case DOUBLEEXTENDED:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_round_to_doubleextended(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
   case LIBRARYFUNCTION:
-    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, leftTheo);
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     tree->libFun->code(stack3, stack1, tree->libFunDeriv);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
@@ -1477,7 +1500,7 @@ chain* evaluateITaylorOnDiv(mpfi_t result, node *func, mpfi_t x, mp_prec_t prec,
 	freeExprBoundTheo(numeratorTheo);
 	freeExprBoundTheo(denominatorTheo);
       }
-      excludes = evaluateI(result, func, x, prec, 0, hopitalrecursions+1, theo);
+      excludes = evaluateI(result, func, x, prec, 0, hopitalrecursions+1, NULL, theo);
     }
     
     mpfi_clear(resultNumerator);
@@ -1487,7 +1510,7 @@ chain* evaluateITaylorOnDiv(mpfi_t result, node *func, mpfi_t x, mp_prec_t prec,
     free_memory(derivDenominator);
     return excludes;
   } else {
-    return evaluateI(result, func, x, prec, 0, hopitalrecursions+1, theo);
+    return evaluateI(result, func, x, prec, 0, hopitalrecursions+1, NULL, theo);
   }
 }
 
@@ -1512,7 +1535,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
       printMessage(9,"Warning: no Taylor evaluation is possible because no derivative has been given.\n");
     
 
-    excludes = evaluateI(result, func, x, prec, 1, hopitalrecursions+1, theo);
+    excludes = evaluateI(result, func, x, prec, 1, hopitalrecursions+1, NULL, theo);
 
     mpfr_clear(leftX);
     mpfr_clear(rightX);
@@ -1584,14 +1607,14 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
 	printMessage(1,"as great that it contains more than %d nodes.\n",DIFFSIZE);
 	printMessage(1,"Will now stop recursive Taylor evaluation on this expression.\n");
 	printMessage(2,"Information: the size of the derivative is %d, we had %d recursion(s) left.\n",size,recurse-1);
-	taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, hopitalrecursions+1, linearTheo);
+	taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, hopitalrecursions+1, NULL, linearTheo);
     } else {
       taylorExcludesLinear = evaluateITaylor(linearTerm, deriv, nextderiv, x, prec, recurse - 1, linearTheo);
     }
     
     free_memory(nextderiv);
   } else {
-    taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, hopitalrecursions+1, linearTheo);
+    taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, hopitalrecursions+1, NULL, linearTheo);
   }
 
   if (!mpfi_has_zero(linearTerm)) {
@@ -1605,8 +1628,8 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
     mpfi_set_fr(xZI,leftX);
     mpfi_set_fr(xZI2,rightX);
 
-    directExcludes = evaluateI(resultDirect, func, xZI, prec, 0, hopitalrecursions+1, directTheo);
-    taylorExcludesConstant = evaluateI(constantTerm, func, xZI2, prec, 1, hopitalrecursions+1, constantTheo);
+    directExcludes = evaluateI(resultDirect, func, xZI, prec, 0, hopitalrecursions+1, NULL, directTheo);
+    taylorExcludesConstant = evaluateI(constantTerm, func, xZI2, prec, 1, hopitalrecursions+1, NULL, constantTheo);
 
     mpfi_union(result,resultDirect,constantTerm);
     
@@ -1637,7 +1660,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
 
   } else {
 
-    taylorExcludesConstant = evaluateI(constantTerm, func, xZI, prec, 1, hopitalrecursions+1, constantTheo);
+    taylorExcludesConstant = evaluateI(constantTerm, func, xZI, prec, 1, hopitalrecursions+1, NULL, constantTheo);
     
     mpfi_sub(temp, x, xZI);
     mpfi_mul(temp2, temp, linearTerm);
@@ -1647,7 +1670,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
     if (deriv != NULL) 
       directExcludes = evaluateITaylorOnDiv(resultDirect, func, x, prec, recurse, directTheo);
     else 
-      directExcludes = evaluateI(resultDirect, func, x, prec, 0, hopitalrecursions+1, directTheo);
+      directExcludes = evaluateI(resultDirect, func, x, prec, 0, hopitalrecursions+1, NULL, directTheo);
 
     if (verbosity >= 12) {
       printf("Information: Taylor evaluation: domain:\n");

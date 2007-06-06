@@ -267,6 +267,8 @@ LIBRARY         "library"
 
 HOPITALRECURSIONS "hopitalrecursions"
 
+HELP            "help"
+
 %%
 
 %{
@@ -475,6 +477,7 @@ HOPITALRECURSIONS "hopitalrecursions"
 {MIDPOINTMODE}           {     promptToBePrinted = 0; return MIDPOINTMODETOKEN; }                    
 {LIBRARY}                {     promptToBePrinted = 0; return LIBRARYTOKEN; }                    
 {HOPITALRECURSIONS}      {     promptToBePrinted = 0; return HOPITALRECURSIONSTOKEN; }                    
+{HELP}                   {     promptToBePrinted = 0; return HELPTOKEN; }                    
 
 {READ}          {
                       BEGIN(readstate);
