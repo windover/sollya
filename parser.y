@@ -1875,17 +1875,24 @@ autoprintelem:   function
 			     $$ = NULL;
 			   }
            | printableRange {
-                             printf("[");
-                             printValue(($1).a,tools_precision);
-			     printf(";");
-			     printValue(($1).b,tools_precision);
-			     printf("] ");
 			     if ((dyadic == 0) && (midpointMode == 1)) {
 			       temp_string = sprintMidpointMode(*(($1).a), *($1).b);
 			       if (temp_string != NULL) {
-				 printf("(= %s) ",temp_string);
+				 printf("%s ",temp_string);
 				 free(temp_string);
+			       } else {
+				 printf("[");
+				 printValue(($1).a,tools_precision);
+				 printf(";");
+				 printValue(($1).b,tools_precision);
+				 printf("] ");
 			       }
+			     } else {
+			       printf("[");
+			       printValue(($1).a,tools_precision);
+			       printf(";");
+			       printValue(($1).b,tools_precision);
+			       printf("] ");
 			     }
 			     mpfr_clear(*(($1).a));
 			     mpfr_clear(*(($1).b));
