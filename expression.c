@@ -6922,7 +6922,7 @@ node* horner(node *tree) {
     free_memory(temp3);
     temp3 = temp2;
     i++;
-  } while ((!isHorner(temp3)) && (i < 5));
+  } while ((!isHorner(temp3)) && (i < 2));
 
   return temp3;
 }

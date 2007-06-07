@@ -960,8 +960,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	      rightTheoConstant = NULL;
 	    }
 
-	    t1 = evaluateI(numeratorInZI, tree->child1, zI, prec, simplifiesA, simplifiesB-1, NULL, leftTheoConstant);
-	    t2 = evaluateI(denominatorInZI, tree->child2, zI, prec, simplifiesA, simplifiesB-1, NULL, rightTheoConstant);
+	    t1 = evaluateI(numeratorInZI, tree->child1, zI, prec, simplifiesA, simplifiesB-1, newHopitalPoint, leftTheoConstant);
+	    t2 = evaluateI(denominatorInZI, tree->child2, zI, prec, simplifiesA, simplifiesB-1, newHopitalPoint, rightTheoConstant);
 	  
 	    freeChain(t1,freeMpfiPtr);
 	    freeChain(t2,freeMpfiPtr);
@@ -1068,8 +1068,8 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		  rightTheoConstant = NULL;
 		}
 	    
-		t1 = evaluateI(numeratorInZI, tree->child1, zI, prec, simplifiesA, simplifiesB-1, NULL, leftTheoConstant);
-		t2 = evaluateI(denominatorInZI, tree->child2, zI, prec, simplifiesA, simplifiesB-1, NULL, rightTheoConstant);
+		t1 = evaluateI(numeratorInZI, tree->child1, zI, prec, simplifiesA, simplifiesB-1, newHopitalPoint, leftTheoConstant);
+		t2 = evaluateI(denominatorInZI, tree->child2, zI, prec, simplifiesA, simplifiesB-1, newHopitalPoint, rightTheoConstant);
 
 		freeChain(t1,freeMpfiPtr);
 		freeChain(t2,freeMpfiPtr);
