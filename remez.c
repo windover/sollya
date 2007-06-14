@@ -388,7 +388,6 @@ chain *uncertifiedFindZeros(node *tree, mpfr_t a, mpfr_t b, unsigned long int po
   mpfr_sub(x2,b,h,GMP_RNDN);
 
   evaluateFaithfulWithCutOffFast(y1, tree, diff_tree, x1, zero_mpfr, prec);
-    printMpfr(y1);
   evaluateFaithfulWithCutOffFast(y2, tree, diff_tree, x2, zero_mpfr, prec);
   while(mpfr_greaterequal_p(x2,a)) {
     if((mpfr_sgn(y1)==0) || (mpfr_sgn(y2)==0) || (mpfr_sgn(y1) != mpfr_sgn(y2))) {
@@ -415,7 +414,6 @@ chain *uncertifiedFindZeros(node *tree, mpfr_t a, mpfr_t b, unsigned long int po
   if(! mpfr_equal_p(x1,a)) {
     mpfr_set(x2,a,GMP_RNDU);
     evaluateFaithfulWithCutOffFast(y2, tree, diff_tree, x2, zero_mpfr, prec);
-        printMpfr(y2);
     if (mpfr_sgn(y1)==0) {
       temp = safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*temp, prec);
