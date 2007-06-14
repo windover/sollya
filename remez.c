@@ -384,12 +384,13 @@ chain *uncertifiedFindZeros(node *tree, mpfr_t a, mpfr_t b, unsigned long int po
   mpfr_sub(h,b,a,GMP_RNDD);
   mpfr_div_si(h,h,points,GMP_RNDD);
 
-  mpfr_set(x1,a,GMP_RNDN);
-  mpfr_add(x2,a,h,GMP_RNDN);
+  mpfr_set(x1,b,GMP_RNDN);
+  mpfr_sub(x2,b,h,GMP_RNDN);
 
   evaluateFaithfulWithCutOffFast(y1, tree, diff_tree, x1, zero_mpfr, prec);
+    printMpfr(y1);
   evaluateFaithfulWithCutOffFast(y2, tree, diff_tree, x2, zero_mpfr, prec);
-  while(mpfr_lessequal_p(x2,b)) {
+  while(mpfr_greaterequal_p(x2,a)) {
     if((mpfr_sgn(y1)==0) || (mpfr_sgn(y2)==0) || (mpfr_sgn(y1) != mpfr_sgn(y2))) {
 	if (mpfr_sgn(y1)==0) {
 	  temp = safeMalloc(sizeof(mpfr_t));
@@ -401,20 +402,20 @@ chain *uncertifiedFindZeros(node *tree, mpfr_t a, mpfr_t b, unsigned long int po
 	  if (mpfr_sgn(y2)!=0) {
 	    temp = safeMalloc(sizeof(mpfr_t));
 	    mpfr_init2(*temp, prec);
-	    newton(*temp, tree, diff_tree, x1, x2, mpfr_sgn(y1), prec);
+	    newton(*temp, tree, diff_tree, x2, x1, mpfr_sgn(y2), prec);
 	    result = addElement(result, temp);
 	  }
 	}
     }
     mpfr_set(x1,x2,GMP_RNDN);
-    mpfr_add(x2,x2,h,GMP_RNDN);
+    mpfr_sub(x2,x2,h,GMP_RNDN);
     mpfr_set(y1,y2,GMP_RNDN);
     evaluateFaithfulWithCutOffFast(y2, tree, diff_tree, x2, zero_mpfr, prec);
   }
-  if(! mpfr_equal_p(x1,b)) {
-    mpfr_set(x2,b,GMP_RNDU);
+  if(! mpfr_equal_p(x1,a)) {
+    mpfr_set(x2,a,GMP_RNDU);
     evaluateFaithfulWithCutOffFast(y2, tree, diff_tree, x2, zero_mpfr, prec);
-    
+        printMpfr(y2);
     if (mpfr_sgn(y1)==0) {
       temp = safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*temp, prec);
@@ -430,7 +431,7 @@ chain *uncertifiedFindZeros(node *tree, mpfr_t a, mpfr_t b, unsigned long int po
     if( (mpfr_sgn(y1)!=0) && (mpfr_sgn(y2)!=0) && (mpfr_sgn(y1) != mpfr_sgn(y2)) ) {
       temp = safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*temp, prec);
-      newton(*temp, tree, diff_tree, x1, x2, mpfr_sgn(y1), prec);
+      newton(*temp, tree, diff_tree, x2, x1, mpfr_sgn(y2), prec);
       result = addElement(result, temp);
     }
   }
