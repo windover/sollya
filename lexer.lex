@@ -269,6 +269,8 @@ HOPITALRECURSIONS "hopitalrecursions"
 
 HELP            "help"
 
+DIRTYFINDZEROS  "dirtyfindzeros"
+
 %%
 
 %{
@@ -478,6 +480,7 @@ HELP            "help"
 {LIBRARY}                {     promptToBePrinted = 0; return LIBRARYTOKEN; }                    
 {HOPITALRECURSIONS}      {     promptToBePrinted = 0; return HOPITALRECURSIONSTOKEN; }                    
 {HELP}                   {     promptToBePrinted = 0; return HELPTOKEN; }                    
+{DIRTYFINDZEROS}         {     promptToBePrinted = 0; return DIRTYFINDZEROSTOKEN; }                    
 
 {READ}          {
                       BEGIN(readstate);

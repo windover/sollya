@@ -222,6 +222,7 @@ void yyerror(char *message) {
 %token  MIDPOINTMODETOKEN
 %token  LIBRARYTOKEN
 %token  HELPTOKEN 
+%token  DIRTYFINDZEROSTOKEN 
 
 %type <other> commands
 %type <other> command
@@ -250,6 +251,7 @@ void yyerror(char *message) {
 %type <other> assignment
 %type <other> findzeros
 %type <other> fpfindzeros
+%type <other> dirtyfindzeros
 %type <other> zerodenominators
 %type <constantval> dirtyinfnorm
 %type <constantval> dirtyintegral
@@ -593,6 +595,9 @@ command:     HELPTOKEN help SEMICOLONTOKEN {
 	                     $$ = NULL;
 	                   }
            | fpfindzeros   {
+	                     $$ = NULL;
+	                   }
+           | dirtyfindzeros   {
 	                     $$ = NULL;
 	                   }
            | zerodenominators {
@@ -1421,7 +1426,117 @@ fpfindzeros:   FPFINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
 			     free($4.b);
 			     $$ = NULL;
                            }
+                | FPFINDZEROSTOKEN function INTOKEN range COMMATOKEN EVALUATETOKEN function ATTOKEN SEMICOLONTOKEN
+                           {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     pushTimeCounter();
+			     chain_temp = fpFindZerosFunction($2,$4,defaultprecision);
+			     popTimeCounter("fpfindzeros");
+			     if (chain_temp == NULL) {
+			       printf("The function seems to have no zeros in the interval.\n");
+			     } else {
+			       printf("The %d approximated zeros of the function and the images of the second function are:\n",
+				      lengthChain(chain_temp));
+			       while (chain_temp != NULL) {
+				 evaluateFaithful(*mpfr_temp, $7, *((mpfr_t *) (chain_temp->value)), defaultprecision);
+				 printValue(((mpfr_t *) (chain_temp->value)),defaultprecision);
+				 printf(" \t( ");
+				 printValue(mpfr_temp,defaultprecision);
+				 printf(" )\n");
+				 mpfr_clear(*((mpfr_t *) (chain_temp->value)));
+				 free(chain_temp->value);
+				 chain_temp2 = chain_temp->next;
+				 free(chain_temp);
+				 chain_temp = chain_temp2;
+			       }
+
+			     }
+			     mpfr_clear(*mpfr_temp);
+			     free(mpfr_temp);
+			     free_memory($2);
+			     free_memory($7);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     $$ = NULL;
+                           }
 ;
+
+dirtyfindzeros:   DIRTYFINDZEROSTOKEN function INTOKEN range SEMICOLONTOKEN
+                           {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     pushTimeCounter();
+			     chain_temp = uncertifiedFindZeros($2,*($4.a),*($4.b),defaultpoints,defaultprecision);
+			     popTimeCounter("dirtyfindzeros");
+			     if (chain_temp == NULL) {
+			       printf("The function seems to have no zeros in the interval.\n");
+			     } else {
+			       printf("The %d approximated zeros of the function (and their images) are:\n",
+				      lengthChain(chain_temp));
+			       while (chain_temp != NULL) {
+				 evaluateFaithful(*mpfr_temp, $2, *((mpfr_t *) (chain_temp->value)), defaultprecision);
+				 printValue(((mpfr_t *) (chain_temp->value)),defaultprecision);
+				 printf(" \t( ");
+				 printValue(mpfr_temp,defaultprecision);
+				 printf(" )\n");
+				 mpfr_clear(*((mpfr_t *) (chain_temp->value)));
+				 free(chain_temp->value);
+				 chain_temp2 = chain_temp->next;
+				 free(chain_temp);
+				 chain_temp = chain_temp2;
+			       }
+
+			     }
+			     mpfr_clear(*mpfr_temp);
+			     free(mpfr_temp);
+			     free_memory($2);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     $$ = NULL;
+                           }
+                | DIRTYFINDZEROSTOKEN function INTOKEN range COMMATOKEN EVALUATETOKEN function ATTOKEN SEMICOLONTOKEN
+                           {
+			     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+			     mpfr_init2(*mpfr_temp,defaultprecision);
+			     pushTimeCounter();
+			     chain_temp = uncertifiedFindZeros($2,*($4.a),*($4.b),defaultpoints,defaultprecision);
+			     popTimeCounter("dirtyfindzeros");
+			     if (chain_temp == NULL) {
+			       printf("The function seems to have no zeros in the interval.\n");
+			     } else {
+			       printf("The %d approximated zeros of the function and the images of the second function are:\n",
+				      lengthChain(chain_temp));
+			       while (chain_temp != NULL) {
+				 evaluateFaithful(*mpfr_temp, $7, *((mpfr_t *) (chain_temp->value)), defaultprecision);
+				 printValue(((mpfr_t *) (chain_temp->value)),defaultprecision);
+				 printf(" \t( ");
+				 printValue(mpfr_temp,defaultprecision);
+				 printf(" )\n");
+				 mpfr_clear(*((mpfr_t *) (chain_temp->value)));
+				 free(chain_temp->value);
+				 chain_temp2 = chain_temp->next;
+				 free(chain_temp);
+				 chain_temp = chain_temp2;
+			       }
+
+			     }
+			     mpfr_clear(*mpfr_temp);
+			     free(mpfr_temp);
+			     free_memory($2);
+			     free_memory($7);
+			     mpfr_clear(*($4.a));
+			     mpfr_clear(*($4.b));
+			     free($4.a);
+			     free($4.b);
+			     $$ = NULL;
+                           }
+;
+
 
 zerodenominators:   ZERODENOMINATORSTOKEN function INTOKEN range SEMICOLONTOKEN
                            {
@@ -4874,7 +4989,7 @@ help:
   $$ = NULL;
 }
 |  FPFINDZEROSTOKEN {
-  printf("Command for searching floating-point approximations for the zeros of an expression in a range\n");
+  printf("Command for searching for floating-point approximations to the zeros of an expression in a range\n");
   $$ = NULL;
 }
 |  ZERODENOMINATORSTOKEN {
@@ -5030,6 +5145,10 @@ help:
   printf("Keyword \"library\" is used for binding a function implemented in a external library to a function symbol.\n");
   $$ = NULL;
 }
+|  DIRTYFINDZEROSTOKEN {
+  printf("Command for quickly searching for floating-point approximations to the zeros of an expression in a range\n");
+  $$ = NULL;
+}
 |  HELPTOKEN {
   printf("Keyword \"help\" is used for getting help on a keyword of the grammar of the tool.\n");
   printf("The keywords of the tool are:\n");
@@ -5083,6 +5202,7 @@ help:
   printf(" -   denominator\n");
   printf(" -   diam\n");
   printf(" -   diff\n");
+  printf(" -   dirtyfindzeros\n");
   printf(" -   dirtyinfnorm\n");
   printf(" -   dirtyintegral\n");
   printf(" -   double\n");

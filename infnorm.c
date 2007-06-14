@@ -3087,8 +3087,12 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
   mpfr_t *newZero;
   mpfr_t before, after, yBefore, yAfter, y, compare;
   int addToList, removedFromList;
+  unsigned int oldDefaultPoints;
 
   
+  oldDefaultPoints = defaultpoints;
+  defaultpoints = 10;
+
   mpfr_init2(diam,prec+50);
   mpfr_set_d(diam,DEFAULTDIAM2,GMP_RNDN);
 
@@ -3239,6 +3243,8 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
     free(fpZeros);
     fpZeros = temp;
   }
+
+  defaultpoints = oldDefaultPoints;
 
   return fpZeros2;
 }
