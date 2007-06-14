@@ -363,6 +363,89 @@ void newton(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, mp
 }
 
 
+// Finds the zeros of a function on an interval.
+chain *uncertifiedFindZeros(node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec) {
+  mpfr_t zero_mpfr, h, x1, x2, y1, y2;
+  mpfr_t *temp;
+  node *diff_tree;
+  chain *result=NULL;
+
+  mpfr_init2(h,prec);
+  mpfr_init2(y1,prec);
+  mpfr_init2(y2,prec);
+  mpfr_init2(x1,prec);
+  mpfr_init2(x2,prec);
+  mpfr_init2(zero_mpfr,prec);
+
+  diff_tree = differentiate(tree);
+
+  mpfr_set_d(zero_mpfr, 0., GMP_RNDN);
+
+  mpfr_sub(h,b,a,GMP_RNDD);
+  mpfr_div_si(h,h,points,GMP_RNDD);
+
+  mpfr_set(x1,a,GMP_RNDN);
+  mpfr_add(x2,a,h,GMP_RNDN);
+
+  evaluateFaithfulWithCutOffFast(y1, tree, diff_tree, x1, zero_mpfr, prec);
+  evaluateFaithfulWithCutOffFast(y2, tree, diff_tree, x2, zero_mpfr, prec);
+  while(mpfr_lessequal_p(x2,b)) {
+    if((mpfr_sgn(y1)==0) || (mpfr_sgn(y2)==0) || (mpfr_sgn(y1) != mpfr_sgn(y2))) {
+	if (mpfr_sgn(y1)==0) {
+	  temp = safeMalloc(sizeof(mpfr_t));
+	  mpfr_init2(*temp, prec);
+	  mpfr_set(*temp, x1, GMP_RNDN);
+	  result = addElement(result, temp);
+	}
+	else {
+	  if (mpfr_sgn(y2)!=0) {
+	    temp = safeMalloc(sizeof(mpfr_t));
+	    mpfr_init2(*temp, prec);
+	    newton(*temp, tree, diff_tree, x1, x2, mpfr_sgn(y1), prec);
+	    result = addElement(result, temp);
+	  }
+	}
+    }
+    mpfr_set(x1,x2,GMP_RNDN);
+    mpfr_add(x2,x2,h,GMP_RNDN);
+    mpfr_set(y1,y2,GMP_RNDN);
+    evaluateFaithfulWithCutOffFast(y2, tree, diff_tree, x2, zero_mpfr, prec);
+  }
+  if(! mpfr_equal_p(x1,b)) {
+    mpfr_set(x2,b,GMP_RNDU);
+    evaluateFaithfulWithCutOffFast(y2, tree, diff_tree, x2, zero_mpfr, prec);
+    
+    if (mpfr_sgn(y1)==0) {
+      temp = safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*temp, prec);
+      mpfr_set(*temp, x1, GMP_RNDN);
+      result = addElement(result, temp);
+    }
+    if (mpfr_sgn(y2)==0) {
+      temp = safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*temp, prec);
+      mpfr_set(*temp, x2, GMP_RNDN);
+      result = addElement(result, temp);
+    }
+    if( (mpfr_sgn(y1)!=0) && (mpfr_sgn(y2)!=0) && (mpfr_sgn(y1) != mpfr_sgn(y2)) ) {
+      temp = safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*temp, prec);
+      newton(*temp, tree, diff_tree, x1, x2, mpfr_sgn(y1), prec);
+      result = addElement(result, temp);
+    }
+  }
+
+  mpfr_clear(h);
+  mpfr_clear(y1);
+  mpfr_clear(y2);
+  mpfr_clear(x1);
+  mpfr_clear(x2);
+  mpfr_clear(zero_mpfr);
+  
+  return result;
+}
+
+
 // Returns a PARI array containing the zeros of tree on [a;b]
 // deg+1 indicates the number of zeros which we are expecting.
 void quickFindZeros(mpfr_t *res, node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec, int *crash_report) {
