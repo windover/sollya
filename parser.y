@@ -4612,7 +4612,13 @@ help:
   $$ = NULL;
 }
 |  REMEZTOKEN {
-  printf("Remez operator\n");
+  printf("Computes a minimax approximation by Remez algorithm.\n");
+  printf("Syntax:\n");
+  printf("remez(f,n,I[,w[,err]]): computes a polynomial p of degree n such that max{p(x)*w(x)-f(x) | x in I} is minimal.\n");
+  printf("remez(f,L,I[,w[,err]]): idem but p is a linear combination of the monomials x^k for k in the list L.\n");
+  printf("The optional argument w is 1 by default\n");
+  printf("The optional argument err controls the quality of the computed polynomial.\n");
+  printf("  ->  If p* is actually the exact minimax, the returned p satisfies ||w p* - f|| < ||w p-f|| < (1+err)||w p*-f||\n");
   $$ = NULL;
 }
 |  DIAMTOKEN {
@@ -4996,7 +5002,8 @@ help:
   $$ = NULL;
 }
 |  GUESSDEGREETOKEN {
-  printf("Command for guessing the degree of a Remez approximation polynomial to get under a specified error bound\n");
+  printf("Command for guessing the degree of a Remez approximation polynomial to get under a specified error bound.\n");
+  printf("Syntax: guessdegree f in [a;b] with epsilon=eps[, weight=w]\n");
   $$ = NULL;
 }
 |  PARSETOKEN {
