@@ -254,10 +254,7 @@ void mpfi_erfc(mpfi_t rop, mpfi_t op) {
 }
 
 
-
-
-
-int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+int newtonMPFRWithStartPoint(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mpfr_t start, mp_prec_t prec) {
   mpfr_t x, x2, temp1, temp2, am, bm;
   unsigned long int n=1;
   int okay, lucky, hasZero, i, freeTrees;
@@ -311,9 +308,8 @@ int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_p
 	
 	mpfr_mul(temp1,temp1,temp2,GMP_RNDN);
 	hasZero = (mpfr_sgn(temp1) <= 0);
-	
-	mpfr_add(x,a,b,GMP_RNDN);
-	mpfr_div_2ui(x,x,1,GMP_RNDN);
+
+	mpfr_set(x,start,GMP_RNDN);
 	lucky = 0;
 	
 	i = 5000;
@@ -397,6 +393,24 @@ int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_p
   mpfr_clear(x); mpfr_clear(temp1); mpfr_clear(temp2); mpfr_clear(x2); mpfr_clear(am); mpfr_clear(bm);
   return okay;
 }
+
+
+
+int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+  mpfr_t start;
+  int result;
+
+  mpfr_init2(start,prec);
+  mpfr_add(start,a,b,GMP_RNDN);
+  mpfr_div_2ui(start,start,1,GMP_RNDN);
+
+  result = newtonMPFRWithStartPoint(res, tree, diff_tree, a, b, start, prec);
+
+  mpfr_clear(start);
+
+  return result;
+}
+
 
 
 void makeMpfiAroundMpfr(mpfi_t res, mpfr_t x, unsigned int thousandUlps) {

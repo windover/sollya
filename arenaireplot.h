@@ -111,6 +111,7 @@ extern void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, un
 extern int checkInfnorm(node *func, rangetype range, mpfr_t infnormval, mpfr_t diam, mp_prec_t prec);
 
 extern int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec);
+extern int newtonMPFRWithStartPoint(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mpfr_t start, mp_prec_t prec);
 extern chain* findZerosFunction(node *func, rangetype range, mp_prec_t prec, mpfr_t diam);
 extern chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec);
 
