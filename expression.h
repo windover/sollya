@@ -47,6 +47,10 @@ extern void endBuffer(void);
 #define EXP_M1 33
 #define DOUBLEEXTENDED 34
 #define LIBRARYFUNCTION 35
+#define CEIL 36
+#define FLOOR 37
+#define PI_CONST 38
+
 
 typedef struct nodeStruct node;
 
@@ -58,7 +62,20 @@ struct nodeStruct
   node *child2;
   libraryFunction *libFun;
   int libFunDeriv;
+  char *string;
+  chain *arguments;
 };
+
+/* HELPER TYPE FOR THE PARSER */
+typedef struct doubleNodeStruct doubleNode;
+struct doubleNodeStruct 
+{
+  node *a;
+  node *b;
+};
+
+/* END HELPER TYPE */
+
 
 typedef struct rangetypeStruct rangetype;
 
@@ -138,6 +155,15 @@ node *makeErfc(node *op1);
 node *makeLog1p(node *op1);
 node *makeExpm1(node *op1);
 node *makeDoubleextended(node *op1);
+node *makeCeil(node *op1);
+node *makeFloor(node *op1);
+node *makePi();
+node *makeSinh(node *op1);
+node *makeCosh(node *op1);
+node *makeTanh(node *op1);
+node *makeAsinh(node *op1);
+node *makeAcosh(node *op1);
+node *makeAtanh(node *op1);
 
 node *parseString(char *str); 
 

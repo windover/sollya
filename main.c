@@ -19,75 +19,68 @@
 #include <termios.h>
 #include <sys/time.h>
 #include <time.h>
+#include "execute.h"
 
-#define PARIMEMSIZE 300000000
 
+/* STATE OF THE TOOL */
 
 char *variablename = NULL;
-char *currentVariable = NULL;
-char *currentString = NULL;
-char *newReadFilename = NULL;
-char *newReadFilenameTemp = NULL;
-chain *readStack = NULL;
-chain *readStackTemp = NULL;
-chain *readStack2 = NULL;
-char *constBuffer = NULL;
-char *constBuffer2 = NULL;
-FILE **tempFDPtr;
 mp_prec_t defaultprecision = DEFAULTPRECISION;
-int defaultpoints = DEFAULTPOINTS;
 mp_prec_t tools_precision = DEFAULTPRECISION;
+int defaultpoints = DEFAULTPOINTS;
 int taylorrecursions = DEFAULTTAYLORRECURSIONS;
-mp_prec_t prec_temp;
-char **endptr;
-unsigned long int points;
-mpfr_t *mpfr_temp;
-mpfr_t *mpfr_temp2;
-mpfr_t *mpfr_temp3;
-rangetype range_temp;
-rangetype range_temp2;
-node *temp_node; 
-node *temp_node2;
-int int_temp;
-int int_temp2;
-double double_temp;
-int promptToBePrinted;
-jmp_buf recoverEnvironment;
-int handlingError;
-chain *symbolTable = NULL;
-chain *symbolTable2 = NULL;
-chain *symbolTable3 = NULL;
-char *temp_string;
-char *temp_string2;
-char *temp_string3;
-chain *chain_temp;
-chain *chain_temp2;
-ulong ltop;
-rangetype *rangeTempPtr;
 int dyadic = 0;
-FILE *temp_fd;
-int *intTempPtr = NULL;
 int verbosity = 1;
-doubleChain *doubleChainTemp;
-formatType *formatTypeTemp;
-errorType *errorTypeTemp;
-pointsType *pointsTypeTemp;
-int eliminatePrompt;
-int eliminatePromptBackup;
-mp_prec_t tempPrec;
-int handlingCtrlC;
-int handledCtrlC = 1;
-int fileNumber = 0;
 int canonical = 0;
-void *scanner = NULL;
-node *minitree = NULL;
+int fileNumber = 0;
 int autosimplify = 1;
 int timecounting = 0;
 chain *timeStack=NULL;
 int fullParentheses=0;
 int midpointMode = 0;
-libraryFunction *tempLibraryFunction = NULL;
 int hopitalrecursions = DEFAULTHOPITALRECURSIONS;
+mpfr_t statediam;
+
+int eliminatePromptBackup;
+ulong ltop;
+chain *readStack = NULL;
+chain *readStackTemp = NULL;
+chain *readStack2 = NULL;
+void *scanner = NULL;
+int promptToBePrinted = 0;
+
+node *parsedThing = NULL;
+
+jmp_buf recoverEnvironment;
+int handlingCtrlC = 0;
+int recoverEnvironmentReady = 0;
+
+chain *symbolTable = NULL;
+
+/* END OF STATE OF THE TOOL */
+
+/* HELPER VARIABLES FOR THE LEXER/ PARSER */
+
+char *newReadFilename = NULL;
+char *newReadFilenameTemp = NULL;
+FILE **tempFDPtr;
+FILE *temp_fd;
+char *constBuffer = NULL;
+char *constBuffer2 = NULL;
+char *tempString = NULL;
+char *tempString2 = NULL;
+
+/* END OF HELPER VARIABLES */
+
+/* HELPER VARIABLES FOR LEGACY MINIPARSER */
+
+node * temp_node;
+mpfr_t *mpfr_temp;
+mpfr_t *mpfr_temp2;
+node *minitree;
+
+/* END OF HELPER VARIABLES */
+
 
 extern int yyparse();
 extern void yylex_destroy(void *);
@@ -269,6 +262,18 @@ int removeMidpointMode(char *outbuf, char *inbuf) {
   return removed;
 }
 
+void newReadFileStarted() {
+
+}
+
+void carriageReturnLexed() {
+  if (promptToBePrinted) printPrompt();
+}
+
+void newTokenLexed() {
+  promptToBePrinted = 0;
+}
+
 
 int printMessage(int verb, const char *format, ...) {
   va_list varlist;
@@ -350,62 +355,9 @@ void popTimeCounter(char *s) {
 
 
 void signalHandler(int i) {
-  promptToBePrinted = 1;
   switch (i) {
   case SIGINT: 
-    if (eliminatePromptBackup == 1) {
-      printf("\n");
-      free(endptr);
-      freeSymbolTable(symbolTable,freeMemoryOnVoid);
-      freeSymbolTable(symbolTable2,freeRangetypePtr);
-      freeSymbolTable(symbolTable3,freeStringPtr);
-      if(currentVariable != NULL) free(currentVariable);
-      if(variablename != NULL) free(variablename);
-      if(newReadFilename != NULL) free(newReadFilename);
-      if (constBuffer != NULL) free(constBuffer);
-      if (!(eliminatePromptBackup == 1)) {
-	removePlotFiles();
-      }
-      while ((readStack != NULL) && (readStack2 != NULL)) {
-	temp_fd = *((FILE **) (readStack2->value));
-	fclose(temp_fd);
-	free(readStack2->value);
-	readStackTemp = readStack2->next;
-	free(readStack2);
-	readStack2 = readStackTemp;
-	free(readStack->value);
-	readStackTemp = readStack->next;
-	free(readStack);
-	readStack = readStackTemp;
-      }
-      avma = ltop;
-      pari_close();
-      yylex_destroy(scanner);
-      freeLibraries();
-      freeCounter();
-      exit(0);
-    } else {
-      handlingCtrlC = 1;
-      yylex_destroy(scanner);
-      if (readStack == NULL) {
-	handlingError = 1;
-	promptToBePrinted = 0;
-      }
-      while ((readStack != NULL) && 
-	     (readStack2 != NULL)) {
-	temp_fd = *((FILE **) (readStack2->value));
-	while (readStack2->next != NULL) fclose(temp_fd);
-	free(readStack2->value);
-	readStackTemp = readStack2->next;
-	free(readStack2);
-	readStack2 = readStackTemp;
-	free(readStack->value);
-	readStackTemp = readStack->next;
-	free(readStack);
-	readStack = readStackTemp;
-      }
-      yylex_init(&scanner);
-    }
+    handlingCtrlC = 1;
     break;
   case SIGSEGV:
     fprintf(stderr,"Warning: handling signal SIGSEGV\n");
@@ -423,51 +375,27 @@ void signalHandler(int i) {
     fprintf(stderr,"Error: must handle an unknown signal.\n");
     exit(1);
   }
-  recoverFromError();
+  if (recoverEnvironmentReady) {
+    avma = ltop;
+    longjmp(recoverEnvironment,1);
+  } 
 }
 
-
 void recoverFromError(void) {
-  handlingError = 1;
   avma = ltop;
-  freeCounter();
   longjmp(recoverEnvironment,1);
-  return;
 }
 
 
 void printPrompt(void) {
-  if (eliminatePrompt) return;
+  if (eliminatePromptBackup) return;
+  if (readStack != NULL) return;
   printf("> ");
-  handledCtrlC = 1;
 }
 
-
-
-
-
-int main(int argc, char *argv[]) {
-  struct termios termAttr;
+void initSignalHandler() {
   sigset_t mask;
-  
-  yylex_init(&scanner);
 
-  eliminatePrompt = 0; eliminatePromptBackup = 0;
-  if (tcgetattr(0,&termAttr) == -1) {
-    eliminatePrompt = 1;
-    eliminatePromptBackup = 1;
-  }
-  
-  pari_init(PARIMEMSIZE, 2);
-  mp_set_memory_functions(safeMalloc,wrapSafeRealloc,NULL);
-  ltop = avma;
-  
-
-  if (setjmp(PARIENVIRONMENT)) {
-    fprintf(stderr,"Error: an error occured in the PARI subsystem.\n");
-    recoverFromError();
-  }
- 
   sigemptyset(&mask);
   sigaddset(&mask,SIGINT);
   sigaddset(&mask,SIGSEGV);
@@ -480,55 +408,25 @@ int main(int argc, char *argv[]) {
   signal(SIGBUS,signalHandler);
   signal(SIGFPE,signalHandler);
   signal(SIGPIPE,signalHandler);
-  handlingCtrlC = 0;
-  
-  endptr = (char**) safeMalloc(sizeof(char*));
+}
 
-  printPrompt();
-  while (1) {
-    if (setjmp(recoverEnvironment)) {
-      if (readStack == NULL) {
-	eliminatePrompt = eliminatePromptBackup;
-      }
-      if (handlingCtrlC) {
-	  printMessage(1,"Warning: the last command has been interrupted. May leak memory.\n");
-      }
-      else {
-	  printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
-      }
-      if (verbosity == 0) printf("\n");
-      fflush(stdout);
-      handlingCtrlC = 0;
-      printPrompt();
-      sigemptyset(&mask);
-      sigaddset(&mask,SIGINT);
-      sigaddset(&mask,SIGSEGV);
-      sigaddset(&mask,SIGBUS);
-      sigaddset(&mask,SIGFPE);
-      sigaddset(&mask,SIGPIPE);
-      sigprocmask(SIG_UNBLOCK, &mask, NULL);
-      signal(SIGINT,signalHandler);
-      signal(SIGSEGV,signalHandler);
-      signal(SIGBUS,signalHandler);
-      signal(SIGFPE,signalHandler);
-      signal(SIGPIPE,signalHandler);
-    }
-    if (yyparse(scanner)) break;  
-    handledCtrlC = 0;
-    promptToBePrinted = 1;
-  }
+void blockSignals() {
+  sigset_t mask;
 
-  printf("\n");
-  
-  free(endptr);
-  freeSymbolTable(symbolTable,freeMemoryOnVoid);
-  freeSymbolTable(symbolTable2,freeRangetypePtr);
-  freeSymbolTable(symbolTable3,freeStringPtr);
-  if(currentVariable != NULL) free(currentVariable);
+  sigemptyset(&mask);
+
+  if (readStack != NULL) sigaddset(&mask,SIGINT);
+  sigaddset(&mask,SIGSEGV);
+  sigaddset(&mask,SIGBUS);
+  sigaddset(&mask,SIGFPE);
+  sigaddset(&mask,SIGPIPE);
+  sigprocmask(SIG_BLOCK, &mask, NULL);
+}
+
+void freeTool() {
   if(variablename != NULL) free(variablename);
   if(newReadFilename != NULL) free(newReadFilename);
-  if (constBuffer != NULL) free(constBuffer);
-  
+
   if (!(eliminatePromptBackup == 1)) {
     removePlotFiles();
   }
@@ -550,6 +448,98 @@ int main(int argc, char *argv[]) {
   yylex_destroy(scanner);
   freeLibraries();
   freeCounter();
+  freeSymbolTable(symbolTable, freeThingOnVoid);
+  symbolTable = NULL;
+  mpfr_clear(statediam);
+}
+
+void initToolDefaults() {
+  ltop = avma;
+  if(variablename != NULL) free(variablename); 
+  variablename = NULL;
+  defaultprecision = DEFAULTPRECISION;
+  tools_precision = DEFAULTPRECISION;
+  defaultpoints = DEFAULTPOINTS;
+  taylorrecursions = DEFAULTTAYLORRECURSIONS;
+  dyadic = 0;
+  verbosity = 1;
+  canonical = 0;
+  fileNumber = 0;
+  autosimplify = 1;
+  timecounting = 0;
+  timeStack=NULL;
+  fullParentheses=0;
+  midpointMode = 0;
+  hopitalrecursions = DEFAULTHOPITALRECURSIONS;
+  symbolTable = NULL;
+  mpfr_init2(statediam,10);
+  mpfr_set_d(statediam,DEFAULTDIAM,GMP_RNDN);
+}
+
+void restartTool() {
+  freeSymbolTable(symbolTable, freeThingOnVoid);
+  symbolTable = NULL;
+  freeLibraries();
+  initToolDefaults();
+}
+
+int main(int argc, char *argv[]) {
+  struct termios termAttr;
+  int parseAbort, executeAbort;
+
+  yylex_init(&scanner);
+
+  if (tcgetattr(0,&termAttr) == -1) {
+    eliminatePromptBackup = 1;
+  }
+  
+  pari_init(PARIMEMSIZE, 2);
+  initSignalHandler();
+  blockSignals();
+  mp_set_memory_functions(safeMalloc,wrapSafeRealloc,NULL);
+  ltop = avma;
+  initToolDefaults();
+
+  if (setjmp(PARIENVIRONMENT)) {
+    fprintf(stderr,"Error: an error occured in the PARI subsystem.\n");
+    avma = ltop;
+    longjmp(recoverEnvironment,1);
+  }
+ 
+  printPrompt();
+  while (1) {
+    executeAbort = 0;
+    parsedThing = NULL;
+    parseAbort = yyparse(scanner);
+    if (parsedThing != NULL) {
+      
+      handlingCtrlC = 0;
+      if (!setjmp(recoverEnvironment)) {
+	recoverEnvironmentReady = 1;
+	initSignalHandler();
+	pushTimeCounter();
+	executeAbort = executeCommand(parsedThing);
+	popTimeCounter("full execution of the last parse chunk");
+	blockSignals();
+	recoverEnvironmentReady = 0;
+      } else {
+	blockSignals();
+	if (handlingCtrlC) 
+	  printMessage(1,"Warning: the last command has been interrupted. May leak memory.\n");
+	else 
+	  printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
+      }
+
+      freeThing(parsedThing);
+    }
+    if (parseAbort || executeAbort) break;
+    promptToBePrinted = 1;
+  }
+
+  printf("\n");
+  
+  freeTool();
+
   return 0;
 }
 

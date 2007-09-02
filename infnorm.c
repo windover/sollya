@@ -253,6 +253,54 @@ void mpfi_erfc(mpfi_t rop, mpfi_t op) {
   mpfr_clear(ropr);
 }
 
+void mpfi_ceil(mpfi_t rop, mpfi_t op) {
+  mpfr_t opl, opr, ropl, ropr;
+
+  mpfr_init2(opl,mpfi_get_prec(op));
+  mpfr_init2(opr,mpfi_get_prec(op));
+
+  mpfr_init2(ropl,mpfi_get_prec(op));
+  mpfr_init2(ropr,mpfi_get_prec(op));
+  
+  mpfi_get_left(opl,op);
+  mpfi_get_right(opr,op);
+  
+  mpfr_ceil(ropl,opr);
+  mpfr_ceil(ropr,opl);
+
+  mpfi_interv_fr(rop,ropl,ropr);
+  mpfi_revert_if_needed(rop);
+
+  mpfr_clear(opl);
+  mpfr_clear(opr);
+  mpfr_clear(ropl);
+  mpfr_clear(ropr);
+}
+
+void mpfi_floor(mpfi_t rop, mpfi_t op) {
+  mpfr_t opl, opr, ropl, ropr;
+
+  mpfr_init2(opl,mpfi_get_prec(op));
+  mpfr_init2(opr,mpfi_get_prec(op));
+
+  mpfr_init2(ropl,mpfi_get_prec(op));
+  mpfr_init2(ropr,mpfi_get_prec(op));
+  
+  mpfi_get_left(opl,op);
+  mpfi_get_right(opr,op);
+  
+  mpfr_floor(ropl,opr);
+  mpfr_floor(ropr,opl);
+
+  mpfi_interv_fr(rop,ropl,ropr);
+  mpfi_revert_if_needed(rop);
+
+  mpfr_clear(opl);
+  mpfr_clear(opr);
+  mpfr_clear(ropl);
+  mpfr_clear(ropr);
+}
+
 
 int newtonMPFRWithStartPoint(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mpfr_t start, mp_prec_t prec) {
   mpfr_t x, x2, temp1, temp2, am, bm;
@@ -1437,6 +1485,24 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
+  case CEIL:
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
+    mpfi_ceil(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
+    break;
+  case FLOOR:
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
+    mpfi_floor(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
+    break;
+  case PI_CONST:
+    mpfi_const_pi(stack3);
+    excludes = NULL;
+    break;
   default:
     fprintf(stderr,"Error: evaluateI: unknown identifier in the tree\n");
     exit(1);
@@ -1894,17 +1960,33 @@ chain *findZeros(node *func, node *deriv, mpfi_t range, mp_prec_t prec, mpfr_t d
 void printInterval(mpfi_t interval) {
   mpfr_t l,r;
   mp_prec_t prec;
+  char *temp_string;
 
   prec = mpfi_get_prec(interval);
   mpfr_init2(l,prec);
   mpfr_init2(r,prec);
   mpfi_get_left(l,interval);
   mpfi_get_right(r,interval);
-  printf("[");
-  printValue(&l,prec);
-  printf(";");
-  printValue(&r,prec);
-  printf("]");
+
+  if ((dyadic == 0) && (midpointMode == 1)) {
+    temp_string = sprintMidpointMode(l, r);
+    if (temp_string != NULL) {
+      printf("%s ",temp_string);
+      free(temp_string);
+    } else {
+      printf("[");
+      printValue(&l,prec);
+      printf(";");
+      printValue(&r,prec);
+      printf("]");
+    }
+  } else {
+    printf("[");
+    printValue(&l,prec);
+    printf(";");
+    printValue(&r,prec);
+    printf("]");
+  }
 
   mpfr_clear(l);
   mpfr_clear(r);
@@ -3274,6 +3356,7 @@ chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t pre
     return NULL;
     break;
   case CONSTANT:
+  case PI_CONST:
     return NULL;
     break;
   case ADD:
@@ -3395,6 +3478,12 @@ chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t pre
     return uncertifiedZeroDenominators(tree->child1,a,b,prec);
     break;
   case LIBRARYFUNCTION:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case CEIL:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case FLOOR:
     return uncertifiedZeroDenominators(tree->child1,a,b,prec);
     break;
   default:
@@ -3632,7 +3721,7 @@ int evaluateFaithfulOrFail(node *func, mpfr_t x, mpfr_t y, unsigned int precFact
   return res;
 }
 
-void evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
+int evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
   mp_prec_t startPrec, p;
   mpfr_t cutoff;
   int res;
@@ -3652,6 +3741,8 @@ void evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
     printMessage(4,"Warning: evaluateFaithful returned NaN.\n");
     mpfr_set_nan(result);
   }
+
+  return res;
 
 }
 

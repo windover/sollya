@@ -67,6 +67,8 @@ void miniyyerror(char *message) {
 %token  DOUBLEDOUBLETOKEN
 %token  TRIPLEDOUBLETOKEN
 %token  DOUBLEEXTENDEDTOKEN
+%token  CEILTOKEN
+%token  FLOORTOKEN
 
 %type <other> start
 %type <tree> fun
@@ -294,6 +296,20 @@ prefixfunction:                 SQRTTOKEN LPARTOKEN fun RPARTOKEN
 			     temp_node->child1 = $3;
 			     $$ = temp_node;
                            }
+                        |       CEILTOKEN LPARTOKEN fun RPARTOKEN     			   	
+                           {
+                             temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = CEIL;
+			     temp_node->child1 = $3;
+			     $$ = temp_node;
+                           }
+                        |       FLOORTOKEN LPARTOKEN fun RPARTOKEN     			   	
+                           {
+                             temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = FLOOR;
+			     temp_node->child1 = $3;
+			     $$ = temp_node;
+                           }
 ;
 
 
@@ -354,6 +370,12 @@ primary:			variable
 			     temp_node->value = $1;
 			     $$ = temp_node;
                            }									
+                        |       PITOKEN
+                           {
+                             temp_node = (node*) safeMalloc(sizeof(node));
+			     temp_node->nodeType = PI_CONST;
+			     $$ = temp_node;
+			   }
 			|	LPARTOKEN fun RPARTOKEN			
 			   {
 			     $$ = $2;
@@ -377,6 +399,7 @@ variable: VARIABLETOKEN
 			     }
 			     temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = VARIABLE;
+			     free($1);
 			     $$ = temp_node;
 			   }
 ;
@@ -399,6 +422,7 @@ constant: CONSTTOKEN
 			     } 
 			     mpfr_clear(*mpfr_temp2);
 			     free(mpfr_temp2);
+			     free($1);
 			     $$ = mpfr_temp;
 			   }
         | DYADICCONSTTOKEN {
@@ -433,6 +457,7 @@ constant: CONSTTOKEN
 			     } 
 			     mpfr_clear(*mpfr_temp2);
 			     free(mpfr_temp2);
+			     free($1);
 			     $$ = mpfr_temp;
 	                   }
         | HEXCONSTTOKEN    {
@@ -451,15 +476,6 @@ constant: CONSTTOKEN
 			     }
 	                     $$ = mpfr_temp;
 	                   }
-        | PITOKEN 
-                           {
-			     printMessage(1,"Warning: The pi constant in the expression will be represented on %d bits\n",
-				    (int) tools_precision);
-			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,tools_precision);
-			     mpfr_const_pi(*mpfr_temp,GMP_RNDN);
-			     $$ = mpfr_temp;
-                           }
         | ETOKEN 
                            {
 			     printMessage(1,"Warning: The e constant in the expression will be represented on %d bits\n",

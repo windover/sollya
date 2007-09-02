@@ -33,18 +33,16 @@ HEXCONSTANT     ("0x"){HEXNUMBER}{16}
 BINARYCONSTANT  (([0-1])+|(([0-1])*"."([0-1])+))"_2"
 
 
-VARIABLE        {CHAR}({CHAR}|{NUMBER})*
+IDENTIFIER        {CHAR}({CHAR}|{NUMBER})*
 
 LPAR            "("
 RPAR            ")"
 
 LBRACKET        "["
 RBRACKET        "]"
-
-IN              "in"
 	       	
 PI              ("pi")|("Pi")
-E               "e"
+
 PLUS            "+"
 MINUS           "-"
 MUL             "*"
@@ -73,13 +71,12 @@ ERFC            "erfc"
 LOG1P           "log1p"
 EXPM1           "expm1"
 
-	       	
-COLON           ":"
 EQUAL           "="
 COMMA           ","
 PREC            "prec"
 POINTS          "points"
 EXCLAMATION     "!"
+DOUBLECOLON     "::"
 	       	
 SEMICOLON       ";"
 QUIT            "quit"
@@ -125,14 +122,13 @@ FPFINDZEROS     "fpfindzeros"
 DIRTYINFNORM    "dirtyinfnorm"
 
 EVALUATE        "evaluate"
-AT              "at"
+
 
 NUMERATOR       "numerator"
 DENOMINATOR     "denominator"
 
-WITHOUT         "without"
-
 DYADIC          "dyadic"
+DISPLAY         "display"
 ON              "on"
 OFF             "off"
 POWERS          "powers"
@@ -148,45 +144,31 @@ HEXACHAR        [0123456789ABCDEFabcdef]
 HEXA            ({HEXACHAR})(({HEXACHAR})?)
 STRING          ({STRINGDELIMITER})((("\\\\")|(("\\")[\"\'\?ntabfrv])|(("\\")({OCTAL}))|(("\\x")({HEXA}))|([^\"\\]))*)({STRINGDELIMITER})
 
-PROOF           "proof"
 
 VERBOSITY       "verbosity"
 
 WORSTCASE       "worstcase"
-WITH            "with"
-INPUTPREC       "inputprec"
-OUTPUTPREC      "outputprec"
-INPUTEXPO       "inputexpo"
-EPSILON         "epsilon"
-OUTPUT          "output"
 
 LEFTANGLE       "<"
 RIGHTANGLEUNDERSCORE ">_"
 RIGHTANGLEDOT ">."
 RIGHTANGLE      ">"
+STARLEFTANGLE   "*<"
+RIGHTANGLESTAR  ">*"
+
+COMPAREEQUAL    "=="
+EXCLAMATIONEQUAL "!="
+
+AND             "&&"
+OR              "||"
 
 SUBSTITUTE      "substitute"
-
-FPMINIMAX       "fpminimax"
-MI              "mi"
-TI              "ti"
-ABSOLUTE        "absolute"
-RELATIVE        "relative"
-WEIGHT          "weight"
-EQUI            "equi"
-CHEB            "cheb"
-
 
 DOTS            "..."
 
 IMPLEMENTPOLY   "implementpoly"
-NAME            "name"
-VARIABLEMETA    "variable"
-AS              "as"
 
 CHECKINFNORM    "checkinfnorm"
-BOUNDED         "bounded"
-BY              "by"
 
 TAYLORRECURSIONS "taylorrecursions"
 
@@ -195,20 +177,16 @@ PRINTBINARY     "printbinary"
 
 ROUNDCOEFFICIENTS "roundcoefficients"
 
-HONORCOEFFPREC  "honorcoeffprec"
 
 RESTART         "restart"
 
-TESTPARI        "testpari"
 
 ZERODENOMINATORS "zerodenominators"
 ISEVALUABLE     "isevaluable"
-
-EVALUATEACCURATE "evaluateaccurate"
+HONORCOEFFPREC  "honorcoeffprec"
 
 ACCURATEINFNORM  "accurateinfnorm"
 
-BITS            "bits"
 
 FILE            "file"
 POSTSCRIPT      "postscript"
@@ -219,7 +197,6 @@ PRINTEXPANSION  "printexpansion"
 BASHEXECUTE     "bashexecute"
 EXTERNALPLOT    "externalplot"
 PERTURB         "perturb"
-TO              "to"
 
 COEFF           "coeff"
 SUBPOLY         "subpoly"
@@ -228,7 +205,6 @@ QUESTIONMARK    "?"
 
 SEARCHGAL       "searchgal"
 
-STEPS           "steps"
 
 RATIONALAPPROX  "rationalapprox"
 
@@ -243,7 +219,6 @@ WRITE           "write"
 
 ASCIIPLOT       "asciiplot"
 
-DOLLAR           "$"
 
 ROUNDTOFORMAT   "round"
 MINUSWORD       "M"
@@ -251,7 +226,6 @@ PLUSWORD        "P"
 ZEROWORD        "Z"
 NEAREST         "N"
 
-FINISH          "&"
 
 GUESSDEGREE     "guessdegree"
 
@@ -271,6 +245,43 @@ HELP            "help"
 
 DIRTYFINDZEROS  "dirtyfindzeros"
 
+CEIL            "ceil"
+FLOOR           "floor"
+
+HEAD            "head"
+TAIL            "tail"
+
+VERTBAR         "|"
+AT              "@"
+
+IF              "if"
+THEN            "then"
+ELSE            "else"
+FOR             "for"
+IN              "in"
+FROM            "from"
+TO              "to"
+BY              "by"
+DO              "do"
+BEGIN           "begin"
+END             "end"
+WHILEDEF        "while"
+
+TRUE            "true"
+FALSE           "false"
+DEFAULT         "default"
+
+RENAME          "rename"
+
+LENGTH          "length"
+
+ABSOLUTE        "absolute"
+RELATIVE        "relative"
+DECIMAL         "decimal"
+
+ERROR           "error"
+
+
 %%
 
 %{
@@ -278,230 +289,30 @@ DIRTYFINDZEROS  "dirtyfindzeros"
 %}
 
 
+
+
 {COMMENTSTART}  {     BEGIN(commentstate); }
 
-<commentstate>{COMMENTEND} { printPrompt(); BEGIN(INITIAL); }
+<commentstate>{COMMENTEND} { BEGIN(INITIAL); }
 
 <commentstate>. { // Eat up comments 
+
                  }
 
 <commentstate>[\n] { // Eat up newlines in comments
+
 		}
 
 
 
 {ONELINECOMMENT} {  // Eat up comments
-                      printPrompt();
+
                  }
 
-{DOTS}          {     promptToBePrinted = 0; return DOTSTOKEN;              }     
-
-{BINARYCONSTANT} {
-                      if (constBuffer != NULL) free(constBuffer);
-		      constBuffer = (char *) safeCalloc(strlen(yytext)-1,sizeof(char));
-		      strncpy(constBuffer,yytext,strlen(yytext)-2);
-                      yylval->value = constBuffer;
-                      promptToBePrinted = 0; return BINARYCONSTTOKEN;
-                 }
-
-
-{CONSTANT}      {     
-                      if (constBuffer != NULL) free(constBuffer);
-		      constBuffer = (char *) safeCalloc(strlen(yytext)+1,sizeof(char));
-		      constBuffer2 = (char *) safeCalloc(strlen(yytext)+1,sizeof(char));
-		      if (removeSpaces(constBuffer2,yytext)) {
-			printMessage(2,"Information: removed spaces in scientific notation constant \"%s\", it will be considered as \"%s\"\n",yytext,constBuffer2);
-		      }
-		      if (removeMidpointMode(constBuffer,constBuffer2)) {
-			printMessage(2,"Information: removed midpoint information in scientific notation constant \"%s\", it will be considered as \"%s\"\n",constBuffer2,constBuffer);
-		      }
-		      free(constBuffer2);
-                      yylval->value = constBuffer;
-                      promptToBePrinted = 0; return CONSTTOKEN;
-                }
-{DYADICCONSTANT} {     
-                      yylval->value = yytext;
-                      promptToBePrinted = 0; return DYADICCONSTTOKEN;
-                }
-{HEXCONSTANT}   {     
-                      yylval->value = yytext;
-                      promptToBePrinted = 0; return HEXCONSTTOKEN;
-                }
-{IN}            {     promptToBePrinted = 0; return INTOKEN; }
-{LBRACKET}      {     promptToBePrinted = 0; return LBRACKETTOKEN; }
-{RBRACKET}      {     promptToBePrinted = 0; return RBRACKETTOKEN; }
-
-{PI}            {     promptToBePrinted = 0; return PITOKEN;    }             
-{E}             {     promptToBePrinted = 0; return ETOKEN;     }              
-{LPAR}          {     promptToBePrinted = 0; return LPARTOKEN     ;    }           
-{RPAR}          {     promptToBePrinted = 0; return RPARTOKEN     ;    }           
-{PLUS}          {     promptToBePrinted = 0; return PLUSTOKEN     ;    }           
-{MINUS}         {     promptToBePrinted = 0; return MINUSTOKEN    ;    }          
-{MUL}           {     promptToBePrinted = 0; return MULTOKEN      ;    }            
-{DIV}           {     promptToBePrinted = 0; return DIVTOKEN      ;    }            
-{POW}           {     promptToBePrinted = 0; return POWTOKEN      ;    }            
-{SQRT}          {     promptToBePrinted = 0; return SQRTTOKEN     ;    }           
-{EXP}           {     promptToBePrinted = 0; return EXPTOKEN      ;    }            
-{LOG}           {     promptToBePrinted = 0; return LOGTOKEN      ;    }            
-{LOG2}          {     promptToBePrinted = 0; return LOG2TOKEN     ;    }           
-{LOG10}         {     promptToBePrinted = 0; return LOG10TOKEN    ;    }          
-{SIN}           {     promptToBePrinted = 0; return SINTOKEN      ;    }            
-{COS}           {     promptToBePrinted = 0; return COSTOKEN      ;    }            
-{TAN}           {     promptToBePrinted = 0; return TANTOKEN      ;    }            
-{ASIN}          {     promptToBePrinted = 0; return ASINTOKEN     ;    }           
-{ACOS}          {     promptToBePrinted = 0; return ACOSTOKEN     ;    }           
-{ATAN}          {     promptToBePrinted = 0; return ATANTOKEN     ;    }           
-{SINH}          {     promptToBePrinted = 0; return SINHTOKEN     ;    }           
-{COSH}          {     promptToBePrinted = 0; return COSHTOKEN     ;    }           
-{TANH}          {     promptToBePrinted = 0; return TANHTOKEN     ;    }           
-{ASINH}         {     promptToBePrinted = 0; return ASINHTOKEN    ;    }          
-{ACOSH}         {     promptToBePrinted = 0; return ACOSHTOKEN    ;    }          
-{ATANH}         {     promptToBePrinted = 0; return ATANHTOKEN    ;    }          
-{ABS}           {     promptToBePrinted = 0; return ABSTOKEN      ;    }            
-{ERF}           {     promptToBePrinted = 0; return ERFTOKEN      ;    }            
-{ERFC}          {     promptToBePrinted = 0; return ERFCTOKEN     ;    }            
-{LOG1P}         {     promptToBePrinted = 0; return LOG1PTOKEN    ;    }            
-{EXPM1}         {     promptToBePrinted = 0; return EXPM1TOKEN    ;    }            
-{COLON}         {     promptToBePrinted = 0; return COLONTOKEN    ;    }          
-{EQUAL}         {     promptToBePrinted = 0; return EQUALTOKEN    ;    }          
-{COMMA}         {     promptToBePrinted = 0; return COMMATOKEN    ;    }          
-{PREC}          {     promptToBePrinted = 0; return PRECTOKEN     ;    }           
-{POINTS}        {     promptToBePrinted = 0; return POINTSTOKEN   ;    }         
-{SEMICOLON}     {     promptToBePrinted = 0; return SEMICOLONTOKEN;    }      
-{QUIT}          {     
-                      promptToBePrinted = 0; 
-                      if (readStack != NULL) {
-			return FALSEQUITTOKEN;
-                      }
-                      return QUITTOKEN;         
-                }
-{PRINT}         {     promptToBePrinted = 0; return PRINTTOKEN;        }
-{DIFF}          {     promptToBePrinted = 0; return DIFFTOKEN;         }
-{SIMPLIFY}      {     promptToBePrinted = 0; return SIMPLIFYTOKEN;     }    
-{PLOT}          {     promptToBePrinted = 0; return PLOTTOKEN;         }
-{INFNORM}       {     promptToBePrinted = 0; return INFNORMTOKEN;      }
-{REMEZ}         {     promptToBePrinted = 0; return REMEZTOKEN;        } 
-{DIAM}          {     promptToBePrinted = 0; return DIAMTOKEN;         }
-{DOUBLE}        {     promptToBePrinted = 0; return DOUBLETOKEN;       }
-{DOUBLEDOUBLE}  {     promptToBePrinted = 0; return DOUBLEDOUBLETOKEN; }
-{TRIPLEDOUBLE}  {     promptToBePrinted = 0; return TRIPLEDOUBLETOKEN; }
-{DOUBLEEXTENDED} {     promptToBePrinted = 0; return DOUBLEEXTENDEDTOKEN; }
-{HORNER}        {     promptToBePrinted = 0; return HORNERTOKEN;       }
-{DEGREE}        {     promptToBePrinted = 0; return DEGREETOKEN;       }
-{EXPAND}        {     promptToBePrinted = 0; return EXPANDTOKEN;       }
-{SIMPLIFYSAFE}  {     promptToBePrinted = 0; return SIMPLIFYSAFETOKEN; }
-{CANONICAL}     {     promptToBePrinted = 0; return CANONICALTOKEN; }
-{TAYLOR}        {     promptToBePrinted = 0; return TAYLORTOKEN; }
-{FINDZEROS}     {     promptToBePrinted = 0; return FINDZEROSTOKEN; }
-{DIRTYINFNORM}  {     promptToBePrinted = 0; return DIRTYINFNORMTOKEN; }
-{EVALUATE}      {     promptToBePrinted = 0; return EVALUATETOKEN; }
-{AT}            {     promptToBePrinted = 0; return ATTOKEN; }
-{NUMERATOR}     {     promptToBePrinted = 0; return NUMERATORTOKEN; }
-{DENOMINATOR}   {     promptToBePrinted = 0; return DENOMINATORTOKEN; }
-{WITHOUT}       {     promptToBePrinted = 0; return WITHOUTTOKEN; }
-{DYADIC}        {     promptToBePrinted = 0; return DYADICTOKEN; }
-{ON}            {     promptToBePrinted = 0; return ONTOKEN; }
-{OFF}           {     promptToBePrinted = 0; return OFFTOKEN; }
-{POWERS}        {     promptToBePrinted = 0; return POWERSTOKEN; }
-{BINARY}        {     promptToBePrinted = 0; return BINARYTOKEN; }
-{INTEGRAL}      {     promptToBePrinted = 0; return INTEGRALTOKEN; }
-{DIRTYINTEGRAL} {     promptToBePrinted = 0; return DIRTYINTEGRALTOKEN; }
-{PROOF}         {     promptToBePrinted = 0; return PROOFTOKEN; }
-{VERBOSITY}     {     promptToBePrinted = 0; return VERBOSITYTOKEN; }
-{WORSTCASE}     {     promptToBePrinted = 0; return WORSTCASETOKEN; }	
-{WITH}          {     promptToBePrinted = 0; return WITHTOKEN; }	
-{INPUTPREC}     {     promptToBePrinted = 0; return INPUTPRECTOKEN; }	
-{OUTPUTPREC}    {     promptToBePrinted = 0; return OUTPUTPRECTOKEN; }	
-{INPUTEXPO}     {     promptToBePrinted = 0; return INPUTEXPOTOKEN; }	
-{EPSILON}       {     promptToBePrinted = 0; return EPSILONTOKEN; }     
-{OUTPUT}        {     promptToBePrinted = 0; return OUTPUTTOKEN; }     
-{LEFTANGLE}              {     promptToBePrinted = 0; return LEFTANGLETOKEN; }     
-{RIGHTANGLEUNDERSCORE}   {     promptToBePrinted = 0; return RIGHTANGLEUNDERSCORETOKEN; }     
-{RIGHTANGLEDOT}          {     promptToBePrinted = 0; return RIGHTANGLEDOTTOKEN; }     
-{RIGHTANGLE}             {     promptToBePrinted = 0; return RIGHTANGLETOKEN; }     
-{SUBSTITUTE}             {     promptToBePrinted = 0; return SUBSTITUTETOKEN; }     
-{FPMINIMAX}              {     promptToBePrinted = 0; return FPMINIMAXTOKEN;        }     
-{MI}                     {     promptToBePrinted = 0; return MITOKEN;               }     
-{TI}                     {     promptToBePrinted = 0; return TITOKEN;               }     
-{ABSOLUTE}               {     promptToBePrinted = 0; return ABSOLUTETOKEN;         }     
-{RELATIVE}               {     promptToBePrinted = 0; return RELATIVETOKEN;         }     
-{WEIGHT}                 {     promptToBePrinted = 0; return WEIGHTTOKEN;           }     
-{EQUI}                   {     promptToBePrinted = 0; return EQUITOKEN;             }     
-{CHEB}                   {     promptToBePrinted = 0; return CHEBTOKEN;             }     
-{IMPLEMENTPOLY}          {     promptToBePrinted = 0; return IMPLEMENTPOLYTOKEN;    }     
-{NAME}                   {     promptToBePrinted = 0; return NAMETOKEN;             }     
-{VARIABLEMETA}           {     promptToBePrinted = 0; return VARIABLEMETATOKEN;     }
-{AS}                     {     promptToBePrinted = 0; return ASTOKEN;               }          
-{CHECKINFNORM}           {     promptToBePrinted = 0; return CHECKINFNORMTOKEN;     }          
-{BOUNDED}                {     promptToBePrinted = 0; return BOUNDEDTOKEN;          }
-{BY}                     {     promptToBePrinted = 0; return BYTOKEN;               }                    
-{TAYLORRECURSIONS}       {     promptToBePrinted = 0; return TAYLORRECURSIONSTOKEN; }                    
-{PRINTHEXA}              {     promptToBePrinted = 0; return PRINTHEXATOKEN; }                    
-{PRINTBINARY}            {     promptToBePrinted = 0; return PRINTBINARYTOKEN; }                    
-{ROUNDCOEFFICIENTS}      {     promptToBePrinted = 0; return ROUNDCOEFFICIENTSTOKEN; }                    
-{HONORCOEFFPREC}         {     promptToBePrinted = 0; return HONORCOEFFPRECTOKEN; }                    
-{RESTART}                {     promptToBePrinted = 0; return RESTARTTOKEN; }                    
-{TESTPARI}               {     promptToBePrinted = 0; return TESTPARITOKEN; }                    
-{FPFINDZEROS}            {     promptToBePrinted = 0; return FPFINDZEROSTOKEN; }                    
-{ZERODENOMINATORS}       {     promptToBePrinted = 0; return ZERODENOMINATORSTOKEN; }                    
-{ISEVALUABLE}            {     promptToBePrinted = 0; return ISEVALUABLETOKEN; }                    
-{EVALUATEACCURATE}       {     promptToBePrinted = 0; return EVALUATEACCURATETOKEN; }                    
-{EXCLAMATION}            {     promptToBePrinted = 0; return EXCLAMATIONTOKEN; }                    
-{ACCURATEINFNORM}        {     promptToBePrinted = 0; return ACCURATEINFNORMTOKEN; }                    
-{BITS}                   {     promptToBePrinted = 0; return BITSTOKEN; }                    
-{FILE}                   {     promptToBePrinted = 0; return FILETOKEN;           }                    
-{POSTSCRIPT}             {     promptToBePrinted = 0; return POSTSCRIPTTOKEN;     }                    
-{POSTSCRIPTFILE}         {     promptToBePrinted = 0; return POSTSCRIPTFILETOKEN; }                    
-{PRINTEXPANSION}         {     promptToBePrinted = 0; return PRINTEXPANSIONTOKEN; }                    
-{BASHEXECUTE}            {     promptToBePrinted = 0; return BASHEXECUTETOKEN; }                    
-{EXTERNALPLOT}           {     promptToBePrinted = 0; return EXTERNALPLOTTOKEN; }                    
-{PERTURB}                {     promptToBePrinted = 0; return PERTURBTOKEN; }                    
-{TO}                     {     promptToBePrinted = 0; return TOTOKEN; }                    
-{COEFF}                  {     promptToBePrinted = 0; return COEFFTOKEN; }                    
-{SUBPOLY}                {     promptToBePrinted = 0; return SUBPOLYTOKEN; }                    
-{QUESTIONMARK}           {     promptToBePrinted = 0; return QUESTIONMARKTOKEN; }                    
-{SEARCHGAL}              {     promptToBePrinted = 0; return SEARCHGALTOKEN; }                    
-{STEPS}                  {     promptToBePrinted = 0; return STEPSTOKEN; }                    
-{RATIONALAPPROX}         {     promptToBePrinted = 0; return RATIONALAPPROXTOKEN; }                    
-{WRITE}                  {     promptToBePrinted = 0; return WRITETOKEN; }                    
-{ASCIIPLOT}              {     promptToBePrinted = 0; return ASCIIPLOTTOKEN; }                    
-{DOLLAR}                 {     promptToBePrinted = 0; return DOLLARTOKEN; }                    
-{ROUNDTOFORMAT}          {     promptToBePrinted = 0; return ROUNDTOFORMATTOKEN; }                    
-{MINUSWORD}              {     promptToBePrinted = 0; return MINUSWORDTOKEN; }                    	
-{PLUSWORD}               {     promptToBePrinted = 0; return PLUSWORDTOKEN; }                    	
-{ZEROWORD}               {     promptToBePrinted = 0; return ZEROWORDTOKEN; }                    	
-{NEAREST}                {     promptToBePrinted = 0; return NEARESTTOKEN; }                    
-{GUESSDEGREE}            {     promptToBePrinted = 0; return GUESSDEGREETOKEN; }                    
-{PARSE}                  {     promptToBePrinted = 0; return PARSETOKEN; }                    
-{AUTOSIMPLIFY}           {     promptToBePrinted = 0; return AUTOSIMPLIFYTOKEN; }                    
-{TIMING}                 {     promptToBePrinted = 0; return TIMINGTOKEN; }                    
-{FULLPARENTHESES}        {     promptToBePrinted = 0; return FULLPARENTHESESTOKEN; }                    
-{MIDPOINTMODE}           {     promptToBePrinted = 0; return MIDPOINTMODETOKEN; }                    
-{LIBRARY}                {     promptToBePrinted = 0; return LIBRARYTOKEN; }                    
-{HOPITALRECURSIONS}      {     promptToBePrinted = 0; return HOPITALRECURSIONSTOKEN; }                    
-{HELP}                   {     promptToBePrinted = 0; return HELPTOKEN; }                    
-{DIRTYFINDZEROS}         {     promptToBePrinted = 0; return DIRTYFINDZEROSTOKEN; }                    
 
 {READ}          {
                       BEGIN(readstate);
                 }
-
-{VARIABLE}      {     			     
-                      if (currentVariable != NULL) free(currentVariable);
-		      currentVariable = NULL;
-		      currentVariable = (char*) safeCalloc(yyleng + 1,sizeof(char));
-		      strncpy(currentVariable,yytext,yyleng);
-                      promptToBePrinted = 0; return VARIABLETOKEN;    
-                }
-
-{STRING}        {     			     
-                      if (currentString != NULL) free(currentString);
-		      currentString = NULL;
-		      currentString = (char*) safeCalloc(yyleng - 1,sizeof(char));
-		      strncpy(currentString,yytext+1,yyleng-2);
-                      promptToBePrinted = 0; return STRINGTOKEN;    
-                }
-
 
 <readstate>{STRING}  {
                        if (newReadFilename != NULL) free(newReadFilename);
@@ -527,9 +338,8 @@ DIRTYFINDZEROS  "dirtyfindzeros"
 			printMessage(1,"Warning: the file \"%s\" could not be opened for reading: ",newReadFilenameTemp);
 			printMessage(1,"\"%s\".\n",strerror(errno));
 			printMessage(1,"The last command will have no effect. No memory will be lost.\n");
-			promptToBePrinted = 1;
 		      } else {
-			eliminatePrompt = 1;
+			newReadFileStarted();
 			currStatePtr = (YY_BUFFER_STATE *) safeMalloc(sizeof(YY_BUFFER_STATE));
 			*currStatePtr = YY_CURRENT_BUFFER;
 			readStack = addElement(readStack, (void *) currStatePtr);
@@ -568,47 +378,230 @@ DIRTYFINDZEROS  "dirtyfindzeros"
 			readStackTemp = readStack->next;
 			free(readStack);
 			readStack = readStackTemp;
-			if (readStack == NULL) {
-			  if (!promptToBePrinted && !eliminatePromptBackup)
-			    printMessage(1,"Warning: read macro may have ended on an unfinished line.\n");
-			  eliminatePrompt = eliminatePromptBackup;
-			}
 		      }
                 }
 
-{FINISH}        {
-                      if (readStack == NULL) {
-			fprintf(stderr,"Error: unallowed character in this context.\n");
-		      } else {
-			printMessage(1,"Warning: closing file included using the read macro.\n");
-			fclose(yyin);
-			yyin = *((FILE **) (readStack2->value));
-			free(readStack2->value);
-			readStackTemp = readStack2->next;
-			free(readStack2);
-			readStack2 = readStackTemp;
-			yy_delete_buffer(YY_CURRENT_BUFFER,scanner);
-			yy_switch_to_buffer(*((YY_BUFFER_STATE *) (readStack->value)),scanner);
-			free(readStack->value);
-			readStackTemp = readStack->next;
-			free(readStack);
-			readStack = readStackTemp;
-			if (readStack == NULL) {
-			  if (!promptToBePrinted && !eliminatePromptBackup)
-			    printMessage(1,"Warning: read macro may have ended on an unfinished line.\n");
-			  eliminatePrompt = eliminatePromptBackup;
-			}
-		      }
-                }
+{CONSTANT}                                  { 
+					      constBuffer = (char *) safeCalloc(yyleng+1,sizeof(char));
+					      constBuffer2 = (char *) safeCalloc(yyleng+1,sizeof(char));
+					      if (removeSpaces(constBuffer2,yytext)) {
+						printMessage(2,"Information: removed spaces in scientific notation constant \"%s\", it will be considered as \"%s\"\n",yytext,constBuffer2);
+					      }
+					      if (removeMidpointMode(constBuffer,constBuffer2)) {
+						printMessage(2,"Information: removed midpoint information in scientific notation constant \"%s\", it will be considered as \"%s\"\n",constBuffer2,constBuffer);
+					      }
+					      free(constBuffer2);
+					      yylval->value = constBuffer;
+                                              newTokenLexed(); return CONSTANTTOKEN; }        		       
+{DYADICCONSTANT} 			    { 
+                                              constBuffer = (char *) safeCalloc(yyleng+1,sizeof(char));
+					      strncpy(constBuffer,yytext,yyleng);
+					      yylval->value = constBuffer;
+                                              newTokenLexed(); return DYADICCONSTANTTOKEN; } 	              
+{HEXCONSTANT}     			    { constBuffer = (char *) safeCalloc(yyleng+1,sizeof(char));
+					      strncpy(constBuffer,yytext,yyleng);
+					      yylval->value = constBuffer;
+                                              newTokenLexed(); return HEXCONSTANTTOKEN; }     		        
+{BINARYCONSTANT}  			    { constBuffer = (char *) safeCalloc(yyleng-1,sizeof(char));
+					      strncpy(constBuffer,yytext,yyleng-2);
+					      yylval->value = constBuffer;
+                                              newTokenLexed(); return BINARYCONSTANTTOKEN; }  	  	      
+					    											       
+{PI}              			    { newTokenLexed(); return PITOKEN; }              					       
+					    											       
+{STRING}          			    { 
+					      constBuffer = (char *) safeCalloc(yyleng-1,sizeof(char));
+					      constBuffer2 = (char *) safeCalloc(yyleng-1,sizeof(char));
+					      strncpy(constBuffer2,yytext+1,yyleng-2);
+					      demaskString(constBuffer,constBuffer2);						
+					      free(constBuffer2);
+					      yylval->value = constBuffer;
+                                              newTokenLexed(); return STRINGTOKEN; }          					       
+					    											       
+{LPAR}            			    { newTokenLexed(); return LPARTOKEN; }            					       
+{RPAR}            			    { newTokenLexed(); return RPARTOKEN; }            					       
+{LBRACKET}        			    { newTokenLexed(); return LBRACKETTOKEN; }        					       
+{RBRACKET}        			    { newTokenLexed(); return RBRACKETTOKEN; }        					   
+{EXCLAMATIONEQUAL}			    { newTokenLexed(); return EXCLAMATIONEQUALTOKEN; }        				    
+{COMPAREEQUAL}                              { newTokenLexed(); return COMPAREEQUALTOKEN; }        			           
+{EQUAL}           			    { newTokenLexed(); return EQUALTOKEN; }           					       
+{COMMA}           			    { newTokenLexed(); return COMMATOKEN; }           					       
+{EXCLAMATION}				    { newTokenLexed(); return EXCLAMATIONTOKEN; }				    	       
+{SEMICOLON}       			    { newTokenLexed(); return SEMICOLONTOKEN; }       					       
+{LEFTANGLE}       			    { newTokenLexed(); return LEFTANGLETOKEN; }       					       
+{STARLEFTANGLE}   			    { newTokenLexed(); return STARLEFTANGLETOKEN; }       				        
+{RIGHTANGLEUNDERSCORE}			    { newTokenLexed(); return RIGHTANGLEUNDERSCORETOKEN; }			    	       
+{RIGHTANGLEDOT} 			    { newTokenLexed(); return RIGHTANGLEDOTTOKEN; } 					 
+{RIGHTANGLESTAR}			    { newTokenLexed(); return RIGHTANGLESTARTOKEN; } 					       
+{RIGHTANGLE}      			    { newTokenLexed(); return RIGHTANGLETOKEN; }      					       
+{DOTS}            			    { newTokenLexed(); return DOTSTOKEN; }            					       
+{QUESTIONMARK}				    { newTokenLexed(); return QUESTIONMARKTOKEN; }				      	       
+{AND}         				    { newTokenLexed(); return ANDTOKEN; }				      	       
+{OR}         				    { newTokenLexed(); return ORTOKEN; }				      	       
+{VERTBAR}				    { newTokenLexed(); return VERTBARTOKEN; }						       
+{AT}					    { newTokenLexed(); return ATTOKEN; }					      	       
+{DOUBLECOLON}				    { newTokenLexed(); return DOUBLECOLONTOKEN; }				      	       
 
+
+{PLUS}            			    { newTokenLexed(); return PLUSTOKEN; }            					       
+{MINUS}           			    { newTokenLexed(); return MINUSTOKEN; }           					       
+{MUL}          				    { newTokenLexed(); return MULTOKEN; }          				      	       
+{DIV}            			    { newTokenLexed(); return DIVTOKEN; }            					       
+{POW}            			    { newTokenLexed(); return POWTOKEN; }            					       
+					    											       
+{SQRT}            			    { newTokenLexed(); return SQRTTOKEN; }            					       
+{EXP}             			    { newTokenLexed(); return EXPTOKEN; }             					       
+{LOG}             			    { newTokenLexed(); return LOGTOKEN; }             					       
+{LOG2}            			    { newTokenLexed(); return LOG2TOKEN; }            					       
+{LOG10}           			    { newTokenLexed(); return LOG10TOKEN; }           					       
+{SIN}             			    { newTokenLexed(); return SINTOKEN; }             					       
+{COS}             			    { newTokenLexed(); return COSTOKEN; }             					       
+{TAN}             			    { newTokenLexed(); return TANTOKEN; }             					       
+{ASIN}            			    { newTokenLexed(); return ASINTOKEN; }            					       
+{ACOS}            			    { newTokenLexed(); return ACOSTOKEN; }            					       
+{ATAN}            			    { newTokenLexed(); return ATANTOKEN; }            					       
+{SINH}            			    { newTokenLexed(); return SINHTOKEN; }            					       
+{COSH}            			    { newTokenLexed(); return COSHTOKEN; }            					       
+{TANH}            			    { newTokenLexed(); return TANHTOKEN; }            					       
+{ASINH}           			    { newTokenLexed(); return ASINHTOKEN; }           					       
+{ACOSH}           			    { newTokenLexed(); return ACOSHTOKEN; }           					       
+{ATANH}           			    { newTokenLexed(); return ATANHTOKEN; }           					       
+{ABS}             			    { newTokenLexed(); return ABSTOKEN; }             					       
+{ERF}             			    { newTokenLexed(); return ERFTOKEN; }             					       
+{ERFC}            			    { newTokenLexed(); return ERFCTOKEN; }            					       
+{LOG1P}           			    { newTokenLexed(); return LOG1PTOKEN; }           					       
+{EXPM1}           			    { newTokenLexed(); return EXPM1TOKEN; }           					       
+{DOUBLE}          			    { newTokenLexed(); return DOUBLETOKEN; }          					       
+{DOUBLEDOUBLE}				    { newTokenLexed(); return DOUBLEDOUBLETOKEN; }				      	       
+{TRIPLEDOUBLE}    			    { newTokenLexed(); return TRIPLEDOUBLETOKEN; }    					       
+{DOUBLEEXTENDED}  			    { newTokenLexed(); return DOUBLEEXTENDEDTOKEN; }  					       
+{CEIL}            			    { newTokenLexed(); return CEILTOKEN; }            					       
+{FLOOR}           			    { newTokenLexed(); return FLOORTOKEN; }           					       
+					    											       
+{PREC}            			    { newTokenLexed(); return PRECTOKEN; }            					       
+{POINTS}          			    { newTokenLexed(); return POINTSTOKEN; }          					       
+{DIAM}            			    { newTokenLexed(); return DIAMTOKEN; }            					       
+{DISPLAY}          			    { newTokenLexed(); return DISPLAYTOKEN; }          					       
+{VERBOSITY}       			    { newTokenLexed(); return VERBOSITYTOKEN; }       					       
+{CANONICAL}       			    { newTokenLexed(); return CANONICALTOKEN; }       					       
+{AUTOSIMPLIFY}    			    { newTokenLexed(); return AUTOSIMPLIFYTOKEN; }    					       
+{TAYLORRECURSIONS}			    { newTokenLexed(); return TAYLORRECURSIONSTOKEN; }					       
+{TIMING}          			    { newTokenLexed(); return TIMINGTOKEN; }          					       
+{FULLPARENTHESES} 			    { newTokenLexed(); return FULLPARENTHESESTOKEN; } 					       
+{MIDPOINTMODE}    			    { newTokenLexed(); return MIDPOINTMODETOKEN; }    					       
+{HOPITALRECURSIONS}			    { newTokenLexed(); return HOPITALRECURSIONSTOKEN; }					       
+					    											       
+{ON}              			    { newTokenLexed(); return ONTOKEN; }              					       
+{OFF}             			    { newTokenLexed(); return OFFTOKEN; }             					       
+{DYADIC}				    { newTokenLexed(); return DYADICTOKEN; }						       
+{POWERS}          			    { newTokenLexed(); return POWERSTOKEN; }          					       
+{BINARY}          			    { newTokenLexed(); return BINARYTOKEN; }          					       
+{FILE}            			    { newTokenLexed(); return FILETOKEN; }            					       
+{POSTSCRIPT}      			    { newTokenLexed(); return POSTSCRIPTTOKEN; }      					       
+{POSTSCRIPTFILE}  			    { newTokenLexed(); return POSTSCRIPTFILETOKEN; }  					       
+{PERTURB}         			    { newTokenLexed(); return PERTURBTOKEN; }         					       
+{MINUSWORD}       			    { newTokenLexed(); return MINUSWORDTOKEN; }       					       
+{PLUSWORD}        			    { newTokenLexed(); return PLUSWORDTOKEN; }        					       
+{ZEROWORD}        			    { newTokenLexed(); return ZEROWORDTOKEN; }        					       
+{NEAREST}         			    { newTokenLexed(); return NEARESTTOKEN; }         					       
+{HONORCOEFFPREC} 			    { newTokenLexed(); return HONORCOEFFPRECTOKEN; } 					       
+{TRUE}					    { newTokenLexed(); return TRUETOKEN; }					     	       
+{FALSE}					    { newTokenLexed(); return FALSETOKEN; }					      	       
+{DEFAULT}				    { newTokenLexed(); return DEFAULTTOKEN; }				 
+{HEAD}   				    { newTokenLexed(); return HEADTOKEN; }				 
+{TAIL}   				    { newTokenLexed(); return TAILTOKEN; }				 
+{LENGTH}   				    { newTokenLexed(); return LENGTHTOKEN; }				 
+{ABSOLUTE}   				    { newTokenLexed(); return ABSOLUTETOKEN; }				 
+{RELATIVE}   				    { newTokenLexed(); return RELATIVETOKEN; }				 
+{DECIMAL}   				    { newTokenLexed(); return DECIMALTOKEN; }				 
+{ERROR}   				    { newTokenLexed(); return ERRORTOKEN; }				 	       
+
+{QUIT}            			    {     
+                                              newTokenLexed(); 
+                                              if (readStack != NULL) {
+			                        return FALSEQUITTOKEN;
+                                              }
+                                              return QUITTOKEN;         
+                                            }
+{RESTART}         			    { newTokenLexed(); return RESTARTTOKEN; }         					       
+					    											       
+{LIBRARY}         			    { newTokenLexed(); return LIBRARYTOKEN; }         					       
+					    											       
+{DIFF}            			    { newTokenLexed(); return DIFFTOKEN; }            					       
+{SIMPLIFY}				    { newTokenLexed(); return SIMPLIFYTOKEN; }						       
+{REMEZ}           			    { newTokenLexed(); return REMEZTOKEN; }           					       
+{HORNER}          			    { newTokenLexed(); return HORNERTOKEN; }          					       
+{EXPAND}          			    { newTokenLexed(); return EXPANDTOKEN; }          					       
+{SIMPLIFYSAFE}				    { newTokenLexed(); return SIMPLIFYSAFETOKEN; }				      	       
+{TAYLOR}         			    { newTokenLexed(); return TAYLORTOKEN; }         					       
+{DEGREE}          			    { newTokenLexed(); return DEGREETOKEN; }          					       
+{NUMERATOR}       			    { newTokenLexed(); return NUMERATORTOKEN; }       					       
+{DENOMINATOR}     			    { newTokenLexed(); return DENOMINATORTOKEN; }     					       
+{SUBSTITUTE}      			    { newTokenLexed(); return SUBSTITUTETOKEN; }      					       
+{COEFF}           			    { newTokenLexed(); return COEFFTOKEN; }           					       
+{SUBPOLY}         			    { newTokenLexed(); return SUBPOLYTOKEN; }         					       
+{ROUNDCOEFFICIENTS} 			    { newTokenLexed(); return ROUNDCOEFFICIENTSTOKEN; } 			      	       
+{RATIONALAPPROX}  			    { newTokenLexed(); return RATIONALAPPROXTOKEN; }  					       
+{ACCURATEINFNORM}  			    { newTokenLexed(); return ACCURATEINFNORMTOKEN; }  					       
+{ROUNDTOFORMAT}   			    { newTokenLexed(); return ROUNDTOFORMATTOKEN; }   					       
+{EVALUATE}        			    { newTokenLexed(); return EVALUATETOKEN; }        					       
+					    											       
+{PARSE}           			    { newTokenLexed(); return PARSETOKEN; }           					       
+					    											       
+{PRINT}           			    { newTokenLexed(); return PRINTTOKEN; }           					       
+{PLOT}            			    { newTokenLexed(); return PLOTTOKEN; }            					       
+{PRINTHEXA}       			    { newTokenLexed(); return PRINTHEXATOKEN; }       					       
+{PRINTBINARY}     			    { newTokenLexed(); return PRINTBINARYTOKEN; }     					       
+{PRINTEXPANSION}  			    { newTokenLexed(); return PRINTEXPANSIONTOKEN; }  					       
+{BASHEXECUTE}     			    { newTokenLexed(); return BASHEXECUTETOKEN; }     					       
+{EXTERNALPLOT}    			    { newTokenLexed(); return EXTERNALPLOTTOKEN; }    					       
+{WRITE}           			    { newTokenLexed(); return WRITETOKEN; }           					       
+{ASCIIPLOT}       			    { newTokenLexed(); return ASCIIPLOTTOKEN; }       					       
+{RENAME}         			    { newTokenLexed(); return RENAMETOKEN; }       				
+
+					    											       
+{INFNORM}         			    { newTokenLexed(); return INFNORMTOKEN; }         					       
+{FINDZEROS}       			    { newTokenLexed(); return FINDZEROSTOKEN; }       					       
+{FPFINDZEROS}     			    { newTokenLexed(); return FPFINDZEROSTOKEN; }     					       
+{DIRTYINFNORM}    			    { newTokenLexed(); return DIRTYINFNORMTOKEN; }    					       
+{INTEGRAL}        			    { newTokenLexed(); return INTEGRALTOKEN; }        					       
+{DIRTYINTEGRAL}				    { newTokenLexed(); return DIRTYINTEGRALTOKEN; }				      	       
+{WORSTCASE}       			    { newTokenLexed(); return WORSTCASETOKEN; }       					       
+{IMPLEMENTPOLY}				    { newTokenLexed(); return IMPLEMENTPOLYTOKEN; }				      	       
+{CHECKINFNORM}    			    { newTokenLexed(); return CHECKINFNORMTOKEN; }    					       
+{ZERODENOMINATORS}			    { newTokenLexed(); return ZERODENOMINATORSTOKEN; }					       
+{ISEVALUABLE}     			    { newTokenLexed(); return ISEVALUABLETOKEN; }     					       
+{SEARCHGAL}       			    { newTokenLexed(); return SEARCHGALTOKEN; }       					       
+{GUESSDEGREE}     			    { newTokenLexed(); return GUESSDEGREETOKEN; }     					       
+{DIRTYFINDZEROS}  			    { newTokenLexed(); return DIRTYFINDZEROSTOKEN; }  					       
+					    											       
+{IF}					    { newTokenLexed(); return IFTOKEN; }					      	       
+{THEN}					    { newTokenLexed(); return THENTOKEN; }					      	       
+{ELSE}					    { newTokenLexed(); return ELSETOKEN; }					      	       
+{FOR}					    { newTokenLexed(); return FORTOKEN; }					      	       
+{IN}					    { newTokenLexed(); return INTOKEN; }					      	       
+{FROM}					    { newTokenLexed(); return FROMTOKEN; }					      	       
+{TO}					    { newTokenLexed(); return TOTOKEN; }					     	       
+{BY}					    { newTokenLexed(); return BYTOKEN; }					      	       
+{DO}					    { newTokenLexed(); return DOTOKEN; }					      	       
+{BEGIN}					    { newTokenLexed(); return BEGINTOKEN; }					      	       
+{END}					    { newTokenLexed(); return ENDTOKEN; }					      	       
+{WHILEDEF}				    { newTokenLexed(); return WHILETOKEN; }					      	       
+					    										             
+{HELP}            			    { newTokenLexed(); return HELPTOKEN; }                                                       
 
 
 [ \t]		{ /* Eat up spaces and tabulators */
 		}
 
 [\n]		{ 
-                      if (promptToBePrinted) printPrompt();
+                     carriageReturnLexed();
 		}
+
+{IDENTIFIER}        			    { constBuffer = (char *) safeCalloc(yyleng+1,sizeof(char));
+					      strncpy(constBuffer,yytext,yyleng);
+					      yylval->value = constBuffer;
+					      newTokenLexed(); return IDENTIFIERTOKEN; }        			        
 
 .		{ /* otherwise */
 			fprintf(stderr,"The character \"%s\" cannot be recognized. Will ignore it.\n",

@@ -7,6 +7,7 @@
 #include "miniparser.tab.h"
 #include "main.h"
 
+
 #define YY_NO_UNPUT 1
 
 %}
@@ -81,12 +82,13 @@ DOUBLEDOUBLE    ({DOUBLEDOUBLELONG}|{DOUBLEDOUBLESHORT})
 TRIPLEDOUBLE    ({TRIPLEDOUBLELONG}|{TRIPLEDOUBLESHORT})
 DOUBLEEXTENDED  ({DOUBLEEXTENDEDLONG}|{DOUBLEEXTENDEDSHORT})
 
+CEIL            "ceil"
+FLOOR           "floor"
 
 %%
 
 
 {BINARYCONSTANT} {
-                      if (constBuffer != NULL) free(constBuffer);
 		      constBuffer = (char *) safeCalloc(strlen(miniyytext)-1,sizeof(char));
 		      strncpy(constBuffer,miniyytext,strlen(miniyytext)-2);
                       miniyylval.value = constBuffer;
@@ -95,7 +97,6 @@ DOUBLEEXTENDED  ({DOUBLEEXTENDEDLONG}|{DOUBLEEXTENDEDSHORT})
 
 
 {CONSTANT}      {     
-                      if (constBuffer != NULL) free(constBuffer);
 		      constBuffer = (char *) safeCalloc(strlen(miniyytext)+1,sizeof(char));
 		      removeSpaces(constBuffer,miniyytext);
                       miniyylval.value = constBuffer;
@@ -144,10 +145,10 @@ DOUBLEEXTENDED  ({DOUBLEEXTENDEDLONG}|{DOUBLEEXTENDEDSHORT})
 {DOUBLEDOUBLE}  {      return DOUBLEDOUBLETOKEN; }
 {TRIPLEDOUBLE}  {      return TRIPLEDOUBLETOKEN; }
 {DOUBLEEXTENDED} {      return DOUBLEEXTENDEDTOKEN; }
+{CEIL}          {      return CEILTOKEN; }
+{FLOOR}         {      return FLOORTOKEN; }
 {VARIABLE}      {     			     
-                      if (constBuffer != NULL) free(constBuffer);
-		      constBuffer = NULL;
-		      constBuffer = (char*) safeCalloc(yyleng + 1,sizeof(char));
+		      constBuffer = (char*) safeCalloc(miniyyleng + 1,sizeof(char));
 		      strncpy(constBuffer,miniyytext,miniyyleng);
 		      miniyylval.value = constBuffer;
                        return VARIABLETOKEN;    

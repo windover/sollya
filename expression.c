@@ -176,6 +176,17 @@ void free_memory(node *tree) {
     free_memory(tree->child1);
     free(tree);
     break;
+  case CEIL:
+    free_memory(tree->child1);
+    free(tree);
+    break;
+  case FLOOR:
+    free_memory(tree->child1);
+    free(tree);
+    break;
+  case PI_CONST:
+    free(tree);
+    break;
   default:
    fprintf(stderr,"Error: free_memory: unknown identifier (%d) in the tree\n",tree->nodeType);
    exit(1);
@@ -304,6 +315,15 @@ void fprintHeadFunction(FILE *fd,node *tree, char *x, char *y) {
       }
     }
     break;
+  case CEIL:
+    fprintf(fd,"ceil(%s)",x);
+    break;
+  case FLOOR:
+    fprintf(fd,"floor(%s)",x);
+    break;
+  case PI_CONST:
+    fprintf(fd,"pi");
+    break;
   default:
    fprintf(stderr,"fprintHeadFunction: unknown identifier (%d) in the tree\n",tree->nodeType);
    exit(1);
@@ -315,6 +335,7 @@ int precedence(node *tree) {
   switch (tree->nodeType) {
   case CONSTANT:
   case VARIABLE:
+  case PI_CONST:
     return 1;
     break;
   case ADD:
@@ -342,6 +363,7 @@ int isInfix(node *tree) {
   case CONSTANT: 
     if (mpfr_sgn(*(tree->value)) < 0) return 1;
     break;
+  case PI_CONST:
   case ADD:
   case SUB:
   case MUL:
@@ -972,6 +994,19 @@ void printTree(node *tree) {
       }
     }
     break;
+  case CEIL:
+    printf("ceil(");
+    printTree(tree->child1);
+    printf(")");
+    break;
+  case FLOOR:
+    printf("floor(");
+    printTree(tree->child1);
+    printf(")");
+    break;
+  case PI_CONST:
+    printf("pi");
+    break;
   default:
    fprintf(stderr,"Error: printTree: unknown identifier in the tree\n");
    exit(1);
@@ -1228,6 +1263,20 @@ char *sprintTree(node *tree) {
       }
     }
     break;
+  case CEIL:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"ceil(%s)",buffer1);
+    break;
+  case FLOOR:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 9, sizeof(char));
+    sprintf(buffer,"floor(%s)",buffer1);
+    break;
+  case PI_CONST:
+    buffer = (char *) safeCalloc(3, sizeof(char));
+    sprintf(buffer,"pi");
+    break;
   default:
    fprintf(stderr,"Error: sprintTree: unknown identifier in the tree\n");
    exit(1);
@@ -1466,6 +1515,19 @@ void fprintTree(FILE *fd, node *tree) {
       }
     }
     break;
+  case CEIL:
+    fprintf(fd,"ceil(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case FLOOR:
+    fprintf(fd,"floor(");
+    fprintTree(fd,tree->child1);
+    fprintf(fd,")");
+    break;
+  case PI_CONST:
+    fprintf(fd,"pi");
+    break;
   default:
    fprintf(stderr,"Error: fprintTree: unknown identifier in the tree\n");
    exit(1);
@@ -1667,6 +1729,20 @@ node* copyTree(node *tree) {
     copy->libFun = tree->libFun;
     copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = copyTree(tree->child1);
+    break;
+  case CEIL:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = CEIL;
+    copy->child1 = copyTree(tree->child1);
+    break;
+  case FLOOR:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = FLOOR;
+    copy->child1 = copyTree(tree->child1);
+    break;
+  case PI_CONST:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = PI_CONST;
     break;
   default:
    fprintf(stderr,"Error: copyTree: unknown identifier in the tree\n");
@@ -2808,6 +2884,54 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
     simplified->libFunDeriv = tree->libFunDeriv;
     simplified->child1 = simplifyTreeErrorfreeInner(tree->child1,rec);
     break;
+  case CEIL:
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      if ((mpfr_ceil(*value, *(simplChild1->value)) != 0) || 
+	  (!mpfr_number_p(*value))) {
+	simplified->nodeType = CEIL;
+	simplified->child1 = simplChild1;
+	mpfr_clear(*value);
+	free(value);
+      } else {
+	free_memory(simplChild1);
+      }
+    } else {
+      simplified->nodeType = CEIL;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case FLOOR:
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      if ((mpfr_floor(*value, *(simplChild1->value)) != 0) || 
+	  (!mpfr_number_p(*value))) {
+	simplified->nodeType = FLOOR;
+	simplified->child1 = simplChild1;
+	mpfr_clear(*value);
+	free(value);
+      } else {
+	free_memory(simplChild1);
+      }
+    } else {
+      simplified->nodeType = FLOOR;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case PI_CONST:
+    simplified = (node*) safeMalloc(sizeof(node));
+    simplified->nodeType = PI_CONST;
+    break;
   default:
     fprintf(stderr,"Error: simplifyTreeErrorfreeInner: unknown identifier in the tree\n");
     exit(1);
@@ -3670,6 +3794,37 @@ node* differentiateUnsimplified(node *tree) {
 	temp_node2->child1 = g_copy;    
 	derivative = temp_node;
 	break;
+      case CEIL:
+	printMessage(1,
+		     "Warning: the ceil operator is not differentiable.\nRemplacing it by a constant function when differentiating.\n");
+	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*mpfr_temp,tools_precision);
+	mpfr_set_d(*mpfr_temp,0.0,GMP_RNDN);
+	temp_node = (node*) safeMalloc(sizeof(node));
+	temp_node->nodeType = CONSTANT;
+	temp_node->value = mpfr_temp;
+	derivative = temp_node;
+	break;
+      case FLOOR:
+	printMessage(1,
+		     "Warning: the floor operator is not differentiable.\nRemplacing it by a constant function when differentiating.\n");
+	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*mpfr_temp,tools_precision);
+	mpfr_set_d(*mpfr_temp,0.0,GMP_RNDN);
+	temp_node = (node*) safeMalloc(sizeof(node));
+	temp_node->nodeType = CONSTANT;
+	temp_node->value = mpfr_temp;
+	derivative = temp_node;
+	break;
+      case PI_CONST:
+	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*mpfr_temp,tools_precision);
+	mpfr_set_d(*mpfr_temp,0.0,GMP_RNDN);
+	temp_node = (node*) safeMalloc(sizeof(node));
+	temp_node->nodeType = CONSTANT;
+	temp_node->value = mpfr_temp;
+	derivative = temp_node;    
+	break;
       default:
 	fprintf(stderr,"Error: differentiateUnsimplified: unknown identifier in the tree\n");
 	exit(1);
@@ -3897,6 +4052,20 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
     mpfr_from_mpfi(result, stack1, tree->libFunDeriv, tree->libFun->code);
+    break;
+  case CEIL:
+    isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
+    if (!isConstant) break;
+    mpfr_ceil(result, stack1);
+    break;
+  case FLOOR:
+    isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
+    if (!isConstant) break;
+    mpfr_floor(result, stack1);
+    break;
+  case PI_CONST:
+    mpfr_const_pi(result, GMP_RNDN);
+    isConstant = 1;
     break;
   default:
     fprintf(stderr,"Error: evaluateConstantExpression: unknown identifier in the tree\n");
@@ -4506,6 +4675,44 @@ node* simplifyTreeInner(node *tree) {
       simplified->libFunDeriv = tree->libFunDeriv;
     }
     break;
+  case CEIL:
+    simplChild1 = simplifyTreeInner(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      mpfr_ceil(*value, *(simplChild1->value));
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = CEIL;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case FLOOR:
+    simplChild1 = simplifyTreeInner(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      mpfr_floor(*value, *(simplChild1->value));
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = FLOOR;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case PI_CONST:
+    simplified = (node*) safeMalloc(sizeof(node));
+    simplified->nodeType = CONSTANT;
+    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*value,tools_precision);
+    mpfr_const_pi(*value,GMP_RNDN);
+    simplified->value = value;
+    break;
   default:
     fprintf(stderr,"Error: simplifyTreeInner: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);
@@ -4674,6 +4881,17 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
     evaluate(stack1, tree->child1, x, prec);
     mpfr_from_mpfi(result, stack1, tree->libFunDeriv, tree->libFun->code);
     break;
+  case CEIL:
+    evaluate(stack1, tree->child1, x, prec);
+    mpfr_ceil(result, stack1);
+    break;
+  case FLOOR:
+    evaluate(stack1, tree->child1, x, prec);
+    mpfr_floor(result, stack1);
+    break;
+  case PI_CONST:
+    mpfr_const_pi(result, GMP_RNDN);
+    break;
   default:
     fprintf(stderr,"Error: evaluate: unknown identifier in the tree\n");
     exit(1);
@@ -4690,6 +4908,7 @@ int arity(node *tree) {
     return 1;
     break;
   case CONSTANT:
+  case PI_CONST:
     return 0;
     break;
   case ADD:
@@ -4789,6 +5008,12 @@ int arity(node *tree) {
     return 1;
     break;
   case LIBRARYFUNCTION:
+    return 1;
+    break;
+  case CEIL:
+    return 1;
+    break;
+  case FLOOR:
     return 1;
     break;
   default:
@@ -4958,6 +5183,15 @@ int isPolynomial(node *tree) {
   case LIBRARYFUNCTION:
     res = 0;
     break;
+  case CEIL:
+    res = 0;
+    break;
+  case FLOOR:
+    res = 0;
+    break;
+  case PI_CONST:
+    res = 1;
+    break;
   default:
     fprintf(stderr,"Error: isPolynomial: unknown identifier in the tree\n");
     exit(1);
@@ -4979,6 +5213,7 @@ int getDegreeUnsafe(node *tree) {
     return 1;
     break;
   case CONSTANT:
+  case PI_CONST:
     return 0;
     break;
   case ADD:
@@ -5133,6 +5368,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
     return copyTree(tree);
     break;
   case CONSTANT:
+  case PI_CONST:
     return copyTree(tree);
     break;
   case ADD:
@@ -5193,6 +5429,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	switch (left->nodeType) {
 	case VARIABLE:
 	case CONSTANT:
+	case PI_CONST:
 	  tempTree = copyTree(left);
 	  for (i=1;i<r;i++) {
 	    tempTree2 = (node *) safeMalloc(sizeof(node));
@@ -5536,6 +5773,20 @@ node* expandDivision(node *tree) {
     copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = expandDivision(tree->child1);
     break;
+  case CEIL:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = CEIL;
+    copy->child1 = expandDivision(tree->child1);
+    break;
+  case FLOOR:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = FLOOR;
+    copy->child1 = expandDivision(tree->child1);
+    break;
+  case PI_CONST:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = PI_CONST;
+    break;
   default:
    fprintf(stderr,"Error: expandDivision: unknown identifier in the tree\n");
    exit(1);
@@ -5554,6 +5805,7 @@ node* expandPolynomialUnsafe(node *tree) {
     return copyTree(tree);
     break;
   case CONSTANT:
+  case PI_CONST:
     return copyTree(tree);
     break;
   case ADD:
@@ -5580,6 +5832,7 @@ node* expandPolynomialUnsafe(node *tree) {
     switch (left->nodeType) {
     case VARIABLE:
     case CONSTANT:
+    case PI_CONST:
       if (isConstant(right)) {
 	copy = (node*) safeMalloc(sizeof(node));
 	copy->nodeType = MUL;
@@ -5589,6 +5842,7 @@ node* expandPolynomialUnsafe(node *tree) {
 	switch (right->nodeType) {
 	case VARIABLE:
 	case CONSTANT:
+	case PI_CONST:
 	  copy = (node*) safeMalloc(sizeof(node));
 	  copy->nodeType = MUL;
 	  copy->child1 = left;
@@ -5726,6 +5980,7 @@ node* expandPolynomialUnsafe(node *tree) {
     right = expandPolynomialUnsafe(tree->child2);
     switch (left->nodeType) {
     case CONSTANT:
+    case PI_CONST:
       copy = (node*) safeMalloc(sizeof(node));
       copy->nodeType = DIV;
       copy->child1 = left;
@@ -6058,6 +6313,20 @@ node* expandUnsimplified(node *tree) {
     copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = expand(tree->child1);
     break;
+  case CEIL:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = CEIL;
+    copy->child1 = expand(tree->child1);
+    break;
+  case FLOOR:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = FLOOR;
+    copy->child1 = expand(tree->child1);
+    break;
+  case PI_CONST:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = PI_CONST;
+    break;
   default:
    fprintf(stderr,"Error: expand: unknown identifier in the tree\n");
    exit(1);
@@ -6079,17 +6348,18 @@ node* expand(node *tree) {
 
 
 int isConstant(node *tree) {
- switch (tree->nodeType) {
+  switch (tree->nodeType) {
   case VARIABLE:
     return 0;
     break;
   case CONSTANT:
+  case PI_CONST:
     return 1;
     break;
   case ADD:
     return (isConstant(tree->child1) & isConstant(tree->child2));
     break;
- case SUB:
+  case SUB:
     return (isConstant(tree->child1) & isConstant(tree->child2));
     break;
   case MUL:
@@ -6183,6 +6453,12 @@ int isConstant(node *tree) {
     return isConstant(tree->child1);
     break;
   case LIBRARYFUNCTION:
+    return isConstant(tree->child1);
+    break;
+  case CEIL:
+    return isConstant(tree->child1);
+    break;
+  case FLOOR:
     return isConstant(tree->child1);
     break;
   default:
@@ -6851,6 +7127,20 @@ node* hornerUnsimplified(node *tree) {
     copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = horner(tree->child1);
     break;
+  case CEIL:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = CEIL;
+    copy->child1 = horner(tree->child1);
+    break;
+  case FLOOR:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = FLOOR;
+    copy->child1 = horner(tree->child1);
+    break;
+  case PI_CONST:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = PI_CONST;
+    break;
   default:
    fprintf(stderr,"Error: horner: unknown identifier in the tree\n");
    exit(1);
@@ -7417,6 +7707,20 @@ node *substitute(node* tree, node *t) {
     copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = substitute(tree->child1,t);
     break;
+  case CEIL:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = CEIL;
+    copy->child1 = substitute(tree->child1,t);
+    break;
+  case FLOOR:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = FLOOR;
+    copy->child1 = substitute(tree->child1,t);
+    break;
+  case PI_CONST:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = PI_CONST;
+    break;
   default:
    fprintf(stderr,"Error: substitute: unknown identifier in the tree\n");
    exit(1);
@@ -7559,6 +7863,7 @@ int treeSize(node *tree) {
     return 1;
     break;
   case CONSTANT:
+  case PI_CONST:
     return 1;
     break;
   case ADD:
@@ -7658,6 +7963,12 @@ int treeSize(node *tree) {
     return treeSize(tree->child1) + 1;
     break;
   case LIBRARYFUNCTION:    
+    return treeSize(tree->child1) + 1;
+    break;
+  case CEIL:
+    return treeSize(tree->child1) + 1;
+    break;
+  case FLOOR:
     return treeSize(tree->child1) + 1;
     break;
   default:
@@ -8134,6 +8445,20 @@ node *makeCanonical(node *tree, mp_prec_t prec) {
     copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = makeCanonical(tree->child1,prec);
     break;
+  case CEIL:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = CEIL;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case FLOOR:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = FLOOR;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case PI_CONST:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = PI_CONST;
+    break;
   default:
    fprintf(stderr,"Error: makeCanonical: unknown identifier in the tree\n");
    exit(1);
@@ -8287,6 +8612,47 @@ node *makeExpm1(node *op1) {
 
 node *makeDoubleextended(node *op1) {
   return makeUnary(op1,DOUBLEEXTENDED);
+}
+
+node *makeCeil(node *op1) {
+  return makeUnary(op1,CEIL);
+}
+
+node *makeFloor(node *op1) {
+  return makeUnary(op1,FLOOR);
+}
+
+node *makePi() {
+  node *res;
+  
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = PI_CONST;
+
+  return res;
+}
+
+node *makeSinh(node *op1) {
+  return makeUnary(op1,SINH);
+}
+
+node *makeCosh(node *op1) {
+  return makeUnary(op1,COSH);
+}
+
+node *makeTanh(node *op1) {
+  return makeUnary(op1,TANH);
+}
+
+node *makeAsinh(node *op1) {
+  return makeUnary(op1,ASINH);
+}
+
+node *makeAcosh(node *op1) {
+  return makeUnary(op1,ACOSH);
+}
+
+node *makeAtanh(node *op1) {
+  return makeUnary(op1,ATANH);
 }
 
 

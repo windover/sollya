@@ -17,73 +17,45 @@
 #define MAXHORNERTREESIZE 5000
 #define MAXAUTOSIMPLSIZE 5500
 #define CHEAPSIMPLIFYSIZE 4000
+#define PARIMEMSIZE 300000000
 
-typedef struct doubleChainStruct doubleChain;
-
-struct doubleChainStruct {
-  chain *a;
-  chain *b;
-};
 
 extern char *variablename;
-extern char *currentVariable;
-extern char *currentString;
-extern char *newReadFilename;
-extern char *newReadFilenameTemp;
-extern char *constBuffer;
-extern char *constBuffer2;
-extern chain *readStack;
-extern chain *readStack2;
-extern FILE **tempFDPtr;
-extern chain *readStackTemp;
-extern mp_prec_t tools_precision;
-extern char **endptr;
-extern unsigned long int points;
-extern mpfr_t *mpfr_temp;
-extern mpfr_t *mpfr_temp2;
-extern mpfr_t *mpfr_temp3;
-extern rangetype range_temp;
-extern rangetype range_temp2;
-extern rangetype *rangeTempPtr;
-extern node *temp_node; 
-extern node *temp_node2;
 extern mp_prec_t defaultprecision;
+extern mp_prec_t tools_precision;
 extern int defaultpoints;
 extern int taylorrecursions;
-extern int int_temp;
-extern int int_temp2;
-extern mp_prec_t prec_temp;
-extern double double_temp;
-extern int promptToBePrinted;
-extern int handlingError;
-extern chain *symbolTable;
-extern chain *symbolTable2;
-extern chain *symbolTable3;
-extern char *temp_string;
-extern char *temp_string2;
-extern char *temp_string3;
-extern chain *chain_temp;
-extern chain *chain_temp2;
 extern int dyadic;
-extern FILE *temp_fd;
-extern int *intTempPtr;
 extern int verbosity;
-extern doubleChain *doubleChainTemp;
-extern formatType *formatTypeTemp;
-extern errorType *errorTypeTemp;
-extern pointsType *pointsTypeTemp;
-extern int eliminatePrompt;
-extern int eliminatePromptBackup;
-extern mp_prec_t tempPrec;
 extern int canonical;
-extern void *scanner;
-extern node *minitree;
+extern int fileNumber;
 extern int autosimplify;
 extern int timecounting;
+extern chain *timeStack;
 extern int fullParentheses;
 extern int midpointMode;
-extern libraryFunction *tempLibraryFunction;
 extern int hopitalrecursions;
+extern int eliminatePromptBackup;
+extern chain *readStack;
+extern chain *readStackTemp;
+extern chain *readStack2;
+extern void *scanner;
+extern char *newReadFilename;
+extern char *newReadFilenameTemp;
+extern FILE **tempFDPtr;
+extern FILE *temp_fd;
+extern node *temp_node;
+extern mpfr_t *mpfr_temp;
+extern mpfr_t *mpfr_temp2;
+extern node *minitree;
+extern char *constBuffer;
+extern char *constBuffer2;
+extern node* parsedThing;
+extern int promptToBePrinted;
+extern char *tempString;
+extern char *tempString2;
+extern chain *symbolTable;
+extern mpfr_t statediam;
 
 
 void printPrompt(void);
@@ -97,5 +69,9 @@ int removeMidpointMode(char *outbuf, char *inbuf);
 void freeCounter(void);
 void pushTimeCounter(void);
 void popTimeCounter(char *s);
+void newReadFileStarted();
+void carriageReturnLexed();
+void newTokenLexed();
+void restartTool();
 
 #endif /* ifdef MAIN_H*/

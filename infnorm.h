@@ -30,7 +30,7 @@ int isEvaluable(node *func, mpfr_t x, mpfr_t *y, mp_prec_t prec);
 int evaluateWithAccuracy(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, 
 			 mp_prec_t minprec, mp_prec_t maxprec, mp_prec_t *needPrec);
 int evaluateFaithfulOrFail(node *func, mpfr_t x, mpfr_t y, unsigned int precFactor, mp_prec_t *needPrec);
-void evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec);
+int evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec);
 int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes, mp_prec_t startPrec);
 int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec);
 int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec);

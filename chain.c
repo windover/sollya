@@ -50,6 +50,28 @@ chain *copyChain(chain *c, void *(*f) (void *)) {
   return copy;
 }
 
+chain *copyChainWithoutReversal(chain *c, void * (*f) (void *)) {
+  void **array;
+  int len, i; 
+  chain *curr, *copy;
+
+  if (c == NULL) return NULL;
+
+  len = lengthChain(c);
+  array = (void *) safeCalloc(len,sizeof(void *));
+  curr = c; i = 0;
+  while (curr != NULL) {
+    array[i++] = curr->value;
+    curr = curr->next;
+  }
+  copy = NULL;
+  for (i=len-1;i>=0;i--) {
+    copy = addElement(copy,f(array[i]));
+  }
+  free(array);
+  return copy;
+}
+
 
 chain* concatChains(chain *c1, chain *c2) {
   chain *curr;
@@ -178,4 +200,61 @@ void printIntChain(chain *c) {
   }
   printf("]\n");
   return;
+}
+
+void *accessInList(chain *c, int index) {
+  chain *curr;
+  int i;
+
+  if (index < 0) return NULL;
+
+  curr = c; i = 0;
+  while (curr != NULL) {
+    if (i == index) return curr->value;
+    i++;
+    curr = curr->next;
+  }
+
+  return NULL;
+}
+
+chain *copyChainAndReplaceNth(chain *c, int k, void *obj, void * (*f) (void *)) {
+  void **array;
+  int len, i; 
+  chain *curr, *copy;
+
+  if (c == NULL) return NULL;
+
+  len = lengthChain(c);
+  array = (void *) safeCalloc(len,sizeof(void *));
+  curr = c; i = 0;
+  while (curr != NULL) {
+    array[i++] = curr->value;
+    curr = curr->next;
+  }
+
+  if ((k >= 0) && (k < len)) {
+    array[k] = obj;
+  }
+
+  copy = NULL;
+  for (i=len-1;i>=0;i--) {
+    copy = addElement(copy,f(array[i]));
+  }
+  free(array);
+  return copy;
+}
+
+int isEqualChain(chain *c, chain *c2, int (*f) (void *, void *)) {
+  chain *curr, *curr2;
+
+  if (lengthChain(c) != lengthChain(c2)) return 0;
+
+  curr = c; curr2 = c2;
+  while (curr != NULL) {
+    if (!f(curr->value,curr2->value)) return 0;
+    curr = curr->next;
+    curr2 = curr2->next;
+  }
+  return 1;
 }

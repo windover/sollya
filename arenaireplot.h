@@ -74,6 +74,9 @@ extern node *makeErfc(node *op1);
 extern node *makeLog1p(node *op1);
 extern node *makeExpm1(node *op1);
 extern node *makeDoubleextended(node *op1);
+extern node *makeCeil(node *op1);
+extern node *makeFloor(node *op1);
+extern node *makePi();
 
 extern node *parseString(char *str); 
 
