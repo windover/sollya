@@ -276,8 +276,7 @@ void fPrintXmlInner(FILE *fd, node *tree) {
 
 void fPrintXml(FILE *fd, node *tree) {
   fprintf(fd,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-  fprintf(fd,"<!DOCTYPE math:math PUBLIC\n");
-  fprintf(fd,"\"-//OpenOffice.org//DTD Modified W3C MathML 1.01//EN\" \"math.dtd\">\n");	  
+  fprintf(fd,"<!DOCTYPE math PUBLIC \"-//W3C//DTD MathML 2.0//EN\" \"http://www.w3.org/Math/DTD/mathml2/mathml2.dtd\" >\n");
   fprintf(fd,"<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n");
   fprintf(fd,"<semantics>\n");
   fprintf(fd,"<annotation-xml encoding=\"MathML-Content\">\n");
@@ -291,7 +290,7 @@ void fPrintXml(FILE *fd, node *tree) {
   fprintf(fd,"</apply>\n");
   fprintf(fd,"</lambda>\n");
   fprintf(fd,"</annotation-xml>\n");
-  fprintf(fd,"<annotation encoding=\"arenaireplot\">");
+  fprintf(fd,"<annotation encoding=\"arenaireplot/text\">");
   fprintTree(fd, tree);
   fprintf(fd,"</annotation>\n");
   fprintf(fd,"</semantics>\n");

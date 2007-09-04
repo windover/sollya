@@ -764,11 +764,11 @@ void fprintValue(FILE *fd, mpfr_t value) {
 }
 
 void fprintValueForXml(FILE *fd, mpfr_t value) {
-  mpfr_t y;
+  mpfr_t y, h;
   char *str, *str2;
   mp_exp_t e, expo;
   mp_prec_t prec;
-  int negate;
+  int negate, val;
 
   if (mpfr_zero_p(value)) {
     fprintf(fd,"<cn type=\"integer\" base=\"10\"> 0 </cn>\n");
@@ -776,55 +776,64 @@ void fprintValueForXml(FILE *fd, mpfr_t value) {
     prec = mpfr_get_prec(value);
     mpfr_init2(y,prec+10);
     mpfr_set(y,value,GMP_RNDN);
-    negate = 0;
-    if (mpfr_sgn(y) < 0) {
-      negate = 1; mpfr_neg(y,y,GMP_RNDN);
-    } 
-    if (!mpfr_number_p(value)) {
-      str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
-      if (!negate) 
-	fprintf(fd,"<cn type=\"real\"> %s </cn>\n",str);
-      else 
-	fprintf(fd,"<cn type=\"real\"> -%s </cn>\n",str);
+    val = mpfr_get_si(y,GMP_RNDN);
+    mpfr_init2(h,prec);
+    mpfr_set_si(h,val,GMP_RNDN);
+    if (mpfr_number_p(y) && (mpfr_cmp(h,y) == 0)) {
+      mpfr_clear(h);
+      fprintf(fd,"<cn type=\"integer\" base=\"10\"> %d </cn>\n",val);
     } else {
-      expo = mpfr_get_exp(y);
-      if (mpfr_set_exp(y,prec+10)) {
-	printMessage(1,"\nWarning: upon printing to a file: %d is not in the current exponent range of a variable. Values printed may be wrong.\n",(int)(prec+10));
-      }
-      expo -= prec+10;
-      while (mpfr_integer_p(y)) {
-	mpfr_div_2ui(y,y,1,GMP_RNDN);
-	expo += 1;
-      }
-      expo--;
-      if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
-	printMessage(1,"\nWarning: upon printing to a file: rounding occured. Values printed may be wrong.\n");
-      }
-      str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
-      str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
-      strncpy(str2,str,e);
-      if (!negate) {
-	fprintf(fd,"<apply>\n");
-	fprintf(fd,"<times/>\n");
-	fprintf(fd,"<cn type=\"integer\" base=\"10\"> %s </cn>\n",str2);
-	fprintf(fd,"<apply>\n");
-	fprintf(fd,"<power/>\n");
-	fprintf(fd,"<cn type=\"integer\" base=\"10\"> 2 </cn>\n");
-	fprintf(fd,"<cn type=\"integer\" base=\"10\"> %d </cn>\n",(int) expo);
-	fprintf(fd,"</apply>\n");
-	fprintf(fd,"</apply>\n");
+      mpfr_clear(h);
+      negate = 0;
+      if (mpfr_sgn(y) < 0) {
+	negate = 1; mpfr_neg(y,y,GMP_RNDN);
+      } 
+      if (!mpfr_number_p(value)) {
+	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
+	if (!negate) 
+	  fprintf(fd,"<cn type=\"real\"> %s </cn>\n",str);
+	else 
+	  fprintf(fd,"<cn type=\"real\"> -%s </cn>\n",str);
       } else {
-	fprintf(fd,"<apply>\n");
-	fprintf(fd,"<times/>\n");
-	fprintf(fd,"<cn type=\"integer\" base=\"10\"> -%s </cn>\n",str2);
-	fprintf(fd,"<apply>\n");
-	fprintf(fd,"<power/>\n");
-	fprintf(fd,"<cn type=\"integer\" base=\"10\"> 2 </cn>\n");
-	fprintf(fd,"<cn type=\"integer\" base=\"10\"> %d </cn>\n",(int) expo);
-	fprintf(fd,"</apply>\n");
-	fprintf(fd,"</apply>\n");
+	expo = mpfr_get_exp(y);
+	if (mpfr_set_exp(y,prec+10)) {
+	  printMessage(1,"\nWarning: upon printing to a file: %d is not in the current exponent range of a variable. Values printed may be wrong.\n",(int)(prec+10));
+	}
+	expo -= prec+10;
+	while (mpfr_integer_p(y)) {
+	  mpfr_div_2ui(y,y,1,GMP_RNDN);
+	  expo += 1;
+	}
+	expo--;
+	if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
+	  printMessage(1,"\nWarning: upon printing to a file: rounding occured. Values printed may be wrong.\n");
+	}
+	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
+	str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
+	strncpy(str2,str,e);
+	if (!negate) {
+	  fprintf(fd,"<apply>\n");
+	  fprintf(fd,"<times/>\n");
+	  fprintf(fd,"<cn type=\"integer\" base=\"10\"> %s </cn>\n",str2);
+	  fprintf(fd,"<apply>\n");
+	  fprintf(fd,"<power/>\n");
+	  fprintf(fd,"<cn type=\"integer\" base=\"10\"> 2 </cn>\n");
+	  fprintf(fd,"<cn type=\"integer\" base=\"10\"> %d </cn>\n",(int) expo);
+	  fprintf(fd,"</apply>\n");
+	  fprintf(fd,"</apply>\n");
+	} else {
+	  fprintf(fd,"<apply>\n");
+	  fprintf(fd,"<times/>\n");
+	  fprintf(fd,"<cn type=\"integer\" base=\"10\"> -%s </cn>\n",str2);
+	  fprintf(fd,"<apply>\n");
+	  fprintf(fd,"<power/>\n");
+	  fprintf(fd,"<cn type=\"integer\" base=\"10\"> 2 </cn>\n");
+	  fprintf(fd,"<cn type=\"integer\" base=\"10\"> %d </cn>\n",(int) expo);
+	  fprintf(fd,"</apply>\n");
+	  fprintf(fd,"</apply>\n");
+	}
+	free(str2);
       }
-      free(str2);
     }
     mpfr_clear(y);
   }
