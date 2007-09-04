@@ -37,6 +37,8 @@ struct nodeStruct
   node *child2;
   libraryFunction *libFun;
   int libFunDeriv;
+  char *string;
+  chain *arguments;
 };
 
 typedef struct rangetypeStruct rangetype;
@@ -77,6 +79,12 @@ extern node *makeDoubleextended(node *op1);
 extern node *makeCeil(node *op1);
 extern node *makeFloor(node *op1);
 extern node *makePi();
+extern node *makeSinh(node *op1);
+extern node *makeCosh(node *op1);
+extern node *makeTanh(node *op1);
+extern node *makeAsinh(node *op1);
+extern node *makeAcosh(node *op1);
+extern node *makeAtanh(node *op1);
 
 extern node *parseString(char *str); 
 

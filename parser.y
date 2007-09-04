@@ -1269,491 +1269,492 @@ help:                   CONSTANTTOKEN
                           }            					       
                       | LPARTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Left parenthesis.\n");
                           }                  					       
                       | RPARTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Right parenthesis.\n");
                           }                  					       
                       | LBRACKETTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Left bracket - indicates a range or a list.\n");
                           }              					       
                       | RBRACKETTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Right bracker - indicates a range or a list.\n");
                           }              					       
                       | EQUALTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Assignment operator.\n");
                           }                 					       
                       | COMPAREEQUALTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Equality test.\n");
                           }                 					       
                       | COMMATOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Separator in lists or ranges.\n");
                           }                 					       
                       | EXCLAMATIONTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Suppresses output on assignments.\n");
                           }      						       
                       | SEMICOLONTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Command separator.\n");
                           }             					       
                       | STARLEFTANGLETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Dereferences range bounds.\n");
                           }             					       
                       | LEFTANGLETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Comparison less than.\n");
                           }             					       
                       | RIGHTANGLEUNDERSCORETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Dereferences the lower range bound.\n");
                           }      					       
                       | RIGHTANGLEDOTTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Dereferences the mid-point of a range.\n");
                           }       					       
                       | RIGHTANGLESTARTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Dereferences the upper range bound.\n");
                           }             					       
                       | RIGHTANGLETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Comparison greater than.\n");
                           }            					       
                       | DOTSTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Ellipsis.\n");
                           }                  					       
                       | QUESTIONMARKTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Dereferences global environment variables.\n");
                           }      						       
                       | VERTBARTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Starts or ends a list.\n");
                           }      						       
                       | ATTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Concatenation of lists or strings.\n");
                           }      							       
                       | DOUBLECOLONTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Adding an element to a list.\n");
                           }    
                       | EXCLAMATIONEQUALTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Comparison not equal.\n");
                           }    
                       | ANDTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Boolean and.\n");
                           }    
                       | ORTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Boolean or.\n");
                           }    
                       | PLUSTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Addition.\n");
                           }                  					       
                       | MINUSTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Substraction.\n");
                           }                 					       
                       | MULTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Multiplication.\n");
                           }                						       
                       | DIVTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Division.\n");
                           }                  					       
                       | POWTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Exponentiation.\n");
                           }                  					       
                       | SQRTTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Square root.\n");
                           }                  					       
                       | EXPTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Exponential.\n");
                           }                   					       
                       | LOGTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Natural logarithm.\n");
                           }                   					       
                       | LOG2TOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Logarithm in base 2.\n");
                           }                  					       
                       | LOG10TOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Logarithm in base 10.\n");
                           }                 					       
                       | SINTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Sine.\n");
                           }                   					       
                       | COSTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Cosine.\n");
                           }                   					       
                       | TANTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Tangent.\n");
                           }                   					       
                       | ASINTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Arcsine.\n");
                           }                  					       
                       | ACOSTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Arcosine.\n");
                           }                  					       
                       | ATANTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Arctangent.\n");
                           }                  					       
                       | SINHTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Hyperbolic sine.\n");
                           }                  					       
                       | COSHTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Hyperbolic cosine.\n");
                           }                  					       
                       | TANHTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Hyperbolic tangent.\n");
                           }                  					       
                       | ASINHTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Area sine.\n");
                           }                 					       
                       | ACOSHTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Area cosine.\n");
                           }                 					       
                       | ATANHTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Area tangent.\n");
                           }                 					       
                       | ABSTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Absolute value.\n");
                           }                   					       
                       | ERFTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Error function.\n");
                           }                   					       
                       | ERFCTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Complementary error function.\n");
                           }                  					       
                       | LOG1PTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Natural logarithm of 1 plus argument.\n");
                           }                 					       
                       | EXPM1TOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Exponential of argument minus 1.\n");
                           }                 					       
                       | DOUBLETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Double precision rounding operator.\n");
                           }                					       
                       | DOUBLEDOUBLETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Double-double precision rounding operator.\n");
                           }      						       
                       | TRIPLEDOUBLETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Triple-double precision rounding operator.\n");
                           }          					       
                       | DOUBLEEXTENDEDTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Double-extended precision rounding operator.\n");
                           }        					       
                       | CEILTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Ceiling.\n");
                           }                  					       
                       | FLOORTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Floor.\n");
                           }                 			
                       | HEADTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Head of a list.\n");
                           }    
                       | TAILTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Tail of a list.\n");
                           }    		       
                       | PRECTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Global environment variable precision.\n");
                           }                  					       
                       | POINTSTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Global environment variable number of points.\n");
                           }                					       
                       | DIAMTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Global environment variable diameter.\n");
                           }                  					       
                       | DISPLAYTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Global environment variable display mode.\n");
                           }                					       
                       | VERBOSITYTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Global environment variable verbosity.\n");
                           }             					       
                       | CANONICALTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Global environment variable canonical output.\n");
                           }             					       
                       | AUTOSIMPLIFYTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Global environment variable automatic simplification.\n");
                           }          					       
                       | TAYLORRECURSIONSTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Global environement variable recursions of Taylor evaluation.\n");
                           }      					       
                       | TIMINGTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Global environement variable timing of computations.\n");
                           }                					       
                       | FULLPARENTHESESTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Global environement variable fully parenthized mode.\n");
                           }       					       
                       | MIDPOINTMODETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Global environement variable midpoint mode.\n");
                           }          					       
                       | HOPITALRECURSIONSTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Global environement variable recursions of Hopital evaluation.\n");
                           }      					       
                       | ONTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Something is switched on.\n");
                           }                    					       
                       | OFFTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Something is switched off.\n");
                           }                   					       
                       | DYADICTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Display mode is dyadic output.\n");
                           }      						       
                       | POWERSTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Display mode is dyadic output with powers.\n");
                           }                					       
                       | BINARYTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Display mode is binary.\n");
                           }                					       
                       | FILETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("A file will be specified.\n");
                           }                  					       
                       | POSTSCRIPTTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("A postscript file will be specified.\n");
                           }            					       
                       | POSTSCRIPTFILETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("A postscript file and a file will be specified.\n");
                           }        					       
                       | PERTURBTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Perturbation is demanded.\n");
                           }               					       
                       | MINUSWORDTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Round towards minus infinity.\n");
                           }             					       
                       | PLUSWORDTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Round towards plus infinity.\n");
                           }              					       
                       | ZEROWORDTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Round towards zero.\n");
                           }              					       
                       | NEARESTTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Round to nearest.\n");
                           }               					       
                       | HONORCOEFFPRECTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Honorate the precision of the coefficients.\n");
                           }       					       
                       | TRUETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Boolean constant true.\n");
                           }      							       
                       | FALSETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Boolean constant false.\n");
                           }      							       
                       | DEFAULTTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Default value.\n");
                           }    											       
                       | ABSOLUTETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Consider an absolute error.\n");
                           }    
                       | DECIMALTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Display mode is decimal.\n");
                           }    
                       | RELATIVETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Consider a relative error.\n");
                           }    
                       | ERRORTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Type error meta-value.\n");
                           }    			
                       | QUITTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Exit from the tool.\n");
                           }                  					       
                       | FALSEQUITTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Exit from the tool - help is called inside a read macro.\n");
                           }      						       
                       | RESTARTTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Restart the tool.\n");
                           }               					       
                       | LIBRARYTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Library binding dereferencer.\n");
                           }               					       
                       | DIFFTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Differentiation: diff(func).\n");
                           }                  					       
                       | SIMPLIFYTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Simplify: simplify(func).\n");
                           }      						       
                       | REMEZTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Remez: remez(func,degree|monoms,range[,weight[,quality]]).\n");
                           }                 					       
                       | HORNERTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Horner: horner(func)\n");
                           }                					       
                       | EXPANDTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Expand: expand(func).\n");
                           }                					       
                       | SIMPLIFYSAFETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Safe simplification: simplifysafe(func).\n");
                           }      						       
                       | TAYLORTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Taylor expansion: taylor(func,degree,point).\n");
                           }               					       
                       | DEGREETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Degree of a polynomial: degree(func).\n");
                           }                					       
                       | NUMERATORTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Numerator of an expression: numerator(func).\n");
                           }             					       
                       | DENOMINATORTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Denominator of an expression: denominator(func).\n");
                           }           					       
                       | SUBSTITUTETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Substitute func2 for free variable in func: substitute(func,func2).\n");
                           }            					       
                       | COEFFTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("i-th coefficient of a polynomial: coeff(func,degree).\n");
                           }                 					       
                       | SUBPOLYTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Subpolynomial consisting in monomials: subpoly(func,list of degrees).\n");
                           }               					       
                       | ROUNDCOEFFICIENTSTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Round coefficients of a polynomial to format: roundcoefficients(func,list of formats).\n");
                           }       					       
                       | RATIONALAPPROXTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Rational approximation: rationalapprox(constant).\n");
                           }        					       
                       | ACCURATEINFNORMTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Faithful rounded infinite norm: accurateinfnorm(func,bits,range,domains to exclude).\n");
                           }        					       
                       | ROUNDTOFORMATTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Round to a given format: round(constant,rounding mode,precision).\n");
                           }         					       
                       | EVALUATETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Evaluate a function in a point or interval: round(func,constant|range).\n");
                           }              					       
                       | LENGTHTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Length of a list: length(list).\n");
                           }    
                       | PARSETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Parse a string to function: parse(string).\n");
                           }                 					       
                       | PRINTTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Print something: print(thing1, thing2, ...).\n");
                           }                 					       
                       | PRINTXMLTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Print a function in XML: printxml(func).\n");
                           }                 					       
                       | PLOTTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Plot (a) function(s) in a range: plot(func,func2,...,range).\n");
+			    printf("There are further options.\n");
                           }                  					       
                       | PRINTHEXATOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Print a constant in hexadecimal: printhexa(constant).\n");
                           }             					       
                       | PRINTBINARYTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Print a constant in binary: printbinary(constant).\n");
                           }           					       
                       | PRINTEXPANSIONTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Print a polynomial as an expansion of double precision numbers: printexpansion(func).\n");
                           }        					       
                       | BASHEXECUTETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Execute a command in a shell: bashexecute(string).\n");
                           }           					       
                       | EXTERNALPLOTTOKEN
                           {
@@ -1761,15 +1762,15 @@ help:                   CONSTANTTOKEN
                           }          					       
                       | WRITETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Write something without adding spaces and newlines: write(thing1, thing2, ...).\n");
                           }                 					       
                       | ASCIIPLOTTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Plot a function in a range using an ASCII terminal: asciiplot(func,range).\n");
                           }        
                       | RENAMETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Rename free variable string1 to string2: rename(string1, string2).\n");
                           }        	       
                       | INFNORMTOKEN
                           {
