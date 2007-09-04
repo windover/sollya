@@ -19,6 +19,7 @@
 #include "worstcase.h"
 #include "implement.h"
 #include "taylor.h"
+#include "xml.h"
 
 node *copyThing(node *);
 node *evaluateThingInner(node *);
@@ -237,6 +238,17 @@ node *copyThing(node *tree) {
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     break; 
   case ASCIIPLOT:
+    copy->child1 = copyThing(tree->child1);
+    copy->child2 = copyThing(tree->child2);
+    break;			
+  case PRINTXML:
+    copy->child1 = copyThing(tree->child1);
+    break;			
+  case PRINTXMLNEWFILE:
+    copy->child1 = copyThing(tree->child1);
+    copy->child2 = copyThing(tree->child2);
+    break;			
+  case PRINTXMLAPPENDFILE:
     copy->child1 = copyThing(tree->child1);
     copy->child2 = copyThing(tree->child2);
     break;			
@@ -830,6 +842,15 @@ char *getTimingStringForThing(node *tree) {
     break; 
   case ASCIIPLOT:
     constString = "asciiplot statement";
+    break;			
+  case PRINTXML:
+    constString = "printing in xml mode";
+    break;			
+  case PRINTXMLNEWFILE:
+    constString = "printing in xml mode into a new file";
+    break;			
+  case PRINTXMLAPPENDFILE:
+    constString = "printing in xml mode into a file";
     break;			
   case WORSTCASE:
     constString = "worstcase statement";
@@ -2975,6 +2996,58 @@ int executeCommand(node *tree) {
       printMessage(1,"The command will not be executed.\n");
     }
     break;			
+  case PRINTXML:
+    if (evaluateThingToPureTree(&tempNode, tree->child1)) {
+      printf("\n");
+      printXml(tempNode);
+      freeThing(tempNode);
+    } else {
+      printMessage(1,"Warning: the given expression does not evaluate to a function.\n");
+      printMessage(1,"The command will not be executed.\n");
+    }
+    break;			
+  case PRINTXMLNEWFILE:
+    if (evaluateThingToPureTree(&tempNode, tree->child1)) {
+      if (evaluateThingToString(&tempString, tree->child2)) {
+	fd = fopen(tempString,"w");
+	if (fd != NULL) {
+	  fPrintXml(fd,tempNode);
+	  fclose(fd);
+	} else {
+	  printMessage(1,"Warning: the file \"%s\" could not be opened for writing.\n",tempString);
+	  printMessage(1,"This command will have no effect.\n");
+	}
+      } else {
+	printMessage(1,"Warning: the given expression does not evaluate to a string.\n");
+	printMessage(1,"The command will not be executed.\n");
+      }      
+      freeThing(tempNode);
+    } else {
+      printMessage(1,"Warning: the given expression does not evaluate to a function.\n");
+      printMessage(1,"The command will not be executed.\n");
+    }
+    break;			
+  case PRINTXMLAPPENDFILE:
+    if (evaluateThingToPureTree(&tempNode, tree->child1)) {
+      if (evaluateThingToString(&tempString, tree->child2)) {
+	fd = fopen(tempString,"a");
+	if (fd != NULL) {
+	  fPrintXml(fd,tempNode);
+	  fclose(fd);
+	} else {
+	  printMessage(1,"Warning: the file \"%s\" could not be opened for writing.\n",tempString);
+	  printMessage(1,"This command will have no effect.\n");
+	}
+      } else {
+	printMessage(1,"Warning: the given expression does not evaluate to a string.\n");
+	printMessage(1,"The command will not be executed.\n");
+      }      
+      freeThing(tempNode);
+    } else {
+      printMessage(1,"Warning: the given expression does not evaluate to a function.\n");
+      printMessage(1,"The command will not be executed.\n");
+    }
+    break;			
   case WORSTCASE:
     evaluateThingListToThingArray(&resA, &array, tree->arguments);
     resC = 0;
@@ -3671,6 +3744,42 @@ node *makePrint(chain *thinglist) {
   return res;
 
 }
+
+node *makePrintXml(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = PRINTXML;
+  res->child1 = thing;
+
+  return res;
+
+}
+
+node *makePrintXmlNewFile(node *thing, node *thing2) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = PRINTXMLNEWFILE;
+  res->child1 = thing;
+  res->child2 = thing2;
+
+  return res;
+
+}
+
+node *makePrintXmlAppendFile(node *thing, node *thing2) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = PRINTXMLAPPENDFILE;
+  res->child1 = thing;
+  res->child2 = thing2;
+
+  return res;
+
+}
+
 
 node *makeNewFilePrint(node *thing, chain *thinglist) {
   node *res;
@@ -5515,6 +5624,20 @@ void freeThing(node *tree) {
     free(tree->child2);
     free(tree);
     break;			
+  case PRINTXML:
+    free(tree->child1);
+    free(tree);
+    break;			
+  case PRINTXMLNEWFILE:
+    free(tree->child1);
+    free(tree->child2);
+    free(tree);
+    break;			
+  case PRINTXMLAPPENDFILE:
+    free(tree->child1);
+    free(tree->child2);
+    free(tree);
+    break;			
   case WORSTCASE:
     freeChain(tree->arguments, freeThingOnVoid);
     free(tree);
@@ -6417,6 +6540,23 @@ void rawPrintThing(node *tree) {
     printf(",");
     rawPrintThing(tree->child2);
     printf(")");
+    break;			
+  case PRINTXML:
+    printf("printxml(");
+    rawPrintThing(tree->child1);
+    printf(")");
+    break;			
+  case PRINTXMLNEWFILE:
+    printf("printxml(");
+    rawPrintThing(tree->child1);
+    printf(") > ");
+    rawPrintThing(tree->child2);
+    break;			
+  case PRINTXMLAPPENDFILE:
+    printf("printxml(");
+    rawPrintThing(tree->child1);
+    printf(") >> ");
+    rawPrintThing(tree->child2);
     break;			
   case WORSTCASE:
     printf("worstcase(");
@@ -7473,6 +7613,23 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fRawPrintThing(fd,tree->child2);
     fprintf(fd,")");
     break;			
+  case PRINTXML:
+    fprintf(fd,"printxml(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,")");
+    break;			
+  case PRINTXMLNEWFILE:
+    fprintf(fd,"printxml(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,") > ");
+    fRawPrintThing(fd,tree->child2);
+    break;			
+  case PRINTXMLAPPENDFILE:
+    fprintf(fd,"printxml(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,") >> ");
+    fRawPrintThing(fd,tree->child2);
+    break;			
   case WORSTCASE:
     fprintf(fd,"worstcase(");
     curr = tree->arguments;
@@ -8349,6 +8506,17 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
     break; 
   case ASCIIPLOT:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualThing(tree->child2,tree2->child2)) return 0;
+    break;			
+  case PRINTXML:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break;			
+  case PRINTXMLNEWFILE:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualThing(tree->child2,tree2->child2)) return 0;
+    break;			
+  case PRINTXMLAPPENDFILE:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     break;			

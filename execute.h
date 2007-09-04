@@ -159,6 +159,9 @@
 #define ASSIGNMENTININDEXING 200
 #define DOUBLEEXTENDEDSYMBOL 201
 #define ERRORSPECIAL 202
+#define PRINTXML 203
+#define PRINTXMLNEWFILE 204
+#define PRINTXMLAPPENDFILE 205
 
 int executeCommand(node *);
 
@@ -319,7 +322,9 @@ node *makeMidpointDeref();
 node *makeHopitalRecursDeref();
 node *makeAssignmentInIndexing(node *, node *, node *);
 node *makeDoubleextendedSymbol();
-
+node *makePrintXml(node *);
+node *makePrintXmlNewFile(node *, node *);
+node *makePrintXmlAppendFile(node *, node *);
 
 
 #endif /* ifdef EXECUTE_H*/

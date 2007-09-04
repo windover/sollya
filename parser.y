@@ -179,6 +179,7 @@ void yyerror(char *message) {
 %token  PARSETOKEN;             					       
 											       
 %token  PRINTTOKEN;             					       
+%token  PRINTXMLTOKEN;             					       
 %token  PLOTTOKEN;              					       
 %token  PRINTHEXATOKEN;         					       
 %token  PRINTBINARYTOKEN;       					       
@@ -395,6 +396,18 @@ simplecommand:          QUITTOKEN
                       | ASCIIPLOTTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeAsciiPlot($3, $5);
+			  }				       
+                      | PRINTXMLTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makePrintXml($3);
+			  }				       
+                      | PRINTXMLTOKEN LPARTOKEN thing RPARTOKEN RIGHTANGLETOKEN thing
+                          {
+			    $$ = makePrintXmlNewFile($3,$6);
+			  }				       
+                      | PRINTXMLTOKEN LPARTOKEN thing RPARTOKEN RIGHTANGLETOKEN RIGHTANGLETOKEN thing
+                          {
+			    $$ = makePrintXmlAppendFile($3,$7);
 			  }				       
                       | WORSTCASETOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {
@@ -1718,6 +1731,10 @@ help:                   CONSTANTTOKEN
                           {
 			    printf("Here should be some help text.\n");
                           }                 					       
+                      | PRINTXMLTOKEN
+                          {
+			    printf("Here should be some help text.\n");
+                          }                 					       
                       | PLOTTOKEN
                           {
 			    printf("Here should be some help text.\n");
@@ -1984,6 +2001,7 @@ help:                   CONSTANTTOKEN
 			    printf("- printbinary\n");
 			    printf("- printexpansion\n");
 			    printf("- printhexa\n");
+			    printf("- printxml\n");
 			    printf("- quit\n");
 			    printf("- rationalapprox\n");
 			    printf("- read\n");

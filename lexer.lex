@@ -286,6 +286,8 @@ DECIMAL         "decimal"
 
 ERROR           "error"
 
+PRINTXML        "printxml"
+
 
 %%
 
@@ -554,6 +556,7 @@ ERROR           "error"
 {PARSE}           			    { newTokenLexed(); return PARSETOKEN; }           					       
 					    											       
 {PRINT}           			    { newTokenLexed(); return PRINTTOKEN; }           					       
+{PRINTXML}           			    { newTokenLexed(); return PRINTXMLTOKEN; }           					       
 {PLOT}            			    { newTokenLexed(); return PLOTTOKEN; }            					       
 {PRINTHEXA}       			    { newTokenLexed(); return PRINTHEXATOKEN; }       					       
 {PRINTBINARY}     			    { newTokenLexed(); return PRINTBINARYTOKEN; }     					       
