@@ -263,8 +263,13 @@ FROM            "from"
 TO              "to"
 BY              "by"
 DO              "do"
-BEGIN           "begin"
-END             "end"
+BEGINLONG       "begin"
+ENDLONG         "end"
+BEGINSHORT      "{"
+ENDSHORT        "}"
+BEGIN           ({BEGINSHORT}|{BEGINLONG})
+END             ({ENDSHORT}|{ENDLONG})
+
 WHILEDEF        "while"
 
 TRUE            "true"
