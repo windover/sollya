@@ -30,7 +30,7 @@ void fPrintXmlInner(FILE *fd, node *tree) {
     break;
   case ADD:
     fprintf(fd,"<apply>\n");
-    fprintf(fd,"<add/>\n");
+    fprintf(fd,"<plus/>\n");
     fPrintXmlInner(fd, tree->child1);
     fPrintXmlInner(fd, tree->child2);
     fprintf(fd,"</apply>\n");
