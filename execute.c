@@ -9817,6 +9817,12 @@ node *evaluateThingInner(node *tree) {
       freeThing(copy);
       copy = tempNode;
       if (timingString != NULL) popTimeCounter(timingString);
+    } else {
+      if (isPureTree(copy->child1)) {
+	tempNode = copyThing(copy->child1);
+	freeThing(copy);
+	copy = tempNode;
+      }
     }
     break;  			
   case DEBOUNDMIN:
@@ -9827,6 +9833,12 @@ node *evaluateThingInner(node *tree) {
       freeThing(copy);
       copy = tempNode;
       if (timingString != NULL) popTimeCounter(timingString);
+    } else {
+      if (isPureTree(copy->child1)) {
+	tempNode = copyThing(copy->child1);
+	freeThing(copy);
+	copy = tempNode;
+      }
     }
     break; 			
   case DEBOUNDMID:
@@ -9837,6 +9849,12 @@ node *evaluateThingInner(node *tree) {
       freeThing(copy);
       copy = tempNode;
       if (timingString != NULL) popTimeCounter(timingString);
+    } else {
+      if (isPureTree(copy->child1)) {
+	tempNode = copyThing(copy->child1);
+	freeThing(copy);
+	copy = tempNode;
+      }
     }
     break; 			
   case DIFF:

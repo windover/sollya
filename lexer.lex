@@ -288,6 +288,10 @@ ERROR           "error"
 
 PRINTXML        "printxml"
 
+INF             "inf"
+MID             "mid"
+SUP             "sup"
+
 
 %%
 
@@ -517,6 +521,9 @@ PRINTXML        "printxml"
 {DEFAULT}				    { newTokenLexed(); return DEFAULTTOKEN; }				 
 {HEAD}   				    { newTokenLexed(); return HEADTOKEN; }				 
 {TAIL}   				    { newTokenLexed(); return TAILTOKEN; }				 
+{INF}   				    { newTokenLexed(); return INFTOKEN; }				 
+{MID}   				    { newTokenLexed(); return MIDTOKEN; }				 
+{SUP}   				    { newTokenLexed(); return SUPTOKEN; }				 
 {LENGTH}   				    { newTokenLexed(); return LENGTHTOKEN; }				 
 {ABSOLUTE}   				    { newTokenLexed(); return ABSOLUTETOKEN; }				 
 {RELATIVE}   				    { newTokenLexed(); return RELATIVETOKEN; }				 

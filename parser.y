@@ -174,7 +174,9 @@ void yyerror(char *message) {
 %token  ROUNDTOFORMATTOKEN;     					       
 %token  EVALUATETOKEN;          					       
 %token  LENGTHTOKEN;
-
+%token  INFTOKEN;
+%token  MIDTOKEN;
+%token  SUPTOKEN;
 											       
 %token  PARSETOKEN;             					       
 											       
@@ -920,6 +922,18 @@ debound:                STARLEFTANGLETOKEN thing RIGHTANGLESTARTOKEN
                       | STARLEFTANGLETOKEN thing RIGHTANGLEUNDERSCORETOKEN
                           {
 			    $$ = makeDeboundMin($2);
+			  }
+                      | SUPTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeDeboundMax($3);
+			  }
+                      | MIDTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeDeboundMid($3);
+			  }
+                      | INFTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeDeboundMin($3);
 			  }
 ;
 
@@ -1878,6 +1892,18 @@ help:                   CONSTANTTOKEN
                           {
 			    printf("While construct: while condition do command.\n");
                           }    
+                      | INFTOKEN
+                          {
+			    printf("Dereferencing the infimum of a range: inf(range).\n");
+                          }    
+                      | MIDTOKEN
+                          {
+			    printf("Dereferencing the midpoint of a range: mid(range).\n");
+                          }    
+                      | SUPTOKEN
+                          {
+			    printf("Dereferencing the supremum of a range: sup(range).\n");
+                          }    
                       | HELPTOKEN
                           {
 			    printf("Possible keywords in the arenaireplot tool are:\n");
@@ -1975,6 +2001,7 @@ help:                   CONSTANTTOKEN
 			    printf("- if\n");
 			    printf("- implementpoly\n");
 			    printf("- in\n");
+			    printf("- inf\n");
 			    printf("- infnorm\n");
 			    printf("- integral\n");
 			    printf("- isevaluable\n");
@@ -1985,6 +2012,7 @@ help:                   CONSTANTTOKEN
 			    printf("- log1p\n");
 			    printf("- log2\n");
 			    printf("- M\n");
+			    printf("- mid\n");
 			    printf("- midpointmode\n");
 			    printf("- N\n");
 			    printf("- numerator\n");
@@ -2022,6 +2050,7 @@ help:                   CONSTANTTOKEN
 			    printf("- sqrt\n");
 			    printf("- subpoly\n");
 			    printf("- substitute\n");
+			    printf("- sup\n");
 			    printf("- tail\n");
 			    printf("- tan\n");
 			    printf("- tanh\n");
