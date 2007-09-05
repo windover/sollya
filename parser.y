@@ -1774,107 +1774,109 @@ help:                   CONSTANTTOKEN
                           }        	       
                       | INFNORMTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Certified infinite norm: infnorm(func,range[,prooffile[,list of funcs]]).\n");
                           }               					       
                       | FINDZEROSTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Certified bounding of zeros: findzeros(func,range).\n");
                           }             					       
                       | FPFINDZEROSTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Approximate zeros of a function: fpfindzeros(func,range).\n");
                           }           					       
                       | DIRTYINFNORMTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Floating-point infinite norm: dirtyinfnorm(func,range).\n");
                           }          					       
                       | INTEGRALTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Certified integral: integral(func,range).\n");
                           }              					       
                       | DIRTYINTEGRALTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Floating-point integral: dirtyintegral(func,range).\n");
                           }      						       
                       | WORSTCASETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Print all worst-cases under a certain bound: worstcase(func,constant,range,constant,constant[,file]).\n");
                           }             					       
                       | IMPLEMENTPOLYTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Implement a polynomial in C: implementpoly(func,range,constant,format,string,string2[,honorcoeffprec[,string3]]).\n");
+			    printf("Implements func in range with error constant with entering format named in function\nstring writing to file string2 honoring the precision of the coefficients or not with a proof in file string3.\n");
                           }      						       
                       | CHECKINFNORMTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Checks whether an infinite norm is bounded: checkinfnorm(func,range,constant).\n");
                           }          					       
                       | ZERODENOMINATORSTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Searches floating-point approximations to zeros of denominators: zerodenominators(func,range).\n");
                           }      					       
                       | ISEVALUABLETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Tests if func is evaluable on range: isevaluable(func,range).\n");
                           }           					       
                       | SEARCHGALTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Searches Gal values for func (or list of func): searchgal(func|list of func, constant, integer, integer, format|list of formats, constant|list of constants).\n");
                           }             					       
                       | GUESSDEGREETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Guesses the degree needed for approximating func: guessdegree(func,range,constant[,weight]).\n");
                           }           					       
                       | DIRTYFINDZEROSTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Finds zeros of a function dirtily: dirtyfindzeros(func,range).\n");
                           }        					       
                       | IFTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("If construct: if condition then command or if condition then command else command.\n");
                           }      							       
                       | THENTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("If construct: if condition then command or if condition then command else command.\n");
                           }      							       
                       | ELSETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("If construct: if condition then command else command\n");
                           }      							       
                       | FORTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("For construct: for i from const to const2 [by const3] do command\nor for i in list do command.\n");
                           }      							       
                       | INTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("For construct: for i in list do command.\n");
                           }      							       
                       | FROMTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("For construct: for i from const to const2 [by const3] do command.\n");
                           }      							       
                       | TOTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("For construct: for i from const to const2 [by const3] do command.\n");
                           }      							       
                       | BYTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("For construct: for i from const to const2 by const3 do command.\n");
                           }      							       
                       | DOTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("For construct: for i from const to const2 [by const3] do command.\n");
+			    printf("While construct: while condition do command.\n");
                           }      							       
                       | BEGINTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Begin-end construct: begin command; command; ... end.\n");
                           }      							       
                       | ENDTOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("Begin-end construct: begin command; command; ... end.\n");
                           }      							       
                       | WHILETOKEN
                           {
-			    printf("Here should be some help text.\n");
+			    printf("While construct: while condition do command.\n");
                           }    
                       | HELPTOKEN
                           {

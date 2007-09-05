@@ -2296,7 +2296,7 @@ node *getThingFromTable(char *identifier) {
 
   if ((tempLibraryFunction = getFunction(identifier)) != NULL) {
     if (variablename==NULL) {
-      printMessage(1,"Warning: the current free variable is not bound to an identifier. Dereferencing a library function without an argument requires this binding.\n");
+      printMessage(1,"Warning: the current free variable is not bound to an identifier. Dereferencing library function \"%s\" requires this binding.\n",tempLibraryFunction->functionName);
       printMessage(1,"Will bind the current free variable to the identifier \"x\".\n");
       variablename = (char *) safeCalloc(2,sizeof(char));
       variablename[0] = 'x';
