@@ -560,6 +560,9 @@ node *copyThing(node *tree) {
   case PARSE:
     copy->child1 = copyThing(tree->child1);
     break; 			 	
+  case READXML:
+    copy->child1 = copyThing(tree->child1);
+    break; 			 	
   case INFNORM:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     break; 			
@@ -1154,6 +1157,9 @@ char *getTimingStringForThing(node *tree) {
     break; 			
   case PARSE:
     constString = "parsing a mini-expression";
+    break; 			 	
+  case READXML:
+    constString = "reading a XML-tree";
     break; 			 	
   case INFNORM:
     constString = "computing an infinite norm";
@@ -2771,8 +2777,19 @@ int executeCommand(node *tree) {
 	  plotTree(tempList, a, b, defaultpoints, tools_precision, tempString, resD);
 	  freeChain(tempList,freeThingOnVoid);
 	} else {
-	  printMessage(1,"Warning: at least one of the given expressions does not evaluate to a pure function.\n");
-	  printMessage(1,"This command will have no effect.\n");
+	  if (isPureList(array[0]) && (resB-1 == 1)) {
+	    if (evaluateThingToPureListOfPureTrees(&tempList, array[0])) {
+	      plotTree(tempList, a, b, defaultpoints, tools_precision, tempString, resD);
+	      freeChain(tempList,freeThingOnVoid);
+	    } else {
+	      printMessage(1,"Warning: the first argument is not a list of pure functions.\n");
+	      printMessage(1,"This command will have no effect.\n");
+	    }
+	  } else {
+	    printMessage(1,"Warning: at least one of the given expressions does not evaluate to a pure function.\n");
+	    printMessage(1,"Warning: the first argument is not a list of pure functions.\n");
+	    printMessage(1,"This command will have no effect.\n");
+	  }
 	}
       } else {
 	printMessage(1,"Warning: the expression given does not evaluate to a range.\n");
@@ -5041,6 +5058,18 @@ node *makeParse(node *thing) {
 
 }
 
+node *makeReadXml(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = READXML;
+  res->child1 = thing;
+
+  return res;
+
+}
+
+
 node *makeInfnorm(chain *thinglist) {
   node *res;
 
@@ -6034,6 +6063,10 @@ void freeThing(node *tree) {
     free(tree);
     break; 			
   case PARSE:
+    freeThing(tree->child1);
+    free(tree);
+    break; 			 
+  case READXML:
     freeThing(tree->child1);
     free(tree);
     break; 			 	
@@ -7052,6 +7085,11 @@ void rawPrintThing(node *tree) {
     break; 			
   case PARSE:
     printf("parse(");
+    rawPrintThing(tree->child1);
+    printf(")");
+    break; 			 	
+  case READXML:
+    printf("readxml(");
     rawPrintThing(tree->child1);
     printf(")");
     break; 			 	
@@ -8127,6 +8165,11 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fRawPrintThing(fd,tree->child1);
     fprintf(fd,")");
     break; 			 	
+  case READXML:
+    fprintf(fd,"readxml(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,")");
+    break; 			 	
   case INFNORM:
     fprintf(fd,"infnorm(");
     curr = tree->arguments;
@@ -8807,6 +8850,9 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     break; 			
   case PARSE:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break; 			 	
+  case READXML:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 			 	
   case INFNORM:
@@ -10332,6 +10378,19 @@ node *evaluateThingInner(node *tree) {
 	copy = tempNode; 
       } else {
 	printMessage(1,"Warning: the string \"%s\" could not be parsed by the miniparser.\n",copy->child1->string);
+      }
+      if (timingString != NULL) popTimeCounter(timingString);
+    }
+    break; 			 	
+  case READXML:
+    copy->child1 = evaluateThingInner(tree->child1);
+    if (isString(copy->child1)) {
+      if (timingString != NULL) pushTimeCounter();      
+      if ((tempNode = readXml(copy->child1->string)) != NULL) {
+	freeThing(copy);
+	copy = tempNode; 
+      } else {
+	printMessage(1,"Warning: the file \"%s\" could not be read as an XML file.\n",copy->child1->string);
       }
       if (timingString != NULL) popTimeCounter(timingString);
     }

@@ -292,6 +292,8 @@ INF             "inf"
 MID             "mid"
 SUP             "sup"
 
+READXML         "readxml"
+
 
 %%
 
@@ -524,6 +526,7 @@ SUP             "sup"
 {INF}   				    { newTokenLexed(); return INFTOKEN; }				 
 {MID}   				    { newTokenLexed(); return MIDTOKEN; }				 
 {SUP}   				    { newTokenLexed(); return SUPTOKEN; }				 
+{READXML}   				    { newTokenLexed(); return READXMLTOKEN; }				 
 {LENGTH}   				    { newTokenLexed(); return LENGTHTOKEN; }				 
 {ABSOLUTE}   				    { newTokenLexed(); return ABSOLUTETOKEN; }				 
 {RELATIVE}   				    { newTokenLexed(); return RELATIVETOKEN; }				 

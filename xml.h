@@ -10,5 +10,7 @@
 void printXml(node *);
 void fPrintXml(FILE *, node *);
 
+node *readXml(char *);
+
 
 #endif /* ifdef XML_H*/

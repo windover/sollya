@@ -162,6 +162,7 @@
 #define PRINTXML 203
 #define PRINTXMLNEWFILE 204
 #define PRINTXMLAPPENDFILE 205
+#define READXML 206
 
 int executeCommand(node *);
 
@@ -325,6 +326,7 @@ node *makeDoubleextendedSymbol();
 node *makePrintXml(node *);
 node *makePrintXmlNewFile(node *, node *);
 node *makePrintXmlAppendFile(node *, node *);
+node *makeReadXml(node *);
 
 
 #endif /* ifdef EXECUTE_H*/

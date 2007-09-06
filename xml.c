@@ -296,3 +296,22 @@ void fPrintXml(FILE *fd, node *tree) {
   fprintf(fd,"</semantics>\n");
   fprintf(fd,"</math>\n\n");
 }
+
+
+/* Reads the file filename containing a lambda construct
+   into a node * 
+   Return NULL if parsing the file is impossible
+
+   Indication: use make... found in expression.h for building the nodes.
+   Attention: do not forget do free incomplete trees if the 
+   parsing fails. Use free_memory(node *) for this (found in expression.h).
+
+   If warnings to the user shall be indicated, use printMessage(verbosity level, format string, ...)
+
+*/
+node *readXml(char *filename) {
+
+  printf("We should now read the XML file \"%s\".\n",filename);
+
+  return NULL;
+}

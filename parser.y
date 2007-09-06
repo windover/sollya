@@ -177,7 +177,8 @@ void yyerror(char *message) {
 %token  INFTOKEN;
 %token  MIDTOKEN;
 %token  SUPTOKEN;
-											       
+
+%token  READXMLTOKEN;											       
 %token  PARSETOKEN;             					       
 											       
 %token  PRINTTOKEN;             					       
@@ -1016,6 +1017,10 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                       | PARSETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeParse($3);
+			  }             					       
+                      | READXMLTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeReadXml($3);
 			  }             					       
                       | INFNORMTOKEN LPARTOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {
