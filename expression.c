@@ -3917,10 +3917,10 @@ int isCanonical(node *);
 node* differentiate(node *tree) {
   node *temp, *temp3;
 
-  printMessage(5,"Information: formally differentiating a function.\n");
+  printMessage(10,"Information: formally differentiating a function.\n");
   
-  if (verbosity >= 6) {
-    printMessage(6,"Information: differentiating the expression '");
+  if (verbosity >= 11) {
+    printMessage(11,"Information: differentiating the expression '");
     printTree(tree);
     printf("'\n");
   }
@@ -3929,7 +3929,7 @@ node* differentiate(node *tree) {
     temp = differentiateUnsimplified(tree);
   } else {
     if (treeSize(tree) > MAXDIFFSIMPLSIZE) {
-      printMessage(2,"Information: will not simplify the given expression before differentiating because it is too big.\n");
+      printMessage(3,"Information: will not simplify the given expression before differentiating because it is too big.\n");
       temp = differentiateUnsimplified(tree);
     } else {
       temp3 = simplifyTreeErrorfree(tree);
