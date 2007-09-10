@@ -300,6 +300,7 @@ void fPrintXml(FILE *fd, node *tree) {
 // Nico:
 // From: libxml2-2.6.30 and reader1.c example
 // http://xmlsoft.org/examples/index.html#reader1.c
+
 /** 
  * section: xmlReader
  * synopsis: Parse an XML file with an xmlReader
@@ -326,6 +327,7 @@ void fPrintXml(FILE *fd, node *tree) {
  */
 static void
 processNode(xmlTextReaderPtr reader) {
+// doc/info: http://xmlsoft.planetmirror.com/html/libxml-xmlreader.html
     const xmlChar *name, *value;
 
     name = xmlTextReaderConstName(reader);
@@ -334,14 +336,15 @@ processNode(xmlTextReaderPtr reader) {
 
     value = xmlTextReaderConstValue(reader);
 
-    printf("%d %d %s %d %d", 
+    if (xmlTextReaderNodeType(reader)==14) return; // XmlNodeType.SignificantWhitespace
+    printf("Depth: %02d Type: %02d Name: %s", 
 	    xmlTextReaderDepth(reader),
 	    xmlTextReaderNodeType(reader),
-	    name,
-	    xmlTextReaderIsEmptyElement(reader),
-	    xmlTextReaderHasValue(reader));
-    if (value == NULL)
-	printf("\n");
+	    name);
+	 if (xmlTextReaderIsEmptyElement(reader)) printf(" (EmptyElt)");
+	 if (xmlTextReaderHasValue(reader))       printf(" (HasValue)");
+	 if (xmlTextReaderHasAttributes(reader))  printf(" (HasAttrb)");
+    if (value == NULL)                     	printf("\n");
     else {
         if (xmlStrlen(value) > 40)
             printf(" %.40s...\n", value);
@@ -360,7 +363,7 @@ static node*
 streamXmlFile(const char *filename) {
     xmlTextReaderPtr reader;
     int ret;
-    node result=NULL;
+    node* result=NULL;
 
     reader = xmlReaderForFile(filename, NULL, 0);
     if (reader != NULL) {
@@ -391,7 +394,7 @@ streamXmlFile(const char *filename) {
    verbosity level=0 nothing 1 important 2 information 3 internal/debug...
 */
 node *readXml(char *filename) {
-	node result=NULL;
+	node* result=NULL;
 	
   printf("We should now read the XML file \"%s\".\n",filename);
 
