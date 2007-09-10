@@ -9007,3 +9007,32 @@ node *parseString(char *str) {
 
   return result;
 }
+
+
+int readDecimalConstant(mpfr_t result, char *str) {
+  mpfr_t a,b;
+  int ternary;
+
+  mpfr_init2(a,tools_precision);
+  mpfr_init2(b,tools_precision);
+
+  mpfr_set_str(a,str,10,GMP_RNDD);
+  mpfr_set_str(b,str,10,GMP_RNDU);    
+  if (mpfr_cmp(a,b) != 0) {
+    printMessage(1,
+		 "Warning: Rounding occured when converting the constant \"%s\" to floating-point with %d bits.\n",
+		 str,(int) tools_precision);
+    printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+    ternary = mpfr_set_str(a,str,10,GMP_RNDN);
+  } else {
+    ternary = 0;
+  }
+
+  mpfr_set_prec(result, tools_precision);
+  mpfr_set(result,a,GMP_RNDN);
+
+  mpfr_clear(a);
+  mpfr_clear(b);
+
+  return ternary;
+}

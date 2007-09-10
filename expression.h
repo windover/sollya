@@ -129,6 +129,7 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b);
 void fprintValueForXml(FILE *, mpfr_t );
 void fprintValueWithPrintMode(FILE *, mpfr_t );
 void fprintTreeWithPrintMode(FILE *, node *);
+int readDecimalConstant(mpfr_t ,char *);
 
 node *makeVariable();
 node *makeConstant(mpfr_t x);
