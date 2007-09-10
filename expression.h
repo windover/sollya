@@ -127,6 +127,8 @@ int isHorner(node *tree);
 int isCanonical(node *tree);
 char *sprintMidpointMode(mpfr_t a, mpfr_t b);
 void fprintValueForXml(FILE *, mpfr_t );
+void fprintValueWithPrintMode(FILE *, mpfr_t );
+void fprintTreeWithPrintMode(FILE *, node *);
 
 node *makeVariable();
 node *makeConstant(mpfr_t x);

@@ -2163,7 +2163,7 @@ void fPrintThingWithFullStrings(FILE *fd, node *thing) {
   chain *curr;
 
   if (isPureTree(thing)) {
-    fprintTree(fd,thing);
+    fprintTreeWithPrintMode(fd,thing);
   } else {
     if (isRange(thing)) {
       if (midpointMode) {
@@ -2173,16 +2173,16 @@ void fPrintThingWithFullStrings(FILE *fd, node *thing) {
 	  free(temp);
 	} else {
 	  fprintf(fd,"[");
-	  fprintValue(fd,*(thing->child1->value));
+	  fprintValueWithPrintMode(fd,*(thing->child1->value));
 	  fprintf(fd,";");
-	  fprintValue(fd,*(thing->child2->value));
+	  fprintValueWithPrintMode(fd,*(thing->child2->value));
 	  fprintf(fd,"]");
 	}
       } else {
 	fprintf(fd,"[");
-	fprintValue(fd,*(thing->child1->value));
+	fprintValueWithPrintMode(fd,*(thing->child1->value));
 	fprintf(fd,";");
-	fprintValue(fd,*(thing->child2->value));
+	fprintValueWithPrintMode(fd,*(thing->child2->value));
 	fprintf(fd,"]");
       }
     } else {
@@ -2219,7 +2219,7 @@ void fPrintThing(FILE *fd, node *thing) {
   chain *curr;
 
   if (isPureTree(thing)) {
-    fprintTree(fd,thing);
+    fprintTreeWithPrintMode(fd,thing);
   } else {
     if (isRange(thing)) {
       if (midpointMode) {
@@ -2229,16 +2229,16 @@ void fPrintThing(FILE *fd, node *thing) {
 	  free(temp);
 	} else {
 	  fprintf(fd,"[");
-	  fprintValue(fd,*(thing->child1->value));
+	  fprintValueWithPrintMode(fd,*(thing->child1->value));
 	  fprintf(fd,";");
-	  fprintValue(fd,*(thing->child2->value));
+	  fprintValueWithPrintMode(fd,*(thing->child2->value));
 	  fprintf(fd,"]");
 	}
       } else {
 	fprintf(fd,"[");
-	fprintValue(fd,*(thing->child1->value));
+	fprintValueWithPrintMode(fd,*(thing->child1->value));
 	fprintf(fd,";");
-	fprintValue(fd,*(thing->child2->value));
+	fprintValueWithPrintMode(fd,*(thing->child2->value));
 	fprintf(fd,"]");
       }
     } else {
@@ -7280,7 +7280,7 @@ void fRawPrintThing(FILE *fd, node *tree) {
       fprintf(fd,"undefined");
     break;
   case CONSTANT:
-    fprintValue(fd,*(tree->value));
+    fprintValueWithPrintMode(fd,*(tree->value));
     break;
   case ADD:
     fprintf(fd,"(");
