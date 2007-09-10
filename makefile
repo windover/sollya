@@ -1,9 +1,9 @@
-CPPFLAGS=-I/sw/include -rdynamic
-LIB=-L/sw/lib
+CPPFLAGS=-I/sw/include -I/home/njourd01/work-cvs/mpfi-1.3.4-RC3/src -rdynamic
+LIB=-L/sw/lib -L/home/njourd01/work-cvs/mpfi-1.3.4-RC3/src
 CFLAGS=-Wall -g
 
 tools: parser.tab.o lex.yy.o plot.o miniparser.tab.o lex.miniyy.o expression.o infnorm.o pari_utils.o remez.o main.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o execute.o xml.o
-	gcc $(LIB) $(CFLAGS) -Wl,-export-dynamic -o tools lex.yy.o plot.o miniparser.tab.o lex.miniyy.o parser.tab.o expression.o infnorm.o pari_utils.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o execute.o xml.o main.o -lfl -lmpfi -lpari -lmpfr -lgmp -ldl
+	gcc $(LIB) $(CFLAGS) -Wl,-export-dynamic -o tools lex.yy.o plot.o miniparser.tab.o lex.miniyy.o parser.tab.o expression.o infnorm.o pari_utils.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o execute.o xml.o main.o -lfl -lmpfi -lpari -lmpfr -lgmp -ldl  `xml2-config --libs`
 
 parser.tab.o: parser.tab.h parser.tab.c expression.h main.h infnorm.h remez.h chain.h assignment.h taylor.h
 
@@ -55,7 +55,8 @@ implement.o: implement.h implement.c expression.h main.h
 execute.o: execute.h execute.c expression.h main.h
 
 xml.o: xml.h xml.c expression.h main.h
-
+	cc $(CFLAGS) $(CPPFLAGS) -c -o xml.o  `xml2-config --cflags` xml.c
+	
 lex.miniyy.c: minilexer.lex miniparser.tab.h main.h expression.h
 	flex -I -Pminiyy minilexer.lex
 
