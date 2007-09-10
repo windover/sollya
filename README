@@ -9,7 +9,7 @@ In order to compile the software you will need the following packages installed:
 - mpfr
 - mpfi
 - pari version 2.3.0
-
+- libxml2-dev
 
 In order to compile, use the makefile by invoking it using the following command:
 
