@@ -6838,16 +6838,16 @@ void rawPrintThing(node *tree) {
     printf("perturb");
     break; 			
   case ROUNDDOWN:
-    printf("M");
+    printf("RD");
     break; 			
   case ROUNDUP:
-    printf("U");
+    printf("RU");
     break; 			
   case ROUNDTOZERO:
-    printf("Z");
+    printf("RZ");
     break;  			
   case ROUNDTONEAREST:
-    printf("N");
+    printf("RN");
     break; 			
   case HONORCOEFF:
     printf("honorcoeff");
@@ -6942,19 +6942,19 @@ void rawPrintThing(node *tree) {
     printf("]");
     break; 			 	
   case DEBOUNDMAX:
-    printf("*<");
+    printf("sup(");
     rawPrintThing(tree->child1);
-    printf(">*");
+    printf(")");
     break;  			
   case DEBOUNDMIN:
-    printf("*<");
+    printf("inf(");
     rawPrintThing(tree->child1);
-    printf(">_");
+    printf(")");
     break; 			
   case DEBOUNDMID:
-    printf("*<");
+    printf("mid(");
     rawPrintThing(tree->child1);
-    printf(">.");
+    printf(")");
     break; 			
   case DIFF:
     printf("diff(");
@@ -7915,16 +7915,16 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fprintf(fd,"perturb");
     break; 			
   case ROUNDDOWN:
-    fprintf(fd,"M");
+    fprintf(fd,"RD");
     break; 			
   case ROUNDUP:
-    fprintf(fd,"U");
+    fprintf(fd,"RU");
     break; 			
   case ROUNDTOZERO:
-    fprintf(fd,"Z");
+    fprintf(fd,"RZ");
     break;  			
   case ROUNDTONEAREST:
-    fprintf(fd,"N");
+    fprintf(fd,"RN");
     break; 			
   case HONORCOEFF:
     fprintf(fd,"honorcoeff");

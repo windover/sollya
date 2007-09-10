@@ -221,10 +221,10 @@ ASCIIPLOT       "asciiplot"
 
 
 ROUNDTOFORMAT   "round"
-MINUSWORD       "M"
-PLUSWORD        "P"
-ZEROWORD        "Z"
-NEAREST         "N"
+MINUSWORD       "RD"
+PLUSWORD        "RU"
+ZEROWORD        "RZ"
+NEAREST         "RN"
 
 
 GUESSDEGREE     "guessdegree"
