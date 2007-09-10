@@ -10389,6 +10389,12 @@ node *evaluateThingInner(node *tree) {
       if ((tempNode = readXml(copy->child1->string)) != NULL) {
 	freeThing(copy);
 	copy = tempNode; 
+	if (variablename == NULL) {
+	  printMessage(1,"Warning: the free varible is not bound to an identifier. Reading an XML file requires this binding.\n");
+	  printMessage(1,"Will bind the free variable to the identifier \"x\"\n");
+	  variablename = safeCalloc(2,sizeof(char));
+	  variablename[0] = 'x';
+	}
       } else {
 	printMessage(1,"Warning: the file \"%s\" could not be read as an XML file.\n",copy->child1->string);
       }
