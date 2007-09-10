@@ -9916,11 +9916,31 @@ node *evaluateThingInner(node *tree) {
   case SIMPLIFY:
     copy->child1 = evaluateThingInner(tree->child1);
     if (isPureTree(copy->child1)) {
-      if (timingString != NULL) pushTimeCounter();      
-      tempNode = simplifyTree(copy->child1);
-      freeThing(copy);
-      copy = tempNode; 
-      if (timingString != NULL) popTimeCounter(timingString);
+      if (isConstant(copy->child1)) {
+	mpfr_init2(a,tools_precision);
+	mpfr_init2(b,tools_precision);
+	mpfr_set_d(a,1.0,GMP_RNDN);
+	if (timingString != NULL) pushTimeCounter();      
+	if (evaluateFaithful(b, copy->child1, a, tools_precision)) {
+	  tempNode = makeConstant(b);
+	  freeThing(copy);
+	  copy = tempNode;
+	} else {
+	  printMessage(2,"Information: the given tree is constant but cannot be evaluated faithfully.\n");
+	  tempNode = simplifyTree(copy->child1);
+	  freeThing(copy);
+	  copy = tempNode; 
+	}
+	if (timingString != NULL) popTimeCounter(timingString);
+	mpfr_clear(a);
+	mpfr_clear(b);
+      } else {
+	if (timingString != NULL) pushTimeCounter();      
+	tempNode = simplifyTree(copy->child1);
+	freeThing(copy);
+	copy = tempNode; 
+	if (timingString != NULL) popTimeCounter(timingString);
+      }
     }
     break;  			
   case SIMPLIFYSAFE:
