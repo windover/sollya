@@ -397,11 +397,11 @@ if (xmlTextReaderIsEmptyElement(reader) ||
     ) return 0;
 if (!strcmp((char*)xml_name,"annotation") &&
     xmlTextReaderHasAttributes(reader) &&
-    !strcmp(xmlTextReaderGetAttribute(reader,"encoding"),"arenaireplot/text") )
+    !strcmp((char *) xmlTextReaderGetAttribute(reader,(unsigned char *)"encoding"),"arenaireplot/text") )
 	{change_xmlparser(process_annotation); return 1;}
 if (!strcmp((char*)xml_name,"annotation-xml") &&
     xmlTextReaderHasAttributes(reader) &&
-    !strcmp(xmlTextReaderGetAttribute(reader,"encoding"),"MathML-Content") )
+    !strcmp((char *) xmlTextReaderGetAttribute(reader,(unsigned char *)"encoding"),"MathML-Content") )
 	{change_xmlparser(search_lambda); return 1;}
 // on_not_found
 return 0;
