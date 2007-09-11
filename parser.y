@@ -22,7 +22,7 @@ void yyerror(char *message) {
   if (!feof(yyget_in(scanner))) {
     fprintf(stderr,"Warning: %s.\nWill skip input until next semicolon after the unexpected token. May leak memory.\n",message);
     promptToBePrinted = 1;
-  }
+  } 
 }
 
 %}
@@ -593,14 +593,9 @@ thing:                  megaterm
                           {
 			    $$ = makeNegation($2);
 			  }
-                      | indexing
-                          {
-			    $$ = makeIndex($1->a, $1->b);
-			    free($1);
-			  }
 ;
 
-indexing:               thing LBRACKETTOKEN thing RBRACKETTOKEN 
+indexing:               basicthing LBRACKETTOKEN thing RBRACKETTOKEN 
                           {
 			    $$ = (doubleNode *) safeMalloc(sizeof(doubleNode));
 			    $$->a = $1;
@@ -839,6 +834,11 @@ basicthing:             ONTOKEN
                       | statedereference
                           {
 			    $$ = $1;
+			  }
+                      | indexing
+                          {
+			    $$ = makeIndex($1->a, $1->b);
+			    free($1);
 			  }
 ;
 

@@ -531,13 +531,14 @@ int main(int argc, char *argv[]) {
       }
 
       freeThing(parsedThing);
-    }
+    } 
     if (parseAbort || executeAbort) break;
     promptToBePrinted = 1;
   }
-
   
   freeTool();
+
+  if (!eliminatePromptBackup) printf("\n");
 
   return 0;
 }

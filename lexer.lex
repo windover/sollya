@@ -376,7 +376,7 @@ READXML         "readxml"
 
 <<EOF>>         {
                       if (readStack == NULL) {
-			printf("\n");
+			if (!eliminatePromptBackup) printf("\n");
 			yyterminate();
 		      } else {
 			fclose(yyin);
