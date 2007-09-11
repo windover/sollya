@@ -324,17 +324,33 @@ int search_mathml		 (xmlTextReaderPtr reader);
 int search_semantics  (xmlTextReaderPtr reader);
 int search_annotations(xmlTextReaderPtr reader);
 int process_annotation(xmlTextReaderPtr reader);
-int process_content   (xmlTextReaderPtr reader);
+int search_lambda     (xmlTextReaderPtr reader);
+int search_variable   (xmlTextReaderPtr reader);
 
 static int (*next_xmlparser)(xmlTextReaderPtr reader)=search_mathml;
 
-static int				current_depth;
+static int				current_depth,lambda_depth;
 static const xmlChar *xml_name, *xml_value;
 static node				*result_node;
 
 #define change_xmlparser(new_parser) do { \
 	printMessage(3,"%p => ",next_xmlparser); \
 	printMessage(3,"%p\n",next_xmlparser=new_parser); } while(0)
+
+int search_variable(xmlTextReaderPtr reader)
+{
+// on_error 
+if (lambda_depth>=xmlTextReaderDepth(reader)) { change_xmlparser(search_lambda); return -1; }
+// on_cannot_find
+if (xmlTextReaderIsEmptyElement(reader) ||
+    strcmp((char*)xml_name,"bvar") ||
+    xmlTextReaderNodeType(reader)!=1  ||
+    lambda_depth+1!=xmlTextReaderDepth(reader)
+    ) return 0;
+// on_found
+change_xmlparser(search_variable);
+return 1;
+}
 
 int process_annotation(xmlTextReaderPtr reader)
 {
@@ -353,32 +369,42 @@ change_xmlparser(search_annotations);
 return 1;
 }
 
-int process_content(xmlTextReaderPtr reader)
+int search_lambda(xmlTextReaderPtr reader)
 {
-// node *parseString(char *)
-return 0;
+// on_error 
+if (current_depth+2>=xmlTextReaderDepth(reader)) { change_xmlparser(search_annotations); return -1; }
+// on_cannot_find
+if (xmlTextReaderIsEmptyElement(reader) ||
+    strcmp((char*)xml_name,"lambda") ||
+    xmlTextReaderNodeType(reader)!=1 /* ||
+    current_depth+3!=xmlTextReaderDepth(reader)*/ // allow <declare>, ...
+    ) return 0;
+// on_found
+lambda_depth=xmlTextReaderDepth(reader);
+change_xmlparser(search_variable);
+return 1;
 }
 
 int search_annotations(xmlTextReaderPtr reader)
 {
 // on_error 
 if (current_depth+1>=xmlTextReaderDepth(reader))
-	{ change_xmlparser(search_semantics); return -1; }
+	{change_xmlparser(search_semantics); return -1;}
 // on_search
 if (xmlTextReaderIsEmptyElement(reader) ||
     xmlTextReaderNodeType(reader)!=1 ||
     current_depth+2!=xmlTextReaderDepth(reader)
     ) return 0;
-if (!strcmp(xml_name,"annotation") &&
+if (!strcmp((char*)xml_name,"annotation") &&
     xmlTextReaderHasAttributes(reader) &&
     !strcmp(xmlTextReaderGetAttribute(reader,"encoding"),"arenaireplot/text") )
-	{ change_xmlparser(process_annotation); return 1;}
-if (0 && !strcmp(xml_name,"annotation-xml") &&
+	{change_xmlparser(process_annotation); return 1;}
+if (!strcmp((char*)xml_name,"annotation-xml") &&
     xmlTextReaderHasAttributes(reader) &&
     !strcmp(xmlTextReaderGetAttribute(reader,"encoding"),"MathML-Content") )
-	{ change_xmlparser(process_content); return 1;}
+	{change_xmlparser(search_lambda); return 1;}
 // on_not_found
-return 1;
+return 0;
 }
 
 int search_semantics (xmlTextReaderPtr reader)
@@ -387,7 +413,7 @@ int search_semantics (xmlTextReaderPtr reader)
 if (current_depth>=xmlTextReaderDepth(reader)) { change_xmlparser(search_mathml); return -1; }
 // on_cannot_find
 if (xmlTextReaderIsEmptyElement(reader) ||
-    strcmp(xml_name,"semantics") ||
+    strcmp((char*)xml_name,"semantics") ||
     xmlTextReaderNodeType(reader)!=1 ||
     current_depth+1!=xmlTextReaderDepth(reader)
     ) return 0;
@@ -401,7 +427,7 @@ int search_mathml (xmlTextReaderPtr reader)
 // on_error => nothing to do
 // on_cannot_find =>
 if (xmlTextReaderIsEmptyElement(reader) ||
-    strcmp(xml_name,"math") ||
+    strcmp((char*)xml_name,"math") ||
     xmlTextReaderNodeType(reader)!=1
     ) return 0;
 // on_found =>
