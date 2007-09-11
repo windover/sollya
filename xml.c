@@ -319,39 +319,138 @@ void fPrintXml(FILE *fd, node *tree) {
 
 #ifdef LIBXML_READER_ENABLED
 
+// PARSER MATHML - return: 0 (not found) -1 (sync lost) 1 (found)
+int search_mathml		 (xmlTextReaderPtr reader);
+int search_semantics  (xmlTextReaderPtr reader);
+int search_annotations(xmlTextReaderPtr reader);
+int process_annotation(xmlTextReaderPtr reader);
+int process_content   (xmlTextReaderPtr reader);
+
+static int (*next_xmlparser)(xmlTextReaderPtr reader)=search_mathml;
+
+static int				current_depth;
+static const xmlChar *xml_name, *xml_value;
+static node				*result_node;
+
+#define change_xmlparser(new_parser) do { \
+	printMessage(3,"%p => ",next_xmlparser); \
+	printMessage(3,"%p\n",next_xmlparser=new_parser); } while(0)
+
+int process_annotation(xmlTextReaderPtr reader)
+{
+// using external node *parseString(char *)
+// Depth: 03 Type: 03 Name: #text (HasValue) ((x^(1b1)) + (1b2 * x)) - sin(x)
+// on_error 
+if (current_depth+2>=xmlTextReaderDepth(reader))
+	{ change_xmlparser(search_annotations); return -1; }
+// on_search
+if (xmlTextReaderIsEmptyElement(reader) ||
+    xmlTextReaderNodeType(reader)!=3 ||
+    current_depth+3!=xmlTextReaderDepth(reader)
+    ) return 0;
+result_node=parseString((char*)xml_value);
+change_xmlparser(search_annotations);
+return 1;
+}
+
+int process_content(xmlTextReaderPtr reader)
+{
+// node *parseString(char *)
+return 0;
+}
+
+int search_annotations(xmlTextReaderPtr reader)
+{
+// on_error 
+if (current_depth+1>=xmlTextReaderDepth(reader))
+	{ change_xmlparser(search_semantics); return -1; }
+// on_search
+if (xmlTextReaderIsEmptyElement(reader) ||
+    xmlTextReaderNodeType(reader)!=1 ||
+    current_depth+2!=xmlTextReaderDepth(reader)
+    ) return 0;
+if (!strcmp(xml_name,"annotation") &&
+    xmlTextReaderHasAttributes(reader) &&
+    !strcmp(xmlTextReaderGetAttribute(reader,"encoding"),"arenaireplot/text") )
+	{ change_xmlparser(process_annotation); return 1;}
+if (0 && !strcmp(xml_name,"annotation-xml") &&
+    xmlTextReaderHasAttributes(reader) &&
+    !strcmp(xmlTextReaderGetAttribute(reader,"encoding"),"MathML-Content") )
+	{ change_xmlparser(process_content); return 1;}
+// on_not_found
+return 1;
+}
+
+int search_semantics (xmlTextReaderPtr reader)
+{
+// on_error 
+if (current_depth>=xmlTextReaderDepth(reader)) { change_xmlparser(search_mathml); return -1; }
+// on_cannot_find
+if (xmlTextReaderIsEmptyElement(reader) ||
+    strcmp(xml_name,"semantics") ||
+    xmlTextReaderNodeType(reader)!=1 ||
+    current_depth+1!=xmlTextReaderDepth(reader)
+    ) return 0;
+// on_found
+change_xmlparser(search_annotations);
+return 1;
+}
+
+int search_mathml (xmlTextReaderPtr reader)
+{
+// on_error => nothing to do
+// on_cannot_find =>
+if (xmlTextReaderIsEmptyElement(reader) ||
+    strcmp(xml_name,"math") ||
+    xmlTextReaderNodeType(reader)!=1
+    ) return 0;
+// on_found =>
+current_depth=xmlTextReaderDepth(reader);
+change_xmlparser(search_semantics);
+return 1;
+}
+
 /**
  * processNode:
  * @reader: the xmlReader
  *
  * Dump information about the current node
  */
-static void
+static int
 processNode(xmlTextReaderPtr reader) {
 // doc/info: http://xmlsoft.planetmirror.com/html/libxml-xmlreader.html
-    const xmlChar *name, *value;
+    int				ret;
 
-    name = xmlTextReaderConstName(reader);
-    if (name == NULL)
-	name = BAD_CAST "--";
+    ret = xmlTextReaderRead(reader);
+    if (ret!=1) { // EOF or ERROR
+      if (ret) printf("Failed to parse, return code %i\n",ret);
+      return ret;
+      }
+    xml_name = xmlTextReaderConstName(reader);
+    if (xml_name == NULL)
+	 xml_name = BAD_CAST "--";
 
-    value = xmlTextReaderConstValue(reader);
+    xml_value = xmlTextReaderConstValue(reader);
 
-    if (xmlTextReaderNodeType(reader)==14) return; // XmlNodeType.SignificantWhitespace
-    printf("Depth: %02d Type: %02d Name: %s", 
+    printMessage(3,"Depth: %02d Type: %02d Name: %s", 
 	    xmlTextReaderDepth(reader),
 	    xmlTextReaderNodeType(reader),
-	    name);
-	 if (xmlTextReaderIsEmptyElement(reader)) printf(" (EmptyElt)");
-	 if (xmlTextReaderHasValue(reader))       printf(" (HasValue)");
-	 if (xmlTextReaderHasAttributes(reader))  printf(" (HasAttrb)");
-    if (value == NULL)                     	printf("\n");
+	    xml_name);
+	 if (xmlTextReaderIsEmptyElement(reader)) printMessage(3," (EmptyElt)");
+	 if (xmlTextReaderHasValue(reader))       printMessage(3," (HasValue)");
+	 if (xmlTextReaderHasAttributes(reader))  printMessage(3," (HasAttrb)");
+    if (xml_value == NULL || // XmlNodeType.SignificantWhitespace
+    	  xmlTextReaderNodeType(reader)==14)  	printMessage(3,"\n");
     else {
-        if (xmlStrlen(value) > 40)
-            printf(" %.40s...\n", value);
-        else
-	    printf(" %s\n", value);
-    }
+        if (xmlStrlen(xml_value) > 40)       printMessage(3," %.40s...\n", xml_value);
+        else                                 printMessage(3," %s\n", xml_value);  }
+while((*next_xmlparser)(reader)<0) printMessage(2,"Lost Sync! Try resync...\n");
+return ret;
 }
+
+
+
+
 
 /**
  * streamFile:
@@ -362,24 +461,12 @@ processNode(xmlTextReaderPtr reader) {
 static node*
 streamXmlFile(const char *filename) {
     xmlTextReaderPtr reader;
-    int ret;
-    node* result=NULL;
 
     reader = xmlReaderForFile(filename, NULL, 0);
-    if (reader != NULL) {
-        ret = xmlTextReaderRead(reader);
-        while (ret == 1) {
-            processNode(reader);
-            ret = xmlTextReaderRead(reader);
-        }
-        xmlFreeTextReader(reader);
-        if (ret != 0) {
-            printf("%s : failed to parse\n", filename);
-        }
-    } else {
-        printf("Unable to open %s\n", filename);
-    }
-    return result;
+    if (reader == NULL) { printf("Unable to open %s\n", filename); return NULL; }
+    for(result_node=NULL,current_depth=0;processNode(reader)==1 && !result_node;);
+    xmlFreeTextReader(reader);
+    return result_node;
 }
 
 /* Reads the file filename containing a lambda construct
