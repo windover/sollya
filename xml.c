@@ -509,8 +509,6 @@ streamXmlFile(const char *filename) {
 node *readXml(char *filename) {
 	node* result=NULL;
 	
-  printf("We should now read the XML file \"%s\".\n",filename);
-
     /*
      * this initialize the library and check potential ABI mismatches
      * between the version it was compiled for and the actual shared
