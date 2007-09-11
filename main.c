@@ -536,7 +536,6 @@ int main(int argc, char *argv[]) {
     promptToBePrinted = 1;
   }
 
-  printf("\n");
   
   freeTool();
 

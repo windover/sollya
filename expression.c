@@ -736,66 +736,75 @@ void fprintValueWithPrintMode(FILE *fd, mpfr_t value) {
 }
 
 void fprintTreeWithPrintMode(FILE *fd, node *tree) {
-  int i;
+  int pred, i;
 
-  if (tree == NULL) return;
+  if (fullParentheses) pred = 100; else pred = precedence(tree);
+
   switch (tree->nodeType) {
   case VARIABLE:
-    if (variablename != NULL) fprintf(fd,"%s",variablename); else fprintf(fd,"x");
+    if (variablename != NULL) {
+      fprintf(fd,"%s",variablename);
+    } else {
+      printMessage(1,"Warning: the current free variable has not been bound. Nevertheless it must be printed.\n");
+      printMessage(1,"Will bind the current free variable to \"x\".\n");
+      variablename = (char *) safeCalloc(2,sizeof(char));
+      variablename[0] = 'x';
+      fprintf(fd,"%s",variablename);
+    }
     break;
   case CONSTANT:
     fprintValueWithPrintMode(fd,*(tree->value));
     break;
   case ADD:
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       fprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       fprintf(fd,")");
     fprintf(fd," + ");
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
       fprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child2);
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
       fprintf(fd,")");
     break;
   case SUB:
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       fprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       fprintf(fd,")");
     fprintf(fd," - ");
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
       fprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child2);
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
       fprintf(fd,")");
     break;
   case MUL:
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       fprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       fprintf(fd,")");
     fprintf(fd," * ");
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
       fprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child2);
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
       fprintf(fd,")");
     break;
   case DIV:
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       fprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
       fprintf(fd,")");
     fprintf(fd," / ");
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
       fprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child2);
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
       fprintf(fd,")");
     break;
   case SQRT:
@@ -884,14 +893,19 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
     fprintf(fd,")");
     break;
   case POW:
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
       fprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
       fprintf(fd,")");
-    fprintf(fd,"^(");
+    fprintf(fd,"^");
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) {
+      fprintf(fd,"(");
+    }
     fprintTreeWithPrintMode(fd,tree->child2);
-    fprintf(fd,")");
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) {
+      fprintf(fd,")");
+    }
     break;
   case NEG:
     fprintf(fd,"-");
@@ -978,6 +992,9 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
   }
   return;
 }
+
+
+
 
 
 
