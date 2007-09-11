@@ -449,7 +449,7 @@ processNode(xmlTextReaderPtr reader) {
 
     ret = xmlTextReaderRead(reader);
     if (ret!=1) { // EOF or ERROR
-      if (ret) printf("Failed to parse, return code %i\n",ret);
+      if (ret) printMessage(1,"Warning: on parsing an XML file: failed to parse, return code %i\n",ret);
       return ret;
       }
     xml_name = xmlTextReaderConstName(reader);
