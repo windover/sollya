@@ -163,6 +163,9 @@
 #define PRINTXMLNEWFILE 204
 #define PRINTXMLAPPENDFILE 205
 #define READXML 206
+#define MANTISSA 207
+#define EXPONENT 208
+#define PRECISION 209
 
 int executeCommand(node *);
 
@@ -308,6 +311,9 @@ node *makeGuessDegree(chain *thinglist);
 node *makeDirtyFindZeros(node *thing1, node *thing2);
 node *makeHead(node *thing);
 node *makeTail(node *thing);
+node *makeMantissa(node *thing);
+node *makeExponent(node *thing);
+node *makePrecision(node *thing);
 node *makeLength(node *thing);
 node *makePrecDeref();
 node *makePointsDeref();

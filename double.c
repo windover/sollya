@@ -583,3 +583,44 @@ void mpfr_round_to_format(mpfr_t rop, mpfr_t op, int format) {
     exit(1);
   }
 }
+
+
+int mpfr_mant_exp(mpfr_t rop, mp_exp_t *expo, mpfr_t op) {
+  mp_exp_t e;
+  mp_prec_t p;
+  mpfr_t temp;
+  int res;
+
+  if (!mpfr_number_p(op)) {
+    *expo = 0;
+    return mpfr_set(rop,op,GMP_RNDN);
+  }
+
+  if (mpfr_zero_p(op)) {
+    *expo = 0;
+    return mpfr_set(rop,op,GMP_RNDN);
+  }
+
+  p = mpfr_get_prec(op);  
+  mpfr_init2(temp,p);
+  mpfr_set(temp,op,GMP_RNDN);
+  
+  e = mpfr_get_exp(temp) - p;
+  mpfr_set_exp(temp,p);
+  
+  while (mpfr_integer_p(temp)) {
+    mpfr_div_2ui(temp,temp,1,GMP_RNDN);
+    e++;
+  }
+  mpfr_mul_2ui(temp,temp,1,GMP_RNDN);
+  e--;
+  
+  *expo = e;
+  res = mpfr_set(rop,temp,GMP_RNDN);
+
+  mpfr_clear(temp);
+
+  return res;
+}
+
+

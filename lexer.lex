@@ -294,6 +294,10 @@ SUP             "sup"
 
 READXML         "readxml"
 
+MANTISSA        "mantissa"
+EXPONENT        "exponent"
+PRECISION       "precision"
+
 
 %%
 
@@ -522,6 +526,9 @@ READXML         "readxml"
 {FALSE}					    { newTokenLexed(); return FALSETOKEN; }					      	       
 {DEFAULT}				    { newTokenLexed(); return DEFAULTTOKEN; }				 
 {HEAD}   				    { newTokenLexed(); return HEADTOKEN; }				 
+{MANTISSA}   				    { newTokenLexed(); return MANTISSATOKEN; }				 
+{EXPONENT}   				    { newTokenLexed(); return EXPONENTTOKEN; }				 
+{PRECISION}   				    { newTokenLexed(); return PRECISIONTOKEN; }				 
 {TAIL}   				    { newTokenLexed(); return TAILTOKEN; }				 
 {INF}   				    { newTokenLexed(); return INFTOKEN; }				 
 {MID}   				    { newTokenLexed(); return MIDTOKEN; }				 

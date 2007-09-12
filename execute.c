@@ -616,6 +616,15 @@ node *copyThing(node *tree) {
   case HEAD:
     copy->child1 = copyThing(tree->child1);
     break; 			 	
+  case MANTISSA:
+    copy->child1 = copyThing(tree->child1);
+    break; 			 	
+  case EXPONENT:
+    copy->child1 = copyThing(tree->child1);
+    break; 			 	
+  case PRECISION:
+    copy->child1 = copyThing(tree->child1);
+    break; 			 	
   case TAIL:
     copy->child1 = copyThing(tree->child1);
     break; 			 	
@@ -1205,6 +1214,15 @@ char *getTimingStringForThing(node *tree) {
     break; 			
   case HEAD:
     constString = NULL;
+    break; 			 	
+  case EXPONENT:
+    constString = "computing the exponent of a value";
+    break; 			 	
+  case MANTISSA:
+    constString = "computing the integer mantissa of a value";
+    break; 			 	
+  case PRECISION:
+    constString = "computing the effective precision of a value";
     break; 			 	
   case TAIL:
     constString = NULL;
@@ -5232,6 +5250,39 @@ node *makeHead(node *thing) {
 
 }
 
+node *makeMantissa(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = MANTISSA;
+  res->child1 = thing;
+
+  return res;
+
+}
+
+node *makeExponent(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = EXPONENT;
+  res->child1 = thing;
+
+  return res;
+
+}
+
+node *makePrecision(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = PRECISION;
+  res->child1 = thing;
+
+  return res;
+
+}
+
 node *makeTail(node *thing) {
   node *res;
 
@@ -6135,6 +6186,18 @@ void freeThing(node *tree) {
     free(tree);
     break; 			
   case HEAD:
+    freeThing(tree->child1);
+    free(tree);
+    break; 			 	
+  case MANTISSA:
+    freeThing(tree->child1);
+    free(tree);
+    break; 			 	
+  case EXPONENT:
+    freeThing(tree->child1);
+    free(tree);
+    break; 			 	
+  case PRECISION:
     freeThing(tree->child1);
     free(tree);
     break; 			 	
@@ -7211,6 +7274,21 @@ void rawPrintThing(node *tree) {
     break; 			
   case HEAD:
     printf("head(");
+    rawPrintThing(tree->child1);
+    printf(")");
+    break; 			 	
+  case MANTISSA:
+    printf("mantissa(");
+    rawPrintThing(tree->child1);
+    printf(")");
+    break; 			 	
+  case EXPONENT:
+    printf("exponent(");
+    rawPrintThing(tree->child1);
+    printf(")");
+    break; 			 	
+  case PRECISION:
+    printf("precision(");
     rawPrintThing(tree->child1);
     printf(")");
     break; 			 	
@@ -8291,6 +8369,21 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fRawPrintThing(fd,tree->child1);
     fprintf(fd,")");
     break; 			 	
+  case MANTISSA:
+    fprintf(fd,"mantissa(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,")");
+    break; 			 	
+  case EXPONENT:
+    fprintf(fd,"exponent(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,")");
+    break; 			 	
+  case PRECISION:
+    fprintf(fd,"precision(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,")");
+    break; 			 	
   case TAIL:
     fprintf(fd,"tail(");
     fRawPrintThing(fd,tree->child1);
@@ -8908,6 +9001,15 @@ int isEqualThing(node *tree, node *tree2) {
   case HEAD:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 			 	
+  case MANTISSA:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break; 			 	
+  case EXPONENT:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break; 			 	
+  case PRECISION:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break; 			 	
   case TAIL:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 			 	
@@ -9066,6 +9168,8 @@ node *evaluateThingInner(node *tree) {
   rangetype *rangeTempPtr;
   FILE *fd, *fd2;
   mpfr_t *tempMpfrPtr;
+  mp_exp_t expo;
+  mp_prec_t pTemp;
 
   if (tree == NULL) return NULL;
 
@@ -11043,6 +11147,71 @@ node *evaluateThingInner(node *tree) {
       } 
     }
     break; 			 	
+  case MANTISSA:
+    copy->child1 = evaluateThingInner(tree->child1);
+    if (isPureTree(copy->child1)) {
+      mpfr_init2(a,tools_precision);
+      if (evaluateThingToConstant(a,copy->child1,NULL)) {
+	mpfr_init2(b,tools_precision);
+	if (mpfr_mant_exp(b, &expo, a) == 0) {
+	  tempNode = makeConstant(b);
+	  freeThing(copy);
+	  copy = tempNode;
+	}
+	mpfr_clear(b);
+      }
+      mpfr_clear(a);
+    }
+    break;
+  case EXPONENT:
+    copy->child1 = evaluateThingInner(tree->child1);
+    if (isPureTree(copy->child1)) {
+      mpfr_init2(a,tools_precision);
+      if (evaluateThingToConstant(a,copy->child1,NULL)) {
+	mpfr_init2(b,tools_precision);
+	if (mpfr_mant_exp(b, &expo, a) == 0) {
+	  mpfr_init2(c,sizeof(expo) * 8 + 5);
+	  mpfr_set_si(c,expo,GMP_RNDN);
+	  tempNode = makeConstant(c);
+	  mpfr_clear(c);
+	  freeThing(copy);
+	  copy = tempNode;
+	}
+	mpfr_clear(b);
+      }
+      mpfr_clear(a);
+    }
+    break;
+  case PRECISION:
+    copy->child1 = evaluateThingInner(tree->child1);
+    if (isPureTree(copy->child1)) {
+      mpfr_init2(a,tools_precision);
+      if (evaluateThingToConstant(a,copy->child1,NULL)) {
+	mpfr_init2(b,tools_precision);
+	if (mpfr_mant_exp(b, &expo, a) == 0) {
+	  if (mpfr_zero_p(b)) {
+	    tempNode = makeConstantDouble(0.0);
+	  } else {
+	    pTemp = sizeof(mp_prec_t) * 8 + 5;
+	    if (tools_precision > pTemp) pTemp = tools_precision;
+	    mpfr_init2(c,pTemp);
+	    mpfr_abs(b,b,GMP_RNDN);
+	    mpfr_log2(c,b,GMP_RNDU);
+	    mpfr_ceil(c,c);
+	    if (mpfr_zero_p(c)) {
+	      mpfr_set_d(c,1.0,GMP_RNDN);
+	    }
+	    tempNode = makeConstant(c);
+	    mpfr_clear(c);
+	  }
+	  freeThing(copy);
+	  copy = tempNode;
+	}
+	mpfr_clear(b);
+      }
+      mpfr_clear(a);
+    }
+    break;
   case TAIL:
     copy->child1 = evaluateThingInner(tree->child1);
     if (isList(copy->child1)) {

@@ -113,6 +113,9 @@ void yyerror(char *message) {
 
 %token  HEADTOKEN;
 %token  TAILTOKEN;		       
+%token  MANTISSATOKEN;
+%token  EXPONENTTOKEN;
+%token  PRECISIONTOKEN;
 											       
 %token  PRECTOKEN;              					       
 %token  POINTSTOKEN;            					       
@@ -1078,6 +1081,18 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeHead($3);
 			  }              					       
+                      | MANTISSATOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeMantissa($3);
+			  }              					       
+                      | EXPONENTTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeExponent($3);
+			  }              					       
+                      | PRECISIONTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makePrecision($3);
+			  }              					       
                       | TAILTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeTail($3);
@@ -1909,6 +1924,18 @@ help:                   CONSTANTTOKEN
                           {
 			    printf("Dereferencing the supremum of a range: sup(range).\n");
                           }    
+                      | EXPONENTTOKEN
+                          {
+			    printf("exponent(constant): returns an integer such that constant scaled by the power of 2\nof this integer is an odd or zero integer.\n");
+                          }    
+                      | MANTISSATOKEN
+                          {
+			    printf("mantissa(constant): returns an odd or zero integer equal to constant scaled by an integer power of 2.\n");
+                          }    
+                      | PRECISIONTOKEN
+                          {
+			    printf("precision(constant): returns the least number of bits constant can be written on.\n");
+                          }    
                       | HELPTOKEN
                           {
 			    printf("Possible keywords in the arenaireplot tool are:\n");
@@ -1988,6 +2015,7 @@ help:                   CONSTANTTOKEN
 			    printf("- exp\n");
 			    printf("- expand\n");
 			    printf("- expm1\n");
+			    printf("- exponent\n");
 			    printf("- externalplot\n");
 			    printf("- false\n");
 			    printf("- file\n");
@@ -2017,6 +2045,7 @@ help:                   CONSTANTTOKEN
 			    printf("- log1p\n");
 			    printf("- log2\n");
 			    printf("- M\n");
+			    printf("- mantissa\n");
 			    printf("- mid\n");
 			    printf("- midpointmode\n");
 			    printf("- N\n");
@@ -2033,6 +2062,7 @@ help:                   CONSTANTTOKEN
 			    printf("- postscriptfile\n");
 			    printf("- powers\n");
 			    printf("- prec\n");
+			    printf("- precision\n");
 			    printf("- print\n");
 			    printf("- printbinary\n");
 			    printf("- printexpansion\n");

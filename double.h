@@ -16,5 +16,6 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec);
 int printDoubleExpansion(mpfr_t x);
 int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec);
 void mpfr_round_to_format(mpfr_t rop, mpfr_t op, int format);
+int mpfr_mant_exp(mpfr_t rop, mp_exp_t *expo, mpfr_t op);
 
 #endif /* ifdef DOUBLE_H*/
