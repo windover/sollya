@@ -326,16 +326,62 @@ int search_annotations(xmlTextReaderPtr reader);
 int process_annotation(xmlTextReaderPtr reader);
 int search_lambda     (xmlTextReaderPtr reader);
 int search_variable   (xmlTextReaderPtr reader);
+int search_basic_element (xmlTextReaderPtr reader);
 
-static int (*next_xmlparser)(xmlTextReaderPtr reader)=search_mathml;
+static int (*next_xmlparser)(xmlTextReaderPtr reader)=search_basic_element; //search_mathml;
 
 static int				current_depth,lambda_depth;
 static const xmlChar *xml_name, *xml_value;
 static node				*result_node;
 
+
 #define change_xmlparser(new_parser) do { \
 	printMessage(3,"%p => ",next_xmlparser); \
-	printMessage(3,"%p\n",next_xmlparser=new_parser); } while(0)
+	next_xmlparser=new_parser; \
+	printMessage(3,"%p\n",next_xmlparser); } while(0)
+
+
+struct {
+char*	element;
+int	type;
+int	(*parser)(xmlTextReaderPtr reader);
+int	next_xmlparser;
+int	onerror_parser;
+int	depth;
+int	onerror_depth;
+} mml_parser[]={
+// element:		type:	parser:					next:	err:	depth:	
+{	"math",			1,	search_basic_element,	1,	-1,	-1 }, // search_mathml
+{	"semantics",	1,	search_basic_element,	2,	1,		1	},
+{	"annotations",	1,	search_annotations,		2,	2,		2	},
+},*current_parser=&mml_parser[0];
+
+
+int search_basic_element (xmlTextReaderPtr reader)
+{
+// on_error 
+if (current_parser->onerror_parser!=-1 && current_parser->depth>=xmlTextReaderDepth(reader))
+  {
+  printMessage(3,"%s => %s\n",current_parser->element,mml_parser[current_parser->onerror_parser].element);
+  current_parser=&mml_parser[current_parser->onerror_parser];
+  change_xmlparser(current_parser->parser);
+  return -1;
+  }
+// on_cannot_find
+if (xmlTextReaderIsEmptyElement(reader) ||
+  strcmp((char*)xml_name,current_parser->element) ||
+  xmlTextReaderNodeType(reader)!=current_parser->type ||
+  (current_parser->depth!=-1 && current_parser->depth+1!=xmlTextReaderDepth(reader))
+  ) return 0;
+// on_found
+printMessage(3,"%s => %s\n",current_parser->element,mml_parser[current_parser->next_xmlparser].element);
+current_parser=&mml_parser[current_parser->next_xmlparser];
+change_xmlparser(current_parser->parser);
+current_parser->depth=xmlTextReaderDepth(reader);
+return 1;
+}
+
+
 
 int search_variable(xmlTextReaderPtr reader)
 {
@@ -419,20 +465,6 @@ if (xmlTextReaderIsEmptyElement(reader) ||
     ) return 0;
 // on_found
 change_xmlparser(search_annotations);
-return 1;
-}
-
-int search_mathml (xmlTextReaderPtr reader)
-{
-// on_error => nothing to do
-// on_cannot_find =>
-if (xmlTextReaderIsEmptyElement(reader) ||
-    strcmp((char*)xml_name,"math") ||
-    xmlTextReaderNodeType(reader)!=1
-    ) return 0;
-// on_found =>
-current_depth=xmlTextReaderDepth(reader);
-change_xmlparser(search_semantics);
 return 1;
 }
 
