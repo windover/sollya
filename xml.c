@@ -320,8 +320,6 @@ void fPrintXml(FILE *fd, node *tree) {
 #ifdef LIBXML_READER_ENABLED
 
 // PARSER MATHML - return: 0 (not found) -1 (sync lost) 1 (found)
-//int search_mathml		 (xmlTextReaderPtr reader);
-int search_semantics  (xmlTextReaderPtr reader);
 int search_annotations(xmlTextReaderPtr reader);
 int process_annotation(xmlTextReaderPtr reader);
 int search_lambda     (xmlTextReaderPtr reader);
@@ -352,7 +350,7 @@ int	onerror_depth;
 } mml_parser[]={
 // element:		type:	parser:					next:	err:	depth:	
 {	"math",			1,	search_basic_element,	1,	-1,	-1 }, // search_mathml
-{	"semantics",	1,	search_basic_element,	2,	1,		1	},
+{	"semantics",	1,	search_basic_element,	2,	1,		1	}, // search_semantics
 {	"annotations",	1,	search_annotations,		2,	2,		2	},
 },*current_parser=&mml_parser[0];
 
@@ -435,7 +433,12 @@ int search_annotations(xmlTextReaderPtr reader)
 {
 // on_error 
 if (current_depth+1>=xmlTextReaderDepth(reader))
-	{change_xmlparser(search_semantics); return -1;}
+  {
+  printMessage(3,"%s => %s\n",current_parser->element,mml_parser[current_parser->onerror_parser].element);
+  current_parser=&mml_parser[current_parser->onerror_parser];
+  change_xmlparser(current_parser->parser);
+  return -1;
+  }
 // on_search
 if (xmlTextReaderIsEmptyElement(reader) ||
     xmlTextReaderNodeType(reader)!=1 ||
@@ -453,20 +456,6 @@ if (!strcmp((char*)xml_name,"annotation-xml") &&
 return 0;
 }
 
-int search_semantics (xmlTextReaderPtr reader)
-{
-// on_error 
-if (current_depth>=xmlTextReaderDepth(reader)) { change_xmlparser(search_mathml); return -1; }
-// on_cannot_find
-if (xmlTextReaderIsEmptyElement(reader) ||
-    strcmp((char*)xml_name,"semantics") ||
-    xmlTextReaderNodeType(reader)!=1 ||
-    current_depth+1!=xmlTextReaderDepth(reader)
-    ) return 0;
-// on_found
-change_xmlparser(search_annotations);
-return 1;
-}
 
 /**
  * processNode:
