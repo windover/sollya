@@ -320,7 +320,7 @@ void fPrintXml(FILE *fd, node *tree) {
 #ifdef LIBXML_READER_ENABLED
 
 // PARSER MATHML - return: 0 (not found) -1 (sync lost) 1 (found)
-int search_mathml		 (xmlTextReaderPtr reader);
+//int search_mathml		 (xmlTextReaderPtr reader);
 int search_semantics  (xmlTextReaderPtr reader);
 int search_annotations(xmlTextReaderPtr reader);
 int process_annotation(xmlTextReaderPtr reader);
