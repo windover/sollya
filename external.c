@@ -12,7 +12,7 @@
 #include "external.h"
 #include "plot.h"
 #include "infnorm.h"
-#include "main.h"
+#include "general.h"
 
 extern int fileNumber;
 

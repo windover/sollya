@@ -5,7 +5,7 @@
 #include <errno.h>
 #include "expression.h"
 #include "parser.tab.h"
-#include "main.h"
+#include "general.h"
 #include "chain.h"
 
 #define YY_NO_UNPUT 1
@@ -298,6 +298,9 @@ MANTISSA        "mantissa"
 EXPONENT        "exponent"
 PRECISION       "precision"
 
+REVERT          "revert"
+SORT            "sort"
+
 
 %%
 
@@ -526,6 +529,8 @@ PRECISION       "precision"
 {FALSE}					    { newTokenLexed(); return FALSETOKEN; }					      	       
 {DEFAULT}				    { newTokenLexed(); return DEFAULTTOKEN; }				 
 {HEAD}   				    { newTokenLexed(); return HEADTOKEN; }				 
+{REVERT}   				    { newTokenLexed(); return REVERTTOKEN; }				 
+{SORT}   				    { newTokenLexed(); return SORTTOKEN; }				 
 {MANTISSA}   				    { newTokenLexed(); return MANTISSATOKEN; }				 
 {EXPONENT}   				    { newTokenLexed(); return EXPONENTTOKEN; }				 
 {PRECISION}   				    { newTokenLexed(); return PRECISIONTOKEN; }				 

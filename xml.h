@@ -4,7 +4,7 @@
 
 #include <mpfr.h>
 #include <stdio.h>
-#include "main.h"
+#include "general.h"
 #include "expression.h"
 
 void printXml(node *);

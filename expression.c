@@ -6,7 +6,7 @@
 #include <stdlib.h> /* exit, free, mktemp */
 #include <string.h>
 #include <errno.h>
-#include "main.h"
+#include "general.h"
 #include "double.h"
 #include "miniparser.tab.h"
 

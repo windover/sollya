@@ -2,7 +2,7 @@
 #include <gmp.h>
 #include <mpfr.h>
 
-#include "main.h"
+#include "general.h"
 #include "pari_utils.h"
 #include "infnorm.h"
 

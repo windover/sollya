@@ -7,7 +7,7 @@
 #include "expression.h"
 #include "infnorm.h"
 #include "integral.h"
-#include "main.h"
+#include "general.h"
 
 
 #define DEBUG 0

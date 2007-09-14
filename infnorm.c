@@ -4,7 +4,7 @@
 #include "infnorm.h"
 #include "chain.h"
 #include "double.h"
-#include "main.h"
+#include "general.h"
 #include "proof.h"
 
 #include <stdio.h> /* fprintf, fopen, fclose, */
@@ -3187,7 +3187,7 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
 
   
   oldDefaultPoints = defaultpoints;
-  defaultpoints = 10;
+  defaultpoints = defaultpoints >> 4;
 
   mpfr_init2(diam,prec+50);
   mpfr_set_d(diam,DEFAULTDIAM2,GMP_RNDN);

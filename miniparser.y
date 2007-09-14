@@ -4,7 +4,7 @@
 #include <string.h>
 #include <errno.h>
 #include "expression.h"
-#include "main.h"
+#include "general.h"
 #include "miniparser.tab.h"
 #include "double.h"
 

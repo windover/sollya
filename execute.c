@@ -6,7 +6,7 @@
 #include <stdlib.h> 
 #include <string.h>
 #include <errno.h>
-#include "main.h"
+#include "general.h"
 #include "expression.h"
 #include "infnorm.h"
 #include "assignment.h"
@@ -616,6 +616,12 @@ node *copyThing(node *tree) {
   case HEAD:
     copy->child1 = copyThing(tree->child1);
     break; 			 	
+  case REVERT:
+    copy->child1 = copyThing(tree->child1);
+    break; 	
+  case SORT:
+    copy->child1 = copyThing(tree->child1);
+    break; 			 			 	
   case MANTISSA:
     copy->child1 = copyThing(tree->child1);
     break; 			 	
@@ -1214,6 +1220,12 @@ char *getTimingStringForThing(node *tree) {
     break; 			
   case HEAD:
     constString = NULL;
+    break; 			 	
+  case REVERT:
+    constString = "reverting a list";
+    break; 			 	
+  case SORT:
+    constString = "sorting a list";
     break; 			 	
   case EXPONENT:
     constString = "computing the exponent of a value";
@@ -5250,6 +5262,29 @@ node *makeHead(node *thing) {
 
 }
 
+node *makeRevert(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = REVERT;
+  res->child1 = thing;
+
+  return res;
+
+}
+
+node *makeSort(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = SORT;
+  res->child1 = thing;
+
+  return res;
+
+}
+
+
 node *makeMantissa(node *thing) {
   node *res;
 
@@ -6186,6 +6221,14 @@ void freeThing(node *tree) {
     free(tree);
     break; 			
   case HEAD:
+    freeThing(tree->child1);
+    free(tree);
+    break; 			 	
+  case REVERT:
+    freeThing(tree->child1);
+    free(tree);
+    break; 			 	
+  case SORT:
     freeThing(tree->child1);
     free(tree);
     break; 			 	
@@ -7277,6 +7320,16 @@ void rawPrintThing(node *tree) {
     rawPrintThing(tree->child1);
     printf(")");
     break; 			 	
+  case REVERT:
+    printf("revert(");
+    rawPrintThing(tree->child1);
+    printf(")");
+    break; 	
+  case SORT:
+    printf("sort(");
+    rawPrintThing(tree->child1);
+    printf(")");
+    break; 			 			 	
   case MANTISSA:
     printf("mantissa(");
     rawPrintThing(tree->child1);
@@ -8369,6 +8422,16 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fRawPrintThing(fd,tree->child1);
     fprintf(fd,")");
     break; 			 	
+  case REVERT:
+    fprintf(fd,"revert(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,")");
+    break; 			 	
+  case SORT:
+    fprintf(fd,"sort(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,")");
+    break; 			 	
   case MANTISSA:
     fprintf(fd,"mantissa(");
     fRawPrintThing(fd,tree->child1);
@@ -8999,6 +9062,12 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     break; 			
   case HEAD:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break; 			 	
+  case REVERT:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break; 			 	
+  case SORT:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 			 	
   case MANTISSA:
@@ -9679,6 +9748,24 @@ node *evaluateThingInner(node *tree) {
 	  copy->arguments = addElement(copy->child2->arguments,copy->child1);
 	  free(copy->child2);
 	  if (timingString != NULL) popTimeCounter(timingString);
+	} else {
+	  if (isList(copy->child1)) {
+	    if (timingString != NULL) pushTimeCounter();
+	    tempChain = addElement(copyChain(copy->child1->arguments,copyThingOnVoid),copyThing(copy->child2));
+	    tempNode = makeList(copyChain(tempChain,copyThingOnVoid));
+	    freeChain(tempChain,freeThingOnVoid);
+	    freeThing(copy);
+	    copy = tempNode;
+	    if (timingString != NULL) popTimeCounter(timingString);
+	  } else {
+	    if (isEmptyList(copy->child1)) {
+	      if (timingString != NULL) pushTimeCounter();
+	      copy->nodeType = LIST;
+	      copy->arguments = addElement(NULL, copy->child2);
+	      freeThing(copy->child1);
+	      if (timingString != NULL) popTimeCounter(timingString);
+	    }
+	  }
 	}
       }
     }
@@ -11147,17 +11234,55 @@ node *evaluateThingInner(node *tree) {
       } 
     }
     break; 			 	
+  case REVERT:
+    copy->child1 = evaluateThingInner(tree->child1);
+    if (isList(copy->child1)) {
+      if (timingString != NULL) pushTimeCounter();      
+      tempNode = makeList(copyChain(copy->child1->arguments,copyThingOnVoid));
+      freeThing(copy);
+      copy = tempNode;
+      if (timingString != NULL) popTimeCounter(timingString);
+    } 
+    break; 			 	
+  case SORT:
+    copy->child1 = evaluateThingInner(tree->child1);
+    if (isPureList(copy->child1)) {
+      if (evaluateThingToConstantList(&tempChain, copy->child1)) {
+	if (timingString != NULL) pushTimeCounter();      
+	sortChain(tempChain, cmpMpfrPtr);
+	newChain = NULL;
+	curr = tempChain;
+	while (curr != NULL) {
+	  newChain = addElement(newChain,makeConstant(*((mpfr_t *) (curr->value))));
+	  curr = curr->next;
+	}
+	tempNode = makeList(newChain);
+	freeThing(copy);
+	copy = tempNode;
+	freeChain(tempChain,freeMpfrPtr);
+	if (timingString != NULL) popTimeCounter(timingString);
+      }
+    } else {
+      if (isEmptyList(copy->child1)) {
+	tempNode = copyThing(copy->child1);
+	freeThing(copy);
+	copy = tempNode;
+      }
+    } 
+    break; 			 	
   case MANTISSA:
     copy->child1 = evaluateThingInner(tree->child1);
     if (isPureTree(copy->child1)) {
       mpfr_init2(a,tools_precision);
       if (evaluateThingToConstant(a,copy->child1,NULL)) {
 	mpfr_init2(b,tools_precision);
+	if (timingString != NULL) pushTimeCounter();      
 	if (mpfr_mant_exp(b, &expo, a) == 0) {
 	  tempNode = makeConstant(b);
 	  freeThing(copy);
 	  copy = tempNode;
 	}
+	if (timingString != NULL) popTimeCounter(timingString);
 	mpfr_clear(b);
       }
       mpfr_clear(a);
@@ -11169,6 +11294,7 @@ node *evaluateThingInner(node *tree) {
       mpfr_init2(a,tools_precision);
       if (evaluateThingToConstant(a,copy->child1,NULL)) {
 	mpfr_init2(b,tools_precision);
+	if (timingString != NULL) pushTimeCounter();      
 	if (mpfr_mant_exp(b, &expo, a) == 0) {
 	  mpfr_init2(c,sizeof(expo) * 8 + 5);
 	  mpfr_set_si(c,expo,GMP_RNDN);
@@ -11177,6 +11303,7 @@ node *evaluateThingInner(node *tree) {
 	  freeThing(copy);
 	  copy = tempNode;
 	}
+	if (timingString != NULL) popTimeCounter(timingString);
 	mpfr_clear(b);
       }
       mpfr_clear(a);
@@ -11188,6 +11315,7 @@ node *evaluateThingInner(node *tree) {
       mpfr_init2(a,tools_precision);
       if (evaluateThingToConstant(a,copy->child1,NULL)) {
 	mpfr_init2(b,tools_precision);
+	if (timingString != NULL) pushTimeCounter();      
 	if (mpfr_mant_exp(b, &expo, a) == 0) {
 	  if (mpfr_zero_p(b)) {
 	    tempNode = makeConstantDouble(0.0);
@@ -11207,6 +11335,7 @@ node *evaluateThingInner(node *tree) {
 	  freeThing(copy);
 	  copy = tempNode;
 	}
+	if (timingString != NULL) popTimeCounter(timingString);
 	mpfr_clear(b);
       }
       mpfr_clear(a);

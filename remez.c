@@ -1,7 +1,7 @@
 #include <gmp.h>
 #include <mpfr.h>
 #include "chain.h"
-#include "main.h"
+#include "general.h"
 #include "infnorm.h"
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */

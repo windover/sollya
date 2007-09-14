@@ -5,7 +5,7 @@
 #include <errno.h>
 #include "expression.h"
 #include "miniparser.tab.h"
-#include "main.h"
+#include "general.h"
 
 
 #define YY_NO_UNPUT 1

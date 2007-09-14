@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "expression.h"
 #include "double.h"
-#include "main.h"
+#include "general.h"
 #include "infnorm.h"
 
 typedef union {

@@ -3,7 +3,7 @@
 #include <string.h>
 #include "taylor.h"
 #include "expression.h"
-#include "main.h"
+#include "general.h"
 
 
 

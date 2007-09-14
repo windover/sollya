@@ -7,7 +7,7 @@
 #include <errno.h>
 #include "expression.h"
 #include "infnorm.h"
-#include "main.h"
+#include "general.h"
 
 
 void doNothing(void *arg) {

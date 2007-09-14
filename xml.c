@@ -6,7 +6,7 @@
 #include <stdlib.h> 
 #include <string.h>
 #include <errno.h>
-#include "main.h"
+#include "general.h"
 #include "expression.h"
 #include "xml.h"
 
@@ -334,7 +334,7 @@ int search_return_offset (xmlTextReaderPtr reader);
 
 static int (*next_xmlparser)(xmlTextReaderPtr reader)=search_basic_element; //search_mathml;
 
-static int				current_depth,lambda_depth;
+static int				current_depth;
 static const xmlChar *xml_name, *xml_value;
 static node				*result_node;
 

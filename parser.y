@@ -6,7 +6,7 @@
 #include <pari/pari.h>
 #include "expression.h"
 #include "chain.h"
-#include "main.h"
+#include "general.h"
 #include "execute.h"
 #include "parser.tab.h"
 
@@ -112,6 +112,8 @@ void yyerror(char *message) {
 %token  FLOORTOKEN;             			
 
 %token  HEADTOKEN;
+%token  REVERTTOKEN;
+%token  SORTTOKEN;
 %token  TAILTOKEN;		       
 %token  MANTISSATOKEN;
 %token  EXPONENTTOKEN;
@@ -1081,6 +1083,14 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeHead($3);
 			  }              					       
+                      | REVERTTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeRevert($3);
+			  }              					       
+                      | SORTTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeSort($3);
+			  }              					       
                       | MANTISSATOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeMantissa($3);
@@ -1528,6 +1538,14 @@ help:                   CONSTANTTOKEN
                       | HEADTOKEN
                           {
 			    printf("Head of a list.\n");
+                          }    
+                      | REVERTTOKEN
+                          {
+			    printf("Reverts a list that is not finally elliptic.\n");
+                          }    
+                      | SORTTOKEN
+                          {
+			    printf("Sorts a list of constants in ascending order.\n");
                           }    
                       | TAILTOKEN
                           {
@@ -2075,6 +2093,7 @@ help:                   CONSTANTTOKEN
 			    printf("- remez\n");
 			    printf("- rename\n");
 			    printf("- restart\n");
+			    printf("- revert\n");
 			    printf("- roundcoefficients\n");
 			    printf("- roundtoformat\n");
 			    printf("- searchgal\n");
@@ -2082,6 +2101,7 @@ help:                   CONSTANTTOKEN
 			    printf("- simplifysafe\n");
 			    printf("- sin\n");
 			    printf("- sinh\n");
+			    printf("- sort\n");
 			    printf("- sqrt\n");
 			    printf("- subpoly\n");
 			    printf("- substitute\n");

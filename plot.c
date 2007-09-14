@@ -10,7 +10,7 @@
 #include <sys/ioctl.h>
 #include "plot.h"
 #include "expression.h"
-#include "main.h"
+#include "general.h"
 #include "infnorm.h"
 #include "chain.h"
 

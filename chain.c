@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <mpfr.h>
 #include "chain.h"
-#include "main.h"
+#include "general.h"
 
 
 

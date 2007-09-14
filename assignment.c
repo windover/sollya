@@ -4,7 +4,7 @@
 #include "chain.h"
 #include "assignment.h"
 #include "expression.h"
-#include "main.h"
+#include "general.h"
 
 
 chain *addEntry(chain *symTbl, char *name, void *value, void * (*copyValue) (void *)) {

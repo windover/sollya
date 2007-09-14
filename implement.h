@@ -5,7 +5,7 @@
 #include <mpfr.h>
 #include <stdio.h>
 #include "expression.h"
-#include "main.h"
+#include "general.h"
 
 #define CODESIZE 4000000
 

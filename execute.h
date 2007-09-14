@@ -4,7 +4,7 @@
 
 #include <mpfr.h>
 #include <stdio.h>
-#include "main.h"
+#include "general.h"
 #include "expression.h"
 
 #define COMMANDLIST 50			
@@ -166,6 +166,8 @@
 #define MANTISSA 207
 #define EXPONENT 208
 #define PRECISION 209
+#define REVERT 210
+#define SORT 211
 
 int executeCommand(node *);
 
@@ -310,6 +312,8 @@ node *makeSearchGal(chain *thinglist);
 node *makeGuessDegree(chain *thinglist);
 node *makeDirtyFindZeros(node *thing1, node *thing2);
 node *makeHead(node *thing);
+node *makeRevert(node *thing);
+node *makeSort(node *thing);
 node *makeTail(node *thing);
 node *makeMantissa(node *thing);
 node *makeExponent(node *thing);

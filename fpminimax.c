@@ -2,7 +2,7 @@
 #include <gmp.h>
 #include <mpfr.h>
 #include <mpfi.h>
-#include "main.h"
+#include "general.h"
 #include "expression.h"
 #include "chain.h"
 #include "remez.h"

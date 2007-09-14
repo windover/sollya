@@ -2,7 +2,8 @@
 #define ARENAIREPLOT_H
 
 #include <mpfr.h>
-#include <mpfr.h>
+#include <mpfi.h>
+#include <setjmp.h>
 
 typedef struct chainStruct chain;
 struct chainStruct 
@@ -47,6 +48,24 @@ struct rangetypeStruct
   mpfr_t *a;
   mpfr_t *b;
 };
+
+extern char *getNameOfVariable();
+extern int setNameOfVariable(char *);
+extern mp_prec_t getToolPrecision();
+extern void setToolPrecision(mp_prec_t);
+extern int getToolPoints(); 
+extern void setToolPoints(int);
+extern int getToolTaylorRecursions();
+extern void setToolTaylorRecursions(int);
+extern int getToolHopitalRecursions();
+extern void setToolHopitalRecursions(int);
+extern int getToolDiameter(mpfr_t);
+extern void setToolDiameter(mpfr_t);
+
+extern void initTool();
+extern void finishTool();
+extern void setRecoverEnvironment(jmp_buf *);
+extern void invalidateRecoverEnvironment();
 
 extern node *makeVariable();
 extern node *makeConstant(mpfr_t x);
@@ -137,6 +156,8 @@ extern chain *copyChain(chain *c, void * (*f) (void *));
 extern chain *concatChains(chain *c1, chain *c2);
 extern int lengthChain(chain *c);
 extern void sortChain(chain *c,  int (*f) (void *, void *));
+extern chain *makeIntPtrChainFromTo(int m, int n);
+extern void freeIntPtr(void *ptr);
 
 
 #endif

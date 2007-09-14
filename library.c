@@ -6,7 +6,7 @@
 #include <mpfr.h>
 #include <mpfi.h>
 #include "expression.h"
-#include "main.h"
+#include "general.h"
 #include "library.h"
 #include "chain.h"
 

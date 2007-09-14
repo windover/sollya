@@ -5,7 +5,7 @@
 #include <gmp.h>
 #include <mpfr.h>
 
-#include "main.h"
+#include "general.h"
 #include "infnorm.h"
 
 GEN mpfr_to_PARI(mpfr_t x);
