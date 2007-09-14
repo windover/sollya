@@ -281,7 +281,8 @@ void fPrintXml(FILE *fd, node *tree) {
 //  fprintf(fd,"<!DOCTYPE math PUBLIC \"-//W3C//DTD MathML 2.0//EN\" \"http://www.w3.org/Math/DTD/mathml2/mathml2.dtd\" >\n");
 //  fprintf(fd,"<!-- MathML-Content (section 4 of MathML 2.0) -->\n");
   fprintf(fd,"<?xml-stylesheet type=\"text/xsl\" href=\"http://perso.ens-lyon.fr/nicolas.jourdan/mathmlc2p-web.xsl\"?>\n");
-  fprintf(fd,"<!-- This stylesheet allows direct web browsing of MathML-c XML files -->\n");
+  fprintf(fd,"<?xml-stylesheet type=\"text/xsl\" href=\"mathmlc2p-web.xsl\"?>\n");
+  fprintf(fd,"<!-- This stylesheet allows direct web browsing of MathML-c XML files (http:// or file://) -->\n");
   fprintf(fd,"\n<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n");
   fprintf(fd,"<semantics>\n");
   fprintf(fd,"<annotation-xml encoding=\"MathML-Content\">\n");
