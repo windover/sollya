@@ -397,8 +397,8 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
   mpfr_t y;
   char *str, *str2, *str3;
   mp_exp_t e, expo;
-  double v;
-  int t;
+  int t, l,i;
+
 
   if (dyadic == 3) {
     printBinary(*value);
@@ -407,10 +407,8 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
 
   prec = mpfr_get_prec(*value);
   mpfr_init2(y,prec);
-  v = mpfr_get_d(*value,GMP_RNDN);
-  t = (int) v;
-  v = (double) t;
-  mpfr_set_d(y,v,GMP_RNDN);
+  t = mpfr_get_si(*value,GMP_RNDN);
+  mpfr_set_si(y,t,GMP_RNDN);
   if ((mpfr_cmp(y,*value) == 0) && (mpfr_number_p(*value))) {
     printf("%d",t);
   } else { 
@@ -454,7 +452,13 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
 	if (e == 0) {
 	  printf("0.%s",str3);
 	} else {
-	  printf("0.%se%d",str3,(int)e); 
+	  l = strlen(str3);
+	  if ((e > 0) && (l <= e) && (e <= (prec >> 2))) {
+	    printf("%s",str3);
+	    for (i=l;i<e;i++) printf("0");
+	  } else { 
+	    printf("0.%se%d",str3,(int)e); 
+	  }
 	}
 	free(str3);
       } else {
@@ -629,21 +633,18 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
   mpfr_t y;
   char *str, *str2, *str3;
   mp_exp_t e, expo;
-  double v;
-  int t;
+  int t, l, i;
   char *buffer, *tempBuf, *finalBuffer;
 
   if (dyadic == 3) 
     return sPrintBinary(*value);
 
   prec = mpfr_get_prec(*value);
-  buffer = safeCalloc(prec + 7 + (sizeof(mp_exp_t) * 4) + 1, sizeof(char));
+  buffer = safeCalloc(2 * prec + 7 + (sizeof(mp_exp_t) * 4) + 1, sizeof(char));
   tempBuf = buffer;
   mpfr_init2(y,prec);
-  v = mpfr_get_d(*value,GMP_RNDN);
-  t = (int) v;
-  v = (double) t;
-  mpfr_set_d(y,v,GMP_RNDN);
+  t = mpfr_get_si(*value,GMP_RNDN);
+  mpfr_set_si(y,t,GMP_RNDN);
   if ((mpfr_cmp(y,*value) == 0) && (mpfr_number_p(*value))) {
     tempBuf += sprintf(tempBuf,"%d",t);
   } else { 
@@ -687,7 +688,13 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
 	if (e == 0) {
 	  tempBuf += sprintf(tempBuf,"0.%s",str3);
 	} else {
-	  tempBuf += sprintf(tempBuf,"0.%se%d",str3,(int)e); 
+	  l = strlen(str3);
+	  if ((e > 0) && (l <= e) && (e <= (prec >> 2))) {
+	    tempBuf += sprintf(tempBuf,"%s",str3);
+	    for (i=l;i<e;i++) tempBuf += sprintf(tempBuf,"0");
+	  } else { 
+	    tempBuf += sprintf(tempBuf,"0.%se%d",str3,(int)e); 
+	  }
 	}
 	free(str3);
       } else {
