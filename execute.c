@@ -2313,7 +2313,7 @@ int assignThingToTable(char *identifier, node *thing) {
   }
 
   if (containsEntry(symbolTable, identifier)) {
-    printMessage(2,"Information: the identifier \"%s\" has already been assigned to. This a reassignment.\n");
+    printMessage(2,"Information: the identifier \"%s\" has already been assigned to. This a reassignment.\n",identifier);
     symbolTable = removeEntry(symbolTable, identifier, freeThingOnVoid);
   }
 
@@ -11242,7 +11242,13 @@ node *evaluateThingInner(node *tree) {
       freeThing(copy);
       copy = tempNode;
       if (timingString != NULL) popTimeCounter(timingString);
-    } 
+    } else {
+      if (isEmptyList(copy->child1)) {
+	tempNode = makeEmptyList();
+	freeThing(copy);
+	copy = tempNode;
+      }
+    }
     break; 			 	
   case SORT:
     copy->child1 = evaluateThingInner(tree->child1);
