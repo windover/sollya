@@ -301,6 +301,8 @@ PRECISION       "precision"
 REVERT          "revert"
 SORT            "sort"
 
+READFILE        "readfile"
+
 
 %%
 
@@ -543,7 +545,8 @@ SORT            "sort"
 {ABSOLUTE}   				    { newTokenLexed(); return ABSOLUTETOKEN; }				 
 {RELATIVE}   				    { newTokenLexed(); return RELATIVETOKEN; }				 
 {DECIMAL}   				    { newTokenLexed(); return DECIMALTOKEN; }				 
-{ERROR}   				    { newTokenLexed(); return ERRORTOKEN; }				 	       
+{ERROR}   				    { newTokenLexed(); return ERRORTOKEN; }				 	 
+{READFILE}   				    { newTokenLexed(); return READFILETOKEN; }				 	       
 
 {QUIT}            			    {     
                                               newTokenLexed(); 

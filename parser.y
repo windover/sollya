@@ -226,6 +226,8 @@ void yyerror(char *message) {
 %token  BEGINTOKEN;  							       
 %token  ENDTOKEN;  							       
 %token  WHILETOKEN;  							       
+
+%token  READFILETOKEN;
 											       
 %token  HELPTOKEN;                                                           
 
@@ -1083,6 +1085,10 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeHead($3);
 			  }              					       
+                      | READFILETOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeReadFile($3);
+			  }              					       
                       | REVERTTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeRevert($3);
@@ -1538,6 +1544,10 @@ help:                   CONSTANTTOKEN
                       | HEADTOKEN
                           {
 			    printf("Head of a list.\n");
+                          }   
+                      | READFILETOKEN
+                          {
+			    printf("Reads a file into a string.\n");
                           }    
                       | REVERTTOKEN
                           {
@@ -2089,6 +2099,7 @@ help:                   CONSTANTTOKEN
 			    printf("- quit\n");
 			    printf("- rationalapprox\n");
 			    printf("- read\n");
+			    printf("- readfile\n");
 			    printf("- relative\n");
 			    printf("- remez\n");
 			    printf("- rename\n");

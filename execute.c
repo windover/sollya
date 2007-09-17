@@ -21,6 +21,45 @@
 #include "taylor.h"
 #include "xml.h"
 
+
+#define READBUFFERSIZE 16000
+
+char *readFileIntoString(FILE *fd) {
+  char *readBuf, *newString, *tempString;
+  size_t readChars, i;
+
+  readBuf = (char *) safeCalloc(READBUFFERSIZE,sizeof(char));
+  
+  newString = NULL;
+
+  while (1) {
+    readChars = fread(readBuf,sizeof(char),READBUFFERSIZE,fd);
+    for (i=0;i<readChars;i=i+sizeof(char)) {
+      if (readBuf[i] == 0) readBuf[i] = '?';
+    }
+    if (readChars > 0) {
+      if (newString == NULL) {
+	newString = (char *) safeCalloc(readChars + 1,sizeof(char));
+	strncpy(newString,readBuf,readChars * sizeof(char));
+      } else {
+	i = strlen(newString);
+	tempString = (char *) safeCalloc(i + readChars + 1,sizeof(char));
+	strcpy(tempString,newString);
+	free(newString);
+	newString = tempString;
+	tempString = newString + i;
+	strncpy(tempString,readBuf,readChars * sizeof(char));
+      }
+    }
+    if (readChars < READBUFFERSIZE) break;
+  }
+
+  if (newString == NULL) newString = safeCalloc(1,sizeof(char));
+
+  return newString;
+}
+
+
 node *copyThing(node *);
 node *evaluateThingInner(node *);
 node *evaluateThing(node *);
@@ -614,6 +653,9 @@ node *copyThing(node *tree) {
     copy->child2 = copyThing(tree->child2);
     break; 			
   case HEAD:
+    copy->child1 = copyThing(tree->child1);
+    break; 			 	
+  case READFILE:
     copy->child1 = copyThing(tree->child1);
     break; 			 	
   case REVERT:
@@ -1220,6 +1262,9 @@ char *getTimingStringForThing(node *tree) {
     break; 			
   case HEAD:
     constString = NULL;
+    break; 			 
+  case READFILE:
+    constString = "reading a file into a string";
     break; 			 	
   case REVERT:
     constString = "reverting a list";
@@ -5262,6 +5307,18 @@ node *makeHead(node *thing) {
 
 }
 
+node *makeReadFile(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = READFILE;
+  res->child1 = thing;
+
+  return res;
+
+}
+
+
 node *makeRevert(node *thing) {
   node *res;
 
@@ -6221,6 +6278,10 @@ void freeThing(node *tree) {
     free(tree);
     break; 			
   case HEAD:
+    freeThing(tree->child1);
+    free(tree);
+    break; 			 	
+  case READFILE:
     freeThing(tree->child1);
     free(tree);
     break; 			 	
@@ -7317,6 +7378,11 @@ void rawPrintThing(node *tree) {
     break; 			
   case HEAD:
     printf("head(");
+    rawPrintThing(tree->child1);
+    printf(")");
+    break; 			 	
+  case READFILE:
+    printf("readfile(");
     rawPrintThing(tree->child1);
     printf(")");
     break; 			 	
@@ -8422,6 +8488,11 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fRawPrintThing(fd,tree->child1);
     fprintf(fd,")");
     break; 			 	
+  case READFILE:
+    fprintf(fd,"readfile(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,")");
+    break; 			 	
   case REVERT:
     fprintf(fd,"revert(");
     fRawPrintThing(fd,tree->child1);
@@ -9064,6 +9135,9 @@ int isEqualThing(node *tree, node *tree2) {
   case HEAD:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 			 	
+  case READFILE:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break; 			 	
   case REVERT:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 			 	
@@ -9197,7 +9271,7 @@ node *evaluateThing(node *tree) {
       if (tree->nodeType != ERRORSPECIAL) 
 	printMessage(1,"Warning: the given expression could not be handled.\n");
     } else {
-      printMessage(1,"Warning: at least one of the given expressions or a subexpression is not correctly typed.\n");
+      printMessage(1,"Warning: at least one of the given expressions or a subexpression is not correctly typed\nor its evaluation has failed because of some error on a side-effect.\n");
       if (verbosity >= 2) {
 	printMessage(2,"Information: the expression or a partial evaluation of it has been the following:\n");
 	printThing(evaluated);
@@ -11233,7 +11307,25 @@ node *evaluateThingInner(node *tree) {
 	}
       } 
     }
-    break; 			 	
+    break; 
+  case READFILE:
+    copy->child1 = evaluateThingInner(tree->child1);
+    if (isString(copy->child1)) {
+      fd = fopen(copy->child1->string,"r");
+      if (fd != NULL) {
+	tempString = readFileIntoString(fd);
+	if (tempString != NULL) {
+	  tempNode = makeString(tempString);
+	  free(tempString);
+	  freeThing(copy);
+	  copy = tempNode;
+	}
+	fclose(fd);
+      } else {
+	printMessage(1,"Warning: the file \"%s\" could not be opened for reading.\n",copy->child1->string);
+      }
+    }
+    break;
   case REVERT:
     copy->child1 = evaluateThingInner(tree->child1);
     if (isList(copy->child1)) {
