@@ -118,6 +118,7 @@ void yyerror(char *message) {
 %token  MANTISSATOKEN;
 %token  EXPONENTTOKEN;
 %token  PRECISIONTOKEN;
+%token  ROUNDCORRECTLYTOKEN;
 											       
 %token  PRECTOKEN;              					       
 %token  POINTSTOKEN;            					       
@@ -1085,6 +1086,10 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeHead($3);
 			  }              					       
+                      | ROUNDCORRECTLYTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeRoundCorrectly($3);
+			  }              					       
                       | READFILETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeReadFile($3);
@@ -1544,6 +1549,10 @@ help:                   CONSTANTTOKEN
                       | HEADTOKEN
                           {
 			    printf("Head of a list.\n");
+                          }   
+                      | ROUNDCORRECTLYTOKEN
+                          {
+			    printf("Round a bounding to the nearest floating-point value such that correct rounding is possible.\n");
                           }   
                       | READFILETOKEN
                           {
@@ -2105,8 +2114,9 @@ help:                   CONSTANTTOKEN
 			    printf("- rename\n");
 			    printf("- restart\n");
 			    printf("- revert\n");
+			    printf("- round\n");
 			    printf("- roundcoefficients\n");
-			    printf("- roundtoformat\n");
+			    printf("- roundcorrectly\n");
 			    printf("- searchgal\n");
 			    printf("- simplify\n");
 			    printf("- simplifysafe\n");

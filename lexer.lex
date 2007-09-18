@@ -303,6 +303,8 @@ SORT            "sort"
 
 READFILE        "readfile"
 
+ROUNDCORRECTLY  "roundcorrectly"
+
 
 %%
 
@@ -531,6 +533,7 @@ READFILE        "readfile"
 {FALSE}					    { newTokenLexed(); return FALSETOKEN; }					      	       
 {DEFAULT}				    { newTokenLexed(); return DEFAULTTOKEN; }				 
 {HEAD}   				    { newTokenLexed(); return HEADTOKEN; }				 
+{ROUNDCORRECTLY}   		       	    { newTokenLexed(); return ROUNDCORRECTLYTOKEN; }				 
 {REVERT}   				    { newTokenLexed(); return REVERTTOKEN; }				 
 {SORT}   				    { newTokenLexed(); return SORTTOKEN; }				 
 {MANTISSA}   				    { newTokenLexed(); return MANTISSATOKEN; }				 

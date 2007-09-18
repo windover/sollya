@@ -655,6 +655,9 @@ node *copyThing(node *tree) {
   case HEAD:
     copy->child1 = copyThing(tree->child1);
     break; 			 	
+  case ROUNDCORRECTLY:
+    copy->child1 = copyThing(tree->child1);
+    break; 			 	
   case READFILE:
     copy->child1 = copyThing(tree->child1);
     break; 			 	
@@ -1262,6 +1265,9 @@ char *getTimingStringForThing(node *tree) {
     break; 			
   case HEAD:
     constString = NULL;
+    break; 			 
+  case ROUNDCORRECTLY:
+    constString = "rounding a range to a value";
     break; 			 
   case READFILE:
     constString = "reading a file into a string";
@@ -5307,6 +5313,18 @@ node *makeHead(node *thing) {
 
 }
 
+node *makeRoundCorrectly(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = ROUNDCORRECTLY;
+  res->child1 = thing;
+
+  return res;
+
+}
+
+
 node *makeReadFile(node *thing) {
   node *res;
 
@@ -6278,6 +6296,10 @@ void freeThing(node *tree) {
     free(tree);
     break; 			
   case HEAD:
+    freeThing(tree->child1);
+    free(tree);
+    break; 			 	
+  case ROUNDCORRECTLY:
     freeThing(tree->child1);
     free(tree);
     break; 			 	
@@ -7378,6 +7400,11 @@ void rawPrintThing(node *tree) {
     break; 			
   case HEAD:
     printf("head(");
+    rawPrintThing(tree->child1);
+    printf(")");
+    break; 			 	
+  case ROUNDCORRECTLY:
+    printf("roundcorrectly(");
     rawPrintThing(tree->child1);
     printf(")");
     break; 			 	
@@ -8488,6 +8515,11 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fRawPrintThing(fd,tree->child1);
     fprintf(fd,")");
     break; 			 	
+  case ROUNDCORRECTLY:
+    fprintf(fd,"roundcorrectly(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,")");
+    break; 			 	
   case READFILE:
     fprintf(fd,"readfile(");
     fRawPrintThing(fd,tree->child1);
@@ -9133,6 +9165,9 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     break; 			
   case HEAD:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break; 			 	
+  case ROUNDCORRECTLY:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 			 	
   case READFILE:
@@ -11314,12 +11349,35 @@ node *evaluateThingInner(node *tree) {
       } 
     }
     break; 
+  case ROUNDCORRECTLY:
+    copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      if (evaluateThingToRange(a,b,copy->child1)) {
+	mpfr_init2(c,tools_precision);
+	if (timingString != NULL) pushTimeCounter();      
+	if (!roundRangeCorrectly(c, a, b)) {
+	  printMessage(1,"Warning: correct rounding to nearest impossible with the given bounding.\n");
+	}
+	if (timingString != NULL) popTimeCounter(timingString);
+	tempNode = makeConstant(c);
+	freeThing(copy);
+	copy = tempNode;
+	mpfr_clear(c);
+      }
+      mpfr_clear(a);
+      mpfr_clear(b);
+    }
+    break; 
   case READFILE:
     copy->child1 = evaluateThingInner(tree->child1);
     if (isString(copy->child1)) {
       fd = fopen(copy->child1->string,"r");
       if (fd != NULL) {
+	if (timingString != NULL) pushTimeCounter();      
 	tempString = readFileIntoString(fd);
+	if (timingString != NULL) popTimeCounter(timingString);
 	if (tempString != NULL) {
 	  tempNode = makeString(tempString);
 	  free(tempString);

@@ -624,3 +624,58 @@ int mpfr_mant_exp(mpfr_t rop, mp_exp_t *expo, mpfr_t op) {
 }
 
 
+int roundRangeCorrectly(mpfr_t rop, mpfr_t a, mpfr_t b) {
+  mp_exp_t expoA, expoB;
+  int expoDiff;
+  mp_prec_t prec, p;
+  mpfr_t tempA, tempB;
+  int okay;
+
+  if (mpfr_sgn(a) != mpfr_sgn(b)) {
+    mpfr_set_nan(rop);
+    return 0;
+  }
+  
+  expoA = mpfr_get_exp(a);
+  expoB = mpfr_get_exp(b);
+
+  expoDiff = expoA - expoB;
+  if (expoDiff < 0) expoDiff = -expoDiff;
+
+  if (expoDiff > 1) {
+    mpfr_set_nan(rop);
+    return 0;
+  }
+
+  prec = mpfr_get_prec(a);
+  p = mpfr_get_prec(b);
+  if (p > prec) prec = p;
+
+  mpfr_init2(tempA,prec);
+  mpfr_init2(tempB,prec);
+
+  okay = 0;
+  while (prec >= 1) {
+    mpfr_set(tempA,a,GMP_RNDN);
+    mpfr_set(tempB,b,GMP_RNDN);
+    if (mpfr_cmp(tempA,tempB) == 0) {
+      okay = 1;
+      break;
+    }
+    prec--;
+    mpfr_set_prec(tempA,prec);
+    mpfr_set_prec(tempB,prec);
+  }
+  if (prec < 12) prec = 12;
+  if (okay) {
+    mpfr_set_prec(rop,prec);
+    mpfr_set(rop,tempA,GMP_RNDN);
+  } else{
+    mpfr_set_nan(rop);
+  }
+
+  mpfr_clear(tempA);
+  mpfr_clear(tempB);
+
+  return okay;
+}

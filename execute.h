@@ -169,6 +169,7 @@
 #define REVERT 210
 #define SORT 211
 #define READFILE 212
+#define ROUNDCORRECTLY 213
 
 int executeCommand(node *);
 
@@ -313,6 +314,7 @@ node *makeSearchGal(chain *thinglist);
 node *makeGuessDegree(chain *thinglist);
 node *makeDirtyFindZeros(node *thing1, node *thing2);
 node *makeHead(node *thing);
+node *makeRoundCorrectly(node *thing);
 node *makeReadFile(node *thing);
 node *makeRevert(node *thing);
 node *makeSort(node *thing);
