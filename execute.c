@@ -9528,7 +9528,10 @@ node *evaluateThingInner(node *tree) {
 	copy = makeFalse();
       }
     } else {
-      if (isPureTree(copy->child1) && isPureTree(copy->child2)) {
+      if (isPureTree(copy->child1) && 
+	  isPureTree(copy->child2) && 
+	  isConstant(copy->child1) &&
+	  isConstant(copy->child2)) {
 	printMessage(2,"Information: equality test relies on floating-point result.\n");
 	mpfr_init2(a,tools_precision);
 	mpfr_init2(b,tools_precision);
@@ -9659,7 +9662,10 @@ node *evaluateThingInner(node *tree) {
 	copy = makeFalse();
       }
     } else {
-      if (isPureTree(copy->child1) && isPureTree(copy->child2)) {
+      if (isPureTree(copy->child1) && 
+	  isPureTree(copy->child2) && 
+	  isConstant(copy->child1) &&
+	  isConstant(copy->child2)) {
 	printMessage(2,"Information: equality test relies on floating-point result.\n");
 	mpfr_init2(a,tools_precision);
 	mpfr_init2(b,tools_precision);
