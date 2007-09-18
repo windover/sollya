@@ -655,7 +655,7 @@ int roundRangeCorrectly(mpfr_t rop, mpfr_t a, mpfr_t b) {
   mpfr_init2(tempB,prec);
 
   okay = 0;
-  while (prec >= 1) {
+  while (prec >= 3) {
     mpfr_set(tempA,a,GMP_RNDN);
     mpfr_set(tempB,b,GMP_RNDN);
     if (mpfr_cmp(tempA,tempB) == 0) {

@@ -1784,7 +1784,7 @@ help:                   CONSTANTTOKEN
                           }        					       
                       | ROUNDTOFORMATTOKEN
                           {
-			    printf("Round to a given format: round(constant,rounding mode,precision).\n");
+			    printf("Round to a given format: round(constant,precision,rounding mode).\n");
                           }         					       
                       | EVALUATETOKEN
                           {

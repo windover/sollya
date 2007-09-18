@@ -7256,7 +7256,7 @@ void rawPrintThing(node *tree) {
     printf(")");
     break; 		
   case ROUNDTOFORMAT:
-    printf("roundtoformat(");
+    printf("round(");
     curr = tree->arguments;
     while (curr != NULL) {
       rawPrintThing((node *) (curr->value));
@@ -8368,7 +8368,7 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fprintf(fd,")");
     break; 		
   case ROUNDTOFORMAT:
-    fprintf(fd,"roundtoformat(");
+    fprintf(fd,"round(");
     curr = tree->arguments;
     while (curr != NULL) {
       fRawPrintThing(fd,(node *) (curr->value));
