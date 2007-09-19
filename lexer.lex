@@ -647,3 +647,11 @@ ROUNDCORRECTLY  "roundcorrectly"
 %%
 
 
+char *getCurrentLexSymbol() {
+  char *str;
+
+  str = (char *) safeCalloc(yyget_leng(scanner)+1,sizeof(char));
+  strcpy(str,yyget_text(scanner));
+  
+  return str;
+}
