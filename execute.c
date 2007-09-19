@@ -2990,6 +2990,8 @@ int executeCommand(node *tree) {
 		    } 
 		  }
 		}
+	      } else {
+		resD = 1;
 	      } 
 	      if (resD) {
 		externalPlot(tempString, a, b, (mp_prec_t) resB, resC, tempNode, resA, tools_precision, tempString2, resE);
