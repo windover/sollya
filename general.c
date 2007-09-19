@@ -145,7 +145,7 @@ void demaskString(char *dest, char *src) {
   char *curr, *curr2;
   char internalBuf[4];
   int i;
-
+  
   for (i=0;i<4;i++) internalBuf[i] = '\0';
   curr2 = dest;
   for (curr=src;*curr != '\0';curr++) {

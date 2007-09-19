@@ -800,7 +800,7 @@ basicthing:             ONTOKEN
                       | STRINGTOKEN
                           {
 			    tempString = safeCalloc(strlen($1) + 1, sizeof(char));
-			    demaskString(tempString, $1);
+			    strcpy(tempString, $1);
 			    free($1);
 			    tempString2 = safeCalloc(strlen(tempString) + 1, sizeof(char));
 			    strcpy(tempString2, tempString);
