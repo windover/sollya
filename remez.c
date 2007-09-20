@@ -479,7 +479,9 @@ void quickFindZeros(mpfr_t *res, node *tree, node *diff_tree, int deg, mpfr_t a,
 	  mpfr_set(res[i-1], x1, GMP_RNDN);
 	  if(mpfr_sgn(y2)==0) {
 	    i++;
-	    mpfr_set(res[i-1], x2, GMP_RNDN);
+	    if(i>deg+2)
+	      printMessage(1,"Warning: the function oscillates too much. Nevertheless, we try to continue.\n");
+	    else mpfr_set(res[i-1], x2, GMP_RNDN);
 	  }
 	}
 	else {
