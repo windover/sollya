@@ -11279,13 +11279,15 @@ node *evaluateThingInner(node *tree) {
 	if (timingString != NULL) pushTimeCounter(); 
 	yrange = guessDegree(firstArg, fourthArg, a, b, c);
 	if (timingString != NULL) popTimeCounter(timingString);
-	tempNode = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
-	freeThing(copy);
-	copy = tempNode;
-	mpfr_clear(*(yrange.a));
-	mpfr_clear(*(yrange.b));
-	free(yrange.a);
-	free(yrange.b);
+	if ((yrange.a != NULL) && (yrange.b != NULL)) {
+	  tempNode = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	  freeThing(copy);
+	  copy = tempNode;
+	  mpfr_clear(*(yrange.a));
+	  mpfr_clear(*(yrange.b));
+	  free(yrange.a);
+	  free(yrange.b);
+	}
       }
       mpfr_clear(a);
       mpfr_clear(b);

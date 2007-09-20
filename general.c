@@ -20,6 +20,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include "execute.h"
+#include <execinfo.h>
 
 
 /* STATE OF THE TOOL */
@@ -104,6 +105,7 @@ extern jmp_buf environnement;
 #endif
 
 
+#define BACKTRACELENGTH 100
 
 void *safeCalloc (size_t nmemb, size_t size) {
   void *ptr;
@@ -355,6 +357,25 @@ void popTimeCounter(char *s) {
 }
 
 
+
+void printBacktrace() {
+  void *array[BACKTRACELENGTH];
+  size_t size;
+  char **strings;
+  size_t i;
+
+  size = backtrace (array, BACKTRACELENGTH);
+  strings = backtrace_symbols (array, size);
+
+  fprintf(stderr,"The current stack is:\n\n");
+
+  for (i=0; i<size; i++)
+     fprintf(stderr,"%s\n", strings[i]);
+
+  free (strings);
+}
+
+
 void signalHandler(int i) {
   switch (i) {
   case SIGINT: 
@@ -362,6 +383,8 @@ void signalHandler(int i) {
     break;
   case SIGSEGV:
     fprintf(stderr,"Warning: handling signal SIGSEGV\n");
+    printBacktrace(); 
+    fprintf(stderr,"\n");
     break;
   case SIGBUS:
     fprintf(stderr,"Warning: handling signal SIGBREAK\n");
