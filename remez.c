@@ -1038,8 +1038,9 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 	  temp_tree = temp_tree2; // temp_tree = x^(monomials[j])*w(x)
 	  
 	  r = evaluateFaithfulWithCutOffFast(var1, temp_tree, NULL, x[i-1], zero_mpfr, prec);
+
 	  if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
-	  mpfr_set(M[coeff(i,j,freeDegrees+1)],var2,GMP_RNDN);
+	  mpfr_set(M[coeff(i,j,freeDegrees+1)],var1,GMP_RNDN);
 
 	  free_memory(temp_tree);
 	}
@@ -1426,7 +1427,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps) {
 	  
 	  r = evaluateFaithfulWithCutOffFast(var1, temp_tree, NULL, x[i-1], zero_mpfr, prec);
 	  if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
-	  mpfr_set(M[coeff(i,j,freeDegrees+1)],var2,GMP_RNDN);
+	  mpfr_set(M[coeff(i,j,freeDegrees+1)],var1,GMP_RNDN);
 
 	  free_memory(temp_tree);
 	}
