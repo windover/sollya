@@ -271,7 +271,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
   while(test) {
     r = evaluateFaithfulWithCutOffFast(y, iterator, NULL, x, zero_mpfr, prec);
     if((!mpfr_number_p(y)) && (r==1)) {
-      fprintf(stderr,"Warning: Newton algorithm encountered numerical problems\n");
+      fprintf(stderr,"/*Warning: Newton algorithm encountered numerical problems*/\n");
       mpfr_set(res, x, GMP_RNDN);
       free_memory(iterator);
       mpfr_clear(x);
@@ -291,7 +291,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
       r = evaluateFaithfulWithCutOffFast(y, f, f_diff, x, zero_mpfr, prec);
 
       if((!mpfr_number_p(y)) && (r==1)) {
-	fprintf(stderr,"Warning: Newton algorithm encountered numerical problems\n");
+	fprintf(stderr,"/*Warning: Newton algorithm encountered numerical problems*/\n");
 	mpfr_set(res, x, GMP_RNDN);
 	free_memory(iterator);
 	mpfr_clear(x);
