@@ -8,7 +8,7 @@ cat $beforedir/$2  >> impl.c
 gcc -D$3 -fPIC -c impl.c 
 gcc -D$3 -fPIC -c expansion.c 
 gcc -shared -o implementation impl.o expansion.o -lgmp -lmpfr 
-rm impl.c
+#rm impl.c
 rm impl.o
 rm expansion.o
 cd $beforedir

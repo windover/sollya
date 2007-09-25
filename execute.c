@@ -2364,7 +2364,7 @@ int assignThingToTable(char *identifier, node *thing) {
   }
 
   if (containsEntry(symbolTable, identifier)) {
-    printMessage(2,"Information: the identifier \"%s\" has already been assigned to. This a reassignment.\n",identifier);
+    printMessage(3,"Information: the identifier \"%s\" has already been assigned to. This a reassignment.\n",identifier);
     symbolTable = removeEntry(symbolTable, identifier, freeThingOnVoid);
   }
 
