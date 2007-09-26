@@ -1557,7 +1557,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   mpfr_t *u;
   mpfr_t *v;
   int old_verbosity = verbosity;
-  //verbosity = 0;
+  verbosity = 0;
   int number_points = defaultpoints;
   defaultpoints = 5;
 
