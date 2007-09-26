@@ -1557,7 +1557,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   mpfr_t *u;
   mpfr_t *v;
   int old_verbosity = verbosity;
-  verbosity = 0;
+  //verbosity = 0;
   int number_points = defaultpoints;
   defaultpoints = 5;
 
@@ -1612,13 +1612,13 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
     res=0;
     n_min = (n_min+n_max)/2;
     n_max = n_min;
-    while(res==0) {
+    while(res!=-1) {
       n_min--;
       res = whichPoly(n_min,func,weight,a,b,eps);
     }
     n_min = n_min + 1;
     res=0;
-    while(res==0) {
+    while(res!=1) {
       n_max++;
       res = whichPoly(n_max,func,weight,a,b,eps);
     }
