@@ -13,6 +13,7 @@
 %}
 
 %option noyywrap
+%option prefix="miniyy"
 %option always-interactive
 %option nounput
 

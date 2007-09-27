@@ -20,9 +20,65 @@
 #include "implement.h"
 #include "taylor.h"
 #include "xml.h"
-
+#include <setjmp.h>
 
 #define READBUFFERSIZE 16000
+
+
+extern int internyyparse(void *);
+extern void internyylex_destroy(void *);
+extern int internyylex_init(void **);
+extern void internyyset_in(FILE *, void *);
+
+extern void initSignalHandler();
+extern void blockSignals();
+
+void *copyThingOnVoid(void *);
+
+void executeFile(FILE *fd) {
+  node *oldParsedThingIntern;
+  void *myScanner = NULL;
+  int parseAbort;
+  chain *commands, *commands2;
+  node *tempThing;
+  int res;
+
+  commands = NULL;
+
+  blockSignals();
+  oldParsedThingIntern = parsedThingIntern;
+  internyylex_init(&myScanner);
+  internyyset_in(fd, myScanner);
+
+  while (1) {
+    parsedThingIntern = NULL;
+    parseAbort = internyyparse(myScanner);
+    if (parsedThingIntern != NULL) {
+      commands = addElement(commands,parsedThingIntern);
+    }
+    if (parseAbort) break;
+  }
+
+  internyylex_destroy(myScanner);
+  parsedThingIntern = oldParsedThingIntern;
+  initSignalHandler();
+  
+  commands2 = copyChain(commands, copyThingOnVoid);
+  freeChain(commands, freeThingOnVoid);
+  commands = commands2;
+
+  tempThing = makeCommandList(commands);
+  
+  res = executeCommand(tempThing);
+
+  if (res) {
+    printMessage(1,"Warning: the execution of a file read by execute demanded stopping the interpretation but it is not stopped.\n");
+  }
+
+  freeThing(tempThing);
+
+}
+
 
 char *readFileIntoString(FILE *fd) {
   char *readBuf, *newString, *tempString;
@@ -73,7 +129,7 @@ void *copyStringOnVoid(void *s) {
   return (void *) copy;
 }
 
-void *copyThingOnVoid(void *);
+
 
 node *copyThing(node *tree) {
   node *copy;
@@ -234,11 +290,15 @@ node *copyThing(node *tree) {
     break;  				
   case FALSEQUIT:
     break; 			
+  case FALSERESTART:
+    break; 			
   case RESTART:
     break;  			
   case PRINT:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
-    break; 				
+    break; 	
+  case NOP:
+    break;
   case NEWFILEPRINT:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     copy->child1 = copyThing(tree->child1);
@@ -602,6 +662,9 @@ node *copyThing(node *tree) {
   case READXML:
     copy->child1 = copyThing(tree->child1);
     break; 			 	
+  case EXECUTE:
+    copy->child1 = copyThing(tree->child1);
+    break; 			 	
   case INFNORM:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     break; 			
@@ -860,8 +923,14 @@ char *getTimingStringForThing(node *tree) {
     break;  				
   case QUIT:
     constString = NULL;
-    break;  				
+    break; 
+  case NOP:
+    constString = NULL;
+    break; 
   case FALSEQUIT:
+    constString = NULL;
+    break; 			
+  case FALSERESTART:
     constString = NULL;
     break; 			
   case RESTART:
@@ -1220,6 +1289,9 @@ char *getTimingStringForThing(node *tree) {
     break; 			 	
   case READXML:
     constString = "reading a XML-tree";
+    break; 	
+  case EXECUTE:
+    constString = "executing a file";
     break; 			 	
   case INFNORM:
     constString = "computing an infinite norm";
@@ -2579,11 +2651,27 @@ int evaluateThingToEmptyList(node *tree) {
   return res;
 }
 
-
-
-
+int executeCommandInner(node *tree);
 
 int executeCommand(node *tree) {
+  jmp_buf oldEnvironment;
+  int res;
+  
+  memmove(&oldEnvironment,&recoverEnvironmentError,sizeof(oldEnvironment));
+  if (!setjmp(recoverEnvironmentError)) {
+    res = executeCommandInner(tree);
+  } else {
+    printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
+    res = 0;
+  }
+  memmove(&recoverEnvironmentError,&oldEnvironment,sizeof(recoverEnvironmentError));
+
+  return res;
+}
+
+
+
+int executeCommandInner(node *tree) {
   int result, res, intTemp, resA, resB, resC, resD, resE, defaultVal, i;  
   chain *curr, *tempList, *tempList2; 
   mpfr_t a, b, c, d, e;
@@ -2751,10 +2839,18 @@ int executeCommand(node *tree) {
     break;  				
   case QUIT:
     result = 1;
-    break;  				
+    break; 
+  case NOP:
+    result = 0;
+    break;
   case FALSEQUIT:
     printMessage(1,"Warning: a quit command has been used in a file read into another.\n");
     printMessage(1,"This quit command will be neglected.\n");
+    result = 0;
+    break; 			
+  case FALSERESTART:
+    printMessage(1,"Warning: a restart command has been used in a file read into another.\n");
+    printMessage(1,"This restart command will be neglected.\n");
     result = 0;
     break; 			
   case RESTART:
@@ -3105,7 +3201,23 @@ int executeCommand(node *tree) {
       printMessage(1,"Warning: the given expression does not evaluate to a function.\n");
       printMessage(1,"The command will not be executed.\n");
     }
-    break;			
+    break;	
+  case EXECUTE:
+    if (evaluateThingToString(&tempString, tree->child1)) {
+      fd = fopen(tempString,"r");
+      if (fd != NULL) {
+	executeFile(fd);
+	fclose(fd);
+      } else {
+	printMessage(1,"Warning: the file \"%s\" could not be opened for reading.\n",tempString);
+	printMessage(1,"This command will have no effect.\n");
+      }
+      free(tempString);
+    } else {
+      printMessage(1,"Warning: the given expression does not evaluate to a string.\n");
+      printMessage(1,"The command will not be executed.\n");
+    }
+    break;
   case PRINTXMLNEWFILE:
     if (evaluateThingToPureTree(&tempNode, tree->child1)) {
       if (evaluateThingToString(&tempString, tree->child2)) {
@@ -3117,6 +3229,7 @@ int executeCommand(node *tree) {
 	  printMessage(1,"Warning: the file \"%s\" could not be opened for writing.\n",tempString);
 	  printMessage(1,"This command will have no effect.\n");
 	}
+	free(tempString);
       } else {
 	printMessage(1,"Warning: the given expression does not evaluate to a string.\n");
 	printMessage(1,"The command will not be executed.\n");
@@ -3138,6 +3251,7 @@ int executeCommand(node *tree) {
 	  printMessage(1,"Warning: the file \"%s\" could not be opened for writing.\n",tempString);
 	  printMessage(1,"This command will have no effect.\n");
 	}
+	free(tempString);
       } else {
 	printMessage(1,"Warning: the given expression does not evaluate to a string.\n");
 	printMessage(1,"The command will not be executed.\n");
@@ -3814,6 +3928,17 @@ node *makeQuit() {
 
 }
 
+node *makeNop() {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = NOP;
+
+  return res;
+
+}
+
+
 node *makeFalseQuit() {
   node *res;
 
@@ -3823,6 +3948,17 @@ node *makeFalseQuit() {
   return res;
 
 }
+
+node *makeFalseRestart() {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = FALSERESTART;
+
+  return res;
+
+}
+
 
 node *makeRestart() {
   node *res;
@@ -5152,6 +5288,17 @@ node *makeReadXml(node *thing) {
 
 }
 
+node *makeExecute(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = EXECUTE;
+  res->child1 = thing;
+
+  return res;
+
+}
+
 
 node *makeInfnorm(chain *thinglist) {
   node *res;
@@ -5752,8 +5899,14 @@ void freeThing(node *tree) {
     break;  				
   case QUIT:
     free(tree);
-    break;  				
+    break; 
+  case NOP:
+    free(tree);
+    break;
   case FALSEQUIT:
+    free(tree);
+    break; 			
+  case FALSERESTART:
     free(tree);
     break; 			
   case RESTART:
@@ -6233,6 +6386,10 @@ void freeThing(node *tree) {
     freeThing(tree->child1);
     free(tree);
     break; 			 	
+  case EXECUTE:
+    freeThing(tree->child1);
+    free(tree);
+    break; 			 	
   case INFNORM:
     freeChain(tree->arguments, freeThingOnVoid);
     free(tree);
@@ -6647,9 +6804,15 @@ void rawPrintThing(node *tree) {
     break;  				
   case QUIT:
     printf("quit");
-    break;  				
+    break; 
+  case NOP:
+    printf("nop");
+    break;
   case FALSEQUIT:
     printf("falsequit");
+    break; 			
+  case FALSERESTART:
+    printf("falserestart");
     break; 			
   case RESTART:
     printf("restart");
@@ -7284,6 +7447,11 @@ void rawPrintThing(node *tree) {
     rawPrintThing(tree->child1);
     printf(")");
     break; 			 	
+  case EXECUTE:
+    printf("execute(");
+    rawPrintThing(tree->child1);
+    printf(")");
+    break; 			 	
   case INFNORM:
     printf("infnorm(");
     curr = tree->arguments;
@@ -7759,9 +7927,15 @@ void fRawPrintThing(FILE *fd, node *tree) {
     break;  				
   case QUIT:
     fprintf(fd,"quit");
-    break;  				
+    break; 
+  case NOP:
+    fprintf(fd,"nop");
+    break;
   case FALSEQUIT:
     fprintf(fd,"falsequit");
+    break; 			
+  case FALSERESTART:
+    fprintf(fd,"falserestart");
     break; 			
   case RESTART:
     fprintf(fd,"restart");
@@ -8396,6 +8570,11 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fRawPrintThing(fd,tree->child1);
     fprintf(fd,")");
     break; 			 	
+  case EXECUTE:
+    fprintf(fd,"execute(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,")");
+    break; 			 	
   case INFNORM:
     fprintf(fd,"infnorm(");
     curr = tree->arguments;
@@ -8764,8 +8943,12 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break;  				
   case QUIT:
-    break;  				
+    break; 
+  case NOP:
+    break;
   case FALSEQUIT:
+    break; 			
+  case FALSERESTART:
     break; 			
   case RESTART:
     break;  			
@@ -9114,6 +9297,9 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 			 	
   case READXML:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break; 			 	
+  case EXECUTE:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 			 	
   case INFNORM:

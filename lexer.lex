@@ -305,6 +305,8 @@ READFILE        "readfile"
 
 ROUNDCORRECTLY  "roundcorrectly"
 
+EXECUTE         "execute"
+
 
 %%
 
@@ -585,6 +587,7 @@ ROUNDCORRECTLY  "roundcorrectly"
 					    											       
 {PRINT}           			    { newTokenLexed(); return PRINTTOKEN; }           					       
 {PRINTXML}           			    { newTokenLexed(); return PRINTXMLTOKEN; }           					       
+{EXECUTE}           			    { newTokenLexed(); return EXECUTETOKEN; }           					       
 {PLOT}            			    { newTokenLexed(); return PLOTTOKEN; }            					       
 {PRINTHEXA}       			    { newTokenLexed(); return PRINTHEXATOKEN; }       					       
 {PRINTBINARY}     			    { newTokenLexed(); return PRINTBINARYTOKEN; }     					       

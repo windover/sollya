@@ -19,6 +19,9 @@ void miniyyerror(char *message) {
 
 %}
 
+%defines
+%name-prefix="miniyy" 
+
 %union {
 	char *value;
         node *tree;

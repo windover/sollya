@@ -7,6 +7,7 @@
 #include "chain.h"
 #include "fpminimax.h"
 #include "library.h"
+#include <setjmp.h>
 
 #define DEFAULTPOINTS 501
 #define DEFAULTPRECISION 165
@@ -56,7 +57,8 @@ extern char *tempString;
 extern char *tempString2;
 extern chain *symbolTable;
 extern mpfr_t statediam;
-
+extern jmp_buf recoverEnvironmentError;
+extern node *parsedThingIntern;
 
 int general(int argc, char *argv[]);
 void printPrompt(void);

@@ -170,6 +170,9 @@
 #define SORT 211
 #define READFILE 212
 #define ROUNDCORRECTLY 213
+#define NOP 214
+#define EXECUTE 215
+#define FALSERESTART 216
 
 int executeCommand(node *);
 
@@ -186,6 +189,7 @@ node *makeConstantDouble(double d);
 node *makeForIn(char *string, node *thing1, node *thing2);
 node *makeQuit();
 node *makeFalseQuit();
+node *makeFalseRestart();
 node *makeRestart();
 node *makePrint(chain *thinglist);
 node *makeNewFilePrint(node *thing, chain *thinglist);
@@ -242,6 +246,7 @@ node *makeCompareNotEqual(node *thing1, node *thing2);
 node *makeConcat(node *thing1, node *thing2);
 node *makeAddToList(node *thing1, node *thing2);
 node *makeOn();
+node *makeNop();
 node *makeOff();
 node *makeDyadic();
 node *makePowers();
@@ -341,6 +346,7 @@ node *makePrintXml(node *);
 node *makePrintXmlNewFile(node *, node *);
 node *makePrintXmlAppendFile(node *, node *);
 node *makeReadXml(node *);
+node *makeExecute(node *);
 
 
 #endif /* ifdef EXECUTE_H*/

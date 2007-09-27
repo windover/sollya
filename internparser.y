@@ -8,29 +8,30 @@
 #include "chain.h"
 #include "general.h"
 #include "execute.h"
-#include "parser.tab.h"
+#include "internparser.tab.h"
 
 #define YYERROR_VERBOSE 1
-#define YYPARSE_PARAM scanner
-#define YYLEX_PARAM   scanner
+  // #define YYPARSE_PARAM scanner
+  // #define YYLEX_PARAM   scanner
 
-extern int yylex(YYSTYPE *lvalp, void *scanner);
-extern FILE *yyget_in(void *scanner);
-extern char *getCurrentLexSymbol();
 
-void yyerror(char *message) {
-  char *str;
-  if (!feof(yyget_in(scanner))) {
-    str = getCurrentLexSymbol();
-    fprintf(stderr,"Warning: %s.\nThe last symbol read has been \"%s\".\nWill skip input until next semicolon after the unexpected token. May leak memory.\n",message,str);
-    free(str);
-    promptToBePrinted = 1;
-  } 
-}
+extern int internyylex(YYSTYPE *lvalp, void *scanner);
+extern FILE *internyyget_in(void *scanner);
+
+ void internyyerror(void *myScanner, char *message) {
+   if (!feof(internyyget_in(myScanner))) {
+     fprintf(stderr,"Warning: %s.\nWill skip input until next semicolon after the unexpected token. May leak memory.\n",message);
+   }
+ }
 
 %}
 
+%parse-param {void *myScanner}
+%lex-param {void *myScanner}
+
 %defines
+
+%name-prefix="internyy" 
 
 %expect 1
 
@@ -159,11 +160,7 @@ void yyerror(char *message) {
 %token  DECIMALTOKEN;
 %token  RELATIVETOKEN;
 %token  ERRORTOKEN;			
-								       
-%token  QUITTOKEN;              					       
-%token  FALSEQUITTOKEN;  						       
-%token  RESTARTTOKEN;           					       
-											       
+		       											       
 %token  LIBRARYTOKEN;           					       
 											       
 %token  DIFFTOKEN;              					       
@@ -233,13 +230,15 @@ void yyerror(char *message) {
 %token  ENDTOKEN;  							       
 %token  WHILETOKEN;  							       
 
-%token  READFILETOKEN;
+%token  READFILETOKEN;                                                      
 
 %token  EXECUTETOKEN;
-											       
-%token  HELPTOKEN;                                                           
+
+%token  FALSERESTARTTOKEN;
+%token  FALSEQUITTOKEN;
 
 %type <other> startsymbol;
+%type <tree>  startsymbolwitherr;
 %type <tree>  command;
 %type <tree>  simplecommand;
 %type <list>  commandlist;
@@ -268,23 +267,22 @@ void yyerror(char *message) {
 
 %%
 
-startsymbol:            command SEMICOLONTOKEN 
+startsymbol:            startsymbolwitherr 
                           {
-			    parsedThing = $1;
+			    parsedThingIntern = $1;
 			    $$ = NULL;
 			    YYACCEPT;
 			  }
-                      | HELPTOKEN help SEMICOLONTOKEN
+;
+
+
+startsymbolwitherr:     command SEMICOLONTOKEN 
                           {
-			    parsedThing = NULL;
-			    $$ = NULL;
-			    YYACCEPT;
+			    $$ = $1;
 			  }
                       | error SEMICOLONTOKEN
                           {
-			    parsedThing = NULL;
 			    $$ = NULL;
-			    YYACCEPT;
 			  }
 ;
 
@@ -355,19 +353,15 @@ commandlist:            command SEMICOLONTOKEN
 			  }
 ;
 
-simplecommand:          QUITTOKEN
-                          {
-			    $$ = makeQuit();
-			  }
-                      | FALSEQUITTOKEN
+simplecommand:          FALSEQUITTOKEN 
                           {
 			    $$ = makeFalseQuit();
 			  }
-                      | RESTARTTOKEN
+                      | FALSERESTARTTOKEN 
                           {
-			    $$ = makeRestart();
+			    $$ = makeFalseRestart();
 			  }
-                      | PRINTTOKEN LPARTOKEN thinglist RPARTOKEN            					       
+		      | PRINTTOKEN LPARTOKEN thinglist RPARTOKEN            					       
                           {
 			    $$ = makePrint($3);
 			  }
@@ -426,7 +420,7 @@ simplecommand:          QUITTOKEN
                       | EXECUTETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeExecute($3);
-			  }				       
+			  }				       			       
                       | PRINTXMLTOKEN LPARTOKEN thing RPARTOKEN RIGHTANGLETOKEN thing
                           {
 			    $$ = makePrintXmlNewFile($3,$6);
@@ -1301,871 +1295,5 @@ statedereference:       PRECTOKEN EQUALTOKEN QUESTIONMARKTOKEN
 			  }
 ;
 
-
-
-help:                   CONSTANTTOKEN
-                          {
-			    printf("\"%s\" is recognized as a base 10 constant.\n",$1);
-			    free($1);
-			  }          					       
-                      | DYADICCONSTANTTOKEN
-                          {
-			    printf("\"%s\" is recognized as a dyadic number constant.\n",$1);
-			    free($1);
-                          }   					       
-                      | HEXCONSTANTTOKEN
-                          {
-			    printf("\"%s\" is recognized as a double precision constant.\n",$1);
-			    free($1);
-                          }       					       
-                      | BINARYCONSTANTTOKEN
-                          {
-			    printf("\"%s_2\" is recognized as a base 2 constant.\n",$1);
-			    free($1);
-                          }    					       
-                      | PITOKEN
-                          {
-			    printf("Here should be some help text.\n");
-                          }                					       
-                      | IDENTIFIERTOKEN
-                          {
-			    printf("\"%s\" is an identifier.\n",$1);
-			    free($1);
-                          }          					       
-                      | STRINGTOKEN
-                          {
-			    printf("\"%s\" is a string constant.\n",$1);
-			    free($1);
-                          }            					       
-                      | LPARTOKEN
-                          {
-			    printf("Left parenthesis.\n");
-                          }                  					       
-                      | RPARTOKEN
-                          {
-			    printf("Right parenthesis.\n");
-                          }                  					       
-                      | LBRACKETTOKEN
-                          {
-			    printf("Left bracket - indicates a range or a list.\n");
-                          }              					       
-                      | RBRACKETTOKEN
-                          {
-			    printf("Right bracker - indicates a range or a list.\n");
-                          }              					       
-                      | EQUALTOKEN
-                          {
-			    printf("Assignment operator.\n");
-                          }                 					       
-                      | COMPAREEQUALTOKEN
-                          {
-			    printf("Equality test.\n");
-                          }                 					       
-                      | COMMATOKEN
-                          {
-			    printf("Separator in lists or ranges.\n");
-                          }                 					       
-                      | EXCLAMATIONTOKEN
-                          {
-			    printf("Suppresses output on assignments.\n");
-                          }      						       
-                      | SEMICOLONTOKEN
-                          {
-			    printf("Command separator.\n");
-                          }             					       
-                      | STARLEFTANGLETOKEN
-                          {
-			    printf("Dereferences range bounds.\n");
-                          }             					       
-                      | LEFTANGLETOKEN
-                          {
-			    printf("Comparison less than.\n");
-                          }             					       
-                      | RIGHTANGLEUNDERSCORETOKEN
-                          {
-			    printf("Dereferences the lower range bound.\n");
-                          }      					       
-                      | RIGHTANGLEDOTTOKEN
-                          {
-			    printf("Dereferences the mid-point of a range.\n");
-                          }       					       
-                      | RIGHTANGLESTARTOKEN
-                          {
-			    printf("Dereferences the upper range bound.\n");
-                          }             					       
-                      | RIGHTANGLETOKEN
-                          {
-			    printf("Comparison greater than.\n");
-                          }            					       
-                      | DOTSTOKEN
-                          {
-			    printf("Ellipsis.\n");
-                          }                  					       
-                      | QUESTIONMARKTOKEN
-                          {
-			    printf("Dereferences global environment variables.\n");
-                          }      						       
-                      | VERTBARTOKEN
-                          {
-			    printf("Starts or ends a list.\n");
-                          }      						       
-                      | ATTOKEN
-                          {
-			    printf("Concatenation of lists or strings.\n");
-                          }      							       
-                      | DOUBLECOLONTOKEN
-                          {
-			    printf("Adding an element to a list.\n");
-                          }    
-                      | EXCLAMATIONEQUALTOKEN
-                          {
-			    printf("Comparison not equal.\n");
-                          }    
-                      | ANDTOKEN
-                          {
-			    printf("Boolean and.\n");
-                          }    
-                      | ORTOKEN
-                          {
-			    printf("Boolean or.\n");
-                          }    
-                      | PLUSTOKEN
-                          {
-			    printf("Addition.\n");
-                          }                  					       
-                      | MINUSTOKEN
-                          {
-			    printf("Substraction.\n");
-                          }                 					       
-                      | MULTOKEN
-                          {
-			    printf("Multiplication.\n");
-                          }                						       
-                      | DIVTOKEN
-                          {
-			    printf("Division.\n");
-                          }                  					       
-                      | POWTOKEN
-                          {
-			    printf("Exponentiation.\n");
-                          }                  					       
-                      | SQRTTOKEN
-                          {
-			    printf("Square root.\n");
-                          }                  					       
-                      | EXPTOKEN
-                          {
-			    printf("Exponential.\n");
-                          }                   					       
-                      | LOGTOKEN
-                          {
-			    printf("Natural logarithm.\n");
-                          }                   					       
-                      | LOG2TOKEN
-                          {
-			    printf("Logarithm in base 2.\n");
-                          }                  					       
-                      | LOG10TOKEN
-                          {
-			    printf("Logarithm in base 10.\n");
-                          }                 					       
-                      | SINTOKEN
-                          {
-			    printf("Sine.\n");
-                          }                   					       
-                      | COSTOKEN
-                          {
-			    printf("Cosine.\n");
-                          }                   					       
-                      | TANTOKEN
-                          {
-			    printf("Tangent.\n");
-                          }                   					       
-                      | ASINTOKEN
-                          {
-			    printf("Arcsine.\n");
-                          }                  					       
-                      | ACOSTOKEN
-                          {
-			    printf("Arcosine.\n");
-                          }                  					       
-                      | ATANTOKEN
-                          {
-			    printf("Arctangent.\n");
-                          }                  					       
-                      | SINHTOKEN
-                          {
-			    printf("Hyperbolic sine.\n");
-                          }                  					       
-                      | COSHTOKEN
-                          {
-			    printf("Hyperbolic cosine.\n");
-                          }                  					       
-                      | TANHTOKEN
-                          {
-			    printf("Hyperbolic tangent.\n");
-                          }                  					       
-                      | ASINHTOKEN
-                          {
-			    printf("Area sine.\n");
-                          }                 					       
-                      | ACOSHTOKEN
-                          {
-			    printf("Area cosine.\n");
-                          }                 					       
-                      | ATANHTOKEN
-                          {
-			    printf("Area tangent.\n");
-                          }                 					       
-                      | ABSTOKEN
-                          {
-			    printf("Absolute value.\n");
-                          }                   					       
-                      | ERFTOKEN
-                          {
-			    printf("Error function.\n");
-                          }                   					       
-                      | ERFCTOKEN
-                          {
-			    printf("Complementary error function.\n");
-                          }                  					       
-                      | LOG1PTOKEN
-                          {
-			    printf("Natural logarithm of 1 plus argument.\n");
-                          }                 					       
-                      | EXPM1TOKEN
-                          {
-			    printf("Exponential of argument minus 1.\n");
-                          }                 					       
-                      | DOUBLETOKEN
-                          {
-			    printf("Double precision rounding operator.\n");
-                          }                					       
-                      | DOUBLEDOUBLETOKEN
-                          {
-			    printf("Double-double precision rounding operator.\n");
-                          }      						       
-                      | TRIPLEDOUBLETOKEN
-                          {
-			    printf("Triple-double precision rounding operator.\n");
-                          }          					       
-                      | DOUBLEEXTENDEDTOKEN
-                          {
-			    printf("Double-extended precision rounding operator.\n");
-                          }        					       
-                      | CEILTOKEN
-                          {
-			    printf("Ceiling.\n");
-                          }                  					       
-                      | FLOORTOKEN
-                          {
-			    printf("Floor.\n");
-                          }                 			
-                      | HEADTOKEN
-                          {
-			    printf("Head of a list.\n");
-                          }   
-                      | ROUNDCORRECTLYTOKEN
-                          {
-			    printf("Round a bounding to the nearest floating-point value such that correct rounding is possible.\n");
-                          }   
-                      | READFILETOKEN
-                          {
-			    printf("Reads a file into a string.\n");
-                          }    
-                      | REVERTTOKEN
-                          {
-			    printf("Reverts a list that is not finally elliptic.\n");
-                          }    
-                      | SORTTOKEN
-                          {
-			    printf("Sorts a list of constants in ascending order.\n");
-                          }    
-                      | TAILTOKEN
-                          {
-			    printf("Tail of a list.\n");
-                          }    		       
-                      | PRECTOKEN
-                          {
-			    printf("Global environment variable precision.\n");
-                          }                  					       
-                      | POINTSTOKEN
-                          {
-			    printf("Global environment variable number of points.\n");
-                          }                					       
-                      | DIAMTOKEN
-                          {
-			    printf("Global environment variable diameter.\n");
-                          }                  					       
-                      | DISPLAYTOKEN
-                          {
-			    printf("Global environment variable display mode.\n");
-                          }                					       
-                      | VERBOSITYTOKEN
-                          {
-			    printf("Global environment variable verbosity.\n");
-                          }             					       
-                      | CANONICALTOKEN
-                          {
-			    printf("Global environment variable canonical output.\n");
-                          }             					       
-                      | AUTOSIMPLIFYTOKEN
-                          {
-			    printf("Global environment variable automatic simplification.\n");
-                          }          					       
-                      | TAYLORRECURSIONSTOKEN
-                          {
-			    printf("Global environement variable recursions of Taylor evaluation.\n");
-                          }      					       
-                      | TIMINGTOKEN
-                          {
-			    printf("Global environement variable timing of computations.\n");
-                          }                					       
-                      | FULLPARENTHESESTOKEN
-                          {
-			    printf("Global environement variable fully parenthized mode.\n");
-                          }       					       
-                      | MIDPOINTMODETOKEN
-                          {
-			    printf("Global environement variable midpoint mode.\n");
-                          }          					       
-                      | HOPITALRECURSIONSTOKEN
-                          {
-			    printf("Global environement variable recursions of Hopital evaluation.\n");
-                          }      					       
-                      | ONTOKEN
-                          {
-			    printf("Something is switched on.\n");
-                          }                    					       
-                      | OFFTOKEN
-                          {
-			    printf("Something is switched off.\n");
-                          }                   					       
-                      | DYADICTOKEN
-                          {
-			    printf("Display mode is dyadic output.\n");
-                          }      						       
-                      | POWERSTOKEN
-                          {
-			    printf("Display mode is dyadic output with powers.\n");
-                          }                					       
-                      | BINARYTOKEN
-                          {
-			    printf("Display mode is binary.\n");
-                          }                					       
-                      | FILETOKEN
-                          {
-			    printf("A file will be specified.\n");
-                          }                  					       
-                      | POSTSCRIPTTOKEN
-                          {
-			    printf("A postscript file will be specified.\n");
-                          }            					       
-                      | POSTSCRIPTFILETOKEN
-                          {
-			    printf("A postscript file and a file will be specified.\n");
-                          }        					       
-                      | PERTURBTOKEN
-                          {
-			    printf("Perturbation is demanded.\n");
-                          }               					       
-                      | MINUSWORDTOKEN
-                          {
-			    printf("Round towards minus infinity.\n");
-                          }             					       
-                      | PLUSWORDTOKEN
-                          {
-			    printf("Round towards plus infinity.\n");
-                          }              					       
-                      | ZEROWORDTOKEN
-                          {
-			    printf("Round towards zero.\n");
-                          }              					       
-                      | NEARESTTOKEN
-                          {
-			    printf("Round to nearest.\n");
-                          }               					       
-                      | HONORCOEFFPRECTOKEN
-                          {
-			    printf("Honorate the precision of the coefficients.\n");
-                          }       					       
-                      | TRUETOKEN
-                          {
-			    printf("Boolean constant true.\n");
-                          }      							       
-                      | FALSETOKEN
-                          {
-			    printf("Boolean constant false.\n");
-                          }      							       
-                      | DEFAULTTOKEN
-                          {
-			    printf("Default value.\n");
-                          }    											       
-                      | ABSOLUTETOKEN
-                          {
-			    printf("Consider an absolute error.\n");
-                          }    
-                      | DECIMALTOKEN
-                          {
-			    printf("Display mode is decimal.\n");
-                          }    
-                      | RELATIVETOKEN
-                          {
-			    printf("Consider a relative error.\n");
-                          }    
-                      | ERRORTOKEN
-                          {
-			    printf("Type error meta-value.\n");
-                          }    			
-                      | QUITTOKEN
-                          {
-			    printf("Exit from the tool.\n");
-                          }                  					       
-                      | FALSEQUITTOKEN
-                          {
-			    printf("Exit from the tool - help is called inside a read macro.\n");
-                          }      						       
-                      | RESTARTTOKEN
-                          {
-			    printf("Restart the tool.\n");
-                          }               					       
-                      | LIBRARYTOKEN
-                          {
-			    printf("Library binding dereferencer.\n");
-                          }               					       
-                      | DIFFTOKEN
-                          {
-			    printf("Differentiation: diff(func).\n");
-                          }                  					       
-                      | SIMPLIFYTOKEN
-                          {
-			    printf("Simplify: simplify(func).\n");
-                          }      						       
-                      | REMEZTOKEN
-                          {
-			    printf("Remez: remez(func,degree|monoms,range[,weight[,quality]]).\n");
-                          }                 					       
-                      | HORNERTOKEN
-                          {
-			    printf("Horner: horner(func)\n");
-                          }                					       
-                      | EXPANDTOKEN
-                          {
-			    printf("Expand: expand(func).\n");
-                          }                					       
-                      | SIMPLIFYSAFETOKEN
-                          {
-			    printf("Safe simplification: simplifysafe(func).\n");
-                          }      						       
-                      | TAYLORTOKEN
-                          {
-			    printf("Taylor expansion: taylor(func,degree,point).\n");
-                          }               					       
-                      | DEGREETOKEN
-                          {
-			    printf("Degree of a polynomial: degree(func).\n");
-                          }                					       
-                      | NUMERATORTOKEN
-                          {
-			    printf("Numerator of an expression: numerator(func).\n");
-                          }             					       
-                      | DENOMINATORTOKEN
-                          {
-			    printf("Denominator of an expression: denominator(func).\n");
-                          }           					       
-                      | SUBSTITUTETOKEN
-                          {
-			    printf("Substitute func2 for free variable in func: substitute(func,func2).\n");
-                          }            					       
-                      | COEFFTOKEN
-                          {
-			    printf("i-th coefficient of a polynomial: coeff(func,degree).\n");
-                          }                 					       
-                      | SUBPOLYTOKEN
-                          {
-			    printf("Subpolynomial consisting in monomials: subpoly(func,list of degrees).\n");
-                          }               					       
-                      | ROUNDCOEFFICIENTSTOKEN
-                          {
-			    printf("Round coefficients of a polynomial to format: roundcoefficients(func,list of formats).\n");
-                          }       					       
-                      | RATIONALAPPROXTOKEN
-                          {
-			    printf("Rational approximation: rationalapprox(constant).\n");
-                          }        					       
-                      | ACCURATEINFNORMTOKEN
-                          {
-			    printf("Faithful rounded infinite norm: accurateinfnorm(func,bits,range,domains to exclude).\n");
-                          }        					       
-                      | ROUNDTOFORMATTOKEN
-                          {
-			    printf("Round to a given format: round(constant,precision,rounding mode).\n");
-                          }         					       
-                      | EVALUATETOKEN
-                          {
-			    printf("Evaluate a function in a point or interval: round(func,constant|range).\n");
-                          }              					       
-                      | LENGTHTOKEN
-                          {
-			    printf("Length of a list: length(list).\n");
-                          }    
-                      | PARSETOKEN
-                          {
-			    printf("Parse a string to function: parse(string).\n");
-                          }                 					       
-                      | PRINTTOKEN
-                          {
-			    printf("Print something: print(thing1, thing2, ...).\n");
-                          }                 					       
-                      | PRINTXMLTOKEN
-                          {
-			    printf("Print a function in XML: printxml(func).\n");
-                          }                 					       
-                      | PLOTTOKEN
-                          {
-			    printf("Plot (a) function(s) in a range: plot(func,func2,...,range).\n");
-			    printf("There are further options.\n");
-                          }                  					       
-                      | PRINTHEXATOKEN
-                          {
-			    printf("Print a constant in hexadecimal: printhexa(constant).\n");
-                          }             					       
-                      | PRINTBINARYTOKEN
-                          {
-			    printf("Print a constant in binary: printbinary(constant).\n");
-                          }           					       
-                      | PRINTEXPANSIONTOKEN
-                          {
-			    printf("Print a polynomial as an expansion of double precision numbers: printexpansion(func).\n");
-                          }        					       
-                      | BASHEXECUTETOKEN
-                          {
-			    printf("Execute a command in a shell: bashexecute(string).\n");
-                          }           					       
-                      | EXTERNALPLOTTOKEN
-                          {
-			    printf("Here should be some help text.\n");
-                          }          					       
-                      | WRITETOKEN
-                          {
-			    printf("Write something without adding spaces and newlines: write(thing1, thing2, ...).\n");
-                          }                 					       
-                      | ASCIIPLOTTOKEN
-                          {
-			    printf("Plot a function in a range using an ASCII terminal: asciiplot(func,range).\n");
-                          }        
-                      | RENAMETOKEN
-                          {
-			    printf("Rename free variable string1 to string2: rename(string1, string2).\n");
-                          }        	       
-                      | INFNORMTOKEN
-                          {
-			    printf("Certified infinite norm: infnorm(func,range[,prooffile[,list of funcs]]).\n");
-                          }               					       
-                      | FINDZEROSTOKEN
-                          {
-			    printf("Certified bounding of zeros: findzeros(func,range).\n");
-                          }             					       
-                      | FPFINDZEROSTOKEN
-                          {
-			    printf("Approximate zeros of a function: fpfindzeros(func,range).\n");
-                          }           					       
-                      | DIRTYINFNORMTOKEN
-                          {
-			    printf("Floating-point infinite norm: dirtyinfnorm(func,range).\n");
-                          }          					       
-                      | INTEGRALTOKEN
-                          {
-			    printf("Certified integral: integral(func,range).\n");
-                          }              					       
-                      | DIRTYINTEGRALTOKEN
-                          {
-			    printf("Floating-point integral: dirtyintegral(func,range).\n");
-                          }      						       
-                      | WORSTCASETOKEN
-                          {
-			    printf("Print all worst-cases under a certain bound: worstcase(func,constant,range,constant,constant[,file]).\n");
-                          }             					       
-                      | IMPLEMENTPOLYTOKEN
-                          {
-			    printf("Implement a polynomial in C: implementpoly(func,range,constant,format,string,string2[,honorcoeffprec[,string3]]).\n");
-			    printf("Implements func in range with error constant with entering format named in function\nstring writing to file string2 honoring the precision of the coefficients or not with a proof in file string3.\n");
-                          }      						       
-                      | CHECKINFNORMTOKEN
-                          {
-			    printf("Checks whether an infinite norm is bounded: checkinfnorm(func,range,constant).\n");
-                          }          					       
-                      | ZERODENOMINATORSTOKEN
-                          {
-			    printf("Searches floating-point approximations to zeros of denominators: zerodenominators(func,range).\n");
-                          }      					       
-                      | ISEVALUABLETOKEN
-                          {
-			    printf("Tests if func is evaluable on range: isevaluable(func,range).\n");
-                          }           					       
-                      | SEARCHGALTOKEN
-                          {
-			    printf("Searches Gal values for func (or list of func): searchgal(func|list of func, constant, integer, integer, format|list of formats, constant|list of constants).\n");
-                          }             					       
-                      | GUESSDEGREETOKEN
-                          {
-			    printf("Guesses the degree needed for approximating func: guessdegree(func,range,constant[,weight]).\n");
-                          }           					       
-                      | DIRTYFINDZEROSTOKEN
-                          {
-			    printf("Finds zeros of a function dirtily: dirtyfindzeros(func,range).\n");
-                          }        					       
-                      | IFTOKEN
-                          {
-			    printf("If construct: if condition then command or if condition then command else command.\n");
-                          }      							       
-                      | THENTOKEN
-                          {
-			    printf("If construct: if condition then command or if condition then command else command.\n");
-                          }      							       
-                      | ELSETOKEN
-                          {
-			    printf("If construct: if condition then command else command\n");
-                          }      							       
-                      | FORTOKEN
-                          {
-			    printf("For construct: for i from const to const2 [by const3] do command\nor for i in list do command.\n");
-                          }      							       
-                      | INTOKEN
-                          {
-			    printf("For construct: for i in list do command.\n");
-                          }      							       
-                      | FROMTOKEN
-                          {
-			    printf("For construct: for i from const to const2 [by const3] do command.\n");
-                          }      							       
-                      | TOTOKEN
-                          {
-			    printf("For construct: for i from const to const2 [by const3] do command.\n");
-                          }      							       
-                      | BYTOKEN
-                          {
-			    printf("For construct: for i from const to const2 by const3 do command.\n");
-                          }      							       
-                      | DOTOKEN
-                          {
-			    printf("For construct: for i from const to const2 [by const3] do command.\n");
-			    printf("While construct: while condition do command.\n");
-                          }      							       
-                      | BEGINTOKEN
-                          {
-			    printf("Begin-end construct: begin command; command; ... end.\n");
-                          }      							       
-                      | ENDTOKEN
-                          {
-			    printf("Begin-end construct: begin command; command; ... end.\n");
-                          }      							       
-                      | WHILETOKEN
-                          {
-			    printf("While construct: while condition do command.\n");
-                          }    
-                      | INFTOKEN
-                          {
-			    printf("Dereferencing the infimum of a range: inf(range).\n");
-                          }    
-                      | MIDTOKEN
-                          {
-			    printf("Dereferencing the midpoint of a range: mid(range).\n");
-                          }    
-                      | SUPTOKEN
-                          {
-			    printf("Dereferencing the supremum of a range: sup(range).\n");
-                          }    
-                      | EXPONENTTOKEN
-                          {
-			    printf("exponent(constant): returns an integer such that constant scaled by the power of 2\nof this integer is an odd or zero integer.\n");
-                          }    
-                      | MANTISSATOKEN
-                          {
-			    printf("mantissa(constant): returns an odd or zero integer equal to constant scaled by an integer power of 2.\n");
-                          }    
-                      | PRECISIONTOKEN
-                          {
-			    printf("precision(constant): returns the least number of bits constant can be written on.\n");
-                          }    
-                      | EXECUTETOKEN
-                          {
-			    printf("execute(string): executes an arenaireplot script contained in a file named string.\n");
-                          }    
-                      | HELPTOKEN
-                          {
-			    printf("Possible keywords in the arenaireplot tool are:\n");
-			    printf("- ^\n");
-			    printf("- <\n");
-			    printf("- =\n");
-			    printf("- ==\n");
-			    printf("- >\n");
-			    printf("- >_\n");
-			    printf("- >.\n");
-			    printf("- >*\n");
-			    printf("- |\n");
-			    printf("- ||\n");
-			    printf("- -\n");
-			    printf("- ,\n");
-			    printf("- ;\n");
-			    printf("- ::\n");
-			    printf("- !\n");
-			    printf("- !\n");
-			    printf("- ?\n");
-			    printf("- /\n");
-			    printf("- ...\n");
-			    printf("- (\n");
-			    printf("- )\n");
-			    printf("- [\n");
-			    printf("- ]\n");
-			    printf("- @\n");
-			    printf("- *\n");
-			    printf("- *<\n");
-			    printf("- &&\n");
-			    printf("- +\n");
-			    printf("- abs\n");
-			    printf("- absolute\n");
-			    printf("- accurateinfnorm\n");
-			    printf("- acos\n");
-			    printf("- acosh\n");
-			    printf("- asciiplot\n");
-			    printf("- asin\n");
-			    printf("- asinh\n");
-			    printf("- atan\n");
-			    printf("- atanh\n");
-			    printf("- autosymplify\n");
-			    printf("- bashexecute\n");
-			    printf("- begin\n");
-			    printf("- binary\n");
-			    printf("- by\n");
-			    printf("- canonical\n");
-			    printf("- ceil\n");
-			    printf("- checkinfnorm\n");
-			    printf("- coeff\n");
-			    printf("- cos\n");
-			    printf("- cosh\n");
-			    printf("- D\n");
-			    printf("- DD\n");
-			    printf("- DE\n");
-			    printf("- decimal\n");
-			    printf("- default\n");
-			    printf("- degree\n");
-			    printf("- denominator\n");
-			    printf("- diam\n");
-			    printf("- diff\n");
-			    printf("- dirtinfnorm\n");
-			    printf("- dirtyfindzeros\n");
-			    printf("- dirtyintegral\n");
-			    printf("- display\n");
-			    printf("- do\n");
-			    printf("- double\n");
-			    printf("- doubledouble\n");
-			    printf("- doubleextended\n");
-			    printf("- dyadic\n");
-			    printf("- else\n");
-			    printf("- end\n");
-			    printf("- erf\n");
-			    printf("- erfc\n");
-			    printf("- error\n");
-			    printf("- evaluate\n");
-			    printf("- execute\n");
-			    printf("- exp\n");
-			    printf("- expand\n");
-			    printf("- expm1\n");
-			    printf("- exponent\n");
-			    printf("- externalplot\n");
-			    printf("- false\n");
-			    printf("- file\n");
-			    printf("- findzeros\n");
-			    printf("- floor\n");
-			    printf("- for\n");
-			    printf("- fpfindzeros\n");
-			    printf("- from\n");
-			    printf("- fullparentheses\n");
-			    printf("- guessdegree\n");
-			    printf("- head\n");
-			    printf("- help\n");
-			    printf("- honorcoeffprec\n");
-			    printf("- hopitalrecursions\n");
-			    printf("- horner\n");
-			    printf("- if\n");
-			    printf("- implementpoly\n");
-			    printf("- in\n");
-			    printf("- inf\n");
-			    printf("- infnorm\n");
-			    printf("- integral\n");
-			    printf("- isevaluable\n");
-			    printf("- length\n");
-			    printf("- library\n");
-			    printf("- log\n");
-			    printf("- log10\n");
-			    printf("- log1p\n");
-			    printf("- log2\n");
-			    printf("- M\n");
-			    printf("- mantissa\n");
-			    printf("- mid\n");
-			    printf("- midpointmode\n");
-			    printf("- N\n");
-			    printf("- numerator\n");
-			    printf("- off\n");
-			    printf("- on\n");
-			    printf("- P\n");
-			    printf("- parse\n");
-			    printf("- perturb\n");
-			    printf("- pi\n");
-			    printf("- plot\n");
-			    printf("- points\n");
-			    printf("- postscript\n");
-			    printf("- postscriptfile\n");
-			    printf("- powers\n");
-			    printf("- prec\n");
-			    printf("- precision\n");
-			    printf("- print\n");
-			    printf("- printbinary\n");
-			    printf("- printexpansion\n");
-			    printf("- printhexa\n");
-			    printf("- printxml\n");
-			    printf("- quit\n");
-			    printf("- rationalapprox\n");
-			    printf("- read\n");
-			    printf("- readfile\n");
-			    printf("- relative\n");
-			    printf("- remez\n");
-			    printf("- rename\n");
-			    printf("- restart\n");
-			    printf("- revert\n");
-			    printf("- round\n");
-			    printf("- roundcoefficients\n");
-			    printf("- roundcorrectly\n");
-			    printf("- searchgal\n");
-			    printf("- simplify\n");
-			    printf("- simplifysafe\n");
-			    printf("- sin\n");
-			    printf("- sinh\n");
-			    printf("- sort\n");
-			    printf("- sqrt\n");
-			    printf("- subpoly\n");
-			    printf("- substitute\n");
-			    printf("- sup\n");
-			    printf("- tail\n");
-			    printf("- tan\n");
-			    printf("- tanh\n");
-			    printf("- taylor\n");
-			    printf("- taylorrecursions\n");
-			    printf("- TD\n");
-			    printf("- then\n");
-			    printf("- timing\n");
-			    printf("- to\n");
-			    printf("- tripledouble\n");
-			    printf("- true\n");
-			    printf("- verbosity\n");
-			    printf("- while\n");
-			    printf("- worstcase\n");
-			    printf("- write\n");
-			    printf("- Z\n");
-			    printf("- zerodenominators\n");
-			    printf("\n");
-                          }                                                           
-;
 
 

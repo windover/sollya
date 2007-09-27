@@ -7,15 +7,15 @@ CFLAGS=-fPIC -Wall -g
 
 all: tools libtools.so libtools.a
 
-libtools.a: parser.tab.o lex.yy.o plot.o miniparser.tab.o lex.miniyy.o expression.o infnorm.o pari_utils.o remez.o general.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o execute.o xml.o general.o 
-	ar cru libtools.a lex.yy.o plot.o miniparser.tab.o lex.miniyy.o parser.tab.o expression.o infnorm.o pari_utils.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o execute.o xml.o general.o
+libtools.a: parser.tab.o lex.internyy.o internparser.tab.o lex.yy.o plot.o miniparser.tab.o lex.miniyy.o expression.o infnorm.o pari_utils.o remez.o general.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o execute.o xml.o general.o 
+	ar cru libtools.a lex.internyy.o internparser.tab.o lex.yy.o plot.o miniparser.tab.o lex.miniyy.o parser.tab.o expression.o infnorm.o pari_utils.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o execute.o xml.o general.o
 	ranlib libtools.a
 
-libtools.so: parser.tab.o lex.yy.o plot.o miniparser.tab.o lex.miniyy.o expression.o infnorm.o pari_utils.o remez.o general.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o execute.o xml.o general.o 
-	gcc $(LIB) $(CFLAGS) -Wl,-export-dynamic -shared -o libtools.so lex.yy.o plot.o miniparser.tab.o lex.miniyy.o parser.tab.o expression.o infnorm.o pari_utils.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o execute.o xml.o general.o -lfl -lmpfi -lpari -lmpfr -lgmp -ldl $(LIB_XML2)
+libtools.so: parser.tab.o lex.internyy.o internparser.tab.o lex.yy.o plot.o miniparser.tab.o lex.miniyy.o expression.o infnorm.o pari_utils.o remez.o general.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o execute.o xml.o general.o 
+	gcc $(LIB) $(CFLAGS) -Wl,-export-dynamic -shared -o libtools.so lex.internyy.o internparser.tab.o lex.yy.o plot.o miniparser.tab.o lex.miniyy.o parser.tab.o expression.o infnorm.o pari_utils.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o execute.o xml.o general.o -lmpfi -lpari -lmpfr -lgmp -ldl $(LIB_XML2)
 
-tools: parser.tab.o lex.yy.o plot.o miniparser.tab.o lex.miniyy.o expression.o infnorm.o pari_utils.o remez.o general.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o execute.o xml.o general.o main.o
-	gcc $(LIB) $(CFLAGS) -Wl,-export-dynamic -o tools lex.yy.o plot.o miniparser.tab.o lex.miniyy.o parser.tab.o expression.o infnorm.o pari_utils.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o execute.o xml.o general.o main.o -lfl -lmpfi -lpari -lmpfr -lgmp -ldl $(LIB_XML2)
+tools: lex.internyy.o internparser.tab.o parser.tab.o lex.yy.o plot.o miniparser.tab.o lex.miniyy.o expression.o infnorm.o pari_utils.o remez.o general.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o execute.o xml.o general.o main.o
+	gcc $(LIB) $(CFLAGS) -Wl,-export-dynamic -o tools lex.internyy.o internparser.tab.o lex.yy.o plot.o miniparser.tab.o lex.miniyy.o parser.tab.o expression.o infnorm.o pari_utils.o remez.o chain.o double.o assignment.o taylor.o integral.o proof.o worstcase.o fpminimax.o implement.o external.o library.o execute.o xml.o general.o main.o -lmpfi -lpari -lmpfr -lgmp -ldl $(LIB_XML2)
 
 parser.tab.o: parser.tab.h parser.tab.c expression.h general.h infnorm.h remez.h chain.h assignment.h taylor.h
 
@@ -25,10 +25,23 @@ lex.yy.c: lexer.lex parser.tab.h general.h expression.h
 	flex -I lexer.lex
 
 parser.tab.c: parser.y expression.h infnorm.h remez.h general.h
-	bison -d parser.y
+	bison parser.y
 
 parser.tab.h: parser.y expression.h infnorm.h remez.h general.h
-	bison -d parser.y
+	bison parser.y
+
+internparser.tab.o: internparser.tab.h internparser.tab.c expression.h general.h infnorm.h remez.h chain.h assignment.h taylor.h
+
+lex.internyy.o: lex.internyy.c expression.h general.h
+
+lex.internyy.c: internlexer.lex internparser.tab.h general.h expression.h
+	flex -I internlexer.lex
+
+internparser.tab.c: internparser.y expression.h infnorm.h remez.h general.h
+	bison internparser.y
+
+internparser.tab.h: internparser.y expression.h infnorm.h remez.h general.h
+	bison internparser.y
 
 plot.o: plot.h plot.c expression.h general.h
 
@@ -73,13 +86,13 @@ xml.o: xml.h xml.c expression.h general.h
 
 
 lex.miniyy.c: minilexer.lex miniparser.tab.h general.h expression.h
-	flex -I -Pminiyy minilexer.lex
+	flex -I minilexer.lex
 
 miniparser.tab.c: miniparser.y expression.h general.h double.h
-	bison -d -p miniyy miniparser.y
+	bison miniparser.y
 
 miniparser.tab.h: miniparser.y expression.h general.h double.h
-	bison -d -p miniyy miniparser.y
+	bison miniparser.y
 
 miniparser.tab.o: miniparser.tab.h miniparser.tab.c expression.h general.h double.h
 
@@ -106,6 +119,9 @@ clean:
 	rm -rf miniparser.tab.h
 	rm -rf miniparser.tab.c
 	rm -rf lex.miniyy.c
+	rm -rf lex.internyy.c
+	rm -rf internparser.tab.c
+	rm -rf internparser.tab.h
 	rm -rf tools
 	rm -rf Manuel_fr.log Manuel_fr.aux Manuel_fr.dvi Manuel_fr.out Manuel_fr.toc Manuel_fr.pdf Manuel_fr.ps
 

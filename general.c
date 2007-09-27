@@ -51,8 +51,10 @@ void *scanner = NULL;
 int promptToBePrinted = 0;
 
 node *parsedThing = NULL;
+node *parsedThingIntern = NULL;
 
 jmp_buf recoverEnvironment;
+jmp_buf recoverEnvironmentError;
 int handlingCtrlC = 0;
 int recoverEnvironmentReady = 0;
 int exitInsteadOfRecover = 1;
@@ -415,7 +417,7 @@ void recoverFromError(void) {
     exit(1);
   }
   avma = ltop;
-  longjmp(recoverEnvironment,1);
+  longjmp(recoverEnvironmentError,1);
 }
 
 
@@ -595,6 +597,7 @@ void setToolDiameter(mpfr_t op) {
 
 void setRecoverEnvironment(jmp_buf *env) {
   memmove(&recoverEnvironment,env,sizeof(recoverEnvironment));
+  memmove(&recoverEnvironmentError,env,sizeof(recoverEnvironmentError));
   memmove(&(PARIENVIRONMENT),env,sizeof((PARIENVIRONMENT)));
   exitInsteadOfRecover = 0;
 }
@@ -641,6 +644,7 @@ int general(int argc, char *argv[]) {
       
       handlingCtrlC = 0;
       if (!setjmp(recoverEnvironment)) {
+	memmove(&recoverEnvironmentError,&recoverEnvironment,sizeof(recoverEnvironmentError));
 	recoverEnvironmentReady = 1;
 	initSignalHandler();
 	pushTimeCounter();
