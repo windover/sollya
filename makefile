@@ -1,4 +1,4 @@
-LIB_XML2=`xml2-config --libs || echo "-L/usr/lib -lxml2 -lz -lpthread -lm"`
+LIB_XML2=`xml2-config --libs || echo "-L/usr/lib -lxml2 -lm"`
 CPPFLAGS_XML2=`xml2-config --cflags || echo "-I/usr/include/libxml2"`
 
 CPPFLAGS=-I/sw/include -I/home/njourd01/work-cvs/mpfi-1.3.4-RC3/src -rdynamic
