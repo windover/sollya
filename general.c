@@ -92,19 +92,9 @@ extern int yylex_init(void **);
 extern int yylex(void *);
 
 
-#define NEWPARIVERSION
-
-#ifdef NEWPARIVERSION 
 
 #define PARIENVIRONMENT GP_DATA->env
 extern gp_data *GP_DATA;
-
-#else 
-
-#define PARIENVIRONMENT environnement
-extern jmp_buf environnement;
-
-#endif
 
 
 #define BACKTRACELENGTH 100

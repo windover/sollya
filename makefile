@@ -22,7 +22,7 @@ parser.tab.o: parser.tab.h parser.tab.c expression.h general.h infnorm.h remez.h
 lex.yy.o: lex.yy.c expression.h general.h
 
 lex.yy.c: lexer.lex parser.tab.h general.h expression.h
-	flex -I lexer.lex
+	flex lexer.lex
 
 parser.tab.c: parser.y expression.h infnorm.h remez.h general.h
 	bison parser.y
@@ -35,7 +35,7 @@ internparser.tab.o: internparser.tab.h internparser.tab.c expression.h general.h
 lex.internyy.o: lex.internyy.c expression.h general.h
 
 lex.internyy.c: internlexer.lex internparser.tab.h general.h expression.h
-	flex -I internlexer.lex
+	flex internlexer.lex
 
 internparser.tab.c: internparser.y expression.h infnorm.h remez.h general.h
 	bison internparser.y
@@ -86,7 +86,7 @@ xml.o: xml.h xml.c expression.h general.h
 
 
 lex.miniyy.c: minilexer.lex miniparser.tab.h general.h expression.h
-	flex -I minilexer.lex
+	flex minilexer.lex
 
 miniparser.tab.c: miniparser.y expression.h general.h double.h
 	bison miniparser.y
