@@ -1,3 +1,16 @@
+2007-10-01 11:20  clauter
+
+	* Makefile.am, lexer.l, parser.y:
+
+	  Removed convenience library support because it did not work.
+	  Added version.
+
+2007-10-01 11:10  clauter
+
+	* ChangeLog, Makefile.am:
+
+	  Added support for a convenience library libtools2.
+
 2007-10-01 10:49  clauter
 
 	* internlexer.l, lexer.l, minilexer.l:

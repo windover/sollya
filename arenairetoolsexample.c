@@ -7,7 +7,7 @@
    Compile with something similar to
 
        gcc -Wall -c arenairetoolsexample.c
-       gcc -L. -Wall -o arenairetoolsexample arenairetoolsexample.o -ltools
+       gcc -L./.libs -Wall -o arenairetoolsexample arenairetoolsexample.o -ltools
 
 
    The example...

@@ -84,6 +84,8 @@ external.c \
 external.h \
 fpminimax.c \
 fpminimax.h \
+general.c \
+general.h \
 implement.c \
 implement.h \
 infnorm.c \
@@ -92,8 +94,6 @@ integral.c \
 integral.h \
 library.c \
 library.h \
-main.c \
-main.h \
 pari_utils.c \
 pari_utils.h \
 plot.c \
