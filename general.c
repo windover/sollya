@@ -20,7 +20,10 @@
 #include <sys/time.h>
 #include <time.h>
 #include "execute.h"
+
+#if HAVE_BACKTRACE
 #include <execinfo.h>
+#endif
 
 
 /* STATE OF THE TOOL */
@@ -351,6 +354,7 @@ void popTimeCounter(char *s) {
 
 
 void printBacktrace() {
+#if HAVE_BACKTRACE
   void *array[BACKTRACELENGTH];
   size_t size;
   char **strings;
@@ -365,6 +369,9 @@ void printBacktrace() {
      fprintf(stderr,"%s\n", strings[i]);
 
   free (strings);
+#else
+  printf("\n");
+#endif 
 }
 
 

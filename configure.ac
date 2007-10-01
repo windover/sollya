@@ -201,7 +201,7 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([gettimeofday memset memmove strerror strtol])
+AC_CHECK_FUNCS([gettimeofday memset memmove strerror strtol backtrace])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
