@@ -124,6 +124,8 @@ CFLAGS="$CFLAGS "`$XML2CONFIG --cflags`
 AC_SEARCH_LIBS([xmlTextReaderIsEmptyElement], [$XML2LIBS])
 
 # Checks for libraries.
+
+
 AC_CHECK_LIB([dl], [dlopen], [], AC_MSG_ERROR([libdl unuseable]))
 AC_CHECK_LIB([gmp], [__gmpz_init], [], AC_MSG_ERROR([libgmp unuseable]))
 AC_CHECK_LIB([mpfr], [mpfr_init], [], AC_MSG_ERROR([libmpfr unuseable]))
