@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.60a)
+AC_PREREQ(2.60)
 AC_INIT([tools], [0.1], [christoph.lauter@ens-lyon.fr, sylvain.chevillard@ens-lyon.fr])
 AM_INIT_AUTOMAKE([1.6 no-define dist-zip dist-bzip2])
 
@@ -22,7 +22,7 @@ AC_SUBST(LIBTOOL_DEPS)
 #Check whether flex and bison support interactive and pure parsers
 
 AC_MSG_CHECKING([flex supports interactive and pure lexers])
-if test `echo -e "%{\n%}\n\n%option always-interactive\n%option reentrant\n%option prefix=\"coucou\"\n%option bison-bridge\n%option nounput\n\n%%\n"test" { }\n%%\n" | "$LEX" > /dev/null 2> /dev/null; echo $?; rm -f lex.coucou.c` -eq 0 ; then 
+if test `echo -e "%{\n%}\n\n%option always-interactive\n%option reentrant\n%option prefix=\"coucou\"\n%option bison-bridge\n%option nounput\n\n%%\n"test" { }\n%%\n" > conftest.l ; $LEX conftest.l > /dev/null 2> /dev/null ; echo $?; rm -f lex.coucou.c` -eq 0 ; then 
 AC_MSG_RESULT(yes)
 else
 AC_MSG_ERROR(no)
