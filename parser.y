@@ -1999,7 +1999,7 @@ help:                   CONSTANTTOKEN
                           }    
                       | EXECUTETOKEN
                           {
-			    printf("execute(string): executes an arenaireplot script contained in a file named string.\n");
+			    printf("execute(string): executes an %s script contained in a file named string.\n",PACKAGE_NAME);
                           }    
                       | VERSIONTOKEN 
                           {
@@ -2007,7 +2007,7 @@ help:                   CONSTANTTOKEN
                           }    
                       | HELPTOKEN
                           {
-			    printf("Possible keywords in the arenaireplot tool are:\n");
+			    printf("Possible keywords in %s are:\n",PACKAGE_NAME);
 			    printf("- ^\n");
 			    printf("- <\n");
 			    printf("- =\n");
