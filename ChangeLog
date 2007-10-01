@@ -1,3 +1,24 @@
+2007-10-01 10:49  clauter
+
+	* internlexer.l, lexer.l, minilexer.l:
+
+	  Forgotten files.
+
+2007-10-01 10:45  clauter
+
+	* Manuel_fr.tex:
+
+	  Removing french Manual.
+
+2007-10-01 10:44  clauter
+
+	* AUTHORS, COPYING, ChangeLog, INSTALL, Makefile.am, NEWS,
+	  autogen.sh, configure.ac, expression.c, externalfun.c, general.c,
+	  internlexer.lex, internparser.y, lexer.lex, makefile,
+	  minilexer.lex, miniparser.y, parser.y, doc/tools_manual.pdf:
+
+	  Catapulted arenaireplot to the configure - age.
+
 2007-09-27 17:08  clauter
 
 	* makefile:
