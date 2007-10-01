@@ -149,8 +149,9 @@ CFLAGS=$NEWFLAGS
 OLDLDFLAGS=$LDFLAGS
 LDFLAGS="$LDFLAGS -Wl,-export-dynamic"
 
+
 AC_MSG_CHECKING([check for -export-dyamic support])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]], [[exit(0);]])],
 [AC_MSG_RESULT(yes) 
 NEWFLAGS=$LDFLAGS
 ],[AC_MSG_RESULT(no)
