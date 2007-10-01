@@ -236,8 +236,10 @@ void yyerror(char *message) {
 %token  READFILETOKEN;
 
 %token  EXECUTETOKEN;
-											       
-%token  HELPTOKEN;                                                           
+									       
+%token  HELPTOKEN;      
+%token  VERSIONTOKEN;
+                                                     
 
 %type <other> startsymbol;
 %type <tree>  command;
@@ -276,6 +278,13 @@ startsymbol:            command SEMICOLONTOKEN
 			  }
                       | HELPTOKEN help SEMICOLONTOKEN
                           {
+			    parsedThing = NULL;
+			    $$ = NULL;
+			    YYACCEPT;
+			  }
+                      | VERSIONTOKEN SEMICOLONTOKEN
+                          {
+			    printf("This is %s.\nSend bug reports to %s.\n",PACKAGE_STRING,PACKAGE_BUGREPORT);
 			    parsedThing = NULL;
 			    $$ = NULL;
 			    YYACCEPT;
@@ -1992,6 +2001,10 @@ help:                   CONSTANTTOKEN
                           {
 			    printf("execute(string): executes an arenaireplot script contained in a file named string.\n");
                           }    
+                      | VERSIONTOKEN 
+                          {
+			    printf("Prints the version of the software.\n");
+                          }    
                       | HELPTOKEN
                           {
 			    printf("Possible keywords in the arenaireplot tool are:\n");
@@ -2159,6 +2172,7 @@ help:                   CONSTANTTOKEN
 			    printf("- tripledouble\n");
 			    printf("- true\n");
 			    printf("- verbosity\n");
+			    printf("- version\n");
 			    printf("- while\n");
 			    printf("- worstcase\n");
 			    printf("- write\n");

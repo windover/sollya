@@ -307,6 +307,8 @@ ROUNDCORRECTLY  "roundcorrectly"
 
 EXECUTE         "execute"
 
+VERSION         "version"
+
 
 %%
 
@@ -561,6 +563,7 @@ EXECUTE         "execute"
                                               return QUITTOKEN;         
                                             }
 {RESTART}         			    { newTokenLexed(); return RESTARTTOKEN; }         					       
+{VERSION}         			    { newTokenLexed(); return VERSIONTOKEN; }         					       
 					    											       
 {LIBRARY}         			    { newTokenLexed(); return LIBRARYTOKEN; }         					       
 					    											       
