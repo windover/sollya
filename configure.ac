@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.0)
+AC_PREREQ(2.59)
 AC_INIT([tools], [0.1], [christoph.lauter@ens-lyon.fr, sylvain.chevillard@ens-lyon.fr])
 AM_INIT_AUTOMAKE([1.6 no-define dist-zip dist-bzip2])
 
