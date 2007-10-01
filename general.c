@@ -14,7 +14,7 @@
 #include "remez.h"
 #include "infnorm.h"
 #include "assignment.h"
-#include "parser.tab.h"
+#include "parser.h"
 #include <pari/paripriv.h>
 #include <termios.h>
 #include <sys/time.h>

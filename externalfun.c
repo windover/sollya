@@ -6,7 +6,7 @@
    Compile with 
 
      gcc -fPIC -Wall -c externalfun.c 
-     gcc -fPIC -shared -Wl,-export-dynamic -o externalfun externalfun.o 
+     gcc -fPIC -shared -o externalfun externalfun.o 
 
    Function foo will be linked by
 

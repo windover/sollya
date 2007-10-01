@@ -8,7 +8,7 @@
 #include <errno.h>
 #include "general.h"
 #include "double.h"
-#include "miniparser.tab.h"
+#include "miniparser.h"
 
 #define MAXDIFFSIMPLSIZE 10000
 

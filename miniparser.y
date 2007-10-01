@@ -5,7 +5,7 @@
 #include <errno.h>
 #include "expression.h"
 #include "general.h"
-#include "miniparser.tab.h"
+#include "miniparser.h"
 #include "double.h"
 
 #define YYERROR_VERBOSE 1

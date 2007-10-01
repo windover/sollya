@@ -8,7 +8,7 @@
 #include "chain.h"
 #include "general.h"
 #include "execute.h"
-#include "internparser.tab.h"
+#include "internparser.h"
 
 #define YYERROR_VERBOSE 1
   // #define YYPARSE_PARAM scanner
