@@ -209,15 +209,19 @@ void fPrintXmlInner(FILE *fd, node *tree) {
     break;
   case LOG_1P:
     fprintf(fd,"<apply>\n");
-    fprintf(fd,"<log/><apply><plus/><cn>1</cn>\n");
+    fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">log1p</csymbol>\n");
+//    fprintf(fd,"<log/><apply><plus/><cn>1</cn>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply></apply>\n");
+//    fprintf(fd,"</apply></apply>\n");
+    fprintf(fd,"</apply>\n");
     break;
   case EXP_M1:
     fprintf(fd,"<apply>\n");
-    fprintf(fd,"<apply><minus/><apply><exp>\n");
+    fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">expm1</csymbol>\n");
+//    fprintf(fd,"<apply><minus/><apply><exp>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply><cn>1</cn></apply>\n");
+//    fprintf(fd,"</apply><cn>1</cn></apply>\n");
+    fprintf(fd,"</apply>\n");
     break;
   case DOUBLEEXTENDED:
     fprintf(fd,"<apply>\n");
@@ -325,26 +329,81 @@ void fPrintXml(FILE *fd, node *tree) {
 
 #ifdef LIBXML_READER_ENABLED
 
+#define change_xmlparser(new_parser) do { \
+	printMessage(3,"%p => ",next_xmlparser); \
+	next_xmlparser=new_parser; \
+	printMessage(3,"%p\n",next_xmlparser); } while(0)
+
+
+
 // PARSER MATHML - return: 0 (not found) -1 (sync lost) 1 (found)
-int search_annotations(xmlTextReaderPtr reader);
-int process_annotation(xmlTextReaderPtr reader);
-int search_lambda     (xmlTextReaderPtr reader);
-int search_variable   (xmlTextReaderPtr reader);
-int search_basic_element (xmlTextReaderPtr reader);
-int search_return_offset (xmlTextReaderPtr reader);
+int search_annotations		(xmlTextReaderPtr reader);
+int process_annotation		(xmlTextReaderPtr reader);
+int search_lambda     		(xmlTextReaderPtr reader);
+int search_text   			(xmlTextReaderPtr reader);
+int search_basic_element 	(xmlTextReaderPtr reader);
+int search_return_offset 	(xmlTextReaderPtr reader);
+int search_math_tree 		(xmlTextReaderPtr reader);
 
 static int (*next_xmlparser)(xmlTextReaderPtr reader)=search_basic_element; //search_mathml;
 
 static int				current_depth;
 static const xmlChar *xml_name, *xml_value;
 static node				*result_node;
+char						*var_name;
 
+int action_variable (xmlTextReaderPtr reader)
+{
+if (!xmlTextReaderHasValue(reader)) return 0;
+var_name=(char*)xml_value;
+return 1;
+}
 
-#define change_xmlparser(new_parser) do { \
-	printMessage(3,"%p => ",next_xmlparser); \
-	next_xmlparser=new_parser; \
-	printMessage(3,"%p\n",next_xmlparser); } while(0)
+//typedef node*(*pfn_op_binaire)(node*,node*);
+typedef struct treemath nodemath;
+struct treemath {
+nodemath*	child;
+nodemath*	parent;
+node*			(*operator)(node*,node*);
+int			op_type; // 0=no use, 1=csymbol, 2=ci, 3=cn
+node*			op1;
+node*			op2;
+} math_tree={0,0,0,0,0},*mthis=&math_tree;
 
+node* xml_make_neg (node* n1,node* n2) {if (n1)     return makeNeg  (n1);  return 0; }
+node* xml_make_add (node* n1,node* n2) {if (n1&&n2) return makeAdd(n1,n2); return n1; }
+node* xml_make_sub (node* n1,node* n2) {if (n1&&n2) return makeSub(n1,n2); return xml_make_neg(n1,0); }
+node* xml_make_mul (node* n1,node* n2) {if (n1&&n2) return makeMul(n1,n2); return 0; }
+node* xml_make_div (node* n1,node* n2) {if (n1&&n2) return makeDiv(n1,n2); return 0; }
+node* xml_make_sqrt(node* n1,node* n2) {if (n1)     return makeSqrt (n1);  return 0; }
+node* xml_make_exp (node* n1,node* n2) {if (n1)     return makeExp  (n1);  return 0; }
+node* xml_make_log (node* n1,node* n2) {if (n1)     return makeLog  (n1);  return 0; }
+node* xml_make_log2(node* n1,node* n2) {if (n1)     return makeLog2 (n1);  return 0; }
+node* xml_make_logA(node* n1,node* n2) {if (n1)     return makeLog10(n1);  return 0; }
+node* xml_make_sin (node* n1,node* n2) {if (n1)     return makeSin  (n1);  return 0; }
+node* xml_make_cos (node* n1,node* n2) {if (n1)     return makeCos  (n1);  return 0; }
+node* xml_make_tan (node* n1,node* n2) {if (n1)     return makeTan  (n1);  return 0; }
+node* xml_make_asin(node* n1,node* n2) {if (n1)     return makeAsin (n1);  return 0; }
+node* xml_make_acos(node* n1,node* n2) {if (n1)     return makeAcos (n1);  return 0; }
+node* xml_make_atan(node* n1,node* n2) {if (n1)     return makeAtan (n1);  return 0; }
+node* xml_make_sh  (node* n1,node* n2) {if (n1)     return makeSinh (n1);  return 0; }
+node* xml_make_ch  (node* n1,node* n2) {if (n1)     return makeCosh (n1);  return 0; }
+node* xml_make_th  (node* n1,node* n2) {if (n1)     return makeTanh (n1);  return 0; }
+node* xml_make_ash (node* n1,node* n2) {if (n1)     return makeAsinh(n1);  return 0; }
+node* xml_make_ach (node* n1,node* n2) {if (n1)     return makeAcosh(n1);  return 0; }
+node* xml_make_ath (node* n1,node* n2) {if (n1)     return makeAtanh(n1);  return 0; }
+node* xml_make_pow (node* n1,node* n2) {if (n1&&n2) return makePow(n1,n2); return 0; }
+node* xml_make_abs (node* n1,node* n2) {if (n1)     return makeAbs  (n1);  return 0; }
+node* xml_make_db  (node* n1,node* n2) {if (n1)     return makeDouble(n1); return 0; }
+node* xml_make_db2 (node* n1,node* n2) {if (n1)     return makeDoubledouble(n1); return 0; }
+node* xml_make_db3 (node* n1,node* n2) {if (n1)     return makeTripledouble(n1); return 0; }
+node* xml_make_dbex(node* n1,node* n2) {if (n1)     return makeDoubleextended(n1); return 0; }
+node* xml_make_ceil(node* n1,node* n2) {if (n1)     return makeCeil (n1);  return 0; }
+node* xml_make_floor(node* n1,node* n2){if (n1)     return makeFloor(n1);  return 0; }
+node* xml_make_erf (node* n1,node* n2) {if (n1)     return makeErf  (n1);  return 0; }
+node* xml_make_erfc(node* n1,node* n2) {if (n1)     return makeErfc (n1);  return 0; }
+node* xml_make_log1p(node* n1,node* n2){if (n1)     return makeLog1p(n1);  return 0; }
+node* xml_make_expm1(node* n1,node* n2){if (n1)     return makeExpm1(n1);  return 0; }
 
 struct {
 char*	element;				// name of element, "math" for <math>
@@ -354,7 +413,7 @@ int	next_xmlparser;	// index in mml_parser[] in case of parsing success
 int	onerror_parser;	// index in mml_parser[] in case of parsing error
 int	depth; 				// current XML depth
 int	offset_depth;		// offset of next parser, (-1)==any child level, 1==next child level 
-int	onerror_depth;		// ?
+int	(*action)(xmlTextReaderPtr reader);	// ?
 } mml_parser[]={
 // element:		type:	parser:					next:	err:	d:	offs:		
 {	"math",			1,	search_basic_element,	1,	-1,	0,	-1,	0	}, // search_mathml
@@ -362,6 +421,11 @@ int	onerror_depth;		// ?
 {	"annotations",	1,	search_annotations,		3,	1,		0,	1,		0	}, // search_annotations
 {	"lambda",		1,	search_basic_element,	4,	2,		0,	-1,	0	}, // search_lambda
 {	"bvar",			1,	search_basic_element,	5,	3,		0,	1,		0	}, // search_bvar
+{	"ci",				1,	search_basic_element,	6,	3,		0,	1,		0	}, // search_ci
+{	"#text",			3,	search_basic_element,	7,	3,		0,	1,		action_variable	}, // search_variable
+{	"ci",				15,search_basic_element,	8,	3,		0,	1,		0	}, // search_ci
+{	"bvar",			15,search_basic_element,	9,	3,		0,	1,		0	}, // search_bvar
+{	"bvar",			15,search_math_tree,			10,3,		0,	1,		0	}, // math tree
 {	"simul-error",	0, search_return_offset,	-1,4,		0, -1,	0	},
 },*current_parser=&mml_parser[0];
 
@@ -372,6 +436,119 @@ printMessage(3,"%s => %s\n",current_parser->element,mml_parser[new_index].elemen
 current_parser=&mml_parser[new_index];
 change_xmlparser(current_parser->parser);
 printMessage(3,"depth: %i\n",current_parser->depth);
+}
+
+int search_math_tree (xmlTextReaderPtr reader)
+{
+node* temp=0;
+
+if (xmlTextReaderNodeType(reader)==1)
+  {
+       if (!strcmp((char*)xml_name, "apply"))
+    {
+    mthis->child=malloc(sizeof(nodemath));
+    mthis->child->parent=mthis;
+    mthis=mthis->child;
+    mthis->child=0;
+    mthis->operator=0;
+    mthis->op_type=0;
+    mthis->op1=0;
+    mthis->op2=0;
+    printMessage(3,"This: %p Parent: %p Name: %s\n",mthis,mthis->parent,xml_name);
+    }
+  else if (!strcmp((char*)xml_name, "csymbol")) mthis->op_type=1;
+  else if (!strcmp((char*)xml_name, "ci")) 		mthis->op_type=2;
+  else if (!strcmp((char*)xml_name, "cn")) 		mthis->op_type=3;
+  else if (!strcmp((char*)xml_name, "plus"))   	mthis->operator=xml_make_add;
+  else if (!strcmp((char*)xml_name, "minus")) 	mthis->operator=xml_make_sub;
+  else if (!strcmp((char*)xml_name, "times")) 	mthis->operator=xml_make_mul;
+  else if (!strcmp((char*)xml_name, "divide"))	mthis->operator=xml_make_div;
+  else if (!strcmp((char*)xml_name, "root")) 	mthis->operator=xml_make_sqrt;
+  else if (!strcmp((char*)xml_name, "exp"))   	mthis->operator=xml_make_exp;
+  else if (!strcmp((char*)xml_name, "ln")) 	   mthis->operator=xml_make_log;
+  else if (!strcmp((char*)xml_name, "log"))		mthis->operator=xml_make_logA;
+  else if (!strcmp((char*)xml_name, "sin")) 		mthis->operator=xml_make_sin;
+  else if (!strcmp((char*)xml_name, "cos")) 		mthis->operator=xml_make_cos;
+  else if (!strcmp((char*)xml_name, "tan")) 		mthis->operator=xml_make_tan;
+  else if (!strcmp((char*)xml_name, "arcsin"))	mthis->operator=xml_make_asin;
+  else if (!strcmp((char*)xml_name, "arccos")) 	mthis->operator=xml_make_acos;
+  else if (!strcmp((char*)xml_name, "arctan")) 	mthis->operator=xml_make_atan;
+  else if (!strcmp((char*)xml_name, "sinh")) 	mthis->operator=xml_make_sh;
+  else if (!strcmp((char*)xml_name, "cosh")) 	mthis->operator=xml_make_ch;
+  else if (!strcmp((char*)xml_name, "tanh")) 	mthis->operator=xml_make_th;
+  else if (!strcmp((char*)xml_name, "arcsinh"))	mthis->operator=xml_make_ash;
+  else if (!strcmp((char*)xml_name, "arccosh")) mthis->operator=xml_make_ach;
+  else if (!strcmp((char*)xml_name, "arctanh")) mthis->operator=xml_make_ath;
+  else if (!strcmp((char*)xml_name, "power")) 	mthis->operator=xml_make_pow;
+  else if (!strcmp((char*)xml_name, "abs")) 		mthis->operator=xml_make_abs;
+  else if (!strcmp((char*)xml_name, "ceiling"))	mthis->operator=xml_make_ceil;
+  else if (!strcmp((char*)xml_name, "floor")) 	mthis->operator=xml_make_floor;
+  else if (!strcmp((char*)xml_name, "pi")) 		     temp=makePi();
+  else if (!strcmp((char*)xml_name, "exponentiale")) temp=makeExp(makeConstantDouble(1.));
+  else { switch_parser_index(current_parser->onerror_parser); return -1; } // error: markup unknown
+  }
+else if (xmlTextReaderNodeType(reader)==3) // Text
+  {
+  if (mthis->op_type==1) // csymbol
+    {
+       if (!strcmp((char*)xml_value,"erf"))		mthis->operator=xml_make_erf;
+  else if (!strcmp((char*)xml_value,"erfc"))		mthis->operator=xml_make_erfc;
+  else if (!strcmp((char*)xml_value,"log1p"))	mthis->operator=xml_make_log1p;
+  else if (!strcmp((char*)xml_value,"expm1"))	mthis->operator=xml_make_expm1;
+  else if (!strcmp((char*)xml_value,"double"))	mthis->operator=xml_make_db;
+  else if (!strcmp((char*)xml_value,"doubledouble"))	mthis->operator=xml_make_db2;
+  else if (!strcmp((char*)xml_value,"tripledouble"))	mthis->operator=xml_make_db3;
+  else if (!strcmp((char*)xml_value,"doubleextended"))mthis->operator=xml_make_dbex;
+    }
+  if (mthis->op_type==2) // temp=makeVariable(); // ci
+    { // Test only one variable (in bvar) and always the same name 
+    if(!strcmp((char*)xml_value,var_name)) temp=makeVariable(); // ci
+    else { switch_parser_index(current_parser->onerror_parser); return -1; } // error: variable unknown
+    }
+  if (mthis->op_type==3) //temp=parseString((char*)xml_value);// cn
+    {
+    mpfr_t 	n;
+    mpfr_init2(n,tools_precision);
+    if (readDecimalConstant(n,(char*)xml_value))
+    printMessage(1,"Warning: rounding has happened upon reading constant \"%s\" in an XML file.\n",xml_value);
+    temp = makeConstant(n);
+    mpfr_clear(n);
+    } 
+  }
+else if (xmlTextReaderNodeType(reader)==15)
+  {
+       if (!strcmp((char*)xml_name, "lambda"))
+    {
+    result_node=mthis->op1;
+    printMessage(3,"This: %p Result: %p Name: /%s\n",mthis,result_node,xml_name);
+    change_xmlparser(search_annotations);
+    }
+  else if (!strcmp((char*)xml_name, "apply") && mthis->operator)
+    {
+    printMessage(3,"op1: %p op2: %p op: %p\n",mthis->op1,mthis->op2,mthis->operator);
+    temp=mthis->operator(mthis->op1,mthis->op2);
+    //printTree(temp);  printMessage(2,"\n");
+    if (mthis->parent) mthis=mthis->parent;
+    if (mthis->child)  free(mthis->child);
+    mthis->child=0;
+    }
+  else if (!strcmp((char*)xml_name, "csymbol")) mthis->op_type=0;
+  else if (!strcmp((char*)xml_name, "logbase"));
+  printMessage(3,"This: %p Temp: %p Name: /%s\n",mthis,temp,xml_name);
+  }
+if (temp) // some value/result to add in the tree
+  {
+       if (!mthis->op1) mthis->op1=temp;
+  else if (!mthis->op2) mthis->op2=temp;
+  else if (mthis->operator)
+    {
+    mthis->op1=mthis->operator(mthis->op1,mthis->op2);
+    mthis->op2=temp;
+    }
+  else mthis->op1=mthis->op2=0,mthis->operator=0; // error
+  printMessage(3,"This: %p Temp: %p Name: /%s\n",mthis,temp,xml_name);
+  }
+return 1;
 }
 
 
@@ -396,8 +573,10 @@ if (xmlTextReaderIsEmptyElement(reader) ||
   (current_parser->offset_depth!=-1 && current_parser->depth+1!=xmlTextReaderDepth(reader))
   ) return 0;
 // on_found
+if (current_parser->action) if (!current_parser->action(reader)) return 0;
 switch_parser_index(current_parser->next_xmlparser);
 current_parser->depth=xmlTextReaderDepth(reader);
+if (current_parser->type==15) current_parser->depth-=2;
 return 1;
 }
 
