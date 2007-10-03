@@ -229,14 +229,21 @@ node *constructPolynomial(mpfr_t *coeff, chain *monomials, mp_prec_t prec) {
 void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, mpfr_t *x0, int n, mp_prec_t prec) {
   node *iterator;
   node *temp1;
-  mpfr_t x, y, zero_mpfr;
+  mpfr_t u, v, x, xNew, temp, y, zero_mpfr;
   mp_prec_t estim_prec;
-  int r, nbr_iter,test, n_expo;
+  int r, nbr_iter,test, n_expo, sgnfu;
+
+  sgnfu = sgnfa;
 
   mpfr_init2(x,prec);
+  mpfr_init2(xNew,prec);
   mpfr_init2(y,prec);
+  mpfr_init2(u, mpfr_get_prec(a));
+  mpfr_init2(v, mpfr_get_prec(b));
   mpfr_init2(zero_mpfr,53);
 
+  mpfr_set(u,a,GMP_RNDD);
+  mpfr_set(v,b,GMP_RNDU); // both exacts
 
   if(x0!=NULL) mpfr_set(x,*x0,GMP_RNDN);
   else {
@@ -269,73 +276,114 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
   nbr_iter=1;
   test=1;
   while(test) {
-    r = evaluateFaithfulWithCutOffFast(y, iterator, NULL, x, zero_mpfr, prec);
-    if((!mpfr_number_p(y)) && (r==1)) {
-      fprintf(stderr,"/*Warning: Newton algorithm encountered numerical problems*/\n");
-      mpfr_set(res, x, GMP_RNDN);
-      free_memory(iterator);
-      mpfr_clear(x);
-      mpfr_clear(y);
-      mpfr_clear(zero_mpfr);
-      return;
-    }
-    if(r==0) mpfr_set_d(y,0,GMP_RNDN);
-    
-    if((mpfr_cmp(a,y)>=0) || (mpfr_cmp(y,b)>=0)) {
+    r = evaluateFaithfulWithCutOffFast(xNew, iterator, NULL, x, zero_mpfr, prec);
+    if(r==0) mpfr_set_d(xNew,0,GMP_RNDN);
+
+    if( (mpfr_cmp(u,xNew)>=0) || (mpfr_cmp(xNew,v)>=0) || ((!mpfr_number_p(xNew)) && (r==1)) ) {
       if(verbosity>=4) {
 	printf("Entering in a rescue case of Newton's algorithm\n");
-	printMpfr(y);
+	printMpfr(xNew);
       }
       
-      // Since Newton go out of the interval, we make a step of binary search
-      r = evaluateFaithfulWithCutOffFast(y, f, f_diff, x, zero_mpfr, prec);
+      // We do a step of binary search
+      mpfr_add(xNew,u,v,GMP_RNDN);
+      mpfr_div_2ui(xNew, xNew, 1, GMP_RNDN);
+      r = evaluateFaithfulWithCutOffFast(y, f, f_diff, xNew, zero_mpfr, prec); // y=f[(u+v)/2]
 
       if((!mpfr_number_p(y)) && (r==1)) {
 	fprintf(stderr,"/*Warning: Newton algorithm encountered numerical problems*/\n");
-	mpfr_set(res, x, GMP_RNDN);
+	if(verbosity>=2) {
+	  printf("This function seems to be undefined at this point :"); printTree(f); printMpfr(xNew);
+	}
+
+	mpfr_set(res, xNew, GMP_RNDN);
 	free_memory(iterator);
 	mpfr_clear(x);
+	mpfr_clear(xNew);
 	mpfr_clear(y);
+	mpfr_clear(u);
+	mpfr_clear(v);
 	mpfr_clear(zero_mpfr);
 	return;
       }
-      if(r==0) mpfr_set_d(y,0,GMP_RNDN);
+      if ((r==0) || mpfr_zero_p(y)) { //y=f[u+v]/2] is an exact 0
+	printMessage(4,"Information: an exact zero has been found by Newton's algorithm\n");
+
+	mpfr_set(res, xNew, GMP_RNDN);
+	free_memory(iterator);
+	mpfr_clear(x);
+	mpfr_clear(xNew);
+	mpfr_clear(y);
+	mpfr_clear(u);
+	mpfr_clear(v);
+	mpfr_clear(zero_mpfr);
+	return;
+      }
     
-      if(sgnfa==mpfr_sgn(y)) {
-	mpfr_add(y,x,b,GMP_RNDN);
-	mpfr_div_2ui(y,y,1,GMP_RNDN);
+      // Now y is a non-zero real number
+      if(mpfr_zero_p(y) || !mpfr_number_p(y))
+	fprintf(stderr, "This message means that there is a bug in Newton's algorithm. Please report.\n");
+      if(sgnfu==mpfr_sgn(y)) {
+	mpfr_set(u,xNew,GMP_RNDD);
+	sgnfu=mpfr_sgn(y);
+      }
+      else mpfr_set(v,xNew,GMP_RNDU);
+
+      if (mpfr_equal_p(u,v)) {
+	printMessage(4,"Information: in Newton's algorithm, the interval has been reducted to a single point.\n");
+
+	mpfr_set(res, u, GMP_RNDN);
+	free_memory(iterator);
+	mpfr_clear(x);
+	mpfr_clear(xNew);
+	mpfr_clear(y);
+	mpfr_clear(u);
+	mpfr_clear(v);
+	mpfr_clear(zero_mpfr);
+	return;
+      }
+
+      mpfr_add(xNew,u,v,GMP_RNDN);
+      mpfr_div_2ui(xNew,xNew,1,GMP_RNDN);
+      if(mpfr_sgn(u)*mpfr_sgn(v)!=1) {
+	// 0 lies in [u;v]
+	if((!mpfr_zero_p(x)) && (!mpfr_zero_p(xNew))) n_expo+= mpfr_get_exp(x)-mpfr_get_exp(xNew);
+	estim_prec=1;
       }
       else {
-	mpfr_add(y,a,x,GMP_RNDN);
-	mpfr_div_2ui(y,y,1,GMP_RNDN);
+	n_expo = 0; // since 0 does not lie in [u;v], n_expo is useless
+	mpfr_init2(temp,10);
+	mpfr_sub(temp,v,u,GMP_RNDN);
+	if(mpfr_cmp_abs(v,u)) estim_prec = mpfr_get_exp(temp) - mpfr_get_exp(u) - 1;
+	else estim_prec = mpfr_get_exp(temp) - mpfr_get_exp(v) - 1;
+	mpfr_clear(temp);
       }
     }
-  
-    if(n!=0) {if(nbr_iter==n) test=0;}
     else {
-      if(mpfr_equal_p(x,y)) test=0;
-      else {
-	if((!mpfr_zero_p(x)) && (!mpfr_zero_p(y))) {
-	  if(mpfr_get_exp(x)!=mpfr_get_exp(y)) { n_expo++; estim_prec=1; }
-	  else estim_prec=estim_prec*2;
+      if((!mpfr_zero_p(x)) && (!mpfr_zero_p(xNew))) {
+	if(mpfr_get_exp(x)!=mpfr_get_exp(xNew)) { 
+	  n_expo+= mpfr_get_exp(x)-mpfr_get_exp(xNew);
+	  estim_prec=1;
 	}
-	
-	if((n_expo>5000) || (estim_prec>prec)) test=0;
+	else estim_prec=estim_prec*2;
       }
     }
 
+    if ( ((n!=0) && (nbr_iter==n)) || mpfr_equal_p(x,xNew) || (n_expo>5000) || (estim_prec>prec)) test=0;
+
+
     nbr_iter++;
-    mpfr_set(x,y,GMP_RNDN);
+    mpfr_set(x,xNew,GMP_RNDN);
   }
 
   nbr_iter--;
 
   if(n_expo>5000) {
-    mpfr_set(y,x,GMP_RNDN);
+    mpfr_set(xNew,x,GMP_RNDN);
     mpfr_set_d(x,0.,GMP_RNDN);
     r = evaluateFaithfulWithCutOffFast(x, f, f_diff, x, zero_mpfr, prec);
     if(mpfr_zero_p(x) || (r==0)) mpfr_set_d(x,0.,GMP_RNDN);
-    else mpfr_set(x,y,GMP_RNDN);
+    else mpfr_set(x,xNew,GMP_RNDN);
   }
 
   if(verbosity>=3) {
@@ -351,7 +399,10 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 
   free_memory(iterator);
   mpfr_clear(x);
+  mpfr_clear(xNew);
   mpfr_clear(y);
+  mpfr_clear(u);
+  mpfr_clear(v);
   mpfr_clear(zero_mpfr);
   return;
 }
