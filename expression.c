@@ -6289,10 +6289,19 @@ node* expandPolynomialUnsafe(node *tree) {
       break;
     case DIV:
       if (isConstant(left)) {
-	copy = (node*) safeMalloc(sizeof(node));
-	copy->nodeType = MUL;
-	copy->child1 = left;
-	copy->child2 = right;
+	if (isConstant(right)) {
+	  copy = (node*) safeMalloc(sizeof(node));
+	  copy->nodeType = MUL;
+	  copy->child1 = left;
+	  copy->child2 = right;
+	} else {
+	  tempNode = (node*) safeMalloc(sizeof(node));
+	  tempNode->nodeType = MUL;
+	  tempNode->child1 = right;
+	  tempNode->child2 = left;
+	  copy = expandPolynomialUnsafe(tempNode);
+	  free_memory(tempNode);
+	}
       } else {
 	tempNode = (node*) safeMalloc(sizeof(node));
 	tempNode->nodeType = MUL;
@@ -6921,6 +6930,7 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
   int degree;
   node *temp, *coeff, *temp2;
   mpfr_t *value;
+  node *simplified, *simplifiedTemp;
 
  
   if (isMonomial(polynom)) {
@@ -6971,10 +6981,21 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
     return;
   }
 
-  printTree(polynom);
+  simplifiedTemp = expandPowerInPolynomialUnsafe(polynom);
+  simplified = expandPolynomialUnsafe(simplifiedTemp);
 
-  fprintf(stderr,"Error: getCoefficientsUnsafe: an error occured. The given polynomial is neither a monomial nor a sum of monomials\n");
-  exit(1);
+  if (verbosity >= 2) {
+    printMessage(2,"Warning: recursion on coefficients extraction:\n");
+    printTree(polynom);
+    printMessage(2,"\ntransformed to\n");
+    printTree(simplified); printf("\n");
+  }
+
+  getCoefficientsUnsafe(monomials, simplified, sign);  
+
+  free_memory(simplifiedTemp);
+  free_memory(simplified);
+
 }
 
 int isPowerOfVariable(node *);
@@ -7159,7 +7180,6 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
   temp2 = expandPowerInPolynomialUnsafe(temp);
   temp3 = expandPolynomialUnsafe(temp2);
   temp4 = simplifyTreeErrorfree(temp3);
-
 
   getCoefficientsUnsafe(*coefficients,temp4,1);
 
@@ -7718,8 +7738,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
 
     monomials = (node**) safeCalloc((degree + 1),sizeof(node*));
     for (i=0;i<=degree;i++) monomials[i] = NULL;
-    
-   
+       
     getCoefficientsUnsafe(monomials,simplified,1);
  
   
