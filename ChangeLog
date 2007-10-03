@@ -1,3 +1,43 @@
+2007-10-02 11:00  njourdan
+
+	* xml.c: Add: variable name check, unknown markup check, error
+	  recovery
+
+2007-10-01 18:13  njourdan
+
+	* configure.ac: [no log message]
+
+2007-10-01 18:00  njourdan
+
+	* configure.ac: Upd: version autoconf
+
+2007-10-01 17:08  clauter
+
+	* parser.y:
+
+	  Adapted help.
+
+2007-10-01 15:25  schevill
+
+	* configure.ac: configure.ac checks correctly export-dynamic
+
+2007-10-01 14:14  clauter
+
+	* configure.ac, general.c:
+
+	  Added check for backtrace.
+
+2007-10-01 14:07  schevill
+
+	* configure.ac: configure.ac compatible with a Mac OS X
+	  architecture
+
+2007-10-01 11:26  clauter
+
+	* ChangeLog, Makefile.am, arenairetoolsexample.c:
+
+	  Corrected compilation indication in libary example.
+
 2007-10-01 11:20  clauter
 
 	* Makefile.am, lexer.l, parser.y:

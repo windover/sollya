@@ -16,6 +16,7 @@ if test "$LEX" != flex; then
   AC_SUBST(LEXLIB, '')
 fi
 AC_LIBTOOL_DLOPEN
+AC_DISABLE_SHARED
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 
@@ -160,6 +161,8 @@ NEWFLAGS=$LDFLAGS
 NEWFLAGS=$OLDLDFLAGS
 ])
 LDFLAGS=$NEWFLAGS
+
+
 
 
 #Checks for a particular calling convention in PARI
