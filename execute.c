@@ -1757,14 +1757,15 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
     simplified2 = simplifyTree(simplified);
 
     if (!isConstant(simplified2)) {
-      if (!dirtyIsConstant(simplified2)) {
+      if (dirtyIsConstant(simplified2)) {
 	printMessage(1,"Warning: the given expression should be constant in this context.\n");
-	printMessage(1,"It could not be shown that it is constant. Will refute it.\n");
-	mpfr_clear(tempResult);
-	freeThing(simplified);
-	freeThing(simplified2);
-	return 0;
-      } 
+	printMessage(1,"The expression actually seems to be constant but no proof could be established.\n");
+	printMessage(1,"The resulting syntax error might be unjustified.\n");
+      }
+      mpfr_clear(tempResult);
+      freeThing(simplified);
+      freeThing(simplified2);
+      return 0; 
     }
 
     freeThing(simplified2);
@@ -1772,8 +1773,8 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
     noMessage = 0;
 
     if (!isConstant(simplified)) {
-      printMessage(1,"Warning: the given expression should be constant in this context.\nIt could not be shown that it is constant.\n");
-      printMessage(1,"Will set %s to 1 when evaluating the expression to a constant.\n",variablename);
+      printMessage(1,"Warning: the given expression should be constant in this context.\nIt proves constant under floating point evaluation.\n");
+      printMessage(1,"In this evaluation, %s will be set to 1 when evaluating the expression to a constant.\n",variablename);
       noMessage = 1;
     }
 
