@@ -6162,6 +6162,8 @@ node* expandPolynomialUnsafe(node *tree) {
   node *left, *right, *copy, *tempNode, *tempNode2, *tempNode3, *tempNode4; 
   mpfr_t *value;
 
+  if (isConstant(tree)) return copyTree(tree);
+
   switch (tree->nodeType) {
   case VARIABLE:
     return copyTree(tree);
@@ -6295,12 +6297,25 @@ node* expandPolynomialUnsafe(node *tree) {
 	  copy->child1 = left;
 	  copy->child2 = right;
 	} else {
-	  tempNode = (node*) safeMalloc(sizeof(node));
-	  tempNode->nodeType = MUL;
-	  tempNode->child1 = right;
-	  tempNode->child2 = left;
-	  copy = expandPolynomialUnsafe(tempNode);
-	  free_memory(tempNode);
+	  switch (right->nodeType) {
+	  case ADD:
+	  case SUB:
+	  case NEG:
+	  case DIV:      
+	    tempNode = (node*) safeMalloc(sizeof(node));
+	    tempNode->nodeType = MUL;
+	    tempNode->child1 = right;
+	    tempNode->child2 = left;
+	    copy = expandPolynomialUnsafe(tempNode);
+	    free_memory(tempNode);
+	    break;
+	  default:
+	    copy = (node*) safeMalloc(sizeof(node));
+	    copy->nodeType = MUL;
+	    copy->child1 = left;
+	    copy->child2 = right;
+	    break;  
+	  }  
 	}
       } else {
 	tempNode = (node*) safeMalloc(sizeof(node));
@@ -6979,7 +6994,8 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
   if (polynom->nodeType == NEG) {
     getCoefficientsUnsafe(monomials,polynom->child1,-sign);
     return;
-  }
+  }  
+ 
 
   simplifiedTemp = expandPowerInPolynomialUnsafe(polynom);
   simplified = expandPolynomialUnsafe(simplifiedTemp);
