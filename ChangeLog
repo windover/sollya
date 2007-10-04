@@ -1,3 +1,46 @@
+2007-10-04 14:00  clauter
+
+	* execute.c:
+
+	  Expressions are constant only if they can be proven constant by
+	  safe means.
+
+2007-10-04 13:34  clauter
+
+	* execute.c:
+
+	  Improved syntax error handling on constant expressions.
+
+2007-10-04 11:11  clauter
+
+	* execute.c, general.c:
+
+	  In range bounds and comparisons, expressions that are not
+	  detected to be constant are considered as a type error.
+
+2007-10-03 19:00  schevill
+
+	* remez.c: Newton's algorithm used to fail when a point x where
+	  f'(x)=0 is met during the algorithm. This bug is fixed. I also
+	  patched the code to be more confident when a step of bisection is
+	  performed. The final result is that the algorithm should be now
+	  more robust. Eventually, we cannot avoid cases where the
+	  algorithm loops infinitely and this implementation claims nothing
+	  but being a heuristic
+
+2007-10-03 16:26  clauter
+
+	* expression.c:
+
+	  Corrected a bug in expand.
+
+2007-10-03 13:56  clauter
+
+	* ChangeLog, configure.ac:
+
+	  Changed configure for disabling building a shared library by
+	  default.
+
 2007-10-02 11:00  njourdan
 
 	* xml.c: Add: variable name check, unknown markup check, error
