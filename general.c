@@ -61,6 +61,7 @@ jmp_buf recoverEnvironmentError;
 int handlingCtrlC = 0;
 int recoverEnvironmentReady = 0;
 int exitInsteadOfRecover = 1;
+int numberBacktrace = 1;
 
 chain *symbolTable = NULL;
 
@@ -360,17 +361,20 @@ void printBacktrace() {
   char **strings;
   size_t i;
 
-  size = backtrace (array, BACKTRACELENGTH);
-  strings = backtrace_symbols (array, size);
+  if (numberBacktrace > 0) {
 
-  fprintf(stderr,"The current stack is:\n\n");
+    size = backtrace (array, BACKTRACELENGTH);
+    strings = backtrace_symbols (array, size);
 
-  for (i=0; i<size; i++)
-     fprintf(stderr,"%s\n", strings[i]);
+    fprintf(stderr,"The current stack is:\n\n");
 
-  free (strings);
-#else
-  printf("\n");
+    for (i=0; i<size; i++)
+      fprintf(stderr,"%s\n", strings[i]);
+
+    free (strings);
+    numberBacktrace--;
+
+  }
 #endif 
 }
 
@@ -644,6 +648,7 @@ int general(int argc, char *argv[]) {
 	memmove(&recoverEnvironmentError,&recoverEnvironment,sizeof(recoverEnvironmentError));
 	recoverEnvironmentReady = 1;
 	initSignalHandler();
+	numberBacktrace = 1;
 	pushTimeCounter();
 	executeAbort = executeCommand(parsedThing);
 	popTimeCounter("full execution of the last parse chunk");

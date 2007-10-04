@@ -9783,7 +9783,10 @@ node *evaluateThingInner(node *tree) {
   case COMPARELESS:
     copy->child1 = evaluateThingInner(tree->child1);
     copy->child2 = evaluateThingInner(tree->child2);
-    if (isPureTree(copy->child1) && isPureTree(copy->child2)) {
+    if (isPureTree(copy->child1) && 
+	isPureTree(copy->child2) &&
+	isConstant(copy->child1) && 
+	isConstant(copy->child2)) {
       if (timingString != NULL) pushTimeCounter();
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
@@ -9806,7 +9809,10 @@ node *evaluateThingInner(node *tree) {
   case COMPAREGREATER:
     copy->child1 = evaluateThingInner(tree->child1);
     copy->child2 = evaluateThingInner(tree->child2);
-    if (isPureTree(copy->child1) && isPureTree(copy->child2)) {
+    if (isPureTree(copy->child1) && 
+	isPureTree(copy->child2) &&
+	isConstant(copy->child1) && 
+	isConstant(copy->child2)) {
       if (timingString != NULL) pushTimeCounter();
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
@@ -9829,7 +9835,10 @@ node *evaluateThingInner(node *tree) {
   case COMPARELESSEQUAL:
     copy->child1 = evaluateThingInner(tree->child1);
     copy->child2 = evaluateThingInner(tree->child2);
-    if (isPureTree(copy->child1) && isPureTree(copy->child2)) {
+    if (isPureTree(copy->child1) && 
+	isPureTree(copy->child2) &&
+	isConstant(copy->child1) && 
+	isConstant(copy->child2)) {
       if (timingString != NULL) pushTimeCounter();
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
@@ -9852,7 +9861,10 @@ node *evaluateThingInner(node *tree) {
   case COMPAREGREATEREQUAL:
     copy->child1 = evaluateThingInner(tree->child1);
     copy->child2 = evaluateThingInner(tree->child2);
-    if (isPureTree(copy->child1) && isPureTree(copy->child2)) {
+    if (isPureTree(copy->child1) && 
+	isPureTree(copy->child2) &&
+	isConstant(copy->child1) && 
+	isConstant(copy->child2)) {
       if (timingString != NULL) pushTimeCounter();
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
@@ -10326,7 +10338,10 @@ node *evaluateThingInner(node *tree) {
   case RANGE:
     copy->child1 = evaluateThingInner(tree->child1);
     copy->child2 = evaluateThingInner(tree->child2);
-    if (isPureTree(copy->child1) && isPureTree(copy->child2)) {
+    if (isPureTree(copy->child1) && 
+	isPureTree(copy->child2) &&
+	isConstant(copy->child1) &&
+	isConstant(copy->child2)) {
       if (timingString != NULL) pushTimeCounter();
       mpfr_init2(a,tools_precision);
       if (evaluateThingToConstant(a,copy->child1,NULL)) {
@@ -10820,40 +10835,46 @@ node *evaluateThingInner(node *tree) {
     copy->child2 = evaluateThingInner(tree->child2);
     if (isPureTree(copy->child1)) {
       if (isPureTree(copy->child2)) {
-	mpfr_init2(a,tools_precision);
-	if (evaluateThingToConstant(a,copy->child2,NULL)) {
-	  mpfr_init2(b,tools_precision);
-	  if (timingString != NULL) pushTimeCounter();      
-	  if (evaluateFaithful(b, copy->child1, a, tools_precision)) {
-	    freeThing(copy);
-	    copy = makeConstant(b);
-	  } else {
-	    xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	    xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	    yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	    yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	    mpfr_init2(*(xrange.a),tools_precision);
-	    mpfr_init2(*(xrange.b),tools_precision);
-	    mpfr_init2(*(yrange.a),tools_precision);
-	    mpfr_init2(*(yrange.b),tools_precision);
-	    mpfr_set(*(xrange.a),a,GMP_RNDD);
-	    mpfr_set(*(xrange.b),a,GMP_RNDU);
-	    evaluateRangeFunction(yrange, copy->child1, xrange, tools_precision * 256);
-	    freeThing(copy);
-	    copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
-	    mpfr_clear(*(xrange.a));
-	    mpfr_clear(*(xrange.b));
-	    mpfr_clear(*(yrange.a));
-	    mpfr_clear(*(yrange.b));
-	    free(xrange.a);
-	    free(xrange.b);
-	    free(yrange.a);
-	    free(yrange.b);
+	if (isConstant(copy->child2)) {
+	  mpfr_init2(a,tools_precision);
+	  if (evaluateThingToConstant(a,copy->child2,NULL)) {
+	    mpfr_init2(b,tools_precision);
+	    if (timingString != NULL) pushTimeCounter();      
+	    if (evaluateFaithful(b, copy->child1, a, tools_precision)) {
+	      freeThing(copy);
+	      copy = makeConstant(b);
+	    } else {
+	      xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	      xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	      yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	      yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	      mpfr_init2(*(xrange.a),tools_precision);
+	      mpfr_init2(*(xrange.b),tools_precision);
+	      mpfr_init2(*(yrange.a),tools_precision);
+	      mpfr_init2(*(yrange.b),tools_precision);
+	      mpfr_set(*(xrange.a),a,GMP_RNDD);
+	      mpfr_set(*(xrange.b),a,GMP_RNDU);
+	      evaluateRangeFunction(yrange, copy->child1, xrange, tools_precision * 256);
+	      freeThing(copy);
+	      copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	      mpfr_clear(*(xrange.a));
+	      mpfr_clear(*(xrange.b));
+	      mpfr_clear(*(yrange.a));
+	      mpfr_clear(*(yrange.b));
+	      free(xrange.a);
+	      free(xrange.b);
+	      free(yrange.a);
+	      free(yrange.b);
+	    }
+	    if (timingString != NULL) popTimeCounter(timingString);
+	    mpfr_clear(b);
 	  }
-	  if (timingString != NULL) popTimeCounter(timingString);
-	  mpfr_clear(b);
+	  mpfr_clear(a);
+	} else {
+	  tempNode = substitute(copy->child1,copy->child2);
+	  freeThing(copy);
+	  copy = tempNode;
 	}
-	mpfr_clear(a);
       } else {
 	if (isRange(copy->child2)) {
 	  if (timingString != NULL) pushTimeCounter();      
