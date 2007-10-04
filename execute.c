@@ -1684,10 +1684,50 @@ int evaluateThingToPureTree(node **result, node *tree) {
   return 0;
 }
 
+int dirtyIsConstant(node *tree) {
+  mpfr_t tempY, tempX, value, step, pseudozero;
+  int res, i;
+
+  mpfr_init2(tempY, tools_precision);
+  mpfr_init2(tempX, tools_precision);
+  mpfr_init2(value, tools_precision);
+  mpfr_init2(step, tools_precision);
+  mpfr_init2(pseudozero, tools_precision);
+  
+  mpfr_set_d(step,2.0,GMP_RNDN);
+  mpfr_div_ui(step, step, defaultpoints, GMP_RNDN);
+  mpfr_set_d(tempX, -1.0, GMP_RNDN);
+  
+  mpfr_set_d(pseudozero,1.0,GMP_RNDN);
+  mpfr_div_2ui(pseudozero, pseudozero, tools_precision >> 1, GMP_RNDN);
+
+  res = 1;
+  evaluate(value, tree, tempX, tools_precision);
+  mpfr_add(tempX, tempX, step, GMP_RNDN);
+  for (i=1; i<defaultpoints; i++) {
+    evaluate(tempY, tree, tempX, tools_precision);
+    mpfr_sub(tempY, tempY, value, GMP_RNDN);
+    if (mpfr_cmp_abs(tempY, pseudozero) > 0) {
+      res = 0;
+      break;
+    }
+    mpfr_add(tempX, tempX, step, GMP_RNDN);
+  }
+
+  mpfr_clear(pseudozero);
+  mpfr_clear(step);
+  mpfr_clear(value);
+  mpfr_clear(tempX);
+  mpfr_clear(tempY);
+
+  return res;
+}
+
+
 int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
-  node *evaluatedResult, *simplified;
+  node *evaluatedResult, *simplified, *simplified2;
   mpfr_t tempMpfr, tempResult;
-  int res;
+  int res, noMessage;
 
   evaluatedResult = evaluateThing(tree);
 
@@ -1698,6 +1738,13 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
   }
 
   if (isPureTree(evaluatedResult)) {
+
+    if (treeSize(evaluatedResult) <= MAXHORNERTREESIZE) {
+      simplified2 = horner(evaluatedResult);
+      freeThing(evaluatedResult);
+      evaluatedResult = simplified2;
+    }
+
     
     simplified = simplifyTreeErrorfree(evaluatedResult);
     free_memory(evaluatedResult);
@@ -1707,20 +1754,44 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
 
     mpfr_init2(tempResult,mpfr_get_prec(result));
 
+    simplified2 = simplifyTree(simplified);
+
+    if (!isConstant(simplified2)) {
+      if (!dirtyIsConstant(simplified2)) {
+	printMessage(1,"Warning: the given expression should be constant in this context.\n");
+	printMessage(1,"It could not be shown that it is constant. Will refute it.\n");
+	mpfr_clear(tempResult);
+	freeThing(simplified);
+	freeThing(simplified2);
+	return 0;
+      } 
+    }
+
+    freeThing(simplified2);
+
+    noMessage = 0;
+
     if (!isConstant(simplified)) {
-      printMessage(1,"Warning: the given expression does not evaluate to a constant.\n");
-      printMessage(1,"Setting %s to 1 when evaluating.\n",variablename);
+      printMessage(1,"Warning: the given expression should be constant in this context.\nIt could not be shown that it is constant.\n");
+      printMessage(1,"Will set %s to 1 when evaluating the expression to a constant.\n",variablename);
+      noMessage = 1;
     }
 
     res = evaluateFaithful(tempResult, simplified, tempMpfr, defaultprecision);
 
     if (!res) {
-      printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate.\n");
-      printMessage(1,"A faithful evaluation is not possible. Will use a floating-point evaluation.\n");
+      if (!noMessage) {
+	printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate.\n");
+	printMessage(1,"A faithful evaluation is not possible. Will use a floating-point evaluation.\n");
+      } else {
+	printMessage(1,"Warning: the expression could not be faithfully evaluated.\n");
+      }
       evaluate(tempResult, simplified, tempMpfr, defaultprecision * 256);
     } else {
       if (simplified->nodeType != CONSTANT) {
-	printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate.\n");
+	if (!noMessage) {
+	  printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate.\n");
+	}
       }
     }
 
@@ -10339,9 +10410,7 @@ node *evaluateThingInner(node *tree) {
     copy->child1 = evaluateThingInner(tree->child1);
     copy->child2 = evaluateThingInner(tree->child2);
     if (isPureTree(copy->child1) && 
-	isPureTree(copy->child2) &&
-	isConstant(copy->child1) &&
-	isConstant(copy->child2)) {
+	isPureTree(copy->child2)) {
       if (timingString != NULL) pushTimeCounter();
       mpfr_init2(a,tools_precision);
       if (evaluateThingToConstant(a,copy->child1,NULL)) {
