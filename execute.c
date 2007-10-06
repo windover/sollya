@@ -1778,7 +1778,16 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
       noMessage = 1;
     }
 
-    res = evaluateFaithful(tempResult, simplified, tempMpfr, defaultprecision);
+    if (simplified->nodeType == CONSTANT) {
+      if (mpfr_get_prec(*(simplified->value)) > mpfr_get_prec(result)) {
+	mpfr_set_prec(tempResult, mpfr_get_prec(*(simplified->value)));
+	mpfr_set_prec(result, mpfr_get_prec(*(simplified->value)));
+      }
+      mpfr_set(tempResult,*(simplified->value),GMP_RNDN);
+      res = 1;
+    } else {
+      res = evaluateFaithful(tempResult, simplified, tempMpfr, defaultprecision);
+    }
 
     if (!res) {
       if (!noMessage) {
@@ -3610,7 +3619,7 @@ int executeCommandInner(node *tree) {
     mpfr_set_d(b,DEFAULTDIAM,GMP_RNDN);
     if (evaluateThingToConstant(a, tree->child1, &b)) {
       mpfr_clear(statediam);
-      mpfr_init2(statediam,tools_precision);
+      mpfr_init2(statediam,mpfr_get_prec(a));
       mpfr_set(statediam,a,GMP_RNDN);
       printf("The diameter has been set to ");
       printMpfr(a);
@@ -3787,7 +3796,7 @@ int executeCommandInner(node *tree) {
     mpfr_set_d(b,DEFAULTDIAM,GMP_RNDN);
     if (evaluateThingToConstant(a, tree->child1, &b)) {
       mpfr_clear(statediam);
-      mpfr_init2(statediam,tools_precision);
+      mpfr_init2(statediam,mpfr_get_prec(a));
       mpfr_set(statediam,a,GMP_RNDN);
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
@@ -10918,8 +10927,8 @@ node *evaluateThingInner(node *tree) {
 	      xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	      yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	      yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	      mpfr_init2(*(xrange.a),tools_precision);
-	      mpfr_init2(*(xrange.b),tools_precision);
+	      mpfr_init2(*(xrange.a),mpfr_get_prec(a));
+	      mpfr_init2(*(xrange.b),mpfr_get_prec(a));
 	      mpfr_init2(*(yrange.a),tools_precision);
 	      mpfr_init2(*(yrange.b),tools_precision);
 	      mpfr_set(*(xrange.a),a,GMP_RNDD);
@@ -11718,7 +11727,7 @@ node *evaluateThingInner(node *tree) {
     if (isPureTree(copy->child1)) {
       mpfr_init2(a,tools_precision);
       if (evaluateThingToConstant(a,copy->child1,NULL)) {
-	mpfr_init2(b,tools_precision);
+	mpfr_init2(b,mpfr_get_prec(a));
 	if (timingString != NULL) pushTimeCounter();      
 	if (mpfr_mant_exp(b, &expo, a) == 0) {
 	  tempNode = makeConstant(b);
@@ -11736,7 +11745,7 @@ node *evaluateThingInner(node *tree) {
     if (isPureTree(copy->child1)) {
       mpfr_init2(a,tools_precision);
       if (evaluateThingToConstant(a,copy->child1,NULL)) {
-	mpfr_init2(b,tools_precision);
+	mpfr_init2(b,mpfr_get_prec(a));
 	if (timingString != NULL) pushTimeCounter();      
 	if (mpfr_mant_exp(b, &expo, a) == 0) {
 	  mpfr_init2(c,sizeof(expo) * 8 + 5);
@@ -11757,7 +11766,7 @@ node *evaluateThingInner(node *tree) {
     if (isPureTree(copy->child1)) {
       mpfr_init2(a,tools_precision);
       if (evaluateThingToConstant(a,copy->child1,NULL)) {
-	mpfr_init2(b,tools_precision);
+	mpfr_init2(b,mpfr_get_prec(a));
 	if (timingString != NULL) pushTimeCounter();      
 	if (mpfr_mant_exp(b, &expo, a) == 0) {
 	  if (mpfr_zero_p(b)) {
