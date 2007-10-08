@@ -578,7 +578,7 @@ char *sPrintBinary(mpfr_t x) {
     printf("Error: unable to get a string for the given number.\n");
     recoverFromError();
   } else {
-    formatted = safeCalloc(strlen(raw) + 2, sizeof(char));
+    formatted = safeCalloc(strlen(raw) + 3, sizeof(char));
     temp1 = raw; temp2 = formatted;
     if (negative) {
       *temp2 = '-';
