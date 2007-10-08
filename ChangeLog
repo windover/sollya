@@ -1,3 +1,31 @@
+2007-10-08 12:20  clauter
+
+	* general.c:
+
+	  Changed slightly malloc.
+
+2007-10-08 12:19  clauter
+
+	* general.c, general.h, xml.c:
+
+	  Changed slightly malloc use.
+
+2007-10-08 10:17  clauter
+
+	* ChangeLog, configure.ac:
+
+	  Temporarily remove test for malloc and realloc in configure.ac
+	  for compatibility issues.
+
+2007-10-06 19:31  clauter
+
+	* execute.c:
+
+	  Constants (or constant expressions once evaluate to a constant)
+	  retain their precisions even on range constructions.
+	  Nevertheless, complex types as lists and ranges may be rounded
+	  down at their last evaluation.
+
 2007-10-04 15:32  clauter
 
 	* ChangeLog:
