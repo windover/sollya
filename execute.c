@@ -2585,6 +2585,7 @@ void autoprint(node *thing) {
 	  printValue(&a,tools_precision);
 	}
 	mpfr_clear(a);
+	mpfr_clear(b);
       }
     } else {
       tempNode3 = simplifyTree(tempNode2);

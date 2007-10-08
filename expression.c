@@ -590,7 +590,7 @@ char *sPrintBinary(mpfr_t x) {
       *temp2 = *temp1;
       temp2++; temp1++;
     }
-    str3 = (char *) safeCalloc(strlen(formatted)+1,sizeof(char));
+    str3 = (char *) safeCalloc(strlen(formatted)+2,sizeof(char));
     removeTrailingZeros(str3,formatted);    
     if (!mpfr_zero_p(x)) {
       if (mpfr_number_p(x)) {
