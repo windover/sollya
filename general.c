@@ -122,7 +122,10 @@ void *safeCalloc (size_t nmemb, size_t size) {
 
 void *safeMalloc (size_t size) {
   void *ptr;
-  ptr = malloc(size);
+  if (size == 0) 
+    ptr = malloc(1);
+  else
+    ptr = malloc(size);
   if (ptr == NULL) {
     fprintf(stderr,"Error: malloc could not succeed. No more memory left.\n");
     exit(1);
