@@ -60,6 +60,8 @@ extern mpfr_t statediam;
 extern jmp_buf recoverEnvironmentError;
 extern node *parsedThingIntern;
 
+extern void *rpl_malloc(size_t n);
+
 int general(int argc, char *argv[]);
 void printPrompt(void);
 void recoverFromError(void);

@@ -446,7 +446,7 @@ if (xmlTextReaderNodeType(reader)==1)
   {
        if (!strcmp((char*)xml_name, "apply"))
     {
-    mthis->child=malloc(sizeof(nodemath));
+    mthis->child=safeMalloc(sizeof(nodemath));
     mthis->child->parent=mthis;
     mthis=mthis->child;
     mthis->child=0;
