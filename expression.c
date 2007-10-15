@@ -432,7 +432,7 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
 	}
 	expo--;
 	if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
-	  printMessage(1,"\nWarning: rounding occured during displaying a value. Values displayed may be wrong.\n");
+	  printMessage(1,"\nWarning: rounding occurred during displaying a value. Values displayed may be wrong.\n");
 	}
 	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
 	str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
@@ -668,7 +668,7 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
 	}
 	expo--;
 	if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
-	  printMessage(1,"\nWarning: rounding occured during displaying a value. Values displayed may be wrong.\n");
+	  printMessage(1,"\nWarning: rounding occurred during displaying a value. Values displayed may be wrong.\n");
 	}
 	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
 	str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
@@ -1035,7 +1035,7 @@ void fprintValue(FILE *fd, mpfr_t value) {
       }
       expo--;
       if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
-	printMessage(1,"\nWarning: upon printing to a file: rounding occured. Values printed may be wrong.\n");
+	printMessage(1,"\nWarning: upon printing to a file: rounding occurred. Values printed may be wrong.\n");
       }
       str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
       str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
@@ -1090,7 +1090,7 @@ void fprintValueForXml(FILE *fd, mpfr_t value) {
 	}
 	expo--;
 	if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
-	  printMessage(1,"\nWarning: upon printing to a file: rounding occured. Values printed may be wrong.\n");
+	  printMessage(1,"\nWarning: upon printing to a file: rounding occurred. Values printed may be wrong.\n");
 	}
 	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
 	str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
@@ -5600,15 +5600,15 @@ int getDegreeUnsafe(node *tree) {
     {
       l = getDegreeUnsafe(tree->child1);
       if (tree->child2->nodeType != CONSTANT) {
-	fprintf(stderr,"Error: getDegreeUnsafe: an error occured. The exponent in a power operator is not constant.\n");
+	fprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is not constant.\n");
 	exit(1);
       }
       if (!mpfr_integer_p(*(tree->child2->value))) {
-	fprintf(stderr,"Error: getDegreeUnsafe: an error occured. The exponent in a power operator is not integer.\n");
+	fprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is not integer.\n");
 	exit(1);
       }
       if (mpfr_sgn(*(tree->child2->value)) < 0) {
-	fprintf(stderr,"Error: getDegreeUnsafe: an error occured. The exponent in a power operator is negative.\n");
+	fprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is negative.\n");
 	exit(1);
       }
 
@@ -5630,7 +5630,7 @@ int getDegreeUnsafe(node *tree) {
     return getDegreeUnsafe(tree->child1);
     break;
   default:
-    fprintf(stderr,"Error: getDegreeUnsafe: an error occured on handling the expression tree\n");
+    fprintf(stderr,"Error: getDegreeUnsafe: an error occurred on handling the expression tree\n");
     exit(1);
   }
 }
@@ -5662,7 +5662,7 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     coeffVal = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*coeffVal,tools_precision);
     if(mpfr_set_z(*coeffVal,coeffGMP,GMP_RNDN) != 0) {
-      printMessage(1,"Warning: on expanding a power operator a rounding occured when calculating a binomial coefficient.\n");
+      printMessage(1,"Warning: on expanding a power operator a rounding occurred when calculating a binomial coefficient.\n");
       printMessage(1,"Try to increase the working precision.\n");
     }
     if ((s < 0) && ((i & 1) != 0)) {
@@ -5679,7 +5679,7 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*mpfr_temp,tools_precision);
     if(mpfr_set_ui(*mpfr_temp,i,GMP_RNDN) != 0) {
-      printMessage(1,"Warning: on expanding a power operator a rounding occured when calculating an exponent constant.\n");
+      printMessage(1,"Warning: on expanding a power operator a rounding occurred when calculating an exponent constant.\n");
       printMessage(1,"Try to increase the working precision.\n");
     }
     tempNode->value = mpfr_temp;
@@ -5692,7 +5692,7 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*mpfr_temp,tools_precision);
     if(mpfr_set_ui(*mpfr_temp,((unsigned int) n) - i,GMP_RNDN) != 0) {
-      printMessage(1,"Warning: on expanding a power operator a rounding occured when calculating an exponent constant.\n");
+      printMessage(1,"Warning: on expanding a power operator a rounding occurred when calculating an exponent constant.\n");
       printMessage(1,"Try to increase the working precision.\n");
     }
     tempNode->value = mpfr_temp;
@@ -5765,15 +5765,15 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
     {
       left = expandPowerInPolynomialUnsafe(tree->child1);
       if (tree->child2->nodeType != CONSTANT) {
-	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is not constant.\n");
+	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. The exponent in a power operator is not constant.\n");
 	exit(1);
       }
       if (!mpfr_integer_p(*(tree->child2->value))) {
-	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is not integer.\n");
+	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. The exponent in a power operator is not integer.\n");
 	exit(1);
       }
       if (mpfr_sgn(*(tree->child2->value)) < 0) {
-	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occured. The exponent in a power operator is negative.\n");
+	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. The exponent in a power operator is negative.\n");
 	exit(1);
       }
 
@@ -5781,7 +5781,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
       mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
       mpfr_set_si(temp,r,GMP_RNDN);
       if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
-	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occured. Tried to expand an expression using a power operator with an exponent\n");
+	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. Tried to expand an expression using a power operator with an exponent\n");
 	fprintf(stderr,"which cannot be represented on a integer variable.\n");
 	mpfr_clear(temp);
 	exit(1);
@@ -5891,7 +5891,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	default:
 	  if (isConstant(left)) return copyTree(tree);
 
-	  fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occured on handling the expanded expression subtree\n");
+	  fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred on handling the expanded expression subtree\n");
 	  exit(1);
 	}
 	copy = expandPowerInPolynomialUnsafe(tempTree);
@@ -5922,7 +5922,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 
     if (isConstant(tree)) return copyTree(tree);
 
-    fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occured on handling the expression tree\n");
+    fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred on handling the expression tree\n");
     exit(1);
   }
 }
@@ -6355,7 +6355,7 @@ node* expandPolynomialUnsafe(node *tree) {
 	  return copy;
 	}
       } else {
-	fprintf(stderr,"Error: expandPolynomialUnsafe: an error occured on handling the MUL left rewritten expression subtree\n");
+	fprintf(stderr,"Error: expandPolynomialUnsafe: an error occurred on handling the MUL left rewritten expression subtree\n");
 	exit(1);
       }
     }
@@ -6474,7 +6474,7 @@ node* expandPolynomialUnsafe(node *tree) {
       if (isConstant(left)) {
 	return copyTree(tree);
       } else {
-	fprintf(stderr,"Error: expandPolynomialUnsafe: an error occured on handling the DIV left rewritten expression subtree\n");
+	fprintf(stderr,"Error: expandPolynomialUnsafe: an error occurred on handling the DIV left rewritten expression subtree\n");
 	exit(1);
       }
     }
@@ -6491,7 +6491,7 @@ node* expandPolynomialUnsafe(node *tree) {
     if (isConstant(tree)) {
       return copyTree(tree);
     } else {
-      fprintf(stderr,"Error: expandPolynomialUnsafe: an error occured on handling the expression tree\n");
+      fprintf(stderr,"Error: expandPolynomialUnsafe: an error occurred on handling the expression tree\n");
       exit(1);
     }
   }
@@ -6935,7 +6935,7 @@ node* getCoefficientsInMonomialUnsafe(node *polynom) {
     return coeffs;
   }
 
-  fprintf(stderr,"Error: getCoefficientsInMonomialUnsafe: an error occured. The expression does not have the correct monomial form.\n");
+  fprintf(stderr,"Error: getCoefficientsInMonomialUnsafe: an error occurred. The expression does not have the correct monomial form.\n");
   exit(1);
   return NULL;
 }
@@ -7231,7 +7231,7 @@ node* hornerPolynomialUnsafe(node *tree) {
 
   if (monomials[degree] == NULL) {
     fprintf(stderr,
-"Error: hornerPolynomialUnsafe: an error occured. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
+"Error: hornerPolynomialUnsafe: an error occurred. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
     exit(1);
     return NULL;
   }
@@ -7260,7 +7260,7 @@ node* hornerPolynomialUnsafe(node *tree) {
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,e,GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: rounding occured on representing a monomial power exponent with %d bits.\n",
+	  printMessage(1,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
 		 (int) tools_precision);
 	  printMessage(1,"Try to increase the precision.\n");
 	}
@@ -7632,7 +7632,7 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
 	value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,mpfr_get_prec(*(monomials[i]->value))+(sizeof(int)*8));
 	if (mpfr_mul_si(*value,*(monomials[i]->value),i,GMP_RNDN) != 0)
-	  printMessage(1,"Warning: rounding occured while differentiating a polynomial in Horner form.\n");
+	  printMessage(1,"Warning: rounding occurred while differentiating a polynomial in Horner form.\n");
 	mpfr_clear(*(monomials[i]->value));
 	free(monomials[i]->value);
 	monomials[i]->value = value;
@@ -7645,7 +7645,7 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
 	temp->child1->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*(temp->child1->value),tools_precision);
 	if (mpfr_set_si(*(temp->child1->value),i,GMP_RNDN) != 0) 
-	  printMessage(1,"Warning: on differentiating a polynomial in Horner form rounding occured while representing the degree of a monomial on a constant of the given precision\n");
+	  printMessage(1,"Warning: on differentiating a polynomial in Horner form rounding occurred while representing the degree of a monomial on a constant of the given precision\n");
 	temp->child2 = monomials[i];
       }
       monomials[i-1] = temp;
@@ -7680,7 +7680,7 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,e,GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: rounding occured on representing a monomial power exponent with %d bits.\n",
+	  printMessage(1,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
 		 (int) tools_precision);
 	  printMessage(1,"Try to increase the precision.\n");
 	}
@@ -7760,7 +7760,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
   
     if (monomials[degree] == NULL) {
       fprintf(stderr,
-	     "Error: differentiatePolynomialUnsafe: an error occured. The coefficient of a monomial with the polynomial's degree exponent is zero.\n"
+	     "Error: differentiatePolynomialUnsafe: an error occurred. The coefficient of a monomial with the polynomial's degree exponent is zero.\n"
 	     );
       exit(1);
       return NULL;
@@ -7775,7 +7775,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,degree,GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: rounding occured on differentiating a polynomial. A constant could not be written on %d bits.\n",
+	  printMessage(1,"Warning: rounding occurred on differentiating a polynomial. A constant could not be written on %d bits.\n",
 		 (int) tools_precision);
 	  printMessage(1,"Try to increase the precision.\n");
 	}
@@ -7790,7 +7790,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,degree-1,GMP_RNDN) != 0) {
 	  printMessage(1,
-		 "Warning: rounding occured on differentiating a polynomial. An exponent constant could not be written on %d bits.\n",
+		 "Warning: rounding occurred on differentiating a polynomial. An exponent constant could not be written on %d bits.\n",
 		 (int) tools_precision);
 	  printMessage(1,"Try to increase the precision.\n");
 	}
@@ -7813,7 +7813,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,degree,GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: rounding occured on differentiating a polynomial. A constant could not be written on %d bits.\n",
+	  printMessage(1,"Warning: rounding occurred on differentiating a polynomial. A constant could not be written on %d bits.\n",
 		 (int) tools_precision);
 	  printMessage(1,"Try to increase the precision.\n");
 	}
@@ -7839,7 +7839,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	  value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*value,tools_precision);
 	  if (mpfr_set_si(*value,i,GMP_RNDN) != 0) {
-	    printMessage(1,"Warning: rounding occured on differentiating a polynomial. A constant could not be written on %d bits.\n",
+	    printMessage(1,"Warning: rounding occurred on differentiating a polynomial. A constant could not be written on %d bits.\n",
 		   (int) tools_precision);
 	    printMessage(1,"Try to increase the precision.\n");
 	  }
@@ -7854,7 +7854,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	  mpfr_init2(*value,tools_precision);
 	  if (mpfr_set_si(*value,i-1,GMP_RNDN) != 0) {
 	    printMessage(1,
-		   "Warning: rounding occured on differentiating a polynomial. An exponent constant could not be written on %d bits.\n",
+		   "Warning: rounding occurred on differentiating a polynomial. An exponent constant could not be written on %d bits.\n",
 		   (int) tools_precision);
 	    printMessage(1,"Try to increase the precision.\n");
 	  }
@@ -9079,7 +9079,7 @@ int readDecimalConstant(mpfr_t result, char *str) {
   mpfr_set_str(b,str,10,GMP_RNDU);    
   if (mpfr_cmp(a,b) != 0) {
     printMessage(1,
-		 "Warning: Rounding occured when converting the constant \"%s\" to floating-point with %d bits.\n",
+		 "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
 		 str,(int) tools_precision);
     printMessage(1,"If safe computation is needed, try to increase the precision.\n");
     ternary = mpfr_set_str(a,str,10,GMP_RNDN);

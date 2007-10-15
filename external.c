@@ -162,7 +162,7 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
     if (fork()==0) {
       daemon(1,1);
       execlp("gnuplot", "gnuplot", "-persist", gplotname, NULL);
-      perror("An error occured when calling gnuplot ");
+      perror("An error occurred when calling gnuplot ");
       exit(1);
     }
     else wait(NULL);
@@ -170,7 +170,7 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
   else { /* Case we have an output: no daemon */
     if (fork()==0) {
       execlp("gnuplot", "gnuplot", "-persist", gplotname, NULL);
-      perror("An error occured when calling gnuplot ");
+      perror("An error occurred when calling gnuplot ");
       exit(1);
     }
     else {

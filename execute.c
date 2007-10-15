@@ -3085,7 +3085,7 @@ int executeCommandInner(node *tree) {
   case PRINTEXPANSION:
     if (evaluateThingToPureTree(&tempNode, tree->child1)) {
       if (printPolynomialAsDoubleExpansion(tempNode, tools_precision) == 1) {
-	printMessage(1,"\nWarning: rounding occured while printing.");
+	printMessage(1,"\nWarning: rounding occurred while printing.");
       }
       printf("\n");
       freeThing(tempNode);
@@ -3576,7 +3576,7 @@ int executeCommandInner(node *tree) {
 	if (evaluateThingToString(&tempString, tree->child1)) {
 	  tempLibraryFunction = bindFunction(tempString, tree->string);
 	  if(tempLibraryFunction == NULL) {
-	    printMessage(1,"Warning: an error occured. The last command will have no effect.\n");
+	    printMessage(1,"Warning: an error occurred. The last command will have no effect.\n");
 	  }
 	} else {
 	  printMessage(1,"Warning: the expression given does not evaluate to a string.\n");
@@ -10279,7 +10279,7 @@ node *evaluateThingInner(node *tree) {
     mpfr_set_str(b,tree->string,10,GMP_RNDU);    
     if (mpfr_cmp(a,b) != 0) {
       printMessage(1,
-		   "Warning: Rounding occured when converting the constant \"%s\" to floating-point with %d bits.\n",
+		   "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
 		   tree->string,(int) tools_precision);
       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
       mpfr_set_str(a,tree->string,10,GMP_RNDN);
@@ -10296,7 +10296,7 @@ node *evaluateThingInner(node *tree) {
     mpfr_init2(a,tools_precision);
     if (!readDyadic(a,tree->string)) {
       printMessage(1,
-		   "Warning: Rounding occured when converting the dyadic constant \"%s\" to floating-point with %d bits.\n",
+		   "Warning: Rounding occurred when converting the dyadic constant \"%s\" to floating-point with %d bits.\n",
 		   tree->string,(int) tools_precision);
       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
     }
@@ -10311,7 +10311,7 @@ node *evaluateThingInner(node *tree) {
     mpfr_init2(a,tools_precision);
     if (!readHexa(a,tree->string)) {
       printMessage(1,
-		   "Warning: Rounding occured when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
+		   "Warning: Rounding occurred when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
 		   tree->string,(int) tools_precision);
       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
     }
@@ -10329,7 +10329,7 @@ node *evaluateThingInner(node *tree) {
     mpfr_set_str(b,tree->string,2,GMP_RNDU);    
     if (mpfr_cmp(a,b) != 0) {
       printMessage(1,
-		   "Warning: Rounding occured when converting the binary constant \"%s_2\" to floating-point with %d bits.\n",
+		   "Warning: Rounding occurred when converting the binary constant \"%s_2\" to floating-point with %d bits.\n",
 		   tree->string,(int) tools_precision);
       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
       mpfr_set_str(a,tree->string,2,GMP_RNDN);

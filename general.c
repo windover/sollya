@@ -636,7 +636,7 @@ int general(int argc, char *argv[]) {
   initToolDefaults();
 
   if (setjmp(PARIENVIRONMENT)) {
-    fprintf(stderr,"Error: an error occured in the PARI subsystem.\n");
+    fprintf(stderr,"Error: an error occurred in the PARI subsystem.\n");
     if (exitInsteadOfRecover) {
       fprintf(stderr,"Error: the recover environment has not been initialized. Exiting.\n");
       exit(1);

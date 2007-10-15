@@ -40,13 +40,13 @@ GEN mpfr_to_PARI(mpfr_t x) {
   mpz_export(&(res[2]),NULL,1,BITS_IN_LONG/8,0,0,m);
 
   if ((long int)(prec)+e-1 < -(long int)(HIGHEXPOBIT)) {
-    printMessage(1,"Warning: an underflow occured during a conversion.\n");
+    printMessage(1,"Warning: an underflow occurred during a conversion.\n");
     setsigne(res,0);
     res[2]=0;
   }
   else {
     if ((long int)(prec)+e-1 >= (long int)(HIGHEXPOBIT)) {
-      fprintf(stderr,"Error: an overflow occured during a conversion.\n");
+      fprintf(stderr,"Error: an overflow occurred during a conversion.\n");
       recoverFromError();
     }
     else {

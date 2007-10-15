@@ -418,7 +418,7 @@ constant: CONSTTOKEN
 			     mpfr_set_str(*mpfr_temp2,$1,10,GMP_RNDU);
 			     if (mpfr_cmp(*mpfr_temp,*mpfr_temp2) != 0) {
 			       printMessage(1,
-                            "Warning: Rounding occured when converting constant \"%s\" to floating-point with %d bits.\n",
+                            "Warning: Rounding occurred when converting constant \"%s\" to floating-point with %d bits.\n",
 				      $1,(int) tools_precision);
 			       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
 			       mpfr_set_str(*mpfr_temp,$1,10,GMP_RNDN);
@@ -433,13 +433,13 @@ constant: CONSTTOKEN
 			     mpfr_init2(*mpfr_temp,tools_precision);
 			     if (!readDyadic(*mpfr_temp,$1)) {
 			       printMessage(1,
-                            "Warning: Rounding occured when converting the dyadic constant \"%s\" to floating-point with %d bits.\n",
+                            "Warning: Rounding occurred when converting the dyadic constant \"%s\" to floating-point with %d bits.\n",
 				      $1,(int) tools_precision);
 			       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
 			     }
 			     if (!mpfr_number_p(*mpfr_temp)) {
 			       fprintf(stderr,
-			  "Error: overflow occured during the conversion of the dyadic constant \"%s\". Will abort the computation.\n",$1);
+			  "Error: overflow occurred during the conversion of the dyadic constant \"%s\". Will abort the computation.\n",$1);
 			       recoverFromError();
 			     }
 			     $$ = mpfr_temp;
@@ -453,7 +453,7 @@ constant: CONSTTOKEN
 			     mpfr_set_str(*mpfr_temp2,$1,2,GMP_RNDU);
 			     if (mpfr_cmp(*mpfr_temp,*mpfr_temp2) != 0) {
 			       printMessage(1,
-                            "Warning: Rounding occured when converting constant \"%s_2\" to floating-point with %d bits.\n",
+                            "Warning: Rounding occurred when converting constant \"%s_2\" to floating-point with %d bits.\n",
 				      $1,(int) tools_precision);
 			       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
 			       mpfr_set_str(*mpfr_temp,$1,10,GMP_RNDN);
@@ -468,13 +468,13 @@ constant: CONSTTOKEN
 			     mpfr_init2(*mpfr_temp,tools_precision);
 			     if (!readHexa(*mpfr_temp,$1)) {
 			       printMessage(1,
-                            "Warning: Rounding occured when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
+                            "Warning: Rounding occurred when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
 				      $1,(int) tools_precision);
 			       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
 			     }
 			     if (!mpfr_number_p(*mpfr_temp)) {
 			       fprintf(stderr,
-			  "Error: overflow occured during the conversion of the hexadecimal constant \"%s\". Will abort the computation.\n",$1);
+			  "Error: overflow occurred during the conversion of the hexadecimal constant \"%s\". Will abort the computation.\n",$1);
 			       recoverFromError();
 			     }
 	                     $$ = mpfr_temp;

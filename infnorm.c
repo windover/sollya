@@ -2404,7 +2404,7 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
     }
 
     if (mpfr_nan_p(tl) || mpfr_nan_p(tr)) {
-      printMessage(1,"Warning: NaNs occured during the interval evaluation of the zeros of the derivative.\n");
+      printMessage(1,"Warning: NaNs occurred during the interval evaluation of the zeros of the derivative.\n");
     }
 
     mpfr_min(outerLeft,outerLeft,tl,GMP_RNDD);

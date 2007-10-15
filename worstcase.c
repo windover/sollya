@@ -24,7 +24,7 @@ int mpfrToInt(int *res, mpfr_t val) {
   mpfr_init2(verg,mpfr_get_prec(val));
 
   if (mpfr_set_si(verg,*res,GMP_RNDN) != 0) {
-    printMessage(1,"Warning: rounding occured on reconverting back an integer variable.\n");
+    printMessage(1,"Warning: rounding occurred on reconverting back an integer variable.\n");
     *res = 0;
     mpfr_clear(verg);
     return 0;
@@ -56,20 +56,20 @@ void printWorstCases(node *func,
 	mpfrToInt(&outputprecision, outputprec) &&
 	mpfrToInt(&firstexponent, *(inputExponRange.a)) &&
 	mpfrToInt(&lastexponent, *(inputExponRange.b)))) {
-    printMessage(1,"Warning: an error occured. The last command will not succeed. This is harmless.\n");
+    printMessage(1,"Warning: an error occurred. The last command will not succeed. This is harmless.\n");
     return;
   }
 
   if ((inputprecision < 10) || (outputprecision < 10)) {
     printMessage(1,"Warning: input and outputprecision must be greater or equal to 10.\n");
-    printMessage(1,"Warning: an error occured. The last command will not succeed. This is harmless.\n");
+    printMessage(1,"Warning: an error occurred. The last command will not succeed. This is harmless.\n");
     return;
   }
 
   if ((prec < (mp_prec_t) inputprecision) || (prec < (mp_prec_t) outputprecision)) {
     printMessage(1,"Warning: the internal precision is less than the input or output precision.\n");
     printMessage(1,"Try to increase the tool's precision.\n");
-    printMessage(1,"Warning: an error occured. The last command will not succeed. This is harmless.\n");
+    printMessage(1,"Warning: an error occurred. The last command will not succeed. This is harmless.\n");
     return;
   }
 
@@ -82,7 +82,7 @@ void printWorstCases(node *func,
   if (mpfr_cmp(temp,temp2) >= 0) {
     printMessage(1,"Warning: the epsilon asked is greater than half an ulp of a %d bit format.\n",
 		 outputprecision);
-    printMessage(1,"Warning: an error occured. The last command will not succeed. This is harmless.\n");
+    printMessage(1,"Warning: an error occurred. The last command will not succeed. This is harmless.\n");
     mpfr_clear(temp);
     mpfr_clear(temp2);
     return;

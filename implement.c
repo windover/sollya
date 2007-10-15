@@ -2035,16 +2035,16 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 	format = 3;
       }
       if (mpfr_set(temp,coefficients[i],GMP_RNDN) != 0) {
-	printMessage(1,"Warning: a rounding occured on internal handling (on copying) of the %dth coefficient.\n");
+	printMessage(1,"Warning: a rounding occurred on internal handling (on copying) of the %dth coefficient.\n");
 	res = 0;
       }
       current = mpfr_get_d(temp,GMP_RNDN);
       if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
-	printMessage(1,"Warning: a rounding occured on internal handling (on recasting) of the %dth coefficient.\n");
+	printMessage(1,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
 	res = 0;
       }
       if (mpfr_sub(temp,temp,temp2,GMP_RNDN) != 0) {
-	printMessage(1,"Warning: a rounding occured on internal handling (on a substraction) of the %dth coefficient.\n");
+	printMessage(1,"Warning: a rounding occurred on internal handling (on a substraction) of the %dth coefficient.\n");
 	res = 0;
       }
       fprintf(fd,"#define %s_coeff_%dh %1.80e\n",name,i,current);
@@ -2052,11 +2052,11 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
       current = mpfr_get_d(temp,GMP_RNDN);
       if (current != 0.0) {
 	if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: a rounding occured on internal handling (on recasting) of the %dth coefficient.\n");
+	  printMessage(1,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
 	  res = 0;
 	}
 	if (mpfr_sub(temp,temp,temp2,GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: a rounding occured on internal handling (on a substraction) of the %dth coefficient.\n");
+	  printMessage(1,"Warning: a rounding occurred on internal handling (on a substraction) of the %dth coefficient.\n");
 	  res = 0;
 	}
 	fprintf(fd,"#define %s_coeff_%dm %1.80e\n",name,i,current);
@@ -2064,11 +2064,11 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 	current = mpfr_get_d(temp,GMP_RNDN);
 	if (current != 0.0) {
 	  if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
-	    printMessage(1,"Warning: a rounding occured on internal handling (on recasting) of the %dth coefficient.\n");
+	    printMessage(1,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
 	    res = 0;
 	  }
 	  if (mpfr_sub(temp,temp,temp2,GMP_RNDN) != 0) {
-	    printMessage(1,"Warning: a rounding occured on internal handling (on a substraction) of the %dth coefficient.\n");
+	    printMessage(1,"Warning: a rounding occurred on internal handling (on a substraction) of the %dth coefficient.\n");
 	    res = 0;
 	  }
 	  fprintf(fd,"#define %s_coeff_%dl %1.80e\n",name,i,current); 
@@ -5845,7 +5845,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   getCoefficients(&degree,&coefficients,simplifiedFunc);
 
   if (degree < 0) {
-    fprintf(stderr,"Error: implementpoly: an error occured. Could not extract the coefficients of the given polynomial.\n");
+    fprintf(stderr,"Error: implementpoly: an error occurred. Could not extract the coefficients of the given polynomial.\n");
     exit(1);
   }
 
@@ -5863,7 +5863,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
       tempTree = simplifyTreeErrorfree(coefficients[i]);
       free_memory(coefficients[i]);
       if (!isConstant(tempTree)) {
-	fprintf(stderr,"Error: implementpoly: an error occured. A polynomial coefficient is not constant.\n");
+	fprintf(stderr,"Error: implementpoly: an error occurred. A polynomial coefficient is not constant.\n");
 	exit(1);
       }
       if (tempTree->nodeType != CONSTANT) {
@@ -5875,7 +5875,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
 	fpCoeffRoundAutomatically[i] = 1;
       } else {
 	if (mpfr_set(fpCoefficients[i],*(tempTree->value),GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: rounding occured on internal handling of a coefficient of the given polynomial.\n");
+	  printMessage(1,"Warning: rounding occurred on internal handling of a coefficient of the given polynomial.\n");
 	  fpCoeffRoundAutomatically[i] = 1;
 	}
       }

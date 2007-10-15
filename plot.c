@@ -124,7 +124,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   ad = mpfr_get_d(a, GMP_RNDD);
   bd = mpfr_get_d(b, GMP_RNDU);
   if ((!(ad-ad == 0.0)) || (!(bd-bd == 0.0)))
-    printMessage(1, "Warning: an overflow occured in a conversion mpfr to double while plotting.\n");
+    printMessage(1, "Warning: an overflow occurred in a conversion mpfr to double while plotting.\n");
   if (!(ad-ad == 0.0))
     ad = -MAX_VALUE_GNUPLOT;
   if (!(bd-bd == 0.0))
@@ -198,7 +198,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   fclose(file);
 
   if (overflow)
-    printMessage(1, "Warning: an overflow occured in a conversion mpfr to double while plotting.\n");
+    printMessage(1, "Warning: an overflow occurred in a conversion mpfr to double while plotting.\n");
 
   mpfr_clear(x); mpfr_clear(y); mpfr_clear(step);
 
@@ -210,7 +210,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
     if (fork()==0) {
       daemon(1,1);
       execlp("gnuplot", "gnuplot", "-persist", gplotname, NULL);
-      perror("An error occured when calling gnuplot ");
+      perror("An error occurred when calling gnuplot ");
       exit(1);
     }
     else wait(NULL);
@@ -218,7 +218,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   else { /* Case we have an output: no daemon */
     if (fork()==0) {
       execlp("gnuplot", "gnuplot", "-persist", gplotname, NULL);
-      perror("An error occured when calling gnuplot ");
+      perror("An error occurred when calling gnuplot ");
       exit(1);
     }
     else {

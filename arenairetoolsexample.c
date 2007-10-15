@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
   if (setjmp(recover)) {
     /* If we are here, we have come back from an error in the library */
 
-    fprintf(stderr,"An error occured in the arenairetools library.\n");
+    fprintf(stderr,"An error occurred in the arenairetools library.\n");
     finishTool();
     return 1;
   }
