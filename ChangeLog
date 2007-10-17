@@ -1,3 +1,10 @@
+2007-10-17 15:36  clauter
+
+	* ChangeLog, execute.c, execute.h, internlexer.l, internparser.y,
+	  lexer.l, parser.y:
+
+	  Added isbound.
+
 2007-10-15 15:05  schevill
 
 	* arenairetoolsexample.c, double.c, execute.c, expression.c,

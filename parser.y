@@ -2008,6 +2008,10 @@ help:                   CONSTANTTOKEN
                           {
 			    printf("execute(string): executes an %s script contained in a file named string.\n",PACKAGE_NAME);
                           }    
+                      | ISBOUNDTOKEN
+                          {
+			    printf("isbound(identifier): returns a boolean indicating if identifier is bound.\n");
+                          }   
                       | VERSIONTOKEN 
                           {
 			    printf("Prints the version of the software.\n");
@@ -2114,6 +2118,7 @@ help:                   CONSTANTTOKEN
 			    printf("- inf\n");
 			    printf("- infnorm\n");
 			    printf("- integral\n");
+			    printf("- isbound\n");
 			    printf("- isevaluable\n");
 			    printf("- length\n");
 			    printf("- library\n");
