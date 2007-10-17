@@ -1,3 +1,23 @@
+2007-10-15 15:05  schevill
+
+	* arenairetoolsexample.c, double.c, execute.c, expression.c,
+	  external.c, general.c, implement.c, infnorm.c, miniparser.y,
+	  pari_utils.c, plot.c, taylor.c, worstcase.c: changed *occured*
+	  into *occurred* everywhere
+
+2007-10-08 13:58  clauter
+
+	* expression.c:
+
+	  Corrected a bug in string length computation that could generate
+	  a segmentation fault.
+
+2007-10-08 12:47  clauter
+
+	* ChangeLog, execute.c, expression.c:
+
+	  Slight changes.
+
 2007-10-08 12:32  clauter
 
 	* ChangeLog:

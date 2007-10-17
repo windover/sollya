@@ -309,6 +309,7 @@ EXECUTE         "execute"
 
 VERSION         "version"
 
+ISBOUND         "isbound"
 
 %%
 
@@ -554,6 +555,7 @@ VERSION         "version"
 {DECIMAL}   				    { newTokenLexed(); return DECIMALTOKEN; }				 
 {ERROR}   				    { newTokenLexed(); return ERRORTOKEN; }				 	 
 {READFILE}   				    { newTokenLexed(); return READFILETOKEN; }				 	       
+{ISBOUND}   				    { newTokenLexed(); return ISBOUNDTOKEN; }				 	       
 
 {QUIT}            			    {     
                                               newTokenLexed(); 

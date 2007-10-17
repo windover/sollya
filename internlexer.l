@@ -306,6 +306,8 @@ ROUNDCORRECTLY  "roundcorrectly"
 
 EXECUTE         "execute"
 
+ISBOUND         "isbound"
+
 %%
 
 %{
@@ -482,6 +484,8 @@ EXECUTE         "execute"
 {DECIMAL}   				    {  return DECIMALTOKEN; }				 
 {ERROR}   				    {  return ERRORTOKEN; }				 	 
 {READFILE}   				    {  return READFILETOKEN; }				 	       		  
+{ISBOUND}   				    {  return ISBOUNDTOKEN; }				 	       
+
 {QUIT}             			    {     
 			                        return FALSEQUITTOKEN;
                                             }

@@ -235,6 +235,8 @@ void yyerror(char *message) {
 
 %token  READFILETOKEN;
 
+%token  ISBOUNDTOKEN;
+
 %token  EXECUTETOKEN;
 									       
 %token  HELPTOKEN;      
@@ -837,6 +839,11 @@ basicthing:             ONTOKEN
                           {
 			    $$ = makeTableAccess($1);
 			    free($1);
+			  }
+                      | ISBOUNDTOKEN LPARTOKEN IDENTIFIERTOKEN RPARTOKEN
+                          {
+			    $$ = makeIsBound($3);
+			    free($3);
 			  }
                       | IDENTIFIERTOKEN LPARTOKEN thing RPARTOKEN
                           {

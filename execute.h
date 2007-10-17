@@ -173,6 +173,7 @@
 #define NOP 214
 #define EXECUTE 215
 #define FALSERESTART 216
+#define ISBOUND 217
 
 int executeCommand(node *);
 
@@ -272,6 +273,7 @@ node *makeDoubleDoubleSymbol();
 node *makeTripleDoubleSymbol();
 node *makeString(char *string);
 node *makeTableAccess(char *string);
+node *makeIsBound(char *string);
 node *makeTableAccessWithSubstitute(char *string, node *thing);
 node *makeDecimalConstant(char *string);
 node *makeDyadicConstant(char *string);

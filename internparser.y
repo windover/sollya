@@ -232,6 +232,8 @@ extern FILE *internyyget_in(void *scanner);
 
 %token  READFILETOKEN;                                                      
 
+%token  ISBOUNDTOKEN;
+
 %token  EXECUTETOKEN;
 
 %token  FALSERESTARTTOKEN;
@@ -822,6 +824,11 @@ basicthing:             ONTOKEN
                           {
 			    $$ = makeTableAccess($1);
 			    free($1);
+			  }
+                      | ISBOUNDTOKEN LPARTOKEN IDENTIFIERTOKEN RPARTOKEN
+                          {
+			    $$ = makeIsBound($3);
+			    free($3);
 			  }
                       | IDENTIFIERTOKEN LPARTOKEN thing RPARTOKEN
                           {

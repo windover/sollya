@@ -548,6 +548,10 @@ node *copyThing(node *tree) {
   case TABLEACCESS:
     copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
     strcpy(copy->string,tree->string);
+    break;  		
+  case ISBOUND:
+    copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+    strcpy(copy->string,tree->string);
     break;  			
   case TABLEACCESSWITHSUBSTITUTE:
     copy->child1 = copyThing(tree->child1);
@@ -1187,6 +1191,9 @@ char *getTimingStringForThing(node *tree) {
     break; 			 	
   case TABLEACCESS:
     constString = "dereferencing an identifier";
+    break;  		
+  case ISBOUND:
+    constString = "testing if an identifier is bound";
     break;  			
   case TABLEACCESSWITHSUBSTITUTE:
     constString = "dereferencing an identifier and substituting";
@@ -4984,6 +4991,19 @@ node *makeTableAccess(char *string) {
 
 }
 
+node *makeIsBound(char *string) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = ISBOUND;
+  res->string = (char *) safeCalloc(strlen(string) + 1, sizeof(char));
+  strcpy(res->string, string);
+
+  return res;
+
+}
+
+
 node *makeTableAccessWithSubstitute(char *string, node *thing) {
   node *res;
 
@@ -6326,6 +6346,10 @@ void freeThing(node *tree) {
     free(tree->string);
     free(tree);
     break;  			
+  case ISBOUND:
+    free(tree->string);
+    free(tree);
+    break;  			
   case TABLEACCESSWITHSUBSTITUTE:
     free(tree->string);
     freeThing(tree->child1);
@@ -7326,6 +7350,9 @@ void rawPrintThing(node *tree) {
     break; 			 	
   case TABLEACCESS:
     printf("%s",tree->string);
+    break;  			
+  case ISBOUND:
+    printf("isbound(%s)",tree->string);
     break;  			
   case TABLEACCESSWITHSUBSTITUTE:
     printf("%s(",tree->string);
@@ -8450,6 +8477,9 @@ void fRawPrintThing(FILE *fd, node *tree) {
   case TABLEACCESS:
     fprintf(fd,"%s",tree->string);
     break;  			
+  case ISBOUND:
+    fprintf(fd,"isbound(%s)",tree->string);
+    break;  			
   case TABLEACCESSWITHSUBSTITUTE:
     fprintf(fd,"%s(",tree->string);
     fRawPrintThing(fd,tree->child1);
@@ -9277,6 +9307,8 @@ int isEqualThing(node *tree, node *tree2) {
   case STRING:
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 			 	
   case TABLEACCESS:
+    if (strcmp(tree->string,tree2->string) != 0) return 0;    break;  			
+  case ISBOUND:
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break;  			
   case TABLEACCESSWITHSUBSTITUTE:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
@@ -10236,7 +10268,24 @@ node *evaluateThingInner(node *tree) {
     free(copy);
     copy = tempNode;
     if (timingString != NULL) popTimeCounter(timingString);
-    break;  			
+    break;  		
+  case ISBOUND:
+    if (timingString != NULL) pushTimeCounter();
+    if ((tempNode = getThingFromTable(tree->string)) != NULL) {
+      freeThing(tempNode);
+      tempNode = makeTrue();
+    } else {
+      if ((variablename != NULL) &&
+	  (strcmp(variablename,tree->string) == 0)) {
+	tempNode = makeTrue();
+      } else {
+	tempNode = makeFalse();
+      }
+    }
+    free(copy);
+    copy = tempNode;
+    if (timingString != NULL) popTimeCounter(timingString);
+    break;
   case TABLEACCESSWITHSUBSTITUTE:
     if (timingString != NULL) pushTimeCounter();
     if ((tempNode = getThingFromTable(tree->string)) == NULL) {
