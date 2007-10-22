@@ -76,6 +76,9 @@ PREC            "prec"
 POINTS          "points"
 EXCLAMATION     "!"
 DOUBLECOLON     "::"
+DOTCOLON        ".:"
+COLONDOT        ":."
+
 	       	
 SEMICOLON       ";"
 QUIT            "quit"
@@ -212,7 +215,7 @@ READ            "read"
 COMMENTSTART    "/*"
 COMMENTEND      "*/"
 
-ONELINECOMMENT  ("//"|"#")([^\n])*"\n"
+ONELINECOMMENT  ("//")([^\n])*"\n"
 
 WRITE           "write"
 
@@ -399,6 +402,8 @@ ISBOUND         "isbound"
 {VERTBAR}				    {  return VERTBARTOKEN; }						       
 {AT}					    {  return ATTOKEN; }					      	       
 {DOUBLECOLON}				    {  return DOUBLECOLONTOKEN; }				      	       
+{DOTCOLON}				    {  return DOTCOLONTOKEN; }				      	       
+{COLONDOT}				    {  return COLONDOTTOKEN; }				      	       
 
 
 {PLUS}            			    {  return PLUSTOKEN; }            					       

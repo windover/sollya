@@ -77,6 +77,8 @@ void yyerror(char *message) {
 %token  VERTBARTOKEN;  						       
 %token  ATTOKEN;  							       
 %token  DOUBLECOLONTOKEN;
+%token  DOTCOLONTOKEN;
+%token  COLONDOTTOKEN;
 %token  EXCLAMATIONEQUALTOKEN;
 %token  ANDTOKEN;
 %token  ORTOKEN;
@@ -687,6 +689,14 @@ hyperterm:                term
                       | hyperterm DOUBLECOLONTOKEN term
                           {
 			    $$ = makeAddToList($1, $3);
+			  }
+                      | hyperterm DOTCOLONTOKEN term
+                          {
+			    $$ = makePrepend($1, $3);
+			  }
+                      | hyperterm COLONDOTTOKEN term
+                          {
+			    $$ = makeAppend($1, $3);
 			  }
 ;
 
@@ -1431,7 +1441,15 @@ help:                   CONSTANTTOKEN
                           }      							       
                       | DOUBLECOLONTOKEN
                           {
-			    printf("Adding an element to a list.\n");
+			    printf("a::b prepends a to list b or appends b to list a, preprending list a to list b if both are lists.\n");
+                          }    
+                      | DOTCOLONTOKEN
+                          {
+			    printf("a.:b prepends a to list b.\n");
+                          }    
+                      | COLONDOTTOKEN
+                          {
+			    printf("a:.b appends b to list a.\n");
                           }    
                       | EXCLAMATIONEQUALTOKEN
                           {
@@ -2033,7 +2051,8 @@ help:                   CONSTANTTOKEN
 			    printf("- ,\n");
 			    printf("- ;\n");
 			    printf("- ::\n");
-			    printf("- !\n");
+			    printf("- :.\n");
+			    printf("- .:\n");
 			    printf("- !\n");
 			    printf("- ?\n");
 			    printf("- /\n");

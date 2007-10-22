@@ -174,6 +174,8 @@
 #define EXECUTE 215
 #define FALSERESTART 216
 #define ISBOUND 217
+#define APPEND 218
+#define PREPEND 219
 
 int executeCommand(node *);
 
@@ -245,7 +247,9 @@ node *makeCompareLessEqual(node *thing1, node *thing2);
 node *makeCompareGreaterEqual(node *thing1, node *thing2);
 node *makeCompareNotEqual(node *thing1, node *thing2);
 node *makeConcat(node *thing1, node *thing2);
-node *makeAddToList(node *thing1, node *thing2);
+node *makeAddToList(node *thing1, node *thing2); 
+node *makePrepend(node *thing1, node *thing2); 
+node *makeAppend(node *thing1, node *thing2); 
 node *makeOn();
 node *makeNop();
 node *makeOff();

@@ -491,6 +491,14 @@ node *copyThing(node *tree) {
     copy->child1 = copyThing(tree->child1);
     copy->child2 = copyThing(tree->child2);
     break; 			
+  case PREPEND:
+    copy->child1 = copyThing(tree->child1);
+    copy->child2 = copyThing(tree->child2);
+    break; 			
+  case APPEND:
+    copy->child1 = copyThing(tree->child1);
+    copy->child2 = copyThing(tree->child2);
+    break; 			
   case ON:
     break; 				
   case OFF:
@@ -1110,6 +1118,12 @@ char *getTimingStringForThing(node *tree) {
     break; 			
   case ADDTOLIST:
     constString = "adding an element to a list";
+    break; 			
+  case APPEND:
+    constString = "appending an element to a list";
+    break; 			
+  case PREPEND:
+    constString = "prepending an element to a list";
     break; 			
   case ON:
     constString = NULL;
@@ -4715,6 +4729,31 @@ node *makeAddToList(node *thing1, node *thing2) {
 
 }
 
+node *makePrepend(node *thing1, node *thing2) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = PREPEND;
+  res->child1 = thing1;
+  res->child2 = thing2;
+
+  return res;
+
+}
+
+node *makeAppend(node *thing1, node *thing2) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = APPEND;
+  res->child1 = thing1;
+  res->child2 = thing2;
+
+  return res;
+
+}
+
+
 node *makeOn() {
   node *res;
 
@@ -6263,6 +6302,16 @@ void freeThing(node *tree) {
     freeThing(tree->child2);
     free(tree);
     break; 			
+  case PREPEND:
+    freeThing(tree->child1);
+    freeThing(tree->child2);
+    free(tree);
+    break; 			
+  case APPEND:
+    freeThing(tree->child1);
+    freeThing(tree->child2);
+    free(tree);
+    break; 			
   case ON:
     free(tree);
     break; 				
@@ -7267,6 +7316,20 @@ void rawPrintThing(node *tree) {
     printf("(");
     rawPrintThing(tree->child1);
     printf(") :: (");
+    rawPrintThing(tree->child2);
+    printf(")");
+    break; 			
+  case APPEND:
+    printf("(");
+    rawPrintThing(tree->child1);
+    printf(") :. (");
+    rawPrintThing(tree->child2);
+    printf(")");
+    break; 			
+  case PREPEND:
+    printf("(");
+    rawPrintThing(tree->child1);
+    printf(") .: (");
     rawPrintThing(tree->child2);
     printf(")");
     break; 			
@@ -8396,6 +8459,20 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fRawPrintThing(fd,tree->child2);
     fprintf(fd,")");
     break; 			
+  case APPEND:
+    fprintf(fd,"(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,") :. (");
+    fRawPrintThing(fd,tree->child2);
+    fprintf(fd,")");
+    break; 			
+  case PREPEND:
+    fprintf(fd,"(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,") .: (");
+    fRawPrintThing(fd,tree->child2);
+    fprintf(fd,")");
+    break; 			
   case ON:
     fprintf(fd,"on");
     break; 				
@@ -9251,6 +9328,14 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     break; 			
   case ADDTOLIST:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualThing(tree->child2,tree2->child2)) return 0;
+    break; 			
+  case APPEND:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualThing(tree->child2,tree2->child2)) return 0;
+    break; 			
+  case PREPEND:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     break; 			
@@ -10198,7 +10283,55 @@ node *evaluateThingInner(node *tree) {
 	}
       }
     }
+    break; 		
+  case PREPEND:
+    copy->child1 = evaluateThingInner(tree->child1);
+    copy->child2 = evaluateThingInner(tree->child2);
+    if (isList(copy->child2)) {
+      if (timingString != NULL) pushTimeCounter();
+      copy->nodeType = LIST;
+      copy->arguments = addElement(copy->child2->arguments,copy->child1);
+      free(copy->child2);
+      if (timingString != NULL) popTimeCounter(timingString);
+    } else {
+      if (isEmptyList(copy->child2)) {
+	if (timingString != NULL) pushTimeCounter();
+	copy->nodeType = LIST;
+	copy->arguments = addElement(NULL, copy->child1);
+	freeThing(copy->child2);
+	if (timingString != NULL) popTimeCounter(timingString);
+      } else {
+	if (isFinalEllipticList(copy->child2)) {
+	  if (timingString != NULL) pushTimeCounter();
+	  copy->nodeType = FINALELLIPTICLIST;
+	  copy->arguments = addElement(copy->child2->arguments,copy->child1);
+	  free(copy->child2);
+	  if (timingString != NULL) popTimeCounter(timingString);
+	} 
+      }
+    }
     break; 			
+  case APPEND:
+    copy->child1 = evaluateThingInner(tree->child1);
+    copy->child2 = evaluateThingInner(tree->child2);
+    if (isList(copy->child1)) {
+      if (timingString != NULL) pushTimeCounter();
+      tempChain = addElement(copyChain(copy->child1->arguments,copyThingOnVoid),copyThing(copy->child2));
+      tempNode = makeList(copyChain(tempChain,copyThingOnVoid));
+      freeChain(tempChain,freeThingOnVoid);
+      freeThing(copy);
+      copy = tempNode;
+      if (timingString != NULL) popTimeCounter(timingString);
+    } else {
+      if (isEmptyList(copy->child1)) {
+	if (timingString != NULL) pushTimeCounter();
+	copy->nodeType = LIST;
+	copy->arguments = addElement(NULL, copy->child2);
+	freeThing(copy->child1);
+	if (timingString != NULL) popTimeCounter(timingString);
+      }
+    }
+    break;
   case ON:
     break; 				
   case OFF:

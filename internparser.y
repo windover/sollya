@@ -78,6 +78,8 @@ extern FILE *internyyget_in(void *scanner);
 %token  VERTBARTOKEN;  						       
 %token  ATTOKEN;  							       
 %token  DOUBLECOLONTOKEN;
+%token  DOTCOLONTOKEN;
+%token  COLONDOTTOKEN;
 %token  EXCLAMATIONEQUALTOKEN;
 %token  ANDTOKEN;
 %token  ORTOKEN;
@@ -672,6 +674,14 @@ hyperterm:                term
                       | hyperterm DOUBLECOLONTOKEN term
                           {
 			    $$ = makeAddToList($1, $3);
+			  }
+                      | hyperterm DOTCOLONTOKEN term
+                          {
+			    $$ = makePrepend($1, $3);
+			  }
+                      | hyperterm COLONDOTTOKEN term
+                          {
+			    $$ = makeAppend($1, $3);
 			  }
 ;
 

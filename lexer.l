@@ -77,6 +77,8 @@ PREC            "prec"
 POINTS          "points"
 EXCLAMATION     "!"
 DOUBLECOLON     "::"
+DOTCOLON        ".:"
+COLONDOT        ":."
 	       	
 SEMICOLON       ";"
 QUIT            "quit"
@@ -208,12 +210,12 @@ SEARCHGAL       "searchgal"
 
 RATIONALAPPROX  "rationalapprox"
 
-READ            "read"
+READ            ("read"|"#include")
 
 COMMENTSTART    "/*"
 COMMENTEND      "*/"
 
-ONELINECOMMENT  ("//"|"#")([^\n])*"\n"
+ONELINECOMMENT  ("//")([^\n])*"\n"
 
 WRITE           "write"
 
@@ -470,7 +472,8 @@ ISBOUND         "isbound"
 {VERTBAR}				    { newTokenLexed(); return VERTBARTOKEN; }						       
 {AT}					    { newTokenLexed(); return ATTOKEN; }					      	       
 {DOUBLECOLON}				    { newTokenLexed(); return DOUBLECOLONTOKEN; }				      	       
-
+{DOTCOLON}				    { newTokenLexed(); return DOTCOLONTOKEN; }				      	       
+{COLONDOT}				    { newTokenLexed(); return COLONDOTTOKEN; }				      	       
 
 {PLUS}            			    { newTokenLexed(); return PLUSTOKEN; }            					       
 {MINUS}           			    { newTokenLexed(); return MINUSTOKEN; }           					       

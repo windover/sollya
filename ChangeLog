@@ -1,3 +1,9 @@
+2007-10-17 16:20  clauter
+
+	* ChangeLog, parser.y:
+
+	  Added help for isbound.
+
 2007-10-17 15:36  clauter
 
 	* ChangeLog, execute.c, execute.h, internlexer.l, internparser.y,
