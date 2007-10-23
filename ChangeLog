@@ -1,3 +1,11 @@
+2007-10-22 18:11  clauter
+
+	* ChangeLog, execute.c, execute.h, internlexer.l, internparser.y,
+	  lexer.l, parser.y:
+
+	  Added .: and :. in addition to :: Added #include as a replacement
+	  to read without removing read in the moment.
+
 2007-10-17 16:20  clauter
 
 	* ChangeLog, parser.y:

@@ -198,9 +198,9 @@ int printDoubleInHexa(mpfr_t x) {
 int readHexa(mpfr_t res, char *c) {
   int ret, i;
   int32_t msb, lsb;
-  double x;
+  double x, y;
   char msbstr[9], lsbstr[9];
-  db_number xdb, endianessdb;
+  db_number xdb, endianessdb, ydb;
   
   x = 1.0;
   c += 2; /* Skip over "0x" */
@@ -235,6 +235,11 @@ int readHexa(mpfr_t res, char *c) {
   }
 
   x = xdb.d;
+
+  if ((!(x == x)) && ((msb & 0x00080000) == 0)) {
+    printMessage(1,"Warning: a sNaN might have been converted to a qNaN.\n");
+  }
+
 
   if (mpfr_set_d(res,x,GMP_RNDN) != 0) ret = 0; else ret = 1;
   return ret;
