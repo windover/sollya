@@ -176,6 +176,7 @@
 #define ISBOUND 217
 #define APPEND 218
 #define PREPEND 219
+#define PRINTFLOAT 220
 
 int executeCommand(node *);
 
@@ -199,6 +200,7 @@ node *makeNewFilePrint(node *thing, chain *thinglist);
 node *makeAppendFilePrint(node *thing, chain *thinglist);
 node *makePlot(chain *thinglist);
 node *makePrintHexa(node *thing);
+node *makePrintFloat(node *thing);
 node *makePrintBinary(node *thing);
 node *makePrintExpansion(node *thing);
 node *makeBashExecute(node *thing);

@@ -27,7 +27,7 @@ HEXNUMBER       (([0-9])|([ABCDEFabcdef]))
 
 CONSTANT        ({NUMBER}+|({NUMBER}*"."{NUMBER}+))(("~"{NUMBER}"/"{NUMBER}"~")?)(((((" ")*)(([eE]))([+-])?{NUMBER}+)?))
 DYADICCONSTANT  ({NUMBER}+)([bB])([+-]?)({NUMBER}+)
-HEXCONSTANT     ("0x"){HEXNUMBER}{16}
+HEXCONSTANT     ("0x")({HEXNUMBER}{16}|{HEXNUMBER}{8})
 
 BINARYCONSTANT  (([0-1])+|(([0-1])*"."([0-1])+))"_2"
 
@@ -175,6 +175,7 @@ CHECKINFNORM    "checkinfnorm"
 TAYLORRECURSIONS "taylorrecursions"
 
 PRINTHEXA       "printhexa"
+PRINTFLOAT      "printfloat"
 PRINTBINARY     "printbinary"
 
 ROUNDCOEFFICIENTS "roundcoefficients"
@@ -524,6 +525,7 @@ ISBOUND         "isbound"
 {EXECUTE}           			    {  return EXECUTETOKEN; }           					       
 {PLOT}            			    {  return PLOTTOKEN; }            					       
 {PRINTHEXA}       			    {  return PRINTHEXATOKEN; }       					       
+{PRINTFLOAT}       			    {  return PRINTFLOATTOKEN; }       					       
 {PRINTBINARY}     			    {  return PRINTBINARYTOKEN; }     					       
 {PRINTEXPANSION}  			    {  return PRINTEXPANSIONTOKEN; }  					       
 {BASHEXECUTE}     			    {  return BASHEXECUTETOKEN; }     					       

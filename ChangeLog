@@ -1,3 +1,7 @@
+2007-10-23 14:00  clauter
+
+	* ChangeLog, double.c: Added a wraning for sNaN
+
 2007-10-22 18:11  clauter
 
 	* ChangeLog, execute.c, execute.h, internlexer.l, internparser.y,

@@ -313,6 +313,9 @@ node *copyThing(node *tree) {
   case PRINTHEXA:
     copy->child1 = copyThing(tree->child1);
     break; 
+  case PRINTFLOAT:
+    copy->child1 = copyThing(tree->child1);
+    break; 
   case PRINTBINARY:
     copy->child1 = copyThing(tree->child1);
     break; 			
@@ -962,6 +965,9 @@ char *getTimingStringForThing(node *tree) {
     break;			
   case PRINTHEXA:
     constString = "printhexa statement";
+    break; 
+  case PRINTFLOAT:
+    constString = "printfloat statement";
     break; 
   case PRINTBINARY:
     constString = "printbinary statement";
@@ -3093,6 +3099,16 @@ int executeCommandInner(node *tree) {
     }
     mpfr_clear(a);
     break; 
+  case PRINTFLOAT:
+    mpfr_init2(a,tools_precision);
+    if (evaluateThingToConstant(a, tree->child1, NULL)) {
+      printSimpleInHexa(a);
+    } else {
+      printMessage(1,"Warning: the expression given does not evaluate to a constant value.\n");
+      printMessage(1,"This command will have no effect.\n");
+    }
+    mpfr_clear(a);
+    break; 
   case PRINTBINARY:
     mpfr_init2(a,tools_precision);
     if (evaluateThingToConstant(a, tree->child1, NULL)) {
@@ -4166,6 +4182,18 @@ node *makePrintHexa(node *thing) {
   return res;
 
 }
+
+node *makePrintFloat(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = PRINTFLOAT;
+  res->child1 = thing;
+
+  return res;
+
+}
+
 
 node *makePrintBinary(node *thing) {
   node *res;
@@ -6075,6 +6103,10 @@ void freeThing(node *tree) {
     free(tree->child1);
     free(tree);
     break; 
+  case PRINTFLOAT:
+    free(tree->child1);
+    free(tree);
+    break; 
   case PRINTBINARY:
     free(tree->child1);
     free(tree);
@@ -7016,6 +7048,11 @@ void rawPrintThing(node *tree) {
     break;			
   case PRINTHEXA:
     printf("printhexa(");
+    rawPrintThing(tree->child1);
+    printf(")");
+    break; 
+  case PRINTFLOAT:
+    printf("printfloat(");
     rawPrintThing(tree->child1);
     printf(")");
     break; 
@@ -8159,6 +8196,11 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fRawPrintThing(fd,tree->child1);
     fprintf(fd,")");
     break; 
+  case PRINTFLOAT:
+    fprintf(fd,"printfloat(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,")");
+    break; 
   case PRINTBINARY:
     fprintf(fd,"printbinary(");
     fRawPrintThing(fd,tree->child1);
@@ -9156,6 +9198,9 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
     break;			
   case PRINTHEXA:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break; 
+  case PRINTFLOAT:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 
   case PRINTBINARY:

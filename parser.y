@@ -198,6 +198,7 @@ void yyerror(char *message) {
 %token  PRINTXMLTOKEN;             					       
 %token  PLOTTOKEN;              					       
 %token  PRINTHEXATOKEN;         					       
+%token  PRINTFLOATTOKEN;
 %token  PRINTBINARYTOKEN;       					       
 %token  PRINTEXPANSIONTOKEN;    					       
 %token  BASHEXECUTETOKEN;       					       
@@ -399,6 +400,10 @@ simplecommand:          QUITTOKEN
                       | PRINTHEXATOKEN LPARTOKEN thing RPARTOKEN         	
                           {
 			    $$ = makePrintHexa($3);
+			  }				       
+                      | PRINTFLOATTOKEN LPARTOKEN thing RPARTOKEN         	
+                          {
+			    $$ = makePrintFloat($3);
 			  }				       
                       | PRINTBINARYTOKEN LPARTOKEN thing RPARTOKEN      	
                           {
@@ -1863,6 +1868,10 @@ help:                   CONSTANTTOKEN
                       | PRINTHEXATOKEN
                           {
 			    printf("Print a constant in hexadecimal: printhexa(constant).\n");
+                          }      
+                      | PRINTFLOATTOKEN
+                          {
+			    printf("Print a constant in hexadecimal simple precision: printfloat(constant).\n");
                           }             					       
                       | PRINTBINARYTOKEN
                           {

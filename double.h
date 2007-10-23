@@ -11,6 +11,7 @@ int mpfr_round_to_doubledouble(mpfr_t rop, mpfr_t op);
 int mpfr_round_to_tripledouble(mpfr_t rop, mpfr_t op);
 int mpfr_round_to_doubleextended(mpfr_t rop, mpfr_t op);
 int printDoubleInHexa(mpfr_t x);
+int printSimpleInHexa(mpfr_t x);
 int readHexa(mpfr_t res, char *c);
 node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec);
 int printDoubleExpansion(mpfr_t x);

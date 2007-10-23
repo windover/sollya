@@ -4,15 +4,23 @@
 #include <errno.h>
 #include <inttypes.h>
 #include <stdlib.h>
+#include <string.h>
 #include "expression.h"
 #include "double.h"
 #include "general.h"
 #include "infnorm.h"
 
+
 typedef union {
   int32_t i[2]; 
   double d;
 } db_number;
+
+typedef union {
+  int32_t i; 
+  float f;
+} fl_number;
+
 
 
 int round_to_format(mpfr_t rop, mpfr_t op, int prec, mp_rnd_t mode) {
@@ -194,13 +202,41 @@ int printDoubleInHexa(mpfr_t x) {
   return res;
 }
 
+int printSimpleInHexa(mpfr_t x) {
+  int res;
+  double d, dd;
+  mpfr_t temp;
+  fl_number xfl;
+  float xfloat;
 
-int readHexa(mpfr_t res, char *c) {
+  mpfr_init2(temp,mpfr_get_prec(x));
+  
+  d = mpfr_get_d(x,GMP_RNDN);
+  xfloat = d;
+  dd = xfloat;
+  if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
+    printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+  }
+  
+  res = mpfr_cmp(temp,x);
+
+  if (res) 
+    printMessage(1,"Warning: rounding occurred before printing a value as a simple.\n");
+
+  xfl.f = xfloat;
+  printf("0x%08x\n",xfl.i);
+
+  mpfr_clear(temp);
+  return res;
+}
+
+
+int readHexaDouble(mpfr_t res, char *c) {
   int ret, i;
   int32_t msb, lsb;
-  double x, y;
+  double x;
   char msbstr[9], lsbstr[9];
-  db_number xdb, endianessdb, ydb;
+  db_number xdb, endianessdb;
   
   x = 1.0;
   c += 2; /* Skip over "0x" */
@@ -243,6 +279,59 @@ int readHexa(mpfr_t res, char *c) {
 
   if (mpfr_set_d(res,x,GMP_RNDN) != 0) ret = 0; else ret = 1;
   return ret;
+}
+
+int readHexaSimple(mpfr_t res, char *c) {
+  int ret, i;
+  int32_t msb, lsb;
+  double x;
+  char msbstr[9];
+  fl_number xfl;
+  float xfloat;
+  
+  x = 1.0;
+  c += 2; /* Skip over "0x" */
+  for (i=0;i<9;i++) {
+    msbstr[i] = '\0';
+  }
+  for (i=0;i<8;i++) {
+    msbstr[i] = *c;
+    c++;
+  }
+  
+
+  msb = strtoll(msbstr,NULL,16);
+
+  xfl.i = msb;
+
+  xfloat = xfl.f;
+
+  x = xfloat;
+
+  if ((!(x == x)) && ((msb & 0x00400000) == 0)) {
+    printMessage(1,"Warning: a sNaN might have been converted to a qNaN.\n");
+  }
+
+
+  if (mpfr_set_d(res,x,GMP_RNDN) != 0) ret = 0; else ret = 1;
+  return ret;
+}
+
+
+
+int readHexa(mpfr_t res, char *c) {
+  
+  if (strlen(c) == 18) 
+    return readHexaDouble(res, c);
+
+  if (strlen(c) == 10) 
+    return readHexaSimple(res, c);
+
+  printMessage(1,"Warning: unable to convert the hexadecimal sequence \"%s\" to a constant.\n");
+  
+  mpfr_set_nan(res);
+
+  return 0;
 }
 
 

@@ -195,6 +195,7 @@ extern FILE *internyyget_in(void *scanner);
 %token  PRINTXMLTOKEN;             					       
 %token  PLOTTOKEN;              					       
 %token  PRINTHEXATOKEN;         					       
+%token  PRINTFLOATTOKEN;         					       
 %token  PRINTBINARYTOKEN;       					       
 %token  PRINTEXPANSIONTOKEN;    					       
 %token  BASHEXECUTETOKEN;       					       
@@ -384,6 +385,10 @@ simplecommand:          FALSEQUITTOKEN
                       | PRINTHEXATOKEN LPARTOKEN thing RPARTOKEN         	
                           {
 			    $$ = makePrintHexa($3);
+			  }		
+                      | PRINTFLOATTOKEN LPARTOKEN thing RPARTOKEN         	
+                          {
+			    $$ = makePrintFloat($3);
 			  }				       
                       | PRINTBINARYTOKEN LPARTOKEN thing RPARTOKEN      	
                           {
