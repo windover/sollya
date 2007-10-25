@@ -11,8 +11,8 @@ lexer.c \
 minilexer.c \
 internlexer.c 
 
-bin_PROGRAMS = sollya
-sollya_SOURCES = \
+bin_PROGRAMS = tools
+tools_SOURCES = \
 internparser.y \
 miniparser.y \
 parser.y \
@@ -59,11 +59,11 @@ worstcase.c \
 worstcase.h \
 xml.c \
 xml.h 
-sollya_CFLAGS = $(AM_CFLAGS)
+tools_CFLAGS = $(AM_CFLAGS)
 
 
-lib_LTLIBRARIES     = libsollya.la
-libsollya_la_SOURCES = \
+lib_LTLIBRARIES     = libtools.la
+libtools_la_SOURCES = \
 internparser.y \
 miniparser.y \
 parser.y \
