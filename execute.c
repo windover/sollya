@@ -512,6 +512,8 @@ node *copyThing(node *tree) {
     break; 				
   case BINARY:
     break; 			 	
+  case HEXADECIMAL:
+    break; 			 	
   case FILESYM:
     break; 			 	
   case POSTSCRIPT:
@@ -578,6 +580,10 @@ node *copyThing(node *tree) {
     strcpy(copy->string,tree->string);
     break; 			
   case HEXCONSTANT:
+    copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+    strcpy(copy->string,tree->string);
+    break; 			
+  case HEXADECIMALCONSTANT:
     copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
     strcpy(copy->string,tree->string);
     break; 			
@@ -1146,6 +1152,9 @@ char *getTimingStringForThing(node *tree) {
   case BINARY:
     constString = NULL;
     break; 			 	
+  case HEXADECIMAL:
+    constString = NULL;
+    break; 			 	
   case FILESYM:
     constString = NULL;
     break; 			 	
@@ -1225,6 +1234,9 @@ char *getTimingStringForThing(node *tree) {
     constString = "reading a dyadic constant";
     break; 			
   case HEXCONSTANT:
+    constString = "reading a hexadecimal constant";
+    break; 			
+  case HEXADECIMALCONSTANT:
     constString = "reading a hexadecimal constant";
     break; 			
   case BINARYCONSTANT:
@@ -1656,6 +1668,7 @@ int isDisplayMode(node *tree) {
   if (tree->nodeType == DYADIC) return 1;
   if (tree->nodeType == POWERS) return 1;
   if (tree->nodeType == BINARY) return 1;
+  if (tree->nodeType == HEXADECIMAL) return 1;
   return 0;
 }
 
@@ -2019,6 +2032,9 @@ int evaluateThingToDisplayMode(int *result, node *tree, int *defaultVal) {
       break;
     case BINARY:
       *result = 3;
+      break;
+    case HEXADECIMAL:
+      *result = 4;
       break;
     }
     freeThing(evaluatedResult);
@@ -2604,11 +2620,21 @@ void autoprint(node *thing) {
 	mpfr_init2(b,tools_precision);
 	mpfr_set_d(b,1.0,GMP_RNDN);
 	if (evaluateFaithful(a,tempNode2,b,tools_precision)) {
-	  printMessage(1,"Warning: rounding has happened. The value displayed is a faithful rounding of the true result.\n");
+	  if (mpfr_number_p(a)) {
+	    printMessage(1,"Warning: rounding has happened. The value displayed is a faithful rounding of the true result.\n");
+	  } else {
+	    if (mpfr_nan_p(a)) {
+	      printMessage(1,"Warning: the given expression is undefined or numerically unstable.\n");
+	    }
+	  }
 	  printValue(&a,tools_precision);
 	} else {
 	  evaluate(a,tempNode2,b,tools_precision * 256);
-	  printMessage(1,"Warning: rounding has happened. The value displayed is not a faithful rounding of the true result.\n");
+	  if (mpfr_number_p(a)) {
+	    printMessage(1,"Warning: rounding has happened. The value displayed is not a faithful rounding of the true result.\n");
+	  } else {
+	    printMessage(1,"Warning: the given expression is undefined or numerically unstable.\n");
+	  }
 	  printValue(&a,tools_precision);
 	}
 	mpfr_clear(a);
@@ -3685,11 +3711,14 @@ int executeCommandInner(node *tree) {
       case 3:
 	printf("Display mode is binary numbers.\n");
 	break;
+      case 4:
+	printf("Display mode is hexadecimal numbers.\n");
+	break;
       default:
 	printf("Display mode in unknown state.\n");
       }
     } else {
-      printMessage(1,"Warning: the expression given does not evaluate to default, dyadic, powers or binary.\n");
+      printMessage(1,"Warning: the expression given does not evaluate to default, dyadic, powers, hexadecimal or binary.\n");
       printMessage(1,"This command will have no effect.\n");
     }
     break; 			
@@ -3848,7 +3877,7 @@ int executeCommandInner(node *tree) {
     if (evaluateThingToDisplayMode(&resA, tree->child1, &resB)) {
       dyadic = resA;
     } else {
-      printMessage(1,"Warning: the expression given does not evaluate to default, dyadic, powers or binary.\n");
+      printMessage(1,"Warning: the expression given does not evaluate to default, dyadic, powers, hexadecimal or binary.\n");
       printMessage(1,"This command will have no effect.\n");
     }
     break;  		
@@ -4832,6 +4861,17 @@ node *makeBinaryThing() {
 
 }
 
+node *makeHexadecimalThing() {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = HEXADECIMAL;
+
+  return res;
+
+}
+
+
 node *makeFile() {
   node *res;
 
@@ -5119,6 +5159,19 @@ node *makeHexConstant(char *string) {
   return res;
 
 }
+
+node *makeHexadecimalConstant(char *string) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = HEXADECIMALCONSTANT;
+  res->string = (char *) safeCalloc(strlen(string) + 1, sizeof(char));
+  strcpy(res->string, string);
+
+  return res;
+
+}
+
 
 node *makeBinaryConstant(char *string) {
   node *res;
@@ -6359,6 +6412,9 @@ void freeThing(node *tree) {
   case BINARY:
     free(tree);
     break; 			 	
+  case HEXADECIMAL:
+    free(tree);
+    break; 			 	
   case FILESYM:
     free(tree);
     break; 			 	
@@ -6445,6 +6501,10 @@ void freeThing(node *tree) {
     free(tree);
     break; 			
   case HEXCONSTANT:
+    free(tree->string);
+    free(tree);
+    break; 			
+  case HEXADECIMALCONSTANT:
     free(tree->string);
     free(tree);
     break; 			
@@ -7385,6 +7445,9 @@ void rawPrintThing(node *tree) {
   case BINARY:
     printf("binary");
     break; 			 	
+  case HEXADECIMAL:
+    printf("hexadecimal");
+    break; 			 	
   case FILESYM:
     printf("file");
     break; 			 	
@@ -7466,6 +7529,9 @@ void rawPrintThing(node *tree) {
     printf("dyadicconstant(\"%s\")",tree->string);
     break; 			
   case HEXCONSTANT:
+    printf("hexconstant(\"%s\")",tree->string);
+    break; 			
+  case HEXADECIMALCONSTANT:
     printf("hexconstant(\"%s\")",tree->string);
     break; 			
   case BINARYCONSTANT:
@@ -8530,6 +8596,9 @@ void fRawPrintThing(FILE *fd, node *tree) {
   case BINARY:
     fprintf(fd,"binary");
     break; 			 	
+  case HEXADECIMAL:
+    fprintf(fd,"hexadecimal");
+    break; 			 	
   case FILESYM:
     fprintf(fd,"file");
     break; 			 	
@@ -8611,6 +8680,9 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fprintf(fd,"dyadicconstant(\"%s\")",tree->string);
     break; 			
   case HEXCONSTANT:
+    fprintf(fd,"hexconstant(\"%s\")",tree->string);
+    break; 			
+  case HEXADECIMALCONSTANT:
     fprintf(fd,"hexconstant(\"%s\")",tree->string);
     break; 			
   case BINARYCONSTANT:
@@ -9394,6 +9466,8 @@ int isEqualThing(node *tree, node *tree2) {
     break; 				
   case BINARY:
     break; 			 	
+  case HEXADECIMAL:
+    break; 			 	
   case FILESYM:
     break; 			 	
   case POSTSCRIPT:
@@ -9448,6 +9522,8 @@ int isEqualThing(node *tree, node *tree2) {
   case DYADICCONSTANT:
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 			
   case HEXCONSTANT:
+    if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 			
+  case HEXADECIMALCONSTANT:
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 			
   case BINARYCONSTANT:
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 			
@@ -9669,6 +9745,7 @@ int isCorrectlyTypedBaseSymbol(node *tree) {
   case DYADIC:
   case POWERS:
   case BINARY:
+  case HEXADECIMAL:
   case FILESYM:
   case POSTSCRIPT:
   case POSTSCRIPTFILE:
@@ -10387,6 +10464,8 @@ node *evaluateThingInner(node *tree) {
     break; 				
   case BINARY:
     break; 			 	
+  case HEXADECIMAL:
+    break; 			 	
   case FILESYM:
     break; 			 	
   case POSTSCRIPT:
@@ -10537,6 +10616,21 @@ node *evaluateThingInner(node *tree) {
     if (timingString != NULL) pushTimeCounter();
     mpfr_init2(a,tools_precision);
     if (!readHexa(a,tree->string)) {
+      printMessage(1,
+		   "Warning: Rounding occurred when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
+		   tree->string,(int) tools_precision);
+      printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+    }
+    tempNode = makeConstant(a);
+    mpfr_clear(a);
+    free(copy);
+    copy = tempNode;
+    if (timingString != NULL) popTimeCounter(timingString);
+    break; 			
+  case HEXADECIMALCONSTANT:
+    if (timingString != NULL) pushTimeCounter();
+    mpfr_init2(a,tools_precision);
+    if (!readHexadecimal(a,tree->string)) {
       printMessage(1,
 		   "Warning: Rounding occurred when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
 		   tree->string,(int) tools_precision);
@@ -12132,6 +12226,9 @@ node *evaluateThingInner(node *tree) {
       break;
     case 3:
       copy = makeBinaryThing();
+      break;
+    case 4:
+      copy = makeHexadecimalThing();
       break;
     default:
       fprintf(stderr,"Error: display mode in unknown state.\n");

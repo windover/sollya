@@ -1,3 +1,11 @@
+2007-10-23 18:29  clauter
+
+	* ChangeLog, double.c, double.h, execute.c, execute.h,
+	  internlexer.l, internparser.y, lexer.l, parser.y:
+
+	  Added simple precision hexadecimal parsing capability.  Added
+	  printfloat(constant) for print out in simple precision.
+
 2007-10-23 14:00  clauter
 
 	* ChangeLog, double.c: Added a wraning for sNaN

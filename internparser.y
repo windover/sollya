@@ -49,7 +49,8 @@ extern FILE *internyyget_in(void *scanner);
 
 %token  <value> CONSTANTTOKEN;          					       
 %token  <value> DYADICCONSTANTTOKEN;   					       
-%token  <value> HEXCONSTANTTOKEN;       					       
+%token  <value> HEXCONSTANTTOKEN;       		
+%token  <value> HEXADECIMALCONSTANTTOKEN;   			       
 %token  <value> BINARYCONSTANTTOKEN;    					       
 											       
 %token  PITOKEN;                					       
@@ -146,6 +147,7 @@ extern FILE *internyyget_in(void *scanner);
 %token  DYADICTOKEN;  						       
 %token  POWERSTOKEN;            					       
 %token  BINARYTOKEN;            					       
+%token  HEXADECIMALTOKEN;            					       
 %token  FILETOKEN;              					       
 %token  POSTSCRIPTTOKEN;        					       
 %token  POSTSCRIPTFILETOKEN;    					       
@@ -740,6 +742,10 @@ basicthing:             ONTOKEN
                           {
 			    $$ = makeBinaryThing();
 			  }
+                      | HEXADECIMALTOKEN             					       
+                          {
+			    $$ = makeHexadecimalThing();
+			  }
                       | FILETOKEN               					       
                           {
 			    $$ = makeFile();
@@ -895,6 +901,10 @@ constant:               CONSTANTTOKEN
                       | HEXCONSTANTTOKEN       					       
                           {
 			    $$ = makeHexConstant($1);
+			  }
+                      | HEXADECIMALCONSTANTTOKEN       					       
+                          {
+			    $$ = makeHexadecimalConstant($1);
 			  }
                       | BINARYCONSTANTTOKEN    					       
                           {

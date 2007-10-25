@@ -393,13 +393,19 @@ void removeTrailingZeros(char *outbuf, char *inbuf) {
   *temp3 = '\0';
 }
 
+void printHexadecimalValue(mpfr_t x);
+
 void printValue(mpfr_t *value, mp_prec_t prec) {
   mpfr_t y;
   char *str, *str2, *str3;
   mp_exp_t e, expo;
   int t, l,i;
 
-
+  if (dyadic == 4) {
+    printHexadecimalValue(*value);
+    return;
+  }
+  
   if (dyadic == 3) {
     printBinary(*value);
     return;
@@ -619,6 +625,65 @@ char *sPrintBinary(mpfr_t x) {
   return resultStr;
 }
 
+char *sPrintHexadecimal(mpfr_t x) {
+  mpfr_t xx;
+  int negative;
+  mp_prec_t prec;
+  mp_exp_t expo;
+  char *raw, *formatted, *temp1, *temp2, *str3;
+  char *temp3, *resultStr;
+
+  prec = mpfr_get_prec(x);
+  mpfr_init2(xx,prec);
+  mpfr_abs(xx,x,GMP_RNDN);
+  negative = 0;
+  if (mpfr_sgn(x) < 0) negative = 1;
+  raw = mpfr_get_str(NULL,&expo,16,0,xx,GMP_RNDN);
+  if (raw == NULL) {
+    printf("Error: unable to get a string for the given number.\n");
+    recoverFromError();
+  } else {
+    formatted = safeCalloc(strlen(raw) + 3, sizeof(char));
+    temp1 = raw; temp2 = formatted;
+    *temp2 = *temp1; temp2++; temp1++;
+    *temp2 = '.'; temp2++;
+    while (*temp1 != '\0') {
+      *temp2 = *temp1;
+      temp2++; temp1++;
+    }
+    str3 = (char *) safeCalloc(strlen(formatted)+2,sizeof(char));
+    removeTrailingZeros(str3,formatted);    
+    if (!mpfr_zero_p(x)) {
+      if (mpfr_number_p(x)) {
+	temp3 = (char *) safeCalloc(strlen(str3)+74,sizeof(char));
+	if (negative) {
+	  sprintf(temp3,"-0x%sp%d",str3,4 * (((int)expo)-1)); 
+	} else {
+	  sprintf(temp3,"0x%sp%d",str3,4 * (((int)expo)-1)); 
+	}
+      } else {
+	temp3 = (char *) safeCalloc(strlen(raw) + 2,sizeof(char));
+	if (negative) 
+	  sprintf(temp3,"-%s",raw); 
+	else 
+	  sprintf(temp3,"%s",raw); 
+      }
+    }
+    else {
+      temp3 = (char *) safeCalloc(2,sizeof(char));
+      sprintf(temp3,"0");
+    }
+    free(formatted);
+    free(str3);
+  }
+  mpfr_free_str(raw);  
+  mpfr_clear(xx);
+  resultStr = (char *) safeCalloc(strlen(temp3) + 1,sizeof(char));
+  sprintf(resultStr,"%s",temp3);
+  free(temp3);
+  return resultStr;
+}
+
 
 void printBinary(mpfr_t x) {
   char *str;
@@ -628,6 +693,15 @@ void printBinary(mpfr_t x) {
   free(str);
 }
 
+void printHexadecimalValue(mpfr_t x) {
+  char *str;
+
+  str = sPrintHexadecimal(x);
+  printf("%s",str);
+  free(str);
+}
+
+
 
 char *sprintValue(mpfr_t *value, mp_prec_t prec) {
   mpfr_t y;
@@ -635,6 +709,9 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
   mp_exp_t e, expo;
   int t, l, i;
   char *buffer, *tempBuf, *finalBuffer;
+
+  if (dyadic == 4) 
+    return sPrintHexadecimal(*value);
 
   if (dyadic == 3) 
     return sPrintBinary(*value);
@@ -8123,6 +8200,52 @@ node *substitute(node* tree, node *t) {
    exit(1);
   }
   return copy;
+}
+
+int readHexadecimal(mpfr_t rop, char *c) {
+  mpfr_t vrd, vru;
+  mp_prec_t p;
+  int res, resA, resB;
+  char *c2;
+  
+  c2 = (char *) safeCalloc(strlen(c) + 2, sizeof(char));
+  strcpy(c2, c);
+
+  if (c2[strlen(c2) - 1] == 'p') c2[strlen(c2)] = '0';
+
+
+  p = mpfr_get_prec(rop);
+
+  mpfr_init2(vrd, p);
+  mpfr_init2(vru, p);
+  
+  resA = mpfr_set_str(vrd, c2, 16, GMP_RNDD);
+  resB = mpfr_set_str(vru, c2, 16, GMP_RNDU);
+
+  if (!resA && !resB) {
+    if (mpfr_cmp(vrd,vru) == 0) {
+      mpfr_set(rop,vrd,GMP_RNDN);
+      res = 1;
+    } else {
+      resA = mpfr_set_str(vrd, c2, 16, GMP_RNDN);
+      if (!resA) {
+	mpfr_set(rop, vrd, GMP_RNDN);
+	res = 0;
+      } else {
+	mpfr_set_nan(rop);
+	res = 0;
+      }
+    }
+  } else {
+    mpfr_set_nan(rop);
+    res = 0;
+  }
+
+  mpfr_clear(vrd);
+  mpfr_clear(vru);
+  free(c2);
+
+  return res;
 }
 
 

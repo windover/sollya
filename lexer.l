@@ -30,6 +30,8 @@ CONSTANT        ({NUMBER}+|({NUMBER}*"."{NUMBER}+))(("~"{NUMBER}"/"{NUMBER}"~")?
 DYADICCONSTANT  ({NUMBER}+)([bB])([+-]?)({NUMBER}+)
 HEXCONSTANT     ("0x")({HEXNUMBER}{16}|{HEXNUMBER}{8})
 
+HEXADECIMALCONSTANT ("0x")(({HEXNUMBER}*"."{HEXNUMBER}+)|({HEXNUMBER}+((".")?)))("p"(([+-])?)({NUMBER}*))
+
 BINARYCONSTANT  (([0-1])+|(([0-1])*"."([0-1])+))"_2"
 
 
@@ -135,6 +137,7 @@ ON              "on"
 OFF             "off"
 POWERS          "powers"
 BINARY          "binary"
+HEXADECIMAL     "hexadecimal"
 
 INTEGRAL        "integral"
 DIRTYINTEGRAL   "dirtyintegral"
@@ -430,6 +433,10 @@ ISBOUND         "isbound"
 					      strncpy(constBuffer,yytext,yyleng);
 					      yylval->value = constBuffer;
                                               newTokenLexed(); return DYADICCONSTANTTOKEN; } 	              
+{HEXADECIMALCONSTANT}     		    { constBuffer = (char *) safeCalloc(yyleng+1,sizeof(char));
+					      strncpy(constBuffer,yytext,yyleng);
+					      yylval->value = constBuffer;
+                                              newTokenLexed(); return HEXADECIMALCONSTANTTOKEN; }     		        
 {HEXCONSTANT}     			    { constBuffer = (char *) safeCalloc(yyleng+1,sizeof(char));
 					      strncpy(constBuffer,yytext,yyleng);
 					      yylval->value = constBuffer;
@@ -529,6 +536,7 @@ ISBOUND         "isbound"
 {DYADIC}				    { newTokenLexed(); return DYADICTOKEN; }						       
 {POWERS}          			    { newTokenLexed(); return POWERSTOKEN; }          					       
 {BINARY}          			    { newTokenLexed(); return BINARYTOKEN; }          					       
+{HEXADECIMAL}          			    { newTokenLexed(); return HEXADECIMALTOKEN; }          					       
 {FILE}            			    { newTokenLexed(); return FILETOKEN; }            					       
 {POSTSCRIPT}      			    { newTokenLexed(); return POSTSCRIPTTOKEN; }      					       
 {POSTSCRIPTFILE}  			    { newTokenLexed(); return POSTSCRIPTFILETOKEN; }  					       

@@ -29,6 +29,8 @@ CONSTANT        ({NUMBER}+|({NUMBER}*"."{NUMBER}+))(("~"{NUMBER}"/"{NUMBER}"~")?
 DYADICCONSTANT  ({NUMBER}+)([bB])([+-]?)({NUMBER}+)
 HEXCONSTANT     ("0x")({HEXNUMBER}{16}|{HEXNUMBER}{8})
 
+HEXADECIMALCONSTANT ("0x")(({HEXNUMBER}*"."{HEXNUMBER}+)|({HEXNUMBER}+((".")?)))("p"(([+-])?)({NUMBER}*))
+
 BINARYCONSTANT  (([0-1])+|(([0-1])*"."([0-1])+))"_2"
 
 
@@ -135,6 +137,7 @@ ON              "on"
 OFF             "off"
 POWERS          "powers"
 BINARY          "binary"
+HEXADECIMAL     "hexadecimal"
 
 INTEGRAL        "integral"
 DIRTYINTEGRAL   "dirtyintegral"
@@ -460,6 +463,7 @@ ISBOUND         "isbound"
 {DYADIC}				    {  return DYADICTOKEN; }						       
 {POWERS}          			    {  return POWERSTOKEN; }          					       
 {BINARY}          			    {  return BINARYTOKEN; }          					       
+{HEXADECIMAL}          			    {  return HEXADECIMALTOKEN; }          					
 {FILE}            			    {  return FILETOKEN; }            					       
 {POSTSCRIPT}      			    {  return POSTSCRIPTTOKEN; }      					       
 {POSTSCRIPTFILE}  			    {  return POSTSCRIPTFILETOKEN; }  					       

@@ -177,6 +177,8 @@
 #define APPEND 218
 #define PREPEND 219
 #define PRINTFLOAT 220
+#define HEXADECIMAL 221
+#define HEXADECIMALCONSTANT 222
 
 int executeCommand(node *);
 
@@ -258,6 +260,7 @@ node *makeOff();
 node *makeDyadic();
 node *makePowers();
 node *makeBinaryThing();
+node *makeHexadecimalThing();
 node *makeFile();
 node *makePostscript();
 node *makePostscriptFile();
@@ -284,6 +287,7 @@ node *makeTableAccessWithSubstitute(char *string, node *thing);
 node *makeDecimalConstant(char *string);
 node *makeDyadicConstant(char *string);
 node *makeHexConstant(char *string);
+node *makeHexadecimalConstant(char *string);
 node *makeBinaryConstant(char *string);
 node *makeEmptyList();
 node *makeList(chain *thinglist);

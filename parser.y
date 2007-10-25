@@ -49,6 +49,7 @@ void yyerror(char *message) {
 %token  <value> CONSTANTTOKEN;          					       
 %token  <value> DYADICCONSTANTTOKEN;   					       
 %token  <value> HEXCONSTANTTOKEN;       					       
+%token  <value> HEXADECIMALCONSTANTTOKEN;       					       
 %token  <value> BINARYCONSTANTTOKEN;    					       
 											       
 %token  PITOKEN;                					       
@@ -145,6 +146,7 @@ void yyerror(char *message) {
 %token  DYADICTOKEN;  						       
 %token  POWERSTOKEN;            					       
 %token  BINARYTOKEN;            					       
+%token  HEXADECIMALTOKEN;            					       
 %token  FILETOKEN;              					       
 %token  POSTSCRIPTTOKEN;        					       
 %token  POSTSCRIPTFILETOKEN;    					       
@@ -755,6 +757,10 @@ basicthing:             ONTOKEN
                           {
 			    $$ = makeBinaryThing();
 			  }
+                      | HEXADECIMALTOKEN             					       
+                          {
+			    $$ = makeHexadecimalThing();
+			  }
                       | FILETOKEN               					       
                           {
 			    $$ = makeFile();
@@ -906,14 +912,22 @@ constant:               CONSTANTTOKEN
                       | DYADICCONSTANTTOKEN   					       
                           {
 			    $$ = makeDyadicConstant($1);
+			    free($1);
 			  }
                       | HEXCONSTANTTOKEN       					       
                           {
 			    $$ = makeHexConstant($1);
+			    free($1);
+			  }
+                      | HEXADECIMALCONSTANTTOKEN       					       
+                          {
+			    $$ = makeHexadecimalConstant($1);
+			    free($1);
 			  }
                       | BINARYCONSTANTTOKEN    					       
                           {
 			    $$ = makeBinaryConstant($1);
+			    free($1);
 			  }
                       | PITOKEN
                           {
@@ -1346,7 +1360,12 @@ help:                   CONSTANTTOKEN
                           }   					       
                       | HEXCONSTANTTOKEN
                           {
-			    printf("\"%s\" is recognized as a double precision constant.\n",$1);
+			    printf("\"%s\" is recognized as a double or single precision constant.\n",$1);
+			    free($1);
+                          }       					       
+                      | HEXADECIMALCONSTANTTOKEN
+                          {
+			    printf("\"%s\" is recognized as a hexadecimal constant.\n",$1);
 			    free($1);
                           }       					       
                       | BINARYCONSTANTTOKEN
@@ -1691,6 +1710,10 @@ help:                   CONSTANTTOKEN
                       | BINARYTOKEN
                           {
 			    printf("Display mode is binary.\n");
+                          }                					       
+                      | HEXADECIMALTOKEN
+                          {
+			    printf("Display mode is hexadecimal.\n");
                           }                					       
                       | FILETOKEN
                           {
