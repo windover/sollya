@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.60)
 AC_INIT([tools], [0.1], [christoph.lauter@ens-lyon.fr, sylvain.chevillard@ens-lyon.fr])
 AM_INIT_AUTOMAKE([1.6 no-define dist-zip dist-bzip2])
 
@@ -116,7 +116,7 @@ AC_ARG_WITH(mpfi,
 #Add xml2 include and lib
 
 
-AC_CHECK_PROG(XML2CONFIG,xml2-config,[xml2-config],[echo ""])
+AC_CHECK_PROG(XML2CONFIG,xml2-config,[xml2-config],[false])
 
 XMLLIBS=`$XML2CONFIG --libs`
 
