@@ -33,6 +33,8 @@ extern void internyyset_in(FILE *, void *);
 extern void initSignalHandler();
 extern void blockSignals();
 
+node *makeExternalProcedureUsage(libraryProcedure *);
+
 void *copyThingOnVoid(void *);
 
 void executeFile(FILE *fd) {
@@ -129,6 +131,14 @@ void *copyStringOnVoid(void *s) {
   return (void *) copy;
 }
 
+void *copyIntPtrOnVoid(void *i) {
+  int *copy;
+
+  copy = (int *) safeMalloc(sizeof(int));
+  *copy = *((int *) i);
+  
+  return (void *) copy;
+}
 
 
 node *copyThing(node *tree) {
@@ -364,7 +374,13 @@ node *copyThing(node *tree) {
     break; 				
   case AUTOPRINT:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
-    break;  			
+    break; 
+  case EXTERNALPROC:
+    copy->child1 = copyThing(tree->child1);
+    copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+    strcpy(copy->string,tree->string);
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyIntPtrOnVoid);
+    break;
   case ASSIGNMENT:
     copy->child1 = copyThing(tree->child1);
     copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
@@ -533,6 +549,8 @@ node *copyThing(node *tree) {
   case HONORCOEFF:
     break; 			
   case TRUE:
+    break; 
+  case UNIT:
     break; 			 	
   case FALSE:
     break; 			 	
@@ -567,7 +585,7 @@ node *copyThing(node *tree) {
     strcpy(copy->string,tree->string);
     break;  			
   case TABLEACCESSWITHSUBSTITUTE:
-    copy->child1 = copyThing(tree->child1);
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
     strcpy(copy->string,tree->string);
     break;  	
@@ -765,7 +783,10 @@ node *copyThing(node *tree) {
     break; 			 	
   case LENGTH:
     copy->child1 = copyThing(tree->child1);
-    break; 			 	
+    break; 	
+  case EXTERNALPROCEDUREUSAGE:
+    copy->libProc = tree->libProc;
+    break;
   case PRECDEREF:
     break; 			
   case POINTSDEREF:
@@ -1019,9 +1040,12 @@ char *getTimingStringForThing(node *tree) {
     break;  			
   case ASSIGNMENT:
     constString = "assignment";
+    break; 		
+  case EXTERNALPROC:
+    constString = "binding of an external procedure";
     break; 			
   case LIBRARYBINDING:
-    constString = "binding of a library";
+    constString = "binding of a library function";
     break;  			
   case PRECASSIGN:
     constString = "assigning the precision";
@@ -1183,6 +1207,9 @@ char *getTimingStringForThing(node *tree) {
     constString = NULL;
     break; 			
   case TRUE:
+    constString = NULL;
+    break; 
+  case UNIT:
     constString = NULL;
     break; 			 	
   case FALSE:
@@ -1403,7 +1430,10 @@ char *getTimingStringForThing(node *tree) {
     break; 			 	
   case LENGTH:
     constString = "computing the length of a list";
-    break; 			 	
+    break; 	
+  case EXTERNALPROCEDUREUSAGE:
+    constString = "executing an external procedure";
+    break;
   case PRECDEREF:
     constString = "dereferencing the precision of the tool";
     break; 			
@@ -1650,6 +1680,17 @@ int isBoolean(node *tree) {
   if (tree->nodeType == FALSE) return 1;
   return 0;
 }
+
+int isUnit(node *tree) {
+  if (tree->nodeType == UNIT) return 1;
+  return 0;
+}
+
+int isExternalProcedureUsage(node *tree) {
+  if (tree->nodeType == EXTERNALPROCEDUREUSAGE) return 1;
+  return 0;
+}
+
 
 int isHonorcoeffprec(node *tree) {
   if (tree->nodeType == HONORCOEFF) return 1;
@@ -2554,8 +2595,9 @@ void fPrintThing(FILE *fd, node *thing) {
 int assignThingToTable(char *identifier, node *thing) {
 
   if (((variablename != NULL) && (strcmp(variablename,identifier) == 0)) || 
-      (getFunction(identifier) != NULL)) {
-    printMessage(1,"Warning: the identifier \"%s\" is already bound to the free variable or to a library function\nThe command will have no effect.\n", identifier);
+      (getFunction(identifier) != NULL) ||
+      (getProcedure(identifier) != NULL)) {
+    printMessage(1,"Warning: the identifier \"%s\" is already bound to the free variable, to a library function or to an external procedure.\nThe command will have no effect.\n", identifier);
     return 0;
   }
 
@@ -2571,6 +2613,7 @@ int assignThingToTable(char *identifier, node *thing) {
 
 node *getThingFromTable(char *identifier) {
   libraryFunction *tempLibraryFunction;
+  libraryProcedure *tempLibraryProcedure;
   node *temp_node;
 
   if ((variablename != NULL) && (strcmp(variablename,identifier) == 0)) {
@@ -2593,9 +2636,112 @@ node *getThingFromTable(char *identifier) {
     return temp_node;
   }
 
+  if ((tempLibraryProcedure = getProcedure(identifier)) != NULL) {
+    return makeExternalProcedureUsage(tempLibraryProcedure);
+  }
+
   if (!containsEntry(symbolTable, identifier)) return NULL;
 
   return (node *) getEntry(symbolTable, identifier, copyThingOnVoid);
+}
+
+void printExternalProcedureUsage(node *tree) {
+  chain *curr;
+  if (isExternalProcedureUsage(tree)) {
+    printf("%s(",tree->libProc->procedureName);
+    curr = tree->libProc->signature->next;
+    while (curr != NULL) {
+      switch (*((int *) (curr->value))) {
+      case VOID_TYPE:
+	printf("void");
+	break;
+      case CONSTANT_TYPE:
+	printf("constant");
+	break;
+      case FUNCTION_TYPE:
+	printf("function");
+	break;
+      case RANGE_TYPE:
+	printf("range");
+	break;
+      case INTEGER_TYPE:
+	printf("integer");
+	break;
+      case STRING_TYPE:
+	printf("string");
+	break;
+      case BOOLEAN_TYPE:
+	printf("boolean");
+	break;
+      case CONSTANT_LIST_TYPE:
+	printf("list of constant");
+	break;
+      case FUNCTION_LIST_TYPE:
+	printf("list of function");
+	break;
+      case RANGE_LIST_TYPE:
+	printf("list of range");
+	break;
+      case INTEGER_LIST_TYPE:
+	printf("list of integer");
+	break;
+      case STRING_LIST_TYPE:
+	printf("list of string");
+	break;
+      case BOOLEAN_LIST_TYPE:
+	printf("list of boolean");
+	break;
+      default:
+	printf("unknown type");
+      }
+      if (curr->next != NULL) printf(", ");
+      curr = curr->next;
+    }
+    printf(") -> ");
+    switch (*((int *) (tree->libProc->signature->value))) {
+    case VOID_TYPE:
+      printf("void");
+      break;
+    case CONSTANT_TYPE:
+      printf("constant");
+      break;
+    case FUNCTION_TYPE:
+      printf("function");
+      break;
+    case RANGE_TYPE:
+      printf("range");
+      break;
+    case INTEGER_TYPE:
+      printf("integer");
+      break;
+    case STRING_TYPE:
+      printf("string");
+      break;
+    case BOOLEAN_TYPE:
+      printf("boolean");
+      break;
+    case CONSTANT_LIST_TYPE:
+      printf("list of constant");
+      break;
+    case FUNCTION_LIST_TYPE:
+      printf("list of function");
+      break;
+    case RANGE_LIST_TYPE:
+      printf("list of range");
+      break;
+    case INTEGER_LIST_TYPE:
+      printf("list of integer");
+      break;
+    case STRING_LIST_TYPE:
+      printf("list of string");
+      break;
+    case BOOLEAN_LIST_TYPE:
+      printf("list of boolean");
+      break;
+    default:
+      printf("unknown type");
+    }
+  }
 }
 
 void autoprint(node *thing) {
@@ -2812,6 +2958,7 @@ int executeCommandInner(node *tree) {
   mpfr_t a, b, c, d, e;
   node *tempNode, *tempNode2, *tempNode3, *tempNode4;
   libraryFunction *tempLibraryFunction;
+  libraryProcedure *tempLibraryProcedure;
   char *tempString, *tempString2, *timingString;
   FILE *fd;
   node **array;
@@ -3497,15 +3644,61 @@ int executeCommandInner(node *tree) {
     break; 				
   case AUTOPRINT:
     curr = tree->arguments;
-    while (curr != NULL) {
+    if (curr->next == NULL) {
       tempNode = evaluateThing((node *) (curr->value));
-      autoprint(tempNode);
+      if ((!isUnit(tempNode)) || (verbosity >= 2)) {
+	if (!isExternalProcedureUsage(tempNode)) 
+	  autoprint(tempNode);
+	else 
+	  printExternalProcedureUsage(tempNode);
+	printf("\n");
+      } 
       freeThing(tempNode);
-      if (curr->next != NULL) printf(", ");
-      curr = curr->next;
+    } else {
+      while (curr != NULL) {
+	tempNode = evaluateThing((node *) (curr->value));
+	if (!isExternalProcedureUsage(tempNode)) 
+	  autoprint(tempNode);
+	else 
+	  printExternalProcedureUsage(tempNode);
+	freeThing(tempNode);
+	if (curr->next != NULL) printf(", ");
+	curr = curr->next;
+      }
+      printf("\n");
     }
-    printf("\n");
-    break;  			
+    break;  		
+  case EXTERNALPROC:
+    if ((variablename != NULL) && (strcmp(variablename,tree->string) == 0)) {
+      printMessage(1,"Warning: the identifier \"%s\" is already be bound as the current free variable.\n",variablename);
+      printMessage(1,"It cannot be bound to an external procedure. This command will have no effect.\n");
+    } else {
+      if (containsEntry(symbolTable, tree->string)) {
+	printMessage(1,"Warning: the identifier \"%s\" is already assigned to.\n",tree->string);
+	printMessage(1,"It cannot be bound to an external procedure. This command will have no effect.\n");
+      } else {
+	if (getFunction(tree->string) != NULL) {
+	  printMessage(1,"Warning: the identifier \"%s\" is already bound to a library function.\n",tree->string);
+	  printMessage(1,"It cannot be bound to an external procedure. This command will have no effect.\n");
+	} else {
+	  if (getProcedure(tree->string) != NULL) {
+	    printMessage(1,"Warning: the identifier \"%s\" is already bound to an external procedure.\n",tree->string);
+	    printMessage(1,"It cannot be bound to an external procedure. This command will have no effect.\n");
+	  } else {
+	    if (evaluateThingToString(&tempString, tree->child1)) {
+	      tempLibraryProcedure = bindProcedure(tempString, tree->string, tree->arguments);
+	      if(tempLibraryProcedure == NULL) {
+		printMessage(1,"Warning: an error occurred. The last command will have no effect.\n");
+	      }
+	    } else {
+	      printMessage(1,"Warning: the expression given does not evaluate to a string.\n");
+	      printMessage(1,"This command will have no effect.\n");
+	    }
+	  }
+	}
+      }
+    }
+    break; 			
   case ASSIGNMENT:
     tempNode = evaluateThing(tree->child1);
     if (!assignThingToTable(tree->string, tempNode)) {
@@ -3633,17 +3826,27 @@ int executeCommandInner(node *tree) {
       printMessage(1,"It cannot be bound to a library function. This command will have no effect.\n");
     } else {
       if (containsEntry(symbolTable, tree->string)) {
-	printMessage(1,"Warning: the identifier \"%s\" is already assign to.\n",variablename);
+	printMessage(1,"Warning: the identifier \"%s\" is already assigned to.\n",tree->string);
 	printMessage(1,"It cannot be bound to a library function. This command will have no effect.\n");
       } else {
-	if (evaluateThingToString(&tempString, tree->child1)) {
-	  tempLibraryFunction = bindFunction(tempString, tree->string);
-	  if(tempLibraryFunction == NULL) {
-	    printMessage(1,"Warning: an error occurred. The last command will have no effect.\n");
-	  }
+	if (getProcedure(tree->string) != NULL) {
+	  printMessage(1,"Warning: the identifier \"%s\" is already bound to an external procedure.\n",tree->string);
+	  printMessage(1,"It cannot be bound to a library function. This command will have no effect.\n");
 	} else {
-	  printMessage(1,"Warning: the expression given does not evaluate to a string.\n");
-	  printMessage(1,"This command will have no effect.\n");
+	  if (getFunction(tree->string) != NULL) {
+	    printMessage(1,"Warning: the identifier \"%s\" is already bound to a library function.\n",tree->string);
+	    printMessage(1,"It cannot be bound to a library function. This command will have no effect.\n");
+	  } else {
+	    if (evaluateThingToString(&tempString, tree->child1)) {
+	      tempLibraryFunction = bindFunction(tempString, tree->string);
+	      if(tempLibraryFunction == NULL) {
+		printMessage(1,"Warning: an error occurred. The last command will have no effect.\n");
+	      }
+	    } else {
+	      printMessage(1,"Warning: the expression given does not evaluate to a string.\n");
+	      printMessage(1,"This command will have no effect.\n");
+	    }
+	  }
 	}
       }
     }
@@ -4366,6 +4569,21 @@ node *makeAssignment(char *string, node *thing) {
 
 }
 
+node *makeExternalProc(char *string, node *thing, chain *typelist) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = EXTERNALPROC;
+  res->child1 = thing;
+  res->string = (char *) safeCalloc(strlen(string) + 1, sizeof(char));
+  strcpy(res->string, string);
+  res->arguments = typelist;
+
+  return res;
+
+}
+
+
 node *makeLibraryBinding(char *string, node *thing) {
   node *res;
 
@@ -4972,6 +5190,17 @@ node *makeTrue() {
 
 }
 
+node *makeUnit() {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = UNIT;
+
+  return res;
+
+}
+
+
 node *makeFalse() {
   node *res;
 
@@ -5111,14 +5340,14 @@ node *makeIsBound(char *string) {
 }
 
 
-node *makeTableAccessWithSubstitute(char *string, node *thing) {
+node *makeTableAccessWithSubstitute(char *string, chain *thinglist) {
   node *res;
 
   res = (node *) safeMalloc(sizeof(node));
   res->nodeType = TABLEACCESSWITHSUBSTITUTE;
   res->string = (char *) safeCalloc(strlen(string) + 1, sizeof(char));
   strcpy(res->string, string);
-  res->child1 = thing;
+  res->arguments = thinglist;
 
   return res;
 
@@ -5786,6 +6015,16 @@ node *makeLength(node *thing) {
 
 }
 
+node *makeExternalProcedureUsage(libraryProcedure *proc) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = EXTERNALPROCEDUREUSAGE;
+  res->libProc = proc;
+
+  return res;
+}
+
 
 node *makePrecDeref() {
   node *res;
@@ -6227,6 +6466,12 @@ void freeThing(node *tree) {
     free(tree->string);
     free(tree);
     break; 			
+  case EXTERNALPROC:
+    freeThing(tree->child1);
+    free(tree->string);
+    freeChain(tree->arguments, freeIntPtr);
+    free(tree);
+    break; 			
   case LIBRARYBINDING:
     freeThing(tree->child1);
     free(tree->string);
@@ -6445,6 +6690,9 @@ void freeThing(node *tree) {
   case TRUE:
     free(tree);
     break; 			 	
+  case UNIT:
+    free(tree);
+    break; 			 	
   case FALSE:
     free(tree);
     break; 			 	
@@ -6489,7 +6737,7 @@ void freeThing(node *tree) {
     break;  			
   case TABLEACCESSWITHSUBSTITUTE:
     free(tree->string);
-    freeThing(tree->child1);
+    freeChain(tree->arguments, freeThingOnVoid);
     free(tree);
     break;  	
   case DECIMALCONSTANT:
@@ -6740,7 +6988,10 @@ void freeThing(node *tree) {
   case LENGTH:
     freeThing(tree->child1);
     free(tree);
-    break; 			 	
+    break; 	
+  case EXTERNALPROCEDUREUSAGE:
+    free(tree);
+    break;
   case PRECDEREF:
     free(tree);
     break; 			
@@ -7221,6 +7472,110 @@ void rawPrintThing(node *tree) {
   case ASSIGNMENT:
     printf("%s = ",tree->string);
     rawPrintThing(tree->child1);
+    break; 		
+  case EXTERNALPROC:
+    printf("externalproc(%s, ",tree->string);
+    rawPrintThing(tree->child1);
+    printf(", ");
+    curr = tree->arguments->next;
+    if (*((int *) (curr->value)) == VOID_TYPE) {
+      printf("void");
+    } else {
+      printf("(");
+      while (curr != NULL) {
+	switch (*((int *) (curr->value))) {
+	case VOID_TYPE:
+	  printf("void");
+	  break;
+	case CONSTANT_TYPE:
+	  printf("constant");
+	  break;
+	case FUNCTION_TYPE:
+	  printf("function");
+	  break;
+	case RANGE_TYPE:
+	  printf("range");
+	  break;
+	case INTEGER_TYPE:
+	  printf("integer");
+	  break;
+	case STRING_TYPE:
+	  printf("string");
+	  break;
+	case BOOLEAN_TYPE:
+	  printf("boolean");
+	  break;
+	case CONSTANT_LIST_TYPE:
+	  printf("list of constant");
+	  break;
+	case FUNCTION_LIST_TYPE:
+	  printf("list of function");
+	  break;
+	case RANGE_LIST_TYPE:
+	  printf("list of range");
+	  break;
+	case INTEGER_LIST_TYPE:
+	  printf("list of integer");
+	  break;
+	case STRING_LIST_TYPE:
+	  printf("list of string");
+	  break;
+	case BOOLEAN_LIST_TYPE:
+	  printf("list of boolean");
+	  break;
+	default:
+	  printf("unknown type");
+	}
+	if (curr->next != NULL) printf(", ");
+	curr = curr->next;
+      }
+      printf(")");
+    }
+    printf(" -> ");
+    switch (*((int *) (tree->arguments->value))) {
+    case VOID_TYPE:
+      printf("void");
+      break;
+    case CONSTANT_TYPE:
+      printf("constant");
+      break;
+    case FUNCTION_TYPE:
+      printf("function");
+      break;
+    case RANGE_TYPE:
+      printf("range");
+      break;
+    case INTEGER_TYPE:
+      printf("integer");
+      break;
+    case STRING_TYPE:
+      printf("string");
+      break;
+    case BOOLEAN_TYPE:
+      printf("boolean");
+      break;
+    case CONSTANT_LIST_TYPE:
+      printf("list of constant");
+      break;
+    case FUNCTION_LIST_TYPE:
+      printf("list of function");
+      break;
+    case RANGE_LIST_TYPE:
+      printf("list of range");
+      break;
+    case INTEGER_LIST_TYPE:
+      printf("list of integer");
+      break;
+    case STRING_LIST_TYPE:
+      printf("list of string");
+      break;
+    case BOOLEAN_LIST_TYPE:
+      printf("list of boolean");
+      break;
+    default:
+      printf("unknown type");
+    }
+    printf(")");
     break; 			
   case LIBRARYBINDING:
     printf("%s = library(",tree->string);
@@ -7477,6 +7832,9 @@ void rawPrintThing(node *tree) {
     break; 			
   case TRUE:
     printf("true");
+    break; 
+  case UNIT:
+    printf("void");
     break; 			 	
   case FALSE:
     printf("false");
@@ -7519,7 +7877,12 @@ void rawPrintThing(node *tree) {
     break;  			
   case TABLEACCESSWITHSUBSTITUTE:
     printf("%s(",tree->string);
-    rawPrintThing(tree->child1);
+    curr = tree->arguments;
+    while (curr != NULL) {
+      rawPrintThing((node *) (curr->value));
+      if (curr->next != NULL) printf(", ");
+      curr = curr->next;
+    }
     printf(")");
     break;  	
   case DECIMALCONSTANT:
@@ -7892,7 +8255,10 @@ void rawPrintThing(node *tree) {
     printf("length(");
     rawPrintThing(tree->child1);
     printf(")");
-    break; 			 	
+    break; 	
+  case EXTERNALPROCEDUREUSAGE:
+    printf("%s",tree->libProc->procedureName);
+    break;
   case PRECDEREF:
     printf("prec = ?");
     break; 			
@@ -8368,7 +8734,111 @@ void fRawPrintThing(FILE *fd, node *tree) {
       if (curr->next != NULL) fprintf(fd,", ");
       curr = curr->next;
     }
-    break;  			
+    break;  		
+  case EXTERNALPROC:
+    fprintf(fd,"externalproc(%s, ",tree->string);
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,", ");
+    curr = tree->arguments->next;
+    if (*((int *) (curr->value)) == VOID_TYPE) {
+      fprintf(fd,"void");
+    } else {
+      fprintf(fd,"(");
+      while (curr != NULL) {
+	switch (*((int *) (curr->value))) {
+	case VOID_TYPE:
+	  fprintf(fd,"void");
+	  break;
+	case CONSTANT_TYPE:
+	  fprintf(fd,"constant");
+	  break;
+	case FUNCTION_TYPE:
+	  fprintf(fd,"function");
+	  break;
+	case RANGE_TYPE:
+	  fprintf(fd,"range");
+	  break;
+	case INTEGER_TYPE:
+	  fprintf(fd,"integer");
+	  break;
+	case STRING_TYPE:
+	  fprintf(fd,"string");
+	  break;
+	case BOOLEAN_TYPE:
+	  fprintf(fd,"boolean");
+	  break;
+	case CONSTANT_LIST_TYPE:
+	  fprintf(fd,"list of constant");
+	  break;
+	case FUNCTION_LIST_TYPE:
+	  fprintf(fd,"list of function");
+	  break;
+	case RANGE_LIST_TYPE:
+	  fprintf(fd,"list of range");
+	  break;
+	case INTEGER_LIST_TYPE:
+	  fprintf(fd,"list of integer");
+	  break;
+	case STRING_LIST_TYPE:
+	  fprintf(fd,"list of string");
+	  break;
+	case BOOLEAN_LIST_TYPE:
+	  fprintf(fd,"list of boolean");
+	  break;
+	default:
+	  fprintf(fd,"unknown type");
+	}
+	if (curr->next != NULL) fprintf(fd,", ");
+	curr = curr->next;
+      }
+      fprintf(fd,")");
+    }
+    fprintf(fd," -> ");
+    switch (*((int *) (tree->arguments->value))) {
+    case VOID_TYPE:
+      fprintf(fd,"void");
+      break;
+    case CONSTANT_TYPE:
+      fprintf(fd,"constant");
+      break;
+    case FUNCTION_TYPE:
+      fprintf(fd,"function");
+      break;
+    case RANGE_TYPE:
+      fprintf(fd,"range");
+      break;
+    case INTEGER_TYPE:
+      fprintf(fd,"integer");
+      break;
+    case STRING_TYPE:
+      fprintf(fd,"string");
+      break;
+    case BOOLEAN_TYPE:
+      fprintf(fd,"boolean");
+      break;
+    case CONSTANT_LIST_TYPE:
+      fprintf(fd,"list of constant");
+      break;
+    case FUNCTION_LIST_TYPE:
+      fprintf(fd,"list of function");
+      break;
+    case RANGE_LIST_TYPE:
+      fprintf(fd,"list of range");
+      break;
+    case INTEGER_LIST_TYPE:
+      fprintf(fd,"list of integer");
+      break;
+    case STRING_LIST_TYPE:
+      fprintf(fd,"list of string");
+      break;
+    case BOOLEAN_LIST_TYPE:
+      fprintf(fd,"list of boolean");
+      break;
+    default:
+      fprintf(fd,"unknown type");
+    }
+    fprintf(fd,")");
+    break; 		
   case ASSIGNMENT:
     fprintf(fd,"%s = ",tree->string);
     fRawPrintThing(fd,tree->child1);
@@ -8629,6 +9099,9 @@ void fRawPrintThing(FILE *fd, node *tree) {
   case TRUE:
     fprintf(fd,"true");
     break; 			 	
+  case UNIT:
+    fprintf(fd,"void");
+    break; 			 	
   case FALSE:
     fprintf(fd,"false");
     break; 			 	
@@ -8670,7 +9143,12 @@ void fRawPrintThing(FILE *fd, node *tree) {
     break;  			
   case TABLEACCESSWITHSUBSTITUTE:
     fprintf(fd,"%s(",tree->string);
-    fRawPrintThing(fd,tree->child1);
+    curr = tree->arguments;
+    while (curr != NULL) {
+      fRawPrintThing(fd,(node *) (curr->value));
+      if (curr->next != NULL) fprintf(fd,", ");
+      curr = curr->next;
+    }
     fprintf(fd,")");
     break;  	
   case DECIMALCONSTANT:
@@ -9043,7 +9521,10 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fprintf(fd,"length(");
     fRawPrintThing(fd,tree->child1);
     fprintf(fd,")");
-    break; 			 	
+    break; 	
+  case EXTERNALPROCEDUREUSAGE:
+    fprintf(fd,"%s",tree->libProc->procedureName);
+    break;
   case PRECDEREF:
     fprintf(fd,"prec = ?");
     break; 			
@@ -9095,6 +9576,10 @@ int isEqualThing(node *tree, node *tree2);
 
 int isEqualThingOnVoid(void *tree, void *tree2) {
   return isEqualThing((node *) tree, (node *) tree2);
+}
+
+int isEqualIntPtrOnVoid(void *a, void *b) {
+  return (*((int *) a) == *((int *) b));
 }
 
 int isEqualThing(node *tree, node *tree2) {
@@ -9326,6 +9811,10 @@ int isEqualThing(node *tree, node *tree2) {
   case ASSIGNMENT:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 			
+  case EXTERNALPROC:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 			
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualIntPtrOnVoid)) return 0;
   case LIBRARYBINDING:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break;  			
@@ -9488,6 +9977,8 @@ int isEqualThing(node *tree, node *tree2) {
     break; 			
   case TRUE:
     break; 			 	
+  case UNIT:
+    break; 			 	
   case FALSE:
     break; 			 	
   case DEFAULT:
@@ -9515,7 +10006,7 @@ int isEqualThing(node *tree, node *tree2) {
   case ISBOUND:
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break;  			
   case TABLEACCESSWITHSUBSTITUTE:
-    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break;  	
   case DECIMALCONSTANT:
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 		
@@ -9701,7 +10192,10 @@ int isEqualThing(node *tree, node *tree2) {
     break; 			 	
   case LENGTH:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
-    break; 			 	
+    break; 	
+  case EXTERNALPROCEDUREUSAGE:
+    if (tree->libProc != tree2->libProc) return 0;
+    break;
   case PRECDEREF:
     break; 			
   case POINTSDEREF:
@@ -9756,6 +10250,7 @@ int isCorrectlyTypedBaseSymbol(node *tree) {
   case ROUNDTONEAREST:
   case HONORCOEFF:
   case TRUE:
+  case UNIT:
   case FALSE:
   case DEFAULT:
   case DECIMAL:
@@ -9767,6 +10262,7 @@ int isCorrectlyTypedBaseSymbol(node *tree) {
   case TRIPLEDOUBLESYMBOL:
   case STRING:
   case EMPTYLIST:
+  case EXTERNALPROCEDUREUSAGE:
     return 1;
   default:
     return 0;
@@ -9813,7 +10309,7 @@ node *evaluateThing(node *tree) {
   if (!isCorrectlyTyped(evaluated)) {
     if (evaluated->nodeType == ERRORSPECIAL) {
       if (tree->nodeType != ERRORSPECIAL) 
-	printMessage(1,"Warning: the given expression could not be handled.\n");
+	printMessage(1,"Warning: the given expression or command could not be handled.\n");
     } else {
       printMessage(1,"Warning: at least one of the given expressions or a subexpression is not correctly typed\nor its evaluation has failed because of some error on a side-effect.\n");
       if (verbosity >= 2) {
@@ -9839,6 +10335,87 @@ node *evaluateThing(node *tree) {
 
   return evaluated;
 }
+
+int evaluateArgumentForExternalProc(void **res, node *argument, int type) {
+
+
+  return 0;
+}
+
+void freeArgumentForExternalProc(void* arg, int type) {
+
+
+
+}
+
+
+int executeExternalProcedure(node **resultThing, libraryProcedure *proc, chain *args) {
+  chain *myArgs, *myArgSignature, *curr, *curr2;
+  int myResultSignature;
+  void **arguments;
+  int numberArgs, i, res, k;
+
+  if ((lengthChain(args) == 1) && (isUnit((node *) (args->value)))) myArgs = NULL; else myArgs = args;
+  if (*((int *) (proc->signature->next->value)) == VOID_TYPE) {
+    myArgSignature = NULL; 
+    myResultSignature = *((int *) (proc->signature->value));
+  } else {
+    myArgSignature = copyChainWithoutReversal(proc->signature->next,copyIntPtrOnVoid);
+    myResultSignature = *((int *) (proc->signature->value));
+  }
+
+  if ((numberArgs = lengthChain(myArgs)) != lengthChain(myArgSignature)) {
+    freeChain(myArgSignature, freeIntPtr);
+    *resultThing = NULL;
+    return 1;
+  }
+
+  if (numberArgs != 0) {
+    arguments = (void **) safeCalloc(numberArgs, sizeof(void *));
+    curr = myArgs;
+    curr2 = myArgSignature;
+    i = 0;
+    while ((curr != NULL) && (curr2 != NULL)) {
+      res = evaluateArgumentForExternalProc(&(arguments[i]),(node *) (curr->value),*((int *) (curr2->value)));
+      if (!res) break;
+      i++;
+      curr = curr->next;
+      curr2 = curr2->next;
+    }
+    if (!res) {
+      k = 0;
+      curr2 = myArgSignature;
+      while ((curr2 != NULL) && (k <= i)) {
+	freeArgumentForExternalProc(arguments[k],*((int *) (curr2->value)));
+	k++;
+	curr2 = curr2->next;
+      }
+      free(arguments);
+      freeChain(myArgSignature, freeIntPtr);
+      *resultThing = NULL;
+      return 1;
+    }
+  }
+  
+  
+
+
+
+  
+  if (numberArgs != 0) {
+    k = 0;
+    curr2 = myArgSignature;
+    while ((curr2 != NULL) && (k <= i)) {
+      freeArgumentForExternalProc(arguments[k],*((int *) (curr2->value)));
+      k++;
+      curr2 = curr2->next;
+    }
+    free(arguments);
+  }
+  
+  return 0;
+}
+
 
 void *evaluateThingInnerOnVoid(void *tree) {
   return (void *) evaluateThingInner((node *) tree);
@@ -10486,6 +11063,8 @@ node *evaluateThingInner(node *tree) {
     break; 			
   case TRUE:
     break; 			 	
+  case UNIT:
+    break; 			 	
   case FALSE:
     break; 			 	
   case DEFAULT:
@@ -10556,23 +11135,49 @@ node *evaluateThingInner(node *tree) {
       tempNode = makeVariable();
     }
     if (isPureTree(tempNode)) {
-      if (evaluateThingToPureTree(&tempNode2,tree->child1)) {
-	free(copy);
-	if (tempNode->nodeType == VARIABLE) {
-	  printMessage(1,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
-		       variablename);
+      if (lengthChain(tree->arguments) == 1) {
+	if (evaluateThingToPureTree(&tempNode2,(node *) (tree->arguments->value))) {
+	  free(copy);
+	  if (tempNode->nodeType == VARIABLE) {
+	    printMessage(1,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
+			 variablename);
+	  }
+	  copy = substitute(tempNode, tempNode2);
+	  freeThing(tempNode2);
+	} else {
+	  copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+	  copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+	  strcpy(copy->string,tree->string);
 	}
-	copy = substitute(tempNode, tempNode2);
-	freeThing(tempNode2);
       } else {
-	copy->child1 = copyThing(tree->child1);
+	  copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+	  copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+	  strcpy(copy->string,tree->string);
+      }
+    } else {
+      if (isExternalProcedureUsage(tempNode)) {
+	tempChain = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+	tempNode2 = NULL;
+	if (executeExternalProcedure(&tempNode2, tempNode->libProc, tempChain)) {
+	  if (tempNode2 != NULL) {
+	    free(copy);
+	    copy = tempNode2;
+	    freeChain(tempChain, freeThingOnVoid);
+	  } else {
+	    copy->arguments = tempChain;
+	    copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+	    strcpy(copy->string,tree->string);
+	  }
+	} else {
+	  free(copy);
+	  copy = makeError();
+	  freeChain(tempChain, freeThingOnVoid);
+	}
+      } else {
+	copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
 	copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
 	strcpy(copy->string,tree->string);
       }
-    } else {
-      copy->child1 = copyThing(tree->child1);
-      copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
-      strcpy(copy->string,tree->string);
     }
     freeThing(tempNode);
     if (timingString != NULL) popTimeCounter(timingString);

@@ -317,6 +317,17 @@ VERSION         "version"
 
 ISBOUND         "isbound"
 
+EXTERNALPROC    "externalproc"
+VOID            "void"
+CONSTANTTYPE    "constant"
+FUNCTION        "function"
+RANGE           "range"
+INTEGER         "integer"
+STRINGTYPE      "string"
+BOOLEAN         "boolean"
+LIST            "list"
+OF              "of"
+
 %%
 
 %{
@@ -644,6 +655,18 @@ ISBOUND         "isbound"
 {BEGIN}					    { newTokenLexed(); return BEGINTOKEN; }					      	       
 {END}					    { newTokenLexed(); return ENDTOKEN; }					      	       
 {WHILEDEF}				    { newTokenLexed(); return WHILETOKEN; }					      	       
+
+
+{EXTERNALPROC}                              { newTokenLexed(); return EXTERNALPROCTOKEN; }
+{VOID}                                      { newTokenLexed(); return VOIDTOKEN; }   
+{CONSTANTTYPE}                              { newTokenLexed(); return CONSTANTTYPETOKEN; }   
+{FUNCTION}                                  { newTokenLexed(); return FUNCTIONTOKEN; }   
+{RANGE}                                     { newTokenLexed(); return RANGETOKEN; }   
+{INTEGER}                                   { newTokenLexed(); return INTEGERTOKEN; }   
+{STRINGTYPE}                                { newTokenLexed(); return STRINGTYPETOKEN; }   
+{BOOLEAN}                                   { newTokenLexed(); return BOOLEANTOKEN; }   
+{LIST}                                      { newTokenLexed(); return LISTTOKEN; }   
+{OF}                                        { newTokenLexed(); return OFTOKEN; }   
 					    										             
 {HELP}            			    { newTokenLexed(); return HELPTOKEN; }                                                       
 

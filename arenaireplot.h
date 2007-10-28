@@ -28,6 +28,21 @@ struct libraryFunctionStruct
   int (*code)(mpfi_t, mpfi_t, int);
 };
 
+typedef struct procLibraryHandleStruct procLibraryHandle;
+struct procLibraryHandleStruct 
+{
+  char *procLibraryName;
+  void *procLibraryDescriptor;
+  chain *procedureList;
+};
+
+typedef struct libraryProcedureStruct libraryProcedure;
+struct libraryProcedureStruct 
+{
+  char *procedureName;
+  void *code;
+  chain *signature;
+};
 
 typedef struct nodeStruct node;
 struct nodeStruct 
@@ -40,6 +55,7 @@ struct nodeStruct
   int libFunDeriv;
   char *string;
   chain *arguments;
+  libraryProcedure *libProc;
 };
 
 typedef struct rangetypeStruct rangetype;

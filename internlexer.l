@@ -315,6 +315,19 @@ EXECUTE         "execute"
 
 ISBOUND         "isbound"
 
+EXTERNALPROC    "externalproc"
+VOID            "void"
+CONSTANTTYPE    "constant"
+FUNCTION        "function"
+RANGE           "range"
+INTEGER         "integer"
+STRINGTYPE      "string"
+BOOLEAN         "boolean"
+LIST            "list"
+OF              "of"
+
+
+
 %%
 
 %{
@@ -566,6 +579,17 @@ ISBOUND         "isbound"
 {BEGIN}					    {  return BEGINTOKEN; }					      	       
 {END}					    {  return ENDTOKEN; }					      	       
 {WHILEDEF}				    {  return WHILETOKEN; }					      	       
+
+{EXTERNALPROC}                              {  return EXTERNALPROCTOKEN; }
+{VOID}                                      {  return VOIDTOKEN; }   
+{CONSTANTTYPE}                              {  return CONSTANTTYPETOKEN; }   
+{FUNCTION}                                  {  return FUNCTIONTOKEN; }   
+{RANGE}                                     {  return RANGETOKEN; }   
+{INTEGER}                                   {  return INTEGERTOKEN; }   
+{STRINGTYPE}                                {  return STRINGTYPETOKEN; }   
+{BOOLEAN}                                   {  return BOOLEANTOKEN; }   
+{LIST}                                      {  return LISTTOKEN; }   
+{OF}                                        {  return OFTOKEN; }   
 					    										             
 
 

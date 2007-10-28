@@ -77,6 +77,7 @@ char *constBuffer = NULL;
 char *constBuffer2 = NULL;
 char *tempString = NULL;
 char *tempString2 = NULL;
+int *tempIntPtr = NULL;
 
 /* END OF HELPER VARIABLES */
 
@@ -492,6 +493,7 @@ void freeTool() {
   pari_close();
   yylex_destroy(scanner);
   freeLibraries();
+  freeProcLibraries();
   freeCounter();
   freeSymbolTable(symbolTable, freeThingOnVoid);
   symbolTable = NULL;
@@ -525,6 +527,7 @@ void restartTool() {
   freeSymbolTable(symbolTable, freeThingOnVoid);
   symbolTable = NULL;
   freeLibraries();
+  freeProcLibraries();
   initToolDefaults();
 }
 

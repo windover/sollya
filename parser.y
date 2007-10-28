@@ -9,6 +9,7 @@
 #include "general.h"
 #include "execute.h"
 #include "parser.h"
+#include "library.h"
 
 #define YYERROR_VERBOSE 1
 #define YYPARSE_PARAM scanner
@@ -41,6 +42,7 @@ void yyerror(char *message) {
   char *value;
   node *tree;
   chain *list;
+  int *integerval;
   void *other;
 };
 
@@ -243,6 +245,17 @@ void yyerror(char *message) {
 %token  ISBOUNDTOKEN;
 
 %token  EXECUTETOKEN;
+
+%token  EXTERNALPROCTOKEN; 
+%token  VOIDTOKEN;    
+%token  CONSTANTTYPETOKEN; 
+%token  FUNCTIONTOKEN;  
+%token  RANGETOKEN;  
+%token  INTEGERTOKEN;   
+%token  STRINGTYPETOKEN;    
+%token  BOOLEANTOKEN;    
+%token  LISTTOKEN;    
+%token  OFTOKEN;    
 									       
 %token  HELPTOKEN;      
 %token  VERSIONTOKEN;
@@ -273,7 +286,10 @@ void yyerror(char *message) {
 %type <tree>  megaterm;
 %type <tree>  statedereference;
 %type <dblnode>  indexing;
-
+%type <integerval> externalproctype;
+%type <integerval> extendedexternalproctype;
+%type <list>  externalproctypesimplelist;
+%type <list>  externalproctypelist;
 
 %%
 
@@ -464,6 +480,11 @@ simplecommand:          QUITTOKEN
 			    $$ = makeRename($3, $5);
 			    free($3);
 			    free($5);
+			  }	
+                      | EXTERNALPROCTOKEN LPARTOKEN IDENTIFIERTOKEN COMMATOKEN thing COMMATOKEN externalproctypelist MINUSTOKEN RIGHTANGLETOKEN extendedexternalproctype RPARTOKEN        	
+                          {
+			    $$ = makeExternalProc($3, $5, addElement($7, $10));
+			    free($3);
 			  }				       
                       | assignment
                           {
@@ -801,6 +822,10 @@ basicthing:             ONTOKEN
                           {
 			    $$ = makeTrue();
 			  }
+                      | VOIDTOKEN   							       
+                          {
+			    $$ = makeUnit();
+			  }
                       | FALSETOKEN   							       
                           {
 			    $$ = makeFalse();
@@ -866,9 +891,14 @@ basicthing:             ONTOKEN
 			    $$ = makeIsBound($3);
 			    free($3);
 			  }
-                      | IDENTIFIERTOKEN LPARTOKEN thing RPARTOKEN
+                      | IDENTIFIERTOKEN LPARTOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeTableAccessWithSubstitute($1, $3);
+			    free($1);
+			  }
+                      | IDENTIFIERTOKEN LPARTOKEN RPARTOKEN
+                          {
+			    $$ = makeTableAccessWithSubstitute($1, NULL);
 			    free($1);
 			  }
                       | list 
@@ -1346,6 +1376,112 @@ statedereference:       PRECTOKEN EQUALTOKEN QUESTIONMARKTOKEN
 			  }
 ;
 
+externalproctype:       CONSTANTTYPETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = CONSTANT_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | FUNCTIONTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = FUNCTION_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | RANGETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = RANGE_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | INTEGERTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = INTEGER_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | STRINGTYPETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = STRING_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | BOOLEANTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = BOOLEAN_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN CONSTANTTYPETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = CONSTANT_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN FUNCTIONTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = FUNCTION_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN RANGETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = RANGE_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN INTEGERTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = INTEGER_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN STRINGTYPETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = STRING_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN BOOLEANTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = BOOLEAN_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+;
+
+extendedexternalproctype: VOIDTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = VOID_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | externalproctype
+		          {
+			    $$ = $1;
+		          }
+;
+
+
+externalproctypesimplelist:   externalproctype
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | externalproctype COMMATOKEN externalproctypesimplelist
+                          {
+			    $$ = addElement($3, $1);
+			  }
+;
+
+externalproctypelist:       extendedexternalproctype
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | LPARTOKEN externalproctypesimplelist RPARTOKEN 
+                          {
+			    $$ = $2;
+			  }
+;
 
 
 help:                   CONSTANTTOKEN
@@ -2066,6 +2202,36 @@ help:                   CONSTANTTOKEN
                           {
 			    printf("Prints the version of the software.\n");
                           }    
+                      | EXTERNALPROCTOKEN                          {
+			    printf("externalplot(identifier, file, argumentypes -> resulttype): binds identifier to an external procedure with signature argumenttypes -> resulttype in file file.\n");
+                          }    
+                      | VOIDTOKEN                          {
+			    printf("Represents the void type for externalproc.\n");
+                          }    
+                      | CONSTANTTYPETOKEN                          {
+			    printf("Represents the constant type for externalproc.\n");
+                          }    
+                      | FUNCTIONTOKEN                          {
+			    printf("Represents the function type for externalproc.\n");
+                          }    
+                      | RANGETOKEN                          {
+			    printf("Represents the range type for externalproc.\n");
+                          }    
+                      | INTEGERTOKEN                          {
+			    printf("Represents the integer type for externalproc.\n");
+                          }    
+                      | STRINGTYPETOKEN                          {
+			    printf("Represents the string type for externalproc.\n");
+                          }    
+                      | BOOLEANTOKEN                          {
+			    printf("Represents the boolean type for externalproc.\n");
+                          }    
+                      | LISTTOKEN                          {
+			    printf("Represents the list type for externalproc.\n");
+                          }    
+                      | OFTOKEN                          {
+			    printf("Used in list of type for externalproc.\n");
+                          }    
                       | HELPTOKEN
                           {
 			    printf("Possible keywords in %s are:\n",PACKAGE_NAME);
@@ -2112,11 +2278,13 @@ help:                   CONSTANTTOKEN
 			    printf("- bashexecute\n");
 			    printf("- begin\n");
 			    printf("- binary\n");
+			    printf("- boolean\n");
 			    printf("- by\n");
 			    printf("- canonical\n");
 			    printf("- ceil\n");
 			    printf("- checkinfnorm\n");
 			    printf("- coeff\n");
+			    printf("- constant\n");
 			    printf("- cos\n");
 			    printf("- cosh\n");
 			    printf("- D\n");
@@ -2149,6 +2317,7 @@ help:                   CONSTANTTOKEN
 			    printf("- expm1\n");
 			    printf("- exponent\n");
 			    printf("- externalplot\n");
+			    printf("- externalproc\n");
 			    printf("- false\n");
 			    printf("- file\n");
 			    printf("- findzeros\n");
@@ -2157,6 +2326,7 @@ help:                   CONSTANTTOKEN
 			    printf("- fpfindzeros\n");
 			    printf("- from\n");
 			    printf("- fullparentheses\n");
+			    printf("- function\n");
 			    printf("- guessdegree\n");
 			    printf("- head\n");
 			    printf("- help\n");
@@ -2168,11 +2338,13 @@ help:                   CONSTANTTOKEN
 			    printf("- in\n");
 			    printf("- inf\n");
 			    printf("- infnorm\n");
+			    printf("- integer\n");
 			    printf("- integral\n");
 			    printf("- isbound\n");
 			    printf("- isevaluable\n");
 			    printf("- length\n");
 			    printf("- library\n");
+			    printf("- list\n");
 			    printf("- log\n");
 			    printf("- log10\n");
 			    printf("- log1p\n");
@@ -2183,6 +2355,7 @@ help:                   CONSTANTTOKEN
 			    printf("- midpointmode\n");
 			    printf("- N\n");
 			    printf("- numerator\n");
+			    printf("- of\n");
 			    printf("- off\n");
 			    printf("- on\n");
 			    printf("- P\n");
@@ -2202,6 +2375,7 @@ help:                   CONSTANTTOKEN
 			    printf("- printhexa\n");
 			    printf("- printxml\n");
 			    printf("- quit\n");
+			    printf("- range\n");
 			    printf("- rationalapprox\n");
 			    printf("- read\n");
 			    printf("- readfile\n");
@@ -2220,6 +2394,7 @@ help:                   CONSTANTTOKEN
 			    printf("- sinh\n");
 			    printf("- sort\n");
 			    printf("- sqrt\n");
+			    printf("- string\n");
 			    printf("- subpoly\n");
 			    printf("- substitute\n");
 			    printf("- sup\n");
@@ -2236,6 +2411,7 @@ help:                   CONSTANTTOKEN
 			    printf("- true\n");
 			    printf("- verbosity\n");
 			    printf("- version\n");
+			    printf("- void\n");
 			    printf("- while\n");
 			    printf("- worstcase\n");
 			    printf("- write\n");

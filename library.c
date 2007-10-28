@@ -9,9 +9,10 @@
 #include "general.h"
 #include "library.h"
 #include "chain.h"
+#include "execute.h"
 
 chain *openedLibraries = NULL;
-
+chain *openedProcLibraries = NULL;
 
 libraryHandle *getLibraryHandle(char *libraryName) {
   chain *curr;
@@ -136,4 +137,126 @@ void freeLibraries() {
     free(prevLibList);
   }
   openedLibraries = NULL;
+}
+
+
+
+
+procLibraryHandle *getProcLibraryHandle(char *libraryName) {
+  chain *curr;
+  procLibraryHandle *currHandle;
+  void *dlfcnHandle;
+
+  curr = openedProcLibraries;
+  while (curr != NULL) {
+    currHandle = (procLibraryHandle *) curr->value;
+    if (strcmp(currHandle->procLibraryName,libraryName) == 0) 
+      return currHandle;
+    curr = curr->next;
+  }
+
+  dlerror(); 
+  dlfcnHandle = dlopen(libraryName, RTLD_LOCAL | RTLD_NOW);
+  if (dlfcnHandle == NULL) 
+    return NULL;
+
+  currHandle = (procLibraryHandle *) safeMalloc(sizeof(procLibraryHandle));
+  currHandle->procLibraryName = (char *) safeCalloc(strlen(libraryName)+1,sizeof(char));
+  strcpy(currHandle->procLibraryName,libraryName);
+  currHandle->procLibraryDescriptor = dlfcnHandle;
+  currHandle->procedureList = NULL;
+  openedProcLibraries = addElement(openedProcLibraries,currHandle);
+
+  return currHandle;
+}
+
+
+
+libraryProcedure *bindProcedure(char* libraryName, char *procedureName, chain *signature) {
+  procLibraryHandle *libHandle;
+  libraryProcedure *currProc;
+  char *error;
+  void *myFunction;
+
+  currProc = getProcedure(procedureName);
+  if (currProc != NULL) {
+    printMessage(1,"Warning: a procedure named \"%s\" has already been bound.\n",procedureName);
+    return currProc;
+  }
+
+  libHandle = getProcLibraryHandle(libraryName);
+  if (libHandle == NULL) {
+    fprintf(stderr,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,procedureName,dlerror());
+    return NULL;
+  }
+    
+  dlerror();
+  myFunction = dlsym(libHandle->procLibraryDescriptor, procedureName);
+  if ((error = dlerror()) != NULL) {
+    fprintf(stderr, "Error: could not find procedure \"%s\" in library \"%s\" for binding: %s\n",procedureName,libraryName,error);
+    return NULL;
+  }
+  
+  currProc = (libraryProcedure *) safeMalloc(sizeof(libraryProcedure));
+  currProc->procedureName = (char *) safeCalloc(strlen(procedureName),sizeof(char));
+  strcpy(currProc->procedureName,procedureName);
+  currProc->code = myFunction;
+  currProc->signature = copyChainWithoutReversal(signature, copyIntPtrOnVoid);
+  
+  
+  libHandle->procedureList = addElement(libHandle->procedureList,currProc);
+
+  return currProc;
+} 
+
+
+libraryProcedure *getProcedure(char *procedureName) {
+  chain *currLibList, *currProcList;
+  libraryProcedure *currProc;
+  procLibraryHandle *currLibHandle;
+
+  currLibList = openedProcLibraries;
+  while (currLibList != NULL) {
+    currLibHandle = (procLibraryHandle *) currLibList->value;
+    currProcList = currLibHandle->procedureList;
+    while (currProcList != NULL) {
+      currProc = (libraryProcedure *) currProcList->value;
+      if (strcmp(currProc->procedureName,procedureName) == 0)
+	return currProc;
+      currProcList = currProcList->next;
+    }
+    currLibList = currLibList->next;
+  }
+
+  return NULL;
+}
+
+
+void freeProcLibraries() {
+  chain *currLibList, *currProcList, *prevProcList, *prevLibList;
+  libraryProcedure *currProc;
+  procLibraryHandle *currLibHandle;
+
+  currLibList = openedProcLibraries;
+  while (currLibList != NULL) {
+    currLibHandle = (procLibraryHandle *) currLibList->value;
+    currProcList = currLibHandle->procedureList;
+    while (currProcList != NULL) {
+      currProc = (libraryProcedure *) currProcList->value;
+      free(currProc->procedureName);
+      freeChain(currProc->signature,freeIntPtr);
+      free(currProcList->value);
+      prevProcList = currProcList;
+      currProcList = currProcList->next;
+      free(prevProcList);
+    }
+    dlerror();
+    if (dlclose(currLibHandle->procLibraryDescriptor) != 0) 
+      printMessage(1,"Warning: could not close libary \"%s\": %s\n",currLibHandle->procLibraryName,dlerror());
+    free(currLibHandle->procLibraryName);
+    prevLibList = currLibList;
+    currLibList = currLibList->next;
+    free(prevLibList);
+  }
+  openedProcLibraries = NULL;
 }

@@ -64,6 +64,7 @@ struct nodeStruct
   int libFunDeriv;
   char *string;
   chain *arguments;
+  libraryProcedure *libProc;
 };
 
 /* HELPER TYPE FOR THE PARSER */

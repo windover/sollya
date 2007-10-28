@@ -42,6 +42,7 @@ extern FILE *internyyget_in(void *scanner);
   char *value;
   node *tree;
   chain *list;
+  int *integerval;
   void *other;
 };
 
@@ -244,6 +245,18 @@ extern FILE *internyyget_in(void *scanner);
 %token  FALSERESTARTTOKEN;
 %token  FALSEQUITTOKEN;
 
+%token  EXTERNALPROCTOKEN; 
+%token  VOIDTOKEN;    
+%token  CONSTANTTYPETOKEN; 
+%token  FUNCTIONTOKEN;  
+%token  RANGETOKEN;  
+%token  INTEGERTOKEN;   
+%token  STRINGTYPETOKEN;    
+%token  BOOLEANTOKEN;    
+%token  LISTTOKEN;    
+%token  OFTOKEN;    
+
+
 %type <other> startsymbol;
 %type <tree>  startsymbolwitherr;
 %type <tree>  command;
@@ -270,6 +283,10 @@ extern FILE *internyyget_in(void *scanner);
 %type <tree>  megaterm;
 %type <tree>  statedereference;
 %type <dblnode>  indexing;
+%type <integerval> externalproctype;
+%type <integerval> extendedexternalproctype;
+%type <list>  externalproctypesimplelist;
+%type <list>  externalproctypelist;
 
 
 %%
@@ -449,7 +466,12 @@ simplecommand:          FALSEQUITTOKEN
 			    $$ = makeRename($3, $5);
 			    free($3);
 			    free($5);
-			  }				       
+			  }	
+                      | EXTERNALPROCTOKEN LPARTOKEN IDENTIFIERTOKEN COMMATOKEN thing COMMATOKEN externalproctypelist MINUSTOKEN RIGHTANGLETOKEN extendedexternalproctype RPARTOKEN        	
+                          {
+			    $$ = makeExternalProc($3, $5, addElement($7, $10));
+			    free($3);
+			  }				       			       
                       | assignment
                           {
 			    $$ = $1;
@@ -786,6 +808,10 @@ basicthing:             ONTOKEN
                           {
 			    $$ = makeTrue();
 			  }
+                      | VOIDTOKEN   							       
+                          {
+			    $$ = makeUnit();
+			  }
                       | FALSETOKEN   							       
                           {
 			    $$ = makeFalse();
@@ -851,9 +877,14 @@ basicthing:             ONTOKEN
 			    $$ = makeIsBound($3);
 			    free($3);
 			  }
-                      | IDENTIFIERTOKEN LPARTOKEN thing RPARTOKEN
+                      | IDENTIFIERTOKEN LPARTOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeTableAccessWithSubstitute($1, $3);
+			    free($1);
+			  }
+                      | IDENTIFIERTOKEN LPARTOKEN RPARTOKEN
+                          {
+			    $$ = makeTableAccessWithSubstitute($1, NULL);
 			    free($1);
 			  }
                       | list 
@@ -1327,5 +1358,112 @@ statedereference:       PRECTOKEN EQUALTOKEN QUESTIONMARKTOKEN
 			  }
 ;
 
+
+externalproctype:       CONSTANTTYPETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = CONSTANT_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | FUNCTIONTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = FUNCTION_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | RANGETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = RANGE_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | INTEGERTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = INTEGER_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | STRINGTYPETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = STRING_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | BOOLEANTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = BOOLEAN_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN CONSTANTTYPETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = CONSTANT_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN FUNCTIONTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = FUNCTION_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN RANGETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = RANGE_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN INTEGERTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = INTEGER_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN STRINGTYPETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = STRING_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN BOOLEANTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = BOOLEAN_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+;
+
+extendedexternalproctype: VOIDTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = VOID_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | externalproctype
+		          {
+			    $$ = $1;
+		          }
+;
+
+
+externalproctypesimplelist:   externalproctype
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | externalproctype COMMATOKEN externalproctypesimplelist
+                          {
+			    $$ = addElement($3, $1);
+			  }
+;
+
+externalproctypelist:       extendedexternalproctype
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | LPARTOKEN externalproctypesimplelist RPARTOKEN 
+                          {
+			    $$ = $2;
+			  }
+;
 
 

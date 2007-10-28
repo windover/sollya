@@ -1,3 +1,30 @@
+2007-10-25 17:33  clauter
+
+	* Makefile.am:
+
+	  Switched back to tools for philosophical reasons.
+
+2007-10-25 17:22  clauter
+
+	* ChangeLog, Makefile.am, configure.ac, execute.c, execute.h,
+	  expression.c, expression.h, internlexer.l, internparser.y,
+	  lexer.l, parser.y:
+
+	  Added hexadecimal IEEE754R printing and parsing mode.  Corrected
+	  a memory leak for dyadic constants.  Changed name to sollya.
+
+2007-10-25 15:25  njourdan
+
+	* configure.ac: FIX: gmp test
+
+2007-10-25 14:06  clauter
+
+	* configure.ac: Brought configure.ac back to first version
+
+2007-10-25 14:00  njourdan
+
+	* configure.ac: FIX: gmp test
+
 2007-10-23 18:29  clauter
 
 	* ChangeLog, double.c, double.h, execute.c, execute.h,

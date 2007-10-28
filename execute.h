@@ -179,12 +179,17 @@
 #define PRINTFLOAT 220
 #define HEXADECIMAL 221
 #define HEXADECIMALCONSTANT 222
+#define EXTERNALPROC 223
+#define UNIT 224
+#define EXTERNALPROCEDUREUSAGE 225
 
 int executeCommand(node *);
 
 void freeThing(node *);
 void rawPrintThing(node *);
 void freeThingOnVoid(void *);
+
+void *copyIntPtrOnVoid(void *);
 
 node *makeCommandList(chain *thinglist);
 node *makeWhile(node *thing1, node *thing2);
@@ -283,7 +288,7 @@ node *makeTripleDoubleSymbol();
 node *makeString(char *string);
 node *makeTableAccess(char *string);
 node *makeIsBound(char *string);
-node *makeTableAccessWithSubstitute(char *string, node *thing);
+node *makeTableAccessWithSubstitute(char *string, chain *thinglist);
 node *makeDecimalConstant(char *string);
 node *makeDyadicConstant(char *string);
 node *makeHexConstant(char *string);
@@ -359,6 +364,8 @@ node *makePrintXmlNewFile(node *, node *);
 node *makePrintXmlAppendFile(node *, node *);
 node *makeReadXml(node *);
 node *makeExecute(node *);
+node *makeExternalProc(char *, node *, chain *);
+node *makeUnit();
 
 
 #endif /* ifdef EXECUTE_H*/
