@@ -2203,7 +2203,7 @@ help:                   CONSTANTTOKEN
 			    printf("Prints the version of the software.\n");
                           }    
                       | EXTERNALPROCTOKEN                          {
-			    printf("externalplot(identifier, file, argumentypes -> resulttype): binds identifier to an external procedure with signature argumenttypes -> resulttype in file file.\n");
+			    printf("externalplot(identifier, file, argumentypes -> resulttype): binds identifier to an external procedure with signature argumenttypes -> resulttype in file.\n");
                           }    
                       | VOIDTOKEN                          {
 			    printf("Represents the void type for externalproc.\n");

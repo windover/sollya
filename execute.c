@@ -2302,6 +2302,56 @@ int evaluateThingToIntegerList(chain **ch, int *finalelliptic, node *tree) {
   return 0;
 }
 
+
+int evaluateThingToBooleanList(chain **ch, node *tree) {
+  node *evaluatedResult;
+  chain *curr;
+  int *arrayRes, *resPtr;
+  int i, resA;
+
+  evaluatedResult = evaluateThing(tree);
+
+  if (isPureList(evaluatedResult)) {
+    curr = evaluatedResult->arguments;
+    i = 0;
+    while (curr != NULL) {
+      if (!isPureTree((node *) (curr->value))) {
+	freeThing(evaluatedResult);
+	return 0;
+      }
+      i++;
+      curr = curr->next;
+    }
+    arrayRes = (int *) safeCalloc(i,sizeof(int));
+    curr = evaluatedResult->arguments; i = 0;
+    while (curr != NULL) {
+      if (!evaluateThingToBoolean(&resA,(node *) (curr->value),NULL)) {
+	freeThing(evaluatedResult);
+	free(arrayRes);
+	return 0;
+      } else {
+	arrayRes[i] = resA;
+      }
+      i++;
+      curr = curr->next;
+    }
+    curr = NULL;
+    for (i--;i>=0;i--) {
+      resPtr = (int *) safeMalloc(sizeof(int));
+      *resPtr = arrayRes[i];
+      curr = addElement(curr, resPtr);
+    }
+    free(arrayRes);
+    *ch = curr;
+    freeThing(evaluatedResult);
+    return 1;
+  }
+
+  freeThing(evaluatedResult);
+  return 0;
+}
+
+
 int evaluateThingToExpansionFormatList(chain **ch, node *tree) {
   node *evaluatedResult;
   chain *curr;
@@ -2891,7 +2941,7 @@ int evaluateThingToConstantList(chain **ch, node *tree) {
     }
     for (i=0;i<number;i++) {
       if (!evaluateThingToConstant(*(arrayMpfr[i]),arrayTrees[i],NULL)) {
-	for (k=0;k<=number;k++) {
+	for (k=0;k<number;k++) {
 	  freeThing(arrayTrees[k]);
 	  mpfr_clear(*(arrayMpfr[k]));
 	  free(arrayMpfr[k]);
@@ -2907,6 +2957,102 @@ int evaluateThingToConstantList(chain **ch, node *tree) {
       newChain = addElement(newChain,arrayMpfr[k]);
     }
     free(arrayMpfr);
+    *ch = newChain;
+    for (i=0;i<number;i++) freeThing(arrayTrees[i]);
+    free(arrayTrees);
+    return 1;
+  }
+
+  freeThing(evaluated);
+  return 0;
+}
+
+
+
+int evaluateThingToRangeList(chain **ch, node *tree) {
+  node **arrayTrees;
+  chain *newChain;
+  int i, number, k;
+  node *evaluated;
+  mpfi_t **arrayMpfi;
+  mpfr_t a,b;
+
+  evaluated = evaluateThing(tree);
+
+  if (isPureList(evaluated)) {
+    mpfr_init2(a, tools_precision);
+    mpfr_init2(b, tools_precision);
+    evaluateThingListToThingArray(&number, &arrayTrees, evaluated->arguments); 
+    arrayMpfi = (mpfi_t **) safeCalloc(number,sizeof(mpfi_t *));
+    for (i=0;i<number;i++) {
+      arrayMpfi[i] = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
+      mpfi_init2(*(arrayMpfi[i]),tools_precision);
+    }
+    for (i=0;i<number;i++) {
+      if (!evaluateThingToRange(a,b,arrayTrees[i])) {
+	for (k=0;k<number;k++) {
+	  freeThing(arrayTrees[k]);
+	  mpfi_clear(*(arrayMpfi[k]));
+	  free(arrayMpfi[k]);
+	}
+	free(arrayTrees);
+	free(arrayMpfi);
+	freeThing(evaluated);
+	mpfr_clear(a);
+	mpfr_clear(b);
+	return 0;
+      } else {
+	mpfi_interv_fr(*(arrayMpfi[i]),a,b);
+      }
+    }
+    newChain = NULL;
+    for (k=number-1;k>=0;k--) {
+      newChain = addElement(newChain,arrayMpfi[k]);
+    }
+    free(arrayMpfi);
+    *ch = newChain;
+    for (i=0;i<number;i++) freeThing(arrayTrees[i]);
+    free(arrayTrees);
+    mpfr_clear(a);
+    mpfr_clear(b);
+    return 1;
+  }
+
+  freeThing(evaluated);
+  return 0;
+}
+
+int evaluateThingToStringList(chain **ch, node *tree) {
+  node **arrayTrees;
+  chain *newChain;
+  int i, number, k;
+  node *evaluated;
+  char **arrayString;
+
+  evaluated = evaluateThing(tree);
+
+  if (isPureList(evaluated)) {
+    evaluateThingListToThingArray(&number, &arrayTrees, evaluated->arguments); 
+    arrayString = (char **) safeCalloc(number,sizeof(char *));
+    for (i=0;i<number;i++) {
+      if (!evaluateThingToString(&(arrayString[i]),arrayTrees[i])) {
+	for (k=0;k<i;k++) {
+	  free(arrayString[k]);
+	}
+	for (k=0;k<number;k++) {
+	  freeThing(arrayTrees[k]);
+	}
+	free(arrayTrees);
+	free(arrayString);
+	freeThing(evaluated);
+	return 0;
+      }
+    }
+    newChain = NULL;
+    for (k=number-1;k>=0;k--) {
+      newChain = addElement(newChain,arrayString[k]);
+    }
+    free(arrayString);
     *ch = newChain;
     for (i=0;i<number;i++) freeThing(arrayTrees[i]);
     free(arrayTrees);
@@ -10337,14 +10483,151 @@ node *evaluateThing(node *tree) {
 }
 
 int evaluateArgumentForExternalProc(void **res, node *argument, int type) {
+  int retVal;
+  mpfr_t a, b;
 
+  switch (type) {
+  case VOID_TYPE:
+    retVal = 0;
+    break;
+  case CONSTANT_TYPE:
+    *res = safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*((mpfr_t *) (*res)), tools_precision);
+    retVal = evaluateThingToConstant(*((mpfr_t *) (*res)), argument, NULL);
+    if (!retVal) {
+      mpfr_clear(*((mpfr_t *) (*res)));
+      free(*res);
+    }
+    break;
+  case FUNCTION_TYPE:
+    retVal = evaluateThingToPureTree((node **) res, argument);    
+    break;
+  case RANGE_TYPE:
+    mpfr_init2(a,tools_precision);
+    mpfr_init2(b,tools_precision);
+    retVal = evaluateThingToRange(a, b, argument);
+    if (retVal) {
+      *res = safeMalloc(sizeof(mpfi_t));
+      mpfi_init2(*((mpfi_t *) (*res)), tools_precision);
+      mpfi_interv_fr(*((mpfi_t *) (*res)), a, b);
+    }
+    mpfr_clear(a);
+    mpfr_clear(b);
+    break;
+  case INTEGER_TYPE:
+    *res = safeMalloc(sizeof(int));
+    retVal = evaluateThingToInteger((int *) (*res), argument, NULL);
+    if (!retVal) {
+      free(*res);
+    }
+    break;
+  case STRING_TYPE:
+    retVal = evaluateThingToString((char **) res, argument);    
+    break;
+  case BOOLEAN_TYPE:
+    *res = safeMalloc(sizeof(int));
+    retVal = evaluateThingToBoolean((int *) (*res), argument, NULL);    
+    if (!retVal) {
+      free(*res);
+    }
+    break;
+  case CONSTANT_LIST_TYPE:
+    if (evaluateThingToEmptyList(argument)) {
+      *((chain **) res) = NULL;
+      retVal = 1;
+    } else 
+      retVal = evaluateThingToConstantList((chain **) res, argument);
+    break;
+  case FUNCTION_LIST_TYPE:
+    if (evaluateThingToEmptyList(argument)) {
+      *((chain **) res) = NULL;
+      retVal = 1;
+    } else 
+      retVal = evaluateThingToPureListOfPureTrees((chain **) res, argument);
+    break;
+  case RANGE_LIST_TYPE:
+    if (evaluateThingToEmptyList(argument)) {
+      *((chain **) res) = NULL;
+      retVal = 1;
+    } else 
+      retVal = evaluateThingToRangeList((chain **) res, argument);
+    break;
+  case INTEGER_LIST_TYPE:
+    if (evaluateThingToEmptyList(argument)) {
+      *((chain **) res) = NULL;
+      retVal = 1;
+    } else 
+      retVal = evaluateThingToIntegerList((chain **) res, NULL, argument);    
+    break;
+  case STRING_LIST_TYPE:
+    if (evaluateThingToEmptyList(argument)) {
+      *((chain **) res) = NULL;
+      retVal = 1;
+    } else 
+      retVal = evaluateThingToStringList((chain **) res, argument);    
+    break;
+  case BOOLEAN_LIST_TYPE:
+    if (evaluateThingToEmptyList(argument)) {
+      *((chain **) res) = NULL;
+      retVal = 1;
+    } else 
+      retVal = evaluateThingToBooleanList((chain **) res, argument);    
+    break;
+  default:
+    fprintf(stderr, "Error in evaluateArgumentForExternalProc: unknown type.\n");
+    exit(1);
+  }
 
-  return 0;
+  return retVal;
 }
 
 void freeArgumentForExternalProc(void* arg, int type) {
 
-
+  switch (type) {
+  case VOID_TYPE:
+    break;
+  case CONSTANT_TYPE:
+    mpfr_clear(*((mpfr_t *) arg));
+    free(arg);
+    break;
+  case FUNCTION_TYPE:
+    freeThing((node *) arg);
+    break;
+  case RANGE_TYPE:
+    mpfi_clear(*((mpfi_t *) arg));
+    free(arg);
+    break;
+  case INTEGER_TYPE:
+    free(arg);
+    break;
+  case STRING_TYPE:
+    free(arg);
+    break;
+  case BOOLEAN_TYPE:
+    free(arg);
+    break;
+  case CONSTANT_LIST_TYPE:
+    freeChain((chain *) arg, freeMpfrPtr);
+    break;
+  case FUNCTION_LIST_TYPE:
+    freeChain((chain *) arg, freeThingOnVoid);
+    break;
+  case RANGE_LIST_TYPE:
+    freeChain((chain *) arg, freeMpfiPtr);
+    break;
+  case INTEGER_LIST_TYPE:
+    freeChain((chain *) arg, freeIntPtr);
+    break;
+  case STRING_LIST_TYPE:
+    freeChain((chain *) arg, free);
+    break;
+  case BOOLEAN_LIST_TYPE:
+    freeChain((chain *) arg, freeIntPtr);
+    break;
+  default:
+    fprintf(stderr, "Error in freeArgumentForExternalProc: unknown type.\n");
+    exit(1);
+  }
 
 }
 
@@ -10354,6 +10637,11 @@ int executeExternalProcedure(node **resultThing, libraryProcedure *proc, chain *
   int myResultSignature;
   void **arguments;
   int numberArgs, i, res, k;
+  int externalResult;
+  void *resultSpace;
+  mpfr_t a, b;
+  mp_prec_t pr;
+  node *tempNode;
 
   if ((lengthChain(args) == 1) && (isUnit((node *) (args->value)))) myArgs = NULL; else myArgs = args;
   if (*((int *) (proc->signature->next->value)) == VOID_TYPE) {
@@ -10385,7 +10673,7 @@ int executeExternalProcedure(node **resultThing, libraryProcedure *proc, chain *
     if (!res) {
       k = 0;
       curr2 = myArgSignature;
-      while ((curr2 != NULL) && (k <= i)) {
+      while ((curr2 != NULL) && (k < i)) {
 	freeArgumentForExternalProc(arguments[k],*((int *) (curr2->value)));
 	k++;
 	curr2 = curr2->next;
@@ -10397,15 +10685,390 @@ int executeExternalProcedure(node **resultThing, libraryProcedure *proc, chain *
     }
   }
   
-  
-
-
-
+  if (numberArgs != 0) {
+    switch (myResultSignature) {
+    case VOID_TYPE:
+      externalResult = ((int (*)(void **))(proc->code))(arguments);
+      if (externalResult) {
+	*resultThing = makeUnit();
+      }
+      break;
+    case CONSTANT_TYPE:
+      resultSpace = safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*((mpfr_t *) resultSpace),tools_precision);
+      externalResult = ((int (*)(mpfr_t *, void **))(proc->code))((mpfr_t *) resultSpace,arguments);
+      if (externalResult) {
+	*resultThing = makeConstant(*((mpfr_t *) resultSpace));
+      }
+      mpfr_clear(*((mpfr_t *) resultSpace));
+      free(resultSpace);
+      break;
+    case FUNCTION_TYPE:
+      externalResult = ((int (*)(node **, void **))(proc->code))((node **) (&resultSpace),arguments);
+      if (externalResult) {
+	*resultThing = (node *) resultSpace;
+      }
+      break;
+    case RANGE_TYPE:
+      resultSpace = safeMalloc(sizeof(mpfi_t));
+      mpfi_init2(*((mpfi_t *) resultSpace),tools_precision);
+      externalResult = ((int (*)(mpfi_t *, void **))(proc->code))((mpfi_t *) resultSpace,arguments);
+      if (externalResult) {
+	mpfr_init2(a,tools_precision);
+	mpfr_init2(b,tools_precision);
+	mpfi_get_left(a, *((mpfi_t *) resultSpace));
+	mpfi_get_right(b, *((mpfi_t *) resultSpace));
+	*resultThing = makeRange(makeConstant(a), makeConstant(b));
+	mpfr_clear(b);
+	mpfr_clear(a);
+      }
+      mpfi_clear(*((mpfi_t *) resultSpace));
+      free(resultSpace);
+      break;
+    case INTEGER_TYPE:
+      resultSpace = safeMalloc(sizeof(int));
+      externalResult = ((int (*)(int *, void **))(proc->code))((int *) (resultSpace),arguments);
+      if (externalResult) {
+	mpfr_init2(a,(mp_prec_t) (8 * sizeof(int) + 5));
+	mpfr_set_si(a,*((int *) resultSpace), GMP_RNDN);
+	*resultThing = makeConstant(a);
+	mpfr_clear(a);
+      }
+      free(resultSpace);
+      break;
+    case STRING_TYPE:
+      externalResult = ((int (*)(char **, void **))(proc->code))((char **) (&resultSpace),arguments);
+      if (externalResult) {
+	*resultThing = makeString((char *) resultSpace);
+	free(resultSpace);
+      }
+      break;
+    case BOOLEAN_TYPE:
+      resultSpace = safeMalloc(sizeof(int));
+      externalResult = ((int (*)(int *, void **))(proc->code))((int *) (resultSpace),arguments);
+      if (externalResult) {
+	if (*((int *) resultSpace)) {
+	  *resultThing = makeTrue();
+	} else {
+	  *resultThing = makeFalse();
+	}
+      }
+      free(resultSpace);
+      break;
+    case CONSTANT_LIST_TYPE:
+      externalResult = ((int (*)(chain **, void **))(proc->code))((chain **) (&resultSpace),arguments);
+      if (externalResult) {
+	curr = (chain *) resultSpace;
+	if (curr == NULL) {
+	  *resultThing = makeEmptyList();
+	} else {
+	  curr2 = NULL;
+	  while (curr != NULL) {
+	    curr2 = addElement(curr2, makeConstant(*((mpfr_t *) (curr->value))));
+	    curr = curr->next;
+	  }
+	  *resultThing = makeList(copyChain(curr2, copyThingOnVoid));
+	  freeChain(curr2, freeThingOnVoid);
+	  freeChain((chain *) resultSpace, freeMpfrPtr);
+	}
+      }
+      break;
+    case FUNCTION_LIST_TYPE:
+      externalResult = ((int (*)(chain **, void **))(proc->code))((chain **) (&resultSpace),arguments);
+      if (externalResult) {	
+	if (((chain *) resultSpace) == NULL) {
+	  *resultThing = makeEmptyList();
+	} else {
+	  *resultThing = makeList((chain *) resultSpace);
+	}
+      }
+      break;
+    case RANGE_LIST_TYPE:
+      externalResult = ((int (*)(chain **, void **))(proc->code))((chain **) (&resultSpace),arguments);
+      if (externalResult) {
+	curr = (chain *) resultSpace;
+	if (curr == NULL) {
+	  *resultThing = makeEmptyList();
+	} else {
+	  curr2 = NULL;
+	  while (curr != NULL) {
+	    pr = mpfi_get_prec(*((mpfi_t *) (curr->value)));
+	    mpfr_init2(a, pr);
+	    mpfr_init2(b, pr);
+	    mpfi_get_left(a, *((mpfi_t *) (curr->value)));
+	    mpfi_get_right(b, *((mpfi_t *) (curr->value)));
+	    curr2 = addElement(curr2, makeRange(makeConstant(a), makeConstant(b)));
+	    mpfr_clear(a);
+	    mpfr_clear(b);
+	    curr = curr->next;
+	  }
+	  *resultThing = makeList(copyChain(curr2, copyThingOnVoid));
+	  freeChain(curr2, freeThingOnVoid);
+	  freeChain((chain *) resultSpace, freeMpfiPtr);
+	}
+      }
+      break;
+    case INTEGER_LIST_TYPE:
+      externalResult = ((int (*)(chain **, void **))(proc->code))((chain **) (&resultSpace),arguments);
+      if (externalResult) {
+	curr = (chain *) resultSpace;
+	if (curr == NULL) {
+	  *resultThing = makeEmptyList();
+	} else {
+	  curr2 = NULL;
+	  mpfr_init2(a,(mp_prec_t) (8 * sizeof(int) + 5));
+	  while (curr != NULL) {
+	    mpfr_set_si(a, *((int *) (curr->value)), GMP_RNDN);
+	    curr2 = addElement(curr2, makeConstant(a));
+	    curr = curr->next;
+	  }
+	  mpfr_clear(a);
+	  *resultThing = makeList(copyChain(curr2, copyThingOnVoid));
+	  freeChain(curr2, freeThingOnVoid);
+	  freeChain((chain *) resultSpace, freeIntPtr);
+	}
+      }
+      break;
+    case STRING_LIST_TYPE:
+      externalResult = ((int (*)(chain **, void **))(proc->code))((chain **) (&resultSpace),arguments);
+      if (externalResult) {
+	curr = (chain *) resultSpace;
+	if (curr == NULL) {
+	  *resultThing = makeEmptyList();
+	} else {
+	  curr2 = NULL;
+	  while (curr != NULL) {
+	    curr2 = addElement(curr2, makeString((char *) (curr->value)));
+	    curr = curr->next;
+	  }
+	  *resultThing = makeList(copyChain(curr2, copyThingOnVoid));
+	  freeChain(curr2, freeThingOnVoid);
+	  freeChain((chain *) resultSpace, free);
+	}
+      }
+      break;
+    case BOOLEAN_LIST_TYPE:
+      externalResult = ((int (*)(chain **, void **))(proc->code))((chain **) (&resultSpace),arguments);
+      if (externalResult) {
+	curr = (chain *) resultSpace;
+	if (curr == NULL) {
+	  *resultThing = makeEmptyList();
+	} else {
+	  curr2 = NULL;
+	  while (curr != NULL) {
+	    if (*((int *) (curr->value))) {
+	      tempNode = makeTrue();
+	    } else {
+	      tempNode = makeFalse();
+	    }
+	    curr2 = addElement(curr2, tempNode);
+	    curr = curr->next;
+	  }
+	  *resultThing = makeList(copyChain(curr2, copyThingOnVoid));
+	  freeChain(curr2, freeThingOnVoid);
+	  freeChain((chain *) resultSpace, freeIntPtr);
+	}
+      }
+      break;
+    default:
+      fprintf(stderr, "Error in executeExternalProcedure: unknown type.\n");
+      exit(1);
+    }
+  } else {
+    switch (myResultSignature) {
+    case VOID_TYPE:
+      externalResult = ((int (*)(void))(proc->code))();
+      if (externalResult) {
+	*resultThing = makeUnit();
+      }
+      break;
+    case CONSTANT_TYPE:
+      resultSpace = safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*((mpfr_t *) resultSpace),tools_precision);
+      externalResult = ((int (*)(mpfr_t *))(proc->code))((mpfr_t *) resultSpace);
+      if (externalResult) {
+	*resultThing = makeConstant(*((mpfr_t *) resultSpace));
+      }
+      mpfr_clear(*((mpfr_t *) resultSpace));
+      free(resultSpace);
+      break;
+    case FUNCTION_TYPE:
+      externalResult = ((int (*)(node **))(proc->code))((node **) (&resultSpace));
+      if (externalResult) {	
+	if (((chain *) resultSpace) == NULL) {
+	  *resultThing = makeEmptyList();
+	} else {
+	  *resultThing = makeList((chain *) resultSpace);
+	}
+      }
+      break;
+    case RANGE_TYPE:
+      resultSpace = safeMalloc(sizeof(mpfi_t));
+      mpfi_init2(*((mpfi_t *) resultSpace),tools_precision);
+      externalResult = ((int (*)(mpfi_t *))(proc->code))((mpfi_t *) resultSpace);
+      if (externalResult) {
+	mpfr_init2(a,tools_precision);
+	mpfr_init2(b,tools_precision);
+	mpfi_get_left(a, *((mpfi_t *) resultSpace));
+	mpfi_get_right(b, *((mpfi_t *) resultSpace));
+	*resultThing = makeRange(makeConstant(a), makeConstant(b));
+	mpfr_clear(b);
+	mpfr_clear(a);
+      }
+      mpfi_clear(*((mpfi_t *) resultSpace));
+      free(resultSpace);
+      break;
+    case INTEGER_TYPE:
+      resultSpace = safeMalloc(sizeof(int));
+      externalResult = ((int (*)(int *))(proc->code))((int *) (resultSpace));
+      if (externalResult) {
+	mpfr_init2(a,(mp_prec_t) (8 * sizeof(int) + 5));
+	mpfr_set_si(a,*((int *) resultSpace), GMP_RNDN);
+	*resultThing = makeConstant(a);
+	mpfr_clear(a);
+      }
+      free(resultSpace);
+      break;
+    case STRING_TYPE:
+      externalResult = ((int (*)(char **))(proc->code))((char **) (&resultSpace));
+      if (externalResult) {
+	*resultThing = makeString((char *) resultSpace);
+	free(resultSpace);
+      }
+      break;
+    case BOOLEAN_TYPE:
+      resultSpace = safeMalloc(sizeof(int));
+      externalResult = ((int (*)(int *))(proc->code))((int *) (resultSpace));
+      if (externalResult) {
+	if (*((int *) resultSpace)) {
+	  *resultThing = makeTrue();
+	} else {
+	  *resultThing = makeFalse();
+	}
+      }
+      free(resultSpace);
+      break;
+    case CONSTANT_LIST_TYPE:
+      externalResult = ((int (*)(chain **))(proc->code))((chain **) (&resultSpace));
+      if (externalResult) {
+	curr = (chain *) resultSpace;
+	if (curr == NULL) {
+	  *resultThing = makeEmptyList();
+	} else {
+	  curr2 = NULL;
+	  while (curr != NULL) {
+	    curr2 = addElement(curr2, makeConstant(*((mpfr_t *) (curr->value))));
+	    curr = curr->next;
+	  }
+	  *resultThing = makeList(copyChain(curr2, copyThingOnVoid));
+	  freeChain(curr2, freeThingOnVoid);
+	  freeChain((chain *) resultSpace, freeMpfrPtr);
+	}
+      }
+      break;
+    case FUNCTION_LIST_TYPE:
+      externalResult = ((int (*)(chain **))(proc->code))((chain **) (&resultSpace));
+      if (externalResult) {	
+	*resultThing = makeList((chain *) resultSpace);
+      }
+      break;
+    case RANGE_LIST_TYPE:
+      externalResult = ((int (*)(chain **))(proc->code))((chain **) (&resultSpace));
+      if (externalResult) {
+	curr = (chain *) resultSpace;
+	if (curr == NULL) {
+	  *resultThing = makeEmptyList();
+	} else {
+	  curr2 = NULL;
+	  while (curr != NULL) {
+	    pr = mpfi_get_prec(*((mpfi_t *) (curr->value)));
+	    mpfr_init2(a, pr);
+	    mpfr_init2(b, pr);
+	    mpfi_get_left(a, *((mpfi_t *) (curr->value)));
+	    mpfi_get_right(b, *((mpfi_t *) (curr->value)));
+	    curr2 = addElement(curr2, makeRange(makeConstant(a), makeConstant(b)));
+	    mpfr_clear(a);
+	    mpfr_clear(b);
+	    curr = curr->next;
+	  }
+	  *resultThing = makeList(copyChain(curr2, copyThingOnVoid));
+	  freeChain(curr2, freeThingOnVoid);
+	  freeChain((chain *) resultSpace, freeMpfiPtr);
+	}
+      }
+      break;
+    case INTEGER_LIST_TYPE:
+      externalResult = ((int (*)(chain **))(proc->code))((chain **) (&resultSpace));
+      if (externalResult) {
+	curr = (chain *) resultSpace;
+	if (curr == NULL) {
+	  *resultThing = makeEmptyList();
+	} else {
+	  curr2 = NULL;
+	  mpfr_init2(a,(mp_prec_t) (8 * sizeof(int) + 5));
+	  while (curr != NULL) {
+	    mpfr_set_si(a, *((int *) (curr->value)), GMP_RNDN);
+	    curr2 = addElement(curr2, makeConstant(a));
+	    curr = curr->next;
+	  }
+	  mpfr_clear(a);
+	  *resultThing = makeList(copyChain(curr2, copyThingOnVoid));
+	  freeChain(curr2, freeThingOnVoid);
+	  freeChain((chain *) resultSpace, freeIntPtr);
+	}
+      }
+      break;
+    case STRING_LIST_TYPE:
+      externalResult = ((int (*)(chain **))(proc->code))((chain **) (&resultSpace));
+      if (externalResult) {
+	curr = (chain *) resultSpace;
+	if (curr == NULL) {
+	  *resultThing = makeEmptyList();
+	} else {
+	  curr2 = NULL;
+	  while (curr != NULL) {
+	    curr2 = addElement(curr2, makeString((char *) (curr->value)));
+	    curr = curr->next;
+	  }
+	  *resultThing = makeList(copyChain(curr2, copyThingOnVoid));
+	  freeChain(curr2, freeThingOnVoid);
+	  freeChain((chain *) resultSpace, free);
+	}
+      }
+      break;
+    case BOOLEAN_LIST_TYPE:
+      externalResult = ((int (*)(chain **))(proc->code))((chain **) (&resultSpace));
+      if (externalResult) {
+	curr = (chain *) resultSpace;
+	if (curr == NULL) {
+	  *resultThing = makeEmptyList();
+	} else {
+	  curr2 = NULL;
+	  while (curr != NULL) {
+	    if (*((int *) (curr->value))) {
+	      tempNode = makeTrue();
+	    } else {
+	      tempNode = makeFalse();
+	    }
+	    curr2 = addElement(curr2, tempNode);
+	    curr = curr->next;
+	  }
+	  *resultThing = makeList(copyChain(curr2, copyThingOnVoid));
+	  freeChain(curr2, freeThingOnVoid);
+	  freeChain((chain *) resultSpace, freeIntPtr);
+	}
+      }
+      break;
+    default:
+      fprintf(stderr, "Error in executeExternalProcedure: unknown type.\n");
+      exit(1);
+    }
+  }
   
   if (numberArgs != 0) {
     k = 0;
     curr2 = myArgSignature;
-    while ((curr2 != NULL) && (k <= i)) {
+    while ((curr2 != NULL) && (k <= numberArgs)) {
       freeArgumentForExternalProc(arguments[k],*((int *) (curr2->value)));
       k++;
       curr2 = curr2->next;
@@ -10413,7 +11076,7 @@ int executeExternalProcedure(node **resultThing, libraryProcedure *proc, chain *
     free(arguments);
   }
   
-  return 0;
+  return externalResult;
 }
 
 
@@ -11169,6 +11832,7 @@ node *evaluateThingInner(node *tree) {
 	    strcpy(copy->string,tree->string);
 	  }
 	} else {
+	  printMessage(1,"Warning: external procedure has signalized failure.\n");
 	  free(copy);
 	  copy = makeError();
 	  freeChain(tempChain, freeThingOnVoid);
