@@ -1,4 +1,4 @@
-ARENAIREPLOT:
+SOLLYA:
 
 In order to compile the software you will need the following packages installed:
 
@@ -17,5 +17,5 @@ make
 
 You can then use the software typing
 
-./tools
+./sollya
 

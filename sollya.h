@@ -1,5 +1,5 @@
-#ifndef ARENAIREPLOT_H
-#define ARENAIREPLOT_H
+#ifndef SOLLYA_H
+#define SOLLYA_H
 
 #include <mpfr.h>
 #include <mpfi.h>
