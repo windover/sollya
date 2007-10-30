@@ -61,9 +61,11 @@ xml.c \
 xml.h 
 sollya_CFLAGS = $(AM_CFLAGS)
 
+include_HEADERS = sollya.h
 
 lib_LTLIBRARIES     = libsollya.la
 libsollya_la_SOURCES = \
+sollya.h \
 internparser.y \
 miniparser.y \
 parser.y \
