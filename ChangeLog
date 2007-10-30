@@ -1,156 +1,169 @@
-2007-10-25 17:33  clauter
+2007-10-30 14:24  clauter
 
-	* Makefile.am:
+	* Makefile.am: Added installation of the sollya.h header file for
+	  usage of libsollya.
 
-	  Switched back to tools for philosophical reasons.
+2007-10-30 14:01  schevill
 
-2007-10-25 17:22  clauter
+	* configure.ac: autoconf was complaining about AM_PROG_CC_C_O. It
+	  is now fixed
+
+2007-10-30 13:50  clauter
+
+	* README, doc/sollya.pdf, doc/tools_manual.pdf, sollya.h: Some name
+	  changes.
+
+2007-10-30 13:41  clauter
+
+	* arenairetoolsexample.c, libsollyaexample.c: Changed name of
+	  arenairetoolsexample.c.
+
+2007-10-30 13:41  clauter
+
+	* Makefile.am, arenaireplot.h, arenairetoolsexample.c, external.c,
+	  externalfun.c, externalproc.c, plot.c, sollya.h, xml.c: Renamed
+	  occurrences of arenaireplot/tools to sollya.
+
+2007-10-29 15:18  clauter
+
+	* execute.c, externalproc.c, parser.y: Finished work on external
+	  procedures. Principally working.
+	  Not all combinations of types in argument and result have been
+	  tested, yet.
+	  
+	  Added example file for implementing an external C procedure.
+
+2007-10-28 22:08  clauter
+
+	* ChangeLog, arenaireplot.h, execute.c, execute.h, expression.h,
+	  general.c, general.h, internlexer.l, internparser.y, lexer.l,
+	  library.c, library.h, parser.y: Started adding support for
+	  binding identifiers to external procedures.
+	  Work in progress. Compiles, old functionalities work, usage of
+	  external procedure may segfault.
+
+2007-10-25 15:33  clauter
+
+	* Makefile.am: Switched back to tools for philosophical reasons.
+
+2007-10-25 15:22  clauter
 
 	* ChangeLog, Makefile.am, configure.ac, execute.c, execute.h,
 	  expression.c, expression.h, internlexer.l, internparser.y,
-	  lexer.l, parser.y:
+	  lexer.l, parser.y: Added hexadecimal IEEE754R printing and
+	  parsing mode.
+	  Corrected a memory leak for dyadic constants.
+	  Changed name to sollya.
 
-	  Added hexadecimal IEEE754R printing and parsing mode.  Corrected
-	  a memory leak for dyadic constants.  Changed name to sollya.
-
-2007-10-25 15:25  njourdan
+2007-10-25 13:25  njourdan
 
 	* configure.ac: FIX: gmp test
 
-2007-10-25 14:06  clauter
+2007-10-25 12:06  clauter
 
 	* configure.ac: Brought configure.ac back to first version
 
-2007-10-25 14:00  njourdan
+2007-10-25 12:00  njourdan
 
 	* configure.ac: FIX: gmp test
 
-2007-10-23 18:29  clauter
+2007-10-23 16:29  clauter
 
 	* ChangeLog, double.c, double.h, execute.c, execute.h,
-	  internlexer.l, internparser.y, lexer.l, parser.y:
+	  internlexer.l, internparser.y, lexer.l, parser.y: Added simple
+	  precision hexadecimal parsing capability.
+	  Added printfloat(constant) for print out in simple precision.
 
-	  Added simple precision hexadecimal parsing capability.  Added
-	  printfloat(constant) for print out in simple precision.
-
-2007-10-23 14:00  clauter
+2007-10-23 12:00  clauter
 
 	* ChangeLog, double.c: Added a wraning for sNaN
 
-2007-10-22 18:11  clauter
+2007-10-22 16:11  clauter
 
 	* ChangeLog, execute.c, execute.h, internlexer.l, internparser.y,
-	  lexer.l, parser.y:
+	  lexer.l, parser.y: Added .: and :. in addition to ::
+	  Added #include as a replacement to read without removing read in
+	  the moment.
 
-	  Added .: and :. in addition to :: Added #include as a replacement
-	  to read without removing read in the moment.
+2007-10-17 14:20  clauter
 
-2007-10-17 16:20  clauter
+	* ChangeLog, parser.y: Added help for isbound.
 
-	* ChangeLog, parser.y:
-
-	  Added help for isbound.
-
-2007-10-17 15:36  clauter
+2007-10-17 13:36  clauter
 
 	* ChangeLog, execute.c, execute.h, internlexer.l, internparser.y,
-	  lexer.l, parser.y:
+	  lexer.l, parser.y: Added isbound.
 
-	  Added isbound.
-
-2007-10-15 15:05  schevill
+2007-10-15 13:05  schevill
 
 	* arenairetoolsexample.c, double.c, execute.c, expression.c,
 	  external.c, general.c, implement.c, infnorm.c, miniparser.y,
 	  pari_utils.c, plot.c, taylor.c, worstcase.c: changed *occured*
 	  into *occurred* everywhere
 
-2007-10-08 13:58  clauter
+2007-10-08 11:58  clauter
 
-	* expression.c:
+	* expression.c: Corrected a bug in string length computation that
+	  could generate a segmentation fault.
 
-	  Corrected a bug in string length computation that could generate
-	  a segmentation fault.
+2007-10-08 10:47  clauter
 
-2007-10-08 12:47  clauter
+	* ChangeLog, execute.c, expression.c: Slight changes.
 
-	* ChangeLog, execute.c, expression.c:
+2007-10-08 10:32  clauter
 
-	  Slight changes.
+	* ChangeLog: New Changelog.
 
-2007-10-08 12:32  clauter
+2007-10-08 10:20  clauter
 
-	* ChangeLog:
+	* general.c: Changed slightly malloc.
 
-	  New Changelog.
+2007-10-08 10:19  clauter
 
-2007-10-08 12:20  clauter
+	* general.c, general.h, xml.c: Changed slightly malloc use.
 
-	* general.c:
+2007-10-08 08:17  clauter
 
-	  Changed slightly malloc.
+	* ChangeLog, configure.ac: Temporarily remove test for malloc and
+	  realloc in configure.ac for compatibility issues.
 
-2007-10-08 12:19  clauter
+2007-10-06 17:31  clauter
 
-	* general.c, general.h, xml.c:
+	* execute.c: Constants (or constant expressions once evaluate to a
+	  constant) retain their
+	  precisions even on range constructions. Nevertheless, complex
+	  types as lists
+	  and ranges may be rounded down at their last evaluation.
 
-	  Changed slightly malloc use.
+2007-10-04 13:32  clauter
 
-2007-10-08 10:17  clauter
+	* ChangeLog: New Changelog.
 
-	* ChangeLog, configure.ac:
+2007-10-04 13:31  clauter
 
-	  Temporarily remove test for malloc and realloc in configure.ac
-	  for compatibility issues.
+	* expression.c: Patched a bug introduced when patching a bug (2).
 
-2007-10-06 19:31  clauter
+2007-10-04 12:33  clauter
 
-	* execute.c:
+	* ChangeLog: New Changelog
 
-	  Constants (or constant expressions once evaluate to a constant)
-	  retain their precisions even on range constructions.
-	  Nevertheless, complex types as lists and ranges may be rounded
-	  down at their last evaluation.
+2007-10-04 12:00  clauter
 
-2007-10-04 15:32  clauter
+	* execute.c: Expressions are constant only if they can be proven
+	  constant by safe means.
 
-	* ChangeLog:
+2007-10-04 11:34  clauter
 
-	  New Changelog.
+	* execute.c: Improved syntax error handling on constant
+	  expressions.
 
-2007-10-04 15:31  clauter
+2007-10-04 09:11  clauter
 
-	* expression.c:
+	* execute.c, general.c: In range bounds and comparisons,
+	  expressions that are not detected to
+	  be constant are considered as a type error.
 
-	  Patched a bug introduced when patching a bug (2).
-
-2007-10-04 14:33  clauter
-
-	* ChangeLog:
-
-	  New Changelog
-
-2007-10-04 14:00  clauter
-
-	* execute.c:
-
-	  Expressions are constant only if they can be proven constant by
-	  safe means.
-
-2007-10-04 13:34  clauter
-
-	* execute.c:
-
-	  Improved syntax error handling on constant expressions.
-
-2007-10-04 11:11  clauter
-
-	* execute.c, general.c:
-
-	  In range bounds and comparisons, expressions that are not
-	  detected to be constant are considered as a type error.
-
-2007-10-03 19:00  schevill
+2007-10-03 17:00  schevill
 
 	* remez.c: Newton's algorithm used to fail when a point x where
 	  f'(x)=0 is met during the algorithm. This bug is fixed. I also
@@ -160,214 +173,178 @@
 	  algorithm loops infinitely and this implementation claims nothing
 	  but being a heuristic
 
-2007-10-03 16:26  clauter
+2007-10-03 14:26  clauter
 
-	* expression.c:
+	* expression.c: Corrected a bug in expand.
 
-	  Corrected a bug in expand.
+2007-10-03 11:56  clauter
 
-2007-10-03 13:56  clauter
+	* ChangeLog, configure.ac: Changed configure for disabling building
+	  a shared library by default.
 
-	* ChangeLog, configure.ac:
-
-	  Changed configure for disabling building a shared library by
-	  default.
-
-2007-10-02 11:00  njourdan
+2007-10-02 09:00  njourdan
 
 	* xml.c: Add: variable name check, unknown markup check, error
 	  recovery
 
-2007-10-01 18:13  njourdan
+2007-10-01 16:13  njourdan
 
-	* configure.ac: [no log message]
+	* configure.ac: *** empty log message ***
 
-2007-10-01 18:00  njourdan
+2007-10-01 16:02  njourdan
 
 	* configure.ac: Upd: version autoconf
 
-2007-10-01 17:08  clauter
+2007-10-01 16:00  njourdan
 
-	* parser.y:
+	* configure.ac: Upd: version autoconf
 
-	  Adapted help.
+2007-10-01 15:08  clauter
 
-2007-10-01 15:25  schevill
+	* parser.y: Adapted help.
+
+2007-10-01 13:25  schevill
 
 	* configure.ac: configure.ac checks correctly export-dynamic
 
-2007-10-01 14:14  clauter
+2007-10-01 12:14  clauter
 
-	* configure.ac, general.c:
+	* configure.ac, general.c: Added check for backtrace.
 
-	  Added check for backtrace.
-
-2007-10-01 14:07  schevill
+2007-10-01 12:07  schevill
 
 	* configure.ac: configure.ac compatible with a Mac OS X
 	  architecture
 
-2007-10-01 11:26  clauter
+2007-10-01 09:26  clauter
 
-	* ChangeLog, Makefile.am, arenairetoolsexample.c:
+	* ChangeLog, Makefile.am, arenairetoolsexample.c: Corrected
+	  compilation indication in libary example.
 
-	  Corrected compilation indication in libary example.
+2007-10-01 09:20  clauter
 
-2007-10-01 11:20  clauter
-
-	* Makefile.am, lexer.l, parser.y:
-
-	  Removed convenience library support because it did not work.
+	* Makefile.am, lexer.l, parser.y: Removed convenience library
+	  support because it did not work.
 	  Added version.
 
-2007-10-01 11:10  clauter
+2007-10-01 09:10  clauter
 
-	* ChangeLog, Makefile.am:
+	* ChangeLog, Makefile.am: Added support for a convenience library
+	  libtools2.
 
-	  Added support for a convenience library libtools2.
+2007-10-01 08:49  clauter
 
-2007-10-01 10:49  clauter
+	* internlexer.l, lexer.l, minilexer.l: Forgotten files.
 
-	* internlexer.l, lexer.l, minilexer.l:
+2007-10-01 08:45  clauter
 
-	  Forgotten files.
+	* Manuel_fr.tex: Removing french Manual.
 
-2007-10-01 10:45  clauter
-
-	* Manuel_fr.tex:
-
-	  Removing french Manual.
-
-2007-10-01 10:44  clauter
+2007-10-01 08:44  clauter
 
 	* AUTHORS, COPYING, ChangeLog, INSTALL, Makefile.am, NEWS,
-	  autogen.sh, configure.ac, expression.c, externalfun.c, general.c,
-	  internlexer.lex, internparser.y, lexer.lex, makefile,
-	  minilexer.lex, miniparser.y, parser.y, doc/tools_manual.pdf:
+	  autogen.sh, configure.ac, doc, doc/tools_manual.pdf,
+	  expression.c, externalfun.c, general.c, internlexer.lex,
+	  internparser.y, lexer.lex, makefile, minilexer.lex, miniparser.y,
+	  parser.y: Catapulted arenaireplot to the configure - age.
 
-	  Catapulted arenaireplot to the configure - age.
+2007-09-27 15:08  clauter
 
-2007-09-27 17:08  clauter
+	* makefile: Modified makefile and XML parser.
 
-	* makefile:
+2007-09-27 12:57  clauter
 
-	  Modified makefile and XML parser.
+	* general.c, makefile: Removed the annoying old version of PARI
+	  Improved makefile.
 
-2007-09-27 14:57  clauter
-
-	* general.c, makefile:
-
-	  Removed the annoying old version of PARI Improved makefile.
-
-2007-09-27 14:34  clauter
+2007-09-27 12:34  clauter
 
 	* execute.c, execute.h, general.c, general.h, internlexer.lex,
 	  internparser.y, lexer.lex, makefile, minilexer.lex, miniparser.y,
-	  parser.y:
-
-	  Added execute.  Allowed for empty blocks.  Allowed for error
-	  recovery to the last command not leaving the outest block.
+	  parser.y: Added execute.
+	  Allowed for empty blocks.
+	  Allowed for error recovery to the last command not leaving the
+	  outest block.
 	  Improved makefile.
 
-2007-09-26 11:30  schevill
+2007-09-26 09:30  schevill
 
 	* remez.c: correct verbosity level in guessdegree
 
-2007-09-26 11:29  schevill
+2007-09-26 09:29  schevill
 
 	* remez.c: intervals should now be correct as output of guessdegree
 
-2007-09-25 10:51  clauter
+2007-09-25 08:51  clauter
 
-	* compile.sh, execute.c:
+	* compile.sh, execute.c: Changed a verbosity.
 
-	  Changed a verbosity.
-
-2007-09-24 16:08  schevill
+2007-09-24 14:08  schevill
 
 	* remez.c: A major bug affecting the construction of the matrix
 	  when w(x)=0 for some x has been corrected
 
-2007-09-24 15:19  schevill
+2007-09-24 13:19  schevill
 
 	* remez.c: an important warning is displayed even if verbosity=0,
 	  but it is now displayed as a commentar
 
-2007-09-20 19:17  schevill
+2007-09-20 17:17  schevill
 
 	* remez.c: minor fixes in remez
 
-2007-09-20 14:10  schevill
+2007-09-20 12:10  schevill
 
 	* remez.c: A bug corrected in Remez
 
-2007-09-20 13:19  clauter
+2007-09-20 11:19  clauter
 
-	* execute.c, general.c:
+	* execute.c, general.c: Added backtrace display upon SIGSEGV.
 
-	  Added backtrace display upon SIGSEGV.
+2007-09-19 12:55  clauter
 
-2007-09-19 14:55  clauter
+	* compile.sh, execute.c: Changed slightly compiling script.
+	  Corrected a bug in externalplot execution.
 
-	* compile.sh, execute.c:
+2007-09-19 09:32  clauter
 
-	  Changed slightly compiling script.  Corrected a bug in
-	  externalplot execution.
+	* general.c, parser.y: Changed a bug in the demasking of strings.
 
-2007-09-19 11:32  clauter
+2007-09-19 09:00  clauter
 
-	* general.c, parser.y:
+	* lexer.lex, parser.y: Modifier user output upon syntax error.
 
-	  Changed a bug in the demasking of strings.
+2007-09-18 12:48  clauter
 
-2007-09-19 11:00  clauter
+	* double.c, execute.c, parser.y: Corrected two bugs.
 
-	* lexer.lex, parser.y:
-
-	  Modifier user output upon syntax error.
-
-2007-09-18 14:48  clauter
-
-	* double.c, execute.c, parser.y:
-
-	  Corrected two bugs.
-
-2007-09-18 14:15  clauter
+2007-09-18 12:15  clauter
 
 	* double.c, double.h, execute.c, execute.h, lexer.lex, parser.y:
-
 	  Added roundcorrectly.
 
-2007-09-18 13:13  clauter
+2007-09-18 11:13  clauter
 
-	* execute.c:
+	* execute.c: Changed behaviour of comparisons on expressions that
+	  are not constants.
 
-	  Changed behaviour of comparisons on expressions that are not
-	  constants.
+2007-09-17 14:27  clauter
 
-2007-09-17 16:27  clauter
+	* expression.c: Added printing of small integers as integers.
 
-	* expression.c:
+2007-09-17 13:15  clauter
 
-	  Added printing of small integers as integers.
+	* execute.c, execute.h, lexer.lex, parser.y: Added readfile.
 
-2007-09-17 15:15  clauter
+2007-09-17 12:30  clauter
 
-	* execute.c, execute.h, lexer.lex, parser.y:
+	* execute.c: corrected two bugs.
 
-	  Added readfile.
-
-2007-09-17 14:30  clauter
-
-	* execute.c:
-
-	  corrected two bugs.
-
-2007-09-14 16:37  njourdan
+2007-09-14 14:37  njourdan
 
 	* xml.c: Upd: add file://./mathmlc2p-web.xsl
 
-2007-09-14 16:32  clauter
+2007-09-14 14:32  clauter
 
 	* arenaireplot.h, arenairetoolsexample.c, assignment.c, chain.c,
 	  double.c, execute.c, execute.h, expression.c, external.c,
@@ -375,1083 +352,907 @@
 	  infnorm.c, integral.c, lexer.lex, library.c, main.c, main.h,
 	  makefile, minilexer.lex, miniparser.y, pari_utils.c,
 	  pari_utils.h, parser.y, plot.c, proof.c, remez.c, taylor.c,
-	  worstcase.c, xml.c, xml.h:
+	  worstcase.c, xml.c, xml.h: Allowed for and added compilation of a
+	  library version of arenaireplot.
+	  Added an example usage file to the repository.
 
-	  Allowed for and added compilation of a library version of
-	  arenaireplot.  Added an example usage file to the repository.
-
-2007-09-14 15:06  njourdan
-
-	* xml.c: Upd: XML header files
-
-2007-09-14 14:57  njourdan
+2007-09-14 13:06  njourdan
 
 	* xml.c: Upd: XML header files
 
-2007-09-13 16:45  njourdan
+2007-09-14 12:57  njourdan
+
+	* xml.c: Upd: XML header files
+
+2007-09-13 14:45  njourdan
 
 	* xml.c: Simplify parsing code (FSM)
 
-2007-09-13 16:41  njourdan
+2007-09-13 14:42  njourdan
 
 	* xml.c: Simplify parsing code (FSM)
 
-2007-09-12 17:39  clauter
+2007-09-13 14:41  njourdan
+
+	* xml.c: Simplify parsing code (FSM)
+
+2007-09-12 15:39  clauter
 
 	* double.c, double.h, execute.c, execute.h, lexer.lex, parser.y:
-
 	  Added functionalities mantissa, exponent and precision to user
 	  interface.
 
-2007-09-11 16:20  clauter
+2007-09-11 14:20  clauter
 
-	* xml.c:
+	* xml.c: Removed a printf to have a printMessage.
 
-	  Removed a printf to have a printMessage.
+2007-09-11 14:14  clauter
 
-2007-09-11 16:14  clauter
+	* xml.c: Removed a displayed line in readxml.
 
-	* xml.c:
+2007-09-11 14:11  clauter
 
-	  Removed a displayed line in readxml.
+	* xml.c: Removed some warnings in xml.c
 
-2007-09-11 16:11  clauter
-
-	* xml.c:
-
-	  Removed some warnings in xml.c
-
-2007-09-11 16:07  njourdan
+2007-09-11 14:07  njourdan
 
 	* xml.c: Less warning?
 
-2007-09-11 15:54  clauter
+2007-09-11 13:54  clauter
 
-	* lexer.lex, main.c, parser.y:
+	* lexer.lex, main.c, parser.y: Removed trailing newlines in
+	  non-interactive mode.
 
-	  Removed trailing newlines in non-interactive mode.
+2007-09-11 12:40  clauter
 
-2007-09-11 14:40  clauter
+	* expression.c, main.c: Added fullparentheses mode support to
+	  printing/ writing to files.
 
-	* expression.c, main.c:
-
-	  Added fullparentheses mode support to printing/ writing to files.
-
-2007-09-11 10:58  njourdan
+2007-09-11 08:58  njourdan
 
 	* xml.c: Add support for <annotation encoding='arenaireplot/text'>
 
-2007-09-10 16:59  njourdan
+2007-09-10 14:59  njourdan
 
 	* makefile: no dependance with xml2-dev
 
-2007-09-10 16:31  schevill
+2007-09-10 14:31  schevill
 
 	* README, remez.c: update README with libxml2
 
-2007-09-10 16:25  njourdan
+2007-09-10 14:25  njourdan
 
 	* makefile: ca doit compiler avec ca... (xml lib)
 
-2007-09-10 15:52  clauter
+2007-09-10 13:52  clauter
 
-	* expression.c, expression.h:
-
-	  Added
-
+	* expression.c, expression.h: Added
+	  
 	  int readDecimalConstant(mpfr_t result, char *str)
-
+	  
 	  for internal usage.
 
-2007-09-10 15:19  clauter
+2007-09-10 13:19  clauter
 
-	* execute.c:
+	* execute.c: Added faithful simplifications of constant expressions
+	  to user interface.
 
-	  Added faithful simplifications of constant expressions to user
-	  interface.
+2007-09-10 12:33  clauter
 
-2007-09-10 14:33  clauter
+	* execute.c, lexer.lex: Changed rounding modes to RN, RU, RD, RZ.
+	  Changed output of things inf, sup, mid from *< >*, ... to inf,
+	  sup, mid.
 
-	* execute.c, lexer.lex:
-
-	  Changed rounding modes to RN, RU, RD, RZ.  Changed output of
-	  things inf, sup, mid from *< >*, ... to inf, sup, mid.
-
-2007-09-10 14:20  njourdan
+2007-09-10 12:20  njourdan
 
 	* xml.c: simplify reader xml
 
-2007-09-10 13:21  njourdan
+2007-09-10 11:21  njourdan
 
 	* xml.c: Merge with reader1.c example
 
-2007-09-10 12:59  clauter
+2007-09-10 10:59  clauter
 
-	* execute.c:
+	* execute.c: Added automatic binding to free variable on XML
+	  parsing.
 
-	  Added automatic binding to free variable on XML parsing.
+2007-09-10 09:48  clauter
 
-2007-09-10 11:48  clauter
-
-	* execute.c, expression.c, expression.h:
-
-	  Changed functionality in printing/ writing to files (on user
+	* execute.c, expression.c, expression.h: Changed functionality in
+	  printing/ writing to files (on user
 	  interface). Values are displayed in the current display mode.
 
-2007-09-06 15:07  clauter
+2007-09-06 13:07  clauter
 
-	* execute.c, execute.h, lexer.lex, parser.y, xml.c, xml.h:
+	* execute.c, execute.h, lexer.lex, parser.y, xml.c, xml.h: Added
+	  framework for readxml.
+	  Added support for list of functions in first argument of plot.
 
-	  Added framework for readxml.	Added support for list of functions
-	  in first argument of plot.
+2007-09-06 08:18  clauter
 
-2007-09-06 10:18  clauter
+	* expression.c: Slight change in output for differentiate.
 
-	* expression.c:
+2007-09-05 15:15  clauter
 
-	  Slight change in output for differentiate.
+	* execute.c, lexer.lex, parser.y: Added sup, inf, mid and their
+	  handling on constants.
 
-2007-09-05 17:15  clauter
+2007-09-05 14:58  clauter
 
-	* execute.c, lexer.lex, parser.y:
-
-	  Added sup, inf, mid and their handling on constants.
-
-2007-09-05 16:58  clauter
-
-	* execute.c, parser.y:
-
-	  Added help. Corrected a bug.
-
-2007-09-04 17:22  clauter
-
-	* arenaireplot.h, parser.y:
-
-	  Added some help texts.
-
-2007-09-04 16:14  clauter
-
-	* xml.c:
-
-	  Corrected a bug in xml generation.
+	* execute.c, parser.y: Added help. Corrected a bug.
 
 2007-09-04 15:22  clauter
 
-	* expression.c, xml.c:
+	* arenaireplot.h, parser.y: Added some help texts.
 
-	  Updated xml output.
+2007-09-04 14:14  clauter
 
-2007-09-04 14:21  clauter
+	* xml.c: Corrected a bug in xml generation.
+
+2007-09-04 13:22  clauter
+
+	* expression.c, xml.c: Updated xml output.
+
+2007-09-04 12:21  clauter
 
 	* execute.c, execute.h, expression.c, expression.h, lexer.lex,
-	  makefile, parser.y, xml.c, xml.h:
+	  makefile, parser.y, xml.c, xml.h: Added xml output functionality.
 
-	  Added xml output functionality.
+2007-09-04 08:08  clauter
 
-2007-09-04 10:08  clauter
+	* lexer.lex: Added { and } as a replacement for begin and end.
 
-	* lexer.lex:
-
-	  Added { and } as a replacement for begin and end.
-
-2007-09-02 23:16  clauter
+2007-09-02 21:16  clauter
 
 	* arenaireplot.h, chain.c, chain.h, execute.c, execute.h,
 	  expression.c, expression.h, infnorm.c, infnorm.h, lexer.lex,
 	  main.c, main.h, makefile, minilexer.lex, miniparser.y, parser.y:
-
 	  First version of the Turing-complete brand-new arenaireplot 0.2
 
-2007-07-11 11:36  clauter
+2007-07-11 09:36  clauter
 
-	* arenaireplot.h, infnorm.c:
+	* arenaireplot.h, infnorm.c: Slight changes for having a Newton
+	  with start value.
 
-	  Slight changes for having a Newton with start value.
+2007-07-05 12:33  clauter
 
-2007-07-05 14:33  clauter
+	* arenaireplot.h, externalfun.c: Added some functionalities to
+	  arenaireplot.h
+	  Added an example for an external function to the CVS.
 
-	* arenaireplot.h, externalfun.c:
+2007-07-05 12:23  clauter
 
-	  Added some functionalities to arenaireplot.h Added an example for
-	  an external function to the CVS.
+	* arenaireplot.h: Added header file for using arenaireplot
+	  functionalities in dynamic
+	  libraries that can dynamically be linked to arenaireplot function
+	  symbols.
 
-2007-07-05 14:23  clauter
+2007-07-05 12:03  clauter
 
-	* arenaireplot.h:
+	* makefile: Allowed using symbols in arenaireplot in external
+	  libraries.
 
-	  Added header file for using arenaireplot functionalities in
-	  dynamic libraries that can dynamically be linked to arenaireplot
-	  function symbols.
-
-2007-07-05 14:03  clauter
-
-	* makefile:
-
-	  Allowed using symbols in arenaireplot in external libraries.
-
-2007-06-14 15:40  schevill
+2007-06-14 13:40  schevill
 
 	* remez.c: The list returned by dirtyfindzeros is now sorted by
 	  increasing values
 
-2007-06-14 13:04  clauter
+2007-06-14 13:40  schevill
 
-	* infnorm.c, lexer.lex, parser.y:
+	* remez.c: The list returned by dirtyfindzeros is now sorted by
+	  increasing values
 
-	  Added dirtyfindzeros to user interface.
+2007-06-14 11:04  clauter
 
+	* infnorm.c, lexer.lex, parser.y: Added dirtyfindzeros to user
+	  interface.
+	  
 	  Added additionally
-
+	  
 	  fpfindzeros f in d, evaluate g at;
-
+	  
 	  and
-
+	  
 	  dirtyfindzeros f in d, evaluate g at;
 
-2007-06-14 12:38  schevill
+2007-06-14 10:38  schevill
 
 	* remez.c, remez.h: a first version of uncertifiedFindZeros
 
-2007-06-14 11:53  schevill
+2007-06-14 09:53  schevill
 
 	* parser.y: added help support for guessdegree
 
-2007-06-07 12:58  clauter
+2007-06-07 10:58  clauter
 
-	* expression.c, infnorm.c:
+	* expression.c, infnorm.c: Patched Horner
+	  Patched evaluateI.
 
-	  Patched Horner Patched evaluateI.
+2007-06-07 10:42  clauter
 
-2007-06-07 12:42  clauter
+	* parser.y: Changed midpoint mode display.
 
-	* parser.y:
+2007-06-06 14:21  clauter
 
-	  Changed midpoint mode display.
-
-2007-06-06 16:21  clauter
-
-	* expression.c, infnorm.c, lexer.lex, main.h, parser.y:
-
-	  Corrected use of Hopital's rule for recursion. Recursion is a
-	  allowed if the zero point is the same for each derivative.
-
+	* expression.c, infnorm.c, lexer.lex, main.h, parser.y: Corrected
+	  use of Hopital's rule for recursion. Recursion is a allowed if
+	  the zero point is the same for each derivative.
+	  
 	  Added simple help functionality.
 
-2007-05-30 15:40  clauter
+2007-05-30 13:40  clauter
 
-	* infnorm.c, lexer.lex, main.c, main.h, parser.y:
+	* infnorm.c, lexer.lex, main.c, main.h, parser.y: Changed Hopital's
+	  rule recursion behaviour to be consistant with the
+	  current state of mathematics behind it.
 
-	  Changed Hopital's rule recursion behaviour to be consistant with
-	  the current state of mathematics behind it.
+2007-05-22 13:04  clauter
 
-2007-05-22 15:04  clauter
+	* plot.c: Patched an overflow bug in plot.
 
-	* plot.c:
+2007-05-16 09:27  clauter
 
-	  Patched an overflow bug in plot.
+	* parser.y: Allowed concatenation of strings using the + operator.
 
-2007-05-16 11:27  clauter
+2007-05-15 16:08  clauter
 
-	* parser.y:
+	* parser.y: Corrected a bug on restart.
 
-	  Allowed concatenation of strings using the + operator.
+2007-05-14 21:42  clauter
 
-2007-05-15 18:08  clauter
+	* makefile: Corrected again a bug in makefile
 
-	* parser.y:
+2007-05-14 21:40  clauter
 
-	  Corrected a bug on restart.
+	* makefile: Corrected bug in makefile
 
-2007-05-14 23:42  clauter
+2007-05-14 21:38  clauter
 
-	* makefile:
+	* Manuel_fr.tex: Corrected error in doc.
 
-	  Corrected again a bug in makefile
+2007-05-14 21:36  clauter
 
-2007-05-14 23:40  clauter
+	* Manuel_fr.tex: Corrected a orthography bug.
 
-	* makefile:
+2007-05-14 21:13  clauter
 
-	  Corrected bug in makefile
+	* Manuel_fr.tex, README: Changed doc.
 
-2007-05-14 23:38  clauter
+2007-04-18 08:31  clauter
 
-	* Manuel_fr.tex:
+	* library.c: Patched a little the library system.
 
-	  Corrected error in doc.
-
-2007-05-14 23:36  clauter
-
-	* Manuel_fr.tex:
-
-	  Corrected a orthography bug.
-
-2007-05-14 23:13  clauter
-
-	* Manuel_fr.tex, README:
-
-	  Changed doc.
-
-2007-04-18 10:31  clauter
-
-	* library.c:
-
-	  Patched a little the library system.
-
-2007-04-16 17:26  schevill
+2007-04-16 15:26  schevill
 
 	* chain.c, chain.h, remez.c: transition between PARI and my own
 	  gauss is finished. I have made the basic set of tests on this
 	  version but it can still contain some bugs
 
-2007-04-16 10:44  schevill
+2007-04-16 08:44  schevill
 
 	* chain.c, remez.c: functional testing version of remez with my own
 	  gauss elimination
 
-2007-04-16 00:06  clauter
+2007-04-15 22:06  clauter
 
 	* expression.c, expression.h, infnorm.c, lexer.lex, library.c,
-	  library.h, main.c, main.h, makefile, parser.y:
+	  library.h, main.c, main.h, makefile, parser.y: Added handling of
+	  functions bound to external code.
 
-	  Added handling of functions bound to external code.
-
-2007-04-13 14:49  schevill
+2007-04-13 12:49  schevill
 
 	* chain.c, chain.h, remez.c: Testing version before replacing PARI
 	  by my own Gauss elimination
 
-2007-04-13 14:21  clauter
+2007-04-13 12:21  clauter
 
-	* infnorm.c:
-
-	  Patched differentiate on evaluate rule in
+	* infnorm.c: Patched differentiate on evaluate rule in
 	  evaluateFaithfulWithCutOff.
 
-2007-04-13 14:12  clauter
+2007-04-13 12:12  clauter
 
-	* infnorm.c:
+	* infnorm.c: Patched version of evaluateITaylor.
 
-	  Patched version of evaluateITaylor.
+2007-04-13 11:46  clauter
 
-2007-04-13 13:46  clauter
+	* expression.c, main.h, parser.y: Corrected some bugs in Horner
+	  form handling.
 
-	* expression.c, main.h, parser.y:
-
-	  Corrected some bugs in Horner form handling.
-
-2007-04-13 12:20  clauter
+2007-04-13 10:20  clauter
 
 	* expression.c, expression.h, lexer.lex, main.c, main.h, parser.y:
-
 	  Intermediate version with new features.
 
-2007-04-12 20:06  clauter
+2007-04-12 18:06  clauter
 
-	* expression.c, main.c, main.h:
+	* expression.c, main.c, main.h: Intermediate version.
 
-	  Intermediate version.
-
-2007-04-11 18:28  schevill
+2007-04-11 16:28  schevill
 
 	* main.c, remez.c: timer is now displayed even if verbosity=0
 
-2007-04-06 13:29  clauter
+2007-04-06 11:29  clauter
 
-	* infnorm.c:
-
-	  Added a test for preventing decorrelation trials on addition and
+	* infnorm.c: Added a test for preventing decorrelation trials on
+	  addition and
 	  substraction evaluation on point intervals.
 
-2007-04-05 17:59  clauter
+2007-04-05 15:59  clauter
 
-	* expression.c:
+	* expression.c: Some new high verbosity display code.
 
-	  Some new high verbosity display code.
+2007-04-05 14:58  clauter
 
-2007-04-05 16:58  clauter
+	* lexer.lex: Added warning for cases when read macros do not form
+	  complete expressions.
 
-	* lexer.lex:
-
-	  Added warning for cases when read macros do not form complete
-	  expressions.
-
-2007-04-05 16:49  schevill
+2007-04-05 14:49  schevill
 
 	* main.c: corrected version of the timer
 
-2007-04-05 16:32  clauter
+2007-04-05 14:32  clauter
 
-	* lexer.lex, main.c, parser.y:
+	* lexer.lex, main.c, parser.y: Added timing functionality.
 
-	  Added timing functionality.
-
-2007-04-05 15:49  schevill
+2007-04-05 13:49  schevill
 
 	* main.c: time counter with a new message
 
-2007-04-05 15:47  schevill
+2007-04-05 13:47  schevill
 
 	* infnorm.c, main.c, main.h: time counter added
 
-2007-04-02 18:28  clauter
+2007-04-02 16:28  clauter
 
-	* infnorm.c:
+	* infnorm.c: Added interval handling count in dirtyinform for
+	  verbosity >= 2;
 
-	  Added interval handling count in dirtyinform for verbosity >= 2;
+2007-04-02 08:37  clauter
 
-2007-04-02 10:37  clauter
+	* parser.y: Added quality parameter in remez function to
+	  user-interface.
 
-	* parser.y:
-
-	  Added quality parameter in remez function to user-interface.
-
-2007-04-02 10:33  schevill
+2007-04-02 08:33  schevill
 
 	* parser.y, remez.c, remez.h: added user support for quality in
 	  Remez
 
-2007-03-30 16:07  schevill
+2007-03-30 14:07  schevill
 
 	* remez.c: guessdegree uses now the new optimizations of Remez.
 	  Better handling of the differentiation of the polynomial in Remez
 
-2007-03-30 15:51  clauter
+2007-03-30 13:51  clauter
 
-	* expression.h:
+	* expression.h: Made isHorner and isCanonical available for other
+	  parts of the tool.
 
-	  Made isHorner and isCanonical available for other parts of the
-	  tool.
-
-2007-03-30 13:19  schevill
+2007-03-30 11:19  schevill
 
 	* remez.c: Optimized construction of the Remez' matrix
 
-2007-03-29 15:01  schevill
+2007-03-29 13:01  schevill
 
 	* remez.c: new message when resovig the system in Remez
 
-2007-03-28 14:07  schevill
+2007-03-28 12:07  schevill
 
 	* remez.c: normal version
 
-2007-03-28 14:04  schevill
+2007-03-28 12:04  schevill
 
 	* remez.c: debugging version
 
-2007-03-28 13:48  schevill
+2007-03-28 11:48  schevill
 
 	* remez.c: synchronization
 
-2007-03-28 13:37  clauter
+2007-03-28 11:37  clauter
 
-	* expression.c, lexer.lex, main.c, main.h, parser.y:
+	* expression.c, lexer.lex, main.c, main.h, parser.y: Speeded up
+	  differentiation of horner polynomials.
+	  Added speed-up code to autoprint.
+	  Added autosimplify switch in the user interface.
 
-	  Speeded up differentiation of horner polynomials.  Added speed-up
-	  code to autoprint.  Added autosimplify switch in the user
-	  interface.
-
-2007-03-27 16:28  schevill
+2007-03-27 14:28  schevill
 
 	* remez.c: More adapted messages in level 3
 
-2007-03-27 14:53  clauter
+2007-03-27 12:53  clauter
 
-	* expression.c:
+	* expression.c: Speeded up autoprint by speeding up horner,
+	  makeCanonical and getCoefficients
+	  for horner and canonical polynomials.
 
-	  Speeded up autoprint by speeding up horner, makeCanonical and
-	  getCoefficients for horner and canonical polynomials.
-
-2007-03-27 11:00  schevill
+2007-03-27 09:00  schevill
 
 	* main.c, remez.c: More messages in Remez with verbosity levet set
 	  to 3
 
-2007-03-26 14:07  clauter
+2007-03-26 12:07  clauter
 
-	* infnorm.c:
+	* infnorm.c: Speeded up plot by speeding up evaluateFaithful
+	  family.
 
-	  Speeded up plot by speeding up evaluateFaithful family.
+2007-03-26 11:11  clauter
 
-2007-03-26 13:11  clauter
+	* infnorm.c, main.c: Speeded up evaluateFaithulWithCutOff.
 
-	* infnorm.c, main.c:
-
-	  Speeded up evaluateFaithulWithCutOff.
-
-2007-03-26 12:49  schevill
+2007-03-26 10:49  schevill
 
 	* remez.c: Corrected a bug in Newton's algorithm when binary search
 	  must be used
 
-2007-03-13 15:53  clauter
+2007-03-13 14:53  clauter
 
-	* infnorm.c:
+	* infnorm.c: Slightly changed evaluateFaithful
 
-	  Slightly changed evaluateFaithful
-
-2007-03-13 15:40  clauter
+2007-03-13 14:40  clauter
 
 	* expression.c, expression.h, lexer.lex, main.c, main.h, makefile,
-	  minilexer.lex, miniparser.y, parser.y:
+	  minilexer.lex, miniparser.y, parser.y: Added a miniparser for
+	  parsing strings of simple expressions.
+	  Added tree manipulation functions.
+	  Added miniparser parse functionality in the main parser.
 
-	  Added a miniparser for parsing strings of simple expressions.
-	  Added tree manipulation functions.  Added miniparser parse
-	  functionality in the main parser.
+2007-03-02 17:24  clauter
 
-2007-03-02 18:24  clauter
+	* README: README
 
-	* README:
-
-	  README
-
-2007-03-02 18:20  schevill
+2007-03-02 17:20  schevill
 
 	* remez.c: corrected a memory leak in guessdegree
 
-2007-03-02 18:14  schevill
+2007-03-02 17:14  schevill
 
 	* remez.c: Final version of Remez
 
-2007-03-01 17:26  clauter
+2007-03-01 16:26  clauter
 
-	* lexer.lex, main.c, main.h, parser.y:
+	* lexer.lex, main.c, main.h, parser.y: Corrected Ctrl-C behaviour
+	  for avoiding contact loss with Houston.
 
-	  Corrected Ctrl-C behaviour for avoiding contact loss with
-	  Houston.
+2007-02-28 17:19  clauter
 
-2007-02-28 18:19  clauter
+	* lexer.lex: Corrected a SIGSEV on syntax error.
 
-	* lexer.lex:
+2007-02-28 17:15  clauter
 
-	  Corrected a SIGSEV on syntax error.
+	* lexer.lex, main.c, main.h, parser.y: Corrected memory leaks in
+	  lexer/ parser structure.
 
-2007-02-28 18:15  clauter
-
-	* lexer.lex, main.c, main.h, parser.y:
-
-	  Corrected memory leaks in lexer/ parser structure.
-
-2007-02-28 16:51  schevill
+2007-02-28 15:51  schevill
 
 	* pari_utils.c, remez.c: faster Remez
 
-2007-02-28 14:28  clauter
+2007-02-28 13:28  clauter
 
-	* expression.c:
+	* expression.c: Patched a memory leak in simplifyTreeErrorfree.
 
-	  Patched a memory leak in simplifyTreeErrorfree.
+2007-02-28 12:17  clauter
 
-2007-02-28 13:17  clauter
+	* parser.y: autoprint accepts comma separated lists of elements.
 
-	* parser.y:
+2007-02-28 12:05  clauter
 
-	  autoprint accepts comma separated lists of elements.
+	* lexer.lex: Corrected omission of newlines in comments.
 
-2007-02-28 13:05  clauter
-
-	* lexer.lex:
-
-	  Corrected omission of newlines in comments.
-
-2007-02-28 11:00  schevill
+2007-02-28 10:00  schevill
 
 	* infnorm.h, remez.c: an unfinished version of Remez but already
 	  fully functional in normal cases
 
-2007-02-27 15:33  clauter
+2007-02-27 14:33  clauter
 
-	* infnorm.c:
+	* infnorm.c: evaluateFaithfulWithCutOffFast accepts NULL as an
+	  argument for the derivative,
+	  avoiding in this case Taylor evaluation.
 
-	  evaluateFaithfulWithCutOffFast accepts NULL as an argument for
-	  the derivative, avoiding in this case Taylor evaluation.
+2007-02-25 19:14  clauter
 
-2007-02-25 20:14  clauter
-
-	* expression.c, parser.y:
-
-	  Improved quality of results obtained with simplifyTreeErrorfree.
-
-2007-02-23 14:20  clauter
-
-	* expression.c:
-
-	  Corrected a bug introduced by the modification of
+	* expression.c, parser.y: Improved quality of results obtained with
 	  simplifyTreeErrorfree.
 
-2007-02-23 12:49  schevill
+2007-02-23 13:20  clauter
+
+	* expression.c: Corrected a bug introduced by the modification of
+	  simplifyTreeErrorfree.
+
+2007-02-23 11:49  schevill
 
 	* remez.c: minor changes : a counter limits the number of
 	  iterations, NaN and Inf should now be avoided as often as
 	  possible.
 
-2007-02-23 11:13  clauter
+2007-02-23 10:13  clauter
 
-	* expression.c:
+	* expression.c: Added simplification of expressions f(x) * (1/g(x))
+	  = f(x)/g(x) in simplifysafe.
 
-	  Added simplification of expressions f(x) * (1/g(x)) = f(x)/g(x)
-	  in simplifysafe.
+2007-02-22 13:46  clauter
 
-2007-02-22 14:46  clauter
+	* parser.y: Corrected a memory leak in degree definition.
 
-	* parser.y:
-
-	  Corrected a memory leak in degree definition.
-
-2007-02-22 14:22  schevill
+2007-02-22 13:22  schevill
 
 	* remez.c: remez is now fully functional but still not so quick as
 	  it could be
 
-2007-02-22 12:17  clauter
+2007-02-22 11:17  clauter
 
-	* parser.y:
+	* parser.y: Added weight function functionality to remez.
 
-	  Added weight function functionality to remez.
-
-2007-02-22 12:10  schevill
+2007-02-22 11:10  schevill
 
 	* pari_utils.c, remez.c, remez.h: beta of new remez
 
-2007-02-16 13:15  schevill
+2007-02-16 12:15  schevill
 
 	* Manuel_fr.tex: updated the doc with guessdegree, printbinary and
 	  round
 
-2007-02-16 11:36  clauter
+2007-02-16 10:36  clauter
 
-	* double.c, implement.c, parser.y:
+	* double.c, implement.c, parser.y: Corrected a bug in printbinary
+	  and printexpansion.
 
-	  Corrected a bug in printbinary and printexpansion.
+2007-02-09 14:08  clauter
 
-2007-02-09 15:08  clauter
+	* implement.c: Corrected a slight bug in implementpoly.
 
-	* implement.c:
-
-	  Corrected a slight bug in implementpoly.
-
-2007-02-09 11:50  schevill
+2007-02-09 10:50  schevill
 
 	* infnorm.c, remez.c: memory leaks corrected
 
-2007-02-09 11:18  clauter
+2007-02-09 10:18  clauter
 
-	* remez.c:
+	* remez.c: Corrected some bugs in guessdegree.
 
-	  Corrected some bugs in guessdegree.
-
-2007-02-08 19:32  schevill
+2007-02-08 18:32  schevill
 
 	* remez.c: alternative function ton find zeros
 
-2007-02-08 19:02  schevill
+2007-02-08 18:02  schevill
 
 	* remez.c: guessDegree finished but not alleyooped
 
-2007-02-08 16:19  schevill
+2007-02-08 15:19  schevill
 
 	* remez.c: dummy guessDegree for checking
 
-2007-02-08 16:17  clauter
+2007-02-08 15:17  clauter
 
-	* lexer.lex, parser.y, remez.h:
+	* lexer.lex, parser.y, remez.h: Added guessDegree to user
+	  interface.
 
-	  Added guessDegree to user interface.
+2007-02-08 13:54  clauter
 
-2007-02-08 14:54  clauter
+	* expansion.h, parser.y: Slight change in the parser.
 
-	* expansion.h, parser.y:
+2007-02-07 12:06  clauter
 
-	  Slight change in the parser.
+	* Manuel_fr.tex: Rajout de certaines fonctionalites dans la doc.
 
-2007-02-07 13:06  clauter
+2007-02-07 10:25  clauter
 
-	* Manuel_fr.tex:
+	* fpminimax.h, parser.y, worstcase.c, worstcase.h: Added multiple
+	  function Gal value search.
 
-	  Rajout de certaines fonctionalit�s dans la doc.
+2007-02-06 13:22  clauter
 
-2007-02-07 11:25  clauter
-
-	* fpminimax.h, parser.y, worstcase.c, worstcase.h:
-
-	  Added multiple function Gal value search.
-
-2007-02-06 14:22  clauter
-
-	* external.c, infnorm.c:
-
-	  Corrected the evaluate abs(x) at 0 infinite recursion bug.
+	* external.c, infnorm.c: Corrected the evaluate abs(x) at 0
+	  infinite recursion bug.
 	  Optimized interval evaluation on point intervals.
 
-2007-01-18 17:20  clauter
+2007-01-18 16:20  clauter
 
-	* infnorm.c:
+	* infnorm.c: Improved dirtyinfnorm performance.
 
-	  Improved dirtyinfnorm performance.
+2007-01-18 16:03  clauter
 
-2007-01-18 17:03  clauter
+	* infnorm.c, infnorm.h: Improved dirtyinfnorm performance.
 
-	* infnorm.c, infnorm.h:
+2007-01-18 15:49  clauter
 
-	  Improved dirtyinfnorm performance.
+	* infnorm.c, lexer.lex, main.c: Improved Houston loss.
 
-2007-01-18 16:49  clauter
+2007-01-18 15:06  clauter
 
-	* infnorm.c, lexer.lex, main.c:
+	* main.c: Patch again Houston.
 
-	  Improved Houston loss.
+2007-01-18 14:56  clauter
 
-2007-01-18 16:06  clauter
+	* lexer.lex, main.c, parser.y: Debugged Houston.
 
-	* main.c:
+2007-01-18 12:44  clauter
 
-	  Patch again Houston.
-
-2007-01-18 15:56  clauter
-
-	* lexer.lex, main.c, parser.y:
-
-	  Debugged Houston.
-
-2007-01-18 13:44  clauter
-
-	* expression.c, infnorm.c, plot.c:
-
-	  Changed dirtyinfnorm for using evaluateFaithfulWithCutOff.
+	* expression.c, infnorm.c, plot.c: Changed dirtyinfnorm for using
+	  evaluateFaithfulWithCutOff.
 	  Corrected precision handling in plot.
 
-2007-01-18 11:52  schevill
+2007-01-18 10:52  schevill
 
 	* lexer.lex: corrected a bug in the function read: the allocated
 	  size for the temporary string was not sufficient
 
-2007-01-18 10:56  clauter
+2007-01-18 09:56  clauter
 
-	* lexer.lex, parser.y:
+	* lexer.lex, parser.y: Added
+	  round(constantfunction,integer,[N,M,P,Z]) to user interface.
 
-	  Added round(constantfunction,integer,[N,M,P,Z]) to user
-	  interface.
-
-2007-01-18 10:41  schevill
+2007-01-18 09:41  schevill
 
 	* double.c, double.h, fpminimax.c: added the function
 	  round_to_format
 
-2007-01-17 18:09  clauter
+2007-01-17 17:09  clauter
 
-	* infnorm.c, infnorm.h, plot.c:
+	* infnorm.c, infnorm.h, plot.c: Implemented
+	  evaluateFaithfulWithCutoff and plot using it
 
-	  Implemented evaluateFaithfulWithCutoff and plot using it
+2007-01-17 13:58  clauter
 
-2007-01-17 14:58  clauter
+	* expression.c, lexer.lex, parser.y: Added dyadic = binary to user
+	  interface.
 
-	* expression.c, lexer.lex, parser.y:
+2007-01-17 13:21  clauter
 
-	  Added dyadic = binary to user interface.
+	* expression.c: Corrected a bug in simplifysafe.
 
-2007-01-17 14:21  clauter
+2007-01-12 17:59  clauter
 
-	* expression.c:
+	* double.c: Corrected a bug in double precision hexadecimal parser
+	  for 32 bit machines.
 
-	  Corrected a bug in simplifysafe.
+2007-01-12 17:08  clauter
 
-2007-01-12 18:59  clauter
+	* double.c, parser.y: Patch
 
-	* double.c:
+2007-01-12 16:37  clauter
 
-	  Corrected a bug in double precision hexadecimal parser for 32 bit
-	  machines.
+	* parser.y: DEBUG VERSION
 
-2007-01-12 18:08  clauter
+2007-01-12 16:31  clauter
 
-	* double.c, parser.y:
+	* parser.y: Don't know.
 
-	  Patch
+2007-01-12 16:12  clauter
 
-2007-01-12 17:37  clauter
+	* expression.c: Corrected a bug in doubledouble simplification.
 
-	* parser.y:
+2007-01-11 14:31  clauter
 
-	  DEBUG VERSION
-
-2007-01-12 17:31  clauter
-
-	* parser.y:
-
-	  Don't know.
-
-2007-01-12 17:12  clauter
-
-	* expression.c:
-
-	  Corrected a bug in doubledouble simplification.
-
-2007-01-11 15:31  clauter
-
-	* expression.c, lexer.lex, parser.y:
-
-	  Added parsing capability for binary constants: 1.1_2 = 1.5
+	* expression.c, lexer.lex, parser.y: Added parsing capability for
+	  binary constants: 1.1_2 = 1.5
 	  Adapted printbinary output.
 
-2007-01-11 13:11  clauter
+2007-01-11 12:11  clauter
 
-	* expression.c, expression.h, lexer.lex, parser.y:
+	* expression.c, expression.h, lexer.lex, parser.y: Added
+	  printbinary constant;
 
-	  Added printbinary constant;
+2006-12-19 21:04  clauter
 
-2006-12-19 22:04  clauter
+	* infnorm.c: Corrected a bug in Warning display in certified
+	  infnorm.
 
-	* infnorm.c:
+2006-12-19 20:52  clauter
 
-	  Corrected a bug in Warning display in certified infnorm.
+	* expression.c, parser.y: Corrected a display error in print
+	  functions for repeated substraction and division trees.
 
-2006-12-19 21:52  clauter
-
-	* expression.c, parser.y:
-
-	  Corrected a display error in print functions for repeated
-	  substraction and division trees.
-
-2006-12-18 16:35  schevill
+2006-12-18 15:35  schevill
 
 	* fpminimax.c, makefile, remez.c, remez.h: A rare bug in Remez
 	  corrected : when the optimal error doesn't reach its extrema at
 	  any of the two bounds
 
-2006-12-06 17:04  clauter
+2006-12-06 16:04  clauter
 
-	* infnorm.c:
+	* infnorm.c: Corrected a memory leak.
 
-	  Corrected a memory leak.
+2006-12-06 16:00  clauter
 
-2006-12-06 17:00  clauter
+	* infnorm.c: Improved infnorm on functions that are fractions on
+	  the first level.
 
-	* infnorm.c:
+2006-12-04 13:02  clauter
 
-	  Improved infnorm on functions that are fractions on the first
-	  level.
+	* parser.y: Corrected unary -.
 
-2006-12-04 14:02  clauter
+2006-12-04 12:40  clauter
 
-	* parser.y:
+	* chain.c, parser.y: Changed parsing order for fpminimax.
 
-	  Corrected unary -.
-
-2006-12-04 13:40  clauter
-
-	* chain.c, parser.y:
-
-	  Changed parsing order for fpminimax.
-
-2006-12-03 23:12  clauter
+2006-12-03 22:12  clauter
 
 	* assignment.c, assignment.h, lexer.lex, main.c, main.h, parser.y:
-
 	  Added assignments of strings to variables. If syntax does not
-	  allow unique typing, $a must be used for accessing to variable a
-	  containing a string.
+	  allow
+	  unique typing, $a must be used for accessing to variable a
+	  containing
+	  a string.
 
-2006-12-03 22:16  clauter
+2006-12-03 21:16  clauter
 
-	* lexer.lex, parser.y, plot.c, plot.h:
+	* lexer.lex, parser.y, plot.c, plot.h: Added asciiplot
 
-	  Added asciiplot
-
-2006-12-03 17:16  clauter
+2006-12-03 16:16  clauter
 
 	* expression.c, expression.h, lexer.lex, main.c, main.h, parser.y:
-
 	  Added lexing and parsing capability for GP/PARI scientific
-	  notation: 1.24     (spaces)E+2
-
+	  notation:
+	  1.24 (spaces)E+2
+	  
 	  Attention: no spaces are permitted for cases where no exponent
-	  (e/E) is given. If the exponent sign (e/E) is given, the exponent
-	  value becomes obligatory. The feature is *not* available for
-	  dyadic notation: 1232b-5 is correct 1234 b-5 is not.
-
+	  (e/E)
+	  is given. If the exponent sign (e/E) is given, the exponent value
+	  becomes obligatory. The feature is *not* available for dyadic
+	  notation:
+	  1232b-5 is correct 1234 b-5 is not.
+	  
 	  Added write command to user interface: the same as print but no
-	  spaces or newlines are added. Special syntax for writing/
-	  appending to a file is available:
-
-	  write 1, 2;		   -> prints 12 on stdout write > "toto" 1,
-	  2	 -> prints 12 in file "toto", erasing an old file "toto"
-	  write >> "toto" 1, 2	   -> prints 12 in file "toto", appending
-	  to its content.
-
+	  spaces or
+	  newlines are added. Special syntax for writing/ appending to a
+	  file is
+	  available:
+	  
+	  write 1, 2; -> prints 12 on stdout
+	  write > "toto" 1, 2 -> prints 12 in file "toto", erasing an old
+	  file "toto"
+	  write >> "toto" 1, 2 -> prints 12 in file "toto", appending to
+	  its content.
+	  
 	  Attention: on writing to files, strings to print a first created
-	  in memory and then printed. High memory usage may follow.
-
+	  in
+	  memory and then printed. High memory usage may follow.
+	  
 	  Added trailing zero removal in scientific notation output.
 
-2006-12-02 16:24  schevill
+2006-12-02 15:24  schevill
 
 	* Manuel_fr.tex, pari_utils.c: updated the doc about reassignment ;
 	  mpfr->pari produces now an exact zero when called on 0. ;
 	  pari->mpfr checks now first if its argument is an int and deal
 	  with
 
-2006-11-29 16:20  clauter
+2006-11-29 15:20  clauter
 
-	* implement.c:
+	* implement.c: Corrected a bug in implementpoly.
 
-	  Corrected a bug in implementpoly.
-
-2006-11-29 13:58  schevill
+2006-11-29 12:58  schevill
 
 	* pari_utils.c, remez.c: Again the cray feature about floating 0 in
 	  PARI
 
-2006-11-29 12:59  schevill
+2006-11-29 11:59  schevill
 
 	* remez.c: Oops
 
-2006-11-29 12:58  schevill
+2006-11-29 11:58  schevill
 
 	* remez.c: Again the bug with PARI handling the floating point 0
 
-2006-11-29 12:47  schevill
+2006-11-29 11:47  schevill
 
 	* remez.c: Again the bug with PARI handling the floating point 0
 
-2006-11-29 12:28  schevill
+2006-11-29 11:28  schevill
 
 	* pari_utils.c, remez.c: A bug due to PARI handling 0 in a
 	  subtraction corrected
 
-2006-11-29 11:28  clauter
+2006-11-29 10:28  clauter
 
-	* lexer.lex, parser.y:
+	* lexer.lex, parser.y: Changed reassignment behaviour.
+	  Added // \n and /* */ comments.
 
-	  Changed reassignment behaviour.  Added // \n and /* */ comments.
+2006-11-29 10:15  schevill
 
-2006-11-29 11:15  schevill
+	* pari_utils.c, remez.c: A bug in the conversion function
+	  PARI->mpfr affecting the exponents corrected
 
-	* remez.c: A bug in the conversion function PARI->mpfr affecting
-	  the exponents corrected
+2006-11-29 09:03  clauter
 
-2006-11-29 11:12  schevill
+	* lexer.lex: Added errno.h to lexer.lex in order to overcome a
+	  compile error on Mac OS X
 
-	* pari_utils.c: A bug in the conversion function PARI->mpfr
-	  affecting the exponents corrected
-
-2006-11-29 10:03  clauter
-
-	* lexer.lex:
-
-	  Added errno.h to lexer.lex in order to overcome a compile error
-	  on Mac OS X
-
-2006-11-28 20:32  schevill
+2006-11-28 19:32  schevill
 
 	* remez.c: The bug affecting remez algorithm near the bounds is
 	  corrected
 
-2006-11-28 18:06  clauter
+2006-11-28 17:06  clauter
 
-	* lexer.lex, main.c, main.h, parser.y:
+	* lexer.lex, main.c, main.h, parser.y: Added read "file"
+	  functionality.
 
-	  Added read "file" functionality.
+2006-11-28 14:37  clauter
 
-2006-11-28 15:37  clauter
+	* expression.c, infnorm.c: Corrected a bug.
 
-	* expression.c, infnorm.c:
+2006-11-27 14:06  clauter
 
-	  Corrected a bug.
+	* expression.c: Corrected a bug in expandPowerInPolynomialUnsafe.
 
-2006-11-27 15:06  clauter
-
-	* expression.c:
-
-	  Corrected a bug in expandPowerInPolynomialUnsafe.
-
-2006-11-24 11:24  schevill
+2006-11-24 10:24  schevill
 
 	* remez.c: bug affecting precision in Remez really corrected
 
-2006-11-24 11:10  clauter
+2006-11-24 10:10  clauter
 
-	* parser.y:
+	* parser.y: Corrected an error with a pointer.
 
-	  Corrected an error with a pointer.
-
-2006-11-24 10:46  schevill
+2006-11-24 09:46  schevill
 
 	* remez.c: corrected the rounding of the bounds in remez
 
-2006-11-24 10:45  schevill
+2006-11-24 09:45  schevill
 
 	* remez.c: corrected a bug affecting the precision in Remez
 
-2006-11-24 10:25  schevill
+2006-11-24 09:25  schevill
 
 	* Manuel_fr.tex: Added the doc part for rationalapprox
 
-2006-11-22 17:41  schevill
+2006-11-22 16:41  schevill
 
 	* fpminimax.c, fpminimax.h: rationalApprox is implemented
 
-2006-11-22 16:00  clauter
+2006-11-22 15:00  clauter
 
-	* main.c:
+	* main.c: Plot files are not removed when in a scripted.
 
-	  Plot files are not removed when in a scripted.
+2006-11-22 14:46  clauter
 
-2006-11-22 15:46  clauter
+	* lexer.lex, parser.y: Added rationalapprox
 
-	* lexer.lex, parser.y:
+2006-11-22 14:45  schevill
 
-	  Added rationalapprox
+	* fpminimax.c: *** empty log message ***
 
-2006-11-22 15:45  schevill
-
-	* fpminimax.c: [no log message]
-
-2006-11-22 15:44  schevill
+2006-11-22 14:44  schevill
 
 	* fpminimax.c, fpminimax.h: Dummy version of rationalApprox
 
-2006-11-22 15:02  schevill
+2006-11-22 14:02  schevill
 
 	* external.c, plot.c, plot.h: Now handles filenames in /tmp
 
-2006-11-22 14:35  clauter
+2006-11-22 13:35  clauter
 
 	* double.c, double.h, lexer.lex, parser.y, worstcase.c,
-	  worstcase.h:
+	  worstcase.h: Added Gal searches.
 
-	  Added Gal searches.
-
-2006-11-22 14:12  schevill
+2006-11-22 13:12  schevill
 
 	* external.c: external plot handles file, postscript and
 	  postscriptfiles options
 
-2006-11-22 13:57  schevill
+2006-11-22 12:57  schevill
 
 	* Manuel_fr.tex: Doc up to date
 
-2006-11-22 10:55  clauter
+2006-11-22 09:55  clauter
 
-	* parser.y:
+	* parser.y: Corrected elliptic lists.
 
-	  Corrected elliptic lists.
-
-2006-11-22 00:33  clauter
+2006-11-21 23:33  clauter
 
 	* double.c, expression.c, lexer.lex, main.c, main.h, parser.y,
-	  plot.c:
-
-	  - Checked correct implementation of elliptic monomial definition
-	  in Remez: remez(exp(x),[4...6],[-1;1]) works.  - Implemented
-	  elliptic monomial definition in subpoly: subpoly(poly,[4...6])
-	  works - Implemented final elliptic monomial definition in
-	  subpoly: subpoly(poly,[4,5,...]) works - Adapted final elliptic
-	  format definition in roundcoefficients:
-	  roundcoefficients(poly,[DD,D,...]) works - Implemented DE support
-	  in roundcoefficients (no correct exponent range check, no
-	  subnormal support) - Implemented forced assignment of a new name
-	  to the bound free variable:
-
+	  plot.c: - Checked correct implementation of elliptic monomial
+	  definition in Remez: remez(exp(x),[4...6],[-1;1]) works.
+	  - Implemented elliptic monomial definition in subpoly:
+	  subpoly(poly,[4...6]) works
+	  - Implemented final elliptic monomial definition in subpoly:
+	  subpoly(poly,[4,5,...]) works
+	  - Adapted final elliptic format definition in roundcoefficients:
+	  roundcoefficients(poly,[DD,D,...]) works
+	  - Implemented DE support in roundcoefficients (no correct
+	  exponent range check, no subnormal support)
+	  - Implemented forced assignment of a new name to the bound free
+	  variable:
+	  
 	  > x + 1;
 	  1 + x
 	  > a = x + 5;
@@ -1461,753 +1262,617 @@
 	  > a;
 	  5 + b;
 
-2006-11-21 20:30  clauter
+2006-11-21 19:30  clauter
 
 	* expression.c, expression.h: Intermediate version
 
-2006-11-20 16:50  clauter
+2006-11-20 15:50  clauter
 
-	* external.c, external.h, main.c, parser.y, plot.c, plot.h:
+	* external.c, external.h, main.c, parser.y, plot.c, plot.h: Started
+	  implementing file numbering for (external)plot and file saving
+	  for externalplot.
 
-	  Started implementing file numbering for (external)plot and file
-	  saving for externalplot.
+2006-11-20 15:36  clauter
 
-2006-11-20 16:36  clauter
+	* implement.c, proof.c: Finished implementpoly with proof
+	  generation.
 
-	* implement.c, proof.c:
+2006-11-20 12:34  clauter
 
-	  Finished implementpoly with proof generation.
+	* implement.c, proof.c: Finished automatic generation of code and
+	  proof in implementpoly.
 
-2006-11-20 13:34  clauter
+2006-11-17 15:36  clauter
 
-	* implement.c, proof.c:
+	* proof.c: Improved Gappa generation.
 
-	  Finished automatic generation of code and proof in implementpoly.
+2006-11-17 14:51  clauter
 
-2006-11-17 16:36  clauter
+	* implement.c, proof.c: Finished first version of Gappa generation.
+	  Untested. Will test now.
 
-	* proof.c:
+2006-11-17 10:53  clauter
 
-	  Improved Gappa generation.
+	* implement.c, main.c, parser.y, proof.c, proof.h: Continued
+	  working on Gappa proof generation.
+	  Implemented Ctrl-C as exit(0) in scripts.
+	  Implemented <[ commandfunction ]> for recovering interval
+	  results.
 
-2006-11-17 15:51  clauter
+2006-11-16 13:50  clauter
 
-	* implement.c, proof.c:
+	* double.c, expansion.h, implement.c, makefile, proof.c: Improved
+	  printexpansion
+	  Continued working on Gappa proof generation for implementpoly.
 
-	  Finished first version of Gappa generation. Untested. Will test
-	  now.
+2006-11-14 17:03  clauter
 
-2006-11-17 11:53  clauter
-
-	* implement.c, main.c, parser.y, proof.c, proof.h:
-
-	  Continued working on Gappa proof generation.	Implemented Ctrl-C
-	  as exit(0) in scripts.  Implemented <[ commandfunction ]> for
-	  recovering interval results.
-
-2006-11-16 14:50  clauter
-
-	* double.c, expansion.h, implement.c, makefile, proof.c:
-
-	  Improved printexpansion Continued working on Gappa proof
+	* implement.c, proof.c, proof.h: Continued working on Gappa proof
 	  generation for implementpoly.
 
-2006-11-14 18:03  clauter
+2006-11-14 10:12  clauter
 
-	* implement.c, proof.c, proof.h:
+	* chain.c, infnorm.c, parser.y: Improved fpfindzeros.
 
-	  Continued working on Gappa proof generation for implementpoly.
-
-2006-11-14 11:12  clauter
-
-	* chain.c, infnorm.c, parser.y:
-
-	  Improved fpfindzeros.
-
-2006-11-13 18:33  clauter
+2006-11-13 17:33  clauter
 
 	* chain.c, chain.h, implement.c, implement.h, infnorm.c, parser.y,
-	  proof.c, proof.h:
-
-	  Continued working on Gappa proof generation for implementpoly.
+	  proof.c, proof.h: Continued working on Gappa proof generation for
+	  implementpoly.
 	  Improved fpfindzeros.
 
-2006-11-13 14:07  clauter
+2006-11-13 13:07  clauter
 
 	* assignment.c, assignment.h, expression.c, expression.h,
-	  lexer.lex, parser.y:
-
-	  Added additional functionalities to the user interface:
-
-	  - querying environnement variables: prec = ?, verbosity = ?...  -
-	  forcing reassignment of already assigned variables: a = 4; a =
-	  5!; - printing (and autoprinting) of domains: print [-1;1]; print
+	  lexer.lex, parser.y: Added additional functionalities to the user
+	  interface:
+	  
+	  - querying environnement variables: prec = ?, verbosity = ?...
+	  - forcing reassignment of already assigned variables: a = 4; a =
+	  5!;
+	  - printing (and autoprinting) of domains: print [-1;1]; print
 	  [a];
 
-2006-11-10 18:10  clauter
+2006-11-10 17:10  clauter
 
-	* expression.c, expression.h, lexer.lex, parser.y:
+	* expression.c, expression.h, lexer.lex, parser.y: Added subpoly
+	  support.
 
-	  Added subpoly support.
+2006-11-10 16:09  clauter
 
-2006-11-10 17:09  clauter
+	* implement.c: Finished generation of SSA code for implementpoly.
 
-	* implement.c:
+2006-11-10 15:12  clauter
 
-	  Finished generation of SSA code for implementpoly.
+	* implement.c, infnorm.c: Improved fpfindzeros.
+	  Continued on working on SSA generation for implementpoly
 
-2006-11-10 16:12  clauter
+2006-11-10 14:08  clauter
 
-	* implement.c, infnorm.c:
+	* implement.c, infnorm.c: Improved fpfindzeros
+	  Started implementing SSA in implement.c
 
-	  Improved fpfindzeros.  Continued on working on SSA generation for
-	  implementpoly
+2006-11-09 10:26  clauter
 
-2006-11-10 15:08  clauter
+	* lexer.lex, parser.y: Corrected a mistake in the parser.
 
-	* implement.c, infnorm.c:
+2006-11-09 10:22  clauter
 
-	  Improved fpfindzeros Started implementing SSA in implement.c
+	* expression.c, expression.h, lexer.lex, parser.y: Added
+	  coeff(poly,i);
 
-2006-11-09 11:26  clauter
+2006-11-09 09:42  clauter
 
-	* lexer.lex, parser.y:
+	* infnorm.c: Improved fpfindzeros.
 
-	  Corrected a mistake in the parser.
+2006-11-08 15:27  clauter
 
-2006-11-09 11:22  clauter
+	* parser.y: Corrected a bug in <evaluateaccurate ... >
 
-	* expression.c, expression.h, lexer.lex, parser.y:
+2006-11-08 13:06  clauter
 
-	  Added coeff(poly,i);
+	* compile.sh, expansion.c, expansion.h, external.c: Completed
+	  helper functions for implementpoly and externalplot.
 
-2006-11-09 10:42  clauter
-
-	* infnorm.c:
-
-	  Improved fpfindzeros.
-
-2006-11-08 16:27  clauter
-
-	* parser.y:
-
-	  Corrected a bug in <evaluateaccurate ... >
-
-2006-11-08 14:06  clauter
-
-	* compile.sh, expansion.c, expansion.h, external.c:
-
-	  Completed helper functions for implementpoly and externalplot.
-
-2006-11-07 18:19  schevill
+2006-11-07 17:19  schevill
 
 	* external.c: bug of the man page corrected
 
-2006-11-07 18:13  schevill
+2006-11-07 17:13  schevill
 
 	* external.c: corrected a bug where x looped around 0
 
-2006-11-07 18:02  clauter
+2006-11-07 17:02  clauter
 
-	* expansion.c, expansion.h:
+	* expansion.c, expansion.h: Added expansion handling default files.
 
-	  Added expansion handling default files.
-
-2006-11-07 17:38  schevill
+2006-11-07 16:38  schevill
 
 	* external.c, makefile, plot.c, plot.h: external plot
 
-2006-11-07 16:23  clauter
+2006-11-07 15:23  clauter
 
-	* lexer.lex, parser.y:
+	* lexer.lex, parser.y: Added externalplot to parser.
 
-	  Added externalplot to parser.
-
-2006-11-07 16:08  schevill
+2006-11-07 15:08  schevill
 
 	* external.c, makefile: updated makefile
 
-2006-11-07 16:06  schevill
+2006-11-07 15:06  schevill
 
 	* external.c, external.h: signatures for external.c
 
-2006-11-07 16:02  clauter
+2006-11-07 15:02  clauter
 
-	* lexer.lex, parser.y:
+	* lexer.lex, parser.y: Added bashexecute.
 
-	  Added bashexecute.
-
-2006-11-07 15:37  schevill
+2006-11-07 14:37  schevill
 
 	* external.c: bashExecute implemented
 
-2006-11-07 15:33  clauter
+2006-11-07 14:33  clauter
 
-	* external.c, external.h:
+	* external.c, external.h: Added externals.
 
-	  Added externals.
+2006-11-07 14:32  clauter
 
-2006-11-07 15:32  clauter
+	* makefile: Changed makefile
 
-	* makefile:
+2006-11-07 12:38  clauter
 
-	  Changed makefile
+	* double.c: Corrected a bug on printing expansions of non real
+	  numbers.
 
-2006-11-07 13:38  clauter
+2006-11-07 12:21  clauter
 
-	* double.c:
+	* parser.y: Corrected a bug.
 
-	  Corrected a bug on printing expansions of non real numbers.
+2006-11-07 12:19  clauter
 
-2006-11-07 13:21  clauter
+	* double.c, double.h, lexer.lex, parser.y, plot.c: Added
+	  printexpansion.
+	  Corrected precision in plot to 64 bits.
 
-	* parser.y:
+2006-11-06 15:09  clauter
 
-	  Corrected a bug.
+	* infnorm.c, main.h: Changed a constant for fpfindzeros.
 
-2006-11-07 13:19  clauter
+2006-11-06 14:57  clauter
 
-	* double.c, double.h, lexer.lex, parser.y, plot.c:
+	* infnorm.c: Speeded up plot through more clever evaluateFaithful.
 
-	  Added printexpansion.  Corrected precision in plot to 64 bits.
+2006-10-26 11:44  clauter
 
-2006-11-06 16:09  clauter
+	* implement.c: Adapted implement to new operators in crlibm.
 
-	* infnorm.c, main.h:
+2006-10-25 15:58  clauter
 
-	  Changed a constant for fpfindzeros.
+	* lexer.lex, main.c: Added Ctrl-C handling. Ctrl-D works only on a
+	  fresh prompt.
 
-2006-11-06 15:57  clauter
+2006-10-25 13:35  clauter
 
-	* infnorm.c:
+	* infnorm.c: Slightly changed newton.
 
-	  Speeded up plot through more clever evaluateFaithful.
+2006-10-25 13:28  clauter
 
-2006-10-26 13:44  clauter
+	* infnorm.c, main.h, parser.y, plot.c: Slightly changed newton,
+	  fpfindzeros and plot.
 
-	* implement.c:
-
-	  Adapted implement to new operators in crlibm.
-
-2006-10-25 17:58  clauter
-
-	* lexer.lex, main.c:
-
-	  Added Ctrl-C handling. Ctrl-D works only on a fresh prompt.
-
-2006-10-25 15:35  clauter
-
-	* infnorm.c:
-
-	  Slightly changed newton.
-
-2006-10-25 15:28  clauter
-
-	* infnorm.c, main.h, parser.y, plot.c:
-
-	  Slightly changed newton, fpfindzeros and plot.
-
-2006-10-25 11:04  schevill
+2006-10-25 09:04  schevill
 
 	* plot.c: A bug corrected in plot when using file option
 
-2006-10-24 17:52  schevill
+2006-10-24 15:52  schevill
 
 	* makefile, remez.c: enhanced makefile
 
-2006-10-24 17:51  clauter
+2006-10-24 15:51  clauter
 
-	* expression.c:
+	* expression.c: Corrected a bug in getDegree
 
-	  Corrected a bug in getDegree
-
-2006-10-23 17:38  schevill
+2006-10-23 15:38  schevill
 
 	* Manuel_fr.tex: Doc updated to take in account the new syntax of
 	  plot
 
-2006-10-23 15:39  schevill
+2006-10-23 13:39  schevill
 
 	* lexer.lex, parser.y, plot.c, plot.h: plot can now manage output
 	  files
 
-2006-10-23 14:43  clauter
+2006-10-23 12:43  clauter
 
-	* lexer.lex, parser.y:
+	* lexer.lex, parser.y: User interface handling for plotting into
+	  files.
 
-	  User interface handling for plotting into files.
-
-2006-10-23 14:16  schevill
+2006-10-23 12:16  schevill
 
 	* expression.h, plot.c, plot.h: header for postscipt output and so
 	  on
 
-2006-10-23 13:58  clauter
+2006-10-23 11:58  clauter
 
-	* parser.y:
+	* parser.y: Lists of things can be framed by brackets.
 
-	  Lists of things can be framed by brackets.
+2006-10-23 11:37  clauter
 
-2006-10-23 13:37  clauter
+	* parser.y: Modified the parser for multiplot.
 
-	* parser.y:
+2006-10-23 11:19  clauter
 
-	  Modified the parser for multiplot.
+	* expression.c, plot.c: Plot uses evaluateFaithful.
 
-2006-10-23 13:19  clauter
+2006-10-23 10:44  clauter
 
-	* expression.c, plot.c:
+	* expression.c: Added a bugfix.
 
-	  Plot uses evaluateFaithful.
+2006-10-23 09:23  clauter
 
-2006-10-23 12:44  clauter
+	* expression.c, lexer.lex, parser.y: Added dyadic power of 2
+	  support.
 
-	* expression.c:
+2006-10-23 08:25  clauter
 
-	  Added a bugfix.
+	* expression.c: Added bugfix.
 
-2006-10-23 11:23  clauter
+2006-10-23 08:20  clauter
 
-	* expression.c, lexer.lex, parser.y:
+	* lexer.lex: Added Pi.
 
-	  Added dyadic power of 2 support.
+2006-10-20 15:46  clauter
 
-2006-10-23 10:25  clauter
+	* implement.c: Added information output to implementpoly
 
-	* expression.c:
+2006-10-20 15:30  clauter
 
-	  Added bugfix.
+	* expression.c: Corrected a bug in expand sequences.
 
-2006-10-23 10:20  clauter
+2006-10-20 15:07  clauter
 
-	* lexer.lex:
+	* infnorm.c, parser.y: Made some modifications
 
-	  Added Pi.
-
-2006-10-20 17:46  clauter
-
-	* implement.c:
-
-	  Added information output to implementpoly
-
-2006-10-20 17:30  clauter
-
-	* expression.c:
-
-	  Corrected a bug in expand sequences.
-
-2006-10-20 17:07  clauter
-
-	* infnorm.c, parser.y:
-
-	  Made some modifications
-
-2006-10-20 17:06  schevill
+2006-10-20 15:06  schevill
 
 	* infnorm.c: corrected a bug in mpfi_erfc
 
-2006-10-20 15:17  clauter
+2006-10-20 13:17  clauter
 
-	* expression.c, infnorm.c:
+	* expression.c, infnorm.c: Slightly changed things.
 
-	  Slightly changed things.
-
-2006-10-19 18:05  clauter
+2006-10-19 16:05  clauter
 
 	* double.c, double.h, expression.c, expression.h, infnorm.c,
-	  lexer.lex, parser.y:
+	  lexer.lex, parser.y: Added erf, erfc, log1p, expm1,
+	  doubleextended.
+	  Currently untested.
 
-	  Added erf, erfc, log1p, expm1, doubleextended.  Currently
-	  untested.
+2006-10-19 14:38  clauter
 
-2006-10-19 16:38  clauter
+	* infnorm.c: Changed slightly accurateinfnorm constants.
 
-	* infnorm.c:
-
-	  Changed slightly accurateinfnorm constants.
-
-2006-10-19 16:37  schevill
+2006-10-19 14:37  schevill
 
 	* infnorm.c, pari_utils.c, pari_utils.h, remez.c, remez.h: Faithful
 	  evaluation in Remez
 
-2006-10-19 16:02  clauter
+2006-10-19 14:02  clauter
 
-	* infnorm.c:
+	* infnorm.c: Modified constants for automatic accurateinfnorm
 
-	  Modified constants for automatic accurateinfnorm
+2006-10-19 12:17  clauter
 
-2006-10-19 14:17  clauter
-
-	* expression.c, expression.h, infnorm.c:
-
-	  Completed accurateinfnorm Syntax:
-
+	* expression.c, expression.h, infnorm.c: Completed accurateinfnorm
+	  Syntax:
+	  
 	  accurateinfnorm function in range [without rangelist] with number
 	  bits;
 
-2006-10-19 13:34  clauter
+2006-10-19 11:34  clauter
 
-	* expression.c, main.c:
+	* expression.c, main.c: Added #define for Pari version.
 
-	  Added #define for Pari version.
+2006-10-19 10:50  clauter
 
-2006-10-19 12:50  clauter
+	* infnorm.c, infnorm.h, lexer.lex, main.c, parser.y: Added
+	  accurateinfnorm support.
 
-	* infnorm.c, infnorm.h, lexer.lex, main.c, parser.y:
+2006-10-18 11:07  clauter
 
-	  Added accurateinfnorm support.
+	* infnorm.c: Added an information in evaluateFaithful.
 
-2006-10-18 13:07  clauter
+2006-10-18 09:37  clauter
 
-	* infnorm.c:
+	* infnorm.c, infnorm.h: evaluateFaithful
 
-	  Added an information in evaluateFaithful.
+2006-10-17 16:13  clauter
 
-2006-10-18 11:37  clauter
+	* expression.c, infnorm.c, proof.c, proof.h: Added monotonicity
+	  clou.
 
-	* infnorm.c, infnorm.h:
+2006-10-17 11:39  clauter
 
-	  evaluateFaithful
+	* infnorm.c, infnorm.h, parser.y: Added evaluateFaithfulOrFail
 
-2006-10-17 18:13  clauter
+2006-10-17 10:12  clauter
 
-	* expression.c, infnorm.c, proof.c, proof.h:
+	* infnorm.c: Slightly modified accurate evaluate.
 
-	  Added monotonicity clou.
-
-2006-10-17 13:39  clauter
-
-	* infnorm.c, infnorm.h, parser.y:
-
-	  Added evaluateFaithfulOrFail
-
-2006-10-17 12:12  clauter
-
-	* infnorm.c:
-
-	  Slightly modified accurate evaluate.
-
-2006-10-17 11:27  clauter
+2006-10-17 09:27  clauter
 
 	* infnorm.c, infnorm.h, lexer.lex, main.c, main.h, parser.y:
-
 	  Changed slightly evaluateAccurate
 
-2006-10-16 18:38  clauter
+2006-10-16 16:38  clauter
 
-	* infnorm.c, infnorm.h, lexer.lex, parser.y:
+	* infnorm.c, infnorm.h, lexer.lex, parser.y: First trial for
+	  evaluateaccurate.
 
-	  First trial for evaluateaccurate.
+2006-10-16 15:32  clauter
 
-2006-10-16 17:32  clauter
+	* infnorm.c, infnorm.h, lexer.lex, parser.y: Added isevaluable
 
-	* infnorm.c, infnorm.h, lexer.lex, parser.y:
+2006-10-16 14:13  clauter
 
-	  Added isevaluable
+	* infnorm.c: Improved dirtyinfnorm.
 
-2006-10-16 16:13  clauter
+2006-10-16 14:11  clauter
 
-	* infnorm.c:
+	* infnorm.c: improved dirtyInfnorm in NaNs occur.
 
-	  Improved dirtyinfnorm.
-
-2006-10-16 16:11  clauter
-
-	* infnorm.c:
-
-	  improved dirtyInfnorm in NaNs occur.
-
-2006-10-16 15:43  clauter
+2006-10-16 13:43  clauter
 
 	* expression.c, expression.h, infnorm.c, infnorm.h, lexer.lex,
-	  parser.y:
+	  parser.y: Some modifications.
 
-	  Some modifications.
+2006-10-11 10:56  clauter
 
-2006-10-11 12:56  clauter
+	* expression.c: Changed slightly printMpfr.
 
-	* expression.c:
+2006-10-11 10:45  clauter
 
-	  Changed slightly printMpfr.
+	* expression.c, expression.h: Added a printMpfr function for
+	  debugging and develloping purposes.
 
-2006-10-11 12:45  clauter
+2006-10-06 09:32  clauter
 
-	* expression.c, expression.h:
+	* main.c, main.h: Made parser scripting capable.
 
-	  Added a printMpfr function for debugging and develloping
-	  purposes.
+2006-10-05 13:26  clauter
 
-2006-10-06 11:32  clauter
+	* parser.y: Slightly modified the autoprint functionality.
 
-	* main.c, main.h:
-
-	  Made parser scripting capable.
-
-2006-10-05 15:26  clauter
-
-	* parser.y:
-
-	  Slightly modified the autoprint functionality.
-
-2006-10-04 15:21  schevill
+2006-10-04 13:21  schevill
 
 	* plot.c: small modification for the names of file stored in /tmp
 	  when plotting
 
-2006-10-02 13:50  clauter
+2006-10-02 11:50  clauter
 
 	* expression.h, infnorm.c, infnorm.h, main.c, main.h, parser.y:
-
 	  Modified automatic displaying of values on the prompt user
 	  interface.
 
-2006-09-22 13:54  clauter
+2006-09-22 11:54  clauter
 
-	* expression.c:
+	* expression.c: Corrected a bug in expand and diff.
 
-	  Corrected a bug in expand and diff.
+2006-09-22 11:33  clauter
 
-2006-09-22 13:33  clauter
+	* main.c, parser.y, plot.c: Added automatic printing of simplified
+	  expressions.
 
-	* main.c, parser.y, plot.c:
-
-	  Added automatic printing of simplified expressions.
-
-2006-09-20 15:03  schevill
+2006-09-20 13:03  schevill
 
 	* infnorm.c, plot.c: modified version of plot to deal with overflow
 	  in conversions into double values
 
-2006-09-15 10:51  clauter
+2006-09-15 08:51  clauter
 
-	* main.c:
+	* main.c: Correctly frees memory on SIGINT
 
-	  Correctly frees memory on SIGINT
+2006-09-13 16:06  clauter
 
-2006-09-13 18:06  clauter
+	* implement.c: Corrected a bug in implementpoly when the polynomial
+	  to implement ends
+	  on a multiplication.
 
-	* implement.c:
-
-	  Corrected a bug in implementpoly when the polynomial to implement
-	  ends on a multiplication.
-
-2006-09-13 11:27  schevill
+2006-09-13 09:27  schevill
 
 	* pari_utils.c: declaration of variable j moved
 
-2006-09-13 11:17  schevill
+2006-09-13 09:17  schevill
 
 	* pari_utils.c: Test procedure finished
 
-2006-09-13 11:13  schevill
+2006-09-13 09:13  schevill
 
 	* pari_utils.c: tests enhanced
 
-2006-09-12 18:32  schevill
+2006-09-12 16:32  schevill
 
 	* pari_utils.c: Fixed a cast with sizeof
 
-2006-09-12 18:30  clauter
+2006-09-12 16:30  clauter
 
-	* pari_utils.c:
+	* pari_utils.c: Changed minimal exponent value for AMD64 machines.
 
-	  Changed minimal exponent value for AMD64 machines.
-
-2006-09-12 18:21  schevill
+2006-09-12 16:21  schevill
 
 	* pari_utils.c: Fixed a cast with sizeof
 
-2006-09-12 18:18  clauter
+2006-09-12 16:18  clauter
 
-	* pari_utils.c:
+	* pari_utils.c: Added a letter (l)
 
-	  Added a letter (l)
+2006-09-12 16:14  clauter
 
-2006-09-12 18:14  clauter
+	* main.c: Added safeRealloc and made PARI compatible to GMP in
+	  Debian.
 
-	* main.c:
-
-	  Added safeRealloc and made PARI compatible to GMP in Debian.
-
-2006-09-12 18:12  schevill
+2006-09-12 16:12  schevill
 
 	* pari_utils.c: tests function implemented
 
-2006-09-12 17:35  schevill
+2006-09-12 15:35  schevill
 
 	* pari_utils.c: modified conversion functions
 
-2006-09-12 16:49  schevill
+2006-09-12 14:49  schevill
 
 	* pari_utils.c: modified conversion functions
 
-2006-09-12 11:07  clauter
+2006-09-12 09:07  clauter
 
-	* lexer.lex, pari_utils.c, pari_utils.h, parser.y:
+	* lexer.lex, pari_utils.c, pari_utils.h, parser.y: Added testpari
+	  functionality to the user interface.
 
-	  Added testpari functionality to the user interface.
+2006-09-12 08:34  clauter
 
-2006-09-12 10:34  clauter
+	* main.c, worstcase.c: Don't know what we are comitting ;-(
 
-	* main.c, worstcase.c:
-
-	  Don't know what we are comitting ;-(
-
-2006-09-07 18:06  schevill
+2006-09-07 16:06  schevill
 
 	* Manuel_fr.tex, main.c: Adapted version for PARI 2.3.0
 
-2006-09-07 17:14  clauter
+2006-09-07 15:14  clauter
 
-	* pari_utils.c, remez.c:
+	* pari_utils.c, remez.c: Brought pari_utils.c and remez.c over to
+	  safeMalloc and printMessage.
 
-	  Brought pari_utils.c and remez.c over to safeMalloc and
-	  printMessage.
+2006-09-07 09:17  clauter
 
-2006-09-07 11:17  clauter
-
-	* expression.c, expression.h, infnorm.c:
-
-	  Added an additional end case for recursive Taylor recursion: the
+	* expression.c, expression.h, infnorm.c: Added an additional end
+	  case for recursive Taylor recursion: the
 	  expression becomes too big.
 
-2006-09-06 15:38  clauter
+2006-09-06 13:38  clauter
 
-	* implement.c:
+	* implement.c: Finished implementing the first version of
+	  implementpoly.
 
-	  Finished implementing the first version of implementpoly.
+2006-09-05 15:20  clauter
 
-2006-09-05 17:20  clauter
+	* Manuel_fr.tex, parser.y: Documented restart feature. Corrected it
+	  for dyadic display and verbosity.
 
-	* Manuel_fr.tex, parser.y:
+2006-09-05 15:12  clauter
 
-	  Documented restart feature. Corrected it for dyadic display and
-	  verbosity.
+	* assignment.c, implement.c, lexer.lex, main.c, parser.y: Corrected
+	  a memory lack in assignment.
+	  Added renormalize3 functionality to implementpoly (unfinished)
+	  Added restart functionality to the user interface.
+	  "Corrected" a memory lack of PARI
 
-2006-09-05 17:12  clauter
+2006-09-01 12:08  clauter
 
-	* assignment.c, implement.c, lexer.lex, main.c, parser.y:
+	* Manuel_fr.tex, makefile: Added documentation for the new
+	  fonctionalities.
 
-	  Corrected a memory lack in assignment.  Added renormalize3
-	  functionality to implementpoly (unfinished) Added restart
-	  functionality to the user interface.	"Corrected" a memory lack
-	  of PARI
-
-2006-09-01 14:08  clauter
-
-	* Manuel_fr.tex, makefile:
-
-	  Added documentation for the new fonctionalities.
-
-2006-08-14 17:00  clauter
+2006-08-14 15:00  clauter
 
 	* implement.c, implement.h, infnorm.c, lexer.lex, parser.y:
-
 	  Improved implementpoly. Coefficient precisions are now rounded
 	  automatically by default. An option (honorcoeffprec) allows to
-	  get no rounding on the coefficients.	It is now possible to get
-	  the implemented polynomial back using p = <implementpoly ...>
+	  get no
+	  rounding on the coefficients.
+	  It is now possible to get the implemented polynomial back using
+	  p = <implementpoly ...>
 	  There is an additional check that the additions in the Horner
-	  steps do not cancellate.
+	  steps
+	  do not cancellate.
 
-2006-08-14 15:22  clauter
+2006-08-14 13:22  clauter
 
 	* double.c, double.h, expression.c, expression.h, implement.c,
-	  lexer.lex, parser.y:
-
-	  Added a functionality to round the coefficients of a polynomial
-	  to TD, DD or D:
-
+	  lexer.lex, parser.y: Added a functionality to round the
+	  coefficients of a polynomial to TD, DD or D:
+	  
 	  print roundcoefficients(simplify(t),[TD,TD,TD,DD,DD,D...]);
 
-2006-08-14 11:58  clauter
+2006-08-14 09:58  clauter
 
-	* double.c, double.h, lexer.lex, parser.y:
+	* double.c, double.h, lexer.lex, parser.y: Added hexadecimal double
+	  precision printing and parsing capabilities.
+	  
+	  printhexa 2;
+	  0x4000000000000000
+	  
+	  print 1 + 0x3ff0000000000000;
+	  2
 
-	  Added hexadecimal double precision printing and parsing
-	  capabilities.
+2006-08-11 22:27  clauter
 
-	  printhexa 2; 0x4000000000000000
+	* implement.c, implement.h: Added the forgotten files to the CVS.
 
-	  print 1 + 0x3ff0000000000000; 2
-
-2006-08-12 00:27  clauter
-
-	* implement.c, implement.h:
-
-	  Added the forgotten files to the CVS.
-
-2006-08-11 18:17  clauter
+2006-08-11 16:17  clauter
 
 	* assignment.c, assignment.h, expression.c, expression.h, main.c,
-	  main.h, parser.y:
-
-	  Added assignment functionality for ranges: for example
-
+	  main.h, parser.y: Added assignment functionality for ranges: for
+	  example
+	  
 	  a = [-1;2];
-
-	  print <a>; 2 print <a>_; -1
-
-	  infnorm x in a; ...
-
+	  
+	  print <a>;
+	  2
+	  print <a>_;
+	  -1
+	  
+	  infnorm x in a;
+	  ...
+	  
 	  Dereferencing ranges while assigning them is not possible. This
-	  stays possible for (normal) expression assignments.
+	  stays
+	  possible for (normal) expression assignments.
 
-2006-08-11 16:52  clauter
+2006-08-11 14:52  clauter
 
 	* infnorm.c, infnorm.h, lexer.lex, main.c, main.h, makefile,
-	  parser.y:
-
-	  Added a functionality to check an infinite norm on a function by
+	  parser.y: Added a functionality to check an infinite norm on a
+	  function by
 	  interval arithmetic. The corresponding command is:
-
+	  
 	  checkinfnorm <function> in <range> bounded by <constant
 	  expression> [, diam = <diameter>];
-
+	  
 	  Highly improved the quality of Taylor interval evaluations and
-	  thus improved the quality of the certified infinite norm by
-	  allowing the Taylor evaluation to recurse on the linear term up
-	  to a certain level. The default level is 0, so by default,
-	  nothing changes. The command for setting the recursion level is
-
+	  thus
+	  improved the quality of the certified infinite norm by allowing
+	  the
+	  Taylor evaluation to recurse on the linear term up to a certain
+	  level. The default level is 0, so by default, nothing changes.
+	  The
+	  command for setting the recursion level is
+	  
 	  taylorrecursions = <positive or zero integer>;
 
-2006-08-10 17:24  clauter
+2006-08-10 15:24  clauter
 
-	* infnorm.c, main.h:
+	* infnorm.c, main.h: Improved infnorm performance.
 
-	  Improved infnorm performance.
+2006-08-10 13:21  clauter
 
-2006-08-10 15:21  clauter
+	* expression.c, infnorm.c: Added information printouts at high
+	  verbosity levels.
+	  Slightly increased performance of isPolynomial() function.
 
-	* expression.c, infnorm.c:
+2006-08-10 10:57  clauter
 
-	  Added information printouts at high verbosity levels.  Slightly
-	  increased performance of isPolynomial() function.
+	* main.h: Slight change in main.
 
-2006-08-10 12:57  clauter
+2006-08-10 09:57  clauter
 
-	* main.h:
+	* expression.c, infnorm.c: Corrected a bug in isPolynomial(node
+	  *tree) introduced when correcting another bug ;-)
 
-	  Slight change in main.
-
-2006-08-10 11:57  clauter
-
-	* expression.c, infnorm.c:
-
-	  Corrected a bug in isPolynomial(node *tree) introduced when
-	  correcting another bug ;-)
-
-2006-08-10 11:42  clauter
+2006-08-10 09:42  clauter
 
 	* double.c, expression.c, expression.h, infnorm.c, lexer.lex,
-	  main.h, makefile, parser.y:
+	  main.h, makefile, parser.y: Added the first version of a
+	  functionality for the automatic implementation of
+	  a polynomial (function).
 
-	  Added the first version of a functionality for the automatic
-	  implementation of a polynomial (function).
-
-2006-07-23 23:56  schevill
+2006-07-23 21:56  schevill
 
 	* makefile, pari_utils.c, pari_utils.h, remez.c: Restructured a bit
 	  the file remez.c, moving some code into a new file pari_utils.c.
@@ -2215,550 +1880,462 @@
 	  any more on Linux. We should quickly begin to use
 	  automake/autoconf
 
-2006-06-30 11:03  schevill
+2006-06-30 09:03  schevill
 
 	* Manuel_fr.tex, makefile: Documentation (in french at the moment)
 
-2006-06-28 17:24  schevill
+2006-06-28 15:24  schevill
 
 	* main.c, parser.y: memory leaks filled
 
-2006-06-28 16:54  clauter
+2006-06-28 14:54  clauter
 
-	* parser.y:
+	* parser.y: Added relative integers to user interface.
 
-	  Added relative integers to user interface.
-
-2006-06-28 16:50  schevill
+2006-06-28 14:50  schevill
 
 	* fpminimax.c, parser.y: debugged fpminimax and parser
 
-2006-06-28 15:53  clauter
+2006-06-28 13:53  clauter
 
 	* chain.c, chain.h, expression.c, expression.h, fpminimax.c,
-	  fpminimax.h, lexer.lex, main.c, main.h, parser.y, taylor.c:
-
-	  Added user interface for fpminimax.  Corrected syntax of
-	  commandfunctions as expressions using angles.  Added < >.
-	  Corrected Taylor: added a check that the development point is a
-	  constant expression.	Patched differentiate on double,
-	  doubledouble and tripledouble rounding functions.
-
+	  fpminimax.h, lexer.lex, main.c, main.h, parser.y, taylor.c: Added
+	  user interface for fpminimax. Corrected syntax of
+	  commandfunctions as expressions using angles. Added < >.
+	  Corrected
+	  Taylor: added a check that the development point is a constant
+	  expression. Patched differentiate on double, doubledouble and
+	  tripledouble rounding functions.
+	  
 	  The fpminimax interface must still be checked.
 
-2006-06-27 17:51  clauter
+2006-06-27 15:51  clauter
 
-	* lexer.lex, main.h, parser.y:
+	* lexer.lex, main.h, parser.y: Started implementing angles instead
+	  of parentheses for command functions.
 
-	  Started implementing angles instead of parentheses for command
-	  functions.
+2006-06-27 14:29  clauter
 
-2006-06-27 16:29  clauter
+	* fpminimax.c, fpminimax.h, makefile, parser.y, remez.c: Started
+	  working on fpminimax
+	  Corrected silly syntax of plot
 
-	* fpminimax.c, fpminimax.h, makefile, parser.y, remez.c:
+2006-06-15 14:53  clauter
 
-	  Started working on fpminimax Corrected silly syntax of plot
-
-2006-06-15 16:53  clauter
-
-	* infnorm.c, main.c, parser.y:
-
-	  Corrected a segfault in infnorm.  Added support in user-interface
-	  for being able to consider infnorm, dirtyinfnorm, integral and
+	* infnorm.c, main.c, parser.y: Corrected a segfault in infnorm.
+	  Added support in user-interface for
+	  being able to consider infnorm, dirtyinfnorm, integral and
 	  dirtyintegral as a constant in another expression. The syntax is
 	  e.g. like follows:
-
+	  
 	  print 1+(infnorm x in [-1;1]);
 
-2006-06-15 12:30  clauter
+2006-06-15 10:30  clauter
 
-	* lexer.lex, parser.y, proof.h, worstcase.c, worstcase.h:
+	* lexer.lex, parser.y, proof.h, worstcase.c, worstcase.h: Added
+	  file output support to worst case search.
 
-	  Added file output support to worst case search.
+2006-06-14 16:04  clauter
 
-2006-06-14 18:04  clauter
+	* lexer.lex, makefile, parser.y, worstcase.c, worstcase.h: Added
+	  worstcase search.
 
-	* lexer.lex, makefile, parser.y, worstcase.c, worstcase.h:
-
-	  Added worstcase search.
-
-2006-06-13 19:17  schevill
+2006-06-13 17:17  schevill
 
 	* integral.c, remez.c: Remez is supposed to function with
 	  polynomials with holes
 
-2006-06-13 17:30  clauter
+2006-06-13 15:30  clauter
 
 	* double.c, expression.c, infnorm.c, integral.c, main.c, parser.y,
-	  plot.c, taylor.c:
+	  plot.c, taylor.c: Changed all warnings and errors for proper
+	  support of verbosity and
+	  stderr output. It remain some occurences in Remez.
 
-	  Changed all warnings and errors for proper support of verbosity
-	  and stderr output. It remain some occurences in Remez.
+2006-06-13 14:29  clauter
 
-2006-06-13 16:29  clauter
+	* infnorm.c, lexer.lex, main.c, main.h, parser.y: Added verbosity
+	  support.
 
-	* infnorm.c, lexer.lex, main.c, main.h, parser.y:
-
-	  Added verbosity support.
-
-2006-06-13 15:31  clauter
+2006-06-13 13:31  clauter
 
 	* chain.c, chain.h, main.c, main.h, parser.y, remez.c, remez.h:
-
 	  Added user interface support for remez with holes.
 
-2006-06-09 18:13  clauter
+2006-06-09 16:13  clauter
 
 	* assignment.c, chain.c, expression.c, expression.h, infnorm.c,
 	  lexer.lex, main.c, main.h, parser.y, proof.c, proof.h, taylor.c:
+	  Added safeMalloc and safeCalloc.
+	  Completed the generation of a proof for infnorm.
 
-	  Added safeMalloc and safeCalloc.  Completed the generation of a
-	  proof for infnorm.
-
-2006-06-07 18:07  clauter
+2006-06-07 16:07  clauter
 
 	* expression.c, expression.h, infnorm.c, infnorm.h, proof.c,
-	  proof.h:
+	  proof.h: Continued working on the generation of a proof for the
+	  certified infnorm.
 
-	  Continued working on the generation of a proof for the certified
-	  infnorm.
-
-2006-06-07 12:30  clauter
+2006-06-07 10:30  clauter
 
 	* infnorm.c, infnorm.h, lexer.lex, main.c, main.h, parser.y,
-	  proof.c, proof.h:
+	  proof.c, proof.h: Implemented first version of proof generation
+	  for certified infnorm.
 
-	  Implemented first version of proof generation for certified
-	  infnorm.
-
-2006-06-05 17:56  clauter
+2006-06-05 15:56  clauter
 
 	* expression.c, expression.h, infnorm.c, infnorm.h, makefile,
-	  proof.c, proof.h:
+	  proof.c, proof.h: Started implementing the generation of a proof
+	  for an infinite norm.
 
-	  Started implementing the generation of a proof for an infinite
-	  norm.
+2006-05-29 12:28  clauter
 
-2006-05-29 14:28  clauter
+	* infnorm.c, parser.y: Corrected a bug in user interface displaying
+	  of certified integral result.
 
-	* infnorm.c, parser.y:
+2006-05-29 12:02  clauter
 
-	  Corrected a bug in user interface displaying of certified
-	  integral result.
+	* integral.c, lexer.lex, parser.y: Added dirtyinfnorm to user
+	  interface.
 
-2006-05-29 14:02  clauter
-
-	* integral.c, lexer.lex, parser.y:
-
-	  Added dirtyinfnorm to user interface.
-
-2006-05-29 12:09  schevill
+2006-05-29 10:09  schevill
 
 	* integral.c, integral.h: added an uncertified (but hopefully
 	  faster) integral
 
-2006-05-29 11:30  clauter
+2006-05-29 09:30  clauter
 
-	* infnorm.c, infnorm.h:
+	* infnorm.c, infnorm.h: Implemented
+	  void evaluateRangeFunctionFast(rangetype yrange, node *func, node
+	  *deriv, rangetype xrange, mp_prec_t prec)
 
-	  Implemented void evaluateRangeFunctionFast(rangetype yrange, node
-	  *func, node *deriv, rangetype xrange, mp_prec_t prec)
+2006-05-29 09:26  clauter
 
-2006-05-29 11:26  clauter
+	* integral.c, integral.h, lexer.lex, makefile, parser.y: Added
+	  integral support to user-interface.
 
-	* integral.c, integral.h, lexer.lex, makefile, parser.y:
-
-	  Added integral support to user-interface.
-
-2006-05-29 11:09  schevill
+2006-05-29 09:09  schevill
 
 	* integral.c, integral.h: Added files to compute integrals
 
-2006-05-27 04:22  clauter
+2006-05-27 02:22  clauter
 
 	* chain.h, expression.c, expression.h, infnorm.c, infnorm.h,
-	  lexer.lex, main.c, main.h, parser.y:
-
-	  Added support for excluding intervals in certified infnorm:
-
+	  lexer.lex, main.c, main.h, parser.y: Added support for excluding
+	  intervals in certified infnorm:
+	  
 	  infnorm exp(x) in [-1;1] without [-2^(-12);2^(12)], diam=2^(-10);
-
+	  
 	  Added support for dyadic numbers:
+	  
+	  - Input: always supported; <m>b<+/->e = m * 2^(+/-e)
+	  - Output: supported only when
+	  dyadic=on;
+	  and number is not an integer representable on machine int.
+	  The displaying is <+/-><m>b<+/->e = +/- * m * 2^(+/-e) where m is
+	  odd.
 
-	  - Input:  always supported; <m>b<+/->e = m * 2^(+/-e) - Output:
-	  supported only when	       dyadic=on;	    and number is
-	  not an integer representable on machine int.	    The displaying
-	  is <+/-><m>b<+/->e = +/- * m * 2^(+/-e) where m is odd.
+2006-05-26 16:59  clauter
 
-2006-05-26 18:59  clauter
+	* parser.y: Corrected a bug in parser file that made segfault bison
 
-	* parser.y:
+2006-05-26 15:24  clauter
 
-	  Corrected a bug in parser file that made segfault bison
+	* plot.c: Improved plot printout.
 
-2006-05-26 17:24  clauter
+2006-05-26 14:28  clauter
 
-	* plot.c:
+	* plot.c: Improved precision in plot files.
 
-	  Improved plot printout.
+2006-05-26 14:00  clauter
 
-2006-05-26 16:28  clauter
+	* expression.c, lexer.lex, parser.y: Added numerator(func) support
+	  to user-interface
+	  Improved safety of printing values.
 
-	* plot.c:
+2006-05-26 12:44  clauter
 
-	  Improved precision in plot files.
+	* parser.y: Improved evaluate on user-interface
+	  when the function evaluates to a point interval.
 
-2006-05-26 16:00  clauter
+2006-05-26 12:40  clauter
 
-	* expression.c, lexer.lex, parser.y:
-
-	  Added numerator(func) support to user-interface Improved safety
-	  of printing values.
-
-2006-05-26 14:44  clauter
-
-	* parser.y:
-
-	  Improved evaluate on user-interface when the function evaluates
-	  to a point interval.
-
-2006-05-26 14:40  clauter
-
-	* infnorm.c, infnorm.h, lexer.lex, main.c, main.h, parser.y:
-
-	  Added interval evaluation of a function to the user-interface:
-
+	* infnorm.c, infnorm.h, lexer.lex, main.c, main.h, parser.y: Added
+	  interval evaluation of a function to the user-interface:
+	  
 	  evaluate exp(x) in [-1;1];
-
+	  
 	  or
-
+	  
 	  evaluate exp(x) at 5;
 
-2006-05-22 16:50  clauter
+2006-05-22 14:50  clauter
 
-	* main.c:
+	* main.c: Added error recovering for PARI.
 
-	  Added error recovering for PARI.
-
-2006-05-19 17:14  clauter
+2006-05-19 15:14  clauter
 
 	* main.c, remez.c: Remez fully debugged relatively to the *flows
 
-2006-05-19 16:56  clauter
+2006-05-19 14:56  clauter
 
 	* remez.c: Denormalized and Inf are OK on Itanium
 
-2006-05-19 16:10  clauter
+2006-05-19 14:10  clauter
 
-	* makefile: [no log message]
+	* makefile: *** empty log message ***
 
-2006-05-19 15:11  clauter
+2006-05-19 13:11  clauter
 
 	* remez.c: Test version of mpfr_2_PARI
 
-2006-05-19 12:00  schevill
+2006-05-19 10:00  schevill
 
 	* remez.c: Bug fixed with underflow
 
-2006-05-19 10:57  clauter
+2006-05-19 08:57  clauter
 
-	* parser.y:
+	* parser.y: Corrected a bug in the parser.
 
-	  Corrected a bug in the parser.
+2006-05-16 09:17  clauter
 
-2006-05-16 11:17  clauter
+	* expression.c, expression.h, infnorm.c: Added pole detection to
+	  infnorm to correct the 1/x flaw.
 
-	* expression.c, expression.h, infnorm.c:
+2006-05-15 15:54  clauter
 
-	  Added pole detection to infnorm to correct the 1/x flaw.
+	* infnorm.c: Improved dirty infnorm.
 
-2006-05-15 17:54  clauter
-
-	* infnorm.c:
-
-	  Improved dirty infnorm.
-
-2006-05-15 17:37  schevill
+2006-05-15 15:37  schevill
 
 	* remez.c: I began to implement a more careful version of
 	  mpfr_to_PARI which takes care of denormalized numbers
 
-2006-05-15 14:21  schevill
+2006-05-15 12:21  schevill
 
 	* remez.c: Fixed bug in Remez algorithm when the function fails to
 	  oscillate enough
 
-2006-05-12 17:32  clauter
+2006-05-12 15:32  clauter
 
 	* expression.c, expression.h, infnorm.c, infnorm.h, lexer.lex,
-	  main.c, main.h, parser.y, taylor.c:
+	  main.c, main.h, parser.y, taylor.c: Added dirty infnorm.
+	  Added substitutions in assigned variables: t(x+1)
 
-	  Added dirty infnorm.	Added substitutions in assigned variables:
-	  t(x+1)
+2006-05-12 13:27  clauter
 
-2006-05-12 15:27  clauter
+	* infnorm.c: Improved infnorm.
 
-	* infnorm.c:
+2006-05-11 15:22  clauter
 
-	  Improved infnorm.
+	* chain.c, infnorm.c: Corrected a bug in infnorm (segfault).
 
-2006-05-11 17:22  clauter
+2006-05-11 14:27  clauter
 
-	* chain.c, infnorm.c:
+	* expression.c, infnorm.c, parser.y: Improved infnorm to produced
+	  results different from +infty on ill-conditionned
+	  problems.
 
-	  Corrected a bug in infnorm (segfault).
+2006-05-11 12:04  clauter
 
-2006-05-11 16:27  clauter
+	* infnorm.c: Started working on infnorm with excluded domains.
 
-	* expression.c, infnorm.c, parser.y:
+2006-05-11 09:16  clauter
 
-	  Improved infnorm to produced results different from +infty on
-	  ill-conditionned problems.
+	* infnorm.c: Improved infnorm by improving Newton. No more division
+	  by zero possible.
 
-2006-05-11 14:04  clauter
+2006-05-11 08:44  clauter
 
-	* infnorm.c:
+	* infnorm.c: Improved application of Horner's rule in infnorm.
 
-	  Started working on infnorm with excluded domains.
+2006-05-10 21:40  clauter
 
-2006-05-11 11:16  clauter
+	* expression.c: Improved still horner code.
 
-	* infnorm.c:
-
-	  Improved infnorm by improving Newton. No more division by zero
-	  possible.
-
-2006-05-11 10:44  clauter
-
-	* infnorm.c:
-
-	  Improved application of Horner's rule in infnorm.
-
-2006-05-10 23:40  clauter
-
-	* expression.c:
-
-	  Improved still horner code.
-
-2006-05-10 16:54  schevill
+2006-05-10 14:54  schevill
 
 	* remez.c: Bug in Newton's algorithm fixed
 
-2006-05-10 16:02  clauter
+2006-05-10 14:02  clauter
 
-	* infnorm.c:
+	* infnorm.c: Added additional safety warnings in infnorm
+	  (contourning NaN).
 
-	  Added additional safety warnings in infnorm (contourning NaN).
+2006-05-10 13:31  clauter
 
-2006-05-10 15:31  clauter
+	* infnorm.c: Corrected bug in Newton zero search.
 
-	* infnorm.c:
+2006-05-10 13:00  clauter
 
-	  Corrected bug in Newton zero search.
+	* expression.c, infnorm.c: Improved infnorm on function with false
+	  poles which are representable in FP.
 
-2006-05-10 15:00  clauter
-
-	* expression.c, infnorm.c:
-
-	  Improved infnorm on function with false poles which are
-	  representable in FP.
-
-2006-05-10 11:21  clauter
+2006-05-10 09:21  clauter
 
 	* expression.c, expression.h, infnorm.c, infnorm.h, lexer.lex,
-	  main.c, main.h, parser.y, taylor.c:
-
-	  Corrected bugs in expand.  Improved infnorm, work in progress
+	  main.c, main.h, parser.y, taylor.c: Corrected bugs in expand.
+	  Improved infnorm, work in progress
 	  Improved Taylor
 
-2006-05-09 12:19  clauter
+2006-05-09 10:19  clauter
 
-	* expression.c:
+	* expression.c: Corrected a bug still remaining in Horner scheme
+	  horner() function.
 
-	  Corrected a bug still remaining in Horner scheme horner()
-	  function.
+2006-05-09 09:17  clauter
 
-2006-05-09 11:17  clauter
+	* parser.y: A small combat with the bison versions...
 
-	* parser.y:
+2006-05-08 20:14  clauter
 
-	  A small combat with the bison versions...
+	* expression.c: Corrected a slight bug in Horner scheme function
+	  horner()
 
-2006-05-08 22:14  clauter
-
-	* expression.c:
-
-	  Corrected a slight bug in Horner scheme function horner()
-
-2006-05-08 21:53  clauter
+2006-05-08 19:53  clauter
 
 	* expression.c, lexer.lex, makefile, parser.y, taylor.c, taylor.h:
-
 	  Added Taylor support.
 
-2006-05-08 17:41  clauter
+2006-05-08 15:41  clauter
 
 	* assignment.c, assignment.h, chain.c, chain.h, infnorm.c,
-	  lexer.lex, main.c, main.h, makefile, parser.y:
+	  lexer.lex, main.c, main.h, makefile, parser.y: Added assignment
+	  support.
 
-	  Added assignment support.
-
-2006-05-08 15:45  clauter
+2006-05-08 13:45  clauter
 
 	* expression.c, infnorm.c, lexer.lex, main.c, main.h, makefile,
-	  parser.y:
+	  parser.y: Committing merged versions.
 
-	  Committing merged versions.
-
-2006-05-05 17:02  schevill
+2006-05-05 15:02  schevill
 
 	* remez.c: Remez without all the windows at each step of the
 	  algorithm
 
-2006-05-05 16:20  schevill
+2006-05-05 14:20  schevill
 
 	* main.c, remez.c: Clean catch of Remez when not oscillating.
 
-2006-05-05 16:17  clauter
+2006-05-05 14:17  clauter
 
-	* infnorm.c:
+	* infnorm.c: Debug version of infnorm.
 
-	  Debug version of infnorm.
+2006-05-05 13:09  clauter
 
-2006-05-05 15:09  clauter
+	* expression.c: Corrected differentiate.
 
-	* expression.c:
+2006-05-05 11:27  clauter
 
-	  Corrected differentiate.
+	* expression.c: Corrected derivative of a polynomial.
 
-2006-05-05 13:27  clauter
-
-	* expression.c:
-
-	  Corrected derivative of a polynomial.
-
-2006-05-04 18:13  schevill
+2006-05-04 16:13  schevill
 
 	* remez.c: Better management of the memory and less use of the
 	  differnetiate function which increases the speed of computation.
 	  There is now a warning if the precision is not sufficient and the
 	  remez function returns then its argument as a result
 
-2006-05-04 16:35  schevill
+2006-05-04 14:35  schevill
 
 	* remez.c: Without plotting all intermediate results of Remez
 
-2006-05-04 16:26  schevill
+2006-05-04 14:26  schevill
 
 	* remez.c: Nothing ?
 
-2006-05-04 16:11  clauter
+2006-05-04 14:11  clauter
 
-	* expression.c, parser.y:
+	* expression.c, parser.y: Corrected expand. Added special code for
+	  differentiating polynomials.
+	  Avoided useless warnings.
 
-	  Corrected expand. Added special code for differentiating
-	  polynomials.	Avoided useless warnings.
-
-2006-05-04 14:57  schevill
+2006-05-04 12:57  schevill
 
 	* parser.y: Memory leaks corrected
 
-2006-05-04 14:29  schevill
+2006-05-04 12:29  schevill
 
 	* remez.c: Debug messages removed and commentaries translated in
 	  english
 
-2006-05-04 14:00  schevill
+2006-05-04 12:00  schevill
 
 	* remez.c: Remez fully functional. There is still the dirty
 	  handling of the memory but it seems to not affect the efficiency
 	  of the algorithm. And yes, there is still the debug logs
 
-2006-05-04 13:50  clauter
+2006-05-04 11:50  clauter
 
 	* double.c, double.h, expression.c, expression.h, lexer.lex,
-	  parser.y:
+	  parser.y: Added simplifysafe support.
 
-	  Added simplifysafe support.
+2006-05-04 10:33  clauter
 
-2006-05-04 12:33  clauter
+	* expression.c, infnorm.c, main.c, main.h, parser.y: Completed
+	  horner support.
 
-	* expression.c, infnorm.c, main.c, main.h, parser.y:
-
-	  Completed horner support.
-
-2006-05-03 20:08  schevill
+2006-05-03 18:08  schevill
 
 	* remez.c: Bug sur le exponent overflow corrigé. Ça déconne
-	  toujours pour de grands degrés. Il s'agit plus d'un protoype
-	  pour faire joujou que le fonction définitive
+	  toujours pour de grands degrés. Il s'agit plus d'un protoype pour
+	  faire joujou que le fonction définitive
 
-2006-05-03 19:43  schevill
+2006-05-03 17:43  schevill
 
 	* remez.c: Remez fonctionnel. Je n'ai pas implémenté Newton, mais
-	  ça marche déjà vachement bien comme ça. Nombreuses
-	  optimisations mémoires sur les arbres possibles. Si on augmente
-	  trop le degré, on un une exponent overflow de PARI ; il s'agit
-	  d'un bug MINEUR.
+	  ça marche déjà vachement bien comme ça. Nombreuses optimisations
+	  mémoires sur les arbres possibles. Si on augmente trop le degré,
+	  on un une exponent overflow de PARI ; il s'agit d'un bug MINEUR.
 
-2006-05-03 17:51  schevill
+2006-05-03 15:51  schevill
 
 	* remez.c: Compilation sans warnings. Remez toujours pas
 	  fonctionnel mais il faut une étape de la boucle principale et
 	  devrait dores et déjà être exempt de fuite de mémoire.
 
-2006-05-03 15:43  schevill
+2006-05-03 13:43  schevill
 
 	* expression.c, main.c, main.h, parser.y, remez.c: Changement de la
 	  variable precision en la variable tools_precision pour cause de
 	  PARI fait chier. J'espère ne pas avoir trop gaffé dans le lexer
 	  et le parser. Remez toujours réduit à l'identité
 
-2006-05-03 11:27  schevill
+2006-05-03 09:27  schevill
 
 	* expression.c, expression.h, infnorm.c, makefile, parser.y,
 	  remez.c: Modification des noms LOG2, LOG10 et simplify. Ajout de
 	  la lib PARI dans le Makefile. Quelques fonctionnalités dans
 	  remez.c : ne pas utiliser pour l'instant.
 
-2006-05-03 11:16  clauter
+2006-05-03 09:16  clauter
 
-	* expression.c, expression.h, lexer.lex, parser.y:
+	* expression.c, expression.h, lexer.lex, parser.y: Added expand
+	  support and continued working on horner scheme rewriting.
 
-	  Added expand support and continued working on horner scheme
-	  rewriting.
+2006-05-02 15:22  clauter
 
-2006-05-02 17:22  clauter
+	* expression.c, expression.h, lexer.lex, parser.y: Started working
+	  on horner-rewrite support.
 
-	* expression.c, expression.h, lexer.lex, parser.y:
-
-	  Started working on horner-rewrite support.
-
-2006-05-02 14:18  clauter
+2006-05-02 12:18  clauter
 
 	* double.c, double.h, expression.c, expression.h, infnorm.c,
-	  lexer.lex, makefile, parser.y:
+	  lexer.lex, makefile, parser.y: Added double, double-double and
+	  triple-double support.
 
-	  Added double, double-double and triple-double support.
+2006-05-02 08:47  clauter
 
-2006-05-02 10:47  clauter
+	* results.txt, scratch.txt: Removed files that had been added by
+	  error.
 
-	* results.txt, scratch.txt:
-
-	  Removed files that had been added by error.
-
-2006-05-02 10:45  clauter
-
-	* chain.c, chain.h, expression.c, expression.h, infnorm.c,
-	  infnorm.h, lexer.lex, main.c, main.h, makefile, parser.y, plot.c,
-	  plot.h, remez.c, remez.h, results.txt, scratch.txt:
-
-	  Started arenairplot project
-
-2006-05-02 10:45  clauter
+2006-05-02 08:45  clauter
 
 	* chain.c, chain.h, expression.c, expression.h, infnorm.c,
 	  infnorm.h, lexer.lex, main.c, main.h, makefile, parser.y, plot.c,
 	  plot.h, remez.c, remez.h, results.txt, scratch.txt: Initial
 	  revision
+
+2006-05-02 08:45  
+
+	* branches, tags, .: New repository initialized by cvs2svn.
 
