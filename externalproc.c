@@ -1,8 +1,8 @@
 #include <mpfi.h>
 #include <mpfr.h>
-#include "arenaireplot.h"
+#include "sollya.h"
 
-/* Example of an external procedure linked to an identifier in Sollya
+/* Example of an external procedure linked to an identifier in sollya
 
    Compile with 
 
@@ -20,7 +20,7 @@
    list of function, list of range, list of integer, list of string, list of boolean.
    
    The C function foo is supposed to return an integer indicating success. 
-   It returns its result depending on its Sollya result type as follows:
+   It returns its result depending on its sollya result type as follows:
 
    * void :        the C function has no pointer argument for the result
    * constant:     the first argument of the C function is of C type mpfr_t *, 
@@ -37,7 +37,7 @@
                    the result is returned by affecting the int variable with a boolean value
    * list of type: the first argument of the C function is of C type chain **,
                    the result is returned by the chain * pointed with a new chain *
-		   containing for Sollya type 
+		   containing for sollya type 
 		   - constant: pointers mpfr_t * to new MPFR variables
                    - function: pointers node * to new nodes
                    - range:    pointers mpfi_t * to new MPFI variables
@@ -50,10 +50,10 @@
    leak any memory to the encompassing environment.
  
    The C function foo receives its arguments as follows: 
-   If the Sollya argument type is void, no argument array is given. 
+   If the sollya argument type is void, no argument array is given. 
    Otherwise the C function receives a C void ** argument representing an array 
    of size equal to the arity of the function where each entry (of C type void *) represents
-   a value with a C type depending on the corresponding Sollya type:
+   a value with a C type depending on the corresponding sollya type:
 
    * constant:     the C type the void * is to be casted to is mpfr_t *
    * function:     the C type the void * is to be casted to is node *
@@ -62,7 +62,7 @@
    * string:       the C type the void * is to be casted to is char *
    * boolean:      the C type the void * is to be casted to is int *
    * list of type: the C type the void * is to be casted to is chain *
-                   where depending on Sollya type, the values in the chain are
+                   where depending on sollya type, the values in the chain are
 		   to be casted to 
 		   - constant: mpfr_t *
                    - function: node *

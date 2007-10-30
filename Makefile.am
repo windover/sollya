@@ -1,4 +1,4 @@
-EXTRA_DIST = autogen.sh arenaireplot.h arenairetoolsexample.c compile.sh expansion.c expansion.h externalfun.c doc/tools_manual.pdf
+EXTRA_DIST = autogen.sh sollya.h libsollyaexample.c compile.sh expansion.c expansion.h externalfun.c externalproc.c doc/sollya.pdf
 
 AM_YFLAGS = -d
 AM_LFLAGS = -o$(LEX_OUTPUT_ROOT).c
@@ -11,8 +11,8 @@ lexer.c \
 minilexer.c \
 internlexer.c 
 
-bin_PROGRAMS = tools
-tools_SOURCES = \
+bin_PROGRAMS = sollya
+sollya_SOURCES = \
 internparser.y \
 miniparser.y \
 parser.y \
@@ -59,11 +59,11 @@ worstcase.c \
 worstcase.h \
 xml.c \
 xml.h 
-tools_CFLAGS = $(AM_CFLAGS)
+sollya_CFLAGS = $(AM_CFLAGS)
 
 
-lib_LTLIBRARIES     = libtools.la
-libtools_la_SOURCES = \
+lib_LTLIBRARIES     = libsollya.la
+libsollya_la_SOURCES = \
 internparser.y \
 miniparser.y \
 parser.y \

@@ -1,13 +1,13 @@
-#include "arenaireplot.h"
+#include "sollya.h"
 #include <setjmp.h>
 #include <stdio.h>
 
-/* Example for the usage of the arenairetools library 
+/* Example for the usage of libsollya
 
    Compile with something similar to
 
-       gcc -Wall -c arenairetoolsexample.c
-       gcc -L./.libs -Wall -o arenairetoolsexample arenairetoolsexample.o -ltools
+       gcc -Wall -c libsollyaexample.c
+       gcc -L./.libs -Wall -o libsollyaexample libsollyaexample.o -lsollya
 
 
    The example...
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
   if (setjmp(recover)) {
     /* If we are here, we have come back from an error in the library */
 
-    fprintf(stderr,"An error occurred in the arenairetools library.\n");
+    fprintf(stderr,"An error occurred in the sollya library.\n");
     finishTool();
     return 1;
   }
