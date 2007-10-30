@@ -9,6 +9,7 @@ AM_INIT_AUTOMAKE([1.6 no-define dist-zip dist-bzip2])
 # Checks for programs.
 AC_PROG_YACC
 AC_PROG_CC
+AM_PROG_CC_C_O
 AC_PROG_LEX
 if test "$LEX" != flex; then
   LEX="$SHELL $missing_dir/missing flex"
