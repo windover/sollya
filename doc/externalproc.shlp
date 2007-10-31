@@ -1,0 +1,110 @@
+#NAME $EXTERNALPROC
+#QUICK_DESCRIPTION binds an external code to a $SOLLYA procedure
+#CALLING $COMMAND(<identifier>, <filename>, <argumenttype> -> <resulttype>)
+#PARAMETERS <identifier> represents the identifier the code is to be bound to
+#PARAMETERS <filename> of type $STRING represents the name of the object file where the code of procedure can be found
+#PARAMETERS <argumenttype> represents a definition of the types of the arguments of the $SOLLYA procedure and the external code
+#PARAMETERS <resulttype> represents a definition of the result type of the external code
+
+#DESCRIPTION 
+$COMMAND allows for binding the $SOLLYA identifier <identifier> to an external code.
+After this binding, when $SOLLYA encounters <identifier> applied to a list of 
+actual parameters, it will evaluate these parameters and call the external code 
+with these parameters. If the external code indicated success, it will receive the
+result produced by the external code, transform it to $SOLLYA's iternal representation
+and return it.
+
+In order to allow correct evaluation and typing of the data in parameter and in result 
+to be passed to and received from the external code, $COMMAND has a third paramter
+<argumenttype> -> <resulttype>. Both <argumenttype> and <resulttype> are one of 
+
+void, constant, function, range, integer, string, boolean, list of constant, 
+list of function, list of range, list of integer, list of string, list of boolean.
+
+If upon a usage of a procedure bound to an external procedure the type of the 
+actual parameters given or its number is not correct, $SOLLYA produces a type 
+error. An external function not applied to arguments represents itself and prints
+out with its argument and result types.
+
+The external function is supposed to return an integer indicating success. 
+It returns its result depending on its $SOLLYA result type as follows. Here, 
+the external procedure is assumed to be implemented as a C function:
+
+* void :        the C function has no pointer argument for the result
+* constant:     the first argument of the C function is of C type mpfr_t *, 
+                the result is returned by affecting the MPFR variable
+* function:     the first argument of the C function is of C type node **,
+                the result is returned by the node * pointed with a new node *
+* range:        the first argument of the C function is of C type mpfi_t *,
+                the result is returned by affecting the MPFI variable
+* integer:      the first argument of the C function is of C type int *,
+                the result is returned by affecting the int variable
+* string:       the first argument of the C function is of C type char **,
+                the result is returned by the char * pointed with a new char *
+* boolean:      the first argument of the C function is of C type int *,
+                the result is returned by affecting the int variable with a boolean value
+* list of type: the first argument of the C function is of C type chain **,
+                the result is returned by the chain * pointed with a new chain *
+		   containing for $SOLLYA type 
+		   - constant: pointers mpfr_t * to new MPFR variables
+                   - function: pointers node * to new nodes
+                   - range:    pointers mpfi_t * to new MPFI variables
+                   - integer:  pointers int * to new int variables
+		   - string:   pointers char * to new char * variables
+		   - boolean:  pointers int * to new int variables representing boolean values.
+	       
+The external procedure affects its possible pointer argument if and only if it succeeds.
+This means, if the function returns an integer indicating failure, it does not 
+leak any memory to the encompassing environment.
+
+The external procedure receives its arguments as follows: 
+If the $SOLLYA argument type is void, no argument array is given. 
+Otherwise the C function receives a C void ** argument representing an array 
+of size equal to the arity of the function where each entry (of C type void *) represents
+a value with a C type depending on the corresponding $SOLLYA type:
+
+* constant:     the C type the void * is to be casted to is mpfr_t *
+* function:     the C type the void * is to be casted to is node *
+* range:        the C type the void * is to be casted to is mpfi_t *
+* integer:      the C type the void * is to be casted to is int *
+* string:       the C type the void * is to be casted to is char *
+* boolean:      the C type the void * is to be casted to is int *
+* list of type: the C type the void * is to be casted to is chain *
+                where depending on $SOLLYA type, the values in the chain are
+		   to be casted to 
+		   - constant: mpfr_t *
+                   - function: node *
+                   - range:    mpfi_t *
+                   - integer:  int *
+		   - string:   char *
+		   - boolean:  int *.
+
+The external procedure is not supposed to alter the memory pointed by its array argument void **.
+
+In both directions (argument and result values), empty lists are represented by chain * NULL pointers.
+
+In contrast to internal procedures, externally bounded procedures can be considered as objects
+inside $SOLLYA that can be assigned to other variables, stored in list etc.
+
+#EXAMPLE
+bashexecute("gcc -fPIC -Wall -c externalproc.c");
+bashexecute("gcc -fPIC -shared -o externalproc externalproc.o");
+externalproc(foo, "./externalproc", (integer, integer) -> integer);
+foo;
+foo(5, 6);
+foo();
+a = foo;
+a(5,6);
+
+#SEEALSO $LIBRARY
+#SEEALSO $EXTERNALPLOT
+#SEEALSO $BASHEXECUTE
+#SEEALSO $VOID
+#SEEALSO $CONSTANT
+#SEEALSO $FUNCTION
+#SEEALSO $RANGE
+#SEEALSO $INTEGER
+#SEEALSO $STRING
+#SEEALSO $BOOLEAN
+#SEEALSO $LISTOF
+

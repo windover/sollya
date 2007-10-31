@@ -1,0 +1,34 @@
+#NAME $SUBPOLY
+#QUICK_DESCRIPTION restricts the monomial basis of a polynomial to a list of monomials
+#CALLING $COMMAND(<polynomial>, <list>)
+#TYPE ($FUNCTION_TYPE, $LIST_TYPE) -> $FUNCTION_TYPE
+#PARAMETERS <polynomial> represents the polynomial the coefficients are taken from
+#PARAMETERS <list> represents the list of monomials to be taken
+
+#DESCRIPTION 
+$COMMAND extracts the coefficients of a polynomial <polynomial> and builds up a
+new polynomial out of those coefficients associated to monomial degrees figuring in
+the list <list>. 
+
+If <polynomial> represents a function that is not a polynomial, subpoly returns 0.
+
+If <list> is a list that is end-elliptic, let be j the last value explicitely specified
+in the list. All coefficients of the polynomial associated to monomials greater or
+equal to j are taken.
+
+#EXAMPLE
+p = taylor(exp(x),5,0);
+s = subpoly(p,[|1,3,5|]);
+print(p);
+print(s);
+
+#EXAMPLE
+p = remez(atan(x),10,[-1,1]);
+subpoly(p,[|1,3,5...|]);
+
+#EXAMPLE
+subpoly(exp(x),[|1,2,3|]);
+
+#SEEALSO $ROUNDCOEFFICIENTS
+#SEEALSO $TAYLOR
+#SEEALSO $REMEZ

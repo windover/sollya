@@ -1,0 +1,33 @@
+#NAME $ASCIIPLOT
+#QUICK_DESCRIPTION plots a function in a range using ASCII characters
+#CALLING $COMMAND(<function>, <range>)
+#TYPE ($FUNCTION_TYPE, $RANGE_TYPE) -> $VOID_TYPE
+#PARAMETERS <function> represents a function to be plotted
+#PARAMETERS <range> represents a range the function is to be plotted in 
+
+#DESCRIPTION 
+$COMMAND plots the function <function> in range <range>
+using ASCII characters.  If $SOLLYA is connected to a terminal, the
+size of the plot is determined by the size of the terminal. If not,
+the plot is of fixed size.  The function is evaluated on a number of
+points equal to the number of columns available. Its value is rounded
+to the next integer in the range of lines available. A letter "x" is
+written at this place. If zero is in the hull of the image domain of
+the function, a x-axis is displayed. If zero is in range, an y-axis is
+displayed.  If the function is constant or if the range is reduced to
+one point, the function is evaluated to a constant and the constant is
+displayed instead of a plot.
+
+#EXAMPLE
+asciiplot(exp(x),[1;2]);
+
+#EXAMPLE
+asciiplot(expm1(x),[-1;2]);
+
+#EXAMPLE
+asciiplot(5,[-1;1]);
+
+#EXAMPLE
+asciiplot(exp(x),[1;1]);
+
+#SEEALSO $PLOT
