@@ -7974,7 +7974,7 @@ void rawPrintThing(node *tree) {
     printf("RN");
     break; 			
   case HONORCOEFF:
-    printf("honorcoeff");
+    printf("honorcoeffprec");
     break; 			
   case TRUE:
     printf("true");
@@ -9240,7 +9240,7 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fprintf(fd,"RN");
     break; 			
   case HONORCOEFF:
-    fprintf(fd,"honorcoeff");
+    fprintf(fd,"honorcoeffprec");
     break; 			
   case TRUE:
     fprintf(fd,"true");

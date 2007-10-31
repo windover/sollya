@@ -2349,16 +2349,13 @@ help:                   CONSTANTTOKEN
 			    printf("- log10\n");
 			    printf("- log1p\n");
 			    printf("- log2\n");
-			    printf("- M\n");
 			    printf("- mantissa\n");
 			    printf("- mid\n");
 			    printf("- midpointmode\n");
-			    printf("- N\n");
 			    printf("- numerator\n");
 			    printf("- of\n");
 			    printf("- off\n");
 			    printf("- on\n");
-			    printf("- P\n");
 			    printf("- parse\n");
 			    printf("- perturb\n");
 			    printf("- pi\n");
@@ -2375,6 +2372,10 @@ help:                   CONSTANTTOKEN
 			    printf("- printhexa\n");
 			    printf("- printxml\n");
 			    printf("- quit\n");
+			    printf("- RD\n");
+			    printf("- RN\n");
+			    printf("- RU\n");
+			    printf("- RZ\n");
 			    printf("- range\n");
 			    printf("- rationalapprox\n");
 			    printf("- read\n");
@@ -2415,7 +2416,6 @@ help:                   CONSTANTTOKEN
 			    printf("- while\n");
 			    printf("- worstcase\n");
 			    printf("- write\n");
-			    printf("- Z\n");
 			    printf("- zerodenominators\n");
 			    printf("\n");
                           }                                                           
