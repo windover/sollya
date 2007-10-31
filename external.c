@@ -60,7 +60,7 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
     gplotname = (char *)safeCalloc(13 + strlen(PACKAGE_NAME), sizeof(char));
     sprintf(gplotname,"/tmp/%s-%04d.p",PACKAGE_NAME,fileNumber);
     dataname = (char *)safeCalloc(15 + strlen(PACKAGE_NAME), sizeof(char));
-    sprintf(dataname,"/tmp/-%04d.dat",PACKAGE_NAME,fileNumber);
+    sprintf(dataname,"/tmp/%s-%04d.dat",PACKAGE_NAME,fileNumber);
     outputname = (char *)safeCalloc(1, sizeof(char));
     fileNumber++;
     if (fileNumber >= NUMBEROFFILES) fileNumber=0;
