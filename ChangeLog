@@ -1,3 +1,13 @@
+2007-10-31 10:22  schevill
+
+	* doc/keywords.def, doc/types.def, execute.c, parser.y: small
+	  changes in parser (corrected a bug). Added definitions for help
+	  system
+
+2007-10-30 14:52  clauter
+
+	* ChangeLog: New ChangeLog
+
 2007-10-30 14:24  clauter
 
 	* Makefile.am: Added installation of the sollya.h header file for

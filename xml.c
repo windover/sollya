@@ -9,6 +9,7 @@
 #include "general.h"
 #include "expression.h"
 #include "xml.h"
+#include "config.h"
 
 
 void printXml(node *tree) {

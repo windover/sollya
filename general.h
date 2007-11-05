@@ -8,6 +8,7 @@
 #include "fpminimax.h"
 #include "library.h"
 #include <setjmp.h>
+#include "config.h"
 
 #define DEFAULTPOINTS 501
 #define DEFAULTPRECISION 165

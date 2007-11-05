@@ -13,7 +13,7 @@
 #include "general.h"
 #include "infnorm.h"
 #include "chain.h"
-
+#include "config.h"
 
 extern int fileNumber;
 

@@ -3,6 +3,7 @@
 
 AC_PREREQ(2.59)
 AC_INIT([sollya], [0.1], [christoph.lauter@ens-lyon.fr, sylvain.chevillard@ens-lyon.fr])
+AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([1.6 no-define dist-zip dist-bzip2])
 
 
@@ -37,47 +38,45 @@ else
 AC_MSG_ERROR(no)
 fi
 
-
-
 # withs...
 
 AC_ARG_WITH(gmp-include,
    [  --with-gmp-include=DIR  GMP include directory ],
-   CFLAGS="$CFLAGS -I$withval")
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval")
 AC_ARG_WITH(gmp-lib,
    [  --with-gmp-lib=DIR      GMP lib directory ], [
-   LDFLAGS="$LDFLAGS -L$withval"
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval"
   ])
 AC_ARG_WITH(gmp,
    [  --with-gmp=DIR          GMP install directory ], [
-   CFLAGS="$CFLAGS -I$withval/include"
-   LDFLAGS="$LDFLAGS -L$withval/lib"
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
   ])
 
 AC_ARG_WITH(mpfr-include,
    [  --with-mpfr-include=DIR  MPFR include directory ],
-   CFLAGS="$CFLAGS -I$withval")
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval")
 AC_ARG_WITH(mpfr-lib,
    [  --with-mpfr-lib=DIR      MPFR lib directory ], [
-   LDFLAGS="$LDFLAGS -L$withval"
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval"
   ])
 AC_ARG_WITH(mpfr,
    [  --with-mpfr=DIR          MPFR install directory ], [
-   CFLAGS="$CFLAGS -I$withval/include"
-   LDFLAGS="$LDFLAGS -L$withval/lib"
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
   ])
 
 AC_ARG_WITH(pari-include,
    [  --with-pari-include=DIR  PARI include directory ],
-   CFLAGS="$CFLAGS -I$withval")
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval")
 AC_ARG_WITH(pari-lib,
    [  --with-pari-lib=DIR      PARI lib directory ], [
-   LDFLAGS="$LDFLAGS -L$withval"
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval"
   ])
 AC_ARG_WITH(pari,
    [  --with-pari=DIR          PARI install directory ], [
-   CFLAGS="$CFLAGS -I$withval/include"
-   LDFLAGS="$LDFLAGS -L$withval/lib"
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
   ])
 
 
@@ -85,48 +84,51 @@ XML2INCLUDEGIVEN=""
 XML2LIBGIVEN=""
 AC_ARG_WITH(xml2-include,
    [  --with-xml2-include=DIR  XML2 include directory ],[
-   CFLAGS="$CFLAGS -I$withval"
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval"
    XML2INCLUDEGIVEN=1
    ])
 AC_ARG_WITH(xml2-lib,
    [  --with-xml2-lib=DIR      XML2 lib directory ], [
-   LDFLAGS="$LDFLAGS -L$withval"
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval"
    XML2LIBGIVEN=1
   ])
 AC_ARG_WITH(xml2,
    [  --with-xml2=DIR          XML2 install directory ], [
-   CFLAGS="$CFLAGS -I$withval/include"
-   LDFLAGS="$LDFLAGS -L$withval/lib"
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
    XML2INCLUDEGIVEN=1
    XML2LIBGIVEN=1
   ])
 
 AC_ARG_WITH(mpfi-include,
    [  --with-mpfi-include=DIR  MPFI include directory ],
-   CFLAGS="$CFLAGS -I$withval")
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval")
 AC_ARG_WITH(mpfi-lib,
    [  --with-mpfi-lib=DIR      MPFI lib directory ], [
-   LDFLAGS="$LDFLAGS -L$withval"
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval"
   ])
 AC_ARG_WITH(mpfi,
    [  --with-mpfi=DIR          MPFI install directory ], [
-   CFLAGS="$CFLAGS -I$withval/include"
-   LDFLAGS="$LDFLAGS -L$withval/lib"
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
   ])
+
 
 #Add xml2 include and lib
 
-
 AC_CHECK_PROG(XML2CONFIG,xml2-config,[xml2-config],[false])
 
-XMLLIBS=`$XML2CONFIG --libs`
+if test "x$XML2INCLUDEGIVEN" = "x"; then
+  AM_CPPFLAGS="$AM_CPPFLAGS "`$XML2CONFIG --cflags`
+fi
 
-CFLAGS="$CFLAGS "`$XML2CONFIG --cflags`
+if test "x$XML2LIBGIVEN" = "x"; then
+  XML2LIBS=`$XML2CONFIG --libs`
+  AC_SEARCH_LIBS([xmlTextReaderIsEmptyElement], [$XML2LIBS])
+fi
 
-AC_SEARCH_LIBS([xmlTextReaderIsEmptyElement], [$XML2LIBS])
 
 # Checks for libraries.
-
 
 AC_CHECK_LIB([dl], [dlopen], [], AC_MSG_ERROR([libdl unuseable]))
 AC_CHECK_LIB([gmp], [__gmpz_init], [], AC_MSG_ERROR([libgmp unuseable]))
@@ -144,24 +146,21 @@ CFLAGS="$CFLAGS -fPIC"
 AC_MSG_CHECKING([check for -fPIC support])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
 [AC_MSG_RESULT(yes) 
-NEWFLAGS=$CFLAGS
+AM_CFLAGS="$AM_CFLAGS -fPIC"
 ],[AC_MSG_RESULT(no)
-NEWFLAGS=$OLDCFLAGS
 ])
-CFLAGS=$NEWFLAGS
+CFLAGS=$OLDCFLAGS
 
 OLDLDFLAGS=$LDFLAGS
 LDFLAGS="$LDFLAGS -Wl,-export-dynamic"
 
-
-AC_MSG_CHECKING([check for -export-dyamic support])
+AC_MSG_CHECKING([check for -export-dynamic support])
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]], [[exit(0);]])],
 [AC_MSG_RESULT(yes) 
-NEWFLAGS=$LDFLAGS
+AM_LDFLAGS="$AM_LDFLAGS -Wl,-export-dynamic"
 ],[AC_MSG_RESULT(no)
-NEWFLAGS=$OLDLDFLAGS
 ])
-LDFLAGS=$NEWFLAGS
+LDFLAGS=$OLDLDFLAGS
 
 
 
@@ -208,5 +207,8 @@ AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([gettimeofday memset memmove strerror strtol backtrace])
 
+AC_SUBST(AM_CPPFLAGS)
+AC_SUBST(AM_CFLAGS)
+AC_SUBST(AM_LDFLAGS)
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

@@ -10,6 +10,7 @@
 #include "execute.h"
 #include "parser.h"
 #include "library.h"
+#include "config.h"
 
 #define YYERROR_VERBOSE 1
 #define YYPARSE_PARAM scanner

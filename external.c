@@ -13,6 +13,7 @@
 #include "plot.h"
 #include "infnorm.h"
 #include "general.h"
+#include "config.h"
 
 extern int fileNumber;
 
