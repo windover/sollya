@@ -1809,8 +1809,9 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
   node *evaluatedResult, *simplified, *simplified2;
   mpfr_t tempMpfr, tempResult;
   int res, noMessage;
-  int exact;
+  int exact, notfaithful;
 
+  notfaithful = 0;
   exact = 0;
 
   evaluatedResult = evaluateThing(tree);
@@ -1882,6 +1883,7 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
 	printMessage(1,"Warning: the expression could not be faithfully evaluated.\n");
       }
       evaluate(tempResult, simplified, tempMpfr, defaultprecision * 256);
+      notfaithful = 1;
     } else {
       if (simplified->nodeType != CONSTANT) {
 	if (!noMessage) {
@@ -1896,7 +1898,11 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
     mpfr_clear(tempMpfr);
     mpfr_clear(tempResult);
 
-    if (exact) return 2; else return 1;
+    if (notfaithful) {
+      return 3;
+    } else {
+      if (exact) return 2; else return 1;
+    }
   }
   
   freeThing(evaluatedResult);
@@ -11094,7 +11100,7 @@ node *evaluateThingInner(node *tree) {
   char *tempString, *tempString2, *timingString, *tempString3;
   mpfr_t a, b, c;
   chain *tempChain, *curr, *newChain, *tempChain2, *tempChain3;
-  rangetype yrange, xrange;
+  rangetype yrange, xrange, yrange2;
   node *firstArg, *secondArg, *thirdArg, *fourthArg, *fifthArg, *sixthArg, *seventhArg, *eighthArg;
   rangetype *rangeTempPtr;
   FILE *fd, *fd2;
@@ -12021,6 +12027,39 @@ node *evaluateThingInner(node *tree) {
       if (resA = evaluateThingToConstant(a,copy->child1,NULL)) {
 	mpfr_init2(b,tools_precision);
 	if (resB = evaluateThingToConstant(b,copy->child2,NULL)) {
+	  if ((resA == 3) || (resB == 3)) {
+	    xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    mpfr_init2(*(xrange.a),tools_precision);
+	    mpfr_init2(*(xrange.b),tools_precision);
+	    mpfr_set_d(*(xrange.a),1.0,GMP_RNDN);
+	    mpfr_set_d(*(xrange.b),1.0,GMP_RNDN);
+	    yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    mpfr_init2(*(yrange.a),tools_precision);
+	    mpfr_init2(*(yrange.b),tools_precision);
+	    yrange2.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange2.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    mpfr_init2(*(yrange2.a),tools_precision);
+	    mpfr_init2(*(yrange2.b),tools_precision);
+	    evaluateRangeFunction(yrange, copy->child1, xrange, 256 * tools_precision); 
+	    evaluateRangeFunction(yrange2, copy->child2, xrange, 256 * tools_precision); 
+	    printMessage(1,"Warning: inclusion property is satisfied but the diameter may be greater than the least possible.\n");
+	    mpfr_min(a,*(yrange.a),*(yrange2.a),GMP_RNDD);
+	    mpfr_max(b,*(yrange.b),*(yrange2.b),GMP_RNDU);
+	    mpfr_clear(*(xrange.a));
+	    mpfr_clear(*(xrange.b));
+	    free(xrange.a);
+	    free(xrange.b);
+	    mpfr_clear(*(yrange.a));
+	    mpfr_clear(*(yrange.b));
+	    free(yrange.a);
+	    free(yrange.b);
+	    mpfr_clear(*(yrange2.a));
+	    mpfr_clear(*(yrange2.b));
+	    free(yrange2.a);
+	    free(yrange2.b);
+	  }
 	  freeThing(copy->child1);
 	  freeThing(copy->child2);
 	  if (mpfr_cmp(a,b) > 0) {
