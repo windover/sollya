@@ -17,3 +17,4 @@ FUNCTION_TYPE="function"
 INTEGER_TYPE="integer"
 RANGE_TYPE="range"
 
+ANY_TYPE="any type"

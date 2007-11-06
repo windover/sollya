@@ -93,7 +93,7 @@ preprocessTeX() {
     then test="false"
     fi
     if [ $test = "true" ]
-      then head -n $i $tempfile | tail -n 1 | sed -n 's/{\([^§}]*\)§\([^§}]*\)}/\1/g;p' >> $tempfile2
+      then head -n $i $tempfile | tail -n 1 | sed -n 's/§§\([^§]*\)§\([^§]*\)§§/\1/g;p' >> $tempfile2
       else head -n $i $tempfile | tail -n 1 >> $tempfile2
     fi
     i=`expr $i + 1`
@@ -286,7 +286,7 @@ processFile() {
   fi
 
   getCommand
-  sed -n 's/\(\$COMMAND\)/'$command'/;p' $source > $tempfile
+  sed -n 's/\(\$COMMAND\)/'$command'/g;p' $source > $tempfile
   preprocessKeywords
   preprocessTypes
   preprocessMeta
@@ -301,7 +301,15 @@ processFile() {
   processExamples
   processSeeAlso
 
-  rm $tempfile $tempfile2 $exampleFile
+  if [ -e $tempfile ]
+    then rm $tempfile
+  fi
+  if [ -e $tempfile2 ]
+    then rm $tempfile2
+  fi
+  if [ -e $exampleFile ]
+    then rm $exampleFile
+  fi
 }
 
 main() {
