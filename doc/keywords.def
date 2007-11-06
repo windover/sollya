@@ -16,7 +16,7 @@ NOT="!"
 PLUS="+"
 MULT="*"
 MINUS="-"
-DIVIDE="/"
+DIVIDE="\/"
 POWER="^"
 
 ABS="abs"
