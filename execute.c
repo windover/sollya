@@ -1809,6 +1809,9 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
   node *evaluatedResult, *simplified, *simplified2;
   mpfr_t tempMpfr, tempResult;
   int res, noMessage;
+  int exact;
+
+  exact = 0;
 
   evaluatedResult = evaluateThing(tree);
 
@@ -1865,6 +1868,7 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
 	mpfr_set_prec(result, mpfr_get_prec(*(simplified->value)));
       }
       mpfr_set(tempResult,*(simplified->value),GMP_RNDN);
+      exact = 1;
       res = 1;
     } else {
       res = evaluateFaithful(tempResult, simplified, tempMpfr, defaultprecision);
@@ -1892,7 +1896,7 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
     mpfr_clear(tempMpfr);
     mpfr_clear(tempResult);
 
-    return 1;
+    if (exact) return 2; else return 1;
   }
   
   freeThing(evaluatedResult);
@@ -12014,16 +12018,28 @@ node *evaluateThingInner(node *tree) {
 	isPureTree(copy->child2)) {
       if (timingString != NULL) pushTimeCounter();
       mpfr_init2(a,tools_precision);
-      if (evaluateThingToConstant(a,copy->child1,NULL)) {
+      if (resA = evaluateThingToConstant(a,copy->child1,NULL)) {
 	mpfr_init2(b,tools_precision);
-	if (evaluateThingToConstant(b,copy->child2,NULL)) {
+	if (resB = evaluateThingToConstant(b,copy->child2,NULL)) {
 	  freeThing(copy->child1);
 	  freeThing(copy->child2);
 	  if (mpfr_cmp(a,b) > 0) {
 	    printMessage(1,"Warning: the bounds of the given range are in wrong order. Will reverse them.\n");
+	    if (resA != 2) {
+	      mpfr_nextabove(a);
+	    }
+	    if (resB != 2) {
+	      mpfr_nextbelow(b);
+	    }
 	    copy->child1 = makeConstant(b);
 	    copy->child2 = makeConstant(a);
 	  } else {
+	    if (resA != 2) {
+	      mpfr_nextbelow(a);
+	    }
+	    if (resB != 2) {
+	      mpfr_nextabove(b);
+	    }
 	    copy->child1 = makeConstant(a);
 	    copy->child2 = makeConstant(b);
 	  }
