@@ -1,0 +1,25 @@
+#NAME $PARSE
+#QUICK_DESCRIPTION parses an expression contained in a string
+#CALLING $COMMAND(<string>)
+#TYPE $STRING_TYPE -> $FUNCTION_TYPE | $ERROR_TYPE
+#PARAMETERS <string> represents a character sequence
+
+
+#DESCRIPTION 
+$COMMAND(<string>) parses the character sequence <string> containing
+an expression built on constants and base functions.
+
+If the character sequence does not contain a well-defined expression,
+a warning is displayed indicating a syntax error and $COMMAND returns
+a $ERROR of type $ERROR_TYPE.
+
+#EXAMPLE
+parse("exp(x)");
+
+#EXAMPLE
+verbosity = 1!;
+parse("?<");
+
+#SEEALSO $EXECUTE
+#SEEALSO $READFILE
+

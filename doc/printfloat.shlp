@@ -1,0 +1,26 @@
+#NAME $PRINTFLOAT
+#QUICK_DESCRIPTION prints a constant value as a hexadecimal single precision number
+#CALLING $COMMAND(<constant>)
+#TYPE $CONSTANT_TYPE -> $VOID_TYPE
+#PARAMETERS <constant> represents a constant
+
+#DESCRIPTION 
+Prints a constant value as a hexadecimal number on 8 hexadecimal
+digits. The hexadecimal number represents the integer equivalent to
+the 32 bit memory representation of the constant considered as a
+single precision number.
+
+If the constant value does not hold on a single precision number, it
+is first rounded to the nearest single precision number before
+displayed. A warning is displayed in this case.
+
+#EXAMPLE
+printfloat(3);
+
+#EXAMPLE
+prec=100!;
+verbosity = 1!;
+printfloat(exp(5));
+
+#SEEALSO $PRINTHEXA
+

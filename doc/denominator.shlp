@@ -1,0 +1,36 @@
+#NAME $DENOMINATOR
+#QUICK_DESCRIPTION gives the denominator of an expression
+#CALLING $COMMAND(<expr>)
+#TYPE $FUNCTION_TYPE -> $FUNCTION_TYPE
+#PARAMETERS <expr> represents an expression
+
+
+#DESCRIPTION 
+If <expr> represents a fraction <expr1>/<expr2>, $COMMAND(<expr>)
+returns the denominator of this fraction, i.e. <expr2>.
+
+If <expr> represents something else, $COMMAND(<expr>) 
+returns 1.
+
+Note that for all expressions <expr>, $NUMERATOR(<expr>) $DIVIDE $COMMAND(<expr>)
+is equal to <expr>.
+
+#EXAMPLE
+denominator(5/3);
+
+#EXAMPLE
+denominator(exp(x));
+
+#EXAMPLE
+a = 5/3;
+b = numerator(a)/denominator(a);
+print(a);
+print(b);
+
+#EXAMPLE
+a = exp(x/3);
+b = numerator(a)/denominator(a);
+print(a);
+print(b);
+
+#SEEALSO $NUMERATOR

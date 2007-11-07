@@ -1,0 +1,30 @@
+#NAME $MULT
+#QUICK_DESCRIPTION multiplication function
+#CALLING <function1> $COMMAND <function2>
+#TYPE ($FUNCTION_TYPE, $FUNCTION_TYPE) -> $FUNCTION_TYPE
+#PARAMETERS <function1> and <function2> represent functions
+
+
+#DESCRIPTION 
+$COMMAND represents the multiplication (function) on reals. 
+The expression <function1> $COMMAND <function2> stands for
+the function composed of the multiplication function and the two
+functions <function1> and <function2>.
+
+#EXAMPLE
+5 * 2;
+
+#EXAMPLE
+x * 2;
+
+#EXAMPLE
+x * x;
+
+#EXAMPLE
+diff(sin(x) * exp(x));
+
+#SEEALSO $PLUS
+#SEEALSO $MINUS
+#SEEALSO $DIVIDE
+#SEEALSO $POWER
+

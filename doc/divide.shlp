@@ -1,0 +1,34 @@
+#NAME $DIVIDE
+#QUICK_DESCRIPTION division function
+#CALLING <function1> $COMMAND <function2>
+#TYPE ($FUNCTION_TYPE, $FUNCTION_TYPE) -> $FUNCTION_TYPE
+#PARAMETERS <function1> and <function2> represent functions
+
+
+#DESCRIPTION 
+$COMMAND represents the division (function) on reals. 
+The expression <function1> $COMMAND <function2> stands for
+the function composed of the division function and the two
+functions <function1> and <function2>, where <function1> is
+the numerator and <function2> the denominator.
+
+#EXAMPLE
+5 / 2;
+
+#EXAMPLE
+x / 2;
+
+#EXAMPLE
+x / x;
+
+#EXAMPLE
+3 / 0;
+
+#EXAMPLE
+diff(sin(x) / exp(x));
+
+#SEEALSO $PLUS
+#SEEALSO $MINUS
+#SEEALSO $MULT
+#SEEALSO $POWER
+

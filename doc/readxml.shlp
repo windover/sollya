@@ -1,0 +1,27 @@
+#NAME $READXML
+#QUICK_DESCRIPTION reads an expression written as a MathML-Content-Tree in a file
+#CALLING $COMMAND(<filename>)
+#TYPE $STRING_TYPE -> $FUNCTION_TYPE | $ERROR_TYPE
+#PARAMETERS <filename> represents a character sequence indicating a file name
+
+#DESCRIPTION 
+$COMMAND(<filename>) reads the first occurrence of a lambda
+application with one bounded variable on applications of the supported
+basic functions in file <filename> and returns it as a $SOLLYA
+functional expression.
+
+If the file <filename> does not contain a valid MathML-Content tree,
+$COMMAND tries to find an "annotation encoding" markup of type
+"sollya/text". If this annotation contains a character sequence
+parseable by $PARSE, $COMMAND returns that expression.  Otherwise
+$COMMAND displays a warning and returns an $ERROR variable of type
+$ERROR_TYPE.
+
+#EXAMPLE
+readxml("readxmlexample.xml");
+
+#SEEALSO $PRINTXML
+#SEEALSO $READFILE
+#SEEALSO $PARSE
+
+

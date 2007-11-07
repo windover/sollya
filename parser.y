@@ -2020,6 +2020,10 @@ help:                   CONSTANTTOKEN
                           {
 			    printf("Print a function in XML: printxml(func).\n");
                           }                 					       
+                      | READXMLTOKEN
+                          {
+			    printf("Reads a function in XML: readxml(filename).\n");
+                          }                 					       
                       | PLOTTOKEN
                           {
 			    printf("Plot (a) function(s) in a range: plot(func,func2,...,range).\n");
@@ -2370,6 +2374,7 @@ help:                   CONSTANTTOKEN
 			    printf("- print\n");
 			    printf("- printbinary\n");
 			    printf("- printexpansion\n");
+			    printf("- printfloat\n");
 			    printf("- printhexa\n");
 			    printf("- printxml\n");
 			    printf("- quit\n");
@@ -2381,6 +2386,7 @@ help:                   CONSTANTTOKEN
 			    printf("- rationalapprox\n");
 			    printf("- read\n");
 			    printf("- readfile\n");
+			    printf("- readxml\n");
 			    printf("- relative\n");
 			    printf("- remez\n");
 			    printf("- rename\n");

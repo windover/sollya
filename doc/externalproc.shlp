@@ -102,6 +102,7 @@ bashexecute("gcc -fPIC -shared -o externalprocexample externalprocexample.o");
 externalproc(foo, "./externalprocexample", (integer, integer) -> integer);
 foo;
 foo(5, 6);
+verbosity = 1!;
 foo();
 a = foo;
 a(5,6);

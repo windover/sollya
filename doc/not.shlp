@@ -1,0 +1,21 @@
+#NAME $NOT
+#QUICK_DESCRIPTION boolean NOT operator
+#CALLING $COMMAND <expr>
+#TYPE $BOOLEAN_TYPE -> $BOOLEAN_TYPE
+#PARAMETERS <expr> represents a boolean expression
+
+
+#DESCRIPTION 
+$COMMAND evaluates to the boolean NOT of the boolean expression
+<expr>. $COMMAND <expr> evaluates to true iff <expr> does not evaluate
+to true.
+
+#EXAMPLE
+! false;
+
+#EXAMPLE
+! (1 == exp(0));
+
+#SEEALSO $AND
+#SEEALSO $OR
+

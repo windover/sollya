@@ -1,0 +1,56 @@
+#NAME $RESTART
+#QUICK_DESCRIPTION brings $SOLLYA back to its initial state
+#CALLING $COMMAND
+#TYPE $VOID_TYPE -> $VOID_TYPE
+
+#DESCRIPTION 
+The command $COMMAND brings $SOLLYA back to its initial state.  All
+current state is abandoned, all libraries unbound and all memory freed.
+
+The $COMMAND command has no effect when executed inside a $SOLLYA
+script read into a main $SOLLYA script using $EXECUTE. It is executed
+in a $SOLLYA script included by a #include macro.
+
+Using the $COMMAND command in nested elements of imperative
+programming like for or while loops is possible. Since in most cases
+abandoning the current state of $SOLLYA means altering a loop
+invariant, warnings of the impossibility of continuing a loop may
+follow unless the state is rebuilt.
+
+
+
+#EXAMPLE
+print(exp(x));
+a = 3;
+restart;
+print(x);
+a;
+
+#EXAMPLE
+print(exp(x));
+for i from 1 to 10 do {
+	print(i);
+	if (i == 5) then restart;
+};
+
+#EXAMPLE
+print(exp(x));
+a = 3;
+for i from 1 to 10 do {
+	print(i);
+	if (i == 5) then {
+		restart;
+		i = 7;
+	};
+};
+print(x);
+a;
+
+
+#SEEALSO $QUIT
+#SEEALSO $EXECUTE
+#SEEALSO $WHILE
+#SEEALSO $FOR
+
+
+

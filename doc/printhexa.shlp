@@ -1,0 +1,26 @@
+#NAME $PRINTHEXA
+#QUICK_DESCRIPTION prints a constant value as a hexadecimal double precision number
+#CALLING $COMMAND(<constant>)
+#TYPE $CONSTANT_TYPE -> $VOID_TYPE
+#PARAMETERS <constant> represents a constant
+
+#DESCRIPTION 
+Prints a constant value as a hexadecimal number on 16 hexadecimal
+digits. The hexadecimal number represents the integer equivalent to
+the 64 bit memory representation of the constant considered as a
+double precision number.
+
+If the constant value does not hold on a double precision number, it
+is first rounded to the nearest double precision number before
+displayed. A warning is displayed in this case.
+
+#EXAMPLE
+printhexa(3);
+
+#EXAMPLE
+prec=100!;
+verbosity = 1!;
+printhexa(exp(5));
+
+#SEEALSO $PRINTFLOAT
+#SEEALSO $PRINTEXPANSION

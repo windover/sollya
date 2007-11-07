@@ -1,0 +1,54 @@
+#NAME $EVALUATE
+#QUICK_DESCRIPTION evaluates a function at a constant point or in a range
+#CALLING $COMMAND(<function>, <constant>)
+#TYPE ($FUNCTION_TYPE, $CONSTANT_TYPE) -> $CONSTANT_TYPE | $RANGE_TYPE
+#CALLING $COMMAND(<function>, <range>)
+#TYPE ($FUNCTION_TYPE, $RANGE_TYPE) -> $RANGE_TYPE
+#CALLING $COMMAND(<function>, <function2>)
+#TYPE ($FUNCTION_TYPE, $FUNCTION_TYPE) -> $FUNCTION_TYPE
+#PARAMETERS <function> represents a function
+#PARAMETERS <constant> represents a constant point
+#PARAMETERS <range> represents a range
+#PARAMETERS <function2> represents a function that is not constant
+
+
+#DESCRIPTION 
+If its second argument is a constant <constant>, $COMMAND evaluates
+its first argument <function> at the point indicated by
+<constant>. This evaluation is performed in a way that the result is a
+faithful rounding of the real value of the <function> at <constant> to
+the current global precision. If such a faithful rounding is not
+possible, $COMMAND returns a range surely encompassing the real value
+of the function <function> at <constant>. If even interval evaluation
+is not possible because the expression is undefined or numerically
+unstable, NaN will be produced.
+
+#DESCRIPTION 
+If its second argument is a range <range>, $COMMAND evaluates its
+first argument <function> by interval evaluation on this range
+<range>. This ensures that the image domain of the function <function>
+on the pre-image domain <range> is surely enclosed in the returned
+range.
+
+#DESCRIPTION 
+If its second argument is a function <function2> that is not a
+constant, $COMMAND replaces all occurences of the free variable in
+function <function> by function <function2>.
+
+#EXAMPLE
+print(evaluate(sin(pi * x), 2.25));
+
+#EXAMPLE
+print(evaluate(sin(pi * x), 2));
+
+#EXAMPLE
+print(evaluate(sin(pi * x), [2, 2.25]));
+
+#EXAMPLE
+print(evaluate(sin(pi * x), 2 + 0.25 * x));
+
+#EXAMPLE
+print(evaluate(sin(pi * 1/x), 0));
+
+#SEEALSO $ISEVALUABLE
+

@@ -1,0 +1,21 @@
+#NAME $OR
+#QUICK_DESCRIPTION boolean OR operator
+#CALLING <expr1> $COMMAND <expr2>
+#TYPE ($BOOLEAN_TYPE, $BOOLEAN_TYPE) -> $BOOLEAN_TYPE
+#PARAMETERS <expr1> and <expr2> represent boolean expressions
+
+
+#DESCRIPTION 
+$COMMAND evaluates to the boolean OR of the two
+boolean expressions <expr1> and <expr2>. $COMMAND evaluates to 
+true iff at least one of <expr1> or <expr2> evaluate to true.
+
+#EXAMPLE
+false || false;
+
+#EXAMPLE
+(1 == exp(0)) || (0 == log(1));
+
+#SEEALSO $AND
+#SEEALSO $NOT
+

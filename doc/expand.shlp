@@ -1,0 +1,26 @@
+#NAME $EXPAND
+#QUICK_DESCRIPTION expands polynomial subexpressions
+#CALLING $COMMAND(<function>)
+#TYPE $FUNCTION_TYPE -> $FUNCTION_TYPE
+#PARAMETERS <function> represents a function
+
+
+#DESCRIPTION 
+$COMMAND(<function>) expands all polynomial subexpressions in function
+<function> is far as possible. Factors of sums are multiplied out,
+power operators with constant positive integer exponents are replaced
+by multiplications and divisions are multiplied out, i.e. denomiators
+are brought at the most interior point of expressions.
+
+#EXAMPLE
+print(expand(x^3));
+
+#EXAMPLE
+print(expand((x + 2)^3 + 2 * x));
+
+#EXAMPLE
+print(expand(exp((x + (x + 3))^5)));
+
+#SEEALSO $SIMPLIFY
+#SEEALSO $SIMPLIFYSAFE
+#SEEALSO $HORNER
