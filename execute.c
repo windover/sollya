@@ -3866,11 +3866,12 @@ int executeCommandInner(node *tree) {
     curr = tree->arguments;
     if (((node *) (curr->value))->nodeType == TABLEACCESS) {
       if ((tempNode = getThingFromTable(((node *) (curr->value))->string)) != NULL) {
-	if (isPureList(tempNode)) {
+	if (isPureList(tempNode) || isPureFinalEllipticList(tempNode)) {
 	  curr = tree->arguments;
 	  curr = curr->next;
 	  if (evaluateThingToInteger(&resB, (node *) (curr->value), NULL)) {
-	    if ((resB >= 0) && (resB <= lengthChain(tempNode->arguments))) {
+	    resC = 0;
+	    if (resB >= 0) {
 	      curr = curr->next; 
 	      tempNode2 = evaluateThing((node *) (curr->value));
 	      if (resB == lengthChain(tempNode->arguments)) {
@@ -3878,14 +3879,81 @@ int executeCommandInner(node *tree) {
 		tempList2 = copyChain(tempList,copyThingOnVoid);
 		freeChain(tempList,freeThingOnVoid);
 		tempNode3 = makeList(tempList2);
+		tempNode3->nodeType = tempNode->nodeType;
+		resC = 1;
 	      } else {
-		tempNode3 = makeList(copyChainAndReplaceNth(tempNode->arguments, resB, tempNode2, copyThingOnVoid));
+		if (resB < lengthChain(tempNode->arguments)) {
+		  tempNode3 = makeList(copyChainAndReplaceNth(tempNode->arguments, resB, copyThing(tempNode2), copyThingOnVoid));
+		  tempNode3->nodeType = tempNode->nodeType;
+		  resC = 1;
+		} else {
+		  if (isFinalEllipticList(tempNode)) {
+		    resE = 0;
+		    if (isPureTree((node *) accessInList(tempNode->arguments, 
+							 lengthChain(tempNode->arguments) - 1))) {
+		      mpfr_init2(a, tools_precision);
+		      if (evaluateThingToConstant(a, 
+						  (node *) accessInList(tempNode->arguments, 
+									lengthChain(tempNode->arguments) - 1), 
+						  NULL)) {
+			if (mpfr_integer_p(a)) {
+			  resD = mpfr_get_si(a, GMP_RNDN);
+			  mpfr_init2(b, 8 * sizeof(resD) + 5);
+			  mpfr_set_si(b, resD, GMP_RNDN);
+			  if (mpfr_cmp(a, b) == 0) {
+			    tempList = copyChain(tempNode->arguments,copyThingOnVoid);
+			    for (i=lengthChain(tempNode->arguments);i<resB;i++) {
+			      resD++;
+			      mpfr_set_si(b, resD, GMP_RNDN);
+			      tempList = addElement(tempList,makeConstant(b));
+			    }
+			    tempList = addElement(tempList, copyThing(tempNode2));
+			    tempList2 = copyChain(tempList,copyThingOnVoid);
+			    freeChain(tempList,freeThingOnVoid);
+			    tempNode3 = makeList(tempList2);
+			    tempNode3->nodeType = tempNode->nodeType;
+			    resC = 1;
+			  } else {
+			    resE = 1;
+			  }
+			  mpfr_clear(b);
+			} else {
+			  resE = 1;
+			}
+		      } else {
+			resE = 1;
+		      }
+		      mpfr_clear(a);
+		    } else {
+		      resE = 1;
+		    }		    
+		    if (resE) {
+		      tempNode4 = (node *) accessInList(tempNode->arguments, lengthChain(tempNode->arguments) - 1);
+		      tempList = copyChain(tempNode->arguments,copyThingOnVoid);
+		      for (i=lengthChain(tempNode->arguments);i<resB;i++) {
+			tempList = addElement(tempList,copyThing(tempNode4));
+		      }
+		      tempList = addElement(tempList, copyThing(tempNode2));
+		      tempList2 = copyChain(tempList,copyThingOnVoid);
+		      freeChain(tempList,freeThingOnVoid);
+		      tempNode3 = makeList(tempList2);
+		      tempNode3->nodeType = tempNode->nodeType;
+		      resC = 1;
+		    }
+		  }
+		}
 	      }
-	      curr = tree->arguments;
-	      if (!assignThingToTable(((node *) (curr->value))->string, tempNode3)) {
-		printMessage(1,"Warning: the last assignment will have no effect.\n");
+	      freeThing(tempNode2);
+	      if (resC) {
+		curr = tree->arguments;
+		if (!assignThingToTable(((node *) (curr->value))->string, tempNode3)) {
+		  printMessage(1,"Warning: the last assignment will have no effect.\n");
+		}
+		freeThing(tempNode3);
+	      } else {
+		printMessage(1,"Warning: assigning to indexed elements of lists is only allowed on indexes in the existing range.\n");
+		printMessage(1,"This command will have no effect.\n");
 	      }
-	      freeThing(tempNode3);
 	    } else {
 	      printMessage(1,"Warning: assigning to indexed elements of lists is only allowed on indexes in the existing range.\n");
 	      printMessage(1,"This command will have no effect.\n");
@@ -11282,7 +11350,7 @@ node *evaluateThingInner(node *tree) {
   case INDEX:
     copy->child1 = evaluateThingInner(tree->child1);
     copy->child2 = evaluateThingInner(tree->child2);
-    if (isString(copy->child1) || isPureList(copy->child1)) {
+    if (isString(copy->child1) || isPureList(copy->child1) || isPureFinalEllipticList(copy->child1)) {
       if (evaluateThingToInteger(&resA,copy->child2,NULL)) {
 	if (isString(copy->child1)) {
 	  if ((resA >= 0) && (resA < strlen(copy->child1->string))) {
@@ -11303,6 +11371,72 @@ node *evaluateThingInner(node *tree) {
 	      freeThing(copy);
 	      copy = tempNode;
 	      if (timingString != NULL) popTimeCounter(timingString);
+	    }
+	  } else {
+	    if (isPureFinalEllipticList(copy->child1)) {
+	      if (resA >= 0) {
+		if (resA < lengthChain(copy->child1->arguments)) {
+		  if (timingString != NULL) pushTimeCounter();
+		  tempNode = copyThing((node *) accessInList(copy->child1->arguments, resA));
+		  freeThing(copy);
+		  copy = tempNode;
+		  if (timingString != NULL) popTimeCounter(timingString);
+		} else {
+		  if (isPureTree((node *) accessInList(copy->child1->arguments, 
+						       lengthChain(copy->child1->arguments) - 1))) {
+		    mpfr_init2(a, tools_precision);
+		    if (evaluateThingToConstant(a, 
+						(node *) accessInList(copy->child1->arguments, 
+								      lengthChain(copy->child1->arguments) - 1), 
+						NULL)) {
+		      if (mpfr_integer_p(a)) {
+			resB = mpfr_get_si(a, GMP_RNDN);
+			mpfr_init2(b, 8 * sizeof(resB) + 5);
+			mpfr_set_si(b, resB, GMP_RNDN);
+			if (mpfr_cmp(a, b) == 0) {
+			  resB = resA + resB - lengthChain(copy->child1->arguments) + 1;
+			  mpfr_set_si(b, resB, GMP_RNDN);
+			  if (timingString != NULL) pushTimeCounter();
+			  tempNode = makeConstant(b);
+			  freeThing(copy);
+			  copy = tempNode;
+			  if (timingString != NULL) popTimeCounter(timingString);
+			} else {
+			  if (timingString != NULL) pushTimeCounter();
+			  tempNode = copyThing((node *) accessInList(copy->child1->arguments, 
+								     lengthChain(copy->child1->arguments) - 1));
+			  freeThing(copy);
+			  copy = tempNode;
+			  if (timingString != NULL) popTimeCounter(timingString);
+			}
+			mpfr_clear(b);
+		      } else {
+			if (timingString != NULL) pushTimeCounter();
+			tempNode = copyThing((node *) accessInList(copy->child1->arguments, 
+								   lengthChain(copy->child1->arguments) - 1));
+			freeThing(copy);
+			copy = tempNode;
+			if (timingString != NULL) popTimeCounter(timingString);
+		      }
+		    } else {
+		      if (timingString != NULL) pushTimeCounter();
+		      tempNode = copyThing((node *) accessInList(copy->child1->arguments, 
+								 lengthChain(copy->child1->arguments) - 1));
+		      freeThing(copy);
+		      copy = tempNode;
+		      if (timingString != NULL) popTimeCounter(timingString);
+		    }
+		    mpfr_clear(a);
+		  } else {
+		    if (timingString != NULL) pushTimeCounter();
+		    tempNode = copyThing((node *) accessInList(copy->child1->arguments, 
+							       lengthChain(copy->child1->arguments) - 1));
+		    freeThing(copy);
+		    copy = tempNode;
+		    if (timingString != NULL) popTimeCounter(timingString);
+		  }
+		}
+	      }
 	    }
 	  }
 	}
@@ -13465,6 +13599,41 @@ node *evaluateThingInner(node *tree) {
 	    freeThing(copy->child1);
 	    copy->nodeType = FINALELLIPTICLIST;
 	    if (timingString != NULL) popTimeCounter(timingString);
+	  } 
+	} else {
+	  if (isPureTree((node *) (copy->child1->arguments->value))) {
+	    mpfr_init2(a,tools_precision);
+	    if (evaluateThingToConstant(a,(node *) (copy->child1->arguments->value),NULL)) {
+	      if (mpfr_integer_p(a)) {
+		resA = mpfr_get_si(a, GMP_RNDN);
+		mpfr_init2(b, 8 * sizeof(resA) + 5);
+		mpfr_set_si(b, resA, GMP_RNDN);
+		if (mpfr_cmp(a, b) == 0) {
+		  resA++;
+		  mpfr_set_si(b, resA, GMP_RNDN);
+		  freeThing(copy);
+		  copy = makeFinalEllipticList(addElement(NULL, makeConstant(b)));
+		} else {
+		  tempNode = copyThing(copy->child1);
+		  freeThing(copy);
+		  copy = tempNode;
+		}
+		mpfr_clear(b);
+	      } else {
+		tempNode = copyThing(copy->child1);
+		freeThing(copy);
+		copy = tempNode;
+	      }
+	    } else {
+	      tempNode = copyThing(copy->child1);
+	      freeThing(copy);
+	      copy = tempNode;
+	    }
+	    mpfr_clear(a);
+	  } else {
+	    tempNode = copyThing(copy->child1);
+	    freeThing(copy);
+	    copy = tempNode;
 	  }
 	}
       }

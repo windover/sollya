@@ -1,3 +1,51 @@
+2007-11-07 12:21  schevill
+
+	* doc/shlp2txt.sh: Fixed a bug with the use of the symbol "*"
+	  Now the output txt file write "Function name" or "Function names"
+	  depending of the number of names for the function
+
+2007-11-07 11:44  clauter
+
+	* doc/asciiplot.shlp, doc/externalproc.shlp,
+	  doc/externalprocexample.c, doc/types.def: Made externalproc work
+	  in the doc.
+
+2007-11-06 16:20  schevill
+
+	* doc/shlp2txt.sh, doc/types.def: types.def: type "ANY_TYPE" added
+	  shlp2txt.sh: bug fixes. Notation for LaTeX/text added
+
+2007-11-06 12:49  clauter
+
+	* execute.c: Provided inclusion property for range evaluation if
+	  result cannot be
+	  faithfully evalauted.
+
+2007-11-06 12:49  schevill
+
+	* doc/keywords.def, doc/shlp2txt.sh: shlp2txt should now be plainly
+	  functional
+
+2007-11-06 12:20  clauter
+
+	* execute.c: Patched a bug in range bound evaluation on not
+	  constant range bounds.
+
+2007-11-05 15:50  clauter
+
+	* ChangeLog, configure.ac, external.c, general.h, parser.y, plot.c,
+	  xml.c: Applied patch proposed by Guillaume Melquiond for
+	  resolving a bug with CPPFLAGS.
+
+2007-10-31 12:56  clauter
+
+	* external.c: Corrected a bug in externalplot.
+
+2007-10-31 12:35  clauter
+
+	* doc/asciiplot.shlp, doc/externalproc.shlp, doc/keywords.def,
+	  doc/subpoly.shlp: New help files.
+
 2007-10-31 10:22  schevill
 
 	* doc/keywords.def, doc/types.def, execute.c, parser.y: small

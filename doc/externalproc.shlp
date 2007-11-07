@@ -7,7 +7,8 @@
 #PARAMETERS <argumenttype> represents a definition of the types of the arguments of the $SOLLYA procedure and the external code
 #PARAMETERS <resulttype> represents a definition of the result type of the external code
 
-#DESCRIPTION $COMMAND allows for binding the $SOLLYA identifier
+#DESCRIPTION 
+$COMMAND allows for binding the $SOLLYA identifier
 <identifier> to an external code.  After this binding, when $SOLLYA
 encounters <identifier> applied to a list of actual parameters, it
 will evaluate these parameters and call the external code with these

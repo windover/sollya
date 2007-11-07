@@ -20,3 +20,5 @@ RANGE_TYPE="range"
 ANY_TYPE="any type"
 IDENTIFIER_TYPE="identifier type"
 TYPE_TYPE="type type"
+ERROR_TYPE="error"
+
