@@ -5,8 +5,7 @@
 #PARAMETERS <function> represents a function to be plotted
 #PARAMETERS <range> represents a range the function is to be plotted in 
 
-#DESCRIPTION 
-$COMMAND plots the function <function> in range <range>
+#DESCRIPTION $COMMAND plots the function <function> in range <range>
 using ASCII characters.  If $SOLLYA is connected to a terminal, the
 size of the plot is determined by the size of the terminal. If not,
 the plot is of fixed size.  The function is evaluated on a number of
