@@ -9,7 +9,7 @@ CONCAT="@"
 APPEND=":."
 PREPEND=".:"
 
-AND="&&"
+AND="\&\&"
 OR="||"
 NOT="!"
 
