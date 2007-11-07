@@ -107,7 +107,10 @@ processName() {
  then echo "Error: you must specify at least one name. Exiting"; exit 1
  fi
 
- echo -n "Function names: " >> $target
+ if [ $nLines -eq 1 ]
+   then echo -n "Function name: " >> $target
+   else echo -n "Function names: " >> $target
+ fi
  grep "#NAME" $tempfile | sed -n 's/#NAME //;p' | sed -n 's/$/, /;p' | tr -d "\n" | sed -n 's/, $//;p' >> $target
  echo "" >> $target
 }
@@ -220,7 +223,7 @@ processExampleFile() {
  do
    echo -n "   > " >> $target
    cat $exampleFile | head -n $ilocal | tail -n 1 >> $target
-   echo "verbosity=0!;" `head -n $ilocal $exampleFile` | $sollyaBin > $tempfile2
+   echo "verbosity=0!;" "`head -n $ilocal $exampleFile`" | $sollyaBin > $tempfile2
    sed -i -n 's/^/   /;p' $tempfile2
    total=`cat $tempfile2 | wc -l`
    countlocal=`expr $total - $countlocal`
