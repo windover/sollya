@@ -1,3 +1,32 @@
+2007-11-07 22:05  clauter
+
+	* doc/externalprocvoidexample.c: Forgotten file for doc.
+
+2007-11-07 16:58  clauter
+
+	* doc/and.shlp, doc/denominator.shlp, doc/diff.shlp,
+	  doc/divide.shlp, doc/error.shlp, doc/evaluate.shlp,
+	  doc/expand.shlp, doc/externalproc.shlp,
+	  doc/externalprocexample.c, doc/isevaluable.shlp,
+	  doc/keywords.def, doc/minus.shlp, doc/mult.shlp, doc/not.shlp,
+	  doc/numerator.shlp, doc/or.shlp, doc/parse.shlp, doc/plus.shlp,
+	  doc/power.shlp, doc/printfloat.shlp, doc/printhexa.shlp,
+	  doc/printxml.shlp, doc/quit.shlp, doc/readxml.shlp,
+	  doc/restart.shlp, doc/void.shlp, parser.y: Added help texts and
+	  corrected a bug in the parser.
+
+2007-11-07 15:05  clauter
+
+	* ChangeLog, doc/asciiplot.shlp, doc/externalproc.shlp,
+	  doc/types.def, execute.c: Corrected som inconsistencies in tail
+	  and indexing concerning finally elliptic lists.
+	  
+	  Added some documentation.
+
+2007-11-07 12:34  schevill
+
+	* doc/keywords.def: Fixed a big with &&
+
 2007-11-07 12:21  schevill
 
 	* doc/shlp2txt.sh: Fixed a bug with the use of the symbol "*"

@@ -606,9 +606,9 @@ OF              "of"
 					       return IDENTIFIERTOKEN; }        			        
 
 .		{ /* otherwise */
-			fprintf(stderr,"The character \"%s\" cannot be recognized. Will ignore it.\n",
+			printMessage(1,"The character \"%s\" cannot be recognized. Will ignore it.\n",
 				yytext);
-		}
+}
 
 %%
 

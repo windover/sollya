@@ -13,7 +13,7 @@
 extern int miniyylex();
 
 void miniyyerror(char *message) {
-    fprintf(stderr,"Warning: %s. Will try to continue parsing (expecting \";\"). May leak memory.\n",message);
+    printMessage(1,"Warning: %s. Will try to continue parsing (expecting \";\"). May leak memory.\n",message);
 }
 
 
@@ -438,7 +438,7 @@ constant: CONSTTOKEN
 			       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
 			     }
 			     if (!mpfr_number_p(*mpfr_temp)) {
-			       fprintf(stderr,
+			       printMessage(1,
 			  "Error: overflow occurred during the conversion of the dyadic constant \"%s\". Will abort the computation.\n",$1);
 			       recoverFromError();
 			     }
@@ -473,7 +473,7 @@ constant: CONSTTOKEN
 			       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
 			     }
 			     if (!mpfr_number_p(*mpfr_temp)) {
-			       fprintf(stderr,
+			       printMessage(1,
 			  "Error: overflow occurred during the conversion of the hexadecimal constant \"%s\". Will abort the computation.\n",$1);
 			       recoverFromError();
 			     }

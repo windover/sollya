@@ -162,7 +162,7 @@ FLOOR           "floor"
 		}
 
 .		{ /* otherwise */
-			fprintf(stderr,"The character \"%s\" cannot be recognized. Will ignore it.\n",
+			printMessage(1,"The character \"%s\" cannot be recognized. Will ignore it.\n",
 				miniyytext);
 		}
 
