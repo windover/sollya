@@ -4,14 +4,11 @@ sollyaBin="../sollya"
 
 keywords_defs="./keywords.def"
 types_defs="./types.def"
-sollya_name="sollya"
+sollya_name="Sollya"
 
 tempfile="/tmp/hlp2tex_tempfile"
 tempfile2="/tmp/hlp2tex_tempfile2"
 exampleFile="/tmp/hlp2tex_exampleFile"
-
-source="externalproc.shlp"
-target="result.tex"
 
 
 getCommand() {
@@ -108,8 +105,8 @@ processName() {
  fi
 
  if [ $nLines -eq 1 ]
-   then echo -n "Function name: " >> $target
-   else echo -n "Function names: " >> $target
+   then echo -n "Name: " >> $target
+   else echo -n "Names: " >> $target
  fi
  grep "#NAME" $tempfile | sed -n 's/#NAME //;p' | sed -n 's/$/, /;p' | tr -d "\n" | sed -n 's/, $//;p' >> $target
  echo "" >> $target
@@ -290,6 +287,7 @@ processFile() {
 
   getCommand
   sed -n 's/\(\$COMMAND\)/'$command'/g;p' $source > $tempfile
+  echo "" >> $tempfile
   preprocessKeywords
   preprocessTypes
   preprocessMeta
@@ -326,10 +324,13 @@ main() {
       processFile
     done
   else
-    source=$1
-    target=`echo $source | sed -n 's/\.shlp/\.txt/;p'`
-    echo "Processing file "$source
-    processFile
+    for file in $*
+    do
+      source=$file
+      target=`echo $source | sed -n 's/\.shlp/\.txt/;p'`
+      echo "Processing file "$source
+      processFile
+    done
   fi
 }
 
