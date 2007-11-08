@@ -1,0 +1,28 @@
+#NAME $READFILE
+#QUICK_DESCRIPTION reads the content of a file into a string variable
+#CALLING $COMMAND(<filename>)
+#TYPE $STRING_TYPE -> $STRING_TYPE
+#PARAMETERS <filename> represents a character sequence indicating a file name
+
+#DESCRIPTION 
+$COMMAND opens the file indicated by <filename>, reads it and puts its
+contents in a character sequence of type $STRING_TYPE that is returned.
+
+If the file indicated by <filename> cannot be opened for reading, a
+warning is displayed and $COMMAND evaluates to an $ERROR variable of
+type $ERROR_TYPE.
+
+#EXAMPLE
+print("Hello world") > "myfile.txt";
+t = readfile("myfile.txt"); 
+t;
+
+#EXAMPLE
+verbosity=1!;
+readfile("afile.txt");
+
+
+#SEEALSO $PARSE
+#SEEALSO $EXECUTE
+#SEEALSO $WRITE
+#SEEALSO $PRINT

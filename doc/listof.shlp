@@ -1,0 +1,17 @@
+#NAME $LISTOF
+#QUICK_DESCRIPTION keyword used in combination with a type keyword
+
+#DESCRIPTION 
+$COMMAND is used in combination with one of the following keywords for
+indicating lists of the respective type in declarations of external
+procedures using $EXTERNALPROC: $BOOLEAN, $CONSTANT, $FUNCTION,
+$INTEGER, $RANGE and $STRING.
+
+#SEEALSO $EXTERNALPROC
+#SEEALSO $BOOLEAN
+#SEEALSO $CONSTANT
+#SEEALSO $FUNCTION
+#SEEALSO $INTEGER
+#SEEALSO $RANGE
+#SEEALSO $STRING
+

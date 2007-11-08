@@ -1,0 +1,21 @@
+#NAME $FUNCTION
+#QUICK_DESCRIPTION keyword representing a $FUNCTION_TYPE type 
+#CALLING $COMMAND
+#TYPE $TYPE_TYPE
+
+#DESCRIPTION 
+$COMMAND represents the $FUNCTION_TYPE type for declarations
+of external procedures by means of $EXTERNALPROC.
+
+Remark that in contrast to other indicators, type indicators like
+$COMMAND cannot be handled outside the $EXTERNALPROC context.  In
+particular, they cannot be assigned to variables.
+
+#SEEALSO $EXTERNALPROC
+#SEEALSO $BOOLEAN
+#SEEALSO $CONSTANT
+#SEEALSO $INTEGER
+#SEEALSO $LISTOF
+#SEEALSO $RANGE
+#SEEALSO $STRING
+
