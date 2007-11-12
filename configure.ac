@@ -127,8 +127,16 @@ if test "x$XML2LIBGIVEN" = "x"; then
   AC_SEARCH_LIBS([xmlTextReaderIsEmptyElement], [$XML2LIBS])
 fi
 
+# Save user flags
+
+OLDCFLAGS="$CFLAGS"
+OLDCPPFLAGS="$CPPFLAGS"
+OLDLDFLAGS="$LDFLAGS"
 
 # Checks for libraries.
+
+CPPFLAGS="$AM_CPPFLAGS $CPPFLAGS"
+LDFLAGS="$AM_LDFLAGS $LDFLAGS"
 
 AC_CHECK_LIB([dl], [dlopen], [], AC_MSG_ERROR([libdl unuseable]))
 AC_CHECK_LIB([gmp], [__gmpz_init], [], AC_MSG_ERROR([libgmp unuseable]))
@@ -136,33 +144,6 @@ AC_CHECK_LIB([mpfr], [mpfr_init], [], AC_MSG_ERROR([libmpfr unuseable]))
 AC_CHECK_LIB([pari], [pari_init], [], AC_MSG_ERROR([libpari unuseable]))
 AC_CHECK_LIB([xml2], [xmlTextReaderIsEmptyElement], [], AC_MSG_ERROR([libxml2 unuseable]))
 AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unuseable]))
-
-
-#Check for -Wl,-export-dynamic etc.
-
-OLDCFLAGS=$CFLAGS
-CFLAGS="$CFLAGS -fPIC"
-
-AC_MSG_CHECKING([check for -fPIC support])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
-[AC_MSG_RESULT(yes) 
-AM_CFLAGS="$AM_CFLAGS -fPIC"
-],[AC_MSG_RESULT(no)
-])
-CFLAGS=$OLDCFLAGS
-
-OLDLDFLAGS=$LDFLAGS
-LDFLAGS="$LDFLAGS -Wl,-export-dynamic"
-
-AC_MSG_CHECKING([check for -export-dynamic support])
-AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]], [[exit(0);]])],
-[AC_MSG_RESULT(yes) 
-AM_LDFLAGS="$AM_LDFLAGS -Wl,-export-dynamic"
-],[AC_MSG_RESULT(no)
-])
-LDFLAGS=$OLDLDFLAGS
-
-
 
 
 #Checks for a particular calling convention in PARI
@@ -177,6 +158,30 @@ extern gp_data *GP_DATA;
      AC_MSG_ERROR([libpari convention is incompatible])
 ])
 
+#Check for -Wl,-export-dynamic etc.
+
+CPPFLAGS="$OLDCPPFLAGS"
+CFLAGS="$OLDCFLAGS -fPIC"
+LDFLAGS="$OLDLDFLAGS"
+
+AC_MSG_CHECKING([check for -fPIC support])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
+[AC_MSG_RESULT(yes) 
+AM_CFLAGS="$AM_CFLAGS -fPIC"
+],[AC_MSG_RESULT(no)
+])
+
+CFLAGS="$OLDCFLAGS"
+LDFLAGS="$OLDLDFLAGS -Wl,-export-dynamic"
+
+AC_MSG_CHECKING([check for -export-dynamic support])
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]], [[exit(0);]])],
+[AC_MSG_RESULT(yes) 
+AM_LDFLAGS="$AM_LDFLAGS -Wl,-export-dynamic"
+],[AC_MSG_RESULT(no)
+])
+
+LDFLAGS="$OLDLDFLAGS"
 
 # Checks for header files.
 AC_FUNC_ALLOCA
