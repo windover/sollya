@@ -2515,6 +2515,14 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   mpfr_init2(y2, prec);
   mpfr_init2(s, prec);
 
+  if ( (!mpfr_number_p(a)) || (!mpfr_number_p(b)) ) {
+    printMessage(1,"Warning: a bound of the interval is infinite or NaN.\n");
+    printMessage(1,"This command cannot handle such intervals.\n");
+    mpfr_set_nan(result);
+    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(step); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(s);
+    return;
+  }
+
   mpfr_sub(step, b, a, GMP_RNDN);
   mpfr_div_ui(step, step, points, GMP_RNDN);
  
@@ -2522,14 +2530,14 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
     printMessage(1,"Warning: the given interval is reduced to one point.\n");
     evaluateFaithful(y1,tree,a,prec);
     mpfr_abs(result,y1,GMP_RNDU);
-    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(step);
+    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(step); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(s);
     return;
   }
 
   if (mpfr_sgn(step) < 0) {
     printMessage(1,"Warning: the interval is empty.\n");
     mpfr_set_d(result,0.,GMP_RNDN);
-    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(step);
+    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(step); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(s);
     return;
   }
 
@@ -2537,7 +2545,7 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
     evaluateFaithful(y1,tree,a,prec);
     printMessage(1,"Warning: the expression is constant.\n");
     mpfr_abs(result,y1,GMP_RNDU);
-    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(step);
+    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(step); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(s);
     return;
   }
  
@@ -2658,7 +2666,7 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
 
   free_memory(deriv);
   free_memory(derivsecond);
-  mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(step);
+    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(step); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(s);
   mpfr_clear(z); mpfr_clear(max); mpfr_clear(temp); mpfr_clear(derivCutOff);
   return;
 }
