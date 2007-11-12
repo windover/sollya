@@ -998,7 +998,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	  printMessage(12,"Information: Differentiating while evaluating for Hopital's rule.\n");
 	  derivDenominator = differentiate(tree->child2);
 	  
-	  if (simplifiesB == (hopitalrecursions + 1)) {
+	  if ((simplifiesB == (hopitalrecursions + 1)) || (hopitalPoint == NULL)){
 	    mpfr_init2(z,prec);
 	    newtonMPFR(z,tree->child2,derivDenominator,xl,xr,prec);
 	    newHopitalPoint = &z;
@@ -1109,7 +1109,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	      printMessage(12,"Information: Differentiating while evaluating for Hopital's rule.\n");
 	      derivNumerator = differentiate(tree->child1);
 
-	      if (simplifiesB == (hopitalrecursions + 1)) {
+	      if ((simplifiesB == (hopitalrecursions + 1)) || (hopitalPoint == NULL)) {
 		mpfr_init2(z2,prec);
 		newtonMPFR(z2,tree->child1,derivNumerator,xl,xr,prec);
 		newHopitalPoint = &z2;
@@ -2691,6 +2691,30 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
   res.b = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*(res.a),prec);
   mpfr_init2(*(res.b),prec);
+
+  if ((!mpfr_number_p(*(range.a))) || (!mpfr_number_p(*(range.b)))) {
+    printMessage(1,"Warning: the bounds of the range an infinite norm is to be computed on are not numbers.\n");
+    if (proof != NULL) {
+      printMessage(1,"Warning: no proof will be generated.\n");
+    }
+    mpfr_set_d(*(res.a),0.0,GMP_RNDN);
+    mpfr_set_inf(*(res.b),1);
+    return res;
+  }
+  
+  if ((mpfr_cmp(*(range.a),*(range.b)) == 0) && (proof == NULL)) {
+    evaluateRangeFunctionFast(res, func, NULL, range, prec);
+    mpfr_abs(*(res.a),*(res.a),GMP_RNDN);
+    mpfr_abs(*(res.b),*(res.b),GMP_RNDN);
+    if (mpfr_cmp(*(res.a),*(res.b)) > 0) {
+      mpfr_init2(z,prec);
+      mpfr_set(z,*(res.b),GMP_RNDN);
+      mpfr_set(*(res.b),*(res.a),GMP_RNDN);
+      mpfr_set(*(res.a),z,GMP_RNDN);
+      mpfr_clear(z);
+    }
+    return res;
+  }
 
   if (isTrivialInfnormCase(res, func)) {
     if (proof != NULL) {
