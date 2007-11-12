@@ -36,7 +36,7 @@ void continuedFrac(mpq_t q, mpfi_t x) {
   mpfr_floor(m1,a);
   mpfr_floor(m2,b);
 
-  if (mpfr_equal_p(m1,m2)) {
+  if (mpfr_equal_p(m1,m2) && !mpfr_equal_p(a,m1)) {
     mpfr_get_z(u,m1,GMP_RNDN); //exact
     mpfr_sub(a,a,m1,GMP_RNDD);
     mpfr_sub(b,b,m1,GMP_RNDU);
