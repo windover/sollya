@@ -1,0 +1,58 @@
+#NAME $EXTERNALPLOT
+#QUICK_DESCRIPTION plots the error of an external code with regard to a function
+#CALLING $COMMAND(<filename>, <mode>, <function>, <range>, <precision>)
+#TYPE ($STRING_TYPE, $APPROXERROR_TYPE, $FUNCTION_TYPE, $RANGE_TYPE, $INTEGER_TYPE) -> $VOID_TYPE
+#CALLING $COMMAND(<filename>, <mode>, <function>, <range>, <precision>, <perturb>)
+#TYPE ($STRING_TYPE, $APPROXERROR_TYPE, $FUNCTION_TYPE, $RANGE_TYPE, $INTEGER_TYPE, $PERTURB_TYPE) -> $VOID_TYPE
+#CALLING $COMMAND(<filename>, <mode>, <function>, <range>, <precision>, <plot mode>, <result filename>)
+#TYPE ($STRING_TYPE, $APPROXERROR_TYPE, $FUNCTION_TYPE, $RANGE_TYPE, $INTEGER_TYPE, $FILE_TYPE, $STRING_TYPE) -> $VOID_TYPE
+#CALLING $COMMAND(<filename>, <mode>, <function>, <range>, <precision>, <perturb>, <plot mode>, <result filename>)
+#TYPE ($STRING_TYPE, $APPROXERROR_TYPE, $FUNCTION_TYPE, $RANGE_TYPE, $INTEGER_TYPE, $PERTURB_TYPE, $FILE_TYPE, $STRING_TYPE) -> $VOID_TYPE
+
+
+#DESCRIPTION 
+The command $COMMAND plots the error of an external function
+evaluation code sequence implemented in the object file named
+<filename> with regard to the function <function>.  If <mode>
+evaluates to <absolute>, the difference of both functions is
+considered as an error function; if <mode> evaluates to <relative>,
+the difference is quotiented by the function <function>. The resulting
+error function is plotted on all floating-point numbers with
+<precision> significant mantissa bits in the range <range>. 
+§§ §§§
+If the sixth argument of the command $COMMAND is given an evaluates to
+$PERTURB, each of these floating-point numbers is perturbed by a
+random value that is uniformly distributed in §§+/-1§$\pm1$§§ ulp
+around the original <precision> bit floating-point variable.
+§§ §§§
+If a sixth and seventh argument, respectively a seventh and eighth
+argument in the presence of $PERTURB as a sixth argument, are given
+that evaluate to a variable of type $FILE_TYPE respectively to a
+character sequence of type $STRING_TYPE, $COMMAND will plot
+(additionally) to a file in the same way as the command $PLOT
+does. See $PLOT for details.
+§§ §§§
+The external function evaluation code given in the object file name
+<filename> is supposed to define a function name §§f§\texttt{f}§§ as
+follows (here in C syntax): §§void f(mpfr_t rop, mpfr_t
+op)§\texttt{void f(mpfr\_t rop, mpfr\_ op)}§§. This function is
+supposed to evaluate §§op§\texttt{op}§§ with an accuracy corresponding
+to the precision of §§rop§\texttt{rop}§§ and assign this value to
+§§rop§\texttt{rop}§§.
+
+#EXAMPLE
+bashexecute("gcc -fPIC -c externalplotexample.c");
+bashexecute("gcc -shared -o externalplotexample externalplotexample.o -lgmp -lmpfr");
+externalplot("externalplotexample",relative,exp(x),[-1/2;1/2],12,perturb);
+
+#SEEALSO $PLOT
+#SEEALSO $ASCIIPLOT
+#SEEALSO $PERTURB
+#SEEALSO $ABSOLUTE
+#SEEALSO $RELATIVE
+#SEEALSO $FILE
+#SEEALSO $POSTSCRIPT
+#SEEALSO $POSTSCRIPTFILE
+#SEEALSO $BASHEXECUTE
+#SEEALSO $EXTERNALPROC
+#SEEALSO $LIBRARY

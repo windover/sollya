@@ -5,13 +5,12 @@
 #PARAMETERS <range> represents a range in which an exact value lies
 
 #DESCRIPTION 
-
 Let <range> be a range of values, determined by some approximation
 process, safely bounding an unknown value §§v§$v$§§. The command
 $COMMAND(<range>) determines a precision such that for this precision,
 rounding to the nearest any value in <range> yields to the same
 result, i.e. to the correct rounding of §§v§$v$§§.
-
+§§ §§§
 If no such precision exists, a warning is displayed and $COMMAND
 evaluates to NaN.
 

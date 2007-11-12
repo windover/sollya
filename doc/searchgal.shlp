@@ -1,0 +1,60 @@
+#NAME $SEARCHGAL
+#QUICK_DESCRIPTION searches for a preimage of a function such that the rounding the image commits an error smaller as a constant
+#CALLING $COMMAND(<function>, <start>, <preimage precision>, <steps>, <format>, <error bound>)
+#TYPE ($FUNCTION_TYPE, $CONSTANT_TYPE, $INTEGER_TYPE, $INTEGER_TYPE, $DOUBLEFORMAT_TYPE, $CONSTANT_TYPE) -> $LIST_TYPE
+#CALLING $COMMAND(<list of functions>, <start>, <preimage precision>, <steps>, <list of format>, <list of error bounds>)
+#TYPE ($LIST_TYPE, $CONSTANT_TYPE, $INTEGER_TYPE, $INTEGER_TYPE, $LIST_TYPE, $LIST_TYPE) -> $LIST_TYPE
+#PARAMETERS <function> represents the function to be considered
+#PARAMETERS <start> represents a value around which the search is to be performed
+#PARAMETERS <preimage precision> represents the precision (discretisation) for the eligible preimage values
+#PARAMETERS <steps> represents the log2 of the number of search steps to be performed
+#PARAMETERS <format> represents the format the image of the function is to be rounded to
+#PARAMETERS <error bound> represents a upper bound on the relative rounding error when rounding the image
+#PARAMETERS <list of functions> represents the functions to be considered
+#PARAMETERS <list of formats> represents the respective formats the images of the functions are to be rounded to
+#PARAMETERS <list of error bounds> represents a upper bound on the relative rounding error when rounding the image
+
+#DESCRIPTION 
+The command $COMMAND searches for a preimage §§z§$z$§§ of a function
+<function> or a list of functions <list of functions> such that
+§§z§$z$§§ is a floating-point number with <preimage precision>
+significant mantissa bits and the image §§y§$y$§§ of the function,
+respectively each image §§y_i§$y_i$§§ of the functions, rounds to
+format <format> respectively to the corresponding format in <list of
+format> with a relative rounding error less than <error bound>
+respectively the corresponding value in <list of error bounds>. During
+this search, at most 2 raised to <steps> attempts are made. The search
+starts with a preimage value equal to <start>. This value is then
+increased and decreased by §§1§$1$§ ulp in precision <preimage
+precision> until a value is found or the step limit is reached.
+§§ §§§
+If the search finds an appropriate preimage §§z§$z$§§, $COMMAND
+evaluates to a list containing this value. Otherwise, $COMMAND
+evaluates to an empty list.
+
+
+#EXAMPLE 
+searchgal(log(x),2,53,15,DD,1b-112);
+searchgal(log(x),2,53,18,DD,1b-112);
+
+#EXAMPLE 
+f = exp(x);
+s = searchgal(f,2,53,18,DD,1b-112);
+if (s != [||]) then {
+   v = s[0];
+   print("The rounding error is 2^(",evaluate(log2(abs(DD(f)/f - 1)),v),")");
+} else print("No value found");
+
+#EXAMPLE
+searchgal([|sin(x),cos(x)|],1,53,15,[|D,D|],[|1b-62,1b-60|]);
+
+#SEEALSO $ROUND
+#SEEALSO $D
+#SEEALSO $DD
+#SEEALSO $TD
+#SEEALSO $DOUBLE
+#SEEALSO $DOUBLEDOUBLE
+#SEEALSO $TRIPLEDOUBLE
+#SEEALSO $EVALUATE
+#SEEALSO $WORSTCASE
+

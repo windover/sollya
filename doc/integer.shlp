@@ -6,7 +6,7 @@
 #DESCRIPTION 
 $COMMAND represents the machine integer type for declarations
 of external procedures by means of $EXTERNALPROC.
-
+§§ §§§
 Remark that in contrast to other indicators, type indicators like
 $COMMAND cannot be handled outside the $EXTERNALPROC context.  In
 particular, they cannot be assigned to variables.

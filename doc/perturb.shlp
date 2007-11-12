@@ -1,0 +1,20 @@
+#NAME $PERTURB
+#QUICK_DESCRIPTION indicates random perturbation of sampling points for $EXTERNALPLOT
+#CALLING $COMMAND
+#TYPE $PERTURB_TYPE
+
+#DESCRIPTION 
+The use of $COMMAND in the command $EXTERNALPLOT enables the addition
+of some random noise around each sampling point in $EXTERNALPLOT.
+§§ §§§
+See $EXTERNALPLOT for details.
+
+#EXAMPLE
+bashexecute("gcc -fPIC -c externalplotexample.c");
+bashexecute("gcc -shared -o externalplotexample externalplotexample.o -lgmp -lmpfr");
+externalplot("externalplotexample",relative,exp(x),[-1/2;1/2],12,perturb);
+
+#SEEALSO $EXTERNALPLOT
+#SEEALSO $ABSOLUTE
+#SEEALSO $RELATIVE
+#SEEALSO $BASHEXECUTE

@@ -15,7 +15,7 @@ will evaluate these parameters and call the external code with these
 parameters. If the external code indicated success, it will receive
 the result produced by the external code, transform it to $SOLLYA's
 iternal representation and return it.
-
+§§ §§§
 In order to allow correct evaluation and typing of the data in
 parameter and in result to be passed to and received from the external
 code, $COMMAND has a third parameter <argumenttype> -> <resulttype>.
@@ -23,18 +23,17 @@ Both <argumenttype> and <resulttype> are one of void, constant,
 function, range, integer, string, boolean, list of constant, list of
 function, list of range, list of integer, list of string, list of
 boolean.
-
+§§ §§§
 If upon a usage of a procedure bound to an external procedure the type
 of the actual parameters given or its number is not correct, $SOLLYA
 produces a type error. An external function not applied to arguments
 represents itself and prints out with its argument and result types.
-
+§§ §§§
 The external function is supposed to return an integer indicating
 success.  It returns its result depending on its $SOLLYA result type
 as follows. Here, the external procedure is assumed to be implemented
 as a C function.
-
-
+§§ §§§
 If the $SOLLYA result type is void, the C function has no pointer
 argument for the result.  If the $SOLLYA result type is constant, the
 first argument of the C function is of C type mpfr_t *, the result is
@@ -60,12 +59,12 @@ $SOLLYA type integer pointers int * to new int variables for $SOLLYA
 type string pointers char * to new char * variables and for $SOLLYA
 type boolean pointers int * to new int variables representing boolean
 values.
-	       
+§§ §§§	       
 The external procedure affects its possible pointer argument if and
 only if it succeeds.  This means, if the function returns an integer
 indicating failure, it does not leak any memory to the encompassing
 environment.
-
+§§ §§§
 The external procedure receives its arguments as follows: If the
 $SOLLYA argument type is void, no argument array is given.  Otherwise
 the C function receives a C void ** argument representing an array of
@@ -85,13 +84,13 @@ casted to mpfr_t * for $SOLLYA type constant, node * for $SOLLYA type
 function, mpfi_t * for $SOLLYA type range, int * for $SOLLYA type
 integer, char * for $SOLLYA type string and int * for $SOLLYA type
 boolean.
-
+§§ §§§
 The external procedure is not supposed to alter the memory pointed by
 its array argument void **.
-
+§§ §§§
 In both directions (argument and result values), empty lists are
 represented by chain * NULL pointers.
-
+§§ §§§
 In contrast to internal procedures, externally bounded procedures can
 be considered as objects inside $SOLLYA that can be assigned to other
 variables, stored in list etc.

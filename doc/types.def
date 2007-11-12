@@ -1,6 +1,7 @@
 ONOFF_TYPE="on|off"
 DISPLAY_TYPE="decimal|binary|dyadic|powers|hexadecimal"
 FORMAT_TYPE="D|double|DD|doubledouble|DE|doubleextended|TD|tripledouble"
+DOUBLEFORMAT_TYPE="D|double|DD|doubledouble|TD|tripledouble"
 ROUND_TYPE="RN|RZ|RU|RD"
 FILE_TYPE="file|postscript|postscriptfile"
 PERTURB_TYPE="perturb"

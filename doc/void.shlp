@@ -4,21 +4,20 @@
 #TYPE $VOID_TYPE | $TYPE_TYPE
 
 #DESCRIPTION 
-
 The variable $COMMAND represents the functional result of a
 side-effect or an empty argument.  It is used only in combination with
 the applications of identifiers bound through $EXTERNALPROC to
 external procedures. 
-
+§§ §§§
 The $COMMAND result produced by an external procedure is not printed at
 the prompt. However, it is possible to print it out in a print
 statement or in complex data types such as lists. 
-
+§§ §§§
 The $COMMAND argument is implicit when giving not argument to an external
 procedure when applied. It can be explicited nevertheless.  For
 example, suppose that foo is an external procedure with a void
 argument. Then foo() and foo(void) are correct calls to foo.
-
+§§ §§§
 $COMMAND is used also as a type identifier for
 $EXTERNALPROC. Typically, an external procedure taking $VOID as an
 argument or returning $COMMAND is bound with a signature $COMMAND ->

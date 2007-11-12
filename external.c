@@ -44,9 +44,9 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
     return;
   }
 
-  descr = dlopen(library, RTLD_LAZY);
+  descr = dlopen(library, RTLD_NOW);
   if (descr==NULL) {
-    fprintf(stderr, "Error: the given library (%s) is not available!\n",library);
+    fprintf(stderr, "Error: the given library (%s) is not available (%s)!\n",library,dlerror());
     return;
   }
 

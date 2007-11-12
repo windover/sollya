@@ -9,7 +9,7 @@ $COMMAND(<filename>) reads the first occurrence of a lambda
 application with one bounded variable on applications of the supported
 basic functions in file <filename> and returns it as a $SOLLYA
 functional expression.
-
+§§ §§§
 If the file <filename> does not contain a valid MathML-Content tree,
 $COMMAND tries to find an "annotation encoding" markup of type
 "sollya/text". If this annotation contains a character sequence

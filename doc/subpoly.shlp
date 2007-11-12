@@ -9,9 +9,9 @@
 $COMMAND extracts the coefficients of a polynomial <polynomial> and builds up a
 new polynomial out of those coefficients associated to monomial degrees figuring in
 the list <list>. 
-
+§§ §§§
 If <polynomial> represents a function that is not a polynomial, subpoly returns 0.
-
+§§ §§§
 If <list> is a list that is end-elliptic, let be j the last value explicitely specified
 in the list. All coefficients of the polynomial associated to monomials greater or
 equal to j are taken.
