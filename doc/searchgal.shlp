@@ -1,7 +1,7 @@
 #NAME $SEARCHGAL
 #QUICK_DESCRIPTION searches for a preimage of a function such that the rounding the image commits an error smaller as a constant
 #CALLING $COMMAND(<function>, <start>, <preimage precision>, <steps>, <format>, <error bound>)
-#TYPE ($FUNCTION_TYPE, $CONSTANT_TYPE, $INTEGER_TYPE, $INTEGER_TYPE, $DOUBLEFORMAT_TYPE, $CONSTANT_TYPE) -> $LIST_TYPE
+#TYPE ($FUNCTION_TYPE, $CONSTANT_TYPE, $INTEGER_TYPE, $INTEGER_TYPE, $FORMAT_TYPE, $CONSTANT_TYPE) -> $LIST_TYPE
 #CALLING $COMMAND(<list of functions>, <start>, <preimage precision>, <steps>, <list of format>, <list of error bounds>)
 #TYPE ($LIST_TYPE, $CONSTANT_TYPE, $INTEGER_TYPE, $INTEGER_TYPE, $LIST_TYPE, $LIST_TYPE) -> $LIST_TYPE
 #PARAMETERS <function> represents the function to be considered

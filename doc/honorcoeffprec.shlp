@@ -1,0 +1,26 @@
+#NAME $HONORCOEFFPREC
+#QUICK_DESCRIPTION indicates the (forced) honoring the precision of the coefficients in $IMPLEMENTPOLY
+#CALLING $COMMAND
+#TYPE $HONORCOEFF_TYPE
+
+#DESCRIPTION 
+Used with command $IMPLEMENTPOLY, $COMMAND makes $IMPLEMENTPOLY honor
+the precision of the given polynomial. This means if a coefficient
+needs a double-double or a triple-double to be exactly stored,
+$IMPLEMENTPOLY will allocate appropriate space and use a double-double
+or triple-double operation even if the automatic (heuristical)
+determination implemented in command $IMPLEMENTPOLY indicates that the
+coefficient could be stored on less precision or, respectively, the
+operation could be performed with less precision. See $IMPLEMENTPOLY
+for details.
+
+#EXAMPLE
+verbosity = 1!;
+q = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c");
+printexpansion(q);
+r = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c",honorcoeffprec);
+printexpansion(r);
+
+
+#SEEALSO $IMPLEMENTPOLY
+#SEEALSO $PRINTEXPANSION

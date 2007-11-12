@@ -2153,8 +2153,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		 name,variableNumber,tempVarNum[variableNumber]);
     if ((c < 0) || (c >= CODESIZE)) res = 0;	 
     variableNumber++;
-    /* The overlap is 53 since we have correctly rounded coefficients */
-    currOverlap = 53; 
+    /* The overlap should be 53 since we have correctly rounded coefficients 
+       But: there is the case of double renormalization in the firststep in strange honorcoeffprec cases.
+     */
+    currOverlap = 52; 
     if (gappaAssign != NULL) {
       snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
       snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
@@ -2939,7 +2941,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    }
 		    if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[1]))) {
 		      /* The precision is still not sufficient, we have to renormalize the other operand */
-		      if (currOverlap < powerOverlaps[1]) {
+		      if (currOverlap <= powerOverlaps[1]) {
 			/* We have to renormalize the temporary */
 			c = snprintf(buffer1+t,CODESIZE-t,
 				     "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
@@ -3172,7 +3174,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 		  if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[k-1]))) {
 		    /* The precision is still not sufficient, we have to renormalize the other operand */
-		    if (currOverlap < powerOverlaps[k-1]) {
+		    if (currOverlap <= powerOverlaps[k-1]) {
 		      /* We have to renormalize the temporary */
 		      c = snprintf(buffer1+t,CODESIZE-t,
 				   "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
@@ -4786,7 +4788,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    }
 		    if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[1]))) {
 		      /* The precision is still not sufficient, we have to renormalize the other operand */
-		      if (currOverlap < powerOverlaps[1]) {
+		      if (currOverlap <= powerOverlaps[1]) {
 			/* We have to renormalize the temporary */
 			c = snprintf(buffer1+t,CODESIZE-t,
 				     "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
@@ -5019,7 +5021,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 		  if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[k-1]))) {
 		    /* The precision is still not sufficient, we have to renormalize the other operand */
-		    if (currOverlap < powerOverlaps[k-1]) {
+		    if (currOverlap <= powerOverlaps[k-1]) {
 		      /* We have to renormalize the temporary */
 		      c = snprintf(buffer1+t,CODESIZE-t,
 				   "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
