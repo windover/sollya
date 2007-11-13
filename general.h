@@ -54,6 +54,7 @@ extern char *constBuffer;
 extern char *constBuffer2;
 extern node* parsedThing;
 extern int promptToBePrinted;
+extern int helpNotFinished;
 extern char *tempString;
 extern char *tempString2;
 extern chain *symbolTable;

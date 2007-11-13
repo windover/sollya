@@ -263,6 +263,8 @@ void yyerror(char *message) {
                                                      
 
 %type <other> startsymbol;
+%type <other> help;
+%type <other> helpmeta;
 %type <tree>  command;
 %type <tree>  simplecommand;
 %type <list>  commandlist;
@@ -300,7 +302,21 @@ startsymbol:            command SEMICOLONTOKEN
 			    $$ = NULL;
 			    YYACCEPT;
 			  }
-                      | HELPTOKEN help SEMICOLONTOKEN
+                      | helpmeta SEMICOLONTOKEN		      
+                          {
+                            printf("This is %s.\nType 'help help;' for the list of available commands. Type 'help <command>;' for help on the specific command <command>.\nType 'quit;' for quitting the %s interpreter.\n\nYou can get moral support and help with bugs by writing to %s.\n\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
+			    parsedThing = NULL;
+			    $$ = NULL;
+			    YYACCEPT;
+			  }
+                      | QUESTIONMARKTOKEN
+                          {
+                            printf("This is %s.\nType 'help help;' for the list of available commands. Type 'help <command>;' for help on the specific command <command>.\nType 'quit;' for quitting the %s interpreter.\n\nYou can get moral support and help with bugs by writing to %s.\n\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
+			    parsedThing = NULL;
+			    $$ = NULL;
+			    YYACCEPT;
+			  }
+                      | helpmeta help SEMICOLONTOKEN
                           {
 			    parsedThing = NULL;
 			    $$ = NULL;
@@ -321,6 +337,12 @@ startsymbol:            command SEMICOLONTOKEN
 			  }
 ;
 
+helpmeta:               HELPTOKEN
+                          {
+			    helpNotFinished = 1;
+			    $$ = NULL;
+			  }
+;
 
 command:                simplecommand
                           {
@@ -1556,10 +1578,6 @@ help:                   CONSTANTTOKEN
                           {
 			    printf("Suppresses output on assignments.\n");
                           }      						       
-                      | SEMICOLONTOKEN
-                          {
-			    printf("Command separator.\n");
-                          }             					       
                       | STARLEFTANGLETOKEN
                           {
 			    printf("Dereferences range bounds.\n");

@@ -52,6 +52,7 @@ chain *readStackTemp = NULL;
 chain *readStack2 = NULL;
 void *scanner = NULL;
 int promptToBePrinted = 0;
+int helpNotFinished = 0;
 
 node *parsedThing = NULL;
 node *parsedThingIntern = NULL;
@@ -277,10 +278,12 @@ void newReadFileStarted() {
 }
 
 void carriageReturnLexed() {
+  if (helpNotFinished) printf("This is %s. Having typed 'help', you have got to a special prompt.\nType now a semicolon (';') for an introduction on the %s help system.\nType now 'help;' for getting a list of available commands.\nType now a command name followed by a semicolon (';') for help on this command.\n>> ",PACKAGE_NAME,PACKAGE_NAME);
   if (promptToBePrinted) printPrompt();
 }
 
 void newTokenLexed() {
+  helpNotFinished = 0;
   promptToBePrinted = 0;
 }
 
@@ -649,6 +652,7 @@ int general(int argc, char *argv[]) {
   }
  
   exitInsteadOfRecover = 0;
+  helpNotFinished = 0;
   printPrompt();
   while (1) {
     executeAbort = 0;
@@ -679,6 +683,7 @@ int general(int argc, char *argv[]) {
     } 
     if (parseAbort || executeAbort) break;
     promptToBePrinted = 1;
+    helpNotFinished = 0;
   }
   
   freeTool();
