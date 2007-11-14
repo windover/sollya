@@ -337,12 +337,13 @@ int readHexa(mpfr_t res, char *c) {
 
 node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
   int degree, listLength, i, deg, res, fillUp, k;
-  chain *curr;
+  chain *curr, *monomials;
   int *formatsArray, *tempArray;
   node *roundedPoly, *temp;
   node **coefficients;
   mpfr_t *fpcoefficients;
-  mpfr_t tempMpfr;
+  mpfr_t tempMpfr, dummyX;
+  node *subPolyToRound, *subPolyRest, *tempNode;
 
   degree = getDegree(poly);
 
@@ -353,27 +354,32 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
 
   listLength = lengthChain(formats);
 
-  if (listLength > (degree + 1)) {
-    printMessage(1,"Warning: the number of the given formats does not correspond to the degree of the given polynomial.\n");
-    return copyTree(poly);
-  }
-
   if (*((int *) formats->value) == -1) {
     fillUp = 1;
     curr = formats->next;
   } else {
     curr = formats;
     fillUp = 0;
-    if (listLength != (degree + 1)) {
+    if (listLength < (degree + 1)) {
       printMessage(1,"Warning: the number of the given formats does not correspond to the degree of the given polynomial.\n");
-      return copyTree(poly);
+      monomials = makeIntPtrChainFromTo(0, listLength-1);
+      subPolyToRound = getSubpolynomial(poly, monomials, 0, prec);
+      freeChain(monomials, freeIntPtr);
+      monomials = makeIntPtrChainFromTo(listLength, degree);
+      subPolyRest = getSubpolynomial(poly, monomials, 0, prec);
+      freeChain(monomials, freeIntPtr);
+      tempNode = makeAdd(roundPolynomialCoefficients(subPolyToRound, formats, prec), subPolyRest);
+      free_memory(subPolyToRound);
+      temp = horner(tempNode);
+      free_memory(tempNode);
+      return temp;
     }
   }
   
   tempArray = (int *) safeCalloc(degree + 1,sizeof(int));
 
   i = 0;
-  while (curr != NULL) {
+  while ((curr != NULL) && (i <= degree)) {
     tempArray[i] = *((int *) curr->value);
     i++;
     curr = curr->next;
@@ -421,7 +427,13 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
 	printMessage(1,"Warning: the %dth coefficient of the given polynomial does not evaluate to a floating-point constant without any rounding.\n",i);
 	printMessage(1,"Will evaluate the coefficient in the current precision in floating-point before rounding to the target format.\n");
 	mpfr_init2(fpcoefficients[i],prec);
-	evaluateConstantExpression(fpcoefficients[i], temp, prec);
+	mpfr_init2(dummyX, prec);
+	mpfr_set_si(dummyX, 1, GMP_RNDN);
+	if (!evaluateFaithful(fpcoefficients[i], temp, dummyX, prec)) {
+	  printMessage(1,"Warning: the evaluation of the %dth coefficient is not faithful.\n",i);
+	  evaluateConstantExpression(fpcoefficients[i], temp, 256 * prec);
+	}
+	mpfr_clear(dummyX);
 	res = 1;
       } else {
 	mpfr_init2(fpcoefficients[i],mpfr_get_prec(*(temp->value)));
@@ -631,7 +643,10 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
 	  printMessage(1,"Error: a coefficient of a polynomial is not constant.\n");
 	  recoverFromError();
 	}
-	evaluateFaithful(tempValue, tempNode, tempValue2, GMP_RNDN);
+	if (!evaluateFaithful(tempValue, tempNode, tempValue2, prec)) {
+	  printMessage(1,"Warning: an evaluation is not faithful.\n");
+	  evaluate(tempValue, tempNode, tempValue2, 256 * prec);
+	}
 	printDoubleExpansion(tempValue);
 	roundingOccured = 1;
       }

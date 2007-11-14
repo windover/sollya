@@ -5465,6 +5465,7 @@ int arity(node *tree) {
 int isSyntacticallyEqual(node *tree1, node *tree2) {
 
   if (tree1->nodeType != tree2->nodeType) return 0;
+  if (tree1->nodeType == PI_CONST) return 1;
   if ((tree1->nodeType == LIBRARYFUNCTION) && 
       ((tree1->libFun != tree2->libFun) ||
        (tree1->libFunDeriv != tree2->libFunDeriv))) return 0;
