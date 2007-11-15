@@ -436,32 +436,37 @@ chain *uncertifiedFindZeros(node *tree, mpfr_t a, mpfr_t b, unsigned long int po
   mpfr_div_si(h,h,points,GMP_RNDD);
 
   mpfr_set(x1,b,GMP_RNDN);
-  mpfr_sub(x2,b,h,GMP_RNDN);
+  mpfr_sub(x2,b,h,GMP_RNDD);
 
   evaluateFaithfulWithCutOffFast(y1, tree, diff_tree, x1, zero_mpfr, prec);
   evaluateFaithfulWithCutOffFast(y2, tree, diff_tree, x2, zero_mpfr, prec);
+  /* Little trick: if a=b, h=0, thus x1=x2=a=b */
+  /* By doing this, we avoid entering the loop */
+  if(mpfr_equal_p(a,b)) { mpfr_nextbelow(x2); }
+
   while(mpfr_greaterequal_p(x2,a)) {
     if((mpfr_sgn(y1)==0) || (mpfr_sgn(y2)==0) || (mpfr_sgn(y1) != mpfr_sgn(y2))) {
-	if (mpfr_sgn(y1)==0) {
+      if (mpfr_sgn(y1)==0) {
 	  temp = safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*temp, prec);
 	  mpfr_set(*temp, x1, GMP_RNDN);
 	  result = addElement(result, temp);
+      }
+      else {
+	if (mpfr_sgn(y2)!=0) {
+	  temp = safeMalloc(sizeof(mpfr_t));
+	  mpfr_init2(*temp, prec);
+	  newton(*temp, tree, diff_tree, x2, x1, mpfr_sgn(y2), prec);
+	  result = addElement(result, temp);
 	}
-	else {
-	  if (mpfr_sgn(y2)!=0) {
-	    temp = safeMalloc(sizeof(mpfr_t));
-	    mpfr_init2(*temp, prec);
-	    newton(*temp, tree, diff_tree, x2, x1, mpfr_sgn(y2), prec);
-	    result = addElement(result, temp);
-	  }
-	}
+      }
     }
     mpfr_set(x1,x2,GMP_RNDN);
-    mpfr_sub(x2,x2,h,GMP_RNDN);
+    mpfr_sub(x2,x2,h,GMP_RNDD);
     mpfr_set(y1,y2,GMP_RNDN);
     evaluateFaithfulWithCutOffFast(y2, tree, diff_tree, x2, zero_mpfr, prec);
   }
+
   if(! mpfr_equal_p(x1,a)) {
     mpfr_set(x2,a,GMP_RNDU);
     evaluateFaithfulWithCutOffFast(y2, tree, diff_tree, x2, zero_mpfr, prec);
@@ -484,7 +489,14 @@ chain *uncertifiedFindZeros(node *tree, mpfr_t a, mpfr_t b, unsigned long int po
       result = addElement(result, temp);
     }
   }
-
+  else { // x1=a
+    if (mpfr_sgn(y1)==0) {
+      temp = safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*temp, prec);
+      mpfr_set(*temp, x1, GMP_RNDN);
+      result = addElement(result, temp);
+    }
+  }
   mpfr_clear(h);
   mpfr_clear(y1);
   mpfr_clear(y2);
