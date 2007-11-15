@@ -2572,7 +2572,8 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
     if (verbosity >= 1) printValue(&z,prec);
     printMessage(1," gives NaN.\n");
     printMessage(1,"This point will be excluded from the infnorm result.\n");
-    mpfr_set_d(max,0.0,GMP_RNDU);
+    mpfr_set_d(max,1.0,GMP_RNDU);
+    mpfr_div_2si(max,max,-(prec * 128),GMP_RNDN);
   }
   evaluateFaithful(temp, tree, b, prec);
   if (!mpfr_nan_p(temp)) {
