@@ -1,0 +1,19 @@
+#NAME $PERTURB
+#QUICK_DESCRIPTION indicates an absolute error for $EXTERNALPLOT
+#CALLING $COMMAND
+#TYPE APPROXERROR_TYPE
+
+#DESCRIPTION 
+The use of $COMMAND in the command $EXTERNALPLOT indicates that during
+plotting in $EXTERNALPLOT an absolute error is to be considered.
+§§ §§§
+See $EXTERNALPLOT for details.
+
+#EXAMPLE
+bashexecute("gcc -fPIC -c externalplotexample.c");
+bashexecute("gcc -shared -o externalplotexample externalplotexample.o -lgmp -lmpfr");
+externalplot("externalplotexample",absolute,exp(x),[-1/2;1/2],12,perturb);
+
+#SEEALSO $EXTERNALPLOT
+#SEEALSO $RELATIVE
+#SEEALSO $BASHEXECUTE
