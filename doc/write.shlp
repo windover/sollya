@@ -1,0 +1,72 @@
+#NAME $WRITE
+#QUICK_DESCRIPTION prints an expression without separators
+#CALLING $COMMAND(<expr1>,...,<exprn>)
+#TYPE ($ANY_TYPE,..., $ANY_TYPE) -> $VOID_TYPE
+#CALLING $COMMAND(<expr1>,...,<exprn>) > <filename>
+#TYPE ($ANY_TYPE,..., $ANY_TYPE, $STRING_TYPE) -> $VOID_TYPE
+#CALLING $COMMAND(<expr1>,...,<exprn>) >> <filename>
+#TYPE ($ANY_TYPE,...,$ANY_TYPE, $STRING_TYPE) -> $VOID_TYPE
+#PARAMETERS <expr> represents an expression
+#PARAMETERS <filename> represents a character sequence indicating a file name
+
+#DESCRIPTION
+$COMMAND(<expr1>,...,<exprn>) prints the expressions <expr1> through
+<exprn>. The character sequences corresponding to the expressions are
+concatenated without any separator. No newline is displayed at the
+end.  In contrast to $PRINT, $COMMAND expects the user to give all
+separators and newlines explicitely.
+§§ §§§
+If a second argument <filename> is given after a single ">", the
+displaying is not output on the standard output of $SOLLYA but if in
+the file <filename> that get newly created or overwritten. If a double
+">>" is given, the output will be appended to the file <filename>.
+§§ §§§
+The global variables $DISPLAY, $MIDPOINTMODE and $FULLPARENTHESES have
+some influence on the formatting of the output (see $DISPLAY,
+$MIDPOINTMODE and $FULLPARENTHESES).
+§§ §§§
+Remark that if one of the expressions <expri> given in argument is of
+type $STRING_TYPE, the character sequence <expri> evaluates to is
+displayed. However, if <expri> is of type $LIST_TYPE and this list
+contains a variable of type $STRING_TYPE, the expression for the list
+is displayed, i.e.  all character sequences get displayed surrounded
+by quotes ('"'). Nevertheless, escape sequences used upon defining
+character sequences are interpreted immediately.
+
+
+#EXAMPLE
+write(x + 2 + exp(sin(x))); 
+write("Hello\n");
+write("Hello","world\n");
+write("Hello","you", 4 + 3, "other persons.\n");
+
+#EXAMPLE
+write("Hello","\n");
+write([|"Hello"|],"\n");
+s = "Hello";
+write(s,[|s|],"\n");
+t = "Hello\tyou\a";
+write(t,[|t|],"\n");
+
+#EXAMPLE
+write(x + 2 + exp(sin(x))) > "foo.sol";
+readfile("foo.sol");
+
+#EXAMPLE
+write(x + 2 + exp(sin(x))) >> "foo.sol";
+
+
+#SEEALSO $PRINT
+#SEEALSO $PRINTEXPANSION
+#SEEALSO $PRINTHEXA
+#SEEALSO $PRINTFLOAT
+#SEEALSO $PRINTXML
+#SEEALSO $READFILE
+#SEEALSO $AUTOSIMPLIFY
+#SEEALSO $DISPLAY
+#SEEALSO $MIDPOINTMODE
+#SEEALSO $FULLPARENTHESES
+#SEEALSO $EVALUATE
+
+
+

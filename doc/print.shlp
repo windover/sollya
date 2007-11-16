@@ -1,0 +1,92 @@
+#NAME $PRINT
+#QUICK_DESCRIPTION prints an expression
+#CALLING $COMMAND(<expr1>,...,<exprn>)
+#TYPE ($ANY_TYPE,..., $ANY_TYPE) -> $VOID_TYPE
+#CALLING $COMMAND(<expr1>,...,<exprn>) > <filename>
+#TYPE ($ANY_TYPE,..., $ANY_TYPE, $STRING_TYPE) -> $VOID_TYPE
+#CALLING $COMMAND(<expr1>,...,<exprn>) >> <filename>
+#TYPE ($ANY_TYPE,...,$ANY_TYPE, $STRING_TYPE) -> $VOID_TYPE
+#PARAMETERS <expr> represents an expression
+#PARAMETERS <filename> represents a character sequence indicating a file name
+
+#DESCRIPTION 
+$COMMAND(<expr1>,...,<exprn>) prints the expressions <expr1> through
+<exprn> separated by spaces and followed by a newline.
+§§ §§§
+If a second argument <filename> is given after a single ">", the
+displaying is not output on the standard output of $SOLLYA but if in
+the file <filename> that get newly created or overwritten. If a double
+">>" is given, the output will be appended to the file <filename>.
+§§ §§§
+The global variables $DISPLAY, $MIDPOINTMODE and $FULLPARENTHESES have
+some influence on the formatting of the output (see $DISPLAY,
+$MIDPOINTMODE and $FULLPARENTHESES).
+§§ §§§
+Remark that if one of the expressions <expri> given in argument is of
+type $STRING_TYPE, the character sequence <expri> evaluates to is
+displayed. However, if <expri> is of type $LIST_TYPE and this list
+contains a variable of type $STRING_TYPE, the expression for the list
+is displayed, i.e.  all character sequences get displayed surrounded
+by quotes ('"'). Nevertheless, escape sequences used upon defining
+character sequences are interpreted immediately.
+
+#EXAMPLE
+print(x + 2 + exp(sin(x))); 
+print("Hello","world");
+print("Hello","you", 4 + 3, "other persons.");
+
+#EXAMPLE
+print("Hello");
+print([|"Hello"|]);
+s = "Hello";
+print(s,[|s|]);
+t = "Hello\tyou\a";
+print(t,[|t|]);
+
+#EXAMPLE
+print(x + 2 + exp(sin(x))) > "foo.sol";
+readfile("foo.sol");
+
+#EXAMPLE
+print(x + 2 + exp(sin(x))) >> "foo.sol";
+
+#EXAMPLE
+display = decimal;
+a = evaluate(sin(pi * x), 0.25);
+b = evaluate(sin(pi * x), [0.25; 0.25 + 1b-50]);
+print(a);
+display = binary;
+print(a);
+display = hexadecimal;
+print(a);
+display = dyadic;
+print(a);
+display = powers;
+print(a);
+display = decimal;
+midpointmode = off;
+print(b);
+midpointmode = on;
+print(b);
+display = dyadic;
+print(b);
+display = decimal;
+autosimplify = off;
+fullparentheses = off;
+print(x + x * ((x + 1) + 1));
+fullparentheses = on;
+print(x + x * ((x + 1) + 1));
+
+#SEEALSO $WRITE
+#SEEALSO $PRINTEXPANSION
+#SEEALSO $PRINTHEXA
+#SEEALSO $PRINTFLOAT
+#SEEALSO $PRINTXML
+#SEEALSO $READFILE
+#SEEALSO $AUTOSIMPLIFY
+#SEEALSO $DISPLAY
+#SEEALSO $MIDPOINTMODE
+#SEEALSO $FULLPARENTHESES
+#SEEALSO $EVALUATE
+
+
