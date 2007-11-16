@@ -1,0 +1,44 @@
+#NAME $EQUAL
+#QUICK_DESCRIPTION equality test operator
+#CALLING <expr1> $COMMAND <expr2>
+#TYPE ($ANY_TYPE, $ANY_TYPE) -> $BOOLEAN_TYPE
+#PARAMETERS <expr1> and <expr2> represent expressions
+
+
+#DESCRIPTION 
+The operator $COMMAND evaluates to true iff its operands <expr1> and
+<expr2> are syntactically equal and different from $ERROR or constant
+expressions that evaluate to the same floating-point number with the
+global precision $PREC. The user should be aware of the fact that
+because of floating-point evaluation, the operator $COMMAND is not
+exactly the same as the mathematical equality.
+
+
+#EXAMPLE
+"Hello" == "Hello";
+"Hello" == "Salut";
+"Hello" == 5;
+5 + x == 5 + x;
+
+#EXAMPLE
+1 == exp(0);
+asin(1) * 2 == pi;
+exp(5) == log(4);
+
+#EXAMPLE
+prec = 12;
+16384 == 16385;
+
+#EXAMPLE
+error == error;
+
+#SEEALSO $NEQ
+#SEEALSO $GT
+#SEEALSO $GE
+#SEEALSO $LE
+#SEEALSO $LT
+#SEEALSO $NOT
+#SEEALSO $AND
+#SEEALSO $OR
+#SEEALSO $ERROR
+#SEEALSO $PREC
