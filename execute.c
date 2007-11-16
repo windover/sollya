@@ -2427,7 +2427,7 @@ void printThingWithFullStrings(node *thing) {
     printTree(thing);
   } else {
     if (isRange(thing)) {
-      if (midpointMode) {
+      if (midpointMode && (dyadic == 0)) {
 	temp = sprintMidpointMode(*(thing->child1->value), *(thing->child2->value));
 	if (temp != NULL) {
 	  printf("%s",temp);
@@ -2483,7 +2483,7 @@ void printThing(node *thing) {
     printTree(thing);
   } else {
     if (isRange(thing)) {
-      if (midpointMode) {
+      if (midpointMode && (dyadic == 0)) {
 	temp = sprintMidpointMode(*(thing->child1->value), *(thing->child2->value));
 	if (temp != NULL) {
 	  printf("%s",temp);
@@ -2544,7 +2544,7 @@ void fPrintThingWithFullStrings(FILE *fd, node *thing) {
     fprintTreeWithPrintMode(fd,thing);
   } else {
     if (isRange(thing)) {
-      if (midpointMode) {
+      if (midpointMode && (dyadic == 0)) {
 	temp = sprintMidpointMode(*(thing->child1->value), *(thing->child2->value));
 	if (temp != NULL) {
 	  fprintf(fd,"%s",temp);
@@ -2600,7 +2600,7 @@ void fPrintThing(FILE *fd, node *thing) {
     fprintTreeWithPrintMode(fd,thing);
   } else {
     if (isRange(thing)) {
-      if (midpointMode) {
+      if (midpointMode && (dyadic == 0)) {
 	temp = sprintMidpointMode(*(thing->child1->value), *(thing->child2->value));
 	if (temp != NULL) {
 	  fprintf(fd,"%s",temp);
