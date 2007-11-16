@@ -1,0 +1,29 @@
+#NAME $TAYLOR
+#QUICK_DESCRIPTION computes a Taylor expansion of a function in a point
+#CALLING $COMMAND(<function>, <degree>, <point>)
+#TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $CONSTANT_TYPE) -> $FUNCTION_TYPE
+#PARAMETERS <function> represents the function to be expanded
+#PARAMETERS <degree> represents the degree of the expansion to be delivered
+#PARAMETERS <point> represents the point in which the function is to be developped
+
+#DESCRIPTION 
+The command $COMMAND returns an expression that is a Taylor expansion
+of function <function> in point <point> having the degree <degree>.
+§§ §§§
+Let §§f§$f$§§ be the function <function>, §§t§$t$§§ be the point <point> and
+§§n§$n$§§ be the degree <degree>. Then, $COMMAND(<function>,<degree>,<point>) 
+evaluates to an expression mathematically equal to 
+§§f(t) + f'(t) * (x - t) + 1/2 * f''(t) * (x - t)^2 + ... + 1/(i!) * f[i](t) * (x - t)^i + ... + 1/(n!) * f[n](t) * (x - t)^n§$$\sum\limits_{i=0}^n \frac{f^{(i)}}{i!} \left(x - t \right)^i$$§§
+§§ §§§
+Remark that $COMMAND evaluates to §§0§$0$§§ if the degree <degree> is negative.
+
+#EXAMPLE
+print(taylor(exp(x),5,0));
+
+#EXAMPLE
+print(taylor(asin(x),7,0));
+
+#EXAMPLE
+print(taylor(erf(x),6,0));
+
+#SEEALSO $REMEZ

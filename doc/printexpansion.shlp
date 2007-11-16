@@ -1,0 +1,43 @@
+#NAME $PRINTEXPANSION
+#QUICK_DESCRIPTION prints a polynomial in Horner form with its coefficients written as a expansions of double precision numbers
+#CALLING $COMMAND(<polynomial>)
+#TYPE ($FUNCTION_TYPE) -> $VOID_TYPE
+#PARAMETERS <polynomial> represents the polynomial to be printed
+
+#DESCRIPTION 
+The command $COMMAND prints the polynomial <polynomial> in Horner form
+writing its coefficients as expansions of double precision
+numbers. The double precision numbers themselves are displayed in
+hexadecimal memory notation (see $PRINTHEXA). 
+§§ §§§
+If some of the coefficients of the polynomial <polynomial> are not
+floating-point constants but constant expressions, they are evaluated
+to floating-point constants using the global precision $PREC.  If a
+rounding occurs in this evaluation, a warning is displayed.
+§§ §§§
+If the exponent range of double precision is not sufficient to display
+all the mantissa bits of a coefficient, the coefficient is displayed
+rounded and a warning is displayed.
+§§ §§§
+If the argument <polynomial> does not a polynomial, nothing but a
+warning or a newline is displayed. Constants can be displayed using
+$COMMAND since they are polynomials of degree §§0§$0$§§.
+
+#EXAMPLE
+printexpansion(roundcoefficients(taylor(exp(x),5,0),[|DD...|]));
+
+#EXAMPLE
+printexpansion(remez(exp(x),5,[-1;1]));
+
+#EXAMPLE
+verbosity = 1!;
+prec = 3500!;
+printexpansion(pi);
+
+#SEEALSO $PRINTHEXA
+#SEEALSO $HORNER
+#SEEALSO $PRINT
+#SEEALSO $PREC
+#SEEALSO $REMEZ
+#SEEALSO $TAYLOR
+#SEEALSO $ROUNDCOEFFICIENTS
