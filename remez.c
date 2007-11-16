@@ -1312,8 +1312,12 @@ node *remez(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mpfr
     recoverFromError();
   }
 
+  if (mpfr_equal_p(a,b))
+    printMessage(1,"Warning: input interval is reduced to a single point. The algorithm may not converge.\n");
+
   res = remezAux(func, weight, monomials2, a, b, prec, quality);
 
+ 
   freeChain(monomials2, freeIntPtr);
   mpfr_clear(quality);
   return res;
