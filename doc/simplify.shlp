@@ -1,0 +1,29 @@
+#NAME $SIMPLIFY
+#QUICK_DESCRIPTION simplifies an expression representing a function
+#CALLING $COMMAND(<function>)
+#TYPE $FUNCTION_TYPE -> $FUNCTION_TYPE
+#PARAMETERS <function> represents the expression to be simplified
+
+#DESCRIPTION 
+The command $COMMAND simplifies constant subexpressions of the
+expression given in argument representing the function
+<function>. Those constant subexpressions are evaluated in using
+floating-point arithmetic with the global precision $PREC.
+
+#EXAMPLE
+print(simplify(sin(pi * x)));
+print(simplify(erf(exp(3) + x * log(4))));
+
+#EXAMPLE
+prec = 20!;
+t = erf(0.5);
+s = simplify(erf(0.5));
+prec = 200!;
+t;
+s;
+
+#SEEALSO $SIMPLIFYSAFE
+#SEEALSO $AUTOSIMPLIFY
+#SEEALSO $PREC
+#SEEALSO $EVALUATE
+

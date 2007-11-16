@@ -1,0 +1,64 @@
+#NAME $CANONICAL
+#QUICK_DESCRIPTION brings all polynomial subexpressions of an expression to canonical form or activates, deactivates or checks canonical form printing
+#CALLING $COMMAND(<function>)
+#TYPE $FUNCTION_TYPE -> $FUNCTION_TYPE
+#CALLING $COMMAND = <activation value>
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = <activation value> !
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = ?
+#TYPE $VOID_TYPE -> $ONOFF_TYPE
+
+#PARAMETERS <function> represents the expression to be rewritten in canonical form
+#PARAMETERS <activation value> represents $ON or $OFF, i.e. activation or deactivation
+
+#DESCRIPTION 
+The command $COMMAND rewrites the expression representing the function
+<function> in a way such that all polynomial subexpressions (or the
+whole expression itself, if it is a polynomial) are written in
+canonical form, i.e. as a sum of monomials in the canonical base. The
+canonical base is the base of the integer powers of the global free
+variable. The command $COMMAND does not endanger the safety of
+computations even in $SOLLYA's floating-point environment: the
+function returned is mathematically equal to the function <function>.
+
+#DESCRIPTION 
+An assignment $COMMAND = <activation value>, where <activation value>
+is one of $ON or $OFF, activates respectively deactivates the
+automatic printing of polynomial expressions in canonical form,
+i.e. as a sum of monomials in the canonical base. If automatic
+printing in canonical form is deactivated, automatic printing yield to
+displaying polynomial subexpressions in Horner form.
+§§ §§§
+If the assignment $COMMAND = <activation value> is followed by an
+exclamation mark, no message indicating the new state is
+displayed. Otherwise the user is informed of the new state of the
+global mode by an indication.
+
+#DESCRIPTION
+The expression $COMMAND = ? evaluates to a variable of type
+$ONOFF_TYPE, indicating whether or not the automatic printing of
+subexpressions in canonical form is activated. If automatic printing
+in canonical form is deactivated, automatic printing yield to
+displaying polynomial subexpressions in Horner form.
+
+#EXAMPLE
+print(canonical(1 + x * (x + 3 * x^2));
+print(canonical((x + 1)^7));
+
+#EXAMPLE
+print(canonical(exp((x + 1)^5) - log(asin(((x + 2) + x)^4 * (x + 1)) + x)));
+
+#EXAMPLE
+canonical = ?;
+(x + 2)^9;
+canonical = on;
+(x + 2)^9;
+canonical = ?;
+canonical = off!;
+(x + 2)^9;
+
+#SEEALSO $HORNER
+#SEEALSO $PRINT
+
+

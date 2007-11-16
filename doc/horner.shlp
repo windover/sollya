@@ -1,0 +1,25 @@
+#NAME $HORNER
+#QUICK_DESCRIPTION brings all polynomial subexpressions of an expression to Horner form
+#CALLING $COMMAND(<function>)
+#TYPE $FUNCTION_TYPE -> $FUNCTION_TYPE
+#PARAMETERS <function> represents the expression to be rewritten in Horner form
+
+#DESCRIPTION 
+The command $COMMAND rewrites the expression representing the function
+<function> in a way such that all polynomial subexpressions (or the
+whole expression itself, if it is a polynomial) are written in Horner
+form.  The command $COMMAND does not endanger the safety of
+computations even in $SOLLYA's floating-point environment: the
+function returned is mathematically equal to the function <function>.
+
+#EXAMPLE
+print(horner(1 + 2 * x + 3 * x^2));
+print(horner((x + 1)^7));
+
+#EXAMPLE
+print(horner(exp((x + 1)^5) - log(asin(x + x^3) + x)));
+
+#SEEALSO $CANONICAL
+#SEEALSO $PRINT
+
+
