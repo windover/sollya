@@ -1,0 +1,59 @@
+#NAME $DISPLAY
+#QUICK_DESCRIPTION sets or inspects the global variable specifying number notation
+#CALLING $COMMAND = <notation value>
+#TYPE $DISPLAY_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = <notation value> !
+#TYPE $DISPLAY_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = ?
+#TYPE $VOID_TYPE -> $DISPLAY_TYPE
+
+#PARAMETERS <notation value> represents a variable of type $DISPLAY_TYPE
+
+#DESCRIPTION 
+An assignment $COMMAND = <notation value>, where <notation value> is
+one of $DECIMAL, $DYADIC, $POWERS, $BINARY or $HEXADECIMAL, activates
+the corresponding notation for output of values in $PRINT, $WRITE or
+at the $SOLLYA prompt.
+§§ §§§
+If the global notation variable $COMMAND is $DECIMAL, all numbers will
+be output in scientific decimal notation.  If the global notation
+variable $COMMAND is $DYADIC, all numbers will be output as dyadic
+numbers with Gappa notation.  If the global notation variable $COMMAND
+is $POWERS, all numbers will be output as dyadic numbers with a
+notation compatible with Maple and PARI/GP.  If the global notation
+variable $COMMAND is $BINARY, all numbers will be output in binary
+notation.  If the global notation variable $COMMAND is $HEXADECIMAL,
+all numbers will be output in C99/ IEEE754R notation.  All output
+notations can be reparsed by $SOLLYA, inducing no error if the input
+and output precisions are the same (see $PREC).
+§§ §§§
+If the assignment $COMMAND = <notation value> is followed by an
+exclamation mark, no message indicating the new state is
+displayed. Otherwise the user is informed of the new state of the
+global mode by an indication.
+
+#DESCRIPTION
+The expression $COMMAND = ? evaluates to a variable of type
+$DISPLAY_TYPE, indicating the current notation used.
+
+#EXAMPLE
+display = decimal;
+a = evaluate(sin(pi * x), 0.25);
+a;
+display = binary;
+a;
+display = hexadecimal;
+a;
+display = dyadic;
+a;
+display = powers;
+a;
+
+#SEEALSO $PRINT
+#SEEALSO $WRITE
+#SEEALSO $DECIMAL
+#SEEALSO $DYADIC
+#SEEALSO $POWERS
+#SEEALSO $BINARY
+#SEEALSO $HEXADECIMAL
+#SEEALSO $PREC

@@ -1,0 +1,15 @@
+#NAME $DYADIC
+#QUICK_DESCRIPTION special value for global state $DISPLAY
+
+#DESCRIPTION 
+$COMMAND is a special value used for the global state $DISPLAY.
+If the global state $DISPLAY is equal to $COMMAND, all data will
+be output in dyadic notation with numbers displayed in Gappa format.
+§§ §§§
+As any value it can be affected to a variable and stored in lists.
+
+#SEEALSO $DECIMAL
+#SEEALSO $POWERS
+#SEEALSO $HEXADECIMAL
+#SEEALSO $BINARY
+
