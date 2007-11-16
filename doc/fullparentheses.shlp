@@ -1,0 +1,42 @@
+#NAME $FULLPARENTHESES
+#QUICK_DESCRIPTION activates, deactivates or inspects the state variable controlling output with full parenthesizing
+#CALLING $COMMAND = <activation value>
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = <activation value> !
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = ?
+#TYPE $VOID_TYPE -> $ONOFF_TYPE
+
+#PARAMETERS <activation value> represents $ON or $OFF, i.e. activation or deactivation
+
+#DESCRIPTION 
+An assignment $COMMAND = <activation value>, where <activation value>
+is one of $ON or $OFF, activates respectively deactivates the output
+of expressions with full parenthezing. In full parentheszing mode,
+$SOLLYA commands like $PRINT, $WRITE and the implicit command when an
+expression is given at the prompt will output expressions with
+parentheses at all places where it is necessary for expressions
+containing infix operators to be reparsed with the same
+result. Otherwise parentheses around associative operators are
+omitted.
+§§ §§§
+If the assignment $COMMAND = <activation value> is followed by an
+exclamation mark, no message indicating the new state is
+displayed. Otherwise the user is informed of the new state of the
+global mode by an indication.
+
+#DESCRIPTION
+The expression $COMMAND = ? evaluates to a variable of type
+$ONOFF_TYPE, indicating whether or not the full parenthesized output
+of expressions is activated or not.
+
+#EXAMPLE
+autosimplify = off!;
+fullparentheses = off;
+print(1 + 2 + 3);
+fullparentheses = on;
+print(1 + 2 + 3);
+
+#SEEALSO $PRINT
+#SEEALSO $WRITE
+#SEEALSO $AUTOSIMPLIFY
