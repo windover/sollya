@@ -379,7 +379,7 @@ commandlist:            command SEMICOLONTOKEN
 
 simplecommand:          FALSEQUITTOKEN 
                           {
-			    $$ = makeFalseQuit();
+			    $$ = makeQuit();
 			  }
                       | FALSERESTARTTOKEN 
                           {
