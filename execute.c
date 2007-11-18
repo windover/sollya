@@ -307,6 +307,9 @@ node *copyThing(node *tree) {
   case PRINT:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     break; 	
+  case VARIABLEDECLARATION:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyStringOnVoid);
+    break; 	
   case NOP:
     break;
   case NEWFILEPRINT:
@@ -980,6 +983,9 @@ char *getTimingStringForThing(node *tree) {
     break;  			
   case PRINT:
     constString = "print statement";
+    break; 	
+  case VARIABLEDECLARATION:
+    constString = NULL;
     break; 				
   case NEWFILEPRINT:
     constString = "print-into-new-file statement";
@@ -2661,6 +2667,11 @@ int assignThingToTable(char *identifier, node *thing) {
     return 0;
   }
 
+  if (containsDeclaredEntry(declaredSymbolTable, identifier)) {
+    declaredSymbolTable = assignDeclaredEntry(declaredSymbolTable, identifier, thing, copyThingOnVoid, freeThingOnVoid);
+    return 1;
+  }
+
   if (containsEntry(symbolTable, identifier)) {
     printMessage(3,"Information: the identifier \"%s\" has already been assigned to. This a reassignment.\n",identifier);
     symbolTable = removeEntry(symbolTable, identifier, freeThingOnVoid);
@@ -2699,6 +2710,9 @@ node *getThingFromTable(char *identifier) {
   if ((tempLibraryProcedure = getProcedure(identifier)) != NULL) {
     return makeExternalProcedureUsage(tempLibraryProcedure);
   }
+
+  if (containsDeclaredEntry(declaredSymbolTable, identifier)) 
+    return getDeclaredEntry(declaredSymbolTable, identifier, copyThingOnVoid);
 
   if (!containsEntry(symbolTable, identifier)) return NULL;
 
@@ -3130,6 +3144,7 @@ int executeCommandInner(node *tree) {
 
   switch (tree->nodeType) {  
   case COMMANDLIST:
+    declaredSymbolTable = pushFrame(declaredSymbolTable);
     curr = tree->arguments;
     result = 0;
     while (curr != NULL) {
@@ -3140,6 +3155,7 @@ int executeCommandInner(node *tree) {
       }
       curr = curr->next;
     }
+    declaredSymbolTable = popFrame(declaredSymbolTable,freeThingOnVoid);
     break;			
   case WHILE:
     result = 0;
@@ -3295,7 +3311,36 @@ int executeCommandInner(node *tree) {
     restartTool();
     printf("The tool has been restarted.\n");
     result = 0;
-    break;  			
+    break;  	
+  case VARIABLEDECLARATION:
+    curr = tree->arguments;
+    while (curr != NULL) {
+      if ((variablename != NULL) && (strcmp(variablename, (char *) (curr->value)) == 0)) {
+	printMessage(1,"Warning: the identifier \"%s\" is already bound to the current free variable.\nIt cannot be declared as a local variable. The declaration of \"%s\" will have no effect.\n",
+		     (char *) (curr->value),(char *) (curr->value));
+      } else {
+	if (getFunction((char *) (curr->value)) != NULL) {
+	  printMessage(1,"Warning: the identifier \"%s\" is already bound to a library function.\nIt cannot be declared as a local variable. The declaration of \"%s\" will have no effect.\n",
+		     (char *) (curr->value),(char *) (curr->value));
+
+	} else {
+	  if (getProcedure((char *) (curr->value)) != NULL) {
+	    printMessage(1,"Warning: the identifier \"%s\" is already bound to an external procedure.\nIt cannot be declared as a local variable. The declaration of \"%s\" will have no effect.\n",
+		     (char *) (curr->value),(char *) (curr->value));
+
+	  } else {
+	    if (declaredSymbolTable != NULL) {
+	      declaredSymbolTable = declareNewEntry(declaredSymbolTable, (char *) (curr->value), makeError(), copyThingOnVoid);
+	    } else {
+	      printMessage(1,"Warning: previous command interruptions have corrupted the frame system.\n");
+	      printMessage(1,"Local variable \"%s\" cannot be declared.\n",(char *) (curr->value));
+	    }
+	  }
+	}
+      }
+      curr = curr->next;
+    }
+    break;
   case PRINT:
     curr = tree->arguments;
     while (curr != NULL) {
@@ -3829,7 +3874,7 @@ int executeCommandInner(node *tree) {
       printMessage(1,"Warning: the identifier \"%s\" is already be bound as the current free variable.\n",variablename);
       printMessage(1,"It cannot be bound to an external procedure. This command will have no effect.\n");
     } else {
-      if (containsEntry(symbolTable, tree->string)) {
+      if (containsEntry(symbolTable, tree->string) || containsDeclaredEntry(declaredSymbolTable, tree->string)) {
 	printMessage(1,"Warning: the identifier \"%s\" is already assigned to.\n",tree->string);
 	printMessage(1,"It cannot be bound to an external procedure. This command will have no effect.\n");
       } else {
@@ -4049,7 +4094,7 @@ int executeCommandInner(node *tree) {
       printMessage(1,"Warning: the identifier \"%s\" is already be bound as the current free variable.\n",variablename);
       printMessage(1,"It cannot be bound to a library function. This command will have no effect.\n");
     } else {
-      if (containsEntry(symbolTable, tree->string)) {
+      if (containsEntry(symbolTable, tree->string) || containsDeclaredEntry(declaredSymbolTable, tree->string)) {
 	printMessage(1,"Warning: the identifier \"%s\" is already assigned to.\n",tree->string);
 	printMessage(1,"It cannot be bound to a library function. This command will have no effect.\n");
       } else {
@@ -4555,6 +4600,18 @@ node *makePrint(chain *thinglist) {
   return res;
 
 }
+
+node *makeVariableDeclaration(chain *stringlist) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = VARIABLEDECLARATION;
+  res->arguments = stringlist;
+
+  return res;
+
+}
+
 
 node *makePrintXml(node *thing) {
   node *res;
@@ -6600,6 +6657,10 @@ void freeThing(node *tree) {
   case PRINT:
     freeChain(tree->arguments, freeThingOnVoid);
     free(tree);
+    break; 	
+  case VARIABLEDECLARATION:
+    freeChain(tree->arguments, free);
+    free(tree);
     break; 				
   case NEWFILEPRINT:
     freeChain(tree->arguments, freeThingOnVoid);
@@ -7538,7 +7599,16 @@ void rawPrintThing(node *tree) {
     break; 			
   case RESTART:
     printf("restart");
-    break;  			
+    break;  	
+  case VARIABLEDECLARATION:
+    printf("var ");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      printf((char *) (curr->value));
+      if (curr->next != NULL) printf(", ");
+      curr = curr->next;
+    }
+    break; 						
   case PRINT:
     printf("print(");
     curr = tree->arguments;
@@ -8804,7 +8874,16 @@ void fRawPrintThing(FILE *fd, node *tree) {
     break; 			
   case RESTART:
     fprintf(fd,"restart");
-    break;  			
+    break;  	
+  case VARIABLEDECLARATION:
+    fprintf(fd,"var ");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      fprintf(fd,(char *) (curr->value));
+      if (curr->next != NULL) fprintf(fd,", ");
+      curr = curr->next;
+    }
+    break; 						
   case PRINT:
     fprintf(fd,"print(");
     curr = tree->arguments;
@@ -9963,7 +10042,10 @@ int isEqualThing(node *tree, node *tree2) {
   case FALSERESTART:
     break; 			
   case RESTART:
-    break;  			
+    break;  	
+  case VARIABLEDECLARATION:
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualStringOnVoid)) return 0;
+    break; 						
   case PRINT:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
     break; 				

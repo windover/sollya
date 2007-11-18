@@ -257,6 +257,8 @@ void yyerror(char *message) {
 %token  BOOLEANTOKEN;    
 %token  LISTTOKEN;    
 %token  OFTOKEN;    
+
+%token  VARTOKEN;    
 									       
 %token  HELPTOKEN;      
 %token  VERSIONTOKEN;
@@ -266,8 +268,11 @@ void yyerror(char *message) {
 %type <other> help;
 %type <other> helpmeta;
 %type <tree>  command;
+%type <tree>  variabledeclaration;
 %type <tree>  simplecommand;
 %type <list>  commandlist;
+%type <list>  variabledeclarationlist;
+%type <list>  identifierlist;
 %type <tree>  thing;
 %type <list>  thinglist;
 %type <tree>  ifcommand;
@@ -352,6 +357,14 @@ command:                simplecommand
                           {
 			    $$ = makeCommandList($2);
                           }
+                      | BEGINTOKEN variabledeclarationlist commandlist ENDTOKEN
+                          {			    
+			    $$ = makeCommandList(concatChains($2, $3));
+                          }
+                      | BEGINTOKEN variabledeclarationlist ENDTOKEN
+                          {
+			    $$ = makeCommandList($2);
+                          }
                       | BEGINTOKEN ENDTOKEN
                           {
 			    $$ = makeNop();
@@ -409,6 +422,34 @@ commandlist:            command SEMICOLONTOKEN
 			    $$ = addElement($3, $1);
 			  }
 ;
+
+variabledeclarationlist: variabledeclaration SEMICOLONTOKEN
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | variabledeclaration SEMICOLONTOKEN variabledeclarationlist
+                          {
+			    $$ = addElement($3, $1);
+			  }
+;
+
+variabledeclaration:    VARTOKEN identifierlist
+                          {
+			    $$ = makeVariableDeclaration($2);
+			  }
+;
+
+
+identifierlist:         IDENTIFIERTOKEN
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | IDENTIFIERTOKEN COMMATOKEN identifierlist
+                          {
+			    $$ = addElement($3, $1);
+			  }
+;
+
 
 simplecommand:          QUITTOKEN
                           {
@@ -2255,6 +2296,9 @@ help:                   CONSTANTTOKEN
                       | OFTOKEN                          {
 			    printf("Used in list of type for externalproc.\n");
                           }    
+                      | VARTOKEN                          {
+			    printf("Declares a local variable.\n");
+                          }    
                       | HELPTOKEN
                           {
 			    printf("Possible keywords in %s are:\n",PACKAGE_NAME);
@@ -2435,6 +2479,7 @@ help:                   CONSTANTTOKEN
 			    printf("- to\n");
 			    printf("- tripledouble\n");
 			    printf("- true\n");
+			    printf("- var\n");
 			    printf("- verbosity\n");
 			    printf("- version\n");
 			    printf("- void\n");

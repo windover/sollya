@@ -65,6 +65,7 @@ int exitInsteadOfRecover = 1;
 int numberBacktrace = 1;
 
 chain *symbolTable = NULL;
+chain *declaredSymbolTable = NULL;
 
 /* END OF STATE OF THE TOOL */
 
@@ -500,6 +501,8 @@ void freeTool() {
   freeCounter();
   freeSymbolTable(symbolTable, freeThingOnVoid);
   symbolTable = NULL;
+  freeDeclaredSymbolTable(declaredSymbolTable, freeThingOnVoid);
+  declaredSymbolTable = NULL;
   mpfr_clear(statediam);
 }
 
@@ -522,6 +525,7 @@ void initToolDefaults() {
   midpointMode = 0;
   hopitalrecursions = DEFAULTHOPITALRECURSIONS;
   symbolTable = NULL;
+  declaredSymbolTable = NULL;
   mpfr_init2(statediam,10);
   mpfr_set_d(statediam,DEFAULTDIAM,GMP_RNDN);
 }
@@ -529,6 +533,8 @@ void initToolDefaults() {
 void restartTool() {
   freeSymbolTable(symbolTable, freeThingOnVoid);
   symbolTable = NULL;
+  freeDeclaredSymbolTable(declaredSymbolTable, freeThingOnVoid);
+  declaredSymbolTable = NULL;
   freeLibraries();
   freeProcLibraries();
   initToolDefaults();
@@ -664,6 +670,11 @@ int general(int argc, char *argv[]) {
       if (!setjmp(recoverEnvironment)) {
 	memmove(&recoverEnvironmentError,&recoverEnvironment,sizeof(recoverEnvironmentError));
 	recoverEnvironmentReady = 1;
+	if (declaredSymbolTable != NULL) {
+	  printMessage(1,"Warning: a preceeding command interruption corrupted the variable frame stack.\n");
+	  freeDeclaredSymbolTable(declaredSymbolTable, freeThingOnVoid);
+	  declaredSymbolTable = NULL;
+	}
 	initSignalHandler();
 	numberBacktrace = 1;
 	pushTimeCounter();
@@ -677,6 +688,14 @@ int general(int argc, char *argv[]) {
 	  printMessage(1,"Warning: the last command has been interrupted. May leak memory.\n");
 	else 
 	  printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
+	if (declaredSymbolTable != NULL) {
+	  if (!handlingCtrlC) 
+	    printMessage(1,"Warning: releasing the variable frame stack.\n");
+	  else 
+	    printMessage(2,"Information: releasing the variable frame stack.\n");
+	  freeDeclaredSymbolTable(declaredSymbolTable, freeThingOnVoid);
+	  declaredSymbolTable = NULL;
+	}
       }
 
       freeThing(parsedThing);

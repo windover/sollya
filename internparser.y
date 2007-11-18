@@ -256,12 +256,16 @@ extern FILE *internyyget_in(void *scanner);
 %token  LISTTOKEN;    
 %token  OFTOKEN;    
 
+%token  VARTOKEN;    
 
 %type <other> startsymbol;
 %type <tree>  startsymbolwitherr;
 %type <tree>  command;
+%type <tree>  variabledeclaration;
 %type <tree>  simplecommand;
 %type <list>  commandlist;
+%type <list>  variabledeclarationlist;
+%type <list>  identifierlist;
 %type <tree>  thing;
 %type <list>  thinglist;
 %type <tree>  ifcommand;
@@ -316,6 +320,14 @@ command:                simplecommand
 			    $$ = $1;
 			  }
                       | BEGINTOKEN commandlist ENDTOKEN
+                          {
+			    $$ = makeCommandList($2);
+                          }
+                      | BEGINTOKEN variabledeclarationlist commandlist ENDTOKEN
+                          {			    
+			    $$ = makeCommandList(concatChains($2, $3));
+                          }
+                      | BEGINTOKEN variabledeclarationlist ENDTOKEN
                           {
 			    $$ = makeCommandList($2);
                           }
@@ -376,6 +388,34 @@ commandlist:            command SEMICOLONTOKEN
 			    $$ = addElement($3, $1);
 			  }
 ;
+
+variabledeclarationlist: variabledeclaration SEMICOLONTOKEN
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | variabledeclaration SEMICOLONTOKEN variabledeclarationlist
+                          {
+			    $$ = addElement($3, $1);
+			  }
+;
+
+variabledeclaration:    VARTOKEN identifierlist
+                          {
+			    $$ = makeVariableDeclaration($2);
+			  }
+;
+
+
+identifierlist:         IDENTIFIERTOKEN
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | IDENTIFIERTOKEN COMMATOKEN identifierlist
+                          {
+			    $$ = addElement($3, $1);
+			  }
+;
+
 
 simplecommand:          FALSEQUITTOKEN 
                           {

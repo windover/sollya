@@ -326,7 +326,7 @@ BOOLEAN         "boolean"
 LIST            "list"
 OF              "of"
 
-
+VAR             "var"
 
 %%
 
@@ -417,6 +417,7 @@ OF              "of"
 {AND}         				    {  return ANDTOKEN; }				      	       
 {OR}         				    {  return ORTOKEN; }				      	       
 {VERTBAR}				    {  return VERTBARTOKEN; }						       
+{VAR}					    {  return VARTOKEN; }					      	       
 {AT}					    {  return ATTOKEN; }					      	       
 {DOUBLECOLON}				    {  return DOUBLECOLONTOKEN; }				      	       
 {DOTCOLON}				    {  return DOTCOLONTOKEN; }				      	       

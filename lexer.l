@@ -328,6 +328,8 @@ BOOLEAN         "boolean"
 LIST            "list"
 OF              "of"
 
+VAR             "var"
+
 %%
 
 %{
@@ -489,6 +491,7 @@ OF              "of"
 {AND}         				    { newTokenLexed(); return ANDTOKEN; }				      	       
 {OR}         				    { newTokenLexed(); return ORTOKEN; }				      	       
 {VERTBAR}				    { newTokenLexed(); return VERTBARTOKEN; }						       
+{VAR}					    { newTokenLexed(); return VARTOKEN; }					      	       
 {AT}					    { newTokenLexed(); return ATTOKEN; }					      	       
 {DOUBLECOLON}				    { newTokenLexed(); return DOUBLECOLONTOKEN; }				      	       
 {DOTCOLON}				    { newTokenLexed(); return DOTCOLONTOKEN; }				      	       

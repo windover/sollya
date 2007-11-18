@@ -92,6 +92,119 @@ void freeSymbolTable(chain *symTbl, void (*f) (void *)) {
   }
 }
 
+
+void freeNothing(void *thing) {
+  return;
+}
+
+void freeDeclaredSymbolTable(chain *declSymTbl, void (*f) (void *)) {
+  chain *curr;
+
+  curr = declSymTbl;
+  while (curr != NULL) {
+    freeSymbolTable((chain *) (curr->value), f);
+    curr->value = NULL;
+    curr = curr->next;
+  }
+
+  freeChain(declSymTbl, freeNothing);
+}
+
+chain *pushFrame(chain *declSymTbl) {
+
+  return addElement(declSymTbl, NULL);
+
+}
+
+chain *popFrame(chain *declSymTbl, void (*f) (void *)) {
+  chain *newDeclSymTbl;
+
+  if (declSymTbl == NULL) return NULL;
+
+  newDeclSymTbl = declSymTbl->next;
+
+  freeSymbolTable((chain *) (declSymTbl->value), f);
+
+  free(declSymTbl);
+
+  return newDeclSymTbl;
+}
+
+chain *declareNewEntry(chain *declSymTbl, char *name, void *value, void * (*copyValue) (void *)) {
+  chain *newValue;
+
+  if (declSymTbl == NULL) return NULL;
+
+  if (containsEntry((chain *) (declSymTbl->value), name)) return declSymTbl;
+
+  newValue = addEntry((chain *) (declSymTbl->value), name, value, copyValue);
+
+  declSymTbl->value = newValue;
+
+  return declSymTbl;
+}
+
+chain *replaceDeclaredEntry(chain *declSymTbl, char *name, void *value, void * (*copyValue) (void *), void (*freeValue) (void *)) {
+  chain *curr;
+  chain *newValue;
+
+  if (declSymTbl == NULL) return NULL;
+
+  curr = declSymTbl;
+  while (curr != NULL) {
+    if (containsEntry((chain *) (curr->value), name)) {
+      newValue = removeEntry((chain *) (curr->value), name, freeValue);
+      curr->value = newValue;
+      newValue = addEntry((chain *) (curr->value), name, value, copyValue);
+      curr->value = newValue;
+      break;
+    }
+    curr = curr->next;
+  }
+  
+  return declSymTbl;
+}
+
+int containsDeclaredEntry(chain *declSymTbl, char *name) {
+  chain *curr;
+
+  curr = declSymTbl;
+  while (curr != NULL) {
+    if (containsEntry((chain *) (curr->value), name)) return 1;
+    curr = curr->next;
+  }
+
+  return 0;
+}
+
+void *getDeclaredEntry(chain *declSymTbl, char *name, void * (*copyValue) (void *)) {
+  chain *curr;
+
+  curr = declSymTbl;
+  while (curr != NULL) {
+    if (containsEntry((chain *) (curr->value), name)) return getEntry((chain *) (curr->value), name, copyValue);
+    curr = curr->next;
+  }
+
+  return NULL;
+}
+
+
+
+chain *assignDeclaredEntry(chain *declSymTbl, char *name, void *value, void * (*copyValue) (void *), void (*freeValue) (void *)) {
+  chain *newDeclSymTbl;
+
+  if (containsDeclaredEntry(declSymTbl, name)) 
+    newDeclSymTbl = replaceDeclaredEntry(declSymTbl, name, value, copyValue, freeValue);
+  else 
+    newDeclSymTbl = declareNewEntry(declSymTbl, name, value, copyValue);
+
+  return newDeclSymTbl; 
+}
+
+
+
+
 void *copyString(void *oldString) {
   char *newString;
 
@@ -103,3 +216,4 @@ void *copyString(void *oldString) {
 void freeStringPtr(void *aString) {
   free((char *) aString);
 }
+

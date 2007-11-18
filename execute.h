@@ -182,6 +182,7 @@
 #define EXTERNALPROC 223
 #define UNIT 224
 #define EXTERNALPROCEDUREUSAGE 225
+#define VARIABLEDECLARATION 226
 
 int executeCommand(node *);
 
@@ -366,6 +367,7 @@ node *makeReadXml(node *);
 node *makeExecute(node *);
 node *makeExternalProc(char *, node *, chain *);
 node *makeUnit();
+node *makeVariableDeclaration(chain *stringlist);
 
 
 #endif /* ifdef EXECUTE_H*/
