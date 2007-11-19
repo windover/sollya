@@ -10,6 +10,7 @@
 #include "execute.h"
 #include "parser.h"
 #include "library.h"
+#include "help.h"
 #include "config.h"
 
 #define YYERROR_VERBOSE 1
@@ -1757,604 +1758,1161 @@ help:                   CONSTANTTOKEN
                           }                  					       
                       | POWTOKEN
                           {
+#ifdef HELP_POW_TEXT
+			    printf(HELP_POW_TEXT);
+#else
 			    printf("Exponentiation.\n");
+#endif
                           }                  					       
                       | SQRTTOKEN
                           {
+#ifdef HELP_SQRT_TEXT
+			    printf(HELP_SQRT_TEXT);
+#else
 			    printf("Square root.\n");
+#endif
                           }                  					       
                       | EXPTOKEN
                           {
+#ifdef HELP_EXP_TEXT
+			    printf(HELP_EXP_TEXT);
+#else
 			    printf("Exponential.\n");
+#endif
                           }                   					       
                       | LOGTOKEN
                           {
+#ifdef HELP_LOG_TEXT
+			    printf(HELP_LOG_TEXT);
+#else
 			    printf("Natural logarithm.\n");
+#endif
                           }                   					       
                       | LOG2TOKEN
                           {
+#ifdef HELP_LOG2_TEXT
+			    printf(HELP_LOG2_TEXT);
+#else
 			    printf("Logarithm in base 2.\n");
+#endif
                           }                  					       
                       | LOG10TOKEN
                           {
+#ifdef HELP_LOG10_TEXT
+			    printf(HELP_LOG10_TEXT);
+#else
 			    printf("Logarithm in base 10.\n");
+#endif
                           }                 					       
                       | SINTOKEN
                           {
+#ifdef HELP_SIN_TEXT
+			    printf(HELP_SIN_TEXT);
+#else
 			    printf("Sine.\n");
+#endif
                           }                   					       
                       | COSTOKEN
                           {
+#ifdef HELP_COS_TEXT
+			    printf(HELP_COS_TEXT);
+#else
 			    printf("Cosine.\n");
+#endif
                           }                   					       
                       | TANTOKEN
                           {
+#ifdef HELP_TAN_TEXT
+			    printf(HELP_TAN_TEXT);
+#else
 			    printf("Tangent.\n");
+#endif
                           }                   					       
                       | ASINTOKEN
                           {
+#ifdef HELP_ASIN_TEXT
+			    printf(HELP_ASIN_TEXT);
+#else
 			    printf("Arcsine.\n");
+#endif
                           }                  					       
                       | ACOSTOKEN
                           {
+#ifdef HELP_ACOS_TEXT
+			    printf(HELP_ACOS_TEXT);
+#else
 			    printf("Arcosine.\n");
+#endif
                           }                  					       
                       | ATANTOKEN
                           {
+#ifdef HELP_ATAN_TEXT
+			    printf(HELP_ATAN_TEXT);
+#else
 			    printf("Arctangent.\n");
+#endif
                           }                  					       
                       | SINHTOKEN
                           {
+#ifdef HELP_SINH_TEXT
+			    printf(HELP_SINH_TEXT);
+#else
 			    printf("Hyperbolic sine.\n");
+#endif
                           }                  					       
                       | COSHTOKEN
                           {
+#ifdef HELP_COSH_TEXT
+			    printf(HELP_COSH_TEXT);
+#else
 			    printf("Hyperbolic cosine.\n");
+#endif
                           }                  					       
                       | TANHTOKEN
                           {
+#ifdef HELP_TANH_TEXT
+			    printf(HELP_TANH_TEXT);
+#else
 			    printf("Hyperbolic tangent.\n");
+#endif
                           }                  					       
                       | ASINHTOKEN
                           {
+#ifdef HELP_ASINH_TEXT
+			    printf(HELP_ASINH_TEXT);
+#else
 			    printf("Area sine.\n");
+#endif
                           }                 					       
                       | ACOSHTOKEN
                           {
+#ifdef HELP_ACOSH_TEXT
+			    printf(HELP_ACOSH_TEXT);
+#else
 			    printf("Area cosine.\n");
+#endif
                           }                 					       
                       | ATANHTOKEN
                           {
+#ifdef HELP_ATANH_TEXT
+			    printf(HELP_ATANH_TEXT);
+#else
+
 			    printf("Area tangent.\n");
-                          }                 					       
+#endif
+                          }                 					                        					       
                       | ABSTOKEN
                           {
+#ifdef HELP_ABS_TEXT
+			    printf(HELP_ABS_TEXT);
+#else
 			    printf("Absolute value.\n");
-                          }                   					       
+#endif
+                          }                 					                          					       
                       | ERFTOKEN
                           {
+#ifdef HELP_ERF_TEXT
+			    printf(HELP_ERF_TEXT);
+#else
 			    printf("Error function.\n");
-                          }                   					       
+#endif
+                          }                 					                          					       
                       | ERFCTOKEN
                           {
+#ifdef HELP_ERFC_TEXT
+			    printf(HELP_ERFC_TEXT);
+#else
 			    printf("Complementary error function.\n");
-                          }                  					       
+#endif
+                          }                 					                         					       
                       | LOG1PTOKEN
                           {
+#ifdef HELP_LOG1P_TEXT
+			    printf(HELP_LOG1P_TEXT);
+#else
 			    printf("Natural logarithm of 1 plus argument.\n");
-                          }                 					       
+#endif
+                          }                 					                        					       
                       | EXPM1TOKEN
                           {
+#ifdef HELP_EXPM1_TEXT
+			    printf(HELP_EXPM1_TEXT);
+#else
 			    printf("Exponential of argument minus 1.\n");
-                          }                 					       
+#endif
+                          }                 					                        					       
                       | DOUBLETOKEN
                           {
+#ifdef HELP_DOUBLE_TEXT
+			    printf(HELP_DOUBLE_TEXT);
+#else
 			    printf("Double precision rounding operator.\n");
-                          }                					       
+#endif
+                          }                 					                       					       
                       | DOUBLEDOUBLETOKEN
                           {
+#ifdef HELP_DOUBLEDOUBLE_TEXT
+			    printf(HELP_DOUBLEDOUBLE_TEXT);
+#else
 			    printf("Double-double precision rounding operator.\n");
-                          }      						       
+#endif
+                          }                 					             						       
                       | TRIPLEDOUBLETOKEN
                           {
+#ifdef HELP_TRIPLEDOUBLE_TEXT
+			    printf(HELP_TRIPLEDOUBLE_TEXT);
+#else
 			    printf("Triple-double precision rounding operator.\n");
-                          }          					       
+#endif
+                          }                 					                 					       
                       | DOUBLEEXTENDEDTOKEN
                           {
+#ifdef HELP_DOUBLEEXTENDED_TEXT
+			    printf(HELP_DOUBLEEXTENDED_TEXT);
+#else
 			    printf("Double-extended precision rounding operator.\n");
-                          }        					       
+#endif
+                          }                 					               					       
                       | CEILTOKEN
                           {
+#ifdef HELP_CEIL_TEXT
+			    printf(HELP_CEIL_TEXT);
+#else
 			    printf("Ceiling.\n");
-                          }                  					       
+#endif
+                          }                 					                         					       
                       | FLOORTOKEN
                           {
+#ifdef HELP_FLOOR_TEXT
+			    printf(HELP_FLOOR_TEXT);
+#else
 			    printf("Floor.\n");
-                          }                 			
+#endif
+                          }                 					                        			
                       | HEADTOKEN
                           {
+#ifdef HELP_HEAD_TEXT
+			    printf(HELP_HEAD_TEXT);
+#else
 			    printf("Head of a list.\n");
-                          }   
+#endif
+                          }                 					       
                       | ROUNDCORRECTLYTOKEN
                           {
+#ifdef HELP_ROUNDCORRECTLY_TEXT
+			    printf(HELP_ROUNDCORRECTLY_TEXT);
+#else
 			    printf("Round a bounding to the nearest floating-point value such that correct rounding is possible.\n");
-                          }   
+#endif
+                          }                 					       
                       | READFILETOKEN
                           {
+#ifdef HELP_READFILE_TEXT
+			    printf(HELP_READFILE_TEXT);
+#else
 			    printf("Reads a file into a string.\n");
-                          }    
+#endif
+                          }                 					           
                       | REVERTTOKEN
                           {
+#ifdef HELP_REVERT_TEXT
+			    printf(HELP_REVERT_TEXT);
+#else
 			    printf("Reverts a list that is not finally elliptic.\n");
-                          }    
+#endif
+                          }                 					       
                       | SORTTOKEN
                           {
+#ifdef HELP_SORT_TEXT
+			    printf(HELP_SORT_TEXT);
+#else
 			    printf("Sorts a list of constants in ascending order.\n");
-                          }    
+#endif
+                          }                 					       
                       | TAILTOKEN
                           {
+#ifdef HELP_TAIL_TEXT
+			    printf(HELP_TAIL_TEXT);
+#else
 			    printf("Tail of a list.\n");
-                          }    		       
+#endif
+                          }                 					       
                       | PRECTOKEN
                           {
+#ifdef HELP_PREC_TEXT
+			    printf(HELP_PREC_TEXT);
+#else
 			    printf("Global environment variable precision.\n");
-                          }                  					       
+#endif
+                          }                 					       
                       | POINTSTOKEN
                           {
+#ifdef HELP_POINTS_TEXT
+			    printf(HELP_POINTS_TEXT);
+#else
 			    printf("Global environment variable number of points.\n");
-                          }                					       
+#endif
+                          }                 					                       					       
                       | DIAMTOKEN
                           {
+#ifdef HELP_DIAM_TEXT
+			    printf(HELP_DIAM_TEXT);
+#else
 			    printf("Global environment variable diameter.\n");
-                          }                  					       
+#endif
+                          }                 					                         					       
                       | DISPLAYTOKEN
                           {
+#ifdef HELP_DISPLAY_TEXT
+			    printf(HELP_DISPLAY_TEXT);
+#else
 			    printf("Global environment variable display mode.\n");
-                          }                					       
+#endif
+                          }                 					                       					       
                       | VERBOSITYTOKEN
                           {
+#ifdef HELP_VERBOSITY_TEXT
+			    printf(HELP_VERBOSITY_TEXT);
+#else
 			    printf("Global environment variable verbosity.\n");
-                          }             					       
+#endif
+                          }                 					                    					       
                       | CANONICALTOKEN
                           {
+#ifdef HELP_CANONICAL_TEXT
+			    printf(HELP_CANONICAL_TEXT);
+#else
 			    printf("Global environment variable canonical output.\n");
-                          }             					       
+#endif
+                          }                 					                    					       
                       | AUTOSIMPLIFYTOKEN
                           {
+#ifdef HELP_AUTOSIMPLIFY_TEXT
+			    printf(HELP_AUTOSIMPLIFY_TEXT);
+#else
 			    printf("Global environment variable automatic simplification.\n");
-                          }          					       
+#endif
+                          }                 					                 					       
                       | TAYLORRECURSIONSTOKEN
                           {
+#ifdef HELP_TAYLORRECURSIONS_TEXT
+			    printf(HELP_TAYLORRECURSIONS_TEXT);
+#else
 			    printf("Global environement variable recursions of Taylor evaluation.\n");
-                          }      					       
+#endif
+                          }                 					             					       
                       | TIMINGTOKEN
                           {
+#ifdef HELP_TIMING_TEXT
+			    printf(HELP_TIMING_TEXT);
+#else
 			    printf("Global environement variable timing of computations.\n");
-                          }                					       
+#endif
+                          }                 					                       					       
                       | FULLPARENTHESESTOKEN
                           {
+#ifdef HELP_FULLPARENTHESES_TEXT
+			    printf(HELP_FULLPARENTHESES_TEXT);
+#else
 			    printf("Global environement variable fully parenthized mode.\n");
-                          }       					       
+#endif
+                          }                 					              					       
                       | MIDPOINTMODETOKEN
                           {
+#ifdef HELP_MIDPOINTMODE_TEXT
+			    printf(HELP_MIDPOINTMODE_TEXT);
+#else
 			    printf("Global environement variable midpoint mode.\n");
-                          }          					       
+#endif
+                          }                 					                 					       
                       | HOPITALRECURSIONSTOKEN
                           {
+#ifdef HELP_HOPITALRECURSIONS_TEXT
+			    printf(HELP_HOPITALRECURSIONS_TEXT);
+#else
 			    printf("Global environement variable recursions of Hopital evaluation.\n");
-                          }      					       
+#endif
+                          }                 					             					       
                       | ONTOKEN
                           {
+#ifdef HELP_ON_TEXT
+			    printf(HELP_ON_TEXT);
+#else
 			    printf("Something is switched on.\n");
-                          }                    					       
+#endif
+                          }                 					                           					       
                       | OFFTOKEN
                           {
+#ifdef HELP_OFF_TEXT
+			    printf(HELP_OFF_TEXT);
+#else
 			    printf("Something is switched off.\n");
-                          }                   					       
+#endif
+                          }                 					                          					       
                       | DYADICTOKEN
                           {
+#ifdef HELP_DYADIC_TEXT
+			    printf(HELP_DYADIC_TEXT);
+#else
 			    printf("Display mode is dyadic output.\n");
-                          }      						       
+#endif
+                          }                 					             						       
                       | POWERSTOKEN
                           {
+#ifdef HELP_POWERS_TEXT
+			    printf(HELP_POWERS_TEXT);
+#else
 			    printf("Display mode is dyadic output with powers.\n");
-                          }                					       
+#endif
+                          }                 					                       					       
                       | BINARYTOKEN
                           {
+#ifdef HELP_BINARY_TEXT
+			    printf(HELP_BINARY_TEXT);
+#else
 			    printf("Display mode is binary.\n");
-                          }                					       
+#endif
+                          }                 					                       					       
                       | HEXADECIMALTOKEN
                           {
+#ifdef HELP_HEXADECIMAL_TEXT
+			    printf(HELP_HEXADECIMAL_TEXT);
+#else
 			    printf("Display mode is hexadecimal.\n");
-                          }                					       
+#endif
+                          }                 					                       					       
                       | FILETOKEN
                           {
+#ifdef HELP_FILE_TEXT
+			    printf(HELP_FILE_TEXT);
+#else
 			    printf("A file will be specified.\n");
-                          }                  					       
+#endif
+                          }                 					                         					       
                       | POSTSCRIPTTOKEN
                           {
+#ifdef HELP_POSTSCRIPT_TEXT
+			    printf(HELP_POSTSCRIPT_TEXT);
+#else
 			    printf("A postscript file will be specified.\n");
-                          }            					       
+#endif
+                          }                 					                   					       
                       | POSTSCRIPTFILETOKEN
                           {
+#ifdef HELP_POSTSCRIPTFILE_TEXT
+			    printf(HELP_POSTSCRIPTFILE_TEXT);
+#else
 			    printf("A postscript file and a file will be specified.\n");
-                          }        					       
+#endif
+                          }                 					               					       
                       | PERTURBTOKEN
                           {
+#ifdef HELP_PERTURB_TEXT
+			    printf(HELP_PERTURB_TEXT);
+#else
 			    printf("Perturbation is demanded.\n");
-                          }               					       
+#endif
+                          }                 					                      					       
                       | MINUSWORDTOKEN
                           {
+#ifdef HELP_RD_TEXT
+			    printf(HELP_RD_TEXT);
+#else
 			    printf("Round towards minus infinity.\n");
-                          }             					       
+#endif
+                          }                 					                    					       
                       | PLUSWORDTOKEN
                           {
+#ifdef HELP_RU_TEXT
+			    printf(HELP_RU_TEXT);
+#else
 			    printf("Round towards plus infinity.\n");
-                          }              					       
+#endif
+                          }                 					                     					       
                       | ZEROWORDTOKEN
                           {
+#ifdef HELP_RZ_TEXT
+			    printf(HELP_RZ_TEXT);
+#else
 			    printf("Round towards zero.\n");
-                          }              					       
+#endif
+                          }                 					                     					       
                       | NEARESTTOKEN
                           {
+#ifdef HELP_RN_TEXT
+			    printf(HELP_RN_TEXT);
+#else
 			    printf("Round to nearest.\n");
-                          }               					       
+#endif
+                          }                 					                      					       
                       | HONORCOEFFPRECTOKEN
                           {
+#ifdef HELP_HONORCOEFFPREC_TEXT
+			    printf(HELP_HONORCOEFFPREC_TEXT);
+#else
 			    printf("Honorate the precision of the coefficients.\n");
-                          }       					       
+#endif
+                          }                 					              					       
                       | TRUETOKEN
                           {
+#ifdef HELP_TRUE_TEXT
+			    printf(HELP_TRUE_TEXT);
+#else
 			    printf("Boolean constant true.\n");
-                          }      							       
+#endif
+                          }                 					             							       
                       | FALSETOKEN
                           {
+#ifdef HELP_FALSE_TEXT
+			    printf(HELP_FALSE_TEXT);
+#else
 			    printf("Boolean constant false.\n");
-                          }      							       
+#endif
+                          }                 					             							       
                       | DEFAULTTOKEN
                           {
+#ifdef HELP_DEFAULT_TEXT
+			    printf(HELP_DEFAULT_TEXT);
+#else
 			    printf("Default value.\n");
-                          }    											       
+#endif
+                          }                        											       
                       | ABSOLUTETOKEN
                           {
+#ifdef HELP_ABSOLUTE_TEXT
+			    printf(HELP_ABSOLUTE_TEXT);
+#else
 			    printf("Consider an absolute error.\n");
-                          }    
+#endif
+                          }                 					       
                       | DECIMALTOKEN
                           {
+#ifdef HELP_DECIMAL_TEXT
+			    printf(HELP_DECIMAL_TEXT);
+#else
 			    printf("Display mode is decimal.\n");
-                          }    
+#endif
+                          }                 					       
                       | RELATIVETOKEN
                           {
+#ifdef HELP_RELATIVE_TEXT
+			    printf(HELP_RELATIVE_TEXT);
+#else
 			    printf("Consider a relative error.\n");
-                          }    
+#endif
+                          }                 					       
                       | ERRORTOKEN
                           {
+#ifdef HELP_ERROR_TEXT
+			    printf(HELP_ERROR_TEXT);
+#else
 			    printf("Type error meta-value.\n");
-                          }    			
+#endif
+                          }                 					       
                       | QUITTOKEN
                           {
+#ifdef HELP_QUIT_TEXT
+			    printf(HELP_QUIT_TEXT);
+#else
 			    printf("Exit from the tool.\n");
-                          }                  					       
+#endif
+                          }                 					                         					       
                       | FALSEQUITTOKEN
                           {
+#ifdef HELP_QUIT_TEXT
+			    printf(HELP_QUIT_TEXT);
+#else
 			    printf("Exit from the tool - help is called inside a read macro.\n");
-                          }      						       
+#endif
+                          }                 					             						       
                       | RESTARTTOKEN
                           {
+#ifdef HELP_RESTART_TEXT
+			    printf(HELP_RESTART_TEXT);
+#else
 			    printf("Restart the tool.\n");
-                          }               					       
+#endif
+                          }                 					                      					       
                       | LIBRARYTOKEN
                           {
+#ifdef HELP_LIBRARY_TEXT
+			    printf(HELP_LIBRARY_TEXT);
+#else
 			    printf("Library binding dereferencer.\n");
-                          }               					       
+#endif
+                          }                 					                      					       
                       | DIFFTOKEN
                           {
+#ifdef HELP_DIFF_TEXT
+			    printf(HELP_DIFF_TEXT);
+#else
 			    printf("Differentiation: diff(func).\n");
-                          }                  					       
+#endif
+                          }                 					                         					       
                       | SIMPLIFYTOKEN
                           {
+#ifdef HELP_SIMPLIFY_TEXT
+			    printf(HELP_SIMPLIFY_TEXT);
+#else
 			    printf("Simplify: simplify(func).\n");
-                          }      						       
+#endif
+                          }                 					             						       
                       | REMEZTOKEN
                           {
+#ifdef HELP_REMEZ_TEXT
+			    printf(HELP_REMEZ_TEXT);
+#else
 			    printf("Remez: remez(func,degree|monoms,range[,weight[,quality]]).\n");
-                          }                 					       
+#endif
+                          }                 					                        					       
                       | HORNERTOKEN
                           {
+#ifdef HELP_HORNER_TEXT
+			    printf(HELP_HORNER_TEXT);
+#else
 			    printf("Horner: horner(func)\n");
-                          }                					       
+#endif
+                          }                 					                       					       
                       | EXPANDTOKEN
                           {
+#ifdef HELP_EXPAND_TEXT
+			    printf(HELP_EXPAND_TEXT);
+#else
 			    printf("Expand: expand(func).\n");
-                          }                					       
+#endif
+                          }                 					                       					       
                       | SIMPLIFYSAFETOKEN
                           {
+#ifdef HELP_SIMPLIFYSAFE_TEXT
+			    printf(HELP_SIMPLIFYSAFE_TEXT);
+#else
 			    printf("Safe simplification: simplifysafe(func).\n");
-                          }      						       
+#endif
+                          }                 					             						       
                       | TAYLORTOKEN
                           {
+#ifdef HELP_TAYLOR_TEXT
+			    printf(HELP_TAYLOR_TEXT);
+#else
 			    printf("Taylor expansion: taylor(func,degree,point).\n");
-                          }               					       
+#endif
+                          }                 					                      					       
                       | DEGREETOKEN
                           {
+#ifdef HELP_DEGREE_TEXT
+			    printf(HELP_DEGREE_TEXT);
+#else
 			    printf("Degree of a polynomial: degree(func).\n");
-                          }                					       
+#endif
+                          }                 					                       					       
                       | NUMERATORTOKEN
                           {
+#ifdef HELP_NUMERATOR_TEXT
+			    printf(HELP_NUMERATOR_TEXT);
+#else
 			    printf("Numerator of an expression: numerator(func).\n");
-                          }             					       
+#endif
+                          }                 					                    					       
                       | DENOMINATORTOKEN
                           {
+#ifdef HELP_DENOMINATOR_TEXT
+			    printf(HELP_DENOMINATOR_TEXT);
+#else
 			    printf("Denominator of an expression: denominator(func).\n");
-                          }           					       
+#endif
+                          }                 					                  					       
                       | SUBSTITUTETOKEN
                           {
+#ifdef HELP_SUBSTITUTE_TEXT
+			    printf(HELP_SUBSTITUTE_TEXT);
+#else
 			    printf("Substitute func2 for free variable in func: substitute(func,func2).\n");
-                          }            					       
+#endif
+                          }                 					                   					       
                       | COEFFTOKEN
                           {
+#ifdef HELP_COEFF_TEXT
+			    printf(HELP_COEFF_TEXT);
+#else
 			    printf("i-th coefficient of a polynomial: coeff(func,degree).\n");
-                          }                 					       
+#endif
+                          }                 					                        					       
                       | SUBPOLYTOKEN
                           {
+#ifdef HELP_SUBPOLY_TEXT
+			    printf(HELP_SUBPOLY_TEXT);
+#else
 			    printf("Subpolynomial consisting in monomials: subpoly(func,list of degrees).\n");
-                          }               					       
+#endif
+                          }                 					                      					       
                       | ROUNDCOEFFICIENTSTOKEN
                           {
+#ifdef HELP_ROUNDCOEFFICIENTS_TEXT
+			    printf(HELP_ROUNDCOEFFICIENTS_TEXT);
+#else
 			    printf("Round coefficients of a polynomial to format: roundcoefficients(func,list of formats).\n");
-                          }       					       
+#endif
+                          }                 					              					       
                       | RATIONALAPPROXTOKEN
                           {
+#ifdef HELP_RATIONALAPPROX_TEXT
+			    printf(HELP_RATIONALAPPROX_TEXT);
+#else
 			    printf("Rational approximation: rationalapprox(constant).\n");
-                          }        					       
+#endif
+                          }                 					               					       
                       | ACCURATEINFNORMTOKEN
                           {
+#ifdef HELP_ACCURATEINFNORM_TEXT
+			    printf(HELP_ACCURATEINFNORM_TEXT);
+#else
 			    printf("Faithful rounded infinite norm: accurateinfnorm(func,bits,range,domains to exclude).\n");
-                          }        					       
+#endif
+                          }                 					               					       
                       | ROUNDTOFORMATTOKEN
                           {
+#ifdef HELP_ROUND_TEXT
+			    printf(HELP_ROUND_TEXT);
+#else
 			    printf("Round to a given format: round(constant,precision,rounding mode).\n");
-                          }         					       
+#endif
+                          }                 					                					       
                       | EVALUATETOKEN
                           {
+#ifdef HELP_EVALUATE_TEXT
+			    printf(HELP_EVALUATE_TEXT);
+#else
 			    printf("Evaluate a function in a point or interval: round(func,constant|range).\n");
-                          }              					       
+#endif
+                          }                 					                     					       
                       | LENGTHTOKEN
                           {
+#ifdef HELP_LENGTH_TEXT
+			    printf(HELP_LENGTH_TEXT);
+#else
 			    printf("Length of a list: length(list).\n");
-                          }    
+#endif
+                          }                 					           
                       | PARSETOKEN
                           {
+#ifdef HELP_PARSE_TEXT
+			    printf(HELP_PARSE_TEXT);
+#else
 			    printf("Parse a string to function: parse(string).\n");
-                          }                 					       
+#endif
+                          }                 					                        					       
                       | PRINTTOKEN
                           {
+#ifdef HELP_PRINT_TEXT
+			    printf(HELP_PRINT_TEXT);
+#else
 			    printf("Print something: print(thing1, thing2, ...).\n");
-                          }                 					       
+#endif
+                          }                 					                        					       
                       | PRINTXMLTOKEN
                           {
+#ifdef HELP_PRINTXML_TEXT
+			    printf(HELP_PRINTXML_TEXT);
+#else
 			    printf("Print a function in XML: printxml(func).\n");
-                          }                 					       
+#endif
+                          }                 					                        					       
                       | READXMLTOKEN
                           {
+#ifdef HELP_READXML_TEXT
+			    printf(HELP_READXML_TEXT);
+#else
 			    printf("Reads a function in XML: readxml(filename).\n");
-                          }                 					       
+#endif
+                          }                 					                        					       
                       | PLOTTOKEN
                           {
+#ifdef HELP_PLOT_TEXT
+			    printf(HELP_PLOT_TEXT);
+#else
 			    printf("Plot (a) function(s) in a range: plot(func,func2,...,range).\n");
 			    printf("There are further options.\n");
-                          }                  					       
+#endif
+                          }                 					                         					       
                       | PRINTHEXATOKEN
                           {
+#ifdef HELP_PRINTHEXA_TEXT
+			    printf(HELP_PRINTHEXA_TEXT);
+#else
 			    printf("Print a constant in hexadecimal: printhexa(constant).\n");
-                          }      
+#endif
+                          }                 					       
                       | PRINTFLOATTOKEN
                           {
+#ifdef HELP_PRINTFLOAT_TEXT
+			    printf(HELP_PRINTFLOAT_TEXT);
+#else
 			    printf("Print a constant in hexadecimal simple precision: printfloat(constant).\n");
-                          }             					       
+#endif
+                          }                 					                    					       
                       | PRINTBINARYTOKEN
                           {
+#ifdef HELP_PRINTBINARY_TEXT
+			    printf(HELP_PRINTBINARY_TEXT);
+#else
 			    printf("Print a constant in binary: printbinary(constant).\n");
-                          }           					       
+#endif
+                          }                 					                  					       
                       | PRINTEXPANSIONTOKEN
                           {
+#ifdef HELP_PRINTEXPANSION_TEXT
+			    printf(HELP_PRINTEXPANSION_TEXT);
+#else
 			    printf("Print a polynomial as an expansion of double precision numbers: printexpansion(func).\n");
-                          }        					       
+#endif
+                          }                 					               					       
                       | BASHEXECUTETOKEN
                           {
+#ifdef HELP_BASHEXECUTE_TEXT
+			    printf(HELP_BASHEXECUTE_TEXT);
+#else
 			    printf("Execute a command in a shell: bashexecute(string).\n");
-                          }           					       
+#endif
+                          }                 					                  					       
                       | EXTERNALPLOTTOKEN
                           {
+#ifdef HELP_EXTERNALPLOT_TEXT
+			    printf(HELP_EXTERNALPLOT_TEXT);
+#else
 			    printf("Here should be some help text.\n");
-                          }          					       
+#endif
+                          }                 					                 					       
                       | WRITETOKEN
                           {
+#ifdef HELP_WRITE_TEXT
+			    printf(HELP_WRITE_TEXT);
+#else
 			    printf("Write something without adding spaces and newlines: write(thing1, thing2, ...).\n");
-                          }                 					       
+#endif
+                          }                 					                        					       
                       | ASCIIPLOTTOKEN
                           {
+#ifdef HELP_ASCIIPLOT_TEXT
+			    printf(HELP_ASCIIPLOT_TEXT);
+#else
 			    printf("Plot a function in a range using an ASCII terminal: asciiplot(func,range).\n");
-                          }        
+#endif
+                          }                 					               
                       | RENAMETOKEN
                           {
+#ifdef HELP_RENAME_TEXT
+			    printf(HELP_RENAME_TEXT);
+#else
 			    printf("Rename free variable string1 to string2: rename(string1, string2).\n");
-                          }        	       
+#endif
+                          }                 					       
                       | INFNORMTOKEN
                           {
+#ifdef HELP_INFNORM_TEXT
+			    printf(HELP_INFNORM_TEXT);
+#else
 			    printf("Certified infinite norm: infnorm(func,range[,prooffile[,list of funcs]]).\n");
-                          }               					       
+#endif
+                          }                 					                      					       
                       | FINDZEROSTOKEN
                           {
+#ifdef HELP_FINDZEROS_TEXT
+			    printf(HELP_FINDZEROS_TEXT);
+#else
 			    printf("Certified bounding of zeros: findzeros(func,range).\n");
-                          }             					       
+#endif
+                          }                 					                    					       
                       | FPFINDZEROSTOKEN
                           {
+#ifdef HELP_FPFINDZEROS_TEXT
+			    printf(HELP_FPFINDZEROS_TEXT);
+#else
 			    printf("Approximate zeros of a function: fpfindzeros(func,range).\n");
-                          }           					       
+#endif
+                          }                 					                  					       
                       | DIRTYINFNORMTOKEN
                           {
+#ifdef HELP_DIRTYINFNORM_TEXT
+			    printf(HELP_DIRTYINFNORM_TEXT);
+#else
 			    printf("Floating-point infinite norm: dirtyinfnorm(func,range).\n");
-                          }          					       
+#endif
+                          }                 					                 					       
                       | INTEGRALTOKEN
                           {
+#ifdef HELP_INTEGRAL_TEXT
+			    printf(HELP_INTEGRAL_TEXT);
+#else
 			    printf("Certified integral: integral(func,range).\n");
-                          }              					       
+#endif
+                          }                 					                     					       
                       | DIRTYINTEGRALTOKEN
                           {
+#ifdef HELP_DIRTYINTEGRAL_TEXT
+			    printf(HELP_DIRTYINTEGRAL_TEXT);
+#else
 			    printf("Floating-point integral: dirtyintegral(func,range).\n");
-                          }      						       
+#endif
+                          }                 					             						       
                       | WORSTCASETOKEN
                           {
+#ifdef HELP_WORSTCASE_TEXT
+			    printf(HELP_WORSTCASE_TEXT);
+#else
 			    printf("Print all worst-cases under a certain bound: worstcase(func,constant,range,constant,constant[,file]).\n");
-                          }             					       
+#endif
+                          }                 					                    					       
                       | IMPLEMENTPOLYTOKEN
                           {
+#ifdef HELP_IMPLEMENTPOLY_TEXT
+			    printf(HELP_IMPLEMENTPOLY_TEXT);
+#else
 			    printf("Implement a polynomial in C: implementpoly(func,range,constant,format,string,string2[,honorcoeffprec[,string3]]).\n");
 			    printf("Implements func in range with error constant with entering format named in function\nstring writing to file string2 honoring the precision of the coefficients or not with a proof in file string3.\n");
-                          }      						       
+#endif
+                          }                 					             						       
                       | CHECKINFNORMTOKEN
                           {
+#ifdef HELP_CHECKINFNORM_TEXT
+			    printf(HELP_CHECKINFNORM_TEXT);
+#else
 			    printf("Checks whether an infinite norm is bounded: checkinfnorm(func,range,constant).\n");
-                          }          					       
+#endif
+                          }                 					                 					       
                       | ZERODENOMINATORSTOKEN
                           {
+#ifdef HELP_ZERODENOMINATORS_TEXT
+			    printf(HELP_ZERODENOMINATORS_TEXT);
+#else
 			    printf("Searches floating-point approximations to zeros of denominators: zerodenominators(func,range).\n");
-                          }      					       
+#endif
+                          }                 					             					       
                       | ISEVALUABLETOKEN
                           {
+#ifdef HELP_ISEVALUABLE_TEXT
+			    printf(HELP_ISEVALUABLE_TEXT);
+#else
 			    printf("Tests if func is evaluable on range: isevaluable(func,range).\n");
-                          }           					       
+#endif
+                          }                 					                  					       
                       | SEARCHGALTOKEN
                           {
+#ifdef HELP_SEARCHGAL_TEXT
+			    printf(HELP_SEARCHGAL_TEXT);
+#else
 			    printf("Searches Gal values for func (or list of func): searchgal(func|list of func, constant, integer, integer, format|list of formats, constant|list of constants).\n");
-                          }             					       
+#endif
+                          }                 					                    					       
                       | GUESSDEGREETOKEN
                           {
+#ifdef HELP_GUESSDEGREE_TEXT
+			    printf(HELP_GUESSDEGREE_TEXT);
+#else
 			    printf("Guesses the degree needed for approximating func: guessdegree(func,range,constant[,weight]).\n");
-                          }           					       
+#endif
+                          }                 					                  					       
                       | DIRTYFINDZEROSTOKEN
                           {
+#ifdef HELP_DIRTYFINDZEROS_TEXT
+			    printf(HELP_DIRTYFINDZEROS_TEXT);
+#else
 			    printf("Finds zeros of a function dirtily: dirtyfindzeros(func,range).\n");
-                          }        					       
+#endif
+                          }                 					               					       
                       | IFTOKEN
                           {
 			    printf("If construct: if condition then command or if condition then command else command.\n");
-                          }      							       
+                          }                 					             							       
                       | THENTOKEN
                           {
 			    printf("If construct: if condition then command or if condition then command else command.\n");
-                          }      							       
+                          }                 					             							       
                       | ELSETOKEN
                           {
 			    printf("If construct: if condition then command else command\n");
-                          }      							       
+                          }                 					             							       
                       | FORTOKEN
                           {
 			    printf("For construct: for i from const to const2 [by const3] do command\nor for i in list do command.\n");
-                          }      							       
+                          }                 					             							       
                       | INTOKEN
                           {
 			    printf("For construct: for i in list do command.\n");
-                          }      							       
+                          }                 					             							       
                       | FROMTOKEN
                           {
 			    printf("For construct: for i from const to const2 [by const3] do command.\n");
-                          }      							       
+                          }                 					             							       
                       | TOTOKEN
                           {
 			    printf("For construct: for i from const to const2 [by const3] do command.\n");
-                          }      							       
+                          }                 					             							       
                       | BYTOKEN
                           {
 			    printf("For construct: for i from const to const2 by const3 do command.\n");
-                          }      							       
+                          }                 					             							       
                       | DOTOKEN
                           {
 			    printf("For construct: for i from const to const2 [by const3] do command.\n");
 			    printf("While construct: while condition do command.\n");
-                          }      							       
+                          }                 					             							       
                       | BEGINTOKEN
                           {
 			    printf("Begin-end construct: begin command; command; ... end.\n");
-                          }      							       
+                          }                 					             							       
                       | ENDTOKEN
                           {
 			    printf("Begin-end construct: begin command; command; ... end.\n");
-                          }      							       
+                          }                 					             							       
                       | WHILETOKEN
                           {
 			    printf("While construct: while condition do command.\n");
-                          }    
+                          }                 					       
                       | INFTOKEN
                           {
+#ifdef HELP_INF_TEXT
+			    printf(HELP_INF_TEXT);
+#else
 			    printf("Dereferencing the infimum of a range: inf(range).\n");
-                          }    
+#endif
+                          }                 					       
                       | MIDTOKEN
                           {
+#ifdef HELP_MID_TEXT
+			    printf(HELP_MID_TEXT);
+#else
 			    printf("Dereferencing the midpoint of a range: mid(range).\n");
-                          }    
+#endif
+                          }                 					       
                       | SUPTOKEN
                           {
+#ifdef HELP_SUP_TEXT
+			    printf(HELP_SUP_TEXT);
+#else
 			    printf("Dereferencing the supremum of a range: sup(range).\n");
-                          }    
+#endif
+                          }                 					       
                       | EXPONENTTOKEN
                           {
+#ifdef HELP_EXPONENT_TEXT
+			    printf(HELP_EXPONENT_TEXT);
+#else
 			    printf("exponent(constant): returns an integer such that constant scaled by the power of 2\nof this integer is an odd or zero integer.\n");
-                          }    
+#endif
+                          }                 					       
                       | MANTISSATOKEN
                           {
+#ifdef HELP_MANTISSA_TEXT
+			    printf(HELP_MANTISSA_TEXT);
+#else
 			    printf("mantissa(constant): returns an odd or zero integer equal to constant scaled by an integer power of 2.\n");
-                          }    
+#endif
+                          }                 					       
                       | PRECISIONTOKEN
                           {
+#ifdef HELP_PRECISION_TEXT
+			    printf(HELP_PRECISION_TEXT);
+#else
 			    printf("precision(constant): returns the least number of bits constant can be written on.\n");
-                          }    
+#endif
+                          }                 					       
                       | EXECUTETOKEN
                           {
+#ifdef HELP_EXECUTE_TEXT
+			    printf(HELP_EXECUTE_TEXT);
+#else
 			    printf("execute(string): executes an %s script contained in a file named string.\n",PACKAGE_NAME);
-                          }    
+#endif
+                          }                 					       
                       | ISBOUNDTOKEN
                           {
+#ifdef HELP_ISBOUND_TEXT
+			    printf(HELP_ISBOUND_TEXT);
+#else
 			    printf("isbound(identifier): returns a boolean indicating if identifier is bound.\n");
-                          }   
+#endif
+                          }                 					       
                       | VERSIONTOKEN 
                           {
 			    printf("Prints the version of the software.\n");
-                          }    
+                          }                 					       
                       | EXTERNALPROCTOKEN                          {
+#ifdef HELP_EXTERNALPROC_TEXT
+			    printf(HELP_EXTERNALPROC_TEXT);
+#else
 			    printf("externalplot(identifier, file, argumentypes -> resulttype): binds identifier to an external procedure with signature argumenttypes -> resulttype in file.\n");
-                          }    
+#endif
+                          }                 					           
                       | VOIDTOKEN                          {
+#ifdef HELP_VOID_TEXT
+			    printf(HELP_VOID_TEXT);
+#else
 			    printf("Represents the void type for externalproc.\n");
-                          }    
+#endif
+                          }                 					       
                       | CONSTANTTYPETOKEN                          {
+#ifdef HELP_CONSTANT_TEXT
+			    printf(HELP_CONSTANT_TEXT);
+#else
 			    printf("Represents the constant type for externalproc.\n");
-                          }    
+#endif
+                          }                 					       
                       | FUNCTIONTOKEN                          {
+#ifdef HELP_FUNCTION_TEXT
+			    printf(HELP_FUNCTION_TEXT);
+#else
 			    printf("Represents the function type for externalproc.\n");
-                          }    
+#endif
+                          }                 					       
                       | RANGETOKEN                          {
+#ifdef HELP_RANGE_TEXT
+			    printf(HELP_RANGE_TEXT);
+#else
 			    printf("Represents the range type for externalproc.\n");
-                          }    
+#endif
+                          }                 					       
                       | INTEGERTOKEN                          {
+#ifdef HELP_INTEGER_TEXT
+			    printf(HELP_INTEGER_TEXT);
+#else
 			    printf("Represents the integer type for externalproc.\n");
-                          }    
+#endif
+                          }                 					       
                       | STRINGTYPETOKEN                          {
+#ifdef HELP_STRING_TEXT
+			    printf(HELP_STRING_TEXT);
+#else
 			    printf("Represents the string type for externalproc.\n");
-                          }    
+#endif
+                          }                 					       
                       | BOOLEANTOKEN                          {
+#ifdef HELP_BOOLEAN_TEXT
+			    printf(HELP_BOOLEAN_TEXT);
+#else
 			    printf("Represents the boolean type for externalproc.\n");
-                          }    
+#endif
+                          }                 					       
                       | LISTTOKEN                          {
+#ifdef HELP_LISTOF_TEXT
+			    printf(HELP_LISTOF_TEXT);
+#else
 			    printf("Represents the list type for externalproc.\n");
-                          }    
+#endif
+                          }                 					       
                       | OFTOKEN                          {
+#ifdef HELP_LISTOF_TEXT
+			    printf(HELP_LISTOF_TEXT);
+#else
 			    printf("Used in list of type for externalproc.\n");
-                          }    
+#endif
+                          }                 					       
                       | VARTOKEN                          {
+#ifdef HELP_VAR_TEXT
+			    printf(HELP_VAR_TEXT);
+#else
 			    printf("Declares a local variable.\n");
-                          }    
+#endif
+                          }                 					       
                       | HELPTOKEN
                           {
 			    printf("Possible keywords in %s are:\n",PACKAGE_NAME);

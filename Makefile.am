@@ -19,6 +19,7 @@ parser.y \
 internlexer.l \
 lexer.l \
 minilexer.l \
+help.h \
 assignment.c \
 assignment.h \
 chain.c \
@@ -72,6 +73,7 @@ parser.y \
 internlexer.l \
 lexer.l \
 minilexer.l \
+help.h \
 assignment.c \
 assignment.h \
 chain.c \
