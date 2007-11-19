@@ -17,7 +17,8 @@ The $COMMAND argument is implicit when giving not argument to an external
 procedure when applied. It can be explicited nevertheless.  For
 example, suppose that foo is an external procedure with a void
 argument. Then foo() and foo(void) are correct calls to foo.
-§§ §§§
+
+#DESCRIPTION
 $COMMAND is used also as a type identifier for
 $EXTERNALPROC. Typically, an external procedure taking $VOID as an
 argument or returning $COMMAND is bound with a signature $COMMAND ->

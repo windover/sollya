@@ -1,5 +1,5 @@
 #NAME $SEARCHGAL
-#QUICK_DESCRIPTION searches for a preimage of a function such that the rounding the image commits an error smaller as a constant
+#QUICK_DESCRIPTION searches for a preimage of a function such that the rounding the image commits an error smaller than a constant
 #CALLING $COMMAND(<function>, <start>, <preimage precision>, <steps>, <format>, <error bound>)
 #TYPE ($FUNCTION_TYPE, $CONSTANT_TYPE, $INTEGER_TYPE, $INTEGER_TYPE, $FORMAT_TYPE, $CONSTANT_TYPE) -> $LIST_TYPE
 #CALLING $COMMAND(<list of functions>, <start>, <preimage precision>, <steps>, <list of format>, <list of error bounds>)
@@ -25,7 +25,7 @@ format> with a relative rounding error less than <error bound>
 respectively the corresponding value in <list of error bounds>. During
 this search, at most 2 raised to <steps> attempts are made. The search
 starts with a preimage value equal to <start>. This value is then
-increased and decreased by §§1§$1$§ ulp in precision <preimage
+increased and decreased by §§1§$1$§§ ulp in precision <preimage
 precision> until a value is found or the step limit is reached.
 §§ §§§
 If the search finds an appropriate preimage §§z§$z$§§, $COMMAND
