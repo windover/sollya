@@ -1,3 +1,50 @@
+2007-11-19 13:29  schevill
+
+	* doc/RD.shlp, doc/RN.shlp, doc/RU.shlp, doc/RZ.shlp, doc/abs.shlp,
+	  doc/acos.shlp, doc/acosh.shlp, doc/append.shlp, doc/asin.shlp,
+	  doc/asinh.shlp, doc/atan.shlp, doc/atanh.shlp,
+	  doc/bashexecute.shlp, doc/ceil.shlp, doc/coeff.shlp,
+	  doc/concat.shlp, doc/cos.shlp, doc/cosh.shlp, doc/default.shlp,
+	  doc/degree.shlp, doc/diam.shlp, doc/dirtyfindzeros.shlp,
+	  doc/dirtyinfnorm.shlp, doc/dirtyintegral.shlp, doc/double.shlp,
+	  doc/doubledouble.shlp, doc/doubleextended.shlp, doc/erf.shlp,
+	  doc/erfc.shlp, doc/execute.shlp, doc/exp.shlp, doc/expm1.shlp,
+	  doc/exponent.shlp, doc/false.shlp, doc/file.shlp,
+	  doc/findzeros.shlp, doc/floor.shlp, doc/guessdegree.shlp,
+	  doc/head.shlp, doc/hopitalrecursions.shlp, doc/inf.shlp,
+	  doc/infnorm.shlp, doc/integral.shlp, doc/length.shlp,
+	  doc/log.shlp, doc/log10.shlp, doc/log1p.shlp, doc/log2.shlp,
+	  doc/mantissa.shlp, doc/mid.shlp, doc/midpointmode.shlp,
+	  doc/off.shlp, doc/pi.shlp, doc/plot.shlp, doc/points.shlp,
+	  doc/postscript.shlp, doc/postscriptfile.shlp, doc/prec.shlp,
+	  doc/precision.shlp, doc/prepend.shlp, doc/rationalapprox.shlp,
+	  doc/remez.shlp, doc/rename.shlp, doc/revert.shlp, doc/round.shlp,
+	  doc/roundcoefficients.shlp, doc/sin.shlp, doc/sinh.shlp,
+	  doc/sort.shlp, doc/sqrt.shlp, doc/substitute.shlp, doc/sup.shlp,
+	  doc/tail.shlp, doc/tan.shlp, doc/tanh.shlp,
+	  doc/taylorrecursions.shlp, doc/timing.shlp,
+	  doc/tripledouble.shlp, doc/true.shlp, doc/verbosity.shlp: New
+	  help texts.
+
+2007-11-19 13:22  clauter
+
+	* Makefile.am, help.h, parser.y: Added support for help system in
+	  the parser.
+
+2007-11-19 12:28  clauter
+
+	* execute.c, parser.y: Corrected a huge bug in loud assignments to
+	  the global variable
+	  taylorrecursions.
+
+2007-11-19 10:22  clauter
+
+	* doc/keywords.def, doc/var.shlp: New help text for var.
+
+2007-11-19 09:53  clauter
+
+	* ChangeLog: Nouveau ChangeLog.
+
 2007-11-18 23:31  clauter
 
 	* assignment.c, assignment.h, execute.c, execute.h, general.c,
