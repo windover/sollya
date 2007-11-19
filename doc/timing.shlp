@@ -1,0 +1,14 @@
+#NAME $TIMING
+#QUICK_DESCRIPTION global variable controlling timing measures in $SOLLYA.
+
+#DESCRIPTION 
+$COMMAND is a global variable. When its value is $ON, the time spent in each 
+command is measured and displayed (for $VERBOSITY levels higher than 1).
+
+#EXAMPLE
+verbosity=1!;
+timing=on;
+p=remez(sin(x),10,[-1;1]);
+
+#SEEALSO $ON
+#SEEALSO $OFF

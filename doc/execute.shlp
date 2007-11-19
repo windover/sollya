@@ -1,0 +1,49 @@
+#NAME $EXECUTE
+#QUICK_DESCRIPTION executes the content of a file
+
+#CALLING $COMMAND(<filename>)
+#TYPE $STRING_TYPE -> $VOID_TYPE
+
+#PARAMETERS <filename> is a string representing a file name
+
+#DESCRIPTION 
+$COMMAND opens the file indicated by <filename>, and executes the sequence of 
+commands it contains. This command is evaluated at execution time: this way you
+can modify the file <filename> (for instance using $BASHEXECUTE) and execute it
+just after.
+
+#DESCRIPTION
+If <filename> contains a command $COMMAND, it will be executed recursively.
+
+#DESCRIPTION
+If <filename> contains a call to $RESTART, it will be neglected.
+
+#DESCRIPTION
+If <filename> contains a call to $QUIT, the commands following $QUIT
+in <filename> will be neglected.
+
+
+#EXAMPLE
+a=2;
+a;
+print("a=1;") > "example.sollya";
+execute("example.sollya"); 
+a;
+
+#EXAMPLE
+verbosity=1!;
+print("a=1; restart; a=2;") > "example.sollya";
+execute("example.sollya"); 
+a;
+
+#EXAMPLE
+verbosity=1!;
+print("a=1; quit; a=2;") > "example.sollya";
+execute("example.sollya"); 
+a;
+
+#SEEALSO $PARSE
+#SEEALSO $READFILE
+#SEEALSO $WRITE
+#SEEALSO $PRINT
+#SEEALSO $BASHEXECUTE

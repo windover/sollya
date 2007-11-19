@@ -1,0 +1,27 @@
+#NAME $DEGREE
+#QUICK_DESCRIPTION gives the degree of a polynomial.
+
+#CALLING $COMMAND(<f>)
+#TYPE $FUNCTION_TYPE -> $INTEGER_TYPE
+
+#PARAMETERS <f> is a function (usually a polynomial).
+
+#DESCRIPTION 
+If <f> is a polynomial, $COMMAND(<f>, <n>) returns the degree of <f>.
+
+#DESCRIPTION
+Contrary to the usage, $SOLLYA considers that the degree of the null polynomial
+is 0.
+
+#DESCRIPTION
+If <f> is a function that is not a polynomial, $COMMAND(<f>) returns -1.
+
+#EXAMPLE
+degree((1+x)*(2+5*x^2));
+degree(0);
+
+#EXAMPLE
+degree(sin(x));
+
+
+#SEEALSO $COEFF

@@ -1,0 +1,5 @@
+#NAME $ABS
+#QUICK_DESCRIPTION the absolute value.
+
+#DESCRIPTION 
+$COMMAND is the absolute value function. $COMMAND(x)=x if x>0 and -x otherwise.

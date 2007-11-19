@@ -1,0 +1,11 @@
+#NAME $ATANH
+#QUICK_DESCRIPTION the hyperbolic arctangent function.
+
+#DESCRIPTION 
+$COMMAND is the inverse of the function $TANH: $COMMAND(y) is the unique number 
+§§x in [-Inf; +Inf]§$x \in [-\infty; +\infty]$§§ such that $TANH(x)=y.
+
+#DESCRIPTION
+It is defined only for §§y in [ -1; 1]§$y \in [-1; 1]$§§.
+
+#SEEALSO $TANH

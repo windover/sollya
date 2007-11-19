@@ -1,0 +1,21 @@
+#NAME $DEFAULT
+#QUICK_DESCRIPTION default value for some commands.
+
+#DESCRIPTION 
+$COMMAND is a special value and is replaced by something depending on the 
+context where it is used. It can often be used as a joker, when you want to 
+specify one of the optional parameters of a command and not the others: set 
+the value of uninterresting parameters to $COMMAND.
+
+#DESCRIPTION
+Global variables can be reset by affecting them the special value $COMMAND.
+
+#EXAMPLE
+p = remez(exp(x),5,[0;1],default,1e-5);
+q = remez(exp(x),5,[0;1],1,1e-5);
+p==q;
+
+#EXAMPLE
+prec=?;
+prec=200;
+prec=default;

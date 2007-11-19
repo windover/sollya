@@ -1,0 +1,13 @@
+#NAME $LOG2
+#QUICK_DESCRIPTION binary logarithm.
+
+#DESCRIPTION 
+$COMMAND is the binary logarithm defined by: §§log2(x) = log(x)/log(2)§${\rm log2}(x) = \log(x)/\log(2)$§§.
+
+#DESCRIPTION
+It is defined only for §§x in [0; +Inf]§$x \in [0; +\infty]$§§.
+
+#SEEALSO $LOG
+#SEEALSO $LOG10
+
+

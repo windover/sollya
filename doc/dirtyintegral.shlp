@@ -1,0 +1,41 @@
+#NAME $DIRTYINTEGRAL
+#QUICK_DESCRIPTION computes a numerical approximation of the integral of a function on an interval.
+
+#CALLING $COMMAND(<f>,<I>)
+#TYPE ($FUNCTION_TYPE, $RANGE_TYPE) -> $CONSTANT_TYPE
+
+#PARAMETERS <f> is a function.
+#PARAMETERS <I> is an interval.
+
+
+#DESCRIPTION
+$COMMAND(<f>,<I>) computes an approximation of the integral of <f> on <I>.
+
+#DESCRIPTION
+The interval must be bound. If the interval contains one of -Inf or +Inf, the 
+result of $COMMAND is NaN, even if the integral has a meaning.
+
+#DESCRIPTION
+The result of this command depends on the global variables $PREC and $POINTS.
+The method used is the trapezium rule applied at §§n§$n$§§ evenly distributed
+points in the interval, where §§n§$n$§§ is the value of global variable $POINTS.
+
+#DESCRIPTION
+This command computes a numerical approximation of the exact value of the 
+integral. It should not be used if safety is critical. In this case, use
+command $INTEGRAL instead.
+
+#DESCRIPTION
+Warning: this command is known to be currently unsatisfactory. If you really
+need to compute integrals, think of using an other tool or report a feature
+request to sylvain.chevillard@ens-lyon.fr.
+
+#EXAMPLE
+sin(10);
+dirtyintegral(cos(x),[0;10]);
+points=2000!;
+dirtyintegral(cos(x),[0;10]);
+
+#SEEALSO $PREC
+#SEEALSO $POINTS
+#SEEALSO $INTEGRAL

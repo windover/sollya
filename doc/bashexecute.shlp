@@ -1,0 +1,23 @@
+#NAME $BASHEXECUTE
+#QUICK_DESCRIPTION executes a shell command.
+
+#CALLING $COMMAND(<command>)
+#TYPE $STRING_TYPE -> $VOID_TYPE
+
+#PARAMETERS <command> is a command to be interpreted by the shell.
+
+#DESCRIPTION 
+$COMMAND(<command>) lets the shell interpret <command>. It is useful to execute
+some external code within $SOLLYA.
+
+#DESCRIPTION
+$COMMAND does not return anything. It just executes its argument. However, if
+<command> produces an output in a file, this result can be imported in $SOLLYA
+with help of commands like $EXECUTE, $READFILE and $PARSE.
+
+#EXAMPLE
+bashexecute("ls /");
+
+#SEEALSO $EXECUTE
+#SEEALSO $READFILE
+#SEEALSO $PARSE

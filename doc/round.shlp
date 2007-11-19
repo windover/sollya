@@ -1,0 +1,42 @@
+#NAME $ROUND
+#QUICK_DESCRIPTION rounds a number to a floating-point format.
+
+#CALLING $COMMAND(<x>,<n>,<mode>)
+#TYPE ($CONSTANT_TYPE, $INTEGER_TYPE, $RD|$RU|$RN|$RZ) -> $CONSTANT_TYPE
+
+#PARAMETERS <x> is a constant to be rounded.
+#PARAMETERS <n> is the precision of the target format.
+#PARAMETERS <mode> is the desired rounding mode.
+
+#DESCRIPTION 
+$COMMAND(<x>,<n>,<mode>) rounds <x> to a floating-point number with 
+precision <n>, according to rounding-mode <mode>. 
+
+#DESCRIPTION
+Subnormal numbers are not handled. The range of possible exponents is the 
+range used for all numbers represented in $SOLLYA (e.g. basically the range 
+used in the library MPFR). Please use the functions $DOUBLE, $DOUBLEEXTENDED,
+$DOUBLEDOUBLE and $TRIPLEDOUBLE for roundings to classical formats with their
+range of exponents.
+
+#EXAMPLE
+display=binary!;
+round(Pi,20,RN);
+
+#EXAMPLE
+display=binary!;
+a=2^(-1100);
+round(a,53,RN);
+double(a);
+
+#SEEALSO $RN
+#SEEALSO $RD
+#SEEALSO $RU
+#SEEALSO $RZ
+#SEEALSO $DOUBLE
+#SEEALSO $DOUBLEEXTENDED
+#SEEALSO $DOUBLEDOUBLE
+#SEEALSO $TRIPLEDOUBLE
+#SEEALSO $ROUNDCOEFFICIENTS
+#SEEALSO $ROUNDCORRECTLY
+

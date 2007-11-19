@@ -1,0 +1,37 @@
+#NAME $GUESSDEGREE
+#QUICK_DESCRIPTION returns the minimal degree needed for a polynomial to approximate a function with a certain error on an interval.
+
+#CALLING $COMMAND(<f>,<I>,<eps>,<w>)
+#TYPE ($FUNCTION_TYPE, $RANGE_TYPE, $CONSTANT_TYPE, $FUNCTION_TYPE) -> $RANGE_TYPE
+
+#PARAMETERS <f> is the function to be approximated.
+#PARAMETERS <I> is the interval where the function must be approximated.
+#PARAMETERS <eps> is the maximal acceptable error.
+#PARAMETERS <w> (optional) is a weight function. Default is 1.
+
+#DESCRIPTION
+$COMMAND tries to find the minimal degree needed to approximate <f>
+on <I> by a polynomial with an infinite error not greater than <eps>.
+More precisely, it finds §§n§$n$§§ minimal such that there exists a
+polynomial §§p§$p$§§ of degree §§n§$n$§§ such that §§||p*w-f|| < eps§$\|pw-f\|_{\infty} < \mathrm{eps}$§§.
+
+#DESCRIPTION
+$COMMAND returns an interval: for common cases, this interval is reduced to a 
+single number (e.g. the minimal degree). But in certain cases, $COMMAND does
+not succeed in finding the minimal degree. In such cases the returned interval
+is of the form §§[n,p]§$[n,\,p]$§§ such that:
+§§ §\begin{itemize}§§
+§§   -§\item§§ no polynomial of degree §§n-1§$n-1$§§ gives an error less than <eps>.
+§§   -§\item§§ there exists a polynomial of degree §§p§$p$§§ giving an error less than <eps>. 
+§§ §\end{itemize}§§
+
+#EXAMPLE
+guessdegree(exp(x),[-1;1],1e-10);
+
+
+#EXAMPLE
+guessdegree(1, [-1;1], 1e-8, 1/exp(x));
+
+#SEEALSO $DIRTYINFNORM
+#SEEALSO $REMEZ
+

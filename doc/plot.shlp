@@ -1,0 +1,76 @@
+#NAME $PLOT
+#QUICK_DESCRIPTION plots one or several functions
+
+#CALLING $COMMAND(<f1>, ... ,<fn>, <I>)
+#TYPE ($FUNCTION_TYPE, ... ,$FUNCTION_TYPE, $RANGE_TYPE) -> $VOID_TYPE
+
+#CALLING $COMMAND(<f1>, ... ,<fn>, <I>, $FILE, <name>)
+#TYPE ($FUNCTION_TYPE, ... ,$FUNCTION_TYPE, $RANGE_TYPE, $FILE, $STRING_TYPE) -> $VOID_TYPE
+
+#CALLING $COMMAND(<f1>, ... ,<fn>, <I>, $POSTSCRIPT, <name>)
+#TYPE ($FUNCTION_TYPE, ... ,$FUNCTION_TYPE, $RANGE_TYPE, $POSTSCRIPT, $STRING_TYPE) -> $VOID_TYPE
+
+#CALLING $COMMAND(<f1>, ... ,<fn>, <I>, $POSTSCRIPTFILE, <name>)
+#TYPE ($FUNCTION_TYPE, ... ,$FUNCTION_TYPE, $RANGE_TYPE, $POSTSCRIPTFILE, $STRING_TYPE) -> $VOID_TYPE
+
+#DESCRIPTION 
+This command plots one or several functions <f1>, ... ,<fn> on an interval <I>.
+Functions are plotted on the same graphic with different colors.
+
+#DESCRIPTION
+$COMMAND relies on the value of global variable $POINTS. Let §§n§$n$§§ be the 
+value of this variable. The algorithm is the following: each function is 
+evaluated at §§n§$n$§§ evenly distributed points in <I>. At each point, the 
+computed value is a faithful rounding of the exact value with a sufficiently
+big precision. Each point is finally plotted.
+This avoid numerical artefacts such as critical cancellations.
+
+#DESCRIPTION
+You can save the graphic either as a data file or as a postscript file.
+
+#DESCRIPTION
+If you use argument $FILE with a string <name>, $SOLLYA will save a data file
+called name.dat and a gnuplot directives file called name.p. Invoking gnuplot
+on name.p will plots datas stored in name.dat.
+
+#DESCRIPTION
+If you use argument $POSTSCRIPT with a string <name>, $SOLLYA will save a 
+postscript file called name.eps representing your graphic.
+
+#DESCRIPTION
+If you use argument $POSTSCRIPTFILE with a string <name>, $SOLLYA will 
+produce the corresponding name.dat, name.p and name.eps.
+
+#DESCRIPTION
+This command uses gnuplot to produce the final graphic.
+If your terminal is not graphic (typically if you use $SOLLYA by ssh without -X) 
+gnuplot should be able to detect it and produce an ASCII-art version on the
+standard output. If it is not the case, you can either store the graphic in a
+postscript file to view it locally, or use $ASCIIPLOT command.
+
+#DESCRIPTION
+If every function is constant, $COMMAND will not plot them but just display
+their value.
+
+#DESCRIPTION
+If the interval is reduced to a single point, $COMMAND will just display the
+value of the functions at this point.
+
+#EXAMPLE
+plot(sin(x),0,cos(x),[-Pi,Pi]);
+
+#EXAMPLE
+plot(sin(x),0,cos(x),[-Pi,Pi],postscriptfile,"plotSinCos");
+
+#EXAMPLE
+plot(exp(0), sin(1), [0;1]);
+
+#EXAMPLE
+plot(sin(x), cos(x), [1;1]);
+
+#SEEALSO $EXTERNALPLOT
+#SEEALSO $ASCIIPLOT
+#SEEALSO $FILE
+#SEEALSO $POSTSCRIPT
+#SEEALSO $POSTSCRIPTFILE
+$SEEALSO $POINTS

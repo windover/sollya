@@ -1,0 +1,45 @@
+#NAME $FINDZEROS
+#QUICK_DESCRIPTION gives a list of intervals containing all zeros of a function on an interval.
+
+#CALLING $COMMAND(<f>,<I>)
+#TYPE ($FUNCTION_TYPE, $RANGE_TYPE) -> $LIST_TYPE
+
+#PARAMETERS <f> is a function.
+#PARAMETERS <I> is an interval.
+
+#DESCRIPTION
+$COMMAND(<f>,<I>) returns a list of intervals <I1>, ... ,<In> such that, for 
+every zero §§z§$z$§§ of §§f§$f$§§, there exists some §§k§$k$§§ such that §§z is in Ik§$z \in I_k$§§.
+
+#DESCRIPTION
+The list may contain intervals <Ik> that do not contain any zero of <f>.
+An interval <Ik> may contain many zeros of <f>.
+
+#DESCRIPTION
+This command is ment for cases when safety is critical. If you want to be sure
+not to forget any zero, use $COMMAND. However, if you just want to know 
+numerical values for the zeros of <f>, $DIRTYFINDZEROS should be quite 
+satisfactory and a lot more fast.
+
+#DESCRIPTION
+If §§d§$\delta$§§ denotes the value of global variable $DIAM, the algorithm ensures
+that for each §§k§$k$§§, §§|Ik| < d*|I|§$|I_k| \le \delta \cdot |I|$§§.
+
+#DESCRIPTION
+The algorithm used is basically a bisection algorithm. It is the same algorithm
+that the one used for $INFNORM. See the help page of this command for more 
+details. In short, the behavior of the algorithm depends on global variables
+$PREC, $DIAM, $TAYLORECURSIONS and $HOPITALRECURSIONS.
+
+#EXAMPLE
+findzeros(sin(x),[-5;5]);
+diam=1e-10!;
+findzeros(sin(x),[-5;5]);
+
+#SEEALSO $DIRTYFINDZEROS
+#SEEALSO $INFNORM
+#SEEALSO $PREC
+#SEEALSO $DIAM
+#SEEALSO $TAYLORRECURSIONS
+#SEEALSO $HOPITALRECURSIONS
+

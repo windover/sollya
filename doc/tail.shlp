@@ -1,0 +1,26 @@
+#NAME $TAIL
+#QUICK_DESCRIPTION gives the tail of a list.
+
+#CALLING $COMMAND(<L>)
+#TYPE $LIST_TYPE -> $ANY_TYPE
+
+#PARAMETERS <L> is a list.
+
+#DESCRIPTION 
+$COMMAND(<L>) returns the list <L> without its first element.
+
+#DESCRIPTION
+If <L> is empty, the command will fail with an error.
+
+#DESCRIPTION
+$COMMAND can also be used with end-elliptic lists. In this case, the result of
+$COMMAND is also an end-elliptic list.
+
+#EXAMPLE
+tail([|1,2,3|]);
+tail([|1,2...|]);
+
+#SEEALSO $HEAD
+
+
+

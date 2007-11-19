@@ -1,0 +1,28 @@
+#NAME $APPEND
+#QUICK_DESCRIPTION add an element at the end of a list.
+
+#CALLING <L>$COMMAND<x>
+#TYPE ($LIST_TYPE, $ANY_TYPE) -> $LIST_TYPE
+
+#PARAMETERS <L> is a list (possibly empty).
+#PARAMETERS <x> is an object of any type.
+
+#DESCRIPTION 
+$COMMAND adds the element <x> at the end of the list <L>.
+
+#DESCRIPTION
+Note that since <x> may be of any type, it can be in particular a list.
+
+#EXAMPLE
+[|2,3,4|]:.5;
+
+#EXAMPLE
+[|1,2,3|]:.[|4,5,6|];
+
+#EXAMPLE
+[||]:.1;
+
+#SEEALSO $PREPEND
+#SEEALSO $CONCAT
+
+

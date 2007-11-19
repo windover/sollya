@@ -1,0 +1,15 @@
+#NAME $LOG
+#QUICK_DESCRIPTION neperian logarithm.
+
+#DESCRIPTION 
+$COMMAND is the neperian logarithm defined as the inverse of the exponential
+function: §§log(y)§$\log(y)$§§ is the unique real number §§x§$x$§§ such that §§exp(x)=y§$\exp(x)=y$§§.
+
+#DESCRIPTION
+It is defined only for §§y in [0; +Inf]§$y \in [0; +\infty]$§§.
+
+#SEEALSO $EXP
+#SEEALSO $LOG2
+#SEEALSO $LOG10
+
+

@@ -1,0 +1,59 @@
+#NAME $DIRTYINFNORM
+#QUICK_DESCRIPTION computes a numerical approximation of the infinite norm of a function on an interval.
+
+#CALLING $COMMAND(<f>,<I>)
+#TYPE ($FUNCTION_TYPE, $RANGE_TYPE) -> $CONSTANT_TYPE
+
+#PARAMETERS <f> is a function.
+#PARAMETERS <I> is an interval.
+
+
+#DESCRIPTION
+$COMMAND(<f>,<I>) computes an approximation of the infinite norm of the 
+given function §§f§$f$§§ on the interval §§I§$I$§§, e.g. §§max {|f(x)|, x in I}§$\max_{x \in I} \{|f(x)|\}$§§.
+
+#DESCRIPTION
+The interval must be bound. If the interval contains one of -Inf or +Inf, the 
+result of $COMMAND is NaN.
+
+#DESCRIPTION
+The result of this command depends on the global variables $PREC and $POINTS.
+Therefore, the returned result is generally a good approximation of the exact
+infinite norm, with precision $PREC. However, the result is generally 
+underestimated and should not be used when safety is critical.
+Use $INFNORM instead.
+
+#DESCRIPTION
+The following algorithm is used: let §§n§$n$§§ be the value of variable $POINTS
+and §§t§$t$§§ be the value of variable $PREC.
+§§ §\begin{itemize}§§
+§§   -§\item §§ Evaluate §§|f|§$|f|$§§ at §§n§$n$§§ evenly distributed points in the
+§§    § §§ interval §§I§$I$§§. The evaluation are faithful roundings of the exact
+§§    § §§ results at precision §§t§$t$§§.
+
+§§   -§\item §§ Whenever the derivative of §§f§$f$§§ changes its sign for two consecutive 
+§§    § §§ points, find an approximation §§x§$x$§§ of its zero with precision §§t§$t$§§.
+§§    § §§ Then compute a faithful rounding of §§|f(x)|§$|f(x)|$§§ at precision §§t§$t$§§.
+§§   -§\item §§ Return the maximum of all computed values.
+§§ §\end{itemize}§§
+
+#EXAMPLE
+dirtyinfnorm(sin(x),[-10;10]);
+
+#EXAMPLE
+prec=15!;
+dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
+prec=40!;
+dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
+prec=100!;
+dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
+prec=200!;
+dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
+
+#EXAMPLE
+dirtyinfnorm(x^2, [log(0);log(1)]);
+
+#SEEALSO $PREC
+#SEEALSO $POINTS
+#SEEALSO $INFNORM
+#SEEALSO $CHECKINFNORM

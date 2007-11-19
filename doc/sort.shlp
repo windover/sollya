@@ -1,0 +1,22 @@
+#NAME $SORT
+#QUICK_DESCRIPTION sorts a list of real numbers.
+
+#CALLING $COMMAND(<L>)
+#TYPE $LIST_TYPE -> $LIST_TYPE
+
+#PARAMETERS <L> is a list.
+
+#DESCRIPTION 
+If <L> contains only constant values, $COMMAND(<L>) returns the same list, but
+sorted increasingly.
+
+#DESCRIPTION
+If <L> contains at least one element that is not a constant, the command fails 
+with a type error.
+
+#DESCRIPTION
+If <L> is an end-elliptic list, $COMMAND will fail with an error.
+
+#EXAMPLE
+sort([| |]);
+sort([|2,3,5,2,1,4|]);

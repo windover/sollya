@@ -1,0 +1,55 @@
+#NAME $ROUNDCOEFFICIENTS
+#QUICK_DESCRIPTION rounds the coefficients of a polynomial to classical formats.
+
+#CALLING $COMMAND(<p>,<L>)
+#TYPE ($FUNCTION_TYPE, $LIST_TYPE) -> $FUNCTION_TYPE
+
+#PARAMETERS <p> is a function. Usually a polynomial.
+#PARAMETERS <L> is a list of formats.
+
+#DESCRIPTION
+If <p> is a polynomial and <L> a list of floating-point formats, 
+$COMMAND(<p>,<L>) rounds each coefficient of <p> to the corresponding format
+in <L>.
+
+#DESCRIPTION
+If <p> is not a polynomial, $COMMAND does not do anything.
+
+#DESCRIPTION
+If <L> contains other elements than $D, $DOUBLE, $DD, $DOUBLEDOUBLE, $TD and
+$TRIPLEDOUBLE, an error occurs.
+
+#DESCRIPTION
+The coefficients in <p> corresponding to §§X^i§$X^i$§§ is rounded to the 
+format L[i]. If <L> does not contain enough elements
+(e.g. if $LENGTH(L) < $DEGREE(p)+1), a warning is displayed. However, the
+coefficients corresponding to an element of <L> are rounded. The last 
+coefficients (that do not have a corresponding element in <L>) are kept with
+their own precision.
+If <L> contains too much elements, the last useless elements are ignored.
+In particular <L> may be end-elliptic in which case $COMMAND has the 
+natural behavior.
+
+
+#EXAMPLE
+p=exp(1) + x*(exp(2) + x*exp(3));
+display=binary!;
+roundcoefficients(p,[|DD,D,D|]);
+roundcoefficients(p,[|DD,D...|]);
+
+#EXAMPLE
+f=sin(exp(1)*x);
+display=binary!;
+f;
+roundcoefficients(f,[|D...|]);
+
+#EXAMPLE
+p=exp(1) + x*(exp(2) + x*exp(3));
+verbosity=1!;
+display=binary!;
+roundcoefficients(p,[|DD,D|]);
+
+
+#SEEALSO $DOUBLE
+#SEEALSO $DOUBLEDOUBLE
+#SEEALSO $TRIPLEDOUBLE

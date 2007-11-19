@@ -1,0 +1,22 @@
+#NAME $VERBOSITY
+#QUICK_DESCRIPTION global variable controlling the quantity of information displayed by commands.
+
+#DESCRIPTION 
+$COMMAND accepts any integer value. At level 0, commands do not display anything
+on standard out. Note that very critical information may however be displayed on
+standard err.
+
+#DESCRIPTION
+Default level is 1. It displays important informations such as warnings when 
+roundings happen.
+
+#DESCRIPTION
+For higher levels more informations are displayed depending on the command.
+
+#EXAMPLE
+verbosity=0!;
+1.2+"toto";
+verbosity=1!;
+1.2+"toto";
+verbosity=2!;
+1.2+"toto";

@@ -1,0 +1,32 @@
+#NAME $LENGTH
+#QUICK_DESCRIPTION computes the length of a list or string.
+
+#CALLING $COMMAND(<L>)
+#TYPE $LIST_TYPE -> $INTEGER_TYPE
+
+#CALLING $COMMAND(<s>)
+#TYPE $STRING_TYPE -> $INTEGER_TYPE
+
+#PARAMETERS <L> is a list.
+#PARAMETERS <s> is a string.
+
+
+#DESCRIPTION 
+$COMMAND returns the length of a list or a string, e.g. the number of elements
+or letters.
+
+#DESCRIPTION
+The empty list or string has length 0.
+If <L> is an end-elliptic list, $COMMAND returns +Inf.
+
+#EXAMPLE
+length("Hello World!");
+
+#EXAMPLE
+length([|1,...,5|]);
+
+#EXAMPLE
+length([| |]);
+
+#EXAMPLE
+length([|1,2...|]);

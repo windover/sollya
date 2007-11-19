@@ -1,0 +1,51 @@
+#NAME $RATIONALAPPROX
+#QUICK_DESCRIPTION returns a fraction close to a given number.
+
+#CALLING $COMMAND(<x>,<n>)
+#TYPE ($CONSTANT_TYPE, $INTEGER_TYPE) -> $FUNCTION_TYPE
+
+#PARAMETERS <x> is a number to approximate.
+#PARAMETERS <n> is a integer (representing a format).
+
+#DESCRIPTION
+$COMMAND(<x>,<n>) returns a constant function of the form §§a/b§$a/b$§§ where §§a§$a$§§ and §§b§$b$§§ are
+integers. The value §§a/b§$a/b$§§ is an approximation of <x>. The quality of this 
+approximation is determined by the parameter <n> that indicates the number of
+correct bits that §§a/b§$a/b$§§ should have.
+
+#DESCRIPTION
+The command is not safe in the sense that it is not ensured that the error 
+between §§a/b§$a/b$§§ and <x> is less than §§2^(-n)§$2^{-n}$§§.
+
+#DESCRIPTION
+The following algorithm is used: <x> is first rounded downwards and upwards to
+a format of <n> bits, thus obtaining an interval §§[xl,xu]§$[x_l,\,x_u]$§§. This interval is then
+developped into a continued fraction as far as the representation is the same
+for every elements of §§[xl,xu]§$[x_l,\,x_u]$§§. The corresponding fraction is returned.
+
+#DESCRIPTION
+Since rational numbers are not a primitive object of $SOLLYA, the fraction is
+returned as a constant function. It can be quite amazing, because $SOLLYA
+immediately simplify a constant function by evaluating it when the constant
+has to be displayed.
+To avoid this, you can use $PRINT (that displays the expression representing
+the constant and not the constant itself) or the commands $NUMERATOR 
+and $DENOMINATOR.
+
+#EXAMPLE
+a=0.1;
+b=rationalapprox(a,4);
+numerator(b); denominator(b);
+print(simplify(floor(-log2(abs((b-a)/a)))), "bits.");
+
+#EXAMPLE
+pi10 = rationalapprox(Pi,10);
+pi50 = rationalapprox(Pi,50);
+pi100 = rationalapprox(Pi,100);
+print( pi10, ": ", simplify(floor(-log2(abs(pi10-Pi)/Pi))), "bits." );
+print( pi50, ": ", simplify(floor(-log2(abs(pi50-Pi)/Pi))), "bits." );
+print( pi100, ": ", simplify(floor(-log2(abs(pi100-Pi)/Pi))), "bits." );
+
+#SEEALSO $PRINT
+#SEEALSO $NUMERATOR
+#SEEALSO $DENOMINATOR

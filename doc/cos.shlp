@@ -1,0 +1,13 @@
+#NAME $COS
+#QUICK_DESCRIPTION the cosine function.
+
+#DESCRIPTION 
+$COMMAND is the usual cosine function.
+
+#DESCRIPTION
+It is defined for every real number x.
+
+#SEEALSO $ACOS
+#SEEALSO $SIN
+#SEEALSO $TAN
+

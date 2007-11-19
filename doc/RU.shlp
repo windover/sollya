@@ -1,0 +1,17 @@
+#NAME $RU
+#QUICK_DESCRIPTION constant representing rounding-upwards mode.
+
+#DESCRIPTION 
+$COMMAND is used in command $ROUND to specify that the value §§x§$x$§§ must be rounded
+to the smallest floating-point number §§y§$y$§§ such that §§x <= y§$x \le y$§§.
+
+#EXAMPLE
+display=binary!;
+round(Pi,20,RU);
+
+
+#SEEALSO $RZ
+#SEEALSO $RD
+#SEEALSO $RN
+#SEEALSO $ROUND
+

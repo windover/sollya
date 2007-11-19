@@ -1,0 +1,19 @@
+#NAME $REVERT
+#QUICK_DESCRIPTION reverts a list.
+
+#CALLING $COMMAND(<L>)
+#TYPE $LIST_TYPE -> $LIST_TYPE
+
+#PARAMETERS <L> is a list.
+
+#DESCRIPTION 
+$COMMAND(<L>) returns the same list, but with its elements in reverse order.
+
+#DESCRIPTION
+If <L> is an end-elliptic list, $COMMAND will fail with an error.
+
+#EXAMPLE
+revert([| |]);
+
+#EXAMPLE
+revert([|2,3,5,2,1,4|]);

@@ -1,0 +1,26 @@
+#NAME $MID
+#QUICK_DESCRIPTION gives the middle of an interval.
+
+#CALLING $COMMAND(<I>)
+#TYPE $RANGE_TYPE -> $CONSTANT_TYPE
+
+#CALLING $COMMAND(<x>)
+#TYPE $CONSTANT_TYPE -> $CONSTANT_TYPE
+
+#PARAMETERS <I> is an interval.
+#PARAMETERS <x> is a real number.
+
+#DESCRIPTION 
+Returns the middle of the interval <I>. If the middle is not exactly 
+representable at the current precision, the value is rounded.
+
+#DESCRIPTION
+When called on a real number <x>, $COMMAND considers it as an interval formed
+of a single point: [x, x]. In other words, $COMMAND behaves like the identity.
+
+#EXAMPLE
+mid([1;3]);
+mid(17);
+
+#SEEALSO $INF
+#SEEALSO $SUP

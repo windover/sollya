@@ -1,0 +1,18 @@
+#NAME $RZ
+#QUICK_DESCRIPTION constant representing rounding-to-zero mode.
+
+#DESCRIPTION 
+$COMMAND is used in command $ROUND to specify that the value must be rounded
+to the closest floating-point number towards zero. It just consists in 
+truncate the value to the desired format.
+
+#EXAMPLE
+display=binary!;
+round(Pi,20,RZ);
+
+
+#SEEALSO $RD
+#SEEALSO $RU
+#SEEALSO $RN
+#SEEALSO $ROUND
+

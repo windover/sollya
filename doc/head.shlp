@@ -1,0 +1,23 @@
+#NAME $HEAD
+#QUICK_DESCRIPTION gives the first element of a list.
+
+#CALLING $COMMAND(<L>)
+#TYPE $LIST_TYPE -> $ANY_TYPE
+
+#PARAMETERS <L> is a list.
+
+#DESCRIPTION 
+$COMMAND(<L>) returns the first element of the list <L>. It is equivalent
+to L[0].
+
+#DESCRIPTION
+If <L> is empty, the command will fail with an error.
+
+#EXAMPLE
+head([|1,2,3|]);
+head([|1,2...|]);
+
+#SEEALSO $TAIL
+
+
+

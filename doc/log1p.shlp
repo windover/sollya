@@ -1,0 +1,12 @@
+#NAME $LOG1P
+#QUICK_DESCRIPTION translated logarithm.
+
+#DESCRIPTION 
+$COMMAND is the function defined by §§log1p(x) = log(1+x)§${\rm log1p}(x) = \log(1+x)$§§.
+
+#DESCRIPTION
+It is defined only for §§x in [-1; +Inf]§$x \in [-1; +\infty]$§§.
+
+#SEEALSO $LOG
+
+

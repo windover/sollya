@@ -1,0 +1,19 @@
+#NAME $FILE
+#QUICK_DESCRIPTION special value for commands $PLOT and $EXTERNALPLOT
+
+#DESCRIPTION 
+$COMMAND is a special value used in commands $PLOT and $EXTERNALPLOT to save
+the result of the command in a data file.
+
+#DESCRIPTION
+As any value it can be affected to a variable and stored in lists.
+
+#EXAMPLE
+savemode=file;
+name="plotSinCos";
+plot(sin(x),0,cos(x),[-Pi,Pi],savemode, name);
+
+#SEEALSO $EXTERNALPLOT
+#SEEALSO $PLOT
+#SEEALSO $POSTSCRIPT
+#SEEALSO $POSTSCRIPTFILE

@@ -1,0 +1,11 @@
+#NAME $ACOSH
+#QUICK_DESCRIPTION the arg-hyperbolic cosine function.
+
+#DESCRIPTION 
+$COMMAND is the inverse of the function $COSH: $COMMAND(y) is the unique number 
+§§x in [0; +Inf]§$x \in [0; +\infty]$§§ such that $COSH(x)=y.
+
+#DESCRIPTION
+It is defined only for §§y in [0; +Inf]§$y \in [0;+\infty]$§§.
+
+#SEEALSO $COSH

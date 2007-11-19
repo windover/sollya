@@ -1,0 +1,11 @@
+#NAME $ASINH
+#QUICK_DESCRIPTION the arg-hyperbolic sine function.
+
+#DESCRIPTION 
+$COMMAND is the inverse of the function $SINH: $COMMAND(y) is the unique number 
+§§x in [-Inf; +Inf]§$x \in [-\infty; +\infty]$§§ such that $SINH(x)=y.
+
+#DESCRIPTION
+It is defined for every real number y.
+
+#SEEALSO $SINH

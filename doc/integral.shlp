@@ -1,0 +1,35 @@
+#NAME $INTEGRAL
+#QUICK_DESCRIPTION computes an interval bounding the integral of a function on an interval.
+
+#CALLING $COMMAND(<f>,<I>)
+#TYPE ($FUNCTION_TYPE, $RANGE_TYPE) -> $RANGE_TYPE
+
+#PARAMETERS <f> is a function.
+#PARAMETERS <I> is an interval.
+
+
+#DESCRIPTION
+$COMMAND(<f>,<I>) returns an interval §§J§$J$§§ such that the exact value of 
+the integral of <f> on <I> lies in §§J§$J$§§.
+
+#DESCRIPTION
+This command is safe but very unefficient. Use $DIRTYINTEGRAL if you just want
+an approximate value.
+
+#DESCRIPTION
+The result of this command depends on the global variable $DIAM.
+The method used is the following: <I> is cut into intervals of length not 
+greater then §§d*|I|§$\delta \cdot |I|$§§ where §§d§$\delta$§§ is the value
+of global variable $DIAM.
+On each small interval <J>, an evaluation of <f> by interval is
+performed. The result is multiplied by the length of <J>. Finally all values 
+are summed.
+
+#EXAMPLE
+sin(10);
+integral(cos(x),[0;10]);
+diam=1e-5!;
+integral(cos(x),[0;10]);
+
+#SEEALSO $POINTS
+#SEEALSO $DIRTYINTEGRAL

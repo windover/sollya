@@ -1,0 +1,19 @@
+#NAME $POINTS
+#QUICK_DESCRIPTION controls the number of points chosen by $SOLLYA in certain commands.
+
+#DESCRIPTION 
+$COMMAND is a global variable. Its value represents the number of points
+used in numerical algorithms of $SOLLYA (namely $DIRTYINFNORM,
+$DIRTYINTEGRAL, $DIRTYFINDZEROS, $PLOT).
+
+#EXAMPLE
+f=x^2*sin(1/x);
+points=10;
+dirtyfindzeros(f, [0;1]);
+points=100;
+dirtyfindzeros(f, [0;1]);
+
+#SEEALSO $DIRTYINFNORM
+#SEEALSO $DIRTYINTEGRAL
+#SEEALSO $DIRTYFINDZEROS
+#SEEALSO $PLOT

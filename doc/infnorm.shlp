@@ -1,0 +1,103 @@
+#NAME $INFNORM
+#QUICK_DESCRIPTION computes an interval bounding the infinite norm of a function on an interval.
+
+#CALLING $COMMAND(<f>,<I>,<filename>,<Ilist>)
+#TYPE ($FUNCTION_TYPE, $RANGE_TYPE, $STRING_TYPE, $LIST_TYPE) -> $RANGE_TYPE
+
+#PARAMETERS <f> is a function.
+#PARAMETERS <I> is an interval.
+#PARAMETERS <filename> (optional) is the name of the file into a proof will be saved.
+#PARAMETERS <IList> (optional) is a list of intervals to be excluded.
+
+
+
+#DESCRIPTION
+$COMMAND(<f>,<range>) computes an interval bounding the infinite norm of the 
+given function §§f§$f$§§ on the interval §§I§$I$§§, e.g. computes an interval §§J§$J$§§
+such that §§max {|f(x)|, x in I} C J§$\max_{x \in I} \{|f(x)|\} \subseteq J$§§.
+
+#DESCRIPTION
+If <filename> is given, a proof in english will be produced (and stored in file
+called <filename>) proving that  §§max {|f(x)|, x in I} C J§$\max_{x \in I} \{|f(x)|\} \subseteq J$§§.
+
+#DESCRIPTION
+If a list <IList> of intervals <I1>, ... ,<In> is given, the infinite norm will
+be computed on §§I \ (I1 U ... U I2)§$I \ (I_1 \cup \dots \cup I_n)$§§.
+
+#DESCRIPTION
+The function <f> is assumed to be at least twice continuous on <I>. More 
+generally, if <f> is §§Ck§$\mathcal{C}^k$§§, global variables $HOPITALRECURSIONS and
+$TAYLORRECURSIONS must have values not greater than §§k§$k$§§.  
+
+#DESCRIPTION
+If the interval is reduced to a single point, the result of $COMMAND is an 
+interval containing the exact absolute value of <f> at this point.
+
+#DESCRIPTION
+If the interval is not bound, the result will be §§[0, +Inf]§$[0,\,+\infty]$§§ 
+which is true but perfectly useless. $COMMAND is not ment to be used with 
+infinite intervals.
+
+#DESCRIPTION
+The result of this command depends on the global variables $PREC, $DIAM,
+$TAYLORRECURSIONS and $HOPITALRECURSIONS. The contribution of each variable is 
+not easy even to analyse.
+§§ §\begin{itemize}§§
+§§   -§\item §§ The algorithm uses interval arithmetic with precision $PREC. The
+§§    § §§ precision should thus be set big enough to ensure that no critical
+§§    § §§ cancellation will occur.
+§§   -§\item §§ When an evaluation is performed on an interval §§[a,b]§$[a,\,b]$§§, if the result
+§§    § §§ is considered being too large, the interval is split into §§[a,(a+b)/2]§$[a,\,\frac{a+b}{2}]$§§
+§§    § §§ and §§[(a+b)/2,b]§$[\frac{a+b}{2},\,b]$§§ and so on recursively. This recursion step
+§§    § §§ is  not performed if the §§(b-a) < d*|I|§$(b-a) < \delta \cdot |I|$§§ where §§d§$\delta$§§ is the value
+§§    § §§ of variable $DIAM. In other words, $DIAM controls the minimum length of an
+§§    § §§ interval during the algorithm.
+§§   -§\item §§ To perform the evaluation of a function on an interval, Taylor's rule is
+§§    § §§ applied, e.g. §§f([a,b]) C f(m) + [a-m, b-m]*f'([a,b])§$f([a,b]) \subseteq f(m) + [a-m,\,b-m] \cdot f'([a,\,b])$§§
+§§    § §§ where §§m=(a+b)/2§$m=\frac{a+b}{2}$§§. This rule is applied recursively §§n§$n$§§ times
+§§    § §§ where §§n§$n$§§ is the value of variable $TAYLORRECURSIONS. Roughly speaking,
+§§    § §§ the evaluations will avoid decorrelation up to order §§n§$n$§§.
+§§   -§\item §§ When a function of the form §§g/h§$\frac{g}{h}$§§ has to be evaluated on an
+§§    § §§ interval §§[a,b]§$[a,\,b]$§§ and when §§g§$g$§§ and §§h§$h$§§ vanish at a same point
+§§    § §§ §§z§$z$§§ of the interval, the ratio may be defined even if the expression
+§§    § §§ §§g(z)/h(z)=0/0§$\frac{g(z)}{h(z)}=\frac{0}{0}$§§ does not make any sense. In this case, L'Hopital's rule
+§§    § §§ may be used and §§(g/h)([a,b]) C (g'/h')([a,b])§$\left(\frac{g}{h}\right)([a,\,b]) \subseteq \left(\frac{g'}{h'}\right)([a,\,b])$§§.
+§§    § §§ Since the same can occur with the ratio §§g'/h'§$\frac{g'}{h'}$§§, the rule is applied
+§§    § §§ recursively. Variable $HOPITALRECURSIONS controls the number of 
+§§    § §§ recursion steps.
+§§ §\end{itemize}§§
+
+#DESCRIPTION
+The algorithm used for this command is quite complex to be explained here. 
+Please find a complete description in the following article:
+     S. Chevillard and C. Lauter
+     A certified infinite norm for the implementation of elementary functions
+     LIP Research Report number RR2007-26
+     http://prunel.ccsd.cnrs.fr/ensl-00119810
+
+
+#EXAMPLE
+infnorm(exp(x),[-2;3]);
+
+#EXAMPLE
+infnorm(exp(x),[-2;3],"proof.txt");
+
+#EXAMPLE
+infnorm(exp(x),[-2;3],[| [0;1], [2;2.5] |]);
+
+#EXAMPLE
+infnorm(exp(x),[-2;3],"proof.txt", [| [0;1], [2;2.5] |]);
+
+#EXAMPLE
+infnorm(exp(x),[1;1]);
+
+#EXAMPLE
+infnorm(exp(x), [log(0);log(1)]);
+
+
+#SEEALSO $PREC
+#SEEALSO $DIAM
+#SEEALSO $HOPITALRECURSIONS
+#SEEALSE $TAYLORRECURSIONS
+#SEEALSO $DIRTYINFNORM
+#SEEALSO $CHECKINFNORM

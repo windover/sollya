@@ -1,0 +1,13 @@
+#NAME $LOG10
+#QUICK_DESCRIPTION decimal logarithm.
+
+#DESCRIPTION 
+$COMMAND is the decimal logarithm defined by: §§log10(x) = log(x)/log(10)§${\rm log10}(x) = \log(x)/\log(10)$§§.
+
+#DESCRIPTION
+It is defined only for §§x in [0; +Inf]§$x \in [0; +\infty]$§§.
+
+#SEEALSO $LOG
+#SEEALSO $LOG2
+
+

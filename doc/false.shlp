@@ -1,0 +1,15 @@
+#NAME $FALSE
+#QUICK_DESCRIPTION the boolean value representing the false.
+
+#DESCRIPTION 
+$COMMAND is the usual boolean value.
+
+#EXAMPLE
+true && false;
+2<1;
+
+#SEEALSO $TRUE
+#SEEALSO $AND
+#SEEALSO $OR
+
+

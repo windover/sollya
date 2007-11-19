@@ -1,0 +1,10 @@
+#NAME $SQRT
+#QUICK_DESCRIPTION square root.
+
+#DESCRIPTION 
+$COMMAND is the square root, e.g. the inverse of the function square: §§sqrt(y)§$\sqrt(y)$§§
+is the unique positive §§x§$x$§§ such that §§x^2=y§$x^2=y§§.
+
+#DESCRIPTION
+It is defined only for §§x§$x$§§ in §§[0; +Inf]§$[0;+\infty]$§§.
+

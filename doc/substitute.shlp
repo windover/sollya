@@ -1,0 +1,37 @@
+#NAME $SUBSTITUTE
+#QUICK_DESCRIPTION replace the occurences of the free variable in an expression.
+
+#CALLING $COMMAND(<f>,<g>)
+#TYPE $($FUNCTION_TYPE, $FUNCTION_TYPE) -> $FUNCTION_TYPE
+
+#CALLING $COMMAND(<f>,<t>)
+#TYPE $($FUNCTION_TYPE, $CONSTANT_TYPE) -> $CONSTANT_TYPE
+
+#PARAMETERS <f> is a function.
+#PARAMETERS <g> is a function.
+#PARAMETERS <t> is a real number.
+
+#DESCRIPTION 
+$COMMAND(<f>, <g>) produces the function §§(f o g) : x -> f(g(x))§$(f \circ g) : x \mapsto f(g(x))$§§.
+
+#DESCRIPTION
+$COMMAND(<f>, <t>) is the constant §§f(t)§$f(t)$§§. Note that the constant is
+represented by its expression until it has been evaluated (exactly the same
+way as if you type the expression <f> replacing instances of the free variable 
+by <t>).
+
+#DESCRIPTION
+If <f> is stored in a variable <F>. It is absolutely equivalent to 
+writing <F(g)> or <F(t)>.
+
+#EXAMPLE
+f=sin(x);
+g=cos(x);
+substitute(f,g);
+f(g);
+
+#EXAMPLE
+a=1;
+f=sin(x);
+substitute(f,a);
+f(a);

@@ -1,0 +1,17 @@
+#NAME $RN
+#QUICK_DESCRIPTION constant representing rounding-to-nearest mode.
+
+#DESCRIPTION 
+$COMMAND is used in command $ROUND to specify that the value must be rounded
+to the nearest representable floating-point number.
+
+#EXAMPLE
+display=binary!;
+round(Pi,20,RN);
+
+
+#SEEALSO $RD
+#SEEALSO $RU
+#SEEALSO $RZ
+#SEEALSO $ROUND
+

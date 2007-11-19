@@ -1,0 +1,15 @@
+#NAME $TRUE
+#QUICK_DESCRIPTION the boolean value representing the truth.
+
+#DESCRIPTION 
+$COMMAND is the usual boolean value.
+
+#EXAMPLE
+true && false;
+2>1;
+
+#SEEALSO $FALSE
+#SEEALSO $AND
+#SEEALSO $OR
+
+

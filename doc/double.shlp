@@ -1,0 +1,32 @@
+#NAME $DOUBLE
+#NAME $D
+#QUICK_DESCRIPTION rounding to the nearest IEEE double.
+
+#DESCRIPTION 
+$COMMAND is both a function and a constant.
+
+#DESCRIPTION
+As a function, it rounds its argument to the nearest double precision number.
+Subnormal numbers are supported as well as standard numbers: it is the real
+ounding described in the standard.
+
+#DESCRIPTION
+As a constant, it symoblizes the double precision format. It is used in 
+contexts when a precision format is necessary, e.g. in the commands 
+$ROUNDCOEFFICIENTS and $IMPLEMENTPOLY.
+See the corresponding help pages for examples.
+
+#EXAMPLE
+display=binary!;
+D(0.1);
+D(4.17);
+D(1.011_2 * 2^(-1073));
+
+#SEEALSO $DOUBLEEXTENDED
+#SEEALSO $DOUBLEDOUBLE
+#SEEALSO $TRIPLEDOUBLE
+#SEEALSO $ROUNDCOEFFICIENTS
+#SEEALSO $IMPLEMENTPOLY
+
+
+

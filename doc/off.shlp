@@ -1,0 +1,23 @@
+#NAME $OFF
+#QUICK_DESCRIPTION special value for certain global variables.
+
+#DESCRIPTION 
+$COMMAND is a special value used to deactivate certain functionnalities
+of $SOLLYA (namely $CANONICAL, $TIMING, $FULLPARENTHESES, $MIDPOINTMODE).
+
+#DESCRIPTION
+As any value it can be affected to a variable and stored in lists.
+
+#EXAMPLE
+canonical=on;
+p=1+x+x^2;
+mode=off;
+p;
+canonical=mode;
+p;
+
+#SEEALSO $ON
+#SEEALSO $CANONICAL
+#SEEALSO $TIMING
+#SEEALSO $FULLPARENTHESES
+#SEEALSO $MIDPOINTMODE

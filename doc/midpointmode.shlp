@@ -1,0 +1,24 @@
+#NAME $MIDPOINTMODE
+#QUICK_DESCRIPTION global variable controlling the way intervals are displayed.
+
+#DESCRIPTION 
+$COMMAND is a global variable. When its value is $OFF, intervals are displayed
+as usual (with the form [a;b]).
+When its value is $ON, and if a and b have the same first significant digits,
+the interval in displayed in a way that lets one immediately see the common
+digits of the two bounds.
+
+#DESCRIPTION
+This mode is supported only with $DISPLAY set to $DECIMAL. In other modes of 
+display, $COMMAND value is simply ignored.
+
+#EXAMPLE
+a = round(Pi,30,RD);
+b = round(Pi,30,RU);
+d = [a,b];
+d;
+midpointmode=on!;
+d;
+
+#SEEALSO $ON
+#SEEALSO $OFF

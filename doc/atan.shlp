@@ -1,0 +1,11 @@
+#NAME $ATAN
+#QUICK_DESCRIPTION the arctangent function.
+
+#DESCRIPTION 
+$COMMAND is the inverse of the function $TAN: $COMMAND(y) is the unique number 
+§§x in [-Pi/2; Pi/2]§$x \in [-\pi/2; +\pi/2]$§§ such that $TAN(x)=y.
+
+#DESCRIPTION
+It is defined for every real number y.
+
+#SEEALSO $TAN

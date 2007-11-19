@@ -1,0 +1,76 @@
+#NAME $REMEZ
+#QUICK_DESCRIPTION computes the minimax of a function on an interval.
+#CALLING $COMMAND(<f>, <n>, <range>, <w>, <quality>)
+#TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $RANGE_TYPE, $FUNCTION_TYPE, $CONSTANT_TYPE) -> $FUNCTION_TYPE
+
+#CALLING $COMMAND(<f>, <L>, <range>, <w>, <quality>)
+#TYPE ($FUNCTION_TYPE, $LIST_TYPE, $RANGE_TYPE, $FUNCTION_TYPE, $CONSTANT_TYPE) -> $FUNCTION_TYPE
+
+
+#PARAMETERS <f> is the function to be approximated
+#PARAMETERS <n> is the degree of the polynomial that must approximate <f>
+#PARAMETERS <L> is a list of monomials that can be used to represent the polynomial that must approximate <f>
+#PARAMETERS <range> is the interval where the function must be approximated
+#PARAMETERS <w> (optional) is a weight function. Default is 1.
+#PARAMETERS <quality> (optional) is a parameter that controls the quality of the returned polynomial <p>, with respect to the exact minimax §§p*§$p^\star$§§. Default is 1e-5.
+
+
+#DESCRIPTION 
+$COMMAND computes an approximation of the function §§f§$f$§§ with respect to 
+the weight function §§w§$w$§§ on the interval <range>. More precisely, it 
+searches a polynomial §§p§$§§ such that §§||p*w-f||§$\|pw-f\|_{\infty}$§§ is 
+(almost minimal) among all polynomials §§p§$p$§§ of a certain form. The norm is
+the infinite norm, e.g. §§||g|| = max {|g(x)|, x in <range>}.§$\|g\|_{\infty} = \max \{|g(x)|, x \in \mathrm{range}\}.$§§
+
+#DESCRIPTION
+If §§w=1§$w=1$§§ (the default case), it consists in searching the best 
+polynomial approximation of §§f§$f$§§ with respect to the absolute error.
+
+If §§f=1§$f=1$§§ and §§w§$w$§§ is of the form §§1/g§$1/g$§§, it consists in 
+searching the best polynomial approximation of §§g§$g$§§ with respect to the 
+relative error.
+
+#DESCRIPTION 
+If §§n§$n$§§ is given, the polynomial §§p§$p$§§ is searched among the 
+polynomials with degree not greater than §§n§$n$§§.
+
+If <L> is given, the polynomial §§p§$p$§§ is searched as a linear combination 
+of monomials §§X^k§$X^k$§§ where §§k§$k$§§ belongs to <L>.
+
+<L> may contain ellipses but cannot be end-elliptic.
+
+#DESCRIPTION 
+The polynomial is obtained by a convergent iteration called Remez' algorithm. 
+The algorithm computes a sequence §§p1, ..., pk, ...§$p_1,\dots ,p_k,\dots$§§ 
+such that §§ek = ||<pk*w-f>||§$e_k = \|p_kw-f}\|_{\infty}$§§ converges towards 
+the optimal value §§e§$e$§§. The algorithm is stopped when the relative error 
+between §§ek§$e_k$§§ and §§e§$e$§§ is less than <quality>.
+
+#DESCRIPTION 
+Note: the algorithm may not converge in certain cases. Moreover, it may 
+converge towards a polynomial that is not optimal. These cases correspond to 
+the cases when Haar's condition is not fulfilled.
+See [Cheney - Approximation theory] for details.
+
+
+#EXAMPLE
+p = remez(exp(x),5,[0;1]);
+degree(p);
+dirtyinfnorm(p-exp(x),[0;1]);
+
+#EXAMPLE
+p = remez(1,[|0,2,4,6,8|],[0,Pi/4],1/cos(x));
+canonical=on!;
+p;
+
+#EXAMPLE
+p1 = remez(exp(x),5,[0;1],default,1e-5);
+p2 = remez(exp(x),5,[0;1],default,1e-10);
+p3 = remez(exp(x),5,[0;1],default,1e-15);
+dirtyinfnorm(p1-exp(x),[0;1]);
+dirtyinfnorm(p2-exp(x),[0;1]);
+dirtyinfnorm(p3-exp(x),[0;1]);
+
+
+#SEEALSO $DIRTYINFNORM
+#SEEALSO $INFNORM

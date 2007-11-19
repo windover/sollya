@@ -1,0 +1,53 @@
+#NAME $RENAME
+#QUICK_DESCRIPTION rename the free variable.
+
+#CALLING $COMMAND(<ident1>,<ident2>)
+#TYPE $VOID_TYPE
+
+#PARAMETERS <ident1> is the current name of the free variable.
+#PARAMETERS <ident2> is a fresh name.
+
+
+#DESCRIPTION 
+$COMMAND lets one change the name of the free variable. $SOLLYA can handle only
+one free variable at a time. The first time in a session that an unbound name 
+is used in a context where it can be interpreted as a free variable, the name
+is used to represent the free variable of $SOLLYA. In the following, this name
+can be changed using $COMMAND.
+
+#DESCRIPTION
+Be careful: if <ident2> has been set before, its value will be lost. Use the 
+command $ISBOUND to know if <ident2> is already used or not.
+
+#DESCRIPTION
+If <ident1> is not the current name of the free variable, an error occurs.
+
+#DESCRIPTION
+If $COMMAND is used at a time when the name of the free variable has not been 
+defined, <ident1> is just ignored and the name of the free variable is 
+set to <ident2>.
+
+#EXAMPLE
+f=sin(x);
+f;
+rename(x,y);
+f;
+
+#EXAMPLE
+a=1;
+f=sin(x);
+rename(x,a);
+a;
+f;
+
+#EXAMPLE
+verbosity=1!;
+f=sin(x);
+rename(y,z);
+
+#EXAMPLE
+rename(x,y);
+isbound(x);
+isbound(y);
+
+#SEEALSO $ISBOUND

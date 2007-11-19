@@ -1,0 +1,13 @@
+#NAME $TAN
+#QUICK_DESCRIPTION the tangent function.
+
+#DESCRIPTION 
+$COMMAND is the tangent function, defined by §§tan(x) = sin(x)/cos(x)§$\tan(x) = sin(x)/cos(x)$§§.
+
+#DESCRIPTION
+It is defined for every real number x that is not of the form §§n*Pi+Pi/2§$n\pi + \pi/2$§§ where §§n§$n$§§ is an integer.
+
+#SEEALSO $ATAN
+#SEEALSO $COS
+#SEEALSO $SIN
+

@@ -1,0 +1,18 @@
+#NAME $PREC
+#QUICK_DESCRIPTION controls the precision used in numerical computations.
+
+#DESCRIPTION 
+$COMMAND is a global variable. Its value represents the precision of the 
+floating-point format used in numerical computations.
+
+#DESCRIPTION
+A lot of commands try to adapt their intern precision in order to have 
+approximately §§n§$n$§§ correct bits in output, where §§n§$n$§§ is the value of $PREC.
+
+#EXAMPLE
+display=binary!;
+prec=50;
+dirtyinfnorm(exp(x),[1;2]);
+prec=100;
+dirtyinfnorm(exp(x),[1;2]);
+

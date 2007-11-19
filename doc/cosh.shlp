@@ -1,0 +1,15 @@
+#NAME $COSH
+#QUICK_DESCRIPTION the hyperbolic cosine function.
+
+#DESCRIPTION 
+$COMMAND is the usual hyperbolic function: §§cosh(x) = (exp(x)+exp(-x))/2§$\cosh(x) = \frac{e^x + e^{-x}}{2}$§§.
+
+#DESCRIPTION
+It is defined for every real number x.
+
+#SEEALSO $ACOSH
+#SEEALSO $SINH
+#SEEALSO $TANH
+#SEEALSO $EXP
+
+

@@ -1,0 +1,38 @@
+#NAME $DOUBLEDOUBLE
+#NAME $DD
+#QUICK_DESCRIPTION represents a number as the sum of two IEEE doubles.
+
+#DESCRIPTION 
+$COMMAND is both a function and a constant.
+
+#DESCRIPTION
+As a function, it rounds its argument to the nearest number that can be written
+as the sum of two double precision numbers.
+
+#DESCRIPTION
+The algorithm used to compute $COMMAND(x) is the following: let xh = $DOUBLE(x)
+and let xl = $DOUBLE(x-xh). Return the number xh+xl. Note that if the current 
+precision is not sufficient to represent exactly xh+xl, a rounding will occur
+and the result of $COMMAND(x) will be useless.
+
+#DESCRIPTION
+As a constant, it symoblizes the double-double precision format. It is used in 
+contexts when a precision format is necessary, e.g. in the commands 
+$ROUNDCOEFFICIENTS and $IMPLEMENTPOLY.
+See the corresponding help pages for examples.
+
+#EXAMPLE
+verbosity=1!;
+a = 1+ 2^(-100);
+DD(a);
+prec=50!;
+DD(a);
+
+#SEEALSO $DOUBLE
+#SEEALSO $DOUBLEEXTENDED
+#SEEALSO $TRIPLEDOUBLE
+#SEEALSO $ROUNDCOEFFICIENTS
+#SEEALSO $IMPLEMENTPOLY
+
+
+

@@ -1,0 +1,13 @@
+#NAME $ERFC
+#QUICK_DESCRIPTION the complementary error function.
+
+#DESCRIPTION 
+$COMMAND is the complementary error function defined by §§erfc(x) = 1 - erf(x)§$\mathrm{erfc}(x) = 1 - \mathrm{erf}(x)$§§.
+
+#DESCRIPTION
+It is defined for every real number x.
+
+#SEEALSO $ERF
+
+
+

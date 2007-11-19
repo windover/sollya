@@ -1,0 +1,28 @@
+#NAME $TAYLORRECURSIONS
+#QUICK_DESCRIPTION controls the number of recursion steps when applying Taylor's rule.
+
+#DESCRIPTION 
+$COMMAND is a global variable. Its value represents the number of steps
+of recursion that are used when applying Taylor's rule. This rule is applied
+by the interval evaluator present in the core of $SOLLYA (and particularly
+visible in commands like $INFNORM).
+
+#DESCRIPTION
+To improve the quality of an interval evaluation of a function §§f§$f$§§, in 
+particular when there are problems of decorrelation), the evaluator of $SOLLYA
+uses Taylor's rule:  §§f([a,b]) C f(m) + [a-m, b-m]*f'([a,b])§$f([a,b]) \subseteq f(m) + [a-m,\,b-m] \cdot f'([a,\,b])$§§ where §§m=(a+b)/2§$m=\frac{a+b}{2}$§§.
+This rule can be applied recursively.
+The number of step in this recursion process is controlled by $COMMAND.
+
+#DESCRIPTION
+Setting $COMMAND to 0 makes $SOLLYA use this rule only one time ;
+setting it to 1 makes $SOLLYA use the rule two times, and so on.
+In particular: the rule is always applied at least once.
+
+#EXAMPLE
+f=exp(x);
+p=remez(f,3,[0;1]);
+taylorrecursions=0;
+evaluate(f-p, [0;1]);
+taylorrecursions=1;
+evaluate(f-p, [0;1]);

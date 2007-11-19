@@ -1,0 +1,10 @@
+#NAME $CEIL
+#QUICK_DESCRIPTION the usual function ceil.
+
+#DESCRIPTION 
+$COMMAND is defined as usual: $COMMAND(x) is the smallest integer y such that §§y >= x§$y \ge x$§§.
+
+#DESCRIPTION
+It is defined for every real number x.
+
+#SEEALSO $FLOOR

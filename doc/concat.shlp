@@ -1,0 +1,28 @@
+#NAME $CONCAT
+#QUICK_DESCRIPTION concatenates two lists or strings.
+
+#CALLING <L1>$COMMAND<L2>
+#TYPE ($LIST_TYPE, $LIST_TYPE) -> $LIST_TYPE
+
+#CALLING <string1>$COMMAND<string2>
+#TYPE ($STRING_TYPE, $STRING_TYPE) -> $STRING_TYPE
+
+#PARAMETERS <L1> and <L2> are two lists.
+#PARAMETERS <string1> and <string2> are two strings.
+
+
+#DESCRIPTION 
+$COMMAND concatenates two lists or strings.
+
+#EXAMPLE
+[|1,...,3|]@[|7,8,9|];
+
+#EXAMPLE
+"Hello "@"World!";
+
+
+#SEEALSO $PREPEND
+#SEEALSO $APPEND
+
+
+

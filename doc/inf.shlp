@@ -1,0 +1,34 @@
+#NAME $INF
+#QUICK_DESCRIPTION gives the lower bound of an interval.
+
+#CALLING $COMMAND(<I>)
+#TYPE $RANGE_TYPE -> $CONSTANT_TYPE
+
+#CALLING $COMMAND(<x>)
+#TYPE $CONSTANT_TYPE -> $CONSTANT_TYPE
+
+#PARAMETERS <I> is an interval.
+#PARAMETERS <x> is a real number.
+
+#DESCRIPTION 
+Returns the lower bound of the interval <I>. Each bound of an interval has its 
+own precision, so this command is exact, even if the current precision is too 
+small to represent the bound.
+
+#DESCRIPTION
+When called on a real number <x>, $COMMAND considers it as an interval formed
+of a single point: [x, x]. In other words, $COMMAND behaves like the identity.
+
+#EXAMPLE
+inf([1;3]);
+inf(0);
+
+#EXAMPLE
+display=binary!;
+I=[0.111110000011111_2; 1];
+inf(I);
+prec=12!;
+inf(I);
+
+#SEEALSO $MID
+#SEEALSO $SUP

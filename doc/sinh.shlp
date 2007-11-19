@@ -1,0 +1,13 @@
+#NAME $SINH
+#QUICK_DESCRIPTION the hyperbolic sine function.
+
+#DESCRIPTION 
+$COMMAND is the usual hyperbolic sine function: §§sinh(x) = (exp(x)-exp(-x))/2§$\sinh(x) = \frac{e^x - e^{-x}}{2}$§§.
+
+#DESCRIPTION
+It is defined for every real number x.
+
+#SEEALSO $ASINH
+#SEEALSO $COSH
+#SEEALSO $TANH
+
