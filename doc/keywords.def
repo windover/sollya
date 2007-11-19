@@ -22,6 +22,8 @@ POWER="^"
 WHILE="while"
 FOR="for"
 
+VAR="var"
+
 ABS="abs"
 ABSOLUTE="absolute"
 ACCURATEINFNORM="accurateinfnorm"

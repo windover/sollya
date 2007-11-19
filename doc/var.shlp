@@ -1,0 +1,30 @@
+#NAME $VAR
+#QUICK_DESCRIPTION declaration of a local variable in a scope
+#CALLING $COMMAND <identifier1>, <identifier2>,... , <identifiern>
+#TYPE $VOID_TYPE
+#PARAMETERS <identifier1>, <identifier2>,... , <identifiern> represent variable identifiers
+
+
+#DESCRIPTION 
+The keyword $COMMAND allows for the declaration of local variables
+<identifier1> through <identifiern> in a begin-end-block ({}-block).
+Once declared as a local variable, an identifier will shadow
+identifiers declared in higher scopes and undeclared identifiers
+available at top-level.
+§§ §§§
+Variable declarations using $COMMAND are only possible in the
+beginning of a begin-end-block. Several $COMMAND statements can be
+given. Once another statement is given in a begin-end-block, no more
+$COMMAND statements can be given.
+§§ §§§
+Variables declared by $COMMAND statements are dereferenced as $ERROR
+until they are assigned a value. 
+
+#EXAMPLE
+exp(x); 
+a = 3; 
+{var a, b; a=5; b=3; {var a; var b; b = true; a = 1; a; b;}; a; b; }; 
+a;
+
+#SEEALSO $ERROR
+
