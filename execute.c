@@ -4241,7 +4241,6 @@ int executeCommandInner(node *tree) {
 	resA = 0;
 	printMessage(1,"Warning: the number of recursions for Taylor evaluation must not be negative.\n");
       }
-      verbosity = resA;
       taylorrecursions = resA;
       printf("The number of recursions for Taylor evaluation has been set to %d.\n",resA);
     } else {

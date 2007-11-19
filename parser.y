@@ -1575,7 +1575,11 @@ help:                   CONSTANTTOKEN
                           }    					       
                       | PITOKEN
                           {
-			    printf("Here should be some help text.\n");
+#ifdef HELP_PI_TEXT
+			    printf(HELP_PI_TEXT);
+#else
+			    printf("Ratio circonference and diameter of a circle.\n");
+#endif
                           }                					       
                       | IDENTIFIERTOKEN
                           {
@@ -1605,11 +1609,19 @@ help:                   CONSTANTTOKEN
                           }              					       
                       | EQUALTOKEN
                           {
+#ifdef HELP_ASSIGNMENT_TEXT
+			    printf(HELP_EQUAL_TEXT);
+#else
 			    printf("Assignment operator.\n");
+#endif
                           }                 					       
                       | COMPAREEQUALTOKEN
                           {
+#ifdef HELP_EQUAL_TEXT
+			    printf(HELP_EQUAL_TEXT);
+#else
 			    printf("Equality test.\n");
+#endif
                           }                 					       
                       | COMMATOKEN
                           {
@@ -1641,7 +1653,11 @@ help:                   CONSTANTTOKEN
                           }             					       
                       | RIGHTANGLETOKEN
                           {
+#ifdef HELP_GT_TEXT
+			    printf(HELP_GT_TEXT);
+#else
 			    printf("Comparison greater than.\n");
+#endif
                           }            					       
                       | DOTSTOKEN
                           {
@@ -1657,7 +1673,11 @@ help:                   CONSTANTTOKEN
                           }      						       
                       | ATTOKEN
                           {
+#ifdef HELP_CONCAT_TEXT
+			    printf(HELP_CONCAT_TEXT);
+#else
 			    printf("Concatenation of lists or strings.\n");
+#endif
                           }      							       
                       | DOUBLECOLONTOKEN
                           {
@@ -1665,39 +1685,75 @@ help:                   CONSTANTTOKEN
                           }    
                       | DOTCOLONTOKEN
                           {
+#ifdef HELP_PREPEND_TEXT
+			    printf(HELP_PREPEND_TEXT);
+#else
 			    printf("a.:b prepends a to list b.\n");
+#endif
                           }    
                       | COLONDOTTOKEN
                           {
+#ifdef HELP_APPEND_TEXT
+			    printf(HELP_APPEND_TEXT);
+#else
 			    printf("a:.b appends b to list a.\n");
+#endif
                           }    
                       | EXCLAMATIONEQUALTOKEN
                           {
+#ifdef HELP_NEQ_TEXT
+			    printf(HELP_NEQ_TEXT);
+#else
 			    printf("Comparison not equal.\n");
+#endif
                           }    
                       | ANDTOKEN
                           {
+#ifdef HELP_AND_TEXT
+			    printf(HELP_AND_TEXT);
+#else
 			    printf("Boolean and.\n");
+#endif
                           }    
                       | ORTOKEN
                           {
+#ifdef HELP_OR_TEXT
+			    printf(HELP_OR_TEXT);
+#else
 			    printf("Boolean or.\n");
+#endif
                           }    
                       | PLUSTOKEN
                           {
+#ifdef HELP_PLUS_TEXT
+			    printf(HELP_PLUS_TEXT);
+#else
 			    printf("Addition.\n");
+#endif
                           }                  					       
                       | MINUSTOKEN
                           {
+#ifdef HELP_MINUS_TEXT
+			    printf(HELP_MINUS_TEXT);
+#else
 			    printf("Substraction.\n");
+#endif
                           }                 					       
                       | MULTOKEN
                           {
+#ifdef HELP_MULT_TEXT
+			    printf(HELP_MULT_TEXT);
+#else
 			    printf("Multiplication.\n");
+#endif
                           }                						       
                       | DIVTOKEN
                           {
+#ifdef HELP_DIVIDE_TEXT
+			    printf(HELP_DIVIDE_TEXT);
+#else
 			    printf("Division.\n");
+#endif
                           }                  					       
                       | POWTOKEN
                           {
