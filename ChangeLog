@@ -1,3 +1,162 @@
+2007-11-18 23:31  clauter
+
+	* assignment.c, assignment.h, execute.c, execute.h, general.c,
+	  general.h, internlexer.l, internparser.y, lexer.l, parser.y:
+	  Added support for declared variables living in definition frames,
+	  shadowing each other.
+	  This is work towards internal procedure support.
+	  
+	  Syntax: begin ... end ({...]) - blocks may start with commands
+	  like
+	  var a, b, c;
+	  var d;
+	  
+	  Once other commands are given, no variable declarations are
+	  possible.
+
+2007-11-16 16:31  clauter
+
+	* doc/fullparentheses.shlp: New help text.
+
+2007-11-16 16:18  clauter
+
+	* doc/absolute.shlp, doc/relative.shlp: New help texts.
+
+2007-11-16 16:05  clauter
+
+	* execute.c: Corrected a bug in printing with midpointmode and
+	  display != decimal.
+
+2007-11-16 15:57  clauter
+
+	* doc/binary.shlp, doc/decimal.shlp, doc/display.shlp,
+	  doc/dyadic.shlp, doc/hexadecimal.shlp, doc/powers.shlp: New help
+	  texts.
+
+2007-11-16 15:35  schevill
+
+	* doc/keywords.def, doc/on.shlp: Added hexadecimal in keywords.def
+
+2007-11-16 15:22  clauter
+
+	* doc/print.shlp, doc/write.shlp: New help texts.
+
+2007-11-16 14:34  clauter
+
+	* internparser.y: Changed behaviour of quit in execute.
+
+2007-11-16 14:27  clauter
+
+	* doc/autosimplify.shlp, doc/canonical.shlp, doc/horner.shlp,
+	  doc/simplify.shlp, doc/simplifysafe.shlp: New help texts/
+	  corrected help texts.
+
+2007-11-16 13:32  schevill
+
+	* integral.c, remez.c: Added a warning in remez when the input
+	  interval is reduced to a single point.
+
+2007-11-16 13:31  clauter
+
+	* doc/printexpansion.shlp, doc/taylor.shlp: Added new help files.
+
+2007-11-16 13:09  clauter
+
+	* expression.c: Added some simplifications to
+	  simplifyTreeErrorfree.
+
+2007-11-16 12:15  clauter
+
+	* doc/equal.shlp, doc/ge.shlp, doc/gt.shlp, doc/le.shlp,
+	  doc/lt.shlp, doc/neq.shlp: Some new help texts.
+
+2007-11-15 14:16  schevill
+
+	* remez.c: Bug fix in dirtyfindzeros when a=b
+	  Another bug fix: when f(a)=0 there used to be some value of
+	  points that
+	  make the algorithm ignore a. This is now fixed
+
+2007-11-15 13:23  clauter
+
+	* infnorm.c: Correcting a bug in dirtyinfnorm had introduced a new
+	  one. Corrected that one.
+
+2007-11-15 13:02  clauter
+
+	* infnorm.c: Corrected a slight bug in dirtyinfnorm (NaN handling
+	  for evaluateFaithful).
+
+2007-11-14 13:24  clauter
+
+	* double.c, expression.c: Corrected a bug in isSyntacticallyEqual.
+	  Corrected a bug in
+	  printexpansion. Adapted roundPolynomialCoefficients to a more
+	  sensible behaviour on lists of incorrect length.
+
+2007-11-13 10:08  clauter
+
+	* general.c, general.h, parser.y: Improved help system for
+	  neophytes.
+
+2007-11-12 17:25  clauter
+
+	* doc/honorcoeffprec.shlp, doc/implementpoly.shlp,
+	  doc/searchgal.shlp, implement.c: Added new documentation.
+	  Corrected a subtile bug in implementpoly.
+
+2007-11-12 17:03  schevill
+
+	* configure.ac: patch from Guillaume Melquiond
+
+2007-11-12 14:29  clauter
+
+	* infnorm.c: Corrected some bug with infinities and NaNs in input
+	  to evaluateI and infnorm.
+
+2007-11-12 13:58  schevill
+
+	* infnorm.c: Fixed a bug in dirtyinfnorm when the interval contains
+	  an Inf. Now
+	  returns NaN and prints a warning.
+
+2007-11-12 13:58  clauter
+
+	* doc/accurateinfnorm.shlp, doc/autosimplify.shlp,
+	  doc/boolean.shlp, doc/checkinfnorm.shlp, doc/constant.shlp,
+	  doc/denominator.shlp, doc/diff.shlp, doc/error.shlp,
+	  doc/externalplot.shlp, doc/externalplotexample.c,
+	  doc/externalproc.shlp, doc/function.shlp, doc/integer.shlp,
+	  doc/numerator.shlp, doc/parse.shlp, doc/perturb.shlp,
+	  doc/printfloat.shlp, doc/printhexa.shlp, doc/printxml.shlp,
+	  doc/quit.shlp, doc/range.shlp, doc/readfile.shlp,
+	  doc/readxml.shlp, doc/restart.shlp, doc/roundcorrectly.shlp,
+	  doc/searchgal.shlp, doc/string.shlp, doc/subpoly.shlp,
+	  doc/types.def, doc/void.shlp, doc/worstcase.shlp, external.c:
+	  Added/ changed documentation.
+	  Corrected a bug in externalplot.
+
+2007-11-12 10:43  schevill
+
+	* fpminimax.c: Fixed a bug in rationalapprox(x,n) when x is exactly
+	  representable with n bits
+
+2007-11-08 17:00  clauter
+
+	* doc/boolean.shlp, doc/constant.shlp, doc/function.shlp,
+	  doc/integer.shlp, doc/listof.shlp, doc/range.shlp,
+	  doc/readfile.shlp, doc/roundcorrectly.shlp, doc/string.shlp: New
+	  help files.
+
+2007-11-08 11:22  schevill
+
+	* doc/shlp2txt.sh: Changed "Function name" into "Name"
+
+2007-11-07 22:28  clauter
+
+	* ChangeLog, doc/parse.shlp, internlexer.l, internparser.y,
+	  lexer.l, minilexer.l, miniparser.y, parser.y: Slight changes.
+
 2007-11-07 22:05  clauter
 
 	* doc/externalprocvoidexample.c: Forgotten file for doc.
