@@ -11725,14 +11725,29 @@ node *evaluateThingInner(node *tree) {
       copy->string = tempString;
       if (timingString != NULL) popTimeCounter(timingString);
     } else {
-      if (isString(copy->child1) && isPureTree(copy->child2)) {
-	if (isConstant(copy->child2)) {
+      if (isString(copy->child1) && isPureTree(copy->child2) && isConstant(copy->child2)) {
+	if (timingString != NULL) pushTimeCounter();
+	mpfr_init2(a,tools_precision);
+	if (evaluateThingToConstant(a, copy->child2, NULL)) {	  
+	  tempString2 = sprintValue(&a, tools_precision);
+	  tempString = (char *) safeCalloc(strlen(copy->child1->string) + strlen(tempString2) + 1, sizeof(char));
+	  sprintf(tempString,"%s%s",copy->child1->string,tempString2);
+	  freeThing(copy->child1);
+	  freeThing(copy->child2);
+	  copy->nodeType = STRING;
+	  copy->string = tempString;
+	  free(tempString2);
+	}
+	mpfr_clear(a);
+	if (timingString != NULL) popTimeCounter(timingString);
+      } else {
+	if (isString(copy->child2) && isPureTree(copy->child1) && isConstant(copy->child1)) {
 	  if (timingString != NULL) pushTimeCounter();
 	  mpfr_init2(a,tools_precision);
-	  if (evaluateThingToConstant(a, copy->child2, NULL)) {	  
+	  if (evaluateThingToConstant(a, copy->child1, NULL)) {	  
 	    tempString2 = sprintValue(&a, tools_precision);
-	    tempString = (char *) safeCalloc(strlen(copy->child1->string) + strlen(tempString2) + 1, sizeof(char));
-	    sprintf(tempString,"%s%s",copy->child1->string,tempString2);
+	    tempString = (char *) safeCalloc(strlen(copy->child2->string) + strlen(tempString2) + 1, sizeof(char));
+	    sprintf(tempString,"%s%s",tempString2,copy->child2->string);
 	    freeThing(copy->child1);
 	    freeThing(copy->child2);
 	    copy->nodeType = STRING;
@@ -11741,47 +11756,6 @@ node *evaluateThingInner(node *tree) {
 	  }
 	  mpfr_clear(a);
 	  if (timingString != NULL) popTimeCounter(timingString);
-	} else {
-	  if (timingString != NULL) pushTimeCounter();
-	  tempString2 = sprintTree(copy->child2);
-	  tempString = (char *) safeCalloc(strlen(copy->child1->string) + strlen(tempString2) + 1, sizeof(char));
-	  sprintf(tempString,"%s%s",copy->child1->string,tempString2);
-	  freeThing(copy->child1);
-	  freeThing(copy->child2);
-	  copy->nodeType = STRING;
-	  copy->string = tempString;
-	  free(tempString2);
-	  if (timingString != NULL) popTimeCounter(timingString);
-	}
-      } else {
-	if (isString(copy->child2) && isPureTree(copy->child1)) {
-	  if (isConstant(copy->child1)) {
-	    if (timingString != NULL) pushTimeCounter();
-	    mpfr_init2(a,tools_precision);
-	    if (evaluateThingToConstant(a, copy->child1, NULL)) {	  
-	      tempString2 = sprintValue(&a, tools_precision);
-	      tempString = (char *) safeCalloc(strlen(copy->child2->string) + strlen(tempString2) + 1, sizeof(char));
-	      sprintf(tempString,"%s%s",copy->child2->string,tempString2);
-	      freeThing(copy->child1);
-	      freeThing(copy->child2);
-	      copy->nodeType = STRING;
-	      copy->string = tempString;
-	      free(tempString2);
-	    }
-	    mpfr_clear(a);
-	    if (timingString != NULL) popTimeCounter(timingString);
-	  } else {
-	    if (timingString != NULL) pushTimeCounter();
-	    tempString2 = sprintTree(copy->child1);
-	    tempString = (char *) safeCalloc(strlen(copy->child2->string) + strlen(tempString2) + 1, sizeof(char));
-	    sprintf(tempString,"%s%s",copy->child2->string,tempString2);
-	    freeThing(copy->child1);
-	    freeThing(copy->child2);
-	    copy->nodeType = STRING;
-	    copy->string = tempString;
-	    free(tempString2);
-	    if (timingString != NULL) popTimeCounter(timingString);
-	  }
 	} else {
 	  if (isEmptyList(copy->child1) && isEmptyList(copy->child2)) {
 	    freeThing(copy->child1);

@@ -1606,7 +1606,7 @@ help:                   CONSTANTTOKEN
                           }              					       
                       | RBRACKETTOKEN
                           {
-			    printf("Right bracker - indicates a range or a list.\n");
+			    printf("Right bracket - indicates a range or a list.\n");
                           }              					       
                       | EQUALTOKEN
                           {
@@ -2959,7 +2959,7 @@ help:                   CONSTANTTOKEN
 			    printf("- asinh\n");
 			    printf("- atan\n");
 			    printf("- atanh\n");
-			    printf("- autosymplify\n");
+			    printf("- autosimplify\n");
 			    printf("- bashexecute\n");
 			    printf("- begin\n");
 			    printf("- binary\n");
@@ -2981,7 +2981,7 @@ help:                   CONSTANTTOKEN
 			    printf("- denominator\n");
 			    printf("- diam\n");
 			    printf("- diff\n");
-			    printf("- dirtinfnorm\n");
+			    printf("- dirtyinfnorm\n");
 			    printf("- dirtyfindzeros\n");
 			    printf("- dirtyintegral\n");
 			    printf("- display\n");

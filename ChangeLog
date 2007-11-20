@@ -1,3 +1,35 @@
+2007-11-20 11:53  clauter
+
+	* parser.y: Corrected an error in help invokation for ^.
+
+2007-11-20 11:44  schevill
+
+	* configure.ac, help.h: First version of help.h
+
+2007-11-20 11:30  clauter
+
+	* doc/absolute.shlp, doc/externalplot.shlp, doc/perturb.shlp,
+	  doc/relative.shlp: Corrected some bugs in help texts.
+
+2007-11-20 11:27  schevill
+
+	* doc/shlp2txt.sh: shlp2txt modified in order to patch
+	  automatically help.h
+
+2007-11-19 15:02  clauter
+
+	* doc/readxmlexample.xml: Made help for readxml work.
+
+2007-11-19 14:59  clauter
+
+	* doc/absolute.shlp, doc/externalplot.shlp, doc/numerator.shlp,
+	  doc/searchgal.shlp, doc/void.shlp: Corrected some errors in help
+	  texts.
+
+2007-11-19 13:36  clauter
+
+	* ChangeLog: New ChangeLog
+
 2007-11-19 13:29  schevill
 
 	* doc/RD.shlp, doc/RN.shlp, doc/RU.shlp, doc/RZ.shlp, doc/abs.shlp,
