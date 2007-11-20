@@ -5,6 +5,7 @@ sollyaBin="../sollya"
 keywords_defs="./keywords.def"
 types_defs="./types.def"
 sollya_name="Sollya"
+helpFile="../help.h"
 
 tempfile="/tmp/hlp2tex_tempfile"
 tempfile2="/tmp/hlp2tex_tempfile2"
@@ -315,23 +316,35 @@ processFile() {
 
 main() {
   if [ $# -eq 0 ]
-  then
-    for file in `/bin/ls *.shlp`
-    do
-      source=$file
-      target=`echo $source | sed -n 's/\.shlp/\.txt/;p'`
-      echo "Processing file "$source
-      processFile
-    done
-  else
-    for file in $*
-    do
-      source=$file
-      target=`echo $source | sed -n 's/\.shlp/\.txt/;p'`
-      echo "Processing file "$source
-      processFile
-    done
+  then liste=`/bin/ls *.shlp`
+  else liste=$*
   fi
+
+  for file in $liste
+  do
+    source=$file
+    target=`echo $source | sed -n 's/\.shlp/\.txt/;p'`
+    echo "Processing file "$source
+    processFile
+    
+    sed -i -n 's/\\/\\\\/g;p' $target
+    sed -i -n 's/"/\\"/g;p' $target
+    sed -i -n 's/\t/\\t/g;p' $target
+    sed -i -n 's/$/\\n/g;p' $target
+    index=`echo $source | sed -n 's/\.shlp//;p' | tr 'a-z' 'A-Z'`
+    cat $target | tr -d '\n' > $tempfile
+    replacement="#define HELP_"$index"_TEXT \""`cat $tempfile`"\""
+    
+    sed -i -n 's/\(^#define HELP_'"$index"'\)\(.*\)//;p' $helpFile
+    sed -i -n 's/\(#endif\)\(.*\)//;p' $helpFile
+    echo "$replacement" >> $helpFile
+    echo "#endif /* ifdef HELP_H*/" >> $helpFile
+    
+    rm $target
+  done
+
+  tr -s '\n' < $helpFile > $tempfile
+  mv $tempfile $helpFile
 }
 
 main $*
