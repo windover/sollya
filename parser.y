@@ -1758,8 +1758,8 @@ help:                   CONSTANTTOKEN
                           }                  					       
                       | POWTOKEN
                           {
-#ifdef HELP_POW_TEXT
-			    printf(HELP_POW_TEXT);
+#ifdef HELP_POWER_TEXT
+			    printf(HELP_POWER_TEXT);
 #else
 			    printf("Exponentiation.\n");
 #endif
