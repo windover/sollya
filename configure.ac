@@ -138,12 +138,12 @@ OLDLDFLAGS="$LDFLAGS"
 CPPFLAGS="$AM_CPPFLAGS $CPPFLAGS"
 LDFLAGS="$AM_LDFLAGS $LDFLAGS"
 
-AC_CHECK_LIB([dl], [dlopen], [], AC_MSG_ERROR([libdl unuseable]))
-AC_CHECK_LIB([gmp], [__gmpz_init], [], AC_MSG_ERROR([libgmp unuseable]))
-AC_CHECK_LIB([mpfr], [mpfr_init], [], AC_MSG_ERROR([libmpfr unuseable]))
-AC_CHECK_LIB([pari], [pari_init], [], AC_MSG_ERROR([libpari unuseable]))
-AC_CHECK_LIB([xml2], [xmlTextReaderIsEmptyElement], [], AC_MSG_ERROR([libxml2 unuseable]))
-AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unuseable]))
+AC_CHECK_LIB([dl], [dlopen], [], AC_MSG_ERROR([libdl unusable]))
+AC_CHECK_LIB([gmp], [__gmpz_init], [], AC_MSG_ERROR([libgmp unusable]))
+AC_CHECK_LIB([mpfr], [mpfr_init], [], AC_MSG_ERROR([libmpfr unusable]))
+AC_CHECK_LIB([pari], [pari_init], [], AC_MSG_ERROR([libpari unusable]))
+AC_CHECK_LIB([xml2], [xmlTextReaderIsEmptyElement], [], AC_MSG_ERROR([libxml2 unusable]))
+AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unusable]))
 
 
 #Checks for a particular calling convention in PARI
