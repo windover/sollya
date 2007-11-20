@@ -335,7 +335,7 @@ main() {
     cat $target | tr -d '\n' > $tempfile
     replacement="#define HELP_"$index"_TEXT \""`cat $tempfile`"\""
     
-    sed -i -n 's/\(^#define HELP_'"$index"'\)\(.*\)//;p' $helpFile
+    sed -i -n 's/\(^#define HELP_'"$index"'_TEXT\)\(.*\)//;p' $helpFile
     sed -i -n 's/\(#endif\)\(.*\)//;p' $helpFile
     echo "$replacement" >> $helpFile
     echo "#endif /* ifdef HELP_H*/" >> $helpFile

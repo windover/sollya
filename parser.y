@@ -1638,7 +1638,11 @@ help:                   CONSTANTTOKEN
                           }             					       
                       | LEFTANGLETOKEN
                           {
+#ifdef HELP_LT_TEXT
+			    printf(HELP_LT_TEXT);
+#else
 			    printf("Comparison less than.\n");
+#endif
                           }             					       
                       | RIGHTANGLEUNDERSCORETOKEN
                           {
