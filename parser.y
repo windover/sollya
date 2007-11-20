@@ -995,6 +995,10 @@ basicthing:             ONTOKEN
 			    $$ = makeIndex($1->a, $1->b);
 			    free($1);
 			  }
+                      | LPARTOKEN thing RPARTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeSubstitute($2,$5);
+			  }
 ;
 
 

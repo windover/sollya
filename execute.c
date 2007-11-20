@@ -2540,6 +2540,1514 @@ void printThing(node *thing) {
   }
 }
 
+char *newString(char *str) {
+  char *newStr;
+
+  newStr = (char *) safeCalloc(strlen(str) + 1, sizeof(char));
+  strcpy(newStr, str);
+  
+  return newStr;
+}
+
+char *concatAndFree(char *str1, char *str2) {
+  char *newStr;
+
+  newStr = (char *) safeCalloc(strlen(str1) + strlen(str2) + 1, sizeof(char));
+  sprintf(newStr,"%s%s", str1, str2);
+
+  free(str1); 
+  free(str2);
+  
+  return newStr;
+}
+
+
+char *sRawPrintThing(node *tree) {
+  int i;
+  chain *curr;
+  char *res;
+
+  if (tree == NULL) {
+    res = (char *) safeCalloc(1, sizeof(char));
+    return res;
+  }
+
+  switch (tree->nodeType) {
+  case VARIABLE:
+    if (variablename != NULL) 
+      res = newString(variablename);
+    else 
+      res = newString("undefined");
+    break;
+  case CONSTANT:
+    res = sprintValue(tree->value,mpfr_get_prec(*(tree->value)));
+    break;
+  case ADD:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") + ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break;
+  case SUB:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") - ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break;
+  case MUL:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") * ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break;
+  case DIV:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") / ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break;
+  case SQRT:
+    res = concatAndFree(newString("sqrt("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case EXP:
+    res = concatAndFree(newString("exp("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case LOG:
+    res = concatAndFree(newString("log("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case LOG_2:
+    res = concatAndFree(newString("log2("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case LOG_10:
+    res = concatAndFree(newString("log10("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case SIN:
+    res = concatAndFree(newString("sin("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case COS:
+    res = concatAndFree(newString("cos("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case TAN:
+    res = concatAndFree(newString("tan("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case ASIN:
+    res = concatAndFree(newString("asin("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case ACOS:
+    res = concatAndFree(newString("acos("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case ATAN:
+    res = concatAndFree(newString("atan("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case SINH:
+    res = concatAndFree(newString("sinh("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case COSH:
+    res = concatAndFree(newString("cosh("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case TANH:
+    res = concatAndFree(newString("tanh("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case ASINH:
+    res = concatAndFree(newString("asinh("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case ACOSH:
+    res = concatAndFree(newString("acosh("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case ATANH:
+    res = concatAndFree(newString("atanh("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case POW:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") ^ ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break;
+  case NEG:
+    res = concatAndFree(newString("-("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case ABS:
+    res = concatAndFree(newString("abs("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case DOUBLE:
+    res = concatAndFree(newString("double("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case DOUBLEDOUBLE:
+    res = concatAndFree(newString("doubledouble("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case TRIPLEDOUBLE:
+    res = concatAndFree(newString("tripledouble("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case ERF: 
+    res = concatAndFree(newString("erf("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case ERFC:
+    res = concatAndFree(newString("erfc("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case LOG_1P:
+    res = concatAndFree(newString("log1p("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case EXP_M1:
+    res = concatAndFree(newString("expm1("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case DOUBLEEXTENDED:
+    res = concatAndFree(newString("doubleextended("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case LIBRARYFUNCTION:
+    {
+      res = newString("");
+      for (i=1;i<=tree->libFunDeriv;i++) {
+	res = concatAndFree(res,newString("diff("));
+      }
+      res = concatAndFree(res,newString(tree->libFun->functionName));
+      res = concatAndFree(res, newString(")"));
+      res = concatAndFree(res, sRawPrintThing(tree->child1));
+      res = concatAndFree(res, newString(")"));
+      for (i=1;i<=tree->libFunDeriv;i++) {
+	res = concatAndFree(res, newString(")"));
+      }
+    }
+    break;
+  case CEIL:
+    res = concatAndFree(newString("ceil("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case FLOOR:
+    res = concatAndFree(newString("floor("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case PI_CONST:
+    res = newString("pi");
+    break;
+  case COMMANDLIST:
+    res = newString("begin\n");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res,
+			  sRawPrintThing((node *) (curr->value)));
+      res = concatAndFree(res,newString(";\n"));
+      curr = curr->next;
+    }
+    res = concatAndFree(res,newString("end\n"));
+    break;			
+  case WHILE:
+    res = newString("while ");
+    res = concatAndFree(res, 
+			sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(" do "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    break;				
+  case IFELSE:
+    res = newString("if ");
+    curr = tree->arguments;
+    res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+    curr = curr->next;
+    res = concatAndFree(res, newString(" then\n"));
+    res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+    res = concatAndFree(res, newString("\nelse\n"));
+    curr = curr->next;
+    res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+    break; 				
+  case IF:
+    res = newString("if ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(" then\n"));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    break; 				
+  case FOR:
+    res = newString("for ");
+    res = concatAndFree(res, newString(tree->string));
+    res = concatAndFree(res, newString(" from "));
+    curr = tree->arguments;
+    res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+    res = concatAndFree(res, newString(" to "));
+    curr = curr->next;
+    res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+    res = concatAndFree(res, newString(" by "));
+    curr = curr->next;
+    res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+    res = concatAndFree(res, newString(" do\n"));
+    curr = curr->next;
+    res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+    break; 				
+  case FORIN:
+    res = newString("for ");
+    res = concatAndFree(res, newString(tree->string));
+    res = concatAndFree(res, newString(" in "));
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(" do\n"));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    break;  				
+  case QUIT:
+    res = newString("quit");
+    break; 
+  case NOP:
+    res = newString("nop");
+    break;
+  case FALSEQUIT:
+    res = newString("falsequit");
+    break; 			
+  case FALSERESTART:
+    res = newString("falserestart");
+    break; 			
+  case RESTART:
+    res = newString("restart");
+    break;  	
+  case VARIABLEDECLARATION:
+    res = newString("var ");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, newString((char *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    break; 						
+  case PRINT:
+    res = newString("print(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 				
+  case NEWFILEPRINT:
+    res = newString("print(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(") > "));
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 			
+  case APPENDFILEPRINT:
+    res = newString("print(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(") >> "));
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 			
+  case PLOT:
+    res = newString("plot(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break;			
+  case PRINTHEXA:
+    res = concatAndFree(newString("printhexa("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 
+  case PRINTFLOAT:
+    res = concatAndFree(newString("printfloat("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 
+  case PRINTBINARY:
+    res = concatAndFree(newString("printbinary("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			
+  case PRINTEXPANSION:
+    res = concatAndFree(newString("printexpansion("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case BASHEXECUTE:
+    res = concatAndFree(newString("bashexecute("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			
+  case EXTERNALPLOT:
+    res = newString("externalplot(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 
+  case WRITE:
+    res = newString("write(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case NEWFILEWRITE:
+    res = newString("write(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(") > "));
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break;
+  case APPENDFILEWRITE:
+    res = newString("write(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(") >> "));
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 
+  case ASCIIPLOT:
+    res = newString("asciiplot(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(","));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break;			
+  case PRINTXML:
+    res = concatAndFree(newString("printxml("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;			
+  case PRINTXMLNEWFILE:
+    res = newString("printxml(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(") > "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    break;			
+  case PRINTXMLAPPENDFILE:
+    res = newString("printxml(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(") >> "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    break;			
+  case WORSTCASE:
+    res = newString("worstcase(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case RENAME:
+    res = newString("rename(");
+    res = concatAndFree(res, newString(tree->string));
+    res = concatAndFree(res, newString(","));
+    res = concatAndFree(res, newString((char *) (tree->arguments->value)));
+    res = concatAndFree(res, newString(")"));
+    break; 				
+  case AUTOPRINT:
+    res = newString("");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", "));
+      curr = curr->next;
+    }
+    break;  			
+  case ASSIGNMENT:
+    res = newString(tree->string);
+    res = concatAndFree(res, newString(" = "));
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 		
+  case EXTERNALPROC:
+    res = newString("externalproc(");
+    res = concatAndFree(res, newString(tree->string));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    curr = tree->arguments->next;
+    if (*((int *) (curr->value)) == VOID_TYPE) {
+      res = concatAndFree(res, newString("void"));
+    } else {
+      res = concatAndFree(res, newString("("));
+      while (curr != NULL) {
+	switch (*((int *) (curr->value))) {
+	case VOID_TYPE:
+	  res = concatAndFree(res, newString("void"));
+	  break;
+	case CONSTANT_TYPE:
+	  res = concatAndFree(res, newString("constant"));
+	  printf("constant");
+	  break;
+	case FUNCTION_TYPE:
+	  res = concatAndFree(res, newString("function"));
+	  break;
+	case RANGE_TYPE:
+	  res = concatAndFree(res, newString("range"));
+	  break;
+	case INTEGER_TYPE:
+	  res = concatAndFree(res, newString("integer"));
+	  break;
+	case STRING_TYPE:
+	  res = concatAndFree(res, newString("string"));
+	  break;
+	case BOOLEAN_TYPE:
+	  res = concatAndFree(res, newString("boolean"));
+	  break;
+	case CONSTANT_LIST_TYPE:
+	  res = concatAndFree(res, newString("list of constant"));
+	  break;
+	case FUNCTION_LIST_TYPE:
+	  res = concatAndFree(res, newString("list of function"));
+	  break;
+	case RANGE_LIST_TYPE:
+	  res = concatAndFree(res, newString("list of range"));
+	  break;
+	case INTEGER_LIST_TYPE:
+	  res = concatAndFree(res, newString("list of integer"));
+	  break;
+	case STRING_LIST_TYPE:
+	  res = concatAndFree(res, newString("list of string"));
+	  break;
+	case BOOLEAN_LIST_TYPE:
+	  res = concatAndFree(res, newString("list of boolean"));
+	  break;
+	default:
+	  res = concatAndFree(res, newString("unknown type"));
+	}
+	if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+	curr = curr->next;
+      }
+      res = concatAndFree(res, newString(")")); 
+    }
+    res = concatAndFree(res, newString(" -> ")); 
+    switch (*((int *) (tree->arguments->value))) {
+    case VOID_TYPE:
+      res = concatAndFree(res, newString("void")); 
+      break;
+    case CONSTANT_TYPE:
+      res = concatAndFree(res, newString("constant")); 
+      break;
+    case FUNCTION_TYPE:
+      res = concatAndFree(res, newString("function")); 
+      break;
+    case RANGE_TYPE:
+      res = concatAndFree(res, newString("range")); 
+      break;
+    case INTEGER_TYPE:
+      res = concatAndFree(res, newString("integer")); 
+      break;
+    case STRING_TYPE:
+      res = concatAndFree(res, newString("string")); 
+      break;
+    case BOOLEAN_TYPE:
+      res = concatAndFree(res, newString("boolean")); 
+      break;
+    case CONSTANT_LIST_TYPE:
+      res = concatAndFree(res, newString("list of constant")); 
+      break;
+    case FUNCTION_LIST_TYPE:
+      res = concatAndFree(res, newString("list of function")); 
+      break;
+    case RANGE_LIST_TYPE:
+      res = concatAndFree(res, newString("list of range")); 
+      break;
+    case INTEGER_LIST_TYPE:
+      res = concatAndFree(res, newString("list of integer")); 
+      break;
+    case STRING_LIST_TYPE:
+      res = concatAndFree(res, newString("list of string")); 
+      break;
+    case BOOLEAN_LIST_TYPE:
+      res = concatAndFree(res, newString("list of boolean")); 
+      break;
+    default:
+      res = concatAndFree(res, newString("unknown type")); 
+    }
+    res = concatAndFree(res, newString(")")); 
+    break; 			
+  case LIBRARYBINDING:
+    res = newString(tree->string);
+    res = concatAndFree(res, newString(" = library(")); 
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(")")); 
+    break;  			
+  case PRECASSIGN:
+    res = newString("prec = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 			
+  case POINTSASSIGN:
+    res = newString("points = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 			
+  case DIAMASSIGN:
+    res = newString("diam = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break;			
+  case DISPLAYASSIGN:
+    res = newString("display = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 			
+  case VERBOSITYASSIGN:
+    res = newString("verbosity = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break;  		
+  case CANONICALASSIGN:
+    res = newString("canonical = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 		
+  case AUTOSIMPLIFYASSIGN:
+    res = newString("autosimplify = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break;  		
+  case TAYLORRECURSASSIGN:
+    res = newString("taylorrecursions = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 		
+  case TIMINGASSIGN:
+    res = newString("timing = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 			
+  case FULLPARENASSIGN:
+    res = newString("fullparentheses = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break;  		
+  case MIDPOINTASSIGN:
+    res = newString("midpointmode = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 			
+  case HOPITALRECURSASSIGN:
+    res = newString("hopitalrecursions = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 		
+  case PRECSTILLASSIGN:
+    res = newString("prec = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString("!"));
+    break; 		
+  case POINTSSTILLASSIGN:
+    res = newString("diam = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString("!"));
+    break; 		
+  case DIAMSTILLASSIGN:
+    res = newString("diam = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString("!"));
+    break; 		
+  case DISPLAYSTILLASSIGN:
+    res = newString("display = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString("!"));
+    break;  		
+  case VERBOSITYSTILLASSIGN:
+    res = newString("verbosity = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString("!"));
+    break; 		
+  case CANONICALSTILLASSIGN:
+    res = newString("canonical = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString("!"));
+    break; 		
+  case AUTOSIMPLIFYSTILLASSIGN:
+    res = newString("autosimplify = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString("!"));
+    break;  	
+  case TAYLORRECURSSTILLASSIGN:
+    res = newString("taylorrecursions = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString("!"));
+    break; 	
+  case TIMINGSTILLASSIGN:
+    res = newString("timing = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString("!"));
+    break; 		
+  case FULLPARENSTILLASSIGN:
+    res = newString("fullparentheses = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString("!"));
+    break;  		
+  case MIDPOINTSTILLASSIGN:
+    res = newString("midpointmode = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString("!"));
+    break; 		
+  case HOPITALRECURSSTILLASSIGN:
+    res = newString("hopitalrecursions = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString("!"));
+    break;  	
+  case AND:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") && ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break; 				
+  case OR:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") || ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break;				
+  case NEGATION:
+    res = concatAndFree(newString("!("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			
+  case INDEX:
+    res = concatAndFree(sRawPrintThing(tree->child1),newString("["));
+    res = concatAndFree(res,sRawPrintThing(tree->child2));
+    res = concatAndFree(res,newString("]"));
+    break; 				
+  case COMPAREEQUAL:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") == ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break; 			
+  case COMPARELESS:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") < ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break; 			
+  case COMPAREGREATER:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") > ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break; 			
+  case COMPARELESSEQUAL:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") <= ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break; 		
+  case COMPAREGREATEREQUAL:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") >= ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break;		
+  case COMPARENOTEQUAL:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") != ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break;		
+  case CONCAT:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") @ ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break; 			
+  case ADDTOLIST:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") :: ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break; 			
+  case APPEND:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") :. ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break; 			
+  case PREPEND:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") .: ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break; 			
+  case ON:
+    res = newString("on");
+    break; 				
+  case OFF:
+    res = newString("off");
+    break; 				
+  case DYADIC:
+    res = newString("dyadic");
+    break;  				
+  case POWERS:
+    res = newString("powers");
+    break; 				
+  case BINARY:
+    res = newString("binary");
+    break; 			 	
+  case HEXADECIMAL:
+    res = newString("hexadecimal");
+    break; 			 	
+  case FILESYM:
+    res = newString("file");
+    break; 			 	
+  case POSTSCRIPT:
+    res = newString("postscript");
+    break;  			
+  case POSTSCRIPTFILE:
+    res = newString("postscriptfile");
+    break; 			
+  case PERTURB:
+    res = newString("perturb");
+    break; 			
+  case ROUNDDOWN:
+    res = newString("RD");
+    break; 			
+  case ROUNDUP:
+    res = newString("RU");
+    break; 			
+  case ROUNDTOZERO:
+    res = newString("RZ");
+    break;  			
+  case ROUNDTONEAREST:
+    res = newString("RN");
+    break; 			
+  case HONORCOEFF:
+    res = newString("honorcoeffprec");
+    break; 			
+  case TRUE:
+    res = newString("true");
+    break; 
+  case UNIT:
+    res = newString("void");
+    break; 			 	
+  case FALSE:
+    res = newString("false");
+    break; 			 	
+  case DEFAULT:
+    res = newString("default");
+    break; 			
+  case DECIMAL:
+    res = newString("decimal");
+    break; 			
+  case ABSOLUTESYM:
+    res = newString("absolute");
+    break; 			
+  case RELATIVESYM:
+    res = newString("relative");
+    break; 			
+  case ERRORSPECIAL:
+    res = newString("error");
+    break; 			
+  case DOUBLESYMBOL:
+    res = newString("double");
+    break;  			
+  case DOUBLEEXTENDEDSYMBOL:
+    res = newString("doubleextended");
+    break;  			
+  case DOUBLEDOUBLESYMBOL:
+    res = newString("doubledouble");
+    break; 		
+  case TRIPLEDOUBLESYMBOL:
+    res = newString("tripledouble");
+    break; 		
+  case STRING:
+    res = concatAndFree(newString("\""),concatAndFree(newString(tree->string),newString("\"")));
+    break; 			 	
+  case TABLEACCESS:
+    res = newString(tree->string);
+    break;  			
+  case ISBOUND:
+    res = concatAndFree(newString("isbound("),concatAndFree(newString(tree->string),newString(")")));
+    break;  			
+  case TABLEACCESSWITHSUBSTITUTE:
+    res = concatAndFree(newString(tree->string),newString("("));
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res,sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", "));
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break;  	
+  case DECIMALCONSTANT:
+    res = concatAndFree(newString("decimalconstant(\""),concatAndFree(newString(tree->string),newString("\")")));
+    break; 		
+  case DYADICCONSTANT:
+    res = concatAndFree(newString("dyadicconstant(\""),concatAndFree(newString(tree->string),newString("\")")));
+    break; 			
+  case HEXCONSTANT:
+    res = concatAndFree(newString("hexconstant(\""),concatAndFree(newString(tree->string),newString("\")")));
+    break; 			
+  case HEXADECIMALCONSTANT:
+    res = concatAndFree(newString("hexadecimalconstant(\""),concatAndFree(newString(tree->string),newString("\")")));
+    break; 			
+  case BINARYCONSTANT:
+    res = concatAndFree(newString("binaryconstant(\""),concatAndFree(newString(tree->string),newString("\")")));
+    break; 			
+  case EMPTYLIST:
+    res = newString("[| |]");
+    break; 			
+  case LIST:
+    res = newString("[|");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res,sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", "));
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString("|]"));
+    break; 			 	
+  case FINALELLIPTICLIST:
+    res = newString("[|");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res,sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", "));
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString("...|]"));
+    break; 		
+  case ELLIPTIC:
+    res = newString("...");
+    break; 			
+  case RANGE:
+    res = newString("[");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(";"));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString("]"));
+    break; 			 	
+  case DEBOUNDMAX:
+    res = concatAndFree(newString("sup("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;  			
+  case DEBOUNDMIN:
+    res = concatAndFree(newString("inf("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			
+  case DEBOUNDMID:
+    res = concatAndFree(newString("mid("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			
+  case DIFF:
+    res = concatAndFree(newString("diff("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			 	
+  case SIMPLIFY:
+    res = concatAndFree(newString("simplify("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;  			
+  case SIMPLIFYSAFE:
+    res = concatAndFree(newString("simplifysafe("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;  			
+  case REMEZ:
+    res = newString("remez(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 			 	
+  case HORNER:
+    res = concatAndFree(newString("horner("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			 	
+  case CANONICAL:
+    res = concatAndFree(newString("canonical("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			
+  case EXPAND:
+    res = concatAndFree(newString("expand("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			 	
+  case TAYLOR:
+    res = newString("taylor(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 			 	
+  case DEGREE:
+    res = concatAndFree(newString("degree("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			 	
+  case NUMERATOR:
+    res = concatAndFree(newString("numerator("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			
+  case DENOMINATOR:
+    res = concatAndFree(newString("denominator("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			
+  case SUBSTITUTE:
+    res = newString("substitute(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break;			
+  case COEFF:
+    res = newString("coeff(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break; 			 	
+  case SUBPOLY:
+    res = newString("subpoly(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case ROUNDCOEFFICIENTS:
+    res = newString("roundcoefficients(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break; 		
+  case RATIONALAPPROX:    
+    res = newString("rationalapprox(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case ACCURATEINFNORM:
+    res = newString("accurateinfnorm(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 		
+  case ROUNDTOFORMAT:
+    res = newString("round(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break;			
+  case EVALUATE:
+    res = newString("evaluate(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case PARSE:
+    res = concatAndFree(newString("parse("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			 	
+  case READXML:
+    res = concatAndFree(newString("readxml("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			 	
+  case EXECUTE:
+    res = concatAndFree(newString("execute("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			 	
+  case INFNORM:
+    res = newString("infnorm(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case FINDZEROS:
+    res = newString("findzeros(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case FPFINDZEROS:
+    res = newString("fpfindzeros(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case DIRTYINFNORM:
+    res = newString("dirtyinfnorm(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case INTEGRAL:
+    res = newString("integral(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case DIRTYINTEGRAL:
+    res = newString("dirtyintegral(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break;  			
+  case IMPLEMENTPOLY:
+    res = newString("implementpoly(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case CHECKINFNORM:
+    res = newString("checkinfnorm(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case ZERODENOMINATORS:
+    res = newString("zerodenominators(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break;  		
+  case ISEVALUABLE:
+    res = newString("isevaluable(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case SEARCHGAL:
+    res = newString("searchgal(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case GUESSDEGREE:
+    res = newString("guessdegree(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case ASSIGNMENTININDEXING:
+    curr = tree->arguments;
+    res = concatAndFree(sRawPrintThing((node *) (curr->value)), newString("["));
+    curr = curr->next;
+    res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+    res = concatAndFree(res, newString("] = "));
+    curr = curr->next;
+    res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+    break; 			
+  case DIRTYFINDZEROS:
+    res = newString("dirtyfindzeros(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case HEAD:
+    res = concatAndFree(newString("head("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			 	
+  case ROUNDCORRECTLY:
+    res = concatAndFree(newString("roundcorrectly("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			 	
+  case READFILE:
+    res = concatAndFree(newString("readfile("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			 	
+  case REVERT:
+    res = concatAndFree(newString("revert("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 	
+  case SORT:
+    res = concatAndFree(newString("sort("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			 			 	
+  case MANTISSA:
+    res = concatAndFree(newString("mantissa("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			 	
+  case EXPONENT:
+    res = concatAndFree(newString("exponent("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			 	
+  case PRECISION:
+    res = concatAndFree(newString("precision("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			 	
+  case TAIL:
+    res = concatAndFree(newString("tail("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 			 	
+  case LENGTH:
+    res = concatAndFree(newString("length("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break; 	
+  case EXTERNALPROCEDUREUSAGE:
+    res = newString(tree->libProc->procedureName);
+    break;
+  case PRECDEREF:
+    res = newString("prec = ?");
+    break; 			
+  case POINTSDEREF:
+    res = newString("points = ?");
+    break; 			
+  case DIAMDEREF:
+    res = newString("diam = ?");
+    break; 			
+  case DISPLAYDEREF:
+    res = newString("display = ?");
+    break; 			
+  case VERBOSITYDEREF:
+    res = newString("verbosity = ?");
+    break; 			
+  case CANONICALDEREF:
+    res = newString("canonical = ?");
+    break; 			
+  case AUTOSIMPLIFYDEREF:
+    res = newString("autosimplify = ?");
+    break; 		
+  case TAYLORRECURSDEREF:
+    res = newString("taylorrecursions = ?");
+    break; 		
+  case TIMINGDEREF:
+    res = newString("timing = ?");
+    break; 			
+  case FULLPARENDEREF:
+    res = newString("fullparentheses = ?");
+    break; 			
+  case MIDPOINTDEREF:
+    res = newString("midpointmode = ?");
+    break; 			
+  case HOPITALRECURSDEREF:
+    res = newString("hopitalrecursions = ?");
+    break;  	       
+  default:
+    fprintf(stderr,"Error: sRawPrintThing: unknown identifier (%d) in the tree\n",tree->nodeType);
+    exit(1);
+  }
+  return res;
+}
+
+
+
+char *sPrintThingWithFullStrings(node *thing) {
+  char *temp;
+  chain *curr;
+  char *temp1, *temp2;
+
+  if (isPureTree(thing)) {
+    return sprintTree(thing);
+  } else {
+    if (isRange(thing)) {
+      if (midpointMode && (dyadic == 0)) {
+	temp = sprintMidpointMode(*(thing->child1->value), *(thing->child2->value));
+	if (temp != NULL) {
+	  return temp;
+	} else {
+	  temp1 = sprintValue(thing->child1->value,mpfr_get_prec(*(thing->child1->value)));
+	  temp2 = sprintValue(thing->child2->value,mpfr_get_prec(*(thing->child2->value)));
+	  temp = (char *) safeCalloc(strlen(temp1) + strlen(temp2) + 3 + 1, sizeof(char));
+	  sprintf(temp, "[%s;%s]",temp1,temp2);
+	  free(temp1);
+	  free(temp2);
+	  return temp;
+	}
+      } else {
+	  temp1 = sprintValue(thing->child1->value,mpfr_get_prec(*(thing->child1->value)));
+	  temp2 = sprintValue(thing->child2->value,mpfr_get_prec(*(thing->child2->value)));
+	  temp = (char *) safeCalloc(strlen(temp1) + strlen(temp2) + 3 + 1, sizeof(char));
+	  sprintf(temp, "[%s;%s]",temp1,temp2);
+	  free(temp1);
+	  free(temp2);
+	  return temp;
+      }
+    } else {
+      if (isList(thing)) {
+	curr = thing->arguments;
+	temp = (char *) safeCalloc(2 + 1, sizeof(char));
+	sprintf(temp,"[|");
+	while (curr != NULL) {
+	  temp1 = sPrintThingWithFullStrings((node *) (curr->value));
+	  temp2 = (char *) safeCalloc(strlen(temp) + strlen(temp1) + 1, sizeof(char));
+	  sprintf(temp2,"%s%s",temp,temp1);
+	  free(temp);
+	  free(temp1);
+	  temp = temp2;
+	  if (curr->next != NULL) {
+	    temp2 = (char *) safeCalloc(strlen(temp) + 2 + 1, sizeof(char));
+	    sprintf(temp2,"%s, ",temp);
+	    free(temp);
+	    temp = temp2;
+	  }
+	  curr = curr->next;
+	}
+	temp2 = (char *) safeCalloc(strlen(temp) + 2 + 1, sizeof(char));
+	sprintf(temp2,"%s|]",temp);
+	free(temp);
+	temp = temp2;
+	return temp;
+      } else {
+	if (isFinalEllipticList(thing)) {
+	  curr = thing->arguments;
+	  temp = (char *) safeCalloc(2 + 1, sizeof(char));
+	  sprintf(temp,"[|");
+	  while (curr != NULL) {
+	    temp1 = sPrintThingWithFullStrings((node *) (curr->value));
+	    temp2 = (char *) safeCalloc(strlen(temp) + strlen(temp1) + 1, sizeof(char));
+	    sprintf(temp2,"%s%s",temp,temp1);
+	    free(temp);
+	    free(temp1);
+	    temp = temp2;
+	    if (curr->next != NULL) {
+	      temp2 = (char *) safeCalloc(strlen(temp) + 2 + 1, sizeof(char));
+	      sprintf(temp2,"%s, ",temp);
+	      free(temp);
+	      temp = temp2;
+	    }
+	    curr = curr->next;
+	  }
+	  temp2 = (char *) safeCalloc(strlen(temp) + 5 + 1, sizeof(char));
+	  sprintf(temp2,"%s...|]",temp);
+	  free(temp);
+	  temp = temp2;
+	  return temp;
+	} else {
+	  return sRawPrintThing(thing);
+	}
+      }
+    }  
+  }
+}
+
+
+char *sPrintThing(node *thing) {
+  char *temp;
+  chain *curr;
+  char *temp1, *temp2;
+
+  if (isPureTree(thing)) {
+    return sprintTree(thing);
+  } else {
+    if (isRange(thing)) {
+      if (midpointMode && (dyadic == 0)) {
+	temp = sprintMidpointMode(*(thing->child1->value), *(thing->child2->value));
+	if (temp != NULL) {
+	  return temp;
+	} else {
+	  temp1 = sprintValue(thing->child1->value,mpfr_get_prec(*(thing->child1->value)));
+	  temp2 = sprintValue(thing->child2->value,mpfr_get_prec(*(thing->child2->value)));
+	  temp = (char *) safeCalloc(strlen(temp1) + strlen(temp2) + 3 + 1, sizeof(char));
+	  sprintf(temp, "[%s;%s]",temp1,temp2);
+	  free(temp1);
+	  free(temp2);
+	  return temp;
+	}
+      } else {
+	  temp1 = sprintValue(thing->child1->value,mpfr_get_prec(*(thing->child1->value)));
+	  temp2 = sprintValue(thing->child2->value,mpfr_get_prec(*(thing->child2->value)));
+	  temp = (char *) safeCalloc(strlen(temp1) + strlen(temp2) + 3 + 1, sizeof(char));
+	  sprintf(temp, "[%s;%s]",temp1,temp2);
+	  free(temp1);
+	  free(temp2);
+	  return temp;
+      }
+    } else {
+      if (isList(thing)) {
+	curr = thing->arguments;
+	temp = (char *) safeCalloc(2 + 1, sizeof(char));
+	sprintf(temp,"[|");
+	while (curr != NULL) {
+	  temp1 = sPrintThingWithFullStrings((node *) (curr->value));
+	  temp2 = (char *) safeCalloc(strlen(temp) + strlen(temp1) + 1, sizeof(char));
+	  sprintf(temp2,"%s%s",temp,temp1);
+	  free(temp);
+	  free(temp1);
+	  temp = temp2;
+	  if (curr->next != NULL) {
+	    temp2 = (char *) safeCalloc(strlen(temp) + 2 + 1, sizeof(char));
+	    sprintf(temp2,"%s, ",temp);
+	    free(temp);
+	    temp = temp2;
+	  }
+	  curr = curr->next;
+	}
+	temp2 = (char *) safeCalloc(strlen(temp) + 2 + 1, sizeof(char));
+	sprintf(temp2,"%s|]",temp);
+	free(temp);
+	temp = temp2;
+	return temp;
+      } else {
+	if (isFinalEllipticList(thing)) {
+	  curr = thing->arguments;
+	  temp = (char *) safeCalloc(2 + 1, sizeof(char));
+	  sprintf(temp,"[|");
+	  while (curr != NULL) {
+	    temp1 = sPrintThingWithFullStrings((node *) (curr->value));
+	    temp2 = (char *) safeCalloc(strlen(temp) + strlen(temp1) + 1, sizeof(char));
+	    sprintf(temp2,"%s%s",temp,temp1);
+	    free(temp);
+	    free(temp1);
+	    temp = temp2;
+	    if (curr->next != NULL) {
+	      temp2 = (char *) safeCalloc(strlen(temp) + 2 + 1, sizeof(char));
+	      sprintf(temp2,"%s, ",temp);
+	      free(temp);
+	      temp = temp2;
+	    }
+	    curr = curr->next;
+	  }
+	  temp2 = (char *) safeCalloc(strlen(temp) + 5 + 1, sizeof(char));
+	  sprintf(temp2,"%s...|]",temp);
+	  free(temp);
+	  temp = temp2;
+	  return temp;
+	} else {
+	  if (isString(thing)) {
+	    temp = (char *) safeCalloc(strlen(thing->string) + 1, sizeof(char));
+	    sprintf(temp,"%s",thing->string);
+	    return temp;
+	  } else {
+	    return sRawPrintThing(thing);
+	  }
+	}
+      }
+    }  
+  }
+}
+
+
+
+
 void fRawPrintThing(FILE *fd, node *thing);
 
 void fPrintThingWithFullStrings(FILE *fd, node *thing) {
@@ -7511,7 +9019,7 @@ void rawPrintThing(node *tree) {
 	printf("diff(");
       }
       printf("%s(",tree->libFun->functionName);
-      printTree(tree->child1);
+      rawPrintThing(tree->child1);
       printf(")");
       for (i=1;i<=tree->libFunDeriv;i++) {
 	printf(")");
@@ -8786,7 +10294,7 @@ void fRawPrintThing(FILE *fd, node *tree) {
 	fprintf(fd,"diff(");
       }
       fprintf(fd,"%s(",tree->libFun->functionName);
-      printTree(tree->child1);
+      fRawPrintThing(fd,tree->child1);
       fprintf(fd,")");
       for (i=1;i<=tree->libFunDeriv;i++) {
 	fprintf(fd,")");
@@ -11256,6 +12764,7 @@ node *evaluateThingInner(node *tree) {
   mpfr_t *tempMpfrPtr;
   mp_exp_t expo;
   mp_prec_t pTemp;
+  int undoVariableTrick;
 
   if (tree == NULL) return NULL;
 
@@ -11757,40 +13266,74 @@ node *evaluateThingInner(node *tree) {
 	  mpfr_clear(a);
 	  if (timingString != NULL) popTimeCounter(timingString);
 	} else {
-	  if (isEmptyList(copy->child1) && isEmptyList(copy->child2)) {
-	    freeThing(copy->child1);
-	    freeThing(copy->child2);
-	    copy->nodeType = EMPTYLIST;
-	  } else {
-	    if (isEmptyList(copy->child1) && (isList(copy->child2) || isFinalEllipticList(copy->child2))) {
-	      copy->nodeType = copy->child2->nodeType;
-	      copy->arguments = copy->child2->arguments;
+	  if (isString(copy->child1)) {
+	    if (timingString != NULL) pushTimeCounter();	    
+	    tempNode2 = evaluateThing(copy->child2);
+	    if (!isError(tempNode2)) {
+	      tempString2 = sPrintThing(tempNode2);
+	      freeThing(tempNode2);
+	      tempString = (char *) safeCalloc(strlen(copy->child1->string) + strlen(tempString2) + 1, sizeof(char));
+	      sprintf(tempString,"%s%s",copy->child1->string,tempString2);
 	      freeThing(copy->child1);
-	      free(copy->child2);
-	    } else {
-	      if (isEmptyList(copy->child2) && isList(copy->child1)) {
-		if (timingString != NULL) pushTimeCounter();
-		copy->nodeType = LIST;
-		copy->arguments = copy->child1->arguments;
+	      freeThing(copy->child2);
+	      copy->nodeType = STRING;
+	      copy->string = tempString;
+	      free(tempString2);
+	    } 
+	    if (timingString != NULL) popTimeCounter(timingString);
+	  } else {
+	    if (isString(copy->child2)) {
+	      if (timingString != NULL) pushTimeCounter();	    
+	      tempNode2 = evaluateThing(copy->child1);
+	      if (!isError(tempNode2)) {
+		tempString2 = sPrintThing(tempNode2);
+		freeThing(tempNode2);
+		tempString = (char *) safeCalloc(strlen(copy->child2->string) + strlen(tempString2) + 1, sizeof(char));
+		sprintf(tempString,"%s%s",tempString2,copy->child2->string);
+		freeThing(copy->child1);
 		freeThing(copy->child2);
-		free(copy->child1);
-		if (timingString != NULL) popTimeCounter(timingString);
+		copy->nodeType = STRING;
+		copy->string = tempString;
+		free(tempString2);
+	      } 
+	      if (timingString != NULL) popTimeCounter(timingString);
+	    } else {
+	      if (isEmptyList(copy->child1) && isEmptyList(copy->child2)) {
+		freeThing(copy->child1);
+		freeThing(copy->child2);
+		copy->nodeType = EMPTYLIST;
 	      } else {
-		if (isList(copy->child1) && isList(copy->child2)) {
-		  if (timingString != NULL) pushTimeCounter();
-		  copy->nodeType = LIST;
-		  copy->arguments = concatChains(copy->child1->arguments, copy->child2->arguments);
-		  free(copy->child1);
+		if (isEmptyList(copy->child1) && (isList(copy->child2) || isFinalEllipticList(copy->child2))) {
+		  copy->nodeType = copy->child2->nodeType;
+		  copy->arguments = copy->child2->arguments;
+		  freeThing(copy->child1);
 		  free(copy->child2);
-		  if (timingString != NULL) popTimeCounter(timingString);
 		} else {
-		  if (isList(copy->child1) && isFinalEllipticList(copy->child2)) {
+		  if (isEmptyList(copy->child2) && isList(copy->child1)) {
 		    if (timingString != NULL) pushTimeCounter();
-		    copy->nodeType = FINALELLIPTICLIST;
-		    copy->arguments = concatChains(copy->child1->arguments, copy->child2->arguments);
+		    copy->nodeType = LIST;
+		    copy->arguments = copy->child1->arguments;
+		    freeThing(copy->child2);
 		    free(copy->child1);
-		    free(copy->child2);
 		    if (timingString != NULL) popTimeCounter(timingString);
+		  } else {
+		    if (isList(copy->child1) && isList(copy->child2)) {
+		      if (timingString != NULL) pushTimeCounter();
+		      copy->nodeType = LIST;
+		      copy->arguments = concatChains(copy->child1->arguments, copy->child2->arguments);
+		      free(copy->child1);
+		      free(copy->child2);
+		      if (timingString != NULL) popTimeCounter(timingString);
+		    } else {
+		      if (isList(copy->child1) && isFinalEllipticList(copy->child2)) {
+			if (timingString != NULL) pushTimeCounter();
+			copy->nodeType = FINALELLIPTICLIST;
+			copy->arguments = concatChains(copy->child1->arguments, copy->child2->arguments);
+			free(copy->child1);
+			free(copy->child2);
+			if (timingString != NULL) popTimeCounter(timingString);
+		      }
+		    }
 		  }
 		}
 	      }
@@ -11986,7 +13529,18 @@ node *evaluateThingInner(node *tree) {
     break;
   case TABLEACCESSWITHSUBSTITUTE:
     if (timingString != NULL) pushTimeCounter();
+    undoVariableTrick = 0;
+    if (variablename == NULL) {
+      variablename = (char *) safeCalloc(2, sizeof(char));
+      variablename[0] = 'x';
+      undoVariableTrick = 1;
+    }
     if ((tempNode = getThingFromTable(tree->string)) == NULL) {
+      if (undoVariableTrick) {
+	free(variablename);
+	variablename = NULL;
+	undoVariableTrick = 0;
+      }
       if (variablename == NULL) {
 	variablename = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
 	strcpy(variablename, tree->string);
@@ -11996,9 +13550,20 @@ node *evaluateThingInner(node *tree) {
       }
       tempNode = makeVariable();
     }
+    if (undoVariableTrick) {
+      free(variablename);
+      variablename = NULL;
+      undoVariableTrick = 0;
+    }
     if (isPureTree(tempNode)) {
       if (lengthChain(tree->arguments) == 1) {
 	if (evaluateThingToPureTree(&tempNode2,(node *) (tree->arguments->value))) {
+	  if ((tempNode->nodeType == LIBRARYFUNCTION) && (variablename == NULL)) {
+	    printMessage(1,"Warning: the current free variable is not bound to an identifier. Dereferencing library function \"%s\" requires this binding.\n",tempNode->libFun->functionName);
+	    printMessage(1,"Will bind the current free variable to the identifier \"x\"\n");
+	    variablename = (char *) safeCalloc(2, sizeof(char));
+	    variablename[0] = 'x';
+	  }
 	  free(copy);
 	  if (tempNode->nodeType == VARIABLE) {
 	    printMessage(1,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
