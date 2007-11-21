@@ -9696,7 +9696,7 @@ void rawPrintThing(node *tree) {
     printf("hexconstant(\"%s\")",tree->string);
     break; 			
   case HEXADECIMALCONSTANT:
-    printf("hexconstant(\"%s\")",tree->string);
+    printf("hexadecimalconstant(\"%s\")",tree->string);
     break; 			
   case BINARYCONSTANT:
     printf("binaryconstant(\"%s\")",tree->string);
@@ -10094,7 +10094,7 @@ void rawPrintThing(node *tree) {
     printf("midpointmode = ?");
     break; 			
   case HOPITALRECURSDEREF:
-    printf("hopitalrecursion = ?");
+    printf("hopitalrecursions = ?");
     break;  	       
   default:
     fprintf(stderr,"Error: rawPrintThing: unknown identifier (%d) in the tree\n",tree->nodeType);
@@ -10971,7 +10971,7 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fprintf(fd,"hexconstant(\"%s\")",tree->string);
     break; 			
   case HEXADECIMALCONSTANT:
-    fprintf(fd,"hexconstant(\"%s\")",tree->string);
+    fprintf(fd,"hexadecimalconstant(\"%s\")",tree->string);
     break; 			
   case BINARYCONSTANT:
     fprintf(fd,"binaryconstant(\"%s\")",tree->string);
@@ -11369,7 +11369,7 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fprintf(fd,"midpointmode = ?");
     break; 			
   case HOPITALRECURSDEREF:
-    fprintf(fd,"hopitalrecursion = ?");
+    fprintf(fd,"hopitalrecursions = ?");
     break;  	       
   default:
     fprintf(stderr,"Error: rawPrintThing: unknown identifier (%d) in the tree\n",tree->nodeType);
@@ -13269,7 +13269,7 @@ node *evaluateThingInner(node *tree) {
 	  if (isString(copy->child1)) {
 	    if (timingString != NULL) pushTimeCounter();	    
 	    tempNode2 = evaluateThing(copy->child2);
-	    if (!isError(tempNode2)) {
+	    if (!isError(tempNode2) || isError(copy->child2)) {
 	      tempString2 = sPrintThing(tempNode2);
 	      freeThing(tempNode2);
 	      tempString = (char *) safeCalloc(strlen(copy->child1->string) + strlen(tempString2) + 1, sizeof(char));
@@ -13285,7 +13285,7 @@ node *evaluateThingInner(node *tree) {
 	    if (isString(copy->child2)) {
 	      if (timingString != NULL) pushTimeCounter();	    
 	      tempNode2 = evaluateThing(copy->child1);
-	      if (!isError(tempNode2)) {
+	      if (!isError(tempNode2) || isError(copy->child2)) {
 		tempString2 = sPrintThing(tempNode2);
 		freeThing(tempNode2);
 		tempString = (char *) safeCalloc(strlen(copy->child2->string) + strlen(tempString2) + 1, sizeof(char));
