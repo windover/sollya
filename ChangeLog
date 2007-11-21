@@ -1,3 +1,28 @@
+2007-11-20 20:05  clauter
+
+	* execute.c, internparser.y, parser.y: Corrected a bug in the
+	  parser. Made @ work on any type as long as the
+	  other argument is a string. Corrected a strange bug if verbosity
+	  = 2;
+	  an external library function is bound and a type error occurs
+	  with a
+	  subexpression of an expression having an usage of the library
+	  function
+	  as a head function.
+
+2007-11-20 15:21  clauter
+
+	* ChangeLog, execute.c, parser.y: Changed @ behaviour. Corrected a
+	  bug.
+
+2007-11-20 13:09  schevill
+
+	* doc/shlp2txt.sh, help.h, parser.y: shlp2txt modified in order to
+	  take in account commands that have a
+	  prefix that is also a command (like taylor and taylorrecursions).
+	  
+	  help.h modified accordingly
+
 2007-11-20 11:53  clauter
 
 	* parser.y: Corrected an error in help invokation for ^.
