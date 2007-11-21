@@ -341,7 +341,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       }
       fprintf(fd,"for all %s in the given domain, g(%s) is bounded by the point interval ",variablename,variablename);
       fprintInterval(fd,*(theo->boundLeft));
-      fprintf(fd," and therefore constant zero, too.\nBy Hôpital's rule, the given expression");
+      fprintf(fd," and therefore constant zero, too.\nBy Hopital's rule, the given expression");
       fprintf(fd," is bounded by the interval division of boundings\n");
       fprintf(fd,"of the derivatives of the numerator f(%s) and denominator g(%s) of the given expression.\n",
 	      variablename,variablename);
@@ -424,7 +424,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       fprintf(fd,"the images of g(%s) for %s in _xZ are in the point interval [0;0].\n",
 	      variablename,variablename);
       fprintf(fd,"g(%s) is therefore constant zero in this interval _xZ.\n", variablename);
-      fprintf(fd,"Hôpital's rule, i.e. a first order Taylor expansion of f(%s) and g(%s), can therefore\n",
+      fprintf(fd,"Hopital's rule, i.e. a first order Taylor expansion of f(%s) and g(%s), can therefore\n",
 	      variablename,variablename);
       fprintf(fd,"be used for bounding the given expression, which will be replaced by f'(%s)/g'(%s).\n",
 	      variablename,variablename);
