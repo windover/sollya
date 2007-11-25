@@ -67,6 +67,7 @@ void yyerror(char *message) {
 %token  LBRACKETTOKEN;          					       
 %token  RBRACKETTOKEN;          					       
 %token  EQUALTOKEN;             					       
+%token  ASSIGNEQUALTOKEN;
 %token  COMPAREEQUALTOKEN;             					       
 %token  COMMATOKEN;             					       
 %token  EXCLAMATIONTOKEN;  						       
@@ -664,6 +665,11 @@ simpleassignment:       IDENTIFIERTOKEN EQUALTOKEN thing
 			    $$ = makeAssignment($1, $3);
 			    free($1);
 			  }
+                      | IDENTIFIERTOKEN ASSIGNEQUALTOKEN thing 
+                          {
+			    $$ = makeFloatAssignment($1, $3);
+			    free($1);
+			  }
                       | IDENTIFIERTOKEN EQUALTOKEN LIBRARYTOKEN LPARTOKEN thing RPARTOKEN 
                           {
 			    $$ = makeLibraryBinding($1, $5);
@@ -672,6 +678,11 @@ simpleassignment:       IDENTIFIERTOKEN EQUALTOKEN thing
                       | indexing EQUALTOKEN thing 
                           {
 			    $$ = makeAssignmentInIndexing($1->a,$1->b,$3);
+			    free($1);
+			  }
+                      | indexing ASSIGNEQUALTOKEN thing 
+                          {
+			    $$ = makeFloatAssignmentInIndexing($1->a,$1->b,$3);
 			    free($1);
 			  }
 ;
@@ -1698,7 +1709,15 @@ help:                   CONSTANTTOKEN
                       | EQUALTOKEN
                           {
 #ifdef HELP_ASSIGNMENT_TEXT
-			    printf(HELP_EQUAL_TEXT);
+			    printf(HELP_ASSIGNMENT_TEXT);
+#else
+			    printf("Assignment operator.\n");
+#endif
+                          }       
+                      | ASSIGNEQUALTOKEN
+                          {
+#ifdef HELP_FLOATASSIGNMENT_TEXT
+			    printf(HELP_FLOATASSIGNMENT_TEXT);
 #else
 			    printf("Assignment operator.\n");
 #endif
@@ -3041,6 +3060,7 @@ help:                   CONSTANTTOKEN
 			    printf("- -\n");
 			    printf("- ,\n");
 			    printf("- ;\n");
+			    printf("- :=\n");
 			    printf("- ::\n");
 			    printf("- :.\n");
 			    printf("- .:\n");

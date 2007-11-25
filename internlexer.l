@@ -80,7 +80,7 @@ EXCLAMATION     "!"
 DOUBLECOLON     "::"
 DOTCOLON        ".:"
 COLONDOT        ":."
-
+ASSIGNEQUAL     ":="
 	       	
 SEMICOLON       ";"
 QUIT            "quit"
@@ -413,6 +413,7 @@ NOP             "nop"
 {EXCLAMATIONEQUAL}			    {  return EXCLAMATIONEQUALTOKEN; }        				    
 {COMPAREEQUAL}                              {  return COMPAREEQUALTOKEN; }        			           
 {EQUAL}           			    {  return EQUALTOKEN; }           					       
+{ASSIGNEQUAL}          			    {  return ASSIGNEQUALTOKEN; }           					       
 {COMMA}           			    {  return COMMATOKEN; }           					       
 {EXCLAMATION}				    {  return EXCLAMATIONTOKEN; }				    	       
 {SEMICOLON}       			    {  return SEMICOLONTOKEN; }       					       

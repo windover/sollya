@@ -389,6 +389,11 @@ node *copyThing(node *tree) {
     copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
     strcpy(copy->string,tree->string);
     break; 			
+  case FLOATASSIGNMENT:
+    copy->child1 = copyThing(tree->child1);
+    copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+    strcpy(copy->string,tree->string);
+    break; 			
   case LIBRARYBINDING:
     copy->child1 = copyThing(tree->child1);
     copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
@@ -757,6 +762,9 @@ node *copyThing(node *tree) {
   case ASSIGNMENTININDEXING:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     break; 			
+  case FLOATASSIGNMENTININDEXING:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+    break; 			
   case DIRTYFINDZEROS:
     copy->child1 = copyThing(tree->child1);
     copy->child2 = copyThing(tree->child2);
@@ -1055,6 +1063,9 @@ char *getTimingStringForThing(node *tree) {
     break;  			
   case ASSIGNMENT:
     constString = "assignment";
+    break; 		
+  case FLOATASSIGNMENT:
+    constString = "floating-point assignment";
     break; 		
   case EXTERNALPROC:
     constString = "binding of an external procedure";
@@ -1415,6 +1426,9 @@ char *getTimingStringForThing(node *tree) {
     break; 			
   case ASSIGNMENTININDEXING:
     constString = "assigning to an indexed element of a list";
+    break; 			
+  case FLOATASSIGNMENTININDEXING:
+    constString = "assigning a floating-point value to an indexed element of a list";
     break; 			
   case DIRTYFINDZEROS:
     constString = "searching zeros dirtily";
@@ -3068,6 +3082,11 @@ char *sRawPrintThing(node *tree) {
     res = concatAndFree(res, newString(" = "));
     res = concatAndFree(res, sRawPrintThing(tree->child1));
     break; 		
+  case FLOATASSIGNMENT:
+    res = newString(tree->string);
+    res = concatAndFree(res, newString(" := "));
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 		
   case EXTERNALPROC:
     res = newString("externalproc(");
     res = concatAndFree(res, newString(tree->string));
@@ -3803,6 +3822,15 @@ char *sRawPrintThing(node *tree) {
     curr = curr->next;
     res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
     res = concatAndFree(res, newString("] = "));
+    curr = curr->next;
+    res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+    break; 			
+  case FLOATASSIGNMENTININDEXING:
+    curr = tree->arguments;
+    res = concatAndFree(sRawPrintThing((node *) (curr->value)), newString("["));
+    curr = curr->next;
+    res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+    res = concatAndFree(res, newString("] := "));
     curr = curr->next;
     res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
     break; 			
@@ -5485,6 +5513,21 @@ int executeCommandInner(node *tree) {
     }
     freeThing(tempNode);
     break; 	
+  case FLOATASSIGNMENT:
+    tempNode = evaluateThing(tree->child1);
+    if (isPureTree(tempNode) && isConstant(tempNode)) {
+      mpfr_init2(a, tools_precision);
+      if (evaluateThingToConstant(a, tempNode, NULL))  {
+	freeThing(tempNode);
+	tempNode = makeConstant(a);
+      }
+      mpfr_clear(a);
+    }
+    if (!assignThingToTable(tree->string, tempNode)) {
+      printMessage(1,"Warning: the last assignment will have no effect.\n");
+    }
+    freeThing(tempNode);
+    break; 	
   case ASSIGNMENTININDEXING:
     curr = tree->arguments;
     if (((node *) (curr->value))->nodeType == TABLEACCESS) {
@@ -5627,6 +5670,228 @@ int executeCommandInner(node *tree) {
 			(tempNode3->string)[resB] = tempString[0];
 		      }
 		      curr = tree->arguments;
+		      if (!assignThingToTable(((node *) (curr->value))->string, tempNode3)) {
+			printMessage(1,"Warning: the last assignment will have no effect.\n");
+		      }
+		      freeThing(tempNode3);
+		    } else {
+		      printMessage(1,"Warning: the string to be assigned is not of length 1.\n");
+		      printMessage(1,"This command will have no effect.\n");		      
+		    }
+		    free(tempString);
+		  } else {
+		    printMessage(1,"Warning: the expression given does not evaluate to a string.\n");
+		    printMessage(1,"This command will have no effect.\n");
+		  }
+		} else {
+		  printMessage(1,"Warning: assigning to indexed elements of strings is only allowed in the existing range.\n");
+		  printMessage(1,"This command will have no effect.\n");
+		}
+	      } else {
+		printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
+		printMessage(1,"This command will have no effect.\n");
+	      }	       
+	    } else {
+	      curr = tree->arguments;
+	      printMessage(1,"Warning: the identifier \"%s\" is not assigned to a (empty) list or a string.\n",
+			   ((node *) (curr->value))->string);
+	      printMessage(1,"The command will not be executed.\n");
+	    }
+	  }
+	}
+	freeThing(tempNode);
+      } else {
+	curr = tree->arguments;
+	printMessage(1,"Warning: the identifier \"%s\" is not assigned to.\n",((node *) (curr->value))->string);
+	printMessage(1,"This command will have no effect.\n");
+      }
+    } else {
+      printMessage(1,"Warning: the first element is not an identifier.\n");
+      printMessage(1,"This command will have no effect.\n");
+    }
+    break;
+  case FLOATASSIGNMENTININDEXING:
+    curr = tree->arguments;
+    if (((node *) (curr->value))->nodeType == TABLEACCESS) {
+      if ((tempNode = getThingFromTable(((node *) (curr->value))->string)) != NULL) {
+	if (isPureList(tempNode) || isPureFinalEllipticList(tempNode)) {
+	  curr = tree->arguments;
+	  curr = curr->next;
+	  if (evaluateThingToInteger(&resB, (node *) (curr->value), NULL)) {
+	    resC = 0;
+	    if (resB >= 0) {
+	      curr = curr->next; 
+	      tempNode2 = evaluateThing((node *) (curr->value));
+	      if (isPureTree(tempNode2) && isConstant(tempNode2)) {
+		mpfr_init2(a, tools_precision);
+		if (evaluateThingToConstant(a, tempNode2, NULL))  {
+		  freeThing(tempNode2);
+		  tempNode2 = makeConstant(a);
+		}
+		mpfr_clear(a);
+	      }
+	      if (resB == lengthChain(tempNode->arguments)) {
+		tempList = addElement(copyChain(tempNode->arguments,copyThingOnVoid),copyThing(tempNode2));
+		tempList2 = copyChain(tempList,copyThingOnVoid);
+		freeChain(tempList,freeThingOnVoid);
+		tempNode3 = makeList(tempList2);
+		tempNode3->nodeType = tempNode->nodeType;
+		resC = 1;
+	      } else {
+		if (resB < lengthChain(tempNode->arguments)) {
+		  tempNode3 = makeList(copyChainAndReplaceNth(tempNode->arguments, resB, copyThing(tempNode2), copyThingOnVoid));
+		  tempNode3->nodeType = tempNode->nodeType;
+		  resC = 1;
+		} else {
+		  if (isFinalEllipticList(tempNode)) {
+		    resE = 0;
+		    if (isPureTree((node *) accessInList(tempNode->arguments, 
+							 lengthChain(tempNode->arguments) - 1))) {
+		      mpfr_init2(a, tools_precision);
+		      if (evaluateThingToConstant(a, 
+						  (node *) accessInList(tempNode->arguments, 
+									lengthChain(tempNode->arguments) - 1), 
+						  NULL)) {
+			if (mpfr_integer_p(a)) {
+			  resD = mpfr_get_si(a, GMP_RNDN);
+			  mpfr_init2(b, 8 * sizeof(resD) + 5);
+			  mpfr_set_si(b, resD, GMP_RNDN);
+			  if (mpfr_cmp(a, b) == 0) {
+			    tempList = copyChain(tempNode->arguments,copyThingOnVoid);
+			    for (i=lengthChain(tempNode->arguments);i<resB;i++) {
+			      resD++;
+			      mpfr_set_si(b, resD, GMP_RNDN);
+			      tempList = addElement(tempList,makeConstant(b));
+			    }
+			    tempList = addElement(tempList, copyThing(tempNode2));
+			    tempList2 = copyChain(tempList,copyThingOnVoid);
+			    freeChain(tempList,freeThingOnVoid);
+			    tempNode3 = makeList(tempList2);
+			    tempNode3->nodeType = tempNode->nodeType;
+			    resC = 1;
+			  } else {
+			    resE = 1;
+			  }
+			  mpfr_clear(b);
+			} else {
+			  resE = 1;
+			}
+		      } else {
+			resE = 1;
+		      }
+		      mpfr_clear(a);
+		    } else {
+		      resE = 1;
+		    }		    
+		    if (resE) {
+		      tempNode4 = (node *) accessInList(tempNode->arguments, lengthChain(tempNode->arguments) - 1);
+		      tempList = copyChain(tempNode->arguments,copyThingOnVoid);
+		      for (i=lengthChain(tempNode->arguments);i<resB;i++) {
+			tempList = addElement(tempList,copyThing(tempNode4));
+		      }
+		      tempList = addElement(tempList, copyThing(tempNode2));
+		      tempList2 = copyChain(tempList,copyThingOnVoid);
+		      freeChain(tempList,freeThingOnVoid);
+		      tempNode3 = makeList(tempList2);
+		      tempNode3->nodeType = tempNode->nodeType;
+		      resC = 1;
+		    }
+		  }
+		}
+	      }
+	      freeThing(tempNode2);
+	      if (resC) {
+		curr = tree->arguments;
+		if (isPureTree(tempNode3) && isConstant(tempNode3)) {
+		  mpfr_init2(a, tools_precision);
+		  if (evaluateThingToConstant(a, tempNode3, NULL))  {
+		    freeThing(tempNode3);
+		    tempNode3 = makeConstant(a);
+		  }
+		  mpfr_clear(a);
+		}
+		if (!assignThingToTable(((node *) (curr->value))->string, tempNode3)) {
+		  printMessage(1,"Warning: the last assignment will have no effect.\n");
+		}
+		freeThing(tempNode3);
+	      } else {
+		printMessage(1,"Warning: assigning to indexed elements of lists is only allowed on indexes in the existing range.\n");
+		printMessage(1,"This command will have no effect.\n");
+	      }
+	    } else {
+	      printMessage(1,"Warning: assigning to indexed elements of lists is only allowed on indexes in the existing range.\n");
+	      printMessage(1,"This command will have no effect.\n");
+	    }
+	  } else {
+	    printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
+	    printMessage(1,"This command will have no effect.\n");
+	  }
+	} else {
+	  if (isEmptyList(tempNode)) {
+	    curr = tree->arguments;
+	    curr = curr->next;
+	    if (evaluateThingToInteger(&resB, (node *) (curr->value), NULL)) {
+	      if (resB == 0) {
+		curr = curr->next; 
+		tempNode2 = evaluateThing((node *) (curr->value));
+		if (isPureTree(tempNode2) && isConstant(tempNode2)) {
+		  mpfr_init2(a, tools_precision);
+		  if (evaluateThingToConstant(a, tempNode2, NULL))  {
+		    freeThing(tempNode2);
+		    tempNode2 = makeConstant(a);
+		  }
+		  mpfr_clear(a);
+		}
+		tempNode3 = makeList(addElement(NULL,tempNode2));
+		curr = tree->arguments;
+		if (isPureTree(tempNode3) && isConstant(tempNode3)) {
+		  mpfr_init2(a, tools_precision);
+		  if (evaluateThingToConstant(a, tempNode3, NULL))  {
+		    freeThing(tempNode3);
+		    tempNode3 = makeConstant(a);
+		  }
+		  mpfr_clear(a);
+		}
+		if (!assignThingToTable(((node *) (curr->value))->string, tempNode3)) {
+		  printMessage(1,"Warning: the last assignment will have no effect.\n");
+		}
+		freeThing(tempNode3);
+	      } else {
+		printMessage(1,"Warning: assigning to indexed elements of empty lists is only allowed on index 0.\n");
+		printMessage(1,"This command will have no effect.\n");
+	      }
+	    } else {
+	      printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
+	      printMessage(1,"This command will have no effect.\n");
+	    }
+	  } else {
+	    if (isString(tempNode)) {
+	      curr = tree->arguments;
+	      curr = curr->next;
+	      if (evaluateThingToInteger(&resB, (node *) (curr->value), NULL)) {
+		if ((resB >= 0) && (resB <= strlen(tempNode->string))) {
+		  curr = curr->next; 
+		  if (evaluateThingToString(&tempString,(node *) (curr->value))) {
+		    if (strlen(tempString) == 1) {
+		      if (resB == strlen(tempNode->string)) {
+			tempString2 = (char *) safeCalloc(resB + 2,sizeof(char));
+			strcpy(tempString2,tempNode->string);
+			tempString2[resB] = tempString[0];
+			tempNode3 = makeString(tempString2);
+			free(tempString2);
+		      } else {
+			tempNode3 = makeString(tempNode->string);
+			(tempNode3->string)[resB] = tempString[0];
+		      }
+		      curr = tree->arguments;
+		      if (isPureTree(tempNode3) && isConstant(tempNode3)) {
+			mpfr_init2(a, tools_precision);
+			if (evaluateThingToConstant(a, tempNode3, NULL))  {
+			  freeThing(tempNode3);
+			  tempNode3 = makeConstant(a);
+			}
+			mpfr_clear(a);
+		      }
 		      if (!assignThingToTable(((node *) (curr->value))->string, tempNode3)) {
 			printMessage(1,"Warning: the last assignment will have no effect.\n");
 		      }
@@ -6426,6 +6691,20 @@ node *makeAssignment(char *string, node *thing) {
   return res;
 
 }
+
+node *makeFloatAssignment(char *string, node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = FLOATASSIGNMENT;
+  res->child1 = thing;
+  res->string = (char *) safeCalloc(strlen(string) + 1, sizeof(char));
+  strcpy(res->string, string);
+
+  return res;
+
+}
+
 
 node *makeExternalProc(char *string, node *thing, chain *typelist) {
   node *res;
@@ -8050,6 +8329,17 @@ node *makeAssignmentInIndexing(node *thing1, node *thing2, node *thing3) {
   return res;
 }
 
+node *makeFloatAssignmentInIndexing(node *thing1, node *thing2, node *thing3) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = FLOATASSIGNMENTININDEXING;
+  res->arguments = addElement(addElement(addElement(NULL,thing3),thing2),thing1);
+
+  return res;
+}
+
+
 void freeThingOnVoid(void *tree) {
   freeThing((node *) tree);
 }
@@ -8350,6 +8640,11 @@ void freeThing(node *tree) {
     free(tree);
     break;  			
   case ASSIGNMENT:
+    freeThing(tree->child1);
+    free(tree->string);
+    free(tree);
+    break; 			
+  case FLOATASSIGNMENT:
     freeThing(tree->child1);
     free(tree->string);
     free(tree);
@@ -8834,6 +9129,10 @@ void freeThing(node *tree) {
     free(tree);
     break; 	
   case ASSIGNMENTININDEXING:
+    freeChain(tree->arguments, freeThingOnVoid);
+    free(tree);
+    break; 			
+  case FLOATASSIGNMENTININDEXING:
     freeChain(tree->arguments, freeThingOnVoid);
     free(tree);
     break; 			
@@ -9379,6 +9678,10 @@ void rawPrintThing(node *tree) {
     break;  			
   case ASSIGNMENT:
     printf("%s = ",tree->string);
+    rawPrintThing(tree->child1);
+    break; 		
+  case FLOATASSIGNMENT:
+    printf("%s := ",tree->string);
     rawPrintThing(tree->child1);
     break; 		
   case EXTERNALPROC:
@@ -10119,6 +10422,16 @@ void rawPrintThing(node *tree) {
     curr = curr->next;
     rawPrintThing((node *) (curr->value));    
     break; 			
+  case FLOATASSIGNMENTININDEXING:
+    curr = tree->arguments;
+    rawPrintThing((node *) (curr->value));
+    printf("[");
+    curr = curr->next;
+    rawPrintThing((node *) (curr->value));
+    printf("] := ");
+    curr = curr->next;
+    rawPrintThing((node *) (curr->value));    
+    break; 			
   case DIRTYFINDZEROS:
     printf("dirtyfindzeros(");
     rawPrintThing(tree->child1);
@@ -10791,6 +11104,10 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fprintf(fd,"%s = ",tree->string);
     fRawPrintThing(fd,tree->child1);
     break; 			
+  case FLOATASSIGNMENT:
+    fprintf(fd,"%s := ",tree->string);
+    fRawPrintThing(fd,tree->child1);
+    break; 			
   case LIBRARYBINDING:
     fprintf(fd,"%s = library(",tree->string);
     fRawPrintThing(fd,tree->child1);
@@ -11425,6 +11742,16 @@ void fRawPrintThing(FILE *fd, node *tree) {
     curr = curr->next;
     fRawPrintThing(fd,(node *) (curr->value));    
     break; 					
+  case FLOATASSIGNMENTININDEXING:
+    curr = tree->arguments;
+    fRawPrintThing(fd,(node *) (curr->value));
+    fprintf(fd,"[");
+    curr = curr->next;
+    fRawPrintThing(fd,(node *) (curr->value));
+    fprintf(fd,"] := ");
+    curr = curr->next;
+    fRawPrintThing(fd,(node *) (curr->value));    
+    break; 					
   case DIRTYFINDZEROS:
     fprintf(fd,"dirtyfindzeros(");
     fRawPrintThing(fd,tree->child1);
@@ -11792,6 +12119,9 @@ int isEqualThing(node *tree, node *tree2) {
   case ASSIGNMENT:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 			
+  case FLOATASSIGNMENT:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 			
   case EXTERNALPROC:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 			
@@ -12143,6 +12473,9 @@ int isEqualThing(node *tree, node *tree2) {
   case ASSIGNMENTININDEXING:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
     break; 			
+  case FLOATASSIGNMENTININDEXING:
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
+    break; 			
   case DIRTYFINDZEROS:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
@@ -12480,8 +12813,12 @@ int executeProcedureInner(node **resultThing, node *proc, chain *args) {
   chain *curr, *curr2;
   
   if (lengthChain(proc->arguments) != lengthChain(args)) {
-    *resultThing = NULL;
-    return 1;
+    if (!((lengthChain(args) == 1) && 
+	(isUnit((node *) (args->value))) && 
+	  (lengthChain(proc->arguments) == 0))) {
+      *resultThing = NULL;
+      return 1;
+    }
   }
 
   curr = proc->child1->arguments;

@@ -185,7 +185,8 @@
 #define VARIABLEDECLARATION 226
 #define PROC 227
 #define APPLY 228
-
+#define FLOATASSIGNMENT 229
+#define FLOATASSIGNMENTININDEXING 230
 
 int executeCommand(node *);
 
@@ -224,6 +225,7 @@ node *makeWorstCase(chain *thinglist);
 node *makeRename(char *string1, char *string2);
 node *makeAutoprint(chain *thinglist);
 node *makeAssignment(char *string, node *thing);
+node *makeFloatAssignment(char *string, node *thing);
 node *makeLibraryBinding(char *string, node *thing);
 node *makePrecAssign(node *thing);
 node *makePointsAssign(node *thing);
@@ -362,6 +364,7 @@ node *makeFullParenDeref();
 node *makeMidpointDeref();
 node *makeHopitalRecursDeref();
 node *makeAssignmentInIndexing(node *, node *, node *);
+node *makeFloatAssignmentInIndexing(node *, node *, node *);
 node *makeDoubleextendedSymbol();
 node *makePrintXml(node *);
 node *makePrintXmlNewFile(node *, node *);
