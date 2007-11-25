@@ -260,6 +260,10 @@ void yyerror(char *message) {
 %token  OFTOKEN;    
 
 %token  VARTOKEN;    
+%token  PROCTOKEN;
+%token  PROCEDURETOKEN;
+%token  RETURNTOKEN;
+%token  NOPTOKEN;
 									       
 %token  HELPTOKEN;      
 %token  VERSIONTOKEN;
@@ -269,6 +273,7 @@ void yyerror(char *message) {
 %type <other> help;
 %type <other> helpmeta;
 %type <tree>  command;
+%type <tree>  procbody;
 %type <tree>  variabledeclaration;
 %type <tree>  simplecommand;
 %type <list>  commandlist;
@@ -451,6 +456,72 @@ identifierlist:         IDENTIFIERTOKEN
 			  }
 ;
 
+procbody:               LPARTOKEN RPARTOKEN BEGINTOKEN commandlist ENDTOKEN
+                          {
+			    $$ = makeProc(NULL, makeCommandList($4), makeUnit());
+                          }
+                      | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist ENDTOKEN
+                          {			    
+			    $$ = makeProc(NULL, makeCommandList(concatChains($4, $5)), makeUnit());
+                          }
+                      | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist ENDTOKEN
+                          {
+			    $$ = makeProc(NULL, makeCommandList($4), makeUnit());
+                          }
+                      | LPARTOKEN RPARTOKEN BEGINTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc(NULL, makeCommandList(addElement(NULL,makeNop())), makeUnit());
+                          }
+                      | LPARTOKEN RPARTOKEN BEGINTOKEN commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc(NULL, makeCommandList($4), $6);
+                          }
+                      | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {			    
+			    $$ = makeProc(NULL, makeCommandList(concatChains($4, $5)), $7);
+                          }
+                      | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc(NULL, makeCommandList($4), $6);
+                          }
+                      | LPARTOKEN RPARTOKEN BEGINTOKEN RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc(NULL, makeCommandList(addElement(NULL,makeNop())), $5);
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN commandlist ENDTOKEN
+                          {
+			    $$ = makeProc($2, makeCommandList($5), makeUnit());
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist ENDTOKEN
+                          {			    
+			    $$ = makeProc($2, makeCommandList(concatChains($5, $6)), makeUnit());
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist ENDTOKEN
+                          {
+			    $$ = makeProc($2, makeCommandList($5), makeUnit());
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc($2, makeCommandList(addElement(NULL,makeNop())), makeUnit());
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc($2, makeCommandList($5), $7);
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {			    
+			    $$ = makeProc($2, makeCommandList(concatChains($5, $6)), $8);
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc($2, makeCommandList($5), $7);
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc($2, makeCommandList(addElement(NULL, makeNop())), $6);
+                          }
+;
+
 
 simplecommand:          QUITTOKEN
                           {
@@ -459,6 +530,10 @@ simplecommand:          QUITTOKEN
                       | FALSEQUITTOKEN
                           {
 			    $$ = makeFalseQuit();
+			  }
+                      | NOPTOKEN
+                          {
+			    $$ = makeNop();
 			  }
                       | RESTARTTOKEN
                           {
@@ -559,6 +634,11 @@ simplecommand:          QUITTOKEN
                           {
 			    $$ = makeAutoprint($1);
 			  }
+                      | PROCEDURETOKEN IDENTIFIERTOKEN procbody
+                          {
+			    $$ = makeAssignment($2, $3);
+			    free($2);
+			  }  
 ;
 
 assignment:             stateassignment 
@@ -995,12 +1075,15 @@ basicthing:             ONTOKEN
 			    $$ = makeIndex($1->a, $1->b);
 			    free($1);
 			  }
-                      | LPARTOKEN thing RPARTOKEN LPARTOKEN thing RPARTOKEN
+                      | LPARTOKEN thing RPARTOKEN LPARTOKEN thinglist RPARTOKEN
                           {
-			    $$ = makeSubstitute($2,$5);
+			    $$ = makeApply($2,$5);
+			  }
+                      | PROCTOKEN procbody
+                          {
+			    $$ = $2;
 			  }
 ;
-
 
 
 constant:               CONSTANTTOKEN          					       
@@ -2921,6 +3004,27 @@ help:                   CONSTANTTOKEN
 			    printf("Declares a local variable.\n");
 #endif
                           }                 					       
+                      | NOPTOKEN                          {
+#ifdef HELP_NOP_TEXT
+			    printf(HELP_NOP_TEXT);
+#else
+			    printf("Does nothing.\n");
+#endif
+                          }                 		
+                      | PROCTOKEN                          {
+#ifdef HELP_PROC_TEXT
+			    printf(HELP_PROC_TEXT);
+#else
+			    printf("Defines a nameless procedure.\n");
+#endif
+                          }                 					       			       
+                      | PROCEDURETOKEN                     {
+#ifdef HELP_PROCEDURE_TEXT
+			    printf(HELP_PROCEDURE_TEXT);
+#else
+			    printf("Defines a named procedure.\n");
+#endif
+                          }                 					       			       
                       | HELPTOKEN
                           {
 			    printf("Possible keywords in %s are:\n",PACKAGE_NAME);
@@ -3041,6 +3145,7 @@ help:                   CONSTANTTOKEN
 			    printf("- mantissa\n");
 			    printf("- mid\n");
 			    printf("- midpointmode\n");
+			    printf("- nop\n");
 			    printf("- numerator\n");
 			    printf("- of\n");
 			    printf("- off\n");
@@ -3061,6 +3166,8 @@ help:                   CONSTANTTOKEN
 			    printf("- printfloat\n");
 			    printf("- printhexa\n");
 			    printf("- printxml\n");
+			    printf("- proc\n");
+			    printf("- procedure\n");
 			    printf("- quit\n");
 			    printf("- RD\n");
 			    printf("- RN\n");

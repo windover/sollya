@@ -592,6 +592,10 @@ node *copyThing(node *tree) {
     copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
     strcpy(copy->string,tree->string);
     break;  	
+  case APPLY:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+    copy->child1 = copyThing(tree->child1);
+    break;  	
   case DECIMALCONSTANT:
     copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
     strcpy(copy->string,tree->string);
@@ -789,6 +793,11 @@ node *copyThing(node *tree) {
     break; 	
   case EXTERNALPROCEDUREUSAGE:
     copy->libProc = tree->libProc;
+    break;
+  case PROC:
+    copy->child1 = copyThing(tree->child1);
+    copy->child2 = copyThing(tree->child2);
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyStringOnVoid);
     break;
   case PRECDEREF:
     break; 			
@@ -1260,6 +1269,9 @@ char *getTimingStringForThing(node *tree) {
   case TABLEACCESSWITHSUBSTITUTE:
     constString = "dereferencing an identifier and substituting";
     break;  	
+  case APPLY:
+    constString = "applying something to something";
+    break;  	
   case DECIMALCONSTANT:
     constString = "reading a decimal constant";
     break; 		
@@ -1439,6 +1451,9 @@ char *getTimingStringForThing(node *tree) {
     break; 	
   case EXTERNALPROCEDUREUSAGE:
     constString = "executing an external procedure";
+    break;
+  case PROC:
+    constString = "executing a procedure";
     break;
   case PRECDEREF:
     constString = "dereferencing the precision of the tool";
@@ -1692,8 +1707,34 @@ int isUnit(node *tree) {
   return 0;
 }
 
+int isQuit(node *tree) {
+  if (tree->nodeType == QUIT) return 1;
+  return 0;
+}
+
+int isRestart(node *tree) {
+  if (tree->nodeType == RESTART) return 1;
+  return 0;
+}
+
+int isFalseQuit(node *tree) {
+  if (tree->nodeType == FALSEQUIT) return 1;
+  return 0;
+}
+
+int isFalseRestart(node *tree) {
+  if (tree->nodeType == FALSERESTART) return 1;
+  return 0;
+}
+
+
 int isExternalProcedureUsage(node *tree) {
   if (tree->nodeType == EXTERNALPROCEDUREUSAGE) return 1;
+  return 0;
+}
+
+int isProcedure(node *tree) {
+  if (tree->nodeType == PROC) return 1;
   return 0;
 }
 
@@ -2846,10 +2887,10 @@ char *sRawPrintThing(node *tree) {
     res = newString("nop");
     break;
   case FALSEQUIT:
-    res = newString("falsequit");
+    res = newString("quit");
     break; 			
   case FALSERESTART:
-    res = newString("falserestart");
+    res = newString("restart");
     break; 			
   case RESTART:
     res = newString("restart");
@@ -3442,20 +3483,30 @@ char *sRawPrintThing(node *tree) {
     }
     res = concatAndFree(res, newString(")"));
     break;  	
+  case APPLY:
+    res = concatAndFree(concatAndFree(concatAndFree(newString("("),sRawPrintThing(tree->child1)), newString(")")),newString("("));
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res,sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", "));
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break;  	
   case DECIMALCONSTANT:
-    res = concatAndFree(newString("decimalconstant(\""),concatAndFree(newString(tree->string),newString("\")")));
+    res = newString(tree->string);
     break; 		
   case DYADICCONSTANT:
-    res = concatAndFree(newString("dyadicconstant(\""),concatAndFree(newString(tree->string),newString("\")")));
+    res = newString(tree->string);
     break; 			
   case HEXCONSTANT:
-    res = concatAndFree(newString("hexconstant(\""),concatAndFree(newString(tree->string),newString("\")")));
+    res = newString(tree->string);
     break; 			
   case HEXADECIMALCONSTANT:
-    res = concatAndFree(newString("hexadecimalconstant(\""),concatAndFree(newString(tree->string),newString("\")")));
+    res = newString(tree->string);
     break; 			
   case BINARYCONSTANT:
-    res = concatAndFree(newString("binaryconstant(\""),concatAndFree(newString(tree->string),newString("\")")));
+    res = concatAndFree(newString(tree->string),newString("_2"));
     break; 			
   case EMPTYLIST:
     res = newString("[| |]");
@@ -3814,6 +3865,25 @@ char *sRawPrintThing(node *tree) {
     break; 	
   case EXTERNALPROCEDUREUSAGE:
     res = newString(tree->libProc->procedureName);
+    break;
+  case PROC:
+    res = newString("proc(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, newString((char *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")\nbegin\n"));
+    curr = tree->child1->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      res = concatAndFree(res, newString(";\n")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString("return "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(";\nend"));
     break;
   case PRECDEREF:
     res = newString("prec = ?");
@@ -7141,6 +7211,19 @@ node *makeTableAccessWithSubstitute(char *string, chain *thinglist) {
 
 }
 
+node *makeApply(node *thing, chain *thinglist) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = APPLY;
+  res->child1 = thing;
+  res->arguments = thinglist;
+
+  return res;
+
+}
+
+
 node *makeDecimalConstant(char *string) {
   node *res;
 
@@ -7812,6 +7895,19 @@ node *makeExternalProcedureUsage(libraryProcedure *proc) {
 
   return res;
 }
+
+node *makeProc(chain *stringlist, node *body, node *returnVal) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = PROC;
+  res->arguments = stringlist;
+  res->child1 = body;
+  res->child2 = returnVal;
+
+  return res;
+}
+
 
 
 node *makePrecDeref() {
@@ -8532,6 +8628,11 @@ void freeThing(node *tree) {
     freeChain(tree->arguments, freeThingOnVoid);
     free(tree);
     break;  	
+  case APPLY:
+    freeThing(tree->child1);
+    freeChain(tree->arguments, freeThingOnVoid);
+    free(tree);
+    break;  	
   case DECIMALCONSTANT:
     free(tree->string);
     free(tree);
@@ -8782,6 +8883,12 @@ void freeThing(node *tree) {
     free(tree);
     break; 	
   case EXTERNALPROCEDUREUSAGE:
+    free(tree);
+    break;
+  case PROC:
+    freeThing(tree->child1);
+    freeThing(tree->child2);
+    freeChain(tree->arguments, free);
     free(tree);
     break;
   case PRECDEREF:
@@ -9099,10 +9206,10 @@ void rawPrintThing(node *tree) {
     printf("nop");
     break;
   case FALSEQUIT:
-    printf("falsequit");
+    printf("quit");
     break; 			
   case FALSERESTART:
-    printf("falserestart");
+    printf("restart");
     break; 			
   case RESTART:
     printf("restart");
@@ -9685,21 +9792,33 @@ void rawPrintThing(node *tree) {
       curr = curr->next;
     }
     printf(")");
+    break;
+  case APPLY:
+    printf("(");
+    rawPrintThing(tree->child1);
+    printf(")(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      rawPrintThing((node *) (curr->value));
+      if (curr->next != NULL) printf(", ");
+      curr = curr->next;
+    }
+    printf(")");
     break;  	
   case DECIMALCONSTANT:
-    printf("decimalconstant(\"%s\")",tree->string);
+    printf("%s",tree->string);
     break; 		
   case DYADICCONSTANT:
-    printf("dyadicconstant(\"%s\")",tree->string);
+    printf("%s",tree->string);
     break; 			
   case HEXCONSTANT:
-    printf("hexconstant(\"%s\")",tree->string);
+    printf("%s",tree->string);
     break; 			
   case HEXADECIMALCONSTANT:
-    printf("hexadecimalconstant(\"%s\")",tree->string);
+    printf("%s",tree->string);
     break; 			
   case BINARYCONSTANT:
-    printf("binaryconstant(\"%s\")",tree->string);
+    printf("%s_2",tree->string);
     break; 			
   case EMPTYLIST:
     printf("[| |]");
@@ -10060,6 +10179,25 @@ void rawPrintThing(node *tree) {
   case EXTERNALPROCEDUREUSAGE:
     printf("%s",tree->libProc->procedureName);
     break;
+  case PROC:
+    printf("proc(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      printf((char *) (curr->value));
+      if (curr->next != NULL) printf(", ");
+      curr = curr->next;
+    }
+    printf(")\nbegin\n");
+    curr = tree->child1->arguments;
+    while (curr != NULL) {
+      rawPrintThing((node *) (curr->value));
+      printf(";\n");
+      curr = curr->next;
+    }
+    printf("return ");
+    rawPrintThing(tree->child2);
+    printf(";\nend");
+    break;
   case PRECDEREF:
     printf("prec = ?");
     break; 			
@@ -10374,10 +10512,10 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fprintf(fd,"nop");
     break;
   case FALSEQUIT:
-    fprintf(fd,"falsequit");
+    fprintf(fd,"quit");
     break; 			
   case FALSERESTART:
-    fprintf(fd,"falserestart");
+    fprintf(fd,"restart");
     break; 			
   case RESTART:
     fprintf(fd,"restart");
@@ -10961,20 +11099,32 @@ void fRawPrintThing(FILE *fd, node *tree) {
     }
     fprintf(fd,")");
     break;  	
+  case APPLY:
+    fprintf(fd,"(");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,")(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      fRawPrintThing(fd,(node *) (curr->value));
+      if (curr->next != NULL) fprintf(fd,", ");
+      curr = curr->next;
+    }
+    fprintf(fd,")");
+    break;  	
   case DECIMALCONSTANT:
-    fprintf(fd,"decimalconstant(\"%s\")",tree->string);
+    fprintf(fd,"%s",tree->string);
     break; 		
   case DYADICCONSTANT:
-    fprintf(fd,"dyadicconstant(\"%s\")",tree->string);
+    fprintf(fd,"%s",tree->string);
     break; 			
   case HEXCONSTANT:
-    fprintf(fd,"hexconstant(\"%s\")",tree->string);
+    fprintf(fd,"%s",tree->string);
     break; 			
   case HEXADECIMALCONSTANT:
-    fprintf(fd,"hexadecimalconstant(\"%s\")",tree->string);
+    fprintf(fd,"%s",tree->string);
     break; 			
   case BINARYCONSTANT:
-    fprintf(fd,"binaryconstant(\"%s\")",tree->string);
+    fprintf(fd,"%s_2",tree->string);
     break; 			
   case EMPTYLIST:
     fprintf(fd,"[| |]");
@@ -11335,6 +11485,24 @@ void fRawPrintThing(FILE *fd, node *tree) {
   case EXTERNALPROCEDUREUSAGE:
     fprintf(fd,"%s",tree->libProc->procedureName);
     break;
+  case PROC:
+    fprintf(fd,"proc(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      fprintf(fd,(char *) (curr->value));
+      if (curr->next != NULL) fprintf(fd,", ");
+      curr = curr->next;
+    }
+    fprintf(fd,")\nbegin\n");
+    curr = tree->child1->arguments;
+    while (curr != NULL) {
+      fRawPrintThing(fd,(node *) (curr->value));
+      fprintf(fd,";\n");
+      curr = curr->next;
+    }
+    fprintf(fd,"return ");
+    fRawPrintThing(fd,tree->child2);
+    fprintf(fd,";\nend");
   case PRECDEREF:
     fprintf(fd,"prec = ?");
     break; 			
@@ -11821,6 +11989,9 @@ int isEqualThing(node *tree, node *tree2) {
   case TABLEACCESSWITHSUBSTITUTE:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break;  	
+  case APPLY:
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
   case DECIMALCONSTANT:
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 		
   case DYADICCONSTANT:
@@ -12009,6 +12180,11 @@ int isEqualThing(node *tree, node *tree2) {
   case EXTERNALPROCEDUREUSAGE:
     if (tree->libProc != tree2->libProc) return 0;
     break;
+  case PROC:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualThing(tree->child2,tree2->child2)) return 0;
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualStringOnVoid)) return 0;
+    break;
   case PRECDEREF:
     break; 			
   case POINTSDEREF:
@@ -12076,6 +12252,7 @@ int isCorrectlyTypedBaseSymbol(node *tree) {
   case STRING:
   case EMPTYLIST:
   case EXTERNALPROCEDUREUSAGE:
+  case PROC:
     return 1;
   default:
     return 0;
@@ -12298,8 +12475,136 @@ void freeArgumentForExternalProc(void* arg, int type) {
 
 }
 
+int executeProcedureInner(node **resultThing, node *proc, chain *args) {
+  int result, res, noError;
+  chain *curr, *curr2;
+  
+  if (lengthChain(proc->arguments) != lengthChain(args)) {
+    *resultThing = NULL;
+    return 1;
+  }
 
-int executeExternalProcedure(node **resultThing, libraryProcedure *proc, chain *args) {
+  curr = proc->child1->arguments;
+  result = 0;
+  while (curr != NULL) {
+    if (isQuit((node *) (curr->value)) ||
+	isFalseQuit((node *) (curr->value)) ||
+	isRestart((node *) (curr->value)) ||
+	isRestart((node *) (curr->value))) {
+      printMessage(1,"Warning: a quit or restart command may not be part of a procedure body.\n");
+      printMessage(1,"The procedure will not be executed.\n");
+      result = 1;
+      break;
+    } 
+    curr = curr->next;
+  }
+
+  if (result) {
+    *resultThing = NULL;
+    return 0;
+  }
+
+  declaredSymbolTable = pushFrame(declaredSymbolTable);
+
+  result = 0;
+  curr = proc->arguments;
+  curr2 = args;
+  while (curr != NULL) {
+    noError = 0;
+    if ((variablename != NULL) && (strcmp(variablename, (char *) (curr->value)) == 0)) {
+      printMessage(1,"Warning: the identifier \"%s\" is already bound to the current free variable.\nIt cannot be used as a formal parameter of a procedure. The procedure cannot be executed.\n",
+		   (char *) (curr->value));
+    } else {
+      if (getFunction((char *) (curr->value)) != NULL) {
+	printMessage(1,"Warning: the identifier \"%s\" is already bound to a library function.\nIt cannot be used as a formal parameter of a procedure. The procedure cannot be executed.\n",
+		     (char *) (curr->value));
+	
+      } else {
+	if (getProcedure((char *) (curr->value)) != NULL) {
+	  printMessage(1,"Warning: the identifier \"%s\" is already bound to an external procedure.\nIt cannot be used as a formal parameter of a procedure. The procedure cannot be executed.\n",
+		       (char *) (curr->value),(char *) (curr->value));
+	  
+	} else {
+	  if (declaredSymbolTable != NULL) {
+	    noError = 1;
+	    declaredSymbolTable = declareNewEntry(declaredSymbolTable, (char *) (curr->value), (node *) (curr2->value), copyThingOnVoid);
+	  } else {
+	    printMessage(1,"Warning: previous command interruptions have corrupted the frame system.\n");
+	    printMessage(1,"The formal parameter \"%s\" cannot be bound to its actual value.\nThe procedure cannot be executed.\n",(char *) (curr->value));
+	  }
+	}
+      }
+    }
+    if (!noError) {
+      result = 1;
+      break;
+    }
+    curr = curr->next;
+    curr2 = curr2->next;
+  }  
+
+  if (result) {
+    declaredSymbolTable = popFrame(declaredSymbolTable,freeThingOnVoid);
+    *resultThing = NULL;
+    return 0;
+  }
+   
+  curr = proc->child1->arguments;
+  result = 0;
+  while (curr != NULL) {
+    if (isQuit((node *) (curr->value)) ||
+	isFalseQuit((node *) (curr->value)) ||
+	isRestart((node *) (curr->value)) ||
+	isRestart((node *) (curr->value))) {
+      printMessage(1,"Warning: a quit or restart command may not be part of a procedure body.\n");
+      printMessage(1,"The procedure will no longer be executed.\n");
+      res = 1;
+    } else {
+      res = executeCommand((node *) (curr->value));
+    }
+    if (res) {
+      result = 1;
+      break;
+    }
+    curr = curr->next;
+  }
+
+  if (result) {
+    declaredSymbolTable = popFrame(declaredSymbolTable,freeThingOnVoid);
+    *resultThing = NULL;
+    return 0;
+  }
+
+  *resultThing = evaluateThing(proc->child2);
+
+  declaredSymbolTable = popFrame(declaredSymbolTable,freeThingOnVoid);
+  
+  return 1;
+}
+
+int executeProcedure(node **resultThing, node *proc, chain *args) {
+  jmp_buf oldEnvironment;
+  int res;
+
+  pushTimeCounter();  
+  
+  memmove(&oldEnvironment,&recoverEnvironmentError,sizeof(oldEnvironment));
+  if (!setjmp(recoverEnvironmentError)) {
+    res = executeProcedureInner(resultThing, proc, args);
+  } else {
+    printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
+    res = 0;
+  }
+  memmove(&recoverEnvironmentError,&oldEnvironment,sizeof(recoverEnvironmentError));
+
+  popTimeCounter("executing a procedure");
+
+  return res;
+}
+
+
+
+int executeExternalProcedureInner(node **resultThing, libraryProcedure *proc, chain *args) {
   chain *myArgs, *myArgSignature, *curr, *curr2;
   int myResultSignature;
   void **arguments;
@@ -12746,6 +13051,25 @@ int executeExternalProcedure(node **resultThing, libraryProcedure *proc, chain *
   return externalResult;
 }
 
+int executeExternalProcedure(node **resultThing, libraryProcedure *proc, chain *args) {
+  jmp_buf oldEnvironment;
+  int res;
+
+  pushTimeCounter();  
+  
+  memmove(&oldEnvironment,&recoverEnvironmentError,sizeof(oldEnvironment));
+  if (!setjmp(recoverEnvironmentError)) {
+    res = executeExternalProcedureInner(resultThing, proc, args);
+  } else {
+    printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
+    res = 0;
+  }
+  memmove(&recoverEnvironmentError,&oldEnvironment,sizeof(recoverEnvironmentError));
+
+  popTimeCounter("executing an external procedure");
+
+  return res;
+}
 
 void *evaluateThingInnerOnVoid(void *tree) {
   return (void *) evaluateThingInner((node *) tree);
@@ -13602,14 +13926,109 @@ node *evaluateThingInner(node *tree) {
 	  freeChain(tempChain, freeThingOnVoid);
 	}
       } else {
-	copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
-	copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
-	strcpy(copy->string,tree->string);
+	if (isProcedure(tempNode)) {
+	  tempChain = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+	  tempNode2 = NULL;
+	  if (executeProcedure(&tempNode2, tempNode, tempChain)) {
+	    if (tempNode2 != NULL) {
+	      free(copy);
+	      copy = tempNode2;
+	      freeChain(tempChain, freeThingOnVoid);
+	    } else {
+	      copy->arguments = tempChain;
+	      copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+	      strcpy(copy->string,tree->string);
+	    }
+	  } else {
+	    printMessage(1,"Warning: an error occured while executing a procedure.\n");
+	    free(copy);
+	    copy = makeError();
+	    freeChain(tempChain, freeThingOnVoid);
+	  }
+	} else {
+	  copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+	  copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+	  strcpy(copy->string,tree->string);
+	}
       }
     }
     freeThing(tempNode);
     if (timingString != NULL) popTimeCounter(timingString);
-    break;  	
+    break;
+  case APPLY:
+    if (timingString != NULL) pushTimeCounter();
+    tempNode = evaluateThingInner(tree->child1);
+    if (isPureTree(tempNode)) {
+      if (lengthChain(tree->arguments) == 1) {
+	if (evaluateThingToPureTree(&tempNode2,(node *) (tree->arguments->value))) {
+	  if ((tempNode->nodeType == LIBRARYFUNCTION) && (variablename == NULL)) {
+	    printMessage(1,"Warning: the current free variable is not bound to an identifier. Dereferencing library function \"%s\" requires this binding.\n",tempNode->libFun->functionName);
+	    printMessage(1,"Will bind the current free variable to the identifier \"x\"\n");
+	    variablename = (char *) safeCalloc(2, sizeof(char));
+	    variablename[0] = 'x';
+	  }
+	  free(copy);
+	  if (tempNode->nodeType == VARIABLE) {
+	    printMessage(1,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
+			 variablename);
+	  }
+	  copy = substitute(tempNode, tempNode2);
+	  freeThing(tempNode2);
+	} else {
+	  copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+	  copy->child1 = copyThing(tempNode);
+	}
+      } else {
+	  copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+	  copy->child1 = copyThing(tempNode);
+      }
+    } else {
+      if (isExternalProcedureUsage(tempNode)) {
+	tempChain = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+	tempNode2 = NULL;
+	if (executeExternalProcedure(&tempNode2, tempNode->libProc, tempChain)) {
+	  if (tempNode2 != NULL) {
+	    free(copy);
+	    copy = tempNode2;
+	    freeChain(tempChain, freeThingOnVoid);
+	  } else {
+	    copy->arguments = tempChain;
+	    copy->child1 = copyThing(tempNode);
+	  }
+	} else {
+	  printMessage(1,"Warning: external procedure has signalized failure.\n");
+	  free(copy);
+	  copy = makeError();
+	  freeChain(tempChain, freeThingOnVoid);
+	}
+      } else {
+	if (isProcedure(tempNode)) {
+	  tempChain = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+	  tempNode2 = NULL;
+	  if (executeProcedure(&tempNode2, tempNode, tempChain)) {
+	    if (tempNode2 != NULL) {
+	      free(copy);
+	      copy = tempNode2;
+	      freeChain(tempChain, freeThingOnVoid);
+	    } else {
+	      copy->arguments = tempChain;
+	      copy->child1 = copyThing(tempNode);
+	    }
+	  } else {
+	    printMessage(1,"Warning: an error occured while executing a procedure.\n");
+	    free(copy);
+	    copy = makeError();
+	    freeChain(tempChain, freeThingOnVoid);
+	  }
+	} else {
+	  copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+	  copy->child1 = copyThing(tempNode);
+	}
+      }
+    }
+    freeThing(tempNode);
+    if (timingString != NULL) popTimeCounter(timingString);
+    break;  	  	
   case DECIMALCONSTANT:
     if (timingString != NULL) pushTimeCounter();
     mpfr_init2(a,tools_precision);
@@ -15425,7 +15844,11 @@ node *evaluateThingInner(node *tree) {
     copy = makeConstant(a);
     mpfr_clear(a);
     if (timingString != NULL) popTimeCounter(timingString);
-    break;  	       
+    break;  	 
+  case PROC:
+    free(copy);
+    copy = copyThing(tree);
+    break;
   default:
     fprintf(stderr,"Error: evaluateThingInner: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);

@@ -183,6 +183,9 @@
 #define UNIT 224
 #define EXTERNALPROCEDUREUSAGE 225
 #define VARIABLEDECLARATION 226
+#define PROC 227
+#define APPLY 228
+
 
 int executeCommand(node *);
 
@@ -368,6 +371,7 @@ node *makeExecute(node *);
 node *makeExternalProc(char *, node *, chain *);
 node *makeUnit();
 node *makeVariableDeclaration(chain *stringlist);
-
+node *makeProc(chain *stringlist, node *body, node *returnVal);
+node *makeApply(node *thing, chain *thinglist);
 
 #endif /* ifdef EXECUTE_H*/

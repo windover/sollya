@@ -328,6 +328,12 @@ OF              "of"
 
 VAR             "var"
 
+PROC            "proc"
+PROCEDURE       "procedure"
+RETURN          "return"
+NOP             "nop"
+
+
 %%
 
 %{
@@ -376,6 +382,10 @@ VAR             "var"
 					      strncpy(constBuffer,yytext,yyleng);
 					      yylval->value = constBuffer;
                                                return DYADICCONSTANTTOKEN; } 	              
+{HEXADECIMALCONSTANT}     		    { constBuffer = (char *) safeCalloc(yyleng+1,sizeof(char));
+					      strncpy(constBuffer,yytext,yyleng);
+					      yylval->value = constBuffer;
+                                              return HEXADECIMALCONSTANTTOKEN; }     		        
 {HEXCONSTANT}     			    { constBuffer = (char *) safeCalloc(yyleng+1,sizeof(char));
 					      strncpy(constBuffer,yytext,yyleng);
 					      yylval->value = constBuffer;
@@ -418,6 +428,10 @@ VAR             "var"
 {OR}         				    {  return ORTOKEN; }				      	       
 {VERTBAR}				    {  return VERTBARTOKEN; }						       
 {VAR}					    {  return VARTOKEN; }					      	       
+{PROC}					    {  return PROCTOKEN; }					      	       
+{PROCEDURE}				    {  return PROCEDURETOKEN; }					      	       
+{RETURN}				    {  return RETURNTOKEN; }					      	       
+{NOP}	         			    {  return NOPTOKEN; }					      	       
 {AT}					    {  return ATTOKEN; }					      	       
 {DOUBLECOLON}				    {  return DOUBLECOLONTOKEN; }				      	       
 {DOTCOLON}				    {  return DOTCOLONTOKEN; }				      	       

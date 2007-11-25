@@ -330,6 +330,11 @@ OF              "of"
 
 VAR             "var"
 
+PROC            "proc"
+PROCEDURE       "procedure"
+RETURN          "return"
+NOP             "nop"
+
 %%
 
 %{
@@ -492,6 +497,10 @@ VAR             "var"
 {OR}         				    { newTokenLexed(); return ORTOKEN; }				      	       
 {VERTBAR}				    { newTokenLexed(); return VERTBARTOKEN; }						       
 {VAR}					    { newTokenLexed(); return VARTOKEN; }					      	       
+{PROC}					    { newTokenLexed(); return PROCTOKEN; }					      	       
+{PROCEDURE}				    { newTokenLexed(); return PROCEDURETOKEN; }					      	       
+{RETURN}				    { newTokenLexed(); return RETURNTOKEN; }					      	       
+{NOP}	         			    { newTokenLexed(); return NOPTOKEN; }					      	       
 {AT}					    { newTokenLexed(); return ATTOKEN; }					      	       
 {DOUBLECOLON}				    { newTokenLexed(); return DOUBLECOLONTOKEN; }				      	       
 {DOTCOLON}				    { newTokenLexed(); return DOTCOLONTOKEN; }				      	       
