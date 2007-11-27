@@ -1866,7 +1866,14 @@ chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t pr
   mpfi_revert_if_needed(range);
   mpfr_init2(rangeDiam,prec);
   mpfi_diam_abs(rangeDiam,range);
-  if (mpfr_cmp(rangeDiam,diam) <= 0) {
+
+  mpfr_init2(l,prec);
+  mpfr_init2(r,prec);
+  mpfi_get_left(l,range);
+  mpfi_get_right(r,range);
+  mpfr_nextabove(l); mpfr_nextabove(l); mpfr_nextabove(l); mpfr_nextabove(l);
+
+  if ((mpfr_cmp(rangeDiam,diam) <= 0) || (mpfr_cmp(l,r) >= 0)) {
     res = (chain *) safeMalloc(sizeof(chain));
     res->next = NULL;
     temp = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
@@ -1884,11 +1891,9 @@ chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t pr
       printMessage(1,".\nThe function might not be continuously differentiable in this interval.\n");
     }
     if ((!mpfi_bounded_p(y)) || mpfi_has_zero(y)) {
-      mpfr_init2(l,prec);
       mpfr_init2(m,prec);
-      mpfr_init2(r,prec);
       mpfi_get_left(l,range);
-      mpfi_get_right(r,range);
+
       mpfi_mid(m,range);
       mpfi_init2(lI,prec);
       mpfi_init2(rI,prec);
@@ -1908,9 +1913,8 @@ chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t pr
 	*noZeroProofs = concatChains(leftProofs,rightProofs);
       }
 
-      mpfr_clear(l);
-      mpfr_clear(m);
-      mpfr_clear(r);    
+
+      mpfr_clear(m);    
       mpfi_clear(lI);
       mpfi_clear(rI);
     } else {
@@ -1919,6 +1923,8 @@ chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t pr
     }
     mpfi_clear(y);
   }
+  mpfr_clear(l);
+  mpfr_clear(r);
   mpfr_clear(rangeDiam);
   return res;
 }
