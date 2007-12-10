@@ -1,0 +1,62 @@
+#NAME $LIBRARY
+#QUICK_DESCRIPTION binds an external mathematical function to a variable in $SOLLYA
+
+#CALLING $COMMAND(<path>)
+#TYPE $STRING_TYPE -> $FUNCTION_TYPE
+
+#DESCRIPTION 
+The command $COMMAND lets you extends the set of mathematical
+functions known by $SOLLYA.
+By default, $SOLLYA knows the most common mathematical functions such
+as $EXP, $SIN, $ERF, etc. Within $SOLLYA, these functions may be
+composed. This way, $SOLLYA should satisfy the needs of a lot of
+users. However, for particular applications, one may want to
+manipulates other functions such as Bessel functions, or functions
+defined by an integral or even a particular solution of an ODE.
+
+#DESCRIPTION 
+$COMMAND makes it possible to let $SOLLYA know about new functions. In
+order to let it know, you have to provide an implementation of the
+function you are interested with. This implementation is a C file containing
+a function of the form:
+§§             §\begin{verbatim}§§ int my_ident(mpfi_t result, mpfi_t op, int n)§§ §\end{verbatim}§§
+
+The semantic of this function is the following: it is an implementation of
+the function and its derivatives in interval arithmetic.
+§§my_ident(result, I, n)§\verb|my_ident(result, I, n)|§§ shall store in §§result§\verb|result|§§ an enclosure 
+of the image set of the n-th derivative
+of the function f over §§I§\verb|I|§§: §§f^(n)(I) C result§$f^{(n)}(I) \subseteq \mathrm{result}$§§.
+
+#DESCRIPTION
+The integer returned value has no meaning currently.
+
+#DESCRIPTION
+You must not provide a non trivial implementation for any §§n§\verb|n|§§. Most functions
+of $SOLLYA needs a relevant implementation of §§f§$f$§§, §§f'§$f'$§§ and §§f''§$f''$§§. For higher 
+derivatives, its is not so critical and the implementation may just store 
+§§[-Inf, +Inf]§$[-\infty,\,+\infty]$§§ in result whenever §§n>2§$n>2$§§.
+
+#DESCRIPTION
+Note that you should respect somehow MPFI standards in your implementation:
+§§result§\verb|result|§§ has its own precision and you should perform the 
+intermediate computations so that §§result§\verb|result|§§ is as tighter as possible.
+
+#DESCRIPTION
+You can include sollya.h in your implementation and use library 
+functionnalities of $SOLLYA for your implementation.
+
+#DESCRIPTION
+To bind your function into $SOLLYA, you must use the same identifier as the
+function name used in your implementation file (§§my_ident§\verb|my_ident|§§ in the previous
+example).
+
+#EXAMPLE
+bashexecute("gcc -fPIC -Wall -c libraryexample.c");
+bashexecute("gcc -shared -o libraryexample libraryexample.o -lgmp -lmpfr");
+myownlog = library("./libraryexample");
+evaluate(log(x), 2);
+evaluate(myownlog(x), 2);
+
+#SEEALSO $BASHEXECUTE
+#SEEALSO $EXTERNALPROC
+#SEEALSO $EXTERNALPLOT

@@ -1,0 +1,60 @@
+#NAME $ISBOUND
+#QUICK_DESCRIPTION indicates whether a variable is bound or not.
+
+#CALLING $COMMAND(<ident>)
+#TYPE $BOOLEAN_TYPE
+
+#PARAMETERS <ident> is a name.
+
+#DESCRIPTION 
+$COMMAND(<ident>) returns a boolean value indicating whether the name <ident>
+is used or not to represent a variable. It returns true when <ident> is the 
+name used to represent the global variable or if the name is currently used
+to refer to a (possibly local) variable.
+
+#DESCRIPTION
+When a variable is defined in a block and has not been defined outside, 
+$COMMAND returns true when called inside the block, and false outside.
+Note that $COMMAND returns true as soon as a variable has been declared with 
+$VAR, even if no value is actually stored in it.
+
+#DESCRIPTION
+If <ident1> is bound to a variable and if <ident2> refers to the global 
+variable, the command $RENAME(<ident2>, <ident1>) hides the value of <ident1>
+which becomes the global variable. However, if the globlal variable is again
+renamed, <ident1> gets its value back. In this case, $COMMAND(<ident1>) returns
+true. If <ident1> was not bound before, $COMMAND(<ident1>) returns false after
+that <ident1> has been renamed.
+
+#EXAMPLE
+isbound(x);
+isbound(f);
+isbound(g);
+f=sin(x);
+isbound(x);
+isbound(f);
+isbound(g);
+
+#EXAMPLE
+isbound(a);
+{ var a; isbound(a); };
+isbound(a);
+
+#EXAMPLE
+f=sin(x);
+isbound(x);
+rename(x,y);
+isbound(x);
+
+#EXAMPLE
+x=1;
+f=sin(y);
+rename(y,x);
+f;
+x;
+isbound(x);
+rename(x,y);
+isbound(x);
+x;
+
+#SEEALSO $RENAME

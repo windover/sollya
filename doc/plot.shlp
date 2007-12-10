@@ -13,9 +13,32 @@
 #CALLING $COMMAND(<f1>, ... ,<fn>, <I>, $POSTSCRIPTFILE, <name>)
 #TYPE ($FUNCTION_TYPE, ... ,$FUNCTION_TYPE, $RANGE_TYPE, $POSTSCRIPTFILE, $STRING_TYPE) -> $VOID_TYPE
 
+#CALLING $COMMAND(<L>, <I>)
+#TYPE ($LIST_TYPE, $RANGE_TYPE) -> $VOID_TYPE
+
+#CALLING $COMMAND(<L>, <I>, $FILE, <name>)
+#TYPE ($LIST_TYPE, $RANGE_TYPE, $FILE, $STRING_TYPE) -> $VOID_TYPE
+
+#CALLING $COMMAND(<L>, <I>, $POSTSCRIPT, <name>)
+#TYPE ($LIST_TYPE, $RANGE_TYPE, $POSTSCRIPT, $STRING_TYPE) -> $VOID_TYPE
+
+#CALLING $COMMAND(<L>, <I>, $POSTSCRIPTFILE, <name>)
+#TYPE ($LIST_TYPE, $RANGE_TYPE, $POSTSCRIPTFILE, $STRING_TYPE) -> $VOID_TYPE
+
+#PARAMETERS <f1>, ..., <fn> are functions to be plotted.
+#PARAMETERS <L> is a list of functions to be plotted.
+#PARAMETERS <I> is the interval where the functions have to be plotted.
+#PARAMETERS <name> is a string representing the name of a file.
+
 #DESCRIPTION 
 This command plots one or several functions <f1>, ... ,<fn> on an interval <I>.
+Functions can be either given as parameters of $COMMAND or as a list <L>
+which elements are functions.
 Functions are plotted on the same graphic with different colors.
+
+#DESCRIPTION
+If <L> contains an element that is not a function (or a constant), an error
+occurs.
 
 #DESCRIPTION
 $COMMAND relies on the value of global variable $POINTS. Let §§n§$n$§§ be the 
@@ -43,7 +66,8 @@ produce the corresponding name.dat, name.p and name.eps.
 
 #DESCRIPTION
 This command uses gnuplot to produce the final graphic.
-If your terminal is not graphic (typically if you use $SOLLYA by ssh without -X) 
+If your terminal is not graphic (typically if you use $SOLLYA by 
+ssh without -X)
 gnuplot should be able to detect it and produce an ASCII-art version on the
 standard output. If it is not the case, you can either store the graphic in a
 postscript file to view it locally, or use $ASCIIPLOT command.

@@ -16,7 +16,7 @@ precision is not sufficient to represent exactly xh+xl, a rounding will occur
 and the result of $COMMAND(x) will be useless.
 
 #DESCRIPTION
-As a constant, it symoblizes the double-double precision format. It is used in 
+As a constant, it symbolizes the double-double precision format. It is used in 
 contexts when a precision format is necessary, e.g. in the commands 
 $ROUNDCOEFFICIENTS and $IMPLEMENTPOLY.
 See the corresponding help pages for examples.

@@ -26,17 +26,11 @@ for every elements of §§[xl,xu]§$[x_l,\,x_u]$§§. The corresponding fraction
 #DESCRIPTION
 Since rational numbers are not a primitive object of $SOLLYA, the fraction is
 returned as a constant function. It can be quite amazing, because $SOLLYA
-immediately simplify a constant function by evaluating it when the constant
+immediately simplifies a constant function by evaluating it when the constant
 has to be displayed.
 To avoid this, you can use $PRINT (that displays the expression representing
 the constant and not the constant itself) or the commands $NUMERATOR 
 and $DENOMINATOR.
-
-#EXAMPLE
-a=0.1;
-b=rationalapprox(a,4);
-numerator(b); denominator(b);
-print(simplify(floor(-log2(abs((b-a)/a)))), "bits.");
 
 #EXAMPLE
 pi10 = rationalapprox(Pi,10);
@@ -45,6 +39,12 @@ pi100 = rationalapprox(Pi,100);
 print( pi10, ": ", simplify(floor(-log2(abs(pi10-Pi)/Pi))), "bits." );
 print( pi50, ": ", simplify(floor(-log2(abs(pi50-Pi)/Pi))), "bits." );
 print( pi100, ": ", simplify(floor(-log2(abs(pi100-Pi)/Pi))), "bits." );
+
+#EXAMPLE
+a=0.1;
+b=rationalapprox(a,4);
+numerator(b); denominator(b);
+print(simplify(floor(-log2(abs((b-a)/a)))), "bits.");
 
 #SEEALSO $PRINT
 #SEEALSO $NUMERATOR

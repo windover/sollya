@@ -7,7 +7,7 @@
 #PARAMETERS <f> is a function (usually a polynomial).
 
 #DESCRIPTION 
-If <f> is a polynomial, $COMMAND(<f>, <n>) returns the degree of <f>.
+If <f> is a polynomial, $COMMAND(<f>) returns the degree of <f>.
 
 #DESCRIPTION
 Contrary to the usage, $SOLLYA considers that the degree of the null polynomial

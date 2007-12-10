@@ -1,5 +1,5 @@
 #NAME $DIAM
-#QUICK_DESCRIPTION parameter used in safe algorithms of $SOLLYA and controlloing the maximal length of the involved intervals.
+#QUICK_DESCRIPTION parameter used in safe algorithms of $SOLLYA and controlling the maximal length of the involved intervals.
 
 #DESCRIPTION 
 $COMMAND is a global variable. Its value represents the maximal length allowed

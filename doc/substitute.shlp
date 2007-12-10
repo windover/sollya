@@ -2,10 +2,10 @@
 #QUICK_DESCRIPTION replace the occurences of the free variable in an expression.
 
 #CALLING $COMMAND(<f>,<g>)
-#TYPE $($FUNCTION_TYPE, $FUNCTION_TYPE) -> $FUNCTION_TYPE
+#TYPE ($FUNCTION_TYPE, $FUNCTION_TYPE) -> $FUNCTION_TYPE
 
 #CALLING $COMMAND(<f>,<t>)
-#TYPE $($FUNCTION_TYPE, $CONSTANT_TYPE) -> $CONSTANT_TYPE
+#TYPE ($FUNCTION_TYPE, $CONSTANT_TYPE) -> $CONSTANT_TYPE
 
 #PARAMETERS <f> is a function.
 #PARAMETERS <g> is a function.

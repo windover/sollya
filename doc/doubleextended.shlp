@@ -30,7 +30,7 @@ round(0.1,64,RN);
 
 #EXAMPLE
 D(2^(-2000));
-DE(2^(-1000));
+DE(2^(-2000));
 
 #EXAMPLE
 verbosity=1!;

@@ -19,7 +19,7 @@ An interval <Ik> may contain many zeros of <f>.
 This command is ment for cases when safety is critical. If you want to be sure
 not to forget any zero, use $COMMAND. However, if you just want to know 
 numerical values for the zeros of <f>, $DIRTYFINDZEROS should be quite 
-satisfactory and a lot more fast.
+satisfactory and a lot faster.
 
 #DESCRIPTION
 If §§d§$\delta$§§ denotes the value of global variable $DIAM, the algorithm ensures
@@ -29,7 +29,7 @@ that for each §§k§$k$§§, §§|Ik| < d*|I|§$|I_k| \le \delta \cdot |I|$§§
 The algorithm used is basically a bisection algorithm. It is the same algorithm
 that the one used for $INFNORM. See the help page of this command for more 
 details. In short, the behavior of the algorithm depends on global variables
-$PREC, $DIAM, $TAYLORECURSIONS and $HOPITALRECURSIONS.
+$PREC, $DIAM, $TAYLORRECURSIONS and $HOPITALRECURSIONS.
 
 #EXAMPLE
 findzeros(sin(x),[-5;5]);
