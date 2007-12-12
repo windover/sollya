@@ -1,0 +1,24 @@
+\subsection{ points }
+\noindent Name: \textbf{points}\\
+controls the number of points chosen by Sollya in certain commands.\\
+
+\noindent Description: \begin{itemize}
+
+\item \textbf{points} is a global variable. Its value represents the number of points
+   used in numerical algorithms of Sollya (namely \textbf{dirtyinfnorm},
+   \textbf{dirtyintegral}, \textbf{dirtyfindzeros}, \textbf{plot}).
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > f=x^2*sin(1/x);
+   > points=10;
+   The number of points has been set to 10.
+   > dirtyfindzeros(f, [0;1]);
+   [|0, 0.31830988618379067153776752674502872406891929148091789|]
+   > points=100;
+   The number of points has been set to 100.
+   > dirtyfindzeros(f, [0;1]);
+   [|0, 0.244853758602915901182898097496175941591476378062242989e-1, 0.353677651315322968375297251938920804521021434978790232e-1, 0.45472840883398667362538218106432674866988470211558935e-1, 0.530516476972984452562945877908381206781532152468192029e-1, 0.636619772367581343075535053490057448137838582961835781e-1, 0.774999999999999999999999999999999999999999999991344519e-1, 0.106103295394596890512589175581676241356306430493638406, 0.159154943091895335768883763372514362034459645740458945, 0.31830988618379067153776752674502872406891929148091789|]
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{dirtyinfnorm}, \textbf{dirtyintegral}, \textbf{dirtyfindzeros}, \textbf{plot}

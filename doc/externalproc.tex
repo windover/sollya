@@ -1,0 +1,115 @@
+\subsection{ externalproc }
+\noindent Name: \textbf{externalproc}\\
+binds an external code to a Sollya procedure\\
+
+\noindent Usage: 
+\begin{center}
+\textbf{externalproc}(\emph{identifier}, \emph{filename}, \emph{argumenttype} -> \emph{resulttype}) : (\textsf{identifier type}, \textsf{string}, \textsf{type type}, \textsf{type type}) $\rightarrow$ \textsf{void}\\
+\end{center}
+Parameters: 
+\emph{identifier} represents the identifier the code is to be bound to\\
+\emph{filename} of type \textsf{string} represents the name of the object file where the code of procedure can be found\\
+\emph{argumenttype} represents a definition of the types of the arguments of the Sollya procedure and the external code\\
+\emph{resulttype} represents a definition of the result type of the external code\\
+
+\noindent Description: \begin{itemize}
+
+\item \textbf{externalproc} allows for binding the Sollya identifier
+   \emph{identifier} to an external code.  After this binding, when Sollya
+   encounters \emph{identifier} applied to a list of actual parameters, it
+   will evaluate these parameters and call the external code with these
+   parameters. If the external code indicated success, it will receive
+   the result produced by the external code, transform it to Sollya's
+   iternal representation and return it.
+   In order to allow correct evaluation and typing of the data in
+   parameter and in result to be passed to and received from the external
+   code, \textbf{externalproc} has a third parameter \emph{argumenttype} -> \emph{resulttype}.
+   Both \emph{argumenttype} and \emph{resulttype} are one of void, constant,
+   function, range, integer, string, boolean, list of constant, list of
+   function, list of range, list of integer, list of string, list of
+   boolean.
+   If upon a usage of a procedure bound to an external procedure the type
+   of the actual parameters given or its number is not correct, Sollya
+   produces a type error. An external function not applied to arguments
+   represents itself and prints out with its argument and result types.
+   The external function is supposed to return an integer indicating
+   success.  It returns its result depending on its Sollya result type
+   as follows. Here, the external procedure is assumed to be implemented
+   as a C function.
+   If the Sollya result type is void, the C function has no pointer
+   argument for the result.  If the Sollya result type is constant, the
+   first argument of the C function is of C type mpfr\_t *, the result is
+   returned by affecting the MPFR variable.  If the Sollya result type
+   is function, the first argument of the C function is of C type node
+   **, the result is returned by the node * pointed with a new node *.
+   If the Sollya result type is range, the first argument of the C
+   function is of C type mpfi\_t *, the result is returned by affecting
+   the MPFI variable.  If the Sollya result type is integer, the first
+   argument of the C function is of C type int *, the result is returned
+   by affecting the int variable.  If the Sollya result type is string,
+   the first argument of the C function is of C type char **, the result
+   is returned by the char * pointed with a new char *.  If the Sollya
+   result type is boolean, the first argument of the C function is of C
+   type int *, the result is returned by affecting the int variable with
+   a boolean value.  If the Sollya result type is list of type, the
+   first argument of the C function is of C type chain **, the result is
+   returned by the chain * pointed with a new chain *.  This chain
+   contains for Sollya type constant pointers mpfr\_t * to new MPFR
+   variables, for Sollya type function pointers node * to new nodes, for
+   Sollya type range pointers mpfi\_t * to new MPFI variables, for
+   Sollya type integer pointers int * to new int variables for Sollya
+   type string pointers char * to new char * variables and for Sollya
+   type boolean pointers int * to new int variables representing boolean
+   values.
+   	       
+   The external procedure affects its possible pointer argument if and
+   only if it succeeds.  This means, if the function returns an integer
+   indicating failure, it does not leak any memory to the encompassing
+   environment.
+   The external procedure receives its arguments as follows: If the
+   Sollya argument type is void, no argument array is given.  Otherwise
+   the C function receives a C void ** argument representing an array of
+   size equal to the arity of the function where each entry (of C type
+   void *) represents a value with a C type depending on the
+   corresponding Sollya type. If the Sollya type is constant, the C
+   type the void * is to be casted to is mpfr\_t *.  If the Sollya type
+   is function, the C type the void * is to be casted to is node *.  If
+   the Sollya type is range, the C type the void * is to be casted to is
+   mpfi\_t *.  If the Sollya type is integer, the C type the void * is to
+   be casted to is int *.  If the Sollya type is string, the C type the
+   void * is to be casted to is char *.  If the Sollya type is boolean,
+   the C type the void * is to be casted to is int *.  If the Sollya
+   type is list of type, the C type the void * is to be casted to is
+   chain *.  Here depending on type, the values in the chain are to be
+   casted to mpfr\_t * for Sollya type constant, node * for Sollya type
+   function, mpfi\_t * for Sollya type range, int * for Sollya type
+   integer, char * for Sollya type string and int * for Sollya type
+   boolean.
+   The external procedure is not supposed to alter the memory pointed by
+   its array argument void **.
+   In both directions (argument and result values), empty lists are
+   represented by chain * NULL pointers.
+   In contrast to internal procedures, externally bounded procedures can
+   be considered as objects inside Sollya that can be assigned to other
+   variables, stored in list etc.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > bashexecute("gcc -fPIC -Wall -c externalprocexample.c");
+   > bashexecute("gcc -fPIC -shared -o externalprocexample externalprocexample.o");
+   > externalproc(foo, "./externalprocexample", (integer, integer) -> integer);
+   > foo;
+   foo(integer, integer) -> integer
+   > foo(5, 6);
+   11
+   > verbosity = 1!;
+   > foo();
+   Warning: at least one of the given expressions or a subexpression is not correctly typed
+   or its evaluation has failed because of some error on a side-effect.
+   error
+   > a = foo;
+   > a(5,6);
+   11
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{library}, \textbf{externalplot}, \textbf{bashexecute}, \textbf{void}, \textbf{constant}, \textbf{function}, \textbf{range}, \textbf{integer}, \textbf{string}, \textbf{boolean}, \textbf{list of}

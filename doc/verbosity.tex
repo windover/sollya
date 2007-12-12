@@ -1,0 +1,38 @@
+\subsection{ verbosity }
+\noindent Name: \textbf{verbosity}\\
+global variable controlling the quantity of information displayed by commands.\\
+
+\noindent Description: \begin{itemize}
+
+\item \textbf{verbosity} accepts any integer value. At level 0, commands do not display anything
+   on standard out. Note that very critical information may however be displayed on
+   standard err.
+
+\item Default level is 1. It displays important informations such as warnings when 
+   roundings happen.
+
+\item For higher levels more informations are displayed depending on the command.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > verbosity=0!;
+   > 1.2+"toto";
+   error
+   > verbosity=1!;
+   > 1.2+"toto";
+   Warning: Rounding occurred when converting the constant "1.2" to floating-point with 165 bits.
+   If safe computation is needed, try to increase the precision.
+   Warning: at least one of the given expressions or a subexpression is not correctly typed
+   or its evaluation has failed because of some error on a side-effect.
+   error
+   > verbosity=2!;
+   > 1.2+"toto";
+   Warning: Rounding occurred when converting the constant "1.2" to floating-point with 165 bits.
+   If safe computation is needed, try to increase the precision.
+   Warning: at least one of the given expressions or a subexpression is not correctly typed
+   or its evaluation has failed because of some error on a side-effect.
+   Information: the expression or a partial evaluation of it has been the following:
+   (0.119999999999999999999999999999999999999999999999999e1) + ("toto")
+   error
+\end{Verbatim}
+\end{minipage}\end{center}

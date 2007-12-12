@@ -1,0 +1,97 @@
+\subsection{ asciiplot }
+\noindent Name: \textbf{asciiplot}\\
+plots a function in a range using ASCII characters\\
+
+\noindent Usage: 
+\begin{center}
+\textbf{asciiplot}(\emph{function}, \emph{range}) : (\textsf{function}, \textsf{range}) $\rightarrow$ \textsf{void}\\
+\end{center}
+Parameters: 
+\emph{function} represents a function to be plotted\\
+\emph{range} represents a range the function is to be plotted in \\
+
+\noindent Description: \begin{itemize}
+
+\item \textbf{asciiplot} plots the function \emph{function} in range \emph{range}
+   using ASCII characters.  If Sollya is connected to a terminal, the
+   size of the plot is determined by the size of the terminal. If not,
+   the plot is of fixed size.  The function is evaluated on a number of
+   points equal to the number of columns available. Its value is rounded
+   to the next integer in the range of lines available. A letter "x" is
+   written at this place. If zero is in the hull of the image domain of
+   the function, a x-axis is displayed. If zero is in range, an y-axis is
+   displayed.  If the function is constant or if the range is reduced to
+   one point, the function is evaluated to a constant and the constant is
+   displayed instead of a plot.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > asciiplot(exp(x),[1;2]);
+                                                                             xx
+                                                                           xx  
+                                                                         xx    
+                                                                       xx      
+                                                                     xx        
+                                                                  xxx          
+                                                                xx             
+                                                             xxx               
+                                                           xx                  
+                                                        xxx                    
+                                                     xxx                       
+                                                  xxx                          
+                                               xxx                             
+                                            xxx                                
+                                        xxxx                                   
+                                     xxx                                       
+                                 xxxx                                          
+                             xxxx                                              
+                         xxxx                                                  
+                     xxxx                                                      
+                xxxxx                                                          
+           xxxxx                                                               
+      xxxxx                                                                    
+   xxx                                                                         
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > asciiplot(expm1(x),[-1;2]);
+                            |                                                 x
+                            |                                                x 
+                            |                                               x  
+                            |                                              x   
+                            |                                            xx    
+                            |                                           x      
+                            |                                          x       
+                            |                                        xx        
+                            |                                       x          
+                            |                                     xx           
+                            |                                   xx             
+                            |                                 xx               
+                            |                               xx                 
+                            |                             xx                   
+                            |                           xx                     
+                            |                        xxx                       
+                            |                     xxx                          
+                            |                 xxxx                             
+                            |             xxxx                                 
+                            |         xxxx                                     
+                            |   xxxxxx                                         
+   ---------------------xxxxxxxx-----------------------------------------------
+            xxxxxxxxxxxx    |                                                  
+   xxxxxxxxx                |                                                  
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 3: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > asciiplot(5,[-1;1]);
+   5
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 4: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > asciiplot(exp(x),[1;1]);
+   0.271828182845904523536028747135266249775724709369998e1
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{plot}

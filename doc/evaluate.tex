@@ -1,0 +1,69 @@
+\subsection{ evaluate }
+\noindent Name: \textbf{evaluate}\\
+evaluates a function at a constant point or in a range\\
+
+\noindent Usage: 
+\begin{center}
+\textbf{evaluate}(\emph{function}, \emph{constant}) : (\textsf{function}, \textsf{constant}) $\rightarrow$ \textsf{constant} | \textsf{range}\\
+\textbf{evaluate}(\emph{function}, \emph{range}) : (\textsf{function}, \textsf{range}) $\rightarrow$ \textsf{range}\\
+\textbf{evaluate}(\emph{function}, \emph{function2}) : (\textsf{function}, \textsf{function}) $\rightarrow$ \textsf{function}\\
+\end{center}
+Parameters: 
+\emph{function} represents a function\\
+\emph{constant} represents a constant point\\
+\emph{range} represents a range\\
+\emph{function2} represents a function that is not constant\\
+
+\noindent Description: \begin{itemize}
+
+\item If its second argument is a constant \emph{constant}, \textbf{evaluate} evaluates
+   its first argument \emph{function} at the point indicated by
+   \emph{constant}. This evaluation is performed in a way that the result is a
+   faithful rounding of the real value of the \emph{function} at \emph{constant} to
+   the current global precision. If such a faithful rounding is not
+   possible, \textbf{evaluate} returns a range surely encompassing the real value
+   of the function \emph{function} at \emph{constant}. If even interval evaluation
+   is not possible because the expression is undefined or numerically
+   unstable, NaN will be produced.
+
+\item If its second argument is a range \emph{range}, \textbf{evaluate} evaluates its
+   first argument \emph{function} by interval evaluation on this range
+   \emph{range}. This ensures that the image domain of the function \emph{function}
+   on the pre-image domain \emph{range} is surely enclosed in the returned
+   range.
+
+\item If its second argument is a function \emph{function2} that is not a
+   constant, \textbf{evaluate} replaces all occurences of the free variable in
+   function \emph{function} by function \emph{function2}.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > print(evaluate(sin(pi * x), 2.25));
+   0.707106781186547524400844362104849039284835937688470741
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > print(evaluate(sin(pi * x), 2));
+   [-0.172986452514381269516508615031098129542836767991679e-12714;0.759411982011879631450695643145256617060390843900679e-12715]
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 3: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > print(evaluate(sin(pi * x), [2, 2.25]));
+   [-0.514339027267725463004699891996191240734922416542101e-49;0.707106781186547524400844362104849039284835937688663]
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 4: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > print(evaluate(sin(pi * x), 2 + 0.25 * x));
+   sin((pi) * (2 + 0.25 * x))
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 5: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > print(evaluate(sin(pi * 1/x), 0));
+   @NaN@
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{isevaluable}

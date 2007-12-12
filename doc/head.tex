@@ -1,0 +1,27 @@
+\subsection{ head }
+\noindent Name: \textbf{head}\\
+gives the first element of a list.\\
+
+\noindent Usage: 
+\begin{center}
+\textbf{head}(\emph{L}) : \textsf{list} $\rightarrow$ \textsf{any type}\\
+\end{center}
+Parameters: 
+\emph{L} is a list.\\
+
+\noindent Description: \begin{itemize}
+
+\item \textbf{head}(\emph{L}) returns the first element of the list \emph{L}. It is equivalent
+   to L[0].
+
+\item If \emph{L} is empty, the command will fail with an error.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > head([|1,2,3|]);
+   1
+   > head([|1,2...|]);
+   1
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{tail}

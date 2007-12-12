@@ -1,0 +1,47 @@
+\subsection{ fullparentheses }
+\noindent Name: \textbf{fullparentheses}\\
+activates, deactivates or inspects the state variable controlling output with full parenthesizing\\
+
+\noindent Usage: 
+\begin{center}
+\textbf{fullparentheses} = \emph{activation value} : \textsf{on|off} $\rightarrow$ \textsf{void}\\
+\textbf{fullparentheses} = \emph{activation value} ! : \textsf{on|off} $\rightarrow$ \textsf{void}\\
+\textbf{fullparentheses} = ? : \textsf{void} $\rightarrow$ \textsf{on|off}\\
+\end{center}
+Parameters: 
+\emph{activation value} represents \textbf{on} or \textbf{off}, i.e. activation or deactivation\\
+
+\noindent Description: \begin{itemize}
+
+\item An assignment \textbf{fullparentheses} = \emph{activation value}, where \emph{activation value}
+   is one of \textbf{on} or \textbf{off}, activates respectively deactivates the output
+   of expressions with full parenthezing. In full parentheszing mode,
+   Sollya commands like \textbf{print}, \textbf{write} and the implicit command when an
+   expression is given at the prompt will output expressions with
+   parentheses at all places where it is necessary for expressions
+   containing infix operators to be reparsed with the same
+   result. Otherwise parentheses around associative operators are
+   omitted.
+   If the assignment \textbf{fullparentheses} = \emph{activation value} is followed by an
+   exclamation mark, no message indicating the new state is
+   displayed. Otherwise the user is informed of the new state of the
+   global mode by an indication.
+
+\item The expression \textbf{fullparentheses} = ? evaluates to a variable of type
+   \textsf{on|off}, indicating whether or not the full parenthesized output
+   of expressions is activated or not.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > autosimplify = off!;
+   > fullparentheses = off;
+   Full parentheses mode has been deactivated.
+   > print(1 + 2 + 3);
+   1 + 2 + 3
+   > fullparentheses = on;
+   Full parentheses mode has been activated.
+   > print(1 + 2 + 3);
+   (1 + 2) + 3
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{print}, \textbf{write}, \textbf{autosymplify}

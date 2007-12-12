@@ -1,0 +1,46 @@
+\subsection{ substitute }
+\noindent Name: \textbf{substitute}\\
+replace the occurences of the free variable in an expression.\\
+
+\noindent Usage: 
+\begin{center}
+\textbf{substitute}(\emph{f},\emph{g}) : (\textsf{function}, \textsf{function}) $\rightarrow$ \textsf{function}\\
+\textbf{substitute}(\emph{f},\emph{t}) : (\textsf{function}, \textsf{constant}) $\rightarrow$ \textsf{constant}\\
+\end{center}
+Parameters: 
+\emph{f} is a function.\\
+\emph{g} is a function.\\
+\emph{t} is a real number.\\
+
+\noindent Description: \begin{itemize}
+
+\item \textbf{substitute}(\emph{f}, \emph{g}) produces the function $(f \circ g) : x \mapsto f(g(x))$.
+
+\item \textbf{substitute}(\emph{f}, \emph{t}) is the constant $f(t)$. Note that the constant is
+   represented by its expression until it has been evaluated (exactly the same
+   way as if you type the expression \emph{f} replacing instances of the free variable 
+   by \emph{t}).
+
+\item If \emph{f} is stored in a variable \emph{F}. It is absolutely equivalent to 
+   writing \emph{F(g)} or \emph{F(t)}.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > f=sin(x);
+   > g=cos(x);
+   > substitute(f,g);
+   sin(cos(x))
+   > f(g);
+   sin(cos(x))
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > a=1;
+   > f=sin(x);
+   > substitute(f,a);
+   0.841470984807896506652502321630298999622563060798373
+   > f(a);
+   0.841470984807896506652502321630298999622563060798373
+\end{Verbatim}
+\end{minipage}\end{center}

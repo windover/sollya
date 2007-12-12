@@ -1,0 +1,51 @@
+\subsection{ printexpansion }
+\noindent Name: \textbf{printexpansion}\\
+prints a polynomial in Horner form with its coefficients written as a expansions of double precision numbers\\
+
+\noindent Usage: 
+\begin{center}
+\textbf{printexpansion}(\emph{polynomial}) : (\textsf{function}) $\rightarrow$ \textsf{void}\\
+\end{center}
+Parameters: 
+\emph{polynomial} represents the polynomial to be printed\\
+
+\noindent Description: \begin{itemize}
+
+\item The command \textbf{printexpansion} prints the polynomial \emph{polynomial} in Horner form
+   writing its coefficients as expansions of double precision
+   numbers. The double precision numbers themselves are displayed in
+   hexadecimal memory notation (see \textbf{printhexa}). 
+   If some of the coefficients of the polynomial \emph{polynomial} are not
+   floating-point constants but constant expressions, they are evaluated
+   to floating-point constants using the global precision \textbf{prec}.  If a
+   rounding occurs in this evaluation, a warning is displayed.
+   If the exponent range of double precision is not sufficient to display
+   all the mantissa bits of a coefficient, the coefficient is displayed
+   rounded and a warning is displayed.
+   If the argument \emph{polynomial} does not a polynomial, nothing but a
+   warning or a newline is displayed. Constants can be displayed using
+   \textbf{printexpansion} since they are polynomials of degree $0$.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > printexpansion(roundcoefficients(taylor(exp(x),5,0),[|DD...|]));
+   0x3ff0000000000000 + x * (0x3ff0000000000000 + x * (0x3fe0000000000000 + x * ((0x3fc5555555555555 + 0x3c65555555555555) + x * ((0x3fa5555555555555 + 0x3c45555555555555) + x * (0x3f81111111111111 + 0x3c01111111111111)))))
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > printexpansion(remez(exp(x),5,[-1;1]));
+   (0x3ff0002eec887685 + 0x3c691f5f67e9bc02 + 0xb8da4eda3533a5a0) + x * ((0x3ff00028359b7449 + 0x3c96606599d49aff + 0xb9341c0421ad8f65 + 0x35d8000000000000) + x * ((0x3fdff2d7e6ec686b + 0x3c7bdc5f3e3c6baa + 0xb8f46ddee438d34c) + x * ((0x3fc54d6732dfead0 + 0xbc4115bd475b2c9f + 0x38d2035ba90e783d) + x * ((0x3fa66c209b813377 + 0x3c328b7f6cf9b6de + 0x38dcc2cb5ed93c15 + 0xb578000000000000) + x * (0x3f81e5542ba3ef82 + 0xbc2bd7453be2c03c + 0xb8c7564467912508)))))
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 3: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > verbosity = 1!;
+   > prec = 3500!;
+   > printexpansion(pi);
+   (0x400921fb54442d18 + 0x3ca1a62633145c07 + 0xb92f1976b7ed8fbc + 0x35c4cf98e804177d + 0x32631d89cd9128a5 + 0x2ec0f31c6809bbdf + 0x2b5519b3cd3a431b + 0x27e8158536f92f8a + 0x246ba7f09ab6b6a9 + 0xa0eedd0dbd2544cf + 0x1d779fb1bd1310ba + 0x1a1a637ed6b0bff6 + 0x96aa485fca40908e + 0x933e501295d98169 + 0x8fd160dbee83b4e0 + 0x8c59b6d799ae131c + 0x08f6cf70801f2e28 + 0x05963bf0598da483 + 0x023871574e69a459 + 0x8000000005702db3 + 0x8000000000000000)
+   Warning: the expansion is not complete because of the limited exponent range of double precision.
+   Warning: rounding occurred while printing.
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{printhexa}, \textbf{horner}, \textbf{print}, \textbf{prec}, \textbf{remez}, \textbf{taylor}, \textbf{roundcoefficients}

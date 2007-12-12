@@ -1,0 +1,37 @@
+\subsection{ nop }
+\noindent Name: \textbf{nop}\\
+no operation\\
+
+\noindent Usage: 
+\begin{center}
+\textbf{nop} : \textsf{void} $\rightarrow$ \textsf{void}\\
+\end{center}
+\noindent Description: \begin{itemize}
+
+\item The command \textbf{nop} does nothing. This means it is an explicit parse
+   element in the Sollya language that finally does not produce any
+   result or side-effect.
+
+\item The keyword \textbf{nop} is implicit in some procedure
+   definitions. Procedures without imperative body get parsed as if they
+   had an imperative body containing one \textbf{nop} statement.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+> nop;
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+> succ = proc(n) { return n + 1; };
+> succ;
+proc(n)
+begin
+nop;
+return (n) + (1);
+end
+> succ(5);
+6
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{proc}

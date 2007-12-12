@@ -1,0 +1,46 @@
+\subsection{ bashexecute }
+\noindent Name: \textbf{bashexecute}\\
+executes a shell command.\\
+
+\noindent Usage: 
+\begin{center}
+\textbf{bashexecute}(\emph{command}) : \textsf{string} $\rightarrow$ \textsf{void}\\
+\end{center}
+Parameters: 
+\emph{command} is a command to be interpreted by the shell.\\
+
+\noindent Description: \begin{itemize}
+
+\item \textbf{bashexecute}(\emph{command}) lets the shell interpret \emph{command}. It is useful to execute
+   some external code within Sollya.
+
+\item \textbf{bashexecute} does not return anything. It just executes its argument. However, if
+   \emph{command} produces an output in a file, this result can be imported in Sollya
+   with help of commands like \textbf{execute}, \textbf{readfile} and \textbf{parse}.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > bashexecute("ls /");
+   bin
+   boot
+   cdrom
+   dev
+   etc
+   home
+   lib
+   lib64
+   lost+found
+   media
+   mnt
+   opt
+   proc
+   root
+   sbin
+   srv
+   sys
+   tmp
+   usr
+   var
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{execute}, \textbf{readfile}, \textbf{parse}

@@ -1,0 +1,84 @@
+\subsection{ restart }
+\noindent Name: \textbf{restart}\\
+brings Sollya back to its initial state\\
+
+\noindent Usage: 
+\begin{center}
+\textbf{restart} : \textsf{void} $\rightarrow$ \textsf{void}\\
+\end{center}
+\noindent Description: \begin{itemize}
+
+\item The command \textbf{restart} brings Sollya back to its initial state.  All
+   current state is abandoned, all libraries unbound and all memory freed.
+   The \textbf{restart} command has no effect when executed inside a Sollya
+   script read into a main Sollya script using \textbf{execute}. It is executed
+   in a Sollya script included by a $\#$include macro.
+   Using the \textbf{restart} command in nested elements of imperative
+   programming like for or while loops is possible. Since in most cases
+   abandoning the current state of Sollya means altering a loop
+   invariant, warnings of the impossibility of continuing a loop may
+   follow unless the state is rebuilt.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > print(exp(x));
+   exp(x)
+   > a = 3;
+   > restart;
+   The tool has been restarted.
+   > print(x);
+   x
+   > a;
+   Warning: the identifier "a" is neither assigned to, nor bound to a library function nor equal to the current free variable.
+   Will interpret "a" as "x".
+   x
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > print(exp(x));
+   exp(x)
+   > for i from 1 to 10 do {
+   > 	print(i);
+   > 	if (i == 5) then restart;
+   > };
+   1
+   2
+   3
+   4
+   5
+   The tool has been restarted.
+   Warning: the tool has been restarted inside a for loop.
+   The for loop will no longer be executed.
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 3: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > print(exp(x));
+   exp(x)
+   > a = 3;
+   > for i from 1 to 10 do {
+   > 	print(i);
+   > 	if (i == 5) then {
+   > 		restart;
+   > 		i = 7;
+   > 	};
+   > };
+   1
+   2
+   3
+   4
+   5
+   The tool has been restarted.
+   8
+   9
+   10
+   > print(x);
+   x
+   > a;
+   Warning: the identifier "a" is neither assigned to, nor bound to a library function nor equal to the current free variable.
+   Will interpret "a" as "x".
+   x
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{quit}, \textbf{execute}, \textbf{while}, \textbf{for}

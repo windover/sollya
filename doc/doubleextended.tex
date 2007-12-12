@@ -1,0 +1,52 @@
+\subsection{ doubleextended }
+\noindent Names: \textbf{doubleextended}, \textbf{DE}\\
+computes the nearest number with 64 bits of mantissa.\\
+
+\noindent Description: \begin{itemize}
+
+\item \textbf{doubleextended} is a function that computes the nearest floating-point number with
+   64 bits of mantissa to a given number. Since it is a function, it can be
+   composed with other functions of Sollya such as \textbf{exp}, \textbf{sin}, etc.
+
+\item It does not handle subnormal numbers. The range of possible exponents is the 
+   range used for all numbers represented in Sollya (e.g. basically the range 
+   used in the library MPFR).
+
+\item Since it is a function and not a command, its behavior is a bit different from 
+   the behavior of \textbf{round}(x,64,RN) even if the result is exactly the same.
+   \textbf{round}(x,64,RN) is immediately evaluated whereas \textbf{doubleextended}(x) can be composed 
+   with other functions (and thus be plotted and so on).
+
+\item Be aware that \textbf{doubleextended} cannot be used as a constant to represent a format in the
+   commands \textbf{roundcoefficients} and \textbf{implementpoly} (contrary to \textbf{D}, \textbf{DD},and \textbf{TD}).
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > display=binary!;
+   > DE(0.1);
+   1.100110011001100110011001100110011001100110011001100110011001101_2 * 2^(-4)
+   > round(0.1,64,RN);
+   1.100110011001100110011001100110011001100110011001100110011001101_2 * 2^(-4)
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > D(2^(-2000));
+   0
+   > DE(2^(-2000));
+   0.870980981621721667557619549477887229585910374270538862e-602
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 3: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > verbosity=1!;
+   > f = sin(DE(x));
+   > f(pi);
+   Warning: rounding has happened. The value displayed is a faithful rounding of the true result.
+   -0.501655761266833202355732708033075701383156167025495e-19
+   > g = sin(round(x,64,RN));
+   Warning: at least one of the given expressions or a subexpression is not correctly typed
+   or its evaluation has failed because of some error on a side-effect.
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{double}, \textbf{doubledouble}, \textbf{tripledouble}, \textbf{round}

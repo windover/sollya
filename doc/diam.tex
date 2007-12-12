@@ -1,0 +1,16 @@
+\subsection{ diam }
+\noindent Name: \textbf{diam}\\
+parameter used in safe algorithms of Sollya and controlling the maximal length of the involved intervals.\\
+
+\noindent Description: \begin{itemize}
+
+\item \textbf{diam} is a global variable. Its value represents the maximal length allowed
+   for intervals involved in safe algorithms of Sollya (namely \textbf{infnorm},
+   \textbf{checkinfnorm}, \textbf{accurateinfnorm}, \textbf{integral}, \textbf{findzeros}).
+
+\item More precisely, \textbf{diam} is relative to the diameter of the input interval of
+   the command. For instance, suppose that \textbf{diam}=1e-5: if \textbf{infnorm} is called
+   on interval $[0,\,1]$, the maximal length of an interval will be 1e-5. But if it
+   is called on interval $[0,\,1\mathrm{e}{-3}]$, the maximal length will be 1e-8.
+\end{itemize}
+See also: \textbf{infnorm}, \textbf{checkinfnorm}, \textbf{accurateinfnorm}, \textbf{integral}, \textbf{findzeros}

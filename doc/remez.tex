@@ -1,0 +1,80 @@
+\subsection{ remez }
+\noindent Name: \textbf{remez}\\
+computes the minimax of a function on an interval.\\
+
+\noindent Usage: 
+\begin{center}
+\textbf{remez}(\emph{f}, \emph{n}, \emph{range}, \emph{w}, \emph{quality}) : (\textsf{function}, \textsf{integer}, \textsf{range}, \textsf{function}, \textsf{constant}) $\rightarrow$ \textsf{function}\\
+\textbf{remez}(\emph{f}, \emph{L}, \emph{range}, \emph{w}, \emph{quality}) : (\textsf{function}, \textsf{list}, \textsf{range}, \textsf{function}, \textsf{constant}) $\rightarrow$ \textsf{function}\\
+\end{center}
+Parameters: 
+\begin{itemize}
+\item \emph{f} is the function to be approximated
+\item \emph{n} is the degree of the polynomial that must approximate \emph{f}
+\item \emph{L} is a list of monomials that can be used to represent the polynomial that must approximate \emph{f}
+\item \emph{range} is the interval where the function must be approximated
+\item \emph{w} (optional) is a weight function. Default is 1.
+\item \emph{quality} (optional) is a parameter that controls the quality of the returned polynomial \emph{p}, with respect to the exact minimax $p^\star$. Default is 1e-5.
+\end{itemize}
+\noindent Description: \begin{itemize}
+
+\item \textbf{remez} computes an approximation of the function $f$ with respect to 
+   the weight function $w$ on the interval \emph{range}. More precisely, it 
+   searches a polynomial $p$ such that $\|pw-f\|_{\infty}$ is 
+   (almost minimal) among all polynomials $p$ of a certain form. The norm is
+   the infinite norm, e.g. $\|g\|_{\infty} = \max \{|g(x)|, x \in \mathrm{range}\}.$
+
+\item If $w=1$ (the default case), it consists in searching the best 
+   polynomial approximation of $f$ with respect to the absolute error.
+   If $f=1$ and $w$ is of the form $1/g$, it consists in 
+   searching the best polynomial approximation of $g$ with respect to the 
+   relative error.
+
+\item If $n$ is given, the polynomial $p$ is searched among the 
+   polynomials with degree not greater than $n$.
+   If \emph{L} is given, the polynomial $p$ is searched as a linear combination 
+   of monomials $X^k$ where $k$ belongs to \emph{L}.
+   \emph{L} may contain ellipses but cannot be end-elliptic.
+
+\item The polynomial is obtained by a convergent iteration called Remez' algorithm. 
+   The algorithm computes a sequence $p_1,\dots ,p_k,\dots$ 
+   such that $e_k = \|p_k w-f\|_{\infty}$ converges towards 
+   the optimal value $e$. The algorithm is stopped when the relative error 
+   between $e_k$ and $e$ is less than \emph{quality}.
+
+\item Note: the algorithm may not converge in certain cases. Moreover, it may 
+   converge towards a polynomial that is not optimal. These cases correspond to 
+   the cases when Haar's condition is not fulfilled.
+   See [Cheney - Approximation theory] for details.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+> p = remez(exp(x),5,[0;1]);
+> degree(p);
+5
+> dirtyinfnorm(p-exp(x),[0;1]);
+0.112956994145777826976474581166951642161746831108566851946e-5
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+> p = remez(1,[|0,2,4,6,8|],[0,Pi/4],1/cos(x));
+> canonical=on!;
+> p;
+0.999999999943937321805410306927692541203518389031685 + (-0.499999995715568577559574413581766900435294037106493613) * x^2 + 0.416666132334736321135652061403756856904074913853682927e-1 * x^4 + (-0.138865291471456765864326123540477937091500390886117905e-2) * x^6 + 0.243726791772232726278486347508569482304048351169722066e-4 * x^8
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 3: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+> p1 = remez(exp(x),5,[0;1],default,1e-5);
+> p2 = remez(exp(x),5,[0;1],default,1e-10);
+> p3 = remez(exp(x),5,[0;1],default,1e-15);
+> dirtyinfnorm(p1-exp(x),[0;1]);
+0.112956994145777826976474581166951642161746831108566851946e-5
+> dirtyinfnorm(p2-exp(x),[0;1]);
+0.11295698022747876310115474830183586181755211237038868201e-5
+> dirtyinfnorm(p3-exp(x),[0;1]);
+0.112956980227478673699869114581631945410176127063383668503e-5
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{dirtyinfnorm}, \textbf{infnorm}

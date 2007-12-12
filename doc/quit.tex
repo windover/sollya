@@ -1,0 +1,26 @@
+\subsection{ quit }
+\noindent Name: \textbf{quit}\\
+quits Sollya\\
+
+\noindent Usage: 
+\begin{center}
+\textbf{quit} : \textsf{void} $\rightarrow$ \textsf{void}\\
+\end{center}
+\noindent Description: \begin{itemize}
+
+\item The command \textbf{quit}, when executed abandons the execution of a Sollya
+   script and leaves the Sollya interpreter unless the \textbf{quit} command 
+   is executed in a Sollya script read into a main Sollya script by
+   \textbf{execute} or $\#$include.
+   Upon exiting the Sollya interpreter, all state is thrown away, all
+   memory is deallocated, all bound libraries are unbound and the
+   temporary files produced by \textbf{plot} and \textbf{externalplot} are deleted.
+   If the \textbf{quit} command does not lead to the abandon of the Sollya
+   interpreter, a warning is displayed.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > quit;
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{restart}, \textbf{execute}, \textbf{plot}, \textbf{externalplot}

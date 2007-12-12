@@ -1,0 +1,50 @@
+\subsection{ divide }
+\noindent Name: \textbf{/}\\
+division function\\
+
+\noindent Usage: 
+\begin{center}
+\emph{function1} \textbf{/} \emph{function2} : (\textsf{function}, \textsf{function}) $\rightarrow$ \textsf{function}\\
+\end{center}
+Parameters: 
+\emph{function1} and \emph{function2} represent functions\\
+
+\noindent Description: \begin{itemize}
+
+\item \textbf{/} represents the division (function) on reals. 
+   The expression \emph{function1} \textbf{/} \emph{function2} stands for
+   the function composed of the division function and the two
+   functions \emph{function1} and \emph{function2}, where \emph{function1} is
+   the numerator and \emph{function2} the denominator.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > 5 / 2;
+   0.25e1
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > x / 2;
+   x * 0.5
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 3: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > x / x;
+   1
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 4: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > 3 / 0;
+   @Inf@
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 5: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > diff(sin(x) / exp(x));
+   (exp(x) * cos(x) - sin(x) * exp(x)) / exp(x)^2
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{$+$}, \textbf{$-$}, \textbf{$*$}, \textbf{\^}

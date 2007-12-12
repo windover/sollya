@@ -1,0 +1,60 @@
+\subsection{ library }
+\noindent Name: \textbf{library}\\
+binds an external mathematical function to a variable in Sollya\\
+
+\noindent Usage: 
+\begin{center}
+\textbf{library}(\emph{path}) : \textsf{string} $\rightarrow$ \textsf{function}\\
+\end{center}
+\noindent Description: \begin{itemize}
+
+\item The command \textbf{library} lets you extends the set of mathematical
+   functions known by Sollya.
+   By default, Sollya knows the most common mathematical functions such
+   as \textbf{exp}, \textbf{sin}, \textbf{erf}, etc. Within Sollya, these functions may be
+   composed. This way, Sollya should satisfy the needs of a lot of
+   users. However, for particular applications, one may want to
+   manipulates other functions such as Bessel functions, or functions
+   defined by an integral or even a particular solution of an ODE.
+
+\item \textbf{library} makes it possible to let Sollya know about new functions. In
+   order to let it know, you have to provide an implementation of the
+   function you are interested with. This implementation is a C file containing
+   a function of the form:
+   \begin{verbatim} int my_ident(mpfi_t result, mpfi_t op, int n)\end{verbatim}
+   The semantic of this function is the following: it is an implementation of
+   the function and its derivatives in interval arithmetic.
+   \verb|my_ident(result, I, n)| shall store in \verb|result| an enclosure 
+   of the image set of the n-th derivative
+   of the function f over \verb|I|: $f^{(n)}(I) \subseteq \mathrm{result}$.
+
+\item The integer returned value has no meaning currently.
+
+\item You must not provide a non trivial implementation for any \verb|n|. Most functions
+   of Sollya needs a relevant implementation of $f$, $f'$ and $f''$. For higher 
+   derivatives, its is not so critical and the implementation may just store 
+   $[-\infty,\,+\infty]$ in result whenever $n>2$.
+
+\item Note that you should respect somehow MPFI standards in your implementation:
+   \verb|result| has its own precision and you should perform the 
+   intermediate computations so that \verb|result| is as tighter as possible.
+
+\item You can include sollya.h in your implementation and use library 
+   functionnalities of Sollya for your implementation.
+
+\item To bind your function into Sollya, you must use the same identifier as the
+   function name used in your implementation file (\verb|my_ident| in the previous
+   example).
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > bashexecute("gcc -fPIC -Wall -c libraryexample.c");
+   > bashexecute("gcc -shared -o libraryexample libraryexample.o -lgmp -lmpfr");
+   > myownlog = library("./libraryexample");
+   > evaluate(log(x), 2);
+   0.693147180559945309417232121458176568075500134360248314207
+   > evaluate(myownlog(x), 2);
+   0.693147180559945309417232121458176568075500134360248314207
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{bashexecute}, \textbf{externalproc}, \textbf{externalplot}

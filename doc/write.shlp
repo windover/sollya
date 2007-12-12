@@ -2,9 +2,9 @@
 #QUICK_DESCRIPTION prints an expression without separators
 #CALLING $COMMAND(<expr1>,...,<exprn>)
 #TYPE ($ANY_TYPE,..., $ANY_TYPE) -> $VOID_TYPE
-#CALLING $COMMAND(<expr1>,...,<exprn>) > <filename>
+#CALLING $COMMAND(<expr1>,...,<exprn>) §§>§$>$§§ <filename>
 #TYPE ($ANY_TYPE,..., $ANY_TYPE, $STRING_TYPE) -> $VOID_TYPE
-#CALLING $COMMAND(<expr1>,...,<exprn>) >> <filename>
+#CALLING $COMMAND(<expr1>,...,<exprn>) §§>>§$>>$§§ <filename>
 #TYPE ($ANY_TYPE,...,$ANY_TYPE, $STRING_TYPE) -> $VOID_TYPE
 #PARAMETERS <expr> represents an expression
 #PARAMETERS <filename> represents a character sequence indicating a file name
@@ -16,10 +16,10 @@ concatenated without any separator. No newline is displayed at the
 end.  In contrast to $PRINT, $COMMAND expects the user to give all
 separators and newlines explicitely.
 §§ §§§
-If a second argument <filename> is given after a single ">", the
+If a second argument <filename> is given after a single §§">"§"$>$"§§, the
 displaying is not output on the standard output of $SOLLYA but if in
 the file <filename> that get newly created or overwritten. If a double
-">>" is given, the output will be appended to the file <filename>.
+ §§">>"§"$>>$"§§ is given, the output will be appended to the file <filename>.
 §§ §§§
 The global variables $DISPLAY, $MIDPOINTMODE and $FULLPARENTHESES have
 some influence on the formatting of the output (see $DISPLAY,
@@ -45,7 +45,7 @@ write("Hello","\n");
 write([|"Hello"|],"\n");
 s = "Hello";
 write(s,[|s|],"\n");
-t = "Hello\tyou\a";
+t = "Hello\tyou";
 write(t,[|t|],"\n");
 
 #EXAMPLE

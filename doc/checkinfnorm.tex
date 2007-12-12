@@ -1,0 +1,62 @@
+\subsection{ checkinfnorm }
+\noindent Name: \textbf{checkinfnorm}\\
+checks whether the infinite norm of a function is bounded by a value\\
+
+\noindent Usage: 
+\begin{center}
+\textbf{checkinfnorm}(\emph{function},\emph{range},\emph{constant}) : (\textsf{function}, \textsf{range}, \textsf{constant}) $\rightarrow$ \textsf{boolean}\\
+\end{center}
+Parameters: 
+\emph{function} represents the function whose infinite norm is to be checked\\
+\emph{range} represents the infinite norm is to be considered on\\
+\emph{constant} represents the upper bound the infinite norm is to be checked to\\
+
+\noindent Description: \begin{itemize}
+
+\item The command \textbf{checkinfnorm} checks whether the infinite norm of the given
+   function \emph{function} in the range \emph{range} can be proven (by Sollya) to
+   be less than the given bound \emph{bound}. This means, if \textbf{checkinfnorm}
+   evaluates to \textbf{true}, the infinite norm has been proven (by Sollya's
+   interval arithmetic) to be less than the bound. If \textbf{checkinfnorm} evaluates
+   to \textbf{false}, there are two possibilities: either the bound is less than
+   or equal to the infinite norm of the function or the bound is greater
+   than the infinite norm but Sollya could not conclude using its
+   internal interval arithmetic.
+   \textbf{checkinfnorm} is sensitive to the global variable \textbf{diam}. The smaller \textbf{diam},
+   the more time Sollya will spend on the evaluation of \textbf{checkinfnorm} in
+   order to prove the bound before returning \textbf{false} although the infinite
+   is bounded by the bound. If \textbf{diam} is equal to $0$, Sollya will
+   eventually spend infinite time on instances where the given bound
+   \emph{bound} is less or equal to the infinite norm of the function
+   \emph{function} in range \emph{range}. In contrast, with \textbf{diam} being zero,
+   \textbf{checkinfnorm} evaluates to \textbf{true} iff the infinite norm of the function in
+   the range is bounded by the given bound.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > checkinfnorm(sin(x),[0;1.75], 1);
+   true
+   > checkinfnorm(sin(x),[0;1.75], 1/2); checkinfnorm(sin(x),[0;20/39],
+   false
+   > 1/2);
+   true
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > p = remez(exp(x), 5, [-1;1]);
+   > b = dirtyinfnorm(p - exp(x), [-1;1]);
+   > checkinfnorm(p - exp(x), [-1;1], b);
+   false
+   > b1 = round(b, 20, RU);
+   > checkinfnorm(p - exp(x), [-1;1], b1);
+   true
+   > b2 = round(b, 25, RU);
+   > checkinfnorm(p - exp(x), [-1;1], b2);
+   false
+   > diam = 1b-20!;
+   > checkinfnorm(p - exp(x), [-1;1], b2);
+   true
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{infnorm}, \textbf{dirtyinfnorm}, \textbf{accurateinfnorm}, \textbf{remez}, \textbf{diam}

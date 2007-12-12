@@ -1,0 +1,30 @@
+\subsection{ concat }
+\noindent Name: \textbf{@}\\
+concatenates two lists or strings.\\
+
+\noindent Usage: 
+\begin{center}
+\emph{L1}\textbf{@}\emph{L2} : (\textsf{list}, \textsf{list}) $\rightarrow$ \textsf{list}\\
+\emph{string1}\textbf{@}\emph{string2} : (\textsf{string}, \textsf{string}) $\rightarrow$ \textsf{string}\\
+\end{center}
+Parameters: 
+\emph{L1} and \emph{L2} are two lists.\\
+\emph{string1} and \emph{string2} are two strings.\\
+
+\noindent Description: \begin{itemize}
+
+\item \textbf{@} concatenates two lists or strings.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > [|1,...,3|]@[|7,8,9|];
+   [|1, 2, 3, 7, 8, 9|]
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+   > "Hello "@"World!";
+   Hello World!
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{.:}, \textbf{:.}
