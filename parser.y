@@ -1700,11 +1700,19 @@ help:                   CONSTANTTOKEN
                           }                  					       
                       | LBRACKETTOKEN
                           {
-			    printf("Left bracket - indicates a range or a list.\n");
+			    printf("Left bracket - indicates a range.\n");
                           }              					       
                       | RBRACKETTOKEN
                           {
-			    printf("Right bracket - indicates a range or a list.\n");
+			    printf("Right bracket - indicates a range.\n");
+                          }
+                      | LBRACKETTOKEN VERTBARTOKEN
+                          {
+			    printf("Left bracket-bar - indicates a list.\n");
+                          }              					       
+                      | VERTBARTOKEN RBRACKETTOKEN 
+                          {
+			    printf("Bar-right bracket - indicates a list.\n");
                           }              					       
                       | EQUALTOKEN
                           {
@@ -1719,7 +1727,7 @@ help:                   CONSTANTTOKEN
 #ifdef HELP_FLOATASSIGNMENT_TEXT
 			    printf(HELP_FLOATASSIGNMENT_TEXT);
 #else
-			    printf("Assignment operator.\n");
+			    printf("Evaluating assignment operator.\n");
 #endif
                           }                 					       
                       | COMPAREEQUALTOKEN
@@ -1736,7 +1744,11 @@ help:                   CONSTANTTOKEN
                           }                 					       
                       | EXCLAMATIONTOKEN
                           {
-			    printf("Suppresses output on assignments.\n");
+#ifdef HELP_NOT_TEXT
+			    printf(HELP_NOT_TEXT);
+#else
+			    printf("Suppresses output on assignments or boolean negation.\n");
+#endif
                           }      						       
                       | STARLEFTANGLETOKEN
                           {
@@ -1749,6 +1761,14 @@ help:                   CONSTANTTOKEN
 #else
 			    printf("Comparison less than.\n");
 #endif
+                          }            
+                      | LEFTANGLETOKEN EQUALTOKEN
+                          {
+#ifdef HELP_LE_TEXT
+			    printf(HELP_LE_TEXT);
+#else
+			    printf("Comparison less than or equal to.\n");
+#endif
                           }             					       
                       | RIGHTANGLEUNDERSCORETOKEN
                           {
@@ -1758,6 +1778,14 @@ help:                   CONSTANTTOKEN
                           {
 			    printf("Dereferences the mid-point of a range.\n");
                           }       					       
+                      | RIGHTANGLETOKEN EQUALTOKEN
+                          {
+#ifdef HELP_GE_TEXT
+			    printf(HELP_GE_TEXT);
+#else
+			    printf("Comparison greater than or equal to.\n");
+#endif
+			  }
                       | RIGHTANGLESTARTOKEN
                           {
 			    printf("Dereferences the upper range bound.\n");
@@ -2208,7 +2236,7 @@ help:                   CONSTANTTOKEN
 #ifdef HELP_TAYLORRECURSIONS_TEXT
 			    printf(HELP_TAYLORRECURSIONS_TEXT);
 #else
-			    printf("Global environement variable recursions of Taylor evaluation.\n");
+			    printf("Global environment variable recursions of Taylor evaluation.\n");
 #endif
                           }                 					             					       
                       | TIMINGTOKEN
@@ -2216,7 +2244,7 @@ help:                   CONSTANTTOKEN
 #ifdef HELP_TIMING_TEXT
 			    printf(HELP_TIMING_TEXT);
 #else
-			    printf("Global environement variable timing of computations.\n");
+			    printf("Global environment variable timing of computations.\n");
 #endif
                           }                 					                       					       
                       | FULLPARENTHESESTOKEN
@@ -2224,7 +2252,7 @@ help:                   CONSTANTTOKEN
 #ifdef HELP_FULLPARENTHESES_TEXT
 			    printf(HELP_FULLPARENTHESES_TEXT);
 #else
-			    printf("Global environement variable fully parenthized mode.\n");
+			    printf("Global environment variable fully parenthized mode.\n");
 #endif
                           }                 					              					       
                       | MIDPOINTMODETOKEN
@@ -2232,7 +2260,7 @@ help:                   CONSTANTTOKEN
 #ifdef HELP_MIDPOINTMODE_TEXT
 			    printf(HELP_MIDPOINTMODE_TEXT);
 #else
-			    printf("Global environement variable midpoint mode.\n");
+			    printf("Global environment variable midpoint mode.\n");
 #endif
                           }                 					                 					       
                       | HOPITALRECURSIONSTOKEN
@@ -2240,7 +2268,7 @@ help:                   CONSTANTTOKEN
 #ifdef HELP_HOPITALRECURSIONS_TEXT
 			    printf(HELP_HOPITALRECURSIONS_TEXT);
 #else
-			    printf("Global environement variable recursions of Hopital evaluation.\n");
+			    printf("Global environment variable recursions of Hopital evaluation.\n");
 #endif
                           }                 					             					       
                       | ONTOKEN
@@ -3043,15 +3071,24 @@ help:                   CONSTANTTOKEN
 #else
 			    printf("Defines a named procedure.\n");
 #endif
+                          }                 	
+                      | RETURNTOKEN                     {
+#ifdef HELP_RETURN_TEXT
+			    printf(HELP_RETURN_TEXT);
+#else
+			    printf("Returns an expression in a procedure.\n");
+#endif
                           }                 					       			       
                       | HELPTOKEN
                           {
 			    printf("Possible keywords in %s are:\n",PACKAGE_NAME);
 			    printf("- ^\n");
 			    printf("- <\n");
+			    printf("- <=\n");
 			    printf("- =\n");
 			    printf("- ==\n");
 			    printf("- >\n");
+			    printf("- >=\n");
 			    printf("- >_\n");
 			    printf("- >.\n");
 			    printf("- >*\n");
@@ -3071,7 +3108,9 @@ help:                   CONSTANTTOKEN
 			    printf("- (\n");
 			    printf("- )\n");
 			    printf("- [\n");
+			    printf("- [|\n");
 			    printf("- ]\n");
+			    printf("- |]\n");
 			    printf("- @\n");
 			    printf("- *\n");
 			    printf("- *<\n");

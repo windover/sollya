@@ -1,0 +1,27 @@
+#NAME $PROCEDURE
+#QUICK_DESCRIPTION defines and assigns a $SOLLYA procedure
+#CALLING $COMMAND <identifier>(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) $BEGIN <procedure body> $END
+#TYPE $VOID_TYPE -> $VOID_TYPE
+#CALLING $COMMAND <identifier>(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) $BEGIN <procedure body> $RETURN <expression>; $END
+#TYPE $ANY_TYPE -> $VOID_TYPE
+#PARAMETERS <identifier> represents the name of the procedure to be defined and assigned
+#PARAMETERS <formal parameter1>, <formal parameter2> through <formal parameter n> represent identifiers used as formal parameters
+#PARAMETERS <procedure body> represents the imperative statements in the body of the procedure
+#PARAMETERS <expression> represents the expression $COMMAND shall evaluate to
+
+#DESCRIPTION 
+The $COMMAND keyword allows for defining and assigning procedures in
+the $SOLLYA language. It is an abbreviation to a procedure definition
+using $PROC with the same formal parameters, procedure body and
+return-expression followed by an assignment of the procedure (object)
+to the identifier <identifier>. In particular, all rules concerning
+local variables declared using the $VAR keyword apply for $COMMAND.
+
+#EXAMPLE
+procedure succ(n) { return n + 1; };
+succ(5);
+3 + succ(0);
+succ;
+
+#SEEALSO $PROC
+#SEEALSO $VAR

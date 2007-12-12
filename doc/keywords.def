@@ -23,6 +23,12 @@ WHILE="while"
 FOR="for"
 
 VAR="var"
+PROC="proc"
+PROCEDURE="procedure"
+NOP="nop"
+BEGIN="begin"
+END="end"
+RETURN="return"
 
 ABS="abs"
 ABSOLUTE="absolute"

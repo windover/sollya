@@ -23,3 +23,4 @@ IDENTIFIER_TYPE="identifier type"
 TYPE_TYPE="type type"
 ERROR_TYPE="error"
 
+PROCEDURE_TYPE="procedure"

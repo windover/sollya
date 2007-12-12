@@ -2844,7 +2844,7 @@ char *sRawPrintThing(node *tree) {
       res = concatAndFree(res,newString(";\n"));
       curr = curr->next;
     }
-    res = concatAndFree(res,newString("end\n"));
+    res = concatAndFree(res,newString("end"));
     break;			
   case WHILE:
     res = newString("while ");
@@ -9453,7 +9453,7 @@ void rawPrintThing(node *tree) {
       printf(";\n");
       curr = curr->next;
     }
-    printf("end\n");
+    printf("end");
     break;			
   case WHILE:
     printf("while ");
@@ -10773,7 +10773,7 @@ void fRawPrintThing(FILE *fd, node *tree) {
       fprintf(fd,";\n");
       curr = curr->next;
     }
-    fprintf(fd,"end\n");
+    fprintf(fd,"end");
     break;			
   case WHILE:
     fprintf(fd,"while ");
@@ -12827,7 +12827,7 @@ int executeProcedureInner(node **resultThing, node *proc, chain *args) {
     if (isQuit((node *) (curr->value)) ||
 	isFalseQuit((node *) (curr->value)) ||
 	isRestart((node *) (curr->value)) ||
-	isRestart((node *) (curr->value))) {
+	isFalseRestart((node *) (curr->value))) {
       printMessage(1,"Warning: a quit or restart command may not be part of a procedure body.\n");
       printMessage(1,"The procedure will not be executed.\n");
       result = 1;

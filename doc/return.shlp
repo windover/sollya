@@ -1,0 +1,38 @@
+#NAME $RETURN
+#QUICK_DESCRIPTION indicates an expression to be returned in a procedure
+#CALLING $COMMAND <expression>
+#TYPE $VOID_TYPE
+#PARAMETERS <expression> represents the expression to be returned
+
+#DESCRIPTION 
+The keyword $COMMAND allows for returning the (evaluated) expression
+<expression> at the end of a begin-end-block ({}-block) used as a
+$SOLLYA procedure body. See $PROC for further details concerning
+$SOLLYA procedure definitions.
+§§ §§§ 
+Statements for returning expressions using $COMMAND are only possible
+ at the end of a begin-end-block used as a $SOLLYA procedure
+ body. Only one $COMMAND statement can be given per begin-end-block.
+
+#DESCRIPTION
+If at the end of a procedure definition using $PROC no $COMMAND
+statement is given, a $COMMAND $VOID statement is implicitely
+added. Procedures, i.e. procedure objects, when printed out in $SOLLYA
+defined with an implicit $COMMAND $VOID statement are displayed with
+this statement explicited.
+
+#EXAMPLE
+succ = proc(n) { var res; res := n + 1; return res; };
+succ(5);
+succ;
+
+#EXAMPLE
+hey = proc(s) { print("Hello",s); };
+hey("world");
+hey;
+
+#SEEALSO $PROC
+#SEEALSO $VOID
+
+
+

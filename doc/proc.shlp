@@ -1,0 +1,136 @@
+#NAME $PROC
+#QUICK_DESCRIPTION defines a $SOLLYA procedure
+#CALLING $COMMAND(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) $BEGIN <procedure body> $END
+#TYPE $VOID_TYPE -> $PROCEDURE_TYPE
+#CALLING $COMMAND(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) $BEGIN <procedure body> $RETURN <expression>; $END
+#TYPE $ANY_TYPE -> $PROCEDURE_TYPE
+#PARAMETERS <formal parameter1>, <formal parameter2> through <formal parameter n> represent identifiers used as formal parameters
+#PARAMETERS <procedure body> represents the imperative statements in the body of the procedure
+#PARAMETERS <expression> represents the expression $COMMAND shall evaluate to
+
+#DESCRIPTION 
+The $COMMAND keyword allows for defining procedures in the $SOLLYA
+language. These procedures are common $SOLLYA objects that can be
+applied to actual parameters after definition. Upon such an
+application, the $SOLLYA interpreter applies the actual parameters to
+the formal parameters <formal parameter1> through <formal parameter n>
+and executes the <procedure body>. The procedure applied to actual
+parameters evaluates then to the expression <expression> in the
+$RETURN statement after the <procedure body> or to $VOID, if no return
+statement is given (i.e. a $RETURN $VOID statement is implicitly
+given).
+
+#DESCRIPTION
+$SOLLYA procedures defined by $COMMAND have no name. They can be bound
+to an identifier by assigning the procedure object a $COMMAND
+expression produces to an identifier. However, it is possible to use
+procedures without giving them any name. For instance, $SOLLYA
+procedures, i.e. procedure objects, can be elements of lists. They can
+even be given as an argument to other internal $SOLLYA procedures. See
+also $PROCEDURE on this subject.
+
+#DESCRIPTION
+Upon definition of a $SOLLYA procedure using $COMMAND, no type check
+is performed. More precisely, the statements in <procedure body> are
+merely parsed but not interpreted upon procedure definition with
+$COMMAND. Type checks are performed once the procedure is applied to
+actual parameters or to $VOID. At this time, it is checked whether the
+number of actual parameters corresponds to the number of formal
+parameters. Type checks are further performed upon execution of each
+statement in <procedure body> and upon evaluation of the expression
+<expression> to be returned.
+§§ §§§
+Procedures defined by $PROC containing a $QUIT or $RESTART command
+cannot be executed (i.e. applied). Upon application of a procedure,
+the $SOLLYA interpreter checks beforehand for such a statement. If one
+is found, the application of the procedure to its arguments evaluates
+to $ERROR. A warning is displayed. Remark that in contrast to other
+type or semantical correctness checks, this check is really performed
+before interpreting any other statement in body of the procedure.
+
+#DESCRIPTION
+By means provided by the $VAR keyword, it is possible to declare local
+variables and thus to have full support of recursive procedures. This
+means a procedure defined using $COMMAND may contain in its <procedure
+body> an application of itself to some actual parameters: it suffices
+to assign the procedure (object) to an identifier with an appropriate
+name.
+
+#DESCRIPTION
+$SOLLYA procedures defined using $COMMAND may return other
+procedures. Further <procedure body> may contain assignments of
+locally defined procedure objects to identifiers. See $VAR for the
+particular behaviour of local and global variables.
+
+#DESCRIPTION
+The expression <expression> returned by a procedure is evaluated with
+regard to $SOLLYA commands, procedures and external
+procedures. Simplification may be performed.  However, an application
+of a procedure defined by $PROC to actual parameters evaluates to the
+expression <expression> that may contain the free global variable or
+that may be composed.
+
+#EXAMPLE
+succ = proc(n) { return n + 1; };
+succ(5);
+3 + succ(0);
+succ;
+
+#EXAMPLE
+add = proc(m,n) { var res; res := m + n; return res; };
+add(5,6);
+add;
+verbosity = 1!;
+add(3);
+add(true,false);
+
+
+#EXAMPLE
+succ = proc(n) { return n + 1; };
+succ(5);
+succ(x);
+
+#EXAMPLE
+hey = proc() { print("Hello world."); };
+hey();
+print(hey());
+hey;
+
+
+#EXAMPLE
+fac = proc(n) { var res; if (n == 0) then res := 1 else res := n * fac(n - 1); return res; };
+fac(5);
+fac(11);
+fac;
+
+#EXAMPLE
+myprocs = [| proc(m,n) { return m + n; }, proc(m,n) { return m - n; } |];
+(myprocs[0])(5,6);
+(myprocs[1])(5,6);
+succ = proc(n) { return n + 1; };
+pred = proc(n) { return n - 1; };
+applier = proc(p,n) { return p(n); };
+applier(succ,5);
+applier(pred,5);
+
+#EXAMPLE
+verbosity = 1!;
+myquit = proc(n) { print(n); quit; };
+myquit;
+myquit(5);
+
+#EXAMPLE
+printsucc = proc(n) { var succ; succ = proc(n) { return n + 1; }; print("Successor of",n,"is",succ(n)); };
+printsucc(5);
+
+#EXAMPLE
+makeadd = proc(n) { var add; print("n =",n); add = proc(m,n) { return n + m; }; return add; };
+makeadd(4);
+(makeadd(4))(5,6);
+
+#SEEALSO $RETURN
+#SEEALSO $EXTERNALPROC
+#SEEALSO $VOID
+#SEEALSO $QUIT
+#SEEALSO $RESTART
+#SEEALSO $VAR

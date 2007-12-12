@@ -1,0 +1,25 @@
+#NAME $NOP
+#QUICK_DESCRIPTION no operation
+#CALLING $COMMAND
+#TYPE $VOID_TYPE -> $VOID_TYPE
+
+#DESCRIPTION 
+The command $COMMAND does nothing. This means it is an explicit parse
+element in the $SOLLYA language that finally does not produce any
+result or side-effect.
+
+#DESCRIPTION
+The keyword $COMMAND is implicit in some procedure
+definitions. Procedures without imperative body get parsed as if they
+had an imperative body containing one $COMMAND statement.
+
+#EXAMPLE
+nop;
+
+#EXAMPLE
+succ = proc(n) { return n + 1; };
+succ;
+succ(5);
+
+#SEEALSO $PROC
+

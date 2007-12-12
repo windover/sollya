@@ -6,17 +6,18 @@
 #DESCRIPTION 
 The variable $COMMAND represents the functional result of a
 side-effect or an empty argument.  It is used only in combination with
-the applications of identifiers bound through $EXTERNALPROC to
-external procedures. 
+the applications of procedures or identifiers bound through
+$EXTERNALPROC to external procedures.
 §§ §§§
-The $COMMAND result produced by an external procedure is not printed at
-the prompt. However, it is possible to print it out in a print
-statement or in complex data types such as lists. 
+The $COMMAND result produced by a procedure or an external procedure
+is not printed at the prompt. However, it is possible to print it out
+in a print statement or in complex data types such as lists.
 §§ §§§
-The $COMMAND argument is implicit when giving not argument to an external
-procedure when applied. It can be explicited nevertheless.  For
-example, suppose that foo is an external procedure with a void
-argument. Then foo() and foo(void) are correct calls to foo.
+The $COMMAND argument is implicit when giving not argument to a
+procedure or an external procedure when applied. It can be explicited
+nevertheless.  For example, suppose that foo is a procedure or an
+external procedure with a void argument. Then foo() and foo(void) are
+correct calls to foo.
 
 #DESCRIPTION
 $COMMAND is used also as a type identifier for
@@ -30,6 +31,13 @@ print(void);
 void;
 
 #EXAMPLE
+hey = proc() { print("Hello world."); };
+hey;
+hey();
+hey(void);
+print(hey());
+
+#EXAMPLE
 bashexecute("gcc -fPIC -Wall -c externalprocvoidexample.c");
 bashexecute("gcc -fPIC -shared -o externalprocvoidexample externalprocvoidexample.o");
 externalproc(foo, "./externalprocvoidexample", void -> void);
@@ -39,7 +47,9 @@ foo(void);
 print(foo());
 
 #SEEALSO $ERROR
+#SEEALSO $PROC
 #SEEALSO $EXTERNALPROC
+
 
 
 
