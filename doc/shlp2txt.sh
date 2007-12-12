@@ -7,9 +7,9 @@ types_defs="./types.def"
 sollya_name="Sollya"
 helpFile="../help.h"
 
-tempfile="/tmp/hlp2tex_tempfile"
-tempfile2="/tmp/hlp2tex_tempfile2"
-exampleFile="/tmp/hlp2tex_exampleFile"
+tempfile="/tmp/hlp2txt_tempfile"
+tempfile2="/tmp/hlp2txt_tempfile2"
+exampleFile="/tmp/hlp2txt_exampleFile"
 
 
 getCommand() {
@@ -66,7 +66,7 @@ preprocessMeta() {
     then test="false"
     fi
     if [ $test = "true" ]
-      then head -n $i $tempfile | tail -n 1 | sed -n 's/<\([^>]*\)>/{\1}/g;p' >> $tempfile2
+      then head -n $i $tempfile | tail -n 1 | sed -n 's/<\([^<>]*\)>/{\1}/g;p' >> $tempfile2
       else head -n $i $tempfile | tail -n 1 >> $tempfile2
     fi
     i=`expr $i + 1`
@@ -88,7 +88,7 @@ preprocessTeX() {
     then test="false"
     fi
     if head -n $i $tempfile | tail -n 1 | grep "#SEEALSO" > /dev/null
-    then test="false"
+    then test="true"
     fi
     if [ $test = "true" ]
       then head -n $i $tempfile | tail -n 1 | sed -n 's/§§\([^§]*\)§\([^§]*\)§§/\1/g;p' >> $tempfile2
@@ -327,6 +327,10 @@ main() {
     echo "Processing file "$source
     processFile
     
+    if [ $verbosity -eq 1 ]
+	then cat $target
+    fi
+
     sed -i -n 's/\\/\\\\/g;p' $target
     sed -i -n 's/"/\\"/g;p' $target
     sed -i -n 's/\t/\\t/g;p' $target
@@ -347,4 +351,10 @@ main() {
   mv $tempfile $helpFile
 }
 
+
+
+if [ "$1" = "-v" ]
+then verbosity=1; shift
+else verbosity=0
+fi
 main $*

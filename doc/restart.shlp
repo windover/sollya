@@ -9,7 +9,7 @@ current state is abandoned, all libraries unbound and all memory freed.
 §§ §§§
 The $COMMAND command has no effect when executed inside a $SOLLYA
 script read into a main $SOLLYA script using $EXECUTE. It is executed
-in a $SOLLYA script included by a #include macro.
+in a $SOLLYA script included by a §§#include§$\#$include§§ macro.
 §§ §§§
 Using the $COMMAND command in nested elements of imperative
 programming like for or while loops is possible. Since in most cases

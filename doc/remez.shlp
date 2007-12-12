@@ -18,7 +18,7 @@
 #DESCRIPTION 
 $COMMAND computes an approximation of the function §§f§$f$§§ with respect to 
 the weight function §§w§$w$§§ on the interval <range>. More precisely, it 
-searches a polynomial §§p§$§§ such that §§||p*w-f||§$\|pw-f\|_{\infty}$§§ is 
+searches a polynomial §§p§$p$§§ such that §§||p*w-f||§$\|pw-f\|_{\infty}$§§ is 
 (almost minimal) among all polynomials §§p§$p$§§ of a certain form. The norm is
 the infinite norm, e.g. §§||g|| = max {|g(x)|, x in <range>}.§$\|g\|_{\infty} = \max \{|g(x)|, x \in \mathrm{range}\}.$§§
 
@@ -42,7 +42,7 @@ of monomials §§X^k§$X^k$§§ where §§k§$k$§§ belongs to <L>.
 #DESCRIPTION 
 The polynomial is obtained by a convergent iteration called Remez' algorithm. 
 The algorithm computes a sequence §§p1, ..., pk, ...§$p_1,\dots ,p_k,\dots$§§ 
-such that §§ek = ||<pk*w-f>||§$e_k = \|p_kw-f}\|_{\infty}$§§ converges towards 
+such that §§ek = ||<pk*w-f>||§$e_k = \|p_k w-f\|_{\infty}$§§ converges towards 
 the optimal value §§e§$e$§§. The algorithm is stopped when the relative error 
 between §§ek§$e_k$§§ and §§e§$e$§§ is less than <quality>.
 
