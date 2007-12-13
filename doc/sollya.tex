@@ -9,7 +9,7 @@
 
 \newcommand{\com}[1]{\texttt{#1}}
 \newcommand{\key}[1]{\texttt{#1}}
-\newcommand{\arenairetools}{\texttt{arenairetools}\xspace}
+\newcommand{\sollya}{\texttt{sollya}\xspace}
 \newcommand{\rlwrap}{\texttt{rlwrap}\xspace}
 
 \newcommand{\code}[1]{\begin{center}
@@ -26,14 +26,14 @@
 \begin{document}
 
 \section{Introduction}
-\arenairetools is an interactive tool to handle numerical functions and working with arbitrary precision. It can evaluate functions accurately, compute polynomial approximations of functions, plot functions, compute infinite norms, etc. Let us begin this manual with an example. \arenairetools does not allow command line edition; since it may quickly become uncomfortable, we highly suggest to use the software \rlwrap with \arenairetools:
+\sollya is an interactive tool to handle numerical functions and working with arbitrary precision. It can evaluate functions accurately, compute polynomial approximations of functions, plot functions, compute infinite norms, etc. Let us begin this manual with an example. \sollya does not allow command line edition; since it may quickly become uncomfortable, we highly suggest to use the software \rlwrap with \sollya:
 
 \code{
 \ligne{~/\%rlwrap ./tools}
 \ligne{>}
 }
 
-\arenairetools manipulates only with univariate functions. The first time that an unbound variable is used, it fixes the name that will be used to refer to the free variable. For instance, try
+\sollya manipulates only with univariate functions. The first time that an unbound variable is used, it fixes the name that will be used to refer to the free variable. For instance, try
 
 \code{
 \ligne{~/\% rlwrap ./tools}
@@ -104,14 +104,14 @@ Sometimes, a faithful rounding cannot be easily computed. In such a case, an app
 \ligne{0.23702821088022102782921822379162058842068273168003320319597978e-15412}
 }
 
-The philosophy of \arenairetools is: whenever something is not exact, print a warning. This explains the warnings in the previous examples. If the result can be shown to be exact, there is no warning:
+The philosophy of \sollya is: whenever something is not exact, print a warning. This explains the warnings in the previous examples. If the result can be shown to be exact, there is no warning:
 
 \code{
 \ligne{> sin(0);}
 \ligne{0}
 }
 
-Let us finish this Section with a small complete example that shows a bit of what can be done with \arenairetools:
+Let us finish this Section with a small complete example that shows a bit of what can be done with \sollya:
 
 \code{
 \ligne{>  restart;}
@@ -141,17 +141,17 @@ In this example, we define a function $f$, an interval $d$ and we compute the be
 Note that you do not really need to use such a script for computing infinite norm; as we will see, the command \com{dirtyinfnorm} does this for you.
 
 \section{General principles}
-The first goal of \arenairetools is to help people using numerical functions and numerical algorithm in a safe way. It is first designed to be used interactively but it can also be used in script files.
+The first goal of \sollya is to help people using numerical functions and numerical algorithm in a safe way. It is first designed to be used interactively but it can also be used in script files.
 
-One of the originalities of \arenairetools is to work with a multiprecision arithmetic (it uses the library \texttt{MPFR}). For safety purpose \arenairetools knows how to use interval arithmetic. It uses the interval arithmetic to produce tight and safe results with the precision required by the user.
+One of the originalities of \sollya is to work with a multiprecision arithmetic (it uses the library \texttt{MPFR}). For safety purpose \sollya knows how to use interval arithmetic. It uses the interval arithmetic to produce tight and safe results with the precision required by the user.
 
-The general philosophy of \arenairetools is: \emph{When you can make a computation exactly, do it; when you cannot, do not, unless you have been explicitely asked for.}
+The general philosophy of \sollya is: \emph{When you can make a computation exactly, do it; when you cannot, do not, unless you have been explicitely asked for.}
 
-The precision of the tools is set by the global variable \key{prec}. It indicates the number of bits used to represent the constants in \arenairetools. In general, the variable \key{prec} determines the precision of the outputs of commands: more precisely, the command will internally determine what precision should be used during the computations in order to ensure that the output is a faithful result with \key{prec} bits.
+The precision of the tools is set by the global variable \key{prec}. It indicates the number of bits used to represent the constants in \sollya. In general, the variable \key{prec} determines the precision of the outputs of commands: more precisely, the command will internally determine what precision should be used during the computations in order to ensure that the output is a faithful result with \key{prec} bits.
 
 For decidability and efficiency reasons, this general principle cannot be applied everytime, so be careful. Moreover certain commands are known to be unsafe: they give in general excellent results and gives almost \key{prec} correct bits in output for everyday examples. However they are just heuristic and should not be used when the result must be safe. See the documentation of each command to know precisely how confident you can be with its result.
 
-A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \arenairetools within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \arenairetools. When set to $0$, \arenairetools becomes completely silent on stdout and prints only very important messages on stderr. Increase \key{verbosity} if you want more informations about what \arenairetools is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. To affect silently a global variable, use \texttt{!}:
+A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When set to $0$, \sollya becomes completely silent on stdout and prints only very important messages on stderr. Increase \key{verbosity} if you want more informations about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. To affect silently a global variable, use \texttt{!}:
 
 \code{
 \ligne{> prec=30;}
@@ -160,7 +160,7 @@ A second principle (that comes together with the first one) is: \emph{When a com
 \ligne{>}
 }
 
-For conviviality reasons, values are displayed in decimal by default. This lets a normal human being understand the numbers he manipulates. But since constant are internally represented in binary, this causes permanent conversions that are sources of roundings. Thus you are loosing in accuracy and \arenairetools is always complaining about inexact results. If you just want to store or communicate your results (to another tools for instance) you can use bit-exact representations avaliable in \arenairetools. The global variable \key{display} defines the way constants are displayed. Here is an example of the four avalaible modes:
+For conviviality reasons, values are displayed in decimal by default. This lets a normal human being understand the numbers he manipulates. But since constant are internally represented in binary, this causes permanent conversions that are sources of roundings. Thus you are loosing in accuracy and \sollya is always complaining about inexact results. If you just want to store or communicate your results (to another tools for instance) you can use bit-exact representations avaliable in \sollya. The global variable \key{display} defines the way constants are displayed. Here is an example of the four avalaible modes:
 
 
 \code{
@@ -184,7 +184,7 @@ For conviviality reasons, values are displayed in decimal by default. This lets 
 \ligne{69b-2}
 }
 
-The symbol \texttt{e} means $\times 10^\square $ as always. In the same spirit, the symbol \texttt{b} means  $\times 2^\square $. The suffix \texttt{\_2} indicates to \arenairetools that the previous number has been written in binary. \arenairetools understands these notations even if you are not in the corresponding \key{display} mode, so you can always use them.
+The symbol \texttt{e} means $\times 10^\square $ as always. In the same spirit, the symbol \texttt{b} means  $\times 2^\square $. The suffix \texttt{\_2} indicates to \sollya that the previous number has been written in binary. \sollya understands these notations even if you are not in the corresponding \key{display} mode, so you can always use them.
 
 You can also use the standard hexadecimal notation frequently used to represent \texttt{double} numbers. Since this notation cannot represent exactly numbers with arbitrary precision, there is no corresponding \key{display} mode. However, the command \com{printhexa} rounds the value to the nearest \texttt{double} and displays it in hexadecimal:
 
@@ -194,7 +194,7 @@ You can also use the standard hexadecimal notation frequently used to represent 
 }
 
 \section{Data types}
-\arenairetools has a (very) basic system of types. If you try to perform an illicit operation (such as adding a number and a string, for instance), you will get a type error. Let us see the available data types.
+\sollya has a (very) basic system of types. If you try to perform an illicit operation (such as adding a number and a string, for instance), you will get a type error. Let us see the available data types.
 
 \subsection{Booleans}
 There are two special values \key{true} and \key{false}. Boolean expressions can be constructed using the boolean connectors \key{\&\&} (and), \key{||} (or), \key{!} (not), and comparisons.
@@ -211,7 +211,7 @@ The comparison operators \key{==} and \key{!=} are polymorphic. You can use it t
 }
 
 \subsection{Numbers}
-As seen above, \arenairetools represents numbers as floating-point values with the current precision \com{prec}. A number in an expression is immediately rounded to the precision \com{prec} and the expression is then evaluated:
+As seen above, \sollya represents numbers as floating-point values with the current precision \com{prec}. A number in an expression is immediately rounded to the precision \com{prec} and the expression is then evaluated:
 
 \code{
 \ligne{> prec=12!;}
@@ -288,9 +288,9 @@ You can get the upper-bound (respectively the lower-bound)) of an interval with 
 }
 
 \subsection{Functions}
-\arenairetools knows only functions with one single variable. The first time in a session that an unbound name is used (without being assigned) it determines the name used to refer to the free variable.
+\sollya knows only functions with one single variable. The first time in a session that an unbound name is used (without being assigned) it determines the name used to refer to the free variable.
 
-The basic functions available in \arenairetools are the following:
+The basic functions available in \sollya are the following:
 \begin{itemize}
 \item \com{+}, \com{-}, \com{*}, \com{/}, \com{\^{}}
 \item \com{sqrt}
@@ -321,7 +321,7 @@ The constant $\pi$ is available as a $0$-ary function: its behavior is exactly t
 
 
 \subsection{Strings}
-Anything written between quotes is interpreted as a string. The infix operator \com{@} concatenates two strings. To get the length of a string, use the \com{length} function. You can access the $i$-th character of a string using brackets (see the example above). There is no char type in \arenairetools: the $i$-th character of a string is returned as a string itself.
+Anything written between quotes is interpreted as a string. The infix operator \com{@} concatenates two strings. To get the length of a string, use the \com{length} function. You can access the $i$-th character of a string using brackets (see the example above). There is no char type in \sollya: the $i$-th character of a string is returned as a string itself.
 
 \code{
 \ligne{> s1 = "Hello "; s2 = "World!";}
@@ -335,7 +335,7 @@ Anything written between quotes is interpreted as a string. The infix operator \
 }
 
 \subsection{Particular values}
-\arenairetools knows some particular values. These values do not really have a type but they can be stored in variables and in lists. A (possibly not exhaustive) list of such values is the following:
+\sollya knows some particular values. These values do not really have a type but they can be stored in variables and in lists. A (possibly not exhaustive) list of such values is the following:
 
 \begin{itemize}
 \item \com{on}, \com{off}
