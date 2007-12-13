@@ -336,7 +336,7 @@ startsymbol:            command SEMICOLONTOKEN
 			  }
                       | VERSIONTOKEN SEMICOLONTOKEN
                           {
-			    printf("This is %s.\nSend bug reports to %s.\n",PACKAGE_STRING,PACKAGE_BUGREPORT);
+			    printf("This is\n\n\t%s.\n\nCopyright by Laboratoire de l'Informatique du Parallelisme,\nUMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668\n\nContributors are Ch. Lauter, S. Chevillard, N. Jourdan.\n\nThis software is governed by the CeCILL-C license under French law and\nabiding by the rules of distribution of free software.  You can  use,\nmodify and/ or redistribute the software under the terms of the CeCILL-C\nlicense as circulated by CEA, CNRS and INRIA at the following URL\n\"http://www.cecill.info\".\n\nPlease send bug reports to %s.\n",PACKAGE_STRING,PACKAGE_BUGREPORT);
 			    parsedThing = NULL;
 			    $$ = NULL;
 			    YYACCEPT;
