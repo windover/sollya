@@ -18,9 +18,9 @@ mathematical floating-point libraries (libm). Amongst other features,
 it offers a certified infinite norm, an automatic polynomial
 implementer and a fast Remez algorithm.
 
-This software is governed by the CeCILL license under French law and
+This software is governed by the CeCILL-C license under French law and
 abiding by the rules of distribution of free software.  You can  use, 
-modify and/ or redistribute the software under the terms of the CeCILL
+modify and/ or redistribute the software under the terms of the CeCILL-C
 license as circulated by CEA, CNRS and INRIA at the following URL
 "http://www.cecill.info". 
 
@@ -42,7 +42,7 @@ data to be ensured and,  more generally, to use and operate it in the
 same conditions as regards security. 
 
 The fact that you are presently reading this means that you have had
-knowledge of the CeCILL license and that you accept its terms.
+knowledge of the CeCILL-C license and that you accept its terms.
 
 */
 
