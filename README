@@ -1,4 +1,10 @@
-SOLLYA:
+Sollya is a computer program whose purpose is to provide an
+environment for safe floating-point code development. It is
+particularily targeted to the automatized implementation of
+mathematical floating-point libraries (libm). Amongst other features,
+it offers a certified infinite norm, an automatic polynomial
+implementer and a fast Remez algorithm.
+
 
 In order to compile the software you will need the following packages installed:
 
@@ -13,9 +19,15 @@ In order to compile the software you will need the following packages installed:
 
 In order to compile, use the makefile by invoking it using the following command:
 
+./configure
 make
 
 You can then use the software typing
 
 ./sollya
+
+or install it with:
+
+make install
+
 
