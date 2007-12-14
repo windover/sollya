@@ -7,9 +7,10 @@ rename the free variable.\\
 \textbf{rename}(\emph{ident1},\emph{ident2}) : \textsf{void}\\
 \end{center}
 Parameters: 
-\emph{ident1} is the current name of the free variable.\\
-\emph{ident2} is a fresh name.\\
-
+\begin{itemize}
+\item \emph{ident1} is the current name of the free variable.
+\item \emph{ident2} is a fresh name.
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{rename} lets one change the name of the free variable. Sollya can handle only
@@ -28,42 +29,43 @@ Parameters:
    set to \emph{ident2}.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > f=sin(x);
-   > f;
-   sin(x)
-   > rename(x,y);
-   > f;
-   sin(y)
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> f=sin(x);
+> f;
+sin(x)
+> rename(x,y);
+> f;
+sin(y)
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > a=1;
-   > f=sin(x);
-   > rename(x,a);
-   > a;
-   a
-   > f;
-   sin(a)
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> a=1;
+> f=sin(x);
+> rename(x,a);
+> a;
+a
+> f;
+sin(a)
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > verbosity=1!;
-   > f=sin(x);
-   > rename(y,z);
-   Warning: the current free variable is named "x" and not "y". Can only rename the free variable.
-   The last command will have no effect.
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity=1!;
+> f=sin(x);
+> rename(y,z);
+Warning: the current free variable is named "x" and not "y". Can only rename the
+ free variable.
+The last command will have no effect.
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > rename(x,y);
-   > isbound(x);
-   false
-   > isbound(y);
-   true
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> rename(x,y);
+> isbound(x);
+false
+> isbound(y);
+true
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{isbound}

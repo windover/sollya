@@ -322,29 +322,33 @@ main() {
 
   for file in $liste
   do
-    source=$file
-    target=`echo $source | sed -n 's/\.shlp/\.txt/;p'`
-    echo "Processing file "$source
-    processFile
-    
-    if [ $verbosity -eq 1 ]
-	then cat $target
+    if [ -e $file ]
+    then
+        source=$file
+	target=`echo $source | sed -n 's/\.shlp/\.txt/;p'`
+	echo "Processing file "$source
+	processFile
+	
+	if [ $verbosity -eq 1 ]
+	    then cat $target
+	fi
+	
+	sed -i -n 's/\\/\\\\/g;p' $target
+	sed -i -n 's/"/\\"/g;p' $target
+	sed -i -n 's/\t/\\t/g;p' $target
+	sed -i -n 's/$/\\n/g;p' $target
+	index=`echo $source | sed -n 's/\.shlp//;p' | tr 'a-z' 'A-Z'`
+	cat $target | tr -d '\n' > $tempfile
+	replacement="#define HELP_"$index"_TEXT \""`cat $tempfile`"\""
+	
+	sed -i -n 's/\(^#define HELP_'"$index"'_TEXT\)\(.*\)//;p' $helpFile
+	sed -i -n 's/\(#endif\)\(.*\)//;p' $helpFile
+	echo "$replacement" >> $helpFile
+	echo "#endif /* ifdef HELP_H*/" >> $helpFile
+	
+	rm $target
+    else echo "File "$file" does not exist!"
     fi
-
-    sed -i -n 's/\\/\\\\/g;p' $target
-    sed -i -n 's/"/\\"/g;p' $target
-    sed -i -n 's/\t/\\t/g;p' $target
-    sed -i -n 's/$/\\n/g;p' $target
-    index=`echo $source | sed -n 's/\.shlp//;p' | tr 'a-z' 'A-Z'`
-    cat $target | tr -d '\n' > $tempfile
-    replacement="#define HELP_"$index"_TEXT \""`cat $tempfile`"\""
-    
-    sed -i -n 's/\(^#define HELP_'"$index"'_TEXT\)\(.*\)//;p' $helpFile
-    sed -i -n 's/\(#endif\)\(.*\)//;p' $helpFile
-    echo "$replacement" >> $helpFile
-    echo "#endif /* ifdef HELP_H*/" >> $helpFile
-    
-    rm $target
   done
 
   tr -s '\n' < $helpFile > $tempfile

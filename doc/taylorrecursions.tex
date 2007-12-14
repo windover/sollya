@@ -20,16 +20,18 @@ controls the number of recursion steps when applying Taylor's rule.\\
    In particular: the rule is always applied at least once.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > f=exp(x);
-   > p=remez(f,3,[0;1]);
-   > taylorrecursions=0;
-   The number of recursions for Taylor evaluation has been set to 0.
-   > evaluate(f-p, [0;1]);
-   [-0.468393649043687401639739552931015355858675716815424;0.469477818012697748765376148435266259461851121717393]
-   > taylorrecursions=1;
-   The number of recursions for Taylor evaluation has been set to 1.
-   > evaluate(f-p, [0;1]);
-   [-0.138131114682060169766463621512015307211349976570287;0.139215283651070516892100217016266210814525381472255]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> f=exp(x);
+> p=remez(f,3,[0;1]);
+> taylorrecursions=0;
+The number of recursions for Taylor evaluation has been set to 0.
+> evaluate(f-p, [0;1]);
+[-0.468393649043687401639739552931015355858675716815424;0.4694778180126977487653
+76148435266259461851121717393]
+> taylorrecursions=1;
+The number of recursions for Taylor evaluation has been set to 1.
+> evaluate(f-p, [0;1]);
+[-0.138131114682060169766463621512015307211349976570287;0.1392152836510705168921
+00217016266210814525381472255]
 \end{Verbatim}
 \end{minipage}\end{center}

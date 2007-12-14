@@ -14,11 +14,12 @@ plots one or several functions\\
 \textbf{plot}(\emph{L}, \emph{I}, \textbf{postscriptfile}, \emph{name}) : (\textsf{list}, \textsf{range}, \textbf{postscriptfile}, \textsf{string}) $\rightarrow$ \textsf{void}\\
 \end{center}
 Parameters: 
-\emph{f1}, ..., \emph{fn} are functions to be plotted.\\
-\emph{L} is a list of functions to be plotted.\\
-\emph{I} is the interval where the functions have to be plotted.\\
-\emph{name} is a string representing the name of a file.\\
-
+\begin{itemize}
+\item \emph{f1}, ..., \emph{fn} are functions to be plotted.
+\item \emph{L} is a list of functions to be plotted.
+\item \emph{I} is the interval where the functions have to be plotted.
+\item \emph{name} is a string representing the name of a file.
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item This command plots one or several functions \emph{f1}, ... ,\emph{fn} on an interval \emph{I}.
@@ -62,27 +63,27 @@ Parameters:
    value of the functions at this point.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > plot(sin(x),0,cos(x),[-Pi,Pi]);
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> plot(sin(x),0,cos(x),[-Pi,Pi]);
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > plot(sin(x),0,cos(x),[-Pi,Pi],postscriptfile,"plotSinCos");
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> plot(sin(x),0,cos(x),[-Pi,Pi],postscriptfile,"plotSinCos");
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > plot(exp(0), sin(1), [0;1]);
-   1
-   0.841470984807896506652502321630298999622563060798373
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> plot(exp(0), sin(1), [0;1]);
+1
+0.841470984807896506652502321630298999622563060798373
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > plot(sin(x), cos(x), [1;1]);
-   0.841470984807896506652502321630298999622563060798373
-   0.540302305868139717400936607442976603732310420617923
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> plot(sin(x), cos(x), [1;1]);
+0.841470984807896506652502321630298999622563060798373
+0.540302305868139717400936607442976603732310420617923
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{externalplot}, \textbf{asciiplot}, \textbf{file}, \textbf{postscript}, \textbf{postscriptfile}

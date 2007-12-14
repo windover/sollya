@@ -4,13 +4,14 @@ sets or inspects the global variable specifying number notation\\
 
 \noindent Usage: 
 \begin{center}
-\textbf{display} = \emph{notation value} : \textsf{decimal|binary|dyadic|powers|hexadecimal} $\rightarrow$ \textsf{void}\\
-\textbf{display} = \emph{notation value} ! : \textsf{decimal|binary|dyadic|powers|hexadecimal} $\rightarrow$ \textsf{void}\\
-\textbf{display} = ? : \textsf{void} $\rightarrow$ \textsf{decimal|binary|dyadic|powers|hexadecimal}\\
+\textbf{display} = \emph{notation value} : \textsf{decimal$|$binary$|$dyadic$|$powers$|$hexadecimal} $\rightarrow$ \textsf{void}\\
+\textbf{display} = \emph{notation value} ! : \textsf{decimal$|$binary$|$dyadic$|$powers$|$hexadecimal} $\rightarrow$ \textsf{void}\\
+\textbf{display} = ? : \textsf{void} $\rightarrow$ \textsf{decimal$|$binary$|$dyadic$|$powers$|$hexadecimal}\\
 \end{center}
 Parameters: 
-\emph{notation value} represents a variable of type \textsf{decimal|binary|dyadic|powers|hexadecimal}\\
-
+\begin{itemize}
+\item \emph{notation value} represents a variable of type \textsf{decimal|binary|dyadic|powers|hexadecimal}
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item An assignment \textbf{display} = \emph{notation value}, where \emph{notation value} is
@@ -37,28 +38,30 @@ Parameters:
    \textsf{decimal|binary|dyadic|powers|hexadecimal}, indicating the current notation used.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > display = decimal;
-   Display mode is decimal numbers.
-   > a = evaluate(sin(pi * x), 0.25);
-   > a;
-   0.707106781186547524400844362104849039284835937688470740971063
-   > display = binary;
-   Display mode is binary numbers.
-   > a;
-   1.01101010000010011110011001100111111100111011110011001001000010001011001011111011000100110110011011101010100101010111110100111110001110101101111011000001011101010001_2 * 2^(-1)
-   > display = hexadecimal;
-   Display mode is hexadecimal numbers.
-   > a;
-   0xb.504f333f9de6484597d89b3754abe9f1d6f60ba88p-4
-   > display = dyadic;
-   Display mode is dyadic numbers.
-   > a;
-   33070006991101558613323983488220944360067107133265b-165
-   > display = powers;
-   Display mode is dyadic numbers in integer-power-of-2 notation.
-   > a;
-   33070006991101558613323983488220944360067107133265 * 2^(-165)
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> display = decimal;
+Display mode is decimal numbers.
+> a = evaluate(sin(pi * x), 0.25);
+> a;
+0.707106781186547524400844362104849039284835937688470740971063
+> display = binary;
+Display mode is binary numbers.
+> a;
+1.011010100000100111100110011001111111001110111100110010010000100010110010111110
+11000100110110011011101010100101010111110100111110001110101101111011000001011101
+010001_2 * 2^(-1)
+> display = hexadecimal;
+Display mode is hexadecimal numbers.
+> a;
+0xb.504f333f9de6484597d89b3754abe9f1d6f60ba88p-4
+> display = dyadic;
+Display mode is dyadic numbers.
+> a;
+33070006991101558613323983488220944360067107133265b-165
+> display = powers;
+Display mode is dyadic numbers in integer-power-of-2 notation.
+> a;
+33070006991101558613323983488220944360067107133265 * 2^(-165)
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{print}, \textbf{write}, \textbf{decimal}, \textbf{dyadic}, \textbf{powers}, \textbf{binary}, \textbf{hexadecimal}, \textbf{prec}

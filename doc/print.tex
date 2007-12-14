@@ -33,7 +33,7 @@ Parameters:
    character sequences are interpreted immediately.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > print(x + 2 + exp(sin(x))); 
 x + 2 + exp(sin(x))
 > print("Hello","world");
@@ -43,7 +43,7 @@ Hello you 7 other persons.
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > print("Hello");
 Hello
 > print([|"Hello"|]);
@@ -57,7 +57,7 @@ Hello	you [|"Hello	you"|]
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > print(x + 2 + exp(sin(x))) > "foo.sol";
 > readfile("foo.sol");
 x + 2 + exp(sin(x))
@@ -65,12 +65,12 @@ x + 2 + exp(sin(x))
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > print(x + 2 + exp(sin(x))) >> "foo.sol";
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 5: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > display = decimal;
 Display mode is decimal numbers.
 > a = evaluate(sin(pi * x), 0.25);
@@ -80,7 +80,9 @@ Display mode is decimal numbers.
 > display = binary;
 Display mode is binary numbers.
 > print(a);
-1.01101010000010011110011001100111111100111011110011001001000010001011001011111011000100110110011011101010100101010111110100111110001110101101111011000001011101010001_2 * 2^(-1)
+1.011010100000100111100110011001111111001110111100110010010000100010110010111110
+11000100110110011011101010100101010111110100111110001110101101111011000001011101
+010001_2 * 2^(-1)
 > display = hexadecimal;
 Display mode is hexadecimal numbers.
 > print(a);
@@ -98,7 +100,8 @@ Display mode is decimal numbers.
 > midpointmode = off;
 Midpoint mode has been deactivated.
 > print(b);
-[0.707106781186547524400844362104849039284835937688449;0.707106781186549497437217825175573477826462744170488]
+[0.707106781186547524400844362104849039284835937688449;0.70710678118654949743721
+7825175573477826462744170488]
 > midpointmode = on;
 Midpoint mode has been activated.
 > print(b);
@@ -106,7 +109,8 @@ Midpoint mode has been activated.
 > display = dyadic;
 Display mode is dyadic numbers.
 > print(b);
-[2066875436943847413332748968013809022504194195829b-161;16535003495550825444196237019385936414432675156571b-164]
+[2066875436943847413332748968013809022504194195829b-161;165350034955508254441962
+37019385936414432675156571b-164]
 > display = decimal;
 Display mode is decimal numbers.
 > autosimplify = off;
@@ -121,4 +125,4 @@ Full parentheses mode has been activated.
 x + (x * ((x + 1) + 1))
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{write}, \textbf{printexpansion}, \textbf{printhexa}, \textbf{printfloat}, \textbf{printxml}, \textbf{readfile}, \textbf{autosymplify}, \textbf{display}, \textbf{midpointmode}, \textbf{fullparentheses}, \textbf{evaluate}
+See also: \textbf{write}, \textbf{printexpansion}, \textbf{printhexa}, \textbf{printfloat}, \textbf{printxml}, \textbf{readfile}, \textbf{autosimplify}, \textbf{display}, \textbf{midpointmode}, \textbf{fullparentheses}, \textbf{evaluate}

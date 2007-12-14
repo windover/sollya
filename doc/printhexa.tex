@@ -7,8 +7,9 @@ prints a constant value as a hexadecimal double precision number\\
 \textbf{printhexa}(\emph{constant}) : \textsf{constant} $\rightarrow$ \textsf{void}\\
 \end{center}
 Parameters: 
-\emph{constant} represents a constant\\
-
+\begin{itemize}
+\item \emph{constant} represents a constant
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item Prints a constant value as a hexadecimal number on 16 hexadecimal
@@ -20,19 +21,19 @@ Parameters:
    displayed. A warning is displayed in this case.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > printhexa(3);
-   0x4008000000000000
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> printhexa(3);
+0x4008000000000000
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > prec=100!;
-   > verbosity = 1!;
-   > printhexa(exp(5));
-   Warning: the given expression is not a constant but an expression to evaluate.
-   Warning: rounding occurred before printing a value as a double.
-   0x40628d389970338f
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> prec=100!;
+> verbosity = 1!;
+> printhexa(exp(5));
+Warning: the given expression is not a constant but an expression to evaluate.
+Warning: rounding occurred before printing a value as a double.
+0x40628d389970338f
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{printfloat}, \textbf{printexpansion}

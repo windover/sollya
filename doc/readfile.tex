@@ -7,8 +7,9 @@ reads the content of a file into a string variable\\
 \textbf{readfile}(\emph{filename}) : \textsf{string} $\rightarrow$ \textsf{string}\\
 \end{center}
 Parameters: 
-\emph{filename} represents a character sequence indicating a file name\\
-
+\begin{itemize}
+\item \emph{filename} represents a character sequence indicating a file name
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{readfile} opens the file indicated by \emph{filename}, reads it and puts its
@@ -18,22 +19,23 @@ Parameters:
    type \textsf{error}.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > print("Hello world") > "myfile.txt";
-   > t = readfile("myfile.txt"); 
-   > t;
-   Hello world
-   
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> print("Hello world") > "myfile.txt";
+> t = readfile("myfile.txt"); 
+> t;
+Hello world
+
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > verbosity=1!;
-   > readfile("afile.txt");
-   Warning: the file "afile.txt" could not be opened for reading.
-   Warning: at least one of the given expressions or a subexpression is not correctly typed
-   or its evaluation has failed because of some error on a side-effect.
-   error
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity=1!;
+> readfile("afile.txt");
+Warning: the file "afile.txt" could not be opened for reading.
+Warning: at least one of the given expressions or a subexpression is not correct
+ly typed
+or its evaluation has failed because of some error on a side-effect.
+error
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{parse}, \textbf{execute}, \textbf{write}, \textbf{print}

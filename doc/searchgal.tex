@@ -4,20 +4,21 @@ searches for a preimage of a function such that the rounding the image commits a
 
 \noindent Usage: 
 \begin{center}
-\textbf{searchgal}(\emph{function}, \emph{start}, \emph{preimage precision}, \emph{steps}, \emph{format}, \emph{error bound}) : (\textsf{function}, \textsf{constant}, \textsf{integer}, \textsf{integer}, \textsf{D|double|DD|doubledouble|DE|doubleextended|TD|tripledouble}, \textsf{constant}) $\rightarrow$ \textsf{list}\\
+\textbf{searchgal}(\emph{function}, \emph{start}, \emph{preimage precision}, \emph{steps}, \emph{format}, \emph{error bound}) : (\textsf{function}, \textsf{constant}, \textsf{integer}, \textsf{integer}, \textsf{D$|$double$|$DD$|$doubledouble$|$DE$|$doubleextended$|$TD$|$tripledouble}, \textsf{constant}) $\rightarrow$ \textsf{list}\\
 \textbf{searchgal}(\emph{list of functions}, \emph{start}, \emph{preimage precision}, \emph{steps}, \emph{list of format}, \emph{list of error bounds}) : (\textsf{list}, \textsf{constant}, \textsf{integer}, \textsf{integer}, \textsf{list}, \textsf{list}) $\rightarrow$ \textsf{list}\\
 \end{center}
 Parameters: 
-\emph{function} represents the function to be considered\\
-\emph{start} represents a value around which the search is to be performed\\
-\emph{preimage precision} represents the precision (discretisation) for the eligible preimage values\\
-\emph{steps} represents the log2 of the number of search steps to be performed\\
-\emph{format} represents the format the image of the function is to be rounded to\\
-\emph{error bound} represents a upper bound on the relative rounding error when rounding the image\\
-\emph{list of functions} represents the functions to be considered\\
-\emph{list of formats} represents the respective formats the images of the functions are to be rounded to\\
-\emph{list of error bounds} represents a upper bound on the relative rounding error when rounding the image\\
-
+\begin{itemize}
+\item \emph{function} represents the function to be considered
+\item \emph{start} represents a value around which the search is to be performed
+\item \emph{preimage precision} represents the precision (discretisation) for the eligible preimage values
+\item \emph{steps} represents the log2 of the number of search steps to be performed
+\item \emph{format} represents the format the image of the function is to be rounded to
+\item \emph{error bound} represents a upper bound on the relative rounding error when rounding the image
+\item \emph{list of functions} represents the functions to be considered
+\item \emph{list of formats} represents the respective formats the images of the functions are to be rounded to
+\item \emph{list of error bounds} represents a upper bound on the relative rounding error when rounding the image
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item The command \textbf{searchgal} searches for a preimage $z$ of a function
@@ -37,28 +38,29 @@ Parameters:
    evaluates to an empty list.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > searchgal(log(x),2,53,15,DD,1b-112);
-   [| |]
-   > searchgal(log(x),2,53,18,DD,1b-112);
-   [|0.20000000000384972054234822280704975128173828125e1|]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> searchgal(log(x),2,53,15,DD,1b-112);
+[| |]
+> searchgal(log(x),2,53,18,DD,1b-112);
+[|0.20000000000384972054234822280704975128173828125e1|]
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > f = exp(x);
-   > s = searchgal(f,2,53,18,DD,1b-112);
-   > if (s != [||]) then {
-   >    v = s[0];
-   >    print("The rounding error is 2^(",evaluate(log2(abs(DD(f)/f - 1)),v),")");
-   > } else print("No value found");
-   The rounding error is 2^( -0.112106878438809380148206984258358542322113874177832146e3 )
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> f = exp(x);
+> s = searchgal(f,2,53,18,DD,1b-112);
+> if (s != [||]) then {
+>    v = s[0];
+>    print("The rounding error is 2^(",evaluate(log2(abs(DD(f)/f - 1)),v),")");
+> } else print("No value found");
+The rounding error is 2^( -0.112106878438809380148206984258358542322113874177832
+146e3 )
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > searchgal([|sin(x),cos(x)|],1,53,15,[|D,D|],[|1b-62,1b-60|]);
-   [|0.10000000000015949463971764998859725892543792724609375e1|]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> searchgal([|sin(x),cos(x)|],1,53,15,[|D,D|],[|1b-62,1b-60|]);
+[|0.10000000000015949463971764998859725892543792724609375e1|]
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{round}, \textbf{D}, \textbf{DD}, \textbf{TD}, \textbf{double}, \textbf{doubledouble}, \textbf{tripledouble}, \textbf{evaluate}, \textbf{worstcase}

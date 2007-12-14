@@ -36,7 +36,7 @@ Parameters:
    character sequences are interpreted immediately.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > write(x + 2 + exp(sin(x))); 
 > write("Hello\n");
 x + 2 + exp(sin(x))Hello
@@ -47,7 +47,7 @@ Helloyou7other persons.
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > write("Hello","\n");
 Hello
 > write([|"Hello"|],"\n");
@@ -61,15 +61,15 @@ Hello	you[|"Hello	you"|]
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > write(x + 2 + exp(sin(x))) > "foo.sol";
 > readfile("foo.sol");
 x + 2 + exp(sin(x))
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > write(x + 2 + exp(sin(x))) >> "foo.sol";
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{print}, \textbf{printexpansion}, \textbf{printhexa}, \textbf{printfloat}, \textbf{printxml}, \textbf{readfile}, \textbf{autosymplify}, \textbf{display}, \textbf{midpointmode}, \textbf{fullparentheses}, \textbf{evaluate}
+See also: \textbf{print}, \textbf{printexpansion}, \textbf{printhexa}, \textbf{printfloat}, \textbf{printxml}, \textbf{readfile}, \textbf{autosimplify}, \textbf{display}, \textbf{midpointmode}, \textbf{fullparentheses}, \textbf{evaluate}

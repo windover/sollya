@@ -5,14 +5,15 @@ brings all polynomial subexpressions of an expression to canonical form or activ
 \noindent Usage: 
 \begin{center}
 \textbf{canonical}(\emph{function}) : \textsf{function} $\rightarrow$ \textsf{function}\\
-\textbf{canonical} = \emph{activation value} : \textsf{on|off} $\rightarrow$ \textsf{void}\\
-\textbf{canonical} = \emph{activation value} ! : \textsf{on|off} $\rightarrow$ \textsf{void}\\
-\textbf{canonical} = ? : \textsf{void} $\rightarrow$ \textsf{on|off}\\
+\textbf{canonical} = \emph{activation value} : \textsf{on$|$off} $\rightarrow$ \textsf{void}\\
+\textbf{canonical} = \emph{activation value} ! : \textsf{on$|$off} $\rightarrow$ \textsf{void}\\
+\textbf{canonical} = ? : \textsf{void} $\rightarrow$ \textsf{on$|$off}\\
 \end{center}
 Parameters: 
-\emph{function} represents the expression to be rewritten in canonical form\\
-\emph{activation value} represents \textbf{on} or \textbf{off}, i.e. activation or deactivation\\
-
+\begin{itemize}
+\item \emph{function} represents the expression to be rewritten in canonical form
+\item \emph{activation value} represents \textbf{on} or \textbf{off}, i.e. activation or deactivation
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item The command \textbf{canonical} rewrites the expression representing the function
@@ -42,33 +43,37 @@ Parameters:
    displaying polynomial subexpressions in Horner form.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > print(canonical(1 + x * (x + 3 * x^2));
-   > print(canonical((x + 1)^7));
-   1 + 7 * x + 21 * x^2 + 35 * x^3 + 35 * x^4 + 21 * x^5 + 7 * x^6 + x^7
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> print(canonical(1 + x * (x + 3 * x^2));
+> print(canonical((x + 1)^7));
+1 + 7 * x + 21 * x^2 + 35 * x^3 + 35 * x^4 + 21 * x^5 + 7 * x^6 + x^7
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > print(canonical(exp((x + 1)^5) - log(asin(((x + 2) + x)^4 * (x + 1)) + x)));
-   exp(1 + 5 * x + 10 * x^2 + 10 * x^3 + 5 * x^4 + x^5) - log(asin(16 + 80 * x + 160 * x^2 + 160 * x^3 + 80 * x^4 + 16 * x^5) + x)
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> print(canonical(exp((x + 1)^5) - log(asin(((x + 2) + x)^4 * (x + 1)) + x)));
+exp(1 + 5 * x + 10 * x^2 + 10 * x^3 + 5 * x^4 + x^5) - log(asin(16 + 80 * x + 16
+0 * x^2 + 160 * x^3 + 80 * x^4 + 16 * x^5) + x)
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > canonical = ?;
-   off
-   > (x + 2)^9;
-   512 + x * (2304 + x * (4608 + x * (5376 + x * (4032 + x * (2016 + x * (672 + x * (144 + x * (18 + x))))))))
-   > canonical = on;
-   Canonical automatic printing output has been activated.
-   > (x + 2)^9;
-   512 + 2304 * x + 4608 * x^2 + 5376 * x^3 + 4032 * x^4 + 2016 * x^5 + 672 * x^6 + 144 * x^7 + 18 * x^8 + x^9
-   > canonical = ?;
-   on
-   > canonical = off!;
-   > (x + 2)^9;
-   512 + x * (2304 + x * (4608 + x * (5376 + x * (4032 + x * (2016 + x * (672 + x * (144 + x * (18 + x))))))))
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> canonical = ?;
+off
+> (x + 2)^9;
+512 + x * (2304 + x * (4608 + x * (5376 + x * (4032 + x * (2016 + x * (672 + x *
+ (144 + x * (18 + x))))))))
+> canonical = on;
+Canonical automatic printing output has been activated.
+> (x + 2)^9;
+512 + 2304 * x + 4608 * x^2 + 5376 * x^3 + 4032 * x^4 + 2016 * x^5 + 672 * x^6 +
+ 144 * x^7 + 18 * x^8 + x^9
+> canonical = ?;
+on
+> canonical = off!;
+> (x + 2)^9;
+512 + x * (2304 + x * (4608 + x * (5376 + x * (4032 + x * (2016 + x * (672 + x *
+ (144 + x * (18 + x))))))))
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{horner}, \textbf{print}

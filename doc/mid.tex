@@ -8,9 +8,10 @@ gives the middle of an interval.\\
 \textbf{mid}(\emph{x}) : \textsf{constant} $\rightarrow$ \textsf{constant}\\
 \end{center}
 Parameters: 
-\emph{I} is an interval.\\
-\emph{x} is a real number.\\
-
+\begin{itemize}
+\item \emph{I} is an interval.
+\item \emph{x} is a real number.
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item Returns the middle of the interval \emph{I}. If the middle is not exactly 
@@ -20,11 +21,11 @@ Parameters:
    of a single point: [x, x]. In other words, \textbf{mid} behaves like the identity.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > mid([1;3]);
-   2
-   > mid(17);
-   17
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> mid([1;3]);
+2
+> mid(17);
+17
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{inf}, \textbf{sup}

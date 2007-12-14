@@ -10,17 +10,17 @@ special value for certain global variables.\\
 \item As any value it can be affected to a variable and stored in lists.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > canonical=on;
-   Canonical automatic printing output has been activated.
-   > p=1+x+x^2;
-   > mode=off;
-   > p;
-   1 + x + x^2
-   > canonical=mode;
-   Canonical automatic printing output has been deactivated.
-   > p;
-   1 + x * (1 + x)
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> canonical=on;
+Canonical automatic printing output has been activated.
+> p=1+x+x^2;
+> mode=off;
+> p;
+1 + x + x^2
+> canonical=mode;
+Canonical automatic printing output has been deactivated.
+> p;
+1 + x * (1 + x)
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{on}, \textbf{canonical}, \textbf{timing}, \textbf{fullparentheses}, \textbf{midpointmode}

@@ -7,9 +7,10 @@ rounds the coefficients of a polynomial to classical formats.\\
 \textbf{roundcoefficients}(\emph{p},\emph{L}) : (\textsf{function}, \textsf{list}) $\rightarrow$ \textsf{function}\\
 \end{center}
 Parameters: 
-\emph{p} is a function. Usually a polynomial.\\
-\emph{L} is a list of formats.\\
-
+\begin{itemize}
+\item \emph{p} is a function. Usually a polynomial.
+\item \emph{L} is a list of formats.
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item If \emph{p} is a polynomial and \emph{L} a list of floating-point formats, 
@@ -32,38 +33,57 @@ Parameters:
    natural behavior.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > p=exp(1) + x*(exp(2) + x*exp(3));
-   > display=binary!;
-   > roundcoefficients(p,[|DD,D,D|]);
-   1.010110111111000010101000101100010100010101110110100101010011010101011111101110001010110001000000010011101_2 * 2^(1) + x * (1.110110001110011001001011100011010100110111011010111_2 * 2^(2) + x * 1.010000010101111001011011111101101111101100010000011_2 * 2^(4))
-   > roundcoefficients(p,[|DD,D...|]);
-   1.010110111111000010101000101100010100010101110110100101010011010101011111101110001010110001000000010011101_2 * 2^(1) + x * (1.110110001110011001001011100011010100110111011010111_2 * 2^(2) + x * 1.010000010101111001011011111101101111101100010000011_2 * 2^(4))
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> p=exp(1) + x*(exp(2) + x*exp(3));
+> display=binary!;
+> roundcoefficients(p,[|DD,D,D|]);
+1.010110111111000010101000101100010100010101110110100101010011010101011111101110
+001010110001000000010011101_2 * 2^(1) + x * (1.110110001110011001001011100011010
+100110111011010111_2 * 2^(2) + x * 1.0100000101011110010110111111011011111011000
+10000011_2 * 2^(4))
+> roundcoefficients(p,[|DD,D...|]);
+1.010110111111000010101000101100010100010101110110100101010011010101011111101110
+001010110001000000010011101_2 * 2^(1) + x * (1.110110001110011001001011100011010
+100110111011010111_2 * 2^(2) + x * 1.0100000101011110010110111111011011111011000
+10000011_2 * 2^(4))
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > f=sin(exp(1)*x);
-   > display=binary!;
-   > f;
-   sin(x * 1.0101101111110000101010001011000101000101011101101001010100110101010111111011100010101100010000000100111001111010011110011110001110110001011100111000101100000111101_2 * 2^(1))
-   > roundcoefficients(f,[|D...|]);
-   sin(x * 1.0101101111110000101010001011000101000101011101101001010100110101010111111011100010101100010000000100111001111010011110011110001110110001011100111000101100000111101_2 * 2^(1))
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> f=sin(exp(1)*x);
+> display=binary!;
+> f;
+sin(x * 1.0101101111110000101010001011000101000101011101101001010100110101010111
+11101110001010110001000000010011100111101001111001111000111011000101110011100010
+1100000111101_2 * 2^(1))
+> roundcoefficients(f,[|D...|]);
+sin(x * 1.0101101111110000101010001011000101000101011101101001010100110101010111
+11101110001010110001000000010011100111101001111001111000111011000101110011100010
+1100000111101_2 * 2^(1))
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > p=exp(1) + x*(exp(2) + x*exp(3));
-   > verbosity=1!;
-   > display=binary!;
-   > roundcoefficients(p,[|DD,D|]);
-   Warning: the number of the given formats does not correspond to the degree of the given polynomial.
-   Warning: the 0th coefficient of the given polynomial does not evaluate to a floating-point constant without any rounding.
-   Will evaluate the coefficient in the current precision in floating-point before rounding to the target format.
-   Warning: the 1th coefficient of the given polynomial does not evaluate to a floating-point constant without any rounding.
-   Will evaluate the coefficient in the current precision in floating-point before rounding to the target format.
-   Warning: rounding may have happened.
-   1.010110111111000010101000101100010100010101110110100101010011010101011111101110001010110001000000010011101_2 * 2^(1) + x * (1.110110001110011001001011100011010100110111011010111_2 * 2^(2) + x * 1.01000001010111100101101111110110111110110001000001011111001011010100101111011111110001010011011101000100110000111010001110010000010110000101100000111001011100101001_2 * 2^(4))
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> p=exp(1) + x*(exp(2) + x*exp(3));
+> verbosity=1!;
+> display=binary!;
+> roundcoefficients(p,[|DD,D|]);
+Warning: the number of the given formats does not correspond to the degree of th
+e given polynomial.
+Warning: the 0th coefficient of the given polynomial does not evaluate to a floa
+ting-point constant without any rounding.
+Will evaluate the coefficient in the current precision in floating-point before 
+rounding to the target format.
+Warning: the 1th coefficient of the given polynomial does not evaluate to a floa
+ting-point constant without any rounding.
+Will evaluate the coefficient in the current precision in floating-point before 
+rounding to the target format.
+Warning: rounding may have happened.
+1.010110111111000010101000101100010100010101110110100101010011010101011111101110
+001010110001000000010011101_2 * 2^(1) + x * (1.110110001110011001001011100011010
+100110111011010111_2 * 2^(2) + x * 1.0100000101011110010110111111011011111011000
+10000010111110010110101001011110111111100010100110111010001001100001110100011100
+10000010110000101100000111001011100101001_2 * 2^(4))
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{double}, \textbf{doubledouble}, \textbf{tripledouble}

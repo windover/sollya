@@ -7,8 +7,9 @@ gives the tail of a list.\\
 \textbf{tail}(\emph{L}) : \textsf{list} $\rightarrow$ \textsf{any type}\\
 \end{center}
 Parameters: 
-\emph{L} is a list.\\
-
+\begin{itemize}
+\item \emph{L} is a list.
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{tail}(\emph{L}) returns the list \emph{L} without its first element.
@@ -19,11 +20,11 @@ Parameters:
    \textbf{tail} is also an end-elliptic list.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > tail([|1,2,3|]);
-   [|2, 3|]
-   > tail([|1,2...|]);
-   [|2...|]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> tail([|1,2,3|]);
+[|2, 3|]
+> tail([|1,2...|]);
+[|2...|]
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{head}

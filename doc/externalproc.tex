@@ -7,11 +7,12 @@ binds an external code to a Sollya procedure\\
 \textbf{externalproc}(\emph{identifier}, \emph{filename}, \emph{argumenttype} -> \emph{resulttype}) : (\textsf{identifier type}, \textsf{string}, \textsf{type type}, \textsf{type type}) $\rightarrow$ \textsf{void}\\
 \end{center}
 Parameters: 
-\emph{identifier} represents the identifier the code is to be bound to\\
-\emph{filename} of type \textsf{string} represents the name of the object file where the code of procedure can be found\\
-\emph{argumenttype} represents a definition of the types of the arguments of the Sollya procedure and the external code\\
-\emph{resulttype} represents a definition of the result type of the external code\\
-
+\begin{itemize}
+\item \emph{identifier} represents the identifier the code is to be bound to
+\item \emph{filename} of type \textsf{string} represents the name of the object file where the code of procedure can be found
+\item \emph{argumenttype} represents a definition of the types of the arguments of the Sollya procedure and the external code
+\item \emph{resulttype} represents a definition of the result type of the external code
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{externalproc} allows for binding the Sollya identifier
@@ -94,22 +95,24 @@ Parameters:
    variables, stored in list etc.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > bashexecute("gcc -fPIC -Wall -c externalprocexample.c");
-   > bashexecute("gcc -fPIC -shared -o externalprocexample externalprocexample.o");
-   > externalproc(foo, "./externalprocexample", (integer, integer) -> integer);
-   > foo;
-   foo(integer, integer) -> integer
-   > foo(5, 6);
-   11
-   > verbosity = 1!;
-   > foo();
-   Warning: at least one of the given expressions or a subexpression is not correctly typed
-   or its evaluation has failed because of some error on a side-effect.
-   error
-   > a = foo;
-   > a(5,6);
-   11
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> bashexecute("gcc -fPIC -Wall -c externalprocexample.c");
+> bashexecute("gcc -fPIC -shared -o externalprocexample externalprocexample.o");
+
+> externalproc(foo, "./externalprocexample", (integer, integer) -> integer);
+> foo;
+foo(integer, integer) -> integer
+> foo(5, 6);
+11
+> verbosity = 1!;
+> foo();
+Warning: at least one of the given expressions or a subexpression is not correct
+ly typed
+or its evaluation has failed because of some error on a side-effect.
+error
+> a = foo;
+> a(5,6);
+11
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{library}, \textbf{externalplot}, \textbf{bashexecute}, \textbf{void}, \textbf{constant}, \textbf{function}, \textbf{range}, \textbf{integer}, \textbf{string}, \textbf{boolean}, \textbf{list of}

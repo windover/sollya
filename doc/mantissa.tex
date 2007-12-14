@@ -7,8 +7,9 @@ returns the integer mantissa of a number.\\
 \textbf{mantissa}(\emph{x}) : \textsf{constant} $\rightarrow$ \textsf{integer}\\
 \end{center}
 Parameters: 
-\emph{x} is a dyadic number.\\
-
+\begin{itemize}
+\item \emph{x} is a dyadic number.
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{mantissa}(x) is by definition x if x equals 0, NaN, or Inf.
@@ -17,14 +18,14 @@ Parameters:
    $m$ is an odd integer and $e$ is an integer. \textbf{mantissa}(x) returns $m$. 
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > a=round(Pi,20,RN);
-   > e=exponent(a);
-   > m=mantissa(a);
-   > m;
-   411775
-   > a-m*2^e;
-   0
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> a=round(Pi,20,RN);
+> e=exponent(a);
+> m=mantissa(a);
+> m;
+411775
+> a-m*2^e;
+0
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{exponent}, \textbf{precision}

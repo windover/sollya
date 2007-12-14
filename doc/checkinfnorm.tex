@@ -7,10 +7,11 @@ checks whether the infinite norm of a function is bounded by a value\\
 \textbf{checkinfnorm}(\emph{function},\emph{range},\emph{constant}) : (\textsf{function}, \textsf{range}, \textsf{constant}) $\rightarrow$ \textsf{boolean}\\
 \end{center}
 Parameters: 
-\emph{function} represents the function whose infinite norm is to be checked\\
-\emph{range} represents the infinite norm is to be considered on\\
-\emph{constant} represents the upper bound the infinite norm is to be checked to\\
-
+\begin{itemize}
+\item \emph{function} represents the function whose infinite norm is to be checked
+\item \emph{range} represents the infinite norm is to be considered on
+\item \emph{constant} represents the upper bound the infinite norm is to be checked to
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item The command \textbf{checkinfnorm} checks whether the infinite norm of the given
@@ -33,30 +34,30 @@ Parameters:
    the range is bounded by the given bound.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > checkinfnorm(sin(x),[0;1.75], 1);
-   true
-   > checkinfnorm(sin(x),[0;1.75], 1/2); checkinfnorm(sin(x),[0;20/39],
-   false
-   > 1/2);
-   true
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> checkinfnorm(sin(x),[0;1.75], 1);
+true
+> checkinfnorm(sin(x),[0;1.75], 1/2); checkinfnorm(sin(x),[0;20/39],
+false
+> 1/2);
+true
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > p = remez(exp(x), 5, [-1;1]);
-   > b = dirtyinfnorm(p - exp(x), [-1;1]);
-   > checkinfnorm(p - exp(x), [-1;1], b);
-   false
-   > b1 = round(b, 20, RU);
-   > checkinfnorm(p - exp(x), [-1;1], b1);
-   true
-   > b2 = round(b, 25, RU);
-   > checkinfnorm(p - exp(x), [-1;1], b2);
-   false
-   > diam = 1b-20!;
-   > checkinfnorm(p - exp(x), [-1;1], b2);
-   true
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> p = remez(exp(x), 5, [-1;1]);
+> b = dirtyinfnorm(p - exp(x), [-1;1]);
+> checkinfnorm(p - exp(x), [-1;1], b);
+false
+> b1 = round(b, 20, RU);
+> checkinfnorm(p - exp(x), [-1;1], b1);
+true
+> b2 = round(b, 25, RU);
+> checkinfnorm(p - exp(x), [-1;1], b2);
+false
+> diam = 1b-20!;
+> checkinfnorm(p - exp(x), [-1;1], b2);
+true
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{infnorm}, \textbf{dirtyinfnorm}, \textbf{accurateinfnorm}, \textbf{remez}, \textbf{diam}

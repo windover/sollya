@@ -5,7 +5,7 @@ sollyaBin="../sollya"
 keywords_defs="./keywords.def"
 types_defs="./types.def"
 sollya_name="Sollya"
-helpFile="../help.h"
+listOfCommands="./CommandsAndFunctions.tex"
 
 tempfile="/tmp/hlp2tex_tempfile"
 tempfile2="/tmp/hlp2tex_tempfile2"
@@ -225,12 +225,12 @@ processExampleFile() {
  while [ $ilocal -le $nLineslocal ]
  do
    echo -n "> " >> $target
-   cat $exampleFile | head -n $ilocal | tail -n 1 >> $target
+   cat $exampleFile | head -n $ilocal | tail -n 1 | sed -n 's/\(..............................................................................\)/\1\n/g;p' >> $target
    echo "verbosity=0!;" "`head -n $ilocal $exampleFile`" | $sollyaBin > $tempfile2
    sed -i -n 's/^//;p' $tempfile2
    total=`cat $tempfile2 | wc -l`
    countlocal=`expr $total - $countlocal`
-   tail -n $countlocal $tempfile2 >> $target
+   tail -n $countlocal $tempfile2 | sed -n 's/\(................................................................................\)/\1\n/g;p' >> $target
    countlocal=$total
    ilocal=`expr $ilocal + 1`
  done
@@ -257,7 +257,7 @@ processExamples() {
        then rm $exampleFile; touch $exampleFile
      fi
      echo "\noindent Example "$count": " >> $target
-     echo "\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]" >> $target
+     echo "\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]" >> $target
      count=`expr $count + 1`
    else
      if [ $mode = "on" -a -n "$line" ]
@@ -331,11 +331,24 @@ main() {
 
   for file in $liste
   do
-    source=$file
-    target=`echo $source | sed -n 's/\.shlp/\.tex/;p'`
-    echo "Processing file "$source
-    processFile
+    if [ -e $file ]
+    then
+      source=$file
+      target=`echo $source | sed -n 's/\.shlp/\.tex/;p'`
+      echo "Processing file "$source
+      processFile
+      if grep `echo $source | sed -n 's/\.shlp//;p'` $listOfCommands > /dev/null
+      then echo "Nothing to change in "$listOfCommands
+      else
+        echo "\input{"`echo $source | sed -n 's/\.shlp//;p'`"}" >> $listOfCommands
+      fi
+    else
+      echo "File "$file" does not exist!"
+    fi
   done
+
+  sort $listOfCommands > $tempfile
+  mv $tempfile $listOfCommands
 }
 
 main $*

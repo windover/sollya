@@ -8,10 +8,11 @@ replace the occurences of the free variable in an expression.\\
 \textbf{substitute}(\emph{f},\emph{t}) : (\textsf{function}, \textsf{constant}) $\rightarrow$ \textsf{constant}\\
 \end{center}
 Parameters: 
-\emph{f} is a function.\\
-\emph{g} is a function.\\
-\emph{t} is a real number.\\
-
+\begin{itemize}
+\item \emph{f} is a function.
+\item \emph{g} is a function.
+\item \emph{t} is a real number.
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{substitute}(\emph{f}, \emph{g}) produces the function $(f \circ g) : x \mapsto f(g(x))$.
@@ -25,22 +26,22 @@ Parameters:
    writing \emph{F(g)} or \emph{F(t)}.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > f=sin(x);
-   > g=cos(x);
-   > substitute(f,g);
-   sin(cos(x))
-   > f(g);
-   sin(cos(x))
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> f=sin(x);
+> g=cos(x);
+> substitute(f,g);
+sin(cos(x))
+> f(g);
+sin(cos(x))
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > a=1;
-   > f=sin(x);
-   > substitute(f,a);
-   0.841470984807896506652502321630298999622563060798373
-   > f(a);
-   0.841470984807896506652502321630298999622563060798373
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> a=1;
+> f=sin(x);
+> substitute(f,a);
+0.841470984807896506652502321630298999622563060798373
+> f(a);
+0.841470984807896506652502321630298999622563060798373
 \end{Verbatim}
 \end{minipage}\end{center}

@@ -7,8 +7,9 @@ boolean OR operator\\
 \emph{expr1} \textbf{$||$} \emph{expr2} : (\textsf{boolean}, \textsf{boolean}) $\rightarrow$ \textsf{boolean}\\
 \end{center}
 Parameters: 
-\emph{expr1} and \emph{expr2} represent boolean expressions\\
-
+\begin{itemize}
+\item \emph{expr1} and \emph{expr2} represent boolean expressions
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{$||$} evaluates to the boolean OR of the two
@@ -16,15 +17,15 @@ Parameters:
    true iff at least one of \emph{expr1} or \emph{expr2} evaluate to true.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > false || false;
-   false
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> false || false;
+false
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > (1 == exp(0)) || (0 == log(1));
-   true
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> (1 == exp(0)) || (0 == log(1));
+true
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{$\&\&$}, \textbf{!}

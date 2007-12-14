@@ -7,9 +7,10 @@ gives a list of intervals containing all zeros of a function on an interval.\\
 \textbf{findzeros}(\emph{f},\emph{I}) : (\textsf{function}, \textsf{range}) $\rightarrow$ \textsf{list}\\
 \end{center}
 Parameters: 
-\emph{f} is a function.\\
-\emph{I} is an interval.\\
-
+\begin{itemize}
+\item \emph{f} is a function.
+\item \emph{I} is an interval.
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{findzeros}(\emph{f},\emph{I}) returns a list of intervals \emph{I1}, ... ,\emph{In} such that, for 
@@ -32,12 +33,15 @@ Parameters:
    \textbf{prec}, \textbf{diam}, \textbf{taylorrecursions} and \textbf{hopitalrecursions}.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > findzeros(sin(x),[-5;5]);
-   [|[-0.314208984375e1;-0.3140869140625e1], [-0.1220703125e-2;0.1220703125e-2], [0.3140869140625e1;0.314208984375e1]|]
-   > diam=1e-10!;
-   > findzeros(sin(x),[-5;5]);
-   [|[-0.314159265370108187198638916015625e1;-0.3141592652536928653717041015625e1], [-0.116415321826934814453125e-8;0.116415321826934814453125e-8], [0.3141592652536928653717041015625e1;0.314159265370108187198638916015625e1]|]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> findzeros(sin(x),[-5;5]);
+[|[-0.314208984375e1;-0.3140869140625e1], [-0.1220703125e-2;0.1220703125e-2], [0
+.3140869140625e1;0.314208984375e1]|]
+> diam=1e-10!;
+> findzeros(sin(x),[-5;5]);
+[|[-0.314159265370108187198638916015625e1;-0.3141592652536928653717041015625e1],
+ [-0.116415321826934814453125e-8;0.116415321826934814453125e-8], [0.314159265253
+6928653717041015625e1;0.314159265370108187198638916015625e1]|]
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{dirtyfindzeros}, \textbf{infnorm}, \textbf{prec}, \textbf{diam}, \textbf{taylorrecursions}, \textbf{hopitalrecursions}

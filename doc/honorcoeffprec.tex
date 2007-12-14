@@ -19,20 +19,27 @@ indicates the (forced) honoring the precision of the coefficients in \textbf{imp
    for details.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > verbosity = 1!;
-   > q = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c");
-   Warning: at least one of the coefficients of the given polynomial has been rounded in a way
-   that the target precision can be achieved at lower cost. Nevertheless, the implemented polynomial
-   is different from the given one.
-   > printexpansion(q);
-   0x3ff0000000000000 + x^2 * 0xbfc5555555555555
-   > r = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c",honorcoeffprec);
-   Warning: the infered precision of the 2th coefficient of the polynomial is greater than
-   the necessary precision computed for this step. This may make the automatic determination
-   of precisions useless.
-   > printexpansion(r);
-   0x3ff0000000000000 + x^2 * (0xbfc5555555555555 + 0xbc65555555555555 + 0xb905555555555555)
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity = 1!;
+> q = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","imp
+lementation.c");
+Warning: at least one of the coefficients of the given polynomial has been round
+ed in a way
+that the target precision can be achieved at lower cost. Nevertheless, the imple
+mented polynomial
+is different from the given one.
+> printexpansion(q);
+0x3ff0000000000000 + x^2 * 0xbfc5555555555555
+> r = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","imp
+lementation.c",honorcoeffprec);
+Warning: the infered precision of the 2th coefficient of the polynomial is great
+er than
+the necessary precision computed for this step. This may make the automatic dete
+rmination
+of precisions useless.
+> printexpansion(r);
+0x3ff0000000000000 + x^2 * (0xbfc5555555555555 + 0xbc65555555555555 + 0xb9055555
+55555555)
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{implementpoly}, \textbf{printexpansion}

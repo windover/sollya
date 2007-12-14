@@ -4,11 +4,12 @@ parses an expression contained in a string\\
 
 \noindent Usage: 
 \begin{center}
-\textbf{parse}(\emph{string}) : \textsf{string} $\rightarrow$ \textsf{function} | \textsf{error}\\
+\textbf{parse}(\emph{string}) : \textsf{string} $\rightarrow$ \textsf{function} $|$ \textsf{error}\\
 \end{center}
 Parameters: 
-\emph{string} represents a character sequence\\
-
+\begin{itemize}
+\item \emph{string} represents a character sequence
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{parse}(\emph{string}) parses the character sequence \emph{string} containing
@@ -18,20 +19,22 @@ Parameters:
    a \textbf{error} of type \textsf{error}.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > parse("exp(x)");
-   exp(x)
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> parse("exp(x)");
+exp(x)
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > verbosity = 1!;
-   > parse("5 + + 3");
-   Warning: syntax error, unexpected PLUSTOKEN. Will try to continue parsing (expecting ";"). May leak memory.
-   Warning: the string "5 + + 3" could not be parsed by the miniparser.
-   Warning: at least one of the given expressions or a subexpression is not correctly typed
-   or its evaluation has failed because of some error on a side-effect.
-   error
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity = 1!;
+> parse("5 + + 3");
+Warning: syntax error, unexpected PLUSTOKEN. Will try to continue parsing (expec
+ting ";"). May leak memory.
+Warning: the string "5 + + 3" could not be parsed by the miniparser.
+Warning: at least one of the given expressions or a subexpression is not correct
+ly typed
+or its evaluation has failed because of some error on a side-effect.
+error
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{execute}, \textbf{readfile}

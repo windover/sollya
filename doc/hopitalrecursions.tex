@@ -22,14 +22,15 @@ controls the number of recursion steps when applying L'Hopital's rule.\\
    In particular: the rule is always applied at least once, if necessary.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > hopitalrecursions=0;
-   The number of recursions for Hopital's rule has been set to 0.
-   > evaluate(log(1+x)^2/x^2,[-1/2; 1]);
-   [-@Inf@;@Inf@]
-   > hopitalrecursions=1;
-   The number of recursions for Hopital's rule has been set to 1.
-   > evaluate(log(1+x)^2/x^2,[-1/2; 1]);
-   [-0.252258872223978123766892848583270627230200053744108e1;0.677258872223978123766892848583270627230200053744116e1]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> hopitalrecursions=0;
+The number of recursions for Hopital's rule has been set to 0.
+> evaluate(log(1+x)^2/x^2,[-1/2; 1]);
+[-@Inf@;@Inf@]
+> hopitalrecursions=1;
+The number of recursions for Hopital's rule has been set to 1.
+> evaluate(log(1+x)^2/x^2,[-1/2; 1]);
+[-0.252258872223978123766892848583270627230200053744108e1;0.67725887222397812376
+6892848583270627230200053744116e1]
 \end{Verbatim}
 \end{minipage}\end{center}

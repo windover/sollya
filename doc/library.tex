@@ -47,14 +47,14 @@ binds an external mathematical function to a variable in Sollya\\
    example).
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > bashexecute("gcc -fPIC -Wall -c libraryexample.c");
-   > bashexecute("gcc -shared -o libraryexample libraryexample.o -lgmp -lmpfr");
-   > myownlog = library("./libraryexample");
-   > evaluate(log(x), 2);
-   0.693147180559945309417232121458176568075500134360248314207
-   > evaluate(myownlog(x), 2);
-   0.693147180559945309417232121458176568075500134360248314207
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> bashexecute("gcc -fPIC -Wall -c libraryexample.c");
+> bashexecute("gcc -shared -o libraryexample libraryexample.o -lgmp -lmpfr");
+> myownlog = library("./libraryexample");
+> evaluate(log(x), 2);
+0.693147180559945309417232121458176568075500134360248314207
+> evaluate(myownlog(x), 2);
+0.693147180559945309417232121458176568075500134360248314207
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{bashexecute}, \textbf{externalproc}, \textbf{externalplot}

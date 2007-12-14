@@ -7,9 +7,10 @@ computes a numerical approximation of the integral of a function on an interval.
 \textbf{dirtyintegral}(\emph{f},\emph{I}) : (\textsf{function}, \textsf{range}) $\rightarrow$ \textsf{constant}\\
 \end{center}
 Parameters: 
-\emph{f} is a function.\\
-\emph{I} is an interval.\\
-
+\begin{itemize}
+\item \emph{f} is a function.
+\item \emph{I} is an interval.
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{dirtyintegral}(\emph{f},\emph{I}) computes an approximation of the integral of \emph{f} on \emph{I}.
@@ -30,14 +31,14 @@ Parameters:
    request to sylvain.chevillard@ens-lyon.fr.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > sin(10);
-   -0.544021110889369813404747661851377281683643012916219
-   > dirtyintegral(cos(x),[0;10]);
-   -0.544003049051526298224480588824753820365362983562818375241
-   > points=2000!;
-   > dirtyintegral(cos(x),[0;10]);
-   -0.544019977511583219722226973125831990359958379268927638295
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> sin(10);
+-0.544021110889369813404747661851377281683643012916219
+> dirtyintegral(cos(x),[0;10]);
+-0.544003049051526298224480588824753820365362983562818375241
+> points=2000!;
+> dirtyintegral(cos(x),[0;10]);
+-0.544019977511583219722226973125831990359958379268927638295
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{prec}, \textbf{points}, \textbf{integral}

@@ -7,8 +7,9 @@ boolean NOT operator\\
 \textbf{!} \emph{expr} : \textsf{boolean} $\rightarrow$ \textsf{boolean}\\
 \end{center}
 Parameters: 
-\emph{expr} represents a boolean expression\\
-
+\begin{itemize}
+\item \emph{expr} represents a boolean expression
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{!} evaluates to the boolean NOT of the boolean expression
@@ -16,15 +17,15 @@ Parameters:
    to true.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > ! false;
-   true
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> ! false;
+true
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > ! (1 == exp(0));
-   false
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> ! (1 == exp(0));
+false
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{$\&\&$}, \textbf{$||$}

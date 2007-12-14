@@ -7,8 +7,9 @@ simplifies an expression representing a function\\
 \textbf{simplifysafe}(\emph{function}) : \textsf{function} $\rightarrow$ \textsf{function}\\
 \end{center}
 Parameters: 
-\emph{function} represents the expression to be simplified\\
-
+\begin{itemize}
+\item \emph{function} represents the expression to be simplified
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item The command \textbf{simplifysafe} simplifies the expression given in argument
@@ -21,21 +22,21 @@ Parameters:
    by \textbf{simplifysafe}.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > print(simplifysafe((6 + 2) + (5 + exp(0)) * x));
-   8 + 6 * x
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> print(simplifysafe((6 + 2) + (5 + exp(0)) * x));
+8 + 6 * x
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > print(simplifysafe((log(x - x + 1) + asin(1))));
-   (pi) / 2
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> print(simplifysafe((log(x - x + 1) + asin(1))));
+(pi) / 2
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > print(simplifysafe((log(x - x + 1) + asin(1)) - (atan(1) * 2)));
-   (pi) / 2 - (pi) / 4 * 2
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> print(simplifysafe((log(x - x + 1) + asin(1)) - (atan(1) * 2)));
+(pi) / 2 - (pi) / 4 * 2
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{simplify}, \textbf{autosymplify}
+See also: \textbf{simplify}, \textbf{autosimplify}

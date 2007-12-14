@@ -4,13 +4,14 @@ rounds a number to a floating-point format.\\
 
 \noindent Usage: 
 \begin{center}
-\textbf{round}(\emph{x},\emph{n},\emph{mode}) : (\textsf{constant}, \textsf{integer}, \textbf{RD}|\textbf{RU}|\textbf{RN}|\textbf{RZ}) $\rightarrow$ \textsf{constant}\\
+\textbf{round}(\emph{x},\emph{n},\emph{mode}) : (\textsf{constant}, \textsf{integer}, \textbf{RD}$|$\textbf{RU}$|$\textbf{RN}$|$\textbf{RZ}) $\rightarrow$ \textsf{constant}\\
 \end{center}
 Parameters: 
-\emph{x} is a constant to be rounded.\\
-\emph{n} is the precision of the target format.\\
-\emph{mode} is the desired rounding mode.\\
-
+\begin{itemize}
+\item \emph{x} is a constant to be rounded.
+\item \emph{n} is the precision of the target format.
+\item \emph{mode} is the desired rounding mode.
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{round}(\emph{x},\emph{n},\emph{mode}) rounds \emph{x} to a floating-point number with 
@@ -23,20 +24,20 @@ Parameters:
    range of exponents.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > display=binary!;
-   > round(Pi,20,RN);
-   1.100100100001111111_2 * 2^(1)
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> display=binary!;
+> round(Pi,20,RN);
+1.100100100001111111_2 * 2^(1)
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > display=binary!;
-   > a=2^(-1100);
-   > round(a,53,RN);
-   1._2 * 2^(-1100)
-   > double(a);
-   0
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> display=binary!;
+> a=2^(-1100);
+> round(a,53,RN);
+1._2 * 2^(-1100)
+> double(a);
+0
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{RN}, \textbf{RD}, \textbf{RU}, \textbf{RZ}, \textbf{double}, \textbf{doubleextended}, \textbf{doubledouble}, \textbf{tripledouble}, \textbf{roundcoefficients}, \textbf{roundcorrectly}

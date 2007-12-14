@@ -8,16 +8,16 @@ global variable controlling timing measures in Sollya.\\
    command is measured and displayed (for \textbf{verbosity} levels higher than 1).
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > verbosity=1!;
-   > timing=on;
-   Timing has been activated.
-   > p=remez(sin(x),10,[-1;1]);
-   Information: Remez: computing the matrix spent 3 ms
-   Information: Remez: computing the quality of approximation spent 17 ms
-   Information: computing a minimax approximation spent 24 ms
-   Information: assignment spent 24 ms
-   Information: full execution of the last parse chunk spent 24 ms
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity=1!;
+> timing=on;
+Timing has been activated.
+> p=remez(sin(x),10,[-1;1]);
+Information: Remez: computing the matrix spent 3 ms
+Information: Remez: computing the quality of approximation spent 16 ms
+Information: computing a minimax approximation spent 23 ms
+Information: assignment spent 23 ms
+Information: full execution of the last parse chunk spent 23 ms
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{on}, \textbf{off}

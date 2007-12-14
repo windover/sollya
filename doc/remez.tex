@@ -48,7 +48,7 @@ Parameters:
    See [Cheney - Approximation theory] for details.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > p = remez(exp(x),5,[0;1]);
 > degree(p);
 5
@@ -57,15 +57,19 @@ Parameters:
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > p = remez(1,[|0,2,4,6,8|],[0,Pi/4],1/cos(x));
 > canonical=on!;
 > p;
-0.999999999943937321805410306927692541203518389031685 + (-0.499999995715568577559574413581766900435294037106493613) * x^2 + 0.416666132334736321135652061403756856904074913853682927e-1 * x^4 + (-0.138865291471456765864326123540477937091500390886117905e-2) * x^6 + 0.243726791772232726278486347508569482304048351169722066e-4 * x^8
+0.999999999943937321805410306927692541203518389031685 + (-0.49999999571556857755
+9574413581766900435294037106493613) * x^2 + 0.4166661323347363211356520614037568
+56904074913853682927e-1 * x^4 + (-0.13886529147145676586432612354047793709150039
+0886117905e-2) * x^6 + 0.243726791772232726278486347508569482304048351169722066e
+-4 * x^8
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > p1 = remez(exp(x),5,[0;1],default,1e-5);
 > p2 = remez(exp(x),5,[0;1],default,1e-10);
 > p3 = remez(exp(x),5,[0;1],default,1e-15);

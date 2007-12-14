@@ -28,14 +28,14 @@ the functional result of a side-effect or empty argument resp. the correponding 
    details.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > print(void);
 void
 > void;
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > hey = proc() { print("Hello world."); };
 > hey;
 proc()
@@ -53,9 +53,10 @@ void
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > bashexecute("gcc -fPIC -Wall -c externalprocvoidexample.c");
-> bashexecute("gcc -fPIC -shared -o externalprocvoidexample externalprocvoidexample.o");
+> bashexecute("gcc -fPIC -shared -o externalprocvoidexample externalprocvoidexam
+ple.o");
 > externalproc(foo, "./externalprocvoidexample", void -> void);
 > foo;
 foo(void) -> void

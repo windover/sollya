@@ -4,13 +4,14 @@ activates, deactivates or inspects the state variable controlling output with fu
 
 \noindent Usage: 
 \begin{center}
-\textbf{fullparentheses} = \emph{activation value} : \textsf{on|off} $\rightarrow$ \textsf{void}\\
-\textbf{fullparentheses} = \emph{activation value} ! : \textsf{on|off} $\rightarrow$ \textsf{void}\\
-\textbf{fullparentheses} = ? : \textsf{void} $\rightarrow$ \textsf{on|off}\\
+\textbf{fullparentheses} = \emph{activation value} : \textsf{on$|$off} $\rightarrow$ \textsf{void}\\
+\textbf{fullparentheses} = \emph{activation value} ! : \textsf{on$|$off} $\rightarrow$ \textsf{void}\\
+\textbf{fullparentheses} = ? : \textsf{void} $\rightarrow$ \textsf{on$|$off}\\
 \end{center}
 Parameters: 
-\emph{activation value} represents \textbf{on} or \textbf{off}, i.e. activation or deactivation\\
-
+\begin{itemize}
+\item \emph{activation value} represents \textbf{on} or \textbf{off}, i.e. activation or deactivation
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item An assignment \textbf{fullparentheses} = \emph{activation value}, where \emph{activation value}
@@ -32,16 +33,16 @@ Parameters:
    of expressions is activated or not.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > autosimplify = off!;
-   > fullparentheses = off;
-   Full parentheses mode has been deactivated.
-   > print(1 + 2 + 3);
-   1 + 2 + 3
-   > fullparentheses = on;
-   Full parentheses mode has been activated.
-   > print(1 + 2 + 3);
-   (1 + 2) + 3
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> autosimplify = off!;
+> fullparentheses = off;
+Full parentheses mode has been deactivated.
+> print(1 + 2 + 3);
+1 + 2 + 3
+> fullparentheses = on;
+Full parentheses mode has been activated.
+> print(1 + 2 + 3);
+(1 + 2) + 3
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{print}, \textbf{write}, \textbf{autosymplify}
+See also: \textbf{print}, \textbf{write}, \textbf{autosimplify}

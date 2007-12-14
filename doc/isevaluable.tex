@@ -7,9 +7,10 @@ tests whether a function can be evaluated at a point \\
 \textbf{isevaluable}(\emph{function}, \emph{constant}) : (\textsf{function}, \textsf{constant}) $\rightarrow$ \textsf{boolean}\\
 \end{center}
 Parameters: 
-\emph{function} represents a function\\
-\emph{constant} represents a constant point\\
-
+\begin{itemize}
+\item \emph{function} represents a function
+\item \emph{constant} represents a constant point
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{isevaluable} applied to function \emph{function} and a constant \emph{constant} returns
@@ -18,27 +19,28 @@ Parameters:
    result or NaN. I.e. \textbf{isevaluable} returns false iff \textbf{evaluate} will return NaN.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > isevaluable(sin(pi * 1/x), 0.75);
-   true
-   > print(evaluate(sin(pi * 1/x), 0.75));
-   -0.866025403784438646763723170752936183471402626905185165
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> isevaluable(sin(pi * 1/x), 0.75);
+true
+> print(evaluate(sin(pi * 1/x), 0.75));
+-0.866025403784438646763723170752936183471402626905185165
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > isevaluable(sin(pi * 1/x), 0.5);
-   true
-   > print(evaluate(sin(pi * 1/x), 0.5));
-   [-0.172986452514381269516508615031098129542836767991679e-12714;0.759411982011879631450695643145256617060390843900679e-12715]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> isevaluable(sin(pi * 1/x), 0.5);
+true
+> print(evaluate(sin(pi * 1/x), 0.5));
+[-0.172986452514381269516508615031098129542836767991679e-12714;0.759411982011879
+631450695643145256617060390843900679e-12715]
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > isevaluable(sin(pi * 1/x), 0);
-   false
-   > print(evaluate(sin(pi * 1/x), 0));
-   @NaN@
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> isevaluable(sin(pi * 1/x), 0);
+false
+> print(evaluate(sin(pi * 1/x), 0));
+@NaN@
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{evaluate}

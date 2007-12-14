@@ -7,9 +7,10 @@ computes an interval bounding the integral of a function on an interval.\\
 \textbf{integral}(\emph{f},\emph{I}) : (\textsf{function}, \textsf{range}) $\rightarrow$ \textsf{range}\\
 \end{center}
 Parameters: 
-\emph{f} is a function.\\
-\emph{I} is an interval.\\
-
+\begin{itemize}
+\item \emph{f} is a function.
+\item \emph{I} is an interval.
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{integral}(\emph{f},\emph{I}) returns an interval $J$ such that the exact value of 
@@ -27,14 +28,16 @@ Parameters:
    are summed.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > sin(10);
-   -0.544021110889369813404747661851377281683643012916219
-   > integral(cos(x),[0;10]);
-   [-0.547101979835796902240976371635259430756985992573329;-0.540940151300131838481505408813733707440537411917285]
-   > diam=1e-5!;
-   > integral(cos(x),[0;10]);
-   [-0.544329156859554271018577802959369567752938763827772;-0.543713064012499695080396442219274890104258031735553]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> sin(10);
+-0.544021110889369813404747661851377281683643012916219
+> integral(cos(x),[0;10]);
+[-0.547101979835796902240976371635259430756985992573329;-0.540940151300131838481
+505408813733707440537411917285]
+> diam=1e-5!;
+> integral(cos(x),[0;10]);
+[-0.544329156859554271018577802959369567752938763827772;-0.543713064012499695080
+396442219274890104258031735553]
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{points}, \textbf{dirtyintegral}

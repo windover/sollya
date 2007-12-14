@@ -71,7 +71,7 @@ Parameters:
    that may be composed.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > succ = proc(n) { return n + 1; };
 > succ(5);
 6
@@ -86,7 +86,7 @@ end
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > add = proc(m,n) { var res; res := m + n; return res; };
 > add(5,6);
 11
@@ -99,11 +99,13 @@ return res;
 end
 > verbosity = 1!;
 > add(3);
-Warning: at least one of the given expressions or a subexpression is not correctly typed
+Warning: at least one of the given expressions or a subexpression is not correct
+ly typed
 or its evaluation has failed because of some error on a side-effect.
 error
 > add(true,false);
-Warning: at least one of the given expressions or a subexpression is not correctly typed
+Warning: at least one of the given expressions or a subexpression is not correct
+ly typed
 or its evaluation has failed because of some error on a side-effect.
 Warning: the given expression or command could not be handled.
 Warning: the given expression or command could not be handled.
@@ -111,7 +113,7 @@ error
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > succ = proc(n) { return n + 1; };
 > succ(5);
 6
@@ -120,7 +122,7 @@ error
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > hey = proc() { print("Hello world."); };
 > hey();
 Hello world.
@@ -136,8 +138,9 @@ end
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 5: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-> fac = proc(n) { var res; if (n == 0) then res := 1 else res := n * fac(n - 1); return res; };
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> fac = proc(n) { var res; if (n == 0) then res := 1 else res := n * fac(n - 1);
+ return res; };
 > fac(5);
 120
 > fac(11);
@@ -155,7 +158,7 @@ end
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 6: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > myprocs = [| proc(m,n) { return m + n; }, proc(m,n) { return m - n; } |];
 > (myprocs[0])(5,6);
 11
@@ -171,7 +174,7 @@ end
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 7: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > verbosity = 1!;
 > myquit = proc(n) { print(n); quit; };
 > myquit;
@@ -190,15 +193,17 @@ error
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 8: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-> printsucc = proc(n) { var succ; succ = proc(n) { return n + 1; }; print("Successor of",n,"is",succ(n)); };
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> printsucc = proc(n) { var succ; succ = proc(n) { return n + 1; }; print("Succe
+ssor of",n,"is",succ(n)); };
 > printsucc(5);
 Successor of 5 is 6
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 9: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-> makeadd = proc(n) { var add; print("n =",n); add = proc(m,n) { return n + m; }; return add; };
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> makeadd = proc(n) { var add; print("n =",n); add = proc(m,n) { return n + m; }
+; return add; };
 > makeadd(4);
 n = 4
 proc(m, n)

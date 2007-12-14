@@ -73,13 +73,18 @@ implements a polynomial using double, double-double and triple-double arithmetic
    in \texttt{Gappa}.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-> implementpoly(1 - 1/6 * x^2 + 1/120 * x^4, [-1b-10;1b-10], 1b-30, D, "p","implementation.c");
-1 + x^2 * ((-0.1666666666666666574148081281236954964697360992431640625) + x^2 * 0.833333333333333321768510160154619370587170124053955078125e-2)
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> implementpoly(1 - 1/6 * x^2 + 1/120 * x^4, [-1b-10;1b-10], 1b-30, D, "p","impl
+ementation.c");
+1 + x^2 * ((-0.1666666666666666574148081281236954964697360992431640625) + x^2 * 
+0.833333333333333321768510160154619370587170124053955078125e-2)
 > readfile("implementation.c");
-#define p_coeff_0h 1.00000000000000000000000000000000000000000000000000000000000000000000000000000000e+00
-#define p_coeff_2h -1.66666666666666657414808128123695496469736099243164062500000000000000000000000000e-01
-#define p_coeff_4h 8.33333333333333321768510160154619370587170124053955078125000000000000000000000000e-03
+#define p_coeff_0h 1.00000000000000000000000000000000000000000000000000000000000
+000000000000000000000e+00
+#define p_coeff_2h -1.6666666666666665741480812812369549646973609924316406250000
+0000000000000000000000e-01
+#define p_coeff_4h 8.33333333333333321768510160154619370587170124053955078125000
+000000000000000000000e-03
 
 
 void p(double *p_resh, double x) {
@@ -110,14 +115,19 @@ p_t_5_0h = p_coeff_0h + p_t_4_0h;
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-> implementpoly(1 - 1/6 * x^2 + 1/120 * x^4, [-1b-10;1b-10], 1b-30, D, "p","implementation.c","implementation.gappa");
-1 + x^2 * ((-0.1666666666666666574148081281236954964697360992431640625) + x^2 * 0.833333333333333321768510160154619370587170124053955078125e-2)
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> implementpoly(1 - 1/6 * x^2 + 1/120 * x^4, [-1b-10;1b-10], 1b-30, D, "p","impl
+ementation.c","implementation.gappa");
+1 + x^2 * ((-0.1666666666666666574148081281236954964697360992431640625) + x^2 * 
+0.833333333333333321768510160154619370587170124053955078125e-2)
 > readfile("implementation.gappa");
 # The polynomial to implement is: (1b0 - ((x^(1b1)) / 3b1)) + ((x^(1b2)) / 15b3)
-# The polynomial implemented is: 1b0 + (x * (0 + (x * ((-6004799503160661b-55) + (x * (0 + (x * 4803839602528529b-59)))))))
+
+# The polynomial implemented is: 1b0 + (x * (0 + (x * ((-6004799503160661b-55) +
+ (x * (0 + (x * 4803839602528529b-59)))))))
 # The domain is [-1b-10;1b-10]
-# The free variable x is a double precision number, the result p_res* is stored on a double precision number.
+# The free variable x is a double precision number, the result p_res* is stored 
+on a double precision number.
 # The code produces 10 intermediate and final arithmetical approximations.
 
 # Double precision rounding operator:
@@ -130,11 +140,14 @@ p_t_5_0h = p_coeff_0h + p_t_4_0h;
 xh = x;
 
 # Transcription of the C code
-p_coeff_0h = double(1.00000000000000000000000000000000000000000000000000000000000000000000000000000000e+00);
+p_coeff_0h = double(1.0000000000000000000000000000000000000000000000000000000000
+0000000000000000000000e+00);
 
-p_coeff_2h = double(-1.66666666666666657414808128123695496469736099243164062500000000000000000000000000e-01);
+p_coeff_2h = double(-1.666666666666666574148081281236954964697360992431640625000
+00000000000000000000000e-01);
 
-p_coeff_4h = double(8.33333333333333321768510160154619370587170124053955078125000000000000000000000000e-03);
+p_coeff_4h = double(8.3333333333333332176851016015461937058717012405395507812500
+0000000000000000000000e-03);
 
 p_x_0_pow2h = double(xh * xh);
 p_t_1_0h = p_coeff_4h;
@@ -194,27 +207,40 @@ epsilon $ xh;
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > verbosity = 1!;
-> q = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c");
-Warning: at least one of the coefficients of the given polynomial has been rounded in a way
-that the target precision can be achieved at lower cost. Nevertheless, the implemented polynomial
+> q = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","imp
+lementation.c");
+Warning: at least one of the coefficients of the given polynomial has been round
+ed in a way
+that the target precision can be achieved at lower cost. Nevertheless, the imple
+mented polynomial
 is different from the given one.
 > printexpansion(q);
 0x3ff0000000000000 + x^2 * 0xbfc5555555555555
-> r = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c",honorcoeffprec);
-Warning: the infered precision of the 2th coefficient of the polynomial is greater than
-the necessary precision computed for this step. This may make the automatic determination
+> r = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","imp
+lementation.c",honorcoeffprec);
+Warning: the infered precision of the 2th coefficient of the polynomial is great
+er than
+the necessary precision computed for this step. This may make the automatic dete
+rmination
 of precisions useless.
 > printexpansion(r);
-0x3ff0000000000000 + x^2 * (0xbfc5555555555555 + 0xbc65555555555555 + 0xb905555555555555)
+0x3ff0000000000000 + x^2 * (0xbfc5555555555555 + 0xbc65555555555555 + 0xb9055555
+55555555)
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-> p = 0x3ff0000000000000 + x * (0x3ff0000000000000 + x * (0x3fe0000000000000 + x * (0x3fc5555555555559 + x * (0x3fa55555555555bd + x * (0x3f811111111106e2 + x * (0x3f56c16c16bf5eb7 + x * (0x3f2a01a01a292dcd + x * (0x3efa01a0218a016a + x * (0x3ec71de360331aad + x * (0x3e927e42e3823bf3 + x * (0x3e5ae6b2710c2c9a + x * (0x3e2203730c0a7c1d + x * 0x3de5da557e0781df))))))))))));
-> q = implementpoly(p,[-1/2;1/2],1b-60,D,"p","implementation.c",honorcoeffprec,"implementation.gappa");
-> if (q != p) then print("During implementation, rounding has happened.") else print("Polynomial implemented as given.");	
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> p = 0x3ff0000000000000 + x * (0x3ff0000000000000 + x * (0x3fe0000000000000 + x
+ * (0x3fc5555555555559 + x * (0x3fa55555555555bd + x * (0x3f811111111106e2 + x
+ * (0x3f56c16c16bf5eb7 + x * (0x3f2a01a01a292dcd + x * (0x3efa01a0218a016a + x
+ * (0x3ec71de360331aad + x * (0x3e927e42e3823bf3 + x * (0x3e5ae6b2710c2c9a + x
+ * (0x3e2203730c0a7c1d + x * 0x3de5da557e0781df))))))))))));
+> q = implementpoly(p,[-1/2;1/2],1b-60,D,"p","implementation.c",honorcoeffprec,"
+implementation.gappa");
+> if (q != p) then print("During implementation, rounding has happened.") else p
+rint("Polynomial implemented as given.");	
 Polynomial implemented as given.
 \end{Verbatim}
 \end{minipage}\end{center}

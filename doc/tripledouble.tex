@@ -20,16 +20,17 @@ represents a number as the sum of three IEEE doubles.\\
    See the corresponding help pages for examples.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > verbosity=1!;
-   > a = 1+ 2^(-55)+2^(-115);
-   > TD(a);
-   0.100000000000000002775557561562891353466491600711095598e1
-   > prec=110!;
-   > TD(a);
-   Warning: double rounding occurred on invoking the triple-double rounding operator.
-   Try to increase the working precision.
-   0.10000000000000000277555756156289135106e1
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity=1!;
+> a = 1+ 2^(-55)+2^(-115);
+> TD(a);
+0.100000000000000002775557561562891353466491600711095598e1
+> prec=110!;
+> TD(a);
+Warning: double rounding occurred on invoking the triple-double rounding operato
+r.
+Try to increase the working precision.
+0.10000000000000000277555756156289135106e1
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{double}, \textbf{doubleextended}, \textbf{doubledouble}, \textbf{roundcoefficients}, \textbf{implementpoly}

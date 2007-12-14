@@ -7,9 +7,10 @@ returns a fraction close to a given number.\\
 \textbf{rationalapprox}(\emph{x},\emph{n}) : (\textsf{constant}, \textsf{integer}) $\rightarrow$ \textsf{function}\\
 \end{center}
 Parameters: 
-\emph{x} is a number to approximate.\\
-\emph{n} is a integer (representing a format).\\
-
+\begin{itemize}
+\item \emph{x} is a number to approximate.
+\item \emph{n} is a integer (representing a format).
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{rationalapprox}(\emph{x},\emph{n}) returns a constant function of the form $a/b$ where $a$ and $b$ are
@@ -34,27 +35,27 @@ Parameters:
    and \textbf{denominator}.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > pi10 = rationalapprox(Pi,10);
-   > pi50 = rationalapprox(Pi,50);
-   > pi100 = rationalapprox(Pi,100);
-   > print( pi10, ": ", simplify(floor(-log2(abs(pi10-Pi)/Pi))), "bits." );
-   22 / 7 :  11 bits.
-   > print( pi50, ": ", simplify(floor(-log2(abs(pi50-Pi)/Pi))), "bits." );
-   90982559 / 28960648 :  50 bits.
-   > print( pi100, ": ", simplify(floor(-log2(abs(pi100-Pi)/Pi))), "bits." );
-   4850225745369133 / 1543874804974140 :  101 bits.
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> pi10 = rationalapprox(Pi,10);
+> pi50 = rationalapprox(Pi,50);
+> pi100 = rationalapprox(Pi,100);
+> print( pi10, ": ", simplify(floor(-log2(abs(pi10-Pi)/Pi))), "bits." );
+22 / 7 :  11 bits.
+> print( pi50, ": ", simplify(floor(-log2(abs(pi50-Pi)/Pi))), "bits." );
+90982559 / 28960648 :  50 bits.
+> print( pi100, ": ", simplify(floor(-log2(abs(pi100-Pi)/Pi))), "bits." );
+4850225745369133 / 1543874804974140 :  101 bits.
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > a=0.1;
-   > b=rationalapprox(a,4);
-   > numerator(b); denominator(b);
-   1
-   10
-   > print(simplify(floor(-log2(abs((b-a)/a)))), "bits.");
-   166 bits.
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> a=0.1;
+> b=rationalapprox(a,4);
+> numerator(b); denominator(b);
+1
+10
+> print(simplify(floor(-log2(abs((b-a)/a)))), "bits.");
+166 bits.
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{print}, \textbf{numerator}, \textbf{denominator}

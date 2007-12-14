@@ -21,32 +21,34 @@ computes the nearest number with 64 bits of mantissa.\\
    commands \textbf{roundcoefficients} and \textbf{implementpoly} (contrary to \textbf{D}, \textbf{DD},and \textbf{TD}).
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > display=binary!;
-   > DE(0.1);
-   1.100110011001100110011001100110011001100110011001100110011001101_2 * 2^(-4)
-   > round(0.1,64,RN);
-   1.100110011001100110011001100110011001100110011001100110011001101_2 * 2^(-4)
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> display=binary!;
+> DE(0.1);
+1.100110011001100110011001100110011001100110011001100110011001101_2 * 2^(-4)
+> round(0.1,64,RN);
+1.100110011001100110011001100110011001100110011001100110011001101_2 * 2^(-4)
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > D(2^(-2000));
-   0
-   > DE(2^(-2000));
-   0.870980981621721667557619549477887229585910374270538862e-602
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> D(2^(-2000));
+0
+> DE(2^(-2000));
+0.870980981621721667557619549477887229585910374270538862e-602
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > verbosity=1!;
-   > f = sin(DE(x));
-   > f(pi);
-   Warning: rounding has happened. The value displayed is a faithful rounding of the true result.
-   -0.501655761266833202355732708033075701383156167025495e-19
-   > g = sin(round(x,64,RN));
-   Warning: at least one of the given expressions or a subexpression is not correctly typed
-   or its evaluation has failed because of some error on a side-effect.
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity=1!;
+> f = sin(DE(x));
+> f(pi);
+Warning: rounding has happened. The value displayed is a faithful rounding of th
+e true result.
+-0.501655761266833202355732708033075701383156167025495e-19
+> g = sin(round(x,64,RN));
+Warning: at least one of the given expressions or a subexpression is not correct
+ly typed
+or its evaluation has failed because of some error on a side-effect.
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{double}, \textbf{doubledouble}, \textbf{tripledouble}, \textbf{round}

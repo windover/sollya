@@ -7,8 +7,9 @@ equality test operator\\
 \emph{expr1} \textbf{$==$} \emph{expr2} : (\textsf{any type}, \textsf{any type}) $\rightarrow$ \textsf{boolean}\\
 \end{center}
 Parameters: 
-\emph{expr1} and \emph{expr2} represent expressions\\
-
+\begin{itemize}
+\item \emph{expr1} and \emph{expr2} represent expressions
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item The operator \textbf{$==$} evaluates to true iff its operands \emph{expr1} and
@@ -19,39 +20,39 @@ Parameters:
    exactly the same as the mathematical equality.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > "Hello" == "Hello";
-   true
-   > "Hello" == "Salut";
-   false
-   > "Hello" == 5;
-   false
-   > 5 + x == 5 + x;
-   true
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> "Hello" == "Hello";
+true
+> "Hello" == "Salut";
+false
+> "Hello" == 5;
+false
+> 5 + x == 5 + x;
+true
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > 1 == exp(0);
-   true
-   > asin(1) * 2 == pi;
-   true
-   > exp(5) == log(4);
-   false
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> 1 == exp(0);
+true
+> asin(1) * 2 == pi;
+true
+> exp(5) == log(4);
+false
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > prec = 12;
-   The precision has been set to 12 bits.
-   > 16384 == 16385;
-   true
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> prec = 12;
+The precision has been set to 12 bits.
+> 16384 == 16385;
+true
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > error == error;
-   false
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> error == error;
+false
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{!$=$}, \textbf{$>$}, \textbf{$>=$}, \textbf{$<=$}, \textbf{$<$}, \textbf{!}, \textbf{$\&\&$}, \textbf{$||$}, \textbf{error}, \textbf{prec}

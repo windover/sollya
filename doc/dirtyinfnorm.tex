@@ -7,9 +7,10 @@ computes a numerical approximation of the infinite norm of a function on an inte
 \textbf{dirtyinfnorm}(\emph{f},\emph{I}) : (\textsf{function}, \textsf{range}) $\rightarrow$ \textsf{constant}\\
 \end{center}
 Parameters: 
-\emph{f} is a function.\\
-\emph{I} is an interval.\\
-
+\begin{itemize}
+\item \emph{f} is a function.
+\item \emph{I} is an interval.
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{dirtyinfnorm}(\emph{f},\emph{I}) computes an approximation of the infinite norm of the 
@@ -37,31 +38,31 @@ Parameters:
    \end{itemize}
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > dirtyinfnorm(sin(x),[-10;10]);
-   1
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> dirtyinfnorm(sin(x),[-10;10]);
+1
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > prec=15!;
-   > dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
-   0.145855712891e1
-   > prec=40!;
-   > dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
-   0.14585285371358622797e1
-   > prec=100!;
-   > dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
-   0.1458528537136237644438147455024510015e1
-   > prec=200!;
-   > dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
-   0.14585285371362376444381474550238417182992140879936823740941534981883e1
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> prec=15!;
+> dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
+0.145855712891e1
+> prec=40!;
+> dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
+0.14585285371358622797e1
+> prec=100!;
+> dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
+0.1458528537136237644438147455024510015e1
+> prec=200!;
+> dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
+0.14585285371362376444381474550238417182992140879936823740941534981883e1
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > dirtyinfnorm(x^2, [log(0);log(1)]);
-   @NaN@
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> dirtyinfnorm(x^2, [log(0);log(1)]);
+@NaN@
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{prec}, \textbf{points}, \textbf{infnorm}, \textbf{checkinfnorm}

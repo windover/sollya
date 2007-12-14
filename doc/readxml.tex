@@ -4,11 +4,12 @@ reads an expression written as a MathML-Content-Tree in a file\\
 
 \noindent Usage: 
 \begin{center}
-\textbf{readxml}(\emph{filename}) : \textsf{string} $\rightarrow$ \textsf{function} | \textsf{error}\\
+\textbf{readxml}(\emph{filename}) : \textsf{string} $\rightarrow$ \textsf{function} $|$ \textsf{error}\\
 \end{center}
 Parameters: 
-\emph{filename} represents a character sequence indicating a file name\\
-
+\begin{itemize}
+\item \emph{filename} represents a character sequence indicating a file name
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{readxml}(\emph{filename}) reads the first occurrence of a lambda
@@ -23,9 +24,9 @@ Parameters:
    \textsf{error}.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > readxml("readxmlexample.xml");
-   2 + x + exp(sin(x))
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> readxml("readxmlexample.xml");
+2 + x + exp(sin(x))
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{printxml}, \textbf{readfile}, \textbf{parse}

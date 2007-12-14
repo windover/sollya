@@ -7,8 +7,9 @@ differentiation operator\\
 \textbf{diff}(\emph{function}) : \textsf{function} $\rightarrow$ \textsf{function}\\
 \end{center}
 Parameters: 
-\emph{function} represents a function\\
-
+\begin{itemize}
+\item \emph{function} represents a function
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item \textbf{diff}(\emph{function}) returns the symbolic derivative of the function
@@ -18,21 +19,21 @@ Parameters:
    annotation to the returned expression tree.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > diff(sin(x));
-   cos(x)
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> diff(sin(x));
+cos(x)
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > diff(x);
-   1
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> diff(x);
+1
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > diff(x^x);
-   x^x * (1 + log(x))
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> diff(x^x);
+x^x * (1 + log(x))
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{library}

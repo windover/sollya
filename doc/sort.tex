@@ -7,8 +7,9 @@ sorts a list of real numbers.\\
 \textbf{sort}(\emph{L}) : \textsf{list} $\rightarrow$ \textsf{list}\\
 \end{center}
 Parameters: 
-\emph{L} is a list.\\
-
+\begin{itemize}
+\item \emph{L} is a list.
+\end{itemize}
 \noindent Description: \begin{itemize}
 
 \item If \emph{L} contains only constant values, \textbf{sort}(\emph{L}) returns the same list, but
@@ -20,10 +21,10 @@ Parameters:
 \item If \emph{L} is an end-elliptic list, \textbf{sort} will fail with an error.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{14.8cm}\begin{Verbatim}[frame=single]
-   > sort([| |]);
-   [| |]
-   > sort([|2,3,5,2,1,4|]);
-   [|1, 2, 2, 3, 4, 5|]
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> sort([| |]);
+[| |]
+> sort([|2,3,5,2,1,4|]);
+[|1, 2, 2, 3, 4, 5|]
 \end{Verbatim}
 \end{minipage}\end{center}
