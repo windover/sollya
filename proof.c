@@ -1091,6 +1091,7 @@ void freeGappaProof(gappaProof *proof) {
   for (i=0;i<proof->assignmentsNumber;i++) {
     freeGappaAssignment(proof->assignments[i]);
   }
+  free(proof->assignments);
   free(proof);
 }
 

@@ -8826,7 +8826,11 @@ node *makeCanonicalPolyUnsafe(node *poly, mp_prec_t prec) {
     }
   }
 
+  free(coefficients);
+
   tempNode2 = simplifyTreeErrorfree(tempNode);
+
+  free_memory(tempNode);
 
   return tempNode2;
 }

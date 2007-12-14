@@ -579,6 +579,7 @@ void initToolDefaults() {
 }
 
 void restartTool() {
+  mpfr_clear(statediam);
   freeSymbolTable(symbolTable, freeThingOnVoid);
   symbolTable = NULL;
   freeDeclaredSymbolTable(declaredSymbolTable, freeThingOnVoid);
@@ -725,6 +726,10 @@ int general(int argc, char *argv[]) {
 	}
 	initSignalHandler();
 	numberBacktrace = 1;
+	if (timeStack != NULL) {
+	  printMessage(4,"Information: corrupted timing stack. Releasing the stack.\n");
+	  freeCounter();
+	}
 	pushTimeCounter();
 	executeAbort = executeCommand(parsedThing);
 	popTimeCounter("full execution of the last parse chunk");
@@ -742,7 +747,11 @@ int general(int argc, char *argv[]) {
 	  else 
 	    printMessage(2,"Information: releasing the variable frame stack.\n");
 	  freeDeclaredSymbolTable(declaredSymbolTable, freeThingOnVoid);
-	  declaredSymbolTable = NULL;
+	}
+	declaredSymbolTable = NULL;
+	if (timeStack != NULL) {
+	  printMessage(2,"Information: corrupted timing stack. Releasing the stack.\n");
+	  freeCounter();
 	}
       }
 

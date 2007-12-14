@@ -64,7 +64,6 @@ chain *addEntry(chain *symTbl, char *name, void *value, void * (*copyValue) (voi
   newEntry->name = (char *) safeCalloc(strlen(name)+1,sizeof(char));
   strcpy(newEntry->name,name);
   newEntry->value = copyValue(value);
-
   symTbl = addElement(symTbl,newEntry);   
   return symTbl;
 }

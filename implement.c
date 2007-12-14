@@ -5810,6 +5810,8 @@ int accurToVarType(mpfr_t accur) {
 
   if (mpfr_less_p(accur,temp)) res++;
 
+  mpfr_clear(temp);
+
   return res;
 }
 
@@ -6051,6 +6053,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
 
   for (i=0;i<=degree;i++) mpfr_clear(fpCoefficients[i]);
   free(fpCoefficients);
+  free(fpCoeffRoundAutomatically);
   free(addPrec);
   free(mulPrec);
   free(powPrec);

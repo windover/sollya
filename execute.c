@@ -1957,6 +1957,7 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
 	printMessage(1,"The resulting syntax error might be unjustified.\n");
       }
       mpfr_clear(tempResult);
+      mpfr_clear(tempMpfr);
       freeThing(simplified);
       freeThing(simplified2);
       return 0; 
@@ -4638,6 +4639,7 @@ int evaluateThingToConstantList(chain **ch, node *tree) {
     *ch = newChain;
     for (i=0;i<number;i++) freeThing(arrayTrees[i]);
     free(arrayTrees);
+    freeThing(evaluated);
     return 1;
   }
 
@@ -4984,7 +4986,9 @@ int executeCommandInner(node *tree) {
 
 	  } else {
 	    if (declaredSymbolTable != NULL) {
-	      declaredSymbolTable = declareNewEntry(declaredSymbolTable, (char *) (curr->value), makeError(), copyThingOnVoid);
+	      tempNode = makeError();
+	      declaredSymbolTable = declareNewEntry(declaredSymbolTable, (char *) (curr->value), tempNode, copyThingOnVoid);
+	      freeThing(tempNode);
 	    } else {
 	      printMessage(1,"Warning: previous command interruptions have corrupted the frame system.\n");
 	      printMessage(1,"Local variable \"%s\" cannot be declared.\n",(char *) (curr->value));
@@ -14529,6 +14533,7 @@ node *evaluateThingInner(node *tree) {
       }
       curr = curr->next;
     }
+    freeChain(tempChain, freeThingOnVoid);
     copy->arguments = newChain;
     if (resC && (!isPureList(copy))) {
       tempNode = evaluateThing(copy);
@@ -14565,6 +14570,7 @@ node *evaluateThingInner(node *tree) {
       }
       curr = curr->next;
     }
+    freeChain(tempChain, freeThingOnVoid);
     copy->arguments = newChain;
     if (resC && (!isPureFinalEllipticList(copy))) {
       tempNode = evaluateThing(copy);
