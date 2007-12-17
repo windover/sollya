@@ -3641,6 +3641,7 @@ int isEvaluable(node *func, mpfr_t x, mpfr_t *y, mp_prec_t prec) {
     return ISHOPITALEVALUABLE;
   } 
 
+  mpfr_clear(val);
   mpfr_clear(*(xrange.a));
   mpfr_clear(*(xrange.b));
   mpfr_clear(*(yrange.a));
@@ -4042,6 +4043,11 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
   }
 
   if (okay) mpfr_set(result,resultUp,GMP_RNDU);
+
+  mpfr_clear(*(res.a));
+  mpfr_clear(*(res.b));
+  free(res.a);
+  free(res.b);
 
   mpfr_clear(stopDiameter);
   mpfr_clear(currDiameter);

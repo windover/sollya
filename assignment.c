@@ -121,6 +121,7 @@ chain *removeEntry(chain *symTbl, char *name, void (*f) (void *)) {
 	}
       }
       freeEntry(((entry *) curr->value),f);
+      free(curr);
       return newSymTbl;
     }
     prev = curr;

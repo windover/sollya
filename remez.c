@@ -552,6 +552,8 @@ chain *uncertifiedFindZeros(node *tree, mpfr_t a, mpfr_t b, unsigned long int po
   mpfr_clear(x2);
   mpfr_clear(zero_mpfr);
   
+  free_memory(diff_tree);
+
   return result;
 }
 
@@ -1591,6 +1593,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps) {
       for(j=1;j<=freeDegrees+1;j++) mpfr_clear(x[j-1]);
       free(x);
 
+      free_memory(poly);
       free_memory(poly_diff);
       free_memory(poly_diff2);
       mpfr_clear(zero_mpfr);
@@ -1603,6 +1606,8 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps) {
       free_memory(w_diff2);
       mpfr_clear(computedQuality);
       mpfr_clear(infiniteNorm);
+
+      freeChain(monomials,freeIntPtr);
 
       for(j=1; j <= freeDegrees+1 ; j++) {
 	for(i=1; i<= freeDegrees+1; i++) {
@@ -1635,7 +1640,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps) {
   
   for(j=1;j<=freeDegrees+1;j++) mpfr_clear(x[j-1]);
   free(x);
-  
+  free_memory(poly);
   free_memory(poly_diff);
   free_memory(poly_diff2);
   mpfr_clear(zero_mpfr);
@@ -1649,6 +1654,8 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps) {
   mpfr_clear(computedQuality);
   mpfr_clear(infiniteNorm);
   
+  freeChain(monomials, freeIntPtr);
+
   for(j=1; j <= freeDegrees+1 ; j++) {
     for(i=1; i<= freeDegrees+1; i++) {
       mpfr_clear(M[coeff(i,j,freeDegrees+1)]);

@@ -8608,12 +8608,12 @@ void freeThing(node *tree) {
     break; 				
   case NEWFILEPRINT:
     freeChain(tree->arguments, freeThingOnVoid);
-    free(tree->child1);
+    freeThing(tree->child1);
     free(tree);
     break; 			
   case APPENDFILEPRINT:
     freeChain(tree->arguments, freeThingOnVoid);
-    free(tree->child1);
+    freeThing(tree->child1);
     free(tree);
     break; 			
   case PLOT:
@@ -8621,23 +8621,23 @@ void freeThing(node *tree) {
     free(tree);
     break;			
   case PRINTHEXA:
-    free(tree->child1);
+    freeThing(tree->child1);
     free(tree);
     break; 
   case PRINTFLOAT:
-    free(tree->child1);
+    freeThing(tree->child1);
     free(tree);
     break; 
   case PRINTBINARY:
-    free(tree->child1);
+    freeThing(tree->child1);
     free(tree);
     break; 			
   case PRINTEXPANSION:
-    free(tree->child1);
+    freeThing(tree->child1);
     free(tree);
     break;
   case BASHEXECUTE:
-    free(tree->child1);
+    freeThing(tree->child1);
     free(tree);
     break; 			
   case EXTERNALPLOT:
@@ -8650,31 +8650,31 @@ void freeThing(node *tree) {
     break; 			
   case NEWFILEWRITE:
     freeChain(tree->arguments, freeThingOnVoid);
-    free(tree->child1);
+    freeThing(tree->child1);
     free(tree);
     break;
   case APPENDFILEWRITE:
     freeChain(tree->arguments, freeThingOnVoid);
-    free(tree->child1);
+    freeThing(tree->child1);
     free(tree);
     break; 
   case ASCIIPLOT:
-    free(tree->child1);
-    free(tree->child2);
+    freeThing(tree->child1);
+    freeThing(tree->child2);
     free(tree);
     break;			
   case PRINTXML:
-    free(tree->child1);
+    freeThing(tree->child1);
     free(tree);
     break;			
   case PRINTXMLNEWFILE:
-    free(tree->child1);
-    free(tree->child2);
+    freeThing(tree->child1);
+    freeThing(tree->child2);
     free(tree);
     break;			
   case PRINTXMLAPPENDFILE:
-    free(tree->child1);
-    free(tree->child2);
+    freeThing(tree->child1);
+    freeThing(tree->child2);
     free(tree);
     break;			
   case WORSTCASE:
@@ -14914,9 +14914,8 @@ node *evaluateThingInner(node *tree) {
 	printMessage(1,"Warning: the expression given is not a fraction. ");
 	printMessage(1,"Will consider it as a fraction with denominator 1.\n");
 	tempNode = makeConstantDouble(1.0);
-      } else {
-	freeThing(tempNode2);
       }
+      freeThing(tempNode2);
       freeThing(copy);
       copy = tempNode; 
       if (timingString != NULL) popTimeCounter(timingString);
@@ -15225,7 +15224,6 @@ node *evaluateThingInner(node *tree) {
     }
     break; 			 	
   case INFNORM:
-    copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
     copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
     curr = copy->arguments;
     firstArg = (node *) (curr->value);

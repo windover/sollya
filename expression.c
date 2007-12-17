@@ -2367,6 +2367,8 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
 	  simplified = simplChild1;
 	} else {
 	  if (isSyntacticallyEqual(simplChild1,simplChild2)) {
+	    free_memory(simplChild1);
+	    free_memory(simplChild2);
 	    simplified->nodeType = CONSTANT;
 	    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	    mpfr_init2(*value,tools_precision);
@@ -2533,12 +2535,18 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
 			      if ((simplChild2->nodeType == DIV) && 
 				  (isSyntacticallyEqual(simplChild1,simplChild2->child2))) {
 				free(simplified);
+				free_memory(simplChild1);
+				free_memory(simplChild2->child2);
 				simplified = simplChild2->child1;
+				free(simplChild2);
 			      } else {
 				if ((simplChild1->nodeType == DIV) && 
 				    (isSyntacticallyEqual(simplChild2,simplChild1->child2))) {
 				  free(simplified);
+				  free_memory(simplChild2);
+				  free_memory(simplChild1->child2);
 				  simplified = simplChild1->child1;
+				  free(simplChild1);
 				} else {
 				  simplified->nodeType = MUL;
 				  simplified->child1 = simplChild1;
@@ -2600,6 +2608,8 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
 	    mpfr_init2(*value,tools_precision);
 	    simplified->value = value;
 	    mpfr_set_d(*value,1.0,GMP_RNDN);
+	    free_memory(simplChild1);
+	    free_memory(simplChild2);
 	  } else {
 	    if ((simplChild1->nodeType == NEG) &&
 		(simplChild2->nodeType == NEG)) {
@@ -7285,6 +7295,7 @@ void getCoefficientsCanonicalUnsafe(node **coefficients, node *poly) {
   } else {
     if (isCanonicalMonomial(poly)) {
       deg = getDegree(poly);
+      sign = 1;
       if (isPowerOfVariable(poly)) {
 	  newCoeff = (node *) safeMalloc(sizeof(node));
 	  newCoeff->nodeType = CONSTANT;
@@ -8683,12 +8694,6 @@ node *getSubpolynomial(node *poly, chain *monomials, int fillDegrees, mp_prec_t 
   getCoefficients(&degree, &coefficients, poly);
 
   curr = monomials;
-
-  tempNode = (node *) safeMalloc(sizeof(node));
-  tempNode->nodeType = CONSTANT;
-  tempNode->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-  mpfr_init2(*(tempNode->value),prec);
-  mpfr_set_d(*(tempNode->value),0.0,GMP_RNDN);  
 
   maxDegree = -1;
 

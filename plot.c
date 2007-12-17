@@ -439,5 +439,6 @@ void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   for (i=0;i<sizeX-1;i++) {
     mpfr_clear(values[i]);
   }
+  free(values);
   return;
 }
