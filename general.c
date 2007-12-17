@@ -568,6 +568,7 @@ void initToolDefaults() {
   fileNumber = 0;
   autosimplify = 1;
   timecounting = 0;
+  if (timeStack != NULL) freeCounter();
   timeStack=NULL;
   fullParentheses=0;
   midpointMode = 0;
@@ -733,6 +734,9 @@ int general(int argc, char *argv[]) {
 	pushTimeCounter();
 	executeAbort = executeCommand(parsedThing);
 	popTimeCounter("full execution of the last parse chunk");
+	if((!timecounting) && (timeStack!=NULL)) {
+	  freeCounter();
+	}
 	blockSignals();
 	recoverEnvironmentReady = 0;
       } else {
