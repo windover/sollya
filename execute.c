@@ -4520,19 +4520,18 @@ void autoprint(node *thing) {
       if (!isSyntacticallyEqual(tempNode3,tempNode2)) {
 	printMessage(1,"Warning: rounding may have happened.\n");
       }
-      freeThing(tempNode2);
-      tempNode2 = tempNode3;
-      if (treeSize(tempNode2) > MAXHORNERTREESIZE) {
+      if (treeSize(tempNode3) > MAXHORNERTREESIZE) {
 	if (canonical) 
 	  printMessage(1,"Warning: the expression is too big for being written in canonical form.\n");
 	else 
 	  printMessage(1,"Warning: the expression is too big for being written in Horner form.\n");
-	temp_node = copyTree(tempNode2);
+	temp_node = copyTree(tempNode3);
       } else {
-	if (canonical) temp_node = makeCanonical(tempNode2,tools_precision); else temp_node = horner(tempNode2);
+	if (canonical) temp_node = makeCanonical(tempNode3,tools_precision); else temp_node = horner(tempNode3);
       }
       printTree(temp_node);
       free_memory(temp_node);
+      free_memory(tempNode3);
     }
     if (freeThingAfterwards) free_memory(tempNode2);
   } else {

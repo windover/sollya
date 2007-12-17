@@ -3132,7 +3132,8 @@ int checkInfnorm(node *func, rangetype range, mpfr_t infnormval, mpfr_t diam, mp
   deriv = differentiate(func);
 
   result = checkInfnormI(func, deriv, infnormvalI, rangeI, rangeDiameter, prec);
-  
+
+  free_memory(deriv);
   mpfr_clear(tempLeft);
   mpfr_clear(tempRight);
   mpfr_clear(rangeDiameter);
