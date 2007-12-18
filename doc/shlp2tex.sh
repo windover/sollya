@@ -284,7 +284,7 @@ processSeeAlso() {
  fi
 
  echo -n "See also: " >> $target
- grep "#SEEALSO" $tempfile | sed -n 's/#SEEALSO //;p' | sed -n 's/$/, /;p' | tr -d "\n" | sed -n 's/, $//;p' >> $target
+ grep "#SEEALSO" $tempfile | sed -n 's/#SEEALSO \\textbf{\(.*\)}/\1 (\\ref{\1})/;p' | sed -n 's/$/, /;p' | tr -d "\n" | sed -n 's/, $//;p' >> $target
  echo "" >> $target
 }
 
