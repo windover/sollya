@@ -230,12 +230,12 @@ processExampleFile() {
  while [ $ilocal -le $nLineslocal ]
  do
    echo -n "> " >> $target
-   cat $exampleFile | head -n $ilocal | tail -n 1 | sed -n 's/\(..............................................................................\)/\1\n/g;p' >> $target
+   cat $exampleFile | head -n $ilocal | tail -n 1 | sed -n 's/\t/    /g;p' | sed -n 's/\(..............................................................................\)/\1\n/g;p' >> $target
    echo "verbosity=0!;" "`head -n $ilocal $exampleFile`" | $sollyaBin > $tempfile2
    sed -i -n 's/^//;p' $tempfile2
    total=`cat $tempfile2 | wc -l`
    countlocal=`expr $total - $countlocal`
-   tail -n $countlocal $tempfile2 | sed -n 's/\(................................................................................\)/\1\n/g;p' >> $target
+   tail -n $countlocal $tempfile2 | sed -n 's/\t/    /g;p' | sed -n 's/\(................................................................................\)/\1\n/g;p' >> $target
    countlocal=$total
    ilocal=`expr $ilocal + 1`
  done
