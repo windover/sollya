@@ -304,7 +304,7 @@ processFile() {
 
 
   echo "\subsection{" `echo $source | sed -n 's/\.shlp//;p'` "}" >> $target
-  echo "\label{" `echo $source | sed -n 's/\.shlp//;p'` "}" >> $target
+  echo "\label{lab" `echo $source | sed -n 's/\.shlp//;p'` "}" | sed -n 's/ //g;p' >> $target
   processName
   processQuickDescription
   processCallingAndTypes
