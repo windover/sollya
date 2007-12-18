@@ -24,8 +24,13 @@ preprocessKeywords() {
   i=1
   while [ $i -le $nLines ]
   do
-    pattern=\$`cat $keywords_defs | grep "=" | head -n $i | tail -n 1 | sed -n 's/\(=.*\)//;p'`
+    pattern2=`cat $keywords_defs | grep "=" | head -n $i | tail -n 1 | sed -n 's/\(=.*\)//;p'`
+    pattern=\$"$pattern2"
+    pattern2=`echo $pattern2 | tr A-Z a-z`
+
     replacement=`cat $keywords_defs | grep "=" | head -n $i | tail -n 1 | sed -n 's/\(.*="\)\(.*\)\("\)/\2/;p'`
+
+    sed -n -i 's/#SEEALSO \('"$pattern"'\)\([^[:upper:][:digit:]_]\)/#SEEALSO \\textbf{'"$replacement"'} (\\ref{lab'"$pattern2"'})a/g;p' $tempfile
     sed -n -i 's/\('"$pattern"'\)\([^[:upper:][:digit:]_]\)/\\textbf{'"$replacement"'}\2/g;p' $tempfile
 
     i=`expr $i + 1`
@@ -284,7 +289,8 @@ processSeeAlso() {
  fi
 
  echo -n "See also: " >> $target
- grep "#SEEALSO" $tempfile | sed -n 's/#SEEALSO \\textbf{\(.*\)}/\\textbf{\1} (\\ref{lab\1})/;p' | sed -n 's/$/, /;p' | tr -d "\n" | sed -n 's/, $//;p' >> $target
+# grep "#SEEALSO" $tempfile | sed -n 's/#SEEALSO \\textbf{\(.*\)}/\\textbf{\1} (\\ref{lab\1})/;p' | sed -n 's/$/, /;p' | tr -d "\n" | sed -n 's/, $//;p' >> $target
+ grep "#SEEALSO" $tempfile | sed -n 's/#SEEALSO //;p' | sed -n 's/$/, /;p' | tr -d "\n" | sed -n 's/, $//;p' >> $target
  echo "" >> $target
 }
 
@@ -303,8 +309,8 @@ processFile() {
   sed -n -i 's/$SOLLYA/'"$sollya_name"'/g;p' $tempfile
 
 
-  echo "\subsection{" `echo $source | sed -n 's/\.shlp//;p'` "}" >> $target
-  echo "\label{lab" `echo $source | sed -n 's/\.shlp//;p'` "}" | sed -n 's/ //g;p' >> $target
+  echo "\subsection{"$sectionName"}" >> $target
+  echo "\label{lab"$sectionName"}" | sed -n 's/ //g;p' >> $target
   processName
   processQuickDescription
   processCallingAndTypes
@@ -335,6 +341,7 @@ main() {
     if [ -e $file ]
     then
       source=$file
+      sectionName=`echo $source | sed -n 's/\.shlp//;p'`
       target=`echo $source | sed -n 's/\.shlp/\.tex/;p'`
       echo "Processing file "$source
       processFile
