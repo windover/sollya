@@ -1,8 +1,8 @@
 #NAME $PI
-#QUICK_DESCRIPTION the constant Pi.
+#QUICK_DESCRIPTION the constant §§Pi§$\pi$§§.
 
 #DESCRIPTION 
-$COMMAND is the constant Pi, defined as half the period of sine and cosine.
+$COMMAND is the constant §§Pi§$\pi$§§, defined as half the period of sine and cosine.
 
 #DESCRIPTION
 In $SOLLYA, $COMMAND is considered as a 0-ary function. This way, the constant 

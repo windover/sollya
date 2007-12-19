@@ -1,7 +1,7 @@
 #NAME $READXML
 #QUICK_DESCRIPTION reads an expression written as a MathML-Content-Tree in a file
 #CALLING $COMMAND(<filename>)
-#TYPE $STRING_TYPE -> $FUNCTION_TYPE | $ERROR_TYPE
+#TYPE $STRING_TYPE -> $FUNCTION_TYPE §§|§$|$§§ $ERROR_TYPE
 #PARAMETERS <filename> represents a character sequence indicating a file name
 
 #DESCRIPTION 

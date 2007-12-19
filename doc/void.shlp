@@ -1,7 +1,7 @@
 #NAME $VOID
 #QUICK_DESCRIPTION the functional result of a side-effect or empty argument resp. the correponding type
 #CALLING $COMMAND
-#TYPE $VOID_TYPE | $TYPE_TYPE
+#TYPE $VOID_TYPE §§|§$|$§§ $TYPE_TYPE
 
 #DESCRIPTION 
 The variable $COMMAND represents the functional result of a

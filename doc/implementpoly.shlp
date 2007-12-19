@@ -98,9 +98,6 @@ if (q != p) then print("During implementation, rounding has happened.") else pri
 
 #SEEALSO $HONORCOEFFPREC
 #SEEALSO $ROUNDCOEFFICIENTS
-#SEEALSO $D
-#SEEALSO $DD
-#SEEALSO $TD
 #SEEALSO $DOUBLE
 #SEEALSO $DOUBLEDOUBLE
 #SEEALSO $TRIPLEDOUBLE

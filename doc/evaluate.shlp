@@ -1,7 +1,7 @@
 #NAME $EVALUATE
 #QUICK_DESCRIPTION evaluates a function at a constant point or in a range
 #CALLING $COMMAND(<function>, <constant>)
-#TYPE ($FUNCTION_TYPE, $CONSTANT_TYPE) -> $CONSTANT_TYPE | $RANGE_TYPE
+#TYPE ($FUNCTION_TYPE, $CONSTANT_TYPE) -> $CONSTANT_TYPE §§|§$|$§§ $RANGE_TYPE
 #CALLING $COMMAND(<function>, <range>)
 #TYPE ($FUNCTION_TYPE, $RANGE_TYPE) -> $RANGE_TYPE
 #CALLING $COMMAND(<function>, <function2>)

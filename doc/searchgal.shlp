@@ -49,9 +49,6 @@ if (s != [||]) then {
 searchgal([|sin(x),cos(x)|],1,53,15,[|D,D|],[|1b-62,1b-60|]);
 
 #SEEALSO $ROUND
-#SEEALSO $D
-#SEEALSO $DD
-#SEEALSO $TD
 #SEEALSO $DOUBLE
 #SEEALSO $DOUBLEDOUBLE
 #SEEALSO $TRIPLEDOUBLE
