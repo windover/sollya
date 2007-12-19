@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([sollya], [0.1], [christoph.lauter@ens-lyon.fr, sylvain.chevillard@ens-lyon.fr])
+AC_INIT([sollya], [1.0], [christoph.lauter@ens-lyon.fr, sylvain.chevillard@ens-lyon.fr])
 AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([1.6 no-define dist-zip dist-bzip2])
 
