@@ -13,8 +13,8 @@
 The command $COMMAND implements the polynomial <polynomial> in range
 <range> as a function called <functionname> in §§C§\texttt{C}§§ code
 using double, double-double and triple-double arithmetic in a way that
-the rounding error (estimated at its first order) is bounded by <error
-bound>. The produced code is output in a file named <filename>. The
+the rounding error (estimated at its first order) is bounded by <error bound>. 
+The produced code is output in a file named <filename>. The
 argument <format> indicates the double, double-double or triple-double
 format of the variable in which the polynomial varies, influencing
 also in the signature of the §§C§\texttt{C}§§ function.
