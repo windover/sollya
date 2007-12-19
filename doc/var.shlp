@@ -7,7 +7,7 @@
 
 #DESCRIPTION 
 The keyword $COMMAND allows for the declaration of local variables
-<identifier1> through <identifiern> in a begin-end-block ({}-block).
+<identifier1> through <identifiern> in a begin-end-block (§§{}§$\lbrace \rbrace$§§-block).
 Once declared as a local variable, an identifier will shadow
 identifiers declared in higher scopes and undeclared identifiers
 available at top-level.

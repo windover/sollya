@@ -1,4 +1,5 @@
-\subsection{ implementpoly }
+\subsection{implementpoly}
+\label{labimplementpoly}
 \noindent Name: \textbf{implementpoly}\\
 implements a polynomial using double, double-double and triple-double arithmetic and generates a Gappa proof\\
 
@@ -120,90 +121,6 @@ p_t_5_0h = p_coeff_0h + p_t_4_0h;
 ementation.c","implementation.gappa");
 1 + x^2 * ((-0.1666666666666666574148081281236954964697360992431640625) + x^2 * 
 0.833333333333333321768510160154619370587170124053955078125e-2)
-> readfile("implementation.gappa");
-# The polynomial to implement is: (1b0 - ((x^(1b1)) / 3b1)) + ((x^(1b2)) / 15b3)
-
-# The polynomial implemented is: 1b0 + (x * (0 + (x * ((-6004799503160661b-55) +
- (x * (0 + (x * 4803839602528529b-59)))))))
-# The domain is [-1b-10;1b-10]
-# The free variable x is a double precision number, the result p_res* is stored 
-on a double precision number.
-# The code produces 10 intermediate and final arithmetical approximations.
-
-# Double precision rounding operator:
-@double = float<ieee_64,ne>;
-
-# Disable some annoying warnings:
-#@-Wno-dichotomy-failure
-
-# Helper definitions for decomposing the free variable
-xh = x;
-
-# Transcription of the C code
-p_coeff_0h = double(1.0000000000000000000000000000000000000000000000000000000000
-0000000000000000000000e+00);
-
-p_coeff_2h = double(-1.666666666666666574148081281236954964697360992431640625000
-00000000000000000000000e-01);
-
-p_coeff_4h = double(8.3333333333333332176851016015461937058717012405395507812500
-0000000000000000000000e-03);
-
-p_x_0_pow2h = double(xh * xh);
-p_t_1_0h = p_coeff_4h;
-
-p_t_2_0h = double(p_t_1_0h * p_x_0_pow2h);
-p_t_3_0h = double(p_coeff_2h + p_t_2_0h);
-p_t_4_0h = double(p_t_3_0h * p_x_0_pow2h);
-p_t_5_0h = double(p_coeff_0h + p_t_4_0h);
-p_resh = p_t_5_0h;
-
-
-# Mathematical equivalents
-Mx = x;
-Mp_coeff_0 = p_coeff_0h;
-Mp_coeff_2 = p_coeff_2h;
-Mp_coeff_4 = p_coeff_4h;
-Mp_x_0_pow2 = Mx * Mx;
-Mp_t_1_0 = Mp_coeff_4;
-Mp_t_2_0 = Mp_t_1_0 * Mp_x_0_pow2;
-Mp_t_3_0 = Mp_coeff_2 + Mp_t_2_0;
-Mp_t_4_0 = Mp_t_3_0 * Mp_x_0_pow2;
-Mp_t_5_0 = Mp_coeff_0 + Mp_t_4_0;
-Mp_res = Mp_t_5_0;
-
-# Definition of the relative arithmetical error
-epsilon = (p_resh - Mp_res) / Mp_res;
-
-# Implication to prove
-{((
-   x in [-1b-10,-1b-410]
-) \/ (
-   x in [1b-410,1b-10]
-))
-->
-(
-   epsilon in ?
-)}
-
-# Hints and Meta-Hints for expansion decomposition
-
-
-# Meta-Hints for Horner scheme
-p_x_0_pow2h ~ Mp_x_0_pow2;
-p_t_1_0h ~ Mp_t_1_0;
-p_t_2_0h ~ Mp_t_2_0;
-p_t_3_0h ~ Mp_t_3_0;
-p_t_4_0h ~ Mp_t_4_0;
-p_t_5_0h ~ Mp_t_5_0;
-p_resh ~ Mp_res;
-
-# Dichotomies for triple-double decomposition
-
-# Dichotomy for the error bound
-epsilon $ xh;
-
-
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
@@ -240,8 +157,8 @@ of precisions useless.
 > q = implementpoly(p,[-1/2;1/2],1b-60,D,"p","implementation.c",honorcoeffprec,"
 implementation.gappa");
 > if (q != p) then print("During implementation, rounding has happened.") else p
-rint("Polynomial implemented as given.");	
+rint("Polynomial implemented as given.");    
 Polynomial implemented as given.
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{honorcoeffprec}, \textbf{roundcoefficients}, \textbf{D}, \textbf{DD}, \textbf{TD}, \textbf{double}, \textbf{doubledouble}, \textbf{tripledouble}, \textbf{readfile}, \textbf{printexpansion}, \textbf{error}
+See also: \textbf{honorcoeffprec} (\ref{labhonorcoeffprec}), \textbf{roundcoefficients} (\ref{labroundcoefficients}), \textbf{D} (\ref{labd}), \textbf{DD} (\ref{labdd}), \textbf{TD} (\ref{labtd}), \textbf{double} (\ref{labdouble}), \textbf{doubledouble} (\ref{labdoubledouble}), \textbf{tripledouble} (\ref{labtripledouble}), \textbf{readfile} (\ref{labreadfile}), \textbf{printexpansion} (\ref{labprintexpansion}), \textbf{error} (\ref{laberror})

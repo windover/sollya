@@ -16,7 +16,7 @@ $COMMAND returns the length of a list or a string, e.g. the number of elements
 or letters.
 
 #DESCRIPTION
-The empty list or string has length 0.
+The empty list or string have length 0.
 If <L> is an end-elliptic list, $COMMAND returns +Inf.
 
 #EXAMPLE

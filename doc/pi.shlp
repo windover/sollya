@@ -7,7 +7,7 @@ $COMMAND is the constant Pi, defined as half the period of sine and cosine.
 #DESCRIPTION
 In $SOLLYA, $COMMAND is considered as a 0-ary function. This way, the constant 
 is not evaluated at the time of its definition but at the time of its use. For 
-instance, when you define a constant or a function relating to Pi, the current
+instance, when you define a constant or a function relating to §§Pi§$\pi$§§, the current
 precision at the time of the definition does not matter. What is important is 
 the current precision when you evaluate the function or the constant value.
 

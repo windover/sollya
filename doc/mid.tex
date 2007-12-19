@@ -1,4 +1,5 @@
-\subsection{ mid }
+\subsection{mid}
+\label{labmid}
 \noindent Name: \textbf{mid}\\
 gives the middle of an interval.\\
 
@@ -14,8 +15,9 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item Returns the middle of the interval \emph{I}. If the middle is not exactly 
-   representable at the current precision, the value is rounded.
+\item Returns the middle of the interval \emph{I}. If the middle is not exactly
+   representable at the current precision, the value is returned as an
+   unevaluated expression.
 
 \item When called on a real number \emph{x}, \textbf{mid} considers it as an interval formed
    of a single point: [x, x]. In other words, \textbf{mid} behaves like the identity.
@@ -28,4 +30,4 @@ Parameters:
 17
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{inf}, \textbf{sup}
+See also: \textbf{inf} (\ref{labinf}), \textbf{sup} (\ref{labsup})

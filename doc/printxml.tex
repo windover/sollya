@@ -1,12 +1,13 @@
-\subsection{ printxml }
+\subsection{printxml}
+\label{labprintxml}
 \noindent Name: \textbf{printxml}\\
 prints an expression as an MathML-Content-Tree\\
 
 \noindent Usage: 
 \begin{center}
 \textbf{printxml}(\emph{expr}) : \textsf{function} $\rightarrow$ \textsf{void}\\
-\textbf{printxml}(\emph{expr}) > \emph{filename} : (\textsf{function}, \textsf{string}) $\rightarrow$ \textsf{void}\\
-\textbf{printxml}(\emph{expr}) >> \emph{filename} : (\textsf{function}, \textsf{string}) $\rightarrow$ \textsf{void}\\
+\textbf{printxml}(\emph{expr}) $>$ \emph{filename} : (\textsf{function}, \textsf{string}) $\rightarrow$ \textsf{void}\\
+\textbf{printxml}(\emph{expr}) $>$ $>$ \emph{filename} : (\textsf{function}, \textsf{string}) $\rightarrow$ \textsf{void}\\
 \end{center}
 Parameters: 
 \begin{itemize}
@@ -18,10 +19,10 @@ Parameters:
 \item \textbf{printxml}(\emph{expr}) prints the functional expression \emph{expr} as a tree of
    MathML Content Definition Markups. This XML tree can be re-read in
    external tools or by usage of the \textbf{readxml} command.
-   If a second argument \emph{filename} is given after a single ">", the
+   If a second argument \emph{filename} is given after a single $>$, the
    MathML tree is not output on the standard output of Sollya but if in
    the file \emph{filename} that get newly created or overwritten. If a double
-   ">>" is given, the output will be appended to the file \emph{filename}.
+   $>$ $>$ is given, the output will be appended to the file \emph{filename}.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
@@ -76,4 +77,4 @@ r file://) -->
 > printxml(x + 2 + exp(sin(x))) >> "foo.xml";
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{readxml}, \textbf{print}, \textbf{write}
+See also: \textbf{readxml} (\ref{labreadxml}), \textbf{print} (\ref{labprint}), \textbf{write} (\ref{labwrite})

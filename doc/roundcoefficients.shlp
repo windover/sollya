@@ -22,7 +22,7 @@ $TRIPLEDOUBLE, an error occurs.
 #DESCRIPTION
 The coefficients in <p> corresponding to §§X^i§$X^i$§§ is rounded to the 
 format L[i]. If <L> does not contain enough elements
-(e.g. if $LENGTH(L) < $DEGREE(p)+1), a warning is displayed. However, the
+(e.g. if $LENGTH(L) §§<§$<$§§ $DEGREE(p)+1), a warning is displayed. However, the
 coefficients corresponding to an element of <L> are rounded. The last 
 coefficients (that do not have a corresponding element in <L>) are kept with
 their own precision.

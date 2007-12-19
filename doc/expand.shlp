@@ -7,7 +7,7 @@
 
 #DESCRIPTION 
 $COMMAND(<function>) expands all polynomial subexpressions in function
-<function> is far as possible. Factors of sums are multiplied out,
+<function> as far as possible. Factors of sums are multiplied out,
 power operators with constant positive integer exponents are replaced
 by multiplications and divisions are multiplied out, i.e. denomiators
 are brought at the most interior point of expressions.

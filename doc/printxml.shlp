@@ -2,9 +2,9 @@
 #QUICK_DESCRIPTION prints an expression as an MathML-Content-Tree
 #CALLING $COMMAND(<expr>)
 #TYPE $FUNCTION_TYPE -> $VOID_TYPE
-#CALLING $COMMAND(<expr>) > <filename>
+#CALLING $COMMAND(<expr>) §§>§$>$§§ <filename>
 #TYPE ($FUNCTION_TYPE, $STRING_TYPE) -> $VOID_TYPE
-#CALLING $COMMAND(<expr>) >> <filename>
+#CALLING $COMMAND(<expr>) §§>§$>$§§ §§>§$>$§§ <filename>
 #TYPE ($FUNCTION_TYPE, $STRING_TYPE) -> $VOID_TYPE
 #PARAMETERS <expr> represents a functional expression
 #PARAMETERS <filename> represents a character sequence indicating a file name
@@ -14,10 +14,10 @@ $COMMAND(<expr>) prints the functional expression <expr> as a tree of
 MathML Content Definition Markups. This XML tree can be re-read in
 external tools or by usage of the $READXML command.
 §§ §§§
-If a second argument <filename> is given after a single ">", the
+If a second argument <filename> is given after a single §§">"§$>$§§, the
 MathML tree is not output on the standard output of $SOLLYA but if in
 the file <filename> that get newly created or overwritten. If a double
-">>" is given, the output will be appended to the file <filename>.
+§§">"§$>$ $>$§§ is given, the output will be appended to the file <filename>.
 
 #EXAMPLE
 printxml(x + 2 + exp(sin(x)));

@@ -1,4 +1,5 @@
-\subsection{ roundcoefficients }
+\subsection{roundcoefficients}
+\label{labroundcoefficients}
 \noindent Name: \textbf{roundcoefficients}\\
 rounds the coefficients of a polynomial to classical formats.\\
 
@@ -24,7 +25,7 @@ Parameters:
 
 \item The coefficients in \emph{p} corresponding to $X^i$ is rounded to the 
    format L[i]. If \emph{L} does not contain enough elements
-   (e.g. if \textbf{length}(L) < \textbf{degree}(p)+1), a warning is displayed. However, the
+   (e.g. if \textbf{length}(L) $<$ \textbf{degree}(p)+1), a warning is displayed. However, the
    coefficients corresponding to an element of \emph{L} are rounded. The last 
    coefficients (that do not have a corresponding element in \emph{L}) are kept with
    their own precision.
@@ -86,4 +87,4 @@ Warning: rounding may have happened.
 10000010110000101100000111001011100101001_2 * 2^(4))
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{double}, \textbf{doubledouble}, \textbf{tripledouble}
+See also: \textbf{double} (\ref{labdouble}), \textbf{doubledouble} (\ref{labdoubledouble}), \textbf{tripledouble} (\ref{labtripledouble})

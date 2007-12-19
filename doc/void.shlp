@@ -22,8 +22,8 @@ correct calls to foo.
 #DESCRIPTION
 $COMMAND is used also as a type identifier for
 $EXTERNALPROC. Typically, an external procedure taking $VOID as an
-argument or returning $COMMAND is bound with a signature $COMMAND ->
-some type or some type -> $COMMAND.  See $EXTERNALPROC for more
+argument or returning $COMMAND is bound with a signature $COMMAND §§->§$->$§§
+some type or some type §§->§$->$§§ $COMMAND. See $EXTERNALPROC for more
 details.
 
 #EXAMPLE

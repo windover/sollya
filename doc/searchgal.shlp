@@ -20,13 +20,13 @@ The command $COMMAND searches for a preimage §§z§$z$§§ of a function
 §§z§$z$§§ is a floating-point number with <preimage precision>
 significant mantissa bits and the image §§y§$y$§§ of the function,
 respectively each image §§y_i§$y_i$§§ of the functions, rounds to
-format <format> respectively to the corresponding format in <list of
-format> with a relative rounding error less than <error bound>
+format <format> respectively to the corresponding format in <list of format> 
+with a relative rounding error less than <error bound>
 respectively the corresponding value in <list of error bounds>. During
 this search, at most 2 raised to <steps> attempts are made. The search
 starts with a preimage value equal to <start>. This value is then
-increased and decreased by §§1§$1$§§ ulp in precision <preimage
-precision> until a value is found or the step limit is reached.
+increased and decreased by §§1§$1$§§ ulp in precision <preimage precision> 
+until a value is found or the step limit is reached.
 §§ §§§
 If the search finds an appropriate preimage §§z§$z$§§, $COMMAND
 evaluates to a list containing this value. Otherwise, $COMMAND

@@ -1,4 +1,5 @@
-\subsection{ restart }
+\subsection{restart}
+\label{labrestart}
 \noindent Name: \textbf{restart}\\
 brings Sollya back to its initial state\\
 
@@ -40,8 +41,8 @@ x
 > print(exp(x));
 exp(x)
 > for i from 1 to 10 do {
-> 	print(i);
-> 	if (i == 5) then restart;
+>     print(i);
+>     if (i == 5) then restart;
 > };
 1
 2
@@ -59,11 +60,11 @@ The for loop will no longer be executed.
 exp(x)
 > a = 3;
 > for i from 1 to 10 do {
-> 	print(i);
-> 	if (i == 5) then {
-> 		restart;
-> 		i = 7;
-> 	};
+>     print(i);
+>     if (i == 5) then {
+>         restart;
+>         i = 7;
+>     };
 > };
 1
 2
@@ -83,4 +84,4 @@ Will interpret "a" as "x".
 x
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{quit}, \textbf{execute}, \textbf{while}, \textbf{for}
+See also: \textbf{quit} (\ref{labquit}), \textbf{execute} (\ref{labexecute}), \textbf{while} (\ref{labwhile}), \textbf{for} (\ref{labfor})

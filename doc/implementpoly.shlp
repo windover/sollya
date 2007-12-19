@@ -82,7 +82,7 @@ readfile("implementation.c");
 
 #EXAMPLE
 implementpoly(1 - 1/6 * x^2 + 1/120 * x^4, [-1b-10;1b-10], 1b-30, D, "p","implementation.c","implementation.gappa");
-readfile("implementation.gappa");
+
 
 #EXAMPLE
 verbosity = 1!;

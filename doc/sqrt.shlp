@@ -2,7 +2,7 @@
 #QUICK_DESCRIPTION square root.
 
 #DESCRIPTION 
-$COMMAND is the square root, e.g. the inverse of the function square: §§sqrt(y)§$\sqrt(y)$§§
+$COMMAND is the square root, e.g. the inverse of the function square: §§sqrt(y)§$\sqrt{y}$§§
 is the unique positive §§x§$x$§§ such that §§x^2=y§$x^2=y$§§.
 
 #DESCRIPTION

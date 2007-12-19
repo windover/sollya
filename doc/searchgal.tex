@@ -1,4 +1,5 @@
-\subsection{ searchgal }
+\subsection{searchgal}
+\label{labsearchgal}
 \noindent Name: \textbf{searchgal}\\
 searches for a preimage of a function such that the rounding the image commits an error smaller than a constant\\
 
@@ -26,13 +27,13 @@ Parameters:
    $z$ is a floating-point number with \emph{preimage precision}
    significant mantissa bits and the image $y$ of the function,
    respectively each image $y_i$ of the functions, rounds to
-   format \emph{format} respectively to the corresponding format in <list of
-   format> with a relative rounding error less than \emph{error bound}
+   format \emph{format} respectively to the corresponding format in \emph{list of format} 
+   with a relative rounding error less than \emph{error bound}
    respectively the corresponding value in \emph{list of error bounds}. During
    this search, at most 2 raised to \emph{steps} attempts are made. The search
    starts with a preimage value equal to \emph{start}. This value is then
-   increased and decreased by $1$ ulp in precision <preimage
-   precision> until a value is found or the step limit is reached.
+   increased and decreased by $1$ ulp in precision \emph{preimage precision} 
+   until a value is found or the step limit is reached.
    If the search finds an appropriate preimage $z$, \textbf{searchgal}
    evaluates to a list containing this value. Otherwise, \textbf{searchgal}
    evaluates to an empty list.
@@ -63,4 +64,4 @@ The rounding error is 2^( -0.112106878438809380148206984258358542322113874177832
 [|0.10000000000015949463971764998859725892543792724609375e1|]
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{round}, \textbf{D}, \textbf{DD}, \textbf{TD}, \textbf{double}, \textbf{doubledouble}, \textbf{tripledouble}, \textbf{evaluate}, \textbf{worstcase}
+See also: \textbf{round} (\ref{labround}), \textbf{D} (\ref{labd}), \textbf{DD} (\ref{labdd}), \textbf{TD} (\ref{labtd}), \textbf{double} (\ref{labdouble}), \textbf{doubledouble} (\ref{labdoubledouble}), \textbf{tripledouble} (\ref{labtripledouble}), \textbf{evaluate} (\ref{labevaluate}), \textbf{worstcase} (\ref{labworstcase})

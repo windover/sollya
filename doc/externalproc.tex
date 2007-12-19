@@ -1,10 +1,11 @@
-\subsection{ externalproc }
+\subsection{externalproc}
+\label{labexternalproc}
 \noindent Name: \textbf{externalproc}\\
 binds an external code to a Sollya procedure\\
 
 \noindent Usage: 
 \begin{center}
-\textbf{externalproc}(\emph{identifier}, \emph{filename}, \emph{argumenttype} -> \emph{resulttype}) : (\textsf{identifier type}, \textsf{string}, \textsf{type type}, \textsf{type type}) $\rightarrow$ \textsf{void}\\
+\textbf{externalproc}(\emph{identifier}, \emph{filename}, \emph{argumenttype} $->$ \emph{resulttype}) : (\textsf{identifier type}, \textsf{string}, \textsf{type type}, \textsf{type type}) $\rightarrow$ \textsf{void}\\
 \end{center}
 Parameters: 
 \begin{itemize}
@@ -24,7 +25,7 @@ Parameters:
    iternal representation and return it.
    In order to allow correct evaluation and typing of the data in
    parameter and in result to be passed to and received from the external
-   code, \textbf{externalproc} has a third parameter \emph{argumenttype} -> \emph{resulttype}.
+   code, \textbf{externalproc} has a third parameter \emph{argumenttype} $->$ \emph{resulttype}.
    Both \emph{argumenttype} and \emph{resulttype} are one of void, constant,
    function, range, integer, string, boolean, list of constant, list of
    function, list of range, list of integer, list of string, list of
@@ -39,28 +40,28 @@ Parameters:
    as a C function.
    If the Sollya result type is void, the C function has no pointer
    argument for the result.  If the Sollya result type is constant, the
-   first argument of the C function is of C type mpfr\_t *, the result is
+   first argument of the C function is of C type \texttt{mpfr\_t *}, the result is
    returned by affecting the MPFR variable.  If the Sollya result type
-   is function, the first argument of the C function is of C type node
-   **, the result is returned by the node * pointed with a new node *.
+   is function, the first argument of the C function is of C type §§node
+   **§\texttt{node **}§§, the result is returned by the \texttt{node *} pointed with a new \texttt{node *}.
    If the Sollya result type is range, the first argument of the C
-   function is of C type mpfi\_t *, the result is returned by affecting
+   function is of C type \texttt{mpfi\_t *}, the result is returned by affecting
    the MPFI variable.  If the Sollya result type is integer, the first
-   argument of the C function is of C type int *, the result is returned
+   argument of the C function is of C type \texttt{int *}, the result is returned
    by affecting the int variable.  If the Sollya result type is string,
-   the first argument of the C function is of C type char **, the result
-   is returned by the char * pointed with a new char *.  If the Sollya
+   the first argument of the C function is of C type \texttt{char **}, the result
+   is returned by the \texttt{char *} pointed with a new \texttt{char *}.  If the Sollya
    result type is boolean, the first argument of the C function is of C
-   type int *, the result is returned by affecting the int variable with
+   type \texttt{int *}, the result is returned by affecting the int variable with
    a boolean value.  If the Sollya result type is list of type, the
-   first argument of the C function is of C type chain **, the result is
-   returned by the chain * pointed with a new chain *.  This chain
-   contains for Sollya type constant pointers mpfr\_t * to new MPFR
-   variables, for Sollya type function pointers node * to new nodes, for
-   Sollya type range pointers mpfi\_t * to new MPFI variables, for
-   Sollya type integer pointers int * to new int variables for Sollya
-   type string pointers char * to new char * variables and for Sollya
-   type boolean pointers int * to new int variables representing boolean
+   first argument of the C function is of C type \texttt{chain **}, the result is
+   returned by the \texttt{chain *} pointed with a new \texttt{chain *}.  This chain
+   contains for Sollya type constant pointers \texttt{mpfr\_t *} to new MPFR
+   variables, for Sollya type function pointers \texttt{node *} to new nodes, for
+   Sollya type range pointers \texttt{mpfi\_t *}  to new MPFI variables, for
+   Sollya type integer pointers \texttt{int *} to new int variables for Sollya
+   type string pointers \texttt{char *} to new \texttt{char *} variables and for Sollya
+   type boolean pointers \texttt{int *} to new int variables representing boolean
    values.
    	       
    The external procedure affects its possible pointer argument if and
@@ -69,27 +70,27 @@ Parameters:
    environment.
    The external procedure receives its arguments as follows: If the
    Sollya argument type is void, no argument array is given.  Otherwise
-   the C function receives a C void ** argument representing an array of
+   the C function receives a C \texttt{void **} argument representing an array of
    size equal to the arity of the function where each entry (of C type
-   void *) represents a value with a C type depending on the
+   \texttt{void *}) represents a value with a C type depending on the
    corresponding Sollya type. If the Sollya type is constant, the C
-   type the void * is to be casted to is mpfr\_t *.  If the Sollya type
-   is function, the C type the void * is to be casted to is node *.  If
-   the Sollya type is range, the C type the void * is to be casted to is
-   mpfi\_t *.  If the Sollya type is integer, the C type the void * is to
-   be casted to is int *.  If the Sollya type is string, the C type the
-   void * is to be casted to is char *.  If the Sollya type is boolean,
-   the C type the void * is to be casted to is int *.  If the Sollya
-   type is list of type, the C type the void * is to be casted to is
-   chain *.  Here depending on type, the values in the chain are to be
-   casted to mpfr\_t * for Sollya type constant, node * for Sollya type
-   function, mpfi\_t * for Sollya type range, int * for Sollya type
-   integer, char * for Sollya type string and int * for Sollya type
+   type the \texttt{void *} is to be casted to is \texttt{mpfr\_t *}.  If the Sollya type
+   is function, the C type the \texttt{void *} is to be casted to is \texttt{node *}.  If
+   the Sollya type is range, the C type the \texttt{void *} is to be casted to is
+   \texttt{mpfi\_t *}.  If the Sollya type is integer, the C type the \texttt{void *} is to
+   be casted to is \texttt{int *}.  If the Sollya type is string, the C type the
+   \texttt{void *} is to be casted to is \texttt{char *}.  If the Sollya type is boolean,
+   the C type the \texttt{void *} is to be casted to is \texttt{int *}.  If the Sollya
+   type is list of type, the C type the \texttt{void *} is to be casted to is
+   \texttt{chain *}.  Here depending on type, the values in the chain are to be
+   casted to \texttt{mpfr\_t *}  for Sollya type constant, \texttt{node *} for Sollya type
+   function, \texttt{mpfi\_t *} for Sollya type range, \texttt{int *} for Sollya type
+   integer, \texttt{char *} for Sollya type string and \texttt{int *} for Sollya type
    boolean.
    The external procedure is not supposed to alter the memory pointed by
-   its array argument void **.
+   its array argument \texttt{void **}.
    In both directions (argument and result values), empty lists are
-   represented by chain * NULL pointers.
+   represented by \texttt{chain * NULL} pointers.
    In contrast to internal procedures, externally bounded procedures can
    be considered as objects inside Sollya that can be assigned to other
    variables, stored in list etc.
@@ -115,4 +116,4 @@ error
 11
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{library}, \textbf{externalplot}, \textbf{bashexecute}, \textbf{void}, \textbf{constant}, \textbf{function}, \textbf{range}, \textbf{integer}, \textbf{string}, \textbf{boolean}, \textbf{list of}
+See also: \textbf{library} (\ref{lablibrary}), \textbf{externalplot} (\ref{labexternalplot}), \textbf{bashexecute} (\ref{labbashexecute}), \textbf{void} (\ref{labvoid}), \textbf{constant} (\ref{labconstant}), \textbf{function} (\ref{labfunction}), \textbf{range} (\ref{labrange}), \textbf{integer} (\ref{labinteger}), \textbf{string} (\ref{labstring}), \textbf{boolean} (\ref{labboolean}), \textbf{list of} (\ref{lablistof})

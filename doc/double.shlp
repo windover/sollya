@@ -8,10 +8,10 @@ $COMMAND is both a function and a constant.
 #DESCRIPTION
 As a function, it rounds its argument to the nearest double precision number.
 Subnormal numbers are supported as well as standard numbers: it is the real
-ounding described in the standard.
+rounding described in the standard.
 
 #DESCRIPTION
-As a constant, it symoblizes the double precision format. It is used in 
+As a constant, it symbolizes the double precision format. It is used in 
 contexts when a precision format is necessary, e.g. in the commands 
 $ROUNDCOEFFICIENTS and $IMPLEMENTPOLY.
 See the corresponding help pages for examples.

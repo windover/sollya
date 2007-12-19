@@ -5,10 +5,10 @@ plots the error of an external code with regard to a function\\
 
 \noindent Usage: 
 \begin{center}
-\textbf{externalplot}(\emph{filename}, \emph{mode}, \emph{function}, \emph{range}, \emph{precision}) : (\textsf{string}, \textsf{absolute|relative}, \textsf{function}, \textsf{range}, \textsf{integer}) $\rightarrow$ \textsf{void}\\
-\textbf{externalplot}(\emph{filename}, \emph{mode}, \emph{function}, \emph{range}, \emph{precision}, \emph{perturb}) : (\textsf{string}, \textsf{absolute|relative}, \textsf{function}, \textsf{range}, \textsf{integer}, \textsf{perturb}) $\rightarrow$ \textsf{void}\\
-\textbf{externalplot}(\emph{filename}, \emph{mode}, \emph{function}, \emph{range}, \emph{precision}, \emph{plot mode}, \emph{result filename}) : (\textsf{string}, \textsf{absolute|relative}, \textsf{function}, \textsf{range}, \textsf{integer}, \textsf{file|postscript|postscriptfile}, \textsf{string}) $\rightarrow$ \textsf{void}\\
-\textbf{externalplot}(\emph{filename}, \emph{mode}, \emph{function}, \emph{range}, \emph{precision}, \emph{perturb}, \emph{plot mode}, \emph{result filename}) : (\textsf{string}, \textsf{absolute|relative}, \textsf{function}, \textsf{range}, \textsf{integer}, \textsf{perturb}, \textsf{file|postscript|postscriptfile}, \textsf{string}) $\rightarrow$ \textsf{void}\\
+\textbf{externalplot}(\emph{filename}, \emph{mode}, \emph{function}, \emph{range}, \emph{precision}) : (\textsf{string}, \textsf{absolute$|$relative}, \textsf{function}, \textsf{range}, \textsf{integer}) $\rightarrow$ \textsf{void}\\
+\textbf{externalplot}(\emph{filename}, \emph{mode}, \emph{function}, \emph{range}, \emph{precision}, \emph{perturb}) : (\textsf{string}, \textsf{absolute$|$relative}, \textsf{function}, \textsf{range}, \textsf{integer}, \textsf{perturb}) $\rightarrow$ \textsf{void}\\
+\textbf{externalplot}(\emph{filename}, \emph{mode}, \emph{function}, \emph{range}, \emph{precision}, \emph{plot mode}, \emph{result filename}) : (\textsf{string}, \textsf{absolute$|$relative}, \textsf{function}, \textsf{range}, \textsf{integer}, \textsf{file$|$postscript$|$postscriptfile}, \textsf{string}) $\rightarrow$ \textsf{void}\\
+\textbf{externalplot}(\emph{filename}, \emph{mode}, \emph{function}, \emph{range}, \emph{precision}, \emph{perturb}, \emph{plot mode}, \emph{result filename}) : (\textsf{string}, \textsf{absolute$|$relative}, \textsf{function}, \textsf{range}, \textsf{integer}, \textsf{perturb}, \textsf{file$|$postscript$|$postscriptfile}, \textsf{string}) $\rightarrow$ \textsf{void}\\
 \end{center}
 \noindent Description: \begin{itemize}
 
@@ -26,7 +26,7 @@ plots the error of an external code with regard to a function\\
    around the original \emph{precision} bit floating-point variable.
    If a sixth and seventh argument, respectively a seventh and eighth
    argument in the presence of \textbf{perturb} as a sixth argument, are given
-   that evaluate to a variable of type \textsf{file|postscript|postscriptfile} respectively to a
+   that evaluate to a variable of type \textsf{file$|$postscript$|$postscriptfile} respectively to a
    character sequence of type \textsf{string}, \textbf{externalplot} will plot
    (additionally) to a file in the same way as the command \textbf{plot}
    does. See \textbf{plot} for details.

@@ -13,7 +13,7 @@ functions <function1> and <function2>, where <function1> is
 the base and <function2> the exponent.
 If <function2> is a constant integer, $COMMAND is defined
 on negative values of <function1>. Otherwise $COMMAND
-is defined as exp(y * log(x)).
+is defined as §§exp(y * log(x))§$e^{y \cdot \ln x}$§§.
 
 #EXAMPLE
 5 ^ 2;

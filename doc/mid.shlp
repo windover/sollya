@@ -11,8 +11,9 @@
 #PARAMETERS <x> is a real number.
 
 #DESCRIPTION 
-Returns the middle of the interval <I>. If the middle is not exactly 
-representable at the current precision, the value is rounded.
+Returns the middle of the interval <I>. If the middle is not exactly
+representable at the current precision, the value is returned as an
+unevaluated expression.
 
 #DESCRIPTION
 When called on a real number <x>, $COMMAND considers it as an interval formed

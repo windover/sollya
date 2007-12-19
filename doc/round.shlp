@@ -2,7 +2,7 @@
 #QUICK_DESCRIPTION rounds a number to a floating-point format.
 
 #CALLING $COMMAND(<x>,<n>,<mode>)
-#TYPE ($CONSTANT_TYPE, $INTEGER_TYPE, $RD|$RU|$RN|$RZ) -> $CONSTANT_TYPE
+#TYPE ($CONSTANT_TYPE, $INTEGER_TYPE, $RD §§|§$|$§§ $RU §§|§$|$§§ $RN §§|§$|$§§ $RZ) -> $CONSTANT_TYPE
 
 #PARAMETERS <x> is a constant to be rounded.
 #PARAMETERS <n> is the precision of the target format.
