@@ -4893,8 +4893,10 @@ int executeCommandInner(node *tree) {
 	      if (!assignThingToTable(tree->string,tempNode3)) {
 		printMessage(1,"Warning: at the end of a for loop, the loop variable \"%s\" cannot longer be assigned to.\n",tree->string);
 		printMessage(1,"The for loop will no longer be executed.\n");
+		freeThing(tempNode3);
 		break;
 	      }
+	      freeThing(tempNode3);
 	    } else {
 	      printMessage(1,"Warning: at the end of a for loop, the loop variable \"%s\" decreased by the loop step does no longer evaluate to a constant.\n",tree->string);
 	      printMessage(1,"The for loop will no longer be executed.\n");

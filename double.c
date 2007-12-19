@@ -471,6 +471,7 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
   for (i=0;i<=degree;i++) {
     if (coefficients[i] != NULL) {
       temp = simplifyTreeErrorfree(coefficients[i]);
+      free_memory(coefficients[i]);
       if (temp->nodeType != CONSTANT) {
 	printMessage(1,"Warning: the %dth coefficient of the given polynomial does not evaluate to a floating-point constant without any rounding.\n",i);
 	printMessage(1,"Will evaluate the coefficient in the current precision in floating-point before rounding to the target format.\n");
@@ -513,6 +514,8 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
       printMessage(1,"Warning: double rounding occurred on internal handling of a coefficient.\nTry to increase the precision.\n");
     }
   }
+
+  free(coefficients);
 
   if (res) {
     printMessage(2,"Information: at least one coefficient has been rounded.\n");

@@ -1168,6 +1168,7 @@ void fprintValue(FILE *fd, mpfr_t value) {
       fprintf(fd,"%sb%d",str2,(int)expo);
       free(str2);
     }
+    free(str);
     mpfr_clear(y);
   }
 }

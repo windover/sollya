@@ -1269,12 +1269,36 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     free_memory(poly_diff);
     free_memory(poly_diff2);
   }
+
+
+  // temporary check until I patch the algorithm in order to handle
+  // correctly cases when the error oscillates too much
+  mpfr_t ninf;
+  mpfr_init2(ninf, 53);
+
+  temp_tree = makeSub(makeMul(copyTree(poly), copyTree(w)), copyTree(f));
+  uncertifiedInfnorm(ninf, temp_tree, u, v, getToolPoints(), prec);
+  free_memory(temp_tree);
+
+  mpfr_add_ui(computedQuality, computedQuality, 1, GMP_RNDU);
+  mpfr_mul(computedQuality, computedQuality, ninf, GMP_RNDU);
+  mpfr_div(computedQuality, computedQuality, infiniteNorm, GMP_RNDU);
+  mpfr_sub_ui(computedQuality, computedQuality, 1, GMP_RNDU);
+
+  mpfr_clear(ninf);
+
+  if(mpfr_cmp(computedQuality, quality)>0) {
+    fprintf(stderr, "Error: Remez algorithm failed (too many oscillations?)\n");
+    fprintf(stderr, "Please report the bug.\n");
+  }
+  // end of the temporary check
+
   
   if(verbosity>=2) {
       printf("Remez finished after %d steps\n",count);
       printf("The computed infnorm is "); printValue(&infiniteNorm, 53) ; printf("\n");
-      printf("The polynomial is optimal within a factor 1 +/- "); printValue(&computedQuality, 5);
-      printf("\n");
+      printf("The polynomial is optimal within a factor 1 +/- "); printValue(&computedQuality, 5); printf("\n");
+      if(verbosity>=5) { printf("Computed poly: "); printTree(poly); printf("\n");}
     }
 
 
@@ -1367,7 +1391,6 @@ node *remez(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mpfr
 
   res = remezAux(func, weight, monomials2, a, b, prec, quality);
 
- 
   freeChain(monomials2, freeIntPtr);
   mpfr_clear(quality);
   return res;
