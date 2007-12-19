@@ -24,20 +24,68 @@
 
 \newcommand{\ligne}[1]{\texttt{#1}\\}
 
+\title{Users' manual for the \sollya tool \\ {\large Release 1.0} \\ ~ \\ {\large Laboratoire de l'Informatique du Parall\'elisme \\ UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668}}
+
+\author{Sylvain Chevillard \\ \small{\url{sylvain.chevillard@ens-lyon.fr}} \and Christoph Lauter \\ \small{\url{sylvain.chevillard@ens-lyon.fr}} \and Nicolas Jourdan \\ \small{\url{sylvain.chevillard@ens-lyon.fr}}}
+
+\date{\today}
+
+
 \begin{document}
 
+\maketitle
+
+\section*{License}
+
+The \sollya tool is copyright \copyright~ 2007 Laboratoire de
+l'Informatique du Parall\'elisme - UMR CNRS - ENS Lyon - UCB Lyon 1 -
+INRIA 5668.  
+
+The \sollya tool is open software. It is distributed and can be used,
+modified and redistributed under the terms of the CeCILL-C licence
+available at \url{http://www.cecill.info/} and reproduced in the
+\texttt{COPYING} file of the distribution. The distribution contains
+parts of other libraries as a support for but not integral part of
+\sollya. These libraries are reigned by the GNU Lesser General Public
+License that is available at \url{http://www.gnu.org/licenses/} and
+reproduced in the \texttt{COPYING} file of the distribution.
+
+\tableofcontents
+
+\section{Compilation and installation of the \sollya tool}
+
+The \sollya distribution can be compiled and installed using the usual
+\texttt{./configure}, \texttt{make}, \texttt{make install}
+procedure. Besides a \texttt{C} compiler, \sollya needs the following
+software libraries and tools to be installed. The \texttt{./configure}
+script checks for the installation of the libraries. However \sollya
+will build without error if some of its external tools is not
+installed. In this case an error will be produced at runtime.
+\begin{itemize}
+\item \texttt{MPFR}
+\item \texttt{MPFI}
+\item \texttt{PARI} version 2.3.0
+\item \texttt{libxml2}
+\item \texttt{gnuplot}
+\end{itemize}
+The use of the external tool \texttt{rlwrap} is highly recommended but
+not indispensable.
+
+
 \section{Introduction}
-\sollya is an interactive tool to handle numerical functions and working with arbitrary precision. It can evaluate functions accurately, compute polynomial approximations of functions, plot functions, compute infinite norms, etc. Let us begin this manual with an example. \sollya does not allow command line edition; since it may quickly become uncomfortable, we highly suggest to use the software \rlwrap with \sollya:
+\sollya is an interactive tool for handling numerical functions and working with arbitrary precision. It can evaluate functions accurately, compute polynomial approximations of functions, automatically implement polynomials for use in math libraries, plot functions, compute infinite norms, etc. The language \sollya comes with is a full-featured script programming language with support for procedures etc. 
+
+Let us begin this manual with an example. \sollya does not allow command line edition; since that may quickly become uncomfortable, we highly suggest to use the software \rlwrap with \sollya:
 
 \code{
-\ligne{~/\%rlwrap ./tools}
+\ligne{~/\%rlwrap sollya}
 \ligne{>}
 }
 
-\sollya manipulates only with univariate functions. The first time that an unbound variable is used, it fixes the name that will be used to refer to the free variable. For instance, try
+\sollya manipulates only univariate functions. The first time that an unbound variable is used, this name is fixed. It will be used to refer to the free variable. For instance, try
 
 \code{
-\ligne{~/\% rlwrap ./tools}
+\ligne{~/\% rlwrap sollya}
 \ligne{> f = sin(x)/x;}
 \ligne{> g = cos(y)-1;}
 \ligne{Warning: the identifier "y" is neither assigned to, nor bound to a library }
@@ -48,7 +96,7 @@
 \ligne{>} 
 }
 
-Now, the name $x$ cannot be used to refer to anything but the free variable:
+Now, the name $x$ can only be used to refer to the free variable:
 
 \code{
 \ligne{> x=3;}
@@ -75,7 +123,7 @@ If you really want to unbound $x$, you can use the \com{rename} command and chan
 As you have seen, you can name functions and easily work with. The basic thing to do with a function is to evaluate it at some point:
 
 \code{
-\ligne{> evaluatef(-2);}
+\ligne{> evaluate f(-2);}
 \ligne{Warning: rounding has happened. The value displayed is a faithful rounding of }
 \ligne{the true result.}
 \ligne{0.454648713412840847698009932955872421351127485723941}
@@ -96,13 +144,13 @@ The printed value is generally a faithful rounding of the exact value at the wor
 \ligne{0.45464871341284084769800993295587242135112748572394513418948652}
 }
 
-Sometimes, a faithful rounding cannot be easily computed. In such a case, an approximated value is printed:
+Sometimes, a faithful rounding cannot easily be computed. In such a case, an approximated value is printed:
 
 \code{
 \ligne{> sin(pi);}
 \ligne{Warning: rounding has happened. The value displayed is not a faithful rounding}
 \ligne{of the true result.}
-\ligne{0.23702821088022102782921822379162058842068273168003320319597978e-15412}
+\ligne{-0.379705991005939815725347821572628308530195421950339e-12715}
 }
 
 The philosophy of \sollya is: whenever something is not exact, print a warning. This explains the warnings in the previous examples. If the result can be shown to be exact, there is no warning:
@@ -123,7 +171,7 @@ Let us finish this Section with a small complete example that shows a bit of wha
 \ligne{> d=[-1/8;1/8];}
 \ligne{> p=remez(f,2,d);}
 \ligne{> derivativeZeros = dirtyfindzeros(diff(p-f),d);}
-\ligne{> derivativeZeros = inf(d)::derivativeZeros::sup(d);}
+\ligne{> derivativeZeros = inf(d).:derivativeZeros:.sup(d);}
 \ligne{> max=0; for t in derivativeZeros do}
 \ligne{\{}
 \ligne{  r = evaluate(abs(p-f), t);}
@@ -137,22 +185,22 @@ Let us finish this Section with a small complete example that shows a bit of wha
 \ligne{>}
 }
 
-In this example, we define a function $f$, an interval $d$ and we compute the best degree-4 polynomial approximation of $f$ on $d$ with respect to the infinite norm. In other words, $\max_{x \in d} \{|p(x)-f(x)|\}$ is minimal amongst polynomials with degree not greater than $4$. Then, we compute the list of the zeros of the derivative of $p-f$ and add the bounds of $d$ to this list. Finally, we evaluate $|p-f|$ for each point in the list and store the maximum and the point where it is reached. We conclude by printing the result in a formatted way (the output was too long to fit in this document. That is why we used \texttt{[...]} to shortcut the actual output).
+In this example, we define a function $f$, an interval $d$ and we compute the best degree-4 polynomial approximation of $f$ on $d$ with respect to the infinite norm. In other words, $\max_{x \in d} \{|p(x)-f(x)|\}$ is minimal amongst polynomials with degree not greater than $4$. Then, we compute the list of the zeros of the derivative of $p-f$ and add the bounds of $d$ to this list. Finally, we evaluate $|p-f|$ for each point in the list and store the maximum and the point where it is reached. We conclude by printing the result in a formatted way.
 
 Note that you do not really need to use such a script for computing infinite norm; as we will see, the command \com{dirtyinfnorm} does this for you.
 
 \section{General principles}
-The first goal of \sollya is to help people using numerical functions and numerical algorithm in a safe way. It is first designed to be used interactively but it can also be used in script files.
+The first goal of \sollya is to help people using numerical functions and numerical algorithm in a safe way. It is first designed to be used interactively but it can also be used in scripts\footnote{Remark: some of the behaviours of \sollya slightly change when used in scripts. For example, no prompt is printed.}.
 
-One of the originalities of \sollya is to work with a multiprecision arithmetic (it uses the library \texttt{MPFR}). For safety purpose \sollya knows how to use interval arithmetic. It uses the interval arithmetic to produce tight and safe results with the precision required by the user.
+One of the originalities of \sollya is to work with multi-precision arithmetic (it uses the \texttt{MPFR} library). For safety purposes, \sollya knows how to use interval arithmetic. It uses the interval arithmetic to produce tight and safe results with the precision required by the user.
 
-The general philosophy of \sollya is: \emph{When you can make a computation exactly, do it; when you cannot, do not, unless you have been explicitely asked for.}
+The general philosophy of \sollya is: \emph{When you can make a computation exactly and sufficiently quickly, do it; when you cannot, do not, unless you have been explicitely asked for.}
 
 The precision of the tools is set by the global variable \key{prec}. It indicates the number of bits used to represent the constants in \sollya. In general, the variable \key{prec} determines the precision of the outputs of commands: more precisely, the command will internally determine what precision should be used during the computations in order to ensure that the output is a faithful result with \key{prec} bits.
 
-For decidability and efficiency reasons, this general principle cannot be applied everytime, so be careful. Moreover certain commands are known to be unsafe: they give in general excellent results and gives almost \key{prec} correct bits in output for everyday examples. However they are just heuristic and should not be used when the result must be safe. See the documentation of each command to know precisely how confident you can be with its result.
+For decidability and efficiency reasons, this general principle cannot be applied everytime, so be careful. Moreover certain commands are known to be unsafe: they give in general excellent results and give almost \key{prec} correct bits in output for everyday examples. However they are just heuristic and should not be used when the result must be safe. See the documentation of each command to know precisely how confident you can be with its result.
 
-A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When set to $0$, \sollya becomes completely silent on stdout and prints only very important messages on stderr. Increase \key{verbosity} if you want more informations about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. To affect silently a global variable, use \texttt{!}:
+A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When set to $0$, \sollya becomes completely silent on stdout and prints only very important messages on stderr. Increase \key{verbosity} if you want more informations about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use \texttt{!}:
 
 \code{
 \ligne{> prec=30;}
@@ -161,7 +209,7 @@ A second principle (that comes together with the first one) is: \emph{When a com
 \ligne{>}
 }
 
-For conviviality reasons, values are displayed in decimal by default. This lets a normal human being understand the numbers he manipulates. But since constant are internally represented in binary, this causes permanent conversions that are sources of roundings. Thus you are loosing in accuracy and \sollya is always complaining about inexact results. If you just want to store or communicate your results (to another tools for instance) you can use bit-exact representations avaliable in \sollya. The global variable \key{display} defines the way constants are displayed. Here is an example of the four avalaible modes:
+For conviviality reasons, values are displayed in decimal by default. This lets a normal human being understand the numbers he or she manipulates. But since constants are internally represented in binary, this causes permanent conversions that are sources of roundings. Thus you are loosing in accuracy and \sollya is always complaining about inexact results. If you just want to store or communicate your results (to another tools for instance) you can use bit-exact representations avaliable in \sollya. The global variable \key{display} defines the way constants are displayed. Here is an example of the five available modes:
 
 
 \code{
@@ -183,16 +231,26 @@ For conviviality reasons, values are displayed in decimal by default. This lets 
 \ligne{Display mode is dyadic numbers.}
 \ligne{> a;}
 \ligne{69b-2}
+\ligne{> display=hexadecimal;}
+\ligne{Display mode is hexadecimal numbers.}
+\ligne{> a;}
+\ligne{0x1.14p4}
+\ligne{> }
 }
 
-The symbol \texttt{e} means $\times 10^\square $ as always. In the same spirit, the symbol \texttt{b} means  $\times 2^\square $. The suffix \texttt{\_2} indicates to \sollya that the previous number has been written in binary. \sollya understands these notations even if you are not in the corresponding \key{display} mode, so you can always use them.
+As always, the symbol \texttt{e} means $\times 10^\square $. The same way the symbol \texttt{b} means  $\times 2^\square $. The symbol \texttt{p} means $\times 16^\square$ and is used only with the following \texttt{0x} prefix. The prefix \texttt{0x} indicates that the digits of the following number until 
+a symbol \texttt{p} or whitespace are hexadecimal. The suffix \texttt{\_2} indicates to \sollya that the previous number has been written in binary. \sollya can parse these notations even if you are not in the corresponding \key{display} mode, so you can always use them.
 
-You can also use the standard hexadecimal notation frequently used to represent \texttt{double} numbers. Since this notation cannot represent exactly numbers with arbitrary precision, there is no corresponding \key{display} mode. However, the command \com{printhexa} rounds the value to the nearest \texttt{double} and displays it in hexadecimal:
+You can also use memory-dump hexadecimal notation frequently used to represent IEEE 754 \texttt{double} and \texttt{single} precision numbers. Since this notation does not allow for exactly representing numbers with arbitrary precision, there is no corresponding \key{display} mode. However, the commands \com{printhexa} respectively \com{printfloat} round the value to the nearest \texttt{double} respectively \texttt{single}. The number is then printed in hexadecimal as the integer number corresponding to the memory representation of the IEEE 754 \texttt{double} or \texttt{single} number:
 
 \code{
 \ligne{> printhexa(a);}
 \ligne{0x4031400000000000}
+\ligne{> printfloat(a);}
+\ligne{0x418a0000}
 }
+
+\sollya can parse these memory-dump hexadecimal notation back in any \key{display} mode.
 
 \section{Data types}
 \sollya has a (very) basic system of types. If you try to perform an illicit operation (such as adding a number and a string, for instance), you will get a type error. Let us see the available data types.
@@ -200,9 +258,9 @@ You can also use the standard hexadecimal notation frequently used to represent 
 \subsection{Booleans}
 There are two special values \key{true} and \key{false}. Boolean expressions can be constructed using the boolean connectors \key{\&\&} (and), \key{||} (or), \key{!} (not), and comparisons.
 
-The comparison operators \key{<}, \key{<=}, \key{>} and \key{>=} can be used only between two numbers.
+The comparison operators \key{<}, \key{<=}, \key{>} and \key{>=} can only be used between two numbers or constant expressions.
 
-The comparison operators \key{==} and \key{!=} are polymorphic. You can use it to compare two strings, two intervals, etc. Note that testing the equality between two functions will return \key{true} if and only if the expression trees representing the two functions are exactly the same. Example:
+The comparison operators \key{==} and \key{!=} are polymorphic. You can use it to compare any two objects, like two strings, two intervals, etc. Note that testing the equality between two functions will return \key{true} if and only if the expression trees representing the two functions are exactly the same. See \ref{laberror} for an exception concerning the special object \key{error}. Example:
 
 \code{
 \ligne{> 1+x==1+x;}
@@ -212,7 +270,7 @@ The comparison operators \key{==} and \key{!=} are polymorphic. You can use it t
 }
 
 \subsection{Numbers}
-As seen above, \sollya represents numbers as floating-point values with the current precision \com{prec}. A number in an expression is immediately rounded to the precision \com{prec} and the expression is then evaluated:
+As seen above, \sollya represents numbers as floating-point values with the current precision \com{prec}. A number in an expression is rounded to the precision \com{prec} when the expression gets evaluated:
 
 \code{
 \ligne{> prec=12!;}
@@ -232,11 +290,11 @@ As seen above, \sollya represents numbers as floating-point values with the curr
 \ligne{4096}
 }
 
-Note that each variable has its own precision that corresponds to the value of \com{prec} when the variable was set. Thus you can work with variables having a precision bigger thant the current precision.
+Note that each variable has its own precision that corresponds to the value of \com{prec} when the variable was set. Thus you can work with variables having a precision bigger than the current precision.
 
-In the same spirit, if you define a function that refers to some constant, this constant is stored in the function with the current precision and will keep this value in the future, even if \com{prec} becomes smaller.
+The same way, if you define a function that refers to some constant, this constant is stored in the function with the current precision and will keep this value in the future, even if \com{prec} becomes smaller.
 
-If you define a function that refer to some variable, the precision of the variable is kept, independently of the current precision:
+If you define a function that refers to some variable, the precision of the variable is kept, independently of the current precision:
 
 \code{
 \ligne{> prec=50!;}
@@ -255,16 +313,18 @@ If you define a function that refer to some variable, the precision of the varia
 }
 
 \subsection{Intervals}
-Intervals are composed of two numbers representing the lower and the upper bound. These values are separated either by commas or semi-colons:
+Intervals are composed of two numbers or constant expressions representing the lower and the upper bound. These values are separated either by commas or semi-colons:
 
 \code{
 \ligne{> d=[1;2];}
-\ligne{> d2=[1,2];}
+\ligne{> d2=[1,1+1];}
 \ligne{> d==d2;}
 \ligne{true}
 }
 
-The constant are stored with the precision used during the affectation. If you refer to a variable when defining an interval, the precision of the variable is used:
+If bounds are defined by constant expressions, these are evaluated to floating-point numbers using the current precision. Numbers or variables containing numbers keep their precision for the interval bounds. Interval bound evaluation is performed in a way that ensures the inclusion property: all points
+in the original, unevaluated interval will be contained in the interval with its bounds evaluated to floating-point numbers. Remark that 
+evaluation bounds defined by constant expressions includes $\pi$:
 
 \code{
 \ligne{> prec=30!;}
@@ -274,9 +334,11 @@ The constant are stored with the precision used during the affectation. If you r
 \ligne{> prec=30!;}
 \ligne{> d;}
 \ligne{[4096;4097]}
+\ligne{> [-pi;pi];}
+\ligne{[-0.31415926591e1;0.31415926591e1]}
 }
 
-You can get the upper-bound (respectively the lower-bound)) of an interval with the function \com{sup} (respectively \com{inf}). The middle of the interval is get with the function \com{mid}. Note that these functions can also be used on numbers (in that case, the number is interpreted as an interval containing only one single point. Thus the functions \com{inf}, \com{mid} and \com{sup} are just the identity):
+You can get the upper-bound (respectively the lower-bound)) of an interval with the function \com{sup} (respectively \com{inf}). The middle of the interval is got with the function \com{mid}. Note that these functions can also be used on numbers (in that case, the number is interpreted as an interval containing only one single point. Thus the functions \com{inf}, \com{mid} and \com{sup} are just the identity):
 
 \code{
 \ligne{> d=[1;3];}
@@ -303,7 +365,7 @@ The basic functions available in \sollya are the following:
 \item \com{erf}, \com{erfc}
 \end{itemize}
 
-The constant $\pi$ is available as a $0$-ary function: its behavior is exactly the same as if it were a constant with an infinite precision:
+The constant $\pi$ is available through the keword \key{pi} as a $0$-ary function: its behavior is exactly the same as if it were a constant with an infinite precision:
 
 \code{
 \ligne{> display=binary!;}
@@ -322,7 +384,7 @@ The constant $\pi$ is available as a $0$-ary function: its behavior is exactly t
 
 
 \subsection{Strings}
-Anything written between quotes is interpreted as a string. The infix operator \com{@} concatenates two strings. To get the length of a string, use the \com{length} function. You can access the $i$-th character of a string using brackets (see the example above). There is no char type in \sollya: the $i$-th character of a string is returned as a string itself.
+Anything written between quotes is interpreted as a string. The infix operator \com{@} concatenates two strings. To get the length of a string, use the \com{length} function. You can access the $i$-th character of a string using brackets (see the example above). There is no character type in \sollya: the $i$-th character of a string is returned as a string itself.
 
 \code{
 \ligne{> s1 = "Hello "; s2 = "World!";}
@@ -335,32 +397,43 @@ Anything written between quotes is interpreted as a string. The infix operator \
 \ligne{!}
 }
 
+Strings may contain the following escape sequences:
+\texttt{$\backslash\backslash$}, \texttt{$\backslash$\"},
+\texttt{$\backslash$?}, \texttt{$\backslash$\'},
+\texttt{$\backslash$n}, \texttt{$\backslash$t},
+\texttt{$\backslash$a}, \texttt{$\backslash$b},
+\texttt{$\backslash$f}, \texttt{$\backslash$r},
+\texttt{$\backslash$v}, \texttt{$\backslash$x}[hexadecimal number] and
+\texttt{$\backslash$}[octal number]. See the C99 standard for their
+meaning.
+
 \subsection{Particular values}
 \sollya knows some particular values. These values do not really have a type but they can be stored in variables and in lists. A (possibly not exhaustive) list of such values is the following:
 
 \begin{itemize}
-\item \com{on}, \com{off}
-\item \com{dyadic}, \com{powers}, \com{binary}, \com{decimal}
-\item \com{file}, \com{postscript}, \com{postscriptfile}
+\item \com{on}, \com{off} (see sections \ref{labon} and \ref{laboff})
+\item \com{dyadic}, \com{powers}, \com{binary}, \com{decimal}, \com{hexadecimal} (see sections \ref{labdyadic}, \ref{labpowers}, \ref{labbinary}, \ref{labdecimal} and \ref{labhexadecimal})
+\item \com{file}, \com{postscript}, \com{postscriptfile} (see sections \ref{labfile}, \ref{labpostscript} and \ref{labpostscriptfile})
 \item \com{RU}, \com{RD}, \com{RN}, \com{RZ}
-\item \com{absolute}, \com{relative}
-\item \com{double}, \com{doubleextended}, \com{doubledouble}, \com{tripledouble}
-\item \com{D}, \com{DE}, \com{DD}, \com{TD}
-\item \com{perturb}
-\item \com{honorcoeffprec}
-\item \com{default}
-\item \com{error}
+\item \com{absolute}, \com{relative} (see sections \ref{lababsolute} and \ref{labrelative})
+\item \com{double}, \com{doubleextended}, \com{doubledouble}, \com{tripledouble} (see sections \ref{labdouble}, \ref{labdoubleextended}, \ref{labdoubledouble} and \ref{labtripledouble})
+\item \com{D}, \com{DE}, \com{DD}, \com{TD} (see sections \ref{labdouble}, \ref{labdoubleextended}, \ref{labdoubledouble} and \ref{labtripledouble})
+\item \com{perturb} (see section \ref{labperturb})
+\item \com{honorcoeffprec} (see section \ref{labhonorcoeffprec})
+\item \com{default} (see section \ref{labdefault})
+\item \com{error} (see section \ref{laberror})
+\item \com{void} (see section \ref{labvoid})
 \end{itemize}
 
 \subsection{Lists}
-Objects can be grouped into lists. A list can contain elements with different types. As for strings, you can concatenate two lists with \com{@} and access to an element with brackets. The function \com{length} gives also the length of a list.
+Objects can be grouped into lists. A list can contain elements with different types. As for strings, you can concatenate two lists with \com{@}. The function \com{length} gives also the length of a list.
 
-You can add an element to the left or the right of a list using \com{::}. The following example illustrates some features:
+You can prepend an element to a list using \com{.:} (in $\mathcal{O}(1)$) and you can append an element to a list using \com{:.} (in $\mathcal{O}(n)$). The following example illustrates some features:
 
 \code{
 \ligne{> list = [| "foo" |];}
-\ligne{> list = list::1;}
-\ligne{> list = "bar"::list;}
+\ligne{> list = list:.1;}
+\ligne{> list = "bar".:list;}
 \ligne{> list;}
 \ligne{[|bar, foo, 1|]}
 \ligne{> list[1];}
@@ -369,10 +442,173 @@ You can add an element to the left or the right of a list using \com{::}. The fo
 \ligne{[|bar, foo, 1, bar, foo, 1|]}
 }
 
-\section{Tests and loops}
+Lists can be considered as arrays and elements of lists can be
+referenced using brackets. Possible indices start at $0$. The
+following example illustrates this point:
+
+\code{
+\ligne{> l = [|1,2,3,4,5|];}
+\ligne{> l;}
+\ligne{[|1, 2, 3, 4, 5|]}
+\ligne{> l[3];}
+\ligne{4}
+}
+
+Remark that the complexity for accessing an element of the list using
+indices is $\mathcal{O}(n)$.
+
+Lists may contain ellipses indicated by \texttt{,...,} between
+elements that are constant and evaluate to integers that are
+incrementally ordered. \sollya translates such ellipses to the full
+list upon evaluation. Using ellipses between elements that are not
+constants is not allowed. This feature is provided for ease of
+programmation; remark that the complexity of expanding such lists is
+high. For illustration, see the following example:
+
+\code{
+\ligne{> [|1,...,5|];}
+\ligne{[|1, 2, 3, 4, 5|]}
+\ligne{> [|-5,...,5|];}
+\ligne{[|-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5|]}
+\ligne{> [|3,...,1|];}
+\ligne{Warning: at least one of the given expressions or a subexpression is not correctly typed}
+\ligne{or its evaluation has failed because of some error on a side-effect.}
+\ligne{error}
+\ligne{> [|true,...,false|];}
+\ligne{Warning: at least one of the given expressions or a subexpression is not correctly typed}
+\ligne{or its evaluation has failed because of some error on a side-effect.}
+\ligne{error}
+}
+
+Lists may be continued to infinity by means of the \texttt{...}
+indicator after the last element given. At least one element must
+explicitly be given. If the last element given is a constant
+expression that evaluates to an integer, the list is considered as
+continued to infinity by all integers greater than that last
+element. If the last element is another object, the list is considered
+as continued to infinity by reduplicating this last element. Remark
+that bracket notation is supported for such end-elliptic lists even
+for implicitly given elements. However, evaluation complexity is
+high. Combinations of ellipses inside a list and in its end are
+possible. The usage of lists described here is best illustrated by the
+following examples:
+
+\code{
+\ligne{> l = [|1,2,true,3...|];}
+\ligne{> l;}
+\ligne{[|1, 2, true, 3...|]}
+\ligne{> l[2];}
+\ligne{true}
+\ligne{> l[3];}
+\ligne{3}
+\ligne{> l[4];}
+\ligne{4}
+\ligne{> l[1200];}
+\ligne{1200}
+\ligne{> l = [|1,...,5,true...|];}
+\ligne{> l;}
+\ligne{[|1, 2, 3, 4, 5, true...|]}
+\ligne{> l[1200];}
+\ligne{true}
+}
+
+
+
+\section{Iterative language elements: assignments, conditional statements and loops}
+
+\subsection{Assignments}
+
+\sollya has two different assignment operators, \texttt{=} and
+\texttt{:=}. The assigment operator \texttt{=} assigns its
+right-hand-object ``as is'', i.e. without evaluating functional
+expressions. For instance, \texttt{i = i + 1;} will dereferentiate the
+identifier \texttt{i} with some content, notate it $y$, build up the
+expression (function) $y + 1$ and assign this expression back to
+\texttt{i}. In the example, if \texttt{i} stood for the value $1000$,
+the statement \texttt{i = i + 1;} will assign $1000 + 1$ -- and not
+$1001$ -- to \texttt{i}. The assignment operator \texttt{:=} evaluates
+constant functional expressions before assigning them. On other
+expressions it behaves like \texttt{=}. Still in the example, the
+statement \texttt{i := i + 1;} really assigns $1001$ to \texttt{i}.
+
+Both \sollya assignment operators support indexing of lists or strings
+elements using brackets on the left-hand-side of the assignment
+operator. The indexed element of the list or string gets replaced by
+the right-hand-side of the assignment operator.  When indexing strings
+this way, that right-hand side must evaluate to a string of length
+$1$. End-elliptic lists are supported with their usual semantic for
+this kind of assignment.  When referencing and assigning a value in
+the implicit part of the end-elliptic list, the list gets expanded to
+the corresponding length. The indexing of lists on left-hand sides of
+assignments is reduced to the first order. Multiple indexing of lists
+of lists is not supported for complexity reasons. 
+
+The following examples well illustrate the behaviour of assignment
+statements:
+\code{
+\ligne{> autosimplify = off;}
+\ligne{Automatic pure tree simplification has been deactivated.}
+\ligne{> i = 1000;}
+\ligne{> i = i + 1;}
+\ligne{> print(i);}
+\ligne{1000 + 1}
+\ligne{> i := i + 1;}
+\ligne{> print(i);}
+\ligne{1002}
+\ligne{> l = [|1,...,5|];}
+\ligne{> print(l);}
+\ligne{[|1, 2, 3, 4, 5|]}
+\ligne{> l[3] = l[3] + 1;}
+\ligne{> l[4] := l[4] + 1;}
+\ligne{> print(l);}
+\ligne{[|1, 2, 3, 4 + 1, 6|]}
+\ligne{> l[5] = true;}
+\ligne{> l;}
+\ligne{[|1, 2, 3, 5, 6, true|]}
+\ligne{> s = "Hello world";}
+\ligne{> s;}
+\ligne{Hello world}
+\ligne{> s[1] = "a";}
+\ligne{> s;}
+\ligne{Hallo world}
+\ligne{> l = [|true,1,...,5,9...|];}
+\ligne{> l;}
+\ligne{[|true, 1, 2, 3, 4, 5, 9...|]}
+\ligne{> l[13] = "Hello";}
+\ligne{> l;}
+\ligne{[|true, 1, 2, 3, 4, 5, 9, 10, 11, 12, 13, 14, 15, Hello...|]}
+}
+
+\subsection{Conditional statements}
+
+TODO
+
+If, If-Else, syntaxe bizarre du if-Else.
+
+\subsection{Loops}
+
+For from by, for in, while 
+
+TODO
+
+\section{Functional language elements: procedures}
+
+procedures commes objets, declaration, recursion et identifiants,
+variables locales, return, procedures en argument, evaluation retardee
+de constantes etc.
+
+TODO
+
+\sollya also supports external procedures, i.e. procedures written in
+\texttt{C} (or some other language) and dynamically bound to \sollya
+identifiers. See \ref{labexternalproc} for details.
 
 \section{Commands and functions}
 
 \input{CommandsAndFunctions}
+
+\section{Grammar of the \sollya language}
+
+\input{grammar.tex}
 
 \end{document}

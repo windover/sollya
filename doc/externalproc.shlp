@@ -1,6 +1,6 @@
 #NAME $EXTERNALPROC
 #QUICK_DESCRIPTION binds an external code to a $SOLLYA procedure
-#CALLING $COMMAND(<identifier>, <filename>, <argumenttype> -> <resulttype>)
+#CALLING $COMMAND(<identifier>, <filename>, <argumenttype> §§->§$->$§§ <resulttype>)
 #TYPE ($IDENTIFIER_TYPE, $STRING_TYPE, $TYPE_TYPE, $TYPE_TYPE) -> $VOID_TYPE
 #PARAMETERS <identifier> represents the identifier the code is to be bound to
 #PARAMETERS <filename> of type $STRING_TYPE represents the name of the object file where the code of procedure can be found
@@ -18,7 +18,7 @@ iternal representation and return it.
 §§ §§§
 In order to allow correct evaluation and typing of the data in
 parameter and in result to be passed to and received from the external
-code, $COMMAND has a third parameter <argumenttype> -> <resulttype>.
+code, $COMMAND has a third parameter <argumenttype> §§->§$->$§§ <resulttype>.
 Both <argumenttype> and <resulttype> are one of void, constant,
 function, range, integer, string, boolean, list of constant, list of
 function, list of range, list of integer, list of string, list of
@@ -36,28 +36,28 @@ as a C function.
 §§ §§§
 If the $SOLLYA result type is void, the C function has no pointer
 argument for the result.  If the $SOLLYA result type is constant, the
-first argument of the C function is of C type §§mpfr_t§mpfr\_t§§ *, the result is
+first argument of the C function is of C type §§mpfr_t *§\texttt{mpfr\_t *}§§, the result is
 returned by affecting the MPFR variable.  If the $SOLLYA result type
-is function, the first argument of the C function is of C type node
-**, the result is returned by the node * pointed with a new node *.
+is function, the first argument of the C function is of C type §§node
+**§\texttt{node **}§§, the result is returned by the §§node *§\texttt{node *}§§ pointed with a new §§node *§\texttt{node *}§§.
 If the $SOLLYA result type is range, the first argument of the C
-function is of C type §§mpfi_t§mpfi\_t§§ *, the result is returned by affecting
+function is of C type §§mpfi_t *§\texttt{mpfi\_t *}§§, the result is returned by affecting
 the MPFI variable.  If the $SOLLYA result type is integer, the first
-argument of the C function is of C type int *, the result is returned
+argument of the C function is of C type §§int *§\texttt{int *}§§, the result is returned
 by affecting the int variable.  If the $SOLLYA result type is string,
-the first argument of the C function is of C type char **, the result
-is returned by the char * pointed with a new char *.  If the $SOLLYA
+the first argument of the C function is of C type §§char **§\texttt{char **}§§, the result
+is returned by the §§char *§\texttt{char *}§§ pointed with a new §§char *§\texttt{char *}§§.  If the $SOLLYA
 result type is boolean, the first argument of the C function is of C
-type int *, the result is returned by affecting the int variable with
+type §§int *§\texttt{int *}§§, the result is returned by affecting the int variable with
 a boolean value.  If the $SOLLYA result type is list of type, the
-first argument of the C function is of C type chain **, the result is
-returned by the chain * pointed with a new chain *.  This chain
-contains for $SOLLYA type constant pointers §§mpfr_t§mpfr\_t§§ * to new MPFR
-variables, for $SOLLYA type function pointers node * to new nodes, for
-$SOLLYA type range pointers §§mpfi_t§mpfi\_t§§ * to new MPFI variables, for
-$SOLLYA type integer pointers int * to new int variables for $SOLLYA
-type string pointers char * to new char * variables and for $SOLLYA
-type boolean pointers int * to new int variables representing boolean
+first argument of the C function is of C type §§chain **§\texttt{chain **}§§, the result is
+returned by the §§chain *§\texttt{chain *}§§ pointed with a new §§chain *§\texttt{chain *}§§.  This chain
+contains for $SOLLYA type constant pointers §§mpfr_t *§\texttt{mpfr\_t *}§§ to new MPFR
+variables, for $SOLLYA type function pointers §§node *§\texttt{node *}§§ to new nodes, for
+$SOLLYA type range pointers §§mpfi_t *§\texttt{mpfi\_t *}§§  to new MPFI variables, for
+$SOLLYA type integer pointers §§int *§\texttt{int *}§§ to new int variables for $SOLLYA
+type string pointers §§char *§\texttt{char *}§§ to new §§char *§\texttt{char *}§§ variables and for $SOLLYA
+type boolean pointers §§int *§\texttt{int *}§§ to new int variables representing boolean
 values.
 §§ §§§	       
 The external procedure affects its possible pointer argument if and
@@ -67,29 +67,29 @@ environment.
 §§ §§§
 The external procedure receives its arguments as follows: If the
 $SOLLYA argument type is void, no argument array is given.  Otherwise
-the C function receives a C void ** argument representing an array of
+the C function receives a C §§void **§\texttt{void **}§§ argument representing an array of
 size equal to the arity of the function where each entry (of C type
-void *) represents a value with a C type depending on the
+§§void *§\texttt{void *}§§) represents a value with a C type depending on the
 corresponding $SOLLYA type. If the $SOLLYA type is constant, the C
-type the void * is to be casted to is §§mpfr_t§mpfr\_t§§ *.  If the $SOLLYA type
-is function, the C type the void * is to be casted to is node *.  If
-the $SOLLYA type is range, the C type the void * is to be casted to is
-§§mpfi_t§mpfi\_t§§ *.  If the $SOLLYA type is integer, the C type the void * is to
-be casted to is int *.  If the $SOLLYA type is string, the C type the
-void * is to be casted to is char *.  If the $SOLLYA type is boolean,
-the C type the void * is to be casted to is int *.  If the $SOLLYA
-type is list of type, the C type the void * is to be casted to is
-chain *.  Here depending on type, the values in the chain are to be
-casted to §§mpfr_t§mpfr\_t§§ * for $SOLLYA type constant, node * for $SOLLYA type
-function, §§mpfi_t§mpfi\_t§§ * for $SOLLYA type range, int * for $SOLLYA type
-integer, char * for $SOLLYA type string and int * for $SOLLYA type
+type the §§void *§\texttt{void *}§§ is to be casted to is §§mpfr_t *§\texttt{mpfr\_t *}§§.  If the $SOLLYA type
+is function, the C type the §§void *§\texttt{void *}§§ is to be casted to is §§node *§\texttt{node *}§§.  If
+the $SOLLYA type is range, the C type the §§void *§\texttt{void *}§§ is to be casted to is
+§§mpfi_t *§\texttt{mpfi\_t *}§§.  If the $SOLLYA type is integer, the C type the §§void *§\texttt{void *}§§ is to
+be casted to is §§int *§\texttt{int *}§§.  If the $SOLLYA type is string, the C type the
+§§void *§\texttt{void *}§§ is to be casted to is §§char *§\texttt{char *}§§.  If the $SOLLYA type is boolean,
+the C type the §§void *§\texttt{void *}§§ is to be casted to is §§int *§\texttt{int *}§§.  If the $SOLLYA
+type is list of type, the C type the §§void *§\texttt{void *}§§ is to be casted to is
+§§chain *§\texttt{chain *}§§.  Here depending on type, the values in the chain are to be
+casted to §§mpfr_t *§\texttt{mpfr\_t *}§§  for $SOLLYA type constant, §§node *§\texttt{node *}§§ for $SOLLYA type
+function, §§mpfi_t *§\texttt{mpfi\_t *}§§ for $SOLLYA type range, §§int *§\texttt{int *}§§ for $SOLLYA type
+integer, §§char *§\texttt{char *}§§ for $SOLLYA type string and §§int *§\texttt{int *}§§ for $SOLLYA type
 boolean.
 §§ §§§
 The external procedure is not supposed to alter the memory pointed by
-its array argument void **.
+its array argument §§void **§\texttt{void **}§§.
 §§ §§§
 In both directions (argument and result values), empty lists are
-represented by chain * NULL pointers.
+represented by §§chain * NULL§\texttt{chain * NULL}§§ pointers.
 §§ §§§
 In contrast to internal procedures, externally bounded procedures can
 be considered as objects inside $SOLLYA that can be assigned to other

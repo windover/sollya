@@ -2,4 +2,4 @@
 #QUICK_DESCRIPTION the absolute value.
 
 #DESCRIPTION 
-$COMMAND is the absolute value function. $COMMAND(x)=x if x>0 and -x otherwise.
+$COMMAND is the absolute value function. $COMMAND(x)=§§x if x>0 and -x otherwise§$\left \lbrace \begin{array}{rl} x & x > 0 \\ -x & x \leq 0 \end{array}  \right.$§§.
