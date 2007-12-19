@@ -1929,6 +1929,7 @@ chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t pr
     mpfi_set(*temp,range);
     mpfi_revert_if_needed(*temp);
     res->value = temp;
+    if (theo != NULL) freeExprBoundTheo(theo);
   } else {
     mpfi_init2(y,prec);
     excludes = evaluateITaylor(y, func, deriv, range, prec, taylorrecursions, theo);
@@ -2401,6 +2402,7 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
  
   printMessage(3,"Information: invoking interval zero search.\n");
   tempChain = findZeros(numeratorDeriv,derivNumeratorDeriv,range,prec,diam,noZeros); 
+
   printMessage(3,"Information: interval zero search is done.\n");
   mpfr_init2(diamJoin,prec);
   mpfr_mul_2ui(diamJoin,diam,3,GMP_RNDN);
@@ -2740,6 +2742,7 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
   int newtonWorked;
   mp_prec_t p, p2;
   infnormTheo *theo;
+
 
 
   res.a = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
