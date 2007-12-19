@@ -153,7 +153,7 @@ processCallingAndTypes() {
    calling=`grep "#CALLING" $tempfile | head -n $i | tail -n 1 | sed -n 's/#CALLING //;p'`
    type=`grep "#TYPE" $tempfile | head -n $i | tail -n 1 | sed -n 's/#TYPE //;p'`
    type=`echo $type | sed -n 's/->/$\\\rightarrow$/g;p'`
-   type=`echo $type | sed -n 's/|/$|$/g;p'`
+#   type=`echo $type | sed -n 's/|/$|$/g;p'`
    echo "$calling"" : "$type"\\\\" >> $target
    i=`expr $i + 1`
  done
