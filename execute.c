@@ -5602,7 +5602,7 @@ int executeCommandInner(node *tree) {
 		resC = 1;
 	      } else {
 		if (resB < lengthChain(tempNode->arguments)) {
-		  tempNode3 = makeList(copyChainAndReplaceNth(tempNode->arguments, resB, copyThing(tempNode2), copyThingOnVoid));
+		  tempNode3 = makeList(copyChainAndReplaceNth(tempNode->arguments, resB, tempNode2, copyThingOnVoid));
 		  tempNode3->nodeType = tempNode->nodeType;
 		  resC = 1;
 		} else {
@@ -5792,7 +5792,7 @@ int executeCommandInner(node *tree) {
 		resC = 1;
 	      } else {
 		if (resB < lengthChain(tempNode->arguments)) {
-		  tempNode3 = makeList(copyChainAndReplaceNth(tempNode->arguments, resB, copyThing(tempNode2), copyThingOnVoid));
+		  tempNode3 = makeList(copyChainAndReplaceNth(tempNode->arguments, resB, tempNode2, copyThingOnVoid));
 		  tempNode3->nodeType = tempNode->nodeType;
 		  resC = 1;
 		} else {

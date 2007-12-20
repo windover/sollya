@@ -547,3 +547,69 @@ node *fpminimax(node *expr, chain *monomials, chain *formats, mpfr_t a, mpfr_t b
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+new_fpminimax(chain *x, chain *y, chain *lowerbits, chain *monomials, node *w, mp_prec_t prec) {
+  int nx, nmon;
+  mpfr_t temp, max;
+
+  nx = lengthChain(x);
+  if (nx != lengthChain(y)) error;
+
+  nmon = lengthChain(monomials);
+  if (nmon != lengthChain(lowerbits)) error;
+
+  if(nx<nmon) error;
+
+  if(nmon!=nx) printMessage(2, "Warning: in fpminimax, the number of points and of unknowns do not match. It is highly recommended that you choose as many points as there is of unknowns. However, the algorithm might work anyway.\n");
+
+
+  mpfr_init2(temp, prec);
+  mpfr_init2(max, prec);
+  mpfr_set_ui(max, 0, GMP_RNDN); // exact
+  
+
+  for(i=1; i<=nx; i++) {
+    for(j=1; j<=nmon; j++) {
+      temp = x[i]^monomials[j]*w(x[i])/2^lowerbits[j];
+      M[i,j] = temp;
+      if (abs(temp) > max) max = abs(temp);
+    }
+    M[i, nmon+1] = y[i]
+  }
+  for(j=1; j<=nmon; j++) {
+    M[nx+1, j] = 0; 
+  }
+  M[nx+1, nmon+1] = max*nx;
+
+  T = qflll(M);
+
+  poly=0;
+  for(j=1; j<=nomn; j++) {
+    poly = poly - T[j, nmon+1]*x^monomials[j]/2^lowerbits[j];
+  }
+
+  return poly;
+}
+
+*/

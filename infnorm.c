@@ -1271,6 +1271,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		  excludes = concatChains(leftExcludes,rightExcludes);
 		  excludes = addElement(excludes,newExclude);
 
+		  free_memory(derivNumerator);
 		  mpfr_clear(z2);
 		  mpfi_div(stack3, stack1, stack2);
 		}
@@ -1781,10 +1782,10 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
       }
     }
 
-      excludes = concatChains(directExcludes,taylorExcludesConstant);
-      excludes = concatChains(taylorExcludesLinear,excludes);
+    excludes = concatChains(directExcludes,taylorExcludesConstant);
+    excludes = concatChains(taylorExcludesLinear,excludes);
 
-      mpfi_clear(xZI2);
+    mpfi_clear(xZI2);
 
   } else {
 
