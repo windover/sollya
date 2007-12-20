@@ -190,15 +190,15 @@ In this example, we define a function $f$, an interval $d$ and we compute the be
 Note that you do not really need to use such a script for computing infinite norm; as we will see, the command \com{dirtyinfnorm} does this for you.
 
 \section{General principles}
-The first goal of \sollya is to help people using numerical functions and numerical algorithm in a safe way. It is first designed to be used interactively but it can also be used in scripts\footnote{Remark: some of the behaviours of \sollya slightly change when used in scripts. For example, no prompt is printed.}.
+The first goal of \sollya is to help people using numerical functions and numerical algorithm in a safe way. It is first designed to be used interactively but it can also be used in scripts\footnote{Remark: some of the behaviors of \sollya slightly change when used in scripts. For example, no prompt is printed.}.
 
 One of the originalities of \sollya is to work with multi-precision arithmetic (it uses the \texttt{MPFR} library). For safety purposes, \sollya knows how to use interval arithmetic. It uses the interval arithmetic to produce tight and safe results with the precision required by the user.
 
-The general philosophy of \sollya is: \emph{When you can make a computation exactly and sufficiently quickly, do it; when you cannot, do not, unless you have been explicitely asked for.}
+The general philosophy of \sollya is: \emph{When you can make a computation exactly and sufficiently quickly, do it; when you cannot, do not, unless you have been explicitly asked for.}
 
 The precision of the tools is set by the global variable \key{prec}. It indicates the number of bits used to represent the constants in \sollya. In general, the variable \key{prec} determines the precision of the outputs of commands: more precisely, the command will internally determine what precision should be used during the computations in order to ensure that the output is a faithful result with \key{prec} bits.
 
-For decidability and efficiency reasons, this general principle cannot be applied everytime, so be careful. Moreover certain commands are known to be unsafe: they give in general excellent results and give almost \key{prec} correct bits in output for everyday examples. However they are just heuristic and should not be used when the result must be safe. See the documentation of each command to know precisely how confident you can be with its result.
+For decidability and efficiency reasons, this general principle cannot be applied every time, so be careful. Moreover certain commands are known to be unsafe: they give in general excellent results and give almost \key{prec} correct bits in output for everyday examples. However they are just heuristic and should not be used when the result must be safe. See the documentation of each command to know precisely how confident you can be with its result.
 
 A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When set to $0$, \sollya becomes completely silent on stdout and prints only very important messages on stderr. Increase \key{verbosity} if you want more informations about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use \texttt{!}:
 
@@ -209,7 +209,7 @@ A second principle (that comes together with the first one) is: \emph{When a com
 \ligne{>}
 }
 
-For conviviality reasons, values are displayed in decimal by default. This lets a normal human being understand the numbers he or she manipulates. But since constants are internally represented in binary, this causes permanent conversions that are sources of roundings. Thus you are loosing in accuracy and \sollya is always complaining about inexact results. If you just want to store or communicate your results (to another tools for instance) you can use bit-exact representations avaliable in \sollya. The global variable \key{display} defines the way constants are displayed. Here is an example of the five available modes:
+For conviviality reasons, values are displayed in decimal by default. This lets a normal human being understand the numbers he or she manipulates. But since constants are internally represented in binary, this causes permanent conversions that are sources of roundings. Thus you are loosing in accuracy and \sollya is always complaining about inexact results. If you just want to store or communicate your results (to another tools for instance) you can use bit-exact representations available in \sollya. The global variable \key{display} defines the way constants are displayed. Here is an example of the five available modes:
 
 
 \code{
@@ -251,6 +251,71 @@ You can also use memory-dump hexadecimal notation frequently used to represent I
 }
 
 \sollya can parse these memory-dump hexadecimal notation back in any \key{display} mode.
+
+\section{Variables}\label{variables}
+
+As already explained, \sollya can manipulate univariate functional
+expressions. These expressions contain a unique free variable the name
+of which is fixed by its first usage in an expression that is not a
+left-hand-side of an assignment. This global and unique free variable is 
+variable in the mathematical sense of the term. 
+
+\sollya also provides variables in the sense programming languages
+give to the term.  These variables, that must be different in their
+name from the global free variable, may be global or declared and
+attached to a block of statements, i.e. a begin-end-block. These
+programming language variables may hold any object of the \sollya
+language, as for example functional expressions, strings, intervals,
+constant values, procedures, external functions and procedures, etc.
+
+Global variables need not to be declared. They start existing,
+i.e. can be correctly used in expressions that are not left-hand-sides
+of assignments, when they are assigned a value in an assignment. Since
+they are global, this kind of variables is recommended only for small
+\sollya scripts.  Larger scripts with code reutilization should use
+declared variables in order to avoid name clashes for example in loop
+variables.
+
+Declared variables are attached to a begin-end-block. The block
+structure builds scopes for declared variables. Declared variables in
+inner scopes shadow variables (global and declared) of outer
+scopes. The global free variable, i.e. the mathematical variable for
+univariate functional expressions, cannot be shadowed. Variables are
+declared using \key{var} keyword. See section \ref{labvar} for details
+on its usage and semantic.
+
+The following code examples illustrate the usage of variables.
+
+
+\code{
+\ligne{> f = exp(x);}
+\ligne{> f;}
+\ligne{exp(x)}
+\ligne{> a = "Hello world";}
+\ligne{> a;}
+\ligne{Hello world}
+\ligne{> b = 5;}
+\ligne{> f(b);}
+\ligne{Warning: rounding has happened. The value displayed is a faithful rounding of the true result.}
+\ligne{0.148413159102576603421115580040552279623487667593878e3}
+\ligne{> \{var b; b = 4; f(b); \};}
+\ligne{Warning: rounding has happened. The value displayed is a faithful rounding of the true result.}
+\ligne{0.545981500331442390781102612028608784027907370386137e2}
+\ligne{> \{var x; x = 3; \};}
+\ligne{Warning: the identifier "x" is already bound to the current free variable.}
+\ligne{It cannot be declared as a local variable. The declaration of "x" will have no effect.}
+\ligne{Warning: the identifier "x" is already bound to the free variable, to a library function or to an external procedure.}
+\ligne{The command will have no effect.}
+\ligne{Warning: the last assignment will have no effect.}
+\ligne{\{var a, b; a=5; b=3; \{var a; var b; b = true; a = 1; a; b;\}; a; b; \};}
+\ligne{1}
+\ligne{true}
+\ligne{5}
+\ligne{3}
+\ligne{> a;}
+\ligne{Hello world}
+}
+
 
 \section{Data types}
 \sollya has a (very) basic system of types. If you try to perform an illicit operation (such as adding a number and a string, for instance), you will get a type error. Let us see the available data types.
@@ -365,7 +430,7 @@ The basic functions available in \sollya are the following:
 \item \com{erf}, \com{erfc}
 \end{itemize}
 
-The constant $\pi$ is available through the keword \key{pi} as a $0$-ary function: its behavior is exactly the same as if it were a constant with an infinite precision:
+The constant $\pi$ is available through the keyword \key{pi} as a $0$-ary function: its behavior is exactly the same as if it were a constant with an infinite precision:
 
 \code{
 \ligne{> display=binary!;}
@@ -462,7 +527,7 @@ elements that are constant and evaluate to integers that are
 incrementally ordered. \sollya translates such ellipses to the full
 list upon evaluation. Using ellipses between elements that are not
 constants is not allowed. This feature is provided for ease of
-programmation; remark that the complexity of expanding such lists is
+programming; remark that the complexity of expanding such lists is
 high. For illustration, see the following example:
 
 \code{
@@ -486,7 +551,7 @@ explicitly be given. If the last element given is a constant
 expression that evaluates to an integer, the list is considered as
 continued to infinity by all integers greater than that last
 element. If the last element is another object, the list is considered
-as continued to infinity by reduplicating this last element. Remark
+as continued to infinity by re-duplicating this last element. Remark
 that bracket notation is supported for such end-elliptic lists even
 for implicitly given elements. However, evaluation complexity is
 high. Combinations of ellipses inside a list and in its end are
@@ -516,10 +581,20 @@ following examples:
 
 \section{Iterative language elements: assignments, conditional statements and loops}
 
+\subsection{Blocks}
+
+Statements in \sollya can be regrouped in blocks, so-called
+begin-end-blocks.  This can be done using the keywords \key{begin} and
+\key{end} or their shorter variants \key{$\lbrace$} and
+\key{$\rbrace$}. Blocks declared this way are considered as one single
+statement. As already explained in section \ref{variables}, using
+begin-end-blocks also opens the possibility of declaring variables
+through the keyword \key{var}. 
+
 \subsection{Assignments}
 
 \sollya has two different assignment operators, \texttt{=} and
-\texttt{:=}. The assigment operator \texttt{=} assigns its
+\texttt{:=}. The assignment operator \texttt{=} assigns its
 right-hand-object ``as is'', i.e. without evaluating functional
 expressions. For instance, \texttt{i = i + 1;} will dereferentiate the
 identifier \texttt{i} with some content, notate it $y$, build up the
@@ -543,7 +618,7 @@ the corresponding length. The indexing of lists on left-hand sides of
 assignments is reduced to the first order. Multiple indexing of lists
 of lists is not supported for complexity reasons. 
 
-The following examples well illustrate the behaviour of assignment
+The following examples well illustrate the behavior of assignment
 statements:
 \code{
 \ligne{> autosimplify = off;}
@@ -581,23 +656,173 @@ statements:
 
 \subsection{Conditional statements}
 
-TODO
+\sollya supports conditional statements expressed with the keywords
+\key{if}, \key{then} and optionally \key{else}. Remark that only
+conditional statements are supported not conditional expressions. 
 
-If, If-Else, syntaxe bizarre du if-Else.
+The following examples illustrate both syntax and semantic of
+conditional statements in \sollya. Concerning syntax, consider also
+section \ref{grammar} and remark that there must not be any semicolon
+before the \key{else} keyword.
+
+\code{
+\ligne{> a = 3;}
+\ligne{> b = 4;}
+\ligne{> if (a == b) then print("Hello world");}
+\ligne{> b = 3;}
+\ligne{> if (a == b) then print("Hello world");}
+\ligne{Hello world}
+\ligne{> if (a == b) then print("You are telling the truth") else print("Liar!");}
+\ligne{You are telling the truth}
+}
 
 \subsection{Loops}
 
-For from by, for in, while 
+\sollya supports three kinds of loops. General \emph{while-condition}
+loops can be expressed using the keywords \key{while} and
+\key{do}. Remark that the condition test is executed always before the
+loop, there is no \emph{do-until-condition} loop. Consider the following 
+examples for both syntax and semantic:
 
-TODO
+\code{
+\ligne{> verbosity = 0!;}
+\ligne{> prec = 30!;}
+\ligne{> i = 5;}
+\ligne{> while (expm1(i) > 0) do \{ expm1(i); i := i - 1; \};}
+\ligne{0.14741315913e3}
+\ligne{0.53598150015e2}
+\ligne{0.19085536927e2}
+\ligne{0.63890561014e1}
+\ligne{0.17182818279e1}
+\ligne{> print(i);}
+\ligne{0}
+}
+
+The second kind of loops are loops on a variable ranging from a
+numerical start value and a end value. These kind of loops can be
+expressed using the keywords \key{for}, \key{from}, \key{to}, \key{do}
+and optionally \key{by}. The \key{by} statement indicates the width of
+the steps on the variable from the start value to the end value. Once
+again, syntax and semantic are best explained with an example:
+
+\code{
+\ligne{> for i from 1 to 5 do print ("Hello world",i);}
+\ligne{Hello world 1}
+\ligne{Hello world 2}
+\ligne{Hello world 3}
+\ligne{Hello world 4}
+\ligne{Hello world 5}
+\ligne{> for i from 2 to 1 by -0.5 do print("Hello world",i);}
+\ligne{Hello world 2}
+\ligne{Hello world 0.15e1}
+\ligne{Hello world 1}
+}
+
+The third kind of loops are loops on a variables ranging on values
+contained in a list. In order to ensure the termination of the loop,
+that list must not be end-elliptic. The loop is expressed using the
+keywords \key{for}, \key{in} and \key{do} as in the following
+examples:
+
+\code{
+\ligne{> l = [|true, false, 1,...,4, "Hello", exp(x)|];}
+\ligne{> for i in l do i;}
+\ligne{true}
+\ligne{false}
+\ligne{1}
+\ligne{2}
+\ligne{3}
+\ligne{4}
+\ligne{Hello}
+\ligne{exp(x)}
+}
+
+For both types of \key{for} loops, assigning the loop variable is
+allowed and possible. If the loop terminates, the loop variable will
+contain the value that made the loop condition fail. Consider the
+following examples:
+
+\code{
+\ligne{> for i from 1 to 5 do \{ if (i == 3) then i = 4 else i; \};}
+\ligne{1}
+\ligne{2}
+\ligne{5}
+\ligne{> i;}
+\ligne{6}
+}
 
 \section{Functional language elements: procedures}
 
-procedures commes objets, declaration, recursion et identifiants,
-variables locales, return, procedures en argument, evaluation retardee
-de constantes etc.
+\sollya has some elements of functional languages. In order to 
+avoid confusion with mathematical functions, the associated 
+programming objects are called procedures in \sollya. 
 
-TODO
+\sollya procedures are common objects that can be, for example,
+assigned to variables or stored in lists. Procedures are declared by
+the \key{proc} keyword; see section \ref{labproc} for details. The
+returned procedure object must then be assigned to a variable and can
+hence be applied to arguments with common application syntax. The
+\key{procedure} keyword provides an abbreviation for declaring and
+assigning a procedure; see section \ref{labprocedure} for details.
+
+\sollya procedures can return objects using the \key{return} keyword
+at the end of the begin-end-block of the procedure. Section
+\ref{labreturn} gives details on the usage of \key{return}. Procedures
+further can take any type of object in argument, in particular also
+other procedures that are then applied to arguments. Procedures can
+be declared inside other procedures. 
+
+Remark that declaring a procedure does not involve any evaluation or
+other interpretation of the procedure body. In particular, this means
+that constants are evaluated to floating-point values inside \sollya
+when the procedure is applied to actual parameters and the global
+precision valid at this moment.
+
+\sollya procedures are well illustrated by the following examples:
+
+\code{
+\ligne{succ = proc(n) \{ return n + 1; \};}
+\ligne{succ(5);}
+\ligne{6}
+\ligne{3 + succ(0);}
+\ligne{4}
+\ligne{succ;}
+\ligne{proc(n)}
+\ligne{begin}
+\ligne{nop;}
+\ligne{return (n) + (1);}
+\ligne{end}
+\ligne{add = proc(m,n) \{ var res; res := m + n; return res; \};}
+\ligne{add(5,6);}
+\ligne{11}
+\ligne{hey = proc() \{ print("Hello world."); \};}
+\ligne{> hey();}
+\ligne{Hello world.}
+\ligne{print(hey());}
+\ligne{Hello world.}
+\ligne{void}
+\ligne{hey;}
+\ligne{proc()}
+\ligne{begin}
+\ligne{print("Hello world.");}
+\ligne{return void;}
+\ligne{end}
+\ligne{fac = proc(n) \{ var res; if (n == 0) then res := 1 else res := n * fac(n - 1); return res; \};}
+\ligne{fac(5);}
+\ligne{120}
+\ligne{fac(11);}
+\ligne{39916800}
+\ligne{> fac;}
+\ligne{proc(n)}
+\ligne{begin}
+\ligne{var res;}
+\ligne{if (n) == (0) then}
+\ligne{res := 1}
+\ligne{else}
+\ligne{res := (n) * (fac((n) - (1)));}
+\ligne{return res;}
+\ligne{end}
+} 
 
 \sollya also supports external procedures, i.e. procedures written in
 \texttt{C} (or some other language) and dynamically bound to \sollya
@@ -607,7 +832,7 @@ identifiers. See \ref{labexternalproc} for details.
 
 \input{CommandsAndFunctions}
 
-\section{Grammar of the \sollya language}
+\section{Grammar of the \sollya language}\label{grammar}
 
 \input{grammar.tex}
 

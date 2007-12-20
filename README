@@ -22,6 +22,9 @@ In order to compile, use the makefile by invoking it using the following command
 ./configure
 make
 
+When compiling a fresh svn checkout, launch first the autogen.sh Shell
+script before executing the two steps indicated above.
+
 You can then use the software typing
 
 ./sollya
@@ -29,5 +32,8 @@ You can then use the software typing
 or install it with:
 
 make install
+
+The use of the readline-wrapper rlwrap is highly recommended for interactive 
+work with sollya.
 
 
