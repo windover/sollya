@@ -2743,9 +2743,11 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
   int newtonWorked;
   mp_prec_t p, p2;
   infnormTheo *theo;
+  int freeInitialExcludes;
 
 
 
+  freeInitialExcludes = 1;
   res.a = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
   res.b = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*(res.a),prec);
@@ -2887,6 +2889,7 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
       printf("\n");
     }
     mightExcludes = concatChains(mightExcludes,initialExcludes);
+    freeInitialExcludes = 0;
 
     if (theo != NULL) freeInfnormTheo(theo);
     if (proof != NULL) {
@@ -2925,6 +2928,7 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
   if (theo != NULL) freeInfnormTheo(theo);
   freeChain(mightExcludes,freeMpfiPtr);
   freeChain(secondMightExcludes,freeMpfiPtr);
+  if (freeInitialExcludes) freeChain(initialExcludes,freeMpfiPtr);
   mpfi_revert_if_needed(resI);
   mpfi_get_left(*(res.a),resI);
   mpfi_get_right(*(res.b),resI);
