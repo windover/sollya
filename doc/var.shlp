@@ -11,12 +11,12 @@ The keyword $COMMAND allows for the declaration of local variables
 Once declared as a local variable, an identifier will shadow
 identifiers declared in higher scopes and undeclared identifiers
 available at top-level.
-§§ §§§
+§§ § §§
 Variable declarations using $COMMAND are only possible in the
 beginning of a begin-end-block. Several $COMMAND statements can be
 given. Once another statement is given in a begin-end-block, no more
 $COMMAND statements can be given.
-§§ §§§
+§§ § §§
 Variables declared by $COMMAND statements are dereferenced as $ERROR
 until they are assigned a value. 
 

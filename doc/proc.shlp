@@ -39,7 +39,7 @@ number of actual parameters corresponds to the number of formal
 parameters. Type checks are further performed upon execution of each
 statement in <procedure body> and upon evaluation of the expression
 <expression> to be returned.
-§§ §§§
+§§ § §§
 Procedures defined by $PROC containing a $QUIT or $RESTART command
 cannot be executed (i.e. applied). Upon application of a procedure,
 the $SOLLYA interpreter checks beforehand for such a statement. If one

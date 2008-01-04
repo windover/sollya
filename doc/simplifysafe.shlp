@@ -10,7 +10,7 @@ representing the function <function>.  The command $COMMAND does not
 endanger the safety of computations even in $SOLLYA's floating-point
 environment: the function returned is mathematically equal to the
 function <function>. 
-§§ §§§
+§§ § §§
 Remark that the simplification provided by $COMMAND is not perfect:
 they may exist simpler equivalent expressions for expressions returned
 by $COMMAND.

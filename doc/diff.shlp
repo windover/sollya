@@ -8,7 +8,7 @@
 #DESCRIPTION 
 $COMMAND(<function>) returns the symbolic derivative of the function
 <function> by the global free variable.
-§§ §§§
+§§ § §§
 If <function> represents a function symbol that is externally bound
 to some code by $LIBRARY, the derivative is performed as a symbolic
 annotation to the returned expression tree.

@@ -7,7 +7,7 @@
 #DESCRIPTION 
 $COMMAND opens the file indicated by <filename>, reads it and puts its
 contents in a character sequence of type $STRING_TYPE that is returned.
-§§ §§§
+§§ § §§
 If the file indicated by <filename> cannot be opened for reading, a
 warning is displayed and $COMMAND evaluates to an $ERROR variable of
 type $ERROR_TYPE.

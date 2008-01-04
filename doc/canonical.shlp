@@ -29,7 +29,7 @@ automatic printing of polynomial expressions in canonical form,
 i.e. as a sum of monomials in the canonical base. If automatic
 printing in canonical form is deactivated, automatic printing yield to
 displaying polynomial subexpressions in Horner form.
-§§ §§§
+§§ § §§
 If the assignment $COMMAND = <activation value> is followed by an
 exclamation mark, no message indicating the new state is
 displayed. Otherwise the user is informed of the new state of the

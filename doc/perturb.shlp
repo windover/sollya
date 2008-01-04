@@ -6,7 +6,7 @@
 #DESCRIPTION 
 The use of $COMMAND in the command $EXTERNALPLOT enables the addition
 of some random noise around each sampling point in $EXTERNALPLOT.
-§§ §§§
+§§ § §§
 See $EXTERNALPLOT for details.
 
 #EXAMPLE

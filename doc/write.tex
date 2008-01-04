@@ -21,13 +21,16 @@ Parameters:
    concatenated without any separator. No newline is displayed at the
    end.  In contrast to \textbf{print}, \textbf{write} expects the user to give all
    separators and newlines explicitely.
+    
    If a second argument \emph{filename} is given after a single "$>$", the
    displaying is not output on the standard output of Sollya but if in
    the file \emph{filename} that get newly created or overwritten. If a double
     "$>>$" is given, the output will be appended to the file \emph{filename}.
+    
    The global variables \textbf{display}, \textbf{midpointmode} and \textbf{fullparentheses} have
    some influence on the formatting of the output (see \textbf{display},
    \textbf{midpointmode} and \textbf{fullparentheses}).
+    
    Remark that if one of the expressions \emph{expri} given in argument is of
    type \textsf{string}, the character sequence \emph{expri} evaluates to is
    displayed. However, if \emph{expri} is of type \textsf{list} and this list

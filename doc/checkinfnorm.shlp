@@ -16,7 +16,7 @@ to $FALSE, there are two possibilities: either the bound is less than
 or equal to the infinite norm of the function or the bound is greater
 than the infinite norm but $SOLLYA could not conclude using its
 internal interval arithmetic.
-§§ §§§
+§§ § §§
 $COMMAND is sensitive to the global variable $DIAM. The smaller $DIAM,
 the more time $SOLLYA will spend on the evaluation of $COMMAND in
 order to prove the bound before returning $FALSE although the infinite

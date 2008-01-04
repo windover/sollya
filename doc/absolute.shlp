@@ -6,7 +6,7 @@
 #DESCRIPTION 
 The use of $COMMAND in the command $EXTERNALPLOT indicates that during
 plotting in $EXTERNALPLOT an absolute error is to be considered.
-§§ §§§
+§§ § §§
 See $EXTERNALPLOT for details.
 
 #EXAMPLE

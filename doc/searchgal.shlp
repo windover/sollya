@@ -27,7 +27,7 @@ this search, at most 2 raised to <steps> attempts are made. The search
 starts with a preimage value equal to <start>. This value is then
 increased and decreased by §§1§$1$§§ ulp in precision <preimage precision> 
 until a value is found or the step limit is reached.
-§§ §§§
+§§ § §§
 If the search finds an appropriate preimage §§z§$z$§§, $COMMAND
 evaluates to a list containing this value. Otherwise, $COMMAND
 evaluates to an empty list.

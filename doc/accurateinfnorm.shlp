@@ -18,7 +18,7 @@ lies in the set of dyadic floating point numbers having <constant>
 significant mantissa bits. This means the value $COMMAND evaluates to
 is at the time an upper bound and a faithful rounding to <constant>
 bits of the infinite norm of function <function> on range <range>.
-§§ §§§
+§§ § §§
 If given, the fourth and further arguments of the command $COMMAND,
 <exclusion range 1> through <exclusion range n> the infinite norm of
 the function <function> is not to be considered on.

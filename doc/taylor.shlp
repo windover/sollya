@@ -9,12 +9,12 @@
 #DESCRIPTION 
 The command $COMMAND returns an expression that is a Taylor expansion
 of function <function> in point <point> having the degree <degree>.
-§§ §§§
+§§ § §§
 Let §§f§$f$§§ be the function <function>, §§t§$t$§§ be the point <point> and
 §§n§$n$§§ be the degree <degree>. Then, $COMMAND(<function>,<degree>,<point>) 
 evaluates to an expression mathematically equal to 
 §§f(t) + f'(t) * (x - t) + 1/2 * f''(t) * (x - t)^2 + ... + 1/(i!) * f[i](t) * (x - t)^i + ... + 1/(n!) * f[n](t) * (x - t)^n§$$\sum\limits_{i=0}^n \frac{f^{(i)}}{i!} \left(x - t \right)^i$$§§
-§§ §§§
+§§ § §§
 Remark that $COMMAND evaluates to §§0§$0$§§ if the degree <degree> is negative.
 
 #EXAMPLE

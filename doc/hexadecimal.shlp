@@ -5,7 +5,7 @@
 $COMMAND is a special value used for the global state $DISPLAY.  If
 the global state $DISPLAY is equal to $COMMAND, all data will be
 output in hexadecimal C99/ IEEE 754R notation.
-§§ §§§
+§§ § §§
 As any value it can be affected to a variable and stored in lists.
 
 #SEEALSO $DECIMAL

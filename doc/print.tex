@@ -18,13 +18,16 @@ Parameters:
 
 \item \textbf{print}(\emph{expr1},...,\emph{exprn}) prints the expressions \emph{expr1} through
    \emph{exprn} separated by spaces and followed by a newline.
+    
    If a second argument \emph{filename} is given after a single  "$>$", the
    displaying is not output on the standard output of Sollya but if in
    the file \emph{filename} that get newly created or overwritten. If a double
     "$>>$" is given, the output will be appended to the file \emph{filename}.
+    
    The global variables \textbf{display}, \textbf{midpointmode} and \textbf{fullparentheses} have
    some influence on the formatting of the output (see \textbf{display},
    \textbf{midpointmode} and \textbf{fullparentheses}).
+    
    Remark that if one of the expressions \emph{expri} given in argument is of
    type \textsf{string}, the character sequence \emph{expri} evaluates to is
    displayed. However, if \emph{expri} is of type \textsf{list} and this list

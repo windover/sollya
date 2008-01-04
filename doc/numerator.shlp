@@ -8,10 +8,10 @@
 #DESCRIPTION 
 If <expr> represents a fraction <expr1>/<expr2>, $COMMAND(<expr>)
 returns the numerator of this fraction, i.e. <expr1>.
-§§ §§§
+§§ § §§
 If <expr> represents something else, $COMMAND(<expr>) 
 returns the expression itself, i.e. <expr>.
-§§ §§§
+§§ § §§
 Note that for all expressions <expr>, $COMMAND(<expr>) $DIVIDE $DENOMINATOR(<expr>)
 is equal to <expr>.
 

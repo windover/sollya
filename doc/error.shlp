@@ -11,7 +11,7 @@ evaluate to $COMMAND at some stage.  Inputs that are correctly typed
 but containing commands that depend on side-effects that cannot be
 performed or inputs that are wrongly typed at meta-level (cf. $PARSE),
 evaluate to $COMMAND.
-§§ §§§
+§§ § §§
 Remark that in contrast to all other elements of the $SOLLYA language,
 $COMMAND compares neither equal nor unequal to itself. This provides a
 means of detecting syntax errors inside the $SOLLYA language itself

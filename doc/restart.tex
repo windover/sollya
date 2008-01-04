@@ -11,9 +11,11 @@ brings Sollya back to its initial state\\
 
 \item The command \textbf{restart} brings Sollya back to its initial state.  All
    current state is abandoned, all libraries unbound and all memory freed.
+    
    The \textbf{restart} command has no effect when executed inside a Sollya
    script read into a main Sollya script using \textbf{execute}. It is executed
    in a Sollya script included by a $\#$include macro.
+    
    Using the \textbf{restart} command in nested elements of imperative
    programming like for or while loops is possible. Since in most cases
    abandoning the current state of Sollya means altering a loop

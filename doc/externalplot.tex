@@ -20,16 +20,19 @@ plots the error of an external code with regard to a function\\
    the difference is quotiented by the function \emph{function}. The resulting
    error function is plotted on all floating-point numbers with
    \emph{precision} significant mantissa bits in the range \emph{range}. 
+    
    If the sixth argument of the command \textbf{externalplot} is given an evaluates to
    \textbf{perturb}, each of these floating-point numbers is perturbed by a
    random value that is uniformly distributed in $\pm1$ ulp
    around the original \emph{precision} bit floating-point variable.
+    
    If a sixth and seventh argument, respectively a seventh and eighth
    argument in the presence of \textbf{perturb} as a sixth argument, are given
    that evaluate to a variable of type \textsf{file$|$postscript$|$postscriptfile} respectively to a
    character sequence of type \textsf{string}, \textbf{externalplot} will plot
    (additionally) to a file in the same way as the command \textbf{plot}
    does. See \textbf{plot} for details.
+    
    The external function evaluation code given in the object file name
    \emph{filename} is supposed to define a function name \texttt{f} as
    follows (here in C syntax): \texttt{void f(mpfr\_t rop, mpfr\_ op)}. 

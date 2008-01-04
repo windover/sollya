@@ -4473,7 +4473,7 @@ void printExternalProcedureUsage(node *tree) {
   }
 }
 
-void autoprint(node *thing) {
+void autoprint(node *thing, int inList) {
   mpfr_t a,b;
   node *temp_node, *tempNode2, *tempNode3;
   chain *curr;
@@ -4539,7 +4539,7 @@ void autoprint(node *thing) {
       printf("[|");
       curr = thing->arguments;
       while (curr != NULL) {
-	autoprint((node *) (curr->value));
+	autoprint((node *) (curr->value),1);
 	if (curr->next != NULL) printf(", ");
 	curr = curr->next;
       }
@@ -4549,13 +4549,16 @@ void autoprint(node *thing) {
 	printf("[|");
 	curr = thing->arguments;
 	while (curr != NULL) {
-	  autoprint((node *) (curr->value));
+	  autoprint((node *) (curr->value),1);
 	  if (curr->next != NULL) printf(", ");
 	  curr = curr->next;
 	}
 	printf("...|]");
       } else {
-	printThing(thing);
+	if (inList) 
+	  printThingWithFullStrings(thing);
+	else 
+	  printThing(thing);
       }
     }
   }
@@ -5508,7 +5511,7 @@ int executeCommandInner(node *tree) {
       tempNode = evaluateThing((node *) (curr->value));
       if ((!isUnit(tempNode)) || (verbosity >= 2)) {
 	if (!isExternalProcedureUsage(tempNode)) 
-	  autoprint(tempNode);
+	  autoprint(tempNode,0);
 	else 
 	  printExternalProcedureUsage(tempNode);
 	printf("\n");
@@ -5518,7 +5521,7 @@ int executeCommandInner(node *tree) {
       while (curr != NULL) {
 	tempNode = evaluateThing((node *) (curr->value));
 	if (!isExternalProcedureUsage(tempNode)) 
-	  autoprint(tempNode);
+	  autoprint(tempNode,0);
 	else 
 	  printExternalProcedureUsage(tempNode);
 	freeThing(tempNode);

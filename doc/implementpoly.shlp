@@ -18,13 +18,13 @@ The produced code is output in a file named <filename>. The
 argument <format> indicates the double, double-double or triple-double
 format of the variable in which the polynomial varies, influencing
 also in the signature of the §§C§\texttt{C}§§ function.
-§§ §§§
+§§ § §§
 If a seventh or eightth argument <proof filename> is given and if this
 argument evaluates to a variable of type $STRING_TYPE, the command
 $COMMAND will produce a §§Gappa§\texttt{Gappa}§§ proof that the
 rounding error is less than the given bound. This proof will be output
 in §§Gappa§\texttt{Gappa}§§ syntax in a file name <proof filename>.
-§§ §§§
+§§ § §§
 The command $COMMAND returns the polynomial that has been
 implemented. As the command $COMMAND tries to adapt the precision
 needed in each evaluation step to its strict minimum and as it
@@ -34,7 +34,7 @@ the polynomial <polynomial>. Nevertheless the difference will be small
 enough that the rounding error bound with regard to the polynomial
 <polynomial> (estimated at its first order) will be less than the
 given error bound.
-§§ §§§
+§§ § §§
 If a seventh argument <honor coefficient precisions> is given and
 evaluates to a variable $HONORCOEFFPREC of type $HONORCOEFF_TYPE,
 $COMMAND will honor the precision of the given polynomial
@@ -63,14 +63,14 @@ regard to their coefficients' values. Indicating $HONORCOEFFPREC
 prevents the $COMMAND command from rounding the coefficients and
 altering by many orders of magnitude approximation error of the
 polynomial with regard to the function it approximates.
-§§ §§§
+§§ § §§
 The implementer behind the $COMMAND command makes some assumptions on
 its input and verifies them. If some assumption cannot be verified,
 the implementation will not succeed and $COMMAND will evaluate to a
 variable $ERROR of type $ERROR_TYPE. The same behaviour is observed if
 some file is not writeable or some other side-effect fails, e.g. if
 the implementer runs out of memory.
-§§ §§§
+§§ § §§
 As error estimation is performed only on the first order, the code
 produced by the $COMMAND command should be considered valid iff a
 §§Gappa§\texttt{Gappa}§§ proof has been produced and successfully run

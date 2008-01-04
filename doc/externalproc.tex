@@ -23,6 +23,7 @@ Parameters:
    parameters. If the external code indicated success, it will receive
    the result produced by the external code, transform it to Sollya's
    iternal representation and return it.
+    
    In order to allow correct evaluation and typing of the data in
    parameter and in result to be passed to and received from the external
    code, \textbf{externalproc} has a third parameter \emph{argumenttype} $->$ \emph{resulttype}.
@@ -30,14 +31,17 @@ Parameters:
    function, range, integer, string, boolean, list of constant, list of
    function, list of range, list of integer, list of string, list of
    boolean.
+    
    If upon a usage of a procedure bound to an external procedure the type
    of the actual parameters given or its number is not correct, Sollya
    produces a type error. An external function not applied to arguments
    represents itself and prints out with its argument and result types.
+    
    The external function is supposed to return an integer indicating
    success.  It returns its result depending on its Sollya result type
    as follows. Here, the external procedure is assumed to be implemented
    as a C function.
+    
    If the Sollya result type is void, the C function has no pointer
    argument for the result.  If the Sollya result type is constant, the
    first argument of the C function is of C type \texttt{mpfr\_t *}, the result is
@@ -63,11 +67,12 @@ Parameters:
    type string pointers \texttt{char *} to new \texttt{char *} variables and for Sollya
    type boolean pointers \texttt{int *} to new int variables representing boolean
    values.
-   	       
+    	       
    The external procedure affects its possible pointer argument if and
    only if it succeeds.  This means, if the function returns an integer
    indicating failure, it does not leak any memory to the encompassing
    environment.
+    
    The external procedure receives its arguments as follows: If the
    Sollya argument type is void, no argument array is given.  Otherwise
    the C function receives a C \texttt{void **} argument representing an array of
@@ -87,10 +92,13 @@ Parameters:
    function, \texttt{mpfi\_t *} for Sollya type range, \texttt{int *} for Sollya type
    integer, \texttt{char *} for Sollya type string and \texttt{int *} for Sollya type
    boolean.
+    
    The external procedure is not supposed to alter the memory pointed by
    its array argument \texttt{void **}.
+    
    In both directions (argument and result values), empty lists are
    represented by \texttt{chain * NULL} pointers.
+    
    In contrast to internal procedures, externally bounded procedures can
    be considered as objects inside Sollya that can be assigned to other
    variables, stored in list etc.

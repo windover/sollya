@@ -9,7 +9,7 @@ The keyword $COMMAND allows for returning the (evaluated) expression
 <expression> at the end of a begin-end-block ({}-block) used as a
 $SOLLYA procedure body. See $PROC for further details concerning
 $SOLLYA procedure definitions.
-§§ §§§ 
+§§ § §§ 
 Statements for returning expressions using $COMMAND are only possible
  at the end of a begin-end-block used as a $SOLLYA procedure
  body. Only one $COMMAND statement can be given per begin-end-block.

@@ -13,7 +13,7 @@
 $COMMAND(<expr>) prints the functional expression <expr> as a tree of
 MathML Content Definition Markups. This XML tree can be re-read in
 external tools or by usage of the $READXML command.
-§§ §§§
+§§ § §§
 If a second argument <filename> is given after a single §§">"§$>$§§, the
 MathML tree is not output on the standard output of $SOLLYA but if in
 the file <filename> that get newly created or overwritten. If a double

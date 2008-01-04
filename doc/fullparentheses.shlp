@@ -19,7 +19,7 @@ parentheses at all places where it is necessary for expressions
 containing infix operators to be reparsed with the same
 result. Otherwise parentheses around associative operators are
 omitted.
-§§ §§§
+§§ § §§
 If the assignment $COMMAND = <activation value> is followed by an
 exclamation mark, no message indicating the new state is
 displayed. Otherwise the user is informed of the new state of the
