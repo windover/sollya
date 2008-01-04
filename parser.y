@@ -3129,6 +3129,7 @@ help:                   CONSTANTTOKEN
                           }                 					       			       
                       | HELPTOKEN
                           {
+			    printf("Type \"help <keyword>;\" for help on the keyword <keyword>.\nFor example type \"help implementpoly;\" for help on the command \"implementpoly\".\n\n");
 			    printf("Possible keywords in %s are:\n",PACKAGE_NAME);
 			    printf("- ^\n");
 			    printf("- <\n");
