@@ -762,6 +762,10 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	  internalTheo->theoRightLinear = NULL;
 	}
 	excludes = concatChains(leftExcludes,rightExcludes);
+	freeChain(leftExcludesLinear,freeMpfiPtr); 	
+	freeChain(rightExcludesLinear,freeMpfiPtr); 	
+	freeChain(leftExcludesConstant,freeMpfiPtr); 	
+	freeChain(rightExcludesConstant,freeMpfiPtr); 	
       }
 
       free_memory(derivLeft);
@@ -911,6 +915,10 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	  internalTheo->theoRightLinear = NULL;
 	}
 	excludes = concatChains(leftExcludes,rightExcludes);
+	freeChain(leftExcludesLinear,freeMpfiPtr); 	
+	freeChain(rightExcludesLinear,freeMpfiPtr); 	
+	freeChain(leftExcludesConstant,freeMpfiPtr); 	
+	freeChain(rightExcludesConstant,freeMpfiPtr); 	
       }
 
       free_memory(derivLeft);
