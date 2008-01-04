@@ -37,7 +37,7 @@
 
 \section*{License}
 
-The \sollya tool is copyright \copyright~ 2007 Laboratoire de
+The \sollya tool is copyright \copyright~ 2008 Laboratoire de
 l'Informatique du Parall\'elisme - UMR CNRS - ENS Lyon - UCB Lyon 1 -
 INRIA 5668.  
 
@@ -123,10 +123,11 @@ If you really want to unbound $x$, you can use the \com{rename} command and chan
 As you have seen, you can name functions and easily work with. The basic thing to do with a function is to evaluate it at some point:
 
 \code{
-\ligne{> evaluate f(-2);}
-\ligne{Warning: rounding has happened. The value displayed is a faithful rounding of }
-\ligne{the true result.}
+\ligne{> f(-2);}
+\ligne{Warning: rounding has happened. The value displayed is a faithful rounding of the true result.}
 \ligne{0.454648713412840847698009932955872421351127485723941}
+\ligne{evaluate(f,-2);}
+\ligne{0.454648713412840847698009932955872421351127485723941106879}
 }
 
 The printed value is generally a faithful rounding of the exact value at the working precision. The working precision is controlled by the global variable \com{prec}:
@@ -175,7 +176,7 @@ Let us finish this Section with a small complete example that shows a bit of wha
 \ligne{> max=0; for t in derivativeZeros do}
 \ligne{\{}
 \ligne{  r = evaluate(abs(p-f), t);}
-\ligne{  if r > max then {max=r; argmax=t;};}
+\ligne{  if r > max then \{max=r; argmax=t;\};}
 \ligne{\};}
 \ligne{> print("The infinite norm of", p-f, "is", max, "and is reached at", argmax);}
 \ligne{The infinite norm of (-0.41626557294429078481812212) + x * ((-0.1798067204872539}
@@ -190,7 +191,7 @@ In this example, we define a function $f$, an interval $d$ and we compute the be
 Note that you do not really need to use such a script for computing infinite norm; as we will see, the command \com{dirtyinfnorm} does this for you.
 
 \section{General principles}
-The first goal of \sollya is to help people using numerical functions and numerical algorithm in a safe way. It is first designed to be used interactively but it can also be used in scripts\footnote{Remark: some of the behaviors of \sollya slightly change when used in scripts. For example, no prompt is printed.}.
+The first goal of \sollya is to help people to use numerical functions and numerical algorithms in a safe way. It is first designed to be used interactively but it can also be used in scripts\footnote{Remark: some of the behaviors of \sollya slightly change when used in scripts. For example, no prompt is printed.}.
 
 One of the originalities of \sollya is to work with multi-precision arithmetic (it uses the \texttt{MPFR} library). For safety purposes, \sollya knows how to use interval arithmetic. It uses the interval arithmetic to produce tight and safe results with the precision required by the user.
 
@@ -238,7 +239,7 @@ For conviviality reasons, values are displayed in decimal by default. This lets 
 \ligne{> }
 }
 
-As always, the symbol \texttt{e} means $\times 10^\square $. The same way the symbol \texttt{b} means  $\times 2^\square $. The symbol \texttt{p} means $\times 16^\square$ and is used only with the following \texttt{0x} prefix. The prefix \texttt{0x} indicates that the digits of the following number until 
+As always, the symbol \texttt{e} means $\times 10^\square $. The same way the symbol \texttt{b} means  $\times 2^\square $. The symbol \texttt{p} means $\times 16^\square$ and is used only with the \texttt{0x} prefix. The prefix \texttt{0x} indicates that the digits of the following number until 
 a symbol \texttt{p} or whitespace are hexadecimal. The suffix \texttt{\_2} indicates to \sollya that the previous number has been written in binary. \sollya can parse these notations even if you are not in the corresponding \key{display} mode, so you can always use them.
 
 You can also use memory-dump hexadecimal notation frequently used to represent IEEE 754 \texttt{double} and \texttt{single} precision numbers. Since this notation does not allow for exactly representing numbers with arbitrary precision, there is no corresponding \key{display} mode. However, the commands \com{printhexa} respectively \com{printfloat} round the value to the nearest \texttt{double} respectively \texttt{single}. The number is then printed in hexadecimal as the integer number corresponding to the memory representation of the IEEE 754 \texttt{double} or \texttt{single} number:
@@ -258,7 +259,7 @@ As already explained, \sollya can manipulate univariate functional
 expressions. These expressions contain a unique free variable the name
 of which is fixed by its first usage in an expression that is not a
 left-hand-side of an assignment. This global and unique free variable is 
-variable in the mathematical sense of the term. 
+a variable in the mathematical sense of the term. 
 
 \sollya also provides variables in the sense programming languages
 give to the term.  These variables, that must be different in their
@@ -449,7 +450,7 @@ The constant $\pi$ is available through the keyword \key{pi} as a $0$-ary functi
 
 
 \subsection{Strings}
-Anything written between quotes is interpreted as a string. The infix operator \com{@} concatenates two strings. To get the length of a string, use the \com{length} function. You can access the $i$-th character of a string using brackets (see the example above). There is no character type in \sollya: the $i$-th character of a string is returned as a string itself.
+Anything written between quotes is interpreted as a string. The infix operator \com{@} concatenates two strings. To get the length of a string, use the \com{length} function. You can access the $i$-th character of a string using brackets (see the example below). There is no character type in \sollya: the $i$-th character of a string is returned as a string itself.
 
 \code{
 \ligne{> s1 = "Hello "; s2 = "World!";}
@@ -469,7 +470,7 @@ Strings may contain the following escape sequences:
 \texttt{$\backslash$a}, \texttt{$\backslash$b},
 \texttt{$\backslash$f}, \texttt{$\backslash$r},
 \texttt{$\backslash$v}, \texttt{$\backslash$x}[hexadecimal number] and
-\texttt{$\backslash$}[octal number]. See the C99 standard for their
+\texttt{$\backslash$}[octal number]. Refer to the C99 standard for their
 meaning.
 
 \subsection{Particular values}
@@ -479,7 +480,7 @@ meaning.
 \item \com{on}, \com{off} (see sections \ref{labon} and \ref{laboff})
 \item \com{dyadic}, \com{powers}, \com{binary}, \com{decimal}, \com{hexadecimal} (see sections \ref{labdyadic}, \ref{labpowers}, \ref{labbinary}, \ref{labdecimal} and \ref{labhexadecimal})
 \item \com{file}, \com{postscript}, \com{postscriptfile} (see sections \ref{labfile}, \ref{labpostscript} and \ref{labpostscriptfile})
-\item \com{RU}, \com{RD}, \com{RN}, \com{RZ}
+\item \com{RU}, \com{RD}, \com{RN}, \com{RZ} (see sections \ref{labru}, \ref{labrd}, \ref{labrn} and \ref{labrz})
 \item \com{absolute}, \com{relative} (see sections \ref{lababsolute} and \ref{labrelative})
 \item \com{double}, \com{doubleextended}, \com{doubledouble}, \com{tripledouble} (see sections \ref{labdouble}, \ref{labdoubleextended}, \ref{labdoubledouble} and \ref{labtripledouble})
 \item \com{D}, \com{DE}, \com{DD}, \com{TD} (see sections \ref{labdouble}, \ref{labdoubleextended}, \ref{labdoubledouble} and \ref{labtripledouble})
@@ -496,15 +497,15 @@ Objects can be grouped into lists. A list can contain elements with different ty
 You can prepend an element to a list using \com{.:} (in $\mathcal{O}(1)$) and you can append an element to a list using \com{:.} (in $\mathcal{O}(n)$). The following example illustrates some features:
 
 \code{
-\ligne{> list = [| "foo" |];}
-\ligne{> list = list:.1;}
-\ligne{> list = "bar".:list;}
-\ligne{> list;}
-\ligne{[|bar, foo, 1|]}
-\ligne{> list[1];}
+\ligne{> l = [| "foo" |];}
+\ligne{> l = l:.1;}
+\ligne{> l = "bar".:l;}
+\ligne{> l;}
+\ligne{[|"bar", "foo", 1|]}
+\ligne{> l[1];}
 \ligne{foo}
-\ligne{> list@list;}
-\ligne{[|bar, foo, 1, bar, foo, 1|]}
+\ligne{> l@l;}
+\ligne{[|"bar", "foo", 1, "bar", "foo", 1|]}
 }
 
 Lists can be considered as arrays and elements of lists can be
@@ -651,7 +652,7 @@ statements:
 \ligne{[|true, 1, 2, 3, 4, 5, 9...|]}
 \ligne{> l[13] = "Hello";}
 \ligne{> l;}
-\ligne{[|true, 1, 2, 3, 4, 5, 9, 10, 11, 12, 13, 14, 15, Hello...|]}
+\ligne{[|true, 1, 2, 3, 4, 5, 9, 10, 11, 12, 13, 14, 15, "Hello"...|]}
 }
 
 \subsection{Conditional statements}
