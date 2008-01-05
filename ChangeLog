@@ -1,3 +1,449 @@
+2008-01-05 12:58  clauter
+
+	* doc/proc.shlp, doc/sollya.tex, doc/taylor.shlp: Patched some
+	  documentation files
+
+2008-01-04 13:32  clauter
+
+	* parser.y: Improved help help command
+
+2008-01-04 13:28  clauter
+
+	* assignment.c, assignment.h, chain.c, chain.h, doc/sollya.pdf,
+	  doc/sollya.tex, doc/timing.tex, double.c, double.h, execute.c,
+	  execute.h, expansion.c, expression.c, expression.h, external.c,
+	  external.h, externalfun.c, externalproc.c, fpminimax.c,
+	  fpminimax.h, general.c, general.h, help.h, implement.c,
+	  implement.h, infnorm.c, infnorm.h, integral.c, integral.h,
+	  internlexer.l, internparser.y, lexer.l, library.c, library.h,
+	  libsollyaexample.c, main.c, main.h, minilexer.l, miniparser.y,
+	  pari_utils.c, pari_utils.h, parser.y, plot.c, plot.h, proof.c,
+	  proof.h, remez.c, remez.h, sollya.h, taylor.c, taylor.h,
+	  worstcase.c, worstcase.h, xml.c, xml.h: Small changes in
+	  documentation
+
+2008-01-04 12:27  clauter
+
+	* doc/absolute.shlp, doc/absolute.tex, doc/accurateinfnorm.shlp,
+	  doc/accurateinfnorm.tex, doc/autosimplify.shlp,
+	  doc/autosimplify.tex, doc/bashexecute.tex, doc/binary.shlp,
+	  doc/binary.tex, doc/boolean.shlp, doc/boolean.tex,
+	  doc/canonical.shlp, doc/canonical.tex, doc/checkinfnorm.shlp,
+	  doc/checkinfnorm.tex, doc/constant.shlp, doc/constant.tex,
+	  doc/decimal.shlp, doc/decimal.tex, doc/denominator.shlp,
+	  doc/denominator.tex, doc/diff.shlp, doc/diff.tex,
+	  doc/display.shlp, doc/display.tex, doc/dyadic.shlp,
+	  doc/dyadic.tex, doc/error.shlp, doc/error.tex,
+	  doc/externalplot.shlp, doc/externalplot.tex,
+	  doc/externalproc.shlp, doc/externalproc.tex,
+	  doc/fullparentheses.shlp, doc/fullparentheses.tex,
+	  doc/function.shlp, doc/function.tex, doc/hexadecimal.shlp,
+	  doc/hexadecimal.tex, doc/implementpoly.shlp,
+	  doc/implementpoly.tex, doc/integer.shlp, doc/integer.tex,
+	  doc/neq.shlp, doc/neq.tex, doc/numerator.shlp, doc/numerator.tex,
+	  doc/parse.shlp, doc/parse.tex, doc/perturb.shlp, doc/perturb.tex,
+	  doc/powers.shlp, doc/powers.tex, doc/print.shlp, doc/print.tex,
+	  doc/printexpansion.shlp, doc/printexpansion.tex,
+	  doc/printfloat.shlp, doc/printfloat.tex, doc/printhexa.shlp,
+	  doc/printhexa.tex, doc/printxml.shlp, doc/printxml.tex,
+	  doc/proc.shlp, doc/proc.tex, doc/quit.shlp, doc/quit.tex,
+	  doc/range.shlp, doc/range.tex, doc/readfile.shlp,
+	  doc/readfile.tex, doc/readxml.shlp, doc/readxml.tex,
+	  doc/relative.shlp, doc/relative.tex, doc/restart.shlp,
+	  doc/restart.tex, doc/return.shlp, doc/return.tex,
+	  doc/roundcorrectly.shlp, doc/roundcorrectly.tex,
+	  doc/searchgal.shlp, doc/searchgal.tex, doc/simplifysafe.shlp,
+	  doc/simplifysafe.tex, doc/sollya.pdf, doc/string.shlp,
+	  doc/string.tex, doc/subpoly.shlp, doc/subpoly.tex,
+	  doc/taylor.shlp, doc/taylor.tex, doc/timing.tex, doc/var.shlp,
+	  doc/var.tex, doc/void.shlp, doc/void.tex, doc/write.shlp,
+	  doc/write.tex, execute.c, help.h: Corrected a bug in autoprint
+	  displaying of strings contained in lists
+
+2008-01-04 10:33  clauter
+
+	* infnorm.c: Patched a memory leak in infnorm
+
+2007-12-21 08:41  clauter
+
+	* infnorm.c: Patched a memory leak
+
+2007-12-20 14:41  clauter
+
+	* README, doc/sollya.pdf, doc/sollya.tex: Finished working on
+	  documentation
+
+2007-12-20 13:58  schevill
+
+	* execute.c, fpminimax.c, infnorm.c: * patched leaks.
+	  
+
+2007-12-19 23:11  clauter
+
+	* configure.ac: Changed Sollya version number
+
+2007-12-19 23:01  clauter
+
+	* doc/implementpoly.shlp, doc/implementpoly.tex, doc/sollya.pdf,
+	  help.h: Patched a small error in the documentation
+
+2007-12-19 22:01  clauter
+
+	* doc/CommandsAndFunctions.tex, doc/RD.shlp, doc/RD.tex,
+	  doc/RN.shlp, doc/RN.tex, doc/RU.shlp, doc/RU.tex, doc/RZ.shlp,
+	  doc/RZ.tex, doc/bashexecute.tex, doc/evaluate.shlp,
+	  doc/evaluate.tex, doc/implementpoly.shlp, doc/implementpoly.tex,
+	  doc/parse.shlp, doc/parse.tex, doc/pi.shlp, doc/pi.tex,
+	  doc/rd.shlp, doc/rd.tex, doc/readxml.shlp, doc/readxml.tex,
+	  doc/restart.shlp, doc/restart.tex, doc/rn.shlp, doc/rn.tex,
+	  doc/ru.shlp, doc/ru.tex, doc/rz.shlp, doc/rz.tex,
+	  doc/searchgal.shlp, doc/searchgal.tex, doc/sollya.pdf,
+	  doc/timing.tex, doc/void.shlp, doc/void.tex, help.h: Continued
+	  work on help texts.
+
+2007-12-19 18:50  clauter
+
+	* infnorm.c: Patched memory leak in infnorm with proof generation.
+
+2007-12-19 15:50  clauter
+
+	* doc/RD.tex, doc/RN.tex, doc/RU.tex, doc/RZ.tex, doc/abs.tex,
+	  doc/absolute.tex, doc/accurateinfnorm.tex, doc/acos.tex,
+	  doc/acosh.tex, doc/and.tex, doc/append.tex, doc/asciiplot.tex,
+	  doc/asin.tex, doc/asinh.tex, doc/atan.tex, doc/atanh.tex,
+	  doc/autosimplify.tex, doc/bashexecute.tex, doc/binary.tex,
+	  doc/boolean.tex, doc/canonical.tex, doc/ceil.tex,
+	  doc/checkinfnorm.tex, doc/coeff.tex, doc/concat.tex,
+	  doc/constant.tex, doc/cos.tex, doc/cosh.tex, doc/decimal.tex,
+	  doc/default.tex, doc/degree.tex, doc/denominator.tex,
+	  doc/diam.tex, doc/diff.tex, doc/dirtyfindzeros.tex,
+	  doc/dirtyinfnorm.tex, doc/dirtyintegral.tex, doc/display.tex,
+	  doc/divide.tex, doc/double.shlp, doc/double.tex,
+	  doc/doubledouble.tex, doc/doubleextended.tex, doc/dyadic.tex,
+	  doc/equal.tex, doc/erf.tex, doc/erfc.tex, doc/error.tex,
+	  doc/evaluate.tex, doc/execute.tex, doc/exp.tex, doc/expand.shlp,
+	  doc/expand.tex, doc/expm1.tex, doc/exponent.tex,
+	  doc/externalplot.tex, doc/externalproc.tex, doc/false.tex,
+	  doc/file.tex, doc/findzeros.tex, doc/floor.tex,
+	  doc/fullparentheses.tex, doc/function.tex, doc/ge.tex,
+	  doc/gt.tex, doc/guessdegree.tex, doc/head.tex,
+	  doc/hexadecimal.tex, doc/honorcoeffprec.tex,
+	  doc/hopitalrecursions.tex, doc/horner.tex,
+	  doc/implementpoly.shlp, doc/implementpoly.tex, doc/inf.tex,
+	  doc/infnorm.tex, doc/integer.tex, doc/integral.tex,
+	  doc/isbound.tex, doc/isevaluable.tex, doc/le.tex,
+	  doc/length.shlp, doc/length.tex, doc/library.tex, doc/listof.tex,
+	  doc/log.tex, doc/log10.tex, doc/log1p.tex, doc/log2.tex,
+	  doc/lt.tex, doc/mantissa.tex, doc/mid.shlp, doc/mid.tex,
+	  doc/midpointmode.tex, doc/minus.tex, doc/mult.tex, doc/neq.tex,
+	  doc/nop.tex, doc/not.tex, doc/numerator.tex, doc/off.tex,
+	  doc/on.tex, doc/or.tex, doc/parse.tex, doc/perturb.tex,
+	  doc/pi.shlp, doc/pi.tex, doc/plot.tex, doc/points.tex,
+	  doc/postscript.tex, doc/postscriptfile.tex, doc/power.shlp,
+	  doc/power.tex, doc/powers.tex, doc/prec.tex, doc/precision.shlp,
+	  doc/precision.tex, doc/prepend.tex, doc/print.tex,
+	  doc/printexpansion.tex, doc/printfloat.tex, doc/printhexa.tex,
+	  doc/printxml.shlp, doc/printxml.tex, doc/proc.tex,
+	  doc/procedure.tex, doc/quit.tex, doc/range.tex,
+	  doc/rationalapprox.tex, doc/readfile.tex, doc/readxml.tex,
+	  doc/relative.tex, doc/remez.tex, doc/rename.tex, doc/restart.tex,
+	  doc/return.tex, doc/revert.tex, doc/round.shlp, doc/round.tex,
+	  doc/roundcoefficients.shlp, doc/roundcoefficients.tex,
+	  doc/roundcorrectly.tex, doc/searchgal.shlp, doc/searchgal.tex,
+	  doc/simplify.tex, doc/simplifysafe.tex, doc/sin.tex,
+	  doc/sinh.tex, doc/sollya.pdf, doc/sort.tex, doc/sqrt.shlp,
+	  doc/sqrt.tex, doc/string.tex, doc/subpoly.tex,
+	  doc/substitute.tex, doc/sup.tex, doc/tail.tex, doc/tan.shlp,
+	  doc/tan.tex, doc/tanh.shlp, doc/tanh.tex, doc/taylor.tex,
+	  doc/taylorrecursions.tex, doc/timing.tex, doc/tripledouble.tex,
+	  doc/true.tex, doc/var.shlp, doc/var.tex, doc/verbosity.tex,
+	  doc/void.shlp, doc/void.tex, doc/write.tex: Continued working on
+	  documentation
+
+2007-12-19 13:57  clauter
+
+	* doc/abs.shlp, doc/absolute.shlp, doc/externalproc.shlp,
+	  doc/grammar.tex, doc/sollya.pdf, doc/sollya.tex, doc/types.def:
+	  Continued working on documentation
+
+2007-12-19 13:13  schevill
+
+	* double.c, execute.c, expression.c, remez.c: * Corrected memory
+	  leaks
+	  * Added a test in Remez algorithm that prevents the command to
+	  return a false result when there is too many oscillations.
+
+2007-12-19 10:18  schevill
+
+	* doc/externalplot.tex, doc/shlp2tex.sh: patched version for
+	  handling pipes.
+
+2007-12-18 14:27  schevill
+
+	* doc/shlp2tex.sh, doc/worstcase.tex: patched shlp2tex in order to
+	  handle correctly tabulations in examples.
+
+2007-12-18 14:22  schevill
+
+	* doc/log.tex, doc/log2.tex, doc/plus.tex, doc/remez.tex,
+	  doc/shlp2tex.sh: patched shlp2tex in order to handle correctly
+	  labels of special function
+	  such as + etc.
+
+2007-12-18 11:30  schevill
+
+	* doc/remez.tex, doc/shlp2tex.sh: small bug fix
+
+2007-12-18 11:29  schevill
+
+	* doc/shlp2tex.sh: small bug fix.
+
+2007-12-18 11:27  schevill
+
+	* doc/remez.tex, doc/shlp2tex.sh: added hyperlink in seealso
+
+2007-12-18 10:32  schevill
+
+	* doc/remez.tex, doc/shlp2tex.sh: Now, labels work
+
+2007-12-18 10:28  schevill
+
+	* doc/remez.tex, doc/shlp2tex.sh: Added labels for each subsection
+	  in LaTeX mode.
+
+2007-12-17 18:18  schevill
+
+	* assignment.c, execute.c, expression.c, infnorm.c, plot.c,
+	  remez.c: Corrected memory leaks.
+
+2007-12-17 13:31  clauter
+
+	* general.c: Patched memory leak for timing
+
+2007-12-17 13:05  clauter
+
+	* execute.c, infnorm.c: Patched a memory leak.
+
+2007-12-14 16:11  schevill
+
+	* README: Added a comment explaining briefly what is Sollya.
+
+2007-12-14 15:59  schevill
+
+	* doc/sollya.tex: sollya.tex compatible with new shlp2tex
+
+2007-12-14 15:56  schevill
+
+	* doc/CommandsAndFunctions.tex, doc/RD.tex, doc/RN.tex, doc/RU.tex,
+	  doc/RZ.tex, doc/absolute.tex, doc/accurateinfnorm.tex,
+	  doc/and.tex, doc/append.tex, doc/asciiplot.tex,
+	  doc/autosimplify.tex, doc/bashexecute.tex, doc/canonical.tex,
+	  doc/checkinfnorm.tex, doc/coeff.tex, doc/concat.tex,
+	  doc/default.tex, doc/degree.tex, doc/denominator.tex,
+	  doc/diff.tex, doc/dirtyfindzeros.tex, doc/dirtyinfnorm.tex,
+	  doc/dirtyintegral.tex, doc/display.tex, doc/divide.tex,
+	  doc/double.tex, doc/doubledouble.tex, doc/doubleextended.tex,
+	  doc/equal.tex, doc/error.tex, doc/evaluate.tex, doc/execute.tex,
+	  doc/expand.tex, doc/exponent.tex, doc/externalplot.tex,
+	  doc/externalproc.tex, doc/false.tex, doc/file.tex,
+	  doc/findzeros.tex, doc/fullparentheses.tex, doc/ge.tex,
+	  doc/gt.tex, doc/guessdegree.tex, doc/head.tex,
+	  doc/honorcoeffprec.tex, doc/hopitalrecursions.tex,
+	  doc/horner.tex, doc/implementpoly.tex, doc/inf.tex,
+	  doc/infnorm.tex, doc/integral.tex, doc/isbound.tex,
+	  doc/isevaluable.tex, doc/keywords.def, doc/le.tex,
+	  doc/length.tex, doc/library.tex, doc/lt.tex, doc/mantissa.tex,
+	  doc/mid.tex, doc/midpointmode.tex, doc/minus.tex, doc/mult.tex,
+	  doc/neq.tex, doc/nop.tex, doc/not.tex, doc/numerator.tex,
+	  doc/off.tex, doc/on.tex, doc/or.tex, doc/parse.tex,
+	  doc/perturb.tex, doc/pi.tex, doc/plot.tex, doc/plus.tex,
+	  doc/points.tex, doc/postscript.tex, doc/postscriptfile.tex,
+	  doc/power.tex, doc/prec.tex, doc/precision.tex, doc/prepend.tex,
+	  doc/print.tex, doc/printexpansion.tex, doc/printfloat.tex,
+	  doc/printhexa.tex, doc/printxml.tex, doc/proc.tex,
+	  doc/procedure.tex, doc/quit.tex, doc/rationalapprox.tex,
+	  doc/readfile.tex, doc/readxml.tex, doc/relative.tex,
+	  doc/remez.tex, doc/rename.tex, doc/restart.tex, doc/return.tex,
+	  doc/revert.tex, doc/round.tex, doc/roundcoefficients.tex,
+	  doc/roundcorrectly.tex, doc/searchgal.tex, doc/shlp2tex.sh,
+	  doc/shlp2txt.sh, doc/simplify.tex, doc/simplifysafe.tex,
+	  doc/sort.tex, doc/subpoly.tex, doc/substitute.tex, doc/sup.tex,
+	  doc/tail.tex, doc/taylor.tex, doc/taylorrecursions.tex,
+	  doc/timing.tex, doc/tripledouble.tex, doc/true.tex, doc/var.tex,
+	  doc/verbosity.tex, doc/void.tex, doc/worstcase.tex,
+	  doc/write.tex: Upgrade of shlp2txt and shlp2tex. Examples are now
+	  correctly handled by
+	  shlp2tex.
+
+2007-12-14 14:47  clauter
+
+	* assignment.c, execute.c, expression.c, general.c, implement.c,
+	  proof.c: Patched *some* memory leaks.
+
+2007-12-13 13:42  clauter
+
+	* help.h, internlexer.l, internparser.y, lexer.l, minilexer.l,
+	  miniparser.y, parser.y: Added licensing information to lexer and
+	  parser files
+
+2007-12-13 13:36  clauter
+
+	* COPYING, parser.y: Adapted version command.
+
+2007-12-13 13:26  clauter
+
+	* COPYING, assignment.c, assignment.h, chain.c, chain.h, double.c,
+	  double.h, execute.c, execute.h, expansion.c, expansion.h,
+	  expression.c, expression.h, external.c, external.h,
+	  externalfun.c, externalproc.c, fpminimax.c, fpminimax.h,
+	  general.c, general.h, implement.c, implement.h, infnorm.c,
+	  infnorm.h, integral.c, integral.h, library.c, library.h,
+	  libsollyaexample.c, main.c, main.h, pari_utils.c, pari_utils.h,
+	  plot.c, plot.h, proof.c, proof.h, remez.c, remez.h, sollya.h,
+	  taylor.c, taylor.h, worstcase.c, worstcase.h, xml.c, xml.h:
+	  Passed everything to CeCILL-C
+
+2007-12-13 11:48  clauter
+
+	* COPYING, assignment.c, assignment.h, chain.c, chain.h,
+	  doc/sollya.tex, double.c, double.h, execute.c, execute.h,
+	  expansion.c, expansion.h, expression.c, expression.h, external.c,
+	  external.h, externalfun.c, externalproc.c, fpminimax.c,
+	  fpminimax.h, general.c, general.h, implement.c, implement.h,
+	  infnorm.c, infnorm.h, integral.c, integral.h, library.c,
+	  library.h, libsollyaexample.c, main.c, main.h, pari_utils.c,
+	  pari_utils.h, plot.c, plot.h, proof.c, proof.h, remez.c, remez.h,
+	  sollya.h, taylor.c, taylor.h, worstcase.c, worstcase.h, xml.c,
+	  xml.h: Added CeCILL headers where appropriate. To be verified for
+	  legal reasons.
+
+2007-12-12 14:20  clauter
+
+	* doc/sollya.pdf: Compiled version of sollya.pdf
+
+2007-12-12 12:18  schevill
+
+	* doc/shlp2tex.sh:
+
+2007-12-12 12:10  schevill
+
+	* doc/RD.tex, doc/RN.tex, doc/RU.tex, doc/RZ.tex, doc/abs.tex,
+	  doc/absolute.tex, doc/accurateinfnorm.tex, doc/acos.tex,
+	  doc/acosh.tex, doc/and.tex, doc/append.tex, doc/asciiplot.tex,
+	  doc/asin.tex, doc/asinh.tex, doc/atan.tex, doc/atanh.tex,
+	  doc/autosimplify.tex, doc/bashexecute.tex, doc/binary.tex,
+	  doc/boolean.tex, doc/canonical.tex, doc/ceil.tex,
+	  doc/checkinfnorm.tex, doc/coeff.tex, doc/concat.tex,
+	  doc/constant.tex, doc/cos.tex, doc/cosh.tex, doc/decimal.tex,
+	  doc/default.tex, doc/degree.tex, doc/denominator.tex,
+	  doc/diam.tex, doc/diff.tex, doc/dirtyfindzeros.tex,
+	  doc/dirtyinfnorm.tex, doc/dirtyintegral.tex, doc/display.tex,
+	  doc/divide.tex, doc/double.tex, doc/doubledouble.tex,
+	  doc/doubleextended.tex, doc/dyadic.tex, doc/equal.tex,
+	  doc/erf.tex, doc/erfc.tex, doc/error.tex, doc/evaluate.tex,
+	  doc/execute.tex, doc/exp.tex, doc/expand.tex, doc/expm1.tex,
+	  doc/exponent.tex, doc/externalplot.tex, doc/externalproc.tex,
+	  doc/false.tex, doc/file.tex, doc/findzeros.tex, doc/floor.tex,
+	  doc/fullparentheses.tex, doc/function.tex, doc/ge.tex,
+	  doc/gt.tex, doc/guessdegree.tex, doc/head.tex,
+	  doc/hexadecimal.tex, doc/honorcoeffprec.tex,
+	  doc/hopitalrecursions.tex, doc/horner.tex, doc/implementpoly.tex,
+	  doc/inf.tex, doc/infnorm.tex, doc/integer.tex, doc/integral.tex,
+	  doc/isbound.tex, doc/isevaluable.tex, doc/le.tex, doc/length.tex,
+	  doc/library.tex, doc/listof.tex, doc/log.tex, doc/log10.tex,
+	  doc/log1p.tex, doc/log2.tex, doc/lt.tex, doc/mantissa.tex,
+	  doc/mid.tex, doc/midpointmode.tex, doc/minus.tex, doc/mult.tex,
+	  doc/neq.tex, doc/nop.tex, doc/not.tex, doc/numerator.tex,
+	  doc/off.tex, doc/on.tex, doc/or.tex, doc/parse.tex,
+	  doc/perturb.tex, doc/pi.tex, doc/plot.tex, doc/plus.tex,
+	  doc/points.tex, doc/postscript.tex, doc/postscriptfile.tex,
+	  doc/power.tex, doc/powers.tex, doc/prec.tex, doc/precision.tex,
+	  doc/prepend.tex, doc/print.shlp, doc/print.tex,
+	  doc/printexpansion.tex, doc/printfloat.tex, doc/printhexa.tex,
+	  doc/printxml.tex, doc/proc.tex, doc/procedure.tex, doc/quit.tex,
+	  doc/range.tex, doc/rationalapprox.tex, doc/readfile.tex,
+	  doc/readxml.tex, doc/relative.tex, doc/remez.tex, doc/rename.tex,
+	  doc/restart.tex, doc/return.tex, doc/revert.tex, doc/round.tex,
+	  doc/roundcoefficients.tex, doc/roundcorrectly.tex,
+	  doc/searchgal.tex, doc/simplify.tex, doc/simplifysafe.tex,
+	  doc/sin.tex, doc/sinh.tex, doc/sollya.tex, doc/sort.tex,
+	  doc/sqrt.tex, doc/string.tex, doc/subpoly.tex,
+	  doc/substitute.tex, doc/sup.tex, doc/tail.tex, doc/tan.tex,
+	  doc/tanh.tex, doc/taylor.tex, doc/taylorrecursions.tex,
+	  doc/timing.tex, doc/tripledouble.tex, doc/true.tex, doc/var.tex,
+	  doc/verbosity.tex, doc/void.tex, doc/worstcase.tex,
+	  doc/write.shlp, doc/write.tex, help.h: Added tex help files
+
+2007-12-12 12:01  clauter
+
+	* help.h: Corrected help for void keyword.
+
+2007-12-12 12:00  clauter
+
+	* doc/keywords.def, doc/nop.shlp, doc/proc.shlp,
+	  doc/procedure.shlp, doc/return.shlp, doc/types.def,
+	  doc/void.shlp, execute.c, help.h, parser.y: Corrected a small bug
+	  in procedure evaluation (consistancy check for restart statements
+	  in procedures read out of files included by #include).
+	  Corrected small bugs in help invokation. Added new help texts.
+
+2007-12-12 10:44  schevill
+
+	* doc/exp.shlp, doc/externalproc.shlp, doc/keywords.def,
+	  doc/quit.shlp, doc/relative.shlp, doc/remez.shlp,
+	  doc/restart.shlp, doc/shlp2txt.sh, doc/sqrt.shlp, help.h: * Help
+	  files patched in order to compile in TeX mode
+	  * Definitions of keywords modified to take in account that +, -,
+	  *, ^, &
+	  and | are special characters for LaTeX
+	  * shlp2txt patched for handling new keywords definitions.
+	  Moreover,
+	  shlp2txt supports now "-v" option which prints its output in
+	  stdout.
+	  Usage: ./shlp2txt -v list_of_shlp_files
+	  Note: it keeps updating help.h even when -v option is activated.
+
+2007-12-10 15:17  schevill
+
+	* doc/degree.shlp, doc/diam.shlp, doc/dirtyfindzeros.shlp,
+	  doc/doubledouble.shlp, doc/doubleextended.shlp,
+	  doc/findzeros.shlp, doc/isbound.shlp, doc/library.shlp,
+	  doc/libraryexample.c, doc/pi.shlp, doc/plot.shlp,
+	  doc/rationalapprox.shlp, doc/substitute.shlp,
+	  doc/taylorrecursions.shlp, doc/tripledouble.shlp, help.h: Added
+	  the two last example files.
+
+2007-11-27 15:36  clauter
+
+	* infnorm.c: Corrected a bug in findzeros: findzeros looped to
+	  infinity if the precision
+	  needed to represent intervals of size smaller than diam was not
+	  available.
+
+2007-11-25 19:23  clauter
+
+	* execute.c, execute.h, internlexer.l, internparser.y, lexer.l,
+	  parser.y: Added floating-point evaluated assignment operator :=.
+	  Corrected a small bug in procedure evaluation concerning void as
+	  an argument.
+
+2007-11-25 18:21  clauter
+
+	* execute.c, execute.h, internlexer.l, internparser.y, lexer.l,
+	  parser.y: Added support for procedures.
+
+2007-11-21 09:50  clauter
+
+	* proof.c: Corrected UTF-8 issue
+
+2007-11-21 06:58  clauter
+
+	* ChangeLog: New ChangeLog
+
+2007-11-21 06:57  clauter
+
+	* execute.c: Corrected 3 small bugs
+
 2007-11-20 20:05  clauter
 
 	* execute.c, internparser.y, parser.y: Corrected a bug in the
