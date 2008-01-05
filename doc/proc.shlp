@@ -51,8 +51,8 @@ before interpreting any other statement in body of the procedure.
 #DESCRIPTION
 By means provided by the $VAR keyword, it is possible to declare local
 variables and thus to have full support of recursive procedures. This
-means a procedure defined using $COMMAND may contain in its <procedure
-body> an application of itself to some actual parameters: it suffices
+means a procedure defined using $COMMAND may contain in its <procedure body> 
+an application of itself to some actual parameters: it suffices
 to assign the procedure (object) to an identifier with an appropriate
 name.
 
