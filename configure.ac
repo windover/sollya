@@ -140,7 +140,11 @@ LDFLAGS="$AM_LDFLAGS $LDFLAGS"
 
 AC_CHECK_LIB([dl], [dlopen], [], AC_MSG_ERROR([libdl unusable]))
 AC_CHECK_LIB([gmp], [__gmpz_init], [], AC_MSG_ERROR([libgmp unusable]))
+AC_CHECK_LIB([gmp], [__gmpz_fac_ui], [], AC_MSG_ERROR([libgmp version too old]))
+AC_CHECK_LIB([gmp], [__gmpz_bin_uiui], [], AC_MSG_ERROR([libgmp version too old]))
+AC_CHECK_LIB([gmp], [__gmpz_export], [], AC_MSG_ERROR([libgmp version too old]))
 AC_CHECK_LIB([mpfr], [mpfr_init], [], AC_MSG_ERROR([libmpfr unusable]))
+AC_CHECK_LIB([mpfr], [mpfr_erfc], [], AC_MSG_ERROR([libmpfr version too old]))
 AC_CHECK_LIB([pari], [pari_init], [], AC_MSG_ERROR([libpari unusable]))
 AC_CHECK_LIB([xml2], [xmlTextReaderIsEmptyElement], [], AC_MSG_ERROR([libxml2 unusable]))
 AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unusable]))

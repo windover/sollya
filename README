@@ -13,7 +13,7 @@ In order to compile the software you will need the following packages installed:
 - flex version 2.5.33 or later
 - gnuplot
 - gmp
-- mpfr
+- mpfr 2.2.0 or later
 - mpfi
 - pari version 2.3.0
 - libxml2-dev
