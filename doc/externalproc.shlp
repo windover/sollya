@@ -38,8 +38,8 @@ If the $SOLLYA result type is void, the C function has no pointer
 argument for the result.  If the $SOLLYA result type is constant, the
 first argument of the C function is of C type §§mpfr_t *§\texttt{mpfr\_t *}§§, the result is
 returned by affecting the MPFR variable.  If the $SOLLYA result type
-is function, the first argument of the C function is of C type §§node
-**§\texttt{node **}§§, the result is returned by the §§node *§\texttt{node *}§§ pointed with a new §§node *§\texttt{node *}§§.
+is function, the first argument of the C function is of C type §§node**§\texttt{node **}§§,
+the result is returned by the §§node *§\texttt{node *}§§ pointed with a new §§node *§\texttt{node *}§§.
 If the $SOLLYA result type is range, the first argument of the C
 function is of C type §§mpfi_t *§\texttt{mpfi\_t *}§§, the result is returned by affecting
 the MPFI variable.  If the $SOLLYA result type is integer, the first
