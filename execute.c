@@ -85,6 +85,28 @@ node *makeExternalProcedureUsage(libraryProcedure *);
 
 void *copyThingOnVoid(void *);
 
+rangetype guessDegreeWrapper(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) {
+  rangetype result;
+  jmp_buf oldEnvironment;
+  int oldVerbosity;
+  
+  oldVerbosity = verbosity;
+  memmove(&oldEnvironment,&recoverEnvironmentError,sizeof(oldEnvironment));
+  if (!setjmp(recoverEnvironmentError)) {
+    result = guessDegree(func, weight, a, b, eps);
+  } else {
+    verbosity = oldVerbosity;
+    printMessage(1,"Warning: guessdegree could not be executed.\n");
+    result.a = NULL; result.b = NULL;
+  }
+  memmove(&recoverEnvironmentError,&oldEnvironment,sizeof(recoverEnvironmentError));
+  verbosity = oldVerbosity;
+
+  return result;
+}
+
+
+
 void executeFile(FILE *fd) {
   node *oldParsedThingIntern;
   void *myScanner = NULL;
@@ -12698,6 +12720,8 @@ node *evaluateThing(node *tree) {
       }
     }
 
+    printMessage(3,"Information: evaluation creates an error special symbol.\n");
+
     freeThing(evaluated);
     evaluated = makeError();
   }
@@ -15775,7 +15799,7 @@ node *evaluateThingInner(node *tree) {
       if (evaluateThingToRange(a,b,secondArg) &&
 	  evaluateThingToConstant(c,thirdArg, NULL)) {
 	if (timingString != NULL) pushTimeCounter(); 
-	yrange = guessDegree(firstArg, fourthArg, a, b, c);
+	yrange = guessDegreeWrapper(firstArg, fourthArg, a, b, c);
 	if (timingString != NULL) popTimeCounter(timingString);
 	if ((yrange.a != NULL) && (yrange.b != NULL)) {
 	  tempNode = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
