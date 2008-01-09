@@ -611,6 +611,7 @@ void quickFindZeros(mpfr_t *res, node *tree, node *diff_tree, int deg, mpfr_t a,
   
   if (i<deg) {
     printMessage(1,"Warning: the function fails to oscillate enough.\n");
+    printMessage(1,"Check Haar condition and/or increase precision.\n");
     *crash_report = -1;
   }
   else {
@@ -1601,6 +1602,15 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
 			   freeDegrees, u, v, prec);
     
     if(crash==-1) {
+      verbosity=verb;
+      defaultpoints=npoints;
+      printMessage(1, "Warning: the function fails to oscillate enough.\n");
+      printMessage(1, "Try to increase precision.\n");
+      if (verbosity>=2) {
+	printf("The computed polynomial was: ");printTree(poly);
+	printf("\n");
+      }
+
       for(j=0;j<freeDegrees;j++) {
 	free_memory(monomials_tree[j]);
       }
@@ -1635,8 +1645,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
       free(M);
       free(b);
       free(ai_vect);
-      verbosity=verb;
-      defaultpoints=npoints;
+
       recoverFromError();
     }
 
