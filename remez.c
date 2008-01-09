@@ -1064,20 +1064,13 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   /*                  Manually chosen points                   */
   // assume the list of points to be stored in variable list:
   // run:   i=0; for t in list do {write("mpfr_set_str(x[",i,"],\"",t,"\", 10, GMP_RNDN);\n"); i=i+1;} ;
-  //  mpfr_set_str(x[0],"-0.3125e-1", 10, GMP_RNDN);
-  //  mpfr_set_str(x[1],"-0.30584696851836061231178794452190602808051522319263946458708614667e-1", 10, GMP_RNDN);
-  //  mpfr_set_str(x[2],"-0.28501111491205151104325157864034898021348356159961735558618431475e-1", 10, GMP_RNDN);
-  //  mpfr_set_str(x[3],"-0.24886449463478475396949237795739500812185286056353102927127228394e-1", 10, GMP_RNDN);
-  //  mpfr_set_str(x[4],"-0.19762290147941257522128271303067067541838484524908767960712080225e-1", 10, GMP_RNDN);
-  //  mpfr_set_str(x[5],"-0.13250854683846223359806734141844877411014570720332055635801288526e-1", 10, GMP_RNDN);
-  //  mpfr_set_str(x[6],"-0.56244711839221576562527112094385137737475296714313660806835935129e-2", 10, GMP_RNDN);
-  //  mpfr_set_str(x[7],"0.28391683750101442278882006705620645329423774729985858978557164229e-2", 10, GMP_RNDN);
-  //  mpfr_set_str(x[8],"0.11863948153667030697792566482168683761732741161430970590458867454e-1", 10, GMP_RNDN);
-  //  mpfr_set_str(x[9],"0.20401920326072435911649203711058280321795097964607742385634405983e-1", 10, GMP_RNDN);
-  //  mpfr_set_str(x[10],"0.2657769766120891383383375050507639378011506820549866146399169124e-1", 10, GMP_RNDN);
-  //  mpfr_set_str(x[11],"0.30106407715604841735213313137699925783784565233826547024950086538e-1", 10, GMP_RNDN);
-  //  mpfr_set_str(x[12],"0.3124e-1", 10, GMP_RNDN);
-  //  mpfr_set_str(x[13],"0.3125e-1", 10, GMP_RNDN);
+
+  /*   mpfr_set_str(x[0],"-0.3125e-1", 10, GMP_RNDN); */
+  /*   mpfr_set_str(x[1],"-0.270866924296709954921192919457109841628145246303031e-1", 10, GMP_RNDN); */
+  /*   mpfr_set_str(x[2],"-0.156792125481182037300460865714390558114871681447265e-1", 10, GMP_RNDN); */
+  /*   mpfr_set_str(x[3],"0.270866923865259682207709736846537325622398567463872667e-1", 10, GMP_RNDN); */
+
+
   /*************************************************************/
 
 
@@ -1400,7 +1393,7 @@ node *remez(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mpfr
 // returns 1 if deg is sufficient to approximate the function to eps
 // returns -1 if deg is not sufficient
 // 0 if we cannot determine.
-int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps) {
+int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int verb, int npoints) {
   mp_prec_t prec = defaultprecision;
   int freeDegrees = deg+1;
   chain *monomials;
@@ -1612,7 +1605,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps) {
 	free_memory(monomials_tree[j]);
       }
       free(monomials_tree);
-      
+
       for(j=1;j<=freeDegrees+1;j++) mpfr_clear(x[j-1]);
       free(x);
 
@@ -1642,7 +1635,8 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps) {
       free(M);
       free(b);
       free(ai_vect);
-
+      verbosity=verb;
+      defaultpoints=npoints;
       recoverFromError();
     }
 
@@ -1707,7 +1701,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   defaultpoints = 5;
 
   while(res==-1 && (n_max < 100)) {
-    res = whichPoly(n_max, func, weight, a, b, eps);
+    res = whichPoly(n_max, func, weight, a, b, eps, old_verbosity, number_points);
     if(res==-1) {
       n_min=n_max;
       n_max = n_max*2;
@@ -1725,7 +1719,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
     res = -1;
     while(res<0 && (n_min <= 100)) {
       n_min++;
-      res = whichPoly(n_min,func,weight,a,b,eps);
+      res = whichPoly(n_min,func,weight,a,b,eps, old_verbosity, number_points);
     }
 
     u = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
@@ -1744,7 +1738,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   // else...
 
   while(test && (n_max-n_min > 1)) {
-    res = whichPoly((n_min+n_max)/2, func, weight, a, b, eps);
+    res = whichPoly((n_min+n_max)/2, func, weight, a, b, eps, old_verbosity, number_points);
     if(res==1) n_max=(n_min+n_max)/2;
     else {
       if(res==-1) n_min=(n_min+n_max)/2;
@@ -1759,13 +1753,13 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
     n_max = n_min;
     while(res!=-1) {
       n_min--;
-      res = whichPoly(n_min,func,weight,a,b,eps);
+      res = whichPoly(n_min,func,weight,a,b,eps, old_verbosity, number_points);
     }
     n_min = n_min + 1;
     res=0;
     while(res!=1) {
       n_max++;
-      res = whichPoly(n_max,func,weight,a,b,eps);
+      res = whichPoly(n_max,func,weight,a,b,eps, old_verbosity, number_points);
     }
   }
   
