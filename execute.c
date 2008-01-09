@@ -89,18 +89,23 @@ rangetype guessDegreeWrapper(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_
   rangetype result;
   jmp_buf oldEnvironment;
   int oldVerbosity;
+  int oldPoints;
   
   oldVerbosity = verbosity;
+  oldPoints = defaultpoints;
   memmove(&oldEnvironment,&recoverEnvironmentError,sizeof(oldEnvironment));
   if (!setjmp(recoverEnvironmentError)) {
     result = guessDegree(func, weight, a, b, eps);
   } else {
     verbosity = oldVerbosity;
-    printMessage(1,"Warning: guessdegree could not be executed.\n");
+    defaultpoints = oldPoints;
+    printMessage(1,"Warning: some error occured while executing guessdegree.\n");
+    printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
     result.a = NULL; result.b = NULL;
   }
   memmove(&recoverEnvironmentError,&oldEnvironment,sizeof(recoverEnvironmentError));
   verbosity = oldVerbosity;
+  defaultpoints = oldPoints;
 
   return result;
 }
