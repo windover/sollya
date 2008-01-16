@@ -1,3 +1,63 @@
+2008-01-16 11:38  clauter
+
+	* general.c: Added mpfr_free_cache call at the end of the tool
+
+2008-01-16 11:12  clauter
+
+	* doc/Makefile.am, pari_utils.c: Corrected svn
+
+2008-01-16 11:02  clauter
+
+	* Makefile.am, configure.ac, doc/sollya.pdf, doc/sollya.tex: Added
+	  sollya.pdf build to make dist
+
+2008-01-16 10:49  clauter
+
+	* README, autogen.sh, configure.ac: Patched build files for
+	  overcoming the bug encountered on John Harrison's
+	  computer. Work in progress.
+
+2008-01-09 16:09  schevill
+
+	* remez.c: More explicits message when the curve fails to oscillate
+	  sufficiently.
+
+2008-01-09 16:01  clauter
+
+	* execute.c: Patched error message on guessdegree failure
+
+2008-01-09 15:52  schevill
+
+	* remez.c: corrected a bug concerning the verbosity and
+	  defaultpoints in guessdegree
+
+2008-01-09 09:28  clauter
+
+	* execute.c: Patched guessdegree behaviour in interpreter
+
+2008-01-08 12:47  schevill
+
+	* doc/externalproc.shlp, doc/externalproc.tex, doc/sollya.pdf,
+	  help.h: Corrected a bug in the doc
+
+2008-01-08 09:40  clauter
+
+	* README, configure.ac: Added MPFR version checking to configure
+	  script -- following mail exchange with N. Brisebarre
+
+2008-01-07 10:40  schevill
+
+	* README: Added a mention about the necessity of GMP
+
+2008-01-07 10:40  schevill
+
+	* doc/sollya.tex: Added a mention about the necessity of GMP
+
+2008-01-05 13:05  clauter
+
+	* ChangeLog, doc/proc.tex, doc/sollya.pdf, doc/taylor.tex, help.h:
+	  Compiled versions of new help texts
+
 2008-01-05 12:58  clauter
 
 	* doc/proc.shlp, doc/sollya.tex, doc/taylor.shlp: Patched some

@@ -5116,6 +5116,7 @@ int executeCommandInner(node *tree) {
     } else {
       resB = resA;
       resC = 1;
+      resD = PLOTFILE;
       tempString = NULL;
     }
     if (resC) {
