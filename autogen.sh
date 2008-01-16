@@ -1,3 +1,3 @@
 #!/bin/sh
 touch ChangeLog
-autoreconf -i -s
+autoreconf --force --install -s -I config -I m4

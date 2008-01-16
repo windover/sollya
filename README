@@ -9,8 +9,6 @@ implementer and a fast Remez algorithm.
 In order to compile the software you will need the following packages installed:
 
 - gcc
-- bison version 2.3 or later
-- flex version 2.5.33 or later
 - gnuplot
 - gmp
 - mpfr 2.2.0 or later
@@ -18,13 +16,23 @@ In order to compile the software you will need the following packages installed:
 - pari version 2.3.0
 - libxml2-dev
 
+- bison version 2.3 or later
+- flex version 2.5.33 or later
+
+Bison and flex are really needed if you compile a fresh svn checkout or if you modify
+the grammar files contained in the distribution. Otherwise, precompiled versions
+are found in the distribution and can be used.
+
 In order to compile, use the makefile by invoking it using the following command:
 
 ./configure
 make
 
-When compiling a fresh svn checkout, launch first the autogen.sh Shell
-script before executing the two steps indicated above.
+When compiling a fresh svn checkout, launch first the autogen.sh shell
+script before executing the two steps indicated above. 
+Users compiling fresh svn checkouts are recommanded to use the 
+--enable-strict-lexer-parser-check option of the configure script.
+
 
 You can then use the software typing
 

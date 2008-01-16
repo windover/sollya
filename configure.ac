@@ -24,18 +24,28 @@ AC_SUBST(LIBTOOL_DEPS)
 
 #Check whether flex and bison support interactive and pure parsers
 
+AC_ARG_ENABLE(strict-lexer-parser-check, [  --enable-strict-lexer-parser-check enables strict compatibility checking for building the lexer and parser files], [STRICTFLEXBISONTESTING="1"], [STRICTFLEXBISONTESTING=""])
+
 AC_MSG_CHECKING([flex supports interactive and pure lexers])
 if test `echo -e "%{\n%}\n\n%option always-interactive\n%option reentrant\n%option prefix=\"coucou\"\n%option bison-bridge\n%option nounput\n\n%%\n"test" { }\n%%\n" > conftest.l ; $LEX conftest.l > /dev/null 2> /dev/null ; echo $?; rm -f lex.coucou.c` -eq 0 ; then 
 AC_MSG_RESULT(yes)
 else
-AC_MSG_ERROR(no)
+if test "x$STRICTFLEXBISONTESTING" = "x"; then
+   AC_MSG_RESULT(flex version unable to compile the lexer from the grammar files)
+else
+   AC_MSG_ERROR(no)	
+fi
 fi
 
-AC_MSG_CHECKING([bison supports interactive and pure lexers])
+AC_MSG_CHECKING([bison supports interactive and pure parsers])
 if test `echo -e "%{\n#define YYERROR_VERBOSE 1\n#define YYPARSE_PARAM scanner\n#define YYLEX_PARAM scanner\n%}\n\n%defines\n%pure_parser\n\n%%\nstart: \".\"\n{ }\n;\n\n" > conftest.y ; $YACC conftest.y > /dev/null 2> /dev/null ; echo $?; rm -f y.tab.*` -eq 0 ; then 
 AC_MSG_RESULT(yes)
 else
-AC_MSG_ERROR(no)
+if test "x$STRICTFLEXBISONTESTING" = "x"; then
+   AC_MSG_RESULT(bison version unable to compile the parser from the grammar files)
+else
+   AC_MSG_ERROR(no)	
+fi
 fi
 
 # withs...
