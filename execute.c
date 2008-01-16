@@ -5215,7 +5215,7 @@ int executeCommandInner(node *tree) {
 	  mpfr_init2(b,tools_precision);
 	  if (evaluateThingToRange(a,b,array[3])) {
 	    if (evaluateThingToInteger(&resB, array[4], NULL)) {
-	      resC = 0; resD = 0; tempString2 = NULL;
+	      resC = 0; resD = 0; tempString2 = NULL; resE = PLOTFILE;
 	      if (resA >= 6) {
 		if ((array[5])->nodeType == PERTURB) {
 		  resC = 1;
