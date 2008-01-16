@@ -229,5 +229,5 @@ AC_CHECK_FUNCS([gettimeofday memset memmove strerror strtol backtrace])
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(AM_CFLAGS)
 AC_SUBST(AM_LDFLAGS)
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile doc/Makefile])
 AC_OUTPUT
