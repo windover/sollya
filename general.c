@@ -552,6 +552,7 @@ void freeTool() {
   freeDeclaredSymbolTable(declaredSymbolTable, freeThingOnVoid);
   declaredSymbolTable = NULL;
   mpfr_clear(statediam);
+  mpfr_free_cache();
 }
 
 void initToolDefaults() {
