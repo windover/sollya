@@ -47,6 +47,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 */
 
 #include <pari/pari.h>
+
+#define outbeaut(x) /* Temporary patch for Paul Zimmermann's compile bug */
+
 #include <gmp.h>
 #include <mpfr.h>
 
