@@ -1215,6 +1215,26 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     popTimeCounter("Remez: computing the quality of approximation");
 
     if(crash==-1) {
+
+      // temporary check until I patch the algorithm in order to handle
+      // correctly cases when the error oscillates too much
+      mpfr_t ninf;
+      mpfr_init2(ninf, 53);
+      
+      temp_tree = makeSub(makeMul(copyTree(poly), copyTree(w)), copyTree(f));
+      uncertifiedInfnorm(ninf, temp_tree, u, v, getToolPoints(), prec);
+
+      if(verbosity>=1) {
+	printf("The best polynomial obtained gives an error of ");
+	printMpfr(ninf);
+	printf("\n");
+      }
+
+      free_memory(temp_tree);
+      mpfr_clear(ninf);
+      // end of the temporary check
+
+
       for(j=0;j<freeDegrees;j++) {
 	free_memory(monomials_tree[j]);
       }
