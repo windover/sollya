@@ -560,7 +560,8 @@ chain *uncertifiedFindZeros(node *tree, mpfr_t a, mpfr_t b, unsigned long int po
 
 // Returns a PARI array containing the zeros of tree on [a;b]
 // deg+1 indicates the number of zeros which we are expecting.
-void quickFindZeros(mpfr_t *res, node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec, int *crash_report) {
+// error' = tree  and tree' = diff_tree
+void quickFindZeros(mpfr_t *res, node *error, node *tree, node *diff_tree, int deg, mpfr_t a, mpfr_t b, mp_prec_t prec, int *crash_report) {
   long int n = 50*(deg+2);
   long int i=0;
   mpfr_t h, x1, x2, y1, y2, zero_mpfr;
@@ -621,11 +622,21 @@ void quickFindZeros(mpfr_t *res, node *tree, node *diff_tree, int deg, mpfr_t a,
       mpfr_sort(res, deg+2, prec);
     }
     else {
-      if (i==deg +1) {
-	evaluateFaithfulWithCutOffFast(y1, tree, diff_tree, a, zero_mpfr, prec);
-	evaluateFaithfulWithCutOffFast(y2, tree, diff_tree, b, zero_mpfr, prec);
-	if (mpfr_cmpabs(y1,y2)>0) mpfr_set(res[deg+1], a, GMP_RNDN);
-	else mpfr_set(res[deg+1], b, GMP_RNDN);
+      if (i==deg+1) {
+	evaluateFaithfulWithCutOffFast(y1, error, tree, a, zero_mpfr, prec);
+	evaluateFaithfulWithCutOffFast(y2, error, tree, res[0], zero_mpfr, prec);
+	if (mpfr_sgn(y1)==mpfr_sgn(y2))  mpfr_set(res[deg+1], b, GMP_RNDN);
+	else {
+	  evaluateFaithfulWithCutOffFast(y1,  error, tree, b, zero_mpfr, prec);
+	  evaluateFaithfulWithCutOffFast(y2,  error, tree, res[deg], zero_mpfr, prec);
+	  if (mpfr_sgn(y1)==mpfr_sgn(y2))  mpfr_set(res[deg+1], a, GMP_RNDN);
+	  else {
+	    evaluateFaithfulWithCutOffFast(y1,  error, tree, a, zero_mpfr, prec);
+	    evaluateFaithfulWithCutOffFast(y2,  error, tree, b, zero_mpfr, prec);
+	    if (mpfr_cmpabs(y1,y2)>0) mpfr_set(res[deg+1], a, GMP_RNDN);
+	    else mpfr_set(res[deg+1], b, GMP_RNDN);
+	  }
+	}
 	mpfr_sort(res, deg+2, prec);
       }
     }
@@ -864,7 +875,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
   }
   else {
     printMessage(1,"Warning in Remez: a slower algorithm is used for this step\n");
-    quickFindZeros(z, error_diff, error_diff2, freeDegrees-1, a, b, prec, &crash_report);
+    quickFindZeros(z, error, error_diff, error_diff2, freeDegrees-1, a, b, prec, &crash_report);
     if(crash_report==-1) {
       free_memory(error);
       free_memory(error_diff);
@@ -1184,6 +1195,15 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     if(verbosity>=4) {
       printf("The computed polynomial is "); printTree(poly); printf("\n");
     }
+
+    // Plotting the error curve
+/*     node *plotTemp; */
+/*     chain *plotList=NULL; */
+/*     plotTemp = makeSub(makeMul(copyTree(poly),copyTree(w)),copyTree(f)); */
+/*     plotList=addElement(plotList, plotTemp); */
+/*     plotTree(plotList,u,v,defaultpoints,prec,NULL,0); */
+/*     free_memory(plotTemp); */
+    //    freeChain(plotList, doNothing);
 
     // Computing the useful derivatives of functions
     if(verbosity>=3) {
