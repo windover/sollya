@@ -50,7 +50,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include <mpfr.h>
 #include <fpu_control.h>
 #include "expansion.h"
-
+#include <sys/time.h>
+#include <time.h>
 
 
 void mpfr_to_double(double *dh, mpfr_t op) {
@@ -203,4 +204,113 @@ void f(mpfr_t y, mpfr_t xMpfr) {
 
   _FPU_SETCW(oldcw);
 
+}
+
+
+int timefunc(int *timing, void **args) {
+  unsigned short oldcw, cw;
+#if defined(D_TO_D)
+  double x;
+  double resh;
+#elif defined(D_TO_DD)
+  double x;
+  double resh, resm;
+#elif defined(D_TO_TD)
+  double x;
+  double resh, resm, resl;
+#elif defined(DD_TO_DD)
+  double xh, xm;
+  double resh, resm;
+#elif defined(DD_TO_TD)
+  double xh, xm;
+  double resh, resm, resl;
+#elif defined (TD_TO_TD)
+  double xh, xm, xl;
+  double resh, resm, resl;
+#endif
+  mpfr_t xMpfr;
+  mpfr_t a, b;
+  mpfr_t h;
+  int steps, iterations;
+  int i;
+  struct timeval start, end;
+  int usecs;
+  double overalltime;
+
+  mpfr_init2(xMpfr, 161);
+  mpfr_init2(a, mpfr_get_prec(*((mpfr_t *) (args[0]))));
+  mpfr_init2(b, mpfr_get_prec(*((mpfr_t *) (args[1]))));
+  mpfr_set(a, *((mpfr_t *) (args[0])), GMP_RNDN);
+  mpfr_set(b, *((mpfr_t *) (args[1])), GMP_RNDN);
+  mpfr_init2(h, 161);
+
+  mpfr_set(xMpfr, a, GMP_RNDU);
+
+  steps = *((int *) (args[2]));
+  iterations = *((int *) (args[3]));
+
+  mpfr_sub(h, b, a, GMP_RNDU);
+  mpfr_div_si(h, h, steps, GMP_RNDU);
+  
+  overalltime = 0;
+
+  while (mpfr_cmp(xMpfr,b) <= 0) {
+
+    _FPU_GETCW(oldcw);
+    cw = (_FPU_DEFAULT & ~_FPU_EXTENDED)|_FPU_DOUBLE;
+    _FPU_SETCW(cw);
+
+#if defined(D_TO_D)
+    mpfr_to_double(&x, xMpfr);     
+    gettimeofday(&start,NULL);
+    for (i=0;i<iterations;i++) p(&resh, x);
+    gettimeofday(&end,NULL);
+#elif defined(D_TO_DD)
+    mpfr_to_double(&x, xMpfr);
+    gettimeofday(&start,NULL);
+    for (i=0;i<iterations;i++) p(&resh, &resm, x);
+    gettimeofday(&end,NULL);
+#elif defined(D_TO_TD)
+    mpfr_to_double(&x, xMpfr);
+    gettimeofday(&start,NULL);
+    for (i=0;i<iterations;i++) p(&resh, &resm, &resl, x);
+    gettimeofday(&end,NULL);
+#elif defined(DD_TO_DD)
+    mpfr_to_doubledouble(&xh, &xm, xMpfr);
+    gettimeofday(&start,NULL);
+    for (i=0;i<iterations;i++) p(&resh, &resm, xh, xm);
+    gettimeofday(&end,NULL);
+#elif defined(DD_TO_TD)
+    mpfr_to_doubledouble(&xh, &xm, xMpfr);
+    gettimeofday(&start,NULL);
+    for (i=0;i<iterations;i++) p(&resh, &resm, &resl, xh, xm);
+    gettimeofday(&end,NULL);
+#elif defined(TD_TO_TD)
+    mpfr_to_tripledouble(&xh, &xm, &xl, xMpfr);
+    gettimeofday(&start,NULL);
+    for (i=0;i<iterations;i++) p(&resh, &resm, &resl, xh, xm, xl);
+    gettimeofday(&end,NULL);
+#else
+#warning You must define one of the macros for the argument and result formats
+#endif
+
+    _FPU_SETCW(oldcw);
+
+    mpfr_add(xMpfr, xMpfr, h, GMP_RNDU);
+
+    usecs = ((end.tv_sec - start.tv_sec) * 1000000) + (end.tv_usec - start.tv_usec);
+
+    overalltime += usecs;
+  }
+
+  overalltime /= steps;
+
+  mpfr_clear(b);
+  mpfr_clear(a);
+  mpfr_clear(xMpfr);
+  mpfr_clear(h);
+
+  *timing = overalltime;
+
+  return 1;
 }
