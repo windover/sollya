@@ -84,6 +84,7 @@ extern int timecounting;
 extern chain *timeStack;
 extern int fullParentheses;
 extern int midpointMode;
+extern int noRoundingWarnings;
 extern int hopitalrecursions;
 extern int eliminatePromptBackup;
 extern chain *readStack;

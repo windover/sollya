@@ -96,8 +96,10 @@ node *taylor(node* tree, int degree, node* point, mp_prec_t prec) {
     value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,prec);
     if(mpfr_set_z(*value,denominatorGMP,GMP_RNDN) != 0) {
-      printMessage(1,"Warning: rounding occurred on computing a taylor constant factor.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      if (!noRoundingWarnings) {
+	printMessage(1,"Warning: rounding occurred on computing a taylor constant factor.\n");
+	printMessage(1,"Try to increase the working precision.\n");
+      }
     }
     denominator = (node *) safeMalloc(sizeof(node));
     denominator->nodeType = CONSTANT;
@@ -121,8 +123,10 @@ node *taylor(node* tree, int degree, node* point, mp_prec_t prec) {
     value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,prec);
     if(mpfr_set_si(*value,i,GMP_RNDN) != 0) {
-      printMessage(1,"Warning: rounding occurred on computing a taylor exponent.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      if (!noRoundingWarnings) {
+	printMessage(1,"Warning: rounding occurred on computing a taylor exponent.\n");
+	printMessage(1,"Try to increase the working precision.\n");
+      }
     }
     expon = (node *) safeMalloc(sizeof(node));
     expon->nodeType = CONSTANT;

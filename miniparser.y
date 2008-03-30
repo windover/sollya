@@ -465,10 +465,12 @@ constant: CONSTTOKEN
 			     mpfr_set_str(*mpfr_temp,$1,10,GMP_RNDD);
 			     mpfr_set_str(*mpfr_temp2,$1,10,GMP_RNDU);
 			     if (mpfr_cmp(*mpfr_temp,*mpfr_temp2) != 0) {
-			       printMessage(1,
-                            "Warning: Rounding occurred when converting constant \"%s\" to floating-point with %d bits.\n",
-				      $1,(int) tools_precision);
-			       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+			       if (!noRoundingWarnings) {
+				 printMessage(1,
+					      "Warning: Rounding occurred when converting constant \"%s\" to floating-point with %d bits.\n",
+					      $1,(int) tools_precision);
+				 printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+			       }
 			       mpfr_set_str(*mpfr_temp,$1,10,GMP_RNDN);
 			     } 
 			     mpfr_clear(*mpfr_temp2);
@@ -480,10 +482,12 @@ constant: CONSTTOKEN
                              mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
 			     if (!readDyadic(*mpfr_temp,$1)) {
-			       printMessage(1,
-                            "Warning: Rounding occurred when converting the dyadic constant \"%s\" to floating-point with %d bits.\n",
-				      $1,(int) tools_precision);
-			       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+			       if (!noRoundingWarnings) {
+				 printMessage(1,
+					      "Warning: Rounding occurred when converting the dyadic constant \"%s\" to floating-point with %d bits.\n",
+					      $1,(int) tools_precision);
+				 printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+			       }
 			     }
 			     if (!mpfr_number_p(*mpfr_temp)) {
 			       printMessage(1,
@@ -500,10 +504,12 @@ constant: CONSTTOKEN
 			     mpfr_set_str(*mpfr_temp,$1,2,GMP_RNDD);
 			     mpfr_set_str(*mpfr_temp2,$1,2,GMP_RNDU);
 			     if (mpfr_cmp(*mpfr_temp,*mpfr_temp2) != 0) {
-			       printMessage(1,
-                            "Warning: Rounding occurred when converting constant \"%s_2\" to floating-point with %d bits.\n",
-				      $1,(int) tools_precision);
-			       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+			       if (!noRoundingWarnings) {
+				 printMessage(1,
+					      "Warning: Rounding occurred when converting constant \"%s_2\" to floating-point with %d bits.\n",
+					      $1,(int) tools_precision);
+				 printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+			       }
 			       mpfr_set_str(*mpfr_temp,$1,10,GMP_RNDN);
 			     } 
 			     mpfr_clear(*mpfr_temp2);
@@ -515,10 +521,12 @@ constant: CONSTTOKEN
 	                     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 			     mpfr_init2(*mpfr_temp,tools_precision);
 			     if (!readHexa(*mpfr_temp,$1)) {
-			       printMessage(1,
-                            "Warning: Rounding occurred when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
-				      $1,(int) tools_precision);
-			       printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+			       if (!noRoundingWarnings) {
+				 printMessage(1,
+					      "Warning: Rounding occurred when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
+					      $1,(int) tools_precision);
+				 printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+			       }
 			     }
 			     if (!mpfr_number_p(*mpfr_temp)) {
 			       printMessage(1,

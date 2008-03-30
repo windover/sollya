@@ -375,9 +375,11 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
   }
 
   if (rounded) {
-    printMessage(1,"Warning: at least one of the coefficients of the given polynomial has been rounded in a way\n");
-    printMessage(1,"that the target precision can be achieved at lower cost. Nevertheless, the implemented polynomial\n");
-    printMessage(1,"is different from the given one.\n");
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: at least one of the coefficients of the given polynomial has been rounded in a way\n");
+      printMessage(1,"that the target precision can be achieved at lower cost. Nevertheless, the implemented polynomial\n");
+      printMessage(1,"is different from the given one.\n");
+    }
   }
 
   mpfr_clear(temp);
@@ -2083,16 +2085,22 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 	format = 3;
       }
       if (mpfr_set(temp,coefficients[i],GMP_RNDN) != 0) {
-	printMessage(1,"Warning: a rounding occurred on internal handling (on copying) of the %dth coefficient.\n");
+	if (!noRoundingWarnings) {
+	  printMessage(1,"Warning: a rounding occurred on internal handling (on copying) of the %dth coefficient.\n");
+	}
 	res = 0;
       }
       current = mpfr_get_d(temp,GMP_RNDN);
       if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
-	printMessage(1,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
+	if (!noRoundingWarnings) {
+	  printMessage(1,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
+	}
 	res = 0;
       }
       if (mpfr_sub(temp,temp,temp2,GMP_RNDN) != 0) {
-	printMessage(1,"Warning: a rounding occurred on internal handling (on a substraction) of the %dth coefficient.\n");
+	if (!noRoundingWarnings) {
+	  printMessage(1,"Warning: a rounding occurred on internal handling (on a substraction) of the %dth coefficient.\n");
+	}
 	res = 0;
       }
       fprintf(fd,"#define %s_coeff_%dh %1.80e\n",name,i,current);
@@ -2100,11 +2108,15 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
       current = mpfr_get_d(temp,GMP_RNDN);
       if (current != 0.0) {
 	if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
+	  }
 	  res = 0;
 	}
 	if (mpfr_sub(temp,temp,temp2,GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: a rounding occurred on internal handling (on a substraction) of the %dth coefficient.\n");
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"Warning: a rounding occurred on internal handling (on a substraction) of the %dth coefficient.\n");
+	  }
 	  res = 0;
 	}
 	fprintf(fd,"#define %s_coeff_%dm %1.80e\n",name,i,current);
@@ -2112,11 +2124,15 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 	current = mpfr_get_d(temp,GMP_RNDN);
 	if (current != 0.0) {
 	  if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
-	    printMessage(1,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
+	    if (!noRoundingWarnings) {
+	      printMessage(1,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
+	    }
 	    res = 0;
 	  }
 	  if (mpfr_sub(temp,temp,temp2,GMP_RNDN) != 0) {
-	    printMessage(1,"Warning: a rounding occurred on internal handling (on a substraction) of the %dth coefficient.\n");
+	    if (!noRoundingWarnings) {
+	      printMessage(1,"Warning: a rounding occurred on internal handling (on a substraction) of the %dth coefficient.\n");
+	    }
 	    res = 0;
 	  }
 	  fprintf(fd,"#define %s_coeff_%dl %1.80e\n",name,i,current); 
@@ -5927,7 +5943,9 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
 	fpCoeffRoundAutomatically[i] = 1;
       } else {
 	if (mpfr_set(fpCoefficients[i],*(tempTree->value),GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: rounding occurred on internal handling of a coefficient of the given polynomial.\n");
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"Warning: rounding occurred on internal handling of a coefficient of the given polynomial.\n");
+	  }
 	  fpCoeffRoundAutomatically[i] = 1;
 	}
       }
@@ -5942,8 +5960,10 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   if (honorCoeffPrec) {
     for (i=0;i<=degree;i++) {
       if (mpfr_round_to_tripledouble(temp, fpCoefficients[i]) != 0) {
-	printMessage(2,"Information: the %dth coefficient of the polynomial given cannot even be stored without rounding on a\n",i);
-	printMessage(2,"triple-double floating point variable. Automatic rounding will be used for maximally triple-double precision.\n");
+	if (!noRoundingWarnings) {
+	  printMessage(2,"Information: the %dth coefficient of the polynomial given cannot even be stored without rounding on a\n",i);
+	  printMessage(2,"triple-double floating point variable. Automatic rounding will be used for maximally triple-double precision.\n");
+	}
 	fpCoeffRoundAutomatically[i] = 1;
       }
     }

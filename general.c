@@ -90,6 +90,7 @@ int timecounting = 0;
 chain *timeStack=NULL;
 int fullParentheses=0;
 int midpointMode = 0;
+int noRoundingWarnings = 0;
 int hopitalrecursions = DEFAULTHOPITALRECURSIONS;
 mpfr_t statediam;
 
@@ -573,6 +574,7 @@ void initToolDefaults() {
   timeStack=NULL;
   fullParentheses=0;
   midpointMode = 0;
+  noRoundingWarnings = eliminatePromptBackup;
   hopitalrecursions = DEFAULTHOPITALRECURSIONS;
   symbolTable = NULL;
   declaredSymbolTable = NULL;

@@ -190,6 +190,7 @@ extern FILE *internyyget_in(void *scanner);
 %token  TIMINGTOKEN;            					       
 %token  FULLPARENTHESESTOKEN;   					       
 %token  MIDPOINTMODETOKEN;      					       
+%token  SUPPRESSWARNINGSTOKEN;    					       
 %token  HOPITALRECURSIONSTOKEN;  					       
 											       
 %token  ONTOKEN;                					       
@@ -742,6 +743,10 @@ stateassignment:        PRECTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeMidpointAssign($3);
 			  }
+                      | SUPPRESSWARNINGSTOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeSuppressWarningsAssign($3);
+			  }
                       | HOPITALRECURSIONSTOKEN EQUALTOKEN thing  					       
                           {
 			    $$ = makeHopitalRecursAssign($3);
@@ -791,6 +796,10 @@ stillstateassignment:   PRECTOKEN EQUALTOKEN thing
                       | MIDPOINTMODETOKEN EQUALTOKEN thing      					       
                           {
 			    $$ = makeMidpointStillAssign($3);
+			  }
+                      | SUPPRESSWARNINGSTOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeSuppressWarningsStillAssign($3);
 			  }
                       | HOPITALRECURSIONSTOKEN EQUALTOKEN thing  					       
                           {
@@ -1540,6 +1549,10 @@ statedereference:       PRECTOKEN EQUALTOKEN QUESTIONMARKTOKEN
                       | MIDPOINTMODETOKEN EQUALTOKEN QUESTIONMARKTOKEN			       
                           {
 			    $$ = makeMidpointDeref();
+			  }
+                      | SUPPRESSWARNINGSTOKEN EQUALTOKEN QUESTIONMARKTOKEN			       
+                          {
+			    $$ = makeSuppressWarningsDeref();
 			  }
                       | HOPITALRECURSIONSTOKEN EQUALTOKEN QUESTIONMARKTOKEN				       
                           {

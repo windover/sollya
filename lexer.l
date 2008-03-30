@@ -291,6 +291,7 @@ AUTOSIMPLIFY    "autosimplify"
 TIMING          "timing"
 FULLPARENTHESES "fullparentheses"
 MIDPOINTMODE    "midpointmode"
+SUPPRESSWARNINGS "suppressroundingwarnings"
 
 LIBRARY         "library"
 
@@ -602,6 +603,7 @@ NOP             "nop"
 {TIMING}          			    { newTokenLexed(); return TIMINGTOKEN; }          					       
 {FULLPARENTHESES} 			    { newTokenLexed(); return FULLPARENTHESESTOKEN; } 					       
 {MIDPOINTMODE}    			    { newTokenLexed(); return MIDPOINTMODETOKEN; }    					       
+{SUPPRESSWARNINGS}			    { newTokenLexed(); return SUPPRESSWARNINGSTOKEN; }    					       
 {HOPITALRECURSIONS}			    { newTokenLexed(); return HOPITALRECURSIONSTOKEN; }					       
 					    											       
 {ON}              			    { newTokenLexed(); return ONTOKEN; }              					       

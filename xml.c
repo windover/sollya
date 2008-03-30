@@ -558,8 +558,11 @@ else if (xmlTextReaderNodeType(reader)==3) // Text
     {
     mpfr_t 	n;
     mpfr_init2(n,tools_precision);
-    if (readDecimalConstant(n,(char*)xml_value))
-    printMessage(1,"Warning: rounding has happened upon reading constant \"%s\" in an XML file.\n",xml_value);
+    if (readDecimalConstant(n,(char*)xml_value)) {
+      if (!noRoundingWarnings) {
+	printMessage(1,"Warning: rounding has happened upon reading constant \"%s\" in an XML file.\n",xml_value);
+      }
+    }
     temp = makeConstant(n);
     mpfr_clear(n);
     } 

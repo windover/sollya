@@ -235,6 +235,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #define APPLY 228
 #define FLOATASSIGNMENT 229
 #define FLOATASSIGNMENTININDEXING 230
+#define SUPPRESSWARNINGSASSIGN 231
+#define SUPPRESSWARNINGSSTILLASSIGN 232
+#define SUPPRESSWARNINGSDEREF 233
 
 int executeCommand(node *);
 
@@ -286,6 +289,8 @@ node *makeTaylorRecursAssign(node *thing);
 node *makeTimingAssign(node *thing);
 node *makeFullParenAssign(node *thing);
 node *makeMidpointAssign(node *thing);
+node *makeSuppressWarningsAssign(node *thing);
+node *makeSuppressWarningsStillAssign(node *thing);
 node *makeHopitalRecursAssign(node *thing);
 node *makePrecStillAssign(node *thing);
 node *makePointsStillAssign(node *thing);
@@ -410,6 +415,7 @@ node *makeTaylorRecursDeref();
 node *makeTimingDeref();
 node *makeFullParenDeref();
 node *makeMidpointDeref();
+node *makeSuppressWarningsDeref();
 node *makeHopitalRecursDeref();
 node *makeAssignmentInIndexing(node *, node *, node *);
 node *makeFloatAssignmentInIndexing(node *, node *, node *);

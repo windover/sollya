@@ -290,6 +290,7 @@ AUTOSIMPLIFY    "autosimplify"
 TIMING          "timing"
 FULLPARENTHESES "fullparentheses"
 MIDPOINTMODE    "midpointmode"
+SUPPRESSWARNINGS "suppressroundingwarnings"
 
 LIBRARY         "library"
 
@@ -533,6 +534,7 @@ NOP             "nop"
 {TIMING}          			    {  return TIMINGTOKEN; }          					       
 {FULLPARENTHESES} 			    {  return FULLPARENTHESESTOKEN; } 					       
 {MIDPOINTMODE}    			    {  return MIDPOINTMODETOKEN; }    					       
+{SUPPRESSWARNINGS}			    {  return SUPPRESSWARNINGSTOKEN; }    					       
 {HOPITALRECURSIONS}			    {  return HOPITALRECURSIONSTOKEN; }					       
 					    											       
 {ON}              			    {  return ONTOKEN; }              					       

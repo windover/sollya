@@ -486,7 +486,9 @@ void printValue(mpfr_t *value, mp_prec_t prec) {
 	}
 	expo--;
 	if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
-	  printMessage(1,"\nWarning: rounding occurred during displaying a value. Values displayed may be wrong.\n");
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"\nWarning: rounding occurred during displaying a value. Values displayed may be wrong.\n");
+	  }
 	}
 	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
 	str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
@@ -793,7 +795,9 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
 	}
 	expo--;
 	if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
-	  printMessage(1,"\nWarning: rounding occurred during displaying a value. Values displayed may be wrong.\n");
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"\nWarning: rounding occurred during displaying a value. Values displayed may be wrong.\n");
+	  }
 	}
 	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
 	str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
@@ -1160,7 +1164,9 @@ void fprintValue(FILE *fd, mpfr_t value) {
       }
       expo--;
       if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
-	printMessage(1,"\nWarning: upon printing to a file: rounding occurred. Values printed may be wrong.\n");
+	if (!noRoundingWarnings) {
+	  printMessage(1,"\nWarning: upon printing to a file: rounding occurred. Values printed may be wrong.\n");
+	}
       }
       str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
       str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
@@ -1216,7 +1222,9 @@ void fprintValueForXml(FILE *fd, mpfr_t value) {
 	}
 	expo--;
 	if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
-	  printMessage(1,"\nWarning: upon printing to a file: rounding occurred. Values printed may be wrong.\n");
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"\nWarning: upon printing to a file: rounding occurred. Values printed may be wrong.\n");
+	  }
 	}
 	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
 	str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
@@ -5851,8 +5859,10 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     coeffVal = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*coeffVal,tools_precision);
     if(mpfr_set_z(*coeffVal,coeffGMP,GMP_RNDN) != 0) {
-      printMessage(1,"Warning: on expanding a power operator a rounding occurred when calculating a binomial coefficient.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      if (!noRoundingWarnings) {
+	printMessage(1,"Warning: on expanding a power operator a rounding occurred when calculating a binomial coefficient.\n");
+	printMessage(1,"Try to increase the working precision.\n");
+      }
     }
     if ((s < 0) && ((i & 1) != 0)) {
       mpfr_neg(*coeffVal,*coeffVal,GMP_RNDN);
@@ -5868,8 +5878,10 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*mpfr_temp,tools_precision);
     if(mpfr_set_ui(*mpfr_temp,i,GMP_RNDN) != 0) {
-      printMessage(1,"Warning: on expanding a power operator a rounding occurred when calculating an exponent constant.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      if (!noRoundingWarnings) {
+	printMessage(1,"Warning: on expanding a power operator a rounding occurred when calculating an exponent constant.\n");
+	printMessage(1,"Try to increase the working precision.\n");
+      }
     }
     tempNode->value = mpfr_temp;
     aPow->child2 = tempNode;
@@ -7450,9 +7462,11 @@ node* hornerPolynomialUnsafe(node *tree) {
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,e,GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
-		 (int) tools_precision);
-	  printMessage(1,"Try to increase the precision.\n");
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
+			 (int) tools_precision);
+	    printMessage(1,"Try to increase the precision.\n");
+	  }
 	}
 	temp3->value = value;
 	temp4 = (node *) safeMalloc(sizeof(node));
@@ -7834,8 +7848,11 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
 	temp->child1->nodeType = CONSTANT;
 	temp->child1->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*(temp->child1->value),tools_precision);
-	if (mpfr_set_si(*(temp->child1->value),i,GMP_RNDN) != 0) 
-	  printMessage(1,"Warning: on differentiating a polynomial in Horner form rounding occurred while representing the degree of a monomial on a constant of the given precision\n");
+	if (mpfr_set_si(*(temp->child1->value),i,GMP_RNDN) != 0) {
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"Warning: on differentiating a polynomial in Horner form rounding occurred while representing the degree of a monomial on a constant of the given precision\n");
+	  }
+	}
 	temp->child2 = monomials[i];
       }
       monomials[i-1] = temp;
@@ -7870,9 +7887,11 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,e,GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
-		 (int) tools_precision);
-	  printMessage(1,"Try to increase the precision.\n");
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
+			 (int) tools_precision);
+	    printMessage(1,"Try to increase the precision.\n");
+	  }
 	}
 	temp3->value = value;
 	temp4 = (node *) safeMalloc(sizeof(node));
@@ -7965,9 +7984,11 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,degree,GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: rounding occurred on differentiating a polynomial. A constant could not be written on %d bits.\n",
-		 (int) tools_precision);
-	  printMessage(1,"Try to increase the precision.\n");
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"Warning: rounding occurred on differentiating a polynomial. A constant could not be written on %d bits.\n",
+			 (int) tools_precision);
+	    printMessage(1,"Try to increase the precision.\n");
+	  }
 	}
 	temp2->value = value;
 	temp3 = (node*) safeMalloc(sizeof(node));
@@ -9312,10 +9333,12 @@ int readDecimalConstant(mpfr_t result, char *str) {
   mpfr_set_str(a,str,10,GMP_RNDD);
   mpfr_set_str(b,str,10,GMP_RNDU);    
   if (mpfr_cmp(a,b) != 0) {
-    printMessage(1,
-		 "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
-		 str,(int) tools_precision);
-    printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+    if (!noRoundingWarnings) {
+      printMessage(1,
+		   "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
+		   str,(int) tools_precision);
+      printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+    }
     ternary = mpfr_set_str(a,str,10,GMP_RNDN);
   } else {
     ternary = 0;

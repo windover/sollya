@@ -507,6 +507,9 @@ node *copyThing(node *tree) {
   case MIDPOINTASSIGN:
     copy->child1 = copyThing(tree->child1);
     break; 			
+  case SUPPRESSWARNINGSASSIGN:
+    copy->child1 = copyThing(tree->child1);
+    break; 			
   case HOPITALRECURSASSIGN:
     copy->child1 = copyThing(tree->child1);
     break; 		
@@ -541,6 +544,9 @@ node *copyThing(node *tree) {
     copy->child1 = copyThing(tree->child1);
     break;  		
   case MIDPOINTSTILLASSIGN:
+    copy->child1 = copyThing(tree->child1);
+    break; 		
+  case SUPPRESSWARNINGSSTILLASSIGN:
     copy->child1 = copyThing(tree->child1);
     break; 		
   case HOPITALRECURSSTILLASSIGN:
@@ -903,6 +909,8 @@ node *copyThing(node *tree) {
   case FULLPARENDEREF:
     break; 			
   case MIDPOINTDEREF:
+    break;
+  case SUPPRESSWARNINGSDEREF:
     break; 			
   case HOPITALRECURSDEREF:
     break;  	       
@@ -1181,6 +1189,9 @@ char *getTimingStringForThing(node *tree) {
   case MIDPOINTASSIGN:
     constString = "assigning the midpoint printing mode";
     break; 			
+  case SUPPRESSWARNINGSASSIGN:
+    constString = "assigning the warning suppression";
+    break; 			
   case HOPITALRECURSASSIGN:
     constString = "assigning the number of recursions for Hopital";
     break; 		
@@ -1215,6 +1226,9 @@ char *getTimingStringForThing(node *tree) {
     constString = NULL;
     break;  		
   case MIDPOINTSTILLASSIGN:
+    constString = NULL;
+    break;
+  case SUPPRESSWARNINGSSTILLASSIGN:
     constString = NULL;
     break; 		
   case HOPITALRECURSSTILLASSIGN:
@@ -1576,6 +1590,9 @@ char *getTimingStringForThing(node *tree) {
     break; 			
   case MIDPOINTDEREF:
     constString = "dereferencing the midpoint mode state of the tool";
+    break; 			
+  case SUPPRESSWARNINGSDEREF:
+    constString = "dereferencing the warning suppression state of the tool";
     break; 			
   case HOPITALRECURSDEREF:
     constString = "dereferencing the numbers of recursions for Hopital";
@@ -1979,9 +1996,11 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
 
     if (!isConstant(simplified2)) {
       if (dirtyIsConstant(simplified2)) {
-	printMessage(1,"Warning: the given expression should be constant in this context.\n");
-	printMessage(1,"The expression actually seems to be constant but no proof could be established.\n");
-	printMessage(1,"The resulting syntax error might be unjustified.\n");
+	if (!noRoundingWarnings) {
+	  printMessage(1,"Warning: the given expression should be constant in this context.\n");
+	  printMessage(1,"The expression actually seems to be constant but no proof could be established.\n");
+	  printMessage(1,"The resulting syntax error might be unjustified.\n");
+	}
       }
       mpfr_clear(tempResult);
       mpfr_clear(tempMpfr);
@@ -1995,9 +2014,11 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
     noMessage = 0;
 
     if (!isConstant(simplified)) {
-      printMessage(1,"Warning: the given expression should be constant in this context.\nIt proves constant under floating point evaluation.\n");
-      printMessage(1,"In this evaluation, %s will be set to 1 when evaluating the expression to a constant.\n",variablename);
-      noMessage = 1;
+      if (!noRoundingWarnings) {
+	printMessage(1,"Warning: the given expression should be constant in this context.\nIt proves constant under floating point evaluation.\n");
+	printMessage(1,"In this evaluation, %s will be set to 1 when evaluating the expression to a constant.\n",variablename);
+	noMessage = 1;
+      }
     }
 
     if (simplified->nodeType == CONSTANT) {
@@ -2014,17 +2035,23 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
 
     if (!res) {
       if (!noMessage) {
-	printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate.\n");
-	printMessage(1,"A faithful evaluation is not possible. Will use a floating-point evaluation.\n");
+	if (!noRoundingWarnings) {
+	  printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate.\n");
+	  printMessage(1,"A faithful evaluation is not possible. Will use a floating-point evaluation.\n");
+	} 
       } else {
-	printMessage(1,"Warning: the expression could not be faithfully evaluated.\n");
+	if (!noRoundingWarnings) {
+	  printMessage(1,"Warning: the expression could not be faithfully evaluated.\n");
+	}
       }
       evaluate(tempResult, simplified, tempMpfr, defaultprecision * 256);
       notfaithful = 1;
     } else {
       if (simplified->nodeType != CONSTANT) {
 	if (!noMessage) {
-	  printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate.\n");
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate.\n");
+	  }
 	}
       }
     }
@@ -2068,8 +2095,10 @@ int evaluateThingToInteger(int *result, node *tree, int *defaultVal) {
     mpfr_sub_si(resultMpfr, resultMpfr, tempResult, GMP_RNDN);
 
     if (!mpfr_zero_p(resultMpfr)) {
-      printMessage(1,"Warning: the given expression does not evaluate to a machine integer.\n");
-      printMessage(1,"Will round it to the nearest machine integer.\n");
+      if (!noRoundingWarnings) {
+	printMessage(1,"Warning: the given expression does not evaluate to a machine integer.\n");
+	printMessage(1,"Will round it to the nearest machine integer.\n");
+      }
     }
 
     *result = tempResult;
@@ -3320,6 +3349,10 @@ char *sRawPrintThing(node *tree) {
     res = newString("midpointmode = ");
     res = concatAndFree(res, sRawPrintThing(tree->child1));
     break; 			
+  case SUPPRESSWARNINGSASSIGN:
+    res = newString("suppressroundingwarnings = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 			
   case HOPITALRECURSASSIGN:
     res = newString("hopitalrecursions = ");
     res = concatAndFree(res, sRawPrintThing(tree->child1));
@@ -3376,6 +3409,11 @@ char *sRawPrintThing(node *tree) {
     break;  		
   case MIDPOINTSTILLASSIGN:
     res = newString("midpointmode = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString("!"));
+    break;
+  case SUPPRESSWARNINGSSTILLASSIGN:
+    res = newString("suppressroundingwarnings = ");
     res = concatAndFree(res, sRawPrintThing(tree->child1));
     res = concatAndFree(res, newString("!"));
     break; 		
@@ -4022,6 +4060,9 @@ char *sRawPrintThing(node *tree) {
   case MIDPOINTDEREF:
     res = newString("midpointmode = ?");
     break; 			
+  case SUPPRESSWARNINGSDEREF:
+    res = newString("suppressroundingwarnings = ?");
+    break; 			
   case HOPITALRECURSDEREF:
     res = newString("hopitalrecursions = ?");
     break;  	       
@@ -4523,7 +4564,9 @@ void autoprint(node *thing, int inList) {
 	mpfr_set_d(b,1.0,GMP_RNDN);
 	if (evaluateFaithful(a,tempNode2,b,tools_precision)) {
 	  if (mpfr_number_p(a)) {
-	    printMessage(1,"Warning: rounding has happened. The value displayed is a faithful rounding of the true result.\n");
+	    if (!noRoundingWarnings) {
+	      printMessage(1,"Warning: rounding has happened. The value displayed is a faithful rounding of the true result.\n");
+	    }
 	  } else {
 	    if (mpfr_nan_p(a)) {
 	      printMessage(1,"Warning: the given expression is undefined or numerically unstable.\n");
@@ -4533,7 +4576,9 @@ void autoprint(node *thing, int inList) {
 	} else {
 	  evaluate(a,tempNode2,b,tools_precision * 256);
 	  if (mpfr_number_p(a)) {
-	    printMessage(1,"Warning: rounding has happened. The value displayed is not a faithful rounding of the true result.\n");
+	    if (!noRoundingWarnings) {
+	      printMessage(1,"Warning: rounding has happened. The value displayed is not a faithful rounding of the true result.\n");
+	    }
 	  } else {
 	    printMessage(1,"Warning: the given expression is undefined or numerically unstable.\n");
 	  }
@@ -4545,7 +4590,9 @@ void autoprint(node *thing, int inList) {
     } else {
       tempNode3 = simplifyTree(tempNode2);
       if (!isSyntacticallyEqual(tempNode3,tempNode2)) {
-	printMessage(1,"Warning: rounding may have happened.\n");
+	if (!noRoundingWarnings) {
+	  printMessage(1,"Warning: rounding may have happened.\n");
+	}
       }
       if (treeSize(tempNode3) > MAXHORNERTREESIZE) {
 	if (canonical) 
@@ -5186,7 +5233,9 @@ int executeCommandInner(node *tree) {
   case PRINTEXPANSION:
     if (evaluateThingToPureTree(&tempNode, tree->child1)) {
       if (printPolynomialAsDoubleExpansion(tempNode, tools_precision) == 1) {
-	printMessage(1,"\nWarning: rounding occurred while printing.");
+	if (!noRoundingWarnings) {
+	  printMessage(1,"\nWarning: rounding occurred while printing.");
+	}
       }
       printf("\n");
       freeThing(tempNode);
@@ -6214,6 +6263,19 @@ int executeCommandInner(node *tree) {
       printMessage(1,"This command will have no effect.\n");
     }
     break; 			
+  case SUPPRESSWARNINGSASSIGN:
+    defaultVal = eliminatePromptBackup;
+    if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
+      noRoundingWarnings = resA;
+      if (noRoundingWarnings) 
+	printf("Rounding warning suppression has been activated.\n");
+      else 
+	printf("Rounding warning suppression has been deactivated.\n");
+    } else {
+      printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
+      printMessage(1,"This command will have no effect.\n");
+    }
+    break; 			
   case HOPITALRECURSASSIGN:
     defaultVal = DEFAULTHOPITALRECURSIONS;
     if (evaluateThingToInteger(&resA, tree->child1, &defaultVal)) {
@@ -6345,6 +6407,15 @@ int executeCommandInner(node *tree) {
     defaultVal = 1;
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
       midpointMode = resA;
+    } else {
+      printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
+      printMessage(1,"This command will have no effect.\n");
+    }
+    break; 		
+  case SUPPRESSWARNINGSSTILLASSIGN:
+    defaultVal = eliminatePromptBackup;
+    if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
+      noRoundingWarnings = resA;
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -6939,6 +7010,18 @@ node *makeMidpointAssign(node *thing) {
 
 }
 
+node *makeSuppressWarningsAssign(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = SUPPRESSWARNINGSASSIGN;
+  res->child1 = thing;
+
+  return res;
+
+}
+
+
 node *makeHopitalRecursAssign(node *thing) {
   node *res;
 
@@ -7070,6 +7153,18 @@ node *makeMidpointStillAssign(node *thing) {
   return res;
 
 }
+
+node *makeSuppressWarningsStillAssign(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = SUPPRESSWARNINGSSTILLASSIGN;
+  res->child1 = thing;
+
+  return res;
+
+}
+
 
 node *makeHopitalRecursStillAssign(node *thing) {
   node *res;
@@ -8392,6 +8487,16 @@ node *makeMidpointDeref() {
 
 }
 
+node *makeSuppressWarningsDeref() {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = SUPPRESSWARNINGSDEREF;
+
+  return res;
+
+}
+
 
 node *makeHopitalRecursDeref() {
   node *res;
@@ -8788,6 +8893,10 @@ void freeThing(node *tree) {
     freeThing(tree->child1);
     free(tree);
     break; 			
+  case SUPPRESSWARNINGSASSIGN:
+    freeThing(tree->child1);
+    free(tree);
+    break; 			
   case HOPITALRECURSASSIGN:
     freeThing(tree->child1);
     free(tree);
@@ -8833,6 +8942,10 @@ void freeThing(node *tree) {
     free(tree);
     break;  		
   case MIDPOINTSTILLASSIGN:
+    freeThing(tree->child1);
+    free(tree);
+    break; 		
+  case SUPPRESSWARNINGSSTILLASSIGN:
     freeThing(tree->child1);
     free(tree);
     break; 		
@@ -9305,6 +9418,9 @@ void freeThing(node *tree) {
     free(tree);
     break; 			
   case MIDPOINTDEREF:
+    free(tree);
+    break; 			
+  case SUPPRESSWARNINGSDEREF:
     free(tree);
     break; 			
   case HOPITALRECURSDEREF:
@@ -9921,6 +10037,10 @@ void rawPrintThing(node *tree) {
     printf("midpointmode = ");
     rawPrintThing(tree->child1);
     break; 			
+  case SUPPRESSWARNINGSASSIGN:
+    printf("suppressroundingwarnings = ");
+    rawPrintThing(tree->child1);
+    break; 			
   case HOPITALRECURSASSIGN:
     printf("hopitalrecursions = ");
     rawPrintThing(tree->child1);
@@ -9977,6 +10097,11 @@ void rawPrintThing(node *tree) {
     break;  		
   case MIDPOINTSTILLASSIGN:
     printf("midpointmode = ");
+    rawPrintThing(tree->child1);
+    printf("!");
+    break; 		
+  case SUPPRESSWARNINGSSTILLASSIGN:
+    printf("suppressroundingwarnings = ");
     rawPrintThing(tree->child1);
     printf("!");
     break; 		
@@ -10628,6 +10753,9 @@ void rawPrintThing(node *tree) {
   case MIDPOINTDEREF:
     printf("midpointmode = ?");
     break; 			
+  case SUPPRESSWARNINGSDEREF:
+    printf("suppressroundingwarnings = ?");
+    break; 			
   case HOPITALRECURSDEREF:
     printf("hopitalrecursions = ?");
     break;  	       
@@ -11241,6 +11369,10 @@ void fRawPrintThing(FILE *fd, node *tree) {
     fprintf(fd,"midpointmode = ");
     fRawPrintThing(fd,tree->child1);
     break; 			
+  case SUPPRESSWARNINGSASSIGN:
+    fprintf(fd,"suppressroundingwarnings = ");
+    fRawPrintThing(fd,tree->child1);
+    break; 			
   case HOPITALRECURSASSIGN:
     fprintf(fd,"hopitalrecursions = ");
     fRawPrintThing(fd,tree->child1);
@@ -11297,6 +11429,11 @@ void fRawPrintThing(FILE *fd, node *tree) {
     break;  		
   case MIDPOINTSTILLASSIGN:
     fprintf(fd,"midpointmode = ");
+    fRawPrintThing(fd,tree->child1);
+    fprintf(fd,"!");
+    break; 		
+  case SUPPRESSWARNINGSSTILLASSIGN:
+    fprintf(fd,"suppressroundingwarnings = ");
     fRawPrintThing(fd,tree->child1);
     fprintf(fd,"!");
     break; 		
@@ -11947,6 +12084,9 @@ void fRawPrintThing(FILE *fd, node *tree) {
   case MIDPOINTDEREF:
     fprintf(fd,"midpointmode = ?");
     break; 			
+  case SUPPRESSWARNINGSDEREF:
+    fprintf(fd,"suppressroundingwarnings = ?");
+    break; 			
   case HOPITALRECURSDEREF:
     fprintf(fd,"hopitalrecursions = ?");
     break;  	       
@@ -12246,6 +12386,9 @@ int isEqualThing(node *tree, node *tree2) {
   case MIDPOINTASSIGN:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 			
+  case SUPPRESSWARNINGSASSIGN:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break; 			
   case HOPITALRECURSASSIGN:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 		
@@ -12280,6 +12423,9 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break;  		
   case MIDPOINTSTILLASSIGN:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break; 		
+  case SUPPRESSWARNINGSSTILLASSIGN:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 		
   case HOPITALRECURSSTILLASSIGN:
@@ -12623,6 +12769,8 @@ int isEqualThing(node *tree, node *tree2) {
   case FULLPARENDEREF:
     break; 			
   case MIDPOINTDEREF:
+    break; 			
+  case SUPPRESSWARNINGSDEREF:
     break; 			
   case HOPITALRECURSDEREF:
     break;  	       
@@ -14459,10 +14607,12 @@ node *evaluateThingInner(node *tree) {
     mpfr_set_str(a,tree->string,10,GMP_RNDD);
     mpfr_set_str(b,tree->string,10,GMP_RNDU);    
     if (mpfr_cmp(a,b) != 0) {
-      printMessage(1,
-		   "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
-		   tree->string,(int) tools_precision);
-      printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      if (!noRoundingWarnings) {
+	printMessage(1,
+		     "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
+		     tree->string,(int) tools_precision);
+	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      }
       mpfr_set_str(a,tree->string,10,GMP_RNDN);
     }
     tempNode = makeConstant(a);
@@ -14476,10 +14626,12 @@ node *evaluateThingInner(node *tree) {
     if (timingString != NULL) pushTimeCounter();
     mpfr_init2(a,tools_precision);
     if (!readDyadic(a,tree->string)) {
-      printMessage(1,
-		   "Warning: Rounding occurred when converting the dyadic constant \"%s\" to floating-point with %d bits.\n",
-		   tree->string,(int) tools_precision);
-      printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      if (!noRoundingWarnings) {
+	printMessage(1,
+		     "Warning: Rounding occurred when converting the dyadic constant \"%s\" to floating-point with %d bits.\n",
+		     tree->string,(int) tools_precision);
+	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      }
     }
     tempNode = makeConstant(a);
     mpfr_clear(a);
@@ -14491,10 +14643,12 @@ node *evaluateThingInner(node *tree) {
     if (timingString != NULL) pushTimeCounter();
     mpfr_init2(a,tools_precision);
     if (!readHexa(a,tree->string)) {
-      printMessage(1,
-		   "Warning: Rounding occurred when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
-		   tree->string,(int) tools_precision);
-      printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      if (!noRoundingWarnings) {
+	printMessage(1,
+		     "Warning: Rounding occurred when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
+		     tree->string,(int) tools_precision);
+	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      }
     }
     tempNode = makeConstant(a);
     mpfr_clear(a);
@@ -14506,10 +14660,12 @@ node *evaluateThingInner(node *tree) {
     if (timingString != NULL) pushTimeCounter();
     mpfr_init2(a,tools_precision);
     if (!readHexadecimal(a,tree->string)) {
-      printMessage(1,
-		   "Warning: Rounding occurred when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
-		   tree->string,(int) tools_precision);
-      printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      if (!noRoundingWarnings) {
+	printMessage(1,
+		     "Warning: Rounding occurred when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
+		     tree->string,(int) tools_precision);
+	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      }
     }
     tempNode = makeConstant(a);
     mpfr_clear(a);
@@ -14524,10 +14680,12 @@ node *evaluateThingInner(node *tree) {
     mpfr_set_str(a,tree->string,2,GMP_RNDD);
     mpfr_set_str(b,tree->string,2,GMP_RNDU);    
     if (mpfr_cmp(a,b) != 0) {
-      printMessage(1,
-		   "Warning: Rounding occurred when converting the binary constant \"%s_2\" to floating-point with %d bits.\n",
-		   tree->string,(int) tools_precision);
-      printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      if (!noRoundingWarnings) {
+	printMessage(1,
+		     "Warning: Rounding occurred when converting the binary constant \"%s_2\" to floating-point with %d bits.\n",
+		     tree->string,(int) tools_precision);
+	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      }
       mpfr_set_str(a,tree->string,2,GMP_RNDN);
     }
     tempNode = makeConstant(a);
@@ -14642,7 +14800,9 @@ node *evaluateThingInner(node *tree) {
 	    mpfr_init2(*(yrange2.b),tools_precision);
 	    evaluateRangeFunction(yrange, copy->child1, xrange, 256 * tools_precision); 
 	    evaluateRangeFunction(yrange2, copy->child2, xrange, 256 * tools_precision); 
-	    printMessage(1,"Warning: inclusion property is satisfied but the diameter may be greater than the least possible.\n");
+	    if (!noRoundingWarnings) {
+	      printMessage(1,"Warning: inclusion property is satisfied but the diameter may be greater than the least possible.\n");
+	    }
 	    mpfr_min(a,*(yrange.a),*(yrange2.a),GMP_RNDD);
 	    mpfr_max(b,*(yrange.b),*(yrange2.b),GMP_RNDU);
 	    mpfr_clear(*(xrange.a));
@@ -15247,7 +15407,7 @@ node *evaluateThingInner(node *tree) {
 	freeThing(copy);
 	copy = tempNode; 
 	if (variablename == NULL) {
-	  printMessage(1,"Warning: the free varible is not bound to an identifier. Reading an XML file requires this binding.\n");
+	  printMessage(1,"Warning: the free variable is not bound to an identifier. Reading an XML file requires this binding.\n");
 	  printMessage(1,"Will bind the free variable to the identifier \"x\"\n");
 	  variablename = safeCalloc(2,sizeof(char));
 	  variablename[0] = 'x';
@@ -15890,7 +16050,9 @@ node *evaluateThingInner(node *tree) {
 	mpfr_init2(c,tools_precision);
 	if (timingString != NULL) pushTimeCounter();      
 	if (!roundRangeCorrectly(c, a, b)) {
-	  printMessage(1,"Warning: correct rounding to nearest impossible with the given bounding.\n");
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"Warning: correct rounding to nearest impossible with the given bounding.\n");
+	  }
 	}
 	if (timingString != NULL) popTimeCounter(timingString);
 	tempNode = makeConstant(c);
@@ -16253,6 +16415,16 @@ node *evaluateThingInner(node *tree) {
     if (timingString != NULL) pushTimeCounter();      
     freeThing(copy);
     if (midpointMode) {
+      copy = makeOn();
+    } else {
+      copy = makeOff();
+    }
+    if (timingString != NULL) popTimeCounter(timingString);
+    break; 			
+  case SUPPRESSWARNINGSDEREF:
+    if (timingString != NULL) pushTimeCounter();      
+    freeThing(copy);
+    if (noRoundingWarnings) {
       copy = makeOn();
     } else {
       copy = makeOff();
