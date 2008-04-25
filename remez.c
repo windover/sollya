@@ -402,7 +402,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 	n_expo = 0; // since 0 does not lie in [u;v], n_expo is useless
 	mpfr_init2(temp,10);
 	mpfr_sub(temp,v,u,GMP_RNDN);
-	if(mpfr_cmp_abs(v,u)) estim_prec = mpfr_get_exp(temp) - mpfr_get_exp(u) - 1;
+	if(mpfr_cmp_abs(v,u)>0) estim_prec = mpfr_get_exp(temp) - mpfr_get_exp(u) - 1;
 	else estim_prec = mpfr_get_exp(temp) - mpfr_get_exp(v) - 1;
 	mpfr_clear(temp);
       }
@@ -745,14 +745,19 @@ void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
 // error' = tree  and tree' = diff_tree
 void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
 		    node *error, node *tree, node *diff_tree,
-		    node **monomials_tree, node *w, mpfr_t *lambdai_vect, mpfr_t epsilon,
+		    node **monomials_tree, node *w, mpfr_t *lambdai_vect, mpfr_t epsilon, int HaarCompliant,
 		    int deg,
 		    mpfr_t a, mpfr_t b, mp_prec_t prec,
 		    int *crash_report) {
   long int n = 50*(deg+2);
   long int i=0;
+
+  /* The variable test is used to check that the maximum (in absolute value)
+     of the error will be inserted in the new list of points.
+     If it is not the case, a step of the exchange algorithm is performed */
+  int test=0;
   mpfr_t h, x1, x2, x, y1, y2, zero_mpfr, maxi, argmaxi, z, alpha1, alpha2, alpha;
-  
+
   mpfr_init2(h,prec);
   mpfr_init2(y1,prec);
   mpfr_init2(y2,prec);
@@ -773,7 +778,7 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
   mpfr_set(maxi,z,GMP_RNDN);
   mpfr_set(argmaxi,a,GMP_RNDN);
   evaluateFaithfulWithCutOffFast(z, error, tree, b, zero_mpfr, prec);
-  if (mpfr_cmpabs(z,maxi)) {
+  if (mpfr_cmpabs(z,maxi)>0) {
     mpfr_set(maxi,z,GMP_RNDN);
     mpfr_set(argmaxi,b,GMP_RNDN);
   }
@@ -800,6 +805,8 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
 	  else mpfr_set(res[i-1], x1, GMP_RNDN);
 	}
 	if (mpfr_cmpabs(z,maxi)>0) {
+	  if ( (i>deg+2)||(mpfr_sgn(z)*mpfr_sgn(alpha1)>=0) ) test=0;
+	  else test=1;
 	  mpfr_set(maxi,z,GMP_RNDN);
 	  mpfr_set(argmaxi,x1,GMP_RNDN);
 	}
@@ -813,6 +820,8 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
 	       else mpfr_set(res[i-1], x2, GMP_RNDN);
 	     }
 	     if (mpfr_cmpabs(z,maxi)>0) {
+	       if ( (i>deg+2)||(mpfr_sgn(z)*mpfr_sgn(alpha2)>=0) ) test=0;
+	       else test=1;
 	       mpfr_set(maxi,z,GMP_RNDN);
 	       mpfr_set(argmaxi,x2,GMP_RNDN);
 	     }
@@ -829,6 +838,8 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
 	    else mpfr_set(res[i-1], x2, GMP_RNDN);
 	  }
 	  if (mpfr_cmpabs(z,maxi)>0) {
+	    if ( (i>deg+2) || (mpfr_sgn(z)*mpfr_sgn(alpha2)>=0) ) test=0;
+	    else test=1;	
 	    mpfr_set(maxi,z,GMP_RNDN);
 	    mpfr_set(argmaxi,x2,GMP_RNDN);
 	  }
@@ -844,8 +855,10 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
 	    else mpfr_set(res[i-1], x, GMP_RNDN);
 	  }
 	  if (mpfr_cmpabs(z,maxi)>0) {
+	    if ( (i>deg+2) || (mpfr_sgn(z)*mpfr_sgn(alpha)>=0) ) test=0;
+	    else test=1;
 	    mpfr_set(maxi,z,GMP_RNDN);
-	    mpfr_set(argmaxi,res[i-1],GMP_RNDN);
+	    mpfr_set(argmaxi,x,GMP_RNDN);
 	  }
 	}
       }
@@ -858,10 +871,11 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
     evaluateFaithfulWithCutOffFast(alpha2, diff_tree, NULL, x2, zero_mpfr, prec);
   }
   
-  if ((i<deg)||(i>deg+2)) {
+  if ((i<deg)||(i>deg+2)||(!HaarCompliant)||(!test)) {
     /* printMessage(1,"Warning: the function fails to oscillate enough.\n");
        printMessage(1,"Check Haar condition and/or increase precision.\n");
        *crash_report = -1; */
+    test=0;
     printMessage(2, "Performing an exchange step...\n");
     if (verbosity>=4) {
       printf("Computed infinite norm : "); printMpfr(maxi);
@@ -871,6 +885,7 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
     single_step_remez(argmaxi, maxi, res, monomials_tree, w, lambdai_vect, epsilon, deg+2, prec);
   }
   else {
+    // in this branch test=1
     if (i==deg) { 
       mpfr_set(res[deg], a, GMP_RNDN);
       mpfr_set(res[deg+1], b, GMP_RNDN);
@@ -897,6 +912,27 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
     }
   }
 
+  if(test) {
+    /* since we did not perform an exchange step, 
+       we have to check that the pseudo-alternating condition 
+       is fulfilled */
+
+    test=1;
+    for(i=0; (i<deg+2)&&test ;i++) {
+      evaluateFaithfulWithCutOffFast(z, error, tree, res[i] , zero_mpfr, prec);
+      if ( mpfr_sgn(z)*mpfr_sgn(lambdai_vect[i])*mpfr_sgn(epsilon) >= 0 ) test=0;
+    }
+    if(!test) {
+      printMessage(2, "Failed to find pseudo-alternating points. Performing an exchange step...\n");
+      if (verbosity>=4) {
+	printf("Computed infinite norm : "); printMpfr(maxi);
+	printf("Reached at point "); printMpfr(argmaxi);
+      }
+      for(i=0;i<deg+2;i++) mpfr_set(res[i], curr_points[i], GMP_RNDN);
+      single_step_remez(argmaxi, maxi, res, monomials_tree, w, lambdai_vect, epsilon, deg+2, prec);
+    }
+  }
+
   mpfr_clear(h); mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(x); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(zero_mpfr); mpfr_clear(z); mpfr_clear(maxi); mpfr_clear(argmaxi); mpfr_clear(alpha1); mpfr_clear(alpha2); mpfr_clear(alpha);
   return;
 }
@@ -919,7 +955,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
 		   node *poly, node *poly_diff, node *poly_diff2,
 		   node *f, node *f_diff, node *f_diff2,
 		   node *w, node *w_diff, node *w_diff2,
-		   node **monomials_tree, mpfr_t *lambdai_vect, mpfr_t epsilon,
+		   node **monomials_tree, mpfr_t *lambdai_vect, mpfr_t epsilon, int HaarCompliant,
 		   int freeDegrees, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   node *error;
   node *temp1;
@@ -1105,7 +1141,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
     }
   }
 
-  if(test) {
+  if(test && HaarCompliant) {
     if((case1 || case2b) && (s[0]*s[1]<=0)) {
       if(s[0]==0) mpfr_set(z[0], a, GMP_RNDN);
       else {
@@ -1128,10 +1164,58 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
 
     if((case1 || case2) && (s[n-1]*s[n]>0)) mpfr_set(z[n-1],b,GMP_RNDN);
     if(case2b || case3) findZero(z[n-1], error_diff, error_diff2, y[n-1], y[n], s[n-1], &x[n-1], 2, prec);
+
+
+
+    // We expect error(z[i]) ~ - sgn(lambda[i])*epsilon
+    // We check the sign of error at these points and for z[i]<>a,b, we check the sign of error''
+    test=1;
+    for(i=1; (i<=n) && test; i++) {
+      r = evaluateFaithfulWithCutOffFast(var_mpfr, error, error_diff, z[i-1], zero_mpfr, prec);
+      if(r==0) mpfr_set_d(var_mpfr, 0., GMP_RNDN);
+
+      if ( mpfr_sgn(var_mpfr)*mpfr_sgn(lambdai_vect[i-1])*mpfr_sgn(epsilon) >= 0 ) test=0;
+    
+      if ( (!mpfr_equal_p(z[i-1],a)) && (!mpfr_equal_p(z[i-1],b)) ) {
+	r = evaluateFaithfulWithCutOffFast(var_mpfr, error_diff2, NULL, z[i-1], zero_mpfr, prec);
+	if(r==0) mpfr_set_d(var_mpfr, 0., GMP_RNDN);
+      
+	if(-mpfr_sgn(var_mpfr)*mpfr_sgn(epsilon)*mpfr_sgn(lambdai_vect[i-1]) >= 0) test=0;
+      }
+    }
+  
+    if (!test) {
+      printMessage(1,"Warning in Remez: main heuristic failed. A slower algorithm is used for this step\n");
+      quickFindZeros(z, x, error, error_diff, error_diff2, monomials_tree, w, lambdai_vect, epsilon, HaarCompliant, freeDegrees-1, a, b, prec, &crash_report);
+
+      if(crash_report==-1) {
+	free_memory(error);
+	free_memory(error_diff);
+	free_memory(error_diff2);
+	mpfr_clear(var_mpfr);
+	mpfr_clear(zero_mpfr);
+	mpfr_clear(dummy_mpfr);
+	mpfr_clear(dummy_mpfr2);
+	mpfr_clear(max_val);
+	mpfr_clear(min_val);
+	free(s);
+	  
+	for(i=0;i<=n;i++)  mpfr_clear(y[i]);
+	free(y);
+	for(i=1;i<=n;i++) {
+	  mpfr_clear(z[i-1]);
+	}
+	free(z);
+	  
+	return -1;
+      }
+    }
   }
   else {
-    printMessage(1,"Warning in Remez: a slower algorithm is used for this step\n");
-    quickFindZeros(z, x, error, error_diff, error_diff2, monomials_tree, w, lambdai_vect, epsilon, freeDegrees-1, a, b, prec, &crash_report);
+    printMessage(1,"Warning in Remez: a slower algorithm is used for this step");
+    if(!HaarCompliant) printMessage(1," (pseudo-alternation condition changed)");
+    printMessage(1,"\n");
+    quickFindZeros(z, x, error, error_diff, error_diff2, monomials_tree, w, lambdai_vect, epsilon, HaarCompliant, freeDegrees-1, a, b, prec, &crash_report);
 
     if(crash_report==-1) {
       free_memory(error);
@@ -1155,6 +1239,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
       return -1;
     }
   }
+
 
   if(verbosity>=3) {
     printf("The new points are : ");
@@ -1216,7 +1301,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
 
 node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t prec, mpfr_t quality) {
   int freeDegrees = lengthChain(monomials);
-  int i,j, r, count, test, crash;
+  int i,j, r, count, test, crash, HaarCompliant;
   mpfr_t zero_mpfr, var1, var2, var3, computedQuality, infiniteNorm;
   mpfr_t *ptr;
   node *temp_tree;
@@ -1238,7 +1323,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   mpfr_t *c;
   mpfr_t *ai_vect;
   mpfr_t *lambdai_vect;
-
+  mpfr_t *previous_lambdai_vect;
 
   if(verbosity>=3) {
     printf("Entering in Remez function...\n");
@@ -1262,7 +1347,8 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   b = safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
   c = safeMalloc(freeDegrees*sizeof(mpfr_t));
   ai_vect = safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
-  lambdai_vect = safeMalloc(freeDegrees*sizeof(mpfr_t));
+  lambdai_vect = safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
+  previous_lambdai_vect = safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
   x = safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
   
   for(j=1; j <= freeDegrees+1 ; j++) {
@@ -1280,7 +1366,13 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     }
     mpfr_init2(c[j-1], prec);
     mpfr_init2(lambdai_vect[j-1], prec);
+    mpfr_init2(previous_lambdai_vect[j-1], prec);
   }
+  mpfr_init2(lambdai_vect[freeDegrees], prec);
+  mpfr_init2(previous_lambdai_vect[freeDegrees], prec);
+  mpfr_set_si(lambdai_vect[freeDegrees],-1,GMP_RNDN);
+  mpfr_set_si(previous_lambdai_vect[freeDegrees],-1,GMP_RNDN);
+
 
   if(verbosity>=8)  printf("Differentiating functions...\n");
   pushTimeCounter();
@@ -1442,7 +1534,14 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
     system_solve( lambdai_vect , N, c, freeDegrees, prec);
 
-    for (i=1 ; i <= freeDegrees ; i++) {
+    HaarCompliant=1;
+    for(i=1; i<=freeDegrees+1; i++) {
+      if (mpfr_sgn(lambdai_vect[i-1])*mpfr_sgn(previous_lambdai_vect[i-1])<=0) HaarCompliant=0;
+    }
+    if(count==0) HaarCompliant=1;
+
+
+    for (i=1 ; i <= freeDegrees+1 ; i++) {
       if (mpfr_sgn(lambdai_vect[i-1])>0)
 	mpfr_set_si(M[coeff(i, freeDegrees+1, freeDegrees+1)], 1 ,GMP_RNDN);
       else {
@@ -1454,7 +1553,6 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 	}
       }
     }
-    mpfr_set_si(M[coeff(freeDegrees+1, freeDegrees+1, freeDegrees+1)], -1 ,GMP_RNDN);
 
     if(verbosity>=4) {
       printf("Signs for pseudo-alternating condition : [");
@@ -1531,7 +1629,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 			   poly, poly_diff, poly_diff2,
 			   f, f_diff, f_diff2,
 			   w, w_diff, w_diff2,
-			   monomials_tree, lambdai_vect, ai_vect[freeDegrees],
+			   monomials_tree, lambdai_vect, ai_vect[freeDegrees], HaarCompliant,
 			   freeDegrees, u, v, prec);
     popTimeCounter("Remez: computing the quality of approximation");
 
@@ -1594,10 +1692,14 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 	}
 	mpfr_clear(c[j-1]);
 	mpfr_clear(lambdai_vect[j-1]);
+	mpfr_clear(previous_lambdai_vect[j-1]);
       }
+      mpfr_clear(lambdai_vect[freeDegrees]);
+      mpfr_clear(previous_lambdai_vect[freeDegrees]);
       free(N);
       free(c);
       free(lambdai_vect);
+      free(previous_lambdai_vect);
 
       recoverFromError();
     }
@@ -1607,6 +1709,11 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     }
 
     count++;
+    for(i=1; i<=freeDegrees+1; i++) {
+      mpfr_set(previous_lambdai_vect[i-1], lambdai_vect[i-1], GMP_RNDN);
+    }
+
+
 
     free_memory(poly_diff);
     free_memory(poly_diff2);
@@ -1681,10 +1788,14 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     }
     mpfr_clear(c[j-1]);
     mpfr_clear(lambdai_vect[j-1]);
+    mpfr_clear(previous_lambdai_vect[j-1]);
   }
+  mpfr_clear(lambdai_vect[freeDegrees]);
+  mpfr_clear(previous_lambdai_vect[freeDegrees]);
   free(N);
   free(c);
   free(lambdai_vect);
+  free(previous_lambdai_vect);
 
   if (mpfr_cmp(computedQuality, quality)>0) {
     fprintf(stderr, "Error in Remez: the algorithm does not converge.\n");
@@ -1958,7 +2069,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
 			   poly, poly_diff, poly_diff2,
 			   f, f_diff, f_diff2,
 			   w, w_diff, w_diff2,
-			   monomials_tree, NULL, ai_vect[freeDegrees],
+			   monomials_tree, NULL, ai_vect[freeDegrees], 1,
 			   freeDegrees, u, v, prec);
     
     if(crash==-1) {
