@@ -2572,9 +2572,13 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   node *derivsecond;
   int newtonWorked;
   int i,k;
+  mp_prec_t prec_bound = prec;
+  
+  if (mpfr_get_prec(a) > prec_bound) prec_bound = mpfr_get_prec(a);
+  if (mpfr_get_prec(b) > prec_bound) prec_bound = mpfr_get_prec(b);
 
-  mpfr_init2(x1, prec);
-  mpfr_init2(x2, prec);
+  mpfr_init2(x1, prec_bound);
+  mpfr_init2(x2, prec_bound);
   mpfr_init2(step, prec);
   mpfr_init2(y1, prec);
   mpfr_init2(y2, prec);
@@ -2590,7 +2594,7 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
 
   mpfr_sub(step, b, a, GMP_RNDN);
   mpfr_div_ui(step, step, points, GMP_RNDN);
- 
+
   if (mpfr_sgn(step) == 0) {
     printMessage(1,"Warning: the given interval is reduced to one point.\n");
     evaluateFaithful(y1,tree,a,prec);
@@ -2720,6 +2724,7 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
 	}
       }
     }
+    
     mpfr_set(x1,x2,GMP_RNDN);
     mpfr_set(y1,y2,GMP_RNDN);
     mpfr_add(x2,x1,step, GMP_RNDU);
