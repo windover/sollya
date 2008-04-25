@@ -1391,7 +1391,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     for(i=1;i<=freeDegrees+1;i++) printMpfr(x[i-1]);
   }
   
-  while((mpfr_cmp(computedQuality, quality)>0) && (count<1000)) {
+  while((mpfr_cmp(computedQuality, quality)>0) && (count<120)) {
     free_memory(poly);
 
     // Definition of the matrices M and N of Remez algorithm
