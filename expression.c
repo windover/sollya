@@ -444,86 +444,11 @@ void removeTrailingZeros(char *outbuf, char *inbuf) {
 void printHexadecimalValue(mpfr_t x);
 
 void printValue(mpfr_t *value, mp_prec_t prec) {
-  mpfr_t y;
-  char *str, *str2, *str3;
-  mp_exp_t e, expo;
-  int t, l,i;
+  char *str;
 
-  if (dyadic == 4) {
-    printHexadecimalValue(*value);
-    return;
-  }
-  
-  if (dyadic == 3) {
-    printBinary(*value);
-    return;
-  }
-
-  prec = mpfr_get_prec(*value);
-  mpfr_init2(y,prec);
-  t = mpfr_get_si(*value,GMP_RNDN);
-  mpfr_set_si(y,t,GMP_RNDN);
-  if ((mpfr_cmp(y,*value) == 0) && (mpfr_number_p(*value))) {
-    printf("%d",t);
-  } else { 
-    mpfr_set(y,*value,GMP_RNDN);
-    if (mpfr_sgn(y) < 0) {
-      printf("-"); mpfr_neg(y,y,GMP_RNDN);
-    }
-    if ((dyadic == 1) || (dyadic == 2)) {
-      if (!mpfr_number_p(*value)) {
-	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
-	printf("%s",str);
-      } else {
-	expo = mpfr_get_exp(y);
-	if (mpfr_set_exp(y,prec)) {
-	  printMessage(1,"\nWarning: %d is not in the current exponent range of a variable. Values displayed may be wrong.\n",(int)(prec));
-	}
-	expo -= prec;
-	while (mpfr_integer_p(y)) {
-	  mpfr_div_2ui(y,y,1,GMP_RNDN);
-	  expo += 1;
-	}
-	expo--;
-	if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
-	  if (!noRoundingWarnings) {
-	    printMessage(1,"\nWarning: rounding occurred during displaying a value. Values displayed may be wrong.\n");
-	  }
-	}
-	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
-	str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
-	strncpy(str2,str,e);
-	if (dyadic == 1) 
-	  printf("%sb%d",str2,(int)expo);
-	else
-	  printf("%s * 2^(%d)",str2,(int)expo);
-	free(str2);
-      }
-      mpfr_free_str(str);      
-    } else {
-      str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
-      if (mpfr_number_p(*value)) {
-	str3 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
-	removeTrailingZeros(str3,str);
-	if (e == 0) {
-	  printf("0.%s",str3);
-	} else {
-	  l = strlen(str3);
-	  if ((e > 0) && (l <= e) && (e <= (prec >> 2))) {
-	    printf("%s",str3);
-	    for (i=l;i<e;i++) printf("0");
-	  } else { 
-	    printf("0.%se%d",str3,(int)e); 
-	  }
-	}
-	free(str3);
-      } else {
-	printf("%s",str);
-      }
-      mpfr_free_str(str);      
-    }
-  }
-  mpfr_clear(y);
+  str = sprintValue(value, prec);
+  printf("%s",str);
+  free(str);
 }
 
 char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
@@ -759,6 +684,10 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
   mp_exp_t e, expo;
   int t, l, i;
   char *buffer, *tempBuf, *finalBuffer;
+  char *tempBufOld;
+  char *str4;
+  mpfr_t temp;
+  mp_prec_t prec2;
 
   if (dyadic == 4) 
     return sPrintHexadecimal(*value);
@@ -767,6 +696,21 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
     return sPrintBinary(*value);
 
   prec = mpfr_get_prec(*value);
+  if (mpfr_number_p(*value)) {
+    prec2 = prec;
+    while (prec2 >= 12) {
+      mpfr_init2(temp,prec2);
+      mpfr_set(temp,*value,GMP_RNDN);
+      if (mpfr_cmp(temp,*value) != 0) {
+	prec2++;
+	break;
+      }
+      prec2--;
+    }
+    if (prec2 > prec) prec2 = prec;
+  }
+  prec = prec2;
+  if (prec < tools_precision) printMessage(2,"Information: printing value of lower precision\n");
   buffer = safeCalloc(2 * prec + 7 + (sizeof(mp_exp_t) * 4) + 1, sizeof(char));
   tempBuf = buffer;
   mpfr_init2(y,prec);
@@ -815,14 +759,36 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
 	str3 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
 	removeTrailingZeros(str3,str);
 	if (e == 0) {
-	  tempBuf += sprintf(tempBuf,"0.%s",str3);
+	  tempBufOld = tempBuf;
+	  str4 = (char *) safeCalloc(strlen(str3)+1,sizeof(char));
+	  mpfr_init2(temp,prec);
+	  for (i=0;i<strlen(str3);i++) {
+	    str4[i] = str3[i];
+	    tempBuf = tempBufOld;
+	    tempBuf += sprintf(tempBuf,"0.%s",str4);   
+	    mpfr_set_str(temp,buffer,10,GMP_RNDN);
+	    if (mpfr_cmp(temp,*value) == 0) break;
+	  }
+	  free(str4);
+	  mpfr_clear(temp);
 	} else {
 	  l = strlen(str3);
-	  if ((e > 0) && (l <= e) && (e <= (prec >> 2))) {
+	  if ((e > 0) && (l <= e) && (e <= (tools_precision >> 2))) {
 	    tempBuf += sprintf(tempBuf,"%s",str3);
 	    for (i=l;i<e;i++) tempBuf += sprintf(tempBuf,"0");
-	  } else { 
-	    tempBuf += sprintf(tempBuf,"0.%se%d",str3,(int)e); 
+	  } else {
+	    tempBufOld = tempBuf;
+	    str4 = (char *) safeCalloc(strlen(str3)+1,sizeof(char));
+	    mpfr_init2(temp,prec);
+	    for (i=0;i<strlen(str3);i++) {
+	      str4[i] = str3[i];
+	      tempBuf = tempBufOld;
+	      tempBuf += sprintf(tempBuf,"0.%se%d",str4,(int)e);   
+	      mpfr_set_str(temp,buffer,10,GMP_RNDN);
+	      if (mpfr_cmp(temp,*value) == 0) break;
+	    }
+	    free(str4);
+	    mpfr_clear(temp);
 	  }
 	}
 	free(str3);
