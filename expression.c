@@ -698,7 +698,7 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
   prec = mpfr_get_prec(*value);
   if (mpfr_number_p(*value)) {
     prec2 = prec;
-    while (prec2 >= 12) {
+    while (prec2 >= tools_precision) {
       mpfr_init2(temp,prec2);
       mpfr_set(temp,*value,GMP_RNDN);
       if (mpfr_cmp(temp,*value) != 0) {
@@ -710,7 +710,7 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
     if (prec2 > prec) prec2 = prec;
   }
   prec = prec2;
-  if (prec < tools_precision) printMessage(2,"Information: printing value of lower precision\n");
+  if (prec < tools_precision) printMessage(12,"Information: printing value of lower precision\n");
   buffer = safeCalloc(2 * prec + 7 + (sizeof(mp_exp_t) * 4) + 1, sizeof(char));
   tempBuf = buffer;
   mpfr_init2(y,prec);
