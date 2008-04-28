@@ -339,9 +339,9 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
       r = evaluateFaithfulWithCutOffFast(y, f, f_diff, xNew, zero_mpfr, prec); // y=f[(u+v)/2]
 
       if((!mpfr_number_p(y)) && (r==1)) {
-	fprintf(stderr,"/*Warning: Newton algorithm encountered numerical problems*/\n");
+	fprintf(stderr,"/*Warning: Newton's algorithm encountered numerical problems*/\n");
 	if(verbosity>=2) {
-	  printf("This function seems to be undefined at this point :"); printTree(f); printMpfr(xNew);
+	  printf("The function "); printTree(f); printf(" seems to be undefined at this point: ");  printMpfr(xNew);
 	}
 
 	mpfr_set(res, xNew, GMP_RNDN);
@@ -1874,6 +1874,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
   int i,j, r, count, test, crash;
   mpfr_t zero_mpfr, var1, var2, var3, computedQuality, infiniteNorm;
   mpfr_t *ptr;
+  mpfr_t *lambdai_vect;
   node *temp_tree;
   node *temp_tree2;
   node *temp_tree3;
@@ -1909,6 +1910,8 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
   ai_vect = safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
   x = safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
   
+  lambdai_vect = safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
+
   for(j=1; j <= freeDegrees+1 ; j++) {
     for(i=1; i<= freeDegrees+1; i++) {
       mpfr_init2(M[coeff(i,j,freeDegrees+1)],prec);
@@ -1916,6 +1919,13 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
     mpfr_init2(b[j-1], prec);
     mpfr_init2(ai_vect[j-1], prec);
     mpfr_init2(x[j-1], prec);
+  }
+
+  i=-1;
+  for(j=freeDegrees+1; j >= 1 ; j--) {
+    mpfr_init2(lambdai_vect[j-1], prec);
+    mpfr_set_si(lambdai_vect[j-1],i, GMP_RNDN);
+    i=-i;
   }
 
   f_diff = differentiate(f);
@@ -2069,7 +2079,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
 			   poly, poly_diff, poly_diff2,
 			   f, f_diff, f_diff2,
 			   w, w_diff, w_diff2,
-			   monomials_tree, NULL, ai_vect[freeDegrees], 1,
+			   monomials_tree, lambdai_vect, ai_vect[freeDegrees], 1,
 			   freeDegrees, u, v, prec);
     
     if(crash==-1) {
@@ -2087,8 +2097,12 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
       }
       free(monomials_tree);
 
-      for(j=1;j<=freeDegrees+1;j++) mpfr_clear(x[j-1]);
+      for(j=1;j<=freeDegrees+1;j++) {
+	mpfr_clear(lambdai_vect[j-1]);
+	mpfr_clear(x[j-1]);
+      }
       free(x);
+      free(lambdai_vect);
 
       free_memory(poly);
       free_memory(poly_diff);
@@ -2135,8 +2149,12 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
   }
   free(monomials_tree);
   
-  for(j=1;j<=freeDegrees+1;j++) mpfr_clear(x[j-1]);
+  for(j=1;j<=freeDegrees+1;j++) {
+    mpfr_clear(lambdai_vect[j-1]);
+    mpfr_clear(x[j-1]);
+  }
   free(x);
+  free(lambdai_vect);
   free_memory(poly);
   free_memory(poly_diff);
   free_memory(poly_diff2);
