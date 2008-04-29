@@ -1754,7 +1754,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
     taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, hopitalrecursions+1, NULL, linearTheo);
   }
 
-  if (!mpfi_has_zero(linearTerm)) {
+  if (!mpfi_has_zero(linearTerm) && mpfi_bounded_p(linearTerm)) {
 
     printMessage(12,"Information: the linear term during Taylor evaluation does not change its sign.\n");
     printMessage(12,"Simplifying by taking the convex hull of the evaluations on the endpoints.\n");
