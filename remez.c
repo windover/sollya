@@ -1449,7 +1449,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     mpfr_sub(var2, x[i], x[i-1], GMP_RNDN);
     if (mpfr_cmpabs(var1,var2)>0) mpfr_mul(var3, var2, perturb, GMP_RNDN);
     else mpfr_mul(var3, var1, perturb, GMP_RNDN);
-    mpfr_add(x[i-1], x[i-1], perturb, GMP_RNDN);
+    mpfr_add(x[i-1], x[i-1], var3, GMP_RNDN);
   }
   mpfr_clear(perturb);
 
