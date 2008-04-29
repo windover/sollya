@@ -1324,7 +1324,12 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   mpfr_t *ai_vect;
   mpfr_t *lambdai_vect;
   mpfr_t *previous_lambdai_vect;
+  mpfr_t perturb;
+  gmp_randstate_t random_state;
 
+  gmp_randinit_default(random_state);
+  gmp_randseed_ui(random_state, 65845285);
+  
   if(verbosity>=3) {
     printf("Entering in Remez function...\n");
     printf("Required quality :"); printMpfr(quality);
@@ -1431,6 +1436,24 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     mpfr_cos(x[i-1], x[i-1], GMP_RNDN);
     mpfr_fma(x[i-1], x[i-1], var2, var3, GMP_RNDN); // x_i = [cos((i-1)*Pi/freeDegrees)]*(u-v)/2 + (u+v)/2
   }
+
+  /* Random pertubration of the points... */
+  mpfr_init2(perturb, prec);
+  for(i=2;i<=freeDegrees;i++) {
+    mpfr_urandomb(perturb, random_state);
+    mpfr_mul_2ui(perturb, perturb, 1, GMP_RNDN);
+    mpfr_sub_ui(perturb, perturb, 1, GMP_RNDN);
+    mpfr_div_2ui(perturb, perturb, 2, GMP_RNDN); // perturb \in [-1/4; 1/4]
+
+    mpfr_sub(var1, x[i-1], x[i-2], GMP_RNDN);
+    mpfr_sub(var2, x[i], x[i-1], GMP_RNDN);
+    if (mpfr_cmpabs(var1,var2)>0) mpfr_mul(var3, var2, perturb, GMP_RNDN);
+    else mpfr_mul(var3, var1, perturb, GMP_RNDN);
+    mpfr_add(x[i-1], x[i-1], perturb, GMP_RNDN);
+  }
+  mpfr_clear(perturb);
+
+
   /*************************************************************/
 
 
