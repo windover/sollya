@@ -708,9 +708,8 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
       prec2--;
     }
     if (prec2 > prec) prec2 = prec;
+    prec = prec2;
   }
-  prec = prec2;
-  if (prec < tools_precision) printMessage(12,"Information: printing value of lower precision\n");
   buffer = safeCalloc(2 * prec + 7 + (sizeof(mp_exp_t) * 4) + 1, sizeof(char));
   tempBuf = buffer;
   mpfr_init2(y,prec);
