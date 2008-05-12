@@ -107,7 +107,7 @@ void system_solve(mpfr_t *res, mpfr_t *M, mpfr_t *b, int n, mp_prec_t prec) {
       while(currj!=NULL) {
 	i = *(int *)(curri->value);
 	j = *(int *)(currj->value);
-	if(mpfr_cmpabs(M[coeff(i,j,n)],max)>0) {
+	if(mpfr_cmpabs(M[coeff(i,j,n)],max)>=0) {
 	  i0 = i;
 	  j0 = j;
 	  mpfr_set(max, M[coeff(i,j,n)], GMP_RNDN);
