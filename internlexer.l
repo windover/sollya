@@ -73,7 +73,7 @@ CHAR		[a-zA-Z]
 NUMBER		[0-9]
 HEXNUMBER       (([0-9])|([ABCDEFabcdef]))
 
-CONSTANT        ({NUMBER}+|({NUMBER}*"."{NUMBER}+))(("~"{NUMBER}"/"{NUMBER}"~")?)(((((" ")*)(([eE]))([+-])?{NUMBER}+)?))
+CONSTANT        ((({NUMBER}+|({NUMBER}*"."{NUMBER}+))(("~"{NUMBER}"/"{NUMBER}"~")?)(((((" ")*)(([eE]))([+-])?{NUMBER}+)?)))|("infty"|"nan"|"NAN"|"NaN"|"@Inf@"|"@NaN@"))
 DYADICCONSTANT  ({NUMBER}+)([bB])([+-]?)({NUMBER}+)
 HEXCONSTANT     ("0x")({HEXNUMBER}{16}|{HEXNUMBER}{8})
 
