@@ -67,6 +67,27 @@ knowledge of the CeCILL-C license and that you accept its terms.
 void printInterval(mpfi_t interval);
 void freeMpfiPtr(void *i);
 
+
+void special_mpfi_div(mpfi_t rop, mpfi_t a, mpfi_t b) {
+  mpfr_t temp;
+  mpfr_t bh, bl;
+  mp_prec_t prec;
+
+  prec = mpfi_get_prec(b);
+  mpfr_init2(bh,prec);
+  mpfr_init2(bl,prec);
+  mpfi_get_left(bl,b);
+  mpfi_get_left(bh,b);
+  if (mpfr_zero_p(bl) && mpfr_zero_p(bh)) {
+    mpfr_set_nan(bh);
+    mpfi_interv_fr(rop,bh,bh);
+  } else {
+    mpfi_div(rop,a,b);
+  }
+  mpfr_clear(bl);
+  mpfr_clear(bh);
+}
+
 void mpfi_pow(mpfi_t z, mpfi_t x, mpfi_t y) {
   mpfr_t l,r,lx,rx;
   mp_prec_t prec, precx;
@@ -1016,7 +1037,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	
 	free_memory(derivNumerator);
 	free_memory(derivDenominator);
-	mpfi_div(stack3, stack1, stack2);
+	special_mpfi_div(stack3, stack1, stack2);
 	excludes = concatChains(leftExcludes,rightExcludes);
       } else {
 	/* [0;0] / [bl;br], bl,br != 0 */
@@ -1281,7 +1302,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 
 		  free_memory(derivNumerator);
 		  mpfr_clear(z2);
-		  mpfi_div(stack3, stack1, stack2);
+		  special_mpfi_div(stack3, stack1, stack2);
 		}
 	      } else {
 
@@ -1293,7 +1314,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	    	excludes = concatChains(leftExcludes,rightExcludes);
 		excludes = addElement(excludes,newExclude);
 
-		mpfi_div(stack3, stack1, stack2);
+		special_mpfi_div(stack3, stack1, stack2);
 	      }
 	    }
 
@@ -1301,19 +1322,19 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	    mpfi_clear(denominatorInZI);
 	    mpfi_clear(zI);
 	  } else {
-	    mpfi_div(stack3, stack1, stack2);
+	    special_mpfi_div(stack3, stack1, stack2);
 	    excludes = concatChains(leftExcludes,rightExcludes);
 	  }
 	  free_memory(derivDenominator);
 	  mpfr_clear(z);
 	} else {
-	  mpfi_div(stack3, stack1, stack2);
+	  special_mpfi_div(stack3, stack1, stack2);
 	  excludes = concatChains(leftExcludes,rightExcludes);
 	}
 	mpfr_clear(xl);
 	mpfr_clear(xr);
       } else {
-	mpfi_div(stack3, stack1, stack2);
+	special_mpfi_div(stack3, stack1, stack2);
 	excludes = concatChains(leftExcludes,rightExcludes);
       }
     }
@@ -1612,7 +1633,7 @@ chain* evaluateITaylorOnDiv(mpfi_t result, node *func, mpfi_t x, mp_prec_t prec,
     numeratorExcludes = evaluateITaylor(resultNumerator, numerator, derivNumerator, x, prec, recurse, numeratorTheo);
     denominatorExcludes = evaluateITaylor(resultDenominator, denominator, derivDenominator, x, prec, recurse, denominatorTheo);
     excludes = concatChains(numeratorExcludes,denominatorExcludes);    
-    mpfi_div(resultIndirect, resultNumerator, resultDenominator);
+    special_mpfi_div(resultIndirect, resultNumerator, resultDenominator);
     if (mpfi_bounded_p(resultIndirect)) {
       mpfi_set(result, resultIndirect);
       if (theo != NULL) {
