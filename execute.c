@@ -11990,20 +11990,57 @@ node *evaluateThingInner(node *tree) {
     break;  	  	
   case DECIMALCONSTANT:
     if (timingString != NULL) pushTimeCounter();
-    mpfr_init2(a,tools_precision);
-    mpfr_init2(b,tools_precision);
+    pTemp = 4 * strlen(tree->string) + 3324;
+    if (tools_precision > pTemp) pTemp = tools_precision;
+    mpfr_init2(a,pTemp);
+    mpfr_init2(b,pTemp);
+    mpfr_set_str(a,tree->string,10,GMP_RNDD);
+    mpfr_set_str(b,tree->string,10,GMP_RNDU);    
+    if (mpfr_cmp(a,b) != 0) {
+      pTemp = tools_precision;
+    }
+    mpfr_clear(a); mpfr_clear(b);
+    mpfr_init2(a,pTemp);
+    mpfr_init2(b,pTemp);
     mpfr_set_str(a,tree->string,10,GMP_RNDD);
     mpfr_set_str(b,tree->string,10,GMP_RNDU);    
     if (mpfr_cmp(a,b) != 0) {
       if (!noRoundingWarnings) {
 	printMessage(1,
 		     "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
-		     tree->string,(int) tools_precision);
+		     tree->string,(int) pTemp);
 	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
       }
       mpfr_set_str(a,tree->string,10,GMP_RNDN);
     }
-    tempNode = makeConstant(a);
+    if (mpfr_number_p(a)) {
+      while (pTemp >= tools_precision) {
+	mpfr_init2(c,pTemp);
+	mpfr_set(c,a,GMP_RNDN);
+	if (mpfr_cmp(a,c) != 0) {
+	  pTemp++;
+	  mpfr_clear(c);
+	  break;
+	}
+	mpfr_clear(c);
+	pTemp--;
+      }
+      if (pTemp < tools_precision) pTemp = tools_precision;
+    } else {
+      pTemp = tools_precision;
+    }
+    mpfr_init2(c,pTemp);
+    mpfr_set(c,a,GMP_RNDN);
+    if (mpfr_cmp(a,c) != 0) {
+      if (!noRoundingWarnings) {
+	printMessage(1,
+		     "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
+		     tree->string,(int) pTemp);
+	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      }
+    }
+    tempNode = makeConstant(c);
+    mpfr_clear(c);
     mpfr_clear(b);
     mpfr_clear(a);
     free(copy);
@@ -12012,12 +12049,14 @@ node *evaluateThingInner(node *tree) {
     break; 		
   case DYADICCONSTANT:
     if (timingString != NULL) pushTimeCounter();
-    mpfr_init2(a,tools_precision);
+    pTemp = 4 * strlen(tree->string);
+    if (tools_precision > pTemp) pTemp = tools_precision;
+    mpfr_init2(a,pTemp);
     if (!readDyadic(a,tree->string)) {
       if (!noRoundingWarnings) {
 	printMessage(1,
 		     "Warning: Rounding occurred when converting the dyadic constant \"%s\" to floating-point with %d bits.\n",
-		     tree->string,(int) tools_precision);
+		     tree->string,(int) pTemp);
 	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
       }
     }
@@ -12029,12 +12068,14 @@ node *evaluateThingInner(node *tree) {
     break; 			
   case HEXCONSTANT:
     if (timingString != NULL) pushTimeCounter();
-    mpfr_init2(a,tools_precision);
+    pTemp = 53;
+    if (tools_precision > pTemp) pTemp = tools_precision;
+    mpfr_init2(a,pTemp);
     if (!readHexa(a,tree->string)) {
       if (!noRoundingWarnings) {
 	printMessage(1,
 		     "Warning: Rounding occurred when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
-		     tree->string,(int) tools_precision);
+		     tree->string,(int) pTemp);
 	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
       }
     }
@@ -12046,12 +12087,14 @@ node *evaluateThingInner(node *tree) {
     break; 			
   case HEXADECIMALCONSTANT:
     if (timingString != NULL) pushTimeCounter();
-    mpfr_init2(a,tools_precision);
+    pTemp = 4 * strlen(tree->string);
+    if (tools_precision > pTemp) pTemp = tools_precision;
+    mpfr_init2(a,pTemp);
     if (!readHexadecimal(a,tree->string)) {
       if (!noRoundingWarnings) {
 	printMessage(1,
 		     "Warning: Rounding occurred when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
-		     tree->string,(int) tools_precision);
+		     tree->string,(int) pTemp);
 	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
       }
     }
@@ -12063,15 +12106,17 @@ node *evaluateThingInner(node *tree) {
     break; 			
   case BINARYCONSTANT:
     if (timingString != NULL) pushTimeCounter();
-    mpfr_init2(a,tools_precision);
-    mpfr_init2(b,tools_precision);
+    pTemp = strlen(tree->string);
+    if (tools_precision > pTemp) pTemp = tools_precision;
+    mpfr_init2(a,pTemp);
+    mpfr_init2(b,pTemp);
     mpfr_set_str(a,tree->string,2,GMP_RNDD);
     mpfr_set_str(b,tree->string,2,GMP_RNDU);    
     if (mpfr_cmp(a,b) != 0) {
       if (!noRoundingWarnings) {
 	printMessage(1,
 		     "Warning: Rounding occurred when converting the binary constant \"%s_2\" to floating-point with %d bits.\n",
-		     tree->string,(int) tools_precision);
+		     tree->string,(int) pTemp);
 	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
       }
       mpfr_set_str(a,tree->string,2,GMP_RNDN);

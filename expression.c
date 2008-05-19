@@ -576,7 +576,10 @@ char *sPrintBinary(mpfr_t x) {
     if (!mpfr_zero_p(x)) {
       if (mpfr_number_p(x)) {
 	temp3 = (char *) safeCalloc(strlen(str3)+74,sizeof(char));
-	sprintf(temp3,"%s_2 * 2^(%d)",str3,((int)expo)-1); 
+	if ((((int) expo)-1) != 0) 
+	  sprintf(temp3,"%s_2 * 2^(%d)",str3,((int)expo)-1);  
+	else
+	  sprintf(temp3,"%s_2",str3);  
       } else {
 	temp3 = (char *) safeCalloc(strlen(raw) + 2,sizeof(char));
 	if (negative) 
@@ -702,9 +705,11 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
       mpfr_init2(temp,prec2);
       mpfr_set(temp,*value,GMP_RNDN);
       if (mpfr_cmp(temp,*value) != 0) {
+	mpfr_clear(temp);
 	prec2++;
 	break;
       }
+      mpfr_clear(temp);
       prec2--;
     }
     if (prec2 > prec) prec2 = prec;
@@ -713,6 +718,7 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
   buffer = safeCalloc(2 * prec + 7 + (sizeof(mp_exp_t) * 4) + 1, sizeof(char));
   tempBuf = buffer;
   mpfr_init2(y,prec);
+  mpfr_init2(temp,prec);
   t = mpfr_get_si(*value,GMP_RNDN);
   mpfr_set_si(y,t,GMP_RNDN);
   if ((mpfr_cmp(y,*value) == 0) && (mpfr_number_p(*value))) {
