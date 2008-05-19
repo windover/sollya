@@ -79,8 +79,9 @@ void special_mpfi_div(mpfi_t rop, mpfi_t a, mpfi_t b) {
   mpfi_get_left(bl,b);
   mpfi_get_left(bh,b);
   if (mpfr_zero_p(bl) && mpfr_zero_p(bh)) {
-    mpfr_set_nan(bh);
-    mpfi_interv_fr(rop,bh,bh);
+    mpfr_set_inf(bh,1);
+    mpfr_set_inf(bl,-1);
+    mpfi_interv_fr(rop,bl,bh);
   } else {
     mpfi_div(rop,a,b);
   }
