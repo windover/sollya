@@ -4381,7 +4381,7 @@ node* differentiate(node *tree) {
     temp = differentiateUnsimplified(tree);
   } else {
     if (treeSize(tree) > MAXDIFFSIMPLSIZE) {
-      printMessage(3,"Information: will not simplify the given expression before differentiating because it is too big.\n");
+      printMessage(7,"Information: will not simplify the given expression before differentiating because it is too big.\n");
       temp = differentiateUnsimplified(tree);
     } else {
       temp3 = simplifyTreeErrorfree(tree);
@@ -7172,10 +7172,10 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
   simplifiedTemp = expandPowerInPolynomialUnsafe(polynom);
   simplified = expandPolynomialUnsafe(simplifiedTemp);
 
-  if (verbosity >= 2) {
-    printMessage(2,"Warning: recursion on coefficients extraction:\n");
+  if (verbosity >= 7) {
+    printMessage(7,"Warning: recursion on coefficients extraction:\n");
     printTree(polynom);
-    printMessage(2,"\ntransformed to\n");
+    printMessage(7,"\ntransformed to\n");
     printTree(simplified); printf("\n");
   }
 
@@ -7255,7 +7255,7 @@ void getCoefficientsHornerUnsafe(node **coefficients, node *poly, int offset, in
 void getCoefficientsHorner(node **coefficients, node *poly) {
   int offset;
 
-  printMessage(3,"Information: extraction of coefficient terms from a polynomial uses a special algorithm for Horner forms.\n");
+  printMessage(7,"Information: extraction of coefficient terms from a polynomial uses a special algorithm for Horner forms.\n");
 
   if (poly->nodeType == MUL) {
     offset = getDegree(poly->child1);
@@ -7331,7 +7331,7 @@ void getCoefficientsCanonicalUnsafe(node **coefficients, node *poly) {
 
 void getCoefficientsCanonical(node **coefficients, node *poly) {
 
-  printMessage(3,"Information: extraction of coefficient terms from a polynomial uses a special algorithm for canonical forms.\n");
+  printMessage(7,"Information: extraction of coefficient terms from a polynomial uses a special algorithm for canonical forms.\n");
 
   getCoefficientsCanonicalUnsafe(coefficients, poly);
 }
@@ -7491,7 +7491,7 @@ node* hornerPolynomial(node *tree) {
   if (isConstant(tree)) return copyTree(tree);
   if (getDegree(tree) < 0) return copyTree(tree);
   if (isHorner(tree)) {
-    printMessage(3,"Information: no Horner simplification will be performed because the given tree is already in Horner form.\n");
+    printMessage(7,"Information: no Horner simplification will be performed because the given tree is already in Horner form.\n");
     return copyTree(tree);
   }
   if (isCanonical(tree)) {
@@ -7771,7 +7771,7 @@ node* horner(node *tree) {
   int i;
 
   if (isHorner(tree)) {
-    printMessage(2,"Information: no Horner simplification will be performed because the given tree is already in Horner form.\n");
+    printMessage(7,"Information: no Horner simplification will be performed because the given tree is already in Horner form.\n");
     return copyTree(tree);
   }
 
@@ -7913,7 +7913,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
   mpfr_t *value;
 
   if (isHorner(tree)) {
-    printMessage(3,"Information: differentiating a polynomial in Horner form uses a special algorithm.\n");
+    printMessage(7,"Information: differentiating a polynomial in Horner form uses a special algorithm.\n");
     return differentiatePolynomialHornerUnsafe(tree);
   }
 
@@ -8877,7 +8877,7 @@ node *makeCanonical(node *tree, mp_prec_t prec) {
   mpfr_t *value;
 
   if (isCanonical(tree)) {
-    printMessage(2,"Information: no canonical form simplification will be performed because the given tree is already canonical.\n");
+    printMessage(7,"Information: no canonical form simplification will be performed because the given tree is already canonical.\n");
     return copyTree(tree);
   }
 
