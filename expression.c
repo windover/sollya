@@ -58,7 +58,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "double.h"
 #include "miniparser.h"
 
-#define MAXDIFFSIMPLSIZE 250
+#define MAXDIFFSIMPLSIZE 10000
 
 
 void mpfr_from_mpfi(mpfr_t rop, mpfr_t op, int n, int (*mpfifun)(mpfi_t, mpfi_t, int)) {
@@ -2223,6 +2223,107 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
   node *simplChild1, *simplChild2, *simplified, *recsimplified;
   mpfr_t *value;
   mpfr_t temp;
+  mp_prec_t prec, p;
+  /* int alpha, beta;
+  node *temp1, *temp2, *temp3, *temp4;
+
+  
+  if ((tree->nodeType == DIV) && 
+      (isPolynomial(tree->child1)) &&
+      (isPolynomial(tree->child1)) &&
+      ((alpha = getMaxPowerDivider(tree->child1)) > 0) && 
+      ((beta = getMaxPowerDivider(tree->child2)) > 0)) {
+    if (alpha == beta) {
+      temp1 = horner(tree->child1);
+      temp2 = horner(tree->child2);
+      temp3 = (node *) safeMalloc(sizeof(node));
+      temp3->nodeType = DIV;
+      temp3->child1 = copyTree(temp1->child2);
+      temp3->child2 = copyTree(temp2->child2);
+      free_memory(temp1);
+      free_memory(temp2);
+      temp4 = simplifyTreeErrorfreeInner(temp3,rec);
+      free_memory(temp3);
+      return temp4;
+    } else {
+      temp1 = (node *) safeMalloc(sizeof(node));
+      temp1->nodeType = DIV;
+      temp1->child1 = copyTree(tree->child1);
+      temp2 = (node *) safeMalloc(sizeof(node));
+      temp1->child2 = temp2;
+      temp2->nodeType = POW;
+      temp2->child1 = (node *) safeMalloc(sizeof(node));
+      temp2->child1->nodeType = VARIABLE;
+      temp2->child2 = (node *) safeMalloc(sizeof(node));
+      temp2->child2->nodeType = CONSTANT;
+      temp2->child2->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*(temp2->child2->value),8 * sizeof(int) + 10);
+      mpfr_set_si(*(temp2->child2->value),alpha,GMP_RNDN);
+      temp3 = simplifyTreeErrorfreeInner(temp1, rec);
+      free_memory(temp1);
+      temp1 = (node *) safeMalloc(sizeof(node));
+      temp1->nodeType = DIV;
+      temp1->child1 = copyTree(tree->child2);
+      temp2 = (node *) safeMalloc(sizeof(node));
+      temp1->child2 = temp2;
+      temp2->nodeType = POW;
+      temp2->child1 = (node *) safeMalloc(sizeof(node));
+      temp2->child1->nodeType = VARIABLE;
+      temp2->child2 = (node *) safeMalloc(sizeof(node));
+      temp2->child2->nodeType = CONSTANT;
+      temp2->child2->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*(temp2->child2->value),8 * sizeof(int) + 10);
+      mpfr_set_si(*(temp2->child2->value),beta,GMP_RNDN);
+      temp4 = simplifyTreeErrorfreeInner(temp1, rec);
+      free_memory(temp1);
+      temp1 = (node *) safeMalloc(sizeof(node));
+      temp1->nodeType = DIV;
+      temp1->child1 = temp3;
+      temp1->child2 = temp4;
+      temp2 = simplifyTreeErrorfreeInner(temp1, rec);
+      free_memory(temp1);
+      if (alpha > beta) {
+	temp1 = (node *) safeMalloc(sizeof(node));
+	temp1->nodeType = POW;
+	temp1->child1 = (node *) safeMalloc(sizeof(node));
+	temp1->child1->nodeType = VARIABLE;
+	temp1->child2 = (node *) safeMalloc(sizeof(node));
+	temp1->child2->nodeType = CONSTANT;
+	temp1->child2->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*(temp1->child2->value),8 * sizeof(int) + 10);
+	mpfr_set_si(*(temp1->child2->value),alpha - beta,GMP_RNDN);
+      } else {
+	temp3 = (node *) safeMalloc(sizeof(node));
+	temp3->nodeType = POW;
+	temp3->child1 = (node *) safeMalloc(sizeof(node));
+	temp3->child1->nodeType = VARIABLE;
+	temp3->child2 = (node *) safeMalloc(sizeof(node));
+	temp3->child2->nodeType = CONSTANT;
+	temp3->child2->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*(temp3->child2->value),8 * sizeof(int) + 10);
+	mpfr_set_si(*(temp3->child2->value),beta - alpha,GMP_RNDN);
+	temp1 = (node *) safeMalloc(sizeof(node));
+	temp1->nodeType = DIV;
+	temp1->child2 = temp3;
+	temp1->child1 = (node *) safeMalloc(sizeof(node));
+	temp1->child1->nodeType = CONSTANT;
+	temp1->child1->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*(temp1->child1->value),12);
+	mpfr_set_si(*(temp1->child1->value),1,GMP_RNDN);
+      }
+      temp4 = (node *) safeMalloc(sizeof(node));
+      temp4->nodeType = MUL;
+      temp4->child1 = temp2;
+      temp4->child2 = simplifyTreeErrorfreeInner(temp1,rec);
+      free_memory(temp1);
+
+      printTree(temp4); printf("\n");
+
+      return temp4;
+    }
+  }
+
+  */
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -2244,7 +2345,14 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      prec = 2 * tools_precision;
+      p = 2 * mpfr_get_prec(*(simplChild1->value));
+      if (p > prec) prec = p;
+      p = 2 * mpfr_get_prec(*(simplChild2->value));
+      if (p > prec) prec = p;
+      prec += 10;
+      if (prec > 256 * tools_precision) prec = 256 * tools_precision;
+      mpfr_init2(*value,prec);
       simplified->value = value;
       if ((mpfr_add(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN) != 0) || 
 	  (!mpfr_number_p(*value))) {
@@ -2321,8 +2429,15 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
     simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
+      prec = 2 * tools_precision;
+      p = 2 * mpfr_get_prec(*(simplChild1->value));
+      if (p > prec) prec = p;
+      p = 2 * mpfr_get_prec(*(simplChild2->value));
+      if (p > prec) prec = p;
+      prec += 10;
+      if (prec > 256 * tools_precision) prec = 256 * tools_precision;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,prec);
       simplified->value = value;
       if ((mpfr_sub(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN) != 0) || 
 	  (!mpfr_number_p(*value))) {
@@ -2385,8 +2500,15 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
     simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
+      prec = 2 * tools_precision;
+      p = 2 * mpfr_get_prec(*(simplChild1->value));
+      if (p > prec) prec = p;
+      p = 2 * mpfr_get_prec(*(simplChild2->value));
+      if (p > prec) prec = p;
+      prec += 10;
+      if (prec > 256 * tools_precision) prec = 256 * tools_precision;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,prec);
       simplified->value = value;
       if ((mpfr_mul(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN) != 0) || 
 	  (!mpfr_number_p(*value))) {
@@ -2553,8 +2675,15 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
     simplified = (node*) safeMalloc(sizeof(node));
     if ((simplChild1->nodeType == CONSTANT) && (simplChild2->nodeType == CONSTANT)) {
       simplified->nodeType = CONSTANT;
+      prec = 2 * tools_precision;
+      p = 2 * mpfr_get_prec(*(simplChild1->value));
+      if (p > prec) prec = p;
+      p = 2 * mpfr_get_prec(*(simplChild2->value));
+      if (p > prec) prec = p;
+      prec += 10;
+      if (prec > 256 * tools_precision) prec = 256 * tools_precision;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,prec);
       simplified->value = value;
       if ((mpfr_div(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN) != 0) || 
 	  (!mpfr_number_p(*value))) {
@@ -2668,7 +2797,12 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      prec = tools_precision;
+      p = mpfr_get_prec(*(simplChild1->value));
+      if (p > prec) prec = p;
+      prec += 10;
+      if (prec > 256 * tools_precision) prec = 256 * tools_precision;
+      mpfr_init2(*value,prec);
       simplified->value = value;
       if ((mpfr_sqrt(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
 	  (!mpfr_number_p(*value))) {
@@ -3565,8 +3699,8 @@ node* differentiateUnsimplified(node *tree) {
 	  } else {
 	    f_copy = copyTree(tree->child1);
 	    g_copy = copyTree(tree->child2);
-	    f_diff = differentiate(tree->child1);
-	    g_diff = differentiate(tree->child2);
+	    f_diff = differentiateUnsimplified(tree->child1);
+	    g_diff = differentiateUnsimplified(tree->child2);
 	    temp_node = (node*) safeMalloc(sizeof(node));
 	    temp_node->nodeType = ADD;
 	    temp_node2 = (node*) safeMalloc(sizeof(node));
@@ -3586,8 +3720,8 @@ node* differentiateUnsimplified(node *tree) {
       case DIV:
 	f_copy = copyTree(tree->child1);
 	g_copy = copyTree(tree->child2);
-	f_diff = differentiate(tree->child1);
-	g_diff = differentiate(tree->child2);
+	f_diff = differentiateUnsimplified(tree->child1);
+	g_diff = differentiateUnsimplified(tree->child2);
 	temp_node = (node*) safeMalloc(sizeof(node));
 	temp_node->nodeType = SUB;
 	temp_node2 = (node*) safeMalloc(sizeof(node));
@@ -5730,7 +5864,7 @@ int isPolynomial(node *tree) {
 }
 
 #define MAX(a,b) (a) > (b) ? (a) : (b)
-
+#define MIN(a,b) (a) < (b) ? (a) : (b)
 
 int getDegreeUnsafe(node *tree) {
   int l, r;
@@ -5808,6 +5942,82 @@ int getDegree(node *tree) {
   return getDegreeUnsafe(tree);
 }
 
+int getMaxPowerDividerUnsafe(node *tree) {
+  int l, r;
+  mpfr_t temp;
+
+  if (isConstant(tree)) return 0;
+
+  switch (tree->nodeType) {
+  case VARIABLE:
+    return 1;
+    break;
+  case CONSTANT:
+  case PI_CONST:
+    return 0;
+    break;
+  case ADD:
+    l = getMaxPowerDividerUnsafe(tree->child1);
+    r = getMaxPowerDividerUnsafe(tree->child2);
+    return MIN(l,r);
+    break;
+  case SUB:
+    l = getMaxPowerDividerUnsafe(tree->child1);
+    r = getMaxPowerDividerUnsafe(tree->child2);
+    return MIN(l,r);
+    break;
+  case MUL:
+    l = getMaxPowerDividerUnsafe(tree->child1);
+    r = getMaxPowerDividerUnsafe(tree->child2);
+    return l + r;
+    break;
+  case DIV:
+    return getMaxPowerDividerUnsafe(tree->child1);
+    break;
+  case POW:
+    {
+      l = getMaxPowerDividerUnsafe(tree->child1);
+      if (tree->child2->nodeType != CONSTANT) {
+	fprintf(stderr,"Error: getMaxPowerDividerUnsafe: an error occurred. The exponent in a power operator is not constant.\n");
+	exit(1);
+      }
+      if (!mpfr_integer_p(*(tree->child2->value))) {
+	fprintf(stderr,"Error: getMaxPowerDividerUnsafe: an error occurred. The exponent in a power operator is not integer.\n");
+	exit(1);
+      }
+      if (mpfr_sgn(*(tree->child2->value)) < 0) {
+	fprintf(stderr,"Error: getMaxPowerDividerUnsafe: an error occurred. The exponent in a power operator is negative.\n");
+	exit(1);
+      }
+
+      r = (int) mpfr_get_d(*(tree->child2->value),GMP_RNDN);
+      mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
+      mpfr_set_si(temp,r,GMP_RNDN);
+      if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
+	printMessage(1,
+"Warning: tried to compute degree of maximal polynomial divider of a polynomial in an expression using a power operator with an exponent\n");
+	printf("which cannot be represented on a integer variable.\n");
+	mpfr_clear(temp);
+	return -1;
+      }
+      mpfr_clear(temp);
+      return l * r;
+    }
+    break;
+  case NEG:
+    return getMaxPowerDividerUnsafe(tree->child1);
+    break;
+  default:
+    fprintf(stderr,"Error: getMaxPowerDividerUnsafe: an error occurred on handling the expression tree\n");
+    exit(1);
+  }
+}
+
+int getMaxPowerDivider(node *tree) {
+  if (!isPolynomial(tree)) return -1;
+  return getMaxPowerDividerUnsafe(tree);
+}
+
 
 
 
@@ -5817,6 +6027,7 @@ node* makeBinomial(node *a, node *b, int n, int s) {
   mpfr_t *coeffVal, *mpfr_temp;
   unsigned int i;
   mpz_t coeffGMP;
+  mp_prec_t prec;
   
   tree = (node*) safeMalloc(sizeof(node));
   tree->nodeType = CONSTANT;
@@ -5827,8 +6038,10 @@ node* makeBinomial(node *a, node *b, int n, int s) {
   mpz_init(coeffGMP);
   for (i=0;i<=((unsigned int) n);i++) {
     mpz_bin_uiui(coeffGMP,(unsigned int) n,i);
+    prec = mpz_sizeinbase (coeffGMP, 2) + 10;
+    if (prec < tools_precision) prec = tools_precision;
     coeffVal = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*coeffVal,tools_precision);
+    mpfr_init2(*coeffVal,prec);
     if(mpfr_set_z(*coeffVal,coeffGMP,GMP_RNDN) != 0) {
       if (!noRoundingWarnings) {
 	printMessage(1,"Warning: on expanding a power operator a rounding occurred when calculating a binomial coefficient.\n");
@@ -7343,7 +7556,10 @@ int isCanonical(node *);
 
 void getCoefficients(int *degree, node ***coefficients, node *poly) {
   node *temp, *temp2, *temp3, *temp4;
-  int i;
+  int i,k,j, mpd;
+  node **coefficients1, **coefficients2;
+  int degree1, degree2;
+  mpfr_t y;
 
   *degree = getDegree(poly);
   if (*degree < 0) {
@@ -7354,6 +7570,7 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
   *coefficients = (node**) safeCalloc((*degree + 1),sizeof(node*));
   for (i=0;i<=*degree;i++) (*coefficients)[i] = NULL;
 
+  
   if (isHorner(poly)) {
     getCoefficientsHorner(*coefficients,poly);
     return;
@@ -7362,6 +7579,97 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
   if (isCanonical(poly)) {
     getCoefficientsCanonical(*coefficients,poly);
     return;
+  }
+  
+
+  if ((poly->nodeType == ADD) || (poly->nodeType == SUB)) {
+    getCoefficients(&degree1, &coefficients1, poly->child1);
+    getCoefficients(&degree2, &coefficients2, poly->child2);
+    for (i=0;i<=degree1;i++) {
+      (*coefficients)[i] = coefficients1[i];
+    }
+    free(coefficients1);
+    for (i=0;i<=degree2;i++) {
+      if (coefficients2[i] != NULL) {
+	if ((*coefficients)[i] == NULL) {
+	  if (poly->nodeType == SUB) {
+	    temp = (node *) safeMalloc(sizeof(node));
+	    temp->nodeType = NEG;
+	    temp->child1 = coefficients2[i];
+	    (*coefficients)[i] = temp;
+	  } else {
+	    (*coefficients)[i] = coefficients2[i];
+	  }
+	  
+	} else {
+	  temp = (node *) safeMalloc(sizeof(node));
+	  temp->nodeType = poly->nodeType;
+	  temp->child1 = (*coefficients)[i];
+	  temp->child2 = coefficients2[i];
+	  (*coefficients)[i] = temp;
+	}
+      }
+    }
+    free(coefficients2);
+    return;
+  }
+
+  if (poly->nodeType == MUL) {
+    getCoefficients(&degree1, &coefficients1, poly->child1);
+    getCoefficients(&degree2, &coefficients2, poly->child2);
+    for (i=0;i<=degree1;i++) {
+      for (k=0;k<=degree2;k++) {
+	if ((coefficients1[i] != NULL) && (coefficients2[k] != NULL)) {
+	  j = i + k;
+	  temp = (node *) safeMalloc(sizeof(node));
+	  temp->nodeType = MUL;
+	  temp->child1 = copyTree(coefficients1[i]);
+	  temp->child2 = copyTree(coefficients2[k]);
+	  if ((*coefficients)[j] == NULL) {
+	    (*coefficients)[j] = temp;
+	  } else {
+	    temp2 = (node *) safeMalloc(sizeof(node));
+	    temp2->nodeType = MUL;
+	    temp2->child1 = (*coefficients)[j];
+	    temp2->child2 = temp;
+	    (*coefficients)[j] = temp2;
+	  }
+	}
+      }
+    }
+    for (i=0;i<=degree1;i++) free_memory(coefficients1[i]);
+    for (i=0;i<=degree2;i++) free_memory(coefficients2[i]);
+    free(coefficients1);
+    free(coefficients2);
+    return;
+  }
+
+  if ((poly->nodeType == POW) &&
+      (poly->child2->nodeType == CONSTANT) &&
+      (mpfr_integer_p(*(poly->child2->value)))) {
+    k = mpfr_get_si(*(poly->child2->value),GMP_RNDN);
+    mpfr_init2(y,8 * sizeof(int) + 10);
+    mpfr_set_si(y,k,GMP_RNDN);
+    if ((mpfr_cmp(y,*(poly->child2->value)) == 0) &&
+	(k > 0) && 
+	((mpd = getMaxPowerDivider(poly->child1)) > 0)) {
+      temp = horner(poly->child1);
+      if (temp->nodeType == MUL) {
+	temp2 = (node *) safeMalloc(sizeof(node));
+	temp2->nodeType = POW;
+	temp2->child1 = copyTree(temp->child2);
+	temp2->child2 = copyTree(poly->child2);
+	getCoefficients(&degree1, &coefficients1, temp2);
+	free_memory(temp2);
+	for (i=0;i<=degree1;i++) 
+	  (*coefficients)[i + k * mpd] = coefficients1[i];
+	free(coefficients1);
+      }
+      free_memory(temp);
+      mpfr_clear(y);
+      return;
+    }
+    mpfr_clear(y);
   }
 
 
@@ -7388,17 +7696,19 @@ node* hornerPolynomialUnsafe(node *tree) {
   
   simplified = simplifyTreeErrorfree(tree);
 
-  degree = getDegree(simplified);
-  monomials = (node**) safeCalloc((degree + 1),sizeof(node*));
-  for (i=0;i<=degree;i++) monomials[i] = NULL;
-
   if (isHorner(simplified)) {
+    degree = getDegree(simplified);
+    monomials = (node**) safeCalloc((degree + 1),sizeof(node*));
+    for (i=0;i<=degree;i++) monomials[i] = NULL;
     getCoefficientsHorner(monomials,simplified);
   } else {
     if (isCanonical(simplified)) {
+      degree = getDegree(simplified);
+      monomials = (node**) safeCalloc((degree + 1),sizeof(node*));
+      for (i=0;i<=degree;i++) monomials[i] = NULL;
       getCoefficientsCanonical(monomials,simplified);
     } else {
-      getCoefficientsUnsafe(monomials,simplified,1);
+      getCoefficients(&degree,&monomials,simplified);
     }
   }
 
@@ -7483,29 +7793,18 @@ node* hornerPolynomialUnsafe(node *tree) {
 }
 
 node* hornerPolynomial(node *tree) {
-  node *temp, *temp2, *temp3, *temp4;
-  temp = NULL;
-  temp2 = NULL;
-  temp3 = NULL;
-  temp4 = NULL;
+  node *temp;
+  
   if (isConstant(tree)) return copyTree(tree);
   if (getDegree(tree) < 0) return copyTree(tree);
   if (isHorner(tree)) {
     printMessage(7,"Information: no Horner simplification will be performed because the given tree is already in Horner form.\n");
     return copyTree(tree);
   }
-  if (isCanonical(tree)) {
-    temp3 = hornerPolynomialUnsafe(tree);
-  } else {
-    temp4 = simplifyTreeErrorfree(tree);
-    temp = expandPowerInPolynomialUnsafe(temp4);
-    temp2 = expandPolynomialUnsafe(temp);
-    temp3 = hornerPolynomialUnsafe(temp2);
-  }
-  free_memory(temp);
-  free_memory(temp2);
-  free_memory(temp4);
-  return temp3;
+  
+  temp = hornerPolynomialUnsafe(tree);
+  
+  return temp;
 }
 
 
@@ -7796,6 +8095,7 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
   node **monomials;
   node *temp, *temp2, *temp3, *temp4, *copy;
   mpfr_t *value;
+  mp_prec_t prec;
 
   getCoefficients(&degree,&monomials,tree);
 
@@ -7818,7 +8118,8 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
 	temp->child1 = (node *) safeMalloc(sizeof(node));
 	temp->child1->nodeType = CONSTANT;
 	temp->child1->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	mpfr_init2(*(temp->child1->value),tools_precision);
+	prec = 8 * sizeof(int) + 10; if (tools_precision > prec) prec = tools_precision;
+	mpfr_init2(*(temp->child1->value),prec);
 	if (mpfr_set_si(*(temp->child1->value),i,GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
 	    printMessage(1,"Warning: on differentiating a polynomial in Horner form rounding occurred while representing the degree of a monomial on a constant of the given precision\n");
@@ -7907,7 +8208,7 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
 }
 
 node *differentiatePolynomialUnsafe(node *tree) {
-  node *simplifiedTemp, *simplified, *copy, *temp, *temp2, *temp3, *temp4, *temp5;
+  node *copy, *temp, *temp2, *temp3, *temp4, *temp5;
   int degree, i;
   node **monomials;
   mpfr_t *value;
@@ -7917,11 +8218,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
     return differentiatePolynomialHornerUnsafe(tree);
   } 
 
-  simplifiedTemp = expandPowerInPolynomialUnsafe(tree);
-
-  simplified = expandPolynomialUnsafe(simplifiedTemp);
-
-  degree = getDegree(simplified);
+  degree = getDegree(tree);
 
   if (degree == 0) {
     copy = (node*) safeMalloc(sizeof(node));
@@ -7931,11 +8228,8 @@ node *differentiatePolynomialUnsafe(node *tree) {
     mpfr_set_d(*value,0.0,GMP_RNDN);
     copy->value = value;
   } else {
-
-    monomials = (node**) safeCalloc((degree + 1),sizeof(node*));
-    for (i=0;i<=degree;i++) monomials[i] = NULL;
        
-    getCoefficientsUnsafe(monomials,simplified,1);
+    getCoefficients(&degree,&monomials,tree);
  
   
     if (monomials[degree] == NULL) {
@@ -8077,8 +8371,6 @@ node *differentiatePolynomialUnsafe(node *tree) {
     }
     free(monomials);
   } 
-  free_memory(simplifiedTemp);
-  free_memory(simplified);
 
   return copy;
 }
