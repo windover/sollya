@@ -1689,9 +1689,9 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
 
   if ((mpfr_cmp(leftX,rightX) == 0) || (deriv == NULL)) {
     if (deriv != NULL) 
-      printMessage(9,"Information: avoiding using Taylor's formula on a point interval.\n");
+      printMessage(25,"Information: avoiding using Taylor's formula on a point interval.\n");
     else 
-      printMessage(9,"Warning: no Taylor evaluation is possible because no derivative has been given.\n");
+      printMessage(25,"Warning: no Taylor evaluation is possible because no derivative has been given.\n");
     
 
     excludes = evaluateI(result, func, x, prec, 1, hopitalrecursions+1, NULL, theo);
@@ -1703,8 +1703,8 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   }
 
 
-  printMessage(9,"Information: evaluating a function in interval arithmetic using Taylor's formula.\n");
-  if (verbosity >= 12) {
+  printMessage(13,"Information: evaluating a function in interval arithmetic using Taylor's formula.\n");
+  if (verbosity >= 15) {
     printf("Information: the function is\n");
     printTree(func);
     printf("\nIts derivative is\n");
@@ -1831,7 +1831,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
     else 
       directExcludes = evaluateI(resultDirect, func, x, prec, 0, hopitalrecursions+1, NULL, directTheo);
 
-    if (verbosity >= 12) {
+    if (verbosity >= 15) {
       printf("Information: Taylor evaluation: domain:\n");
       printInterval(x);
       printf("\nconstant term:\n");

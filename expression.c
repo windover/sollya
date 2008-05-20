@@ -58,7 +58,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "double.h"
 #include "miniparser.h"
 
-#define MAXDIFFSIMPLSIZE 10000
+#define MAXDIFFSIMPLSIZE 250
 
 
 void mpfr_from_mpfi(mpfr_t rop, mpfr_t op, int n, int (*mpfifun)(mpfi_t, mpfi_t, int)) {
@@ -3565,8 +3565,8 @@ node* differentiateUnsimplified(node *tree) {
 	  } else {
 	    f_copy = copyTree(tree->child1);
 	    g_copy = copyTree(tree->child2);
-	    f_diff = differentiateUnsimplified(tree->child1);
-	    g_diff = differentiateUnsimplified(tree->child2);
+	    f_diff = differentiate(tree->child1);
+	    g_diff = differentiate(tree->child2);
 	    temp_node = (node*) safeMalloc(sizeof(node));
 	    temp_node->nodeType = ADD;
 	    temp_node2 = (node*) safeMalloc(sizeof(node));
@@ -3586,8 +3586,8 @@ node* differentiateUnsimplified(node *tree) {
       case DIV:
 	f_copy = copyTree(tree->child1);
 	g_copy = copyTree(tree->child2);
-	f_diff = differentiateUnsimplified(tree->child1);
-	g_diff = differentiateUnsimplified(tree->child2);
+	f_diff = differentiate(tree->child1);
+	g_diff = differentiate(tree->child2);
 	temp_node = (node*) safeMalloc(sizeof(node));
 	temp_node->nodeType = SUB;
 	temp_node2 = (node*) safeMalloc(sizeof(node));
@@ -7913,9 +7913,9 @@ node *differentiatePolynomialUnsafe(node *tree) {
   mpfr_t *value;
 
   if (isHorner(tree)) {
-    printMessage(7,"Information: differentiating a polynomial in Horner form uses a special algorithm.\n");
+    printMessage(25,"Information: differentiating a polynomial in Horner form uses a special algorithm.\n");
     return differentiatePolynomialHornerUnsafe(tree);
-  }
+  } 
 
   simplifiedTemp = expandPowerInPolynomialUnsafe(tree);
 
