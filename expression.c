@@ -2218,13 +2218,14 @@ node* copyTree(node *tree) {
   return copy;
 }
 
+node *dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha);
 
 node* simplifyTreeErrorfreeInner(node *tree, int rec) {
   node *simplChild1, *simplChild2, *simplified, *recsimplified;
   mpfr_t *value;
   mpfr_t temp;
   mp_prec_t prec, p;
-  /* int alpha, beta;
+  int alpha, beta;
   node *temp1, *temp2, *temp3, *temp4;
 
   
@@ -2234,14 +2235,12 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
       ((alpha = getMaxPowerDivider(tree->child1)) > 0) && 
       ((beta = getMaxPowerDivider(tree->child2)) > 0)) {
     if (alpha == beta) {
-      temp1 = horner(tree->child1);
-      temp2 = horner(tree->child2);
+      temp1 = dividePolynomialByPowerOfVariableUnsafe(tree->child1, alpha);
+      temp2 = dividePolynomialByPowerOfVariableUnsafe(tree->child2, alpha);
       temp3 = (node *) safeMalloc(sizeof(node));
       temp3->nodeType = DIV;
-      temp3->child1 = copyTree(temp1->child2);
-      temp3->child2 = copyTree(temp2->child2);
-      free_memory(temp1);
-      free_memory(temp2);
+      temp3->child1 = temp1;
+      temp3->child2 = temp2;
       temp4 = simplifyTreeErrorfreeInner(temp3,rec);
       free_memory(temp3);
       return temp4;
@@ -2316,14 +2315,11 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
       temp4->child1 = temp2;
       temp4->child2 = simplifyTreeErrorfreeInner(temp1,rec);
       free_memory(temp1);
-
-      printTree(temp4); printf("\n");
-
       return temp4;
     }
   }
 
-  */
+
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -7553,6 +7549,7 @@ void getCoefficientsCanonical(node **coefficients, node *poly) {
 int isHorner(node *);
 int isCanonical(node *);
 
+node *dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha);
 
 void getCoefficients(int *degree, node ***coefficients, node *poly) {
   node *temp, *temp2, *temp3, *temp4;
@@ -7653,19 +7650,16 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
     if ((mpfr_cmp(y,*(poly->child2->value)) == 0) &&
 	(k > 0) && 
 	((mpd = getMaxPowerDivider(poly->child1)) > 0)) {
-      temp = horner(poly->child1);
-      if (temp->nodeType == MUL) {
-	temp2 = (node *) safeMalloc(sizeof(node));
-	temp2->nodeType = POW;
-	temp2->child1 = copyTree(temp->child2);
-	temp2->child2 = copyTree(poly->child2);
-	getCoefficients(&degree1, &coefficients1, temp2);
-	free_memory(temp2);
-	for (i=0;i<=degree1;i++) 
-	  (*coefficients)[i + k * mpd] = coefficients1[i];
-	free(coefficients1);
-      }
-      free_memory(temp);
+      temp = dividePolynomialByPowerOfVariableUnsafe(poly->child1, mpd);
+      temp2 = (node *) safeMalloc(sizeof(node));
+      temp2->nodeType = POW;
+      temp2->child1 = temp;
+      temp2->child2 = copyTree(poly->child2);
+      getCoefficients(&degree1, &coefficients1, temp2);
+      free_memory(temp2);
+      for (i=0;i<=degree1;i++) 
+	(*coefficients)[i + k * mpd] = coefficients1[i];
+      free(coefficients1);    
       mpfr_clear(y);
       return;
     }
@@ -7791,6 +7785,108 @@ node* hornerPolynomialUnsafe(node *tree) {
   free_memory(simplified);
   return copy;
 }
+
+node* dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha) {
+  node *copy, *temp, *temp2, *temp3, *temp4, *simplified;
+  node **monomials;
+  int degree, i, k, e;
+  mpfr_t *value;
+  
+  simplified = simplifyTreeErrorfree(tree);
+
+  getCoefficients(&degree,&monomials,simplified);
+
+  if (alpha > 0) {
+    for (i=0;i<alpha;i++) 
+      if (monomials[i] != NULL) free_memory(monomials[i]);
+    for (i=alpha;i<=degree;i++) {
+      monomials[i-alpha] = monomials[i];
+    }
+    degree = degree - alpha;
+  }
+
+
+  if (monomials[degree] == NULL) {
+    fprintf(stderr,
+"Error: hornerPolynomialUnsafe: an error occurred. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
+    exit(1);
+    return NULL;
+  }
+
+  copy = copyTree(monomials[degree]);
+
+  for (i=degree-1;i>=0;i--) {
+    if (monomials[i] == NULL) {
+      if ((i == 0)) {
+	temp = (node *) safeMalloc(sizeof(node));
+	temp->nodeType = MUL;
+	temp2 = (node *) safeMalloc(sizeof(node));
+	temp2->nodeType = VARIABLE;
+	temp->child1 = temp2;
+	temp->child2 = copy;
+	copy = temp;
+      } else {
+	for (k=i-1;((monomials[k]==NULL) && (k > 0));k--);
+	e = (i - k) + 1;
+	temp = (node *) safeMalloc(sizeof(node));
+	temp->nodeType = MUL;
+	temp2 = (node *) safeMalloc(sizeof(node));
+	temp2->nodeType = VARIABLE;
+	temp3 = (node *) safeMalloc(sizeof(node));
+	temp3->nodeType = CONSTANT;
+	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*value,tools_precision);
+	if (mpfr_set_si(*value,e,GMP_RNDN) != 0) {
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
+			 (int) tools_precision);
+	    printMessage(1,"Try to increase the precision.\n");
+	  }
+	}
+	temp3->value = value;
+	temp4 = (node *) safeMalloc(sizeof(node));
+	temp4->nodeType = POW;
+	temp4->child1 = temp2;
+	temp4->child2 = temp3;
+	temp->child1 = temp4;
+	temp->child2 = copy;
+	copy = temp;
+	if (monomials[k] != NULL) {
+	  temp = (node *) safeMalloc(sizeof(node));
+	  temp->nodeType = ADD;
+	  temp->child1 = copyTree(monomials[k]);
+	  temp->child2 = copy;
+	  copy = temp;
+	}
+	i = k;
+      }
+    } else {
+      temp = (node *) safeMalloc(sizeof(node));
+      temp->nodeType = MUL;
+      temp2 = (node *) safeMalloc(sizeof(node));
+      temp2->nodeType = VARIABLE;
+      temp->child1 = temp2;
+      temp->child2 = copy;
+      copy = temp;
+      temp = (node *) safeMalloc(sizeof(node));
+      temp->nodeType = ADD;
+      temp->child1 = copyTree(monomials[i]);
+      temp->child2 = copy;
+      copy = temp;
+    }
+  }
+  
+
+  for (i=0;i<=degree;i++) {
+    if (monomials[i] != NULL) free_memory(monomials[i]);
+  }
+  free(monomials);
+
+  free_memory(simplified);
+  return copy;
+}
+
+
 
 node* hornerPolynomial(node *tree) {
   node *temp;
