@@ -4560,7 +4560,7 @@ void autoprint(node *thing, int inList) {
     if (isConstant(tempNode2)) {
       if (tempNode2->nodeType == CONSTANT) {
 	printValue(tempNode2->value,mpfr_get_prec(*(tempNode2->value)));
-      } else {
+      } else { 
 	mpfr_init2(a,tools_precision);
 	mpfr_init2(b,tools_precision);
 	mpfr_set_d(b,1.0,GMP_RNDN);

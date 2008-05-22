@@ -3310,7 +3310,12 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      prec = tools_precision;
+      p = mpfr_get_prec(*(simplChild1->value));
+      if (p > prec) prec = p;
+      prec += 10;
+      if (prec > 256 * tools_precision) prec = 256 * tools_precision;
+      mpfr_init2(*value,prec);
       simplified->value = value;
       if ((mpfr_neg(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
 	  (!mpfr_number_p(*value))) {
