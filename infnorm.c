@@ -1613,6 +1613,9 @@ chain* evaluateITaylorOnDiv(mpfi_t result, node *func, mpfi_t x, mp_prec_t prec,
   chain *excludes, *numeratorExcludes, *denominatorExcludes;
   exprBoundTheo *numeratorTheo, *denominatorTheo;
   mpfi_t resultNumerator, resultDenominator, resultIndirect;
+  mpfr_t tempNaN;
+
+  mpfr_init2(tempNaN, prec);
 
   if (func->nodeType == DIV) {
     numerator = func->child1;
@@ -1637,6 +1640,11 @@ chain* evaluateITaylorOnDiv(mpfi_t result, node *func, mpfi_t x, mp_prec_t prec,
     special_mpfi_div(resultIndirect, resultNumerator, resultDenominator);
     if (mpfi_bounded_p(resultIndirect)) {
       mpfi_set(result, resultIndirect);
+      if (mpfi_nan_p(result)) {
+	mpfr_set_nan(tempNaN);
+	mpfi_interv_fr(result, tempNaN, tempNaN);
+      }
+
       if (theo != NULL) {
 	theo->functionType = func->nodeType;
 	theo->boundLeft = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
@@ -1660,6 +1668,10 @@ chain* evaluateITaylorOnDiv(mpfi_t result, node *func, mpfi_t x, mp_prec_t prec,
 	freeExprBoundTheo(denominatorTheo);
       }
       excludes = evaluateI(result, func, x, prec, 0, hopitalrecursions+1, NULL, theo);
+      if (mpfi_nan_p(result)) {
+	mpfr_set_nan(tempNaN);
+	mpfi_interv_fr(result, tempNaN, tempNaN);
+      }
     }
     
     mpfi_clear(resultNumerator);
@@ -1667,9 +1679,17 @@ chain* evaluateITaylorOnDiv(mpfi_t result, node *func, mpfi_t x, mp_prec_t prec,
     mpfi_clear(resultIndirect);     
     free_memory(derivNumerator);
     free_memory(derivDenominator);
+    mpfr_clear(tempNaN);
     return excludes;
-  } else {
-    return evaluateI(result, func, x, prec, 0, hopitalrecursions+1, NULL, theo);
+  }
+  else {
+    excludes = evaluateI(result, func, x, prec, 0, hopitalrecursions+1, NULL, theo);
+    if (mpfi_nan_p(result)) {
+      mpfr_set_nan(tempNaN);
+      mpfi_interv_fr(result, tempNaN, tempNaN);
+    }
+    mpfr_clear(tempNaN);
+    return excludes;
   }
 }
 
@@ -1695,6 +1715,11 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
     
 
     excludes = evaluateI(result, func, x, prec, 1, hopitalrecursions+1, NULL, theo);
+    if(mpfi_nan_p(result)) {
+      mpfr_set_nan(leftX);
+      mpfi_interv_fr(result, leftX, leftX);
+    }
+
 
     mpfr_clear(leftX);
     mpfr_clear(rightX);
@@ -1899,6 +1924,10 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   }
 
   mpfi_revert_if_needed(result);
+  if(mpfi_nan_p(result)) {
+    mpfr_set_nan(leftX);
+    mpfi_interv_fr(result, leftX, leftX);
+  }
 
   if (theo != NULL) mpfi_set(*(theo->y),result);
 
@@ -4148,18 +4177,24 @@ int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_
     evaluateRangeFunctionFast(yrange, func, deriv, xrange, p);
     mpfr_set(resDown,*(yrange.a),GMP_RNDN);
     mpfr_set(resUp,*(yrange.b),GMP_RNDN);
-    if (mpfr_cmp(resDown,resUp) == 0) 
-      okay = 1;
-    mpfr_nextabove(resDown);
-    if (mpfr_cmp(resDown,resUp) == 0) 
-      okay = 1;
-    if (okay == 0) {
-      if ((mpfr_cmpabs(*(yrange.a),cutoff) < 0) && (mpfr_cmpabs(*(yrange.b),cutoff) < 0)) {
-	mpfr_add(*(yrange.a),*(yrange.b),*(yrange.a),GMP_RNDN);
-	mpfr_div_2ui(*(yrange.a),*(yrange.a),1,GMP_RNDN);
-	mpfr_set(resUp,*(yrange.a),GMP_RNDN);
-	okay = 2;
-      } 
+    if ((mpfr_number_p(resDown)) &&
+	(mpfr_number_p(resUp)) &&
+	(mpfr_number_p(*(yrange.a))) &&
+	(mpfr_number_p(*(yrange.b)))
+	) {
+      if (mpfr_cmp(resDown,resUp) == 0) 
+	okay = 1;
+      mpfr_nextabove(resDown);
+      if (mpfr_cmp(resDown,resUp) == 0) 
+	okay = 1;
+      if (okay == 0) {
+	if ((mpfr_cmpabs(*(yrange.a),cutoff) < 0) && (mpfr_cmpabs(*(yrange.b),cutoff) < 0)) {
+	  mpfr_add(*(yrange.a),*(yrange.b),*(yrange.a),GMP_RNDN);
+	  mpfr_div_2ui(*(yrange.a),*(yrange.a),1,GMP_RNDN);
+	  mpfr_set(resUp,*(yrange.a),GMP_RNDN);
+	  okay = 2;
+	} 
+      }
     }
     mpfr_clear(*(yrange.a));
     mpfr_clear(*(yrange.b));
