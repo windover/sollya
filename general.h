@@ -142,5 +142,7 @@ void warningMode();
 void saveMode();
 void restoreMode();
 void changeToWarningMode();
+int  getDisplayColor();
+void setDisplayColor(int);
 
 #endif /* ifdef GENERAL_H*/

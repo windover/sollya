@@ -189,6 +189,10 @@ void setDisplayColor(int i) {
   }
 }
 
+int getDisplayColor() {
+  return displayColor;
+}
+
 void saveMode() {
   oldMode = displayColor;
 }

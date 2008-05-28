@@ -313,6 +313,8 @@ void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   } size;
   mpfr_t *values;
   char **lines;
+  char *curr;
+  int oldColor;
 
   mpfr_init2(y,prec);
   if ((mpfr_cmp(a,b) == 0) || isConstant(tree)) {
@@ -333,6 +335,8 @@ void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     ioctl(STDIN_FILENO, TIOCGWINSZ, (char *) &size);
     sizeX = size.ws_col;
     sizeY = size.ws_row;
+    if (sizeX > 5000) sizeX = 5000;
+    if (sizeY > 5000) sizeY = 5000;
   }
 
   values = (mpfr_t *) safeCalloc(sizeX-1,sizeof(mpfr_t));
@@ -426,8 +430,23 @@ void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     lines[(sizeY - 2) - k][i] = 'x'; 
   }
 
-  for (k=0;k<sizeY-1;k++) 
-    printf("%s\n",lines[k]);
+  saveMode();
+  for (k=0;k<sizeY-1;k++) { 
+    curr = lines[k];
+    while (*curr != '\0') {
+      if (*curr != 'x')
+	printf("%c",*(curr++));
+      else {
+	oldColor = getDisplayColor();
+	redMode();
+	printf("%c",*(curr++));
+	setDisplayColor(oldColor);
+      }
+    }
+    printf("\n");
+  }
+
+  restoreMode();
 
   for (k=0;k<sizeY-1;k++) free(lines[k]);
   free(lines);
