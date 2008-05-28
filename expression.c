@@ -3612,11 +3612,13 @@ node *simplifyTreeErrorfree(node *tree) {
       if (verbosity < 9) {
 	printMessage(7,"Information: an expression has been simplified.\n");
       } else {
+	changeToWarningMode();
 	printMessage(9,"Information: expression '");
 	printTree(tree);
 	printMessage(9,"' has been simplified to expression '");
 	printTree(temp);
 	printMessage(9,"'.\n");
+	restoreMode();
       }
     }
   }
@@ -4507,9 +4509,11 @@ node* differentiate(node *tree) {
   printMessage(10,"Information: formally differentiating a function.\n");
   
   if (verbosity >= 11) {
+    changeToWarningMode();
     printMessage(11,"Information: differentiating the expression '");
     printTree(tree);
     printf("'\n");
+    restoreMode();
   }
 
   if (isPolynomial(tree) && (isHorner(tree) || isCanonical(tree))) {
@@ -7387,10 +7391,12 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
   simplified = expandPolynomialUnsafe(simplifiedTemp);
 
   if (verbosity >= 7) {
+    changeToWarningMode();
     printMessage(7,"Warning: recursion on coefficients extraction:\n");
     printTree(polynom);
     printMessage(7,"\ntransformed to\n");
     printTree(simplified); printf("\n");
+    restoreMode();
   }
 
   getCoefficientsUnsafe(monomials, simplified, sign);  

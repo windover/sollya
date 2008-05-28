@@ -4580,8 +4580,18 @@ void autoprint(node *thing, int inList) {
 	  evaluate(a,tempNode2,b,tools_precision * 256);
 	  if (mpfr_number_p(a)) {
 	    if (!noRoundingWarnings) {
-	      if (!shown) printMessage(1,"Warning: rounding has happened. The value displayed is not a faithful rounding of the true result.\n");
-	      shown = 1;
+	      if (!shown) {
+		if (verbosity >= 1) {
+		  printMessage(1,"Warning: rounding has happened. The value displayed is ");
+		  saveMode();
+		  warningMode(); blinkMode();
+		  printf("not");
+		  unblinkMode(); 
+		  restoreMode();
+		  printMessage(1," a faithful rounding of the true result.\n");
+		}
+		shown = 1;
+	      }
 	    }
 	  } else {
 	    printMessage(1,"Warning: the given expression is undefined or numerically unstable.\n");
@@ -4900,6 +4910,8 @@ int executeCommandInner(node *tree) {
   node **array;
   rangetype tempRange;
 
+  outputMode();
+
   result = 0;
 
   timingString = NULL;
@@ -5077,6 +5089,7 @@ int executeCommandInner(node *tree) {
     break; 			
   case RESTART:
     restartTool();
+    outputMode();
     printf("The tool has been restarted.\n");
     result = 0;
     break;  	
@@ -5113,6 +5126,7 @@ int executeCommandInner(node *tree) {
     break;
   case PRINT:
     curr = tree->arguments;
+    outputMode();
     while (curr != NULL) {
       tempNode = evaluateThing((node *) (curr->value));
       printThing(tempNode);
@@ -5171,6 +5185,7 @@ int executeCommandInner(node *tree) {
     } 
     break; 			
   case PLOT:
+    outputMode();
     evaluateThingListToThingArray(&resA, &array, tree->arguments);
     resC = 0;
     if (isFilePostscriptFile(array[resA-2])) {
@@ -5237,6 +5252,7 @@ int executeCommandInner(node *tree) {
   case PRINTHEXA:
     mpfr_init2(a,tools_precision);
     if (evaluateThingToConstant(a, tree->child1, NULL)) {
+      outputMode();
       printDoubleInHexa(a);
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a constant value.\n");
@@ -5247,6 +5263,7 @@ int executeCommandInner(node *tree) {
   case PRINTFLOAT:
     mpfr_init2(a,tools_precision);
     if (evaluateThingToConstant(a, tree->child1, NULL)) {
+      outputMode();
       printSimpleInHexa(a);
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a constant value.\n");
@@ -5257,6 +5274,7 @@ int executeCommandInner(node *tree) {
   case PRINTBINARY:
     mpfr_init2(a,tools_precision);
     if (evaluateThingToConstant(a, tree->child1, NULL)) {
+      outputMode();
       printBinary(a); printf("\n");
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a constant value.\n");
@@ -5265,6 +5283,7 @@ int executeCommandInner(node *tree) {
     mpfr_clear(a);
     break; 			
   case PRINTEXPANSION:
+    outputMode();
     if (evaluateThingToPureTree(&tempNode, tree->child1)) {
       if (printPolynomialAsDoubleExpansion(tempNode, tools_precision) == 1) {
 	if (!noRoundingWarnings) {
@@ -5280,6 +5299,7 @@ int executeCommandInner(node *tree) {
     break;
   case BASHEXECUTE:
     if (evaluateThingToString(&tempString, tree->child1)) {
+      outputMode();
       intTemp = bashExecute(tempString);
       printMessage(2,"Information: the bash return value is %d.\n",intTemp);
       free(tempString);
@@ -5388,6 +5408,7 @@ int executeCommandInner(node *tree) {
     free(array);
     break; 
   case WRITE:
+    outputMode();
     curr = tree->arguments;
     while (curr != NULL) {
       tempNode = evaluateThing((node *) (curr->value));
@@ -5441,6 +5462,7 @@ int executeCommandInner(node *tree) {
     } 
     break; 
   case ASCIIPLOT:
+    outputMode();
     if (evaluateThingToPureTree(&tempNode, tree->child1)) {
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
@@ -5461,6 +5483,7 @@ int executeCommandInner(node *tree) {
   case PRINTXML:
     if (evaluateThingToPureTree(&tempNode, tree->child1)) {
       printf("\n");
+      outputMode();
       printXml(tempNode);
       freeThing(tempNode);
     } else {
@@ -5560,6 +5583,7 @@ int executeCommandInner(node *tree) {
 		mpfr_init2(*(tempRange.b),tools_precision);
 		mpfr_set(*(tempRange.a),b,GMP_RNDN);
 		mpfr_set(*(tempRange.b),c,GMP_RNDN);
+		outputMode();
 		printWorstCases(tempNode, a, tempRange, d, e, tools_precision, fd);
 		mpfr_clear(*(tempRange.a));
 		mpfr_clear(*(tempRange.b));
@@ -5621,16 +5645,20 @@ int executeCommandInner(node *tree) {
     if (curr->next == NULL) {
       tempNode = evaluateThing((node *) (curr->value));
       if ((!isUnit(tempNode)) || (verbosity >= 2)) {
-	if (!isExternalProcedureUsage(tempNode)) 
-	  autoprint(tempNode,0);
-	else 
+	if (!isExternalProcedureUsage(tempNode)) {
+	  outputMode();
+	  autoprint(tempNode,0); 
+	} else {
+	  outputMode();
 	  printExternalProcedureUsage(tempNode);
+	}
 	printf("\n");
       } 
       freeThing(tempNode);
     } else {
       while (curr != NULL) {
 	tempNode = evaluateThing((node *) (curr->value));
+	outputMode();
 	if (!isExternalProcedureUsage(tempNode)) 
 	  autoprint(tempNode,0);
 	else 
@@ -6139,6 +6167,7 @@ int executeCommandInner(node *tree) {
       }
       defaultprecision = resA;
       tools_precision = resA;
+      outputMode();
       printf("The precision has been set to %d bits.\n",resA);
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
@@ -6153,6 +6182,7 @@ int executeCommandInner(node *tree) {
 	printMessage(1,"Warning: the number of points must be at least 3 points.\n");
       }
       defaultpoints = resA;
+      outputMode();
       printf("The number of points has been set to %d.\n",resA);
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
@@ -6167,6 +6197,7 @@ int executeCommandInner(node *tree) {
       mpfr_clear(statediam);
       mpfr_init2(statediam,mpfr_get_prec(a));
       mpfr_set(statediam,a,GMP_RNDN);
+      outputMode();
       printf("The diameter has been set to ");
       printMpfr(a);
     } else {
@@ -6180,6 +6211,7 @@ int executeCommandInner(node *tree) {
     resB = 0;
     if (evaluateThingToDisplayMode(&resA, tree->child1, &resB)) {
       dyadic = resA;
+      outputMode();
       switch (dyadic) {	     
       case 0:
 	printf("Display mode is decimal numbers.\n");
@@ -6212,6 +6244,7 @@ int executeCommandInner(node *tree) {
 	printMessage(1,"Warning: the verbosity of the tool must not be negative.\n");
       }
       verbosity = resA;
+      outputMode();
       printf("The verbosity level has been set to %d.\n",resA);
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
@@ -6222,6 +6255,7 @@ int executeCommandInner(node *tree) {
     defaultVal = 0;
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
       canonical = resA;
+      outputMode();
       if (canonical) 
 	printf("Canonical automatic printing output has been activated.\n");
       else 
@@ -6235,6 +6269,7 @@ int executeCommandInner(node *tree) {
     defaultVal = 1;
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
       autosimplify = resA;
+      outputMode();
       if (autosimplify) 
 	printf("Automatic pure tree simplification has been activated.\n");
       else 
@@ -6251,7 +6286,7 @@ int executeCommandInner(node *tree) {
 	resA = 0;
 	printMessage(1,"Warning: the number of recursions for Taylor evaluation must not be negative.\n");
       }
-      taylorrecursions = resA;
+      taylorrecursions = resA;     outputMode();
       printf("The number of recursions for Taylor evaluation has been set to %d.\n",resA);
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
@@ -6261,7 +6296,7 @@ int executeCommandInner(node *tree) {
   case TIMINGASSIGN:
     defaultVal = 0;
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
-      timecounting = resA;
+      timecounting = resA;     outputMode();
       if (timecounting) 
 	printf("Timing has been activated.\n");
       else 
@@ -6274,7 +6309,7 @@ int executeCommandInner(node *tree) {
   case FULLPARENASSIGN:
     defaultVal = 0;
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
-      fullParentheses = resA;
+      fullParentheses = resA;     outputMode();
       if (fullParentheses) 
 	printf("Full parentheses mode has been activated.\n");
       else 
@@ -6287,7 +6322,7 @@ int executeCommandInner(node *tree) {
   case MIDPOINTASSIGN:
     defaultVal = 1;
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
-      midpointMode = resA;
+      midpointMode = resA;     outputMode();
       if (midpointMode) 
 	printf("Midpoint mode has been activated.\n");
       else 
@@ -6300,7 +6335,7 @@ int executeCommandInner(node *tree) {
   case SUPPRESSWARNINGSASSIGN:
     defaultVal = eliminatePromptBackup;
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
-      noRoundingWarnings = resA;
+      noRoundingWarnings = resA;     outputMode();
       if (noRoundingWarnings) 
 	printf("Rounding warning suppression has been activated.\n");
       else 
@@ -6317,7 +6352,7 @@ int executeCommandInner(node *tree) {
 	resA = 0;
 	printMessage(1,"Warning: the number of recursions for Hopital's rule must not be negative.\n");
       }
-      hopitalrecursions = resA;
+      hopitalrecursions = resA;     outputMode();
       printf("The number of recursions for Hopital's rule has been set to %d.\n",resA);
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
@@ -10256,9 +10291,11 @@ node *evaluateThing(node *tree) {
     } else {
       printMessage(1,"Warning: at least one of the given expressions or a subexpression is not correctly typed\nor its evaluation has failed because of some error on a side-effect.\n");
       if (verbosity >= 2) {
+	changeToWarningMode();
 	printMessage(2,"Information: the expression or a partial evaluation of it has been the following:\n");
 	printThing(evaluated);
 	printf("\n");     
+	restoreMode();
       }
     }
 

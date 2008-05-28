@@ -726,6 +726,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 
 	printMessage(8,"Information: decorrelating an interval addition.\n");
 	if (verbosity >= 12) {
+	  changeToWarningMode();
 	  printf("Decorrelating on function\n");
 	  printTree(tree);
 	  printf("\nconstant term:\n");
@@ -739,6 +740,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	  printf("\ndirect evaluation:\n");
 	  printInterval(stack3);
 	  printf("\n");
+	  restoreMode();
 	}
 
 	mpfi_intersect(stack3,stack3,temp1);
@@ -880,6 +882,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 
 	printMessage(8,"Information: decorrelating an interval substraction.\n");
 	if (verbosity >= 12) {
+	  changeToWarningMode();
 	  printf("Decorrelating on function\n");
 	  printTree(tree);
 	  printf("\nconstant term:\n");
@@ -893,6 +896,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	  printf("\ndirect evaluation:\n");
 	  printInterval(stack3);
 	  printf("\n");
+	  restoreMode();
 	}
 
 	mpfi_intersect(stack3,stack3,temp1);
@@ -999,25 +1003,30 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 
 	printMessage(8,"Information: using Hopital's rule on point division.\n");
 	if (verbosity >= 9) {
+	  changeToWarningMode();
 	  printf("Information: entering interval was \n");
 	  printInterval(x);
 	  printf("\n");
-
+	  restoreMode();
 	}
 
 	if (verbosity >= 12) {
+	  changeToWarningMode();
 	  printf("Hopital's rule is used on function\n");
 	  printTree(tree);
 	  printf("\n");
+	  restoreMode();
 	}
 
 	if (verbosity >= 15) {
+	  changeToWarningMode();
 	  printf("The derivative of the numerator is\n");
 	  printTree(derivNumerator);
 	  printf("\n");
 	  printf("The derivative of the denominator is\n");
 	  printTree(derivDenominator);
 	  printf("\n");
+	  restoreMode();
 	}
 
 	if (internalTheo != NULL) {
@@ -1046,9 +1055,11 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 
 	printMessage(8,"Information: simplifying an interval division with 0 point numerator.\n");
 	if (verbosity >= 12) {
+	  changeToWarningMode();
 	  printf("Simplification on function\n");
 	  printTree(tree);
 	  printf("\n");
+	  restoreMode();
 	}
 
 
@@ -1152,25 +1163,31 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	      if (simplifiesB == (hopitalrecursions + 1)) {
 		printMessage(8,"Information: using Hopital's rule (general case) on denominator zero.\n");
 		if (verbosity >= 10) {
+		  changeToWarningMode();
 		  printf("Hopital's rule is used on function\n");
 		  printTree(tree);
 		  printf(" in point ");
 		  printMpfr(z);
+		  restoreMode();
 		}
 	      }
 
 	      if (simplifiesB != (hopitalrecursions + 1)) {
 		printMessage(8,"Information: recursion on use of Hopital's rule\n");
 		if (verbosity >= 10) {
+		  changeToWarningMode();
 		  printf("Reused Hopital's rule point is ");
 		  printMpfr(*hopitalPoint);
+		  restoreMode();
 		}
 	      }
 
 	      if (verbosity >= 15) {
+		changeToWarningMode();
 		printf("Information in Hopital: The simplified function is\n");
 		printTree(tempNode);
 		printf("\n");
+		restoreMode();
 	      }
 	      
 	      excludes = evaluateI(stack3, tempNode, x, prec, simplifiesA, simplifiesB-1, newHopitalPoint, leftTheoLinear);
@@ -1256,25 +1273,31 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		  if (simplifiesB == (hopitalrecursions + 1)) {
 		    printMessage(8,"Information: using Hopital's rule (general case) on numerator zero.\n");
 		    if (verbosity >= 10) {
+		      changeToWarningMode();
 		      printf("Hopital's rule is used on function\n");
 		      printTree(tree);
 		      printf(" in point ");
 		      printMpfr(z);
+		      restoreMode();
 		    }
 		  }
 
 		  if (simplifiesB != (hopitalrecursions + 1)) {
 		    printMessage(8,"Information: recursion on use of Hopital's rule\n");
 		    if (verbosity >= 10) {
+		      changeToWarningMode();
 		      printf("Reused Hopital's rule point is ");
 		      printMpfr(*hopitalPoint);
+		      restoreMode();
 		    }
 		  }
 		  
 		  if (verbosity >= 15) {
+		    changeToWarningMode();
 		    printf("Information in Hopital: The simplified function is\n");
 		    printTree(tempNode);
 		    printf("\n");
+		    restoreMode();
 		  }
 
 
@@ -1730,11 +1753,13 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
 
   printMessage(13,"Information: evaluating a function in interval arithmetic using Taylor's formula.\n");
   if (verbosity >= 15) {
+    changeToWarningMode();
     printf("Information: the function is\n");
     printTree(func);
     printf("\nIts derivative is\n");
     printTree(deriv);
     printf("\n");
+    restoreMode();
   }
 
   if (theo != NULL) {
@@ -1857,6 +1882,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
       directExcludes = evaluateI(resultDirect, func, x, prec, 0, hopitalrecursions+1, NULL, directTheo);
 
     if (verbosity >= 15) {
+      changeToWarningMode();
       printf("Information: Taylor evaluation: domain:\n");
       printInterval(x);
       printf("\nconstant term:\n");
@@ -1870,6 +1896,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
       printf("\ndirect evaluation:\n");
       printInterval(resultDirect);
       printf("\n");
+      restoreMode();
     }
 
     mpfi_get_left(rTl,resultTaylor);
@@ -1996,7 +2023,7 @@ chain *findZerosUnsimplified(node *func, node *deriv, mpfi_t range, mp_prec_t pr
     freeChain(excludes,freeMpfiPtr);
     if (!mpfi_bounded_p(y)) {
       printMessage(1,"Warning: during zero-search the derivative of the function evaluated to NaN or Inf in the interval ");
-      if (verbosity >= 1) printInterval(range);
+      if (verbosity >= 1) { 	changeToWarningMode(); printInterval(range); restoreMode(); }
       printMessage(1,".\nThe function might not be continuously differentiable in this interval.\n");
     }
     if ((!mpfi_bounded_p(y)) || mpfi_has_zero(y)) {
@@ -2483,6 +2510,7 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
   while (curr != NULL) {
 
     if (verbosity >= 7) {
+      changeToWarningMode();
       printf("Information:\nCurrent inner enclosure: [");
       printValue(&innerLeft,prec);
       printf(";");
@@ -2492,6 +2520,7 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
       printf(";");
       printValue(&outerRight,prec);
       printf("]\n");
+      restoreMode();
     }
 
     if (theo != NULL) {
@@ -2504,11 +2533,13 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
     excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, *currInterval, prec, taylorrecursions, currZeroTheo); 
 
     if (verbosity >= 7) {
+      changeToWarningMode();
       printf("Information: The function evaluates on\n");
       printInterval(*currInterval);
       printf(" to\n");
       printInterval(evalFuncOnInterval);
       printf("\n");
+      restoreMode();
     }
 
     excludes = concatChains(excludes,excludesTemp);
@@ -2683,13 +2714,15 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   if (!mpfr_nan_p(temp)) {
     mpfr_abs(max, temp, GMP_RNDU);
     if (verbosity >= 3) { 
+      changeToWarningMode();
       printf("Information: current max is "); printValue(&max,prec);
       printf(" and is reached at "); printMpfr(a);
+      restoreMode();
     }
   } else {
     printMessage(1,"Warning: the evaluation of the given function in ");
     mpfr_set(z,a,GMP_RNDN);
-    if (verbosity >= 1) printValue(&z,prec);
+    if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z,prec); restoreMode(); }
     printMessage(1," gives NaN.\n");
     printMessage(1,"This point will be excluded from the infnorm result.\n");
     mpfr_set_d(max,1.0,GMP_RNDU);
@@ -2699,14 +2732,16 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   if (!mpfr_nan_p(temp)) {
       mpfr_abs(temp, temp, GMP_RNDU);
       if ((verbosity >= 3) && (mpfr_cmp(b, max) > 0)) { 
+	changeToWarningMode();
 	printf("Information: current max is "); printValue(&temp,prec);
 	printf(" and is reached at "); printMpfr(b);
+	restoreMode();
       }
       mpfr_max(max, max, temp, GMP_RNDU);
   } else {
     printMessage(1,"Warning: the evaluation of the given function in ");
     mpfr_set(z,b,GMP_RNDN);
-    if (verbosity >= 1) printValue(&z,prec);
+    if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z,prec); restoreMode(); }
     printMessage(1," gives NaN\n");
     printMessage(1,"This point will be excluded from the infnorm result.\n");
   }
@@ -2731,8 +2766,10 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
     if (mpfr_number_p(s)) {
       mpfr_abs(s,s,GMP_RNDN);
       if ((verbosity >= 3) && (mpfr_cmp(s, max) > 0)) { 
+	changeToWarningMode();
 	printf("Information: current max is "); printValue(&s,prec);
 	printf(" and is reached at "); printMpfr(x1);
+	restoreMode();
       }
       mpfr_max(max,max,s,GMP_RNDU);
     }
@@ -2741,20 +2778,20 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
       if (!newtonWorked) {
 	printMessage(1,"Warning: zero-search by Newton's method did not converge\n");
 	printMessage(2,"The function was\n");
-	if (verbosity >= 2) printTree(deriv);
+	if (verbosity >= 2) { 	changeToWarningMode(); printTree(deriv); restoreMode(); }
 	printMessage(2,"\nThe interval was\n[");
-	if (verbosity >= 2) printValue(&x1,prec);
+	if (verbosity >= 2) { 	changeToWarningMode(); printValue(&x1,prec); restoreMode(); }
 	printMessage(2,";");
-	if (verbosity >= 2) printValue(&x2,prec);
+	if (verbosity >= 2) { 	changeToWarningMode(); printValue(&x2,prec); restoreMode(); }
 	printMessage(2,"]\n");
 	printMessage(1,"This (possibly maximum) point will be excluded from the infnorm result.\n");
       } else {
 	if (!(mpfr_number_p(z))) {
 	  printMessage(1,"Warning: zero-search by Newton's method produces infinity or NaN.\n");
 	  printMessage(1,"Will replace the zero point of the derivative by the mid-point of\nthe considered interval [");
-	  if (verbosity >= 1) printValue(&x1,prec);
+	  if (verbosity >= 1) { 	changeToWarningMode(); printValue(&x1,prec); restoreMode(); }
 	  printMessage(1,";");
-	  if (verbosity >= 1) printValue(&x2,prec);
+	  if (verbosity >= 1) { 	changeToWarningMode(); printValue(&x2,prec); restoreMode(); }
 	  printMessage(1,"]\n");
 	  mpfr_add(z,x1,x2,GMP_RNDN);
 	  mpfr_div_ui(z,z,2,GMP_RNDN);
@@ -2763,13 +2800,15 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
 	if (!mpfr_nan_p(temp)) {
 	  mpfr_abs(temp, temp, GMP_RNDU);
 	  if ((verbosity >= 3) && (mpfr_cmp(temp, max) > 0)) { 
+	    changeToWarningMode();
 	    printf("Information: current max is "); printValue(&temp,prec);
 	    printf(" and is reached at "); printMpfr(z);
+	    restoreMode();
 	  }
 	  mpfr_max(max, max, temp, GMP_RNDU);
 	} else {
 	  printMessage(1,"Warning: the evaluation of the given function in ");
-	  if (verbosity >= 1) printValue(&z,prec);
+	  if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z,prec); restoreMode(); }
 	  printMessage(1," gives NaN.\n");
 	  printMessage(1,"This (possibly maximum) point will be excluded from the infnorm result.\n");
 	}
@@ -2895,13 +2934,13 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
 
       if (mpfr_cmp(ya,yb) <= 0) {
 	printMessage(1,"Warning: the derivative of the function seems to have a extensible singularity in ");
-	if (verbosity >= 1) printValue(&z,prec);
+	if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z,prec); restoreMode(); }
 	printMessage(1,".\n");
 	printMessage(1,"The infnorm result might not be trustful if the derivative cannot actually\n");
 	printMessage(1,"be extended in this point.\n");
       } else {
 	printMessage(1,"Warning: the derivative of the function seems to have a singularity in ");
-	if (verbosity >= 1) printValue(&z,prec);
+	if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z,prec); restoreMode(); }
 	printMessage(1,".\n");
 	printMessage(1,"The infnorm result is likely to be wrong.\n");
       }
@@ -2944,6 +2983,7 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
   if (mightExcludes != NULL) {
     printMessage(1,"Warning: to get better infnorm quality, the following domains will be excluded additionally:\n");
     if (verbosity >= 1) {
+      changeToWarningMode();
       curr = mightExcludes;
       while(curr != NULL) {
 	printInterval(*((mpfi_t *) (curr->value)));
@@ -2951,6 +2991,7 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
 	curr = curr->next;
       }
       printf("\n");
+      restoreMode();
     }
     mightExcludes = concatChains(mightExcludes,initialExcludes);
     freeInitialExcludes = 0;
@@ -2972,6 +3013,7 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
     if (secondMightExcludes != NULL) {
       printMessage(1,"Warning: the following domains remain the exclusion of which could improve the result.\n");
       if (verbosity >= 1) {
+	changeToWarningMode();
 	curr = secondMightExcludes;
 	while(curr != NULL) {
 	  printInterval(*((mpfi_t *) (curr->value)));
@@ -2979,6 +3021,7 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
 	  curr = curr->next;
 	}
 	printf("\n");
+	restoreMode();
       }
     }
   }
@@ -3139,11 +3182,13 @@ int checkInfnormI(node *func, node *deriv, mpfi_t infnormval, mpfi_t range, mpfr
   if (mpfr_cmp(diamRange,diam) <= 0) {
     /* Simple end case: the range to test is already smaller than diam but we could not check */
     if (verbosity >= 2) {
+      changeToWarningMode();
       printf("Information: could not check the infinite norm on the domain\n");
       printInterval(range);
       printf("\nThe function evaluates here to\n");
       printInterval(evaluateOnRange);
       printf("\n");
+      restoreMode();
     }
     mpfi_clear(evaluateOnRange);
     mpfr_clear(diamRange);
@@ -3443,17 +3488,21 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
 	    } else {
 	      removedFromList = 1;
 	      if (verbosity >= 2) {
+		changeToWarningMode();
 		printMessage(2,"Information: removing possible zero in ");
 		printMpfr(*((mpfr_t *) (fpZeros2->value)));
 		printMessage(3,"Information: removing because all signs are equal.\n");
+		restoreMode();
 	      }
 	    }
 	  } else {
 	    removedFromList = 1;
 	    if (verbosity >= 2) {
+	      changeToWarningMode();
 	      printMessage(2,"Information: removing possible zero in ");
 	      printMpfr(*((mpfr_t *) (fpZeros2->value)));
 	      printMessage(3,"Information: removing because predecessor and successor signs are equal.\n");
+	      restoreMode();
 	    }
 	  }
 	}
@@ -4034,13 +4083,13 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
 
       if (mpfr_cmp(ya,yb) <= 0) {
 	printMessage(1,"Warning: the derivative of the function seems to have a extensible singularity in ");
-	if (verbosity >= 1) printValue(&z,prec);
+	if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z,prec); restoreMode(); }
 	printMessage(1,".\n");
 	printMessage(1,"The infnorm result might not be trustful if the derivative cannot actually\n");
 	printMessage(1,"be extended in this point.\n");
       } else {
 	printMessage(1,"Warning: the derivative of the function seems to have a singularity in ");
-	if (verbosity >= 1) printValue(&z,prec);
+	if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z,prec); restoreMode(); }
 	printMessage(1,".\n");
 	printMessage(1,"The infnorm result is likely to be wrong.\n");
       }
@@ -4100,7 +4149,9 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
 
       printMessage(4,"Information: the absolute diameter is now ");
       if (verbosity >= 4) {
+	changeToWarningMode();
 	printMpfr(currDiameter);
+	restoreMode();
       }
       printMessage(4,"The current intermediate precision is %d bits.\n",(int) prec);
 

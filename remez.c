@@ -300,9 +300,11 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
   }
 
   if(verbosity>=7) {
+    changeToWarningMode();
     printf("Newton's call with parameters :"); printTree(f); printf("\n");
     printMpfr(a); printMpfr(b);
     printMpfr(x); evaluateFaithful(y,f,x,prec); printMpfr(y);
+    restoreMode();
   }
 
   mpfr_set_d(zero_mpfr,0.,GMP_RNDN);
@@ -329,8 +331,10 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 
     if( (mpfr_cmp(u,xNew)>=0) || (mpfr_cmp(xNew,v)>=0) || ((!mpfr_number_p(xNew)) && (r==1)) ) {
       if(verbosity>=6) {
+	changeToWarningMode();
 	printf("Entering in a rescue case of Newton's algorithm\n");
 	printMpfr(xNew);
+	restoreMode();
       }
       
       // We do a step of binary search
@@ -341,7 +345,9 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
       if((!mpfr_number_p(y)) && (r==1)) {
 	fprintf(stderr,"/*Warning: Newton's algorithm encountered numerical problems*/\n");
 	if(verbosity>=2) {
+	  changeToWarningMode();
 	  printf("The function "); printTree(f); printf(" seems to be undefined at this point: ");  printMpfr(xNew);
+	  restoreMode();
 	}
 
 	mpfr_set(res, xNew, GMP_RNDN);
@@ -435,12 +441,16 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
   }
 
   if(verbosity>=7) {
+    changeToWarningMode();
     printf("Newton made %d iterations\n",nbr_iter);
+    restoreMode();
   }
   
   if(verbosity>=7) {
+    changeToWarningMode();
     printf("Newton's result :");
     printMpfr(x); evaluateFaithful(y,f,x,prec); printMpfr(y);
+    restoreMode();
   }
 
   mpfr_set(res, x, GMP_RNDN);
@@ -699,17 +709,21 @@ void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
   // Introduce newx
   if(mpfr_sgn(err_newx)*mpfr_sgn(epsilon)==1) {
     if(verbosity>=3) {
+      changeToWarningMode();
       printf("Remez: exchange algorithm takes the minimum (");
       printValue(&mini, 53);
       printf(") at place %d\n",argmini);
+      restoreMode();
     }
     mpfr_set(x[argmini], newx, GMP_RNDN);
   }
   else {
     if(verbosity>=3) {
+      changeToWarningMode();
       printf("Remez: exchange algorithm takes the maximum (");
       printValue(&maxi, 53);
       printf(") at place %d\n",argmaxi);
+      restoreMode();
     }
     mpfr_set(x[argmaxi], newx, GMP_RNDN);
   }
@@ -878,8 +892,10 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
     test=0;
     printMessage(2, "Performing an exchange step...\n");
     if (verbosity>=4) {
+      changeToWarningMode();
       printf("Computed infinite norm : "); printMpfr(maxi);
       printf("Reached at point "); printMpfr(argmaxi);
+      restoreMode();
     }
     for(i=0;i<deg+2;i++) mpfr_set(res[i], curr_points[i], GMP_RNDN);
     single_step_remez(argmaxi, maxi, res, monomials_tree, w, lambdai_vect, epsilon, deg+2, prec);
@@ -925,8 +941,10 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
     if(!test) {
       printMessage(2, "Failed to find pseudo-alternating points. Performing an exchange step...\n");
       if (verbosity>=4) {
+	changeToWarningMode();
 	printf("Computed infinite norm : "); printMpfr(maxi);
 	printf("Reached at point "); printMpfr(argmaxi);
+	restoreMode();
       }
       for(i=0;i<deg+2;i++) mpfr_set(res[i], curr_points[i], GMP_RNDN);
       single_step_remez(argmaxi, maxi, res, monomials_tree, w, lambdai_vect, epsilon, deg+2, prec);
@@ -985,7 +1003,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
 
   
   // Construction of the trees corresponding to (poly*w-f)' and (poly*w-f)''
-  if(verbosity>=8) printf("Constructing the error tree... \n");
+  if(verbosity>=8) { 	changeToWarningMode(); printf("Constructing the error tree... \n"); restoreMode(); }
   error = safeMalloc(sizeof(node));
   error->nodeType = SUB;
   temp1 = safeMalloc(sizeof(node));
@@ -999,19 +1017,19 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
   free_memory(error);
   error = temp1;
 
-  if(verbosity>=8) printf("Constructing the error' tree... \n");
+  if(verbosity>=8) { 	changeToWarningMode(); printf("Constructing the error' tree... \n"); restoreMode(); }
   error_diff = differentiate(error);
   temp1 = simplifyTreeErrorfree(error_diff);
   free_memory(error_diff);
   error_diff = temp1;
 
-  if(verbosity>=8) printf("Constructing the error'' trees... \n");
+  if(verbosity>=8) { 	changeToWarningMode(); printf("Constructing the error'' trees... \n"); restoreMode(); }
   error_diff2 = differentiate(error_diff);
   temp1 = simplifyTreeErrorfree(error_diff2);
   free_memory(error_diff2);
   error_diff2 = temp1;
   
-  if(verbosity>=6) printf("Computing the yi... \n");
+  if(verbosity>=6) { 	changeToWarningMode(); printf("Computing the yi... \n"); restoreMode(); }
   // If x = [x1 ... xn], we construct [y0 y1 ... yn] by
   // y0 = (a+x1)/2, yn = (xn+b)/2 and yi = (xi + x(i+1))/2
   y = (mpfr_t *)safeMalloc((n+1)*sizeof(mpfr_t));
@@ -1030,9 +1048,11 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
   mpfr_div_2ui(y[n], y[n], 1, GMP_RNDN);
 
   if(verbosity>=6) {
+    changeToWarningMode();
     printf("The computed yi are : ");
     for(i=0;i<=n;i++) {printMpfr(y[i]); printf(" ");}
     printf("\n");
+    restoreMode();
   }
   
 
@@ -1060,11 +1080,13 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
   }
 
   if(verbosity>=6) {
+    changeToWarningMode();
     printf("We are in case : ");
     if(case1) printf("1\n");
     if(case2) printf("2\n");
     if(case2b) printf("2bis\n");
     if(case3) printf("3\n");
+    restoreMode();
   }
 
 
@@ -1105,12 +1127,14 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
   }
 
   if(verbosity>=6) {
+    changeToWarningMode();
     if(test) {
       printf("The computed signs are : ");
       for(i=0;i<=n;i++) printf("%d  ",s[i]);
       printf("\n");
     }
     else printf("Test is false because signs could not be evaluated\n");
+    restoreMode();
   }
   
 
@@ -1242,8 +1266,10 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
 
 
   if(verbosity>=3) {
+    changeToWarningMode();
     printf("The new points are : ");
     for(i=1; i<=n; i++) printMpfr(z[i-1]);
+    restoreMode();
   }
 
   // Test the quality of the current error
@@ -1269,11 +1295,13 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
   if(infiniteNorm!=NULL) mpfr_set(infiniteNorm, max_val, GMP_RNDU);
 
   if(verbosity>=3) {
+    changeToWarningMode();
     mpfr_set(dummy_mpfr2,max_val,GMP_RNDN);
     printf("Current norm: "); printValue(&dummy_mpfr2, 5) ;
     mpfr_set(dummy_mpfr2,var_mpfr,GMP_RNDN);
     printf(" (1 +/- "); printValue(&dummy_mpfr2, 5);
     printf(")\n");
+    restoreMode();
   }
 
 
@@ -1331,8 +1359,10 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   gmp_randseed_ui(random_state, 65845285);
   
   if(verbosity>=3) {
+    changeToWarningMode();
     printf("Entering in Remez function...\n");
     printf("Required quality :"); printMpfr(quality);
+    restoreMode();
   }
 
   // Initialisations and precomputations
@@ -1379,7 +1409,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   mpfr_set_si(previous_lambdai_vect[freeDegrees],-1,GMP_RNDN);
 
 
-  if(verbosity>=8)  printf("Differentiating functions...\n");
+  if(verbosity>=8)  { changeToWarningMode(); printf("Differentiating functions...\n"); restoreMode(); }
   pushTimeCounter();
   poly = NULL;
   f_diff = differentiate(f);
@@ -1389,7 +1419,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   popTimeCounter("Remez: differentiating the functions");
 
 
-  if(verbosity>=8)  printf("Computing monomials...\n");
+  if(verbosity>=8)  { changeToWarningMode(); printf("Computing monomials...\n"); restoreMode(); }
   pushTimeCounter();
   monomials_tree = safeMalloc(freeDegrees*sizeof(node *));
   curr = monomials;
@@ -1419,7 +1449,9 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   // Definition of the array x of the n+2 Chebychev points
 
   if(verbosity>=8) {
+    changeToWarningMode();
     printf("Computing an initial points set...\n");
+    restoreMode();
   }
   pushTimeCounter();
 
@@ -1502,8 +1534,10 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
   popTimeCounter("Remez: computing initial points set");
   if(verbosity>=4) {
+    changeToWarningMode();
     printf("Computed points set:\n");
     for(i=1;i<=freeDegrees+1;i++) printMpfr(x[i-1]);
+    restoreMode();
   }
   
   while((mpfr_cmp(computedQuality, quality)>0) && (count<120)) {
@@ -1513,8 +1547,10 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     // N lets us determine the modified alternation property
     // M lets us solve the interpolation problem
     if(verbosity>=3) {
+      changeToWarningMode();
       printf("Step %d\n",count);
       printf("Computing the matrix...\n");
+      restoreMode();
     }
     pushTimeCounter();
 
@@ -1578,18 +1614,22 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     }
 
     if(verbosity>=4) {
+      changeToWarningMode();
       printf("Signs for pseudo-alternating condition : [");
       for (i=1 ; i <= freeDegrees ; i++) {
 	printValue(&M[coeff(i, freeDegrees+1, freeDegrees+1)],10);
 	printf(", ");
       }
       printf("-1]\n");
+      restoreMode();
     }
 
     popTimeCounter("Remez: computing the matrix");
 
     if(verbosity>=7) {
+      changeToWarningMode();
       printf("The computed matrix is "); printMatrix(M, freeDegrees+1);
+      restoreMode();
     }
         
     
@@ -1601,7 +1641,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       mpfr_set(b[i-1],var1,GMP_RNDN);
     }
 
-    if(verbosity>=8) printf("Resolving the system...\n");
+    if(verbosity>=8) { changeToWarningMode(); printf("Resolving the system...\n"); restoreMode(); }
 
     pushTimeCounter();
     system_solve(ai_vect, M, b, freeDegrees+1, prec);
@@ -1610,10 +1650,14 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     poly = constructPolynomial(ai_vect, monomials, prec);
 
     if(verbosity>=4) {
+      changeToWarningMode();
       printf("The computed polynomial is "); printTree(poly); printf("\n");
+      restoreMode();
     }
     if(verbosity>=3) {
+      changeToWarningMode();
       printf("Current value of epsilon : "); printValue(&ai_vect[freeDegrees],53); printf("\n");
+      restoreMode();
     }
 
     // Plotting the error curve
@@ -1627,7 +1671,9 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
     // Computing the useful derivatives of functions
     if(verbosity>=8) {
+      changeToWarningMode();
       printf("Differentiating the computed polynomial...\n");
+      restoreMode();
     }
     
     pushTimeCounter();
@@ -1642,7 +1688,9 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     popTimeCounter("Remez: differentiating the polynomial");
 
     if(verbosity>=8) {
+      changeToWarningMode();
       printf("Searching extrema of the error function...\n");
+      restoreMode();
     }
     
     // Find extremas and tests the quality of the current approximation
@@ -1667,9 +1715,11 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       uncertifiedInfnorm(ninf, temp_tree, u, v, getToolPoints(), prec);
 
       if(verbosity>=1) {
+	changeToWarningMode();
 	printf("The best polynomial obtained gives an error of ");
 	printMpfr(ninf);
 	printf("\n");
+	restoreMode();
       }
 
       free_memory(temp_tree);
@@ -1728,7 +1778,9 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     }
       
     if(verbosity>=3) {
+      changeToWarningMode();
       printf("Current quality: "); printMpfr(computedQuality);
+      restoreMode();
     }
 
     count++;
@@ -1767,11 +1819,13 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
   
   if(verbosity>=2) {
-      printf("Remez finished after %d steps\n",count);
-      printf("The computed infnorm is "); printValue(&infiniteNorm, 53) ; printf("\n");
-      printf("The polynomial is optimal within a factor 1 +/- "); printValue(&computedQuality, 5); printf("\n");
-      if(verbosity>=5) { printf("Computed poly: "); printTree(poly); printf("\n");}
-    }
+    changeToWarningMode();
+    printf("Remez finished after %d steps\n",count);
+    printf("The computed infnorm is "); printValue(&infiniteNorm, 53) ; printf("\n");
+    printf("The polynomial is optimal within a factor 1 +/- "); printValue(&computedQuality, 5); printf("\n");
+    if(verbosity>=5) { printf("Computed poly: "); printTree(poly); printf("\n");}
+    restoreMode();
+  }
 
 
   for(j=0;j<freeDegrees;j++) {
@@ -2111,8 +2165,10 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
       printMessage(1, "Warning: the function fails to oscillate enough.\n");
       printMessage(1, "Try to increase precision.\n");
       if (verbosity>=2) {
+	changeToWarningMode();
 	printf("The computed polynomial was: ");printTree(poly);
 	printf("\n");
+	restoreMode();
       }
 
       for(j=0;j<freeDegrees;j++) {

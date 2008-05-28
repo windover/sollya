@@ -131,5 +131,16 @@ void newReadFileStarted();
 void carriageReturnLexed();
 void newTokenLexed();
 void restartTool();
+void normalMode();
+void redMode();
+void blueMode();
+void blinkMode();
+void unblinkMode();
+void parseMode();
+void outputMode();
+void warningMode();
+void saveMode();
+void restoreMode();
+void changeToWarningMode();
 
 #endif /* ifdef GENERAL_H*/

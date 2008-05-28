@@ -112,6 +112,8 @@ int handlingCtrlC = 0;
 int recoverEnvironmentReady = 0;
 int exitInsteadOfRecover = 1;
 int numberBacktrace = 1;
+int displayColor = 0;
+int oldMode = 0;
 
 chain *symbolTable = NULL;
 chain *declaredSymbolTable = NULL;
@@ -154,6 +156,76 @@ extern gp_data *GP_DATA;
 
 
 #define BACKTRACELENGTH 100
+
+void normalMode() {
+  if (eliminatePromptBackup) return;
+  printf("\e[0m");
+  displayColor = 0;
+}
+
+void redMode() {
+  if (eliminatePromptBackup) return;
+  printf("\e[0m\e[31m");
+  displayColor = 1;
+}
+
+void blueMode() {
+  if (eliminatePromptBackup) return;
+  printf("\e[0m\e[34m");
+  displayColor = 2;
+}
+
+void setDisplayColor(int i) {
+  switch (i) {
+  case 2: 
+    blueMode();
+    break;
+  case 1: 
+    redMode();
+    break;
+  default:
+    normalMode();
+    break;
+  }
+}
+
+void saveMode() {
+  oldMode = displayColor;
+}
+
+void changeToWarningMode() {
+  saveMode();
+  warningMode();
+}
+
+void restoreMode() {
+  setDisplayColor(oldMode);
+}
+
+
+void blinkMode() {
+  if (eliminatePromptBackup) return;
+  printf("\e[5m");
+}
+
+void unblinkMode() {
+  if (eliminatePromptBackup) return;
+  printf("\e[25m");
+}
+
+
+void parseMode() {
+  normalMode();
+}
+
+void outputMode() {
+  blueMode();
+}
+
+void warningMode() {
+  redMode();
+}
+
 
 void *rpl_malloc(size_t n) {
   if (n == 0)
@@ -328,7 +400,7 @@ void newReadFileStarted() {
 }
 
 void carriageReturnLexed() {
-  if (helpNotFinished) printf("This is %s. Having typed 'help', you have got to a special prompt.\nType now a semicolon (';') for an introduction on the %s help system.\nType now 'help;' for getting a list of available commands.\nType now a command name followed by a semicolon (';') for help on this command.\n>> ",PACKAGE_NAME,PACKAGE_NAME);
+  if (helpNotFinished) { outputMode(); printf("This is %s. Having typed 'help', you have got to a special prompt.\nType now a semicolon (';') for an introduction on the %s help system.\nType now 'help;' for getting a list of available commands.\nType now a command name followed by a semicolon (';') for help on this command.\n>> ",PACKAGE_NAME,PACKAGE_NAME); }
   if (promptToBePrinted) printPrompt();
 }
 
@@ -340,12 +412,22 @@ void newTokenLexed() {
 
 int printMessage(int verb, const char *format, ...) {
   va_list varlist;
-  
+  int oldColor;
+  int res;
+
   if (verbosity < verb) return 0;
+
+  oldColor = displayColor;
   
+  if (verb >= 1) warningMode(); else outputMode();
+
   va_start(varlist,format);
 
-  return vprintf(format,varlist);
+  res = vprintf(format,varlist);
+
+  setDisplayColor(oldColor);
+
+  return res;
 }
 
 
@@ -489,6 +571,7 @@ void recoverFromError(void) {
 void printPrompt(void) {
   if (eliminatePromptBackup) return;
   if (readStack != NULL) return;
+  parseMode();
   printf("> ");
 }
 
@@ -554,6 +637,7 @@ void freeTool() {
   declaredSymbolTable = NULL;
   mpfr_clear(statediam);
   mpfr_free_cache();
+  normalMode();
 }
 
 void initToolDefaults() {
@@ -580,6 +664,7 @@ void initToolDefaults() {
   declaredSymbolTable = NULL;
   mpfr_init2(statediam,10);
   mpfr_set_d(statediam,DEFAULTDIAM,GMP_RNDN);
+  parseMode();
 }
 
 void restartTool() {
@@ -591,6 +676,7 @@ void restartTool() {
   freeLibraries();
   freeProcLibraries();
   initToolDefaults();
+  parseMode();
 }
 
 char *getNameOfVariable() {
