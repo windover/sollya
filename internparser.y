@@ -913,6 +913,10 @@ term:                   subterm
                           {
 			    $$ = makeNeg($2);
                           }									
+		      |	PLUSTOKEN subterm			
+                          {
+			    $$ = $2;
+                          }									
 		      |	term MULTOKEN subterm				
 			  {
 			    $$ = makeMul($1, $3);
@@ -927,7 +931,7 @@ subterm:                basicthing
                           {
 			    $$ = $1;
                           }
-                      | subterm POWTOKEN basicthing
+                      | basicthing POWTOKEN subterm
                           {
 			    $$ = makePow($1, $3);
                           }

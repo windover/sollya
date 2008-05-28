@@ -377,6 +377,10 @@ term:				subterm
 			     temp_node->child1 = $2;
 			     $$ = temp_node;
                            }									
+			|	PLUSTOKEN subterm			
+                           {
+			     $$ = $2;
+                           }									
 			|	term MULTOKEN subterm				
 			   {
                              temp_node = (node*) safeMalloc(sizeof(node));
@@ -400,7 +404,7 @@ subterm:                        primary
                            {
 			     $$ = $1;
                            }
-                        |       subterm POWTOKEN primary
+                        |       primary POWTOKEN subterm
                            {
                              temp_node = (node*) safeMalloc(sizeof(node));
 			     temp_node->nodeType = POW;
