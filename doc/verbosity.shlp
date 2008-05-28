@@ -20,3 +20,5 @@ verbosity=1!;
 1.2+"toto";
 verbosity=2!;
 1.2+"toto";
+
+#SEEALSO $SUPPRESSWARNINGS

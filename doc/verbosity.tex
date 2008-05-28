@@ -21,24 +21,19 @@ global variable controlling the quantity of information displayed by commands.\\
 error
 > verbosity=1!;
 > 1.2+"toto";
-Warning: Rounding occurred when converting the constant "1.2" to floating-point 
-with 165 bits.
-If safe computation is needed, try to increase the precision.
 Warning: at least one of the given expressions or a subexpression is not correct
 ly typed
 or its evaluation has failed because of some error on a side-effect.
 error
 > verbosity=2!;
 > 1.2+"toto";
-Warning: Rounding occurred when converting the constant "1.2" to floating-point 
-with 165 bits.
-If safe computation is needed, try to increase the precision.
 Warning: at least one of the given expressions or a subexpression is not correct
 ly typed
 or its evaluation has failed because of some error on a side-effect.
 Information: the expression or a partial evaluation of it has been the following
 :
-(0.119999999999999999999999999999999999999999999999999e1) + ("toto")
+(0.120000000000000000000000000000000000000000000000003e1) + ("toto")
 error
 \end{Verbatim}
 \end{minipage}\end{center}
+See also: \textbf{suppressroundingwarnings} (\ref{labsuppresswarnings})

@@ -3330,6 +3330,7 @@ help:                   CONSTANTTOKEN
 			    printf("- subpoly\n");
 			    printf("- substitute\n");
 			    printf("- sup\n");
+			    printf("- suppressroundingwarnings\n");
 			    printf("- tail\n");
 			    printf("- tan\n");
 			    printf("- tanh\n");
