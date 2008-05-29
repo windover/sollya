@@ -161,6 +161,7 @@ extern gp_data *GP_DATA;
 void normalMode() {
   if (noColor) return;
   if (eliminatePromptBackup) return;
+  if (displayColor == 0) return;
   printf("\e[0m");
   fflush(NULL);
   displayColor = 0;
@@ -169,6 +170,7 @@ void normalMode() {
 void redMode() {
   if (noColor) return;
   if (eliminatePromptBackup) return;
+  if (displayColor == 1) return;
   printf("\e[0m\e[31m");
   fflush(NULL);
   displayColor = 1;
@@ -177,6 +179,7 @@ void redMode() {
 void blueMode() {
   if (eliminatePromptBackup) return;
   if (noColor) return;
+  if (displayColor == 2) return;
   printf("\e[0m\e[34m");
   fflush(NULL);
   displayColor = 2;
