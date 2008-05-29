@@ -102,6 +102,7 @@ chain *readStack2 = NULL;
 void *scanner = NULL;
 int promptToBePrinted = 0;
 int helpNotFinished = 0;
+int noColor = 0;
 
 node *parsedThing = NULL;
 node *parsedThingIntern = NULL;
@@ -158,20 +159,26 @@ extern gp_data *GP_DATA;
 #define BACKTRACELENGTH 100
 
 void normalMode() {
+  if (noColor) return;
   if (eliminatePromptBackup) return;
   printf("\e[0m");
+  fflush(NULL);
   displayColor = 0;
 }
 
 void redMode() {
+  if (noColor) return;
   if (eliminatePromptBackup) return;
   printf("\e[0m\e[31m");
+  fflush(NULL);
   displayColor = 1;
 }
 
 void blueMode() {
   if (eliminatePromptBackup) return;
+  if (noColor) return;
   printf("\e[0m\e[34m");
+  fflush(NULL);
   displayColor = 2;
 }
 
@@ -210,11 +217,13 @@ void restoreMode() {
 void blinkMode() {
   if (eliminatePromptBackup) return;
   printf("\e[5m");
+  fflush(NULL);
 }
 
 void unblinkMode() {
   if (eliminatePromptBackup) return;
   printf("\e[25m");
+  fflush(NULL);
 }
 
 
@@ -776,11 +785,17 @@ void invalidateRecoverEnvironment() {
 int general(int argc, char *argv[]) {
   struct termios termAttr;
   int parseAbort, executeAbort;
+  int i;
 
   yylex_init(&scanner);
 
   if (tcgetattr(0,&termAttr) == -1) {
     eliminatePromptBackup = 1;
+  }
+
+  for (i=1;i<argc;i++) {
+    if (strcmp(argv[i],"-nocolor") == 0) noColor = 1;
+    if (strcmp(argv[i],"-noprompt") == 0) eliminatePromptBackup = 1;
   }
   
   pari_init(PARIMEMSIZE, 2);
