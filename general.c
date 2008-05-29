@@ -113,7 +113,7 @@ int handlingCtrlC = 0;
 int recoverEnvironmentReady = 0;
 int exitInsteadOfRecover = 1;
 int numberBacktrace = 1;
-int displayColor = 0;
+int displayColor = -1;
 int oldMode = 0;
 
 chain *symbolTable = NULL;
@@ -575,6 +575,7 @@ void signalHandler(int i) {
 }
 
 void recoverFromError(void) {
+  displayColor = -1; normalMode();
   if (exitInsteadOfRecover) {
     fprintf(stderr,"Error: the recover environment has not been initialized. Exiting.\n");
     exit(1);
@@ -851,6 +852,7 @@ int general(int argc, char *argv[]) {
 	blockSignals();
 	recoverEnvironmentReady = 0;
       } else {
+	displayColor = -1; normalMode();
 	blockSignals();
 	if (handlingCtrlC) 
 	  printMessage(1,"Warning: the last command has been interrupted. May leak memory.\n");
