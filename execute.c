@@ -5183,7 +5183,6 @@ int executeCommandInner(node *tree) {
     } 
     break; 			
   case PLOT:
-    outputMode();
     evaluateThingListToThingArray(&resA, &array, tree->arguments);
     resC = 0;
     if (isFilePostscriptFile(array[resA-2])) {
