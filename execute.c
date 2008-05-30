@@ -4910,8 +4910,6 @@ int executeCommandInner(node *tree) {
   node **array;
   rangetype tempRange;
 
-  outputMode();
-
   result = 0;
 
   timingString = NULL;
