@@ -162,7 +162,7 @@ void normalMode() {
   if (noColor) return;
   if (eliminatePromptBackup) return;
   if (displayColor == 0) return;
-  printf("\e[0m");
+  printf("\e[0m\e[1A\n");
   fflush(NULL);
   displayColor = 0;
 }
