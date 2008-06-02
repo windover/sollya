@@ -221,7 +221,7 @@ processExampleFile() {
  do
    echo -n "   > " >> $target
    cat $exampleFile | head -n $ilocal | tail -n 1 >> $target
-   echo "verbosity=0!;" "`head -n $ilocal $exampleFile`" | $sollyaBin > $tempfile2
+   echo "verbosity=0!; roundingwarnings=on!;" "`head -n $ilocal $exampleFile`" | $sollyaBin > $tempfile2
    sed -i -n 's/^/   /;p' $tempfile2
    total=`cat $tempfile2 | wc -l`
    countlocal=`expr $total - $countlocal`

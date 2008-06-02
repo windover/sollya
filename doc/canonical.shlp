@@ -27,7 +27,7 @@ An assignment $COMMAND = <activation value>, where <activation value>
 is one of $ON or $OFF, activates respectively deactivates the
 automatic printing of polynomial expressions in canonical form,
 i.e. as a sum of monomials in the canonical base. If automatic
-printing in canonical form is deactivated, automatic printing yield to
+printing in canonical form is deactivated, automatic printing yields to
 displaying polynomial subexpressions in Horner form.
 §§ § §§
 If the assignment $COMMAND = <activation value> is followed by an
@@ -43,7 +43,7 @@ in canonical form is deactivated, automatic printing yield to
 displaying polynomial subexpressions in Horner form.
 
 #EXAMPLE
-print(canonical(1 + x * (x + 3 * x^2));
+print(canonical(1 + x * (x + 3 * x^2)));
 print(canonical((x + 1)^7));
 
 #EXAMPLE
