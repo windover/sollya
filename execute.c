@@ -1190,7 +1190,7 @@ char *getTimingStringForThing(node *tree) {
     constString = "assigning the midpoint printing mode";
     break; 			
   case SUPPRESSWARNINGSASSIGN:
-    constString = "assigning the warning suppression";
+    constString = "assigning the warning activation";
     break; 			
   case HOPITALRECURSASSIGN:
     constString = "assigning the number of recursions for Hopital";
@@ -1592,7 +1592,7 @@ char *getTimingStringForThing(node *tree) {
     constString = "dereferencing the midpoint mode state of the tool";
     break; 			
   case SUPPRESSWARNINGSDEREF:
-    constString = "dereferencing the warning suppression state of the tool";
+    constString = "dereferencing the warning activation state of the tool";
     break; 			
   case HOPITALRECURSDEREF:
     constString = "dereferencing the numbers of recursions for Hopital";
@@ -3350,7 +3350,7 @@ char *sRawPrintThing(node *tree) {
     res = concatAndFree(res, sRawPrintThing(tree->child1));
     break; 			
   case SUPPRESSWARNINGSASSIGN:
-    res = newString("suppressroundingwarnings = ");
+    res = newString("roundingwarnings = ");
     res = concatAndFree(res, sRawPrintThing(tree->child1));
     break; 			
   case HOPITALRECURSASSIGN:
@@ -3413,7 +3413,7 @@ char *sRawPrintThing(node *tree) {
     res = concatAndFree(res, newString("!"));
     break;
   case SUPPRESSWARNINGSSTILLASSIGN:
-    res = newString("suppressroundingwarnings = ");
+    res = newString("roundingwarnings = ");
     res = concatAndFree(res, sRawPrintThing(tree->child1));
     res = concatAndFree(res, newString("!"));
     break; 		
@@ -4061,7 +4061,7 @@ char *sRawPrintThing(node *tree) {
     res = newString("midpointmode = ?");
     break; 			
   case SUPPRESSWARNINGSDEREF:
-    res = newString("suppressroundingwarnings = ?");
+    res = newString("roundingwarnings = ?");
     break; 			
   case HOPITALRECURSDEREF:
     res = newString("hopitalrecursions = ?");
@@ -6332,11 +6332,11 @@ int executeCommandInner(node *tree) {
   case SUPPRESSWARNINGSASSIGN:
     defaultVal = eliminatePromptBackup;
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
-      noRoundingWarnings = resA;     outputMode();
+      noRoundingWarnings = !resA;     outputMode();
       if (noRoundingWarnings) 
-	printf("Rounding warning suppression has been activated.\n");
+	printf("Rounding warning mode has been deactivated.\n");
       else 
-	printf("Rounding warning suppression has been deactivated.\n");
+	printf("Rounding warning mode has been activated.\n");
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -6481,7 +6481,7 @@ int executeCommandInner(node *tree) {
   case SUPPRESSWARNINGSSTILLASSIGN:
     defaultVal = eliminatePromptBackup;
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
-      noRoundingWarnings = resA;
+      noRoundingWarnings = !resA;
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -13892,9 +13892,9 @@ node *evaluateThingInner(node *tree) {
     if (timingString != NULL) pushTimeCounter();      
     freeThing(copy);
     if (noRoundingWarnings) {
-      copy = makeOn();
-    } else {
       copy = makeOff();
+    } else {
+      copy = makeOn();
     }
     if (timingString != NULL) popTimeCounter(timingString);
     break; 			

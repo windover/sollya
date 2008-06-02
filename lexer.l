@@ -291,7 +291,7 @@ AUTOSIMPLIFY    "autosimplify"
 TIMING          "timing"
 FULLPARENTHESES "fullparentheses"
 MIDPOINTMODE    "midpointmode"
-SUPPRESSWARNINGS "suppressroundingwarnings"
+SUPPRESSWARNINGS "roundingwarnings"
 
 LIBRARY         "library"
 

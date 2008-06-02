@@ -2330,10 +2330,10 @@ help:                   CONSTANTTOKEN
                           }                 	
                       | SUPPRESSWARNINGSTOKEN
                           {
-#ifdef HELP_SUPPRESSWARNINGS_TEXT
-			    outputMode(); printf(HELP_SUPPRESSWARNINGS_TEXT);
+#ifdef HELP_ROUNDINGWARNINGS_TEXT
+			    outputMode(); printf(HELP_ROUNDINGWARNINGS_TEXT);
 #else
-			    outputMode(); printf("Global environment variable suppressing warnings about rounding.\n");
+			    outputMode(); printf("Global environment variable activating warnings about rounding.\n");
 #endif
                           }                 						                 					       
                       | HOPITALRECURSIONSTOKEN
@@ -3319,6 +3319,7 @@ help:                   CONSTANTTOKEN
 			    printf("- round\n");
 			    printf("- roundcoefficients\n");
 			    printf("- roundcorrectly\n");
+			    printf("- roundingwarnings\n");
 			    printf("- searchgal\n");
 			    printf("- simplify\n");
 			    printf("- simplifysafe\n");
@@ -3330,7 +3331,6 @@ help:                   CONSTANTTOKEN
 			    printf("- subpoly\n");
 			    printf("- substitute\n");
 			    printf("- sup\n");
-			    printf("- suppressroundingwarnings\n");
 			    printf("- tail\n");
 			    printf("- tan\n");
 			    printf("- tanh\n");
