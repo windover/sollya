@@ -30,7 +30,7 @@ Parameters:
    is one of \textbf{on} or \textbf{off}, activates respectively deactivates the
    automatic printing of polynomial expressions in canonical form,
    i.e. as a sum of monomials in the canonical base. If automatic
-   printing in canonical form is deactivated, automatic printing yield to
+   printing in canonical form is deactivated, automatic printing yields to
    displaying polynomial subexpressions in Horner form.
     
    If the assignment \textbf{canonical} = \emph{activation value} is followed by an
@@ -46,7 +46,8 @@ Parameters:
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> print(canonical(1 + x * (x + 3 * x^2));
+> print(canonical(1 + x * (x + 3 * x^2)));
+1 + x^2 + 3 * x^3
 > print(canonical((x + 1)^7));
 1 + 7 * x + 21 * x^2 + 35 * x^3 + 35 * x^4 + 21 * x^5 + 7 * x^6 + x^7
 \end{Verbatim}

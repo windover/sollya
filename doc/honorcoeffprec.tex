@@ -24,6 +24,11 @@ indicates the (forced) honoring the precision of the coefficients in \textbf{imp
 > verbosity = 1!;
 > q = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","imp
 lementation.c");
+Warning: at least one of the coefficients of the given polynomial has been round
+ed in a way
+that the target precision can be achieved at lower cost. Nevertheless, the imple
+mented polynomial
+is different from the given one.
 > printexpansion(q);
 0x3ff0000000000000 + x^2 * 0xbfc5555555555555
 > r = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","imp
