@@ -24,7 +24,7 @@
 
 \newcommand{\ligne}[1]{\texttt{#1}\\}
 
-\title{Users' manual for the \sollya tool \\ {\large Release 1.0} \\ ~ \\ {\large Laboratoire de l'Informatique du Parall\'elisme \\ UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668}}
+\title{Users' manual for the \sollya tool \\ {\large Release 1.0.1} \\ ~ \\ {\large Laboratoire de l'Informatique du Parall\'elisme \\ UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668}}
 
 \author{Sylvain Chevillard \\ \small{\url{sylvain.chevillard@ens-lyon.fr}} \and Christoph Lauter \\ \small{\url{christoph.lauter@ens-lyon.fr}} \and Nicolas Jourdan \\ \small{\url{nicolas.jourdan@ens-lyon.fr}}}
 
@@ -337,46 +337,47 @@ The comparison operators \key{==} and \key{!=} are polymorphic. You can use it t
 }
 
 \subsection{Numbers}
-As seen above, \sollya represents numbers as floating-point values with the current precision \com{prec}. A number in an expression is rounded to the precision \com{prec} when the expression gets evaluated:
+\sollya represents numbers as floating-point values. For integer values and values in dyadic, binary, hexadecimal or memory dump notation, it 
+automatically uses a precision needed for representing the value exactly. Otherwise the values are represented with the current precision \com{prec}. A number in an expression is rounded to the precision \com{prec} when the expression gets evaluated:
 
 \code{
 \ligne{> prec=12!;}
-\ligne{> 4097;}
-\ligne{Warning: Rounding occured when converting the constant "4097" to floating-point}
+\ligne{> 4097.1;}
+\ligne{Warning: Rounding occured when converting the constant "4097.1" to floating-point}
 \ligne{with 12 bits.}
 \ligne{If safe computation is needed, try to increase the precision.}
-\ligne{4096}
-\ligne{> 4098;}
-\ligne{4098}
-\ligne{> 4097+1;}
-\ligne{Warning: Rounding occured when converting the constant "4097" to floating-point}
+\ligne{0.4096e4}
+\ligne{> 4097.1+1;}
+\ligne{Warning: Rounding occured when converting the constant "4097.1" to floating-point}
 \ligne{with 12 bits.}
 \ligne{If safe computation is needed, try to increase the precision.}
-\ligne{Warning: rounding has happened. The value displayed is a faithful rounding of}
-\ligne{the true result.}
-\ligne{4096}
+\ligne{4099}
 }
 
-Note that each variable has its own precision that corresponds to the value of \com{prec} when the variable was set. Thus you can work with variables having a precision bigger than the current precision.
+Note that each variable has its own precision that corresponds to its intrinsic precision or, if it cannot be represented, to the value of \com{prec} when the variable was set. Thus you can work with variables having a precision bigger than the current precision.
 
 The same way, if you define a function that refers to some constant, this constant is stored in the function with the current precision and will keep this value in the future, even if \com{prec} becomes smaller.
 
 If you define a function that refers to some variable, the precision of the variable is kept, independently of the current precision:
 
 \code{
-\ligne{> prec=50!;}
-\ligne{> a = 4097;}
-\ligne{> prec=12!;}
-\ligne{> f = x+a;}
-\ligne{> g = x+4097;}
-\ligne{Warning: Rounding occured when converting the constant "4097" to floating-point}
+\ligne{> prec = 50!;}
+\ligne{> a = 4097.1;}
+\ligne{Warning: Rounding occurred when converting the constant "4097.1" to floating-point}
+\ligne{with 50 bits.}
+\ligne{If safe computation is needed, try to increase the precision.}
+\ligne{> prec = 12!;}
+\ligne{> f = x + a;}
+\ligne{> g = x + 4097.1;}
+\ligne{Warning: Rounding occurred when converting the constant "4097.1" to floating-point} 
 \ligne{with 12 bits.}
 \ligne{If safe computation is needed, try to increase the precision.}
-\ligne{> prec=50!;}
+\ligne{> prec = 120;}
+\ligne{The precision has been set to 120 bits.}
 \ligne{> f;}
-\ligne{4097 + x}
+\ligne{0.409709999999999854480847716331481933e4 + x}
 \ligne{> g;}
-\ligne{4096 + x}
+\ligne{4098 + x}
 }
 
 \subsection{Intervals}
@@ -394,15 +395,26 @@ in the original, unevaluated interval will be contained in the interval with its
 evaluation bounds defined by constant expressions includes $\pi$:
 
 \code{
-\ligne{> prec=30!;}
-\ligne{> a=4097;}
-\ligne{> prec=12!;}
-\ligne{> d=[4096; a];}
-\ligne{> prec=30!;}
+\ligne{> prec = 300!;}
+\ligne{> a = 4097.1;}
+\ligne{Warning: Rounding occurred when converting the constant "4097.1" to floating-point}
+\ligne{with 300 bits.}
+\ligne{If safe computation is needed, try to increase the precision.}
+\ligne{> prec = 12!;}
+\ligne{> d = [4097.1; a];}
+\ligne{Warning: Rounding occurred when converting the constant "4097.1" to floating-point}
+\ligne{with 12 bits.}
+\ligne{If safe computation is needed, try to increase the precision.}
+\ligne{Warning: the bounds of the given range are in wrong order. Will reverse them.}
+\ligne{> prec = 300!;}
 \ligne{> d;}
-\ligne{[4096;4097]}
+\ligne{[0.409709999999999999999999999999999999999999999999999999999999999999999999999}
+\ligne{99999999999999968e4;4098]}
+\ligne{> prec = 30!;}
 \ligne{> [-pi;pi];}
-\ligne{[-0.31415926591e1;0.31415926591e1]}
+\ligne{Warning: the given expression is not a constant but an expression to evaluate.}
+\ligne{Warning: the given expression is not a constant but an expression to evaluate.}
+\ligne{[-0.3141592659e1;0.3141592659e1]}
 }
 
 You can get the upper-bound (respectively the lower-bound)) of an interval with the function \com{sup} (respectively \com{inf}). The middle of the interval is got with the function \com{mid}. Note that these functions can also be used on numbers (in that case, the number is interpreted as an interval containing only one single point. Thus the functions \com{inf}, \com{mid} and \com{sup} are just the identity):
