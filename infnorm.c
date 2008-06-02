@@ -570,6 +570,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   mpfi_t leftConstantTerm, rightConstantTerm;
   mpfi_t leftLinearTerm, rightLinearTerm;
   mpfr_t al, ar, bl, br, xl, xr, z, z2;
+  mpfr_t temph, templ;
   mpfr_t *newHopitalPoint;
   node *derivNumerator, *derivDenominator, *tempNode;
   node *derivLeft, *derivRight;
@@ -1401,6 +1402,12 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   case SIN:
     excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_sin(stack3, stack1);
+    if (mpfi_inf_p(stack1)) {
+      mpfr_init2(temph,12);
+      mpfr_set_nan(temph);
+      mpfi_interv_fr(stack3,temph,temph);
+      mpfr_clear(temph);      
+    }
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
@@ -1417,6 +1424,12 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   case COS:
     excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_cos(stack3, stack1);
+    if (mpfi_inf_p(stack1)) {
+      mpfr_init2(temph,12);
+      mpfr_set_nan(temph);
+      mpfi_interv_fr(stack3,temph,temph);
+      mpfr_clear(temph);      
+    }
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }

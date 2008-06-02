@@ -713,6 +713,7 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
       prec2--;
     }
     if (prec2 > prec) prec2 = prec;
+    if (prec2 < tools_precision) prec2 = tools_precision;
     prec = prec2;
   }
   buffer = safeCalloc(2 * prec + 7 + (sizeof(mp_exp_t) * 4) + 1, sizeof(char));
