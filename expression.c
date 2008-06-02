@@ -7637,7 +7637,7 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
 	    (*coefficients)[j] = temp;
 	  } else {
 	    temp2 = (node *) safeMalloc(sizeof(node));
-	    temp2->nodeType = MUL;
+	    temp2->nodeType = ADD;
 	    temp2->child1 = (*coefficients)[j];
 	    temp2->child2 = temp;
 	    (*coefficients)[j] = temp2;
