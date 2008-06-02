@@ -1,28 +1,34 @@
-\subsection{suppresswarnings}
-\label{labsuppresswarnings}
-\noindent Name: \textbf{suppressroundingwarnings}\\
+\subsection{roundingwarnings}
+\label{labroundingwarnings}
+\noindent Name: \textbf{roundingwarnings}\\
 global variable controlling whether or not there is a warning when roundings occur.\\
 
 \noindent Description: \begin{itemize}
 
-\item \textbf{suppressroundingwarnings} is a global variable. When its value is \textbf{off}, warnings are
+\item \textbf{roundingwarnings} is a global variable. When its value is \textbf{on}, warnings are
    emitted in appropriate verbosity modes (see \textbf{verbosity}) when roundings
-   occur.  When its value is \textbf{on}, these warnings are suppressed.
+   occur.  When its value is \textbf{off}, these warnings are suppressed.
 
 \item This mode depends on a verbosity of at least 1. See
    \textbf{verbosity} for more details.
 
-\item Default is \textbf{off} when the standard input is a terminal and
-   \textbf{on} when Sollya input is read from a file.
+\item Default is \textbf{on} when the standard input is a terminal and
+   \textbf{off} when Sollya input is read from a file.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> suppressroundingwarnings = off;
-Rounding warning suppression has been deactivated.
+> verbosity=1!;
+> roundingwarnings = on;
+Rounding warning mode has been activated.
 > exp(0.1);
+Warning: Rounding occurred when converting the constant "0.1" to floating-point 
+with 165 bits.
+If safe computation is needed, try to increase the precision.
+Warning: rounding has happened. The value displayed is a faithful rounding of th
+e true result.
 0.110517091807564762481170782649024666822454719473754e1
-> suppressroundingwarnings = on;
-Rounding warning suppression has been activated.
+> roundingwarnings = off;
+Rounding warning mode has been deactivated.
 > exp(0.1);
 0.110517091807564762481170782649024666822454719473754e1
 \end{Verbatim}
