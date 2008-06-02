@@ -53,9 +53,9 @@ binds an external mathematical function to a variable in Sollya\\
 > bashexecute("gcc -shared -o libraryexample libraryexample.o -lgmp -lmpfr");
 > myownlog = library("./libraryexample");
 > evaluate(log(x), 2);
-0.693147180559945309417232121458176568075500134360248314207
+0.69314718055994530941723212145817656807550013436024
 > evaluate(myownlog(x), 2);
-0.693147180559945309417232121458176568075500134360248314207
+0.69314718055994530941723212145817656807550013436024
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{bashexecute} (\ref{labbashexecute}), \textbf{externalproc} (\ref{labexternalproc}), \textbf{externalplot} (\ref{labexternalplot})

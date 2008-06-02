@@ -24,7 +24,7 @@ Parameters:
 > isevaluable(sin(pi * 1/x), 0.75);
 true
 > print(evaluate(sin(pi * 1/x), 0.75));
--0.866025403784438646763723170752936183471402626905185165
+-0.866025403784438646763723170752936183471402626905164
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
@@ -33,15 +33,15 @@ true
 true
 > print(evaluate(sin(pi * 1/x), 0.5));
 [-0.172986452514381269516508615031098129542836767991679e-12714;0.759411982011879
-631450695643145256617060390843900679e-12715]
+631450695643145256617060390843900652e-12715]
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > isevaluable(sin(pi * 1/x), 0);
-false
+true
 > print(evaluate(sin(pi * 1/x), 0));
-@NaN@
+[-1;1]
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{evaluate} (\ref{labevaluate})

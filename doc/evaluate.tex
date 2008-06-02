@@ -41,21 +41,21 @@ Parameters:
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > print(evaluate(sin(pi * x), 2.25));
-0.707106781186547524400844362104849039284835937688470741
+0.707106781186547524400844362104849039284835937688449
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > print(evaluate(sin(pi * x), 2));
 [-0.172986452514381269516508615031098129542836767991679e-12714;0.759411982011879
-631450695643145256617060390843900679e-12715]
+631450695643145256617060390843900652e-12715]
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > print(evaluate(sin(pi * x), [2, 2.25]));
-[-0.514339027267725463004699891996191240734922416542101e-49;0.707106781186547524
-400844362104849039284835937688663]
+[-0.514339027267725463004699891996191240734922416542083e-49;0.707106781186547524
+40084436210484903928483593768866]
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
@@ -67,7 +67,7 @@ sin((pi) * (2 + 0.25 * x))
 \noindent Example 5: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > print(evaluate(sin(pi * 1/x), 0));
-@NaN@
+[-1;1]
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{isevaluable} (\ref{labisevaluable})

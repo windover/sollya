@@ -33,11 +33,11 @@ Parameters:
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > p = remez(exp(x), 5, [-1;1]);
 > accurateinfnorm(p - exp(x), [-1;1], 20);
-0.45205641072243e-4
+0.452055246569e-4
 > accurateinfnorm(p - exp(x), [-1;1], 30);
-0.45205621802324458e-4
+0.4520552107578623e-4
 > accurateinfnorm(p - exp(x), [-1;1], 40);
-0.45205621769406345578e-4
+0.4520552104386732494e-4
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
@@ -45,9 +45,9 @@ Parameters:
 > p = remez(exp(x), 5, [-1;1]);
 > midpointmode = on!;
 > infnorm(p - exp(x), [-1;1]);
-0.45205~5/7~e-4
+0.45205~5/6~e-4
 > accurateinfnorm(p - exp(x), [-1;1], 40);
-0.45205621769406345578e-4
+0.4520552104386732494e-4
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{infnorm} (\ref{labinfnorm}), \textbf{dirtyinfnorm} (\ref{labdirtyinfnorm}), \textbf{checkinfnorm} (\ref{labcheckinfnorm}), \textbf{remez} (\ref{labremez}), \textbf{diam} (\ref{labdiam})

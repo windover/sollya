@@ -82,8 +82,8 @@ implements a polynomial using double, double-double and triple-double arithmetic
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > implementpoly(1 - 1/6 * x^2 + 1/120 * x^4, [-1b-10;1b-10], 1b-30, D, "p","impl
 ementation.c");
-1 + x^2 * ((-0.1666666666666666574148081281236954964697360992431640625) + x^2 * 
-0.833333333333333321768510160154619370587170124053955078125e-2)
+1 + x^2 * ((-0.16666666666666665741480812812369549646973609924316) + x^2 * 0.833
+33333333333332176851016015461937058717012405395e-2)
 > readfile("implementation.c");
 #define p_coeff_0h 1.00000000000000000000000000000000000000000000000000000000000
 000000000000000000000e+00
@@ -124,8 +124,8 @@ p_t_5_0h = p_coeff_0h + p_t_4_0h;
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > implementpoly(1 - 1/6 * x^2 + 1/120 * x^4, [-1b-10;1b-10], 1b-30, D, "p","impl
 ementation.c","implementation.gappa");
-1 + x^2 * ((-0.1666666666666666574148081281236954964697360992431640625) + x^2 * 
-0.833333333333333321768510160154619370587170124053955078125e-2)
+1 + x^2 * ((-0.16666666666666665741480812812369549646973609924316) + x^2 * 0.833
+33333333333332176851016015461937058717012405395e-2)
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
@@ -133,11 +133,6 @@ ementation.c","implementation.gappa");
 > verbosity = 1!;
 > q = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","imp
 lementation.c");
-Warning: at least one of the coefficients of the given polynomial has been round
-ed in a way
-that the target precision can be achieved at lower cost. Nevertheless, the imple
-mented polynomial
-is different from the given one.
 > printexpansion(q);
 0x3ff0000000000000 + x^2 * 0xbfc5555555555555
 > r = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","imp
