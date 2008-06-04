@@ -4585,7 +4585,7 @@ void autoprint(node *thing, int inList) {
 		  printMessage(1,"Warning: rounding has happened. The value displayed is ");
 		  saveMode();
 		  warningMode(); blinkMode();
-		  printf("not");
+		  printf("*NOT*");
 		  unblinkMode(); 
 		  restoreMode();
 		  printMessage(1," a faithful rounding of the true result.\n");
@@ -5298,6 +5298,7 @@ int executeCommandInner(node *tree) {
     if (evaluateThingToString(&tempString, tree->child1)) {
       outputMode();
       intTemp = bashExecute(tempString);
+      normalMode(); outputMode();
       printMessage(2,"Information: the bash return value is %d.\n",intTemp);
       free(tempString);
     } else {

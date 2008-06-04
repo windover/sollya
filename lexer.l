@@ -73,6 +73,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 CHAR		[a-zA-Z]
 NUMBER		[0-9]
 HEXNUMBER       (([0-9])|([ABCDEFabcdef]))
+SPECIAL         [_~$§{}@,&#|]
 
 CONSTANT        ((({NUMBER}+|({NUMBER}*"."{NUMBER}+))(("~"{NUMBER}"/"{NUMBER}"~")?)(((((" ")*)(([eE]))([+-])?{NUMBER}+)?)))|("infty"|"nan"|"NAN"|"NaN"|"@Inf@"|"@NaN@"))
 DYADICCONSTANT  ({NUMBER}+)([bB])([+-]?)({NUMBER}+)
@@ -83,7 +84,7 @@ HEXADECIMALCONSTANT ("0x")(({HEXNUMBER}*"."{HEXNUMBER}+)|({HEXNUMBER}+((".")?)))
 BINARYCONSTANT  (([0-1])+|(([0-1])*"."([0-1])+))"_2"
 
 
-IDENTIFIER        {CHAR}({CHAR}|{NUMBER})*
+IDENTIFIER        ({CHAR}|{SPECIAL})({CHAR}|{NUMBER}|{SPECIAL})*
 
 LPAR            "("
 RPAR            ")"

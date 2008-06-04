@@ -467,6 +467,7 @@ void pushTimeCounter(void) {
 void popTimeCounter(char *s) {
   struct timeval *buf_init;
   struct timeval *buf_final;
+  int oldcol;
 
   long int days, hours, minutes, seconds, milliseconds, microseconds;
 
@@ -488,7 +489,9 @@ void popTimeCounter(char *s) {
     milliseconds = microseconds / 1000;
 
     if((milliseconds>0)||(seconds>0)) {
-      printMessage(0, "Information: %s spent ", s);
+      oldcol = getDisplayColor(); 
+      outputMode();
+      printf("Information: %s spent ", s);
       if(seconds!=0) {
 	minutes = seconds / 60;
 	seconds = seconds % 60;
@@ -497,12 +500,13 @@ void popTimeCounter(char *s) {
 	days = hours / 24;
 	hours = hours % 24;
 	
-	if(days!=0) printMessage(0, "%d days, ", days);
-	if(hours!=0) printMessage(0, "%d hours, ", hours);
-	if(minutes!=0) printMessage(0, "%d minutes, ", minutes);
-	if(seconds!=0) printMessage(0, "%d seconds, ", seconds);
+	if(days!=0) printf("%d days, ", days);
+	if(hours!=0) printf("%d hours, ", hours);
+	if(minutes!=0) printf("%d minutes, ", minutes);
+	if(seconds!=0) printf("%d seconds, ", seconds);
       }
-      printMessage(0, "%d ms\n", milliseconds);
+      printf("%d ms\n", milliseconds);
+      setDisplayColor(oldcol);
     }
 
     prev = timeStack;

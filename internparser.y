@@ -314,6 +314,7 @@ extern FILE *internyyget_in(void *scanner);
 
 
 %type <other> startsymbol;
+%type <other> egalquestionmark;
 %type <tree>  startsymbolwitherr;
 %type <tree>  command;
 %type <tree>  procbody;
@@ -1510,55 +1511,66 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
 			  }
 ;
 
-statedereference:       PRECTOKEN EQUALTOKEN QUESTIONMARKTOKEN
+egalquestionmark:       EQUALTOKEN QUESTIONMARKTOKEN
+                          {
+			    $$ = NULL;
+			  }
+                      | 
+                          {
+			    $$ = NULL;
+			  }
+;
+
+
+statedereference:       PRECTOKEN egalquestionmark
                           {
 			    $$ = makePrecDeref();
 			  }
-                      | POINTSTOKEN EQUALTOKEN QUESTIONMARKTOKEN            					       
+                      | POINTSTOKEN egalquestionmark            					       
                           {
 			    $$ = makePointsDeref();
 			  }
-                      | DIAMTOKEN EQUALTOKEN QUESTIONMARKTOKEN              					       
+                      | DIAMTOKEN egalquestionmark              					       
                           {
 			    $$ = makeDiamDeref();
 			  }
-                      | DISPLAYTOKEN EQUALTOKEN QUESTIONMARKTOKEN            					       
+                      | DISPLAYTOKEN egalquestionmark            					       
                           {
 			    $$ = makeDisplayDeref();
 			  }
-                      | VERBOSITYTOKEN EQUALTOKEN QUESTIONMARKTOKEN         					       
+                      | VERBOSITYTOKEN egalquestionmark         					       
                           {
 			    $$ = makeVerbosityDeref();
 			  }
-                      | CANONICALTOKEN EQUALTOKEN QUESTIONMARKTOKEN         					       
+                      | CANONICALTOKEN egalquestionmark         					       
                           {
 			    $$ = makeCanonicalDeref();
 			  }
-                      | AUTOSIMPLIFYTOKEN EQUALTOKEN QUESTIONMARKTOKEN				       
+                      | AUTOSIMPLIFYTOKEN egalquestionmark				       
                           {
 			    $$ = makeAutoSimplifyDeref();
 			  }
-                      | TAYLORRECURSIONSTOKEN EQUALTOKEN QUESTIONMARKTOKEN				       
+                      | TAYLORRECURSIONSTOKEN egalquestionmark				       
                           {
 			    $$ = makeTaylorRecursDeref();
 			  }
-                      | TIMINGTOKEN EQUALTOKEN QUESTIONMARKTOKEN			       
+                      | TIMINGTOKEN egalquestionmark			       
                           {
 			    $$ = makeTimingDeref();
 			  }
-                      | FULLPARENTHESESTOKEN EQUALTOKEN QUESTIONMARKTOKEN					       
+                      | FULLPARENTHESESTOKEN egalquestionmark					       
                           {
 			    $$ = makeFullParenDeref();
 			  }
-                      | MIDPOINTMODETOKEN EQUALTOKEN QUESTIONMARKTOKEN			       
+                      | MIDPOINTMODETOKEN egalquestionmark			       
                           {
 			    $$ = makeMidpointDeref();
 			  }
-                      | SUPPRESSWARNINGSTOKEN EQUALTOKEN QUESTIONMARKTOKEN			       
+                      | SUPPRESSWARNINGSTOKEN egalquestionmark			       
                           {
 			    $$ = makeSuppressWarningsDeref();
 			  }
-                      | HOPITALRECURSIONSTOKEN EQUALTOKEN QUESTIONMARKTOKEN				       
+                      | HOPITALRECURSIONSTOKEN egalquestionmark				       
                           {
 			    $$ = makeHopitalRecursDeref();
 			  }
