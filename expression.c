@@ -457,6 +457,8 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
   mpfr_t aP, bP;
   int sign, len1, len2, len, i;
   mp_prec_t prec, p;
+  char *s1, *s2;
+  int possibleLength;
 
   if (mpfr_sgn(a) != mpfr_sgn(b)) return NULL;
   
@@ -480,52 +482,71 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
   mpfr_abs(aP,a,GMP_RNDN);
   mpfr_abs(bP,b,GMP_RNDN);
   
-  str1 = mpfr_get_str(NULL,&e1,10,0,aP,GMP_RNDN);  
-  str2 = mpfr_get_str(NULL,&e2,10,0,bP,GMP_RNDN);  
-
+  str1 = mpfr_get_str(NULL,&e1,10,0,aP,GMP_RNDD);  
+  str2 = mpfr_get_str(NULL,&e2,10,0,bP,GMP_RNDU);  
+  
   if (e1 == e2) {
     if (str1[0] == str2[0]) {
       len1 = strlen(str1);
       len2 = strlen(str2);
-      len = len1; 
+      len = len1;
       if (len2 < len) len = len2;
-      str = safeCalloc(len + 6,sizeof(char));
       i = 0;
       while ((i < len) && (str1[i] == str2[i])) {
-	str[i] = str1[i];
 	i++;
       }
-      if (i < len) {
-	str[i] = '~';
-	str[i+1] = str1[i];
-	str[i+2] = '/';
-	str[i+3] = str2[i];
-	str[i+4] = '~';
-      }
-      str3 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
-      removeTrailingZeros(str3,str);
-      free(str);
-      str = str3;
-      str3 = (char *) safeCalloc(strlen(str)+69,sizeof(char));
-      if (sign < 0) {
-	if (e1 == 0) {
-	  sprintf(str3,"-0.%s",str);
+      possibleLength = i;
+      s1 = mpfr_get_str(NULL,&e1,10,possibleLength+1,aP,GMP_RNDD);  
+      s2 = mpfr_get_str(NULL,&e2,10,possibleLength+1,bP,GMP_RNDU);  
+      if (e1 == e2) {
+	if (s1[0] == s2[0]) {
+	  len1 = strlen(s1);
+	  len2 = strlen(s2);
+	  len = len1;
+	  if (len2 < len) len = len2;
+	  str = (char *) safeCalloc(len+6,sizeof(char));
+	  i = 0;
+	  while ((i < len) && (s1[i] == s2[i])) {
+	    str[i] = s1[i];
+	    i++;
+	  }
+	  str[i] = '~';
+	  str[i+1] = s1[i];
+	  str[i+2] = '/';
+	  str[i+3] = s2[i];
+	  str[i+4] = '~';
+	  str3 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
+	  removeTrailingZeros(str3,str);
+	  free(str);
+	  str = str3;
+	  str3 = (char *) safeCalloc(strlen(str)+69,sizeof(char));
+	  if (sign < 0) {
+	    if (e1 == 0) {
+	      sprintf(str3,"-0.%s",str);
+	    } else {
+	      sprintf(str3,"-0.%se%d",str,(int)e1);
+	    }
+	  } else {
+	    if (e1 == 0) {
+	      sprintf(str3,"0.%s",str);
+	    } else {
+	      sprintf(str3,"0.%se%d",str,(int)e1);
+	    }
+	  }
+	  free(str);
+	  str = str3;
+	  str3 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
+	  sprintf(str3,"%s",str);
+	  free(str);
+	  str = str3;
 	} else {
-	  sprintf(str3,"-0.%se%d",str,(int)e1);
+	  str = NULL;
 	}
       } else {
-	if (e1 == 0) {
-	  sprintf(str3,"0.%s",str);
-	} else {
-	  sprintf(str3,"0.%se%d",str,(int)e1);
-	}
+	str = NULL;
       }
-      free(str);
-      str = str3;
-      str3 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
-      sprintf(str3,"%s",str);
-      free(str);
-      str = str3;
+      free(s1);
+      free(s2);
     } else {
       str = NULL;
     }

@@ -686,6 +686,10 @@ node *copyThing(node *tree) {
     copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
     strcpy(copy->string,tree->string);
     break; 		
+  case MIDPOINTCONSTANT:
+    copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+    strcpy(copy->string,tree->string);
+    break; 		
   case DYADICCONSTANT:
     copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
     strcpy(copy->string,tree->string);
@@ -1374,6 +1378,9 @@ char *getTimingStringForThing(node *tree) {
     break;  	
   case DECIMALCONSTANT:
     constString = "reading a decimal constant";
+    break; 		
+  case MIDPOINTCONSTANT:
+    constString = "reading a midpoint constant";
     break; 		
   case DYADICCONSTANT:
     constString = "reading a dyadic constant";
@@ -3627,6 +3634,9 @@ char *sRawPrintThing(node *tree) {
     res = concatAndFree(res, newString(")"));
     break;  	
   case DECIMALCONSTANT:
+    res = newString(tree->string);
+    break; 		
+  case MIDPOINTCONSTANT:
     res = newString(tree->string);
     break; 		
   case DYADICCONSTANT:
@@ -7761,6 +7771,19 @@ node *makeDecimalConstant(char *string) {
 
 }
 
+node *makeMidpointConstant(char *string) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = MIDPOINTCONSTANT;
+  res->string = (char *) safeCalloc(strlen(string) + 1, sizeof(char));
+  strcpy(res->string, string);
+
+  return res;
+
+}
+
+
 node *makeDyadicConstant(char *string) {
   node *res;
 
@@ -9196,6 +9219,10 @@ void freeThing(node *tree) {
     free(tree->string);
     free(tree);
     break; 		
+  case MIDPOINTCONSTANT:
+    free(tree->string);
+    free(tree);
+    break; 		
   case DYADICCONSTANT:
     free(tree->string);
     free(tree);
@@ -9974,6 +10001,8 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
   case DECIMALCONSTANT:
+    if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 		
+  case MIDPOINTCONSTANT:
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 		
   case DYADICCONSTANT:
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 			
@@ -11070,9 +11099,10 @@ void *evaluateThingInnerOnVoid(void *tree) {
 }
 
 node *evaluateThingInner(node *tree) {
-  node *copy, *tempNode, *tempNode2;
+  node *copy, *tempNode, *tempNode2, *tempNode3;
   int resA, resB, i, resC, resD, resE;
   char *tempString, *tempString2, *timingString, *tempString3;
+  char *str1, *str2;
   mpfr_t a, b, c;
   chain *tempChain, *curr, *newChain, *tempChain2, *tempChain3;
   rangetype yrange, xrange, yrange2;
@@ -12080,6 +12110,123 @@ node *evaluateThingInner(node *tree) {
     mpfr_clear(a);
     free(copy);
     copy = tempNode;
+    if (timingString != NULL) popTimeCounter(timingString);
+    break; 		
+  case MIDPOINTCONSTANT:
+    if (timingString != NULL) pushTimeCounter();
+    str1 = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+    str2 = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+    cutMidpointStringIntoTwo(str1,str2,tree->string);
+    pTemp = 4 * strlen(str1) + 3324;
+    if (tools_precision > pTemp) pTemp = tools_precision;
+    mpfr_init2(a,pTemp);
+    mpfr_init2(b,pTemp);
+    mpfr_set_str(a,str1,10,GMP_RNDD);
+    mpfr_set_str(b,str1,10,GMP_RNDU);    
+    if (mpfr_cmp(a,b) != 0) {
+      pTemp = tools_precision;
+    }
+    mpfr_clear(a); mpfr_clear(b);
+    mpfr_init2(a,pTemp);
+    mpfr_init2(b,pTemp);
+    mpfr_set_str(a,str1,10,GMP_RNDD);
+    mpfr_set_str(b,str1,10,GMP_RNDU);    
+    if (mpfr_cmp(a,b) != 0) {
+      if (!noRoundingWarnings) {
+	printMessage(1,
+		     "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
+		     str1,(int) pTemp);
+	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      }
+      mpfr_set_str(a,str1,10,GMP_RNDD);
+    }
+    if (mpfr_number_p(a)) {
+      while (pTemp >= tools_precision) {
+	mpfr_init2(c,pTemp);
+	mpfr_set(c,a,GMP_RNDN);
+	if (mpfr_cmp(a,c) != 0) {
+	  pTemp++;
+	  mpfr_clear(c);
+	  break;
+	}
+	mpfr_clear(c);
+	pTemp--;
+      }
+      if (pTemp < tools_precision) pTemp = tools_precision;
+    } else {
+      pTemp = tools_precision;
+    }
+    mpfr_init2(c,pTemp);
+    mpfr_set(c,a,GMP_RNDD);
+    if (mpfr_cmp(a,c) != 0) {
+      if (!noRoundingWarnings) {
+	printMessage(1,
+		     "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
+		     str1,(int) pTemp);
+	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      }
+    }
+    tempNode = makeConstant(c);
+    mpfr_clear(c);
+    mpfr_clear(b);
+    mpfr_clear(a);
+    pTemp = 4 * strlen(str2) + 3324;
+    if (tools_precision > pTemp) pTemp = tools_precision;
+    mpfr_init2(a,pTemp);
+    mpfr_init2(b,pTemp);
+    mpfr_set_str(a,str2,10,GMP_RNDD);
+    mpfr_set_str(b,str2,10,GMP_RNDU);    
+    if (mpfr_cmp(a,b) != 0) {
+      pTemp = tools_precision;
+    }
+    mpfr_clear(a); mpfr_clear(b);
+    mpfr_init2(a,pTemp);
+    mpfr_init2(b,pTemp);
+    mpfr_set_str(a,str2,10,GMP_RNDD);
+    mpfr_set_str(b,str2,10,GMP_RNDU);    
+    if (mpfr_cmp(a,b) != 0) {
+      if (!noRoundingWarnings) {
+	printMessage(1,
+		     "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
+		     str2,(int) pTemp);
+	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      }
+      mpfr_set_str(a,str2,10,GMP_RNDU);
+    }
+    if (mpfr_number_p(a)) {
+      while (pTemp >= tools_precision) {
+	mpfr_init2(c,pTemp);
+	mpfr_set(c,a,GMP_RNDN);
+	if (mpfr_cmp(a,c) != 0) {
+	  pTemp++;
+	  mpfr_clear(c);
+	  break;
+	}
+	mpfr_clear(c);
+	pTemp--;
+      }
+      if (pTemp < tools_precision) pTemp = tools_precision;
+    } else {
+      pTemp = tools_precision;
+    }
+    mpfr_init2(c,pTemp);
+    mpfr_set(c,a,GMP_RNDU);
+    if (mpfr_cmp(a,c) != 0) {
+      if (!noRoundingWarnings) {
+	printMessage(1,
+		     "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
+		     str2,(int) pTemp);
+	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      }
+    }
+    tempNode2 = makeConstant(c);
+    mpfr_clear(c);
+    mpfr_clear(b);
+    mpfr_clear(a);
+    tempNode3 = makeRange(tempNode,tempNode2);
+    free(copy);
+    copy = tempNode3;
+    free(str1); free(str2);
     if (timingString != NULL) popTimeCounter(timingString);
     break; 		
   case DYADICCONSTANT:

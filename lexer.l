@@ -75,13 +75,15 @@ NUMBER		[0-9]
 HEXNUMBER       (([0-9])|([ABCDEFabcdef]))
 SPECIAL         [_~$§{}@,&#|]
 
-CONSTANT        ((({NUMBER}+|({NUMBER}*"."{NUMBER}+))(("~"{NUMBER}"/"{NUMBER}"~")?)(((((" ")*)(([eE]))([+-])?{NUMBER}+)?)))|("infty"|"nan"|"NAN"|"NaN"|"@Inf@"|"@NaN@"))
+CONSTANT        ((({NUMBER}+|({NUMBER}*"."{NUMBER}+))(((((" ")*)(([eE]))([+-])?{NUMBER}+)?)))|("infty"|"nan"|"NAN"|"NaN"|"@Inf@"|"@NaN@"))
 DYADICCONSTANT  ({NUMBER}+)([bB])([+-]?)({NUMBER}+)
 HEXCONSTANT     ("0x")({HEXNUMBER}{16}|{HEXNUMBER}{8})
 
 HEXADECIMALCONSTANT ("0x")(({HEXNUMBER}*"."{HEXNUMBER}+)|({HEXNUMBER}+((".")?)))("p"(([+-])?)({NUMBER}*))
 
 BINARYCONSTANT  (([0-1])+|(([0-1])*"."([0-1])+))"_2"
+
+MIDPOINTCONSTANT        (({NUMBER}+|({NUMBER}*"."{NUMBER}+))(("~"({NUMBER})+("/")({NUMBER})+("~")))(((((" ")*)(([eE]))([+-])?{NUMBER}+)?)))
 
 
 IDENTIFIER        ({CHAR}|{SPECIAL})({CHAR}|{NUMBER}|{SPECIAL})*
@@ -485,17 +487,20 @@ NOP             "nop"
 		      }
                 }
 
+{MIDPOINTCONSTANT}                          { 
+					      constBuffer2 = (char *) safeCalloc(yyleng+1,sizeof(char));
+					      if (removeSpaces(constBuffer2,yytext)) {
+						printMessage(2,"Information: removed spaces in scientific notation constant \"%s\", it will be considered as \"%s\"\n",yytext,constBuffer2);
+					      }
+					      yylval->value = constBuffer2;
+                                              newTokenLexed(); return MIDPOINTCONSTANTTOKEN; }        		       
 {CONSTANT}                                  { 
 					      constBuffer = (char *) safeCalloc(yyleng+1,sizeof(char));
 					      constBuffer2 = (char *) safeCalloc(yyleng+1,sizeof(char));
 					      if (removeSpaces(constBuffer2,yytext)) {
 						printMessage(2,"Information: removed spaces in scientific notation constant \"%s\", it will be considered as \"%s\"\n",yytext,constBuffer2);
 					      }
-					      if (removeMidpointMode(constBuffer,constBuffer2)) {
-						printMessage(2,"Information: removed midpoint information in scientific notation constant \"%s\", it will be considered as \"%s\"\n",constBuffer2,constBuffer);
-					      }
-					      free(constBuffer2);
-					      yylval->value = constBuffer;
+					      yylval->value = constBuffer2;
                                               newTokenLexed(); return CONSTANTTOKEN; }        		       
 {DYADICCONSTANT} 			    { 
                                               constBuffer = (char *) safeCalloc(yyleng+1,sizeof(char));

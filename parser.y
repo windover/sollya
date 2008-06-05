@@ -99,6 +99,7 @@ void yyerror(char *message) {
 
 
 %token  <value> CONSTANTTOKEN;          					       
+%token  <value> MIDPOINTCONSTANTTOKEN;          					       
 %token  <value> DYADICCONSTANTTOKEN;   					       
 %token  <value> HEXCONSTANTTOKEN;       					       
 %token  <value> HEXADECIMALCONSTANTTOKEN;       					       
@@ -1162,6 +1163,11 @@ basicthing:             ONTOKEN
 constant:               CONSTANTTOKEN          					       
                           {
 			    $$ = makeDecimalConstant($1);
+			    free($1);
+			  }
+                      | MIDPOINTCONSTANTTOKEN   					       
+                          {
+			    $$ = makeMidpointConstant($1);
 			    free($1);
 			  }
                       | DYADICCONSTANTTOKEN   					       

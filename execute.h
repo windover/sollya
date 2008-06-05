@@ -238,6 +238,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #define SUPPRESSWARNINGSASSIGN 231
 #define SUPPRESSWARNINGSSTILLASSIGN 232
 #define SUPPRESSWARNINGSDEREF 233
+#define MIDPOINTCONSTANT 234
 
 int executeCommand(node *);
 
@@ -349,6 +350,7 @@ node *makeTableAccess(char *string);
 node *makeIsBound(char *string);
 node *makeTableAccessWithSubstitute(char *string, chain *thinglist);
 node *makeDecimalConstant(char *string);
+node *makeMidpointConstant(char *string);
 node *makeDyadicConstant(char *string);
 node *makeHexConstant(char *string);
 node *makeHexadecimalConstant(char *string);

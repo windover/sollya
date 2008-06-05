@@ -411,6 +411,45 @@ int removeMidpointMode(char *outbuf, char *inbuf) {
   return removed;
 }
 
+void cutMidpointStringIntoTwo(char *str1, char *str2, char *str) {
+  char *temp1, *temp2, *temp;
+
+  temp1 = str1;
+  temp2 = str2;
+  temp = str;
+  while (*temp != '\0') {
+    if (*temp != '~') {
+      *temp1 = *temp;
+      *temp2 = *temp;
+      temp++;
+      temp1++;
+      temp2++;
+    } else {
+      temp++;
+      while (*temp != '\0') {
+	if (*temp != '/') {
+	  *temp1 = *temp;
+	  temp++;
+	  temp1++;
+	} else {
+	  temp++;
+	  while (*temp != '\0') {
+	    if (*temp != '~') {
+	      *temp2 = *temp;
+	      temp++;
+	      temp2++;
+	    } else {
+	      temp++;
+	      break;
+	    }
+	  }
+	  break;
+	}
+      }
+    }
+  }
+}
+
 void newReadFileStarted() {
 
 }
