@@ -7,7 +7,6 @@ activates, deactivates or inspects the state variable controlling output with fu
 \begin{center}
 \textbf{fullparentheses} = \emph{activation value} : \textsf{on$|$off} $\rightarrow$ \textsf{void}\\
 \textbf{fullparentheses} = \emph{activation value} ! : \textsf{on$|$off} $\rightarrow$ \textsf{void}\\
-\textbf{fullparentheses} = ? : \textsf{void} $\rightarrow$ \textsf{on$|$off}\\
 \end{center}
 Parameters: 
 \begin{itemize}
@@ -29,10 +28,6 @@ Parameters:
    exclamation mark, no message indicating the new state is
    displayed. Otherwise the user is informed of the new state of the
    global mode by an indication.
-
-\item The expression \textbf{fullparentheses} = ? evaluates to a variable of type
-   \textsf{on$|$off}, indicating whether or not the full parenthesized output
-   of expressions is activated or not.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]

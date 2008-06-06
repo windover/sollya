@@ -8,7 +8,6 @@ brings all polynomial subexpressions of an expression to canonical form or activ
 \textbf{canonical}(\emph{function}) : \textsf{function} $\rightarrow$ \textsf{function}\\
 \textbf{canonical} = \emph{activation value} : \textsf{on$|$off} $\rightarrow$ \textsf{void}\\
 \textbf{canonical} = \emph{activation value} ! : \textsf{on$|$off} $\rightarrow$ \textsf{void}\\
-\textbf{canonical} = ? : \textsf{void} $\rightarrow$ \textsf{on$|$off}\\
 \end{center}
 Parameters: 
 \begin{itemize}
@@ -37,12 +36,6 @@ Parameters:
    exclamation mark, no message indicating the new state is
    displayed. Otherwise the user is informed of the new state of the
    global mode by an indication.
-
-\item The expression \textbf{canonical} = ? evaluates to a variable of type
-   \textsf{on$|$off}, indicating whether or not the automatic printing of
-   subexpressions in canonical form is activated. If automatic printing
-   in canonical form is deactivated, automatic printing yield to
-   displaying polynomial subexpressions in Horner form.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
@@ -61,7 +54,7 @@ exp(1 + 5 * x + 10 * x^2 + 10 * x^3 + 5 * x^4 + x^5) - log(asin(16 + 80 * x + 16
 \end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> canonical = ?;
+> canonical;
 off
 > (x + 2)^9;
 512 + x * (2304 + x * (4608 + x * (5376 + x * (4032 + x * (2016 + x * (672 + x *
@@ -71,7 +64,7 @@ Canonical automatic printing output has been activated.
 > (x + 2)^9;
 512 + 2304 * x + 4608 * x^2 + 5376 * x^3 + 4032 * x^4 + 2016 * x^5 + 672 * x^6 +
  144 * x^7 + 18 * x^8 + x^9
-> canonical = ?;
+> canonical;
 on
 > canonical = off!;
 > (x + 2)^9;

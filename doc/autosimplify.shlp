@@ -4,8 +4,6 @@
 #TYPE $ONOFF_TYPE -> $VOID_TYPE
 #CALLING $COMMAND = <activation value> !
 #TYPE $ONOFF_TYPE -> $VOID_TYPE
-#CALLING $COMMAND = ?
-#TYPE $VOID_TYPE -> $ONOFF_TYPE
 
 #PARAMETERS <activation value> represents $ON or $OFF, i.e. activation or deactivation
 
@@ -36,11 +34,6 @@ exclamation mark, no message indicating the new state is
 displayed. Otherwise the user is informed of the new state of the
 global mode by an indication.
 
-#DESCRIPTION
-The expression $COMMAND = ? evaluates to a variable of type
-$ONOFF_TYPE, indicating whether or not the automatic simplifications
-of expressions of functions is activated.
-
 #EXAMPLE
 autosimplify = on !;
 print(x - x);
@@ -52,9 +45,6 @@ autosimplify = on !;
 print(rationalapprox(sin(pi/5.9),7));
 autosimplify = off !; 
 print(rationalapprox(sin(pi/5.9),7));
-
-#EXAMPLE 
-autosimplify = ?; 
 
 
 #SEEALSO $PRINT

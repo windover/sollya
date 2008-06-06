@@ -54,10 +54,10 @@ Hello
 [|"Hello"|]
 > s = "Hello";
 > print(s,[|s|]);
-Hello [|"Hello"|]
+error
 > t = "Hello\tyou";
 > print(t,[|t|]);
-Hello    you [|"Hello    you"|]
+error
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
@@ -109,7 +109,7 @@ Midpoint mode has been deactivated.
 > midpointmode = on;
 Midpoint mode has been activated.
 > print(b);
-0.70710678118654~7/9~
+0.7071067811865~4/5~
 > display = dyadic;
 Display mode is dyadic numbers.
 > print(b);

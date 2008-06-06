@@ -4,8 +4,6 @@
 #TYPE $DISPLAY_TYPE -> $VOID_TYPE
 #CALLING $COMMAND = <notation value> !
 #TYPE $DISPLAY_TYPE -> $VOID_TYPE
-#CALLING $COMMAND = ?
-#TYPE $VOID_TYPE -> $DISPLAY_TYPE
 
 #PARAMETERS <notation value> represents a variable of type $DISPLAY_TYPE
 
@@ -31,10 +29,6 @@ If the assignment $COMMAND = <notation value> is followed by an
 exclamation mark, no message indicating the new state is
 displayed. Otherwise the user is informed of the new state of the
 global mode by an indication.
-
-#DESCRIPTION
-The expression $COMMAND = ? evaluates to a variable of type
-$DISPLAY_TYPE, indicating the current notation used.
 
 #EXAMPLE
 display = decimal;

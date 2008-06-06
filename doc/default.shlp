@@ -16,6 +16,6 @@ q = remez(exp(x),5,[0;1],1,1e-5);
 p==q;
 
 #EXAMPLE
-prec=?;
+prec;
 prec=200;
 prec=default;

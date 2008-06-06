@@ -7,7 +7,6 @@ sets or inspects the global variable specifying number notation\\
 \begin{center}
 \textbf{display} = \emph{notation value} : \textsf{decimal$|$binary$|$dyadic$|$powers$|$hexadecimal} $\rightarrow$ \textsf{void}\\
 \textbf{display} = \emph{notation value} ! : \textsf{decimal$|$binary$|$dyadic$|$powers$|$hexadecimal} $\rightarrow$ \textsf{void}\\
-\textbf{display} = ? : \textsf{void} $\rightarrow$ \textsf{decimal$|$binary$|$dyadic$|$powers$|$hexadecimal}\\
 \end{center}
 Parameters: 
 \begin{itemize}
@@ -36,9 +35,6 @@ Parameters:
    exclamation mark, no message indicating the new state is
    displayed. Otherwise the user is informed of the new state of the
    global mode by an indication.
-
-\item The expression \textbf{display} = ? evaluates to a variable of type
-   \textsf{decimal$|$binary$|$dyadic$|$powers$|$hexadecimal}, indicating the current notation used.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
