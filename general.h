@@ -145,5 +145,15 @@ void restoreMode();
 void changeToWarningMode();
 int  getDisplayColor();
 void setDisplayColor(int);
+mp_prec_t getToolPrecision();
+void setToolPrecision(mp_prec_t prec);
+int getToolPoints();
+void setToolPoints(int p);
+int getToolTaylorRecursions();
+void setToolTaylorRecursions(int i);
+int getToolHopitalRecursions();
+void setToolHopitalRecursions(int i);
+int getToolDiameter(mpfr_t rop);
+void setToolDiameter(mpfr_t op);
 
 #endif /* ifdef GENERAL_H*/

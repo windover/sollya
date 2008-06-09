@@ -761,8 +761,7 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
 		    node *error, node *tree, node *diff_tree,
 		    node **monomials_tree, node *w, mpfr_t *lambdai_vect, mpfr_t epsilon, int HaarCompliant,
 		    int deg,
-		    mpfr_t a, mpfr_t b, mp_prec_t prec,
-		    int *crash_report) {
+		    mpfr_t a, mpfr_t b, mp_prec_t prec) {
   long int n = 50*(deg+2);
   long int i=0;
 
@@ -970,9 +969,7 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
 // in computedQuality and the infinite norm is stored in infiniteNorm
 // if these parameters are non NULL.
 int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
-		   node *poly, node *poly_diff, node *poly_diff2,
-		   node *f, node *f_diff, node *f_diff2,
-		   node *w, node *w_diff, node *w_diff2,
+		   node *poly, node *f, node *w,
 		   node **monomials_tree, mpfr_t *lambdai_vect, mpfr_t epsilon, int HaarCompliant,
 		   int freeDegrees, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   node *error;
@@ -1210,7 +1207,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
   
     if (!test) {
       printMessage(1,"Warning in Remez: main heuristic failed. A slower algorithm is used for this step\n");
-      quickFindZeros(z, x, error, error_diff, error_diff2, monomials_tree, w, lambdai_vect, epsilon, HaarCompliant, freeDegrees-1, a, b, prec, &crash_report);
+      quickFindZeros(z, x, error, error_diff, error_diff2, monomials_tree, w, lambdai_vect, epsilon, HaarCompliant, freeDegrees-1, a, b, prec);
 
       if(crash_report==-1) {
 	free_memory(error);
@@ -1239,7 +1236,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
     printMessage(1,"Warning in Remez: a slower algorithm is used for this step");
     if(!HaarCompliant) printMessage(1," (pseudo-alternation condition changed)");
     printMessage(1,"\n");
-    quickFindZeros(z, x, error, error_diff, error_diff2, monomials_tree, w, lambdai_vect, epsilon, HaarCompliant, freeDegrees-1, a, b, prec, &crash_report);
+    quickFindZeros(z, x, error, error_diff, error_diff2, monomials_tree, w, lambdai_vect, epsilon, HaarCompliant, freeDegrees-1, a, b, prec);
 
     if(crash_report==-1) {
       free_memory(error);
@@ -1697,9 +1694,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     pushTimeCounter();
 
     crash = qualityOfError(computedQuality, infiniteNorm, x,
-			   poly, poly_diff, poly_diff2,
-			   f, f_diff, f_diff2,
-			   w, w_diff, w_diff2,
+			   poly, f, w,
 			   monomials_tree, lambdai_vect, ai_vect[freeDegrees], HaarCompliant,
 			   freeDegrees, u, v, prec);
     popTimeCounter("Remez: computing the quality of approximation");
@@ -2153,9 +2148,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
     
     // Find extremas and tests the quality of the current approximation
     crash = qualityOfError(computedQuality, infiniteNorm, x,
-			   poly, poly_diff, poly_diff2,
-			   f, f_diff, f_diff2,
-			   w, w_diff, w_diff2,
+			   poly, f, w,
 			   monomials_tree, lambdai_vect, ai_vect[freeDegrees], 1,
 			   freeDegrees, u, v, prec);
     
@@ -2356,6 +2349,6 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
 
 
 // temporary definition until fpminimax.c is updated
-node* remezWithWeight(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
-  return (copyTree(func));
-}
+//node* remezWithWeight(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+//  return (copyTree(func));
+//}

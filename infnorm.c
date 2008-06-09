@@ -69,7 +69,6 @@ void freeMpfiPtr(void *i);
 
 
 void special_mpfi_div(mpfi_t rop, mpfi_t a, mpfi_t b) {
-  mpfr_t temp;
   mpfr_t bh, bl;
   mp_prec_t prec;
 
@@ -570,7 +569,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   mpfi_t leftConstantTerm, rightConstantTerm;
   mpfi_t leftLinearTerm, rightLinearTerm;
   mpfr_t al, ar, bl, br, xl, xr, z, z2;
-  mpfr_t temph, templ;
+  mpfr_t temph;
   mpfr_t *newHopitalPoint;
   node *derivNumerator, *derivDenominator, *tempNode;
   node *derivLeft, *derivRight;
