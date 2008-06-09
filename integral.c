@@ -185,7 +185,7 @@ void uncertifiedIntegral(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned
   mpfr_set_d(sum,0.,GMP_RNDN);
 
   mpfr_set(x,a,GMP_RNDN);
-  evaluate(y1,tree,x,prec);
+  evaluateFaithful(y1,tree,x,prec);
 
   mpfr_add(x,x,step,GMP_RNDU);
   if (mpfr_greater_p(x,b)) {
@@ -193,7 +193,7 @@ void uncertifiedIntegral(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned
     mpfr_sub(step, b, x, GMP_RNDN);
     mpfr_set(x,b,GMP_RNDN);
   }
-  evaluate(y2,tree,x,prec);
+  evaluateFaithful(y2,tree,x,prec);
 
   while(mpfr_lessequal_p(x,b)) {
     mpfr_add(temp, y1, y2, GMP_RNDN);
@@ -211,7 +211,7 @@ void uncertifiedIntegral(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned
       mpfr_sub(step, b, x, GMP_RNDN);
       mpfr_set(x,b,GMP_RNDN);
     }
-    evaluate(y2,tree,x,prec);
+    evaluateFaithful(y2,tree,x,prec);
   }
 
   mpfr_set(result,sum,GMP_RNDU);
