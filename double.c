@@ -377,7 +377,7 @@ int readHexaDouble(mpfr_t res, char *c) {
 
 int readHexaSimple(mpfr_t res, char *c) {
   int ret, i;
-  int32_t msb, lsb;
+  int32_t msb;
   double x;
   char msbstr[9];
   fl_number xfl;

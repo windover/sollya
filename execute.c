@@ -12395,9 +12395,11 @@ node *evaluateThingInner(node *tree) {
 	isPureTree(copy->child2)) {
       if (timingString != NULL) pushTimeCounter();
       mpfr_init2(a,tools_precision);
-      if (resA = evaluateThingToConstant(a,copy->child1,NULL)) {
+      resA = evaluateThingToConstant(a,copy->child1,NULL);
+      if(resA) {
 	mpfr_init2(b,tools_precision);
-	if (resB = evaluateThingToConstant(b,copy->child2,NULL)) {
+	resB = evaluateThingToConstant(b,copy->child2,NULL);
+	if(resB) {
 	  if ((resA == 3) || (resB == 3)) {
 	    xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	    xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));

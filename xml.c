@@ -417,7 +417,7 @@ node*			(*operator)(node*,node*);
 int			op_type; // 0=no use, 1=csymbol, 2=ci, 3=cn
 node*			op1;
 node*			op2;
-} math_tree={0,0,0,0,0},*mthis=&math_tree;
+} math_tree={NULL,NULL,NULL,0,NULL,NULL},*mthis=&math_tree;
 
 node* xml_make_neg (node* n1,node* n2) {if (n1)     return makeNeg  (n1);  return 0; }
 node* xml_make_add (node* n1,node* n2) {if (n1&&n2) return makeAdd(n1,n2); return n1; }
