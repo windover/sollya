@@ -5858,11 +5858,11 @@ int executeCommandInner(node *tree) {
 	      curr = tree->arguments;
 	      curr = curr->next;
 	      if (evaluateThingToInteger(&resB, (node *) (curr->value), NULL)) {
-		if ((resB >= 0) && (resB <= strlen(tempNode->string))) {
+		if ((resB >= 0) && (resB <= (int)strlen(tempNode->string))) {
 		  curr = curr->next; 
 		  if (evaluateThingToString(&tempString,(node *) (curr->value))) {
 		    if (strlen(tempString) == 1) {
-		      if (resB == strlen(tempNode->string)) {
+		      if (resB == (int)strlen(tempNode->string)) {
 			tempString2 = (char *) safeCalloc(resB + 2,sizeof(char));
 			strcpy(tempString2,tempNode->string);
 			tempString2[resB] = tempString[0];
@@ -6072,11 +6072,11 @@ int executeCommandInner(node *tree) {
 	      curr = tree->arguments;
 	      curr = curr->next;
 	      if (evaluateThingToInteger(&resB, (node *) (curr->value), NULL)) {
-		if ((resB >= 0) && (resB <= strlen(tempNode->string))) {
+		if ((resB >= 0) && (resB <= (int)strlen(tempNode->string))) {
 		  curr = curr->next; 
 		  if (evaluateThingToString(&tempString,(node *) (curr->value))) {
 		    if (strlen(tempString) == 1) {
-		      if (resB == strlen(tempNode->string)) {
+		      if (resB == (int)strlen(tempNode->string)) {
 			tempString2 = (char *) safeCalloc(resB + 2,sizeof(char));
 			strcpy(tempString2,tempNode->string);
 			tempString2[resB] = tempString[0];
@@ -11291,7 +11291,7 @@ node *evaluateThingInner(node *tree) {
     if (isString(copy->child1) || isPureList(copy->child1) || isPureFinalEllipticList(copy->child1)) {
       if (evaluateThingToInteger(&resA,copy->child2,NULL)) {
 	if (isString(copy->child1)) {
-	  if ((resA >= 0) && (resA < strlen(copy->child1->string))) {
+	  if ((resA >= 0) && (resA < (int)strlen(copy->child1->string))) {
 	    if (timingString != NULL) pushTimeCounter();
 	    tempString = (char *) safeCalloc(2,sizeof(char));
 	    tempString[0] = (copy->child1->string)[resA];
@@ -13924,7 +13924,7 @@ node *evaluateThingInner(node *tree) {
   case PRECDEREF:
     if (timingString != NULL) pushTimeCounter();      
     mpfr_init2(a,sizeof(int) * 8);
-    mpfr_set_si(a,tools_precision,GMP_RNDN);
+    mpfr_set_ui(a,tools_precision,GMP_RNDN);
     freeThing(copy);
     copy = makeConstant(a);
     mpfr_clear(a);

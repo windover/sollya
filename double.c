@@ -59,6 +59,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "infnorm.h"
 
 
+
 typedef union {
   int32_t i[2]; 
   double d;
