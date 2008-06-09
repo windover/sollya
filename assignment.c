@@ -142,7 +142,7 @@ void freeSymbolTable(chain *symTbl, void (*f) (void *)) {
 
 
 void freeNothing(void *thing) {
-  return;
+  UNUSED_PARAM(thing); return;
 }
 
 void freeDeclaredSymbolTable(chain *declSymTbl, void (*f) (void *)) {

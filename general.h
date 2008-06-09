@@ -69,6 +69,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #define CHEAPSIMPLIFYSIZE 4000
 #define PARIMEMSIZE 300000000
 
+#define UNUSED_PARAM(_unused_param_x) ((void)(_unused_param_x))
 
 extern char *variablename;
 extern mp_prec_t defaultprecision;

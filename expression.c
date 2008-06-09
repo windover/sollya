@@ -789,7 +789,7 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
 	  tempBufOld = tempBuf;
 	  str4 = (char *) safeCalloc(strlen(str3)+1,sizeof(char));
 	  mpfr_init2(temp,prec);
-	  for (i=0;i<strlen(str3);i++) {
+	  for (i=0;i<(int)strlen(str3);i++) {
 	    str4[i] = str3[i];
 	    tempBuf = tempBufOld;
 	    tempBuf += sprintf(tempBuf,"0.%s",str4);   
@@ -800,14 +800,14 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
 	  mpfr_clear(temp);
 	} else {
 	  l = strlen(str3);
-	  if ((e > 0) && (l <= e) && (e <= (tools_precision >> 2))) {
+	  if ((e > 0) && (l <= e) && (e <= (int)(tools_precision >> 2))) {
 	    tempBuf += sprintf(tempBuf,"%s",str3);
 	    for (i=l;i<e;i++) tempBuf += sprintf(tempBuf,"0");
 	  } else {
 	    tempBufOld = tempBuf;
 	    str4 = (char *) safeCalloc(strlen(str3)+1,sizeof(char));
 	    mpfr_init2(temp,prec);
-	    for (i=0;i<strlen(str3);i++) {
+	    for (i=0;i<(int)strlen(str3);i++) {
 	      str4[i] = str3[i];
 	      tempBuf = tempBufOld;
 	      tempBuf += sprintf(tempBuf,"0.%se%d",str4,(int)e);   

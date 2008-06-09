@@ -285,6 +285,7 @@ void *safeRealloc (void *ptr, size_t size) {
 
 /* The gp signature for realloc is strange, we have to wrap our function */
 void *wrapSafeRealloc(void *ptr, size_t old_size, size_t new_size) {
+   UNUSED_PARAM(old_size);
    return (void *) safeRealloc(ptr,new_size);
 }
 
@@ -539,12 +540,12 @@ void popTimeCounter(char *s) {
 	days = hours / 24;
 	hours = hours % 24;
 	
-	if(days!=0) printf("%d days, ", days);
-	if(hours!=0) printf("%d hours, ", hours);
-	if(minutes!=0) printf("%d minutes, ", minutes);
-	if(seconds!=0) printf("%d seconds, ", seconds);
+	if(days!=0) printf("%ld days, ", days);
+	if(hours!=0) printf("%ld hours, ", hours);
+	if(minutes!=0) printf("%ld minutes, ", minutes);
+	if(seconds!=0) printf("%ld seconds, ", seconds);
       }
-      printf("%d ms\n", milliseconds);
+      printf("%ld ms\n", milliseconds);
       setDisplayColor(oldcol);
     }
 

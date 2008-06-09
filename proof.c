@@ -59,6 +59,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 
 void doNothing(void *arg) {
+  UNUSED_PARAM(arg);
   return;
 }
 

@@ -180,6 +180,7 @@ void fprintValueForXml(FILE *, mpfr_t );
 void fprintValueWithPrintMode(FILE *, mpfr_t );
 void fprintTreeWithPrintMode(FILE *, node *);
 int readDecimalConstant(mpfr_t ,char *);
+int getMaxPowerDivider(node *tree);
 
 node *makeVariable();
 node *makeConstant(mpfr_t x);
