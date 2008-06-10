@@ -10658,6 +10658,7 @@ int executeExternalProcedureInner(node **resultThing, libraryProcedure *proc, ch
     curr = myArgs;
     curr2 = myArgSignature;
     i = 0;
+    res=0; /* useless */
     while ((curr != NULL) && (curr2 != NULL)) {
       res = evaluateArgumentForExternalProc(&(arguments[i]),(node *) (curr->value),*((int *) (curr2->value)));
       if (!res) break;

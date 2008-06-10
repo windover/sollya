@@ -568,7 +568,8 @@ char *sPrintBinary(mpfr_t x) {
   mp_prec_t prec;
   mp_exp_t expo;
   char *raw, *formatted, *temp1, *temp2, *str3;
-  char *temp3, *resultStr;
+  char *temp3=NULL;
+  char *resultStr;
 
   prec = mpfr_get_prec(x);
   mpfr_init2(xx,prec);
@@ -630,7 +631,8 @@ char *sPrintHexadecimal(mpfr_t x) {
   mp_prec_t prec;
   mp_exp_t expo;
   char *raw, *formatted, *temp1, *temp2, *str3;
-  char *temp3, *resultStr;
+  char *temp3 = NULL;
+  char *resultStr;
 
   prec = mpfr_get_prec(x);
   mpfr_init2(xx,prec);

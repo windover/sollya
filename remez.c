@@ -97,6 +97,7 @@ void system_solve(mpfr_t *res, mpfr_t *M, mpfr_t *b, int n, mp_prec_t prec) {
 
 
   // Triangulation by Gaussian elimination
+  i0 = j0 = -1;
   for(k=1;k<=n;k++) {
     mpfr_set_d(max, 0., GMP_RNDN); //exact
 

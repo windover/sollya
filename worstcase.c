@@ -279,6 +279,7 @@ int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t
 
   t = 1;
   t <<= steps;
+  res = 1;
   while (t > 0) {
     res = 1;
     currFunc = myFuncs;
