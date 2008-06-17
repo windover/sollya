@@ -2607,16 +2607,16 @@ void printThingWithFullStrings(node *thing) {
 	  free(temp);
 	} else {
 	  printf("[");
-	  printValue(thing->child1->value,mpfr_get_prec(*(thing->child1->value)));
+	  printValue(thing->child1->value);
 	  printf(";");
-	  printValue(thing->child2->value,mpfr_get_prec(*(thing->child2->value)));
+	  printValue(thing->child2->value);
 	  printf("]");
 	}
       } else {
 	printf("[");
-	printValue(thing->child1->value,mpfr_get_prec(*(thing->child1->value)));
+	printValue(thing->child1->value);
 	printf(";");
-	printValue(thing->child2->value,mpfr_get_prec(*(thing->child2->value)));
+	printValue(thing->child2->value);
 	printf("]");
       }
     } else {
@@ -2663,16 +2663,16 @@ void printThing(node *thing) {
 	  free(temp);
 	} else {
 	  printf("[");
-	  printValue(thing->child1->value,mpfr_get_prec(*(thing->child1->value)));
+	  printValue(thing->child1->value);
 	  printf(";");
-	  printValue(thing->child2->value,mpfr_get_prec(*(thing->child2->value)));
+	  printValue(thing->child2->value);
 	  printf("]");
 	}
       } else {
 	printf("[");
-	printValue(thing->child1->value,mpfr_get_prec(*(thing->child1->value)));
+	printValue(thing->child1->value);
 	printf(";");
-	printValue(thing->child2->value,mpfr_get_prec(*(thing->child2->value)));
+	printValue(thing->child2->value);
 	printf("]");
       }
     } else {
@@ -2747,7 +2747,7 @@ char *sRawPrintThing(node *tree) {
       res = newString("undefined");
     break;
   case CONSTANT:
-    res = sprintValue(tree->value,mpfr_get_prec(*(tree->value)));
+    res = sprintValue(tree->value);
     break;
   case ADD:
     res = concatAndFree(newString("("),
@@ -4099,8 +4099,8 @@ char *sPrintThingWithFullStrings(node *thing) {
 	if (temp != NULL) {
 	  return temp;
 	} else {
-	  temp1 = sprintValue(thing->child1->value,mpfr_get_prec(*(thing->child1->value)));
-	  temp2 = sprintValue(thing->child2->value,mpfr_get_prec(*(thing->child2->value)));
+	  temp1 = sprintValue(thing->child1->value);
+	  temp2 = sprintValue(thing->child2->value);
 	  temp = (char *) safeCalloc(strlen(temp1) + strlen(temp2) + 3 + 1, sizeof(char));
 	  sprintf(temp, "[%s;%s]",temp1,temp2);
 	  free(temp1);
@@ -4108,8 +4108,8 @@ char *sPrintThingWithFullStrings(node *thing) {
 	  return temp;
 	}
       } else {
-	  temp1 = sprintValue(thing->child1->value,mpfr_get_prec(*(thing->child1->value)));
-	  temp2 = sprintValue(thing->child2->value,mpfr_get_prec(*(thing->child2->value)));
+	  temp1 = sprintValue(thing->child1->value);
+	  temp2 = sprintValue(thing->child2->value);
 	  temp = (char *) safeCalloc(strlen(temp1) + strlen(temp2) + 3 + 1, sizeof(char));
 	  sprintf(temp, "[%s;%s]",temp1,temp2);
 	  free(temp1);
@@ -4189,8 +4189,8 @@ char *sPrintThing(node *thing) {
 	if (temp != NULL) {
 	  return temp;
 	} else {
-	  temp1 = sprintValue(thing->child1->value,mpfr_get_prec(*(thing->child1->value)));
-	  temp2 = sprintValue(thing->child2->value,mpfr_get_prec(*(thing->child2->value)));
+	  temp1 = sprintValue(thing->child1->value);
+	  temp2 = sprintValue(thing->child2->value);
 	  temp = (char *) safeCalloc(strlen(temp1) + strlen(temp2) + 3 + 1, sizeof(char));
 	  sprintf(temp, "[%s;%s]",temp1,temp2);
 	  free(temp1);
@@ -4198,8 +4198,8 @@ char *sPrintThing(node *thing) {
 	  return temp;
 	}
       } else {
-	  temp1 = sprintValue(thing->child1->value,mpfr_get_prec(*(thing->child1->value)));
-	  temp2 = sprintValue(thing->child2->value,mpfr_get_prec(*(thing->child2->value)));
+	  temp1 = sprintValue(thing->child1->value);
+	  temp2 = sprintValue(thing->child2->value);
 	  temp = (char *) safeCalloc(strlen(temp1) + strlen(temp2) + 3 + 1, sizeof(char));
 	  sprintf(temp, "[%s;%s]",temp1,temp2);
 	  free(temp1);
@@ -4569,7 +4569,7 @@ void autoprint(node *thing, int inList) {
     }
     if (isConstant(tempNode2)) {
       if (tempNode2->nodeType == CONSTANT) {
-	printValue(tempNode2->value,mpfr_get_prec(*(tempNode2->value)));
+	printValue(tempNode2->value);
       } else { 
 	mpfr_init2(a,tools_precision);
 	mpfr_init2(b,tools_precision);
@@ -4585,7 +4585,7 @@ void autoprint(node *thing, int inList) {
 	      printMessage(1,"Warning: the given expression is undefined or numerically unstable.\n");
 	    }
 	  }
-	  printValue(&a,tools_precision);
+	  printValue(&a);
 	} else {
 	  evaluate(a,tempNode2,b,tools_precision * 256);
 	  if (mpfr_number_p(a)) {
@@ -4606,7 +4606,7 @@ void autoprint(node *thing, int inList) {
 	  } else {
 	    printMessage(1,"Warning: the given expression is undefined or numerically unstable.\n");
 	  }
-	  printValue(&a,tools_precision);
+	  printValue(&a);
 	}
 	mpfr_clear(a);
 	mpfr_clear(b);
@@ -11587,7 +11587,7 @@ node *evaluateThingInner(node *tree) {
 	if (timingString != NULL) pushTimeCounter();
 	mpfr_init2(a,tools_precision);
 	if (evaluateThingToConstant(a, copy->child2, NULL)) {	  
-	  tempString2 = sprintValue(&a, tools_precision);
+	  tempString2 = sprintValue(&a);
 	  tempString = (char *) safeCalloc(strlen(copy->child1->string) + strlen(tempString2) + 1, sizeof(char));
 	  sprintf(tempString,"%s%s",copy->child1->string,tempString2);
 	  freeThing(copy->child1);
@@ -11603,7 +11603,7 @@ node *evaluateThingInner(node *tree) {
 	  if (timingString != NULL) pushTimeCounter();
 	  mpfr_init2(a,tools_precision);
 	  if (evaluateThingToConstant(a, copy->child1, NULL)) {	  
-	    tempString2 = sprintValue(&a, tools_precision);
+	    tempString2 = sprintValue(&a);
 	    tempString = (char *) safeCalloc(strlen(copy->child2->string) + strlen(tempString2) + 1, sizeof(char));
 	    sprintf(tempString,"%s%s",tempString2,copy->child2->string);
 	    freeThing(copy->child1);

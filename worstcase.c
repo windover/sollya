@@ -174,7 +174,7 @@ void printWorstCases(node *func,
     mpfr_abs(temp2,temp2,GMP_RNDN);
     if (mpfr_zero_p(y)) {
       printMessage(1,"Warning: the given function evaluates to 0 on ");
-      if (verbosity >= 1) { 	changeToWarningMode(); printValue(&x,mpfr_get_prec(x)); restoreMode(); }
+      if (verbosity >= 1) { 	changeToWarningMode(); printValue(&x); restoreMode(); }
       printMessage(1,"\nThe rounding error will be considered as an absolute one.\n");
     } else {
       mpfr_div(temp2,temp2,y,GMP_RNDN);
@@ -182,11 +182,11 @@ void printWorstCases(node *func,
     
     if (mpfr_cmp(temp2,epsilon) <= 0) {
       printf("%s = ",variablename);
-      printValue(&x,mpfr_get_prec(x));
+      printValue(&x);
       printf("\t\tf(%s) = ",variablename);
-      printValue(&yR,mpfr_get_prec(yR));
+      printValue(&yR);
       printf("\t\teps = ");
-      printValue(&temp2,mpfr_get_prec(temp2));
+      printValue(&temp2);
       mpfr_log2(temp,temp2,GMP_RNDN);
       eps = mpfr_get_d(temp,GMP_RNDN);
       printf(" = 2^(%f) \n",eps);

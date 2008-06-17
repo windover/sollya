@@ -57,12 +57,20 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 #define coeff(i,j,n) ((i)-1)*(n)+(j)-1
 
+void myPrintValue(mpfr_t *x, mp_prec_t prec) {
+  mpfr_t y;
+  mpfr_init2(y,prec);
+  mpfr_set(y,*x,GMP_RNDN);
+  printValue(&y);
+  mpfr_clear(y);
+}
+
 void printMatrix(mpfr_t *M, int n) {
   int i,j;
   printf("[");
   for(i=1;i<=n;i++) {
     for(j=1;j<=n;j++) {
-      printValue(&M[coeff(i,j,n)],53); if(j!=n)printf(", ");
+      myPrintValue(&M[coeff(i,j,n)],53); if(j!=n)printf(", ");
     }
     if(i!=n) printf(";\n");
   }
@@ -712,7 +720,7 @@ void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
     if(verbosity>=3) {
       changeToWarningMode();
       printf("Remez: exchange algorithm takes the minimum (");
-      printValue(&mini, 53);
+      myPrintValue(&mini, 53);
       printf(") at place %d\n",argmini);
       restoreMode();
     }
@@ -722,7 +730,7 @@ void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
     if(verbosity>=3) {
       changeToWarningMode();
       printf("Remez: exchange algorithm takes the maximum (");
-      printValue(&maxi, 53);
+      myPrintValue(&maxi, 53);
       printf(") at place %d\n",argmaxi);
       restoreMode();
     }
@@ -1295,9 +1303,9 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
   if(verbosity>=3) {
     changeToWarningMode();
     mpfr_set(dummy_mpfr2,max_val,GMP_RNDN);
-    printf("Current norm: "); printValue(&dummy_mpfr2, 5) ;
+    printf("Current norm: "); myPrintValue(&dummy_mpfr2, 5) ;
     mpfr_set(dummy_mpfr2,var_mpfr,GMP_RNDN);
-    printf(" (1 +/- "); printValue(&dummy_mpfr2, 5);
+    printf(" (1 +/- "); myPrintValue(&dummy_mpfr2, 5);
     printf(")\n");
     restoreMode();
   }
@@ -1615,7 +1623,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       changeToWarningMode();
       printf("Signs for pseudo-alternating condition : [");
       for (i=1 ; i <= freeDegrees ; i++) {
-	printValue(&M[coeff(i, freeDegrees+1, freeDegrees+1)],10);
+	myPrintValue(&M[coeff(i, freeDegrees+1, freeDegrees+1)],10);
 	printf(", ");
       }
       printf("-1]\n");
@@ -1654,7 +1662,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     }
     if(verbosity>=3) {
       changeToWarningMode();
-      printf("Current value of epsilon : "); printValue(&ai_vect[freeDegrees],53); printf("\n");
+      printf("Current value of epsilon : "); myPrintValue(&ai_vect[freeDegrees],53); printf("\n");
       restoreMode();
     }
 
@@ -1705,7 +1713,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       // temporary check until I patch the algorithm in order to handle
       // correctly cases when the error oscillates too much
       mpfr_t ninf;
-      mpfr_init2(ninf, 53);
+      mpfr_init2(ninf, prec);
       
       temp_tree = makeSub(makeMul(copyTree(poly), copyTree(w)), copyTree(f));
       uncertifiedInfnorm(ninf, temp_tree, u, v, getToolPoints(), prec);
@@ -1794,7 +1802,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   // temporary check until I patch the algorithm in order to handle
   // correctly cases when the error oscillates too much
   mpfr_t ninf;
-  mpfr_init2(ninf, 53);
+  mpfr_init2(ninf, prec);
 
   temp_tree = makeSub(makeMul(copyTree(poly), copyTree(w)), copyTree(f));
   uncertifiedInfnorm(ninf, temp_tree, u, v, getToolPoints(), prec);
@@ -1817,8 +1825,8 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   if(verbosity>=2) {
     changeToWarningMode();
     printf("Remez finished after %d steps\n",count);
-    printf("The computed infnorm is "); printValue(&infiniteNorm, 53) ; printf("\n");
-    printf("The polynomial is optimal within a factor 1 +/- "); printValue(&computedQuality, 5); printf("\n");
+    printf("The computed infnorm is "); myPrintValue(&infiniteNorm, 53) ; printf("\n");
+    printf("The polynomial is optimal within a factor 1 +/- "); myPrintValue(&computedQuality, 5); printf("\n");
     if(verbosity>=5) { printf("Computed poly: "); printTree(poly); printf("\n");}
     restoreMode();
   }

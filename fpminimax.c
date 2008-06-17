@@ -220,7 +220,7 @@ void affiche_format(formatType *f) {
     printf("%d ",f->prec);
     break;
   case TI_FORMAT:
-    printValue(f->tiValue,50);
+    printValue(f->tiValue);
     printf(" ");
     break;
   default:

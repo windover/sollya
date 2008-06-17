@@ -109,7 +109,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
 	printMessage(1,"Warning: this constant function is not evaluable by this tool.\n");
       } 
       outputMode();
-      printValue(&y,prec);
+      printValue(&y);
       printf("\n");
       list = list->next;
     }
@@ -142,7 +142,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
 	printMessage(1,"Warning: this constant function is not evaluable by this tool.\n");
       } 
       outputMode();
-      printValue(&y,prec);
+      printValue(&y);
       printf("\n");
       list = list->next;
     }
@@ -218,12 +218,12 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
       if (tern == 2) {
 	flush = 1;
 	printMessage(2,"Information: function image proven to be less than 2^(-%d) on point %s = ",p,variablename);
-	if (verbosity >= 2) { 	changeToWarningMode(); printValue(&x,prec); restoreMode(); }
+	if (verbosity >= 2) { 	changeToWarningMode(); printValue(&x); restoreMode(); }
 	printMessage(2,"\nThis point will be plotted as the midpoint of the proof interval.\n");
       }
       if (!mpfr_number_p(y)) {
 	printMessage(2,"Information: function undefined or not evaluable in point %s = ",variablename);
-	if (verbosity >= 2) { 	changeToWarningMode(); printValue(&x,prec); restoreMode(); }
+	if (verbosity >= 2) { 	changeToWarningMode(); printValue(&x); restoreMode(); }
 	printMessage(2,"\nThis point will not be plotted.\n");
       }
       yd = mpfr_get_d(y, GMP_RNDN);
@@ -324,7 +324,7 @@ void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     if (!mpfr_number_p(y)) {
       printMessage(1,"Warning: this constant function is not evaluable by this tool.\n");
     } 
-    printValue(&y,prec);
+    printValue(&y);
     printf("\n");
     mpfr_clear(y);
     return;

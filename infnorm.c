@@ -2129,16 +2129,16 @@ void printInterval(mpfi_t interval) {
       free(temp_string);
     } else {
       printf("[");
-      printValue(&l,prec);
+      printValue(&l);
       printf(";");
-      printValue(&r,prec);
+      printValue(&r);
       printf("]");
     }
   } else {
     printf("[");
-    printValue(&l,prec);
+    printValue(&l);
     printf(";");
-    printValue(&r,prec);
+    printValue(&r);
     printf("]");
   }
 
@@ -2524,13 +2524,13 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
     if (verbosity >= 7) {
       changeToWarningMode();
       printf("Information:\nCurrent inner enclosure: [");
-      printValue(&innerLeft,prec);
+      printValue(&innerLeft);
       printf(";");
-      printValue(&innerRight,prec);
+      printValue(&innerRight);
       printf("]\nCurrent outer enclosure: [");
-      printValue(&outerLeft,prec);
+      printValue(&outerLeft);
       printf(";");
-      printValue(&outerRight,prec);
+      printValue(&outerRight);
       printf("]\n");
       restoreMode();
     }
@@ -2727,14 +2727,14 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
     mpfr_abs(max, temp, GMP_RNDU);
     if (verbosity >= 3) { 
       changeToWarningMode();
-      printf("Information: current max is "); printValue(&max,prec);
+      printf("Information: current max is "); printValue(&max);
       printf(" and is reached at "); printMpfr(a);
       restoreMode();
     }
   } else {
     printMessage(1,"Warning: the evaluation of the given function in ");
     mpfr_set(z,a,GMP_RNDN);
-    if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z,prec); restoreMode(); }
+    if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z); restoreMode(); }
     printMessage(1," gives NaN.\n");
     printMessage(1,"This point will be excluded from the infnorm result.\n");
     mpfr_set_d(max,1.0,GMP_RNDU);
@@ -2745,7 +2745,7 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
       mpfr_abs(temp, temp, GMP_RNDU);
       if ((verbosity >= 3) && (mpfr_cmp(b, max) > 0)) { 
 	changeToWarningMode();
-	printf("Information: current max is "); printValue(&temp,prec);
+	printf("Information: current max is "); printValue(&temp);
 	printf(" and is reached at "); printMpfr(b);
 	restoreMode();
       }
@@ -2753,7 +2753,7 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
   } else {
     printMessage(1,"Warning: the evaluation of the given function in ");
     mpfr_set(z,b,GMP_RNDN);
-    if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z,prec); restoreMode(); }
+    if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z); restoreMode(); }
     printMessage(1," gives NaN\n");
     printMessage(1,"This point will be excluded from the infnorm result.\n");
   }
@@ -2779,7 +2779,7 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
       mpfr_abs(s,s,GMP_RNDN);
       if ((verbosity >= 3) && (mpfr_cmp(s, max) > 0)) { 
 	changeToWarningMode();
-	printf("Information: current max is "); printValue(&s,prec);
+	printf("Information: current max is "); printValue(&s);
 	printf(" and is reached at "); printMpfr(x1);
 	restoreMode();
       }
@@ -2792,18 +2792,18 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
 	printMessage(2,"The function was\n");
 	if (verbosity >= 2) { 	changeToWarningMode(); printTree(deriv); restoreMode(); }
 	printMessage(2,"\nThe interval was\n[");
-	if (verbosity >= 2) { 	changeToWarningMode(); printValue(&x1,prec); restoreMode(); }
+	if (verbosity >= 2) { 	changeToWarningMode(); printValue(&x1); restoreMode(); }
 	printMessage(2,";");
-	if (verbosity >= 2) { 	changeToWarningMode(); printValue(&x2,prec); restoreMode(); }
+	if (verbosity >= 2) { 	changeToWarningMode(); printValue(&x2); restoreMode(); }
 	printMessage(2,"]\n");
 	printMessage(1,"This (possibly maximum) point will be excluded from the infnorm result.\n");
       } else {
 	if (!(mpfr_number_p(z))) {
 	  printMessage(1,"Warning: zero-search by Newton's method produces infinity or NaN.\n");
 	  printMessage(1,"Will replace the zero point of the derivative by the mid-point of\nthe considered interval [");
-	  if (verbosity >= 1) { 	changeToWarningMode(); printValue(&x1,prec); restoreMode(); }
+	  if (verbosity >= 1) { 	changeToWarningMode(); printValue(&x1); restoreMode(); }
 	  printMessage(1,";");
-	  if (verbosity >= 1) { 	changeToWarningMode(); printValue(&x2,prec); restoreMode(); }
+	  if (verbosity >= 1) { 	changeToWarningMode(); printValue(&x2); restoreMode(); }
 	  printMessage(1,"]\n");
 	  mpfr_add(z,x1,x2,GMP_RNDN);
 	  mpfr_div_ui(z,z,2,GMP_RNDN);
@@ -2813,14 +2813,14 @@ void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned 
 	  mpfr_abs(temp, temp, GMP_RNDU);
 	  if ((verbosity >= 3) && (mpfr_cmp(temp, max) > 0)) { 
 	    changeToWarningMode();
-	    printf("Information: current max is "); printValue(&temp,prec);
+	    printf("Information: current max is "); printValue(&temp);
 	    printf(" and is reached at "); printMpfr(z);
 	    restoreMode();
 	  }
 	  mpfr_max(max, max, temp, GMP_RNDU);
 	} else {
 	  printMessage(1,"Warning: the evaluation of the given function in ");
-	  if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z,prec); restoreMode(); }
+	  if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z); restoreMode(); }
 	  printMessage(1," gives NaN.\n");
 	  printMessage(1,"This (possibly maximum) point will be excluded from the infnorm result.\n");
 	}
@@ -2946,13 +2946,13 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
 
       if (mpfr_cmp(ya,yb) <= 0) {
 	printMessage(1,"Warning: the derivative of the function seems to have a extensible singularity in ");
-	if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z,prec); restoreMode(); }
+	if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z); restoreMode(); }
 	printMessage(1,".\n");
 	printMessage(1,"The infnorm result might not be trustful if the derivative cannot actually\n");
 	printMessage(1,"be extended in this point.\n");
       } else {
 	printMessage(1,"Warning: the derivative of the function seems to have a singularity in ");
-	if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z,prec); restoreMode(); }
+	if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z); restoreMode(); }
 	printMessage(1,".\n");
 	printMessage(1,"The infnorm result is likely to be wrong.\n");
       }
@@ -4095,13 +4095,13 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
 
       if (mpfr_cmp(ya,yb) <= 0) {
 	printMessage(1,"Warning: the derivative of the function seems to have a extensible singularity in ");
-	if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z,prec); restoreMode(); }
+	if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z); restoreMode(); }
 	printMessage(1,".\n");
 	printMessage(1,"The infnorm result might not be trustful if the derivative cannot actually\n");
 	printMessage(1,"be extended in this point.\n");
       } else {
 	printMessage(1,"Warning: the derivative of the function seems to have a singularity in ");
-	if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z,prec); restoreMode(); }
+	if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z); restoreMode(); }
 	printMessage(1,".\n");
 	printMessage(1,"The infnorm result is likely to be wrong.\n");
       }

@@ -187,7 +187,7 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
     if (!mpfr_number_p(temp)) {
       printMessage(2,"Information: function undefined or not evaluable in point %s = ",variablename);
       changeToWarningMode();
-      if (verbosity >= 2) printValue(&x,prec);
+      if (verbosity >= 2) printValue(&x);
       restoreMode();
       printMessage(2,"\nThis point will not be plotted.\n");
     }

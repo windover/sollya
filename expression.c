@@ -443,10 +443,10 @@ void removeTrailingZeros(char *outbuf, char *inbuf) {
 
 void printHexadecimalValue(mpfr_t x);
 
-void printValue(mpfr_t *value, mp_prec_t prec) {
+void printValue(mpfr_t *value) {
   char *str;
 
-  str = sprintValue(value, prec);
+  str = sprintValue(value);
   printf("%s",str);
   free(str);
 }
@@ -472,7 +472,7 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
 
   if (mpfr_cmp(a,b) == 0) {
     mpfr_set(aP,a,GMP_RNDN);
-    str = sprintValue(&aP,prec);
+    str = sprintValue(&aP);
     mpfr_clear(aP);
     mpfr_clear(bP);
     return str;
@@ -704,7 +704,7 @@ void printHexadecimalValue(mpfr_t x) {
 
 
 
-char *sprintValue(mpfr_t *value, mp_prec_t prec) {
+char *sprintValue(mpfr_t *value) {
   mpfr_t y;
   char *str, *str2, *str3;
   mp_exp_t e, expo;
@@ -713,7 +713,7 @@ char *sprintValue(mpfr_t *value, mp_prec_t prec) {
   char *tempBufOld;
   char *str4;
   mpfr_t temp;
-  mp_prec_t prec2;
+  mp_prec_t prec2, prec;
 
   if (dyadic == 4) 
     return sPrintHexadecimal(*value);
@@ -844,7 +844,7 @@ void printMpfr(mpfr_t x) {
   mpfr_init2(tmp,prec);
   mpfr_set(tmp,x,GMP_RNDN);
 
-  printValue(&tmp,prec);
+  printValue(&tmp);
   printf("\n");
 
   mpfr_clear(tmp);
@@ -859,7 +859,7 @@ void fprintValueWithPrintMode(FILE *fd, mpfr_t value) {
   p = mpfr_get_prec(value);
   mpfr_init2(temp,p);
   mpfr_set(temp,value,GMP_RNDN);
-  str = sprintValue(&temp,p);
+  str = sprintValue(&temp);
   mpfr_clear(temp);
   fprintf(fd,"%s",str);
   free(str);
@@ -1264,7 +1264,7 @@ void printTree(node *tree) {
     printf("%s",variablename);
     break;
   case CONSTANT:
-    printValue(tree->value,mpfr_get_prec(*(tree->value)));
+    printValue(tree->value);
     break;
   case ADD:
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
@@ -1517,7 +1517,7 @@ char *sprintTree(node *tree) {
     sprintf(buffer,"%s",variablename);
     break;
   case CONSTANT:
-    buffer = sprintValue(tree->value,mpfr_get_prec(*(tree->value)));
+    buffer = sprintValue(tree->value);
     break;
   case ADD:
     buffer1 = sprintTree(tree->child1);

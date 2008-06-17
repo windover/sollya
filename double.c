@@ -639,7 +639,7 @@ int printDoubleExpansion(mpfr_t x) {
 
   if (!mpfr_number_p(temp)) {
     printMessage(1,"Warning: will not print a number that is not real as a double expansion.\n");
-    printValue(&temp,mpfr_get_prec(temp));
+    printValue(&temp);
     mpfr_clear(temp);
     mpfr_clear(rest);
     return 1;
