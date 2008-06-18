@@ -1303,7 +1303,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
   if(verbosity>=3) {
     changeToWarningMode();
     mpfr_set(dummy_mpfr2,max_val,GMP_RNDN);
-    printf("Current norm: "); myPrintValue(&dummy_mpfr2, 5) ;
+    printf("Current norm: "); printValue(&max_val); //myPrintValue(&dummy_mpfr2, 5) ;
     mpfr_set(dummy_mpfr2,var_mpfr,GMP_RNDN);
     printf(" (1 +/- "); myPrintValue(&dummy_mpfr2, 5);
     printf(")\n");
@@ -1379,9 +1379,11 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   mpfr_init2(zero_mpfr, 53);
   mpfr_set_d(zero_mpfr, 0., GMP_RNDN);
 
-  mpfr_init2(computedQuality, mpfr_get_prec(quality));
+  if (mpfr_get_prec(quality)>prec) mpfr_init2(computedQuality, mpfr_get_prec(quality));
+  else mpfr_init2(computedQuality, prec);
+
   mpfr_set_inf(computedQuality, 1);
-  mpfr_init2(infiniteNorm, 53);
+  mpfr_init2(infiniteNorm, prec);
 
   M = safeMalloc((freeDegrees+1)*(freeDegrees+1)*sizeof(mpfr_t));
   N = safeMalloc(freeDegrees*freeDegrees*sizeof(mpfr_t));
@@ -1917,10 +1919,15 @@ node *remez(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mpfr
   mpfr_t quality;
   node *res;
   chain *monomials2;
-
-  mpfr_init2(quality, 53);
-  if (requestedQuality==NULL) mpfr_set_d(quality, 0.00001, GMP_RNDN);
-  else mpfr_abs(quality, *requestedQuality, GMP_RNDN);
+  
+  if (requestedQuality==NULL) {
+    mpfr_init2(quality, 53);
+    mpfr_set_d(quality, 0.00001, GMP_RNDN);
+  }
+  else {
+    mpfr_init2(quality, mpfr_get_prec(*requestedQuality));
+    mpfr_abs(quality, *requestedQuality, GMP_RNDN);
+  }
   
   monomials2 = copyChain(monomials, &copyInt);
 
