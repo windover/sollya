@@ -1547,282 +1547,289 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     for(i=1;i<=freeDegrees+1;i++) printMpfr(x[i-1]);
     restoreMode();
   }
-  
-  while((mpfr_cmp(computedQuality, quality)>0) && (count<120)) {
-    free_memory(poly);
 
-    // Definition of the matrices M and N of Remez algorithm
-    // N lets us determine the modified alternation property
-    // M lets us solve the interpolation problem
-    if(verbosity>=3) {
-      changeToWarningMode();
-      printf("Step %d\n",count);
-      printf("Computing the matrix...\n");
-      restoreMode();
-    }
-    pushTimeCounter();
+  while(mpfr_cmp(computedQuality, quality)>0) {  
+    while((mpfr_cmp(computedQuality, quality)>0) && (count<120)) {
+      free_memory(poly);
 
-    for (i=1 ; i <= freeDegrees+1 ; i++) {
-      r = evaluateFaithfulWithCutOffFast(var1, w, NULL, x[i-1], zero_mpfr, prec);
-      if((r==1) && (mpfr_number_p(var1))) test=1;
-      else test=0;
+      // Definition of the matrices M and N of Remez algorithm
+      // N lets us determine the modified alternation property
+      // M lets us solve the interpolation problem
+      if(verbosity>=3) {
+	changeToWarningMode();
+	printf("Step %d\n",count);
+	printf("Computing the matrix...\n");
+	restoreMode();
+      }
+      pushTimeCounter();
+
+      for (i=1 ; i <= freeDegrees+1 ; i++) {
+	r = evaluateFaithfulWithCutOffFast(var1, w, NULL, x[i-1], zero_mpfr, prec);
+	if((r==1) && (mpfr_number_p(var1))) test=1;
+	else test=0;
 		 
-      for (j=1 ; j <= freeDegrees ; j++) {
-	if(test==1) {
-	  r = evaluateFaithfulWithCutOffFast(var2, monomials_tree[j-1], NULL, x[i-1], zero_mpfr, prec);
-	  if((r==1) && (mpfr_number_p(var2))) {
-	    mpfr_mul(var2, var1, var2, GMP_RNDN);
-	    mpfr_set(M[coeff(i,j,freeDegrees+1)],var2,GMP_RNDN);
-	    if (i<=freeDegrees) mpfr_set(N[coeff(j,i,freeDegrees)],var2,GMP_RNDN);
-	    else mpfr_set(c[j-1],var2,GMP_RNDN);
+	for (j=1 ; j <= freeDegrees ; j++) {
+	  if(test==1) {
+	    r = evaluateFaithfulWithCutOffFast(var2, monomials_tree[j-1], NULL, x[i-1], zero_mpfr, prec);
+	    if((r==1) && (mpfr_number_p(var2))) {
+	      mpfr_mul(var2, var1, var2, GMP_RNDN);
+	      mpfr_set(M[coeff(i,j,freeDegrees+1)],var2,GMP_RNDN);
+	      if (i<=freeDegrees) mpfr_set(N[coeff(j,i,freeDegrees)],var2,GMP_RNDN);
+	      else mpfr_set(c[j-1],var2,GMP_RNDN);
+	    }
+	  }
+	  if((test==0) || (r==0) || (!mpfr_number_p(var2))) {
+	    printMessage(2,"Information: the construction of M[%d,%d] uses a slower algorithm\n",i,j);
+	    temp_tree = safeMalloc(sizeof(node));
+	    temp_tree->nodeType = MUL;
+	    temp_tree->child1 = copyTree(monomials_tree[j-1]);
+	    temp_tree->child2 = copyTree(w);
+	  
+	    temp_tree2 = simplifyTreeErrorfree(temp_tree);
+	    free_memory(temp_tree);
+	    temp_tree = temp_tree2; // temp_tree = x^(monomials[j])*w(x)
+	  
+	    r = evaluateFaithfulWithCutOffFast(var1, temp_tree, NULL, x[i-1], zero_mpfr, prec);
+
+	    if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
+	    mpfr_set(M[coeff(i,j,freeDegrees+1)],var1,GMP_RNDN);
+	    if (i<=freeDegrees) mpfr_set(N[coeff(j,i,freeDegrees)],var1,GMP_RNDN);
+	    else mpfr_set(c[j-1], var1, GMP_RNDN);
+	    free_memory(temp_tree);
 	  }
 	}
-	if((test==0) || (r==0) || (!mpfr_number_p(var2))) {
-	  printMessage(2,"Information: the construction of M[%d,%d] uses a slower algorithm\n",i,j);
-	  temp_tree = safeMalloc(sizeof(node));
-	  temp_tree->nodeType = MUL;
-	  temp_tree->child1 = copyTree(monomials_tree[j-1]);
-	  temp_tree->child2 = copyTree(w);
-	  
-	  temp_tree2 = simplifyTreeErrorfree(temp_tree);
-	  free_memory(temp_tree);
-	  temp_tree = temp_tree2; // temp_tree = x^(monomials[j])*w(x)
-	  
-	  r = evaluateFaithfulWithCutOffFast(var1, temp_tree, NULL, x[i-1], zero_mpfr, prec);
-
-	  if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
-	  mpfr_set(M[coeff(i,j,freeDegrees+1)],var1,GMP_RNDN);
-	  if (i<=freeDegrees) mpfr_set(N[coeff(j,i,freeDegrees)],var1,GMP_RNDN);
-	  else mpfr_set(c[j-1], var1, GMP_RNDN);
-	  free_memory(temp_tree);
-	}
       }
-    }
 
-    system_solve( lambdai_vect , N, c, freeDegrees, prec);
+      system_solve( lambdai_vect , N, c, freeDegrees, prec);
 
-    HaarCompliant=1;
-    for(i=1; i<=freeDegrees+1; i++) {
-      if (mpfr_sgn(lambdai_vect[i-1])*mpfr_sgn(previous_lambdai_vect[i-1])<=0) HaarCompliant=0;
-    }
-    if(count==0) HaarCompliant=1;
-
-
-    for (i=1 ; i <= freeDegrees+1 ; i++) {
-      if (mpfr_sgn(lambdai_vect[i-1])>0)
-	mpfr_set_si(M[coeff(i, freeDegrees+1, freeDegrees+1)], 1 ,GMP_RNDN);
+      if(HaarCompliant==2) HaarCompliant=0; /* Too many oscillations: forcing exchange step */
       else {
-	if (mpfr_sgn(lambdai_vect[i-1])<0)
-	  mpfr_set_si(M[coeff(i, freeDegrees+1, freeDegrees+1)], -1 ,GMP_RNDN);
-	else {
-	  printMessage(1,"Warning: degenerated system in a non Haar context. The algorithm may be incorrect.\n");
+	HaarCompliant=1;
+	for(i=1; i<=freeDegrees+1; i++) {
+	  if (mpfr_sgn(lambdai_vect[i-1])*mpfr_sgn(previous_lambdai_vect[i-1])<=0) HaarCompliant=0;
+	}
+	if(count==0) HaarCompliant=1;
+      }
+
+      for (i=1 ; i <= freeDegrees+1 ; i++) {
+	if (mpfr_sgn(lambdai_vect[i-1])>0)
 	  mpfr_set_si(M[coeff(i, freeDegrees+1, freeDegrees+1)], 1 ,GMP_RNDN);
+	else {
+	  if (mpfr_sgn(lambdai_vect[i-1])<0)
+	    mpfr_set_si(M[coeff(i, freeDegrees+1, freeDegrees+1)], -1 ,GMP_RNDN);
+	  else {
+	    printMessage(1,"Warning: degenerated system in a non Haar context. The algorithm may be incorrect.\n");
+	    mpfr_set_si(M[coeff(i, freeDegrees+1, freeDegrees+1)], 1 ,GMP_RNDN);
+	  }
 	}
       }
-    }
 
-    if(verbosity>=4) {
-      changeToWarningMode();
-      printf("Signs for pseudo-alternating condition : [");
-      for (i=1 ; i <= freeDegrees ; i++) {
-	myPrintValue(&M[coeff(i, freeDegrees+1, freeDegrees+1)],10);
-	printf(", ");
-      }
-      printf("-1]\n");
-      restoreMode();
-    }
-
-    popTimeCounter("Remez: computing the matrix");
-
-    if(verbosity>=7) {
-      changeToWarningMode();
-      printf("The computed matrix is "); printMatrix(M, freeDegrees+1);
-      restoreMode();
-    }
-        
-    
-    // Determination of the polynomial corresponding to M and x
-    for (i=1 ; i <= freeDegrees+1 ; i++) {
-      r = evaluateFaithfulWithCutOffFast(var1, f, NULL, x[i-1], zero_mpfr, prec); // var1=f(x_i)
-      if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
-
-      mpfr_set(b[i-1],var1,GMP_RNDN);
-    }
-
-    if(verbosity>=8) { changeToWarningMode(); printf("Resolving the system...\n"); restoreMode(); }
-
-    pushTimeCounter();
-    system_solve(ai_vect, M, b, freeDegrees+1, prec);
-    popTimeCounter("Remez: solving the system");
-
-    poly = constructPolynomial(ai_vect, monomials, prec);
-
-    if(verbosity>=4) {
-      changeToWarningMode();
-      printf("The computed polynomial is "); printTree(poly); printf("\n");
-      restoreMode();
-    }
-    if(verbosity>=3) {
-      changeToWarningMode();
-      printf("Current value of epsilon : "); myPrintValue(&ai_vect[freeDegrees],53); printf("\n");
-      restoreMode();
-    }
-
-    // Plotting the error curve
-/*     node *plotTemp; */
-/*     chain *plotList=NULL; */
-/*     plotTemp = makeSub(makeMul(copyTree(poly),copyTree(w)),copyTree(f)); */
-/*     plotList=addElement(plotList, plotTemp); */
-/*     plotTree(plotList,u,v,defaultpoints,prec,NULL,0); */
-/*     free_memory(plotTemp); */
-    //    freeChain(plotList, doNothing);
-
-    // Computing the useful derivatives of functions
-    if(verbosity>=8) {
-      changeToWarningMode();
-      printf("Differentiating the computed polynomial...\n");
-      restoreMode();
-    }
-    
-    pushTimeCounter();
-    
-    temp_tree = horner(poly);
-    free_memory(poly);
-    poly = temp_tree;
-
-    poly_diff = differentiate(poly);
-    poly_diff2 = differentiate(poly_diff);
-    
-    popTimeCounter("Remez: differentiating the polynomial");
-
-    if(verbosity>=8) {
-      changeToWarningMode();
-      printf("Searching extrema of the error function...\n");
-      restoreMode();
-    }
-    
-    // Find extremas and tests the quality of the current approximation
-    pushTimeCounter();
-
-    crash = qualityOfError(computedQuality, infiniteNorm, x,
-			   poly, f, w,
-			   monomials_tree, lambdai_vect, ai_vect[freeDegrees], HaarCompliant,
-			   freeDegrees, u, v, prec);
-    popTimeCounter("Remez: computing the quality of approximation");
-
-    if(crash==-1) {
-
-      // temporary check until I patch the algorithm in order to handle
-      // correctly cases when the error oscillates too much
-      mpfr_t ninf;
-      mpfr_init2(ninf, prec);
-      
-      temp_tree = makeSub(makeMul(copyTree(poly), copyTree(w)), copyTree(f));
-      uncertifiedInfnorm(ninf, temp_tree, u, v, getToolPoints(), prec);
-
-      if(verbosity>=1) {
+      if(verbosity>=4) {
 	changeToWarningMode();
-	printf("The best polynomial obtained gives an error of ");
-	printMpfr(ninf);
-	printf("\n");
+	printf("Signs for pseudo-alternating condition : [");
+	for (i=1 ; i <= freeDegrees ; i++) {
+	  myPrintValue(&M[coeff(i, freeDegrees+1, freeDegrees+1)],10);
+	  printf(", ");
+	}
+	printf("-1]\n");
 	restoreMode();
       }
 
-      free_memory(temp_tree);
-      mpfr_clear(ninf);
-      // end of the temporary check
+      popTimeCounter("Remez: computing the matrix");
 
-
-      for(j=0;j<freeDegrees;j++) {
-	free_memory(monomials_tree[j]);
+      if(verbosity>=7) {
+	changeToWarningMode();
+	printf("The computed matrix is "); printMatrix(M, freeDegrees+1);
+	restoreMode();
       }
-      free(monomials_tree);
+        
+    
+      // Determination of the polynomial corresponding to M and x
+      for (i=1 ; i <= freeDegrees+1 ; i++) {
+	r = evaluateFaithfulWithCutOffFast(var1, f, NULL, x[i-1], zero_mpfr, prec); // var1=f(x_i)
+	if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
+
+	mpfr_set(b[i-1],var1,GMP_RNDN);
+      }
+
+      if(verbosity>=8) { changeToWarningMode(); printf("Resolving the system...\n"); restoreMode(); }
+
+      pushTimeCounter();
+      system_solve(ai_vect, M, b, freeDegrees+1, prec);
+      popTimeCounter("Remez: solving the system");
+
+      poly = constructPolynomial(ai_vect, monomials, prec);
+
+      if(verbosity>=4) {
+	changeToWarningMode();
+	printf("The computed polynomial is "); printTree(poly); printf("\n");
+	restoreMode();
+      }
+      if(verbosity>=3) {
+	changeToWarningMode();
+	printf("Current value of epsilon : "); myPrintValue(&ai_vect[freeDegrees],53); printf("\n");
+	restoreMode();
+      }
+
+      // Plotting the error curve
+      /*     node *plotTemp; */
+      /*     chain *plotList=NULL; */
+      /*     plotTemp = makeSub(makeMul(copyTree(poly),copyTree(w)),copyTree(f)); */
+      /*     plotList=addElement(plotList, plotTemp); */
+      /*     plotTree(plotList,u,v,defaultpoints,prec,NULL,0); */
+      /*     free_memory(plotTemp); */
+      //    freeChain(plotList, doNothing);
+
+      // Computing the useful derivatives of functions
+      if(verbosity>=8) {
+	changeToWarningMode();
+	printf("Differentiating the computed polynomial...\n");
+	restoreMode();
+      }
+    
+      pushTimeCounter();
+    
+      temp_tree = horner(poly);
+      free_memory(poly);
+      poly = temp_tree;
+
+      poly_diff = differentiate(poly);
+      poly_diff2 = differentiate(poly_diff);
+    
+      popTimeCounter("Remez: differentiating the polynomial");
+
+      if(verbosity>=8) {
+	changeToWarningMode();
+	printf("Searching extrema of the error function...\n");
+	restoreMode();
+      }
+    
+      // Find extremas and tests the quality of the current approximation
+      pushTimeCounter();
+
+      crash = qualityOfError(computedQuality, infiniteNorm, x,
+			     poly, f, w,
+			     monomials_tree, lambdai_vect, ai_vect[freeDegrees], HaarCompliant,
+			     freeDegrees, u, v, prec);
+      popTimeCounter("Remez: computing the quality of approximation");
+
+      if(crash==-1) {
+
+	// temporary check until I patch the algorithm in order to handle
+	// correctly cases when the error oscillates too much
+	mpfr_t ninf;
+	mpfr_init2(ninf, prec);
       
-      for(j=1;j<=freeDegrees+1;j++) mpfr_clear(x[j-1]);
-      free(x);
+	temp_tree = makeSub(makeMul(copyTree(poly), copyTree(w)), copyTree(f));
+	uncertifiedInfnorm(ninf, temp_tree, u, v, getToolPoints(), prec);
+
+	if(verbosity>=1) {
+	  changeToWarningMode();
+	  printf("The best polynomial obtained gives an error of ");
+	  printMpfr(ninf);
+	  printf("\n");
+	  restoreMode();
+	}
+
+	free_memory(temp_tree);
+	mpfr_clear(ninf);
+	// end of the temporary check
+
+
+	for(j=0;j<freeDegrees;j++) {
+	  free_memory(monomials_tree[j]);
+	}
+	free(monomials_tree);
+      
+	for(j=1;j<=freeDegrees+1;j++) mpfr_clear(x[j-1]);
+	free(x);
+
+	free_memory(poly_diff);
+	free_memory(poly_diff2);
+	mpfr_clear(zero_mpfr);
+	mpfr_clear(var1);
+	mpfr_clear(var2);
+	mpfr_clear(var3);
+	free_memory(f_diff);
+	free_memory(f_diff2);
+	free_memory(w_diff);
+	free_memory(w_diff2);
+	mpfr_clear(computedQuality);
+	mpfr_clear(infiniteNorm);
+
+	for(j=1; j <= freeDegrees+1 ; j++) {
+	  for(i=1; i<= freeDegrees+1; i++) {
+	    mpfr_clear(M[coeff(i,j,freeDegrees+1)]);
+	  }
+	  mpfr_clear(b[j-1]);
+	  mpfr_clear(ai_vect[j-1]);
+	}
+	free(M);
+	free(b);
+	free(ai_vect);
+
+	for(j=1; j <= freeDegrees ; j++) {
+	  for(i=1; i<= freeDegrees; i++) {
+	    mpfr_clear(N[coeff(i,j,freeDegrees)]);
+	  }
+	  mpfr_clear(c[j-1]);
+	  mpfr_clear(lambdai_vect[j-1]);
+	  mpfr_clear(previous_lambdai_vect[j-1]);
+	}
+	mpfr_clear(lambdai_vect[freeDegrees]);
+	mpfr_clear(previous_lambdai_vect[freeDegrees]);
+	free(N);
+	free(c);
+	free(lambdai_vect);
+	free(previous_lambdai_vect);
+
+	recoverFromError();
+      }
+      
+      if(verbosity>=3) {
+	changeToWarningMode();
+	printf("Current quality: "); printMpfr(computedQuality);
+	restoreMode();
+      }
+
+      count++;
+      for(i=1; i<=freeDegrees+1; i++) {
+	mpfr_set(previous_lambdai_vect[i-1], lambdai_vect[i-1], GMP_RNDN);
+      }
+
+
 
       free_memory(poly_diff);
       free_memory(poly_diff2);
-      mpfr_clear(zero_mpfr);
-      mpfr_clear(var1);
-      mpfr_clear(var2);
-      mpfr_clear(var3);
-      free_memory(f_diff);
-      free_memory(f_diff2);
-      free_memory(w_diff);
-      free_memory(w_diff2);
-      mpfr_clear(computedQuality);
-      mpfr_clear(infiniteNorm);
-
-      for(j=1; j <= freeDegrees+1 ; j++) {
-	for(i=1; i<= freeDegrees+1; i++) {
-	  mpfr_clear(M[coeff(i,j,freeDegrees+1)]);
-	}
-	mpfr_clear(b[j-1]);
-	mpfr_clear(ai_vect[j-1]);
-      }
-      free(M);
-      free(b);
-      free(ai_vect);
-
-      for(j=1; j <= freeDegrees ; j++) {
-	for(i=1; i<= freeDegrees; i++) {
-	  mpfr_clear(N[coeff(i,j,freeDegrees)]);
-	}
-	mpfr_clear(c[j-1]);
-	mpfr_clear(lambdai_vect[j-1]);
-	mpfr_clear(previous_lambdai_vect[j-1]);
-      }
-      mpfr_clear(lambdai_vect[freeDegrees]);
-      mpfr_clear(previous_lambdai_vect[freeDegrees]);
-      free(N);
-      free(c);
-      free(lambdai_vect);
-      free(previous_lambdai_vect);
-
-      recoverFromError();
     }
-      
-    if(verbosity>=3) {
+
+
+    // temporary check until I patch the algorithm in order to handle
+    // correctly cases when the error oscillates too much
+    mpfr_t ninf;
+    mpfr_init2(ninf, prec);
+
+    temp_tree = makeSub(makeMul(copyTree(poly), copyTree(w)), copyTree(f));
+    uncertifiedInfnorm(ninf, temp_tree, u, v, getToolPoints(), prec);
+    free_memory(temp_tree);
+
+    mpfr_add_ui(computedQuality, computedQuality, 1, GMP_RNDU);
+    mpfr_mul(computedQuality, computedQuality, ninf, GMP_RNDU);
+    mpfr_div(computedQuality, computedQuality, infiniteNorm, GMP_RNDU);
+    mpfr_sub_ui(computedQuality, computedQuality, 1, GMP_RNDU);
+
+    mpfr_clear(ninf);
+
+    if(mpfr_cmp(computedQuality, quality)>0) {
       changeToWarningMode();
-      printf("Current quality: "); printMpfr(computedQuality);
+      printMessage(2, "Warning: Remez algorithm failed (too many oscillations?)\n");
+      printMessage(2, "Looping again\n");
+      HaarCompliant=2;
       restoreMode();
     }
-
-    count++;
-    for(i=1; i<=freeDegrees+1; i++) {
-      mpfr_set(previous_lambdai_vect[i-1], lambdai_vect[i-1], GMP_RNDN);
-    }
-
-
-
-    free_memory(poly_diff);
-    free_memory(poly_diff2);
+    
+    // end of the temporary check
   }
-
-
-  // temporary check until I patch the algorithm in order to handle
-  // correctly cases when the error oscillates too much
-  mpfr_t ninf;
-  mpfr_init2(ninf, prec);
-
-  temp_tree = makeSub(makeMul(copyTree(poly), copyTree(w)), copyTree(f));
-  uncertifiedInfnorm(ninf, temp_tree, u, v, getToolPoints(), prec);
-  free_memory(temp_tree);
-
-  mpfr_add_ui(computedQuality, computedQuality, 1, GMP_RNDU);
-  mpfr_mul(computedQuality, computedQuality, ninf, GMP_RNDU);
-  mpfr_div(computedQuality, computedQuality, infiniteNorm, GMP_RNDU);
-  mpfr_sub_ui(computedQuality, computedQuality, 1, GMP_RNDU);
-
-  mpfr_clear(ninf);
-
-  if(mpfr_cmp(computedQuality, quality)>0) {
-    fprintf(stderr, "Error: Remez algorithm failed (too many oscillations?)\n");
-    fprintf(stderr, "Please report the bug.\n");
-  }
-  // end of the temporary check
-
   
   if(verbosity>=2) {
     changeToWarningMode();
