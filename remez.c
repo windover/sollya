@@ -1363,7 +1363,8 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
   gmp_randinit_default(random_state);
   gmp_randseed_ui(random_state, 65845285);
-  
+  HaarCompliant=1;
+
   if(verbosity>=3) {
     changeToWarningMode();
     printf("Entering in Remez function...\n");
