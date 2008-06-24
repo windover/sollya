@@ -60,6 +60,47 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 #define MAXDIFFSIMPLSIZE 10000
 
+void simplifyMpfrPrec(mpfr_t rop, mpfr_t op) {
+  mpz_t mant;
+  mp_exp_t expo;
+  mp_prec_t prec;
+  mpfr_t x;
+  unsigned int dyadicValue;
+  int p;
+
+  if (mpfr_number_p(op) && (!mpfr_zero_p(op))) {
+    mpz_init(mant);
+    expo = mpfr_get_z_exp(mant,op);
+    prec = mpz_sizeinbase(mant, 2);
+    dyadicValue = mpz_scan1(mant, 0);
+    p = prec - dyadicValue;
+    if (p < 12) prec = 12; else prec = p; 
+    mpfr_init2(x,prec);
+    mpfr_set_z(x,mant,GMP_RNDN);
+    mpfr_mul_2si(x,x,expo,GMP_RNDN);
+    if (mpfr_cmp(x,op) == 0) {
+      mpfr_set_prec(rop,prec);
+      mpfr_set(rop,x,GMP_RNDN);
+    } else {
+      prec = mpfr_get_prec(op);
+      mpfr_set_prec(x,prec);
+      mpfr_set(x,op,GMP_RNDN);
+      mpfr_set_prec(rop,prec);
+      mpfr_set(rop,x,GMP_RNDN);
+    }
+    mpfr_clear(x);
+    mpz_clear(mant);
+  } else {
+    prec = mpfr_get_prec(op);
+    mpfr_init2(x,prec);
+    mpfr_set(x,op,GMP_RNDN);
+    mpfr_set_prec(rop,prec);
+    mpfr_set(rop,x,GMP_RNDN);
+    mpfr_clear(x);
+  }
+}
+
+
 
 void mpfr_from_mpfi(mpfr_t rop, mpfr_t op, int n, int (*mpfifun)(mpfi_t, mpfi_t, int)) {
   mpfi_t opI, ropI;
@@ -704,7 +745,7 @@ void printHexadecimalValue(mpfr_t x) {
 
 
 
-char *sprintValue(mpfr_t *value) {
+char *sprintValue(mpfr_t *aValue) {
   mpfr_t y;
   char *str, *str2, *str3;
   mp_exp_t e, expo;
@@ -713,15 +754,34 @@ char *sprintValue(mpfr_t *value) {
   char *tempBufOld;
   char *str4;
   mpfr_t temp;
-  mp_prec_t prec2, prec;
+  mp_prec_t prec2, prec, p;
+  mpfr_t *value, myValue;
+  char *res;
+  
+  p = mpfr_get_prec(*aValue);  
+  mpfr_init2(myValue,p);
+  simplifyMpfrPrec(myValue, *aValue);
+  if ((p > tools_precision) && (mpfr_get_prec(myValue) < tools_precision)) {
+    if (tools_precision < p) p = tools_precision;
+    mpfr_set_prec(myValue,p);
+    mpfr_set(myValue,*aValue,GMP_RNDN);
+  }
+  value = &myValue;
+  
+  if (dyadic == 4) {
+    res = sPrintHexadecimal(*value);
+    mpfr_clear(myValue);
+    return res;
+  }
 
-  if (dyadic == 4) 
-    return sPrintHexadecimal(*value);
-
-  if (dyadic == 3) 
-    return sPrintBinary(*value);
+  if (dyadic == 3) {
+    res = sPrintBinary(*value);
+    mpfr_clear(myValue);
+    return res;
+  } 
 
   prec = mpfr_get_prec(*value);
+
   if (mpfr_number_p(*value)) {
     prec2 = prec;
     while (prec2 >= tools_precision) {
@@ -802,7 +862,7 @@ char *sprintValue(mpfr_t *value) {
 	  mpfr_clear(temp);
 	} else {
 	  l = strlen(str3);
-	  if ((e > 0) && (l <= e) && (e <= (int)(tools_precision >> 2))) {
+	  if ((e > 0) && (l <= e) && (e <= 16)) {
 	    tempBuf += sprintf(tempBuf,"%s",str3);
 	    for (i=l;i<e;i++) tempBuf += sprintf(tempBuf,"0");
 	  } else {
@@ -812,7 +872,10 @@ char *sprintValue(mpfr_t *value) {
 	    for (i=0;i<(int)strlen(str3);i++) {
 	      str4[i] = str3[i];
 	      tempBuf = tempBufOld;
-	      tempBuf += sprintf(tempBuf,"0.%se%d",str4,(int)e);   
+	      if (e-1 == 0) 
+		tempBuf += sprintf(tempBuf,"%c.%s",*str4,str4+1);   
+	      else 
+		tempBuf += sprintf(tempBuf,"%c.%se%d",*str4,str4+1,(int)e-1);   
 	      mpfr_set_str(temp,buffer,10,GMP_RNDN);
 	      if (mpfr_cmp(temp,*value) == 0) break;
 	    }
@@ -832,6 +895,7 @@ char *sprintValue(mpfr_t *value) {
   finalBuffer = (char *) safeCalloc(strlen(buffer)+1,sizeof(char));
   sprintf(finalBuffer,"%s",buffer);
   free(buffer);
+  mpfr_clear(myValue);
   return finalBuffer;
 }
 
@@ -2046,7 +2110,7 @@ node* copyTree(node *tree) {
     p = mpfr_get_prec(*(tree->value));
     if (p > prec) prec = p;
     mpfr_init2(*value,prec);
-    mpfr_set(*value,*(tree->value),GMP_RNDN);
+    simplifyMpfrPrec(*value,*(tree->value));
     copy->value = value;
     break;
   case ADD:
@@ -2355,7 +2419,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
     simplified->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,mpfr_get_prec(*(tree->value)) + 10);
-    mpfr_set(*value,*(tree->value),GMP_RNDN);
+    simplifyMpfrPrec(*value, *(tree->value));
     simplified->value = value;
     break;
   case ADD:
@@ -4783,7 +4847,7 @@ node* simplifyTreeInner(node *tree) {
     simplified->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,tools_precision);
-    mpfr_set(*value,*(tree->value),GMP_RNDN);
+    simplifyMpfrPrec(*value,*(tree->value));
     simplified->value = value;
     break;
   case ADD:
@@ -6362,7 +6426,7 @@ node* expandDivision(node *tree) {
     copy->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,tools_precision);
-    mpfr_set(*value,*(tree->value),GMP_RNDN);
+    simplifyMpfrPrec(*value,*(tree->value));
     copy->value = value;
     break;
   case ADD:
@@ -6938,7 +7002,7 @@ node* expandUnsimplified(node *tree) {
     copy->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,tools_precision);
-    mpfr_set(*value,*(tree->value),GMP_RNDN);
+    simplifyMpfrPrec(*value,*(tree->value));
     copy->value = value;
     break;
   case ADD:
@@ -7955,7 +8019,7 @@ node* hornerUnsimplified(node *tree) {
     copy->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,tools_precision);
-    mpfr_set(*value,*(tree->value),GMP_RNDN);
+    simplifyMpfrPrec(*value,*(tree->value));
     copy->value = value;
     break;
   case ADD:
@@ -8534,7 +8598,7 @@ node *substitute(node* tree, node *t) {
     copy->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,mpfr_get_prec(*(tree->value)));
-    mpfr_set(*value,*(tree->value),GMP_RNDN);
+    simplifyMpfrPrec(*value,*(tree->value));
     copy->value = value;
     break;
   case ADD:
@@ -9316,7 +9380,7 @@ node *makeCanonical(node *tree, mp_prec_t prec) {
     copy->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*value,tools_precision);
-    mpfr_set(*value,*(tree->value),GMP_RNDN);
+    simplifyMpfrPrec(*value,*(tree->value));
     copy->value = value;
     break;
   case ADD:

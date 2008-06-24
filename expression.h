@@ -181,6 +181,8 @@ void fprintValueWithPrintMode(FILE *, mpfr_t );
 void fprintTreeWithPrintMode(FILE *, node *);
 int readDecimalConstant(mpfr_t ,char *);
 int getMaxPowerDivider(node *tree);
+void simplifyMpfrPrec(mpfr_t rop, mpfr_t op);
+
 
 node *makeVariable();
 node *makeConstant(mpfr_t x);
