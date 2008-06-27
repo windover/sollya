@@ -1549,8 +1549,8 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     restoreMode();
   }
 
-  while(mpfr_cmp(computedQuality, quality)>0) {  
-    while((mpfr_cmp(computedQuality, quality)>0) && (count<120)) {
+  while((mpfr_cmp(computedQuality, quality)>0)  && (count<200)) {  
+    while((mpfr_cmp(computedQuality, quality)>0) && (count<200)) {
       free_memory(poly);
 
       // Definition of the matrices M and N of Remez algorithm
@@ -1891,6 +1891,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   if (mpfr_cmp(computedQuality, quality)>0) {
     fprintf(stderr, "Error in Remez: the algorithm does not converge.\n");
     mpfr_clear(computedQuality);
+    mpfr_clear(infiniteNorm);
     recoverFromError();
   }
 
