@@ -1242,9 +1242,14 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
     }
   }
   else {
-    printMessage(1,"Warning in Remez: a slower algorithm is used for this step");
-    if(!HaarCompliant) printMessage(1," (pseudo-alternation condition changed)");
-    printMessage(1,"\n");
+    if(verbosity>=1) {
+      changeToWarningMode();
+      printf("Warning in Remez: a slower algorithm is used for this step");
+      if(!HaarCompliant) printf(" (pseudo-alternation condition changed)");
+      printf("\n");
+      restoreMode();
+    }
+
     quickFindZeros(z, x, error, error_diff, error_diff2, monomials_tree, w, lambdai_vect, epsilon, HaarCompliant, freeDegrees-1, a, b, prec);
 
     if(crash_report==-1) {
