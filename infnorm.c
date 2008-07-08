@@ -2945,16 +2945,24 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
       mpfr_mul_ui(yb,yb,2,GMP_RNDN);
 
       if (mpfr_cmp(ya,yb) <= 0) {
-	printMessage(1,"Warning: the derivative of the function seems to have a extensible singularity in ");
-	if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z); restoreMode(); }
-	printMessage(1,".\n");
-	printMessage(1,"The infnorm result might not be trustful if the derivative cannot actually\n");
-	printMessage(1,"be extended in this point.\n");
+	if (verbosity >= 1) {
+	  changeToWarningMode();
+	  printf("Warning: the derivative of the function seems to have a extensible singularity in ");
+	  printValue(&z); 
+	  printf(".\n");
+	  printf("The infnorm result might not be trustful if the derivative cannot actually\n");
+	  printf("be extended in this point.\n");
+	  restoreMode(); 
+	}
       } else {
-	printMessage(1,"Warning: the derivative of the function seems to have a singularity in ");
-	if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z); restoreMode(); }
-	printMessage(1,".\n");
-	printMessage(1,"The infnorm result is likely to be wrong.\n");
+	if (verbosity >= 1) {
+	  changeToWarningMode(); 
+	  printf("Warning: the derivative of the function seems to have a singularity in ");
+	  printValue(&z); 
+	  printf(".\n");
+	  printf("The infnorm result is likely to be wrong.\n");
+	  restoreMode(); 
+	}
       }
     } else {
       evaluate(ya,denominatorDeriv,*(range.a),prec);
