@@ -96,6 +96,7 @@ PI              ("pi")|("Pi")
 
 PLUS            "+"
 MINUS           "-"
+APPROX          "~"
 MUL             "*"
 DIV             "/"
 POW             "^"
@@ -600,6 +601,7 @@ NOP             "nop"
 {SUBPOLY}         			    {  return SUBPOLYTOKEN; }         					       
 {ROUNDCOEFFICIENTS} 			    {  return ROUNDCOEFFICIENTSTOKEN; } 			      	       
 {RATIONALAPPROX}  			    {  return RATIONALAPPROXTOKEN; }  					       
+{APPROX}           			    {  return APPROXTOKEN; }           					       
 {ACCURATEINFNORM}  			    {  return ACCURATEINFNORMTOKEN; }  					       
 {ROUNDTOFORMAT}   			    {  return ROUNDTOFORMATTOKEN; }   					       
 {EVALUATE}        			    {  return EVALUATETOKEN; }        					       

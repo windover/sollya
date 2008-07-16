@@ -133,6 +133,7 @@ extern FILE *internyyget_in(void *scanner);
 %token  DOTCOLONTOKEN;
 %token  COLONDOTTOKEN;
 %token  EXCLAMATIONEQUALTOKEN;
+%token  APPROXTOKEN;
 %token  ANDTOKEN;
 %token  ORTOKEN;
 	       										       
@@ -914,7 +915,11 @@ term:                   subterm
 		      |	MINUSTOKEN subterm			
                           {
 			    $$ = makeNeg($2);
-                          }									
+                          }	
+		      |	APPROXTOKEN subterm			
+                          {
+			    $$ = makeEvalConst($2);
+                          }												
 		      |	PLUSTOKEN subterm			
                           {
 			    $$ = $2;
