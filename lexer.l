@@ -98,6 +98,7 @@ PI              ("pi")|("Pi")
 
 PLUS            "+"
 MINUS           "-"
+APPROX          "~"
 MUL             "*"
 DIV             "/"
 POW             "^"
@@ -565,6 +566,7 @@ NOP             "nop"
 
 {PLUS}            			    { newTokenLexed(); return PLUSTOKEN; }            					       
 {MINUS}           			    { newTokenLexed(); return MINUSTOKEN; }           					       
+{APPROX}           			    { newTokenLexed(); return APPROXTOKEN; }           					       
 {MUL}          				    { newTokenLexed(); return MULTOKEN; }          				      	       
 {DIV}            			    { newTokenLexed(); return DIVTOKEN; }            					       
 {POW}            			    { newTokenLexed(); return POWTOKEN; }            					       

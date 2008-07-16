@@ -135,6 +135,7 @@ void yyerror(char *message) {
 %token  DOTCOLONTOKEN;
 %token  COLONDOTTOKEN;
 %token  EXCLAMATIONEQUALTOKEN;
+%token  APPROXTOKEN;
 %token  ANDTOKEN;
 %token  ORTOKEN;
 	       										       
@@ -951,6 +952,10 @@ term:                   subterm
 		      |	MINUSTOKEN subterm			
                           {
 			    $$ = makeNeg($2);
+                          }				
+		      |	APPROXTOKEN subterm			
+                          {
+			    $$ = makeEvalConst($2);
                           }				
 		      |	PLUSTOKEN subterm			
                           {
@@ -1958,6 +1963,14 @@ help:                   CONSTANTTOKEN
 			    outputMode(); printf(HELP_MINUS_TEXT);
 #else
 			    outputMode(); printf("Substraction.\n");
+#endif
+                          }                 					       
+                      | APPROXTOKEN
+                          {
+#ifdef HELP_APPROX_TEXT
+			    outputMode(); printf(HELP_APPROX_TEXT);
+#else
+			    outputMode(); printf("Floating-point approximation of a constant expression.\n");
 #endif
                           }                 					       
                       | MULTOKEN

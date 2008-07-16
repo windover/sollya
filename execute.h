@@ -239,6 +239,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #define SUPPRESSWARNINGSSTILLASSIGN 232
 #define SUPPRESSWARNINGSDEREF 233
 #define MIDPOINTCONSTANT 234
+#define EVALCONST 235
 
 int executeCommand(node *);
 
@@ -363,6 +364,7 @@ node *makeRange(node *thing1, node *thing2);
 node *makeDeboundMax(node *thing);
 node *makeDeboundMin(node *thing);
 node *makeDeboundMid(node *thing);
+node *makeEvalConst(node *thing);
 node *makeDiff(node *thing);
 node *makeSimplify(node *thing);
 node *makeSimplifySafe(node *thing);

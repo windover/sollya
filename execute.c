@@ -729,6 +729,9 @@ node *copyThing(node *tree) {
   case DEBOUNDMID:
     copy->child1 = copyThing(tree->child1);
     break; 			
+  case EVALCONST:
+    copy->child1 = copyThing(tree->child1);
+    break; 			
   case DIFF:
     copy->child1 = copyThing(tree->child1);
     break; 			 	
@@ -1417,6 +1420,9 @@ char *getTimingStringForThing(node *tree) {
     break; 			
   case DEBOUNDMID:
     constString = NULL;
+    break; 			
+  case EVALCONST:
+    constString = "floating-point evaluation of a constant expression";
     break; 			
   case DIFF:
     constString = "differentiation";
@@ -3698,6 +3704,9 @@ char *sRawPrintThing(node *tree) {
     res = concatAndFree(newString("mid("),
 			concatAndFree(sRawPrintThing(tree->child1),
 				      newString(")")));
+    break; 			
+  case EVALCONST:
+    res = concatAndFree(newString("~"),sRawPrintThing(tree->child1));
     break; 			
   case DIFF:
     res = concatAndFree(newString("diff("),
@@ -7899,6 +7908,18 @@ node *makeDeboundMax(node *thing) {
 
 }
 
+node *makeEvalConst(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = EVALCONST;
+  res->child1 = thing;
+
+  return res;
+
+}
+
+
 node *makeDeboundMin(node *thing) {
   node *res;
 
@@ -9262,6 +9283,10 @@ void freeThing(node *tree) {
     freeThing(tree->child1);
     free(tree);
     break;  			
+  case EVALCONST:
+    freeThing(tree->child1);
+    free(tree);
+    break;  			
   case DEBOUNDMIN:
     freeThing(tree->child1);
     free(tree);
@@ -10027,6 +10052,9 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     break; 			 	
   case DEBOUNDMAX:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break;  			
+  case EVALCONST:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break;  			
   case DEBOUNDMIN:
@@ -12480,7 +12508,35 @@ node *evaluateThingInner(node *tree) {
 	copy = tempNode;
       }
     }
-    break;  			
+    break;  	
+  case EVALCONST:
+    copy->child1 = evaluateThingInner(tree->child1);
+    if (isPureTree(copy->child1)) {
+      tempNode = simplifyTreeErrorfree(copy->child1);
+      if (isConstant(tempNode)) {
+	mpfr_init2(a,tools_precision);
+	if (evaluateThingToConstant(a,tempNode,NULL)) {
+	  tempNode2 = makeConstant(a);
+	  freeThing(copy->child1);
+	  copy = tempNode2;
+	} else {
+	  tempNode2 = copy->child1;
+	  free(copy);
+	  copy = tempNode2;
+	}
+	mpfr_clear(a);
+      } else {
+	tempNode2 = copy->child1;
+	free(copy);
+	copy = tempNode2;
+      }
+      freeThing(tempNode);
+    } else {
+      tempNode2 = copy->child1;
+      free(copy);
+      copy = tempNode2;
+    }
+    break;
   case DEBOUNDMIN:
     copy->child1 = evaluateThingInner(tree->child1);
     if (isRange(copy->child1)) {
