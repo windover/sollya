@@ -148,7 +148,11 @@ OLDLDFLAGS="$LDFLAGS"
 CPPFLAGS="$AM_CPPFLAGS $CPPFLAGS"
 LDFLAGS="$AM_LDFLAGS $LDFLAGS"
 
-AC_CHECK_LIB([dl], [dlopen], [], AC_MSG_ERROR([libdl unusable]))
+dlopen_ok="yes"
+AC_CHECK_LIB([c], [dlopen], [], [dlopen_ok="no"])
+if [[ $dlopen_ok == "no" ]] ; then
+  AC_CHECK_LIB([dl], [dlopen], [], AC_MSG_ERROR([libdl unusable]))
+fi
 AC_CHECK_LIB([gmp], [__gmpz_init], [], AC_MSG_ERROR([libgmp unusable]))
 AC_CHECK_LIB([gmp], [__gmpz_fac_ui], [], AC_MSG_ERROR([libgmp version too old]))
 AC_CHECK_LIB([gmp], [__gmpz_bin_uiui], [], AC_MSG_ERROR([libgmp version too old]))

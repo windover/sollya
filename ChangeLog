@@ -1,3 +1,408 @@
+2008-06-24 10:28  schevill
+
+	* remez.c: I forgot the initialization of variable HaarCompliant
+
+2008-06-24 10:25  clauter
+
+	* expression.c, expression.h: Improved precision management on
+	  constants
+
+2008-06-24 10:07  schevill
+
+	* remez.c: When there is too many oscillations, the algorithm
+	  should use the exchange algorithm. In the particular case when
+	  the algorithm did not use the slower algorithm, this error was
+	  caught at the end by a call to dirtyinfnorm but nothing was done
+	  to solve the problem. Now, the main loop is relaunched forcing an
+	  exchange step. Hopefully, this will introduce the maximum and
+	  converge. The convergence should not be taken for sure.
+
+2008-06-18 08:59  schevill
+
+	* remez.c: A quality less than ~ 2^(-53) used to lead to an error.
+	  However, the polynomial was correctly computed: it was a bug
+	  affecting the final test. It is now corrected
+
+2008-06-17 14:17  schevill
+
+	* double.c, execute.c, expression.c, expression.h, external.c,
+	  fpminimax.c, infnorm.c, plot.c, remez.c, worstcase.c: suppressed
+	  useless argument prec of printValue
+
+2008-06-10 15:57  schevill
+
+	* execute.c, expression.c, remez.c, worstcase.c: suppressed some
+	  warnings
+
+2008-06-09 15:31  schevill
+
+	* double.c, execute.c: suppressed some warnings
+
+2008-06-09 15:31  schevill
+
+	* xml.c: suppressed some warnings
+
+2008-06-09 15:30  schevill
+
+	* assignment.c, expression.c, expression.h, general.c, general.h,
+	  proof.c: suppressed some warnings
+
+2008-06-09 13:09  schevill
+
+	* double.c, execute.c, xml.c: suppressed some warnings
+
+2008-06-09 10:51  schevill
+
+	* fpminimax.c, general.h, infnorm.c, remez.c: suppressed some
+	  warnings
+
+2008-06-09 08:50  clauter
+
+	* integral.c: Added faithful rounded evaluation to dirtyintegral
+
+2008-06-06 18:12  clauter
+
+	* internlexer.l, lexer.l: reduced once again list of special
+	  characters in identifiers
+
+2008-06-06 16:01  schevill
+
+	* doc/autosimplify.tex, doc/midpointmode.tex, doc/print.tex,
+	  doc/sollya.pdf, help.h: changed doc
+
+2008-06-06 15:54  schevill
+
+	* doc/accurateinfnorm.tex, doc/autosimplify.shlp,
+	  doc/autosimplify.tex, doc/canonical.shlp, doc/canonical.tex,
+	  doc/default.shlp, doc/default.tex, doc/display.shlp,
+	  doc/display.tex, doc/fullparentheses.shlp,
+	  doc/fullparentheses.tex, doc/midpointmode.tex, doc/print.tex,
+	  doc/sollya.pdf, doc/sollya.tex: updated some doc files
+
+2008-06-06 15:47  clauter
+
+	* internlexer.l, lexer.l: Patched special character set in
+	  identifiers
+
+2008-06-05 07:59  clauter
+
+	* execute.c, execute.h, expression.c, general.c, general.h,
+	  internlexer.l, internparser.y, lexer.l, parser.y: Correct
+	  midpoint mode on display and parsing
+
+2008-06-04 14:54  clauter
+
+	* execute.c, general.c, internlexer.l, internparser.y, lexer.l,
+	  parser.y: Some additional features
+
+2008-06-02 21:07  clauter
+
+	* doc/accurateinfnorm.tex, doc/asciiplot.tex, doc/bashexecute.tex,
+	  doc/dirtyfindzeros.tex, doc/dirtyinfnorm.tex,
+	  doc/dirtyintegral.tex, doc/display.tex, doc/doubleextended.tex,
+	  doc/evaluate.tex, doc/hopitalrecursions.tex,
+	  doc/implementpoly.tex, doc/infnorm.tex, doc/integral.tex,
+	  doc/isevaluable.tex, doc/pi.tex, doc/points.tex, doc/print.tex,
+	  doc/remez.tex, doc/roundingwarnings.tex, doc/searchgal.tex,
+	  doc/simplify.tex, doc/sollya.pdf, doc/subpoly.tex,
+	  doc/taylorrecursions.tex, doc/timing.tex, doc/tripledouble.tex,
+	  doc/verbosity.tex, doc/worstcase.tex, help.h: Recompiled doc
+	  after patching bugs
+
+2008-06-02 20:17  clauter
+
+	* expression.c, infnorm.c: Patched a lot of bugs
+
+2008-06-02 14:34  clauter
+
+	* doc/canonical.tex, doc/doubledouble.tex, doc/doubleextended.tex,
+	  doc/honorcoeffprec.tex, doc/implementpoly.tex, doc/pi.tex,
+	  doc/printexpansion.tex, doc/printfloat.tex, doc/printhexa.tex,
+	  doc/roundcoefficients.tex, doc/sollya.pdf, doc/timing.tex,
+	  doc/tripledouble.tex, doc/verbosity.tex, help.h: Recompiled once
+	  again the documentation
+
+2008-06-02 14:00  schevill
+
+	* doc/canonical.shlp, doc/shlp2tex.sh, doc/shlp2txt.sh: activated
+	  roundingwarnings by default in the examples of the documentation.
+	  Minor patch in canonical.shlp
+
+2008-06-02 13:46  clauter
+
+	* doc/roundingwarnings.tex, doc/sollya.pdf: Transfer commit
+
+2008-06-02 13:28  clauter
+
+	* doc/sollya.pdf, help.h: recompiled parts of docu
+
+2008-06-02 13:25  schevill
+
+	* doc/roundingwarnings.tex, doc/suppresswarnings.tex: moved
+	  suppresswarnings.tex into roundindwarnings.tex
+
+2008-06-02 12:42  clauter
+
+	* configure.ac, doc/canonical.tex, doc/sollya.pdf, doc/sollya.tex,
+	  doc/timing.tex, help.h: Recompiled once again help texts, adapted
+	  manual documentation to new behaviour
+
+2008-06-02 11:49  clauter
+
+	* expression.c: Patched a real big bug in coefficient extraction on
+	  multiplicative horner terms
+
+2008-06-02 11:18  clauter
+
+	* doc/accurateinfnorm.tex, doc/asciiplot.tex, doc/canonical.tex,
+	  doc/checkinfnorm.tex, doc/dirtyfindzeros.tex,
+	  doc/dirtyinfnorm.tex, doc/dirtyintegral.tex, doc/display.tex,
+	  doc/doubledouble.tex, doc/doubleextended.tex, doc/equal.tex,
+	  doc/evaluate.tex, doc/ge.tex, doc/honorcoeffprec.tex,
+	  doc/hopitalrecursions.tex, doc/implementpoly.tex,
+	  doc/infnorm.tex, doc/integral.tex, doc/isevaluable.tex,
+	  doc/le.tex, doc/library.tex, doc/lt.tex, doc/neq.tex,
+	  doc/parse.tex, doc/pi.tex, doc/plot.tex, doc/points.tex,
+	  doc/power.tex, doc/print.tex, doc/printexpansion.tex,
+	  doc/printfloat.tex, doc/printhexa.tex, doc/remez.tex,
+	  doc/roundcoefficients.tex, doc/roundcorrectly.tex,
+	  doc/searchgal.tex, doc/simplify.tex, doc/sollya.pdf,
+	  doc/subpoly.tex, doc/substitute.tex, doc/taylorrecursions.tex,
+	  doc/timing.tex, doc/tripledouble.tex, doc/worstcase.tex, help.h:
+	  Recompiled help texts
+
+2008-06-02 10:37  schevill
+
+	* execute.c, help.h, internlexer.l, lexer.l, parser.y: Changed
+	  suppressroundingwarnings into roundingwarnings
+
+2008-06-02 10:34  schevill
+
+	* doc/roundingwarnings.shlp, doc/suppresswarnings.shlp: Changed
+	  suppresswarnings.shlp into roundingwarnings.shlp
+
+2008-06-02 10:34  schevill
+
+	* doc/CommandsAndFunctions.tex, doc/keywords.def,
+	  doc/midpointmode.shlp, doc/midpointmode.tex, doc/sollya.pdf,
+	  doc/suppresswarnings.shlp, doc/verbosity.shlp, doc/verbosity.tex:
+	  Changed suppressroundingwarnings into roundingwarnings
+
+2008-06-01 18:08  clauter
+
+	* general.c: Still better rlwrap compatibility
+
+2008-05-30 14:33  clauter
+
+	* execute.c, plot.c: Still better rlwrap and color compatibility
+
+2008-05-30 14:22  clauter
+
+	* execute.c: Better rlwrap compatiblity for color mode
+
+2008-05-29 13:25  clauter
+
+	* general.c: Restore color mode upon recovering from error
+
+2008-05-29 11:35  clauter
+
+	* general.c: Speeded up color mode switching
+
+2008-05-29 09:03  clauter
+
+	* general.c: Improved color mode handling in scripts and added
+	  compatibility flags '-nocolor' and '-noprompt'
+
+2008-05-28 20:44  clauter
+
+	* doc/CommandsAndFunctions.tex, doc/keywords.def,
+	  doc/midpointmode.shlp, doc/midpointmode.tex, doc/sollya.pdf,
+	  doc/suppresswarnings.shlp, doc/suppresswarnings.tex,
+	  doc/verbosity.shlp, doc/verbosity.tex, help.h, parser.y: Added
+	  suppressroundingwarnings to docu
+
+2008-05-28 20:17  clauter
+
+	* general.c, general.h, plot.c: Added still more colors
+
+2008-05-28 18:00  clauter
+
+	* execute.c, expression.c, external.c, general.c, general.h,
+	  implement.c, infnorm.c, parser.y, plot.c, remez.c, worstcase.c:
+	  Added coloring
+
+2008-05-28 14:42  clauter
+
+	* internparser.y, miniparser.y, parser.y: Changed implicit
+	  parenthesation order for power operator ^
+
+2008-05-23 09:48  schevill
+
+	* infnorm.c: Patched evaluate in order to handle correctly
+	  intervals containing NaN
+
+2008-05-22 10:24  clauter
+
+	* execute.c, expression.c: Patched small bug concerning precision
+	  handling on autoprint display of negative, unevaluated values
+
+2008-05-21 07:57  clauter
+
+	* expression.c: Patched new expression handling behaviour
+
+2008-05-20 22:35  clauter
+
+	* expression.c: Some optimizations to expression tree handling
+
+2008-05-20 15:20  clauter
+
+	* expression.c, infnorm.c: Changed slightly the heuristics for
+	  differentiating polynomials
+
+2008-05-20 12:04  clauter
+
+	* expression.c: Changed verbosity levels in expression handling
+
+2008-05-19 19:53  clauter
+
+	* execute.c, expression.c: Changed behaviour in converting literal
+	  constants to internal binary floating-point format - less
+	  rounding occurs
+
+2008-05-19 08:10  clauter
+
+	* infnorm.c: Changed behaviour of 1/x in 0 to [-infty;infty]
+
+2008-05-18 22:28  clauter
+
+	* internlexer.l, lexer.l, minilexer.l: Added infty, @Inf@, nan,
+	  NaN, NAN, @NaN@ lexing/ parsing capability
+
+2008-05-18 22:17  clauter
+
+	* infnorm.c: Patched behaviour on divison by only value 0
+
+2008-05-17 13:06  clauter
+
+	* execute.c: Improved code size in execute, patched a bug in
+	  autoprint
+
+2008-05-15 15:31  schevill
+
+	* expression.c: Corrected frenglish "Remplacing" expression.
+
+2008-05-12 16:17  schevill
+
+	* remez.c: Corrected a bug leading to segfault when remez was
+	  called with only one monomial.
+	  
+
+2008-04-29 13:23  schevill
+
+	* remez.c: patched a big bug with the random perturbation
+
+2008-04-29 13:09  schevill
+
+	* remez.c: The initial set of points is now randomly perturbed in
+	  order to avoid singular matrices. It seems to enhance
+	  considerably the behavior of the algorithm in the bad cases.
+
+2008-04-29 11:34  clauter
+
+	* expression.c: Patched bug in printing NaNs and Infs
+
+2008-04-29 09:32  clauter
+
+	* infnorm.c: Patched evaluate(1/x,[-1;1]) behaviour
+
+2008-04-28 10:32  clauter
+
+	* expression.c: Changed information level
+
+2008-04-28 10:24  schevill
+
+	* remez.c: Corrected some bugs, in particular one in guessdegee
+	  that lead to a segfault.
+
+2008-04-27 20:09  clauter
+
+	* expression.c: Corrected precision handling in displaying of
+	  decimal values
+
+2008-04-25 21:17  schevill
+
+	* remez.c: Added heuristics to make the algorithm more robust.
+	  Corrected few bugs as well. The code is still not perfect. It
+	  seems to perform too much exchange steps. However this does not
+	  compromise the algorithm.
+
+2008-04-25 14:58  schevill
+
+	* remez.c: Changed temporarily the maximal number of loops in remez
+	  algorithm
+
+2008-04-25 14:03  schevill
+
+	* infnorm.c: patched a bug leading to an infinite loop in
+	  dirtyinfnorm
+
+2008-04-25 13:35  schevill
+
+	* remez.c: MAJOR MODIFICATION: this is a first try to integrate the
+	  exchange algorithm into the current implementation of remez
+	  command.
+	  Since it merges two different algorithms (second algorithm and
+	  exchange algorithm) into a single program, I am completely unsure
+	  of the stability of this new implementation.
+	  However, the new implementation should always give a correct
+	  minimax when it finishes normally. In the case when the Haar
+	  condition is fulfilled, the algorithm should be at most twice
+	  slower than the old implementation.
+	  
+	  This is provided as a temporary and experimental implementation
+	  before a safer and faster one in the next few weeks.
+
+2008-03-30 13:05  clauter
+
+	* double.c, execute.c, execute.h, expression.c, general.c,
+	  general.h, implement.c, internlexer.l, internparser.y, lexer.l,
+	  miniparser.y, parser.y, taylor.c, xml.c: Added warning
+	  suppression for rounding warnings.
+
+2008-03-17 09:26  clauter
+
+	* expansion.c: Added timing support for external polynomial
+	  evaluation codes.
+
+2008-02-29 05:53  schevill
+
+	* remez.c: Corrected a bug in Remez' algorithm. More precisely,
+	  when there is only
+	  n+1 oscillations in the interval, we have to choose one of the
+	  bounds.
+	  The way it was done did not check if the alternation property was
+	  fulfilled. It is now the case.
+
+2008-02-19 01:24  schevill
+
+	* remez.c: added a message that prints the norm of the current
+	  polynomial whenever Remez' algorithm crashes because there are
+	  not enough oscillations.
+
+2008-01-16 16:26  schevill
+
+	* execute.c: Same bug as in plot corrected for externalplot
+
+2008-01-16 16:20  schevill
+
+	* ChangeLog, execute.c: bug in default case of plot command
+	  corrected
+
+2008-01-16 14:03  clauter
+
+	* doc/Makefile.am, doc/sollya.pdf: Patched Makefile error in
+	  distribution
+
 2008-01-16 11:38  clauter
 
 	* general.c: Added mpfr_free_cache call at the end of the tool
