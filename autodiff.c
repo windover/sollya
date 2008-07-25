@@ -16,6 +16,7 @@
 
 #include "sollya.h"
 extern int mpfi_pow(mpfi_t res, mpfi_t x, mpfi_t y);
+extern void fprintInterval(FILE *fd, mpfi_t interval);
 
 /* This function performs the differentiation.
    See the commentaries below.
@@ -125,47 +126,91 @@ void baseFunction_diff(mpfi_t *res2, int nodeType, mpfi_t x, int n) {
   return;
 }
 
-/* Computes the successive derivatives of y -> y^q at point x */ 
-void integerPower_diff(mpfi_t *res, int p, mpfi_t x, int n) {
-  int i,k;
-  mpfi_t pminusk, y, acc;
-
-  mpfi_init2(pminusk, getToolPrecision());
-  mpfi_init2(y, getToolPrecision());
+/* Computes the successive derivatives of y -> y^p at point x */ 
+/* [x^p    p*x^(p-1)   ...   p*(p-1)*...*(p-n+1)*x^(p-n) ]    */
+void constantPower_diff(mpfi_t *res, mpfr_t p, mpfi_t x, int n) {
+  mpfi_t expo, acc;
+  int i;
+  
+  /* The precision of expo is set in such a way that expo will
+     be a point interval during the algorithm */
+  mpfi_init2(expo, mpfr_get_prec(p)+8*sizeof(int));
   mpfi_init2(acc, getToolPrecision());
-
-  if(p==0) {
-    mpfi_set_ui(res[0], 1);
-    for(i=1; i<=n; i++) mpfi_set_ui(res[i], 0);
-  }
-  else {
-    if( (p>0) && (p <= n)) k=p;
-    else k=n;
-
-    for(i=n;i>=k+1;i--)  mpfi_set_ui(res[i], 0);
-
-    mpfi_set_si(pminusk, p-k); 
-    mpfi_pow(y, x, pminusk);
-    for(i=k;i>=0;i--) {
-      mpfi_set(res[i], y);
-      mpfi_mul(y, y, x);
-    }
-    
-    mpfi_set_si(acc, p);
-    for(i=1;i<=k;i++) {
+  
+  mpfi_set_fr(expo, p);
+  mpfi_set_ui(acc, 1);
+  
+  for(i=0; i<=n; i++) {
+    if (mpfi_is_zero(acc)) mpfi_set_ui(res[i],0);
+    else {
+      mpfi_pow(res[i], x, expo);
       mpfi_mul(res[i], res[i], acc);
-      mpfi_mul_si(acc, acc, p-i);
+      
+      mpfi_mul(acc, acc, expo);
+      mpfi_sub_ui(expo, expo, 1);
     }
   }
 
-  mpfi_clear(pminusk);
-  mpfi_clear(y);
+  mpfi_clear(expo);
   mpfi_clear(acc);
 
   return;
 }
 
+
+void computeBinomials(mpfi_t **res, int n) {
+  int m,k;
+  
+  mpfi_set_ui(res[0][0], 1);
+  for(m=1; m<=n; m++) {
+    mpfi_set_ui(res[m][0], 1);
+    for(k=1; k<=m-1; k++) {
+      mpfi_add(res[m][k], res[m-1][k-1], res[m-1][k]);
+    }
+    mpfi_set_ui(res[m][m], 1);
+  }
+
+  return;
+}
+
+
 void multiplication_AD(mpfi_t *res, mpfi_t *f, mpfi_t *g, int n) {
+  int i,j,p;
+  mpfi_t temp;
+  mpfi_t **binomial_array;
+
+  binomial_array = (mpfi_t **)safeMalloc( (n+1)*sizeof(mpfi_t *));
+  for(i=0;i<=n;i++) {
+    binomial_array[i] = (mpfi_t *)safeMalloc( (n+1)*sizeof(mpfi_t) );
+    for(j=0;j<=n;j++) {
+      mpfi_init2(binomial_array[i][j], getToolPrecision());
+    }
+  }
+  computeBinomials(binomial_array, n);
+
+  mpfi_init2(temp, getToolPrecision());
+
+  for(p=0;p<=n;p++) {
+    i=0; j=p; mpfi_set_ui(res[p], 0);
+    while(i<=p) {
+      mpfi_mul(temp, f[i], g[j]);
+      mpfi_mul(temp, temp, binomial_array[p][i]);
+      mpfi_add(res[p], res[p], temp);
+
+      i++;
+      j--;
+    }
+  }
+
+  mpfi_clear(temp);
+
+  for(i=0;i<=n;i++) {
+    for(j=0;j<=n;j++) {
+      mpfi_clear(binomial_array[i][j]);
+    }
+    free(binomial_array[i]);
+  }
+  free(binomial_array);
   return;
 }
 
@@ -198,6 +243,7 @@ void composition_AD(mpfi_t *res, mpfi_t *g, mpfi_t *f, int n) {
 void auto_diff(mpfi_t* res, node *f, mpfi_t x, int n) {
   int i;
   mpfi_t *res1, *res2, *res3, *res4;
+  mpfr_t minusOne;
   
   switch (f->nodeType) {
 
@@ -306,12 +352,16 @@ void auto_diff(mpfi_t* res, node *f, mpfi_t x, int n) {
 
     auto_diff(res1, f->child2, x, n);
 
-    integerPower_diff(res2, -1, res1[0], n);
+    mpfr_init2(minusOne, getToolPrecision());
+    
+    mpfr_set_si(minusOne, -1, GMP_RNDN);
+    constantPower_diff(res2, minusOne, res1[0], n);
     composition_AD(res3, res2, res1, n);
 
     auto_diff(res4, f->child1, x, n);
     multiplication_AD(res, res3, res4, n);
 
+    mpfr_clear(minusOne);
     for(i=0;i<=n;i++) {
       mpfi_clear(res1[i]);
       mpfi_clear(res2[i]);
