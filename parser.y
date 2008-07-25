@@ -51,7 +51,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <pari/pari.h>
 #include "expression.h"
 #include "chain.h"
 #include "general.h"
