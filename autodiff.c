@@ -15,8 +15,10 @@
 
 
 #include "sollya.h"
+
 extern int mpfi_pow(mpfi_t res, mpfi_t x, mpfi_t y);
 extern void fprintInterval(FILE *fd, mpfi_t interval);
+
 
 /* This function performs the differentiation.
    See the commentaries below.
@@ -58,6 +60,36 @@ int AD(chain **res, void **args) {
 }
 
 
+/* Computes the successive derivatives of y -> y^p at point x */ 
+/* [x^p    p*x^(p-1)   ...   p*(p-1)*...*(p-n+1)*x^(p-n) ]    */
+void constantPower_diff(mpfi_t *res, mpfr_t p, mpfi_t x, int n) {
+  mpfi_t expo, acc;
+  int i;
+  
+  /* The precision of expo is set in such a way that expo will
+     be a point interval during the algorithm */
+  mpfi_init2(expo, mpfr_get_prec(p)+8*sizeof(int));
+  mpfi_init2(acc, getToolPrecision());
+  
+  mpfi_set_fr(expo, p);
+  mpfi_set_ui(acc, 1);
+  
+  for(i=0; i<=n; i++) {
+    if (mpfi_is_zero(acc)) mpfi_set_ui(res[i],0);
+    else {
+      mpfi_pow(res[i], x, expo);
+      mpfi_mul(res[i], res[i], acc);
+      
+      mpfi_mul(acc, acc, expo);
+      mpfi_sub_ui(expo, expo, 1);
+    }
+  }
+
+  mpfi_clear(expo);
+  mpfi_clear(acc);
+
+  return;
+}
 
 
 void exp_diff(mpfi_t *res, mpfi_t x, int n) {
@@ -73,22 +105,153 @@ void exp_diff(mpfi_t *res, mpfi_t x, int n) {
   return;
 }
 
+void log_diff(mpfi_t *res, mpfi_t x, int n) {
+  mpfr_t minusOne;
+  
+  mpfi_log(res[0], x);
+
+  if(n>=1) {
+    mpfr_init2(minusOne, getToolPrecision());
+    mpfr_set_si(minusOne, -1, GMP_RNDN);
+    constantPower_diff(res+1, minusOne, x, n-1);
+    mpfr_clear(minusOne);
+  }
+  return;
+}
+
+void log2_diff(mpfi_t *res, mpfi_t x, int n) {
+  int i;
+  mpfi_t log2;
+  mpfi_init2(log2, getToolPrecision());
+
+  mpfi_set_ui(log2, 2); mpfi_log(log2, log2);
+  log_diff(res,x,n);
+  for(i=0;i<=n;i++) mpfi_div(res[i], res[i], log2);
+
+  mpfi_clear(log2);
+  return;
+}
+
+void log10_diff(mpfi_t *res, mpfi_t x, int n) {
+  int i;
+  mpfi_t log10;
+  mpfi_init2(log10, getToolPrecision());
+
+  mpfi_set_ui(log10, 10); mpfi_log(log10, log10);
+  log_diff(res,x,n);
+  for(i=0;i<=n;i++) mpfi_div(res[i], res[i], log10);
+
+  mpfi_clear(log10);
+  return;
+}
+
+void sin_diff(mpfi_t *res, mpfi_t x, int n) {
+  int i,index;
+  mpfi_t vals[4];
+  
+  if(n==0) mpfi_sin(res[0], x);
+  else {
+    
+    for(index=0;index<4;index++) mpfi_init2(vals[index], getToolPrecision());
+    
+    mpfi_sin(vals[0], x);  mpfi_cos(vals[1], x);
+    mpfi_neg(vals[2],vals[0]);
+    mpfi_neg(vals[3],vals[1]);
+
+    for(i=0;i<=n;i++) mpfi_set(res[i], vals[i % 4]);
+
+    for(index=0;index<4;index++) mpfi_clear(vals[index]);
+  }
+
+  return;
+}
+
+void cos_diff(mpfi_t *res, mpfi_t x, int n) {
+  int i,index;
+  mpfi_t vals[4];
+  
+  if(n==0) mpfi_cos(res[0], x);
+  else {
+    
+    for(index=0;index<4;index++) mpfi_init2(vals[index], getToolPrecision());
+    
+    mpfi_cos(vals[0], x);  mpfi_sin(vals[3], x);
+    mpfi_neg(vals[2],vals[0]);
+    mpfi_neg(vals[1],vals[3]);
+
+    for(i=0;i<=n;i++) mpfi_set(res[i], vals[i % 4]);
+
+    for(index=0;index<4;index++) mpfi_clear(vals[index]);
+  }
+
+  return;
+}
+
+void sinh_diff(mpfi_t *res, mpfi_t x, int n) {
+  int i,index;
+  mpfi_t vals[2];
+  
+  if(n==0) mpfi_sinh(res[0], x);
+  else {
+    
+    for(index=0;index<2;index++) mpfi_init2(vals[index], getToolPrecision());
+    
+    mpfi_sinh(vals[0], x);  mpfi_cosh(vals[1], x);
+
+    for(i=0;i<=n;i++) mpfi_set(res[i], vals[i % 2]);
+
+    for(index=0;index<2;index++) mpfi_clear(vals[index]);
+  }
+
+  return;
+}
+
+void cosh_diff(mpfi_t *res, mpfi_t x, int n) {
+  int i,index;
+  mpfi_t vals[2];
+  
+  if(n==0) mpfi_cosh(res[0], x);
+  else {
+    
+    for(index=0;index<2;index++) mpfi_init2(vals[index], getToolPrecision());
+    
+    mpfi_cosh(vals[0], x);  mpfi_sinh(vals[1], x);
+
+    for(i=0;i<=n;i++) mpfi_set(res[i], vals[i % 2]);
+
+    for(index=0;index<2;index++) mpfi_clear(vals[index]);
+  }
+
+  return;
+}
+
 void baseFunction_diff(mpfi_t *res, int nodeType, mpfi_t x, int n) {
+  mpfr_t oneHalf;
+
   switch(nodeType) {
   case SQRT:
+    mpfr_init2(oneHalf, getToolPrecision());
+    mpfr_set_d(oneHalf, 0.5, GMP_RNDN);
+    constantPower_diff(res, oneHalf, x, n);
+    mpfr_clear(oneHalf);
     break;
   case EXP:
     exp_diff(res, x, n);
     break;
   case LOG:
+    log_diff(res,x,n);
     break;
   case LOG_2:
+    log2_diff(res,x,n);
     break;
   case LOG_10:
+    log10_diff(res,x,n);
     break;
   case SIN:
+    sin_diff(res,x,n);
     break;
   case COS:
+    cos_diff(res,x,n);
     break;
   case TAN:
     break;
@@ -99,8 +262,10 @@ void baseFunction_diff(mpfi_t *res, int nodeType, mpfi_t x, int n) {
   case ATAN:
     break;
   case SINH:
+    sinh_diff(res,x,n);
     break;
   case COSH:
+    cosh_diff(res,x,n);
     break;
   case TANH:
     break;
@@ -140,36 +305,6 @@ void baseFunction_diff(mpfi_t *res, int nodeType, mpfi_t x, int n) {
   return;
 }
 
-/* Computes the successive derivatives of y -> y^p at point x */ 
-/* [x^p    p*x^(p-1)   ...   p*(p-1)*...*(p-n+1)*x^(p-n) ]    */
-void constantPower_diff(mpfi_t *res, mpfr_t p, mpfi_t x, int n) {
-  mpfi_t expo, acc;
-  int i;
-  
-  /* The precision of expo is set in such a way that expo will
-     be a point interval during the algorithm */
-  mpfi_init2(expo, mpfr_get_prec(p)+8*sizeof(int));
-  mpfi_init2(acc, getToolPrecision());
-  
-  mpfi_set_fr(expo, p);
-  mpfi_set_ui(acc, 1);
-  
-  for(i=0; i<=n; i++) {
-    if (mpfi_is_zero(acc)) mpfi_set_ui(res[i],0);
-    else {
-      mpfi_pow(res[i], x, expo);
-      mpfi_mul(res[i], res[i], acc);
-      
-      mpfi_mul(acc, acc, expo);
-      mpfi_sub_ui(expo, expo, 1);
-    }
-  }
-
-  mpfi_clear(expo);
-  mpfi_clear(acc);
-
-  return;
-}
 
 
 void computeBinomials(mpfi_t **res, int n) {
