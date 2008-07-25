@@ -76,19 +76,6 @@ AC_ARG_WITH(mpfr,
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
   ])
 
-AC_ARG_WITH(pari-include,
-   [  --with-pari-include=DIR  PARI include directory ],
-   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval")
-AC_ARG_WITH(pari-lib,
-   [  --with-pari-lib=DIR      PARI lib directory ], [
-   AM_LDFLAGS="$AM_LDFLAGS -L$withval"
-  ])
-AC_ARG_WITH(pari,
-   [  --with-pari=DIR          PARI install directory ], [
-   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
-   AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
-  ])
-
 
 XML2INCLUDEGIVEN=""
 XML2LIBGIVEN=""
@@ -159,22 +146,10 @@ AC_CHECK_LIB([gmp], [__gmpz_bin_uiui], [], AC_MSG_ERROR([libgmp version too old]
 AC_CHECK_LIB([gmp], [__gmpz_export], [], AC_MSG_ERROR([libgmp version too old]))
 AC_CHECK_LIB([mpfr], [mpfr_init], [], AC_MSG_ERROR([libmpfr unusable]))
 AC_CHECK_LIB([mpfr], [mpfr_erfc], [], AC_MSG_ERROR([libmpfr version too old]))
-AC_CHECK_LIB([pari], [pari_init], [], AC_MSG_ERROR([libpari unusable]))
 AC_CHECK_LIB([xml2], [xmlTextReaderIsEmptyElement], [], AC_MSG_ERROR([libxml2 unusable]))
 AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unusable]))
 
 
-#Checks for a particular calling convention in PARI
-
-AC_MSG_CHECKING([libpari calling convention compatible])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include <pari/pari.h>
-#include <pari/paripriv.h>
-#include <setjmp.h>
-extern gp_data *GP_DATA;
-]], [[setjmp(GP_DATA->env);]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
-     AC_MSG_ERROR([libpari convention is incompatible])
-])
 
 #Check for -Wl,-export-dynamic etc.
 

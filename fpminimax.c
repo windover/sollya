@@ -46,7 +46,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 */
 
-#include <pari/pari.h>
 #include <gmp.h>
 #include <mpfr.h>
 #include <mpfi.h>

@@ -46,11 +46,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 */
 
-#include <pari/pari.h>
 #include <gmp.h>
 #include <mpfr.h>
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
+#include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <signal.h>
@@ -63,7 +63,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "infnorm.h"
 #include "assignment.h"
 #include "parser.h"
-#include <pari/paripriv.h>
 #include <termios.h>
 #include <sys/time.h>
 #include <time.h>
@@ -150,10 +149,6 @@ extern void yylex_destroy(void *);
 extern int yylex_init(void **);
 extern int yylex(void *);
 
-
-
-#define PARIENVIRONMENT GP_DATA->env
-extern gp_data *GP_DATA;
 
 
 #define BACKTRACELENGTH 100
@@ -283,12 +278,10 @@ void *safeRealloc (void *ptr, size_t size) {
   return newPtr;
 }
 
-/* The gp signature for realloc is strange, we have to wrap our function */
+/* The gmp signature for realloc is strange, we have to wrap our function */
 void *wrapSafeRealloc(void *ptr, size_t old_size, size_t new_size) {
-   UNUSED_PARAM(old_size);
    return (void *) safeRealloc(ptr,new_size);
 }
-
 
 void demaskString(char *dest, char *src) {
   char *curr, *curr2;
@@ -613,7 +606,6 @@ void signalHandler(int i) {
       fprintf(stderr,"Error: the recover environment has not been initialized. Exiting.\n");
       exit(1);
     }
-    avma = ltop;
     longjmp(recoverEnvironment,1);
   } 
 }
@@ -624,7 +616,6 @@ void recoverFromError(void) {
     fprintf(stderr,"Error: the recover environment has not been initialized. Exiting.\n");
     exit(1);
   }
-  avma = ltop;
   longjmp(recoverEnvironmentError,1);
 }
 
@@ -686,8 +677,6 @@ void freeTool() {
     free(readStack);
     readStack = readStackTemp;
   }
-  avma = ltop;
-  pari_close();
   yylex_destroy(scanner);
   freeLibraries();
   freeProcLibraries();
@@ -702,7 +691,6 @@ void freeTool() {
 }
 
 void initToolDefaults() {
-  ltop = avma;
   if(variablename != NULL) free(variablename); 
   variablename = NULL;
   defaultprecision = DEFAULTPRECISION;
@@ -763,11 +751,9 @@ void initTool() {
     eliminatePromptBackup = 1;
   }
   
-  pari_init(PARIMEMSIZE, 2);
   initSignalHandler();
   blockSignals();
   mp_set_memory_functions(safeMalloc,wrapSafeRealloc,NULL);
-  ltop = avma;
   initToolDefaults();
 }
 
@@ -821,7 +807,6 @@ void setToolDiameter(mpfr_t op) {
 void setRecoverEnvironment(jmp_buf *env) {
   memmove(&recoverEnvironment,env,sizeof(recoverEnvironment));
   memmove(&recoverEnvironmentError,env,sizeof(recoverEnvironmentError));
-  memmove(&(PARIENVIRONMENT),env,sizeof((PARIENVIRONMENT)));
   exitInsteadOfRecover = 0;
 }
 
@@ -846,23 +831,11 @@ int general(int argc, char *argv[]) {
     if (strcmp(argv[i],"-noprompt") == 0) eliminatePromptBackup = 1;
   }
   
-  pari_init(PARIMEMSIZE, 2);
   initSignalHandler();
   blockSignals();
   mp_set_memory_functions(safeMalloc,wrapSafeRealloc,NULL);
-  ltop = avma;
   initToolDefaults();
 
-  if (setjmp(PARIENVIRONMENT)) {
-    fprintf(stderr,"Error: an error occurred in the PARI subsystem.\n");
-    if (exitInsteadOfRecover) {
-      fprintf(stderr,"Error: the recover environment has not been initialized. Exiting.\n");
-      exit(1);
-    }
-    avma = ltop;
-    longjmp(recoverEnvironment,1);
-  }
- 
   exitInsteadOfRecover = 0;
   helpNotFinished = 0;
   printPrompt();

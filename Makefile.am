@@ -47,8 +47,6 @@ library.c \
 library.h \
 main.c \
 main.h \
-pari_utils.c \
-pari_utils.h \
 plot.c \
 plot.h \
 proof.c \
@@ -99,8 +97,6 @@ integral.c \
 integral.h \
 library.c \
 library.h \
-pari_utils.c \
-pari_utils.h \
 plot.c \
 plot.h \
 proof.c \

@@ -13,7 +13,6 @@ In order to compile the software you will need the following packages installed:
 - gmp
 - mpfr 2.2.0 or later
 - mpfi
-- pari version 2.3.0
 - libxml2-dev
 
 - bison version 2.3 or later
@@ -44,5 +43,3 @@ make install
 
 The use of the readline-wrapper rlwrap is highly recommended for interactive 
 work with sollya.
-
-
