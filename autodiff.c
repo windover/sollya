@@ -60,11 +60,25 @@ int AD(chain **res, void **args) {
 
 
 
-void baseFunction_diff(mpfi_t *res2, int nodeType, mpfi_t x, int n) {
+void exp_diff(mpfi_t *res, mpfi_t x, int n) {
+  int i;
+  mpfi_t temp;
+
+  mpfi_init2(temp, getToolPrecision());
+
+  mpfi_exp(temp, x);
+  for(i=0;i<=n;i++) mpfi_set(res[i], temp);
+
+  mpfi_clear(temp);
+  return;
+}
+
+void baseFunction_diff(mpfi_t *res, int nodeType, mpfi_t x, int n) {
   switch(nodeType) {
   case SQRT:
     break;
   case EXP:
+    exp_diff(res, x, n);
     break;
   case LOG:
     break;
