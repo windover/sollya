@@ -268,4 +268,6 @@ extern void freeIntPtr(void *ptr);
 extern void *safeCalloc (size_t nmemb, size_t size);
 extern void *safeMalloc (size_t size);
 
+extern void printInterval(mpfi_t);
+
 #endif
