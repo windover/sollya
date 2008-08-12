@@ -67,8 +67,6 @@ int containsEntry(chain *symTbl, char *name);
 void *getEntry(chain *symTbl, char *name, void * (*copyValue) (void *));
 chain *removeEntry(chain *symTbl, char *name, void (*f) (void *));
 void freeSymbolTable(chain *symTbl, void (*f) (void *));
-void *copyString(void *oldString);
-void freeStringPtr(void *aString);
 void freeDeclaredSymbolTable(chain *declSymTbl, void (*f) (void *));
 chain *pushFrame(chain *declSymTbl);
 chain *popFrame(chain *declSymTbl, void (*f) (void *));

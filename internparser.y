@@ -215,6 +215,9 @@ extern FILE *internyyget_in(void *scanner);
 %token  ABSOLUTETOKEN;
 %token  DECIMALTOKEN;
 %token  RELATIVETOKEN;
+%token  FIXEDTOKEN;
+%token  FLOATINGTOKEN;
+
 %token  ERRORTOKEN;			
 		       											       
 %token  LIBRARYTOKEN;           					       
@@ -222,6 +225,7 @@ extern FILE *internyyget_in(void *scanner);
 %token  DIFFTOKEN;              					       
 %token  SIMPLIFYTOKEN;  						       
 %token  REMEZTOKEN;             					       
+%token  FPMINIMAXTOKEN;             					       
 %token  HORNERTOKEN;            					       
 %token  EXPANDTOKEN;            					       
 %token  SIMPLIFYSAFETOKEN;  						       
@@ -1032,6 +1036,14 @@ basicthing:             ONTOKEN
                           {
 			    $$ = makeRelative();
 			  }
+                      | FIXEDTOKEN   							       
+                          {
+			    $$ = makeFixed();
+			  }
+                      | FLOATINGTOKEN   							       
+                          {
+			    $$ = makeFloating();
+			  }
                       | ERRORTOKEN   							       
                           {
 			    $$ = makeError();
@@ -1243,6 +1255,10 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeRemez(addElement(addElement($7, $5), $3));
 			  }             					       
+                      | FPMINIMAXTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeFPminimax(addElement(addElement(addElement($9, $7), $5), $3));
+			  }
                       | HORNERTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeHorner($3);

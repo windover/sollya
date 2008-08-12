@@ -185,11 +185,13 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
     if (xd <= -MAX_VALUE_GNUPLOT) xd = -MAX_VALUE_GNUPLOT;
     fprintf(file, "%1.50e",xd);
     if (!mpfr_number_p(temp)) {
-      printMessage(2,"Information: function undefined or not evaluable in point %s = ",variablename);
-      changeToWarningMode();
-      if (verbosity >= 2) printValue(&x);
-      restoreMode();
-      printMessage(2,"\nThis point will not be plotted.\n");
+      if (verbosity >= 2) {
+	changeToWarningMode();
+	printf("Information: function undefined or not evaluable in point %s = ",variablename);
+	printValue(&x);
+	printf("\nThis point will not be plotted.\n");
+	restoreMode();
+      }
     }
     yd = mpfr_get_d(temp, GMP_RNDN);
     if (yd >= MAX_VALUE_GNUPLOT) yd = MAX_VALUE_GNUPLOT;

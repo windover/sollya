@@ -65,7 +65,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 
 void printInterval(mpfi_t interval);
-void freeMpfiPtr(void *i);
 
 
 void special_mpfi_div(mpfi_t rop, mpfi_t a, mpfi_t b) {
@@ -2168,12 +2167,6 @@ void fprintInterval(FILE *fd, mpfi_t interval) {
 }
 
 
-void freeMpfiPtr(void *i) {
-  if (i == NULL) return;
-  mpfi_clear(*((mpfi_t *) i));
-  free(i);
-}
-
 chain *joinAdjacentIntervals(chain *intervals, mpfr_t diam) {
   chain *newChain, *curr;
   mpfi_t *tempI;
@@ -2411,15 +2404,6 @@ chain *excludeIntervals(chain *mainIntervals, chain *excludeIntervals) {
   mpfr_clear(er);
 
   return mainIntervals;
-}
-
-void *copyMpfiPtr(void *ptr) {
-  mpfi_t *newMpfi;
-
-  newMpfi = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
-  mpfi_init2(*newMpfi,mpfi_get_prec(*((mpfi_t *) ptr)));
-  mpfi_set(*newMpfi,*((mpfi_t *) ptr));
-  return (void *) newMpfi;
 }
 
 

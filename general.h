@@ -53,7 +53,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include <mpfr.h>
 #include "expression.h"
 #include "chain.h"
-#include "fpminimax.h"
 #include "library.h"
 #include <setjmp.h>
 #include "config.h"

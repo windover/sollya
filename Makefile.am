@@ -33,8 +33,6 @@ expression.c \
 expression.h \
 external.c \
 external.h \
-fpminimax.c \
-fpminimax.h \
 general.c \
 general.h \
 implement.c \
@@ -51,6 +49,8 @@ plot.c \
 plot.h \
 proof.c \
 proof.h \
+fpminimax.cpp \
+fpminimax.h \
 remez.c \
 remez.h \
 taylor.c \
@@ -85,8 +85,6 @@ expression.c \
 expression.h \
 external.c \
 external.h \
-fpminimax.c \
-fpminimax.h \
 general.c \
 general.h \
 implement.c \

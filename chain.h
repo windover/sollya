@@ -65,8 +65,22 @@ void *first(chain *c);
 chain *tail(chain *c);
 chain *copyChain(chain *c, void * (*f) (void *));
 chain *copyChainWithoutReversal(chain *c, void * (*f) (void *));
+void *copyString(void *oldString);
+void *copyTreeOnVoid(void *tree);
+void *copyRangetypePtr(void *ptr);
+void *copyMpfiPtr(void *ptr);
+void *copyIntPtrOnVoid(void *);
+void *copyMpfrPtr(void *ptr);
+
 chain *concatChains(chain *c1, chain *c2);
+
+void freeRangetypePtr(void *ptr);
+void freeMpfrPtr(void *ptr);
+void freeMpfiPtr(void *i);
 void freeIntPtr(void *ptr);
+void freeStringPtr(void *aString);
+void freeMemoryOnVoid(void *tree);
+
 chain *makeIntPtrChain(int n);
 chain *makeIntPtrChainFromTo(int m, int n);
 int lengthChain(chain *c);
@@ -76,6 +90,10 @@ int cmpMpfrPtr(void *a, void *b);
 void printIntChain(chain *c);
 void *accessInList(chain *, int);
 chain *copyChainAndReplaceNth(chain *c, int k, void *obj, void * (*f) (void *));
+
+int isEqualStringOnVoid(void *s, void *s2);
+int isEqualIntPtrOnVoid(void *a, void *b);
+
 int isEqualChain(chain *c, chain *c2, int (*f) (void *, void *));
 
 #endif /* ifdef CHAIN_H*/

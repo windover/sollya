@@ -240,14 +240,15 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #define SUPPRESSWARNINGSDEREF 233
 #define MIDPOINTCONSTANT 234
 #define EVALCONST 235
+#define FIXED 236
+#define FLOATING 237
+#define FPMINIMAX 238
 
 int executeCommand(node *);
 
 void freeThing(node *);
 void rawPrintThing(node *);
 void freeThingOnVoid(void *);
-
-void *copyIntPtrOnVoid(void *);
 
 node *makeCommandList(chain *thinglist);
 node *makeWhile(node *thing1, node *thing2);
@@ -342,6 +343,8 @@ node *makeDefault();
 node *makeDecimal();
 node *makeAbsolute();
 node *makeRelative();
+node *makeFixed();
+node *makeFloating();
 node *makeError();
 node *makeDoubleSymbol();
 node *makeDoubleDoubleSymbol();
@@ -369,6 +372,7 @@ node *makeDiff(node *thing);
 node *makeSimplify(node *thing);
 node *makeSimplifySafe(node *thing);
 node *makeRemez(chain *thinglist);
+node *makeFPminimax(chain *thinglist);
 node *makeHorner(node *thing);
 node *makeCanonicalThing(node *thing);
 node *makeExpand(node *thing);

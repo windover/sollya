@@ -249,19 +249,3 @@ chain *assignDeclaredEntry(chain *declSymTbl, char *name, void *value, void * (*
 
   return newDeclSymTbl; 
 }
-
-
-
-
-void *copyString(void *oldString) {
-  char *newString;
-
-  newString = (char *) safeCalloc(strlen((char *) oldString) + 1,sizeof(char));
-  strcpy(newString,(char *) oldString);
-  return (void *) newString;
-}
-
-void freeStringPtr(void *aString) {
-  free((char *) aString);
-}
-

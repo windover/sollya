@@ -432,8 +432,15 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
       }
     }
 
-    if ( ((n!=0) && (nbr_iter==n)) || mpfr_equal_p(x,xNew) || (n_expo>5000) || (estim_prec>prec)) test=0;
+    if ( ((n!=0) && (nbr_iter==n)) || mpfr_equal_p(x,xNew) || (n_expo>2*prec) || (estim_prec>prec)) test=0;
 
+    if(n_expo>=32) {
+      mpfr_set(x,xNew,GMP_RNDN);
+      mpfr_set_d(xNew,0.,GMP_RNDN);
+      r = evaluateFaithfulWithCutOffFast(xNew, f, f_diff, xNew, zero_mpfr, prec);
+      if(mpfr_zero_p(xNew) || (r==0)) test=0;
+      else mpfr_set(xNew,x,GMP_RNDN);
+    }
 
     nbr_iter++;
     mpfr_set(x,xNew,GMP_RNDN);
@@ -441,13 +448,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 
   nbr_iter--;
 
-  if(n_expo>5000) {
-    mpfr_set(xNew,x,GMP_RNDN);
-    mpfr_set_d(x,0.,GMP_RNDN);
-    r = evaluateFaithfulWithCutOffFast(x, f, f_diff, x, zero_mpfr, prec);
-    if(mpfr_zero_p(x) || (r==0)) mpfr_set_d(x,0.,GMP_RNDN);
-    else mpfr_set(x,xNew,GMP_RNDN);
-  }
+  if(n_expo>2*prec) printMessage(8, "Warning: in Newton's algorithm: the zero seems to be 0 but it cannot be proven\n");
 
   if(verbosity>=7) {
     changeToWarningMode();
@@ -600,13 +601,14 @@ void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
   mpfr_t *mui_vect;
   node *temp_tree;
   node *temp_tree2;
-  mpfr_t zero_mpfr, var1, var2;
+  mpfr_t zero_mpfr, var1, var2, var3;
   mpfr_t maxi;
   mpfr_t mini;
   
   // Initialisations and precomputations
   mpfr_init2(var1, prec);
   mpfr_init2(var2, prec);
+  mpfr_init2(var3, prec);
 
   mpfr_init2(zero_mpfr, 53);
   mpfr_set_d(zero_mpfr, 0., GMP_RNDN);
@@ -651,10 +653,10 @@ void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
 	free_memory(temp_tree);
 	temp_tree = temp_tree2; // temp_tree = x^(monomials[j])*w(x)
 	
-	r = evaluateFaithfulWithCutOffFast(var1, temp_tree, NULL, x[i-1], zero_mpfr, prec);
+	r = evaluateFaithfulWithCutOffFast(var3, temp_tree, NULL, x[i-1], zero_mpfr, prec);
 	
-	if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
-	mpfr_set(N[coeff(j,i,freeDegrees)],var1,GMP_RNDN);
+	if(r==0) mpfr_set_d(var3, 0., GMP_RNDN);
+	mpfr_set(N[coeff(j,i,freeDegrees)],var3,GMP_RNDN);
 	free_memory(temp_tree);
       }
     }
@@ -683,10 +685,10 @@ void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
       free_memory(temp_tree);
       temp_tree = temp_tree2; // temp_tree = x^(monomials[j])*w(x)
       
-      r = evaluateFaithfulWithCutOffFast(var1, temp_tree, NULL, newx, zero_mpfr, prec);
+      r = evaluateFaithfulWithCutOffFast(var3, temp_tree, NULL, newx, zero_mpfr, prec);
       
-      if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
-      mpfr_set(c[j-1], var1, GMP_RNDN);
+      if(r==0) mpfr_set_d(var3, 0., GMP_RNDN);
+      mpfr_set(c[j-1], var3, GMP_RNDN);
       free_memory(temp_tree);
     }
   }
@@ -756,6 +758,7 @@ void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
   mpfr_clear(zero_mpfr);
   mpfr_clear(var1);
   mpfr_clear(var2);
+  mpfr_clear(var3);
   mpfr_clear(maxi);
   mpfr_clear(mini);
 
@@ -1595,12 +1598,12 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 	    free_memory(temp_tree);
 	    temp_tree = temp_tree2; // temp_tree = x^(monomials[j])*w(x)
 	  
-	    r = evaluateFaithfulWithCutOffFast(var1, temp_tree, NULL, x[i-1], zero_mpfr, prec);
+	    r = evaluateFaithfulWithCutOffFast(var3, temp_tree, NULL, x[i-1], zero_mpfr, prec);
 
-	    if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
-	    mpfr_set(M[coeff(i,j,freeDegrees+1)],var1,GMP_RNDN);
-	    if (i<=freeDegrees) mpfr_set(N[coeff(j,i,freeDegrees)],var1,GMP_RNDN);
-	    else mpfr_set(c[j-1], var1, GMP_RNDN);
+	    if(r==0) mpfr_set_d(var3, 0., GMP_RNDN);
+	    mpfr_set(M[coeff(i,j,freeDegrees+1)],var3,GMP_RNDN);
+	    if (i<=freeDegrees) mpfr_set(N[coeff(j,i,freeDegrees)],var3,GMP_RNDN);
+	    else mpfr_set(c[j-1], var3, GMP_RNDN);
 	    free_memory(temp_tree);
 	  }
 	}
@@ -1788,6 +1791,8 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 	free(c);
 	free(lambdai_vect);
 	free(previous_lambdai_vect);
+	
+	gmp_randclear(random_state);
 
 	recoverFromError();
       }
@@ -1893,6 +1898,8 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   free(lambdai_vect);
   free(previous_lambdai_vect);
 
+  gmp_randclear(random_state);
+
   if (mpfr_cmp(computedQuality, quality)>0) {
     fprintf(stderr, "Error in Remez: the algorithm does not converge.\n");
     mpfr_clear(computedQuality);
@@ -1902,6 +1909,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
   mpfr_clear(computedQuality);
   mpfr_clear(infiniteNorm);
+
   return poly;
 }
 
@@ -1922,12 +1930,6 @@ int testMonomials(chain *monom) {
   return 1;
 }
 
-void *copyInt(void *n) {
-  int *n2;
-  n2 = safeMalloc(sizeof(int));
-  *n2 = *((int *)n);
-  return n2;
-}
   
 node *remez(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mpfr_t *requestedQuality, mp_prec_t prec) {
   mpfr_t quality;
@@ -1943,7 +1945,7 @@ node *remez(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mpfr
     mpfr_abs(quality, *requestedQuality, GMP_RNDN);
   }
   
-  monomials2 = copyChain(monomials, &copyInt);
+  monomials2 = copyChain(monomials, copyIntPtrOnVoid);
 
   sortChain(monomials2,cmpIntPtr);
 
@@ -2141,9 +2143,9 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
 	  free_memory(temp_tree);
 	  temp_tree = temp_tree2; // temp_tree = x^(monomials[j])*w(x)
 	  
-	  r = evaluateFaithfulWithCutOffFast(var1, temp_tree, NULL, x[i-1], zero_mpfr, prec);
-	  if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
-	  mpfr_set(M[coeff(i,j,freeDegrees+1)],var1,GMP_RNDN);
+	  r = evaluateFaithfulWithCutOffFast(var3, temp_tree, NULL, x[i-1], zero_mpfr, prec);
+	  if(r==0) mpfr_set_d(var3, 0., GMP_RNDN);
+	  mpfr_set(M[coeff(i,j,freeDegrees+1)],var3,GMP_RNDN);
 
 	  free_memory(temp_tree);
 	}
@@ -2375,10 +2377,3 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   verbosity = old_verbosity;
   return range;
 }
-
-
-
-// temporary definition until fpminimax.c is updated
-//node* remezWithWeight(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec) {
-//  return (copyTree(func));
-//}

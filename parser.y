@@ -217,6 +217,9 @@ void yyerror(char *message) {
 %token  ABSOLUTETOKEN;
 %token  DECIMALTOKEN;
 %token  RELATIVETOKEN;
+%token  FIXEDTOKEN;
+%token  FLOATINGTOKEN;
+
 %token  ERRORTOKEN;			
 								       
 %token  QUITTOKEN;              					       
@@ -228,6 +231,7 @@ void yyerror(char *message) {
 %token  DIFFTOKEN;              					       
 %token  SIMPLIFYTOKEN;  						       
 %token  REMEZTOKEN;             					       
+%token  FPMINIMAXTOKEN;             					       
 %token  HORNERTOKEN;            					       
 %token  EXPANDTOKEN;            					       
 %token  SIMPLIFYSAFETOKEN;  						       
@@ -1069,6 +1073,14 @@ basicthing:             ONTOKEN
                           {
 			    $$ = makeRelative();
 			  }
+                      | FIXEDTOKEN   							       
+                          {
+			    $$ = makeFixed();
+			  }
+                      | FLOATINGTOKEN   							       
+                          {
+			    $$ = makeFloating();
+			  }
                       | ERRORTOKEN   							       
                           {
 			    $$ = makeError();
@@ -1283,6 +1295,10 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeRemez(addElement(addElement($7, $5), $3));
 			  }             					       
+                      | FPMINIMAXTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeFPminimax(addElement(addElement(addElement($9, $7), $5), $3));
+			  }
                       | HORNERTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeHorner($3);
@@ -2540,6 +2556,22 @@ help:                   CONSTANTTOKEN
 #else
 			    outputMode(); printf("Consider a relative error.\n");
 #endif
+                          }
+                      | FIXEDTOKEN
+                          {
+#ifdef HELP_FIXED_TEXT
+			    outputMode(); printf(HELP_FIXED_TEXT);
+#else
+			    outputMode(); printf("Consider fixed-point numbers.\n");
+#endif
+                          }
+                      | FLOATINGTOKEN
+                          {
+#ifdef HELP_FLOATING_TEXT
+			    outputMode(); printf(HELP_FLOATING_TEXT);
+#else
+			    outputMode(); printf("Consider floating-point numbers.\n");
+#endif
                           }                 					       
                       | ERRORTOKEN
                           {
@@ -2603,6 +2635,14 @@ help:                   CONSTANTTOKEN
 			    outputMode(); printf(HELP_REMEZ_TEXT);
 #else
 			    outputMode(); printf("Remez: remez(func,degree|monoms,range[,weight[,quality]]).\n");
+#endif
+                          }                 					                        					       
+                      | FPMINIMAXTOKEN
+                          {
+#ifdef HELP_FPMINIMAX_TEXT
+			    outputMode(); printf(HELP_FPMINIMAX_TEXT);
+#else
+			    outputMode(); printf("Fpminimax: fpminimax(func,degree|monoms,formats,range|pointslist[,absolute|relative[,fixed|floating[,constrainedPart[, minimaxpoly]]]]).\n");
 #endif
                           }                 					                        					       
                       | HORNERTOKEN
@@ -3276,9 +3316,12 @@ help:                   CONSTANTTOKEN
 			    printf("- false\n");
 			    printf("- file\n");
 			    printf("- findzeros\n");
+			    printf("- fixed\n");
+			    printf("- floating\n");
 			    printf("- floor\n");
 			    printf("- for\n");
 			    printf("- fpfindzeros\n");
+			    printf("- fpminimax\n");
 			    printf("- from\n");
 			    printf("- fullparentheses\n");
 			    printf("- function\n");

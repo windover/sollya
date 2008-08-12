@@ -57,6 +57,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "general.h"
 #include "double.h"
 #include "miniparser.h"
+#include "chain.h"
 
 #define MAXDIFFSIMPLSIZE 10000
 
@@ -802,7 +803,7 @@ char *sprintValue(mpfr_t *aValue) {
   buffer = safeCalloc(2 * prec + 7 + (sizeof(mp_exp_t) * 4) + 1, sizeof(char));
   tempBuf = buffer;
   mpfr_init2(y,prec);
-  mpfr_init2(temp,prec);
+
   t = mpfr_get_si(*value,GMP_RNDN);
   mpfr_set_si(y,t,GMP_RNDN);
   if ((mpfr_cmp(y,*value) == 0) && (mpfr_number_p(*value))) {
@@ -8902,38 +8903,6 @@ int readDyadic(mpfr_t res, char *c) {
   free(mantissa);
   free(exponent);
   return rounding;
-}
-
-void *copyTreeOnVoid(void *tree) {
-  return copyTree((node *) tree);
-}
-
-void freeMemoryOnVoid(void *tree) {
-  free_memory((node *) tree);
-}
-
-void freeRangetypePtr(void *ptr) {
-  mpfr_clear(*(((rangetype *) ptr)->a));
-  mpfr_clear(*(((rangetype *) ptr)->b));
-  free(((rangetype *) ptr)->a);
-  free(((rangetype *) ptr)->b);
-  free(ptr);
-}
-
-void *copyRangetypePtr(void *ptr) {
-  rangetype *newPtr;
-
-  newPtr = (rangetype *) safeMalloc(sizeof(rangetype));
-  newPtr->a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-  newPtr->b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-
-  mpfr_init2(*(newPtr->a),mpfr_get_prec(*(((rangetype *) ptr)->a)));
-  mpfr_init2(*(newPtr->b),mpfr_get_prec(*(((rangetype *) ptr)->b)));
-
-  mpfr_set(*(newPtr->a),*(((rangetype *) ptr)->a),GMP_RNDN);
-  mpfr_set(*(newPtr->b),*(((rangetype *) ptr)->b),GMP_RNDN);
-
-  return newPtr;
 }
 
 node *makePolynomial(mpfr_t *coefficients, int degree) {

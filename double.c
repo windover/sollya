@@ -48,6 +48,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 #include <gmp.h>
 #include <mpfr.h>
+#include <mpfi.h>
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <errno.h>
 #include <inttypes.h>
@@ -57,7 +58,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "double.h"
 #include "general.h"
 #include "infnorm.h"
-
 
 
 typedef union {
@@ -911,4 +911,105 @@ int roundRangeCorrectly(mpfr_t rop, mpfr_t a, mpfr_t b) {
   mpfr_clear(tempB);
 
   return okay;
+}
+
+
+
+
+void continuedFrac(mpq_t q, mpfi_t x) {
+  mpfi_t xprime;
+  mpfr_t a,b;
+  mpfr_t m1,m2;
+  mp_prec_t t;
+  mpq_t res;
+  mpz_t u;
+
+  t = mpfi_get_prec(x);
+  mpfi_init2(xprime,t);
+  mpfr_init2(a,t);
+  mpfr_init2(b,t);
+  mpfr_init2(m1,t);
+  mpfr_init2(m2,t);
+  mpq_init(res);
+  mpz_init(u);
+
+  mpfi_get_left(a,x);
+  mpfi_get_right(b,x);
+  mpfr_floor(m1,a);
+  mpfr_floor(m2,b);
+
+  if (mpfr_equal_p(m1,m2) && !mpfr_equal_p(a,m1)) {
+    mpfr_get_z(u,m1,GMP_RNDN); //exact
+    mpfr_sub(a,a,m1,GMP_RNDD);
+    mpfr_sub(b,b,m1,GMP_RNDU);
+    mpfi_interv_fr(xprime,a,b);
+    mpfi_inv(xprime,xprime);
+    continuedFrac(res,xprime);
+    mpq_inv(res,res);
+    mpq_set_num(q,u);
+    mpz_set_ui(u,1);
+    mpq_set_den(q,u);
+    mpq_add(q,q,res);
+  }
+  else {
+    mpfr_add(m1,a,b,GMP_RNDN);
+    mpfr_div_2ui(m1,m1,1,GMP_RNDN);
+    mpfr_get_z(u,m1,GMP_RNDN);
+    mpq_set_num(q,u);
+    mpz_set_ui(u,1);
+    mpq_set_den(q,u);
+  }
+  
+  mpfi_clear(xprime);
+  mpfr_clear(a);
+  mpfr_clear(b);
+  mpfr_clear(m1);
+  mpfr_clear(m2);
+  mpq_clear(res);
+  mpz_clear(u);
+  return;
+}
+
+node *rationalApprox(mpfr_t x, unsigned int n) {
+  mpq_t q;
+  mpz_t u;
+  mpfi_t xprime;
+  node *tree;
+  node *num;
+  node *denom;
+  mpfr_t *numerator;
+  mpfr_t *denominator;
+
+  mpq_init(q);
+  mpz_init(u);
+  mpfi_init2(xprime,(mp_prec_t)n);
+
+  mpfi_set_fr(xprime,x);
+  continuedFrac(q,xprime);
+ 
+  mpq_get_num(u,q);
+  numerator = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*numerator,mp_bits_per_limb*mpz_size(u));
+  mpfr_set_z(*numerator,u,GMP_RNDN);
+
+  mpq_get_den(u,q);
+  denominator = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*denominator,mp_bits_per_limb*mpz_size(u));
+  mpfr_set_z(*denominator,u,GMP_RNDN);
+
+  tree = safeMalloc(sizeof(node));
+  tree->nodeType = DIV;
+  num = safeMalloc(sizeof(node));
+  denom = safeMalloc(sizeof(node));
+  num->nodeType = CONSTANT;
+  denom->nodeType = CONSTANT;
+  num->value = numerator;
+  denom->value = denominator;
+  tree->child1 = num;
+  tree->child2 = denom;
+
+  mpfi_clear(xprime);
+  mpq_clear(q);
+  mpz_clear(u);
+  return tree;
 }

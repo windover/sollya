@@ -62,6 +62,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "external.h"
 #include "plot.h"
 #include "remez.h"
+#include "fpminimax.h"
 #include "integral.h"
 #include "double.h"
 #include "worstcase.h"
@@ -196,25 +197,6 @@ char *readFileIntoString(FILE *fd) {
 node *copyThing(node *);
 node *evaluateThingInner(node *);
 node *evaluateThing(node *);
-
-void *copyStringOnVoid(void *s) {
-  char *copy;
-
-  copy = (char *) safeCalloc(strlen((char *) s)+1,sizeof(char));
-  strcpy(copy,(char *) s);
-  
-  return (void *) copy;
-}
-
-void *copyIntPtrOnVoid(void *i) {
-  int *copy;
-
-  copy = (int *) safeMalloc(sizeof(int));
-  *copy = *((int *) i);
-  
-  return (void *) copy;
-}
-
 
 node *copyThing(node *tree) {
   node *copy;
@@ -383,7 +365,7 @@ node *copyThing(node *tree) {
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     break; 	
   case VARIABLEDECLARATION:
-    copy->arguments = copyChainWithoutReversal(tree->arguments, copyStringOnVoid);
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyString);
     break; 	
   case NOP:
     break;
@@ -448,7 +430,7 @@ node *copyThing(node *tree) {
   case RENAME:
     copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
     strcpy(copy->string,tree->string);
-    copy->arguments = copyChainWithoutReversal(tree->arguments, copyStringOnVoid);
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyString);
     break; 				
   case AUTOPRINT:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
@@ -650,7 +632,11 @@ node *copyThing(node *tree) {
   case ABSOLUTESYM:
     break; 			
   case RELATIVESYM:
-    break; 			
+    break;
+  case FIXED:
+    break;
+  case FLOATING:
+    break;
   case ERRORSPECIAL:
     break; 			
   case DOUBLESYMBOL:
@@ -742,6 +728,9 @@ node *copyThing(node *tree) {
     copy->child1 = copyThing(tree->child1);
     break;  			
   case REMEZ:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+    break; 			 	
+  case FPMINIMAX:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     break; 			 	
   case HORNER:
@@ -893,7 +882,7 @@ node *copyThing(node *tree) {
   case PROC:
     copy->child1 = copyThing(tree->child1);
     copy->child2 = copyThing(tree->child2);
-    copy->arguments = copyChainWithoutReversal(tree->arguments, copyStringOnVoid);
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyString);
     break;
   case PRECDEREF:
     break; 			
@@ -1348,6 +1337,12 @@ char *getTimingStringForThing(node *tree) {
     break; 			
   case RELATIVESYM:
     constString = NULL;
+    break; 
+  case FIXED:
+    constString = NULL;
+    break; 
+  case FLOATING:
+    constString = NULL;
     break; 			
   case ERRORSPECIAL:
     constString = NULL;
@@ -1435,6 +1430,9 @@ char *getTimingStringForThing(node *tree) {
     break;  			
   case REMEZ:
     constString = "computing a minimax approximation";
+    break; 			 	
+  case FPMINIMAX:
+    constString = "computing a fpminimax approximation";
     break; 			 	
   case HORNER:
     constString = "convertion to horner notation";
@@ -3594,6 +3592,12 @@ char *sRawPrintThing(node *tree) {
     break; 			
   case RELATIVESYM:
     res = newString("relative");
+    break; 
+  case FIXED:
+    res = newString("fixed");
+    break; 
+  case FLOATING:
+    res = newString("floating");
     break; 			
   case ERRORSPECIAL:
     res = newString("error");
@@ -3725,6 +3729,16 @@ char *sRawPrintThing(node *tree) {
     break;  			
   case REMEZ:
     res = newString("remez(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 			 	
+  case FPMINIMAX:
+    res = newString("fpminimax(");
     curr = tree->arguments;
     while (curr != NULL) {
       res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
@@ -7653,6 +7667,26 @@ node *makeRelative() {
 
 }
 
+node *makeFixed() {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = FIXED;
+
+  return res;
+
+}
+
+node *makeFloating() {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = FLOATING;
+
+  return res;
+
+}
+
 node *makeError() {
   node *res;
 
@@ -7969,6 +8003,17 @@ node *makeRemez(chain *thinglist) {
 
   res = (node *) safeMalloc(sizeof(node));
   res->nodeType = REMEZ;
+  res->arguments = thinglist;
+
+  return res;
+
+}
+
+node *makeFPminimax(chain *thinglist) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = FPMINIMAX;
   res->arguments = thinglist;
 
   return res;
@@ -9198,6 +9243,12 @@ void freeThing(node *tree) {
     break; 			
   case RELATIVESYM:
     free(tree);
+    break; 
+  case FIXED:
+    free(tree);
+    break; 
+  case FLOATING:
+    free(tree);
     break; 			
   case ERRORSPECIAL:
     free(tree);
@@ -9308,6 +9359,10 @@ void freeThing(node *tree) {
     free(tree);
     break;  			
   case REMEZ:
+    freeChain(tree->arguments, freeThingOnVoid);
+    free(tree);
+    break; 			 	
+  case FPMINIMAX:
     freeChain(tree->arguments, freeThingOnVoid);
     free(tree);
     break; 			 	
@@ -9570,18 +9625,10 @@ void rawPrintThing(node *tree) {
 }
 
 
-int isEqualStringOnVoid(void *s, void *s2) {
-  if (strcmp((char *) s, (char *) s2)) return 1; else return 0;
-}
-
 int isEqualThing(node *tree, node *tree2);
 
 int isEqualThingOnVoid(void *tree, void *tree2) {
   return isEqualThing((node *) tree, (node *) tree2);
-}
-
-int isEqualIntPtrOnVoid(void *a, void *b) {
-  return (*((int *) a) == *((int *) b));
 }
 
 int isEqualThing(node *tree, node *tree2) {
@@ -10003,6 +10050,10 @@ int isEqualThing(node *tree, node *tree2) {
     break; 			
   case RELATIVESYM:
     break; 			
+  case FIXED:
+    break; 			
+  case FLOATING:
+    break; 			
   case ERRORSPECIAL:
     break; 			
   case DOUBLESYMBOL:
@@ -10073,6 +10124,9 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break;  			
   case REMEZ:
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
+    break; 			 	
+  case FPMINIMAX:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
     break; 			 	
   case HORNER:
@@ -10288,6 +10342,8 @@ int isCorrectlyTypedBaseSymbol(node *tree) {
   case DECIMAL:
   case ABSOLUTESYM:
   case RELATIVESYM:
+  case FIXED:
+  case FLOATING:
   case DOUBLESYMBOL:
   case DOUBLEEXTENDEDSYMBOL:
   case DOUBLEDOUBLESYMBOL:
@@ -10372,6 +10428,54 @@ node *evaluateThing(node *tree) {
 
   return evaluated;
 }
+
+
+int evaluateFormatsListForFPminimax(chain **res, node *list, int n) {
+  chain *result=NULL;
+  chain *curr;
+  int i, a;
+  int *intptr;
+
+  if( (list->nodeType==LIST) && (lengthChain(list->arguments) < n) ) {
+    printMessage(1, "Error in fpminimax: there is less formats indications than monomials\n");
+    return 0;
+  }
+  if( (list->nodeType==LIST) && (lengthChain(list->arguments) > n) ) {
+    printMessage(1, "Warning in fpminimax: there is more formats indications than monomials\n");
+    printMessage(1, "the formats list will be truncated\n");
+  }
+
+  curr=list->arguments;
+  i = 1;
+  while(i <= n) {
+    switch(((node *)(curr->value))->nodeType) {
+    case DOUBLESYMBOL: a=53; break;
+    case DOUBLEDOUBLESYMBOL: a=107; break;
+    case TRIPLEDOUBLESYMBOL: a=161; break;
+    case DOUBLEEXTENDEDSYMBOL: a=64; break;
+    default:
+      if (! evaluateThingToInteger(&a, (node *)(curr->value), NULL) ) {
+	printMessage(1, "Error in fpminimax: the formats list must contains only integers or formats\n");
+	freeChain(result, freeIntPtr);
+	return 0;
+      }
+    }
+
+    intptr = (int *)safeMalloc(sizeof(int));
+    *intptr = a;
+    result = addElement(result, intptr);
+    
+    if(curr->next != NULL) curr=curr->next;
+    i++;
+  }
+  
+  *res = copyChain(result, copyIntPtrOnVoid);
+  freeChain(result, freeIntPtr);
+  
+  return 1; 
+}
+
+
 
 int evaluateArgumentForExternalProc(void **res, node *argument, int type) {
   int retVal;
@@ -11129,6 +11233,7 @@ void *evaluateThingInnerOnVoid(void *tree) {
 
 node *evaluateThingInner(node *tree) {
   node *copy, *tempNode, *tempNode2, *tempNode3;
+  int *intptr;
   int resA, resB, i, resC, resD, resE;
   char *tempString, *tempString2, *timingString, *tempString3;
   char *str1, *str2;
@@ -11856,7 +11961,11 @@ node *evaluateThingInner(node *tree) {
   case ABSOLUTESYM:
     break; 			
   case RELATIVESYM:
-    break; 			
+    break;
+  case FIXED:
+    break;
+  case FLOATING:
+    break;			
   case ERRORSPECIAL:
     break; 			
   case DOUBLESYMBOL:
@@ -11954,9 +12063,9 @@ node *evaluateThingInner(node *tree) {
 	  strcpy(copy->string,tree->string);
 	}
       } else {
-	  copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
-	  copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
-	  strcpy(copy->string,tree->string);
+	copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+	copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+	strcpy(copy->string,tree->string);
       }
     } else {
       if (isExternalProcedureUsage(tempNode)) {
@@ -12692,6 +12801,179 @@ node *evaluateThingInner(node *tree) {
     freeThing(fourthArg);
     if (fifthArg != NULL) freeThing(fifthArg);
     break; 			 	
+  case FPMINIMAX:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+    curr = copy->arguments;
+    firstArg = copyThing((node *) (curr->value)); /* f */
+    curr = curr->next;
+    secondArg = copyThing((node *) (curr->value)); /* degree or monomials */
+    curr = curr->next;
+    thirdArg = copyThing((node *) (curr->value)); /* list of formats */
+    curr = curr->next;
+    fourthArg = copyThing((node *) (curr->value)); /* interval or points list */
+    curr = curr->next;
+    fifthArg = sixthArg = seventhArg = eighthArg = NULL;
+    if (curr != NULL) { /* one of absolute, relative, floating, fixed, constPart */
+      fifthArg = copyThing((node *) (curr->value));
+      curr = curr->next;
+      if (curr != NULL) { 
+	sixthArg = copyThing((node *) (curr->value));
+	curr = curr->next;
+	if (curr != NULL) { 
+	  seventhArg = copyThing((node *) (curr->value));
+	  curr = curr->next;
+	  if (curr != NULL) { /* minimax polynomial */
+	    eighthArg = copyThing((node *) (curr->value));
+	  }
+	}
+      }
+    }
+
+    tempChain = NULL;
+    if(evaluateThingToInteger(&resA, secondArg, NULL)) {
+      if(resA<0) printMessage(1, "Degree must be a positive integer");
+      else {
+	for(i=resA;i>=0;i--) {
+	  intptr = (int *)safeMalloc(sizeof(int));
+	  *intptr = i;
+	  tempChain = addElement(tempChain, intptr);
+	}
+      }
+    }
+    else{
+      if( (!evaluateThingToIntegerList(&tempChain, &resA, secondArg)) ||
+	  (resA=0) ) {
+	printMessage(1, "The second argument of fpminimax must be either an integer or a finite list of integers\n");
+      }
+    }
+  
+    tempChain2 = NULL;
+    if( (thirdArg->nodeType == LIST) || (thirdArg->nodeType == FINALELLIPTICLIST) )
+      evaluateFormatsListForFPminimax(&tempChain2, thirdArg, lengthChain(tempChain));
+    else
+      printMessage(1, "The third argument of fpminimax must be a list of formats indications\n");
+
+
+    tempChain3 = NULL;
+    mpfr_init2(a, tools_precision);
+    mpfr_init2(b, tools_precision);
+    resD = 1; /* tests if something goes wrong with 4th argument */
+    if (!evaluateThingToRange(a,b,fourthArg)) {
+      if (!evaluateThingToConstantList(&tempChain3, fourthArg)) {
+	resD = 0;
+	printMessage(1, "The fourth argument of fpminimax must be either an interval or a list of points\n");
+      }
+    }
+    if(tempChain3 != NULL) {
+      curr=tempChain3;
+      mpfr_set_prec(a, mpfr_get_prec(*(mpfr_t *)(curr->value)));
+      mpfr_set(a, *(mpfr_t *)(curr->value), GMP_RNDD);
+      while(curr->next != NULL) curr = curr->next;
+      mpfr_set_prec(b, mpfr_get_prec(*(mpfr_t *)(curr->value)));
+      mpfr_set(b, *(mpfr_t *)(curr->value), GMP_RNDD);
+    }
+
+
+    resB = FLOATING;
+    resC = RELATIVESYM;
+    tempNode = makeConstantDouble(0.);
+    resE = 1; /* tests if something goes wrong with 5th, 6th and 7th argument */
+
+    if ( (fifthArg != NULL) && (!isDefault(fifthArg)) ) {
+      switch(fifthArg->nodeType) {
+      case RELATIVESYM: resC = RELATIVESYM; break;
+      case ABSOLUTESYM: resC = ABSOLUTESYM; break;
+      case FLOATING: resB = FLOATING; break;
+      case FIXED: resB = FIXED; break;
+      default:
+	if( (isPureTree(fifthArg)) && (isPolynomial(fifthArg)) ) {
+	  freeThing(tempNode);
+	  tempNode = copyTree(fifthArg);
+	}
+	else {
+	  printMessage(1, "fpminimax: invalid fifth argument\n");
+	  resE = 0;
+	}
+      }
+    }
+    
+    if ( (sixthArg != NULL) && (!isDefault(sixthArg)) ) {
+      switch(sixthArg->nodeType) {
+      case RELATIVESYM: resC = RELATIVESYM; break;
+      case ABSOLUTESYM: resC = ABSOLUTESYM; break;
+      case FLOATING: resB = FLOATING; break;
+      case FIXED: resB = FIXED; break;
+      default:
+	if( (isPureTree(sixthArg)) && (isPolynomial(sixthArg)) ) {
+	  freeThing(tempNode);
+	  tempNode = copyTree(sixthArg);
+	}
+	else {
+	  printMessage(1, "fpminimax: invalid sixth argument\n");
+	  resE = 0;
+	}
+      }
+    }
+  
+    if ( (seventhArg != NULL) && (!isDefault(seventhArg)) ) {
+      switch(seventhArg->nodeType) {
+      case RELATIVESYM: resC = RELATIVESYM; break;
+      case ABSOLUTESYM: resC = ABSOLUTESYM; break;
+      case FLOATING: resB = FLOATING; break;
+      case FIXED: resB = FIXED; break;
+      default:
+	if( (isPureTree(seventhArg)) && (isPolynomial(seventhArg)) ) {
+	  freeThing(tempNode);
+	  tempNode = copyTree(seventhArg);
+	}
+	else {
+	  printMessage(1, "fpminimax: invalid seventth argument\n");
+	  resE = 0;
+	}
+      }
+    }
+
+
+    tempNode2 = NULL;
+    if( (eighthArg != NULL) && (isPureTree(eighthArg)) && (isPolynomial(eighthArg)) )
+      tempNode2 = copyTree(eighthArg);
+
+
+    if ( (isPureTree(firstArg)) &&
+	 (tempChain != NULL) &&    /* list of monomials */
+	 (tempChain2 != NULL) &&   /* list of formats   */
+	 (resD) &&                 /* tempChain3 != NULL or [a,b] is the interval */
+	 (resE) &&                 /* resB=FIXED,FLOATING   resC=ABSOLUTESYM,RELATIVESYM    tempNode=consPart */
+	 ((eighthArg == NULL) || (tempNode2 != NULL))  /* tempNode2 is minimax or NULL */
+	 ) {
+      
+      if (timingString != NULL) pushTimeCounter();
+      tempNode3 = FPminimax(firstArg, tempChain, tempChain2, tempChain3, a, b, resB, resC, tempNode, tempNode2);
+      if (timingString != NULL) popTimeCounter(timingString);
+      freeThing(copy);
+      copy=tempNode3;
+
+    }
+  
+
+	 
+    freeChain(tempChain, freeIntPtr);
+    freeChain(tempChain2, freeIntPtr);
+    freeChain(tempChain3, freeMpfrPtr);
+    mpfr_clear(a);
+    mpfr_clear(b);
+    freeThing(tempNode);
+    freeThing(tempNode2);
+
+    freeThing(firstArg);
+    freeThing(secondArg);
+    freeThing(thirdArg);
+    freeThing(fourthArg);
+    if(fifthArg!=NULL) freeThing(fifthArg);
+    if(sixthArg!=NULL) freeThing(sixthArg);
+    if(seventhArg!=NULL) freeThing(seventhArg);
+    if(eighthArg!=NULL) freeThing(eighthArg);
+    break;
   case HORNER:
     copy->child1 = evaluateThingInner(tree->child1);
     if (isPureTree(copy->child1)) {

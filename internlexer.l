@@ -141,6 +141,7 @@ SIMPLIFY        "simplify"
 CANONICAL       "canonical"
 PLOT            "plot"
 REMEZ           "remez"
+FPMINIMAX       "fpminimax"
 INFNORM         "infnorm"
 DIAM            "diam"
 
@@ -341,6 +342,8 @@ LENGTH          "length"
 ABSOLUTE        "absolute"
 RELATIVE        "relative"
 DECIMAL         "decimal"
+FIXED           "fixed"
+FLOATING        "floating"
 
 ERROR           "error"
 
@@ -575,6 +578,9 @@ NOP             "nop"
 {ABSOLUTE}   				    {  return ABSOLUTETOKEN; }				 
 {RELATIVE}   				    {  return RELATIVETOKEN; }				 
 {DECIMAL}   				    {  return DECIMALTOKEN; }				 
+{FIXED}   				    {  return FIXEDTOKEN; }				 
+{FLOATING}   				    {  return FLOATINGTOKEN; }				 
+
 {ERROR}   				    {  return ERRORTOKEN; }				 	 
 {READFILE}   				    {  return READFILETOKEN; }				 	       		  
 {ISBOUND}   				    {  return ISBOUNDTOKEN; }				 	       
@@ -589,6 +595,7 @@ NOP             "nop"
 {DIFF}            			    {  return DIFFTOKEN; }            					       
 {SIMPLIFY}				    {  return SIMPLIFYTOKEN; }						       
 {REMEZ}           			    {  return REMEZTOKEN; }           					       
+{FPMINIMAX}           			    {  return FPMINIMAXTOKEN; }           					       
 {HORNER}          			    {  return HORNERTOKEN; }          					       
 {EXPAND}          			    {  return EXPANDTOKEN; }          					       
 {SIMPLIFYSAFE}				    {  return SIMPLIFYSAFETOKEN; }				      	       

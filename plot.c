@@ -217,14 +217,22 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
       tern = evaluateFaithfulWithCutOff(y, tree, x, cutoff, prec);
       if (tern == 2) {
 	flush = 1;
-	printMessage(2,"Information: function image proven to be less than 2^(-%d) on point %s = ",p,variablename);
-	if (verbosity >= 2) { 	changeToWarningMode(); printValue(&x); restoreMode(); }
-	printMessage(2,"\nThis point will be plotted as the midpoint of the proof interval.\n");
+	if (verbosity >= 2) { 	
+	  changeToWarningMode(); 
+	  printf("Information: function image proven to be less than 2^(-%d) on point %s = ",p,variablename);
+	  printValue(&x);
+	  printf("\nThis point will be plotted as the midpoint of the proof interval.\n");
+	  restoreMode();
+	}
       }
       if (!mpfr_number_p(y)) {
-	printMessage(2,"Information: function undefined or not evaluable in point %s = ",variablename);
-	if (verbosity >= 2) { 	changeToWarningMode(); printValue(&x); restoreMode(); }
-	printMessage(2,"\nThis point will not be plotted.\n");
+	if (verbosity >= 2) {
+	  changeToWarningMode();
+	  printf("Information: function undefined or not evaluable in point %s = ",variablename);
+	  printValue(&x);
+	  printf("\nThis point will not be plotted.\n");
+	  restoreMode();
+	}
       }
       yd = mpfr_get_d(y, GMP_RNDN);
       if (!(yd-yd == 0.0)) overflow = 1;

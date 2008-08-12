@@ -14,6 +14,7 @@ In order to compile the software you will need the following packages installed:
 - mpfr 2.2.0 or later
 - mpfi
 - libxml2-dev
+- fpll (available at url http://perso.ens-lyon.fr/damien.stehle/english.html#software)
 
 - bison version 2.3 or later
 - flex version 2.5.33 or later

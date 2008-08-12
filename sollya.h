@@ -134,6 +134,9 @@ struct libraryProcedureStruct
 #define FLOOR 37
 #define PI_CONST 38
 
+#define ERRORSPECIAL 202
+
+
 typedef struct nodeStruct node;
 struct nodeStruct 
 {
@@ -172,9 +175,12 @@ extern void initTool();
 extern void finishTool();
 extern void setRecoverEnvironment(jmp_buf *);
 extern void invalidateRecoverEnvironment();
+extern void changeToWarningMode();
+extern void restoreMode();
 
 extern node *makeVariable();
 extern node *makeConstant(mpfr_t x);
+extern node *makeConstantDouble(double d);
 extern node *makeAdd(node *op1, node *op2);
 extern node *makeSub(node *op1, node *op2);
 extern node *makeMul(node *op1, node *op2);
@@ -211,10 +217,13 @@ extern node *makeAsinh(node *op1);
 extern node *makeAcosh(node *op1);
 extern node *makeAtanh(node *op1);
 
+extern node *makeError();
+
 extern node *parseString(char *str); 
 
 extern void free_memory(node *tree);
 
+extern int printMessage(int verb, const char *format, ...);
 extern void printTree(node *tree);
 extern void fprintTree(FILE *fd, node *tree);
 extern char *sprintTree(node *tree);
@@ -232,8 +241,10 @@ extern node *makePolynomial(mpfr_t *coefficients, int degree);
 extern node *getIthCoefficient(node *poly, int i);
 extern void getCoefficients(int *degree, node ***coefficients, node *poly);
 
+extern void evaluateRangeFunction(rangetype y, node *f, rangetype x, mp_prec_t prec);
 extern void evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec);
 extern int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec);
+extern int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec);
 
 extern int getDegree(node *tree);
 extern int isPolynomial(node *tree);
@@ -264,6 +275,8 @@ extern int lengthChain(chain *c);
 extern void sortChain(chain *c,  int (*f) (void *, void *));
 extern chain *makeIntPtrChainFromTo(int m, int n);
 extern void freeIntPtr(void *ptr);
+extern void *accessInList(chain *, int);
+extern chain *removeInt(chain *c, int n);
 
 extern void *safeCalloc (size_t nmemb, size_t size);
 extern void *safeMalloc (size_t size);

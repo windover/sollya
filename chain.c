@@ -49,6 +49,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpfr.h>
+#include <string.h>
 #include "chain.h"
 #include "general.h"
 
@@ -121,6 +122,65 @@ chain *copyChainWithoutReversal(chain *c, void * (*f) (void *)) {
 }
 
 
+void *copyString(void *oldString) {
+  char *newString;
+
+  newString = (char *) safeCalloc(strlen((char *) oldString) + 1,sizeof(char));
+  strcpy(newString,(char *) oldString);
+  return (void *) newString;
+}
+
+void *copyTreeOnVoid(void *tree) {
+  return copyTree((node *) tree);
+}
+
+
+void *copyRangetypePtr(void *ptr) {
+  rangetype *newPtr;
+
+  newPtr = (rangetype *) safeMalloc(sizeof(rangetype));
+  newPtr->a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  newPtr->b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+
+  mpfr_init2(*(newPtr->a),mpfr_get_prec(*(((rangetype *) ptr)->a)));
+  mpfr_init2(*(newPtr->b),mpfr_get_prec(*(((rangetype *) ptr)->b)));
+
+  mpfr_set(*(newPtr->a),*(((rangetype *) ptr)->a),GMP_RNDN);
+  mpfr_set(*(newPtr->b),*(((rangetype *) ptr)->b),GMP_RNDN);
+
+  return newPtr;
+}
+
+void *copyMpfiPtr(void *ptr) {
+  mpfi_t *newMpfi;
+
+  newMpfi = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
+  mpfi_init2(*newMpfi,mpfi_get_prec(*((mpfi_t *) ptr)));
+  mpfi_set(*newMpfi,*((mpfi_t *) ptr));
+  return (void *) newMpfi;
+}
+
+void *copyIntPtrOnVoid(void *i) {
+  int *copy;
+
+  copy = (int *) safeMalloc(sizeof(int));
+  *copy = *((int *) i);
+  
+  return (void *) copy;
+}
+
+void *copyMpfrPtr(void *ptr) {
+  mpfr_t *newMpfr;
+
+  newMpfr = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*newMpfr,mpfr_get_prec(*((mpfr_t *) ptr)));
+  mpfr_set(*newMpfr,*((mpfr_t *) ptr), GMP_RNDN);   /* exect */
+  return (void *) newMpfr;
+}
+
+
+
+
 chain* concatChains(chain *c1, chain *c2) {
   chain *curr;
 
@@ -162,11 +222,40 @@ chain *removeInt(chain *c, int n) {
   }
 }
 
+void freeMpfrPtr(void *ptr) {
+  if (ptr == NULL) return;
+
+  mpfr_clear(*((mpfr_t *) ptr));
+  free((mpfr_t *) ptr);
+}
+
+void freeMpfiPtr(void *i) {
+  if (i == NULL) return;
+  mpfi_clear(*((mpfi_t *) i));
+  free(i);
+}
 
 void freeIntPtr(void *ptr) {
   if (ptr == NULL) return;
   free(ptr);
 }
+
+void freeRangetypePtr(void *ptr) {
+  mpfr_clear(*(((rangetype *) ptr)->a));
+  mpfr_clear(*(((rangetype *) ptr)->b));
+  free(((rangetype *) ptr)->a);
+  free(((rangetype *) ptr)->b);
+  free(ptr);
+}
+
+void freeStringPtr(void *aString) {
+  free((char *) aString);
+}
+
+void freeMemoryOnVoid(void *tree) {
+  free_memory((node *) tree);
+}
+
 
 chain *makeIntPtrChain(int n) {
   return makeIntPtrChainFromTo(0,n);
@@ -293,6 +382,14 @@ chain *copyChainAndReplaceNth(chain *c, int k, void *obj, void * (*f) (void *)) 
   return copy;
 }
 
+int isEqualStringOnVoid(void *s, void *s2) {
+  if (strcmp((char *) s, (char *) s2)) return 1; else return 0;
+}
+
+int isEqualIntPtrOnVoid(void *a, void *b) {
+  return (*((int *) a) == *((int *) b));
+}
+
 int isEqualChain(chain *c, chain *c2, int (*f) (void *, void *)) {
   chain *curr, *curr2;
 
@@ -306,3 +403,4 @@ int isEqualChain(chain *c, chain *c2, int (*f) (void *, void *)) {
   }
   return 1;
 }
+
