@@ -18,7 +18,7 @@ parse("exp(x)");
 
 #EXAMPLE
 verbosity = 1!;
-parse("5 + + 3");
+parse("5 + * 3");
 
 #SEEALSO $EXECUTE
 #SEEALSO $READFILE

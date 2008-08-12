@@ -15,6 +15,12 @@ If <function2> is a constant integer, $COMMAND is defined
 on negative values of <function1>. Otherwise $COMMAND
 is defined as §§exp(y * log(x))§$e^{y \cdot \ln x}$§§.
 
+#DESCRIPTION
+Note that whenever several $COMMAND are composed, the priority goes
+to the last $COMMAND. This corresponds to the natural way of
+thinking when a tower of powers is written on a paper.
+Thus, §§2^3^5§\verb|2^3^5| is read as $2^{3^5}$ and§§ is interpreted as §§2^(3^5)§$2^{(3^5)}$§§.
+
 #EXAMPLE
 5 ^ 2;
 
@@ -27,9 +33,13 @@ x ^ 2;
 #EXAMPLE
 (-3) ^ (-2.5);
 
-
 #EXAMPLE
 diff(sin(x) ^ exp(x));
+
+#EXAMPLE
+2^3^5;
+(2^3)^5;
+2^(3^5);
 
 #SEEALSO $PLUS
 #SEEALSO $MINUS

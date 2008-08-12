@@ -21,6 +21,11 @@ Parameters:
    If \emph{function2} is a constant integer, \textbf{\^} is defined
    on negative values of \emph{function1}. Otherwise \textbf{\^}
    is defined as $e^{y \cdot \ln x}$.
+
+\item Note that whenever several \textbf{\^} are composed, the priority goes
+   to the last \textbf{\^}. This corresponds to the natural way of
+   thinking when a tower of powers is written on a paper.
+   Thus, \verb|2^3^5| is read as $2^{3^5}$ and is interpreted as $2^{(3^5)}$.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
@@ -37,7 +42,7 @@ x^2
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > 3 ^ (-5);
-0.41152263374485596707818930041152263374485596707818e-2
+4.1152263374485596707818930041152263374485596707818e-3
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
@@ -50,6 +55,16 @@ x^2
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > diff(sin(x) ^ exp(x));
 sin(x)^exp(x) * ((cos(x) * exp(x)) / sin(x) + exp(x) * log(sin(x)))
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 6: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> 2^3^5;
+1.4134776518227074636666380005943348126619871175005e73
+> (2^3)^5;
+32768
+> 2^(3^5);
+1.4134776518227074636666380005943348126619871175005e73
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{$+$} (\ref{labplus}), \textbf{$-$} (\ref{labminus}), \textbf{$*$} (\ref{labmult}), \textbf{/} (\ref{labdivide})

@@ -29,8 +29,14 @@ exp(x)
 \noindent Example 2: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > verbosity = 1!;
-> parse("5 + + 3");
-8
+> parse("5 + * 3");
+Warning: syntax error, unexpected MULTOKEN. Will try to continue parsing (expect
+ing ";"). May leak memory.
+Warning: the string "5 + * 3" could not be parsed by the miniparser.
+Warning: at least one of the given expressions or a subexpression is not correct
+ly typed
+or its evaluation has failed because of some error on a side-effect.
+error
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{execute} (\ref{labexecute}), \textbf{readfile} (\ref{labreadfile})

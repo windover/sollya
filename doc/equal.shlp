@@ -27,7 +27,7 @@ exp(5) == log(4);
 
 #EXAMPLE
 prec = 12;
-16384 == 16385;
+16384.25 == 16385.25;
 
 #EXAMPLE
 error == error;

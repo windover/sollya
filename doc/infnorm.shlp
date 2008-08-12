@@ -83,10 +83,10 @@ infnorm(exp(x),[-2;3]);
 infnorm(exp(x),[-2;3],"proof.txt");
 
 #EXAMPLE
-infnorm(exp(x),[-2;3],[| [0;1], [2;2.5] |]);
+infnorm(exp(x),[-2;3],[| [0;1], [2;2.5] |]);
 
 #EXAMPLE
-infnorm(exp(x),[-2;3],"proof.txt", [| [0;1], [2;2.5] |]);
+infnorm(exp(x),[-2;3],"proof.txt", [| [0;1], [2;2.5] |]);
 
 #EXAMPLE
 infnorm(exp(x),[1;1]);

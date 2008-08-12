@@ -37,7 +37,7 @@ checkinfnorm(sin(x),[0;1.75], 1/2); checkinfnorm(sin(x),[0;20/39],
 p = remez(exp(x), 5, [-1;1]);
 b = dirtyinfnorm(p - exp(x), [-1;1]);
 checkinfnorm(p - exp(x), [-1;1], b);
-b1 = round(b, 20, RU);
+b1 = round(b, 15, RU);
 checkinfnorm(p - exp(x), [-1;1], b1);
 b2 = round(b, 25, RU);
 checkinfnorm(p - exp(x), [-1;1], b2);
