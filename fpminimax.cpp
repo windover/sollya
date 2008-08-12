@@ -325,7 +325,7 @@ node *FPminimax(node *f,
 		node *minimax) {
   printMessage(0, "FPminimax is not yet available in Sollya but is coming soon.\n");
   printMessage(0, "We still have some minor issues with fplll but it should be fixed within a few weeks.\n\n");
-  printMessage(0, "   /********************************************************\\\n");
+  printMessage(0, "    ********************************************************\n");
   printMessage(0, "   |                                                        |\n");
   printMessage(0, "   |       IMPORTANT INFORMATION: Sollya's developper       |\n");
   printMessage(0, "   |                                                        |\n");
@@ -343,7 +343,7 @@ node *FPminimax(node *f,
   printMessage(0, "   | uncomment the end of the file.                         |\n");
   printMessage(0, "   | Then configure sollya with CXX=\"g++-4.2\" and make.     |\n");
   printMessage(0, "   |                                                        |\n");
-  printMessage(0, "   \\********************************************************/\n\n");
+  printMessage(0, "    ********************************************************\n\n");
 
   return copyTree(f);
 }
