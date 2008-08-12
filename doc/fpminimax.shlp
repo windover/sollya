@@ -1,0 +1,146 @@
+#NAME $FPMINIMAX
+#QUICK_DESCRIPTION computes a good polynomial approximation with fixed-point or floating-point coefficients
+
+#CALLING $COMMAND(<f>, <n>, <formats>, <range>, <indic1>, <indic2>, <indic3>, <P>)
+#TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $LIST_TYPE, $RANGE_TYPE, $APPROXERROR_TYPE §§|§$|$§§ $FPFORMAT_TYPE §§|§$|$§§ $FUNCTION_TYPE, $APPROXERROR_TYPE §§|§$|$§§ $FPFORMAT_TYPE §§|§$|$§§ $FUNCTION_TYPE, $APPROXERROR_TYPE §§|§$|$§§ $FPFORMAT_TYPE §§|§$|$§§ $FUNCTION_TYPE, $FUNCTION_TYPE) -> $FUNCTION_TYPE
+
+#CALLING $COMMAND(<f>, <monomials>, <formats>, <range>, <indic1>, <indic2>, <indic3>, <P>)
+#TYPE ($FUNCTION_TYPE, $LIST_TYPE, $LIST_TYPE, $RANGE_TYPE,  $APPROXERROR_TYPE §§|§$|$§§ $FPFORMAT_TYPE §§|§$|$§§ $FUNCTION_TYPE, $APPROXERROR_TYPE §§|§$|$§§ $FPFORMAT_TYPE §§|§$|$§§ $FUNCTION_TYPE, $APPROXERROR_TYPE §§|§$|$§§ $FPFORMAT_TYPE §§|§$|$§§ $FUNCTION_TYPE, $FUNCTION_TYPE) -> $FUNCTION_TYPE
+
+#CALLING $COMMAND(<f>, <n>, <formats>, <L>, <indic1>, <indic2>, <indic3>, <P>)
+#TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $LIST_TYPE, $LIST_TYPE,  $APPROXERROR_TYPE §§|§$|$§§ $FPFORMAT_TYPE §§|§$|$§§ $FUNCTION_TYPE, $APPROXERROR_TYPE §§|§$|$§§ $FPFORMAT_TYPE §§|§$|$§§ $FUNCTION_TYPE, $APPROXERROR_TYPE §§|§$|$§§ $FPFORMAT_TYPE §§|§$|$§§ $FUNCTION_TYPE, $FUNCTION_TYPE) -> $FUNCTION_TYPE
+
+#CALLING $COMMAND(<f>, <monomials>, <formats>, <L>, <indic1>, <indic2>, <indic3>, <P>)
+#TYPE ($FUNCTION_TYPE, $LIST_TYPE, $LIST_TYPE, $LIST_TYPE,  $APPROXERROR_TYPE §§|§$|$§§ $FPFORMAT_TYPE §§|§$|$§§ $FUNCTION_TYPE, $APPROXERROR_TYPE §§|§$|$§§ $FPFORMAT_TYPE §§|§$|$§§ $FUNCTION_TYPE, $APPROXERROR_TYPE §§|§$|$§§ $FPFORMAT_TYPE §§|§$|$§§ $FUNCTION_TYPE, $FUNCTION_TYPE) -> $FUNCTION_TYPE
+
+
+#PARAMETERS <f> is the function to be approximated
+#PARAMETERS <n> is the degree of the polynomial that must approximate<f>
+#PARAMETERS <monomials> is the list of monomials that must be used to represent the polynomial that approximates§§ §~§§<f>
+#PARAMETERS <formats> is a list indicating the formats that the coefficients of the polynomial must have
+#PARAMETERS <range> is the interval where the function must be approximated
+#PARAMETERS <L> is a list of interpolation points used by the method
+#PARAMETERS <indic1> (optional) is one of the optional indication parameters. See the detailed description below.
+#PARAMETERS <indic2> (optional) is one of the optional indication parameters. See the detailed description below.
+#PARAMETERS <indic3> (optional) is one of the optional indication parameters. See the detailed description below.
+#PARAMETERS <P> (optional) is the minimax polynomial to be considered for solving the problem.
+
+
+#DESCRIPTION 
+$COMMAND uses a heuristical (but practically efficient) method to find a good
+polynomial approximation of a function <f> on an interval <range>. It 
+implements the method published in the article:§§ §\\§§
+Efficient polynomial §§L^\infty - approximations§$L^\infty$-approximations\\§§ 
+Nicolas Brisebarre and Sylvain Chevillard§§ §\\§§
+Proceedings of the 18th IEEE Symposium on Computer Arithmetic (ARITH 18)§§ §\\§§
+pp. 169-176
+
+#DESCRIPTION
+The basic usage of this command is $COMMAND(<f>, <n>, <formats>, <range>).
+It computes a polynomial approximation of §§f§$f$§§ with degree at most §§n§$n$§§
+on the interval <range>. <formats> is a list of integers or format types 
+(such as $DOUBLE, $DOUBLEDOUBLE, etc.). The polynomial returned by the
+command has its coefficients that fits the formats indication. For 
+instance, if formats[0] is 35, the coefficient of degree 0 of the 
+polynomial will fit a floating-point format of 35 bits. If formats[1] 
+is D, the coefficient of degree 1 will be representable by a IEEE double
+precision number, etc.
+
+#DESCRIPTION
+The second argument may be either an integer or a list of integers
+interpreted as the list of desired monomials. For instance, the list
+§§[|0,2,4,6|]§$[|0,\,2,\,4,\,6|]$§§ indicates that the polynomial must be even and of
+degree at most 6. Giving an integer §§n§$n$§§ as second argument is equivalent
+as giving §§[|0,...,n|]§$[|0,\,\dots,\,n|]$§§.
+
+#DESCRIPTION
+The list of formats may contain either integers of format types ($DOUBLE,
+$DOUBLEDOUBLE, $TRIPLEDOUBLE and $DOUBLEEXTENDED). The list may be too big
+or even infinite. Only the first indications will be considered. For 
+instance, for a degree §§n§$n$§§ polynomial, §§formats[n+1]§$\mathrm{formats}[n+1]$§§ and above will
+be discarded. This lets one use elliptical indications for the last
+coefficients.
+
+#DESCRIPTION
+The fourth argument may be a range or a list. Lists are for advanced users
+that know what they are doing. The core of the  method is a kind of
+approximated interpolation. The list given here is a list of points that
+must be considered for the interpolation. It must contain at least as 
+many points as unknown coefficients. If you give a list, it is also 
+recommended that you provide the minimax polynomial as last argument.
+If you give a range, the list of points will be automatically computed.
+
+#DESCRIPTION
+The fivth, sixth and seventh arguments are optional. By default, $COMMAND
+will approximate §§f§$f$§§ optimizing the relative error, and interpreting
+the list of formats as a list of floating-point formats.§§ §\\§§
+This default behavior may be changed with these optional arguments. You
+may provide zero, one, two or three of the arguments and in any order.
+This lets the user indicate only the non-default arguments.§§ §\\§§
+The three possible arguments are: §§ §\begin{itemize}§§
+§§    -§\item§§ $RELATIVE or $ABSOLUTE: the error to be optimized;
+§§    -§\item§§ $FLOATING or $FIXED: formats of the coefficients;
+§§    -§\item§§ a constrained part §§q§$q$§§.
+§§ §\end{itemize}§§
+The constrained part lets the user assign in advance some of the
+coefficients. For instance, for approximating §§exp(x)§$\exp(x)$§§, it may
+be interesting to search for a polynomial §§p§$p$§§ of the form
+                §§p = 1 + x + x^2/2 + a3 x^3 + a4 x^4.§$$p = 1 + x + \frac{x^2}{2} + a_3 x^3 + a_4 x^4.$$§§
+Thus, there is a constrained part §§q = 1 + x + x^2/2§$q = 1 + x + x^2/2$§§ and the unknown
+polynomial should be considered in the monomial basis §§[|3, 4|]§$[|3, 4|]$§§.
+Calling $COMMAND with monomial basis §§[|3,4|]§$[|3,\,4|]$§§ and constrained
+part §§q§$q$§§, will return a polynomial with the right form.
+
+#DESCRIPTION
+The last argument is for advanced users. It is the minimax polynomial that
+approximates the function §§f§$f$§§ in the monomial basis. If it is not given
+this polynomial will be automatically computed by $COMMAND.
+§§ §\\§§
+This minimax polynomial is used to compute the list of interpolation
+points required by the method. In general, you do not have to provide this
+argument. But if you want to obtain several polynomials of the same degree
+that approximate the same function on the same range, just changing the
+formats, you should probably consider computing only once the minimax
+polynomial and the list of points instead of letting $COMMAND recompute
+them each time.
+§§ §\\§§
+Note that in the case when a constrained part is given, the minimax 
+polynomial must take it into account. For instance, in the previous
+example, the minimax would be obtained by the following command:
+       §§P = remez(1-(1+x+x^2/2)/exp(x), [|3,4|], range, 1/exp(x));§\begin{center}\verb~P = remez(1-(1+x+x^2/2)/exp(x), [|3,4|], range, 1/exp(x));~\end{center}§§
+Note that the constrained part is not to be added to §§P§$P$§§.
+
+
+#EXAMPLE
+P = fpminimax(cos(x),6,[|DD, DD, D...|],[-1b-5;1b-5]);
+printexpansion(P);
+
+#EXAMPLE
+P = fpminimax(sin(x),6,[|32...|],[-1b-5;1b-5], fixed, absolute);
+display = powers!;
+P;
+
+#EXAMPLE
+P = fpminimax(exp(x), [|3,4|], [|D,24|], [-1/256; 1/246], 1+x+x^2/2);
+display = powers!;
+P;
+
+#EXAMPLE
+f = cos(exp(x));
+pstar = remez(f, 5, [-1b-7;1b-7]);
+listpoints = dirtyfindzeros(f-pstar, [-1b-7; 1b-7]);
+P1 = fpminimax(f, 5, [|DD...|], listpoints, absolute, default, default, pstar);
+P2 = fpminimax(f, 5, [|D...|], listpoints, absolute, default, default, pstar);
+P3 = fpminimax(f, 5, [|D, D, D, 24...|], listpoints, absolute, default, default, pstar);
+print("Error of pstar: ", dirtyinfnorm(f-pstar, [-1b-7; 1b-7]));
+print("Error of P1:    ", dirtyinfnorm(f-P1, [-1b-7; 1b-7]));
+print("Error of P2:    ", dirtyinfnorm(f-P2, [-1b-7; 1b-7]));
+print("Error of P3:    ", dirtyinfnorm(f-P3, [-1b-7; 1b-7]));
+
+#SEEALSO $REMEZ
+#SEEALSO $DIRTYFINDZEROS
+#SEEALSO $ABSOLUTE
+#SEEALSO $RELATIVE
+#SEEALSO $FIXED
+#SEEALSO $FLOATING
+#SEEALSO $DEFAULT
