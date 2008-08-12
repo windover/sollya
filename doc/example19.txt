@@ -1,0 +1,6 @@
+display=binary!;
+prec=12!;
+a=pi;
+a;
+prec=30!;
+a;

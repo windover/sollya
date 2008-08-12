@@ -1,0 +1,2 @@
+for i from 1 to 5 do { if (i == 3) then i = 4 else i; };
+i;

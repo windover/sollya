@@ -7,6 +7,7 @@ FILE_TYPE="§§file|postscript|postscriptfile§file$|$postscript$|$postscriptfil
 PERTURB_TYPE="perturb"
 HONORCOEFF_TYPE="honorcoeffprec"
 APPROXERROR_TYPE="§§absolute|relative§absolute$|$relative§§"
+FPFORMAT_TYPE="§§fixed|floating§fixed$|$floating§§"
 
 VOID_TYPE="void"
 LIST_TYPE="list"

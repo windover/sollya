@@ -1,0 +1,5 @@
+verbosity = 0!;
+prec = 30!;
+i = 5;
+while (expm1(i) > 0) do { expm1(i); i := i - 1; };
+print(i);

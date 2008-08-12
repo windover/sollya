@@ -1,0 +1,16 @@
+#NAME $FIXED
+#QUICK_DESCRIPTION indicates that fixed-point formats should be used for $FPMINIMAX
+#CALLING $COMMAND
+#TYPE $FPFORMAT_TYPE
+
+#DESCRIPTION 
+The use of $COMMAND in the command $FPMINIMAX indicates that the list of
+formats given as argument is to be considered as a list of fixed-point
+formats.
+See $FPMINIMAX for details.
+
+#EXAMPLE
+fpminimax(cos(x),6,[|32,32,32,32,32,32,32|],[-1;1],fixed);
+
+#SEEALSO $FPMINIMAX
+#SEEALSO $FLOATING

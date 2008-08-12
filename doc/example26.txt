@@ -1,0 +1,6 @@
+a = 3;
+b = 4;
+if (a == b) then print("Hello world");
+b = 3;
+if (a == b) then print("Hello world");
+if (a == b) then print("You are telling the truth") else print("Liar!");

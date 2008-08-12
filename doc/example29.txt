@@ -1,0 +1,2 @@
+l = [|true, false, 1,...,4, "Hello", exp(x)|];
+for i in l do i;

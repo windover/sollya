@@ -1,0 +1,10 @@
+f = exp(x);
+f;
+a = "Hello world";
+a;
+b = 5;
+f(b);
+{var b; b = 4; f(b); };
+{var x; x = 3; };
+{var a, b; a=5; b=3; {var a; var b; b = true; a = 1; a; b;}; a; b; };
+a;

@@ -1,0 +1,5 @@
+f = sin(x)/x;
+prec;
+prec=200;
+prec;
+f(-2);

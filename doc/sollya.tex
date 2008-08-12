@@ -65,6 +65,7 @@ installed. In this case an error will be produced at runtime.
 \item \texttt{GMP}
 \item \texttt{MPFR}
 \item \texttt{MPFI}
+\item \texttt{fplll}
 \item \texttt{libxml2}
 \item \texttt{gnuplot}
 \end{itemize}
@@ -77,114 +78,43 @@ not indispensable.
 
 Let us begin this manual with an example. \sollya does not allow command line edition; since that may quickly become uncomfortable, we highly suggest to use the software \rlwrap with \sollya:
 
-\code{
-\ligne{~/\%rlwrap sollya}
-\ligne{>}
-}
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+~/% rlwrap sollya
+>
+\end{Verbatim}
+\end{minipage}\end{center}
 
 \sollya manipulates only univariate functions. The first time that an unbound variable is used, this name is fixed. It will be used to refer to the free variable. For instance, try
 
-\code{
-\ligne{~/\% rlwrap sollya}
-\ligne{> f = sin(x)/x;}
-\ligne{> g = cos(y)-1;}
-\ligne{Warning: the identifier "y" is neither assigned to, nor bound to a library }
-\ligne{function nor equal to the current free variable.}
-\ligne{Will interpret "y" as "x".}
-\ligne{> g;}
-\ligne{cos(x) - 1}
-\ligne{>} 
-}
+\input{example1}
 
 Now, the name $x$ can only be used to refer to the free variable:
 
-\code{
-\ligne{> x=3;}
-\ligne{Warning: the identifier "x" is already bound to the free variable or to a }
-\ligne{library function}
-\ligne{The command will have no effect.}
-\ligne{Warning: the last assignment will have no effect.}
-\ligne{>}
-}
+\input{example2}
 
 If you really want to unbound $x$, you can use the \com{rename} command and change the name of the free variable:
 
-\code{
-\ligne{> rename(x,y);}
-\ligne{Information: the free variable has been renamed from "x" to "y".}
-\ligne{> g;}
-\ligne{cos(y) - 1}
-\ligne{> x=3;}
-\ligne{> x;}
-\ligne{3}
-\ligne{> }
-}
+\input{example3}
 
 As you have seen, you can name functions and easily work with. The basic thing to do with a function is to evaluate it at some point:
 
-\code{
-\ligne{> f(-2);}
-\ligne{Warning: rounding has happened. The value displayed is a faithful rounding of the true result.}
-\ligne{0.454648713412840847698009932955872421351127485723941}
-\ligne{evaluate(f,-2);}
-\ligne{0.454648713412840847698009932955872421351127485723941106879}
-}
+\input{example4}
 
 The printed value is generally a faithful rounding of the exact value at the working precision. The working precision is controlled by the global variable \com{prec}:
 
-\code{
-\ligne{> prec;}
-\ligne{165}
-\ligne{> prec=200;}
-\ligne{The precision has been set to 200 bits.}
-\ligne{> prec;}
-\ligne{200}
-\ligne{> f(-2);}
-\ligne{Warning: rounding has happened. The value displayed is a faithful rounding of}
-\ligne{the true result.}
-\ligne{0.45464871341284084769800993295587242135112748572394513418948652}
-}
+\input{example5}
 
 Sometimes, a faithful rounding cannot easily be computed. In such a case, an approximated value is printed:
 
-\code{
-\ligne{> sin(pi);}
-\ligne{Warning: rounding has happened. The value displayed is not a faithful rounding}
-\ligne{of the true result.}
-\ligne{-0.379705991005939815725347821572628308530195421950339e-12715}
-}
+\input{example6}
 
 The philosophy of \sollya is: whenever something is not exact, print a warning. This explains the warnings in the previous examples. If the result can be shown to be exact, there is no warning:
 
-\code{
-\ligne{> sin(0);}
-\ligne{0}
-}
+\input{example7}
 
 Let us finish this Section with a small complete example that shows a bit of what can be done with \sollya:
 
-\code{
-\ligne{>  restart;}
-\ligne{The tool has been restarted.}
-\ligne{> prec=50;}
-\ligne{The precision has been set to 50 bits.}
-\ligne{> f=cos(2*exp(x));}
-\ligne{> d=[-1/8;1/8];}
-\ligne{> p=remez(f,2,d);}
-\ligne{> derivativeZeros = dirtyfindzeros(diff(p-f),d);}
-\ligne{> derivativeZeros = inf(d).:derivativeZeros:.sup(d);}
-\ligne{> max=0; for t in derivativeZeros do}
-\ligne{\{}
-\ligne{  r = evaluate(abs(p-f), t);}
-\ligne{  if r > max then \{max=r; argmax=t;\};}
-\ligne{\};}
-\ligne{> print("The infinite norm of", p-f, "is", max, "and is reached at", argmax);}
-\ligne{The infinite norm of (-0.41626557294429078481812212) + x * ((-0.1798067204872539}
-\ligne{9037039096583612263e1) + x * (-0.38971068364047456444865247249254026e-1)) - cos(}
-\ligne{2 * exp(x)) is 0.86306625059183635084725239e-3 and is reached at -0.580167296300}
-\ligne{62879863317e-1}
-\ligne{>}
-}
+\input{example8}
 
 In this example, we define a function $f$, an interval $d$ and we compute the best degree-4 polynomial approximation of $f$ on $d$ with respect to the infinite norm. In other words, $\max_{x \in d} \{|p(x)-f(x)|\}$ is minimal amongst polynomials with degree not greater than $4$. Then, we compute the list of the zeros of the derivative of $p-f$ and add the bounds of $d$ to this list. Finally, we evaluate $|p-f|$ for each point in the list and store the maximum and the point where it is reached. We conclude by printing the result in a formatted way.
 
@@ -203,53 +133,18 @@ For decidability and efficiency reasons, this general principle cannot be applie
 
 A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When set to $0$, \sollya becomes completely silent on stdout and prints only very important messages on stderr. Increase \key{verbosity} if you want more informations about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use \texttt{!}:
 
-\code{
-\ligne{> prec=30;}
-\ligne{The precision has been set to 30 bits.}
-\ligne{> prec=30!;}
-\ligne{>}
-}
+\input{example9}
 
 For conviviality reasons, values are displayed in decimal by default. This lets a normal human being understand the numbers he or she manipulates. But since constants are internally represented in binary, this causes permanent conversions that are sources of roundings. Thus you are loosing in accuracy and \sollya is always complaining about inexact results. If you just want to store or communicate your results (to another tools for instance) you can use bit-exact representations available in \sollya. The global variable \key{display} defines the way constants are displayed. Here is an example of the five available modes:
 
-
-\code{
-\ligne{> prec=30!;}
-\ligne{> a = 17.25;}
-\ligne{> display=decimal;}
-\ligne{Display mode is decimal numbers.}
-\ligne{> a;}
-\ligne{0.1725e2}
-\ligne{> display=binary;}
-\ligne{Display mode is binary numbers.}
-\ligne{> a;}
-\ligne{1.000101\_2 * 2\^{}(4)}
-\ligne{> display=powers;}
-\ligne{Display mode is dyadic numbers in integer-power-of-2 notation.}
-\ligne{> a;}
-\ligne{69 * 2\^{}(-2)}
-\ligne{> display=dyadic;}
-\ligne{Display mode is dyadic numbers.}
-\ligne{> a;}
-\ligne{69b-2}
-\ligne{> display=hexadecimal;}
-\ligne{Display mode is hexadecimal numbers.}
-\ligne{> a;}
-\ligne{0x1.14p4}
-\ligne{> }
-}
+\input{example10}
 
 As always, the symbol \texttt{e} means $\times 10^\square $. The same way the symbol \texttt{b} means  $\times 2^\square $. The symbol \texttt{p} means $\times 16^\square$ and is used only with the \texttt{0x} prefix. The prefix \texttt{0x} indicates that the digits of the following number until 
 a symbol \texttt{p} or whitespace are hexadecimal. The suffix \texttt{\_2} indicates to \sollya that the previous number has been written in binary. \sollya can parse these notations even if you are not in the corresponding \key{display} mode, so you can always use them.
 
 You can also use memory-dump hexadecimal notation frequently used to represent IEEE 754 \texttt{double} and \texttt{single} precision numbers. Since this notation does not allow for exactly representing numbers with arbitrary precision, there is no corresponding \key{display} mode. However, the commands \com{printhexa} respectively \com{printfloat} round the value to the nearest \texttt{double} respectively \texttt{single}. The number is then printed in hexadecimal as the integer number corresponding to the memory representation of the IEEE 754 \texttt{double} or \texttt{single} number:
 
-\code{
-\ligne{> printhexa(a);}
-\ligne{0x4031400000000000}
-\ligne{> printfloat(a);}
-\ligne{0x418a0000}
-}
+\input{example11}
 
 \sollya can parse these memory-dump hexadecimal notation back in any \key{display} mode.
 
@@ -288,35 +183,7 @@ on its usage and semantic.
 The following code examples illustrate the usage of variables.
 
 
-\code{
-\ligne{> f = exp(x);}
-\ligne{> f;}
-\ligne{exp(x)}
-\ligne{> a = "Hello world";}
-\ligne{> a;}
-\ligne{Hello world}
-\ligne{> b = 5;}
-\ligne{> f(b);}
-\ligne{Warning: rounding has happened. The value displayed is a faithful rounding of the true result.}
-\ligne{0.148413159102576603421115580040552279623487667593878e3}
-\ligne{> \{var b; b = 4; f(b); \};}
-\ligne{Warning: rounding has happened. The value displayed is a faithful rounding of the true result.}
-\ligne{0.545981500331442390781102612028608784027907370386137e2}
-\ligne{> \{var x; x = 3; \};}
-\ligne{Warning: the identifier "x" is already bound to the current free variable.}
-\ligne{It cannot be declared as a local variable. The declaration of "x" will have no effect.}
-\ligne{Warning: the identifier "x" is already bound to the free variable, to a library function or to an external procedure.}
-\ligne{The command will have no effect.}
-\ligne{Warning: the last assignment will have no effect.}
-\ligne{\{var a, b; a=5; b=3; \{var a; var b; b = true; a = 1; a; b;\}; a; b; \};}
-\ligne{1}
-\ligne{true}
-\ligne{5}
-\ligne{3}
-\ligne{> a;}
-\ligne{Hello world}
-}
-
+\input{example12}
 
 \section{Data types}
 \sollya has a (very) basic system of types. If you try to perform an illicit operation (such as adding a number and a string, for instance), you will get a type error. Let us see the available data types.
@@ -328,30 +195,13 @@ The comparison operators \key{<}, \key{<=}, \key{>} and \key{>=} can only be use
 
 The comparison operators \key{==} and \key{!=} are polymorphic. You can use it to compare any two objects, like two strings, two intervals, etc. Note that testing the equality between two functions will return \key{true} if and only if the expression trees representing the two functions are exactly the same. See \ref{laberror} for an exception concerning the special object \key{error}. Example:
 
-\code{
-\ligne{> 1+x==1+x;}
-\ligne{true}
-\ligne{> 1+x==x+1;}
-\ligne{false}
-}
+\input{example13}
 
 \subsection{Numbers}
 \sollya represents numbers as floating-point values. For integer values and values in dyadic, binary, hexadecimal or memory dump notation, it 
 automatically uses a precision needed for representing the value exactly. Otherwise the values are represented with the current precision \com{prec}. A number in an expression is rounded to the precision \com{prec} when the expression gets evaluated:
 
-\code{
-\ligne{> prec=12!;}
-\ligne{> 4097.1;}
-\ligne{Warning: Rounding occured when converting the constant "4097.1" to floating-point}
-\ligne{with 12 bits.}
-\ligne{If safe computation is needed, try to increase the precision.}
-\ligne{0.4096e4}
-\ligne{> 4097.1+1;}
-\ligne{Warning: Rounding occured when converting the constant "4097.1" to floating-point}
-\ligne{with 12 bits.}
-\ligne{If safe computation is needed, try to increase the precision.}
-\ligne{4099}
-}
+\input{example14}
 
 Note that each variable has its own precision that corresponds to its intrinsic precision or, if it cannot be represented, to the value of \com{prec} when the variable was set. Thus you can work with variables having a precision bigger than the current precision.
 
@@ -359,74 +209,22 @@ The same way, if you define a function that refers to some constant, this consta
 
 If you define a function that refers to some variable, the precision of the variable is kept, independently of the current precision:
 
-\code{
-\ligne{> prec = 50!;}
-\ligne{> a = 4097.1;}
-\ligne{Warning: Rounding occurred when converting the constant "4097.1" to floating-point}
-\ligne{with 50 bits.}
-\ligne{If safe computation is needed, try to increase the precision.}
-\ligne{> prec = 12!;}
-\ligne{> f = x + a;}
-\ligne{> g = x + 4097.1;}
-\ligne{Warning: Rounding occurred when converting the constant "4097.1" to floating-point} 
-\ligne{with 12 bits.}
-\ligne{If safe computation is needed, try to increase the precision.}
-\ligne{> prec = 120;}
-\ligne{The precision has been set to 120 bits.}
-\ligne{> f;}
-\ligne{0.409709999999999854480847716331481933e4 + x}
-\ligne{> g;}
-\ligne{4098 + x}
-}
+\input{example15}
 
 \subsection{Intervals}
 Intervals are composed of two numbers or constant expressions representing the lower and the upper bound. These values are separated either by commas or semi-colons:
 
-\code{
-\ligne{> d=[1;2];}
-\ligne{> d2=[1,1+1];}
-\ligne{> d==d2;}
-\ligne{true}
-}
+\input{example16}
 
 If bounds are defined by constant expressions, these are evaluated to floating-point numbers using the current precision. Numbers or variables containing numbers keep their precision for the interval bounds. Interval bound evaluation is performed in a way that ensures the inclusion property: all points
 in the original, unevaluated interval will be contained in the interval with its bounds evaluated to floating-point numbers. Remark that 
 evaluation bounds defined by constant expressions includes $\pi$:
 
-\code{
-\ligne{> prec = 300!;}
-\ligne{> a = 4097.1;}
-\ligne{Warning: Rounding occurred when converting the constant "4097.1" to floating-point}
-\ligne{with 300 bits.}
-\ligne{If safe computation is needed, try to increase the precision.}
-\ligne{> prec = 12!;}
-\ligne{> d = [4097.1; a];}
-\ligne{Warning: Rounding occurred when converting the constant "4097.1" to floating-point}
-\ligne{with 12 bits.}
-\ligne{If safe computation is needed, try to increase the precision.}
-\ligne{Warning: the bounds of the given range are in wrong order. Will reverse them.}
-\ligne{> prec = 300!;}
-\ligne{> d;}
-\ligne{[0.409709999999999999999999999999999999999999999999999999999999999999999999999}
-\ligne{99999999999999968e4;4098]}
-\ligne{> prec = 30!;}
-\ligne{> [-pi;pi];}
-\ligne{Warning: the given expression is not a constant but an expression to evaluate.}
-\ligne{Warning: the given expression is not a constant but an expression to evaluate.}
-\ligne{[-0.3141592659e1;0.3141592659e1]}
-}
+\input{example17}
 
 You can get the upper-bound (respectively the lower-bound)) of an interval with the function \com{sup} (respectively \com{inf}). The middle of the interval is got with the function \com{mid}. Note that these functions can also be used on numbers (in that case, the number is interpreted as an interval containing only one single point. Thus the functions \com{inf}, \com{mid} and \com{sup} are just the identity):
 
-\code{
-\ligne{> d=[1;3];}
-\ligne{> inf(d);}
-\ligne{1}
-\ligne{> mid(d);}
-\ligne{2}
-\ligne{> sup(4);}
-\ligne{4}
-}
+\input{example18}
 
 \subsection{Functions}
 \sollya knows only functions with one single variable. The first time in a session that an unbound name is used (without being assigned) it determines the name used to refer to the free variable.
@@ -445,35 +243,12 @@ The basic functions available in \sollya are the following:
 
 The constant $\pi$ is available through the keyword \key{pi} as a $0$-ary function: its behavior is exactly the same as if it were a constant with an infinite precision:
 
-\code{
-\ligne{> display=binary!;}
-\ligne{> prec=12!;}
-\ligne{> a=pi;}
-\ligne{> a;}
-\ligne{Warning: rounding has happened. The value displayed is a faithful rounding of}
-\ligne{the true result.}
-\ligne{1.10010010001\_2 * 2\^{}(1)}
-\ligne{> prec=30!;}
-\ligne{> a;}
-\ligne{Warning: rounding has happened. The value displayed is a faithful rounding of}
-\ligne{the true result.}
-\ligne{1.10010010000111111011010101001\_2 * 2\^{}(1)}
-}
-
+\input{example19}
 
 \subsection{Strings}
 Anything written between quotes is interpreted as a string. The infix operator \com{@} concatenates two strings. To get the length of a string, use the \com{length} function. You can access the $i$-th character of a string using brackets (see the example below). There is no character type in \sollya: the $i$-th character of a string is returned as a string itself.
 
-\code{
-\ligne{> s1 = "Hello "; s2 = "World!";}
-\ligne{> s = s1@s2;}
-\ligne{> length(s);}
-\ligne{12}
-\ligne{> s[0];}
-\ligne{H}
-\ligne{> s[11];}
-\ligne{!}
-}
+\input{example20}
 
 Strings may contain the following escape sequences:
 \texttt{$\backslash\backslash$}, \texttt{$\backslash$\"},
@@ -494,6 +269,7 @@ meaning.
 \item \com{file}, \com{postscript}, \com{postscriptfile} (see sections \ref{labfile}, \ref{labpostscript} and \ref{labpostscriptfile})
 \item \com{RU}, \com{RD}, \com{RN}, \com{RZ} (see sections \ref{labru}, \ref{labrd}, \ref{labrn} and \ref{labrz})
 \item \com{absolute}, \com{relative} (see sections \ref{lababsolute} and \ref{labrelative})
+\item \com{floating}, \com{fixed} (see sections \ref{labfloating} and \ref{labfixed})
 \item \com{double}, \com{doubleextended}, \com{doubledouble}, \com{tripledouble} (see sections \ref{labdouble}, \ref{labdoubleextended}, \ref{labdoubledouble} and \ref{labtripledouble})
 \item \com{D}, \com{DE}, \com{DD}, \com{TD} (see sections \ref{labdouble}, \ref{labdoubleextended}, \ref{labdoubledouble} and \ref{labtripledouble})
 \item \com{perturb} (see section \ref{labperturb})
@@ -508,29 +284,13 @@ Objects can be grouped into lists. A list can contain elements with different ty
 
 You can prepend an element to a list using \com{.:} (in $\mathcal{O}(1)$) and you can append an element to a list using \com{:.} (in $\mathcal{O}(n)$). The following example illustrates some features:
 
-\code{
-\ligne{> l = [| "foo" |];}
-\ligne{> l = l:.1;}
-\ligne{> l = "bar".:l;}
-\ligne{> l;}
-\ligne{[|"bar", "foo", 1|]}
-\ligne{> l[1];}
-\ligne{foo}
-\ligne{> l@l;}
-\ligne{[|"bar", "foo", 1, "bar", "foo", 1|]}
-}
+\input{example21}
 
 Lists can be considered as arrays and elements of lists can be
 referenced using brackets. Possible indices start at $0$. The
 following example illustrates this point:
 
-\code{
-\ligne{> l = [|1,2,3,4,5|];}
-\ligne{> l;}
-\ligne{[|1, 2, 3, 4, 5|]}
-\ligne{> l[3];}
-\ligne{4}
-}
+\input{example22}
 
 Remark that the complexity for accessing an element of the list using
 indices is $\mathcal{O}(n)$.
@@ -543,20 +303,7 @@ constants is not allowed. This feature is provided for ease of
 programming; remark that the complexity of expanding such lists is
 high. For illustration, see the following example:
 
-\code{
-\ligne{> [|1,...,5|];}
-\ligne{[|1, 2, 3, 4, 5|]}
-\ligne{> [|-5,...,5|];}
-\ligne{[|-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5|]}
-\ligne{> [|3,...,1|];}
-\ligne{Warning: at least one of the given expressions or a subexpression is not correctly typed}
-\ligne{or its evaluation has failed because of some error on a side-effect.}
-\ligne{error}
-\ligne{> [|true,...,false|];}
-\ligne{Warning: at least one of the given expressions or a subexpression is not correctly typed}
-\ligne{or its evaluation has failed because of some error on a side-effect.}
-\ligne{error}
-}
+\input{example23}
 
 Lists may be continued to infinity by means of the \texttt{...}
 indicator after the last element given. At least one element must
@@ -571,26 +318,7 @@ high. Combinations of ellipses inside a list and in its end are
 possible. The usage of lists described here is best illustrated by the
 following examples:
 
-\code{
-\ligne{> l = [|1,2,true,3...|];}
-\ligne{> l;}
-\ligne{[|1, 2, true, 3...|]}
-\ligne{> l[2];}
-\ligne{true}
-\ligne{> l[3];}
-\ligne{3}
-\ligne{> l[4];}
-\ligne{4}
-\ligne{> l[1200];}
-\ligne{1200}
-\ligne{> l = [|1,...,5,true...|];}
-\ligne{> l;}
-\ligne{[|1, 2, 3, 4, 5, true...|]}
-\ligne{> l[1200];}
-\ligne{true}
-}
-
-
+\input{example24}
 
 \section{Iterative language elements: assignments, conditional statements and loops}
 
@@ -633,39 +361,8 @@ of lists is not supported for complexity reasons.
 
 The following examples well illustrate the behavior of assignment
 statements:
-\code{
-\ligne{> autosimplify = off;}
-\ligne{Automatic pure tree simplification has been deactivated.}
-\ligne{> i = 1000;}
-\ligne{> i = i + 1;}
-\ligne{> print(i);}
-\ligne{1000 + 1}
-\ligne{> i := i + 1;}
-\ligne{> print(i);}
-\ligne{1002}
-\ligne{> l = [|1,...,5|];}
-\ligne{> print(l);}
-\ligne{[|1, 2, 3, 4, 5|]}
-\ligne{> l[3] = l[3] + 1;}
-\ligne{> l[4] := l[4] + 1;}
-\ligne{> print(l);}
-\ligne{[|1, 2, 3, 4 + 1, 6|]}
-\ligne{> l[5] = true;}
-\ligne{> l;}
-\ligne{[|1, 2, 3, 5, 6, true|]}
-\ligne{> s = "Hello world";}
-\ligne{> s;}
-\ligne{Hello world}
-\ligne{> s[1] = "a";}
-\ligne{> s;}
-\ligne{Hallo world}
-\ligne{> l = [|true,1,...,5,9...|];}
-\ligne{> l;}
-\ligne{[|true, 1, 2, 3, 4, 5, 9...|]}
-\ligne{> l[13] = "Hello";}
-\ligne{> l;}
-\ligne{[|true, 1, 2, 3, 4, 5, 9, 10, 11, 12, 13, 14, 15, "Hello"...|]}
-}
+
+\input{example25}
 
 \subsection{Conditional statements}
 
@@ -678,16 +375,7 @@ conditional statements in \sollya. Concerning syntax, consider also
 section \ref{grammar} and remark that there must not be any semicolon
 before the \key{else} keyword.
 
-\code{
-\ligne{> a = 3;}
-\ligne{> b = 4;}
-\ligne{> if (a == b) then print("Hello world");}
-\ligne{> b = 3;}
-\ligne{> if (a == b) then print("Hello world");}
-\ligne{Hello world}
-\ligne{> if (a == b) then print("You are telling the truth") else print("Liar!");}
-\ligne{You are telling the truth}
-}
+\input{example26}
 
 \subsection{Loops}
 
@@ -697,19 +385,7 @@ loops can be expressed using the keywords \key{while} and
 loop, there is no \emph{do-until-condition} loop. Consider the following 
 examples for both syntax and semantic:
 
-\code{
-\ligne{> verbosity = 0!;}
-\ligne{> prec = 30!;}
-\ligne{> i = 5;}
-\ligne{> while (expm1(i) > 0) do \{ expm1(i); i := i - 1; \};}
-\ligne{0.14741315913e3}
-\ligne{0.53598150015e2}
-\ligne{0.19085536927e2}
-\ligne{0.63890561014e1}
-\ligne{0.17182818279e1}
-\ligne{> print(i);}
-\ligne{0}
-}
+\input{example27}
 
 The second kind of loops are loops on a variable ranging from a
 numerical start value and a end value. These kind of loops can be
@@ -718,18 +394,7 @@ and optionally \key{by}. The \key{by} statement indicates the width of
 the steps on the variable from the start value to the end value. Once
 again, syntax and semantic are best explained with an example:
 
-\code{
-\ligne{> for i from 1 to 5 do print ("Hello world",i);}
-\ligne{Hello world 1}
-\ligne{Hello world 2}
-\ligne{Hello world 3}
-\ligne{Hello world 4}
-\ligne{Hello world 5}
-\ligne{> for i from 2 to 1 by -0.5 do print("Hello world",i);}
-\ligne{Hello world 2}
-\ligne{Hello world 0.15e1}
-\ligne{Hello world 1}
-}
+\input{example28}
 
 The third kind of loops are loops on a variables ranging on values
 contained in a list. In order to ensure the termination of the loop,
@@ -737,32 +402,14 @@ that list must not be end-elliptic. The loop is expressed using the
 keywords \key{for}, \key{in} and \key{do} as in the following
 examples:
 
-\code{
-\ligne{> l = [|true, false, 1,...,4, "Hello", exp(x)|];}
-\ligne{> for i in l do i;}
-\ligne{true}
-\ligne{false}
-\ligne{1}
-\ligne{2}
-\ligne{3}
-\ligne{4}
-\ligne{Hello}
-\ligne{exp(x)}
-}
+\input{example29}
 
 For both types of \key{for} loops, assigning the loop variable is
 allowed and possible. If the loop terminates, the loop variable will
 contain the value that made the loop condition fail. Consider the
 following examples:
 
-\code{
-\ligne{> for i from 1 to 5 do \{ if (i == 3) then i = 4 else i; \};}
-\ligne{1}
-\ligne{2}
-\ligne{5}
-\ligne{> i;}
-\ligne{6}
-}
+\input{example30}
 
 \section{Functional language elements: procedures}
 
@@ -793,49 +440,7 @@ precision valid at this moment.
 
 \sollya procedures are well illustrated by the following examples:
 
-\code{
-\ligne{succ = proc(n) \{ return n + 1; \};}
-\ligne{succ(5);}
-\ligne{6}
-\ligne{3 + succ(0);}
-\ligne{4}
-\ligne{succ;}
-\ligne{proc(n)}
-\ligne{begin}
-\ligne{nop;}
-\ligne{return (n) + (1);}
-\ligne{end}
-\ligne{add = proc(m,n) \{ var res; res := m + n; return res; \};}
-\ligne{add(5,6);}
-\ligne{11}
-\ligne{hey = proc() \{ print("Hello world."); \};}
-\ligne{> hey();}
-\ligne{Hello world.}
-\ligne{print(hey());}
-\ligne{Hello world.}
-\ligne{void}
-\ligne{hey;}
-\ligne{proc()}
-\ligne{begin}
-\ligne{print("Hello world.");}
-\ligne{return void;}
-\ligne{end}
-\ligne{fac = proc(n) \{ var res; if (n == 0) then res := 1 else res := n * fac(n - 1); return res; \};}
-\ligne{fac(5);}
-\ligne{120}
-\ligne{fac(11);}
-\ligne{39916800}
-\ligne{> fac;}
-\ligne{proc(n)}
-\ligne{begin}
-\ligne{var res;}
-\ligne{if (n) == (0) then}
-\ligne{res := 1}
-\ligne{else}
-\ligne{res := (n) * (fac((n) - (1)));}
-\ligne{return res;}
-\ligne{end}
-} 
+\input{example31}
 
 \sollya also supports external procedures, i.e. procedures written in
 \texttt{C} (or some other language) and dynamically bound to \sollya

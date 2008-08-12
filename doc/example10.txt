@@ -1,0 +1,12 @@
+prec=30!;
+a = 17.25;
+display=decimal;
+a;
+display=binary;
+a;
+display=powers;
+a;
+display=dyadic;
+a;
+display=hexadecimal;
+a;

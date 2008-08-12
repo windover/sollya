@@ -69,11 +69,11 @@ not easy even to analyse.
 
 #DESCRIPTION
 The algorithm used for this command is quite complex to be explained here. 
-Please find a complete description in the following article:
-     S. Chevillard and C. Lauter
-     A certified infinite norm for the implementation of elementary functions
-     LIP Research Report number RR2007-26
-     http://prunel.ccsd.cnrs.fr/ensl-00119810
+Please find a complete description in the following article:§§§\\§§
+     S. Chevillard and C. Lauter§§§\\§§
+     A certified infinite norm for the implementation of elementary functions§§§\\§§
+     LIP Research Report number RR2007-26§§§\\§§
+     http://prunel.ccsd.cnrs.fr/ensl-00119810§§§\\§§
 
 
 #EXAMPLE

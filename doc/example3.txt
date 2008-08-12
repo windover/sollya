@@ -1,0 +1,6 @@
+f = sin(x)/x;
+g = cos(y) - 1;
+rename(x,y);
+g;
+x=3;
+x;

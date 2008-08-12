@@ -1,0 +1,16 @@
+#NAME $FLOATING
+#QUICK_DESCRIPTION indicates that floating-point formats should be used for $FPMINIMAX
+#CALLING $COMMAND
+#TYPE $FPFORMAT_TYPE
+
+#DESCRIPTION 
+The use of $COMMAND in the command $FPMINIMAX indicates that the list of
+formats given as argument is to be considered as a list of floating-point
+formats.
+See $FPMINIMAX for details.
+
+#EXAMPLE
+fpminimax(cos(x),6,[|D...|],[-1;1],floating);
+
+#SEEALSO $FPMINIMAX
+#SEEALSO $FIXED
