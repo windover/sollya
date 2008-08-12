@@ -47,6 +47,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 */
 
 
+#include <iostream>
 #include <gmp.h>
 #include <mpfr.h>
 #include <stdio.h>
