@@ -51,6 +51,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "chain.h"
 #include "general.h"
 #include "infnorm.h"
+#include "execute.h"
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
@@ -210,7 +211,7 @@ void mpfr_sort(mpfr_t *vect, int n, mp_prec_t prec) {
 
 
 // Constructs the tree corresponding to p = sum(coeff(i) X^monomials[i])
-// The array coeff is supposed to have at least so many elements as monomials
+// The array coeff is supposed to have at least as many elements as monomials
 node *constructPolynomial(mpfr_t *coeff, chain *monomials, mp_prec_t prec) {
   int i=1;
   chain *curr;
@@ -2289,7 +2290,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
   return res;
 }
 
-rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) {
+rangetype oldguessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) {
   int n_min=1;
   int n_max=10;
   int res=-1;
@@ -2375,5 +2376,339 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   range.b = v;
   defaultpoints=number_points;
   verbosity = old_verbosity;
+  return range;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+node *constructPolynomialFromArray(mpfr_t *coeff, node **monomials_tree, int n, mp_prec_t prec) {
+  int i;
+  node *poly;
+
+  poly = makeConstantDouble(0.0);
+  for(i=0;i<n;i++) poly = makeAdd(makeMul(makeConstant(coeff[i]), copyTree(monomials_tree[i])),poly);
+
+  return poly;
+}
+
+
+/* Construct a set of p Chebychev's points corresponding to the extrema
+   of the Chebychev polynomial */
+mpfr_t *chebychevsPoints(mpfr_t u, mpfr_t v, int p, mp_prec_t *currentPrec) {
+  mpfr_t var1, var2, var3;
+  mpfr_t *x;
+  int i;
+  mpfr_init2(var1, *currentPrec);
+  mpfr_init2(var2, *currentPrec);
+  mpfr_init2(var3, *currentPrec);
+
+  x = (mpfr_t *)safeMalloc(p*sizeof(mpfr_t));
+
+  mpfr_const_pi(var1, GMP_RNDN);
+  mpfr_div_si(var1, var1, (long)(p-1), GMP_RNDN); // var1 = Pi/(p-1)
+  mpfr_sub(var2, u, v, GMP_RNDN);
+  mpfr_div_2ui(var2, var2, 1, GMP_RNDN); // var2 = (u-v)/2
+  mpfr_add(var3, u, v, GMP_RNDN);
+  mpfr_div_2ui(var3, var3, 1, GMP_RNDN); // var3 = (u+v)/2
+  
+  for (i=1 ; i <= p ; i++) {
+    mpfr_init2(x[i-1], *currentPrec);
+    mpfr_mul_si(x[i-1], var1, i-1, GMP_RNDN);
+    mpfr_cos(x[i-1], x[i-1], GMP_RNDN);
+    mpfr_fma(x[i-1], x[i-1], var2, var3, GMP_RNDN); // x_i = [cos((i-1)*Pi/(p-1))]*(u-v)/2 + (u+v)/2
+  }
+
+  mpfr_clear(var1);
+  mpfr_clear(var2);
+  mpfr_clear(var3);
+  
+  return x;
+}
+
+
+mpfr_t *remezMatrix(node *w, mpfr_t *x, node **monomials_tree, int n, mp_prec_t *currentPrec) {
+  mpfr_t var1, var2, var3, zero_mpfr;
+  mpfr_t *M;
+  int i,j,r, test;
+  node *temp_tree, *temp_tree2;
+  mp_prec_t prec= *currentPrec;
+
+  M = (mpfr_t *)(safeMalloc((n+1)*(n+1)*sizeof(mpfr_t)));
+  
+  mpfr_init2(var1, prec);
+  mpfr_init2(var2, prec);
+  mpfr_init2(var3, prec);
+  mpfr_init2(zero_mpfr, 53);
+  mpfr_set_d(zero_mpfr, 0., GMP_RNDN);
+
+  for (i=1 ; i <= n+1 ; i++) {
+    mpfr_init2(M[coeff(i,n+1,n+1)], prec);
+    if(i%2==0) mpfr_set_si(M[coeff(i,n+1,n+1)], 1, GMP_RNDN);
+    else mpfr_set_si(M[coeff(i,n+1,n+1)], -1, GMP_RNDN);
+
+    r = evaluateFaithfulWithCutOffFast(var1, w, NULL, x[i-1], zero_mpfr, prec);
+    if((r==1) && (mpfr_number_p(var1))) test=1;
+    else test=0;
+
+    for (j=1 ; j <= n ; j++) {
+      mpfr_init2(M[coeff(i,j,n+1)], prec);
+
+      if(test==1) {
+	r = evaluateFaithfulWithCutOffFast(var2, monomials_tree[j-1], NULL, x[i-1], zero_mpfr, prec);
+	if((r==1) && (mpfr_number_p(var2))) {
+	  mpfr_mul(var2, var1, var2, GMP_RNDN);
+	  mpfr_set(M[coeff(i,j,n+1)],var2,GMP_RNDN);
+	}
+      }
+      if((test==0) || (r==0) || (!mpfr_number_p(var2))) {
+	printMessage(2,"Information: the construction of M[%d,%d] uses a slower algorithm\n",i,j);
+	temp_tree = safeMalloc(sizeof(node));
+	temp_tree->nodeType = MUL;
+	temp_tree->child1 = copyTree(monomials_tree[j-1]);
+	temp_tree->child2 = copyTree(w);
+	
+	temp_tree2 = simplifyTreeErrorfree(temp_tree);
+	free_memory(temp_tree);
+	temp_tree = temp_tree2; // temp_tree = x^(monomials[j])*w(x)
+	
+	r = evaluateFaithfulWithCutOffFast(var3, temp_tree, NULL, x[i-1], zero_mpfr, prec);
+	
+	if(r==0) mpfr_set_d(var3, 0., GMP_RNDN);
+	mpfr_set(M[coeff(i,j,n+1)],var3,GMP_RNDN);
+
+	free_memory(temp_tree);
+      }
+    }
+  }
+
+  
+  mpfr_clear(zero_mpfr);
+  mpfr_clear(var1);
+  mpfr_clear(var2);
+  mpfr_clear(var3);
+
+  return M;
+}
+
+
+node *elementaryStepRemezAlgorithm(mpfr_t *h,
+				   node *func, node *weight, mpfr_t *x,
+				   node **monomials_tree, int n,
+				   mp_prec_t *currentPrec) {
+  mpfr_t *M;
+  mpfr_t *b, *ai_vect;
+  int i,j;
+  mpfr_t zero_mpfr;
+  node *poly;
+  int r;
+
+  mpfr_init2(zero_mpfr, 53);
+  mpfr_set_d(zero_mpfr, 0., GMP_RNDN);
+
+  b = (mpfr_t *)(safeMalloc((n+1)*sizeof(mpfr_t)));
+  ai_vect = (mpfr_t *)(safeMalloc((n+1)*sizeof(mpfr_t)));
+
+  for(i=0;i<=n;i++) {
+    mpfr_init2(b[i], *currentPrec);
+    r=evaluateFaithfulWithCutOffFast(b[i], func, NULL, x[i], zero_mpfr, *currentPrec);
+    if (r == 0) mpfr_set_d(b[i], 0., GMP_RNDN);
+  }
+
+  for(i=0;i<=n;i++) mpfr_init2(ai_vect[i], *currentPrec);
+
+  M = remezMatrix(weight, x, monomials_tree, n, currentPrec);
+  system_solve(ai_vect, M, b, n+1, *currentPrec);
+  
+  poly = constructPolynomialFromArray(ai_vect, monomials_tree, n, *currentPrec);
+  if (h!=NULL)   mpfr_set(*h, ai_vect[n], GMP_RNDU);
+
+  for(i=0;i<=n;i++) mpfr_clear(b[i]);
+  free(b);
+
+  for(i=0;i<=n;i++) mpfr_clear(ai_vect[i]);
+  free(ai_vect);
+
+  for(i=1;i<=n+1;i++) {
+    for(j=1;j<=n+1;j++) mpfr_clear(M[coeff(i,j,n+1)]);
+  }
+  free(M);
+
+  mpfr_clear(zero_mpfr);
+  return poly;
+}
+
+void radiusBasicMinimaxChebychevsPoints(mpfr_t *h, node *func, node *weight, mpfr_t a, mpfr_t b, int n, mp_prec_t *currentPrec) {
+  mpfr_t *x;
+  node **monomials_tree;
+  int i;
+  node *poly;
+
+  monomials_tree = (node **)safeMalloc(n*sizeof(node *));
+  monomials_tree[0] = makeConstantDouble(1.);
+  for(i=1;i<n;i++) monomials_tree[i] = makePow(makeVariable(), makeConstantDouble((double)i));
+
+
+  x = chebychevsPoints(a,b,n+1,currentPrec);
+  poly = elementaryStepRemezAlgorithm(h, func, weight, x, monomials_tree, n, currentPrec);
+  mpfr_abs(*h, *h, GMP_RNDN);
+
+  free_memory(poly);
+
+  for(i=0;i<n;i++) free_memory(monomials_tree[i]);
+  free(monomials_tree);
+
+  for(i=0;i<=n;i++) mpfr_clear(x[i]);
+  free(x);
+
+  return;
+}
+
+void firstStepContinuousMinimaxChebychevsPoints(mpfr_t *h, node *func, node *weight, mpfr_t a, mpfr_t b, int n, mp_prec_t *currentPrec) {
+  mpfr_t *x;
+  node **monomials_tree;
+  int i;
+  node *poly;
+  node *error;
+  monomials_tree = (node **)(safeMalloc(n*sizeof(node *)));
+  monomials_tree[0] = makeConstantDouble(1.);
+  for(i=1;i<n;i++) monomials_tree[i] = makePow(makeVariable(), makeConstantDouble((double)i));
+
+  x = chebychevsPoints(a,b,n+1,currentPrec);
+  poly = elementaryStepRemezAlgorithm(NULL, func, weight, x, monomials_tree, n, currentPrec);
+      
+  error = makeSub(makeMul(copyTree(poly), copyTree(weight)), copyTree(func));
+  uncertifiedInfnorm(*h, error, a, b, 3*n, getToolPrecision());
+
+  free_memory(error);
+  free_memory(poly);
+
+  for(i=0;i<n;i++) free_memory(monomials_tree[i]);
+  free(monomials_tree);
+
+  for(i=0;i<=n;i++) mpfr_clear(x[i]);
+  free(x);
+
+  return;
+}
+
+rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) {
+  int n=1;
+  int n_min, n_max;
+  mp_prec_t prec = getToolPrecision();
+  mpfr_t h;
+  rangetype range;
+  mpfr_t *tempMpfr;
+
+  mpfr_init2(h, prec);
+
+
+  /* n reprensents the number of unknowns: n=1 corresponds to degree 0 */
+  
+  /* We try n=1, 2, 4, 8, etc. until we find one for which the basic 
+     minimax problem achieve the required bound eps */
+  pushTimeCounter();
+  radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
+
+  while(mpfr_cmp(h,eps) >= 0) {
+    n *= 2;
+    radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
+  }
+  
+
+  /* Now, the basic minimax problem achieves eps for n but not for n/2
+     We use a bisection to obtain a thinner bound.
+     Note that if n=1 achieves the bound eps, we have nothing to do */
+  if(n!=1) {
+    n_min = n/2;
+    n_max = n;
+
+    n = (n_min + n_max)/2;
+
+    while(n != n_min) {
+      radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
+      if(mpfr_cmp(h,eps) >= 0) n_min = n;
+      else n_max = n;
+
+      n = (n_min + n_max)/2;
+    }
+  }
+  else n_max = 1;
+  popTimeCounter("finding a lower bound for guessdegree");
+
+
+  /* Now n_min = n = n_max - 1
+     What we know for sure is: n_min is not sufficient to achieve
+     the basic minimax problem. A fortiori, it is not sufficient for
+     the continuous minimax problem.
+     n_max is a possible candidate for the continuous minimax problem */
+  n = n_max;
+  
+  pushTimeCounter();
+  firstStepContinuousMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
+  while(mpfr_cmp(h,eps) > 0) {
+    n++;
+    firstStepContinuousMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
+  }
+  popTimeCounter("finding an unpper bound for guessdegree");
+
+  /* Now, we are sure that n is sufficient to achieve eps in the continuous problem
+     We return [n_max, n]; */
+  mpfr_clear(h);
+
+  tempMpfr = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*tempMpfr,128);
+  mpfr_set_ui(*tempMpfr, n_max-1, GMP_RNDN);
+  range.a = tempMpfr;
+
+  tempMpfr = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*tempMpfr,128);
+  mpfr_set_ui(*tempMpfr, n-1, GMP_RNDN);
+  range.b = tempMpfr;
+
   return range;
 }
