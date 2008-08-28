@@ -54,7 +54,7 @@ degree at most 6. Giving an integer §§n§$n$§§ as second argument is equival
 as giving §§[|0,...,n|]§$[|0,\,\dots,\,n|]$§§.
 
 #DESCRIPTION
-The list of formats may contain either integers of format types ($DOUBLE,
+The list of formats may contain either integers or format types ($DOUBLE,
 $DOUBLEDOUBLE, $TRIPLEDOUBLE and $DOUBLEEXTENDED). The list may be too big
 or even infinite. Only the first indications will be considered. For 
 instance, for a degree §§n§$n$§§ polynomial, §§formats[n+1]§$\mathrm{formats}[n+1]$§§ and above will
