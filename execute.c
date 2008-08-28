@@ -12216,32 +12216,8 @@ node *evaluateThingInner(node *tree) {
       }
       mpfr_set_str(a,tree->string,10,GMP_RNDN);
     }
-    if (mpfr_number_p(a)) {
-      while (pTemp >= tools_precision) {
-	mpfr_init2(c,pTemp);
-	mpfr_set(c,a,GMP_RNDN);
-	if (mpfr_cmp(a,c) != 0) {
-	  pTemp++;
-	  mpfr_clear(c);
-	  break;
-	}
-	mpfr_clear(c);
-	pTemp--;
-      }
-      if (pTemp < tools_precision) pTemp = tools_precision;
-    } else {
-      pTemp = tools_precision;
-    }
     mpfr_init2(c,pTemp);
-    mpfr_set(c,a,GMP_RNDN);
-    if (mpfr_cmp(a,c) != 0) {
-      if (!noRoundingWarnings) {
-	printMessage(1,
-		     "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
-		     tree->string,(int) pTemp);
-	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
-      }
-    }
+    simplifyMpfrPrec(c, a);
     tempNode = makeConstant(c);
     mpfr_clear(c);
     mpfr_clear(b);
@@ -12278,32 +12254,8 @@ node *evaluateThingInner(node *tree) {
       }
       mpfr_set_str(a,str1,10,GMP_RNDD);
     }
-    if (mpfr_number_p(a)) {
-      while (pTemp >= tools_precision) {
-	mpfr_init2(c,pTemp);
-	mpfr_set(c,a,GMP_RNDN);
-	if (mpfr_cmp(a,c) != 0) {
-	  pTemp++;
-	  mpfr_clear(c);
-	  break;
-	}
-	mpfr_clear(c);
-	pTemp--;
-      }
-      if (pTemp < tools_precision) pTemp = tools_precision;
-    } else {
-      pTemp = tools_precision;
-    }
     mpfr_init2(c,pTemp);
-    mpfr_set(c,a,GMP_RNDD);
-    if (mpfr_cmp(a,c) != 0) {
-      if (!noRoundingWarnings) {
-	printMessage(1,
-		     "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
-		     str1,(int) pTemp);
-	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
-      }
-    }
+    simplifyMpfrPrec(c, a);
     tempNode = makeConstant(c);
     mpfr_clear(c);
     mpfr_clear(b);
@@ -12331,32 +12283,8 @@ node *evaluateThingInner(node *tree) {
       }
       mpfr_set_str(a,str2,10,GMP_RNDU);
     }
-    if (mpfr_number_p(a)) {
-      while (pTemp >= tools_precision) {
-	mpfr_init2(c,pTemp);
-	mpfr_set(c,a,GMP_RNDN);
-	if (mpfr_cmp(a,c) != 0) {
-	  pTemp++;
-	  mpfr_clear(c);
-	  break;
-	}
-	mpfr_clear(c);
-	pTemp--;
-      }
-      if (pTemp < tools_precision) pTemp = tools_precision;
-    } else {
-      pTemp = tools_precision;
-    }
     mpfr_init2(c,pTemp);
-    mpfr_set(c,a,GMP_RNDU);
-    if (mpfr_cmp(a,c) != 0) {
-      if (!noRoundingWarnings) {
-	printMessage(1,
-		     "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
-		     str2,(int) pTemp);
-	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
-      }
-    }
+    simplifyMpfrPrec(c, a);
     tempNode2 = makeConstant(c);
     mpfr_clear(c);
     mpfr_clear(b);
