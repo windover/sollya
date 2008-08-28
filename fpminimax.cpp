@@ -327,15 +327,11 @@ node *FPminimax(node *f,
   printMessage(0, "We still have some minor issues with fplll but it should be fixed within a few weeks.\n\n");
   printMessage(0, "    ********************************************************\n");
   printMessage(0, "   |                                                        |\n");
-  printMessage(0, "   |       IMPORTANT INFORMATION: Sollya's developper       |\n");
+  printMessage(0, "   |      IMPORTANT INFORMATION: Sollya's developpers       |\n");
   printMessage(0, "   |                                                        |\n");
   printMessage(0, "   | FPminimax is fully functional. If you want to test it, |\n");
   printMessage(0, "   | install fplll from Damien's webpage. You will need to  |\n");
   printMessage(0, "   | configure it this way: ./configure CXX=\"g++-4.2\"       |\n");
-  printMessage(0, "   |                                                        |\n");
-  printMessage(0, "   | There is a bug in fplll: you need to manually replace  |\n");
-  printMessage(0, "   | all references to \"../util/util.h\" by \"util.h\" in      |\n");
-  printMessage(0, "   | the appropriate header files installed by fplll.       |\n");
   printMessage(0, "   |                                                        |\n");
   printMessage(0, "   | Once it is done, you need to change a few things in    |\n");
   printMessage(0, "   | in the file fpminimax.cpp of Sollya. Uncomment the     |\n");
