@@ -6142,7 +6142,7 @@ node* makeBinomial(node *a, node *b, int n, int s) {
 	printMessage(1,"Try to increase the working precision.\n");
       }
     }
-    if ((s < 0) && ((i & 1) != 0)) {
+    if ((s < 0) && (((((unsigned int) n) - i) & 1) != 0)) {
       mpfr_neg(*coeffVal,*coeffVal,GMP_RNDN);
     }
     coeff = (node*) safeMalloc(sizeof(node));
@@ -7201,7 +7201,6 @@ node* expandUnsimplified(node *tree) {
 
 node* expand(node *tree) {
   node *temp, *temp2, *temp3;
-
   temp3 = expandDivision(tree);
   temp = expandUnsimplified(temp3);
   temp2 = simplifyTreeErrorfree(temp);
