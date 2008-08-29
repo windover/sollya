@@ -20,10 +20,14 @@ In order to compile the software you will need the following packages installed:
 - bison version 2.3 or later
 - flex version 2.5.33 or later
 
-IMPORTANT Warning: the current version of fplll (2.1) requires to be compiled with
-g++ version 4.2 or below. Trying to compile with the last version of g++ (4.3) will 
-lead to a compilation error.
+*IMPORTANT WARNING*: the current version of fplll (2.1) requires to be compiled
+with g++ version 4.2 or below. Trying to compile with the last version
+of g++ (4.3) will lead to a compilation error.
 Furhtermore, you need to compile Sollya with g++ version 4.2 or below as well.
+You may specify to use a particular version of g++ by configuring with:
+
+             ./configure CXX="g++-4.2"
+
 
 Bison and flex are really needed if you compile a fresh svn checkout or if you modify
 the grammar files contained in the distribution. Otherwise, precompiled versions
