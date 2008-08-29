@@ -44,7 +44,7 @@ Parameters:
 > searchgal(log(x),2,53,15,DD,1b-112);
 [| |]
 > searchgal(log(x),2,53,18,DD,1b-112);
-[|0.20000000000384972054234822280704975128173828125e1|]
+[|2.0000000000384972054234822280704975128173828125|]
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
@@ -55,14 +55,14 @@ Parameters:
 >    v = s[0];
 >    print("The rounding error is 2^(",evaluate(log2(abs(DD(f)/f - 1)),v),")");
 > } else print("No value found");
-The rounding error is 2^( -0.112106878438809380148206984258358542322113874177832
-e3 )
+The rounding error is 2^( -1.12106878438809380148206984258358542322113874177832e
+2 )
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > searchgal([|sin(x),cos(x)|],1,53,15,[|D,D|],[|1b-62,1b-60|]);
-[|0.100000000000159494639717649988597258925437927246094e1|]
+[|1.00000000000159494639717649988597258925437927246094|]
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{round} (\ref{labround}), \textbf{double} (\ref{labdouble}), \textbf{doubledouble} (\ref{labdoubledouble}), \textbf{tripledouble} (\ref{labtripledouble}), \textbf{evaluate} (\ref{labevaluate}), \textbf{worstcase} (\ref{labworstcase})

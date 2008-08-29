@@ -25,13 +25,17 @@ represents a number as the sum of three IEEE doubles.\\
 > verbosity=1!;
 > a = 1+ 2^(-55)+2^(-115);
 > TD(a);
-0.100000000000000002775557561562891353466491600711096e1
+Warning: rounding a value computed on less than 159 bits to triple-double precis
+ion
+1.00000000000000002775557561562891353466491600711096
 > prec=110!;
 > TD(a);
+Warning: rounding a value computed on less than 159 bits to triple-double precis
+ion
 Warning: double rounding occurred on invoking the triple-double rounding operato
 r.
 Try to increase the working precision.
-0.1000000000000000027755575615628913e1
+1.000000000000000027755575615628913
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{double} (\ref{labdouble}), \textbf{doubleextended} (\ref{labdoubleextended}), \textbf{doubledouble} (\ref{labdoubledouble}), \textbf{roundcoefficients} (\ref{labroundcoefficients}), \textbf{implementpoly} (\ref{labimplementpoly})

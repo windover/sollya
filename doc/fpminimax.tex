@@ -140,13 +140,13 @@ x * (1 + x^2 * ((-357913941 * 2^(-31)) + x^2 * 35789873 * 2^(-32)))
 > P3 = fpminimax(f, 5, [|D, D, D, 24...|], listpoints, absolute, default, defaul
 t, pstar);
 > print("Error of pstar: ", dirtyinfnorm(f-pstar, [-1b-7; 1b-7]));
-Error of pstar:  7.9048482198097924881613709250085234503882055369255e-16
+Error of pstar:  7.9048441305459735102879831325718747183089581485922e-16
 > print("Error of P1:    ", dirtyinfnorm(f-P1, [-1b-7; 1b-7]));
-Error of P1:     7.9048482198097925145227335488934227938190853343743e-16
+Error of P1:     7.9048441305459735159848647089192667442047469404883e-16
 > print("Error of P2:    ", dirtyinfnorm(f-P2, [-1b-7; 1b-7]));
-Error of P2:     8.2477144579950903511320656591431998721972862465026e-16
+Error of P2:     8.2477144579950871061147021597406077993657714575238e-16
 > print("Error of P3:    ", dirtyinfnorm(f-P3, [-1b-7; 1b-7]));
-Error of P3:     1.08589225157946674530174198018927191510501967039589e-15
+Error of P3:     1.08454277156993282593701156841863009789063333951055e-15
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{remez} (\ref{labremez}), \textbf{dirtyfindzeros} (\ref{labdirtyfindzeros}), \textbf{absolute} (\ref{lababsolute}), \textbf{relative} (\ref{labrelative}), \textbf{fixed} (\ref{labfixed}), \textbf{floating} (\ref{labfloating}), \textbf{default} (\ref{labdefault})
