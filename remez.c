@@ -433,7 +433,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
       }
     }
 
-    if ( ((n!=0) && (nbr_iter==n)) || mpfr_equal_p(x,xNew) || (n_expo>2*prec) || (estim_prec>prec)) test=0;
+    if ( ((n!=0) && (nbr_iter==n)) || mpfr_equal_p(x,xNew) || (n_expo>2*(int)prec) || (estim_prec>prec)) test=0;
 
     if(n_expo>=32) {
       mpfr_set(x,xNew,GMP_RNDN);
@@ -449,7 +449,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 
   nbr_iter--;
 
-  if(n_expo>2*prec) printMessage(8, "Warning: in Newton's algorithm: the zero seems to be 0 but it cannot be proven\n");
+  if(n_expo>2*(int)prec) printMessage(8, "Warning: in Newton's algorithm: the zero seems to be 0 but it cannot be proven\n");
 
   if(verbosity>=7) {
     changeToWarningMode();
@@ -2426,7 +2426,7 @@ rangetype oldguessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t ep
 
 
 
-node *constructPolynomialFromArray(mpfr_t *coeff, node **monomials_tree, int n, mp_prec_t prec) {
+node *constructPolynomialFromArray(mpfr_t *coeff, node **monomials_tree, int n) {
   int i;
   node *poly;
 
@@ -2564,7 +2564,7 @@ node *elementaryStepRemezAlgorithm(mpfr_t *h,
   M = remezMatrix(weight, x, monomials_tree, n, currentPrec);
   system_solve(ai_vect, M, b, n+1, *currentPrec);
   
-  poly = constructPolynomialFromArray(ai_vect, monomials_tree, n, *currentPrec);
+  poly = constructPolynomialFromArray(ai_vect, monomials_tree, n);
   if (h!=NULL)   mpfr_set(*h, ai_vect[n], GMP_RNDU);
 
   for(i=0;i<=n;i++) mpfr_clear(b[i]);

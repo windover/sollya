@@ -280,7 +280,8 @@ void *safeRealloc (void *ptr, size_t size) {
 
 /* The gmp signature for realloc is strange, we have to wrap our function */
 void *wrapSafeRealloc(void *ptr, size_t old_size, size_t new_size) {
-   return (void *) safeRealloc(ptr,new_size);
+  UNUSED_PARAM(old_size);
+  return (void *) safeRealloc(ptr,new_size);
 }
 
 void demaskString(char *dest, char *src) {

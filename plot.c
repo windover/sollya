@@ -219,7 +219,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
 	flush = 1;
 	if (verbosity >= 2) { 	
 	  changeToWarningMode(); 
-	  printf("Information: function image proven to be less than 2^(-%d) on point %s = ",p,variablename);
+	  printf("Information: function image proven to be less than 2^(-%d) on point %s = ",(int)p,variablename);
 	  printValue(&x);
 	  printf("\nThis point will be plotted as the midpoint of the proof interval.\n");
 	  restoreMode();
