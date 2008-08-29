@@ -60,6 +60,7 @@ worstcase.h \
 xml.c \
 xml.h 
 sollya_CFLAGS = $(AM_CFLAGS)
+sollya_CXXFLAGS = $(AM_CXXFLAGS)
 
 include_HEADERS = sollya.h
 
@@ -99,6 +100,8 @@ plot.c \
 plot.h \
 proof.c \
 proof.h \
+fpminimax.cpp \
+fpminimax.h \
 remez.c \
 remez.h \
 taylor.c \
