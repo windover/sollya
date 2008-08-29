@@ -371,6 +371,7 @@ startsymbol:            command SEMICOLONTOKEN
 			  }
                       | helpmeta SEMICOLONTOKEN		      
                           {
+			    outputMode();
                             printf("This is %s.\nType 'help help;' for the list of available commands. Type 'help <command>;' for help on the specific command <command>.\nType 'quit;' for quitting the %s interpreter.\n\nYou can get moral support and help with bugs by writing to %s.\n\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
 			    parsedThing = NULL;
 			    $$ = NULL;
@@ -378,6 +379,7 @@ startsymbol:            command SEMICOLONTOKEN
 			  }
                       | QUESTIONMARKTOKEN
                           {
+			    outputMode();
                             printf("This is %s.\nType 'help help;' for the list of available commands. Type 'help <command>;' for help on the specific command <command>.\nType 'quit;' for quitting the %s interpreter.\n\nYou can get moral support and help with bugs by writing to %s.\n\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
 			    parsedThing = NULL;
 			    $$ = NULL;
@@ -391,6 +393,7 @@ startsymbol:            command SEMICOLONTOKEN
 			  }
                       | VERSIONTOKEN SEMICOLONTOKEN
                           {
+			    outputMode();
 			    printf("This is\n\n\t%s.\n\nCopyright 2008 by Laboratoire de l'Informatique du Parallelisme,\nUMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668\n\nContributors are Ch. Lauter, S. Chevillard, N. Jourdan and M. Joldes.\n\nThis software is governed by the CeCILL-C license under French law and\nabiding by the rules of distribution of free software.  You can  use,\nmodify and/ or redistribute the software under the terms of the CeCILL-C\nlicense as circulated by CEA, CNRS and INRIA at the following URL\n\"http://www.cecill.info\".\n\nPlease send bug reports to %s.\n",PACKAGE_STRING,PACKAGE_BUGREPORT);
 			    parsedThing = NULL;
 			    $$ = NULL;
