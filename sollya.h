@@ -262,6 +262,8 @@ extern chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec);
 extern node* remez(node *func, node *weight, chain* monom, mpfr_t a, mpfr_t b, mpfr_t *requestedQuality, mp_prec_t prec);
 extern rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps);
 
+extern node *FPminimax(node *f,	chain *monomials, chain *formats, chain *points, mpfr_t a, mpfr_t b, int fp, int absrel, node *consPart, node *minimax);
+
 extern void freeChain(chain *c, void (*f) (void *));
 extern chain *addElement(chain *c, void *elem);
 extern void *first(chain *c);
