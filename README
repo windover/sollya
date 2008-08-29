@@ -9,15 +9,21 @@ implementer and a fast Remez algorithm.
 In order to compile the software you will need the following packages installed:
 
 - gcc
+- g++ version 4.2 or below.
 - gnuplot
 - gmp
 - mpfr 2.2.0 or later
 - mpfi
 - libxml2-dev
-- fpll (available at url http://perso.ens-lyon.fr/damien.stehle/english.html#software)
+- fplll (available at url http://perso.ens-lyon.fr/damien.stehle/english.html#software)
 
 - bison version 2.3 or later
 - flex version 2.5.33 or later
+
+IMPORTANT Warning: the current version of fplll (2.1) requires to be compiled with
+g++ version 4.2 or below. Trying to compile with the last version of g++ (4.3) will 
+lead to a compilation error.
+Furhtermore, you need to compile Sollya with g++ version 4.2 or below as well.
 
 Bison and flex are really needed if you compile a fresh svn checkout or if you modify
 the grammar files contained in the distribution. Otherwise, precompiled versions
