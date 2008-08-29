@@ -134,8 +134,6 @@ struct libraryProcedureStruct
 #define FLOOR 37
 #define PI_CONST 38
 
-#define ERRORSPECIAL 202
-
 
 typedef struct nodeStruct node;
 struct nodeStruct 
@@ -217,7 +215,6 @@ extern node *makeAsinh(node *op1);
 extern node *makeAcosh(node *op1);
 extern node *makeAtanh(node *op1);
 
-extern node *makeError();
 
 extern node *parseString(char *str); 
 

@@ -112,7 +112,8 @@ void mpq_fma(mpq_t r, mpq_t a, mpq_t b, mpq_t c) {
 /* n is the number of columns                */
 /* p is the number of lines (p>=n)           */
 /* the system is supposed to be invertible   */
-void exact_system_solve(mpq_t *res, mpq_t *M, mpq_t *b, int p, int n) {
+/* returns 1 if the system is singular       */
+int exact_system_solve(mpq_t *res, mpq_t *M, mpq_t *b, int p, int n) {
   chain *i_list=NULL;
   chain *j_list=NULL;
   chain *curri;
@@ -143,7 +144,7 @@ void exact_system_solve(mpq_t *res, mpq_t *M, mpq_t *b, int p, int n) {
   for(k=1;k<=n;k++) {
     mpq_set_ui(max, 0, 1);
 
-    // In this part, we search for the bigger element of the matrix
+    // In this part, we search for the biggest element of the matrix
     curri = i_list;
     while(curri!=NULL) {
       currj = j_list;
@@ -165,6 +166,17 @@ void exact_system_solve(mpq_t *res, mpq_t *M, mpq_t *b, int p, int n) {
 
     order_i[k-1] = i0;
     order_j[k-1] = j0;
+
+    if(mpq_cmp_ui(M[coeff(i0,j0,n)], 0, 1)==0) {
+      printMessage(1, "Error: fpminimax: singular matrix\n");
+      freeChain(i_list, freeIntPtr);
+      freeChain(j_list, freeIntPtr);
+      mpq_clear(max);
+      mpq_clear(lambda);
+      free(order_i);
+      free(order_j);
+      return 1;
+    }
 
     // Here we update the matrix and the second member
     curri = i_list;
@@ -202,7 +214,8 @@ void exact_system_solve(mpq_t *res, mpq_t *M, mpq_t *b, int p, int n) {
     i0 = order_i[k-1];
     j0 = order_j[k-1];
 
-    if(mpq_cmp_ui(M[coeff(i0,j0,n)], 0, 1)==0) {
+    /*
+      if(mpq_cmp_ui(M[coeff(i0,j0,n)], 0, 1)==0) {
       printMessage(1, "Warning: fpminimax: the matrix is singular. Coefficient %d is arbitrarily set to 0\n", j0);
       if(mpq_cmp_ui(b[i0-1],0,1)==0) {
 	mpq_set_ui(res[j0-1],0,1);
@@ -212,7 +225,7 @@ void exact_system_solve(mpq_t *res, mpq_t *M, mpq_t *b, int p, int n) {
 	recoverFromError();
       }
     }
-    else  mpq_div(res[j0-1], b[i0-1], M[coeff(i0,j0,n)]);
+    else */ mpq_div(res[j0-1], b[i0-1], M[coeff(i0,j0,n)]);
 
     i_list = removeInt(i_list, i0);
 
@@ -230,7 +243,7 @@ void exact_system_solve(mpq_t *res, mpq_t *M, mpq_t *b, int p, int n) {
   freeChain(i_list, freeIntPtr);
   mpq_clear(max);
   mpq_clear(lambda);
-  return;
+  return 0;
 }
 
 
@@ -311,40 +324,6 @@ chain *computeExponents(chain *formats, chain *monomials, node *poly) {
   mpfr_clear(tempMpfr);
   return res;
 }
-
-
-
-  /*
-node *FPminimax(node *f,
-		chain *monomials,
-		chain *formats,
-		chain *points,
-		mpfr_t a, mpfr_t b,
-		int fp, int absrel,
-		node *consPart,
-		node *minimax) {
-
-  printMessage(0, "FPminimax is not yet available in Sollya but is coming soon.\n");
-  printMessage(0, "We still have some minor issues with fplll but it should be fixed within a few weeks.\n\n");
-  printMessage(0, "    ********************************************************\n");
-  printMessage(0, "   |                                                        |\n");
-  printMessage(0, "   |      IMPORTANT INFORMATION: Sollya's developpers       |\n");
-  printMessage(0, "   |                                                        |\n");
-  printMessage(0, "   | FPminimax is fully functional. If you want to test it, |\n");
-  printMessage(0, "   | install fplll from Damien's webpage. You will need to  |\n");
-  printMessage(0, "   | configure it this way: ./configure CXX=\"g++-4.2\"       |\n");
-  printMessage(0, "   |                                                        |\n");
-  printMessage(0, "   | Once it is done, you need to change a few things in    |\n");
-  printMessage(0, "   | in the file fpminimax.cpp of Sollya. Uncomment the     |\n");
-  printMessage(0, "   | include of fplll.h, comment this dummy wrapper and     |\n");
-  printMessage(0, "   | uncomment the end of the file.                         |\n");
-  printMessage(0, "   | Then configure sollya with CXX=\"g++-4.2\" and make.     |\n");
-  printMessage(0, "   |                                                        |\n");
-  printMessage(0, "    ********************************************************\n\n");
-
-  return copyTree(f);
-}
-  */
 
 node *FPminimaxMain(node *, chain *, chain *, chain *, node *);
 
@@ -476,16 +455,19 @@ node *FPminimax(node *f,
     
       res = FPminimaxMain(g, monomials, correctedFormats, pointslist, w);
     
-      newFormats =  computeExponents(formats, monomials, res);
-      if( isEqualChain(newFormats,correctedFormats, isEqualIntPtrOnVoid) ) test=0;
+      if(res==NULL) test=0;
       else {
-	free_memory(res);
-	freeChain(correctedFormats, freeIntPtr);
-	correctedFormats = newFormats;
+	newFormats =  computeExponents(formats, monomials, res);
+	if( isEqualChain(newFormats,correctedFormats, isEqualIntPtrOnVoid) ) test=0;
+	else {
+	  free_memory(res);
+	  freeChain(correctedFormats, freeIntPtr);
+	  correctedFormats = newFormats;
+	}
       }
     }
     freeChain(correctedFormats, freeIntPtr);
-    freeChain(newFormats, freeIntPtr);
+    if (res!=NULL) freeChain(newFormats, freeIntPtr);
   }
 
     
@@ -493,13 +475,14 @@ node *FPminimax(node *f,
   free_memory(w);
   if(pstar!=NULL) free_memory(pstar);
   if(err!=NULL) free_memory(err);
-
-  tempTree = makeAdd(copyTree(consPart), res);
-  res = simplifyTreeErrorfree(tempTree);
-  free_memory(tempTree);
-  
   freeChain(pointslist, freeMpfrPtr);
 
+  if(res!=NULL) {
+    tempTree = makeAdd(copyTree(consPart), res);
+    res = simplifyTreeErrorfree(tempTree);
+    free_memory(tempTree);
+  }
+  
   return res;
 }
 
@@ -508,7 +491,7 @@ node *FPminimaxMain(node *f,
 		    chain *formats,
 		    chain *points,
 		    node *w) {
-  int i,j, test, r;
+  int i,j, test, r, testIfSingular;
   mp_prec_t prec = getToolPrecision();
   int dim = lengthChain(monomials);
   int nbpoints = lengthChain(points);
@@ -536,22 +519,12 @@ node *FPminimaxMain(node *f,
 
 
   if(nbpoints < dim) {
-    changeToWarningMode();
-    printf("Error: FPminimax: not enough points!\n"); 
-    restoreMode();
-    res = (node *)safeMalloc(sizeof(node));
-    res->nodeType = ERRORSPECIAL;
-    restoreMode();
-    return res;
+    printMessage(1,"Error: FPminimax: not enough points!\n"); 
+    return NULL;
   }
   if(lengthChain(formats) < dim) {
-    changeToWarningMode();
-    printf("Error: FPminimax: not enough formats!\n"); 
-    restoreMode();
-    res = (node *)safeMalloc(sizeof(node));
-    res->nodeType = ERRORSPECIAL;
-    restoreMode();
-    return res;
+    printMessage(1,"Error: FPminimax: not enough formats!\n"); 
+    return NULL;
   }    
     
  // Initialisations and precomputations
@@ -721,38 +694,41 @@ node *FPminimaxMain(node *f,
   // Converting all stuff into exact numbers
 
   for(i=1; i<=nbpoints+1; i++) {
-    zval = LLLwrapper->GetBase()->Get(dim, i-1);
-    mpq_set_z(reducedVect[i-1], zval.GetData());
+    mpq_set_z(reducedVect[i-1], LLLwrapper->GetBase()->Get(dim, i-1).GetData());
   }
 
   // Getting the coefficients
   pushTimeCounter();
-  exact_system_solve(coefficients, exactMatrix, reducedVect, nbpoints+1, dim+1);
+  testIfSingular = exact_system_solve(coefficients, exactMatrix, reducedVect, nbpoints+1, dim+1);
   popTimeCounter((char *)"FPminimax: computing the coefficients");
-
-  // Construction of the resulting polynomial
-  for(j=1;j<=dim;j++) {
-    mpfr_set_q(mpfr_coefficients[j-1], coefficients[j-1], GMP_RNDN);
-
-    // We check that the precision is sufficient to represent exactly the coefficient
-    if( (!mpfr_zero_p(mpfr_coefficients[j-1])) &&
-	(mpfr_get_exp(mpfr_coefficients[j-1]) > mpfr_get_prec(mpfr_coefficients[j-1]))
-	) {
-      mpfr_set_prec(mpfr_coefficients[j-1], mpfr_get_exp(mpfr_coefficients[j-1]));
-      mpfr_set_q(mpfr_coefficients[j-1], coefficients[j-1], GMP_RNDN);
-    }
-
-    mpfr_neg(mpfr_coefficients[j-1], mpfr_coefficients[j-1], GMP_RNDN);
-    mpfr_div_2si(mpfr_coefficients[j-1],
-		 mpfr_coefficients[j-1],
-		 *(int *)accessInList(formats,j-1), GMP_RNDN);
-  }
   
-  res = constructPolynomial(mpfr_coefficients, monomials, prec);
+  if(testIfSingular == 0) { /* The system has been correctly solved */
 
+    // Construction of the resulting polynomial
+    for(j=1;j<=dim;j++) {
+      mpfr_set_q(mpfr_coefficients[j-1], coefficients[j-1], GMP_RNDN);
+
+      // We check that the precision is sufficient to represent exactly the coefficient
+      if( (!mpfr_zero_p(mpfr_coefficients[j-1])) &&
+	  (mpfr_get_exp(mpfr_coefficients[j-1]) > mpfr_get_prec(mpfr_coefficients[j-1]))
+	  ) {
+	mpfr_set_prec(mpfr_coefficients[j-1], mpfr_get_exp(mpfr_coefficients[j-1]));
+	mpfr_set_q(mpfr_coefficients[j-1], coefficients[j-1], GMP_RNDN);
+      }
+      
+      mpfr_neg(mpfr_coefficients[j-1], mpfr_coefficients[j-1], GMP_RNDN);
+      mpfr_div_2si(mpfr_coefficients[j-1],
+		   mpfr_coefficients[j-1],
+		   *(int *)accessInList(formats,j-1), GMP_RNDN);
+    }
+  
+    res = constructPolynomial(mpfr_coefficients, monomials, prec);
+
+  }
+  else res = NULL;
   
   // Cleaning
-  //delete FPlllMat;
+  delete FPlllMat;
   delete LLLwrapper;
 
   mpfr_clear(zero_mpfr);

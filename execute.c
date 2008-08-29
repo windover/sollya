@@ -12855,7 +12855,7 @@ node *evaluateThingInner(node *tree) {
 	  tempNode = copyTree(seventhArg);
 	}
 	else {
-	  printMessage(1, "fpminimax: invalid seventth argument\n");
+	  printMessage(1, "fpminimax: invalid seventh argument\n");
 	  resE = 0;
 	}
       }
@@ -12878,9 +12878,10 @@ node *evaluateThingInner(node *tree) {
       if (timingString != NULL) pushTimeCounter();
       tempNode3 = FPminimax(firstArg, tempChain, tempChain2, tempChain3, a, b, resB, resC, tempNode, tempNode2);
       if (timingString != NULL) popTimeCounter(timingString);
-      freeThing(copy);
-      copy=tempNode3;
 
+      freeThing(copy);
+      if (tempNode3 == NULL) { tempNode3 = makeError(); }
+      copy=tempNode3;
     }
   
 
