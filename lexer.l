@@ -416,7 +416,7 @@ NOP             "nop"
 
 
 {ONELINECOMMENT} {  // Eat up comments
-
+                     carriageReturnLexed();
                  }
 
 
