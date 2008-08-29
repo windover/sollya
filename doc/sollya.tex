@@ -86,35 +86,36 @@ Let us begin this manual with an example. \sollya does not allow command line ed
 
 \sollya manipulates only univariate functions. The first time that an unbound variable is used, this name is fixed. It will be used to refer to the free variable. For instance, try
 
-\input{example1}
+\input{introExample1}
 
 Now, the name $x$ can only be used to refer to the free variable:
 
-\input{example2}
+\input{introExample2}
 
 If you really want to unbound $x$, you can use the \com{rename} command and change the name of the free variable:
 
-\input{example3}
+\input{introExample3}
 
 As you have seen, you can name functions and easily work with. The basic thing to do with a function is to evaluate it at some point:
 
-\input{example4}
+\input{introExample4}
 
 The printed value is generally a faithful rounding of the exact value at the working precision. The working precision is controlled by the global variable \com{prec}:
 
-\input{example5}
+\input{introExample5}
 
 Sometimes, a faithful rounding cannot easily be computed. In such a case, an approximated value is printed:
 
-\input{example6}
+\input{introExample6}
 
 The philosophy of \sollya is: whenever something is not exact, print a warning. This explains the warnings in the previous examples. If the result can be shown to be exact, there is no warning:
 
-\input{example7}
+\input{introExample7}
 
 Let us finish this Section with a small complete example that shows a bit of what can be done with \sollya:
 
-\input{example8}
+% Warning: this file must be manually corrected: delete the extra ">"
+\input{introExample8}
 
 In this example, we define a function $f$, an interval $d$ and we compute the best degree-4 polynomial approximation of $f$ on $d$ with respect to the infinite norm. In other words, $\max_{x \in d} \{|p(x)-f(x)|\}$ is minimal amongst polynomials with degree not greater than $4$. Then, we compute the list of the zeros of the derivative of $p-f$ and add the bounds of $d$ to this list. Finally, we evaluate $|p-f|$ for each point in the list and store the maximum and the point where it is reached. We conclude by printing the result in a formatted way.
 
@@ -133,18 +134,18 @@ For decidability and efficiency reasons, this general principle cannot be applie
 
 A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When set to $0$, \sollya becomes completely silent on stdout and prints only very important messages on stderr. Increase \key{verbosity} if you want more informations about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use \texttt{!}:
 
-\input{example9}
+\input{introExample9}
 
 For conviviality reasons, values are displayed in decimal by default. This lets a normal human being understand the numbers he or she manipulates. But since constants are internally represented in binary, this causes permanent conversions that are sources of roundings. Thus you are loosing in accuracy and \sollya is always complaining about inexact results. If you just want to store or communicate your results (to another tools for instance) you can use bit-exact representations available in \sollya. The global variable \key{display} defines the way constants are displayed. Here is an example of the five available modes:
 
-\input{example10}
+\input{introExample10}
 
 As always, the symbol \texttt{e} means $\times 10^\square $. The same way the symbol \texttt{b} means  $\times 2^\square $. The symbol \texttt{p} means $\times 16^\square$ and is used only with the \texttt{0x} prefix. The prefix \texttt{0x} indicates that the digits of the following number until 
 a symbol \texttt{p} or whitespace are hexadecimal. The suffix \texttt{\_2} indicates to \sollya that the previous number has been written in binary. \sollya can parse these notations even if you are not in the corresponding \key{display} mode, so you can always use them.
 
 You can also use memory-dump hexadecimal notation frequently used to represent IEEE 754 \texttt{double} and \texttt{single} precision numbers. Since this notation does not allow for exactly representing numbers with arbitrary precision, there is no corresponding \key{display} mode. However, the commands \com{printhexa} respectively \com{printfloat} round the value to the nearest \texttt{double} respectively \texttt{single}. The number is then printed in hexadecimal as the integer number corresponding to the memory representation of the IEEE 754 \texttt{double} or \texttt{single} number:
 
-\input{example11}
+\input{introExample11}
 
 \sollya can parse these memory-dump hexadecimal notation back in any \key{display} mode.
 
@@ -183,7 +184,7 @@ on its usage and semantic.
 The following code examples illustrate the usage of variables.
 
 
-\input{example12}
+\input{introExample12}
 
 \section{Data types}
 \sollya has a (very) basic system of types. If you try to perform an illicit operation (such as adding a number and a string, for instance), you will get a type error. Let us see the available data types.
@@ -195,13 +196,13 @@ The comparison operators \key{<}, \key{<=}, \key{>} and \key{>=} can only be use
 
 The comparison operators \key{==} and \key{!=} are polymorphic. You can use it to compare any two objects, like two strings, two intervals, etc. Note that testing the equality between two functions will return \key{true} if and only if the expression trees representing the two functions are exactly the same. See \ref{laberror} for an exception concerning the special object \key{error}. Example:
 
-\input{example13}
+\input{introExample13}
 
 \subsection{Numbers}
 \sollya represents numbers as floating-point values. For integer values and values in dyadic, binary, hexadecimal or memory dump notation, it 
 automatically uses a precision needed for representing the value exactly. Otherwise the values are represented with the current precision \com{prec}. A number in an expression is rounded to the precision \com{prec} when the expression gets evaluated:
 
-\input{example14}
+\input{introExample14}
 
 Note that each variable has its own precision that corresponds to its intrinsic precision or, if it cannot be represented, to the value of \com{prec} when the variable was set. Thus you can work with variables having a precision bigger than the current precision.
 
@@ -209,22 +210,22 @@ The same way, if you define a function that refers to some constant, this consta
 
 If you define a function that refers to some variable, the precision of the variable is kept, independently of the current precision:
 
-\input{example15}
+\input{introExample15}
 
 \subsection{Intervals}
 Intervals are composed of two numbers or constant expressions representing the lower and the upper bound. These values are separated either by commas or semi-colons:
 
-\input{example16}
+\input{introExample16}
 
 If bounds are defined by constant expressions, these are evaluated to floating-point numbers using the current precision. Numbers or variables containing numbers keep their precision for the interval bounds. Interval bound evaluation is performed in a way that ensures the inclusion property: all points
 in the original, unevaluated interval will be contained in the interval with its bounds evaluated to floating-point numbers. Remark that 
 evaluation bounds defined by constant expressions includes $\pi$:
 
-\input{example17}
+\input{introExample17}
 
 You can get the upper-bound (respectively the lower-bound)) of an interval with the function \com{sup} (respectively \com{inf}). The middle of the interval is got with the function \com{mid}. Note that these functions can also be used on numbers (in that case, the number is interpreted as an interval containing only one single point. Thus the functions \com{inf}, \com{mid} and \com{sup} are just the identity):
 
-\input{example18}
+\input{introExample18}
 
 \subsection{Functions}
 \sollya knows only functions with one single variable. The first time in a session that an unbound name is used (without being assigned) it determines the name used to refer to the free variable.
@@ -243,12 +244,12 @@ The basic functions available in \sollya are the following:
 
 The constant $\pi$ is available through the keyword \key{pi} as a $0$-ary function: its behavior is exactly the same as if it were a constant with an infinite precision:
 
-\input{example19}
+\input{introExample19}
 
 \subsection{Strings}
 Anything written between quotes is interpreted as a string. The infix operator \com{@} concatenates two strings. To get the length of a string, use the \com{length} function. You can access the $i$-th character of a string using brackets (see the example below). There is no character type in \sollya: the $i$-th character of a string is returned as a string itself.
 
-\input{example20}
+\input{introExample20}
 
 Strings may contain the following escape sequences:
 \texttt{$\backslash\backslash$}, \texttt{$\backslash$\"},
@@ -284,13 +285,13 @@ Objects can be grouped into lists. A list can contain elements with different ty
 
 You can prepend an element to a list using \com{.:} (in $\mathcal{O}(1)$) and you can append an element to a list using \com{:.} (in $\mathcal{O}(n)$). The following example illustrates some features:
 
-\input{example21}
+\input{introExample21}
 
 Lists can be considered as arrays and elements of lists can be
 referenced using brackets. Possible indices start at $0$. The
 following example illustrates this point:
 
-\input{example22}
+\input{introExample22}
 
 Remark that the complexity for accessing an element of the list using
 indices is $\mathcal{O}(n)$.
@@ -303,7 +304,7 @@ constants is not allowed. This feature is provided for ease of
 programming; remark that the complexity of expanding such lists is
 high. For illustration, see the following example:
 
-\input{example23}
+\input{introExample23}
 
 Lists may be continued to infinity by means of the \texttt{...}
 indicator after the last element given. At least one element must
@@ -318,7 +319,7 @@ high. Combinations of ellipses inside a list and in its end are
 possible. The usage of lists described here is best illustrated by the
 following examples:
 
-\input{example24}
+\input{introExample24}
 
 \section{Iterative language elements: assignments, conditional statements and loops}
 
@@ -362,7 +363,7 @@ of lists is not supported for complexity reasons.
 The following examples well illustrate the behavior of assignment
 statements:
 
-\input{example25}
+\input{introExample25}
 
 \subsection{Conditional statements}
 
@@ -375,7 +376,7 @@ conditional statements in \sollya. Concerning syntax, consider also
 section \ref{grammar} and remark that there must not be any semicolon
 before the \key{else} keyword.
 
-\input{example26}
+\input{introExample26}
 
 \subsection{Loops}
 
@@ -385,7 +386,7 @@ loops can be expressed using the keywords \key{while} and
 loop, there is no \emph{do-until-condition} loop. Consider the following 
 examples for both syntax and semantic:
 
-\input{example27}
+\input{introExample27}
 
 The second kind of loops are loops on a variable ranging from a
 numerical start value and a end value. These kind of loops can be
@@ -394,7 +395,7 @@ and optionally \key{by}. The \key{by} statement indicates the width of
 the steps on the variable from the start value to the end value. Once
 again, syntax and semantic are best explained with an example:
 
-\input{example28}
+\input{introExample28}
 
 The third kind of loops are loops on a variables ranging on values
 contained in a list. In order to ensure the termination of the loop,
@@ -402,14 +403,14 @@ that list must not be end-elliptic. The loop is expressed using the
 keywords \key{for}, \key{in} and \key{do} as in the following
 examples:
 
-\input{example29}
+\input{introExample29}
 
 For both types of \key{for} loops, assigning the loop variable is
 allowed and possible. If the loop terminates, the loop variable will
 contain the value that made the loop condition fail. Consider the
 following examples:
 
-\input{example30}
+\input{introExample30}
 
 \section{Functional language elements: procedures}
 
@@ -440,7 +441,7 @@ precision valid at this moment.
 
 \sollya procedures are well illustrated by the following examples:
 
-\input{example31}
+\input{introExample31}
 
 \sollya also supports external procedures, i.e. procedures written in
 \texttt{C} (or some other language) and dynamically bound to \sollya

@@ -1,5 +1,5 @@
-f = sin(x)/x;
-g = cos(y) - 1;
+f = sin(x)/x; /* hidden */
+g = cos(x) - 1; /* hidden */
 rename(x,y);
 g;
 x=3;

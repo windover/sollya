@@ -1,2 +1,2 @@
-f = sin(x)/x;
+f = sin(x)/x; /* hidden */
 x = 3;
