@@ -137,6 +137,7 @@ if test "x$XML2LIBGIVEN" = "x"; then
   AC_SEARCH_LIBS([xmlTextReaderIsEmptyElement], [$XML2LIBS])
 fi
 
+
 # Save user flags
 
 OLDCFLAGS="$CFLAGS"
@@ -162,12 +163,6 @@ AC_CHECK_LIB([mpfr], [mpfr_erfc], [], AC_MSG_ERROR([libmpfr version too old]))
 AC_CHECK_LIB([xml2], [xmlTextReaderIsEmptyElement], [], AC_MSG_ERROR([libxml2 unusable]))
 AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unusable]))
 
-#Check for -Wl,-export-dynamic etc.
-
-CPPFLAGS="$OLDCPPFLAGS"
-CFLAGS="$OLDCFLAGS -fPIC"
-LDFLAGS="$OLDLDFLAGS"
-
 #Special check for fplll
 AC_LANG_PUSH([C++])
 AC_MSG_CHECKING([for fplll support])
@@ -179,6 +174,13 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
 ],[AC_MSG_ERROR([fplll unusable (or g++ too new -- see README)])
 ])
 AC_LANG_POP([C++])	
+
+#Check for -Wl,-export-dynamic etc.
+
+CPPFLAGS="$OLDCPPFLAGS"
+CFLAGS="$OLDCFLAGS -fPIC"
+LDFLAGS="$OLDLDFLAGS"
+
 
 AC_MSG_CHECKING([for -fPIC support])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
