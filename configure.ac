@@ -165,13 +165,6 @@ AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unusable]))
 
 #Special check for fplll
 AC_LANG_PUSH([C++])
-
-echo CPPFLAGS $CPPFLAGS
-echo CFLAGS $CFLAGS
-echo CXXFLAGS $CXXFLAGS
-echo LDFLAGS $LDFLAGS
-
-
 AC_MSG_CHECKING([for fplll support])
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
 [[#include <gmp.h>]]
