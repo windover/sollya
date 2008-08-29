@@ -583,18 +583,26 @@ void signalHandler(int i) {
     handlingCtrlC = 1;
     break;
   case SIGSEGV:
-    fprintf(stderr,"Warning: handling signal SIGSEGV\n");
+    changeToWarningMode();
+    printf("Warning: handling signal SIGSEGV\n");
     printBacktrace(); 
-    fprintf(stderr,"\n");
+    printf("\n");
+    restoreMode();
     break;
   case SIGBUS:
-    fprintf(stderr,"Warning: handling signal SIGBREAK\n");
+    changeToWarningMode();
+    printf("Warning: handling signal SIGBREAK\n");
+    restoreMode();
     break;
   case SIGFPE:
-    fprintf(stderr,"Warning: handling signal SIGFPE\n");
+    changeToWarningMode();
+    printf("Warning: handling signal SIGFPE\n");
+    restoreMode();
     break;
   case SIGPIPE:
-    fprintf(stderr,"Warning: handling signal SIGPIPE\n");
+    changeToWarningMode();
+    printf("Warning: handling signal SIGPIPE\n");
+    restoreMode();
     break;
   default:
     fprintf(stderr,"Error: must handle an unknown signal.\n");
