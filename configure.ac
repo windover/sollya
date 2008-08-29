@@ -76,6 +76,19 @@ AC_ARG_WITH(mpfr,
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
   ])
 
+AC_ARG_WITH(fplll-include,
+   [  --with-fplll-include=DIR  fplll include directory ],
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval")
+AC_ARG_WITH(fplll-lib,
+   [  --with-fplll-lib=DIR      fplll lib directory ], [
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval"
+  ])
+AC_ARG_WITH(fplll,
+   [  --with-fplll=DIR          fplll install directory ], [
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
+  ])
+
 
 XML2INCLUDEGIVEN=""
 XML2LIBGIVEN=""
@@ -149,15 +162,25 @@ AC_CHECK_LIB([mpfr], [mpfr_erfc], [], AC_MSG_ERROR([libmpfr version too old]))
 AC_CHECK_LIB([xml2], [xmlTextReaderIsEmptyElement], [], AC_MSG_ERROR([libxml2 unusable]))
 AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unusable]))
 
-
-
 #Check for -Wl,-export-dynamic etc.
 
 CPPFLAGS="$OLDCPPFLAGS"
 CFLAGS="$OLDCFLAGS -fPIC"
 LDFLAGS="$OLDLDFLAGS"
 
-AC_MSG_CHECKING([check for -fPIC support])
+#Special check for fplll
+AC_LANG_PUSH([C++])
+AC_MSG_CHECKING([for fplll support])
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
+[[#include <gmp.h>]]
+[[#include <fplll.h>]] 
+, [[ZZ_mat<mpz_t> * M; M = new ZZ_mat<mpz_t>(3,3); if(M!=NULL) exit(0); else exit(1);]])],
+[AC_MSG_RESULT(yes) 
+],[AC_MSG_ERROR([fplll unusable (or g++ too new -- see README)])
+])
+AC_LANG_POP([C++])	
+
+AC_MSG_CHECKING([for -fPIC support])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
 [AC_MSG_RESULT(yes) 
 AM_CFLAGS="$AM_CFLAGS -fPIC"
@@ -167,7 +190,7 @@ AM_CFLAGS="$AM_CFLAGS -fPIC"
 CFLAGS="$OLDCFLAGS"
 LDFLAGS="$OLDLDFLAGS -Wl,-export-dynamic"
 
-AC_MSG_CHECKING([check for -export-dynamic support])
+AC_MSG_CHECKING([for -export-dynamic support])
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]], [[exit(0);]])],
 [AC_MSG_RESULT(yes) 
 AM_LDFLAGS="$AM_LDFLAGS -Wl,-export-dynamic"

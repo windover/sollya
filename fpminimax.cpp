@@ -52,7 +52,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include <mpfr.h>
 #include <stdio.h>
 #include <stdlib.h>
-//#include <fplll.h>
+#include <fplll.h>
 
 
 extern "C" {
@@ -314,7 +314,7 @@ chain *computeExponents(chain *formats, chain *monomials, node *poly) {
 
 
 
-
+  /*
 node *FPminimax(node *f,
 		chain *monomials,
 		chain *formats,
@@ -323,6 +323,7 @@ node *FPminimax(node *f,
 		int fp, int absrel,
 		node *consPart,
 		node *minimax) {
+
   printMessage(0, "FPminimax is not yet available in Sollya but is coming soon.\n");
   printMessage(0, "We still have some minor issues with fplll but it should be fixed within a few weeks.\n\n");
   printMessage(0, "    ********************************************************\n");
@@ -343,8 +344,8 @@ node *FPminimax(node *f,
 
   return copyTree(f);
 }
+  */
 
-/*
 node *FPminimaxMain(node *, chain *, chain *, chain *, node *);
 
 
@@ -790,4 +791,3 @@ node *FPminimaxMain(node *f,
   return res;
 }
 
-*/
