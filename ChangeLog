@@ -1,3 +1,363 @@
+2008-08-30 13:30  clauter
+
+	* general.c, library.c, plot.c: Made Sollya compile under Cygwin, a
+	  warning persists under compilatio, Sollya library untested,
+	  externalproc, externalplot and library function untested,
+	  asciiplot plots always for a 77x24 character terminal because
+	  ioctrl impossible.
+
+2008-08-29 18:43  clauter
+
+	* doc/sollya.pdf, parser.y: New version
+
+2008-08-29 17:04  schevill
+
+	* sollya.h: updated sollya.h with the signature of FPminimax
+
+2008-08-29 16:58  schevill
+
+	* doc/introExample11.sollya, doc/introExample2.sollya,
+	  doc/introExample3.sollya, doc/introExample3.tex,
+	  doc/introExample4.sollya, doc/introExample5.sollya,
+	  doc/introExample6.sollya, doc/introExample6.tex, doc/sollya.pdf,
+	  doc/sollya.tex: updated the examples in introduction of the
+	  manual.
+
+2008-08-29 16:46  clauter
+
+	* doc/Makefile.am, doc/introExample1.tex: Some updates
+
+2008-08-29 16:38  schevill
+
+	* doc/compileExamples.sh, doc/example1.tex, doc/example1.txt,
+	  doc/example10.tex, doc/example10.txt, doc/example11.tex,
+	  doc/example11.txt, doc/example12.tex, doc/example12.txt,
+	  doc/example13.tex, doc/example13.txt, doc/example14.tex,
+	  doc/example14.txt, doc/example15.tex, doc/example15.txt,
+	  doc/example16.tex, doc/example16.txt, doc/example17.tex,
+	  doc/example17.txt, doc/example18.tex, doc/example18.txt,
+	  doc/example19.tex, doc/example19.txt, doc/example2.tex,
+	  doc/example2.txt, doc/example20.tex, doc/example20.txt,
+	  doc/example21.tex, doc/example21.txt, doc/example22.tex,
+	  doc/example22.txt, doc/example23.tex, doc/example23.txt,
+	  doc/example24.tex, doc/example24.txt, doc/example25.tex,
+	  doc/example25.txt, doc/example26.tex, doc/example26.txt,
+	  doc/example27.tex, doc/example27.txt, doc/example28.tex,
+	  doc/example28.txt, doc/example29.tex, doc/example29.txt,
+	  doc/example3.tex, doc/example3.txt, doc/example30.tex,
+	  doc/example30.txt, doc/example31.tex, doc/example31.txt,
+	  doc/example4.tex, doc/example4.txt, doc/example5.tex,
+	  doc/example5.txt, doc/example6.tex, doc/example6.txt,
+	  doc/example7.tex, doc/example7.txt, doc/example8.tex,
+	  doc/example8.txt, doc/example9.tex, doc/example9.txt,
+	  doc/introExample1.sollya, doc/introExample1.tex,
+	  doc/introExample10.sollya, doc/introExample10.tex,
+	  doc/introExample11.sollya, doc/introExample11.tex,
+	  doc/introExample12.sollya, doc/introExample12.tex,
+	  doc/introExample13.sollya, doc/introExample13.tex,
+	  doc/introExample14.sollya, doc/introExample14.tex,
+	  doc/introExample15.sollya, doc/introExample15.tex,
+	  doc/introExample16.sollya, doc/introExample16.tex,
+	  doc/introExample17.sollya, doc/introExample17.tex,
+	  doc/introExample18.sollya, doc/introExample18.tex,
+	  doc/introExample19.sollya, doc/introExample19.tex,
+	  doc/introExample2.sollya, doc/introExample2.tex,
+	  doc/introExample20.sollya, doc/introExample20.tex,
+	  doc/introExample21.sollya, doc/introExample21.tex,
+	  doc/introExample22.sollya, doc/introExample22.tex,
+	  doc/introExample23.sollya, doc/introExample23.tex,
+	  doc/introExample24.sollya, doc/introExample24.tex,
+	  doc/introExample25.sollya, doc/introExample25.tex,
+	  doc/introExample26.sollya, doc/introExample26.tex,
+	  doc/introExample27.sollya, doc/introExample27.tex,
+	  doc/introExample28.sollya, doc/introExample28.tex,
+	  doc/introExample29.sollya, doc/introExample29.tex,
+	  doc/introExample3.sollya, doc/introExample3.tex,
+	  doc/introExample30.sollya, doc/introExample30.tex,
+	  doc/introExample31.sollya, doc/introExample31.tex,
+	  doc/introExample4.sollya, doc/introExample4.tex,
+	  doc/introExample5.sollya, doc/introExample5.tex,
+	  doc/introExample6.sollya, doc/introExample6.tex,
+	  doc/introExample7.sollya, doc/introExample7.tex,
+	  doc/introExample8.sollya, doc/introExample8.tex,
+	  doc/introExample9.sollya, doc/introExample9.tex: Changed names of
+	  example files for the introduction. Updated compileExamples.sh
+
+2008-08-29 16:30  clauter
+
+	* doc/grammar.tex, doc/sollya.pdf, doc/sollya.tex: Removed grammar
+	  from help
+
+2008-08-29 16:24  clauter
+
+	* lexer.l: Made prompt come back after a comment started by //
+
+2008-08-29 16:12  clauter
+
+	* doc/accurateinfnorm.tex, doc/asciiplot.tex, doc/bashexecute.tex,
+	  doc/dirtyfindzeros.tex, doc/dirtyinfnorm.tex, doc/divide.tex,
+	  doc/doubledouble.tex, doc/doubleextended.tex, doc/evaluate.tex,
+	  doc/findzeros.tex, doc/fpminimax.tex, doc/hopitalrecursions.tex,
+	  doc/implementpoly.tex, doc/isevaluable.tex, doc/length.tex,
+	  doc/midpointmode.tex, doc/pi.tex, doc/points.tex, doc/print.tex,
+	  doc/printexpansion.tex, doc/remez.tex, doc/roundingwarnings.tex,
+	  doc/searchgal.tex, doc/simplify.tex, doc/sollya.pdf,
+	  doc/subpoly.tex, doc/timing.tex, doc/tripledouble.tex,
+	  doc/verbosity.tex, doc/worstcase.tex, help.h: New help text
+	  example compilation
+
+2008-08-29 15:31  clauter
+
+	* Makefile.am, configure.ac: Added fpminimax to libsollya
+
+2008-08-29 15:14  schevill
+
+	* execute.c, fpminimax.cpp, sollya.h: FPminimax does not construct
+	  an node of type error anymore. Now, it returns NULL and the error
+	  is generated in execute.c
+	  
+	  FPminimax does not handle singular matrices but does not crash on
+	  such matrices: it just returns an error
+	  
+	  Memory leak corrected in FPminimax.
+
+2008-08-29 12:49  clauter
+
+	* configure.ac, general.c: Colored SIGNAL handler messages
+
+2008-08-29 12:13  schevill
+
+	* general.c, plot.c, remez.c: removed some warnings
+
+2008-08-29 12:00  schevill
+
+	* README: Added information about how to configure sollya for
+	  compiling with g++-4.2
+
+2008-08-29 11:58  schevill
+
+	* README: Updated README to include a warning about the version of
+	  g++ used to compile Sollya.
+
+2008-08-29 11:44  clauter
+
+	* configure.ac: New version of configure.ac for fplll (final)
+
+2008-08-29 11:38  clauter
+
+	* configure.ac: New version of configure.ac for fplll
+	  (communication version)
+
+2008-08-29 11:28  clauter
+
+	* configure.ac: New version of configure.ac for fplll (2)
+
+2008-08-29 11:26  clauter
+
+	* configure.ac: New version of configure.ac for fplll
+
+2008-08-29 10:03  clauter
+
+	* configure.ac, fpminimax.cpp: Added test for fplll in configure
+
+2008-08-28 14:48  clauter
+
+	* expression.c: Patched a very dangerous bug in binomial expression
+	  expansion
+	  affecting the sign of the monomials in the expansion.
+	  
+	  THIS CODE IS CALLED FROM EVERYWHERE EACH TIME A POLYNOMIAL IS
+	  HANDLED!
+	  
+	  Please re-check all results previously obtained using Sollya.
+
+2008-08-28 13:56  schevill
+
+	* doc/sollya.pdf: corrected a typo.
+
+2008-08-28 13:52  schevill
+
+	* doc/fpminimax.shlp, doc/fpminimax.tex, help.h: corrected a typo.
+
+2008-08-28 13:00  clauter
+
+	* execute.c: Really speeded up conversion of decimal constants
+
+2008-08-28 12:45  clauter
+
+	* doc/sollya.pdf, general.c: Patched coloring on timing information
+	  - I do not why it was blue
+
+2008-08-28 12:28  schevill
+
+	* fpminimax.cpp: Updated the message relative to the installation
+	  of fplll
+
+2008-08-19 17:11  schevill
+
+	* remez.c: New version of guessdegree much *much* more efficient.
+
+2008-08-12 14:56  schevill
+
+	* fpminimax.cpp: The dummy wrapper is more easy to comment now.
+
+2008-08-12 14:49  schevill
+
+	* fpminimax.cpp: Now sollya compiles with recent versions of g++.
+
+2008-08-12 14:16  schevill
+
+	* fpminimax.cpp, fpminimax.h: New files for fpminimax
+
+2008-08-12 14:16  schevill
+
+	* Makefile.am, README, assignment.c, assignment.h, chain.c,
+	  chain.h, double.c, double.h, execute.c, execute.h, expression.c,
+	  expression.h, external.c, fpminimax.c, fpminimax.h, general.h,
+	  help.h, infnorm.c, infnorm.h, internlexer.l, internparser.y,
+	  lexer.l, parser.y, plot.c, remez.c, remez.h, sollya.h: * Added:
+	  fixed, floating, and fpminimax.
+	  * Corrected a memory leak in function sprintValue of file
+	  expression.c
+	  * Corrected a bug in the informations displayed by plot and
+	  externalplot (buffer was badly flushed)
+	  * Updated help
+	  * Moved rationapprox code in file double.c
+	  * Moved a lot of useful functions that were in several files all
+	  together in chain.c (freeMpfiPtr, freeIntPtr, etc.)
+	  * Added useful declarations in sollya.h
+	  * Enhanced Newton's algorithm used by remez and dirtyfindzeros:
+	  an exact zero is detected more quickly now.
+
+2008-08-12 12:44  schevill
+
+	* doc/checkinfnorm.shlp, doc/checkinfnorm.tex, doc/equal.shlp,
+	  doc/equal.tex, doc/infnorm.shlp, doc/infnorm.tex, doc/parse.shlp,
+	  doc/parse.tex, doc/power.shlp, doc/power.tex,
+	  doc/printexpansion.tex, doc/remez.tex, doc/sollya.pdf,
+	  doc/subpoly.tex: Corrected a few things and updated the examples
+	  with current version of sollya.
+
+2008-08-12 10:14  schevill
+
+	* doc/fixed.tex, doc/floating.tex, doc/fpminimax.shlp,
+	  doc/fpminimax.tex: I forgot to add tex files
+
+2008-08-12 09:57  schevill
+
+	* doc/CommandsAndFunctions.tex, doc/compileExamples.sh,
+	  doc/example.sollya, doc/example1.tex, doc/example1.txt,
+	  doc/example10.tex, doc/example10.txt, doc/example11.tex,
+	  doc/example11.txt, doc/example12.tex, doc/example12.txt,
+	  doc/example13.tex, doc/example13.txt, doc/example14.tex,
+	  doc/example14.txt, doc/example15.tex, doc/example15.txt,
+	  doc/example16.tex, doc/example16.txt, doc/example17.tex,
+	  doc/example17.txt, doc/example18.tex, doc/example18.txt,
+	  doc/example19.tex, doc/example19.txt, doc/example2.tex,
+	  doc/example2.txt, doc/example20.tex, doc/example20.txt,
+	  doc/example21.tex, doc/example21.txt, doc/example22.tex,
+	  doc/example22.txt, doc/example23.tex, doc/example23.txt,
+	  doc/example24.tex, doc/example24.txt, doc/example25.tex,
+	  doc/example25.txt, doc/example26.tex, doc/example26.txt,
+	  doc/example27.tex, doc/example27.txt, doc/example28.tex,
+	  doc/example28.txt, doc/example29.tex, doc/example29.txt,
+	  doc/example3.tex, doc/example3.txt, doc/example30.tex,
+	  doc/example30.txt, doc/example31.tex, doc/example31.txt,
+	  doc/example4.tex, doc/example4.txt, doc/example5.tex,
+	  doc/example5.txt, doc/example6.tex, doc/example6.txt,
+	  doc/example7.tex, doc/example7.txt, doc/example8.tex,
+	  doc/example8.txt, doc/example9.tex, doc/example9.txt,
+	  doc/fixed.shlp, doc/floating.shlp, doc/infnorm.shlp,
+	  doc/infnorm.tex, doc/keywords.def, doc/plot.shlp, doc/plot.tex,
+	  doc/sollya.pdf, doc/sollya.tex, doc/types.def: * Added a script
+	  compileExamples.sh that lets one write easily an example for the
+	  documentation of sollya, out of a .shlp file.
+	  The examples in the first sections of the documentation are now
+	  written in separate files and may be recompiled at any time with
+	  compileExamples.
+	  
+	  * Added documentation for fixed, floating and fpminimax.
+	  
+	  * Corrected a few things in other documentation files.
+
+2008-08-01 09:28  clauter
+
+	* sollya.h: Added printInterval to sollya.h
+
+2008-07-29 13:36  jmio17
+
+	* autodiff.c: added auto diff base functions: tan,asin, acos ...
+	  modified pow
+
+2008-07-25 18:21  schevill
+
+	* internparser.y, parser.y: I forgot to suppress references to
+	  pari.h in these internparser.y and parser.y
+
+2008-07-25 18:10  schevill
+
+	* autodiff.c: Implementation of base_diffs for sin, cos, sinh,
+	  cosh, log, log2, log10, exp and sqrt.
+
+2008-07-25 17:31  schevill
+
+	* autodiff.c: Implementation of exp. Note that I rewrote the base
+	  case for x^p : p may be any value (not only integer) and the
+	  results should be more accurate when the input interval is large.
+
+2008-07-25 17:23  schevill
+
+	* autodiff.c: First implementation of the multiplication.
+
+2008-07-25 14:34  schevill
+
+	* autodiff.c: Incomplete version of autodiff. For working purpose
+
+2008-07-25 07:58  schevill
+
+	* Makefile.am, README, configure.ac, doc/sollya.pdf,
+	  doc/sollya.tex, fpminimax.c, general.c, pari_utils.c,
+	  pari_utils.h: Removed dependance to PARI/GP.
+
+2008-07-24 16:09  clauter
+
+	* parser.y: Added Mioara
+
+2008-07-24 14:23  clauter
+
+	* ChangeLog, configure.ac: Applied patch provided by Christophe
+	  Mouilleron
+
+2008-07-24 14:16  schevill
+
+	* sollya.h: update of sollya.h in order to allow more possibilities
+
+2008-07-16 22:08  clauter
+
+	* internlexer.l, internparser.y: Added floating-point approximation
+	  mode (forgot something)
+
+2008-07-16 22:03  clauter
+
+	* execute.c, execute.h, lexer.l, parser.y: Added floating-point
+	  approximation mode
+
+2008-07-08 07:58  clauter
+
+	* infnorm.c: Patched color handling on a warning message in infnorm
+
+2008-07-03 10:00  schevill
+
+	* remez.c: Christoph introduced a bug in the printing of the line
+	  "A slower algorithm is used for this step (pseudo-alternating
+	  condition changed)" when he introduced the coloring. It is
+	  corrected.
+
+2008-06-27 16:28  schevill
+
+	* remez.c: Avoid infinite looping when reaching the maximum allowed
+	  iterations of the algorithm
+
 2008-06-24 10:28  schevill
 
 	* remez.c: I forgot the initialization of variable HaarCompliant
