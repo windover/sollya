@@ -338,6 +338,8 @@ void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     return;
   }
 
+
+#if defined(TIOCGWINSZ) && defined(STDIN_FILENO)
   if (eliminatePromptBackup == 1) {
     sizeX = 77;
     sizeY = 25;
@@ -348,6 +350,10 @@ void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     if (sizeX > 5000) sizeX = 5000;
     if (sizeY > 5000) sizeY = 5000;
   }
+#else
+  sizeX = 77;
+  sizeY = 25;
+#endif
 
   values = (mpfr_t *) safeCalloc(sizeX-1,sizeof(mpfr_t));
   for (i=0;i<sizeX-1;i++) {

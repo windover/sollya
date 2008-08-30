@@ -76,7 +76,7 @@ libraryHandle *getLibraryHandle(char *libraryName) {
   }
 
   dlerror(); 
-  dlfcnHandle = dlopen(libraryName, RTLD_LOCAL | RTLD_NOW);
+  dlfcnHandle = dlopen(libraryName, RTLD_NOW);
   if (dlfcnHandle == NULL) 
     return NULL;
 
@@ -204,7 +204,7 @@ procLibraryHandle *getProcLibraryHandle(char *libraryName) {
   }
 
   dlerror(); 
-  dlfcnHandle = dlopen(libraryName, RTLD_LOCAL | RTLD_NOW);
+  dlfcnHandle = dlopen(libraryName, RTLD_NOW);
   if (dlfcnHandle == NULL) 
     return NULL;
 

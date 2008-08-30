@@ -94,7 +94,6 @@ int hopitalrecursions = DEFAULTHOPITALRECURSIONS;
 mpfr_t statediam;
 
 int eliminatePromptBackup;
-ulong ltop;
 chain *readStack = NULL;
 chain *readStackTemp = NULL;
 chain *readStack2 = NULL;
