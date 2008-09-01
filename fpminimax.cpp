@@ -48,11 +48,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 
 #include <iostream>
+#include <fplll.h>
 #include <gmp.h>
 #include <mpfr.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <fplll.h>
 
 
 extern "C" {

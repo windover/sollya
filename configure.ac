@@ -168,8 +168,8 @@ AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unusable]))
 AC_LANG_PUSH([C++])
 AC_MSG_CHECKING([for fplll support])
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
-[[#include <gmp.h>]]
 [[#include <fplll.h>]] 
+[[#include <gmp.h>]]
 , [[ZZ_mat<mpz_t> * M; M = new ZZ_mat<mpz_t>(3,3); if(M!=NULL) exit(0); else exit(1);]])],
 [AC_MSG_RESULT(yes) 
 ],[AC_MSG_ERROR([fplll unusable (or g++ too new -- see README)])
