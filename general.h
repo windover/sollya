@@ -106,6 +106,8 @@ extern int promptToBePrinted;
 extern int helpNotFinished;
 extern char *tempString;
 extern char *tempString2;
+extern node *tempNode;
+extern int tempInteger;
 extern chain *symbolTable;
 extern chain *declaredSymbolTable;
 extern mpfr_t statediam;

@@ -129,6 +129,8 @@ char *constBuffer = NULL;
 char *constBuffer2 = NULL;
 char *tempString = NULL;
 char *tempString2 = NULL;
+node *tempNode = NULL;
+int tempInteger = 0;
 int *tempIntPtr = NULL;
 
 /* END OF HELPER VARIABLES */

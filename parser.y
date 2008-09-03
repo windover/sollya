@@ -92,6 +92,7 @@ void yyerror(char *message) {
   node *tree;
   chain *list;
   int *integerval;
+  int count;
   void *other;
 };
 
@@ -328,6 +329,7 @@ void yyerror(char *message) {
 %type <other> help;
 %type <other> helpmeta;
 %type <other> egalquestionmark;
+%type <count> unaryplusminus;
 %type <tree>  command;
 %type <tree>  procbody;
 %type <tree>  variabledeclaration;
@@ -950,22 +952,39 @@ hyperterm:                term
 			  }
 ;
 
+unaryplusminus:         PLUSTOKEN 
+			  {
+			    $$ = 0;
+                          }			
+		      |	MINUSTOKEN 		
+                          {
+			    $$ = 1;
+                          }				
+                      | PLUSTOKEN unaryplusminus
+			  {
+			    $$ = $2;
+                          }			
+		      |	MINUSTOKEN unaryplusminus 		
+                          {
+			    $$ = $2+1;
+                          }
+;
+
                            
 term:                   subterm						
 			  {
 			    $$ = $1;
                           }			
-		      |	MINUSTOKEN subterm			
+		      |	unaryplusminus subterm			
                           {
-			    $$ = makeNeg($2);
+			    tempNode = $2;
+			    for (tempInteger=0;tempInteger<$1;tempInteger++)
+			      tempNode = makeNeg(tempNode);
+			    $$ = tempNode;
                           }				
 		      |	APPROXTOKEN subterm			
                           {
 			    $$ = makeEvalConst($2);
-                          }				
-		      |	PLUSTOKEN subterm			
-                          {
-			    $$ = $2;
                           }				
 		      |	term MULTOKEN subterm				
 			  {
@@ -975,21 +994,19 @@ term:                   subterm
                           {
 			    $$ = makeDiv($1, $3);
                           }					
-		      |	term MULTOKEN MINUSTOKEN subterm				
+		      |	term MULTOKEN unaryplusminus subterm				
 			  {
-			    $$ = makeMul($1, makeNeg($4));
+			    tempNode = $4;
+			    for (tempInteger=0;tempInteger<$3;tempInteger++)
+			      tempNode = makeNeg(tempNode);
+			    $$ = makeMul($1, tempNode);
                           }														
-		      |	term DIVTOKEN MINUSTOKEN subterm				
+		      |	term DIVTOKEN unaryplusminus subterm				
                           {
-			    $$ = makeDiv($1, makeNeg($4));
-                          }					
-		      |	term MULTOKEN PLUSTOKEN subterm				
-			  {
-			    $$ = makeMul($1, $4);
-                          }														
-		      |	term DIVTOKEN PLUSTOKEN subterm				
-                          {
-			    $$ = makeDiv($1, $4);
+			    tempNode = $4;
+			    for (tempInteger=0;tempInteger<$3;tempInteger++)
+			      tempNode = makeNeg(tempNode);
+			    $$ = makeDiv($1, tempNode);
                           }					
 ;
 
@@ -1001,13 +1018,12 @@ subterm:                basicthing
                           {
 			    $$ = makePow($1, $3);
                           }
-                      | basicthing POWTOKEN MINUSTOKEN subterm
+                      | basicthing POWTOKEN unaryplusminus subterm
                           {
-			    $$ = makePow($1, makeNeg($4));
-                          }
-                      | basicthing POWTOKEN PLUSTOKEN subterm
-                          {
-			    $$ = makePow($1, $4);
+			    tempNode = $4;
+			    for (tempInteger=0;tempInteger<$3;tempInteger++)
+			      tempNode = makeNeg(tempNode);
+			    $$ = makePow($1, tempNode);
                           }
 ;
 
