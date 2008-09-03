@@ -934,7 +934,23 @@ term:                   subterm
 		      |	term DIVTOKEN subterm				
                           {
 			    $$ = makeDiv($1, $3);
-                          }					
+                          }	
+                      | term MULTOKEN MINUSTOKEN subterm
+  	                  {
+  	                    $$ = makeMul($1, makeNeg($4));
+  	                  }
+  	              | term DIVTOKEN MINUSTOKEN subterm
+  	                  {
+  	                    $$ = makeDiv($1, makeNeg($4));
+  	                  }
+  	              | term MULTOKEN PLUSTOKEN subterm
+  	                  {
+  	                    $$ = makeMul($1, $4);
+  	                  }
+  	              | term DIVTOKEN PLUSTOKEN subterm
+  	                  {
+  	                    $$ = makeDiv($1, $4);
+  	                  }				
 ;
 
 subterm:                basicthing
@@ -945,6 +961,14 @@ subterm:                basicthing
                           {
 			    $$ = makePow($1, $3);
                           }
+                      | basicthing POWTOKEN MINUSTOKEN subterm
+  	                  {
+  	                    $$ = makePow($1, makeNeg($4));
+  	                  }
+  	              | basicthing POWTOKEN PLUSTOKEN subterm
+  	                  {
+  	                    $$ = makePow($1, $4);
+  	                  }
 ;
 
 
