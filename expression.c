@@ -438,11 +438,14 @@ int precedence(node *tree) {
   case DIV:
     return 4;
     break;
-  case POW:
+  case NEG:
     return 5;
     break;
+  case POW:
+    return 6;
+    break;
   default:
-    return 6; 
+    return 7; 
   }
   return 0;
 }
@@ -952,10 +955,10 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
     fprintValueWithPrintMode(fd,*(tree->value));
     break;
   case ADD:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       fprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       fprintf(fd,")");
     fprintf(fd," + ");
     if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
@@ -965,10 +968,10 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
       fprintf(fd,")");
     break;
   case SUB:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       fprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       fprintf(fd,")");
     fprintf(fd," - ");
     if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
@@ -978,10 +981,10 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
       fprintf(fd,")");
     break;
   case MUL:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       fprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       fprintf(fd,")");
     fprintf(fd," * ");
     if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
@@ -991,10 +994,10 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
       fprintf(fd,")");
     break;
   case DIV:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       fprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       fprintf(fd,")");
     fprintf(fd," / ");
     if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
@@ -1105,10 +1108,10 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
     break;
   case NEG:
     fprintf(fd,"-");
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
       fprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
       fprintf(fd,")");
     break;
   case ABS:
@@ -1332,10 +1335,10 @@ void printTree(node *tree) {
     printValue(tree->value);
     break;
   case ADD:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       printf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       printf(")");
     printf(" + ");
     if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
@@ -1345,10 +1348,10 @@ void printTree(node *tree) {
       printf(")");
     break;
   case SUB:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       printf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       printf(")");
     printf(" - ");
     if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
@@ -1358,10 +1361,10 @@ void printTree(node *tree) {
       printf(")");
     break;
   case MUL:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       printf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       printf(")");
     printf(" * ");
     if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
@@ -1371,10 +1374,10 @@ void printTree(node *tree) {
       printf(")");
     break;
   case DIV:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       printf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       printf(")");
     printf(" / ");
     if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
@@ -1485,10 +1488,10 @@ void printTree(node *tree) {
     break;
   case NEG:
     printf("-");
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
       printf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
       printf(")");
     break;
   case ABS:
@@ -1589,10 +1592,10 @@ char *sprintTree(node *tree) {
     buffer2 = sprintTree(tree->child2);
     buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 9, sizeof(char));
     tempBuf = buffer;
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       tempBuf += sprintf(tempBuf,")");
     tempBuf += sprintf(tempBuf," + ");
     if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
@@ -1606,10 +1609,10 @@ char *sprintTree(node *tree) {
     buffer2 = sprintTree(tree->child2);
     buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 9, sizeof(char));
     tempBuf = buffer;
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       tempBuf += sprintf(tempBuf,")");
     tempBuf += sprintf(tempBuf," - ");
     if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
@@ -1623,10 +1626,10 @@ char *sprintTree(node *tree) {
     buffer2 = sprintTree(tree->child2);
     buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 9, sizeof(char));
     tempBuf = buffer;
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       tempBuf += sprintf(tempBuf,")");
     tempBuf += sprintf(tempBuf," * ");
     if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
@@ -1640,10 +1643,10 @@ char *sprintTree(node *tree) {
     buffer2 = sprintTree(tree->child2);
     buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 9, sizeof(char));
     tempBuf = buffer;
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
       tempBuf += sprintf(tempBuf,")");
     tempBuf += sprintf(tempBuf," / ");
     if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
@@ -1742,16 +1745,16 @@ char *sprintTree(node *tree) {
     buffer2 = sprintTree(tree->child2);
     buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 9, sizeof(char));
     tempBuf = buffer;
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
       tempBuf += sprintf(tempBuf,")");
     tempBuf += sprintf(tempBuf,"^");
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
       tempBuf += sprintf(tempBuf,")");
     break;
   case NEG:
