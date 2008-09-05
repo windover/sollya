@@ -117,6 +117,8 @@ int oldMode = 0;
 chain *symbolTable = NULL;
 chain *declaredSymbolTable = NULL;
 
+int oldrlwrapcompatible = 0;
+
 /* END OF STATE OF THE TOOL */
 
 /* HELPER VARIABLES FOR THE LEXER/ PARSER */
@@ -158,7 +160,7 @@ void normalMode() {
   if (noColor) return;
   if (eliminatePromptBackup) return;
   if (displayColor == 0) return;
-  printf("\e[0m\e[1A\n");
+  printf("\e[0m");
   fflush(NULL);
   displayColor = 0;
 }
@@ -632,6 +634,10 @@ void printPrompt(void) {
   if (eliminatePromptBackup) return;
   if (readStack != NULL) return;
   parseMode();
+  if (oldrlwrapcompatible && (!noColor)) {
+    printf("\e[1A\n");
+    fflush(NULL);
+  }
   printf("> ");
 }
 
@@ -837,6 +843,7 @@ int general(int argc, char *argv[]) {
   for (i=1;i<argc;i++) {
     if (strcmp(argv[i],"-nocolor") == 0) noColor = 1;
     if (strcmp(argv[i],"-noprompt") == 0) eliminatePromptBackup = 1;
+    if (strcmp(argv[i],"-oldrlwrapcompatible") == 0) oldrlwrapcompatible = 1;
   }
   
   initSignalHandler();
