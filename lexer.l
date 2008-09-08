@@ -499,7 +499,6 @@ NOP             "nop"
 					      yylval->value = constBuffer2;
                                               newTokenLexed(); return MIDPOINTCONSTANTTOKEN; }        		       
 {CONSTANT}                                  { 
-					      constBuffer = (char *) safeCalloc(yyleng+1,sizeof(char));
 					      constBuffer2 = (char *) safeCalloc(yyleng+1,sizeof(char));
 					      if (removeSpaces(constBuffer2,yytext)) {
 						printMessage(2,"Information: removed spaces in scientific notation constant \"%s\", it will be considered as \"%s\"\n",yytext,constBuffer2);
