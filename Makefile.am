@@ -1,4 +1,4 @@
-SUBDIRS = doc 
+SUBDIRS = doc tests
 EXTRA_DIST = autogen.sh sollya.h libsollyaexample.c compile.sh expansion.c expansion.h externalfun.c externalproc.c 
 
 AM_YFLAGS = -d

@@ -1,0 +1,637 @@
+The tool has been restarted.
+4.52055246569216251373291015625e-5
+4.520552107578623690642416477203369140625e-5
+4.5205521043867324948450914234854280948638916015625e-5
+The tool has been restarted.
+0.45205~5/7~e-4
+4.5205521043867324948450914234854280948638916015625e-5
+The tool has been restarted.
+false
+The tool has been restarted.
+true
+The tool has been restarted.
+[|2, 3, 4, 5|]
+The tool has been restarted.
+[|1, 2, 3, [|4, 5, 6|]|]
+The tool has been restarted.
+[|1|]
+The tool has been restarted.
+0
+Automatic pure tree simplification has been deactivated.
+x - x
+The tool has been restarted.
+0.5
+1 / 2
+The tool has been restarted.
+on
+The tool has been restarted.
+Warning: syntax error, unexpected SEMICOLONTOKEN, expecting RPARTOKEN.
+The last symbol read has been ";".
+Will skip input until next semicolon after the unexpected token. May leak memory.
+1 + 7 * x + 21 * x^2 + 35 * x^3 + 35 * x^4 + 21 * x^5 + 7 * x^6 + x^7
+The tool has been restarted.
+exp(1 + 5 * x + 10 * x^2 + 10 * x^3 + 5 * x^4 + x^5) - log(asin(16 + 80 * x + 160 * x^2 + 160 * x^3 + 80 * x^4 + 16 * x^5) + x)
+The tool has been restarted.
+off
+512 + x * (2304 + x * (4608 + x * (5376 + x * (4032 + x * (2016 + x * (672 + x * (144 + x * (18 + x))))))))
+Canonical automatic printing output has been activated.
+512 + 2304 * x + 4608 * x^2 + 5376 * x^3 + 4032 * x^4 + 2016 * x^5 + 672 * x^6 + 144 * x^7 + 18 * x^8 + x^9
+on
+512 + x * (2304 + x * (4608 + x * (5376 + x * (4032 + x * (2016 + x * (672 + x * (144 + x * (18 + x))))))))
+The tool has been restarted.
+true
+false
+true
+The tool has been restarted.
+false
+false
+false
+true
+The tool has been restarted.
+10
+The tool has been restarted.
+0
+The tool has been restarted.
+[|1, 2, 3, 7, 8, 9|]
+The tool has been restarted.
+Hello World!
+The tool has been restarted.
+true
+The tool has been restarted.
+165
+The precision has been set to 200 bits.
+The tool has been restarted.
+3
+0
+The tool has been restarted.
+-1
+The tool has been restarted.
+3
+The tool has been restarted.
+Warning: the expression given is not a fraction. Will consider it as a fraction with denominator 1.
+1
+The tool has been restarted.
+5 / 3
+5 / 3
+The tool has been restarted.
+Warning: the expression given is not a fraction. Will consider it as a fraction with denominator 1.
+Warning: the expression given is not a fraction. Will consider it as a fraction with denominator 1.
+exp(x / 3)
+exp(x / 3)
+The tool has been restarted.
+cos(x)
+The tool has been restarted.
+1
+The tool has been restarted.
+x^x * (1 + log(x))
+The tool has been restarted.
+[|-3.14159265358979323846264338327950288419716939937508, 0, 3.14159265358979323846264338327950288419716939937508|]
+The tool has been restarted.
+18
+25
+The tool has been restarted.
+1
+The tool has been restarted.
+1.45856
+1.458528537135
+1.458528537136237644438147455024
+1.458528537136237644438147455023841718299214087993682374094153
+The tool has been restarted.
+Warning: a bound of the interval is infinite or NaN.
+This command cannot handle such intervals.
+@NaN@
+The tool has been restarted.
+-0.54402111088936981340474766185137728168364301291621
+-0.54400304905152629822448058882475382036536298356281
+-0.54401997751158321972222697312583199035995837926892
+The tool has been restarted.
+Display mode is decimal numbers.
+0.70710678118654752440084436210484903928483593768847
+Display mode is binary numbers.
+1.01101010000010011110011001100111111100111011110011001001000010001011001011111011000100110110011011101010100101010111110100111110001110101101111011000001011101010001_2 * 2^(-1)
+Display mode is hexadecimal numbers.
+0xb.504f333f9de6484597d89b3754abe9f1d6f60ba88p-4
+Display mode is dyadic numbers.
+33070006991101558613323983488220944360067107133265b-165
+Display mode is dyadic numbers in integer-power-of-2 notation.
+33070006991101558613323983488220944360067107133265 * 2^(-165)
+The tool has been restarted.
+2.5
+The tool has been restarted.
+x * 0.5
+The tool has been restarted.
+1
+The tool has been restarted.
+Warning: the given expression is undefined or numerically unstable.
+@Inf@
+The tool has been restarted.
+(exp(x) * cos(x) - sin(x) * exp(x)) / exp(x)^2
+The tool has been restarted.
+1.0000000000000000000000000000007888609052210118054
+1
+The tool has been restarted.
+1.100110011001100110011001100110011001100110011001100110011001101_2 * 2^(-4)
+1.100110011001100110011001100110011001100110011001100110011001101_2 * 2^(-4)
+The tool has been restarted.
+0
+8.7098098162172166755761954947788722958591037427053e-603
+The tool has been restarted.
+-5.0165576126683320235573270803307570138315616702549e-20
+Warning: at least one of the given expressions or a subexpression is not correctly typed
+or its evaluation has failed because of some error on a side-effect.
+The tool has been restarted.
+1.100110011001100110011001100110011001100110011001101_2 * 2^(-4)
+1.000010101110000101000111101011100001010001111010111_2 * 2^(2)
+1.1_2 * 2^(-1073)
+The tool has been restarted.
+true
+false
+false
+true
+The tool has been restarted.
+true
+true
+false
+The tool has been restarted.
+The precision has been set to 12 bits.
+false
+The tool has been restarted.
+false
+The tool has been restarted.
+Warning: at least one of the given expressions or a subexpression is not correctly typed
+or its evaluation has failed because of some error on a side-effect.
+error
+The tool has been restarted.
+error
+The tool has been restarted.
+false
+false
+The tool has been restarted.
+Warning: at least one of the given expressions or a subexpression is not correctly typed
+or its evaluation has failed because of some error on a side-effect.
+true
+false
+The tool has been restarted.
+0.70710678118654752440084436210484903928483593768847
+The tool has been restarted.
+[-1.72986452514381269516508615031098129542836767991679e-12715;7.5941198201187963145069564314525661706039084390067e-12716]
+The tool has been restarted.
+[-5.143390272677254630046998919961912407349224165421e-50;0.70710678118654752440084436210484903928483593768866]
+The tool has been restarted.
+sin((pi) * (2 + 0.25 * x))
+The tool has been restarted.
+[@NaN@;@NaN@]
+The tool has been restarted.
+x * x * x
+The tool has been restarted.
+8 + 12 * x + 6 * x * x + x * x * x + 2 * x
+The tool has been restarted.
+exp(243 + 405 * x + 270 * x * x + 90 * x * x * x + 15 * x * x * x * x + x * x * x * x * x + x * 405 + 108 * x * 5 * x + 54 * x * x * 5 * x + 12 * x * x * x * 5 * x + x * x * x * x * 5 * x + x * x * 270 + 27 * x * x * x * 10 + 9 * x * x * x * x * 10 + x * x * x * x * x * 10 + x * x * x * 90 + 6 * x * x * x * x * 10 + x * x * x * x * x * 10 + x * x * x * x * 5 * x + 15 * x * x * x * x + x * x * x * x * x)
+The tool has been restarted.
+-17
+0
+The tool has been restarted.
+false
+false
+The tool has been restarted.
+[|[-3.14208984375;-3.140869140625], [-1.220703125e-3;1.220703125e-3], [3.140869140625;3.14208984375]|]
+[|[-3.14159265370108187198638916015625;-3.141592652536928653717041015625], [-1.16415321826934814453125e-9;1.16415321826934814453125e-9], [3.141592652536928653717041015625;3.14159265370108187198638916015625]|]
+The tool has been restarted.
+Full parentheses mode has been deactivated.
+1 + 2 + 3
+Full parentheses mode has been activated.
+(1 + 2) + 3
+The tool has been restarted.
+true
+true
+false
+true
+false
+The tool has been restarted.
+The precision has been set to 12 bits.
+false
+The tool has been restarted.
+true
+false
+false
+true
+false
+The tool has been restarted.
+The precision has been set to 12 bits.
+false
+The tool has been restarted.
+[10;10]
+The tool has been restarted.
+[8;9]
+The tool has been restarted.
+1
+1
+The tool has been restarted.
+0x3ff0000000000000 + x^2 * 0xbfc5555555555555
+Warning: the infered precision of the 2th coefficient of the polynomial is greater than
+the necessary precision computed for this step. This may make the automatic determination
+of precisions useless.
+0x3ff0000000000000 + x^2 * (0xbfc5555555555555 + 0xbc65555555555555 + 0xb905555555555555)
+The tool has been restarted.
+The number of recursions for Hopital's rule has been set to 0.
+[-@Inf@;@Inf@]
+The number of recursions for Hopital's rule has been set to 1.
+[-2.52258872223978123766892848583270627230200053744108;6.7725887222397812376689284858327062723020005374411]
+The tool has been restarted.
+1 + x * (2 + x * 3)
+1 + x * (7 + x * (21 + x * (35 + x * (35 + x * (21 + x * (7 + x))))))
+The tool has been restarted.
+exp(1 + x * (5 + x * (10 + x * (10 + x * (5 + x))))) - log(asin(x * (1 + x^2)) + x)
+The tool has been restarted.
+0x3ff0000000000000 + x^2 * 0xbfc5555555555555
+Warning: the infered precision of the 2th coefficient of the polynomial is greater than
+the necessary precision computed for this step. This may make the automatic determination
+of precisions useless.
+0x3ff0000000000000 + x^2 * (0xbfc5555555555555 + 0xbc65555555555555 + 0xb905555555555555)
+The tool has been restarted.
+Warning: a coefficient is not at least 2 times greater than a already evaluated sub-polynomial.
+This procedure is not able to implement the polynomial correctly in this case.
+Warning: the infered precision of the 13th coefficient of the polynomial is greater than
+the necessary precision computed for this step. This may make the automatic determination
+of precisions useless.
+Warning: a problem has been encountered during the determination of the precisions needed.
+The produced implementation may be incorrect.
+Polynomial implemented as given.
+The tool has been restarted.
+[2.00855369231876677409285296545817178969879078385537e1;2.00855369231876677409285296545817178969879078385544e1]
+The tool has been restarted.
+Warning: syntax error, unexpected IDENTIFIERTOKEN, expecting DOTSTOKEN or VERTBARTOKEN.
+The last symbol read has been "Â".
+Will skip input until next semicolon after the unexpected token. May leak memory.
+The character " " cannot be recognized. Will ignore it.
+The tool has been restarted.
+Warning: syntax error, unexpected IDENTIFIERTOKEN, expecting DOTSTOKEN or VERTBARTOKEN.
+The last symbol read has been "Â".
+Will skip input until next semicolon after the unexpected token. May leak memory.
+The character " " cannot be recognized. Will ignore it.
+The tool has been restarted.
+[2.71828182845904523536028747135266249775724709369989;2.71828182845904523536028747135266249775724709369998]
+The tool has been restarted.
+Warning: the bounds of the range an infinite norm is to be computed on are not numbers.
+[0;@Inf@]
+The tool has been restarted.
+1
+0
+The tool has been restarted.
+1.11110000011111_2 * 2^(-1)
+1.11110000011111_2 * 2^(-1)
+The tool has been restarted.
+-0.54402111088936981340474766185137728168364301291621
+[-0.54710197983579690224097637163525943075698599257332;-0.54094015130013183848150540881373370744053741191728]
+[-0.54432915685955427101857780295936956775293876382777;-0.54371306401249969508039644221927489010425803173555]
+The tool has been restarted.
+false
+false
+false
+true
+true
+false
+The tool has been restarted.
+false
+true
+false
+The tool has been restarted.
+true
+Information: the free variable has been renamed from "x" to "y".
+false
+The tool has been restarted.
+Information: the free variable has been renamed from "y" to "x".
+sin(x)
+x
+true
+Information: the free variable has been renamed from "x" to "y".
+true
+1
+The tool has been restarted.
+true
+-0.86602540378443864676372317075293618347140262690518
+The tool has been restarted.
+true
+[-1.72986452514381269516508615031098129542836767991679e-12715;7.5941198201187963145069564314525661706039084390067e-12716]
+The tool has been restarted.
+false
+[@NaN@;@NaN@]
+The tool has been restarted.
+12
+The tool has been restarted.
+5
+The tool has been restarted.
+The character " " cannot be recognized. Will ignore it.
+1
+The tool has been restarted.
+@Inf@
+The tool has been restarted.
+false
+true
+true
+false
+true
+The tool has been restarted.
+The precision has been set to 12 bits.
+false
+The tool has been restarted.
+false
+false
+true
+false
+true
+The tool has been restarted.
+The precision has been set to 12 bits.
+true
+The tool has been restarted.
+411775
+0
+The tool has been restarted.
+[3.1415926516056060791015625;3.1415926553308963775634765625]
+0.314159265~1/6~e1
+The tool has been restarted.
+2
+17
+The tool has been restarted.
+3
+The tool has been restarted.
+-2 + x
+The tool has been restarted.
+0
+The tool has been restarted.
+cos(x) - exp(x)
+The tool has been restarted.
+10
+The tool has been restarted.
+x * 2
+The tool has been restarted.
+x^2
+The tool has been restarted.
+sin(x) * exp(x) + exp(x) * cos(x)
+The tool has been restarted.
+false
+true
+true
+false
+The tool has been restarted.
+false
+false
+true
+The tool has been restarted.
+The precision has been set to 12 bits.
+true
+The tool has been restarted.
+false
+The tool has been restarted.
+The tool has been restarted.
+proc(n)
+begin
+nop;
+return (n) + (1);
+end
+6
+The tool has been restarted.
+true
+The tool has been restarted.
+false
+The tool has been restarted.
+5
+The tool has been restarted.
+Warning: the expression given is not a fraction. Will consider it as a fraction with denominator 1.
+exp(x)
+The tool has been restarted.
+5 / 3
+5 / 3
+The tool has been restarted.
+Warning: the expression given is not a fraction. Will consider it as a fraction with denominator 1.
+Warning: the expression given is not a fraction. Will consider it as a fraction with denominator 1.
+exp(x / 3)
+exp(x / 3)
+The tool has been restarted.
+Canonical automatic printing output has been activated.
+1 + x + x^2
+Canonical automatic printing output has been deactivated.
+1 + x * (1 + x)
+The tool has been restarted.
+1 + x * (1 + x)
+Canonical automatic printing output has been activated.
+1 + x + x^2
+The tool has been restarted.
+false
+The tool has been restarted.
+true
+The tool has been restarted.
+exp(x)
+The tool has been restarted.
+6.283
+6.283187
+The tool has been restarted.
+[3.1406;5]
+[3.140625;5]
+The tool has been restarted.
+3
+The tool has been restarted.
+2 + x
+The tool has been restarted.
+x * 2
+The tool has been restarted.
+cos(x) + exp(x)
+The tool has been restarted.
+The number of points has been set to 10.
+[|0, 0.318309886183790671537767526745028724068919291480918|]
+The number of points has been set to 100.
+[|0, 2.4485375860291590118289809749617594159147637806224e-2, 3.5367765131532296837529725193892080452102143497879e-2, 4.54728408833986673625382181064326748669884702115589e-2, 5.3051647697298445256294587790838120678153215246819e-2, 6.3661977236758134307553505349005744813783858296183e-2, 7.7499999999999999999999999999999999999999999999134e-2, 0.106103295394596890512589175581676241356306430493638, 0.159154943091895335768883763372514362034459645740459, 0.318309886183790671537767526745028724068919291480918|]
+The tool has been restarted.
+25
+The tool has been restarted.
+x^2
+The tool has been restarted.
+4.1152263374485596707818930041152263374485596707818e-3
+The tool has been restarted.
+Warning: the given expression is undefined or numerically unstable.
+@NaN@
+The tool has been restarted.
+sin(x)^exp(x) * ((cos(x) * exp(x)) / sin(x) + exp(x) * log(sin(x)))
+The tool has been restarted.
+19
+19
+The tool has been restarted.
+The precision has been set to 50 bits.
+1.110110001110011001001011100011010100110111011011_2 * 2^(2)
+The precision has been set to 100 bits.
+1.11011000111001100100101110001101010011011101101011011100110000110011101000111011101000100000011011_2 * 2^(2)
+The tool has been restarted.
+[|1, 2, 3, 4|]
+The tool has been restarted.
+[|[|1, 2, 3|], 4, 5, 6|]
+The tool has been restarted.
+[|1|]
+The tool has been restarted.
+0x3ff0000000000000 + x * (0x3ff0000000000000 + x * (0x3fe0000000000000 + x * ((0x3fc5555555555555 + 0x3c65555555555555) + x * ((0x3fa5555555555555 + 0x3c45555555555555) + x * (0x3f81111111111111 + 0x3c01111111111111)))))
+The tool has been restarted.
+(0x3ff0002eec908ce9 + 0xbc7df99eb225af5b + 0xb8d55834b08b1f18) + x * ((0x3ff0002835917719 + 0x3c6d82c073b25ebf + 0xb902cf062b54b7b7) + x * ((0x3fdff2d7e6a9c5e9 + 0xbc7b09a95b0d520f + 0xb915b639add55731 + 0x35b0000000000000) + x * ((0x3fc54d67338ba09f + 0x3c4867596d0631cf + 0xb8ef0756bdb4af62 + 0x3580000000000000) + x * ((0x3fa66c209b825167 + 0x3c45ec5b6655b076 + 0xb8d8c125286400ba + 0x3570000000000000) + x * (0x3f81e55425e72ab4 + 0x3c263b25a1bf597b + 0xb8c843e0401dadea + 0x3570000000000000)))))
+The tool has been restarted.
+(0x400921fb54442d18 + 0x3ca1a62633145c07 + 0xb92f1976b7ed8fbc + 0x35c4cf98e804177d + 0x32631d89cd9128a5 + 0x2ec0f31c6809bbdf + 0x2b5519b3cd3a431b + 0x27e8158536f92f8a + 0x246ba7f09ab6b6a9 + 0xa0eedd0dbd2544cf + 0x1d779fb1bd1310ba + 0x1a1a637ed6b0bff6 + 0x96aa485fca40908e + 0x933e501295d98169 + 0x8fd160dbee83b4e0 + 0x8c59b6d799ae131c + 0x08f6cf70801f2e28 + 0x05963bf0598da483 + 0x023871574e69a459 + 0x8000000005702db3 + 0x8000000000000000)
+The tool has been restarted.
+0x40400000
+The tool has been restarted.
+0x431469c5
+The tool has been restarted.
+0x4008000000000000
+The tool has been restarted.
+0x40628d389970338f
+The tool has been restarted.
+x + 2 + exp(sin(x))
+Hello world
+Hello you 7 other persons.
+The tool has been restarted.
+Hello
+[|"Hello"|]
+Hello [|"Hello"|]
+Hello	you [|"Hello	you"|]
+The tool has been restarted.
+Display mode is decimal numbers.
+0.70710678118654752440084436210484903928483593768847
+Display mode is binary numbers.
+1.01101010000010011110011001100111111100111011110011001001000010001011001011111011000100110110011011101010100101010111110100111110001110101101111011000001011101010001_2 * 2^(-1)
+Display mode is hexadecimal numbers.
+0xb.504f333f9de6484597d89b3754abe9f1d6f60ba88p-4
+Display mode is dyadic numbers.
+33070006991101558613323983488220944360067107133265b-165
+Display mode is dyadic numbers in integer-power-of-2 notation.
+33070006991101558613323983488220944360067107133265 * 2^(-165)
+Display mode is decimal numbers.
+Midpoint mode has been deactivated.
+[0.70710678118654752440084436210484903928483593768844;0.70710678118654949743721782517557347782646274417048]
+Midpoint mode has been activated.
+0.7071067811865~4/5~
+Display mode is dyadic numbers.
+[2066875436943847413332748968013809022504194195829b-161;16535003495550825444196237019385936414432675156571b-164]
+Display mode is decimal numbers.
+Automatic pure tree simplification has been deactivated.
+Full parentheses mode has been deactivated.
+x + x * (x + 1 + 1)
+Full parentheses mode has been activated.
+x + (x * ((x + 1) + 1))
+The tool has been restarted.
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- generated by sollya: http://sollya.gforge.inria.fr/ -->
+<!-- syntax: printxml(...);   exemple: printxml(x^2-2*x+5); -->
+<?xml-stylesheet type="text/xsl" href="http://perso.ens-lyon.fr/nicolas.jourdan/mathmlc2p-web.xsl"?>
+<?xml-stylesheet type="text/xsl" href="mathmlc2p-web.xsl"?>
+<!-- This stylesheet allows direct web browsing of MathML-c XML files (http:// or file://) -->
+
+<math xmlns="http://www.w3.org/1998/Math/MathML">
+<semantics>
+<annotation-xml encoding="MathML-Content">
+<lambda>
+<bvar><ci> x </ci></bvar>
+<apply>
+<apply>
+<plus/>
+<apply>
+<plus/>
+<ci> x </ci>
+<cn type="integer" base="10"> 2 </cn>
+</apply>
+<apply>
+<exp/>
+<apply>
+<sin/>
+<ci> x </ci>
+</apply>
+</apply>
+</apply>
+</apply>
+</lambda>
+</annotation-xml>
+<annotation encoding="sollya/text">(x + 1b1) + exp(sin(x))</annotation>
+</semantics>
+</math>
+
+The tool has been restarted.
+6
+4
+proc(n)
+begin
+nop;
+return (n) + (1);
+end
+The tool has been restarted.
+6
+4
+proc(n)
+begin
+nop;
+return (n) + (1);
+end
+The tool has been restarted.
+11
+proc(m, n)
+begin
+var res;
+res := (m) + (n);
+return res;
+end
+Warning: at least one of the given expressions or a subexpression is not correctly typed
+or its evaluation has failed because of some error on a side-effect.
+error
+Warning: at least one of the given expressions or a subexpression is not correctly typed
+or its evaluation has failed because of some error on a side-effect.
+Warning: the given expression or command could not be handled.
+Warning: the given expression or command could not be handled.
+error
+The tool has been restarted.
+6
+1 + x
+The tool has been restarted.
+Hello world.
+Hello world.
+void
+proc()
+begin
+print("Hello world.");
+return void;
+end
+The tool has been restarted.
+120
+39916800
+proc(n)
+begin
+var res;
+if (n) == (0) then
+res := 1
+else
+res := (n) * (fac((n) - (1)));
+return res;
+end
+The tool has been restarted.
+11
+-1
+6
+4
+The tool has been restarted.
+proc(n)
+begin
+print(n);
+quit;
+return void;
+end
+Warning: a quit or restart command may not be part of a procedure body.
+The procedure will not be executed.
+Warning: an error occured while executing a procedure.
+Warning: the given expression or command could not be handled.
+error
+The tool has been restarted.
+Successor of 5 is 6
+The tool has been restarted.
+n = 4
+proc(m, n)
+begin
+nop;
+return (n) + (m);
+end
+n = 4
+11
+The tool has been restarted.
