@@ -10,12 +10,12 @@ The precision has been set to 50 bits.
 > derivativeZeros = inf(d).:derivativeZeros:.sup(d);
 > max=0;
 > for t in derivativeZeros do {
-     r = evaluate(abs(p-f), t);
-     if r > max then { max=r; argmax=t; };
-  };
+>    r = evaluate(abs(p-f), t);
+>    if r > max then { max=r; argmax=t; };
+> };
 > print("The infinite norm of", p-f, "is", max, "and is reached at", argmax);
-The infinite norm of (-0.416265572875373) + x * ((-1.798067209218835) + x * (-3.
-89710727747639e-2)) - cos(2 * exp(x)) is 8.630659443624325e-4 and is reached at 
--5.801672331417684e-2
+The infinite norm of -0.416265572875373 + x * (-1.798067209218835 + x * (-3.8971
+0727747639e-2)) - cos(2 * exp(x)) is 8.630659443624325e-4 and is reached at -5.8
+01672331417684e-2
 \end{Verbatim}
 \end{minipage}\end{center}

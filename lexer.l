@@ -445,9 +445,14 @@ NOP             "nop"
 		      demaskString(newReadFilenameTemp,newReadFilename);
 		      temp_fd = fopen(newReadFilenameTemp,"r");
 		      if (temp_fd == NULL) {
-			printMessage(1,"Warning: the file \"%s\" could not be opened for reading: ",newReadFilenameTemp);
-			printMessage(1,"\"%s\".\n",strerror(errno));
-			printMessage(1,"The last command will have no effect. No memory will be lost.\n");
+                        if (verbosity >= 1) {
+                           changeToWarningMode();
+                           printf("Warning: the file \"%s\" could not be opened for reading: ",newReadFilenameTemp);
+                           printf("\"%s\".\n",strerror(errno));
+			   printf("The last command will have no effect. No memory will be lost.\n");
+                           restoreMode();
+                        }
+                        promptToBePrinted = 1; 
 		      } else {
 			newReadFileStarted();
 			currStatePtr = (YY_BUFFER_STATE *) safeMalloc(sizeof(YY_BUFFER_STATE));
