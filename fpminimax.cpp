@@ -66,6 +66,8 @@ extern "C" {
 
 #define coeff(i,j,n) ((i)-1)*(n)+(j)-1
 
+void printFPLLLMat(ZZ_mat<mpz_t> *M) { M->print(); }
+
 void printMpqMatrix(mpq_t *M, int p, int n) {
   int i,j;
   printf("[");
@@ -442,7 +444,7 @@ node *FPminimax(node *f,
     while(test) {
       if(verbosity>=3) {
 	changeToWarningMode();
-	printf("Computed exponents: [|");
+	printf("Information: fpminimax: computed exponents: [|");
 	curr = correctedFormats;
 	while(curr != NULL) {
 	  printf("%d", *(int *)(curr->value));
@@ -454,7 +456,7 @@ node *FPminimax(node *f,
       }
     
       res = FPminimaxMain(g, monomials, correctedFormats, pointslist, w);
-    
+
       if(res==NULL) test=0;
       else {
 	newFormats =  computeExponents(formats, monomials, res);
