@@ -239,7 +239,7 @@ extern node *getIthCoefficient(node *poly, int i);
 extern void getCoefficients(int *degree, node ***coefficients, node *poly);
 
 extern void evaluateRangeFunction(rangetype y, node *f, rangetype x, mp_prec_t prec);
-extern void evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec);
+extern int evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec);
 extern int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec);
 extern int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec);
 
