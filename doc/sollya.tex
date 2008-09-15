@@ -80,13 +80,20 @@ below).
 
 In principle \sollya reads all its input on standard input and reponds
 on standard output. Reading of files is internally supported but no
-file names can be given for input when the tool is started. All
-configurations of the internal state of the tool are done by commands
-given on the \sollya prompt. Nevertheless, some command line options
-are supported; they work at a very basic I/O-level and can therefore
-not be implemented as commands. 
+file names can be given for input when the tool is started. Remark that 
+it is nevertheless possible to use Sollya on input contained in a file; 
+just redirect standard input to the file, writing on \texttt{bash} for example:
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+~/% sollya < myfile.sollya 
+\end{Verbatim}
+\end{minipage}\end{center}
 
-The following options are supported when calling \texttt{sollya}:
+All configurations of the internal state of the tool are done by
+commands given on the \sollya prompt. Nevertheless, some command line
+options are supported; they work at a very basic I/O-level and can
+therefore not be implemented as commands.
+
+The following options are supported when calling \sollya:
 \begin{itemize}
 \item \texttt{--nocolor}: \sollya supports coloring of the output
   using ANSI X3.64/ ISO/IEC 6429 escape sequences. Coloring is
@@ -101,7 +108,7 @@ The following options are supported when calling \texttt{sollya}:
   makes \sollya emit a wrong coloring escape sequence for making it
   compatible with versions of \texttt{rlwrap} that do not support the
   \texttt{-A} option. The option is considered as a hack since it is
-  know to garble the output of the tool under some particular
+  known to garble the output of the tool under some particular
   circumstances.
 \item \texttt{--help}: Prints help on the usage of the tool and quits.
 \end{itemize}
