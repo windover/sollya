@@ -15,8 +15,11 @@
 
 
 #include "sollya.h"
+#include <gmp.h>
+#include <limits.h>
 
 extern int noRoundingWarnings;
+extern int verbosity;
 
 //these are the functions that work on mpq_t
 
@@ -30,6 +33,159 @@ int polynomialEval_mpq( mpq_t *res, mpq_t x, mpq_t *p, int p_degree);
 int mpfr_to_mpq( mpq_t y, mpfr_t x);
 
 
+void printMpq(mpq_t x) {
+  mpz_t num;
+  mpz_t denom;
+  mpfr_t numMpfr;
+  mpfr_t denomMpfr;
+  mp_prec_t prec;
+  int p;
+  unsigned int dyadicValue;
+
+  mpz_init(num);
+  mpz_init(denom);
+
+  mpq_get_num(num,x);
+  mpq_get_den(denom,x);
+  
+  prec = mpz_sizeinbase(num, 2);
+  dyadicValue = mpz_scan1(num, 0);
+  p = prec - dyadicValue;
+  if (p < 12) prec = 12; else prec = p; 
+  mpfr_init2(numMpfr,prec);
+  mpfr_set_z(numMpfr,num,GMP_RNDN);
+
+  prec = mpz_sizeinbase(denom, 2);
+  dyadicValue = mpz_scan1(denom, 0);
+  p = prec - dyadicValue;
+  if (p < 12) prec = 12; else prec = p; 
+  mpfr_init2(denomMpfr,prec);
+  mpfr_set_z(denomMpfr,denom,GMP_RNDN);
+
+  printValue(&numMpfr); printf(" / "); printValue(&denomMpfr);
+
+  mpfr_clear(numMpfr);
+  mpfr_clear(denomMpfr);
+
+  mpz_clear(num);
+  mpz_clear(denom);
+
+}
+
+
+int tryEvaluateConstantTermToMpq(mpq_t res, node *tree) {
+  mpq_t resA, resB, resC;
+  int result;
+  mpz_t num, denom;
+  mpz_t num2, denom2;
+  signed long int expo;
+
+  if (tree == NULL) return 0;
+
+  mpq_init(resA);
+  mpq_init(resB);
+  mpq_init(resC);
+
+  result = 1;
+  switch (tree->nodeType) {
+  case CONSTANT:
+    mpfr_to_mpq(resC,*(tree->value));
+    break;
+  case ADD:
+    if (tryEvaluateConstantTermToMpq(resA, tree->child1) && 
+	tryEvaluateConstantTermToMpq(resB, tree->child2)) {
+      mpq_add(resC,resA,resB);
+    } else result = 0;
+    break;
+  case SUB:
+    if (tryEvaluateConstantTermToMpq(resA, tree->child1) && 
+	tryEvaluateConstantTermToMpq(resB, tree->child2)) {
+      mpq_sub(resC,resA,resB);
+    } else result = 0;
+    break;
+  case MUL:
+    if (tryEvaluateConstantTermToMpq(resA, tree->child1) && 
+	tryEvaluateConstantTermToMpq(resB, tree->child2)) {
+      mpq_mul(resC,resA,resB);
+    } else result = 0;
+    break;
+  case DIV:
+    if (tryEvaluateConstantTermToMpq(resA, tree->child1) && 
+	tryEvaluateConstantTermToMpq(resB, tree->child2)) {
+      mpq_div(resC,resA,resB);
+    } else result = 0;
+    break;
+  case SQRT:
+    if (tryEvaluateConstantTermToMpq(resA, tree->child1)) {
+      mpz_init(num);
+      mpz_init(denom);
+      mpq_get_num(num,resA);
+      mpq_get_den(denom,resA);
+      if (mpz_root(num,num,2) && mpz_root(denom,denom,2)) {
+	mpq_set_num(resC,num);
+	mpq_set_den(resC,denom);
+	mpq_canonicalize(resC);
+      } else {
+	result = 0;
+      }
+      mpz_clear(num);
+      mpz_clear(denom);
+    } else result = 0;
+    break;
+  case POW:
+    if (tryEvaluateConstantTermToMpq(resA, tree->child1) && 
+	tryEvaluateConstantTermToMpq(resB, tree->child2)) {
+      mpz_init(num);
+      mpz_init(denom);
+      mpq_get_num(num,resB);
+      mpq_get_den(denom,resB);
+      if (mpz_cmp_ui(denom,1) == 0) {
+	/* Must set resC to resA^num */
+	mpz_init(num2);
+	mpz_init(denom2);
+	if (mpz_sgn(num) < 0) {
+	  mpq_get_num(denom2,resA);
+	  mpq_get_den(num2,resA);
+	  mpz_neg(num,num);
+	} else {
+	  mpq_get_num(num2,resA);
+	  mpq_get_den(denom2,resA);
+	}
+	/* Must set resC to (num2^num)/(denom2^num), num is positive */
+	if (mpz_fits_slong_p(num)) {
+	  expo = mpz_get_si(num);
+	  /* Must set resC to (num2^expo)/(denom2^expo), expo is positive */
+	  mpz_pow_ui(num2, num2, (unsigned long int) expo);
+	  mpz_pow_ui(denom2, denom2, (unsigned long int) expo);
+	  mpq_set_num(resC,num2);
+	  mpq_set_den(resC,denom2);
+	  mpq_canonicalize(resC);
+	} else result = 0;
+	mpz_clear(num2);
+	mpz_clear(denom2);
+      } else result = 0;
+      mpz_clear(num);
+      mpz_clear(denom);
+    } else result = 0;
+    break;
+  case NEG:
+    if (tryEvaluateConstantTermToMpq(resA, tree->child1)) {
+      mpq_neg(resC,resA);
+    } else result = 0;
+    break;
+  default:
+    result = 0;
+  }
+
+  if (result) mpq_set(res,resC);
+
+  mpq_clear(resA);
+  mpq_clear(resB);
+  mpq_clear(resC);
+
+  return result;
+}
+
 
 int getNrRoots(int *res, void **args) {
   node *f;
@@ -40,6 +196,7 @@ int getNrRoots(int *res, void **args) {
   int r;
   mpfr_t tempValue, tempValue2;
   node *tempTree;
+  int deg;
   
   prec=getToolPrecision();
 
@@ -72,19 +229,36 @@ int getNrRoots(int *res, void **args) {
 	exit(1);
       }
       if (tempTree->nodeType != CONSTANT) {
-	if (!noRoundingWarnings) {
-	  printMessage(1,"Warning: the %dth coefficient of the polynomial is neither a floating point\n",i);
-	  printMessage(1,"constant nor can be evaluated without rounding to a floating point constant.\n");
-	  printMessage(1,"Will faithfully evaluate it with the current precision (%d bits) \n",prec);
-	}
-	r=evaluateFaithful(tempValue2, tempTree, tempValue, prec);
-	if (!r){
-	  mpfr_set_ui(tempValue2,0,GMP_RNDN);
+	if (tryEvaluateConstantTermToMpq(qCoefficients[i], tempTree)) {
+	  if (verbosity >= 2) {
+	    changeToWarningMode();
+	    printf("Information: evaluated the %dth coefficient to ",i);
+	    printMpq(qCoefficients[i]);
+	    printf("\n");
+	    restoreMode();
+	  }
+	} else {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: Rounded the coefficient %d to 0.\n",i);
+	    printMessage(1,"Warning: the %dth coefficient of the polynomial is neither a floating point\n",i);
+	    printMessage(1,"constant nor can be evaluated without rounding to a floating point constant.\n");
+	    printMessage(1,"Will faithfully evaluate it with the current precision (%d bits) \n",prec);
+	  }
+	  r=evaluateFaithful(tempValue2, tempTree, tempValue, prec);
+	  if (!r){
+	    mpfr_set_ui(tempValue2,0,GMP_RNDN);
+	    if (!noRoundingWarnings) {
+	      printMessage(1,"Warning: Rounded the coefficient %d to 0.\n",i);
+	    }
+	  }
+	  mpfr_to_mpq(qCoefficients[i], tempValue2);
+	  if (verbosity >= 2) {
+	    changeToWarningMode();
+	    printf("Information: evaluated the %dth coefficient to ",i);
+	    printMpq(qCoefficients[i]);
+	    printf("\n");
+	    restoreMode();
 	  }
 	}
-	mpfr_to_mpq(qCoefficients[i], tempValue2);
       } 
       else {
 	mpfr_to_mpq(qCoefficients[i], *(tempTree->value));
@@ -97,9 +271,17 @@ int getNrRoots(int *res, void **args) {
   free(coefficients);
   mpfr_clear(tempValue); 
   mpfr_clear(tempValue2);
-  
-  sturm_mpq(&nr, qCoefficients, degree,x);
-  *res = nr;
+
+  for(deg = degree; deg >= 0 && (mpq_sgn(qCoefficients[deg]) == 0); deg--); 
+
+  if (deg >= 0) {
+    sturm_mpq(&nr, qCoefficients, deg,x);
+    *res = nr;
+  } else {
+    printMessage(1,"Warning: the given polynomial is the zero polynomial. Its number of zeros is infinite.\n");
+    *res = INT_MAX;
+  }
+
   mpfi_clear(x);
   for (i=0;i<=degree;i++) {
     mpq_clear(qCoefficients[i]);
@@ -297,16 +479,9 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
       nb++;
     }
 
-    /*mpq_init(evalResA[evalNr]);
-      mpq_init(evalResB[evalNr]);
-      polynomialEval_mpq(&evalResA[evalNr], aq, dp, dp_degree);
-      polynomialEval_mpq( &evalResB[evalNr], bq, dp, dp_degree);
-      evalNr++;*/  
   }
   
   while (s1_degree!=0){
-    // mpq_init(evalResA[evalNr]);
-    //mpq_init(evalResB[evalNr]);
           
     polynomialDivide_mpq(quotient, &quotient_degree, rest, &rest_degree, s0, s0_degree, s1, s1_degree) ;
     
@@ -323,9 +498,6 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
     for (i=0; i<=s1_degree; i++)
       mpq_neg(s1[i],s1[i]);
     
-    // polynomialEval_mpq( &evalResA[evalNr], aq, s1, s1_degree);
-    // polynomialEval_mpq(  &evalResB[evalNr], bq, s1, s1_degree);
-    // evalNr++;
     polynomialEval_mpq( &evalRes, aq, s1, s1_degree);
     if (mpq_cmp_ui(evalRes,0,1)!=0){
       mpq_init(evalResA[na]);
@@ -352,13 +524,15 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
     if ((mpq_cmp_si(evalResB[i-1],0,1) * mpq_cmp_si(evalResB[i],0,1))<0) 
       varSignB++;
   }
-  // printf("\nA variations: = %d\n", varSignA);
-  // printf("\nB variations: = %d\n", varSignB);
+
   *n=(((varSignA-varSignB)>0)?(varSignA-varSignB+nrRoots):(varSignB-varSignA+nrRoots) );
 
+  free(evalResA);
+  free(evalResB);
+  free(s0); 
+  free(quotient); 
+  free(rest); 
   
-  
-
   return 1;
 }
 

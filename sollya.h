@@ -281,5 +281,6 @@ extern void *safeCalloc (size_t nmemb, size_t size);
 extern void *safeMalloc (size_t size);
 
 extern void printInterval(mpfi_t);
+extern void printValue(mpfr_t *);
 
 #endif
