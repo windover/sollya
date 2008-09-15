@@ -6,7 +6,7 @@
 
   Within Sollya:
     > externalproc(getNrRoots, "./sturm", (function, range) -> integer);
-    getNrRoots(function, range, integer) -> list of range
+    getNrRoots(function, range) -> integer
 
   And then, for instance:
     > getNrRoots(x+1, [2.5; 2.6]);
@@ -15,7 +15,12 @@
 
 
 #include "sollya.h"
+
+extern int noRoundingWarnings;
+
 //these are the functions that work on mpq_t
+
+
 int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x);
 int polynomialDivide_mpq(mpq_t *quotient, int *quotient_degree, mpq_t *rest, int *rest_degree, mpq_t *p, int p_degree, mpq_t *q, int q_degree) ;
 int polynomialDeriv_mpq(mpq_t **derivCoeff, int *deriv_degree, mpq_t *p, int p_degree);
@@ -31,18 +36,16 @@ int getNrRoots(int *res, void **args) {
   mpfi_t x;
   int degree,prec,i,nr;
   node **coefficients;
-  mpfr_t *fpCoefficients;
   mpq_t  *qCoefficients;
   int r;
-  int *fpCoeffRoundAutomatically;
-  mpfr_t tempValue;
+  mpfr_t tempValue, tempValue2;
   node *tempTree;
   
   prec=getToolPrecision();
 
   f = (node *)args[0];
   
-  mpfi_init2(x, prec);
+  mpfi_init2(x, mpfi_get_prec(*( (mpfi_t *)args[1] )));
   mpfi_set(x, *( (mpfi_t *)args[1] ));
 
   getCoefficients(&degree,&coefficients,f);
@@ -51,66 +54,58 @@ int getNrRoots(int *res, void **args) {
     fprintf(stderr,"Error: implementpoly: an error occurred. Could not extract the coefficients of the given polynomial.\n");
     exit(1);
   }
-
-  fpCoefficients = (mpfr_t *) safeCalloc(degree+1,sizeof(mpfr_t));
-  fpCoeffRoundAutomatically = (int *) safeCalloc(degree+1,sizeof(int));
   
   qCoefficients = (mpq_t *) safeCalloc(degree+1,sizeof(mpq_t));
-  
+  for (i=0;i<=degree;i++) {
+    mpq_init(qCoefficients[i]);
+  }  
+
   mpfr_init2(tempValue,prec);
   mpfr_set_d(tempValue,1.0,GMP_RNDN);
-
+  mpfr_init2(tempValue2,prec);
   for (i=0;i<=degree;i++) {
-    mpfr_init2(fpCoefficients[i],prec);
-    fpCoeffRoundAutomatically[i] = 0;
-
     if (coefficients[i] != NULL) {
       tempTree = simplifyTreeErrorfree(coefficients[i]);
       free_memory(coefficients[i]);
       if (!isConstant(tempTree)) {
-    fprintf(stderr,"Error: implementpoly: an error occurred. A polynomial coefficient is not constant.\n");
-    exit(1);
+	fprintf(stderr,"Error: implementpoly: an error occurred. A polynomial coefficient is not constant.\n");
+	exit(1);
       }
       if (tempTree->nodeType != CONSTANT) {
-    printMessage(1,"Warning: the %dth coefficient of the polynomial to implement is neither a floating point\n",i);
-    printMessage(1,"constant nor is able to be evaluated without rounding to a floating point constant.\n");
-    printMessage(1,"Will evaluate it faithfully with the current precision (%d bits) \n",prec);
-    r=evaluateFaithful(fpCoefficients[i], tempTree, tempValue, prec);
-    if (!r){
-      mpfr_set_ui(fpCoefficients[i],0,GMP_RNDN);
-      printMessage(1,"Warning: Forced the coefficient %d to 0 \n",i);
-      }
-    fpCoeffRoundAutomatically[i] = 1;
+	if (!noRoundingWarnings) {
+	  printMessage(1,"Warning: the %dth coefficient of the polynomial is neither a floating point\n",i);
+	  printMessage(1,"constant nor can be evaluated without rounding to a floating point constant.\n");
+	  printMessage(1,"Will faithfully evaluate it with the current precision (%d bits) \n",prec);
+	}
+	r=evaluateFaithful(tempValue2, tempTree, tempValue, prec);
+	if (!r){
+	  mpfr_set_ui(tempValue2,0,GMP_RNDN);
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"Warning: Rounded the coefficient %d to 0.\n",i);
+	  }
+	}
+	mpfr_to_mpq(qCoefficients[i], tempValue2);
       } 
       else {
-        if (mpfr_set(fpCoefficients[i],*(tempTree->value),GMP_RNDN) != 0) {
-          //if (!noRoundingWarnings) {
-          printMessage(1,"Warning: rounding occurred on internal handling of a coefficient of the given polynomial.\n");
-         // }
-        fpCoeffRoundAutomatically[i] = 1;
+	mpfr_to_mpq(qCoefficients[i], *(tempTree->value));
       }
-     }
-     free_memory(tempTree);
+      free_memory(tempTree);
     } else {
-      mpfr_set_d(fpCoefficients[i],0.0,GMP_RNDN);
+      mpq_set_ui(qCoefficients[i],0,1);
     }
   }
   free(coefficients);
   mpfr_clear(tempValue); 
+  mpfr_clear(tempValue2);
   
-  for (i=0;i<=degree;i++) {
-    //printValue(fpCoefficients[i],prec);
-    mpq_init(qCoefficients[i]);
-    mpfr_to_mpq( qCoefficients[i], fpCoefficients[i]);
-  }  
-  //printf("\nSturm....\n");
   sturm_mpq(&nr, qCoefficients, degree,x);
   *res = nr;
   mpfi_clear(x);
   for (i=0;i<=degree;i++) {
-  mpq_clear(qCoefficients[i]);
-  mpfr_clear(fpCoefficients[i]);  
+    mpq_clear(qCoefficients[i]);
   }
+  free(qCoefficients);
+  
   return 1;
 }
 
@@ -125,9 +120,9 @@ int mpfr_to_mpq( mpq_t y, mpfr_t x){
     mpq_set_z(aux,mant);
     
     if (expo>=0)
-    mpq_mul_2exp(aux,aux,(unsigned int)expo);
+      mpq_mul_2exp(aux,aux,(unsigned int)expo);
     else
-    mpq_div_2exp(aux,aux,(unsigned int)(-expo));
+      mpq_div_2exp(aux,aux,(unsigned int)(-expo));
     mpq_set(y,aux);
     mpq_clear(aux);
     return 1;
@@ -139,9 +134,8 @@ int mpfr_to_mpq( mpq_t y, mpfr_t x){
 
 int polynomialDeriv_mpq(mpq_t **derivCoeff, int *deriv_degree, mpq_t *p, int p_degree){
   int i;
-  int prec;
   mpq_t aux;
-  prec=getToolPrecision();
+
   if ((mpq_cmp_ui(p[p_degree],0,1))==0) 
     return 0;
   if (p_degree>=1)
@@ -194,28 +188,28 @@ int polynomialDivide_mpq(mpq_t *quotient, int *quotient_degree, mpq_t *rest, int
   if (((mpq_cmp_ui(q[q_degree],0,1))==0) || ((mpq_cmp_ui(p[p_degree],0,1))==0))
     return 0;
  
-   mpq_init(aux);
+  mpq_init(aux);
   
   step=0;
   for (k=*quotient_degree; k>=0;k--)
-  {
+    {
 
-    mpq_set(quotient[k],p[p_degree-step]);
-    mpq_div(quotient[k],quotient[k],q[q_degree]);
-    for (i=q_degree; i>=0;i--){    
+      mpq_set(quotient[k],p[p_degree-step]);
+      mpq_div(quotient[k],quotient[k],q[q_degree]);
+      for (i=q_degree; i>=0;i--){    
         mpq_mul(aux,quotient[k],q[i]);
         mpq_sub(p[p_degree-step-(q_degree-i)],p[p_degree-step-(q_degree-i)],aux);  
+      }
+      step++; 
     }
-    step++; 
-  }
   *rest_degree=0;
   for (i=q_degree-1; i>=0; i--)  
-  {
-    if ((mpq_cmp_ui(p[i],0,1))!=0){
-      *rest_degree=i;
-      break;
+    {
+      if ((mpq_cmp_ui(p[i],0,1))!=0){
+	*rest_degree=i;
+	break;
+      }
     }
-  }
   for (i=*rest_degree; i>=0; i--){ 
     mpq_set(rest[i],p[i]);
   }
@@ -236,7 +230,7 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
   int i,na,nb,prec,nrRoots;
   int varSignB,varSignA;
 
-  prec=getToolPrecision();
+  prec=mpfi_get_prec(x);
   na=0; nb=0;  
   nrRoots=0;
   mpfr_init2(a,prec);
@@ -304,14 +298,14 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
     }
 
     /*mpq_init(evalResA[evalNr]);
-    mpq_init(evalResB[evalNr]);
-    polynomialEval_mpq(&evalResA[evalNr], aq, dp, dp_degree);
-    polynomialEval_mpq( &evalResB[evalNr], bq, dp, dp_degree);
-    evalNr++;*/  
+      mpq_init(evalResB[evalNr]);
+      polynomialEval_mpq(&evalResA[evalNr], aq, dp, dp_degree);
+      polynomialEval_mpq( &evalResB[evalNr], bq, dp, dp_degree);
+      evalNr++;*/  
   }
   
   while (s1_degree!=0){
-   // mpq_init(evalResA[evalNr]);
+    // mpq_init(evalResA[evalNr]);
     //mpq_init(evalResB[evalNr]);
           
     polynomialDivide_mpq(quotient, &quotient_degree, rest, &rest_degree, s0, s0_degree, s1, s1_degree) ;
@@ -329,9 +323,9 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
     for (i=0; i<=s1_degree; i++)
       mpq_neg(s1[i],s1[i]);
     
-   // polynomialEval_mpq( &evalResA[evalNr], aq, s1, s1_degree);
-   // polynomialEval_mpq(  &evalResB[evalNr], bq, s1, s1_degree);
-   // evalNr++;
+    // polynomialEval_mpq( &evalResA[evalNr], aq, s1, s1_degree);
+    // polynomialEval_mpq(  &evalResB[evalNr], bq, s1, s1_degree);
+    // evalNr++;
     polynomialEval_mpq( &evalRes, aq, s1, s1_degree);
     if (mpq_cmp_ui(evalRes,0,1)!=0){
       mpq_init(evalResA[na]);
@@ -358,14 +352,14 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
     if ((mpq_cmp_si(evalResB[i-1],0,1) * mpq_cmp_si(evalResB[i],0,1))<0) 
       varSignB++;
   }
- // printf("\nA variations: = %d\n", varSignA);
- // printf("\nB variations: = %d\n", varSignB);
+  // printf("\nA variations: = %d\n", varSignA);
+  // printf("\nB variations: = %d\n", varSignB);
   *n=(((varSignA-varSignB)>0)?(varSignA-varSignB+nrRoots):(varSignB-varSignA+nrRoots) );
 
   
   
 
-return 1;
+  return 1;
 }
 
 
