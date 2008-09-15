@@ -54,6 +54,8 @@ reproduced in the \texttt{COPYING} file of the distribution.
 
 \section{Compilation and installation of the \sollya tool}
 
+\subsection{Compilation dependencies}
+
 The \sollya distribution can be compiled and installed using the usual
 \texttt{./configure}, \texttt{make}, \texttt{make install}
 procedure. Besides a \texttt{C} compiler, \sollya needs the following
@@ -70,7 +72,39 @@ installed. In this case an error will be produced at runtime.
 \item \texttt{gnuplot}
 \end{itemize}
 The use of the external tool \texttt{rlwrap} is highly recommended but
-not indispensable.
+not indispensable. Use the \texttt{-A} options of \texttt{rlwrap} for
+correctly displayed ANSI X3.64/ ISO/IEC 6429 colored prompts (see
+below).
+
+\subsection{\sollya command line options}
+
+In principle \sollya reads all its input on standard input and reponds
+on standard output. Reading of files is internally supported but no
+file names can be given for input when the tool is started. All
+configurations of the internal state of the tool are done by commands
+given on the \sollya prompt. Nevertheless, some command line options
+are supported; they work at a very basic I/O-level and can therefore
+not be implemented as commands. 
+
+The following options are supported when calling \texttt{sollya}:
+\begin{itemize}
+\item \texttt{--nocolor}: \sollya supports coloring of the output
+  using ANSI X3.64/ ISO/IEC 6429 escape sequences. Coloring is
+  deactivated when Sollya is connected on standard input to a file
+  that is not a terminal. This option forces the deactivation of ANSI
+  coloring. This might be necessary on very old grey-scale terminals or when
+  encountering problems with old versions of \texttt{rlwrap}. 
+\item \texttt{--noprompt}: \sollya prints a prompt symbol when
+  connected on standard input to a pseudo-file that is a terminal. The
+  option deactivates the prompt.
+\item \texttt{--oldrlwrapcompatible}: This option is deprecated. It
+  makes \sollya emit a wrong coloring escape sequence for making it
+  compatible with versions of \texttt{rlwrap} that do not support the
+  \texttt{-A} option. The option is considered as a hack since it is
+  know to garble the output of the tool under some particular
+  circumstances.
+\item \texttt{--help}: Prints help on the usage of the tool and quits.
+\end{itemize}
 
 
 \section{Introduction}

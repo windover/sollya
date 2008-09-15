@@ -14,17 +14,20 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{asciiplot} plots the function \emph{function} in range \emph{range}
-   using ASCII characters.  If Sollya is connected to a terminal, the
-   size of the plot is determined by the size of the terminal. If not,
-   the plot is of fixed size.  The function is evaluated on a number of
-   points equal to the number of columns available. Its value is rounded
-   to the next integer in the range of lines available. A letter "x" is
-   written at this place. If zero is in the hull of the image domain of
-   the function, a x-axis is displayed. If zero is in range, an y-axis is
-   displayed.  If the function is constant or if the range is reduced to
-   one point, the function is evaluated to a constant and the constant is
-   displayed instead of a plot.
+\item \textbf{asciiplot} plots the function \emph{function} in range \emph{range} using ASCII
+   characters.  On systems that provide the necessary 
+   \texttt{TIOCGWINSZ ioctl}, Sollya determines the size of the
+   terminal for the plot size if connected to a terminal. If it is not
+   connected to a terminal or if the test is not possible, the plot is of
+   fixed size $77\times25$ characters.  The function is
+   evaluated on a number of points equal to the number of columns
+   available. Its value is rounded to the next integer in the range of
+   lines available. A letter \texttt{x} is written at this place. If zero is in
+   the hull of the image domain of the function, a x-axis is
+   displayed. If zero is in range, an y-axis is displayed.  If the
+   function is constant or if the range is reduced to one point, the
+   function is evaluated to a constant and the constant is displayed
+   instead of a plot.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
