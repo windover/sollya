@@ -834,16 +834,27 @@ int general(int argc, char *argv[]) {
   int parseAbort, executeAbort;
   int i;
 
+  for (i=1;i<argc;i++) {
+    if (strcmp(argv[i],"--nocolor") == 0) noColor = 1;
+    if (strcmp(argv[i],"--noprompt") == 0) eliminatePromptBackup = 1;
+    if (strcmp(argv[i],"--oldrlwrapcompatible") == 0) oldrlwrapcompatible = 1;
+    if (strcmp(argv[i],"--help") == 0) {
+      printf("This is %s.\n\n",PACKAGE_STRING);
+      printf("Usage: %s [options]\n\nPossible options are:\n",argv[0]);
+      printf("--nocolor : do not color the output using ANSI escape sequences\n");
+      printf("--noprompt : do not print a prompt symbol\n");
+      printf("--oldrlwrapcompatible : acheive some compatibilty with old rlwrap versions by emitting wrong ANSI sequences (deprecated)\n");
+      printf("--help : print this help text\n");
+      printf("\nFor help on %s commands type \"help;\" on the %s prompt\n",PACKAGE_NAME,PACKAGE_NAME);
+      printf("More documentation on %s is available on the %s website.\nFor bug reports send an email to %s.\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
+      return 1;
+    }
+  }
+
   yylex_init(&scanner);
 
   if (tcgetattr(0,&termAttr) == -1) {
     eliminatePromptBackup = 1;
-  }
-
-  for (i=1;i<argc;i++) {
-    if (strcmp(argv[i],"-nocolor") == 0) noColor = 1;
-    if (strcmp(argv[i],"-noprompt") == 0) eliminatePromptBackup = 1;
-    if (strcmp(argv[i],"-oldrlwrapcompatible") == 0) oldrlwrapcompatible = 1;
   }
   
   initSignalHandler();
