@@ -1,0 +1,52 @@
+#NAME $APPROX
+#QUICK_DESCRIPTION floating-point evaluation of a constant expression
+#CALLING $COMMAND <expression>
+#TYPE $FUNCTION_TYPE -> $CONSTANT_TYPE
+#PARAMETERS <expression> stands for an expression that is a constant
+
+#CALLING $COMMAND <something>
+#TYPE $ANY_TYPE -> $ANY_TYPE
+#PARAMETERS <something> stands for some language element that is not a constant expression
+
+#DESCRIPTION 
+$COMMAND <expression> evaluates the <expression> that is a constant
+term to a floating-point constant. The evaluation may involve a
+rounding. If <expression> is not a constant, the evaluated constant is
+a faithful rounding of <expression> with $PRECISION bits, unless the
+<expression> is exactly §§0§$0$§§ as a result of cancellation. In the
+latter case, a floating-point approximation of some (unknown) accuracy
+is returned.
+
+#DESCRIPTION
+$COMMAND does not do anything on all language elements that are not a
+constant expression.  In other words, it behaves like the identity
+function on any type that is not a constant expression. It can hence
+be used in any place where one wants to be sure that expressions are
+simplified using floating-point computations to constants of a known
+precision, regardless of the type of actual language elements.
+
+#DESCRIPTION
+$COMMAND $ERROR evaluates to error and provoques a warning.
+
+#DESCRIPTION 
+$COMMAND is a prefix operator not requiring parentheses. Its
+precedence is the same as for the unary §§+§$+$§§ and §§-§$-$§§
+operators. It cannot be used repeatedly without parenthesation.
+
+#EXAMPLE
+print(exp(5));
+print(~ exp(5));
+
+#EXAMPLE
+autosimplify = off!;
+
+#EXAMPLE
+print(~sin(5 * pi));
+
+#EXAMPLE
+print(~exp(x));
+print(~ "Hello");
+
+#SEEALSO $EVALUATE
+#SEEALSO $PREC
+#SEEALSO $ERROR
