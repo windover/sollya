@@ -345,7 +345,7 @@ main() {
       target=`echo $source | sed -n 's/\.shlp/\.tex/;p'`
       echo "Processing file "$source
       processFile
-      if grep `echo $source | sed -n 's/\.shlp//;p'` $listOfCommands > /dev/null
+      if grep `echo "\input{$source}" | sed -n 's/\.shlp//;p'` $listOfCommands > /dev/null
       then echo "Nothing to change in "$listOfCommands
       else
         echo "\input{"`echo $source | sed -n 's/\.shlp//;p'`"}" >> $listOfCommands
