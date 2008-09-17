@@ -19,7 +19,7 @@ If at the end of a procedure definition using $PROC no $COMMAND
 statement is given, a $COMMAND $VOID statement is implicitely
 added. Procedures, i.e. procedure objects, when printed out in $SOLLYA
 defined with an implicit $COMMAND $VOID statement are displayed with
-this statement explicited.
+this statement explicitly given.
 
 #EXAMPLE
 succ = proc(n) { var res; res := n + 1; return res; };

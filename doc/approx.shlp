@@ -26,12 +26,12 @@ simplified using floating-point computations to constants of a known
 precision, regardless of the type of actual language elements.
 
 #DESCRIPTION
-$COMMAND $ERROR evaluates to error and provoques a warning.
+$COMMAND $ERROR evaluates to error and provokes a warning.
 
 #DESCRIPTION 
 $COMMAND is a prefix operator not requiring parentheses. Its
 precedence is the same as for the unary §§+§$+$§§ and §§-§$-$§§
-operators. It cannot be repeatedly used without parenthesation.
+operators. It cannot be repeatedly used without brackets.
 
 #EXAMPLE
 print(exp(5));

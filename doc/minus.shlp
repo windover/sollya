@@ -6,11 +6,11 @@
 
 
 #DESCRIPTION 
-$COMMAND represents the substraction (function) on reals. 
+$COMMAND represents the subtraction (function) on reals. 
 The expression <function1> $COMMAND <function2> stands for
-the function composed of the substraction function and the two
+the function composed of the subtraction function and the two
 functions <function1> and <function2>, where <function1> is 
-the subtrahent and <function2> the substractor.
+the subtrahend and <function2> the subtractor.
 
 #EXAMPLE
 5 - 2;

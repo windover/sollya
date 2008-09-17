@@ -21,7 +21,7 @@ $VAR, even if no value is actually stored in it.
 #DESCRIPTION
 If <ident1> is bound to a variable and if <ident2> refers to the global 
 variable, the command $RENAME(<ident2>, <ident1>) hides the value of <ident1>
-which becomes the global variable. However, if the globlal variable is again
+which becomes the global variable. However, if the global variable is again
 renamed, <ident1> gets its value back. In this case, $COMMAND(<ident1>) returns
 true. If <ident1> was not bound before, $COMMAND(<ident1>) returns false after
 that <ident1> has been renamed.

@@ -6,7 +6,7 @@
 #TYPE ($LIST_TYPE, $CONSTANT_TYPE, $INTEGER_TYPE, $INTEGER_TYPE, $LIST_TYPE, $LIST_TYPE) -> $LIST_TYPE
 #PARAMETERS <function> represents the function to be considered
 #PARAMETERS <start> represents a value around which the search is to be performed
-#PARAMETERS <preimage precision> represents the precision (discretisation) for the eligible preimage values
+#PARAMETERS <preimage precision> represents the precision (discretization) for the eligible preimage values
 #PARAMETERS <steps> represents the log2 of the number of search steps to be performed
 #PARAMETERS <format> represents the format the image of the function is to be rounded to
 #PARAMETERS <error bound> represents a upper bound on the relative rounding error when rounding the image

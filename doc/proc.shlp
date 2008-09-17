@@ -45,7 +45,7 @@ cannot be executed (i.e. applied). Upon application of a procedure,
 the $SOLLYA interpreter checks beforehand for such a statement. If one
 is found, the application of the procedure to its arguments evaluates
 to $ERROR. A warning is displayed. Remark that in contrast to other
-type or semantical correctness checks, this check is really performed
+type or semantic correctness checks, this check is really performed
 before interpreting any other statement in body of the procedure.
 
 #DESCRIPTION

@@ -1,5 +1,5 @@
 #NAME $VOID
-#QUICK_DESCRIPTION the functional result of a side-effect or empty argument resp. the correponding type
+#QUICK_DESCRIPTION the functional result of a side-effect or empty argument resp. the corresponding type
 #CALLING $COMMAND
 #TYPE $VOID_TYPE §§|§$|$§§ $TYPE_TYPE
 
@@ -14,7 +14,7 @@ is not printed at the prompt. However, it is possible to print it out
 in a print statement or in complex data types such as lists.
 §§ § §§
 The $COMMAND argument is implicit when giving not argument to a
-procedure or an external procedure when applied. It can be explicited
+procedure or an external procedure when applied. It can be explicitly given
 nevertheless.  For example, suppose that foo is a procedure or an
 external procedure with a void argument. Then foo() and foo(void) are
 correct calls to foo.

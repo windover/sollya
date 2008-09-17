@@ -16,7 +16,7 @@ evaluation code sequence implemented in the object file named
 <filename> with regard to the function <function>.  If <mode>
 evaluates to <absolute>, the difference of both functions is
 considered as an error function; if <mode> evaluates to <relative>,
-the difference is quotiented by the function <function>. The resulting
+the difference is divided by the function <function>. The resulting
 error function is plotted on all floating-point numbers with
 <precision> significant mantissa bits in the range <range>. 
 §§ § §§

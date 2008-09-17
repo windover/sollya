@@ -49,7 +49,7 @@ between §§ek§$e_k$§§ and §§e§$e$§§ is less than <quality>.
 #DESCRIPTION 
 Note: the algorithm may not converge in certain cases. Moreover, it may 
 converge towards a polynomial that is not optimal. These cases correspond to 
-the cases when Haar's condition is not fulfilled.
+the cases when the Haar condition is not fulfilled.
 See [Cheney - Approximation theory] for details.
 
 

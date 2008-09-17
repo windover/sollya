@@ -16,7 +16,7 @@ The list may contain intervals <Ik> that do not contain any zero of <f>.
 An interval <Ik> may contain many zeros of <f>.
 
 #DESCRIPTION
-This command is ment for cases when safety is critical. If you want to be sure
+This command is meant for cases when safety is critical. If you want to be sure
 not to forget any zero, use $COMMAND. However, if you just want to know 
 numerical values for the zeros of <f>, $DIRTYFINDZEROS should be quite 
 satisfactory and a lot faster.

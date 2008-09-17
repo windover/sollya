@@ -1,5 +1,5 @@
 #NAME $FULLPARENTHESES
-#QUICK_DESCRIPTION activates, deactivates or inspects the state variable controlling output with full parenthesizing
+#QUICK_DESCRIPTION activates, deactivates or inspects the state variable controlling output with full parenthesising
 #CALLING $COMMAND = <activation value>
 #TYPE $ONOFF_TYPE -> $VOID_TYPE
 #CALLING $COMMAND = <activation value> !
@@ -10,11 +10,11 @@
 #DESCRIPTION 
 An assignment $COMMAND = <activation value>, where <activation value>
 is one of $ON or $OFF, activates respectively deactivates the output
-of expressions with full parenthezing. In full parentheszing mode,
+of expressions with full parenthesising. In full parenthesising mode,
 $SOLLYA commands like $PRINT, $WRITE and the implicit command when an
 expression is given at the prompt will output expressions with
-parentheses at all places where it is necessary for expressions
-containing infix operators to be reparsed with the same
+parenthesising at all places where it is necessary for expressions
+containing infix operators to be parsed back with the same
 result. Otherwise parentheses around associative operators are
 omitted.
 §§ § §§

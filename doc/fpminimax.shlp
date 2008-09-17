@@ -27,7 +27,7 @@
 
 
 #DESCRIPTION 
-$COMMAND uses a heuristical (but practically efficient) method to find a good
+$COMMAND uses a heuristic (but practically efficient) method to find a good
 polynomial approximation of a function <f> on an interval <range>. It 
 implements the method published in the article:§§ §\\§§
 Efficient polynomial §§L^\infty - approximations§$L^\infty$-approximations\\§§ 
@@ -70,7 +70,7 @@ coefficients.
 By default, the list of formats is interpreted as a list of floating-point
 formats. This may be changed by passing $FIXED as an optional argument (see
 below). Let us take an example: $COMMAND(f, 2, [107, DD, 53], [0;1]).
-Herer, the optional argument is missing (we could have set it to $FLOATING).
+Here the optional argument is missing (we could have set it to $FLOATING).
 Thus, $COMMAND will search for a polynomial of degree 2 with a constant 
 coefficient that is a 107 bits floating-point number, etc.§§ §\\§§
 Currently, $DOUBLEDOUBLE is just a synonym for 107 and $TRIPLEDOUBLE a 
@@ -101,7 +101,7 @@ recommended that you provide the minimax polynomial as last argument.
 If you give a range, the list of points will be automatically computed.
 
 #DESCRIPTION
-The fivth, sixth and seventh arguments are optional. By default, $COMMAND
+The fifth, sixth and seventh arguments are optional. By default, $COMMAND
 will approximate §§f§$f$§§ optimizing the relative error, and interpreting
 the list of formats as a list of floating-point formats.§§ §\\§§
 This default behavior may be changed with these optional arguments. You
@@ -144,7 +144,7 @@ Note that the constrained part is not to be added to §§P§$P$§§.
 Note that $COMMAND internally computes a minimax polynomial (using
 the same algorithm as $REMEZ command). Thus $COMMAND may encounter
 the same problems as $REMEZ. In particular, it may be very long 
-when Haar's condition is not fulfilled. Another consequence is that
+when Haar condition is not fulfilled. Another consequence is that
 currently $COMMAND has to be run with a sufficiently high precision.
 
 #EXAMPLE

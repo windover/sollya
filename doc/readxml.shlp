@@ -13,7 +13,7 @@ functional expression.
 If the file <filename> does not contain a valid MathML-Content tree,
 $COMMAND tries to find an "annotation encoding" markup of type
 "sollya/text". If this annotation contains a character sequence
-parseable by $PARSE, $COMMAND returns that expression.  Otherwise
+that can be parsed by $PARSE, $COMMAND returns that expression.  Otherwise
 $COMMAND displays a warning and returns an $ERROR variable of type
 $ERROR_TYPE.
 

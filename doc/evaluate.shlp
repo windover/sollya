@@ -27,12 +27,12 @@ unstable, NaN will be produced.
 If its second argument is a range <range>, $COMMAND evaluates its
 first argument <function> by interval evaluation on this range
 <range>. This ensures that the image domain of the function <function>
-on the pre-image domain <range> is surely enclosed in the returned
+on the preimage domain <range> is surely enclosed in the returned
 range.
 
 #DESCRIPTION 
 If its second argument is a function <function2> that is not a
-constant, $COMMAND replaces all occurences of the free variable in
+constant, $COMMAND replaces all occurrences of the free variable in
 function <function> by function <function2>.
 
 #EXAMPLE

@@ -25,7 +25,7 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{fpminimax} uses a heuristical (but practically efficient) method to find a good
+\item \textbf{fpminimax} uses a heuristic (but practically efficient) method to find a good
    polynomial approximation of a function \emph{f} on an interval \emph{range}. It 
    implements the method published in the article:\\
    Efficient polynomial $L^\infty$-approximations\\ 
@@ -64,7 +64,7 @@ Parameters:
 \item By default, the list of formats is interpreted as a list of floating-point
    formats. This may be changed by passing \textbf{fixed} as an optional argument (see
    below). Let us take an example: \textbf{fpminimax}(f, 2, [107, DD, 53], [0;1]).
-   Herer, the optional argument is missing (we could have set it to \textbf{floating}).
+   Here the optional argument is missing (we could have set it to \textbf{floating}).
    Thus, \textbf{fpminimax} will search for a polynomial of degree 2 with a constant 
    coefficient that is a 107 bits floating-point number, etc.\\
    Currently, \textbf{doubledouble} is just a synonym for 107 and \textbf{tripledouble} a 
@@ -92,7 +92,7 @@ Parameters:
    recommended that you provide the minimax polynomial as last argument.
    If you give a range, the list of points will be automatically computed.
 
-\item The fivth, sixth and seventh arguments are optional. By default, \textbf{fpminimax}
+\item The fifth, sixth and seventh arguments are optional. By default, \textbf{fpminimax}
    will approximate $f$ optimizing the relative error, and interpreting
    the list of formats as a list of floating-point formats.\\
    This default behavior may be changed with these optional arguments. You
@@ -133,7 +133,7 @@ Parameters:
 \item Note that \textbf{fpminimax} internally computes a minimax polynomial (using
    the same algorithm as \textbf{remez} command). Thus \textbf{fpminimax} may encounter
    the same problems as \textbf{remez}. In particular, it may be very long 
-   when Haar's condition is not fulfilled. Another consequence is that
+   when Haar condition is not fulfilled. Another consequence is that
    currently \textbf{fpminimax} has to be run with a sufficiently high precision.
 \end{itemize}
 \noindent Example 1: 
@@ -180,7 +180,7 @@ Error of P1:     7.9048441305459735159848647089192667442047469404883e-16
 > print("Error of P2:    ", dirtyinfnorm(f-P2, [-1b-7; 1b-7]));
 Error of P2:     8.2477144579950871061147021597406077993657714575238e-16
 > print("Error of P3:    ", dirtyinfnorm(f-P3, [-1b-7; 1b-7]));
-Error of P3:     1.08589225157946674530174198018927191510501967039589e-15
+Error of P3:     1.08454277156993282593701156841863009789063333951055e-15
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{remez} (\ref{labremez}), \textbf{dirtyfindzeros} (\ref{labdirtyfindzeros}), \textbf{absolute} (\ref{lababsolute}), \textbf{relative} (\ref{labrelative}), \textbf{fixed} (\ref{labfixed}), \textbf{floating} (\ref{labfloating}), \textbf{default} (\ref{labdefault})

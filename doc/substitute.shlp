@@ -1,5 +1,5 @@
 #NAME $SUBSTITUTE
-#QUICK_DESCRIPTION replace the occurences of the free variable in an expression.
+#QUICK_DESCRIPTION replace the occurrences of the free variable in an expression.
 
 #CALLING $COMMAND(<f>,<g>)
 #TYPE ($FUNCTION_TYPE, $FUNCTION_TYPE) -> $FUNCTION_TYPE

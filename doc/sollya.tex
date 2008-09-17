@@ -78,7 +78,7 @@ below).
 
 \subsection{\sollya command line options}
 
-In principle \sollya reads all its input on standard input and reponds
+In principle \sollya reads all its input on standard input and responds
 on standard output. Reading of files is internally supported but no
 file names can be given for input when the tool is started. Remark that 
 it is nevertheless possible to use Sollya on input contained in a file; 
@@ -125,7 +125,7 @@ Let us begin this manual with an example. \sollya does not allow command line ed
 \end{Verbatim}
 \end{minipage}\end{center}
 
-\sollya manipulates only univariate functions. The first time that an unbound variable is used, this name is fixed. It will be used to refer to the free variable. For instance, try
+\sollya manipulates only functions in one variable. The first time that an unbound variable is used, this name is fixed. It will be used to refer to the free variable. For instance, try
 
 \input{introExample1}
 
@@ -165,7 +165,7 @@ Note that you do not really need to use such a script for computing infinite nor
 \section{General principles}
 The first goal of \sollya is to help people to use numerical functions and numerical algorithms in a safe way. It is first designed to be used interactively but it can also be used in scripts\footnote{Remark: some of the behaviors of \sollya slightly change when used in scripts. For example, no prompt is printed.}.
 
-One of the originalities of \sollya is to work with multi-precision arithmetic (it uses the \texttt{MPFR} library). For safety purposes, \sollya knows how to use interval arithmetic. It uses the interval arithmetic to produce tight and safe results with the precision required by the user.
+One of the particularities of \sollya is to work with multi-precision arithmetic (it uses the \texttt{MPFR} library). For safety purposes, \sollya knows how to use interval arithmetic. It uses the interval arithmetic to produce tight and safe results with the precision required by the user.
 
 The general philosophy of \sollya is: \emph{When you can make a computation exactly and sufficiently quickly, do it; when you cannot, do not, unless you have been explicitly asked for.}
 
@@ -173,7 +173,7 @@ The precision of the tools is set by the global variable \key{prec}. It indicate
 
 For decidability and efficiency reasons, this general principle cannot be applied every time, so be careful. Moreover certain commands are known to be unsafe: they give in general excellent results and give almost \key{prec} correct bits in output for everyday examples. However they are just heuristic and should not be used when the result must be safe. See the documentation of each command to know precisely how confident you can be with its result.
 
-A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When set to $0$, \sollya becomes completely silent on stdout and prints only very important messages on stderr. Increase \key{verbosity} if you want more informations about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use \texttt{!}:
+A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When set to $0$, \sollya becomes completely silent on stdout and prints only very important messages on stderr. Increase \key{verbosity} if you want more information about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use \texttt{!}:
 
 \input{introExample9}
 
@@ -182,7 +182,7 @@ For conviviality reasons, values are displayed in decimal by default. This lets 
 \input{introExample10}
 
 As always, the symbol \texttt{e} means $\times 10^\square $. The same way the symbol \texttt{b} means  $\times 2^\square $. The symbol \texttt{p} means $\times 16^\square$ and is used only with the \texttt{0x} prefix. The prefix \texttt{0x} indicates that the digits of the following number until 
-a symbol \texttt{p} or whitespace are hexadecimal. The suffix \texttt{\_2} indicates to \sollya that the previous number has been written in binary. \sollya can parse these notations even if you are not in the corresponding \key{display} mode, so you can always use them.
+a symbol \texttt{p} or white-space are hexadecimal. The suffix \texttt{\_2} indicates to \sollya that the previous number has been written in binary. \sollya can parse these notations even if you are not in the corresponding \key{display} mode, so you can always use them.
 
 You can also use memory-dump hexadecimal notation frequently used to represent IEEE 754 \texttt{double} and \texttt{single} precision numbers. Since this notation does not allow for exactly representing numbers with arbitrary precision, there is no corresponding \key{display} mode. However, the commands \com{printhexa} respectively \com{printfloat} round the value to the nearest \texttt{double} respectively \texttt{single}. The number is then printed in hexadecimal as the integer number corresponding to the memory representation of the IEEE 754 \texttt{double} or \texttt{single} number:
 
@@ -192,8 +192,8 @@ You can also use memory-dump hexadecimal notation frequently used to represent I
 
 \section{Variables}\label{variables}
 
-As already explained, \sollya can manipulate univariate functional
-expressions. These expressions contain a unique free variable the name
+As already explained, \sollya can manipulate variate functional
+expressions in one variable. These expressions contain a unique free variable the name
 of which is fixed by its first usage in an expression that is not a
 left-hand-side of an assignment. This global and unique free variable is 
 a variable in the mathematical sense of the term. 
@@ -210,7 +210,7 @@ Global variables need not to be declared. They start existing,
 i.e. can be correctly used in expressions that are not left-hand-sides
 of assignments, when they are assigned a value in an assignment. Since
 they are global, this kind of variables is recommended only for small
-\sollya scripts.  Larger scripts with code reutilization should use
+\sollya scripts.  Larger scripts with code reutilisation should use
 declared variables in order to avoid name clashes for example in loop
 variables.
 
@@ -218,7 +218,7 @@ Declared variables are attached to a begin-end-block. The block
 structure builds scopes for declared variables. Declared variables in
 inner scopes shadow variables (global and declared) of outer
 scopes. The global free variable, i.e. the mathematical variable for
-univariate functional expressions, cannot be shadowed. Variables are
+variate functional expressions in one variable, cannot be shadowed. Variables are
 declared using \key{var} keyword. See section \ref{labvar} for details
 on its usage and semantic.
 
@@ -279,7 +279,7 @@ The basic functions available in \sollya are the following:
 \item \com{sin}, \com{cos}, \com{tan}, \com{sinh}, \com{cosh}, \com{tanh}
 \item \com{asin}, \com{acos}, \com{atan}, \com{asinh}, \com{atanh}
 \item \com{exp}, \com{expm1} (defined as $\mathrm{expm1}(x) = \exp(x)-1$)
-\item \com{log} (neperian logarithm), \com{log2} (binary logarithm), \com{log10} (decimal logarithm), \com{log1p} (defined as $\mathrm{log1p}(x) = \log(1+x)$)
+\item \com{log} (natural logarithm), \com{log2} (binary logarithm), \com{log10} (decimal logarithm), \com{log1p} (defined as $\mathrm{log1p}(x) = \log(1+x)$)
 \item \com{erf}, \com{erfc}
 \end{itemize}
 

@@ -17,7 +17,7 @@ given function §§f§$f$§§ on the interval §§I§$I$§§, e.g. computes an i
 such that §§max {|f(x)|, x in I} C J§$\max_{x \in I} \{|f(x)|\} \subseteq J$§§.
 
 #DESCRIPTION
-If <filename> is given, a proof in english will be produced (and stored in file
+If <filename> is given, a proof in English will be produced (and stored in file
 called <filename>) proving that  §§max {|f(x)|, x in I} C J§$\max_{x \in I} \{|f(x)|\} \subseteq J$§§.
 
 #DESCRIPTION

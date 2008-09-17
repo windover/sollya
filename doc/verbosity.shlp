@@ -7,11 +7,11 @@ on standard out. Note that very critical information may however be displayed on
 standard err.
 
 #DESCRIPTION
-Default level is 1. It displays important informations such as warnings when 
+Default level is 1. It displays important information such as warnings when 
 roundings happen.
 
 #DESCRIPTION
-For higher levels more informations are displayed depending on the command.
+For higher levels more information is displayed depending on the command.
 
 #EXAMPLE
 verbosity=0!;

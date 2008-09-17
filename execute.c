@@ -100,7 +100,7 @@ rangetype guessDegreeWrapper(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_
   } else {
     verbosity = oldVerbosity;
     defaultpoints = oldPoints;
-    printMessage(1,"Warning: some error occured while executing guessdegree.\n");
+    printMessage(1,"Warning: some error occurred while executing guessdegree.\n");
     printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
     result.a = NULL; result.b = NULL;
   }
@@ -12106,7 +12106,7 @@ node *evaluateThingInner(node *tree) {
 	      strcpy(copy->string,tree->string);
 	    }
 	  } else {
-	    printMessage(1,"Warning: an error occured while executing a procedure.\n");
+	    printMessage(1,"Warning: an error occurred while executing a procedure.\n");
 	    free(copy);
 	    copy = makeError();
 	    freeChain(tempChain, freeThingOnVoid);
@@ -12181,7 +12181,7 @@ node *evaluateThingInner(node *tree) {
 	      copy->child1 = copyThing(tempNode);
 	    }
 	  } else {
-	    printMessage(1,"Warning: an error occured while executing a procedure.\n");
+	    printMessage(1,"Warning: an error occurred while executing a procedure.\n");
 	    free(copy);
 	    copy = makeError();
 	    freeChain(tempChain, freeThingOnVoid);
