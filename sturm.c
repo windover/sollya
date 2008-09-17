@@ -28,6 +28,10 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x);
 int polynomialDivide_mpq(mpq_t *quotient, int *quotient_degree, mpq_t *rest, int *rest_degree, mpq_t *p, int p_degree, mpq_t *q, int q_degree) ;
 int polynomialDeriv_mpq(mpq_t **derivCoeff, int *deriv_degree, mpq_t *p, int p_degree);
 int polynomialEval_mpq( mpq_t *res, mpq_t x, mpq_t *p, int p_degree);
+int sturm_mpfi(int *n, mpq_t *p, int p_degree, mpfi_t x);
+int polynomialDivide_mpfi(mpfi_t *quotient, int *quotient_degree, mpfi_t *rest, int *rest_degree, mpfi_t *p, int p_degree, mpfi_t *q, int q_degree, mp_prec_t prec) ;
+int polynomialDeriv_mpfi(mpfi_t **derivCoeff, int *deriv_degree, mpfi_t *p, int p_degree, mp_prec_t prec);
+int polynomialEval_mpfi( mpfi_t *res, mpfi_t x, mpfi_t *p, int p_degree);
 
 
 int mpfr_to_mpq( mpq_t y, mpfr_t x);
@@ -187,16 +191,21 @@ int tryEvaluateConstantTermToMpq(mpq_t res, node *tree) {
 }
 
 
+
+
+
 int getNrRoots(int *res, void **args) {
   node *f;
   mpfi_t x;
-  int degree,prec,i,nr;
+  int degree,i,nr;
   node **coefficients;
   mpq_t  *qCoefficients;
   int r;
   mpfr_t tempValue, tempValue2;
   node *tempTree;
   int deg;
+  int resMpfi;
+  mp_prec_t prec;
   
   prec=getToolPrecision();
 
@@ -208,7 +217,7 @@ int getNrRoots(int *res, void **args) {
   getCoefficients(&degree,&coefficients,f);
 
   if (degree < 0) {
-    fprintf(stderr,"Error: implementpoly: an error occurred. Could not extract the coefficients of the given polynomial.\n");
+    fprintf(stderr,"Error: getNrRoots: an error occurred. Could not extract the coefficients of the given polynomial.\n");
     exit(1);
   }
   
@@ -225,14 +234,14 @@ int getNrRoots(int *res, void **args) {
       tempTree = simplifyTreeErrorfree(coefficients[i]);
       free_memory(coefficients[i]);
       if (!isConstant(tempTree)) {
-	fprintf(stderr,"Error: implementpoly: an error occurred. A polynomial coefficient is not constant.\n");
+	fprintf(stderr,"Error: getNrRoots: an error occurred. A polynomial coefficient is not constant.\n");
 	exit(1);
       }
       if (tempTree->nodeType != CONSTANT) {
 	if (tryEvaluateConstantTermToMpq(qCoefficients[i], tempTree)) {
-	  if (verbosity >= 2) {
+	  if (verbosity >= 3) {
 	    changeToWarningMode();
-	    printf("Information: evaluated the %dth coefficient to ",i);
+	    printf("Information: in getNrRoots: evaluated the %dth coefficient to ",i);
 	    printMpq(qCoefficients[i]);
 	    printf("\n");
 	    restoreMode();
@@ -251,7 +260,7 @@ int getNrRoots(int *res, void **args) {
 	    }
 	  }
 	  mpfr_to_mpq(qCoefficients[i], tempValue2);
-	  if (verbosity >= 2) {
+	  if (verbosity >= 3) {
 	    changeToWarningMode();
 	    printf("Information: evaluated the %dth coefficient to ",i);
 	    printMpq(qCoefficients[i]);
@@ -275,7 +284,11 @@ int getNrRoots(int *res, void **args) {
   for(deg = degree; deg >= 0 && (mpq_sgn(qCoefficients[deg]) == 0); deg--); 
 
   if (deg >= 0) {
-    sturm_mpq(&nr, qCoefficients, deg,x);
+    resMpfi = sturm_mpfi(&nr, qCoefficients, deg,x);
+    if (!resMpfi) {
+      printMessage(1,"Warning: using slower GMP MPQ version\n");
+      sturm_mpq(&nr, qCoefficients, deg,x);
+    }
     *res = nr;
   } else {
     printMessage(1,"Warning: the given polynomial is the zero polynomial. Its number of zeros is infinite.\n");
@@ -360,6 +373,12 @@ int polynomialEval_mpq( mpq_t *res, mpq_t x, mpq_t *p, int p_degree){
   return 1;
 }
 
+
+
+
+
+
+
 int polynomialDivide_mpq(mpq_t *quotient, int *quotient_degree, mpq_t *rest, int *rest_degree, mpq_t *p, int p_degree, mpq_t *q, int q_degree) {
   
   int i,step,k;
@@ -399,6 +418,14 @@ int polynomialDivide_mpq(mpq_t *quotient, int *quotient_degree, mpq_t *rest, int
   return 1;
 }  
 
+
+
+
+
+
+
+
+
 int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
   mpq_t *quotient, *rest, *dp;
   int quotient_degree, rest_degree, dp_degree;
@@ -411,6 +438,7 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
   mpq_t aq,bq;
   int i,na,nb,prec,nrRoots;
   int varSignB,varSignA;
+
 
   prec=mpfi_get_prec(x);
   na=0; nb=0;  
@@ -504,6 +532,7 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
       mpq_set(evalResA[na],evalRes);
       na++;
     }
+    
   
     polynomialEval_mpq( &evalRes, bq, s1, s1_degree);
     if (mpq_cmp_ui(evalRes,0,1)!=0){
@@ -511,6 +540,7 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
       mpq_set(evalResB[nb],evalRes);
       nb++;
     }
+    
   }
   
   varSignA=0;
@@ -536,5 +566,293 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
   return 1;
 }
 
+int polynomialDeriv_mpfi(mpfi_t **derivCoeff, int *deriv_degree, mpfi_t *p, int p_degree, mp_prec_t prec){
+  int i;
+  mpfi_t aux;
+
+  if (mpfi_is_zero(p[p_degree])) 
+    return 0;
+  if (p_degree>=1)
+    *deriv_degree=p_degree-1;
+  else if (p_degree==0) *deriv_degree=0;
+  else return 0; 
+ 
+  *derivCoeff= (mpfi_t *)safeMalloc((*deriv_degree+1)*sizeof(mpfi_t));  
+  mpfi_init2((*derivCoeff)[0],prec);
+  mpfi_set_ui((*derivCoeff)[0],0);
+  mpfi_init2(aux,prec);
+  
+  for (i=1; i<=p_degree;i++){
+    mpfi_init2((*derivCoeff)[i-1],prec);
+    mpfi_set_ui(aux,i);
+    mpfi_mul((*derivCoeff)[i-1],p[i],aux);
+  }
+  mpfi_clear(aux);
+  return 1;
+}  
+
+
+int polynomialEval_mpfi( mpfi_t *res, mpfi_t x, mpfi_t *p, int p_degree){
+  int i;
+
+  mpfi_set_ui(*res,0);
+  mpfi_set(*res,p[p_degree]);
+  for (i=p_degree-1;i>=0;i--) {
+    mpfi_mul(*res,*res,x);
+    mpfi_add(*res,*res,p[i]);
+  }
+
+  return 1;
+}
+
+int polynomialDivide_mpfi(mpfi_t *quotient, int *quotient_degree, mpfi_t *rest, int *rest_degree, mpfi_t *p, int p_degree, mpfi_t *q, int q_degree, mp_prec_t prec) {
+  
+  int i,step,k;
+  mpfi_t aux;
+  int okay;
+
+  okay = 1;
+ 
+  *quotient_degree=p_degree-q_degree;
+  
+  if (mpfi_is_zero(q[q_degree]) || mpfi_is_zero(p[p_degree]))
+    return 0;
+ 
+  mpfi_init2(aux,prec);
+  
+  step=0;
+  for (k=*quotient_degree; (k>=0) && okay;k--)
+    {
+
+      mpfi_set(quotient[k],p[p_degree-step]);
+      if (!mpfi_has_zero(q[q_degree])) 
+	mpfi_div(quotient[k],quotient[k],q[q_degree]);
+      else {
+	okay = 0;
+      }
+      if (okay) {
+	for (i=q_degree; i>=0;i--){    
+	  mpfi_mul(aux,quotient[k],q[i]);
+	  mpfi_sub(p[p_degree-step-(q_degree-i)],p[p_degree-step-(q_degree-i)],aux);  
+	}
+	step++; 
+      }
+    }
+  *rest_degree=0;
+  for (i=q_degree-1; i>=0; i--)  
+    {
+      if (!mpfi_is_zero(p[i])){
+	*rest_degree=i;
+	break;
+      }
+    }
+  for (i=*rest_degree; i>=0; i--){ 
+    mpfi_set(rest[i],p[i]);
+  }
+  mpfi_clear(aux);
+  return okay;
+}  
+
+mp_prec_t getMpzPrecision(mpz_t x) {
+  mp_prec_t prec;
+  int p, dyadicValue;
+
+  prec = mpz_sizeinbase(x, 2);
+  dyadicValue = mpz_scan1(x, 0);
+  p = prec - dyadicValue;
+  if (p < 12) prec = 12; else prec = p; 
+
+  return prec;
+}
+
+
+int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
+  mpfi_t *quotient, *rest, *dp;
+  int quotient_degree, rest_degree, dp_degree;
+  mpfi_t *evalResA;
+  mpfi_t *evalResB;
+  mpfi_t *s0, *s1;
+  mpfi_t evalRes;
+  int s0_degree, s1_degree;
+  mpfr_t a,b;
+  mpfi_t aq,bq;
+  int i,na,nb,nrRoots;
+  int varSignB,varSignA;
+  mpfi_t *p;
+  int resultat;
+  int resDiv;
+  mp_prec_t prec, tempprec, prec2;
+
+
+  resultat = 1;
+
+  prec = getToolPrecision();
+  for (i=0;i<=p_degree;i++) {
+    tempprec = getMpzPrecision(mpq_numref(pMpq[i])) + 10;
+    if (tempprec > prec) prec = tempprec;
+    tempprec = getMpzPrecision(mpq_denref(pMpq[i])) + 10;
+    if (tempprec > prec) prec = tempprec;
+  }
+  prec = 2 * prec;
+
+  printMessage(2,"Information: in sturm_mpfi: chosen working precision is %d\n",(int) prec);
+
+  p = (mpfi_t *) safeCalloc(p_degree+1,sizeof(mpfi_t));
+  for (i=0;i<=p_degree;i++) {
+    mpfi_init2(p[i],prec);
+    mpfi_set_q(p[i],pMpq[i]);
+  }
+
+  prec2=mpfi_get_prec(x);
+  if (prec > prec2) prec2 = prec;
+  na=0; nb=0;  
+  nrRoots=0;
+  mpfr_init2(a,prec2);
+  mpfr_init2(b,prec2);
+  mpfi_get_left(a,x);
+  mpfi_get_right(b,x);
+ 
+  mpfi_init2(aq,prec2);
+  mpfi_init2(bq,prec2);
+    
+  mpfi_set_fr(aq,a);
+  mpfi_set_fr(bq,b);
+  
+  mpfi_init2(evalRes,prec);
+
+  evalResA = (mpfi_t *)safeMalloc((p_degree+1)*sizeof(mpfi_t));  
+  evalResB = (mpfi_t *)safeMalloc((p_degree+1)*sizeof(mpfi_t));    
+  s0=(mpfi_t *)safeMalloc((p_degree+1)*sizeof(mpfi_t));
+  quotient=(mpfi_t *)safeMalloc((p_degree+1)*sizeof(mpfi_t));
+  rest=(mpfi_t *)safeMalloc((p_degree+1)*sizeof(mpfi_t));
+  for (i=0; i<=p_degree; i++){ 
+    mpfi_init2(quotient[i],prec);
+    mpfi_init2(rest[i],prec);
+  }
+
+  s0_degree=p_degree;
+
+  for (i=0; i<=p_degree; i++){ 
+    mpfi_init2(s0[i],prec); 
+    mpfi_set(s0[i],p[i]);
+  }
+        
+  polynomialDeriv_mpfi(&dp, &dp_degree, p, p_degree, prec);
+  mpfi_init2(evalRes,prec);
+    
+  polynomialEval_mpfi( &evalRes, aq, s0, s0_degree);
+  if (!mpfi_has_zero(evalRes)){
+    mpfi_init2(evalResA[na],prec);
+    mpfi_set(evalResA[na],evalRes);
+    na++;
+  }
+  else {
+    if (mpfi_is_zero(evalRes)) 
+    nrRoots++; /*if the left extremity is a root we count it here
+                    since the number of sign changes gives the nr of distinct 
+                    roots between a and b, a<b*/  
+    else resultat = 0;
+  }
+
+  polynomialEval_mpfi( &evalRes, bq, s0, s0_degree);
+  if (!mpfi_has_zero(evalRes)){
+    mpfi_init2(evalResB[nb],prec);
+    mpfi_set(evalResB[nb],evalRes);
+    nb++;
+  } else {
+    if (!mpfi_is_zero(evalRes)) resultat = 0;
+  }
+
+  s1=dp;
+  s1_degree=dp_degree;
+  if (s0_degree>0){
+
+    polynomialEval_mpfi( &evalRes, aq, dp, dp_degree);
+    if (!mpfi_has_zero(evalRes)){
+      mpfi_init2(evalResA[na],prec);
+      mpfi_set(evalResA[na],evalRes);
+      na++;
+    } else {
+      if (!mpfi_is_zero(evalRes)) resultat = 0;
+    }
+  
+    polynomialEval_mpfi( &evalRes, bq, dp, dp_degree);
+    if (!mpfi_has_zero(evalRes)){
+      mpfi_init2(evalResB[nb],prec);
+      mpfi_set(evalResB[nb],evalRes);
+      nb++;
+    } else {
+      if (!mpfi_is_zero(evalRes)) resultat = 0;
+    }
+
+  }
+  
+  while ((s1_degree!=0) && resultat) {
+          
+    resDiv = polynomialDivide_mpfi(quotient, &quotient_degree, rest, &rest_degree, s0, s0_degree, s1, s1_degree, prec);
+
+    if (!resDiv) 
+      resultat = 0; 
+    else {
+
+      s0_degree=s1_degree; 
+      for(i=0;i<=s0_degree;i++) {
+	mpfi_set(s0[i],s1[i]);
+      }
+
+      s1_degree=rest_degree; 
+      
+      for(i=0;i<=s1_degree;i++){
+	mpfi_set(s1[i],rest[i]);
+      }
+      
+      for (i=0; i<=s1_degree; i++)
+	mpfi_neg(s1[i],s1[i]);
+      
+      polynomialEval_mpfi( &evalRes, aq, s1, s1_degree);
+      if (!mpfi_has_zero(evalRes)){
+	mpfi_init2(evalResA[na],prec);
+	mpfi_set(evalResA[na],evalRes);
+	na++;
+      } else {
+	if (!mpfi_is_zero(evalRes)) resultat = 0;
+      }
+      
+      polynomialEval_mpfi( &evalRes, bq, s1, s1_degree);
+      if (!mpfi_has_zero(evalRes)){
+	mpfi_init2(evalResB[nb],prec);
+	mpfi_set(evalResB[nb],evalRes);
+	nb++;
+      } else {
+	if (!mpfi_is_zero(evalRes)) resultat = 0;
+      }
+    }
+  }
+  
+  varSignA=0;
+  for (i=1; i<na; i++){
+    if (mpfi_is_pos(evalResA[i-1]) ^ mpfi_is_pos(evalResA[i])) varSignA++;    
+  } 
+  varSignB=0;
+  for (i=1; i<nb; i++){
+    if (mpfi_is_pos(evalResB[i-1]) ^ mpfi_is_pos(evalResB[i])) varSignB++;    
+  }
+
+  *n=(((varSignA-varSignB)>0)?(varSignA-varSignB+nrRoots):(varSignB-varSignA+nrRoots) );
+
+  free(evalResA);
+  free(evalResB);
+  free(s0); 
+  free(quotient); 
+  free(rest); 
+  mpfi_clear(evalRes);
+
+  for (i=0;i<=p_degree;i++) {
+    mpfi_clear(p[i]);
+  }
+  free(p);
+  
+  return resultat;
+}
 
 
