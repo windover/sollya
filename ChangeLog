@@ -1,3 +1,114 @@
+2008-09-17 11:59  clauter
+
+	* sturm.c: Speeded up getNrRoots on typical examples by a factor of
+	  500
+
+2008-09-15 14:07  clauter
+
+	* sollya.h, sturm.c: Improved handling of rational coefficients in
+	  Sturm
+
+2008-09-15 12:30  clauter
+
+	* INSTALL: Patching the 'a changé de statut spécial de façon
+	  inattendue' error - step 2
+
+2008-09-15 12:27  clauter
+
+	* INSTALL: Patching the 'a changé de statut spécial de façon
+	  inattendue' error - step 1
+
+2008-09-15 12:26  clauter
+
+	* sturm.c: Slightly changed FP coefficient handling in sturm
+	  external procedure
+
+2008-09-15 11:51  clauter
+
+	* doc/sollya.pdf, doc/sollya.tex: Reedited documentation
+
+2008-09-15 11:40  clauter
+
+	* doc/asciiplot.shlp, doc/asciiplot.tex, doc/sollya.pdf,
+	  doc/sollya.tex, general.c, help.h: Updated documentation, changed
+	  slightly the --help option behaviour
+
+2008-09-15 10:49  clauter
+
+	* general.c: Changed option syntax and added --help option
+
+2008-09-12 13:15  jmio17
+
+	* sollya.h: changed signature of evaluateFaithful
+
+2008-09-12 11:54  jmio17
+
+	* sturm.c: modified to find all distinct roots in the closed
+	  interval [a,b], a<=b.
+
+2008-09-12 11:45  schevill
+
+	* fpminimax.cpp: Added a dummy wrapper for printing FPLLL matrices
+
+2008-09-12 07:11  jmio17
+
+	* sturm.c: Added sturm algo for obtaining the number of distinct
+	  roots of a
+	  polynomial.
+
+2008-09-08 17:01  clauter
+
+	* Makefile.am, configure.ac, tests, tests/Makefile.am,
+	  tests/check.proto, tests/check.sollya, tests/check.sollya.output:
+	  Added first check environment
+
+2008-09-08 15:51  clauter
+
+	* AUTHORS, configure.ac, doc/fixed.tex, doc/floating.tex,
+	  doc/fpminimax.tex, doc/implementpoly.tex, doc/introExample1.tex,
+	  doc/introExample8.tex, doc/minus.tex, doc/remez.tex,
+	  doc/sollya.pdf, doc/sollya.tex, doc/subpoly.tex, doc/timing.tex,
+	  help.h, lexer.l: Patched failures in read when file did not exist
+
+2008-09-08 10:16  clauter
+
+	* lexer.l: Patched memory leak in lexer
+
+2008-09-05 17:23  clauter
+
+	* general.c: Patched color handling behaviour -- if colors do not
+	  work with your rlwrap, update our rlwrap or use the
+	  -oldrlwrapcompatible option
+
+2008-09-03 15:43  clauter
+
+	* internparser.y: Patched once again parser for unary plus and
+	  minus -- 2nd step
+
+2008-09-03 15:34  clauter
+
+	* general.c, general.h, parser.y: Patched once again parser for
+	  unary plus and minus -- 1st step
+
+2008-09-03 11:55  clauter
+
+	* internparser.y: Patched display and parsing of negation -- 2nd
+	  step
+
+2008-09-03 11:51  clauter
+
+	* expression.c, parser.y: Patched display and parsing of negation
+	  -- 1st step
+
+2008-09-01 13:39  schevill
+
+	* configure.ac, fpminimax.cpp: Minor changes for compatibility with
+	  fplll 3
+
+2008-08-30 13:37  clauter
+
+	* ChangeLog: New changelog
+
 2008-08-30 13:30  clauter
 
 	* general.c, library.c, plot.c: Made Sollya compile under Cygwin, a
