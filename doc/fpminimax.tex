@@ -47,7 +47,12 @@ Parameters:
    interpreted as the list of desired monomials. For instance, the list
    $[|0,\,2,\,4,\,6|]$ indicates that the polynomial must be even and of
    degree at most 6. Giving an integer $n$ as second argument is equivalent
-   as giving $[|0,\,\dots,\,n|]$.
+   as giving $[|0,\,\dots,\,n|]$.\\
+   The list of format is interpreted with respect to the list of monomials. For
+   instance, if the list of monomials is $[|0,\,2,\,4,\,6|]$ and the list
+   of formats is $[|161,\,107,\,53,\,24|]$, the coefficients of degree 0 is 
+   searched as a floating-point number with precision 161, the coefficient of 
+   degree 1 is searched as a number of precision 107, and so on.
 
 \item The list of formats may contain either integers or format types (\textbf{double},
    \textbf{doubledouble}, \textbf{tripledouble} and \textbf{doubleextended}). The list may be too big
@@ -55,6 +60,29 @@ Parameters:
    instance, for a degree $n$ polynomial, $\mathrm{formats}[n+1]$ and above will
    be discarded. This lets one use elliptical indications for the last
    coefficients.
+
+\item By default, the list of formats is interpreted as a list of floating-point
+   formats. This may be changed by passing \textbf{fixed} as an optional argument (see
+   below). Let us take an example: \textbf{fpminimax}(f, 2, [107, DD, 53], [0;1]).
+   Herer, the optional argument is missing (we could have set it to \textbf{floating}).
+   Thus, \textbf{fpminimax} will search for a polynomial of degree 2 with a constant 
+   coefficient that is a 107 bits floating-point number, etc.\\
+   Currently, \textbf{doubledouble} is just a synonym for 107 and \textbf{tripledouble} a 
+   synonym for 161. This behavior may changed in the future (taking into
+   account the fact that some double-doubles are not representable with
+   107 bits).\\
+   Second example: \textbf{fpminimax}(f, 2, [25, 18, 30], [0;1], \textbf{fixed}).
+   In this case, \textbf{fpminimax} will search for a polynomial of degree 2 with a
+   constant coefficient of the form $m/2^25$ where $m$ is an
+   integer. In other words, it is a fixed-point number with 25 bits after
+   the point. Note that even with argument \textbf{fixed}, the formats list is 
+   allowed to contain \textbf{double}, \textbf{doubledouble} or \textbf{tripledouble}. In this this
+   case, it is just a synonym for 53, 107 or 161. This is deprecated and may
+   changed in the future.
+
+\item The floating-point coefficients considered by \textbf{fpminimax} do not have an
+   exponent range. In particular, in the format list, \textbf{double} or 53 does not
+   imply that the corresponding coefficient is an IEEE-754 double.
 
 \item The fourth argument may be a range or a list. Lists are for advanced users
    that know what they are doing. The core of the  method is a kind of
@@ -101,6 +129,12 @@ Parameters:
    example, the minimax would be obtained by the following command:
           \begin{center}\verb~P = remez(1-(1+x+x^2/2)/exp(x), [|3,4|], range, 1/exp(x));~\end{center}
    Note that the constrained part is not to be added to $P$.
+
+\item Note that \textbf{fpminimax} internally computes a minimax polynomial (using
+   the same algorithm as \textbf{remez} command). Thus \textbf{fpminimax} may encounter
+   the same problems as \textbf{remez}. In particular, it may be very long 
+   when Haar's condition is not fulfilled. Another consequence is that
+   currently \textbf{fpminimax} has to be run with a sufficiently high precision.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
@@ -146,7 +180,7 @@ Error of P1:     7.9048441305459735159848647089192667442047469404883e-16
 > print("Error of P2:    ", dirtyinfnorm(f-P2, [-1b-7; 1b-7]));
 Error of P2:     8.2477144579950871061147021597406077993657714575238e-16
 > print("Error of P3:    ", dirtyinfnorm(f-P3, [-1b-7; 1b-7]));
-Error of P3:     1.08454277156993282593701156841863009789063333951055e-15
+Error of P3:     1.08589225157946674530174198018927191510501967039589e-15
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{remez} (\ref{labremez}), \textbf{dirtyfindzeros} (\ref{labdirtyfindzeros}), \textbf{absolute} (\ref{lababsolute}), \textbf{relative} (\ref{labrelative}), \textbf{fixed} (\ref{labfixed}), \textbf{floating} (\ref{labfloating}), \textbf{default} (\ref{labdefault})
