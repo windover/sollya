@@ -105,6 +105,27 @@ void exp_diff(mpfi_t *res, mpfi_t x, int n) {
   return;
 }
 
+void powerFunction_diff(mpfi_t *res, mpfr_t p, mpfi_t x, int n) { //the power function is: p^x, where p is a positive ct
+  int i;
+  mpfi_t temp1,temp2;
+
+  mpfi_init2(temp1, getToolPrecision());
+  mpfi_init2(temp2, getToolPrecision());
+  mpfi_set_fr(temp1,p);
+  mpfi_log(temp1,temp1);
+  mpfi_mul(temp2,temp1,x);
+  mpfi_exp(temp2, temp2);
+  for(i=0;i<=n;i++) {
+    mpfi_set(res[i], temp2);
+    mpfi_mul(temp2,temp2,temp1);
+  }
+  mpfi_clear(temp1);
+  mpfi_clear(temp2);
+  return;
+}
+
+
+
 void log_diff(mpfi_t *res, mpfi_t x, int n) {
   mpfr_t minusOne;
   
@@ -1247,9 +1268,10 @@ void composition_AD(mpfi_t *res, mpfi_t *g, mpfi_t *f, int n) {
 */
 void auto_diff(mpfi_t* res, node *f, mpfi_t x, int n) {
   int i;
-  mpfi_t *res1, *res2, *res3, *res4;
+  mpfi_t *res1, *res2, *res3, *res4, *res5, *res6;
   mpfr_t minusOne;
-  
+  node *simplifiedChild1, *simplifiedChild2;
+  mpfi_t temp1,temp2;
   switch (f->nodeType) {
 
   case VARIABLE:
@@ -1433,6 +1455,103 @@ void auto_diff(mpfi_t* res, node *f, mpfi_t x, int n) {
     if (((f->child2)->nodeType==CONSTANT) && ((f->child1)->nodeType==VARIABLE)){
       constantPower_diff(res,*(f->child2->value) , x, n);
     }
+    else{
+      simplifiedChild2=simplifyTreeErrorfree(f->child2);
+      simplifiedChild1=simplifyTreeErrorfree(f->child1);
+      
+      if ((simplifiedChild2->nodeType==CONSTANT) &&(simplifiedChild1->nodeType==CONSTANT)) { //we have the ct1^ct2 case
+         // printf("We are in the  ct1^ct2 case");       
+         mpfi_init2(temp1, getToolPrecision());
+         mpfi_set_fr(temp1, *(simplifiedChild1->value));
+         mpfi_init2(temp2, getToolPrecision());
+         mpfi_set_fr(temp2, *(simplifiedChild2->value));
+         mpfi_pow(res[0],temp1,temp2);
+         for(i=1;i<=n;i++) mpfi_set_ui(res[i],0);
+
+         mpfi_clear(temp1);
+         mpfi_clear(temp2);
+      }
+      else if (simplifiedChild2->nodeType==CONSTANT) { //we have the f^p case
+        //printf("We are in the  f^p case");        
+        res1 = (mpfi_t *)safeMalloc((n+1)*sizeof(mpfi_t));
+        res2 = (mpfi_t *)safeMalloc((n+1)*sizeof(mpfi_t));
+        for(i=0;i<=n;i++) {
+          mpfi_init2(res1[i], getToolPrecision());
+          mpfi_init2(res2[i], getToolPrecision());
+        }
+        auto_diff(res1, f->child1, x, n);
+        constantPower_diff(res2,*(simplifiedChild2->value) , res1[0], n);
+        composition_AD(res, res2, res1, n); 
+        for(i=0;i<=n;i++) {
+          mpfi_clear(res1[i]);
+          mpfi_clear(res2[i]); 
+        }
+        free(res1);
+        free(res2);    
+      } 
+       else if (simplifiedChild1->nodeType==CONSTANT) { //we have the p^f case
+        //printf("We are in the  p^f case");     
+        res1 = (mpfi_t *)safeMalloc((n+1)*sizeof(mpfi_t));
+        res2 = (mpfi_t *)safeMalloc((n+1)*sizeof(mpfi_t));
+        for(i=0;i<=n;i++) {
+          mpfi_init2(res1[i], getToolPrecision());
+          mpfi_init2(res2[i], getToolPrecision());
+        }
+        auto_diff(res1, f->child2, x, n);
+        powerFunction_diff(res2,*(simplifiedChild1->value) , res1[0], n);
+        composition_AD(res, res2, res1, n); 
+        for(i=0;i<=n;i++) {
+          mpfi_clear(res1[i]);
+          mpfi_clear(res2[i]); 
+        }
+        free(res1);
+        free(res2);    
+      } 
+      else {
+      //printf("We are in the  f^g case");     
+      res1 = (mpfi_t *)safeMalloc((n+1)*sizeof(mpfi_t));
+      res2 = (mpfi_t *)safeMalloc((n+1)*sizeof(mpfi_t));
+      res3 = (mpfi_t *)safeMalloc((n+1)*sizeof(mpfi_t));
+      res4 = (mpfi_t *)safeMalloc((n+1)*sizeof(mpfi_t));
+      res5 = (mpfi_t *)safeMalloc((n+1)*sizeof(mpfi_t));
+      res6 = (mpfi_t *)safeMalloc((n+1)*sizeof(mpfi_t));
+      for(i=0;i<=n;i++) {
+        mpfi_init2(res1[i], getToolPrecision());
+        mpfi_init2(res2[i], getToolPrecision());
+        mpfi_init2(res3[i], getToolPrecision());
+        mpfi_init2(res4[i], getToolPrecision());
+        mpfi_init2(res5[i], getToolPrecision());
+        mpfi_init2(res6[i], getToolPrecision());
+      }
+
+      
+      auto_diff(res1, f->child1, x, n);
+      log_diff(res2,res1[0],n);
+      composition_AD(res3, res2, res1, n);
+      auto_diff(res4,f->child2,x,n);
+      multiplication_AD(res5,res3,res4,n);
+      exp_diff(res6,res5[0],n);
+      composition_AD(res,res6,res5,n);
+      
+      for(i=0;i<=n;i++) {
+        mpfi_clear(res1[i]);
+        mpfi_clear(res2[i]);
+        mpfi_clear(res3[i]);
+        mpfi_clear(res4[i]);
+        mpfi_clear(res5[i]);
+        mpfi_clear(res6[i]);
+      }
+      free(res1);
+      free(res2);
+      free(res3);
+      free(res4);
+      free(res5);
+      free(res6);
+
+    }
+    free_memory(simplifiedChild2);
+    free_memory(simplifiedChild1);
+  }
     break;
 
   case LIBRARYFUNCTION:
