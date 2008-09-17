@@ -1,3 +1,65 @@
+2008-09-17 20:48  clauter
+
+	* doc/approx.shlp, doc/approx.tex, doc/autosimplify.shlp,
+	  doc/autosimplify.tex, doc/default.shlp, doc/default.tex,
+	  doc/display.shlp, doc/display.tex, doc/evaluate.shlp,
+	  doc/evaluate.tex, doc/externalplot.shlp, doc/externalplot.tex,
+	  doc/externalproc.shlp, doc/externalproc.tex, doc/findzeros.shlp,
+	  doc/findzeros.tex, doc/fpminimax.shlp, doc/fpminimax.tex,
+	  doc/fullparentheses.shlp, doc/fullparentheses.tex,
+	  doc/honorcoeffprec.shlp, doc/honorcoeffprec.tex,
+	  doc/implementpoly.shlp, doc/implementpoly.tex, doc/infnorm.shlp,
+	  doc/infnorm.tex, doc/integral.shlp, doc/integral.tex,
+	  doc/isbound.shlp, doc/isbound.tex, doc/log.shlp, doc/log.tex,
+	  doc/minus.shlp, doc/minus.tex, doc/printxml.tex, doc/proc.shlp,
+	  doc/proc.tex, doc/readxml.shlp, doc/readxml.tex, doc/remez.shlp,
+	  doc/remez.tex, doc/restart.tex, doc/return.shlp, doc/return.tex,
+	  doc/searchgal.shlp, doc/searchgal.tex, doc/sollya.pdf,
+	  doc/sollya.tex, doc/subpoly.shlp, doc/subpoly.tex,
+	  doc/substitute.shlp, doc/substitute.tex, doc/timing.tex,
+	  doc/verbosity.shlp, doc/verbosity.tex, doc/void.shlp,
+	  doc/void.tex, doc/write.shlp, doc/write.tex, execute.c, help.h,
+	  xml.c: Some changes
+
+2008-09-17 17:55  jmio17
+
+	* autodiff.c: added POW case (f^g, f^ct, ct^f, ct^ct)
+
+2008-09-17 17:52  jmio17
+
+	* sollya.h: added extern node* simplifyTreeErrorfree(node *tree);
+
+2008-09-17 16:11  schevill
+
+	* doc/fpminimax.shlp, doc/fpminimax.tex, help.h: Some explanations
+	  in the documentation of fpminimax
+
+2008-09-17 14:43  clauter
+
+	* doc/approx.shlp, doc/approx.tex, doc/introExample1.tex,
+	  doc/keywords.def, doc/sollya.pdf, execute.c: Corrected a warning
+	  text
+
+2008-09-17 14:24  clauter
+
+	* doc/CommandsAndFunctions.tex, doc/shlp2tex.sh: Added help for ~
+
+2008-09-17 14:13  clauter
+
+	* doc/approx.shlp, doc/approx.tex: Updated documentation -- 2
+
+2008-09-17 14:12  clauter
+
+	* doc/keywords.def, doc/sollya.pdf, help.h: Updated documentation
+
+2008-09-17 13:15  clauter
+
+	* ChangeLog: Updated Changelog file
+
+2008-09-17 13:13  clauter
+
+	* execute.c, library.c: Patched some memory leaks
+
 2008-09-17 11:59  clauter
 
 	* sturm.c: Speeded up getNrRoots on typical examples by a factor of
