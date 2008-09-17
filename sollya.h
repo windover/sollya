@@ -282,5 +282,5 @@ extern void *safeMalloc (size_t size);
 
 extern void printInterval(mpfi_t);
 extern void printValue(mpfr_t *);
-
+extern node* simplifyTreeErrorfree(node *tree);
 #endif
