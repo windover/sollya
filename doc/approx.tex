@@ -1,12 +1,12 @@
 \subsection{approx}
 \label{labapprox}
-\noindent Name: \textbf{$	ilde$}\\
+\noindent Name: \textbf{$\sim$}\\
 floating-point evaluation of a constant expression\\
 
 \noindent Usage: 
 \begin{center}
-\textbf{$	ilde$} \emph{expression} : \textsf{function} $\rightarrow$ \textsf{constant}\\
-\textbf{$	ilde$} \emph{something} : \textsf{any type} $\rightarrow$ \textsf{any type}\\
+\textbf{$\sim$} \emph{expression} : \textsf{function} $\rightarrow$ \textsf{constant}\\
+\textbf{$\sim$} \emph{something} : \textsf{any type} $\rightarrow$ \textsf{any type}\\
 \end{center}
 Parameters: 
 \begin{itemize}
@@ -15,7 +15,7 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{$	ilde$} \emph{expression} evaluates the \emph{expression} that is a constant
+\item \textbf{$\sim$} \emph{expression} evaluates the \emph{expression} that is a constant
    term to a floating-point constant. The evaluation may involve a
    rounding. If \emph{expression} is not a constant, the evaluated constant is
    a faithful rounding of \emph{expression} with \textbf{precision} bits, unless the
@@ -23,18 +23,18 @@ Parameters:
    latter case, a floating-point approximation of some (unknown) accuracy
    is returned.
 
-\item \textbf{$	ilde$} does not do anything on all language elements that are not a
+\item \textbf{$\sim$} does not do anything on all language elements that are not a
    constant expression.  In other words, it behaves like the identity
    function on any type that is not a constant expression. It can hence
    be used in any place where one wants to be sure that expressions are
    simplified using floating-point computations to constants of a known
    precision, regardless of the type of actual language elements.
 
-\item \textbf{$	ilde$} \textbf{error} evaluates to error and provoques a warning.
+\item \textbf{$\sim$} \textbf{error} evaluates to error and provoques a warning.
 
-\item \textbf{$	ilde$} is a prefix operator not requiring parentheses. Its
+\item \textbf{$\sim$} is a prefix operator not requiring parentheses. Its
    precedence is the same as for the unary $+$ and $-$
-   operators. It cannot be used repeatedly without parenthesation.
+   operators. It cannot be repeatedly used without parenthesation.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]

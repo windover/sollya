@@ -11991,7 +11991,7 @@ node *evaluateThingInner(node *tree) {
 	variablename = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
 	strcpy(variablename, tree->string);
       } else {
-	printMessage(1,"Warning: the identifier \"%s\" is neither assigned to, nor bound to a library function nor equal to the current free variable.\n",tree->string);
+	printMessage(1,"Warning: the identifier \"%s\" is neither assigned to, nor bound to a library function nor external procedure, nor equal to the current free variable.\n",tree->string);
 	printMessage(1,"Will interpret \"%s\" as \"%s\".\n",tree->string,variablename);
       }
       tempNode = makeVariable();
@@ -12035,7 +12035,7 @@ node *evaluateThingInner(node *tree) {
 	variablename = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
 	strcpy(variablename, tree->string);
       } else {
-	printMessage(1,"Warning: the identifier \"%s\" is neither assigned to, nor bound to a library function nor equal to the current free variable.\n",tree->string);
+	printMessage(1,"Warning: the identifier \"%s\" is neither assigned to, nor bound to a library function nor external procedure, nor equal to the current free variable.\n",tree->string);
 	printMessage(1,"Will interpret \"%s\" as \"%s\".\n",tree->string,variablename);
       }
       tempNode = makeVariable();

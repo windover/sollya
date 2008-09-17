@@ -31,7 +31,7 @@ $COMMAND $ERROR evaluates to error and provoques a warning.
 #DESCRIPTION 
 $COMMAND is a prefix operator not requiring parentheses. Its
 precedence is the same as for the unary §§+§$+$§§ and §§-§$-$§§
-operators. It cannot be used repeatedly without parenthesation.
+operators. It cannot be repeatedly used without parenthesation.
 
 #EXAMPLE
 print(exp(5));
