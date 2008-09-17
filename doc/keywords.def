@@ -19,6 +19,8 @@ MINUS="§§-§$-$§§"
 DIVIDE="\/"
 POWER="§§^§\\\^§§"
 
+APPROX="§§~§$\tilde$§§"
+
 WHILE="while"
 FOR="for"
 
