@@ -127,7 +127,7 @@ libraryFunction *bindFunction(char* libraryName, char *functionName) {
   mpfi_clear(op);
 
   currFunct = (libraryFunction *) safeMalloc(sizeof(libraryFunction));
-  currFunct->functionName = (char *) safeCalloc(strlen(functionName),sizeof(char));
+  currFunct->functionName = (char *) safeCalloc(strlen(functionName)+1,sizeof(char));
   strcpy(currFunct->functionName,functionName);
   currFunct->code = myFunction;
   
@@ -180,6 +180,7 @@ void freeLibraries() {
     if (dlclose(currLibHandle->libraryDescriptor) != 0) 
       printMessage(1,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
     free(currLibHandle->libraryName);
+    free(currLibHandle);
     prevLibList = currLibList;
     currLibList = currLibList->next;
     free(prevLibList);
@@ -246,7 +247,7 @@ libraryProcedure *bindProcedure(char* libraryName, char *procedureName, chain *s
   }
   
   currProc = (libraryProcedure *) safeMalloc(sizeof(libraryProcedure));
-  currProc->procedureName = (char *) safeCalloc(strlen(procedureName),sizeof(char));
+  currProc->procedureName = (char *) safeCalloc(strlen(procedureName)+1,sizeof(char));
   strcpy(currProc->procedureName,procedureName);
   currProc->code = myFunction;
   currProc->signature = copyChainWithoutReversal(signature, copyIntPtrOnVoid);
@@ -302,6 +303,7 @@ void freeProcLibraries() {
     if (dlclose(currLibHandle->procLibraryDescriptor) != 0) 
       printMessage(1,"Warning: could not close libary \"%s\": %s\n",currLibHandle->procLibraryName,dlerror());
     free(currLibHandle->procLibraryName);
+    free(currLibHandle);
     prevLibList = currLibList;
     currLibList = currLibList->next;
     free(prevLibList);

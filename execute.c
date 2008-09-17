@@ -5723,6 +5723,7 @@ int executeCommandInner(node *tree) {
 	      if(tempLibraryProcedure == NULL) {
 		printMessage(1,"Warning: an error occurred. The last command will have no effect.\n");
 	      }
+	      free(tempString);
 	    } else {
 	      printMessage(1,"Warning: the expression given does not evaluate to a string.\n");
 	      printMessage(1,"This command will have no effect.\n");
@@ -6180,6 +6181,7 @@ int executeCommandInner(node *tree) {
 	      if(tempLibraryFunction == NULL) {
 		printMessage(1,"Warning: an error occurred. The last command will have no effect.\n");
 	      }
+	      free(tempString);
 	    } else {
 	      printMessage(1,"Warning: the expression given does not evaluate to a string.\n");
 	      printMessage(1,"This command will have no effect.\n");
@@ -11203,6 +11205,8 @@ int executeExternalProcedureInner(node **resultThing, libraryProcedure *proc, ch
     }
     free(arguments);
   }
+
+  freeChain(myArgSignature, freeIntPtr);
   
   return externalResult;
 }
