@@ -35,7 +35,7 @@ interval containing the exact absolute value of <f> at this point.
 
 #DESCRIPTION
 If the interval is not bound, the result will be §§[0, +Inf]§$[0,\,+\infty]$§§ 
-which is true but perfectly useless. $COMMAND is not ment to be used with 
+which is true but perfectly useless. $COMMAND is not meant to be used with 
 infinite intervals.
 
 #DESCRIPTION

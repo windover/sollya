@@ -169,17 +169,27 @@ One of the particularities of \sollya is to work with multi-precision arithmetic
 
 The general philosophy of \sollya is: \emph{When you can make a computation exactly and sufficiently quickly, do it; when you cannot, do not, unless you have been explicitly asked for.}
 
-The precision of the tools is set by the global variable \key{prec}. It indicates the number of bits used to represent the constants in \sollya. In general, the variable \key{prec} determines the precision of the outputs of commands: more precisely, the command will internally determine what precision should be used during the computations in order to ensure that the output is a faithful result with \key{prec} bits.
+The precision of the tools is set by the global variable \key{prec}. It indicates the number of bits used to represent the constants in \sollya. In general, the variable \key{prec} determines the precision of the outputs of commands: more precisely, the command will internally determine what precision should be used during the computations in order to ensure that the output is a faithfully rounded result with \key{prec} bits.
 
 For decidability and efficiency reasons, this general principle cannot be applied every time, so be careful. Moreover certain commands are known to be unsafe: they give in general excellent results and give almost \key{prec} correct bits in output for everyday examples. However they are just heuristic and should not be used when the result must be safe. See the documentation of each command to know precisely how confident you can be with its result.
 
-A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When set to $0$, \sollya becomes completely silent on stdout and prints only very important messages on stderr. Increase \key{verbosity} if you want more information about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use \texttt{!}:
+A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user by a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When set to $0$, \sollya becomes completely silent on stdout and prints only very important messages on stderr. Increase \key{verbosity} if you want more information about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use \texttt{!}:
 
 \input{introExample9}
 
 For conviviality reasons, values are displayed in decimal by default. This lets a normal human being understand the numbers he or she manipulates. But since constants are internally represented in binary, this causes permanent conversions that are sources of roundings. Thus you are loosing in accuracy and \sollya is always complaining about inexact results. If you just want to store or communicate your results (to another tools for instance) you can use bit-exact representations available in \sollya. The global variable \key{display} defines the way constants are displayed. Here is an example of the five available modes:
 
 \input{introExample10}
+
+Remark that it is possible to maintain the general verbosity level at
+some higher setting while deactivating all warnings on roundings. This
+feature is controlled using the \key{roundingwarnings} global
+variable. It may be set to \key{on} or \key{off}. By default, the
+warnings are activated (\key{roundingwarnings = on}) when \sollya is
+connected on standard input to a pseudo-file that represents a
+terminal. They are deactivated when \sollya is connected on standard
+input to a real file. See \ref{labroundingwarnings} for further details; the behavior is
+illustrated with examples there.
 
 As always, the symbol \texttt{e} means $\times 10^\square $. The same way the symbol \texttt{b} means  $\times 2^\square $. The symbol \texttt{p} means $\times 16^\square$ and is used only with the \texttt{0x} prefix. The prefix \texttt{0x} indicates that the digits of the following number until 
 a symbol \texttt{p} or white-space are hexadecimal. The suffix \texttt{\_2} indicates to \sollya that the previous number has been written in binary. \sollya can parse these notations even if you are not in the corresponding \key{display} mode, so you can always use them.
@@ -188,7 +198,10 @@ You can also use memory-dump hexadecimal notation frequently used to represent I
 
 \input{introExample11}
 
-\sollya can parse these memory-dump hexadecimal notation back in any \key{display} mode.
+\sollya can parse these memory-dump hexadecimal notation back in any
+\key{display} mode. Remark that the difference of this memory-dump
+notation with the hexadecimal notation (as defined above) is made by
+the presence or absence of a \texttt{p} indicator.
 
 \section{Variables}\label{variables}
 
@@ -227,8 +240,16 @@ The following code examples illustrate the usage of variables.
 
 \input{introExample12}
 
+Remark that a variable identifier, just as every identifier in
+\sollya, contains at least one character, starting with a ASCII letter
+or one of the special symbols ``\texttt{\_}'', ``\texttt{\$}'' or
+``\texttt{\S}'' and continuing with ASCII letters, special symbols or
+numerical digits.
+
+
+
 \section{Data types}
-\sollya has a (very) basic system of types. If you try to perform an illicit operation (such as adding a number and a string, for instance), you will get a type error. Let us see the available data types.
+\sollya has a (very) basic system of types. If you try to perform an illicit operation (such as adding a number and a string, for instance), you will get a typing error. Let us see the available data types.
 
 \subsection{Booleans}
 There are two special values \key{true} and \key{false}. Boolean expressions can be constructed using the boolean connectors \key{\&\&} (and), \key{||} (or), \key{!} (not), and comparisons.
@@ -240,8 +261,10 @@ The comparison operators \key{==} and \key{!=} are polymorphic. You can use it t
 \input{introExample13}
 
 \subsection{Numbers}
-\sollya represents numbers as floating-point values. For integer values and values in dyadic, binary, hexadecimal or memory dump notation, it 
-automatically uses a precision needed for representing the value exactly. Otherwise the values are represented with the current precision \com{prec}. A number in an expression is rounded to the precision \com{prec} when the expression gets evaluated:
+\sollya represents numbers as binary multi-precision floating-point values. For integer values and values in dyadic, binary, hexadecimal or memory dump notation, it 
+automatically uses a precision needed for representing the value exactly. Additionally, automatic precision adaption takes place for all 
+integer values (even in decimal notation) written without the exponent sign \texttt{e} or with the exponent sign \texttt{e} and an exponent sufficiently 
+small that they are less than $10^{999}$. Otherwise the values are represented with the current precision \com{prec}. A number in an expression is rounded to the precision \com{prec} when the expression gets evaluated:
 
 \input{introExample14}
 
@@ -267,6 +290,10 @@ evaluation bounds defined by constant expressions includes $\pi$:
 You can get the upper-bound (respectively the lower-bound)) of an interval with the function \com{sup} (respectively \com{inf}). The middle of the interval is got with the function \com{mid}. Note that these functions can also be used on numbers (in that case, the number is interpreted as an interval containing only one single point. Thus the functions \com{inf}, \com{mid} and \com{sup} are just the identity):
 
 \input{introExample18}
+
+Remark that the \com{mid} operator never provokes a rounding. If a
+rounding were needed, it is rewritten as an unevaluated expression in
+terms of \com{inf} and \com{sup}.
 
 \subsection{Functions}
 \sollya knows only functions with one single variable. The first time in a session that an unbound name is used (without being assigned) it determines the name used to refer to the free variable.
@@ -413,8 +440,7 @@ statements:
 conditional statements are supported not conditional expressions. 
 
 The following examples illustrate both syntax and semantic of
-conditional statements in \sollya. Concerning syntax, consider also
-section \ref{grammar} and remark that there must not be any semicolon
+conditional statements in \sollya. Concerning syntax, remark also that there must not be any semicolon
 before the \key{else} keyword.
 
 \input{introExample26}
