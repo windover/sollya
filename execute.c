@@ -1435,10 +1435,10 @@ char *getTimingStringForThing(node *tree) {
     constString = "computing a fpminimax approximation";
     break; 			 	
   case HORNER:
-    constString = "convertion to horner notation";
+    constString = "conversion to horner notation";
     break; 			 	
   case CANONICAL:
-    constString = "convertion to canonical notation";
+    constString = "conversion to canonical notation";
     break; 			
   case EXPAND:
     constString = "expanding an expression";

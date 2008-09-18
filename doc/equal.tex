@@ -15,10 +15,11 @@ Parameters:
 
 \item The operator \textbf{$==$} evaluates to true iff its operands \emph{expr1} and
    \emph{expr2} are syntactically equal and different from \textbf{error} or constant
-   expressions that evaluate to the same floating-point number with the
-   global precision \textbf{prec}. The user should be aware of the fact that
-   because of floating-point evaluation, the operator \textbf{$==$} is not
-   exactly the same as the mathematical equality.
+   expressions that are not constants and that evaluate to the same
+   floating-point number with the global precision \textbf{prec}. The user should
+   be aware of the fact that because of floating-point evaluation, the
+   operator \textbf{$==$} is not exactly the same as the mathematical
+   equality.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
@@ -44,13 +45,19 @@ false
 \end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> prec = 12;
-The precision has been set to 12 bits.
-> 16384.25 == 16385.25;
+> sin(pi/6) == 1/2 * sqrt(3);
 false
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> prec = 12;
+The precision has been set to 12 bits.
+> 16384.1 == 16385.1;
+true
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 5: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > error == error;
 false

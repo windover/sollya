@@ -8,10 +8,11 @@
 #DESCRIPTION 
 The operator $COMMAND evaluates to true iff its operands <expr1> and
 <expr2> are syntactically equal and different from $ERROR or constant
-expressions that evaluate to the same floating-point number with the
-global precision $PREC. The user should be aware of the fact that
-because of floating-point evaluation, the operator $COMMAND is not
-exactly the same as the mathematical equality.
+expressions that are not constants and that evaluate to the same
+floating-point number with the global precision $PREC. The user should
+be aware of the fact that because of floating-point evaluation, the
+operator $COMMAND is not exactly the same as the mathematical
+equality.
 
 
 #EXAMPLE
@@ -26,8 +27,11 @@ asin(1) * 2 == pi;
 exp(5) == log(4);
 
 #EXAMPLE
+sin(pi/6) == 1/2 * sqrt(3);
+
+#EXAMPLE
 prec = 12;
-16384.25 == 16385.25;
+16384.1 == 16385.1;
 
 #EXAMPLE
 error == error;
