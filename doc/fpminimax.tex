@@ -13,7 +13,7 @@ computes a good polynomial approximation with fixed-point or floating-point coef
 Parameters: 
 \begin{itemize}
 \item \emph{f} is the function to be approximated
-\item \emph{n} is the degree of the polynomial that must approximate\emph{f}
+\item \emph{n} is the degree of the polynomial that must approximate \emph{f}
 \item \emph{monomials} is the list of monomials that must be used to represent the polynomial that approximates~\emph{f}
 \item \emph{formats} is a list indicating the formats that the coefficients of the polynomial must have
 \item \emph{range} is the interval where the function must be approximated
@@ -37,11 +37,12 @@ Parameters:
    It computes a polynomial approximation of $f$ with degree at most $n$
    on the interval \emph{range}. \emph{formats} is a list of integers or format types 
    (such as \textbf{double}, \textbf{doubledouble}, etc.). The polynomial returned by the
-   command has its coefficients that fits the formats indication. For 
+   command has its coefficients that fit the formats indications. For 
    instance, if formats[0] is 35, the coefficient of degree 0 of the 
    polynomial will fit a floating-point format of 35 bits. If formats[1] 
-   is D, the coefficient of degree 1 will be representable by a IEEE double
-   precision number, etc.
+   is D, the coefficient of degree 1 will be representable by a floating-point
+   number with a precision of 53 bits (that is not necessarily an IEEE double
+   precision number. See the remark below), etc.
 
 \item The second argument may be either an integer or a list of integers
    interpreted as the list of desired monomials. For instance, the list
@@ -52,7 +53,7 @@ Parameters:
    instance, if the list of monomials is $[|0,\,2,\,4,\,6|]$ and the list
    of formats is $[|161,\,107,\,53,\,24|]$, the coefficients of degree 0 is 
    searched as a floating-point number with precision 161, the coefficient of 
-   degree 1 is searched as a number of precision 107, and so on.
+   degree 2 is searched as a number of precision 107, and so on.
 
 \item The list of formats may contain either integers or format types (\textbf{double},
    \textbf{doubledouble}, \textbf{tripledouble} and \textbf{doubleextended}). The list may be too big
@@ -61,6 +62,10 @@ Parameters:
    be discarded. This lets one use elliptical indications for the last
    coefficients.
 
+\item The floating-point coefficients considered by \textbf{fpminimax} do not have an
+   exponent range. In particular, in the format list, \textbf{double} or 53 does not
+   imply that the corresponding coefficient is an IEEE-754 double.
+
 \item By default, the list of formats is interpreted as a list of floating-point
    formats. This may be changed by passing \textbf{fixed} as an optional argument (see
    below). Let us take an example: \textbf{fpminimax}(f, 2, [107, DD, 53], [0;1]).
@@ -68,21 +73,17 @@ Parameters:
    Thus, \textbf{fpminimax} will search for a polynomial of degree 2 with a constant 
    coefficient that is a 107 bits floating-point number, etc.\\
    Currently, \textbf{doubledouble} is just a synonym for 107 and \textbf{tripledouble} a 
-   synonym for 161. This behavior may changed in the future (taking into
+   synonym for 161. This behavior may change in the future (taking into
    account the fact that some double-doubles are not representable with
    107 bits).\\
    Second example: \textbf{fpminimax}(f, 2, [25, 18, 30], [0;1], \textbf{fixed}).
    In this case, \textbf{fpminimax} will search for a polynomial of degree 2 with a
-   constant coefficient of the form $m/2^25$ where $m$ is an
+   constant coefficient of the form $m/2^{25}$ where $m$ is an
    integer. In other words, it is a fixed-point number with 25 bits after
    the point. Note that even with argument \textbf{fixed}, the formats list is 
    allowed to contain \textbf{double}, \textbf{doubledouble} or \textbf{tripledouble}. In this this
    case, it is just a synonym for 53, 107 or 161. This is deprecated and may
-   changed in the future.
-
-\item The floating-point coefficients considered by \textbf{fpminimax} do not have an
-   exponent range. In particular, in the format list, \textbf{double} or 53 does not
-   imply that the corresponding coefficient is an IEEE-754 double.
+   change in the future.
 
 \item The fourth argument may be a range or a list. Lists are for advanced users
    that know what they are doing. The core of the  method is a kind of
@@ -180,7 +181,7 @@ Error of P1:     7.9048441305459735159848647089192667442047469404883e-16
 > print("Error of P2:    ", dirtyinfnorm(f-P2, [-1b-7; 1b-7]));
 Error of P2:     8.2477144579950871061147021597406077993657714575238e-16
 > print("Error of P3:    ", dirtyinfnorm(f-P3, [-1b-7; 1b-7]));
-Error of P3:     1.08454277156993282593701156841863009789063333951055e-15
+Error of P3:     1.08589225157946674530174198018927191510501967039589e-15
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{remez} (\ref{labremez}), \textbf{dirtyfindzeros} (\ref{labdirtyfindzeros}), \textbf{absolute} (\ref{lababsolute}), \textbf{relative} (\ref{labrelative}), \textbf{fixed} (\ref{labfixed}), \textbf{floating} (\ref{labfloating}), \textbf{default} (\ref{labdefault})

@@ -15,7 +15,7 @@
 
 
 #PARAMETERS <f> is the function to be approximated
-#PARAMETERS <n> is the degree of the polynomial that must approximate<f>
+#PARAMETERS <n> is the degree of the polynomial that must approximate <f>
 #PARAMETERS <monomials> is the list of monomials that must be used to represent the polynomial that approximates§§ §~§§<f>
 #PARAMETERS <formats> is a list indicating the formats that the coefficients of the polynomial must have
 #PARAMETERS <range> is the interval where the function must be approximated
@@ -40,11 +40,12 @@ The basic usage of this command is $COMMAND(<f>, <n>, <formats>, <range>).
 It computes a polynomial approximation of §§f§$f$§§ with degree at most §§n§$n$§§
 on the interval <range>. <formats> is a list of integers or format types 
 (such as $DOUBLE, $DOUBLEDOUBLE, etc.). The polynomial returned by the
-command has its coefficients that fits the formats indication. For 
+command has its coefficients that fit the formats indications. For 
 instance, if formats[0] is 35, the coefficient of degree 0 of the 
 polynomial will fit a floating-point format of 35 bits. If formats[1] 
-is D, the coefficient of degree 1 will be representable by a IEEE double
-precision number, etc.
+is D, the coefficient of degree 1 will be representable by a floating-point
+number with a precision of 53 bits (that is not necessarily an IEEE double
+precision number. See the remark below), etc.
 
 #DESCRIPTION
 The second argument may be either an integer or a list of integers
@@ -56,7 +57,7 @@ The list of format is interpreted with respect to the list of monomials. For
 instance, if the list of monomials is §§[|0,2,4,6|]§$[|0,\,2,\,4,\,6|]$§§ and the list
 of formats is §§[|161,107,53,24|]§$[|161,\,107,\,53,\,24|]$§§, the coefficients of degree 0 is 
 searched as a floating-point number with precision 161, the coefficient of 
-degree 1 is searched as a number of precision 107, and so on.
+degree 2 is searched as a number of precision 107, and so on.
 
 #DESCRIPTION
 The list of formats may contain either integers or format types ($DOUBLE,
@@ -67,6 +68,11 @@ be discarded. This lets one use elliptical indications for the last
 coefficients.
 
 #DESCRIPTION
+The floating-point coefficients considered by $COMMAND do not have an
+exponent range. In particular, in the format list, $DOUBLE or 53 does not
+imply that the corresponding coefficient is an IEEE-754 double.
+
+#DESCRIPTION
 By default, the list of formats is interpreted as a list of floating-point
 formats. This may be changed by passing $FIXED as an optional argument (see
 below). Let us take an example: $COMMAND(f, 2, [107, DD, 53], [0;1]).
@@ -74,22 +80,17 @@ Here the optional argument is missing (we could have set it to $FLOATING).
 Thus, $COMMAND will search for a polynomial of degree 2 with a constant 
 coefficient that is a 107 bits floating-point number, etc.§§ §\\§§
 Currently, $DOUBLEDOUBLE is just a synonym for 107 and $TRIPLEDOUBLE a 
-synonym for 161. This behavior may changed in the future (taking into
+synonym for 161. This behavior may change in the future (taking into
 account the fact that some double-doubles are not representable with
 107 bits).§§ §\\§§
 Second example: $COMMAND(f, 2, [25, 18, 30], [0;1], $FIXED).
 In this case, $COMMAND will search for a polynomial of degree 2 with a
-constant coefficient of the form §§m/2^25§$m/2^25$§§ where §§m§$m$§§ is an
+constant coefficient of the form §§m/2^25§$m/2^{25}$§§ where §§m§$m$§§ is an
 integer. In other words, it is a fixed-point number with 25 bits after
 the point. Note that even with argument $FIXED, the formats list is 
 allowed to contain $DOUBLE, $DOUBLEDOUBLE or $TRIPLEDOUBLE. In this this
 case, it is just a synonym for 53, 107 or 161. This is deprecated and may
-changed in the future.
-
-#DESCRIPTION
-The floating-point coefficients considered by $COMMAND do not have an
-exponent range. In particular, in the format list, $DOUBLE or 53 does not
-imply that the corresponding coefficient is an IEEE-754 double.
+change in the future.
 
 #DESCRIPTION
 The fourth argument may be a range or a list. Lists are for advanced users

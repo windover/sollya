@@ -4,7 +4,7 @@ sollyaBin="../sollya"
 
 keywords_defs="./keywords.def"
 types_defs="./types.def"
-sollya_name="\sollya"
+sollya_name="\\\\sollya"
 listOfCommands="./CommandsAndFunctions.tex"
 
 tempfile="/tmp/hlp2tex_tempfile"
