@@ -7,19 +7,19 @@ controls the number of recursion steps when applying L'Hopital's rule.\\
 
 \item \textbf{hopitalrecursions} is a global variable. Its value represents the number of steps of
    recursion that are tried when applying L'Hopital's rule. This rule is applied
-   by the interval evaluator present in the core of Sollya (and particularly
+   by the interval evaluator present in the core of \sollya (and particularly
    visible in commands like \textbf{infnorm}).
 
 \item If an expression of the form $f/g$ has to be evaluated by interval 
    arithmetic on an interval $I$ and if $f$ and $g$ have a common zero
    in $I$, a direct evaluation leads to NaN.
-   Sollya implements a safe heuristic to avoid this, based on L'Hopital's rule: in 
+   \sollya implements a safe heuristic to avoid this, based on L'Hopital's rule: in 
    such a case, it can be shown that $(f/g)(I) \subseteq (f'/g')(I)$. Since
    the same problem may hold for $f'/g'$, the rule is applied recursively.
    The number of step in this recursion process is controlled by \textbf{hopitalrecursions}.
 
-\item Setting \textbf{hopitalrecursions} to 0 makes Sollya use this rule only one time ;
-   setting it to 1 makes Sollya use the rule two times, and so on.
+\item Setting \textbf{hopitalrecursions} to 0 makes \sollya use this rule only one time ;
+   setting it to 1 makes \sollya use the rule two times, and so on.
    In particular: the rule is always applied at least once, if necessary.
 \end{itemize}
 \noindent Example 1: 

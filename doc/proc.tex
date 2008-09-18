@@ -1,7 +1,7 @@
 \subsection{proc}
 \label{labproc}
 \noindent Name: \textbf{proc}\\
-defines a Sollya procedure\\
+defines a \sollya procedure\\
 
 \noindent Usage: 
 \begin{center}
@@ -16,10 +16,10 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item The \textbf{proc} keyword allows for defining procedures in the Sollya
-   language. These procedures are common Sollya objects that can be
+\item The \textbf{proc} keyword allows for defining procedures in the \sollya
+   language. These procedures are common \sollya objects that can be
    applied to actual parameters after definition. Upon such an
-   application, the Sollya interpreter applies the actual parameters to
+   application, the \sollya interpreter applies the actual parameters to
    the formal parameters \emph{formal parameter1} through \emph{formal parameter n}
    and executes the \emph{procedure body}. The procedure applied to actual
    parameters evaluates then to the expression \emph{expression} in the
@@ -27,15 +27,15 @@ Parameters:
    statement is given (i.e. a \textbf{return} \textbf{void} statement is implicitly
    given).
 
-\item Sollya procedures defined by \textbf{proc} have no name. They can be bound
+\item \sollya procedures defined by \textbf{proc} have no name. They can be bound
    to an identifier by assigning the procedure object a \textbf{proc}
    expression produces to an identifier. However, it is possible to use
-   procedures without giving them any name. For instance, Sollya
+   procedures without giving them any name. For instance, \sollya
    procedures, i.e. procedure objects, can be elements of lists. They can
-   even be given as an argument to other internal Sollya procedures. See
+   even be given as an argument to other internal \sollya procedures. See
    also \textbf{procedure} on this subject.
 
-\item Upon definition of a Sollya procedure using \textbf{proc}, no type check
+\item Upon definition of a \sollya procedure using \textbf{proc}, no type check
    is performed. More precisely, the statements in \emph{procedure body} are
    merely parsed but not interpreted upon procedure definition with
    \textbf{proc}. Type checks are performed once the procedure is applied to
@@ -47,7 +47,7 @@ Parameters:
     
    Procedures defined by \textbf{proc} containing a \textbf{quit} or \textbf{restart} command
    cannot be executed (i.e. applied). Upon application of a procedure,
-   the Sollya interpreter checks beforehand for such a statement. If one
+   the \sollya interpreter checks beforehand for such a statement. If one
    is found, the application of the procedure to its arguments evaluates
    to \textbf{error}. A warning is displayed. Remark that in contrast to other
    type or semantic correctness checks, this check is really performed
@@ -60,13 +60,13 @@ Parameters:
    to assign the procedure (object) to an identifier with an appropriate
    name.
 
-\item Sollya procedures defined using \textbf{proc} may return other
+\item \sollya procedures defined using \textbf{proc} may return other
    procedures. Further \emph{procedure body} may contain assignments of
    locally defined procedure objects to identifiers. See \textbf{var} for the
    particular behaviour of local and global variables.
 
 \item The expression \emph{expression} returned by a procedure is evaluated with
-   regard to Sollya commands, procedures and external
+   regard to \sollya commands, procedures and external
    procedures. Simplification may be performed.  However, an application
    of a procedure defined by \textbf{proc} to actual parameters evaluates to the
    expression \emph{expression} that may contain the free global variable or
