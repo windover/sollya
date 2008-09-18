@@ -47,6 +47,15 @@ print(~sin(5 * pi));
 print(~exp(x));
 print(~ "Hello");
 
+#EXAMPLE
+print(~exp(x*5*Pi));
+print(exp(x* ~(5*Pi)));
+
+#EXAMPLE
+print(~exp(5)*x);
+print( (~exp(5))*x);
+print(~(exp(5)*x));
+
 #SEEALSO $EVALUATE
 #SEEALSO $PREC
 #SEEALSO $ERROR

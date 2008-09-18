@@ -63,4 +63,21 @@ exp(x)
 Hello
 \end{Verbatim}
 \end{minipage}\end{center}
+\noindent Example 5: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> print(~exp(x*5*Pi));
+exp((pi) * 5 * x)
+> print(exp(x* ~(5*Pi)));
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 6: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> print(~exp(5)*x);
+1.48413159102576603421115580040552279623487667593878e2 * x
+> print( (~exp(5))*x);
+1.48413159102576603421115580040552279623487667593878e2 * x
+> print(~(exp(5)*x));
+exp(5) * x
+\end{Verbatim}
+\end{minipage}\end{center}
 See also: \textbf{evaluate} (\ref{labevaluate}), \textbf{prec} (\ref{labprec}), \textbf{error} (\ref{laberror})
