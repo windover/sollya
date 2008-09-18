@@ -133,6 +133,10 @@ struct libraryProcedureStruct
 #define CEIL 36
 #define FLOOR 37
 #define PI_CONST 38
+#define FIXED 236
+#define FLOATING 237
+#define ABSOLUTESYM 197
+#define RELATIVESYM 198
 
 
 typedef struct nodeStruct node;
