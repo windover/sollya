@@ -1,3 +1,42 @@
+2008-09-18 14:23  schevill
+
+	* sollya.h: Added defined constant FLOATING, FIXED, ABSOLUTESYM,
+	  and RELATIVESYM for fpminimax
+
+2008-09-18 13:36  clauter
+
+	* doc/equal.shlp, doc/equal.tex, doc/ge.shlp, doc/ge.tex,
+	  doc/gt.shlp, doc/gt.tex, doc/le.shlp, doc/le.tex, doc/lt.shlp,
+	  doc/lt.tex, doc/neq.shlp, doc/neq.tex, doc/prec.shlp,
+	  doc/prec.tex, doc/sollya.pdf, doc/sollya.tex, execute.c, help.h:
+	  Changes in documentation
+
+2008-09-18 13:05  clauter
+
+	* ChangeLog, NEWS, README, doc/log.shlp, doc/log.tex,
+	  doc/minus.shlp, doc/minus.tex, doc/searchgal.shlp,
+	  doc/searchgal.tex, doc/sollya.pdf, doc/sollya.tex, help.h: New
+	  NEWS and Changlog files
+
+2008-09-18 12:01  clauter
+
+	* doc/sollya.pdf: Recompiled whole help
+
+2008-09-18 11:24  clauter
+
+	* doc/autosimplify.tex, doc/bashexecute.tex, doc/canonical.tex,
+	  doc/checkinfnorm.tex, doc/degree.tex, doc/diam.tex,
+	  doc/display.tex, doc/doubleextended.tex, doc/error.tex,
+	  doc/externalproc.tex, doc/fpminimax.tex, doc/fullparentheses.tex,
+	  doc/hopitalrecursions.tex, doc/horner.tex, doc/library.tex,
+	  doc/nop.tex, doc/off.tex, doc/on.tex, doc/pi.tex, doc/plot.tex,
+	  doc/points.tex, doc/print.tex, doc/printxml.tex, doc/proc.tex,
+	  doc/procedure.tex, doc/quit.tex, doc/rationalapprox.tex,
+	  doc/readxml.tex, doc/rename.tex, doc/restart.tex, doc/return.tex,
+	  doc/round.tex, doc/roundingwarnings.tex, doc/simplifysafe.tex,
+	  doc/sollya.pdf, doc/taylorrecursions.tex, doc/timing.tex,
+	  doc/write.tex, help.h: Updated recompiled documentation
+
 2008-09-18 10:41  schevill
 
 	* doc/asciiplot.tex, doc/fpminimax.shlp, doc/fpminimax.tex,
