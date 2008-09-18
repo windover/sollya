@@ -29,13 +29,14 @@ implements a polynomial using double, double-double and triple-double arithmetic
     
    The command \textbf{implementpoly} returns the polynomial that has been
    implemented. As the command \textbf{implementpoly} tries to adapt the precision
-   needed in each evaluation step to its strict minimum and as it
-   renormalises double-double and triple-double precision coefficients to
-   a round-to-nearest expansion, the polynomial return may differ from
-   the polynomial \emph{polynomial}. Nevertheless the difference will be small
-   enough that the rounding error bound with regard to the polynomial
-   \emph{polynomial} (estimated at its first order) will be less than the
-   given error bound.
+   needed in each evaluation step to its strict minimum and as it applies
+   renormalization to double-double and triple-double precision
+   coefficients to bring them to a round-to-nearest expansion form, the
+   polynomial return may differ from the polynomial
+   \emph{polynomial}. Nevertheless the difference will be small enough that
+   the rounding error bound with regard to the polynomial \emph{polynomial}
+   (estimated at its first order) will be less than the given error
+   bound.
     
    If a seventh argument \emph{honor coefficient precisions} is given and
    evaluates to a variable \textbf{honorcoeffprec} of type \textsf{honorcoeffprec},
