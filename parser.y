@@ -1008,6 +1008,14 @@ term:                   subterm
 			      tempNode = makeNeg(tempNode);
 			    $$ = makeDiv($1, tempNode);
                           }					
+		      |	term MULTOKEN APPROXTOKEN subterm				
+			  {
+			    $$ = makeMul($1, makeEvalConst($4));
+                          }														
+		      |	term DIVTOKEN APPROXTOKEN subterm				
+                          {
+			    $$ = makeDiv($1, makeEvalConst($4));
+                          }					
 ;
 
 subterm:                basicthing
@@ -1024,6 +1032,10 @@ subterm:                basicthing
 			    for (tempInteger=0;tempInteger<$3;tempInteger++)
 			      tempNode = makeNeg(tempNode);
 			    $$ = makePow($1, tempNode);
+                          }
+                      | basicthing POWTOKEN APPROXTOKEN subterm
+                          {
+			    $$ = makePow($1, makeEvalConst($4));
                           }
 ;
 
