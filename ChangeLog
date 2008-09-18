@@ -1,3 +1,47 @@
+2008-09-18 10:41  schevill
+
+	* doc/asciiplot.tex, doc/fpminimax.shlp, doc/fpminimax.tex,
+	  doc/shlp2tex.sh, doc/sollya.pdf, help.h: several things
+
+2008-09-18 10:35  clauter
+
+	* doc/sollya.pdf, doc/sollya.tex: Forgot one thing
+
+2008-09-18 10:34  clauter
+
+	* doc/implementpoly.tex, doc/infnorm.tex, doc/sollya.pdf, help.h:
+	  Forgot to compile the changed help texts
+
+2008-09-18 10:31  clauter
+
+	* doc/implementpoly.shlp, doc/infnorm.shlp, doc/sollya.pdf,
+	  doc/sollya.tex: Some updates in the documentation
+
+2008-09-18 09:21  clauter
+
+	* doc/sollya.pdf, doc/sollya.tex: Slight change in sollya.tex main
+	  document
+
+2008-09-18 09:17  clauter
+
+	* doc/approx.tex, doc/sollya.pdf, help.h, internparser.y, parser.y:
+	  Patched a parsing bug for ~ operator
+
+2008-09-18 09:14  schevill
+
+	* doc/shlp2tex.sh, doc/sollya.pdf, help.h: Unified \sollya and
+	  Sollya in the generated documentation
+
+2008-09-18 09:09  schevill
+
+	* doc/approx.shlp, doc/approx.tex: Added two examples in the
+	  documentation of approx
+
+2008-09-17 21:31  clauter
+
+	* ChangeLog, tests/check.sollya.output: New check output file
+	  because errors corrected
+
 2008-09-17 20:48  clauter
 
 	* doc/approx.shlp, doc/approx.tex, doc/autosimplify.shlp,

@@ -1,5 +1,5 @@
 #NAME $LOG
-#QUICK_DESCRIPTION neperian logarithm.
+#QUICK_DESCRIPTION natural logarithm.
 
 #DESCRIPTION 
 $COMMAND is the natural logarithm defined as the inverse of the exponential

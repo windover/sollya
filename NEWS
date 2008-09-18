@@ -1,0 +1,39 @@
+Changes from version 1.0 to version 1.1:
+
+Critical bug fixes:
+  * Patched expansion of polynomial terms. Signs and coefficient values could be completely wrong
+    All results previously obtained using Sollya should be re-checked
+
+
+Changes of syntax and output:
+  * Unary + and - are now correctly parsed
+  * Changes in midpointmode. In particular, midpoint values are now parsed back as ranges.
+  * Changed implicit parenthesation order for power operator ^: 2^3^4 is now understood as 2^(3^4)
+  * Integers and binary representations are now read without rounding (see documentation for details)
+  * Added infty, @Inf@, nan, NaN, NAN, @NaN@ lexing/parsing capability
+
+
+Major new functionnalities:
+  * Remez' algorithm is now able to correctly handle cases where the Haar condition is not fulfilled
+  * Added fpminimax command (see documentation for details)
+  * Added ~ operator for evaluating constant expressions
+  * Added roundingwarnings mode (see documentation for details)
+
+
+Improvements in internal handling:
+  * Speeded up dirtyfindzeros when 0 is a zero of the function
+  * Improvement in execution speed of guessdegree
+
+
+Others:
+  * Fixes of many slight bugs and memory leaks
+  * Made Sollya compile under Cygwin (Sollya library untested)
+  * Removed dependance to PARI/GP
+  * New dependency to Damien Stehle's fplll library
+  * Added --help, --oldrlwrapcompatible, --nocolor and --noprompt command-line options
+  * Added check environment
+  * Added color printing
+
+
+
+
