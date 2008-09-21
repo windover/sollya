@@ -12247,6 +12247,8 @@ node *evaluateThingInner(node *tree) {
     mpfr_clear(a); mpfr_clear(b);
     mpfr_init2(a,pTemp);
     mpfr_init2(b,pTemp);
+    mpfr_set_str(a,str1,10,GMP_RNDD);
+    mpfr_set_str(b,str1,10,GMP_RNDU);    
     if (mpfr_cmp(a,b) != 0) {
       if (!noRoundingWarnings) {
 	printMessage(1,
