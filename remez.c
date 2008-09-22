@@ -288,7 +288,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
   node *iterator;
   node *temp1;
   mpfr_t u, v, x, xNew, temp, y, zero_mpfr;
-  mp_prec_t estim_prec;
+  int estim_prec;
   int r, nbr_iter,test, n_expo, sgnfu;
 
   sgnfu = sgnfa;
@@ -418,18 +418,23 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 	n_expo = 0; // since 0 does not lie in [u;v], n_expo is useless
 	mpfr_init2(temp,10);
 	mpfr_sub(temp,v,u,GMP_RNDN);
-	if(mpfr_cmp_abs(v,u)>0) estim_prec = mpfr_get_exp(temp) - mpfr_get_exp(u) - 1;
-	else estim_prec = mpfr_get_exp(temp) - mpfr_get_exp(v) - 1;
+	if(mpfr_cmp_abs(v,u)>0) estim_prec =  mpfr_get_exp(u) - mpfr_get_exp(temp) + 1;
+	else estim_prec = mpfr_get_exp(v) - mpfr_get_exp(temp)  + 1;
 	mpfr_clear(temp);
       }
     }
     else {
       if((!mpfr_zero_p(x)) && (!mpfr_zero_p(xNew))) {
-	if(mpfr_get_exp(x)!=mpfr_get_exp(xNew)) { 
+	if((mpfr_sgn(x) != mpfr_sgn(xNew)) || (mpfr_get_exp(x)!=mpfr_get_exp(xNew))) { 
 	  n_expo+= mpfr_get_exp(x)-mpfr_get_exp(xNew);
 	  estim_prec=1;
 	}
-	else estim_prec=estim_prec*2;
+	else { 
+	  mpfr_init2(temp, 10);
+	  mpfr_sub(temp, xNew, x, GMP_RNDU);
+	  if (mpfr_zero_p(temp)) estim_prec=prec+1;
+	  else estim_prec=(mpfr_get_exp(xNew)-mpfr_get_exp(temp))*2;
+	}
       }
     }
 
