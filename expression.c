@@ -917,10 +917,19 @@ char *sprintValue(mpfr_t *aValue) {
 	    for (i=0;i<(int)strlen(str3);i++) {
 	      str4[i] = str3[i];
 	      tempBuf = tempBufOld;
-	      if (e-1 == 0) 
-		tempBuf += sprintf(tempBuf,"%c.%s",*str4,str4+1);   
-	      else 
-		tempBuf += sprintf(tempBuf,"%c.%se%d",*str4,str4+1,(int)e-1);   
+	      if (e-1 == 0) {
+		if (strlen(str4) > 1) {
+		  tempBuf += sprintf(tempBuf,"%c.%s",*str4,str4+1);   
+		} else {
+		  tempBuf += sprintf(tempBuf,"%c",*str4);
+		}
+	      } else {
+		if (strlen(str4) > 1) {
+		  tempBuf += sprintf(tempBuf,"%c.%se%d",*str4,str4+1,(int)e-1);   
+		} else {
+		  tempBuf += sprintf(tempBuf,"%ce%d",*str4,(int)e-1);   
+		}
+	      }
 	      mpfr_set_str(temp,buffer,10,GMP_RNDN);
 	      if (mpfr_cmp(temp,*value) == 0) break;
 	    }

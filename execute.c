@@ -11239,7 +11239,7 @@ node *evaluateThingInner(node *tree) {
   node *copy, *tempNode, *tempNode2, *tempNode3;
   int *intptr;
   int resA, resB, i, resC, resD, resE;
-  char *tempString, *tempString2, *timingString, *tempString3;
+  char *tempString, *tempString2, *timingString, *tempString3, *tempString4, *tempString5;
   char *str1, *str2;
   mpfr_t a, b, c;
   chain *tempChain, *curr, *newChain, *tempChain2, *tempChain3;
@@ -11249,7 +11249,7 @@ node *evaluateThingInner(node *tree) {
   FILE *fd, *fd2;
   mpfr_t *tempMpfrPtr;
   mp_exp_t expo;
-  mp_prec_t pTemp;
+  mp_prec_t pTemp, pTemp2;
   int undoVariableTrick;
 
   if (tree == NULL) return NULL;
@@ -12197,37 +12197,73 @@ node *evaluateThingInner(node *tree) {
     break;  	  	
   case DECIMALCONSTANT:
     if (timingString != NULL) pushTimeCounter();
-    pTemp = 4 * strlen(tree->string) + 3324;
-    if (tools_precision > pTemp) pTemp = tools_precision;
-    mpfr_init2(a,pTemp);
-    mpfr_init2(b,pTemp);
-    mpfr_set_str(a,tree->string,10,GMP_RNDD);
-    mpfr_set_str(b,tree->string,10,GMP_RNDU);    
-    if (mpfr_cmp(a,b) != 0) {
-      pTemp = tools_precision;
-    }
-    mpfr_clear(a); mpfr_clear(b);
-    mpfr_init2(a,pTemp);
-    mpfr_init2(b,pTemp);
-    mpfr_set_str(a,tree->string,10,GMP_RNDD);
-    mpfr_set_str(b,tree->string,10,GMP_RNDU);    
-    if (mpfr_cmp(a,b) != 0) {
-      if (!noRoundingWarnings) {
-	printMessage(1,
-		     "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
-		     tree->string,(int) pTemp);
-	printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+    resA = 0;
+    tempString2 = strchr(tree->string,'%');
+    tempString3 = strrchr(tree->string,'%');
+    if ((tempString2 != NULL) &&
+	(tempString3 != NULL) &&
+	(tempString2 != tempString3) &&
+	(*(tempString2 + 1) != '\0') &&
+	(tempString3 != tree->string) &&
+	(*(tempString3 + 1) != '\0')) {
+      tempString = (char *) safeCalloc(strlen(tempString3 + 1) + 1, sizeof(char));
+      strcpy(tempString,tempString3 + 1);
+      tempString4 = (char *) safeCalloc(strlen(tempString2 + 1) + 1, sizeof(char));
+      tempString5 = tempString4;
+      tempString2++;
+      while ((*tempString2 != '\0') && (tempString2 != tempString3)) {
+	*tempString5 = *tempString2;
+	tempString5++; tempString2++;
       }
-      mpfr_set_str(a,tree->string,10,GMP_RNDN);
+      resB = atoi(tempString4);
+      free(tempString4);
+      if (resB < 12) {
+	printMessage(1,"Warning: the precision of values in the tool must be at least 12 bits.\n");
+	resB = 12;
+      }
+      pTemp = (mp_prec_t) resB;
+      pTemp2 = pTemp;
+      resA = 1;
+    } 
+    if (!resA) {
+      tempString = (char *) safeCalloc(strlen(tree->string) + 1, sizeof(char));
+      strcpy(tempString,tree->string);
+      pTemp = 4 * strlen(tempString) + 3324;
+      if (tools_precision > pTemp) pTemp = tools_precision;
+      pTemp2 = tools_precision;
+    } 
+    if (strchr(tempString,'%') == NULL) {
+      mpfr_init2(a,pTemp);
+      mpfr_init2(b,pTemp);
+      mpfr_set_str(a,tempString,10,GMP_RNDD);
+      mpfr_set_str(b,tempString,10,GMP_RNDU);    
+      if (mpfr_cmp(a,b) != 0) {
+	pTemp = pTemp2;
+      }
+      mpfr_clear(a); mpfr_clear(b);
+      mpfr_init2(a,pTemp);
+      mpfr_init2(b,pTemp);
+      mpfr_set_str(a,tempString,10,GMP_RNDD);
+      mpfr_set_str(b,tempString,10,GMP_RNDU);    
+      if (mpfr_cmp(a,b) != 0) {
+	if (!noRoundingWarnings) {
+	  printMessage(1,
+		       "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
+		       tempString,(int) pTemp);
+	  printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+	}
+	mpfr_set_str(a,tempString,10,GMP_RNDN);
+      }
+      mpfr_init2(c,pTemp);
+      if (!resA) simplifyMpfrPrec(c, a); else mpfr_set(c,a,GMP_RNDN);
+      tempNode = makeConstant(c);
+      mpfr_clear(c);
+      mpfr_clear(b);
+      mpfr_clear(a);
+      free(copy);
+      copy = tempNode;
     }
-    mpfr_init2(c,pTemp);
-    simplifyMpfrPrec(c, a);
-    tempNode = makeConstant(c);
-    mpfr_clear(c);
-    mpfr_clear(b);
-    mpfr_clear(a);
-    free(copy);
-    copy = tempNode;
+    free(tempString);
     if (timingString != NULL) popTimeCounter(timingString);
     break; 		
   case MIDPOINTCONSTANT:

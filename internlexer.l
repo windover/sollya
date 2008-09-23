@@ -74,7 +74,8 @@ NUMBER		[0-9]
 HEXNUMBER       (([0-9])|([ABCDEFabcdef]))
 SPECIAL         [_$§]
 
-CONSTANT        ((({NUMBER}+|({NUMBER}*"."{NUMBER}+))(((((" ")*)(([eE]))([+-])?{NUMBER}+)?)))|("infty"|"nan"|"NAN"|"NaN"|"@Inf@"|"@NaN@"))
+ACONSTANT        ((({NUMBER}+|({NUMBER}*"."{NUMBER}+))(((((" ")*)(([eE]))([+-])?{NUMBER}+)?)))|("infty"|"nan"|"NAN"|"NaN"|"@Inf@"|"@NaN@"))
+CONSTANT        ({ACONSTANT})|((("%")({NUMBER})({NUMBER}+)("%"))({ACONSTANT}))
 DYADICCONSTANT  ({NUMBER}+)([bB])([+-]?)({NUMBER}+)
 HEXCONSTANT     ("0x")({HEXNUMBER}{16}|{HEXNUMBER}{8})
 
