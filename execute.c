@@ -2080,7 +2080,6 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
     }
   }
   
-  freeThing(evaluatedResult);
   return 0;
 }
 
@@ -11571,10 +11570,27 @@ node *evaluateThingInner(node *tree) {
       if (timingString != NULL) pushTimeCounter();
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      if (evaluateThingToConstant(a,copy->child1,NULL) && 
-	  evaluateThingToConstant(b,copy->child2,NULL)) {
-	printMessage(2,"Information: inequality test relies on floating-point result.\n");
-	if (mpfr_cmp(a,b) < 0) {
+      if ((resA = evaluateThingToConstant(a,copy->child1,NULL)) && 
+	  (resB = evaluateThingToConstant(b,copy->child2,NULL))) {
+	if ((resA == 3) || (resB == 3)) 
+	  printMessage(1,"Warning: inequality test relies on floating-point result that is not faithfully evaluated.\n");
+	resC = (mpfr_cmp(a,b) < 0);
+	if ((resA == 1) || (resB == 1)) {
+	  if (resC) {
+	    /* a < b */
+	    if (resA == 1) mpfr_nextabove(a);
+	    if (resB == 1) mpfr_nextbelow(b);
+	  } else {
+	    /* a >= b */
+	    if (resA == 1) mpfr_nextbelow(a);
+	    if (resB == 1) mpfr_nextabove(b);
+	  }
+	  if ((mpfr_cmp(a,b) < 0) != resC) 
+	    printMessage(1,"Warning: inequality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+	  else 
+	    printMessage(2,"Information: inequality test relies on floating-point result.\n");
+	}
+	if (resC) {
 	  freeThing(copy);
 	  copy = makeTrue();		    
 	} else {
@@ -11597,10 +11613,27 @@ node *evaluateThingInner(node *tree) {
       if (timingString != NULL) pushTimeCounter();
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      if (evaluateThingToConstant(a,copy->child1,NULL) && 
-	  evaluateThingToConstant(b,copy->child2,NULL)) {
-	printMessage(2,"Information: inequality test relies on floating-point result.\n");
-	if (mpfr_cmp(a,b) > 0) {
+      if ((resA = evaluateThingToConstant(a,copy->child1,NULL)) && 
+	  (resB = evaluateThingToConstant(b,copy->child2,NULL))) {
+	if ((resA == 3) || (resB == 3)) 
+	  printMessage(1,"Warning: inequality test relies on floating-point result that is not faithfully evaluated.\n");
+	resC = (mpfr_cmp(a,b) > 0);
+	if ((resA == 1) || (resB == 1)) {
+	  if (resC) {
+	    /* a > b */
+	    if (resA == 1) mpfr_nextbelow(a);
+	    if (resB == 1) mpfr_nextabove(b);
+	  } else {
+	    /* a <= b */
+	    if (resA == 1) mpfr_nextabove(a);
+	    if (resB == 1) mpfr_nextbelow(b);
+	  }
+	  if ((mpfr_cmp(a,b) > 0) != resC) 
+	    printMessage(1,"Warning: inequality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+	  else 
+	    printMessage(2,"Information: inequality test relies on floating-point result.\n");
+	}
+	if (resC) {
 	  freeThing(copy);
 	  copy = makeTrue();		    
 	} else {
@@ -11623,10 +11656,27 @@ node *evaluateThingInner(node *tree) {
       if (timingString != NULL) pushTimeCounter();
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      if (evaluateThingToConstant(a,copy->child1,NULL) && 
-	  evaluateThingToConstant(b,copy->child2,NULL)) {
-	printMessage(2,"Information: inequality test relies on floating-point result.\n");
-	if (mpfr_cmp(a,b) <= 0) {
+      if ((resA = evaluateThingToConstant(a,copy->child1,NULL)) && 
+	  (resB = evaluateThingToConstant(b,copy->child2,NULL))) {
+	if ((resA == 3) || (resB == 3)) 
+	  printMessage(1,"Warning: inequality test relies on floating-point result that is not faithfully evaluated.\n");
+	resC = (mpfr_cmp(a,b) <= 0);
+	if ((resA == 1) || (resB == 1)) {
+	  if (resC) {
+	    /* a <= b */
+	    if (resA == 1) mpfr_nextabove(a);
+	    if (resB == 1) mpfr_nextbelow(b);
+	  } else {
+	    /* a > b */
+	    if (resA == 1) mpfr_nextbelow(a);
+	    if (resB == 1) mpfr_nextabove(b);
+	  }
+	  if ((mpfr_cmp(a,b) <= 0) != resC) 
+	    printMessage(1,"Warning: inequality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+	  else 
+	    printMessage(2,"Information: inequality test relies on floating-point result.\n");
+	}
+	if (resC) {
 	  freeThing(copy);
 	  copy = makeTrue();		    
 	} else {
@@ -11649,10 +11699,27 @@ node *evaluateThingInner(node *tree) {
       if (timingString != NULL) pushTimeCounter();
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      if (evaluateThingToConstant(a,copy->child1,NULL) && 
-	  evaluateThingToConstant(b,copy->child2,NULL)) {
-	printMessage(2,"Information: inequality test relies on floating-point result.\n");
-	if (mpfr_cmp(a,b) >= 0) {
+      if ((resA = evaluateThingToConstant(a,copy->child1,NULL)) && 
+	  (resB = evaluateThingToConstant(b,copy->child2,NULL))) {
+	if ((resA == 3) || (resB == 3)) 
+	  printMessage(1,"Warning: inequality test relies on floating-point result that is not faithfully evaluated.\n");
+	resC = (mpfr_cmp(a,b) >= 0);
+	if ((resA == 1) || (resB == 1)) {
+	  if (resC) {
+	    /* a >= b */
+	    if (resA == 1) mpfr_nextbelow(a);
+	    if (resB == 1) mpfr_nextabove(b);
+	  } else {
+	    /* a < b */
+	    if (resA == 1) mpfr_nextabove(a);
+	    if (resB == 1) mpfr_nextbelow(b);
+	  }
+	  if ((mpfr_cmp(a,b) >= 0) != resC) 
+	    printMessage(1,"Warning: inequality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+	  else 
+	    printMessage(2,"Information: inequality test relies on floating-point result.\n");
+	}
+	if (resC) {
 	  freeThing(copy);
 	  copy = makeTrue();		    
 	} else {
