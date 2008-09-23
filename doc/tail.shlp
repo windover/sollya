@@ -2,7 +2,7 @@
 #QUICK_DESCRIPTION gives the tail of a list.
 
 #CALLING $COMMAND(<L>)
-#TYPE $LIST_TYPE -> $ANY_TYPE
+#TYPE $LIST_TYPE -> $LIST_TYPE
 
 #PARAMETERS <L> is a list.
 
