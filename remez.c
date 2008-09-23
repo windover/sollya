@@ -423,7 +423,47 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 	mpfr_clear(temp);
       }
     }
-    else {
+    else { // xNew \in [u, v]
+      r = evaluateFaithfulWithCutOffFast(y, f, f_diff, xNew, zero_mpfr, prec); // y=f[xNew]
+
+      if((!mpfr_number_p(y)) && (r==1)) {
+	fprintf(stderr,"Warning: Newton's algorithm encountered numerical problems\n");
+	if(verbosity>=2) {
+	  changeToWarningMode();
+	  printf("The function "); printTree(f); printf(" seems to be undefined at this point: ");  printMpfr(xNew);
+	  restoreMode();
+	}
+
+	mpfr_set(res, xNew, GMP_RNDN);
+	free_memory(iterator);
+	mpfr_clear(x);
+	mpfr_clear(xNew);
+	mpfr_clear(y);
+	mpfr_clear(u);
+	mpfr_clear(v);
+	mpfr_clear(zero_mpfr);
+	return;
+      }
+      if ((r==0) || mpfr_zero_p(y)) { //y=[xNew] is an exact 0
+	printMessage(4,"Information: an exact zero has been found by Newton's algorithm\n");
+
+	mpfr_set(res, xNew, GMP_RNDN);
+	free_memory(iterator);
+	mpfr_clear(x);
+	mpfr_clear(xNew);
+	mpfr_clear(y);
+	mpfr_clear(u);
+	mpfr_clear(v);
+	mpfr_clear(zero_mpfr);
+	return;
+      }
+    
+      // Now y is a non-zero real number
+      if(mpfr_zero_p(y) || !mpfr_number_p(y))
+	fprintf(stderr, "This message means that there is a bug in Newton's algorithm. Please report.\n");
+      if(sgnfu==mpfr_sgn(y)) mpfr_set(u,xNew,GMP_RNDD);
+      else mpfr_set(v,xNew,GMP_RNDU);
+      
       if((!mpfr_zero_p(x)) && (!mpfr_zero_p(xNew))) {
 	if((mpfr_sgn(x) != mpfr_sgn(xNew)) || (mpfr_get_exp(x)!=mpfr_get_exp(xNew))) { 
 	  n_expo+= mpfr_get_exp(x)-mpfr_get_exp(xNew);
