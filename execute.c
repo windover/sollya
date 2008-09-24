@@ -11239,7 +11239,7 @@ node *evaluateThingInner(node *tree) {
   int *intptr;
   int resA, resB, i, resC, resD, resE;
   char *tempString, *tempString2, *timingString, *tempString3, *tempString4, *tempString5;
-  char *str1, *str2;
+  char *str1, *str2, *str3;
   mpfr_t a, b, c, d;
   chain *tempChain, *curr, *newChain, *tempChain2, *tempChain3;
   rangetype yrange, xrange, yrange2;
@@ -12338,6 +12338,17 @@ node *evaluateThingInner(node *tree) {
     str1 = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
     str2 = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
     cutMidpointStringIntoTwo(str1,str2,tree->string);
+    mpfr_init2(a,tools_precision);
+    mpfr_init2(b,tools_precision);
+    mpfr_set_str(a,str1,10,GMP_RNDD);
+    mpfr_set_str(b,str2,10,GMP_RNDU);    
+    if (mpfr_cmp(a,b) > 0) {
+      printMessage(1,"Warning: the range bounds are given in inverse order. Will revert them.\n");
+      str3 = str1;
+      str1 = str2;
+      str2 = str3;
+    }
+    mpfr_clear(a); mpfr_clear(b);
     pTemp = 4 * strlen(str1) + 3324;
     if (tools_precision > pTemp) pTemp = tools_precision;
     mpfr_init2(a,pTemp);
@@ -12363,8 +12374,6 @@ node *evaluateThingInner(node *tree) {
     }
     mpfr_init2(c,pTemp);
     simplifyMpfrPrec(c, a);
-    tempNode = makeConstant(c);
-    mpfr_clear(c);
     mpfr_clear(b);
     mpfr_clear(a);
     pTemp = 4 * strlen(str2) + 3324;
@@ -12390,10 +12399,12 @@ node *evaluateThingInner(node *tree) {
       }
       mpfr_set_str(a,str2,10,GMP_RNDU);
     }
-    mpfr_init2(c,pTemp);
-    simplifyMpfrPrec(c, a);
-    tempNode2 = makeConstant(c);
+    mpfr_init2(d,pTemp);
+    simplifyMpfrPrec(d, a);
+    tempNode = makeConstant(c);
+    tempNode2 = makeConstant(d);
     mpfr_clear(c);
+    mpfr_clear(d);
     mpfr_clear(b);
     mpfr_clear(a);
     tempNode3 = makeRange(tempNode,tempNode2);
