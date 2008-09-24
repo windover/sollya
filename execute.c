@@ -13420,7 +13420,13 @@ node *evaluateThingInner(node *tree) {
 	    mpfr_set(*(xrange.b),*(copy->child2->child2->value),GMP_RNDU);
 	    evaluateRangeFunction(yrange, copy->child1, xrange, pTemp);
 	    freeThing(copy);
-	    copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	    mpfr_init2(c,tools_precision);
+	    mpfr_init2(d,tools_precision);
+	    mpfr_set(c,*(yrange.a),GMP_RNDD);
+	    mpfr_set(d,*(yrange.b),GMP_RNDU);
+	    copy = makeRange(makeConstant(c),makeConstant(d));
+	    mpfr_clear(c);
+	    mpfr_clear(d);
 	    mpfr_clear(*(xrange.a));
 	    mpfr_clear(*(xrange.b));
 	    mpfr_clear(*(yrange.a));
