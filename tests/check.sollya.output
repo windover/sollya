@@ -1,4 +1,54 @@
 The tool has been restarted.
+[232;233]
+Warning: the range bounds are given in inverse order. Will revert them.
+[232;233]
+[0.11;0.12]
+[0.125;0.125]
+Warning: the range bounds are given in inverse order. Will revert them.
+[0.11;0.12]
+[0.11;0.190000000000000000000000000000000000000000000000004]
+Warning: the range bounds are given in inverse order. Will revert them.
+[0.11;0.190000000000000000000000000000000000000000000000004]
+Warning: the range bounds are given in inverse order. Will revert them.
+true
+Warning: the range bounds are given in inverse order. Will revert them.
+[-233;-232]
+[-233;-232]
+Warning: the range bounds are given in inverse order. Will revert them.
+[-0.12;-0.11]
+[-0.125;-0.125]
+[-0.12;-0.11]
+Warning: the range bounds are given in inverse order. Will revert them.
+[-0.190000000000000000000000000000000000000000000000004;-0.11]
+[-0.190000000000000000000000000000000000000000000000004;-0.11]
+Warning: the range bounds are given in inverse order. Will revert them.
+true
+Midpoint mode has been activated.
+0.23~2/3~e3
+Warning: the range bounds are given in inverse order. Will revert them.
+0.23~2/3~e3
+0.1~0/3~
+0.125~0/0~
+Warning: the range bounds are given in inverse order. Will revert them.
+0.1~0/3~
+[0.11;0.190000000000000000000000000000000000000000000000004]
+Warning: the range bounds are given in inverse order. Will revert them.
+[0.11;0.190000000000000000000000000000000000000000000000004]
+Warning: the range bounds are given in inverse order. Will revert them.
+true
+Warning: the range bounds are given in inverse order. Will revert them.
+-0.23~3/2~e3
+-0.23~3/2~e3
+Warning: the range bounds are given in inverse order. Will revert them.
+-0.1~3/0~
+-0.125~0/0~
+-0.1~3/0~
+Warning: the range bounds are given in inverse order. Will revert them.
+[-0.190000000000000000000000000000000000000000000000004;-0.11]
+[-0.190000000000000000000000000000000000000000000000004;-0.11]
+Warning: the range bounds are given in inverse order. Will revert them.
+true
+The tool has been restarted.
 4096
 Warning: the precision of values in the tool must be at least 12 bits.
 0.100006103515625
