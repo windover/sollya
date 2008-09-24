@@ -30,13 +30,26 @@ first argument <function> by interval evaluation on this range
 on the preimage domain <range> is surely enclosed in the returned
 range.
 
+#DESCRIPTION
+In the case when the second argument is a range that is reduced to a
+single point (such that §§[1;1]§$[1;\,1]$§§ for instance), the evaluation
+is performed in the same way as when the second argument is a constant but
+it produces a range as a result: $COMMAND automatically adjust the precision
+of the intern computations and returns a range that contains at most three
+consecutive numbers of precision $PREC. This correponds to the same accuracy
+as a faithful rounding of the actual result. If such a faithful rounding
+is not possible, $COMMAND has the same behavior as in the case when the
+second argument is a constant.
+
 #DESCRIPTION 
 If its second argument is a function <function2> that is not a
 constant, $COMMAND replaces all occurrences of the free variable in
 function <function> by function <function2>.
 
 #EXAMPLE
+midpointmode=on!;
 print(evaluate(sin(pi * x), 2.25));
+print(evaluate(sin(pi * x), [2.25; 2.25]));
 
 #EXAMPLE
 print(evaluate(sin(pi * x), 2));
