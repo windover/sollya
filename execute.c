@@ -11240,7 +11240,7 @@ node *evaluateThingInner(node *tree) {
   int resA, resB, i, resC, resD, resE;
   char *tempString, *tempString2, *timingString, *tempString3, *tempString4, *tempString5;
   char *str1, *str2;
-  mpfr_t a, b, c;
+  mpfr_t a, b, c, d;
   chain *tempChain, *curr, *newChain, *tempChain2, *tempChain3;
   rangetype yrange, xrange, yrange2;
   node *firstArg, *secondArg, *thirdArg, *fourthArg, *fifthArg, *sixthArg, *seventhArg, *eighthArg;
@@ -13352,27 +13352,73 @@ node *evaluateThingInner(node *tree) {
       } else {
 	if (isRange(copy->child2)) {
 	  if (timingString != NULL) pushTimeCounter();      
-	  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	  mpfr_init2(*(xrange.a),tools_precision);
-	  mpfr_init2(*(xrange.b),tools_precision);
-	  mpfr_init2(*(yrange.a),tools_precision);
-	  mpfr_init2(*(yrange.b),tools_precision);
-	  mpfr_set(*(xrange.a),*(copy->child2->child1->value),GMP_RNDD);
-	  mpfr_set(*(xrange.b),*(copy->child2->child2->value),GMP_RNDU);
-	  evaluateRangeFunction(yrange, copy->child1, xrange, tools_precision);
-	  freeThing(copy);
-	  copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
-	  mpfr_clear(*(xrange.a));
-	  mpfr_clear(*(xrange.b));
-	  mpfr_clear(*(yrange.a));
-	  mpfr_clear(*(yrange.b));
-	  free(xrange.a);
-	  free(xrange.b);
-	  free(yrange.a);
-	  free(yrange.b);
+	  resA = 0; pTemp = tools_precision;
+	  if (mpfr_cmp(*(copy->child2->child1->value),*(copy->child2->child2->value))==0) {
+	    mpfr_init2(a,tools_precision+1);
+	    if (evaluateFaithful(a, copy->child1, *(copy->child2->child1->value), tools_precision+1)) {
+	      mpfr_init2(b,mpfr_get_prec(a));
+	      mpfr_set(b,a,GMP_RNDN);
+	      mpfr_nextabove(b);
+	      mpfr_nextbelow(a);
+	      xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	      xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	      yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	      yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	      mpfr_init2(*(xrange.a),mpfr_get_prec(*(copy->child2->child1->value)));
+	      mpfr_init2(*(xrange.b),mpfr_get_prec(*(copy->child2->child2->value)));
+	      mpfr_init2(*(yrange.a),tools_precision+1);
+	      mpfr_init2(*(yrange.b),tools_precision+1);
+	      mpfr_set(*(xrange.a),*(copy->child2->child1->value),GMP_RNDD);
+	      mpfr_set(*(xrange.b),*(copy->child2->child2->value),GMP_RNDU);
+	      evaluateRangeFunction(yrange, copy->child1, xrange, tools_precision+1);
+	      if (mpfr_cmp(*(yrange.a),a) > 0) mpfr_set(a,*(yrange.a),GMP_RNDD);
+	      if (mpfr_cmp(*(yrange.b),b) < 0) mpfr_set(b,*(yrange.b),GMP_RNDU);
+	      mpfr_clear(*(xrange.a));
+	      mpfr_clear(*(xrange.b));
+	      mpfr_clear(*(yrange.a));
+	      mpfr_clear(*(yrange.b));
+	      free(xrange.a);
+	      free(xrange.b);
+	      free(yrange.a);
+	      free(yrange.b);
+	      freeThing(copy);
+	      mpfr_init2(c,tools_precision);
+	      mpfr_init2(d,tools_precision);
+	      mpfr_set(c,a,GMP_RNDD);
+	      mpfr_set(d,b,GMP_RNDU);
+	      copy = makeRange(makeConstant(c),makeConstant(d));
+	      mpfr_clear(c);
+	      mpfr_clear(d);
+	      resA = 1;
+	      mpfr_clear(b);
+	    } else {
+	      pTemp = 256 * tools_precision;
+	    }
+	    mpfr_clear(a);
+	  }
+	  if (!resA) {
+	    xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    mpfr_init2(*(xrange.a),pTemp);
+	    mpfr_init2(*(xrange.b),pTemp);
+	    mpfr_init2(*(yrange.a),pTemp);
+	    mpfr_init2(*(yrange.b),pTemp);
+	    mpfr_set(*(xrange.a),*(copy->child2->child1->value),GMP_RNDD);
+	    mpfr_set(*(xrange.b),*(copy->child2->child2->value),GMP_RNDU);
+	    evaluateRangeFunction(yrange, copy->child1, xrange, pTemp);
+	    freeThing(copy);
+	    copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	    mpfr_clear(*(xrange.a));
+	    mpfr_clear(*(xrange.b));
+	    mpfr_clear(*(yrange.a));
+	    mpfr_clear(*(yrange.b));
+	    free(xrange.a);
+	    free(xrange.b);
+	    free(yrange.a);
+	    free(yrange.b);
+	  }
 	  if (timingString != NULL) popTimeCounter(timingString);
 	}
       }
