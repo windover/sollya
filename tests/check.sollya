@@ -1,5 +1,25 @@
 /*********************************************************************************/
 restart; 
+midpointmode = on;
+evaluate(sin(x),3.5);
+evaluate(sin(x),[3.5;3.5]);
+evaluate(sin(x),3.4);
+evaluate(sin(x),[3.4;3.4]);
+evaluate(sin(pi * x),3.5);
+evaluate(sin(pi * x),[3.5;3.5]);
+evaluate(sin(pi * x),3.4);
+evaluate(sin(pi * x),[3.4;3.4]);
+evaluate(cos(x),3.5);
+evaluate(cos(x),[3.5;3.5]);
+evaluate(cos(x),3.4);
+evaluate(cos(x),[3.4;3.4]);
+evaluate(cos(pi * x),3.5);
+evaluate(cos(pi * x),[3.5;3.5]);
+evaluate(cos(pi * x),3.4);
+evaluate(cos(pi * x),[3.4;3.4]);
+
+/*********************************************************************************/
+restart; 
 23~2/3~;
 23~3/2~;
 0.1~1/2~;
