@@ -2739,7 +2739,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
     n++;
     firstStepContinuousMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
   }
-  popTimeCounter("finding an unpper bound for guessdegree");
+  popTimeCounter("finding an upper bound for guessdegree");
 
   /* Now, we are sure that n is sufficient to achieve eps in the continuous problem
      We return [n_max, n]; */
