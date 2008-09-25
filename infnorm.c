@@ -15,7 +15,7 @@ This software is a computer program whose purpose is to provide an
 environment for safe floating-point code development. It is
 particularily targeted to the automatized implementation of
 mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinite norm, an automatic polynomial
+it offers a certified infinity norm, an automatic polynomial
 implementer and a fast Remez algorithm.
 
 This software is governed by the CeCILL-C license under French law and
@@ -2853,7 +2853,7 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
   mpfr_init2(*(res.b),prec);
 
   if ((!mpfr_number_p(*(range.a))) || (!mpfr_number_p(*(range.b)))) {
-    printMessage(1,"Warning: the bounds of the range an infinite norm is to be computed on are not numbers.\n");
+    printMessage(1,"Warning: the bounds of the range an infinity norm is to be computed on are not numbers.\n");
     if (proof != NULL) {
       printMessage(1,"Warning: no proof will be generated.\n");
     }
@@ -3187,7 +3187,7 @@ int checkInfnormI(node *func, node *deriv, mpfi_t infnormval, mpfi_t range, mpfr
     /* Simple end case: the range to test is already smaller than diam but we could not check */
     if (verbosity >= 2) {
       changeToWarningMode();
-      printf("Information: could not check the infinite norm on the domain\n");
+      printf("Information: could not check the infinity norm on the domain\n");
       printInterval(range);
       printf("\nThe function evaluates here to\n");
       printInterval(evaluateOnRange);

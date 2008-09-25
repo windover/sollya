@@ -15,7 +15,7 @@ This software is a computer program whose purpose is to provide an
 environment for safe floating-point code development. It is
 particularily targeted to the automatized implementation of
 mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinite norm, an automatic polynomial
+it offers a certified infinity norm, an automatic polynomial
 implementer and a fast Remez algorithm.
 
 This software is governed by the CeCILL-C license under French law and
@@ -950,7 +950,7 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
     printMessage(2, "Performing an exchange step...\n");
     if (verbosity>=4) {
       changeToWarningMode();
-      printf("Computed infinite norm : "); printMpfr(maxi);
+      printf("Computed infinity norm : "); printMpfr(maxi);
       printf("Reached at point "); printMpfr(argmaxi);
       restoreMode();
     }
@@ -999,7 +999,7 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
       printMessage(2, "Failed to find pseudo-alternating points. Performing an exchange step...\n");
       if (verbosity>=4) {
 	changeToWarningMode();
-	printf("Computed infinite norm : "); printMpfr(maxi);
+	printf("Computed infinity norm : "); printMpfr(maxi);
 	printf("Reached at point "); printMpfr(argmaxi);
 	restoreMode();
       }
@@ -1024,9 +1024,9 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
 // Moreover, the quality of the approximation
 // (defined by abs(err_max)/abs(err_min) - 1 where err_min and err_max 
 // denote the minimal and maximal extrema in absolute value) is stored
-// in computedQuality and the infinite norm is stored in infiniteNorm
+// in computedQuality and the infinity norm is stored in infinityNorm
 // if these parameters are non NULL.
-int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
+int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
 		   node *poly, node *f, node *w,
 		   node **monomials_tree, mpfr_t *lambdai_vect, mpfr_t epsilon, int HaarCompliant,
 		   int freeDegrees, mpfr_t a, mpfr_t b, mp_prec_t prec) {
@@ -1337,7 +1337,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
   mpfr_set_d(max_val, 0., GMP_RNDN);
   mpfr_set_inf(min_val, 1);
 
-  if((computedQuality!=NULL) || (infiniteNorm != NULL)) {
+  if((computedQuality!=NULL) || (infinityNorm != NULL)) {
     for(i=1;i<=n;i++) {
       r = evaluateFaithfulWithCutOffFast(var_mpfr, error, error_diff, z[i-1], zero_mpfr, prec);
       if(r==0) mpfr_set_d(var_mpfr, 0., GMP_RNDN);
@@ -1352,7 +1352,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
   }
 
   if(computedQuality!=NULL) mpfr_set(computedQuality, var_mpfr, GMP_RNDU);
-  if(infiniteNorm!=NULL) mpfr_set(infiniteNorm, max_val, GMP_RNDU);
+  if(infinityNorm!=NULL) mpfr_set(infinityNorm, max_val, GMP_RNDU);
 
   if(verbosity>=3) {
     changeToWarningMode();
@@ -1390,7 +1390,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infiniteNorm, mpfr_t *x,
 node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t prec, mpfr_t quality) {
   int freeDegrees = lengthChain(monomials);
   int i,j, r, count, test, crash, HaarCompliant;
-  mpfr_t zero_mpfr, var1, var2, var3, computedQuality, infiniteNorm;
+  mpfr_t zero_mpfr, var1, var2, var3, computedQuality, infinityNorm;
   mpfr_t *ptr;
   node *temp_tree;
   node *temp_tree2;
@@ -1438,7 +1438,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   else mpfr_init2(computedQuality, prec);
 
   mpfr_set_inf(computedQuality, 1);
-  mpfr_init2(infiniteNorm, prec);
+  mpfr_init2(infinityNorm, prec);
 
   M = safeMalloc((freeDegrees+1)*(freeDegrees+1)*sizeof(mpfr_t));
   N = safeMalloc(freeDegrees*freeDegrees*sizeof(mpfr_t));
@@ -1762,7 +1762,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       // Find extremas and tests the quality of the current approximation
       pushTimeCounter();
 
-      crash = qualityOfError(computedQuality, infiniteNorm, x,
+      crash = qualityOfError(computedQuality, infinityNorm, x,
 			     poly, f, w,
 			     monomials_tree, lambdai_vect, ai_vect[freeDegrees], HaarCompliant,
 			     freeDegrees, u, v, prec);
@@ -1810,7 +1810,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 	free_memory(w_diff);
 	free_memory(w_diff2);
 	mpfr_clear(computedQuality);
-	mpfr_clear(infiniteNorm);
+	mpfr_clear(infinityNorm);
 
 	for(j=1; j <= freeDegrees+1 ; j++) {
 	  for(i=1; i<= freeDegrees+1; i++) {
@@ -1872,7 +1872,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
     mpfr_add_ui(computedQuality, computedQuality, 1, GMP_RNDU);
     mpfr_mul(computedQuality, computedQuality, ninf, GMP_RNDU);
-    mpfr_div(computedQuality, computedQuality, infiniteNorm, GMP_RNDU);
+    mpfr_div(computedQuality, computedQuality, infinityNorm, GMP_RNDU);
     mpfr_sub_ui(computedQuality, computedQuality, 1, GMP_RNDU);
 
     mpfr_clear(ninf);
@@ -1891,7 +1891,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   if(verbosity>=2) {
     changeToWarningMode();
     printf("Remez finished after %d steps\n",count);
-    printf("The computed infnorm is "); myPrintValue(&infiniteNorm, 53) ; printf("\n");
+    printf("The computed infnorm is "); myPrintValue(&infinityNorm, 53) ; printf("\n");
     printf("The polynomial is optimal within a factor 1 +/- "); myPrintValue(&computedQuality, 5); printf("\n");
     if(verbosity>=5) { printf("Computed poly: "); printTree(poly); printf("\n");}
     restoreMode();
@@ -1949,12 +1949,12 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   if (mpfr_cmp(computedQuality, quality)>0) {
     fprintf(stderr, "Error in Remez: the algorithm does not converge.\n");
     mpfr_clear(computedQuality);
-    mpfr_clear(infiniteNorm);
+    mpfr_clear(infinityNorm);
     recoverFromError();
   }
 
   mpfr_clear(computedQuality);
-  mpfr_clear(infiniteNorm);
+  mpfr_clear(infinityNorm);
 
   return poly;
 }
@@ -2022,7 +2022,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
   int res;
   
   int i,j, r, count, test, crash;
-  mpfr_t zero_mpfr, var1, var2, var3, computedQuality, infiniteNorm;
+  mpfr_t zero_mpfr, var1, var2, var3, computedQuality, infinityNorm;
   mpfr_t *ptr;
   mpfr_t *lambdai_vect;
   node *temp_tree;
@@ -2053,7 +2053,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
 
   mpfr_init2(computedQuality, prec);
   mpfr_set_inf(computedQuality, 1);
-  mpfr_init2(infiniteNorm, 53);
+  mpfr_init2(infinityNorm, 53);
 
   M = safeMalloc((freeDegrees+1)*(freeDegrees+1)*sizeof(mpfr_t));
   b = safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
@@ -2225,7 +2225,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
     
     
     // Find extremas and tests the quality of the current approximation
-    crash = qualityOfError(computedQuality, infiniteNorm, x,
+    crash = qualityOfError(computedQuality, infinityNorm, x,
 			   poly, f, w,
 			   monomials_tree, lambdai_vect, ai_vect[freeDegrees], 1,
 			   freeDegrees, u, v, prec);
@@ -2266,7 +2266,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
       free_memory(w_diff);
       free_memory(w_diff2);
       mpfr_clear(computedQuality);
-      mpfr_clear(infiniteNorm);
+      mpfr_clear(infinityNorm);
 
       freeChain(monomials,freeIntPtr);
 
@@ -2285,11 +2285,11 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
     }
 
   
-  if(mpfr_cmp(eps,infiniteNorm) >= 0) res=1;
+  if(mpfr_cmp(eps,infinityNorm) >= 0) res=1;
   else {
     mpfr_add_ui(computedQuality, computedQuality, 1, GMP_RNDU);
-    mpfr_div(infiniteNorm, infiniteNorm, computedQuality, GMP_RNDD);
-    if(mpfr_cmp(eps,infiniteNorm) < 0) res=-1;
+    mpfr_div(infinityNorm, infinityNorm, computedQuality, GMP_RNDD);
+    if(mpfr_cmp(eps,infinityNorm) < 0) res=-1;
     else res=0;
   }
 
@@ -2317,7 +2317,7 @@ int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int ver
   free_memory(w_diff);
   free_memory(w_diff2);
   mpfr_clear(computedQuality);
-  mpfr_clear(infiniteNorm);
+  mpfr_clear(infinityNorm);
   
   freeChain(monomials, freeIntPtr);
 

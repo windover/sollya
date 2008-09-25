@@ -1,7 +1,7 @@
 \subsection{infnorm}
 \label{labinfnorm}
 \noindent Name: \textbf{infnorm}\\
-computes an interval bounding the infinite norm of a function on an interval.\\
+computes an interval bounding the infinity norm of a function on an interval.\\
 
 \noindent Usage: 
 \begin{center}
@@ -16,14 +16,14 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{infnorm}(\emph{f},\emph{range}) computes an interval bounding the infinite norm of the 
+\item \textbf{infnorm}(\emph{f},\emph{range}) computes an interval bounding the infinity norm of the 
    given function $f$ on the interval $I$, e.g. computes an interval $J$
    such that $\max_{x \in I} \{|f(x)|\} \subseteq J$.
 
 \item If \emph{filename} is given, a proof in English will be produced (and stored in file
    called \emph{filename}) proving that  $\max_{x \in I} \{|f(x)|\} \subseteq J$.
 
-\item If a list \emph{IList} of intervals \emph{I1}, ... ,\emph{In} is given, the infinite norm will
+\item If a list \emph{IList} of intervals \emph{I1}, ... ,\emph{In} is given, the infinity norm will
    be computed on $I \ (I_1 \cup \dots \cup I_n)$.
 
 \item The function \emph{f} is assumed to be at least twice continuous on \emph{I}. More 
@@ -68,7 +68,7 @@ Parameters:
 \item The algorithm used for this command is quite complex to be explained here. 
    Please find a complete description in the following article:\\
         S. Chevillard and C. Lauter\\
-        A certified infinite norm for the implementation of elementary functions\\
+        A certified infinity norm for the implementation of elementary functions\\
         LIP Research Report number RR2007-26\\
         http://prunel.ccsd.cnrs.fr/ensl-00119810\\
 \end{itemize}

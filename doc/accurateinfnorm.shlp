@@ -1,26 +1,26 @@
 #NAME $ACCURATEINFNORM
-#QUICK_DESCRIPTION computes a faithful rounding of the infinite norm of a function 
+#QUICK_DESCRIPTION computes a faithful rounding of the infinity norm of a function 
 #CALLING $COMMAND(<function>,<range>,<constant>)
 #TYPE ($FUNCTION_TYPE, $RANGE_TYPE, $CONSTANT_TYPE) -> $CONSTANT_TYPE
 #CALLING $COMMAND(<function>,<range>,<constant>,<exclusion range 1>,...,<exclusion range n>)
 #TYPE ($FUNCTION_TYPE, $RANGE_TYPE, $CONSTANT_TYPE, $RANGE_TYPE, ..., $RANGE_TYPE) -> $CONSTANT_TYPE
 
-#PARAMETERS <function> represents the function whose infinite norm is to be computed
-#PARAMETERS <range> represents the infinite norm is to be considered on
+#PARAMETERS <function> represents the function whose infinity norm is to be computed
+#PARAMETERS <range> represents the infinity norm is to be considered on
 #PARAMETERS <constant> represents the number of bits in the significant of the result
 #PARAMETERS <exclusion range 1> through <exclusion range n> represent ranges to be excluded 
 
 #DESCRIPTION 
-The command $COMMAND computes an upper bound to the infinite norm of
+The command $COMMAND computes an upper bound to the infinity norm of
 function <function> in <range>. This upper bound is the least
-floating-point number greater than the value of the infinite norm that
+floating-point number greater than the value of the infinity norm that
 lies in the set of dyadic floating point numbers having <constant>
 significant mantissa bits. This means the value $COMMAND evaluates to
 is at the time an upper bound and a faithful rounding to <constant>
-bits of the infinite norm of function <function> on range <range>.
+bits of the infinity norm of function <function> on range <range>.
 §§ § §§
 If given, the fourth and further arguments of the command $COMMAND,
-<exclusion range 1> through <exclusion range n> the infinite norm of
+<exclusion range 1> through <exclusion range n> the infinity norm of
 the function <function> is not to be considered on.
 
 

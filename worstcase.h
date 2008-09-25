@@ -15,7 +15,7 @@ This software is a computer program whose purpose is to provide an
 environment for safe floating-point code development. It is
 particularily targeted to the automatized implementation of
 mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinite norm, an automatic polynomial
+it offers a certified infinity norm, an automatic polynomial
 implementer and a fast Remez algorithm.
 
 This software is governed by the CeCILL-C license under French law and

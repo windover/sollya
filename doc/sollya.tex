@@ -115,7 +115,7 @@ The following options are supported when calling \sollya:
 
 
 \section{Introduction}
-\sollya is an interactive tool for handling numerical functions and working with arbitrary precision. It can evaluate functions accurately, compute polynomial approximations of functions, automatically implement polynomials for use in math libraries, plot functions, compute infinite norms, etc. The language \sollya comes with is a full-featured script programming language with support for procedures etc. 
+\sollya is an interactive tool for handling numerical functions and working with arbitrary precision. It can evaluate functions accurately, compute polynomial approximations of functions, automatically implement polynomials for use in math libraries, plot functions, compute infinity norms, etc. The language \sollya comes with is a full-featured script programming language with support for procedures etc. 
 
 Let us begin this manual with an example. \sollya does not allow command line edition; since that may quickly become uncomfortable, we highly suggest to use the software \rlwrap with \sollya:
 
@@ -158,9 +158,9 @@ Let us finish this Section with a small complete example that shows a bit of wha
 % Warning: this file must be manually corrected: delete the extra ">"
 \input{introExample8}
 
-In this example, we define a function $f$, an interval $d$ and we compute the best degree-4 polynomial approximation of $f$ on $d$ with respect to the infinite norm. In other words, $\max_{x \in d} \{|p(x)-f(x)|\}$ is minimal amongst polynomials with degree not greater than $4$. Then, we compute the list of the zeros of the derivative of $p-f$ and add the bounds of $d$ to this list. Finally, we evaluate $|p-f|$ for each point in the list and store the maximum and the point where it is reached. We conclude by printing the result in a formatted way.
+In this example, we define a function $f$, an interval $d$ and we compute the best degree-4 polynomial approximation of $f$ on $d$ with respect to the infinity norm. In other words, $\max_{x \in d} \{|p(x)-f(x)|\}$ is minimal amongst polynomials with degree not greater than $4$. Then, we compute the list of the zeros of the derivative of $p-f$ and add the bounds of $d$ to this list. Finally, we evaluate $|p-f|$ for each point in the list and store the maximum and the point where it is reached. We conclude by printing the result in a formatted way.
 
-Note that you do not really need to use such a script for computing infinite norm; as we will see, the command \com{dirtyinfnorm} does this for you.
+Note that you do not really need to use such a script for computing infinity norm; as we will see, the command \com{dirtyinfnorm} does this for you.
 
 \section{General principles}
 The first goal of \sollya is to help people to use numerical functions and numerical algorithms in a safe way. It is first designed to be used interactively but it can also be used in scripts\footnote{Remark: some of the behaviors of \sollya slightly change when used in scripts. For example, no prompt is printed.}.

@@ -11,7 +11,7 @@
 
 #DESCRIPTION
 $COMMAND tries to find the minimal degree needed to approximate <f>
-on <I> by a polynomial with an infinite error not greater than <eps>.
+on <I> by a polynomial with an infinity norm not greater than <eps>.
 More precisely, it finds §§n§$n$§§ minimal such that there exists a
 polynomial §§p§$p$§§ of degree §§n§$n$§§ such that §§||p*w-f|| < eps§$\|pw-f\|_{\infty} < \mathrm{eps}$§§.
 

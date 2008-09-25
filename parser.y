@@ -15,7 +15,7 @@ This software is a computer program whose purpose is to provide an
 environment for safe floating-point code development. It is
 particularily targeted to the automatized implementation of
 mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinite norm, an automatic polynomial
+it offers a certified infinity norm, an automatic polynomial
 implementer and a fast Remez algorithm.
 
 This software is governed by the CeCILL-C license under French law and
@@ -2801,7 +2801,7 @@ help:                   CONSTANTTOKEN
 #ifdef HELP_ACCURATEINFNORM_TEXT
 			    outputMode(); printf(HELP_ACCURATEINFNORM_TEXT);
 #else
-			    outputMode(); printf("Faithful rounded infinite norm: accurateinfnorm(func,bits,range,domains to exclude).\n");
+			    outputMode(); printf("Faithful rounded infinity norm: accurateinfnorm(func,bits,range,domains to exclude).\n");
 #endif
                           }                 					               					       
                       | ROUNDTOFORMATTOKEN
@@ -2946,7 +2946,7 @@ help:                   CONSTANTTOKEN
 #ifdef HELP_INFNORM_TEXT
 			    outputMode(); printf(HELP_INFNORM_TEXT);
 #else
-			    outputMode(); printf("Certified infinite norm: infnorm(func,range[,prooffile[,list of funcs]]).\n");
+			    outputMode(); printf("Certified infinity norm: infnorm(func,range[,prooffile[,list of funcs]]).\n");
 #endif
                           }                 					                      					       
                       | FINDZEROSTOKEN
@@ -2970,7 +2970,7 @@ help:                   CONSTANTTOKEN
 #ifdef HELP_DIRTYINFNORM_TEXT
 			    outputMode(); printf(HELP_DIRTYINFNORM_TEXT);
 #else
-			    outputMode(); printf("Floating-point infinite norm: dirtyinfnorm(func,range).\n");
+			    outputMode(); printf("Floating-point infinity norm: dirtyinfnorm(func,range).\n");
 #endif
                           }                 					                 					       
                       | INTEGRALTOKEN
@@ -3011,7 +3011,7 @@ help:                   CONSTANTTOKEN
 #ifdef HELP_CHECKINFNORM_TEXT
 			    outputMode(); printf(HELP_CHECKINFNORM_TEXT);
 #else
-			    outputMode(); printf("Checks whether an infinite norm is bounded: checkinfnorm(func,range,constant).\n");
+			    outputMode(); printf("Checks whether an infinity norm is bounded: checkinfnorm(func,range,constant).\n");
 #endif
                           }                 					                 					       
                       | ZERODENOMINATORSTOKEN

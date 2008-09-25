@@ -1,5 +1,5 @@
 #NAME $DIRTYINFNORM
-#QUICK_DESCRIPTION computes a numerical approximation of the infinite norm of a function on an interval.
+#QUICK_DESCRIPTION computes a numerical approximation of the infinity norm of a function on an interval.
 
 #CALLING $COMMAND(<f>,<I>)
 #TYPE ($FUNCTION_TYPE, $RANGE_TYPE) -> $CONSTANT_TYPE
@@ -9,7 +9,7 @@
 
 
 #DESCRIPTION
-$COMMAND(<f>,<I>) computes an approximation of the infinite norm of the 
+$COMMAND(<f>,<I>) computes an approximation of the infinity norm of the 
 given function §§f§$f$§§ on the interval §§I§$I$§§, e.g. §§max {|f(x)|, x in I}§$\max_{x \in I} \{|f(x)|\}$§§.
 
 #DESCRIPTION
@@ -19,7 +19,7 @@ result of $COMMAND is NaN.
 #DESCRIPTION
 The result of this command depends on the global variables $PREC and $POINTS.
 Therefore, the returned result is generally a good approximation of the exact
-infinite norm, with precision $PREC. However, the result is generally 
+infinity norm, with precision $PREC. However, the result is generally 
 underestimated and should not be used when safety is critical.
 Use $INFNORM instead.
 

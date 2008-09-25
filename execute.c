@@ -15,7 +15,7 @@ This software is a computer program whose purpose is to provide an
 environment for safe floating-point code development. It is
 particularily targeted to the automatized implementation of
 mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinite norm, an automatic polynomial
+it offers a certified infinity norm, an automatic polynomial
 implementer and a fast Remez algorithm.
 
 This software is governed by the CeCILL-C license under French law and
@@ -1471,7 +1471,7 @@ char *getTimingStringForThing(node *tree) {
     constString = "computing a rational approximation";
     break; 			
   case ACCURATEINFNORM:
-    constString = "computing an accurate infinite norm";
+    constString = "computing an accurate infinity norm";
     break; 		
   case ROUNDTOFORMAT:
     constString = "rounding to a format";
@@ -1489,7 +1489,7 @@ char *getTimingStringForThing(node *tree) {
     constString = "executing a file";
     break; 			 	
   case INFNORM:
-    constString = "computing an infinite norm";
+    constString = "computing an infinity norm";
     break; 			
   case FINDZEROS:
     constString = "bounding zeros";
@@ -1498,7 +1498,7 @@ char *getTimingStringForThing(node *tree) {
     constString = "searching zeros";
     break; 			
   case DIRTYINFNORM:
-    constString = "computing an infinite norm dirtily";
+    constString = "computing an infinity norm dirtily";
     break; 			
   case INTEGRAL:
     constString = "computing an integral";
@@ -1510,7 +1510,7 @@ char *getTimingStringForThing(node *tree) {
     constString = "implementing a polynomial";
     break; 			
   case CHECKINFNORM:
-    constString = "checking an infinite norm";
+    constString = "checking an infinity norm";
     break; 			
   case ZERODENOMINATORS:
     constString = "searching zeros of denominators";

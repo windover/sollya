@@ -15,7 +15,7 @@ This software is a computer program whose purpose is to provide an
 environment for safe floating-point code development. It is
 particularily targeted to the automatized implementation of
 mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinite norm, an automatic polynomial
+it offers a certified infinity norm, an automatic polynomial
 implementer and a fast Remez algorithm.
 
 This software is governed by the CeCILL-C license under French law and
@@ -812,7 +812,7 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
   nextNumber++;
 
   fprintf(fd,"Theorem %d:\n",theo->number);
-  fprintf(fd,"Assuming that f is C^2, the infinite norm of\nf(%s) = ",variablename);
+  fprintf(fd,"Assuming that f is C^2, the infinity norm of\nf(%s) = ",variablename);
   fprintTree(fd,theo->function);
   fprintf(fd,"\nfor %s in ",variablename);
   if (theo->domain != NULL) fprintInterval(fd,*(theo->domain));
@@ -894,7 +894,7 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
   mpfi_get_left(l,*(theo->infnorm));
   mpfi_get_right(u,*(theo->infnorm));
   fprintValue(fd,u);
-  fprintf(fd," given for the infinite norm.\nTheorem(s) ");
+  fprintf(fd," given for the infinity norm.\nTheorem(s) ");
   curr = theo->evalOnZeros;
   while (curr != NULL) {
     if ((curr->next == NULL) && (curr != theo->evalOnZeros)) fprintf(fd,"and ");
@@ -960,7 +960,7 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
 	    innerRightNumber,variablename);
     fprintf(fd,"the value of f(%s) can principally as small as ",variablename);
     fprintValue(fd,fr);
-    fprintf(fd,".\nThe lower bound for the infinite norm on f(%s) in the given domain l = ",variablename);
+    fprintf(fd,".\nThe lower bound for the infinity norm on f(%s) in the given domain l = ",variablename);
     fprintValue(fd,l);
     fprintf(fd," is therefore the best lower bound that can be shown in this proof.\n");
   } else {
@@ -975,7 +975,7 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
 	    num,variablename);
     fprintf(fd,"the absolute value of f(%s) is not less than the lower bound l = ",variablename);
     fprintValue(fd,l);
-    fprintf(fd," given for the infinite norm.");
+    fprintf(fd," given for the infinity norm.");
   }
   fprintf(fd,"\n\n");
   mpfr_clear(a);

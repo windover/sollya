@@ -10,4 +10,4 @@ for t in derivativeZeros do {
    r = evaluate(abs(p-f), t);
    if r > max then { max=r; argmax=t; };
 };
-print("The infinite norm of", p-f, "is", max, "and is reached at", argmax);
+print("The infinity norm of", p-f, "is", max, "and is reached at", argmax);

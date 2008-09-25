@@ -1,5 +1,5 @@
 #NAME $INFNORM
-#QUICK_DESCRIPTION computes an interval bounding the infinite norm of a function on an interval.
+#QUICK_DESCRIPTION computes an interval bounding the infinity norm of a function on an interval.
 
 #CALLING $COMMAND(<f>,<I>,<filename>,<Ilist>)
 #TYPE ($FUNCTION_TYPE, $RANGE_TYPE, $STRING_TYPE, $LIST_TYPE) -> $RANGE_TYPE
@@ -12,7 +12,7 @@
 
 
 #DESCRIPTION
-$COMMAND(<f>,<range>) computes an interval bounding the infinite norm of the 
+$COMMAND(<f>,<range>) computes an interval bounding the infinity norm of the 
 given function §§f§$f$§§ on the interval §§I§$I$§§, e.g. computes an interval §§J§$J$§§
 such that §§max {|f(x)|, x in I} C J§$\max_{x \in I} \{|f(x)|\} \subseteq J$§§.
 
@@ -21,7 +21,7 @@ If <filename> is given, a proof in English will be produced (and stored in file
 called <filename>) proving that  §§max {|f(x)|, x in I} C J§$\max_{x \in I} \{|f(x)|\} \subseteq J$§§.
 
 #DESCRIPTION
-If a list <IList> of intervals <I1>, ... ,<In> is given, the infinite norm will
+If a list <IList> of intervals <I1>, ... ,<In> is given, the infinity norm will
 be computed on §§I \ (I1 U ... U I2)§$I \ (I_1 \cup \dots \cup I_n)$§§.
 
 #DESCRIPTION
@@ -71,7 +71,7 @@ not easy even to analyse.
 The algorithm used for this command is quite complex to be explained here. 
 Please find a complete description in the following article:§§§\\§§
      S. Chevillard and C. Lauter§§§\\§§
-     A certified infinite norm for the implementation of elementary functions§§§\\§§
+     A certified infinity norm for the implementation of elementary functions§§§\\§§
      LIP Research Report number RR2007-26§§§\\§§
      http://prunel.ccsd.cnrs.fr/ensl-00119810§§§\\§§
 
