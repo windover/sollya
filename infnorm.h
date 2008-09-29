@@ -83,4 +83,16 @@ int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutof
 int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec);
 
 int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec);
+
+void mpfi_pow(mpfi_t z, mpfi_t x, mpfi_t y);
+void special_mpfi_div(mpfi_t rop, mpfi_t a, mpfi_t b);
+void mpfi_round_to_double(mpfi_t rop, mpfi_t op);
+void mpfi_round_to_doubledouble(mpfi_t rop, mpfi_t op);
+void mpfi_round_to_tripledouble(mpfi_t rop, mpfi_t op);
+void mpfi_round_to_doubleextended(mpfi_t rop, mpfi_t op);
+void mpfi_erf(mpfi_t rop, mpfi_t op);
+void mpfi_erfc(mpfi_t rop, mpfi_t op);
+void mpfi_ceil(mpfi_t rop, mpfi_t op);
+void mpfi_floor(mpfi_t rop, mpfi_t op);
+
 #endif /* ifdef INFNORM_H*/

@@ -11250,6 +11250,7 @@ node *evaluateThingInner(node *tree) {
   mp_exp_t expo;
   mp_prec_t pTemp, pTemp2;
   int undoVariableTrick;
+  mpfi_t tempIA, tempIB, tempIC;
 
   if (tree == NULL) return NULL;
 
@@ -11272,114 +11273,809 @@ node *evaluateThingInner(node *tree) {
   case ADD:
     copy->child1 = evaluateThingInner(tree->child1);
     copy->child2 = evaluateThingInner(tree->child2);
+    if (isRange(copy->child1) && isRange(copy->child2)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      pTemp = mpfr_get_prec(*(copy->child2->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child2->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIB,pTemp);
+      mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_add(tempIC,tempIA,tempIB);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIB);
+      mpfi_clear(tempIC);
+    }
     break;
   case SUB:
     copy->child1 = evaluateThingInner(tree->child1);
     copy->child2 = evaluateThingInner(tree->child2);
+    if (isRange(copy->child1) && isRange(copy->child2)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      pTemp = mpfr_get_prec(*(copy->child2->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child2->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIB,pTemp);
+      mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_sub(tempIC,tempIA,tempIB);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIB);
+      mpfi_clear(tempIC);
+    }
     break;
   case MUL:
     copy->child1 = evaluateThingInner(tree->child1);
     copy->child2 = evaluateThingInner(tree->child2);
+    if (isRange(copy->child1) && isRange(copy->child2)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      pTemp = mpfr_get_prec(*(copy->child2->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child2->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIB,pTemp);
+      mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_mul(tempIC,tempIA,tempIB);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIB);
+      mpfi_clear(tempIC);
+    }
     break;
   case DIV:
     copy->child1 = evaluateThingInner(tree->child1);
     copy->child2 = evaluateThingInner(tree->child2);
+    if (isRange(copy->child1) && isRange(copy->child2)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      pTemp = mpfr_get_prec(*(copy->child2->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child2->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIB,pTemp);
+      mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      special_mpfi_div(tempIC,tempIA,tempIB);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIB);
+      mpfi_clear(tempIC);
+    }
     break;
   case SQRT:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_sqrt(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case EXP:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_exp(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case LOG:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_log(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case LOG_2:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_log2(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case LOG_10:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_log10(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case SIN:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_sin(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case COS:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_cos(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case TAN:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_tan(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case ASIN:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_asin(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case ACOS:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_acos(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case ATAN:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_atan(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case SINH:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_sinh(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case COSH:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_cosh(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case TANH:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_tanh(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case ASINH:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_asinh(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case ACOSH:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_acosh(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case ATANH:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_atanh(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case POW:
     copy->child1 = evaluateThingInner(tree->child1);
     copy->child2 = evaluateThingInner(tree->child2);
+    if (isRange(copy->child1) && isRange(copy->child2)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      pTemp = mpfr_get_prec(*(copy->child2->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child2->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIB,pTemp);
+      mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_pow(tempIC,tempIA,tempIB);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIB);
+      mpfi_clear(tempIC);
+    }
     break;
   case NEG:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_neg(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case ABS:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_abs(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case DOUBLE:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_round_to_double(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case DOUBLEDOUBLE:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_round_to_doubledouble(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case TRIPLEDOUBLE:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_round_to_tripledouble(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case ERF: 
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_erf(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case ERFC:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_erfc(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case LOG_1P:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_log1p(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case EXP_M1:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_expm1(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case DOUBLEEXTENDED:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_round_to_doubleextended(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case LIBRARYFUNCTION:
     copy->libFun = tree->libFun;
     copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      copy->libFun->code(tempIC, tempIA, copy->libFunDeriv);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case CEIL:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_ceil(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case FLOOR:
     copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_floor(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
     break;
   case PI_CONST:
     break;
@@ -12064,7 +12760,8 @@ node *evaluateThingInner(node *tree) {
       tempNode = makeVariable();
     }
     free(copy);
-    copy = tempNode;
+    copy = evaluateThingInner(tempNode);
+    freeThing(tempNode);
     if (timingString != NULL) popTimeCounter(timingString);
     break;  		
   case ISBOUND:
@@ -12129,9 +12826,37 @@ node *evaluateThingInner(node *tree) {
 	  copy = substitute(tempNode, tempNode2);
 	  freeThing(tempNode2);
 	} else {
-	  copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
-	  copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
-	  strcpy(copy->string,tree->string);
+	  mpfr_init2(a,tools_precision);
+	  mpfr_init2(b,tools_precision);
+	  if (evaluateThingToRange(a,b,(node *) (tree->arguments->value))) {
+	    xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    mpfr_init2(*(xrange.a),mpfr_get_prec(a));
+	    mpfr_init2(*(xrange.b),mpfr_get_prec(b));
+	    mpfr_init2(*(yrange.a),tools_precision);
+	    mpfr_init2(*(yrange.b),tools_precision);
+	    mpfr_set(*(xrange.a),a,GMP_RNDD);
+	    mpfr_set(*(xrange.b),b,GMP_RNDU);
+	    evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	    free(copy);
+	    copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	    mpfr_clear(*(xrange.a));
+	    mpfr_clear(*(xrange.b));
+	    mpfr_clear(*(yrange.a));
+	    mpfr_clear(*(yrange.b));
+	    free(xrange.a);
+	    free(xrange.b);
+	    free(yrange.a);
+	    free(yrange.b);
+	  } else { 
+	    copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+	    copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+	    strcpy(copy->string,tree->string);
+	  }
+	  mpfr_clear(a);
+	  mpfr_clear(b);
 	}
       } else {
 	copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
@@ -12208,8 +12933,36 @@ node *evaluateThingInner(node *tree) {
 	  copy = substitute(tempNode, tempNode2);
 	  freeThing(tempNode2);
 	} else {
-	  copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
-	  copy->child1 = copyThing(tempNode);
+	  mpfr_init2(a,tools_precision);
+	  mpfr_init2(b,tools_precision);
+	  if (evaluateThingToRange(a,b,(node *) (tree->arguments->value))) {
+	    xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    mpfr_init2(*(xrange.a),mpfr_get_prec(a));
+	    mpfr_init2(*(xrange.b),mpfr_get_prec(b));
+	    mpfr_init2(*(yrange.a),tools_precision);
+	    mpfr_init2(*(yrange.b),tools_precision);
+	    mpfr_set(*(xrange.a),a,GMP_RNDD);
+	    mpfr_set(*(xrange.b),b,GMP_RNDU);
+	    evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	    free(copy);
+	    copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	    mpfr_clear(*(xrange.a));
+	    mpfr_clear(*(xrange.b));
+	    mpfr_clear(*(yrange.a));
+	    mpfr_clear(*(yrange.b));
+	    free(xrange.a);
+	    free(xrange.b);
+	    free(yrange.a);
+	    free(yrange.b);
+	  } else { 
+	    copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+	    copy->child1 = copyThing(tempNode);
+	  }
+	  mpfr_clear(a);
+	  mpfr_clear(b);
 	}
       } else {
 	  copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
