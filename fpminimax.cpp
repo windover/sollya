@@ -498,7 +498,7 @@ node *FPminimaxMain(node *f,
   int dim = lengthChain(monomials);
   int nbpoints = lengthChain(points);
   node *res;
-  mpfr_t zero_mpfr, var1, var2, var3, max, tempMpfr;
+  mpfr_t zero_mpfr, var1, var2, var3, max;
   node * temp_tree, *temp_tree2, *temp_tree3; 
   mpfr_t *ptr;
   mpfr_t *M;
@@ -712,7 +712,7 @@ node *FPminimaxMain(node *f,
 
       // We check that the precision is sufficient to represent exactly the coefficient
       if( (!mpfr_zero_p(mpfr_coefficients[j-1])) &&
-	  (mpfr_get_exp(mpfr_coefficients[j-1]) > mpfr_get_prec(mpfr_coefficients[j-1]))
+	  (mpfr_get_exp(mpfr_coefficients[j-1]) > (int)mpfr_get_prec(mpfr_coefficients[j-1]))
 	  ) {
 	mpfr_set_prec(mpfr_coefficients[j-1], mpfr_get_exp(mpfr_coefficients[j-1]));
 	mpfr_set_q(mpfr_coefficients[j-1], coefficients[j-1], GMP_RNDN);

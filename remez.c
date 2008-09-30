@@ -478,7 +478,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
       }
     }
 
-    if ( ((n!=0) && (nbr_iter==n)) || mpfr_equal_p(x,xNew) || (n_expo>2*(int)prec) || (estim_prec>prec)) test=0;
+    if ( ((n!=0) && (nbr_iter==n)) || mpfr_equal_p(x,xNew) || (n_expo>2*(int)prec) || (estim_prec>(int)prec)) test=0;
 
     if(n_expo>=32) {
       mpfr_set(x,xNew,GMP_RNDN);
