@@ -2011,462 +2011,6 @@ node *remez(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mpfr
 }
 
 
-// returns 1 if deg is sufficient to approximate the function to eps
-// returns -1 if deg is not sufficient
-// 0 if we cannot determine.
-int whichPoly(int deg, node *f, node *w, mpfr_t u, mpfr_t v, mpfr_t eps, int verb, int npoints) {
-  mp_prec_t prec = defaultprecision;
-  int freeDegrees = deg+1;
-  chain *monomials;
-  int *var;
-  int res;
-  
-  int i,j, r, count, test, crash;
-  mpfr_t zero_mpfr, var1, var2, var3, computedQuality, infinityNorm;
-  mpfr_t *ptr;
-  mpfr_t *lambdai_vect;
-  node *temp_tree;
-  node *temp_tree2;
-  node *temp_tree3;
-  node *poly;
-  node *poly_diff;
-  node *poly_diff2;
-  node *f_diff;
-  node *f_diff2;
-  node *w_diff;
-  node *w_diff2;
-  chain *curr;
-  node **monomials_tree;
-  mpfr_t *x;
-  mpfr_t *M;
-  mpfr_t *b;
-  mpfr_t *ai_vect;
-
-
-  // Initialisations and precomputations
-  mpfr_init2(var1, prec);
-  mpfr_init2(var2, prec);
-  mpfr_init2(var3, prec);
-
-  mpfr_init2(zero_mpfr, 53);
-  mpfr_set_d(zero_mpfr, 0., GMP_RNDN);
-
-  mpfr_init2(computedQuality, prec);
-  mpfr_set_inf(computedQuality, 1);
-  mpfr_init2(infinityNorm, 53);
-
-  M = safeMalloc((freeDegrees+1)*(freeDegrees+1)*sizeof(mpfr_t));
-  b = safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
-  ai_vect = safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
-  x = safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
-  
-  lambdai_vect = safeMalloc((freeDegrees+1)*sizeof(mpfr_t));
-
-  for(j=1; j <= freeDegrees+1 ; j++) {
-    for(i=1; i<= freeDegrees+1; i++) {
-      mpfr_init2(M[coeff(i,j,freeDegrees+1)],prec);
-    }
-    mpfr_init2(b[j-1], prec);
-    mpfr_init2(ai_vect[j-1], prec);
-    mpfr_init2(x[j-1], prec);
-  }
-
-  i=-1;
-  for(j=freeDegrees+1; j >= 1 ; j--) {
-    mpfr_init2(lambdai_vect[j-1], prec);
-    mpfr_set_si(lambdai_vect[j-1],i, GMP_RNDN);
-    i=-i;
-  }
-
-  f_diff = differentiate(f);
-  f_diff2 = differentiate(f_diff);
-  w_diff = differentiate(w);
-  w_diff2 = differentiate(w_diff);
- 
-  monomials=NULL;
-  for(i=0;i<=deg;i++) {
-    var = safeMalloc(sizeof(int));
-    *var = i;
-    monomials = addElement(monomials, (void *)var);
-  }
-
-
-  monomials_tree = safeMalloc(freeDegrees*sizeof(node *));
-  curr = monomials;
-  for(j=0;j<freeDegrees;j++) {
-    temp_tree = safeMalloc(sizeof(node));
-    temp_tree->nodeType = VARIABLE;
-    temp_tree2 = safeMalloc(sizeof(node));
-    temp_tree2->nodeType = CONSTANT;
-    ptr = safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*ptr, prec);
-    mpfr_set_si(*ptr, (long) (*((int *)(curr->value))), GMP_RNDN);
-    temp_tree2->value = ptr;
-    
-    temp_tree3 = safeMalloc(sizeof(node));
-    temp_tree3->nodeType = POW;
-    temp_tree3->child1 = temp_tree;
-    temp_tree3->child2 = temp_tree2;
-
-    monomials_tree[j] = temp_tree3;
-    curr=curr->next;
-  }
-
-
-  count = 0;
-
-  // Definition of the array x of the n+2 Chebychev points
-
-
-  /*************************************************************/
-  mpfr_const_pi(var1, GMP_RNDN);
-  mpfr_div_si(var1, var1, (long)freeDegrees, GMP_RNDN); // var1 = Pi/freeDegrees
-  mpfr_sub(var2, u, v, GMP_RNDN);
-  mpfr_div_2ui(var2, var2, 1, GMP_RNDN); // var2 = (u-v)/2
-  mpfr_add(var3, u, v, GMP_RNDN);
-  mpfr_div_2ui(var3, var3, 1, GMP_RNDN); // var3 = (u+v)/2
-
-  for (i=1 ; i <= freeDegrees+1 ; i++) {
-    mpfr_mul_si(x[i-1], var1, i-1, GMP_RNDN);
-    mpfr_cos(x[i-1], x[i-1], GMP_RNDN);
-    mpfr_fma(x[i-1], x[i-1], var2, var3, GMP_RNDN); // x_i = [cos((i-1)*Pi/freeDegrees)]*(u-v)/2 + (u+v)/2
-  }
-  /*************************************************************/
-
-
-  /*************************************************************/
-  /*                 Evenly distributed points                 */
-  //x = cgetg(freeDegrees + 2, t_COL);
-  //mpfr_sub(x[i-1], v, u, GMP_RNDN);
-  //mpfr_div_si(x[i-1], x[i-1], (long)(freeDegrees), GMP_RNDN); // x_i = (v-u)/freeDegrees
-  //
-  //for (i=1 ; i <= freeDegrees+1 ; i++) {
-  //  mpfr_mul_si(x[i-1], x[i-1], i-1, GMP_RNDN);
-  //  mpfr_add(x[i-1], x[i-1], u, GMP_RNDN);
-  //}
-  /*************************************************************/
-
-
-  /*************************************************************/
-  /*                  Alternative Cheb points                  */
-  //x = cgetg(freeDegrees + 2, t_COL);
-  //mpfr_const_pi(var1, GMP_RNDN);
-  //mpfr_div_si(var1, var1, 2*((long)freeDegrees+1), GMP_RNDN); // var1 = Pi/(2*freeDegrees+2)
-  //mpfr_sub(var2, u, v, GMP_RNDN);
-  //mpfr_div_2ui(var2, var2, 1, GMP_RNDN); // var2 = (u-v)/2
-  //mpfr_add(var3, u, v, GMP_RNDN);
-  //mpfr_div_2ui(var3, var3, 1, GMP_RNDN); // var3 = (u+v)/2
-
-  //for (i=1 ; i <= freeDegrees+1 ; i++) {
-  //  mpfr_mul_si(x[i-1], var1, 2*i-1, GMP_RNDN);
-  //  mpfr_cos(x[i-1], x[i-1], GMP_RNDN);
-  //  mpfr_fma(x[i-1], x[i-1], var2, var3, GMP_RNDN); // x_i=[cos((2i-1)*Pi/(2freeDegrees+2))]*(u-v)/2 + (u+v)/2
-  //}
-  /*************************************************************/
-  
-    // Definition of the matrix M of Remez algorithm
-    for (i=1 ; i <= freeDegrees+1 ; i++) {
-      r = evaluateFaithfulWithCutOffFast(var1, w, NULL, x[i-1], zero_mpfr, prec);
-      if((r==1) && (mpfr_number_p(var1))) test=1;
-      else test=0;
-		 
-      for (j=1 ; j <= freeDegrees ; j++) {
-	if(test==1) {
-	  r = evaluateFaithfulWithCutOffFast(var2, monomials_tree[j-1], NULL, x[i-1], zero_mpfr, prec);
-	  if((r==1) && (mpfr_number_p(var2))) {
-	    mpfr_mul(var2, var1, var2, GMP_RNDN);
-	    mpfr_set(M[coeff(i,j,freeDegrees+1)],var2,GMP_RNDN);
-	  }
-	}
-	if((test==0) || (r==0) || (!mpfr_number_p(var2))) {
-	  printMessage(2,"Information: the construction of M[%d,%d] uses a slower algorithm\n",i,j);
-	  temp_tree = safeMalloc(sizeof(node));
-	  temp_tree->nodeType = MUL;
-	  temp_tree->child1 = copyTree(monomials_tree[j-1]);
-	  temp_tree->child2 = copyTree(w);
-	  
-	  temp_tree2 = simplifyTreeErrorfree(temp_tree);
-	  free_memory(temp_tree);
-	  temp_tree = temp_tree2; // temp_tree = x^(monomials[j])*w(x)
-	  
-	  r = evaluateFaithfulWithCutOffFast(var3, temp_tree, NULL, x[i-1], zero_mpfr, prec);
-	  if(r==0) mpfr_set_d(var3, 0., GMP_RNDN);
-	  mpfr_set(M[coeff(i,j,freeDegrees+1)],var3,GMP_RNDN);
-
-	  free_memory(temp_tree);
-	}
-      }
-    }
-
-    for (i=1 ; i <= freeDegrees+1 ; i++) {
-      mpfr_set_si(M[coeff(i, freeDegrees+1, freeDegrees+1)], (i % 2)*2-1,GMP_RNDN);
-    }
-
-        
-    // Determination of the polynomial corresponding to M and x
-    for (i=1 ; i <= freeDegrees+1 ; i++) {
-      r = evaluateFaithfulWithCutOffFast(var1, f, NULL, x[i-1], zero_mpfr, prec); // var1=f(x_i)
-      if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
-
-      mpfr_set(b[i-1],var1,GMP_RNDN);
-    }
-
-    system_solve(ai_vect, M, b, freeDegrees+1, prec);
-    poly = constructPolynomial(ai_vect, monomials, prec);
-
-
-    // Computing the useful derivatives of functions
-    temp_tree = horner(poly);
-    free_memory(poly);
-    poly = temp_tree;
-
-    poly_diff = differentiate(poly);
-    poly_diff2 = differentiate(poly_diff);
-    
-    
-    // Find extremas and tests the quality of the current approximation
-    crash = qualityOfError(computedQuality, infinityNorm, x,
-			   poly, f, w,
-			   monomials_tree, lambdai_vect, ai_vect[freeDegrees], 1,
-			   freeDegrees, u, v, prec);
-    
-    if(crash==-1) {
-      verbosity=verb;
-      defaultpoints=npoints;
-      printMessage(1, "Warning: the function fails to oscillate enough.\n");
-      printMessage(1, "Try to increase precision.\n");
-      if (verbosity>=2) {
-	changeToWarningMode();
-	printf("The computed polynomial was: ");printTree(poly);
-	printf("\n");
-	restoreMode();
-      }
-
-      for(j=0;j<freeDegrees;j++) {
-	free_memory(monomials_tree[j]);
-      }
-      free(monomials_tree);
-
-      for(j=1;j<=freeDegrees+1;j++) {
-	mpfr_clear(lambdai_vect[j-1]);
-	mpfr_clear(x[j-1]);
-      }
-      free(x);
-      free(lambdai_vect);
-
-      free_memory(poly);
-      free_memory(poly_diff);
-      free_memory(poly_diff2);
-      mpfr_clear(zero_mpfr);
-      mpfr_clear(var1);
-      mpfr_clear(var2);
-      mpfr_clear(var3);
-      free_memory(f_diff);
-      free_memory(f_diff2);
-      free_memory(w_diff);
-      free_memory(w_diff2);
-      mpfr_clear(computedQuality);
-      mpfr_clear(infinityNorm);
-
-      freeChain(monomials,freeIntPtr);
-
-      for(j=1; j <= freeDegrees+1 ; j++) {
-	for(i=1; i<= freeDegrees+1; i++) {
-	  mpfr_clear(M[coeff(i,j,freeDegrees+1)]);
-	}
-	mpfr_clear(b[j-1]);
-	mpfr_clear(ai_vect[j-1]);
-      }
-      free(M);
-      free(b);
-      free(ai_vect);
-
-      recoverFromError();
-    }
-
-  
-  if(mpfr_cmp(eps,infinityNorm) >= 0) res=1;
-  else {
-    mpfr_add_ui(computedQuality, computedQuality, 1, GMP_RNDU);
-    mpfr_div(infinityNorm, infinityNorm, computedQuality, GMP_RNDD);
-    if(mpfr_cmp(eps,infinityNorm) < 0) res=-1;
-    else res=0;
-  }
-
-  
-  for(j=0;j<freeDegrees;j++) {
-    free_memory(monomials_tree[j]);
-  }
-  free(monomials_tree);
-  
-  for(j=1;j<=freeDegrees+1;j++) {
-    mpfr_clear(lambdai_vect[j-1]);
-    mpfr_clear(x[j-1]);
-  }
-  free(x);
-  free(lambdai_vect);
-  free_memory(poly);
-  free_memory(poly_diff);
-  free_memory(poly_diff2);
-  mpfr_clear(zero_mpfr);
-  mpfr_clear(var1);
-  mpfr_clear(var2);
-  mpfr_clear(var3);
-  free_memory(f_diff);
-  free_memory(f_diff2);
-  free_memory(w_diff);
-  free_memory(w_diff2);
-  mpfr_clear(computedQuality);
-  mpfr_clear(infinityNorm);
-  
-  freeChain(monomials, freeIntPtr);
-
-  for(j=1; j <= freeDegrees+1 ; j++) {
-    for(i=1; i<= freeDegrees+1; i++) {
-      mpfr_clear(M[coeff(i,j,freeDegrees+1)]);
-    }
-    mpfr_clear(b[j-1]);
-    mpfr_clear(ai_vect[j-1]);
-  }
-  free(M);
-  free(b);
-  free(ai_vect);
-  
-  return res;
-}
-
-rangetype oldguessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) {
-  int n_min=1;
-  int n_max=10;
-  int res=-1;
-  int test=1;
-  rangetype range;
-  mpfr_t *u;
-  mpfr_t *v;
-  int old_verbosity = verbosity;
-  verbosity = 0;
-  int number_points = defaultpoints;
-  defaultpoints = 5;
-
-  while(res==-1 && (n_max < 100)) {
-    res = whichPoly(n_max, func, weight, a, b, eps, old_verbosity, number_points);
-    if(res==-1) {
-      n_min=n_max;
-      n_max = n_max*2;
-    }
-    else {
-      if(res==0) {
-	n_max=n_max*2;
-      }
-    }
-  }
-  
-  // This case shouldn't happen...
-  if (n_max >=100) {
-    fprintf(stderr, "Warning in guessdegree: the result may be not trustable\n");
-    res = -1;
-    while(res<0 && (n_min <= 100)) {
-      n_min++;
-      res = whichPoly(n_min,func,weight,a,b,eps, old_verbosity, number_points);
-    }
-
-    u = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
-    v = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*u,defaultprecision);
-    mpfr_init2(*v,defaultprecision);
-    if (res<0) mpfr_set_inf(*u,1);
-    else mpfr_set_ui(*u, n_min, GMP_RNDN);
-    mpfr_set_inf(*v, 1);
-    range.a = u;
-    range.b = v;
-    defaultpoints=number_points;
-    verbosity = old_verbosity;
-    return range;
-  }
-  // else...
-
-  while(test && (n_max-n_min > 1)) {
-    res = whichPoly((n_min+n_max)/2, func, weight, a, b, eps, old_verbosity, number_points);
-    if(res==1) n_max=(n_min+n_max)/2;
-    else {
-      if(res==-1) n_min=(n_min+n_max)/2;
-      else test=0;
-    }
-  }
-
-  if(test) n_min=n_max;
-  else {
-    res=0;
-    n_min = (n_min+n_max)/2;
-    n_max = n_min;
-    while(res!=-1) {
-      n_min--;
-      res = whichPoly(n_min,func,weight,a,b,eps, old_verbosity, number_points);
-    }
-    n_min = n_min + 1;
-    res=0;
-    while(res!=1) {
-      n_max++;
-      res = whichPoly(n_max,func,weight,a,b,eps, old_verbosity, number_points);
-    }
-  }
-  
-  u = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
-  v = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
-  mpfr_init2(*u,defaultprecision);
-  mpfr_init2(*v,defaultprecision);
-  mpfr_set_ui(*u, n_min, GMP_RNDN);
-  mpfr_set_ui(*v, n_max, GMP_RNDN);
-  range.a = u;
-  range.b = v;
-  defaultpoints=number_points;
-  verbosity = old_verbosity;
-  return range;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2515,6 +2059,43 @@ mpfr_t *chebychevsPoints(mpfr_t u, mpfr_t v, int p, mp_prec_t *currentPrec) {
   return x;
 }
 
+
+/* Random pertubration of the points... */
+/* There is p points : x0 ... x(p-1)    */
+void perturbPoints(mpfr_t *x, int p, mp_prec_t *currentPrec) {
+  mpfr_t perturb;
+  mpfr_t var1, var2, var3;
+  int i;
+  gmp_randstate_t random_state;
+
+  gmp_randinit_default(random_state);
+  gmp_randseed_ui(random_state, 65845285);
+
+  mpfr_init2(perturb, *currentPrec);
+  mpfr_init2(var1, *currentPrec);
+  mpfr_init2(var2, *currentPrec);
+  mpfr_init2(var3, *currentPrec);
+
+  for(i=1;i<=p-2;i++) {
+    mpfr_urandomb(perturb, random_state);
+    mpfr_mul_2ui(perturb, perturb, 1, GMP_RNDN);
+    mpfr_sub_ui(perturb, perturb, 1, GMP_RNDN);
+    mpfr_div_2ui(perturb, perturb, 2, GMP_RNDN); // perturb \in [-1/4; 1/4]
+
+    mpfr_sub(var1, x[i], x[i-1], GMP_RNDN);
+    mpfr_sub(var2, x[i+1], x[i], GMP_RNDN);
+    if (mpfr_cmpabs(var1,var2)>0) mpfr_mul(var3, var2, perturb, GMP_RNDN);
+    else mpfr_mul(var3, var1, perturb, GMP_RNDN);
+    mpfr_add(x[i], x[i], var3, GMP_RNDN);
+  }
+
+  gmp_randclear(random_state);
+  mpfr_clear(perturb);
+  mpfr_clear(var1);
+  mpfr_clear(var2);
+  mpfr_clear(var3);
+  return;
+}
 
 mpfr_t *remezMatrix(node *w, mpfr_t *x, node **monomials_tree, int n, mp_prec_t *currentPrec) {
   mpfr_t var1, var2, var3, zero_mpfr;
@@ -2639,6 +2220,7 @@ void radiusBasicMinimaxChebychevsPoints(mpfr_t *h, node *func, node *weight, mpf
 
 
   x = chebychevsPoints(a,b,n+1,currentPrec);
+  perturbPoints(x, n+1, currentPrec);
   poly = elementaryStepRemezAlgorithm(h, func, weight, x, monomials_tree, n, currentPrec);
   mpfr_abs(*h, *h, GMP_RNDN);
 
@@ -2664,6 +2246,7 @@ void firstStepContinuousMinimaxChebychevsPoints(mpfr_t *h, node *func, node *wei
   for(i=1;i<n;i++) monomials_tree[i] = makePow(makeVariable(), makeConstantDouble((double)i));
 
   x = chebychevsPoints(a,b,n+1,currentPrec);
+  perturbPoints(x, n+1, currentPrec);
   poly = elementaryStepRemezAlgorithm(NULL, func, weight, x, monomials_tree, n, currentPrec);
       
   error = makeSub(makeMul(copyTree(poly), copyTree(weight)), copyTree(func));
@@ -2688,6 +2271,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   mpfr_t h;
   rangetype range;
   mpfr_t *tempMpfr;
+  int mayBeDegenerated;
 
   mpfr_init2(h, prec);
 
@@ -2698,10 +2282,41 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
      minimax problem achieve the required bound eps */
   pushTimeCounter();
   radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
+  if(verbosity>=4) {
+    changeToWarningMode();
+    printf("Information: guessdegree: trying degree %d. Found radius: ",n-1);
+    printMpfr(h);
+    restoreMode();
+  }
+
+
+  /* If n<eps, we may be in a degenerated case (for instance, an even
+     function on a symetrical interval, that leads to a huge difference
+     between the radius of the basic minimax problem and of the continuous
+     minimax problem. We try, n=2 for a confirmation. */
+  if(mpfr_cmp(h,eps)<0) {
+    n=2;
+    radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
+    if(verbosity>=4) {
+      changeToWarningMode();
+      printf("Information: guessdegree: trying degree %d. Found radius: ",n-1);
+      printMpfr(h);
+      restoreMode();
+    }
+
+    if (mpfr_cmp(h,eps)<0) n=1; /* OK. Sorry. The system seems to be normal */ 
+  }
+
 
   while(mpfr_cmp(h,eps) >= 0) {
     n *= 2;
     radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
+    if(verbosity>=4) {
+      changeToWarningMode();
+      printf("Information: guessdegree: trying degree %d. Found radius: ",n-1);
+      printMpfr(h);
+      restoreMode();
+    }
   }
   
 
@@ -2716,6 +2331,12 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
 
     while(n != n_min) {
       radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
+      if(verbosity>=4) {
+	changeToWarningMode();
+	printf("Information: guessdegree: trying degree %d (current bounds: [%d, %d]). Found radius: ",n-1,n_min-1,n_max-1);
+	printMpfr(h);
+	restoreMode();
+      }
       if(mpfr_cmp(h,eps) >= 0) n_min = n;
       else n_max = n;
 
@@ -2735,9 +2356,22 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   
   pushTimeCounter();
   firstStepContinuousMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
+  if(verbosity>=4) {
+    changeToWarningMode();
+    printf("Information: guessdegree: trying degree %d. Found infnorm: ",n-1);
+    printMpfr(h);
+    restoreMode();
+  }
+
   while(mpfr_cmp(h,eps) > 0) {
     n++;
     firstStepContinuousMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
+    if(verbosity>=4) {
+      changeToWarningMode();
+      printf("Information: guessdegree: trying degree %d. Found infnorm: ",n-1);
+      printMpfr(h);
+      restoreMode();
+    }
   }
   popTimeCounter("finding an upper bound for guessdegree");
 
