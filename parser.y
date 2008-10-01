@@ -1310,6 +1310,10 @@ range:                  LBRACKETTOKEN thing COMMATOKEN thing RBRACKETTOKEN
                           {
 			    $$ = makeRange($2, $4);
 			  }
+                      | LBRACKETTOKEN thing RBRACKETTOKEN
+                          {
+			    $$ = makeRange($2, copyThing($2));
+			  }
 ;
 
 debound:                STARLEFTANGLETOKEN thing RIGHTANGLESTARTOKEN

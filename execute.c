@@ -11297,6 +11297,62 @@ node *evaluateThingInner(node *tree) {
       mpfi_clear(tempIA);
       mpfi_clear(tempIB);
       mpfi_clear(tempIC);
+    } else {
+      if (isRange(copy->child1) && 
+	  isPureTree(copy->child2) && 
+	  isConstant(copy->child2)) {
+	tempNode = makeAdd(makeVariable(),copyTree(copy->child2));
+	xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*(xrange.a),mpfr_get_prec(*(copy->child1->child1->value)));
+	mpfr_init2(*(xrange.b),mpfr_get_prec(*(copy->child1->child2->value)));
+	mpfr_init2(*(yrange.a),tools_precision);
+	mpfr_init2(*(yrange.b),tools_precision);
+	mpfr_set(*(xrange.a),*(copy->child1->child1->value),GMP_RNDD);
+	mpfr_set(*(xrange.b),*(copy->child1->child2->value),GMP_RNDU);
+	evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	freeThing(copy);
+	copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	freeThing(tempNode);
+	mpfr_clear(*(xrange.a));
+	mpfr_clear(*(xrange.b));
+	mpfr_clear(*(yrange.a));
+	mpfr_clear(*(yrange.b));
+	free(xrange.a);
+	free(xrange.b);
+	free(yrange.a);
+	free(yrange.b);
+      } else {
+	if (isRange(copy->child2) && 
+	    isPureTree(copy->child1) && 
+	    isConstant(copy->child1)) {
+	  tempNode = makeAdd(copyTree(copy->child1),makeVariable());
+	  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  mpfr_init2(*(xrange.a),mpfr_get_prec(*(copy->child2->child1->value)));
+	  mpfr_init2(*(xrange.b),mpfr_get_prec(*(copy->child2->child2->value)));
+	  mpfr_init2(*(yrange.a),tools_precision);
+	  mpfr_init2(*(yrange.b),tools_precision);
+	  mpfr_set(*(xrange.a),*(copy->child2->child1->value),GMP_RNDD);
+	  mpfr_set(*(xrange.b),*(copy->child2->child2->value),GMP_RNDU);
+	  evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	  freeThing(copy);
+	  copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	  freeThing(tempNode);
+	  mpfr_clear(*(xrange.a));
+	  mpfr_clear(*(xrange.b));
+	  mpfr_clear(*(yrange.a));
+	  mpfr_clear(*(yrange.b));
+	  free(xrange.a);
+	  free(xrange.b);
+	  free(yrange.a);
+	  free(yrange.b);
+	}
+      }
     }
     break;
   case SUB:
@@ -11326,6 +11382,62 @@ node *evaluateThingInner(node *tree) {
       mpfi_clear(tempIA);
       mpfi_clear(tempIB);
       mpfi_clear(tempIC);
+    } else {
+      if (isRange(copy->child1) && 
+	  isPureTree(copy->child2) && 
+	  isConstant(copy->child2)) {
+	tempNode = makeSub(makeVariable(),copyTree(copy->child2));
+	xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*(xrange.a),mpfr_get_prec(*(copy->child1->child1->value)));
+	mpfr_init2(*(xrange.b),mpfr_get_prec(*(copy->child1->child2->value)));
+	mpfr_init2(*(yrange.a),tools_precision);
+	mpfr_init2(*(yrange.b),tools_precision);
+	mpfr_set(*(xrange.a),*(copy->child1->child1->value),GMP_RNDD);
+	mpfr_set(*(xrange.b),*(copy->child1->child2->value),GMP_RNDU);
+	evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	freeThing(copy);
+	copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	freeThing(tempNode);
+	mpfr_clear(*(xrange.a));
+	mpfr_clear(*(xrange.b));
+	mpfr_clear(*(yrange.a));
+	mpfr_clear(*(yrange.b));
+	free(xrange.a);
+	free(xrange.b);
+	free(yrange.a);
+	free(yrange.b);
+      } else {
+	if (isRange(copy->child2) && 
+	    isPureTree(copy->child1) && 
+	    isConstant(copy->child1)) {
+	  tempNode = makeSub(copyTree(copy->child1),makeVariable());
+	  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  mpfr_init2(*(xrange.a),mpfr_get_prec(*(copy->child2->child1->value)));
+	  mpfr_init2(*(xrange.b),mpfr_get_prec(*(copy->child2->child2->value)));
+	  mpfr_init2(*(yrange.a),tools_precision);
+	  mpfr_init2(*(yrange.b),tools_precision);
+	  mpfr_set(*(xrange.a),*(copy->child2->child1->value),GMP_RNDD);
+	  mpfr_set(*(xrange.b),*(copy->child2->child2->value),GMP_RNDU);
+	  evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	  freeThing(copy);
+	  copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	  freeThing(tempNode);
+	  mpfr_clear(*(xrange.a));
+	  mpfr_clear(*(xrange.b));
+	  mpfr_clear(*(yrange.a));
+	  mpfr_clear(*(yrange.b));
+	  free(xrange.a);
+	  free(xrange.b);
+	  free(yrange.a);
+	  free(yrange.b);
+	}
+      }
     }
     break;
   case MUL:
@@ -11355,6 +11467,62 @@ node *evaluateThingInner(node *tree) {
       mpfi_clear(tempIA);
       mpfi_clear(tempIB);
       mpfi_clear(tempIC);
+    } else {
+      if (isRange(copy->child1) && 
+	  isPureTree(copy->child2) && 
+	  isConstant(copy->child2)) {
+	tempNode = makeMul(makeVariable(),copyTree(copy->child2));
+	xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*(xrange.a),mpfr_get_prec(*(copy->child1->child1->value)));
+	mpfr_init2(*(xrange.b),mpfr_get_prec(*(copy->child1->child2->value)));
+	mpfr_init2(*(yrange.a),tools_precision);
+	mpfr_init2(*(yrange.b),tools_precision);
+	mpfr_set(*(xrange.a),*(copy->child1->child1->value),GMP_RNDD);
+	mpfr_set(*(xrange.b),*(copy->child1->child2->value),GMP_RNDU);
+	evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	freeThing(copy);
+	copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	freeThing(tempNode);
+	mpfr_clear(*(xrange.a));
+	mpfr_clear(*(xrange.b));
+	mpfr_clear(*(yrange.a));
+	mpfr_clear(*(yrange.b));
+	free(xrange.a);
+	free(xrange.b);
+	free(yrange.a);
+	free(yrange.b);
+      } else {
+	if (isRange(copy->child2) && 
+	    isPureTree(copy->child1) && 
+	    isConstant(copy->child1)) {
+	  tempNode = makeMul(copyTree(copy->child1),makeVariable());
+	  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  mpfr_init2(*(xrange.a),mpfr_get_prec(*(copy->child2->child1->value)));
+	  mpfr_init2(*(xrange.b),mpfr_get_prec(*(copy->child2->child2->value)));
+	  mpfr_init2(*(yrange.a),tools_precision);
+	  mpfr_init2(*(yrange.b),tools_precision);
+	  mpfr_set(*(xrange.a),*(copy->child2->child1->value),GMP_RNDD);
+	  mpfr_set(*(xrange.b),*(copy->child2->child2->value),GMP_RNDU);
+	  evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	  freeThing(copy);
+	  copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	  freeThing(tempNode);
+	  mpfr_clear(*(xrange.a));
+	  mpfr_clear(*(xrange.b));
+	  mpfr_clear(*(yrange.a));
+	  mpfr_clear(*(yrange.b));
+	  free(xrange.a);
+	  free(xrange.b);
+	  free(yrange.a);
+	  free(yrange.b);
+	}
+      }
     }
     break;
   case DIV:
@@ -11384,6 +11552,62 @@ node *evaluateThingInner(node *tree) {
       mpfi_clear(tempIA);
       mpfi_clear(tempIB);
       mpfi_clear(tempIC);
+    } else {
+      if (isRange(copy->child1) && 
+	  isPureTree(copy->child2) && 
+	  isConstant(copy->child2)) {
+	tempNode = makeDiv(makeVariable(),copyTree(copy->child2));
+	xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*(xrange.a),mpfr_get_prec(*(copy->child1->child1->value)));
+	mpfr_init2(*(xrange.b),mpfr_get_prec(*(copy->child1->child2->value)));
+	mpfr_init2(*(yrange.a),tools_precision);
+	mpfr_init2(*(yrange.b),tools_precision);
+	mpfr_set(*(xrange.a),*(copy->child1->child1->value),GMP_RNDD);
+	mpfr_set(*(xrange.b),*(copy->child1->child2->value),GMP_RNDU);
+	evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	freeThing(copy);
+	copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	freeThing(tempNode);
+	mpfr_clear(*(xrange.a));
+	mpfr_clear(*(xrange.b));
+	mpfr_clear(*(yrange.a));
+	mpfr_clear(*(yrange.b));
+	free(xrange.a);
+	free(xrange.b);
+	free(yrange.a);
+	free(yrange.b);
+      } else {
+	if (isRange(copy->child2) && 
+	    isPureTree(copy->child1) && 
+	    isConstant(copy->child1)) {
+	  tempNode = makeDiv(copyTree(copy->child1),makeVariable());
+	  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  mpfr_init2(*(xrange.a),mpfr_get_prec(*(copy->child2->child1->value)));
+	  mpfr_init2(*(xrange.b),mpfr_get_prec(*(copy->child2->child2->value)));
+	  mpfr_init2(*(yrange.a),tools_precision);
+	  mpfr_init2(*(yrange.b),tools_precision);
+	  mpfr_set(*(xrange.a),*(copy->child2->child1->value),GMP_RNDD);
+	  mpfr_set(*(xrange.b),*(copy->child2->child2->value),GMP_RNDU);
+	  evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	  freeThing(copy);
+	  copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	  freeThing(tempNode);
+	  mpfr_clear(*(xrange.a));
+	  mpfr_clear(*(xrange.b));
+	  mpfr_clear(*(yrange.a));
+	  mpfr_clear(*(yrange.b));
+	  free(xrange.a);
+	  free(xrange.b);
+	  free(yrange.a);
+	  free(yrange.b);
+	}
+      }
     }
     break;
   case SQRT:
@@ -11787,6 +12011,62 @@ node *evaluateThingInner(node *tree) {
       mpfi_clear(tempIA);
       mpfi_clear(tempIB);
       mpfi_clear(tempIC);
+    } else {
+      if (isRange(copy->child1) && 
+	  isPureTree(copy->child2) && 
+	  isConstant(copy->child2)) {
+	tempNode = makePow(makeVariable(),copyTree(copy->child2));
+	xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*(xrange.a),mpfr_get_prec(*(copy->child1->child1->value)));
+	mpfr_init2(*(xrange.b),mpfr_get_prec(*(copy->child1->child2->value)));
+	mpfr_init2(*(yrange.a),tools_precision);
+	mpfr_init2(*(yrange.b),tools_precision);
+	mpfr_set(*(xrange.a),*(copy->child1->child1->value),GMP_RNDD);
+	mpfr_set(*(xrange.b),*(copy->child1->child2->value),GMP_RNDU);
+	evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	freeThing(copy);
+	copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	freeThing(tempNode);
+	mpfr_clear(*(xrange.a));
+	mpfr_clear(*(xrange.b));
+	mpfr_clear(*(yrange.a));
+	mpfr_clear(*(yrange.b));
+	free(xrange.a);
+	free(xrange.b);
+	free(yrange.a);
+	free(yrange.b);
+      } else {
+	if (isRange(copy->child2) && 
+	    isPureTree(copy->child1) && 
+	    isConstant(copy->child1)) {
+	  tempNode = makePow(copyTree(copy->child1),makeVariable());
+	  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	  mpfr_init2(*(xrange.a),mpfr_get_prec(*(copy->child2->child1->value)));
+	  mpfr_init2(*(xrange.b),mpfr_get_prec(*(copy->child2->child2->value)));
+	  mpfr_init2(*(yrange.a),tools_precision);
+	  mpfr_init2(*(yrange.b),tools_precision);
+	  mpfr_set(*(xrange.a),*(copy->child2->child1->value),GMP_RNDD);
+	  mpfr_set(*(xrange.b),*(copy->child2->child2->value),GMP_RNDU);
+	  evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	  freeThing(copy);
+	  copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	  freeThing(tempNode);
+	  mpfr_clear(*(xrange.a));
+	  mpfr_clear(*(xrange.b));
+	  mpfr_clear(*(yrange.a));
+	  mpfr_clear(*(yrange.b));
+	  free(xrange.a);
+	  free(xrange.b);
+	  free(yrange.a);
+	  free(yrange.b);
+	}
+      }
     }
     break;
   case NEG:

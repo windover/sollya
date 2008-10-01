@@ -246,6 +246,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 int executeCommand(node *);
 
+node *copyThing(node *);
 void freeThing(node *);
 void rawPrintThing(node *);
 void freeThingOnVoid(void *);

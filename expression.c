@@ -509,7 +509,7 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
 
   if (mpfr_zero_p(a)) {
     str = safeCalloc(7,sizeof(char));
-    sprintf(str,"0~0/0~");
+    sprintf(str,"[0]");
     return str;
   }
 
@@ -545,22 +545,10 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
 
   if (e1 == e2) {
     if (strcmp(str1,str2) == 0) {
-      str3 = (char *) safeCalloc(strlen(str1) + 72, sizeof(char));
-      if (sign < 0) {
-	if (e1 == 0) {
-	  sprintf(str3,"-0.%s~0/0~",str1);
-	} else {
-	  sprintf(str3,"-0.%s~0/0~e%d",str1,(int)e1);
-	}
-      } else {
-	if (e1 == 0) {
-	  sprintf(str3,"0.%s~0/0~",str1);
-	} else {
-	  sprintf(str3,"0.%s~0/0~e%d",str1,(int)e1);
-	}
-      }
-      str = (char *) safeCalloc(strlen(str3) + 1, sizeof(char));
-      sprintf(str,"%s",str3);
+      mpfr_set(aP,a,GMP_RNDN);
+      str3 = sprintValue(&aP);
+      str = (char *) safeCalloc(strlen(str3) + 3, sizeof(char));
+      sprintf(str,"[%s]",str3);
       free(str3);
     } else { 
 
