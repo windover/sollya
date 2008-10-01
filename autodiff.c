@@ -105,6 +105,21 @@ void exp_diff(mpfi_t *res, mpfi_t x, int n) {
   return;
 }
 
+void expm1_diff(mpfi_t *res, mpfi_t x, int n) {
+  int i;
+  mpfi_t temp;
+
+  mpfi_init2(temp, getToolPrecision());
+
+  mpfi_exp(temp, x);
+  for(i=0;i<=n;i++) mpfi_set(res[i], temp);
+
+  mpfi_sub_ui(res[0], res[0], 1);
+
+  mpfi_clear(temp);
+  return;
+}
+
 void powerFunction_diff(mpfi_t *res, mpfr_t p, mpfi_t x, int n) { //the power function is: p^x, where p is a positive ct
   int i;
   mpfi_t temp1,temp2;
@@ -1167,6 +1182,7 @@ void baseFunction_diff(mpfi_t *res, int nodeType, mpfi_t x, int n) {
   case LOG_1P:
     break;
   case EXP_M1:
+    expm1_diff(res,x,n);
     break;
   case DOUBLEEXTENDED:
     break;

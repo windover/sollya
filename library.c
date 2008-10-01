@@ -106,14 +106,18 @@ libraryFunction *bindFunction(char* libraryName, char *functionName) {
 
   libHandle = getLibraryHandle(libraryName);
   if (libHandle == NULL) {
+    changeToWarningMode();
     fprintf(stderr,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,functionName,dlerror());
+    restoreMode();
     return NULL;
   }
     
   dlerror();
   myFunction = (int (*)(mpfi_t, mpfi_t, int)) dlsym(libHandle->libraryDescriptor, functionName);
   if ((error = dlerror()) != NULL) {
+    changeToWarningMode();
     fprintf(stderr, "Error: could not find function \"%s\" in library \"%s\" for binding: %s\n",functionName,libraryName,error);
+    restoreMode();
     return NULL;
   }
   
@@ -235,14 +239,18 @@ libraryProcedure *bindProcedure(char* libraryName, char *procedureName, chain *s
 
   libHandle = getProcLibraryHandle(libraryName);
   if (libHandle == NULL) {
+    changeToWarningMode();
     fprintf(stderr,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,procedureName,dlerror());
+    restoreMode();
     return NULL;
   }
     
   dlerror();
   myFunction = dlsym(libHandle->procLibraryDescriptor, procedureName);
   if ((error = dlerror()) != NULL) {
+    changeToWarningMode();
     fprintf(stderr, "Error: could not find procedure \"%s\" in library \"%s\" for binding: %s\n",procedureName,libraryName,error);
+    restoreMode();
     return NULL;
   }
   
