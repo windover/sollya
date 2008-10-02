@@ -59,7 +59,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "miniparser.h"
 #include "chain.h"
 
-#define MAXDIFFSIMPLSIZE 10000
+#define MAXDIFFSIMPLSIZE 100
+#define MAXDIFFSIMPLDEGREE 25
 
 void simplifyMpfrPrec(mpfr_t rop, mpfr_t op) {
   mpz_t mant;
@@ -4649,7 +4650,7 @@ node* differentiate(node *tree) {
   if (isPolynomial(tree) && (isHorner(tree) || isCanonical(tree))) {
     temp = differentiateUnsimplified(tree);
   } else {
-    if (treeSize(tree) > MAXDIFFSIMPLSIZE) {
+    if ((treeSize(tree) > MAXDIFFSIMPLSIZE) || (getDegree(tree) > MAXDIFFSIMPLDEGREE)) {
       printMessage(7,"Information: will not simplify the given expression before differentiating because it is too big.\n");
       temp = differentiateUnsimplified(tree);
     } else {
