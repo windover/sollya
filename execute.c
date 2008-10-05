@@ -13193,6 +13193,9 @@ node *evaluateThingInner(node *tree) {
     freeThing(tempNode);
     if (timingString != NULL) popTimeCounter(timingString);
     break;
+  case EXTERNALPROCEDUREUSAGE:
+    copy->libProc = tree->libProc;
+    break;
   case APPLY:
     if (timingString != NULL) pushTimeCounter();
     tempNode = evaluateThingInner(tree->child1);
