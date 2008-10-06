@@ -473,7 +473,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 	  mpfr_init2(temp, 10);
 	  mpfr_sub(temp, xNew, x, GMP_RNDU);
 	  if (mpfr_zero_p(temp)) estim_prec=prec+1;
-	  else estim_prec=(mpfr_get_exp(xNew)-mpfr_get_exp(temp))*2;
+	  else estim_prec=(mpfr_get_exp(xNew)-mpfr_get_exp(temp));
 	}
       }
     }
@@ -2271,7 +2271,6 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   mpfr_t h;
   rangetype range;
   mpfr_t *tempMpfr;
-  int mayBeDegenerated;
 
   mpfr_init2(h, prec);
 
