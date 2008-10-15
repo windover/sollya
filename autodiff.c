@@ -6,7 +6,6 @@
 
   Within Sollya:
     > externalproc(AD, "./autodiff", (function, range, integer) -> list of range);
-    AD(function, range, integer) -> list of range
 
   And then, for instance:
     > AD(exp(x)*cos(x), [2.5; 2.6], 10);

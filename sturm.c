@@ -6,7 +6,6 @@
 
   Within Sollya:
     > externalproc(getNrRoots, "./sturm", (function, range) -> integer);
-    getNrRoots(function, range) -> integer
 
   And then, for instance:
     > getNrRoots(x+1, [2.5; 2.6]);
