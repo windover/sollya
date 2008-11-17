@@ -11455,7 +11455,7 @@ node *evaluateThingInner(node *tree) {
       mpfi_init2(tempIB,pTemp);
       mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
       mpfi_init2(tempIC,tools_precision);
-      mpfi_mul(tempIC,tempIA,tempIB);
+      special_mpfi_mul(tempIC,tempIA,tempIB);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);

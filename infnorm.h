@@ -86,6 +86,7 @@ int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_p
 
 void mpfi_pow(mpfi_t z, mpfi_t x, mpfi_t y);
 void special_mpfi_div(mpfi_t rop, mpfi_t a, mpfi_t b);
+void special_mpfi_div(mpfi_t rop, mpfi_t a, mpfi_t b);
 void mpfi_round_to_double(mpfi_t rop, mpfi_t op);
 void mpfi_round_to_doubledouble(mpfi_t rop, mpfi_t op);
 void mpfi_round_to_tripledouble(mpfi_t rop, mpfi_t op);

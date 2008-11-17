@@ -87,6 +87,41 @@ void special_mpfi_div(mpfi_t rop, mpfi_t a, mpfi_t b) {
   mpfr_clear(bh);
 }
 
+void special_mpfi_mul(mpfi_t rop, mpfi_t a, mpfi_t b) {
+  mpfr_t ah, al;
+  mpfr_t bh, bl;
+  mp_prec_t prec;
+
+  prec = mpfi_get_prec(a);
+  mpfr_init2(ah,prec);
+  mpfr_init2(al,prec);
+  mpfi_get_left(al,a);
+  mpfi_get_left(ah,a);
+  prec = mpfi_get_prec(b);
+  mpfr_init2(bh,prec);
+  mpfr_init2(bl,prec);
+  mpfi_get_left(bl,b);
+  mpfi_get_left(bh,b);
+  if ((mpfr_zero_p(al) && mpfr_zero_p(ah) &&
+       (mpfr_cmp(bh,bl) == 0) && 
+       mpfr_inf_p(bh) && mpfr_inf_p(bl)) || 
+      (mpfr_zero_p(bl) && mpfr_zero_p(bh) &&
+       (mpfr_cmp(ah,al) == 0) && 
+       mpfr_inf_p(ah) && mpfr_inf_p(al))) {
+    mpfr_set_nan(bh);
+    mpfr_set_nan(bl);
+    mpfi_interv_fr(rop,bl,bh);
+  } else {
+    mpfi_mul(rop,a,b);
+  }
+  mpfr_clear(al);
+  mpfr_clear(ah);
+  mpfr_clear(bl);
+  mpfr_clear(bh);
+}
+
+
+
 void mpfi_pow(mpfi_t z, mpfi_t x, mpfi_t y) {
   mpfr_t l,r,lx,rx;
   mp_prec_t prec, precx;
@@ -966,7 +1001,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   case MUL:
     leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifiesA, simplifiesB, NULL, rightTheo);
-    mpfi_mul(stack3, stack1, stack2);
+    special_mpfi_mul(stack3, stack1, stack2);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
       mpfi_set(*(internalTheo->boundRight),stack2);
