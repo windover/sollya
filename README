@@ -16,13 +16,16 @@ In order to compile the software you will need the following packages installed:
 - mpfi
 - libxml2-dev
 - fplll (available at url http://perso.ens-lyon.fr/damien.stehle/english.html#software)
+- libtool
 
 - bison version 2.3 or later
 - flex version 2.5.33 or later
 
-Bison and flex are really needed if you compile a fresh svn checkout or if you modify
-the grammar files contained in the distribution. Otherwise, precompiled versions
-are found in the distribution and can be used.
+
+Bison and flex are really needed if you compile a fresh svn checkout
+or if you modify the grammar files contained in the
+distribution. Otherwise, precompiled versions are found in the
+distribution and can be used.
 
 In order to compile, use the makefile by invoking it using the following command:
 

@@ -66,6 +66,8 @@ extern "C" {
 
 #define coeff(i,j,n) ((i)-1)*(n)+(j)-1
 
+#define MAXLOOP 10
+
 void printFPLLLMat(ZZ_mat<mpz_t> *M) { M->print(); }
 
 void printMpqMatrix(mpq_t *M, int p, int n) {
@@ -327,6 +329,37 @@ chain *computeExponents(chain *formats, chain *monomials, node *poly) {
   return res;
 }
 
+int fitInFormat(chain *formats, chain *monomials, node *poly) {
+  chain *curr1, *curr2;
+  node *tempTree;
+  mpfr_t tempMpfr;
+  mpfr_t val;
+  int test=1;
+  mpfr_init2(tempMpfr, tools_precision);
+
+  curr1 = monomials;
+  curr2 = formats;
+  while( (curr1!=NULL) && test) {
+    tempTree = getIthCoefficient(poly, *(int *)(curr1->value));
+    evaluate(tempMpfr, tempTree, NULL, tools_precision);
+
+    if(!mpfr_zero_p(tempMpfr)) {
+      mpfr_init2(val, *(int *)(curr2->value));
+      if (mpfr_set(val, tempMpfr, GMP_RNDN)!=0) test=0;
+      mpfr_clear(val);
+    }
+    freeThing(tempTree);
+    
+    curr1 = curr1->next;
+    curr2 = curr2->next;
+  }
+  
+  mpfr_clear(tempMpfr);
+  return test;
+}
+
+
+
 node *FPminimaxMain(node *, chain *, chain *, chain *, node *);
 
 
@@ -347,7 +380,7 @@ node *FPminimax(node *f,
   node *res;
   chain *correctedFormats, *newFormats;
   chain *curr;
-  int test;
+  int test, count;
 
   if (absrel== ABSOLUTESYM) {
     tempTree = makeSub(copyTree(f),copyTree(consPart));
@@ -440,7 +473,7 @@ node *FPminimax(node *f,
   else {   // Floating-point coefficients: we must compute good exponents
     correctedFormats = computeExponents(formats, monomials, pstar);
  
-    test=1;
+    test=1; count=0;
     while(test) {
       if(verbosity>=3) {
 	changeToWarningMode();
@@ -456,15 +489,19 @@ node *FPminimax(node *f,
       }
     
       res = FPminimaxMain(g, monomials, correctedFormats, pointslist, w);
+      count++;
 
       if(res==NULL) test=0;
       else {
 	newFormats =  computeExponents(formats, monomials, res);
 	if( isEqualChain(newFormats,correctedFormats, isEqualIntPtrOnVoid) ) test=0;
 	else {
-	  free_memory(res);
-	  freeChain(correctedFormats, freeIntPtr);
-	  correctedFormats = newFormats;
+	  if( (count > MAXLOOP) && (fitInFormat(formats, monomials, res)) ) test=0;
+	  else {
+	    free_memory(res);
+	    freeChain(correctedFormats, freeIntPtr);
+	    correctedFormats = newFormats;
+	  }
 	}
       }
     }
