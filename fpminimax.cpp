@@ -498,9 +498,12 @@ node *FPminimax(node *f,
 	else {
 	  if( (count > MAXLOOP) && (fitInFormat(formats, monomials, res)) ) test=0;
 	  else {
-	    free_memory(res);
-	    freeChain(correctedFormats, freeIntPtr);
-	    correctedFormats = newFormats;
+	    if( (count > 2*MAXLOOP) ) { res=NULL; test=0;}
+	    else {
+	      free_memory(res);
+	      freeChain(correctedFormats, freeIntPtr);
+	      correctedFormats = newFormats;
+	    }
 	  }
 	}
       }
