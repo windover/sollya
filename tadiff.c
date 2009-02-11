@@ -961,7 +961,7 @@ void log_TS(tSeries *t, tSeries *child1_ts){
 }
 
 
-/*
+
 void tan_TS(tSeries *t, tSeries *child1_ts){
   int k,j,n;
   
@@ -999,29 +999,24 @@ void tan_TS(tSeries *t, tSeries *child1_ts){
   cleartSeries(tc);
   cleartSeries(tt);
 }
+/*the power formula from tadiff is worse than our composition formula.
+Reason: when using interval arithmetic: u^a/u \neq u^(a-1)
+This formula has another drawback when u contains 0
 */
-
-
-
-
-
-
-
-
-
-void ctPower_TS(tSeries *t, tSeries *child1_ts){
-  int i,k,p,n;
+void ctPower_TS(tSeries *t, tSeries *child1_ts, mpfi_t a){
+  int k,j,n;
   
   mpfi_t temp1, temp2;
   tSeries *tt,*tc;
- // printf("in ctPower_TS");
+  
   n=t->n;
   //additional tms for computations
   tc=createEmptytSeries(n,t->x);
   settSeries(tc,child1_ts);
   
+  
   tt=createEmptytSeries(n,tc->poly_array[0]);
-  mpfi_sqrt(tt->poly_array[0],tt->poly_array[0]);
+  mpfi_pow(tt->poly_array[0],tc->poly_array[0],a);
   
   mpfi_init2(temp1, getToolPrecision());
    
@@ -1029,34 +1024,22 @@ void ctPower_TS(tSeries *t, tSeries *child1_ts){
   
   //new series;
   for(k=1; k<=n;k++){
-    mpfi_div(temp2, tc->poly_array[k], tt->poly_array[0]);
-    mpfi_div_ui(temp2, temp2, 2);
-    if (k%2!=0){
-      p=(k-1)/2;
-      for (i=1;i<=p;i++){
-      mpfi_mul(temp1,tt->poly_array[i], tt->poly_array[k-i]);
-      mpfi_add(tt->poly_array[k],tt->poly_array[k],temp1);
-    }
-    mpfi_mul_ui(tt->poly_array[k],tt->poly_array[k],2);
-    mpfi_sub(tt->poly_array[k], temp2, tt->poly_array[k]);   
-    }
-    else {
-    p=(k-2)/2;
-      for (i=1;i<=p;i++){
-      mpfi_mul(temp1,tt->poly_array[i], tt->poly_array[k-i]);
-      mpfi_add(tt->poly_array[k],tt->poly_array[k],temp1);
-    }
-    mpfi_mul_ui(tt->poly_array[k],tt->poly_array[k],2);
-    mpfi_sub(tt->poly_array[k], temp2, tt->poly_array[k]);  
     
-    mpfi_mul(temp2, tt->poly_array[k/2], tt->poly_array[k/2]);
-    
-    mpfi_add(tt->poly_array[k], tt->poly_array[k], temp2);
-    
+    for (j=0;j<=k-1;j++){
+      mpfi_mul(temp1,tt->poly_array[j], tc->poly_array[k-j]);
+      mpfi_mul_ui(temp2,a,k-j);
+      mpfi_sub_si(temp2,temp2,j);
+      mpfi_mul(temp2,temp1,temp2);
+      mpfi_add(tt->poly_array[k],tt->poly_array[k],temp2);
     }
     
-  }
-   
+    mpfi_div_ui(tt->poly_array[k],tt->poly_array[k],k);
+    mpfi_div(tt->poly_array[k], tt->poly_array[k],tc->poly_array[0]);   
+    
+  }    
+  
+  
+     
   mpfi_clear(temp1);
   mpfi_clear(temp2);
  
@@ -1074,8 +1057,8 @@ void taylor_series(tSeries *t, node *f) {
  // mpfi_t *res1, *res2, *res3, *res4, *res5, *res6;
   //mpfi_t *rem_bound1, *rem_bound2;
  // mpfr_t minusOne;
-  //node *simplifiedChild1, *simplifiedChild2;
-  //mpfi_t temp1,temp2;
+  node *simplifiedChild1, *simplifiedChild2;
+  mpfi_t temp1,temp2;
   //node **coefficients;
   //mpfi_t *rpoly, *boundRpoly;
   tSeries *child1_ts, *child2_ts;
@@ -1268,7 +1251,65 @@ void taylor_series(tSeries *t, node *f) {
 
     break;
   case POW:
-    
+   if (((f->child2)->nodeType==CONSTANT) && ((f->child1)->nodeType==VARIABLE)){
+        
+        //create a new empty taylor series the child
+        child1_ts=createEmptytSeries(n, t->x);
+        //call taylor_series on the child
+        taylor_series(child1_ts, f->child1);
+        
+        //compute ctpower for the taylor series obtained
+        mpfi_init2(ct, getToolPrecision());
+        mpfi_set_fr(ct, *((f->child2)->value));
+        ctPower_TS(t,child1_ts,ct);
+        //clear old child
+        cleartSeries(child1_ts);
+        mpfi_clear(ct);
+    }
+    else{
+      simplifiedChild2=simplifyTreeErrorfree(f->child2);
+      simplifiedChild1=simplifyTreeErrorfree(f->child1);
+      
+      if ((simplifiedChild2->nodeType==CONSTANT) &&(simplifiedChild1->nodeType==CONSTANT)) { //we have the ct1^ct2 case
+         // printf("We are in the  ct1^ct2 case");       
+         mpfi_init2(temp1, getToolPrecision());
+         mpfi_set_fr(temp1, *(simplifiedChild1->value));
+         mpfi_init2(temp2, getToolPrecision());
+         mpfi_set_fr(temp2, *(simplifiedChild2->value));
+         mpfi_pow(temp1,temp1,temp2);
+         child1_ts=createConsttSeries(n, t->x,temp1 );
+         settSeries(t, child1_ts);
+         cleartSeries(child1_ts);
+         mpfi_clear(temp1);
+         mpfi_clear(temp2);
+      }
+      else if (simplifiedChild2->nodeType==CONSTANT) { //we have the f^p case
+        //printf("We are in the  f^p case");        
+          //create a new empty taylor series the child
+        child1_ts=createEmptytSeries(n, t->x);
+        //call taylor_series on the child
+        taylor_series(child1_ts, f->child1);
+        
+        //compute ctpower for the taylor series obtained
+        mpfi_init2(ct, getToolPrecision());
+        mpfi_set_fr(ct, *(simplifiedChild2->value));
+        ctPower_TS(t,child1_ts,ct);
+        //clear old child
+        cleartSeries(child1_ts);
+        mpfi_clear(ct);  
+      } 
+       else if (simplifiedChild1->nodeType==CONSTANT) { //we have the p^f case
+        //printf("We are in the  p^f case");     
+        
+      } 
+      else {
+      //printf("We are in the  f^g case");     
+      
+      }
+    free_memory(simplifiedChild2);
+    free_memory(simplifiedChild1);
+  }
+  
    break;
   
   case LIBRARYFUNCTION:
