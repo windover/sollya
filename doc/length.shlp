@@ -26,7 +26,7 @@ length("Hello World!");
 length([|1,...,5|]);
 
 #EXAMPLE
-length([| |]);
+length([| |]);
 
 #EXAMPLE
 length([|1,2...|]);
