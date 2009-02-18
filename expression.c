@@ -6064,7 +6064,7 @@ int getDegreeUnsafe(node *tree) {
       if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
 	printMessage(1,
 "Warning: tried to compute polynomial degree of an expression using a power operator with an exponent\n");
-	printf("which cannot be represented on a integer variable.\n");
+	printMessage(1,"which cannot be represented on a integer variable.\n");
 	mpfr_clear(temp);
 	return -1;
       }
@@ -6140,7 +6140,7 @@ int getMaxPowerDividerUnsafe(node *tree) {
       if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
 	printMessage(1,
 "Warning: tried to compute degree of maximal polynomial divider of a polynomial in an expression using a power operator with an exponent\n");
-	printf("which cannot be represented on a integer variable.\n");
+	printMessage(1,"which cannot be represented on a integer variable.\n");
 	mpfr_clear(temp);
 	return -1;
       }
