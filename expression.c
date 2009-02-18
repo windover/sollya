@@ -453,9 +453,17 @@ int precedence(node *tree) {
 
 
 int isInfix(node *tree) {
+  char *str;
+  int res;
   switch(tree->nodeType) {
   case CONSTANT: 
     if (mpfr_sgn(*(tree->value)) < 0) return 1;
+    if ((dyadic == 2) || (dyadic == 3)) {
+      str = sprintValue(tree->value);
+      res = (strchr(str,'*') != NULL);
+      free(str);
+      return res;
+    }
     break;
   case PI_CONST:
   case ADD:
@@ -1145,11 +1153,15 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
     if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
       fprintf(fd,")");
     fprintf(fd,"^");
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) {
+    if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
+				  || ((tree->child2->nodeType == CONSTANT) 
+				      && ((dyadic == 2) || (dyadic == 3))))) {
       fprintf(fd,"(");
     }
     fprintTreeWithPrintMode(fd,tree->child2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) {
+    if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
+				  || ((tree->child2->nodeType == CONSTANT) 
+				      && ((dyadic == 2) || (dyadic == 3))))) {
       fprintf(fd,")");
     }
     break;
@@ -1525,11 +1537,15 @@ void printTree(node *tree) {
     if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
       printf(")");
     printf("^");
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) {
+    if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
+				  || ((tree->child2->nodeType == CONSTANT) 
+				      && ((dyadic == 2) || (dyadic == 3))))) {
       printf("(");
     }
     printTree(tree->child2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) {
+    if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
+				  || ((tree->child2->nodeType == CONSTANT) 
+				      && ((dyadic == 2) || (dyadic == 3))))) {
       printf(")");
     }
     break;
@@ -1798,10 +1814,14 @@ char *sprintTree(node *tree) {
     if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
       tempBuf += sprintf(tempBuf,")");
     tempBuf += sprintf(tempBuf,"^");
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
+    if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
+				  || ((tree->child2->nodeType == CONSTANT) 
+				      && ((dyadic == 2) || (dyadic == 3))))) 
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
+    if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
+				  || ((tree->child2->nodeType == CONSTANT) 
+				      && ((dyadic == 2) || (dyadic == 3))))) 
       tempBuf += sprintf(tempBuf,")");
     break;
   case NEG:
