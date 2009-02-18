@@ -6082,9 +6082,8 @@ int getDegreeUnsafe(node *tree) {
       mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
       mpfr_set_si(temp,r,GMP_RNDN);
       if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
-	printMessage(1,
-"Warning: tried to compute polynomial degree of an expression using a power operator with an exponent\n");
-	printMessage(1,"which cannot be represented on a integer variable.\n");
+	printMessage(1, "Warning: tried to compute polynomial degree of an expression using a power operator with an exponent");
+	printMessage(1," which cannot be represented on an integer variable.\n");
 	mpfr_clear(temp);
 	return -1;
       }
@@ -6159,8 +6158,8 @@ int getMaxPowerDividerUnsafe(node *tree) {
       mpfr_set_si(temp,r,GMP_RNDN);
       if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
 	printMessage(1,
-"Warning: tried to compute degree of maximal polynomial divider of a polynomial in an expression using a power operator with an exponent\n");
-	printMessage(1,"which cannot be represented on a integer variable.\n");
+"Warning: tried to compute degree of maximal polynomial divider of a polynomial in an expression using a power operator with an exponent ");
+	printMessage(1,"which cannot be represented on an integer variable.\n");
 	mpfr_clear(temp);
 	return -1;
       }
@@ -6330,8 +6329,8 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
       mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
       mpfr_set_si(temp,r,GMP_RNDN);
       if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
-	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. Tried to expand an expression using a power operator with an exponent\n");
-	fprintf(stderr,"which cannot be represented on a integer variable.\n");
+	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. Tried to expand an expression using a power operator with an exponent ");
+	fprintf(stderr,"which cannot be represented on an integer variable.\n");
 	mpfr_clear(temp);
 	exit(1);
       }
