@@ -645,6 +645,7 @@ char *sPrintBinary(mpfr_t x) {
   char *raw, *formatted, *temp1, *temp2, *str3;
   char *temp3=NULL;
   char *resultStr;
+  int len;
 
   prec = mpfr_get_prec(x);
   mpfr_init2(xx,prec);
@@ -663,13 +664,20 @@ char *sPrintBinary(mpfr_t x) {
       temp2++;
     }
     *temp2 = *temp1; temp2++; temp1++;
-    *temp2 = '.'; temp2++;
+    if (*temp1 != '\0') { 
+      *temp2 = '.'; 
+      temp2++;
+    }
     while (*temp1 != '\0') {
       *temp2 = *temp1;
       temp2++; temp1++;
     }
     str3 = (char *) safeCalloc(strlen(formatted)+2,sizeof(char));
-    removeTrailingZeros(str3,formatted);    
+    removeTrailingZeros(str3,formatted);
+    len = strlen(str3) - 1;
+    if (str3[len] == '.') {
+      str3[len] = '\0';
+    }
     if (!mpfr_zero_p(x)) {
       if (mpfr_number_p(x)) {
 	temp3 = (char *) safeCalloc(strlen(str3)+74,sizeof(char));
