@@ -271,7 +271,10 @@ int printDoubleInHexa(mpfr_t x) {
 
   if (res) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: rounding occurred before printing a value as a double.\n");
+      if (res < 0) 
+        printMessage(1,"Warning: rounding down occurred before printing a value as a double.\n");
+      else 
+        printMessage(1,"Warning: rounding up occurred before printing a value as a double.\n");
     }
   }
 
@@ -295,13 +298,16 @@ int printDoubleInHexa(mpfr_t x) {
 int printSimpleInHexa(mpfr_t x) {
   int res;
   double d, dd;
-  mpfr_t temp;
+  mpfr_t temp, tempRound;
   fl_number xfl;
   float xfloat;
 
   mpfr_init2(temp,mpfr_get_prec(x));
-  
-  d = mpfr_get_d(x,GMP_RNDN);
+  mpfr_init2(tempRound,24);
+
+  mpfr_set(tempRound,x,GMP_RNDN);
+
+  d = mpfr_get_d(tempRound,GMP_RNDN);
   xfloat = d;
   dd = xfloat;
   if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
@@ -314,7 +320,10 @@ int printSimpleInHexa(mpfr_t x) {
 
   if (res) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: rounding occurred before printing a value as a simple.\n");
+      if (res < 0) 
+        printMessage(1,"Warning: rounding down occurred before printing a value as a simple.\n");
+      else 
+        printMessage(1,"Warning: rounding up occurred before printing a value as a simple.\n");
     }
   }
 
