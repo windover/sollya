@@ -298,11 +298,12 @@ int printDoubleInHexa(mpfr_t x) {
 int printSimpleInHexa(mpfr_t x) {
   int res;
   double d, dd;
-  mpfr_t temp, tempRound;
+  mpfr_t temp, tempRound, temp2;
   fl_number xfl;
   float xfloat;
 
   mpfr_init2(temp,mpfr_get_prec(x));
+  mpfr_init2(temp2,mpfr_get_prec(x));
   mpfr_init2(tempRound,24);
 
   mpfr_set(tempRound,x,GMP_RNDN);
@@ -316,6 +317,44 @@ int printSimpleInHexa(mpfr_t x) {
     }
   }
   
+  res = mpfr_cmp(temp,x);
+  if (res && mpfr_number_p(x) && mpfr_number_p(temp)) {
+    xfl.f = xfloat;
+    if (xfl.i == 0x80000000U) {
+      xfl.i = 0x80000001U;
+    } else {
+      if (res < 0) {
+        if (xfl.i >= 0) {
+          xfl.i++;
+        } else {
+          xfl.i--;
+        }
+      } else {
+        if (xfl.i < 0) {
+          xfl.i--;
+        } else {
+          xfl.i++;
+        }
+      }
+    }
+    dd = xfl.f;
+    if (mpfr_set_d(temp2,dd,GMP_RNDN) != 0) {
+      if (!noRoundingWarnings) {
+        printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+      }
+    }
+    mpfr_sub(temp,temp,x,GMP_RNDN);
+    mpfr_sub(temp2,temp2,x,GMP_RNDN);
+    if (mpfr_cmpabs(temp2,temp) < 0) {
+      xfloat = dd;
+      if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
+        if (!noRoundingWarnings) {
+          printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+        }
+      }
+    }
+  }
+
   res = mpfr_cmp(temp,x);
 
   if (res) {
@@ -331,6 +370,8 @@ int printSimpleInHexa(mpfr_t x) {
   printf("0x%08x\n",xfl.i);
 
   mpfr_clear(temp);
+  mpfr_clear(temp2);
+  mpfr_clear(tempRound);
   return res;
 }
 

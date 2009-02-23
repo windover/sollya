@@ -1,5 +1,31 @@
 /*********************************************************************************/
 restart;
+printfloat(1b128 - 1b103 - 1b-500);
+printfloat(1b128 - 1b103 - 1b-74);
+printfloat(1b128 - 1b103 - 1b-75);
+printfloat(1b128 - 1b103);
+printfloat(1b128 - 1b103 + 1b-500);
+printfloat(1b128 - 1b103 + 1b-74);
+printfloat(1b128 - 1b103 + 1b-75);
+printfloat(1.0000000010111111111111111000001_2 * 2^(-140));
+printfloat(-1.0000000010111111111111111000001_2 * 2^(-140));
+printfloat(1b-1000);
+printfloat(-1b-1000);
+printfloat(0);
+printfloat(-0);
+printfloat(infty);
+printfloat(-infty);
+printfloat(NaN);
+printfloat(1b-150);
+prec = 2000!;
+printfloat(1b-150 + 1b-1000);
+printfloat(1b-150 - 1b-1000);
+printfloat(-1b-150 + 1b-1000);
+printfloat(-1b-150 - 1b-1000);
+
+
+/*********************************************************************************/
+restart;
 0/0;
 3/0;
 sin(5 * pi) / sin(5 * pi);
