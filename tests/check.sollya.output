@@ -243,7 +243,7 @@ The tool has been restarted.
 1
 The tool has been restarted.
 Warning: the given expression is undefined or numerically unstable.
-@Inf@
+@NaN@
 The tool has been restarted.
 (exp(x) * cos(x) - sin(x) * exp(x)) / exp(x)^2
 The tool has been restarted.

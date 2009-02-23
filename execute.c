@@ -4627,6 +4627,7 @@ void autoprint(node *thing, int inList) {
 	    }
 	  } else {
 	    printMessage(1,"Warning: the given expression is undefined or numerically unstable.\n");
+            mpfr_set_nan(a);
 	  }
 	  printValue(&a);
 	}

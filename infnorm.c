@@ -3109,6 +3109,8 @@ void evaluateRangeFunctionFast(rangetype yrange, node *func, node *deriv, ranget
 
 void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_prec_t prec) {
   node *deriv, *temp, *temp2, *numerator, *denominator, *f;
+  rangetype myrange;
+  node *myderiv;
 
   temp = differentiate(func);
   deriv = horner(temp);
@@ -3118,14 +3120,59 @@ void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_pr
 
   if (getNumeratorDenominator(&numerator,&denominator,temp2)) {
     if (isSyntacticallyEqual(numerator, denominator)) {
-      mpfr_set_d(*(yrange.a),1.0,GMP_RNDD);
-      mpfr_set_d(*(yrange.b),1.0,GMP_RNDU);
-      free_memory(numerator);
-      free_memory(denominator);
-      free_memory(deriv);
-      free_memory(temp);
-      free_memory(temp2);
-      return;
+      if (!isConstant(numerator)) {
+        mpfr_set_d(*(yrange.a),1.0,GMP_RNDD);
+        mpfr_set_d(*(yrange.b),1.0,GMP_RNDU);
+        free_memory(numerator);
+        free_memory(denominator);
+        free_memory(deriv);
+        free_memory(temp);
+        free_memory(temp2);
+        return;
+      } else {
+        myderiv = differentiate(numerator);
+        myrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        myrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        mpfr_init2(*(myrange.a),mpfr_get_prec(*(yrange.a)));
+        mpfr_init2(*(myrange.b),mpfr_get_prec(*(yrange.b)));
+        evaluateRangeFunctionFast(myrange,numerator,myderiv,xrange,prec);
+        free_memory(myderiv);
+        if (mpfr_sgn(*(myrange.a)) * mpfr_sgn(*(myrange.b)) == 1) {
+          mpfr_clear(*(myrange.a));
+          mpfr_clear(*(myrange.b));
+          free(myrange.a);
+          free(myrange.b);
+          mpfr_set_d(*(yrange.a),1.0,GMP_RNDD);
+          mpfr_set_d(*(yrange.b),1.0,GMP_RNDU);
+          free_memory(numerator);
+          free_memory(denominator);
+          free_memory(deriv);
+          free_memory(temp);
+          free_memory(temp2);
+          return;
+        } else {
+          if (mpfr_zero_p(*(myrange.a)) && mpfr_zero_p(*(myrange.b))) {
+            mpfr_clear(*(myrange.a));
+            mpfr_clear(*(myrange.b));
+            free(myrange.a);
+            free(myrange.b);
+            mpfr_set_nan(*(yrange.a));
+            mpfr_set_nan(*(yrange.b));
+            free_memory(numerator);
+            free_memory(denominator);
+            free_memory(deriv);
+            free_memory(temp);
+            free_memory(temp2);
+            return;
+          } else {
+            mpfr_clear(*(myrange.a));
+            mpfr_clear(*(myrange.b));
+            free(myrange.a);
+            free(myrange.b);
+            f = copyTree(temp2);
+          }
+        }
+      }
     } else {
       f = copyTree(temp2);
     }
