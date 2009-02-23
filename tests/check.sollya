@@ -1,4 +1,29 @@
 /*********************************************************************************/
+restart;
+0/0;
+3/0;
+sin(5 * pi) / sin(5 * pi);
+sin(5 * pi) / 0;
+x/x;
+sin(x)/cos(x + 0.5 * pi);
+evaluate(0/0,17);
+evaluate(3/0,17);
+evaluate(sin(5 * pi)/sin(5 * pi),17);
+evaluate(sin(5 * pi) / 0, 17);
+evaluate(x/x,17);
+evaluate(x/x,0);
+evaluate(sin(x)/cos(x + 0.5 * pi),17);
+evaluate(0/0,[0.17]);
+evaluate(3/0,[0.17]);
+evaluate(sin(5 * pi)/sin(5 * pi),[0.17]);
+evaluate(sin(5 * pi) / 0, [0.17]);
+evaluate(x/x,[0.17]);
+evaluate(x/x,[0]);
+evaluate(x/x,[-1b-100000;-1b-100000]);
+evaluate(sin(x)/cos(x + 0.5 * pi),[0.17]);
+
+
+/*********************************************************************************/
 restart; 
 0 * infty;
 infty - infty;

@@ -3091,9 +3091,15 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
 void evaluateRangeFunctionFast(rangetype yrange, node *func, node *deriv, rangetype xrange, mp_prec_t prec) {
   mpfi_t x, y;
   chain *tempChain;
+  mp_prec_t p, p2;
 
+  p = prec;
+  p2 = mpfr_get_prec(*(xrange.a));
+  if (p2 > p) p = p2;
+  p2 = mpfr_get_prec(*(xrange.b));
+  if (p2 > p) p = p2;
 
-  mpfi_init2(x,prec);
+  mpfi_init2(x,p);
   mpfi_init2(y,prec);
   mpfi_interv_fr(x,*(xrange.a),*(xrange.b));
 
@@ -3121,14 +3127,29 @@ void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_pr
   if (getNumeratorDenominator(&numerator,&denominator,temp2)) {
     if (isSyntacticallyEqual(numerator, denominator)) {
       if (!isConstant(numerator)) {
-        mpfr_set_d(*(yrange.a),1.0,GMP_RNDD);
-        mpfr_set_d(*(yrange.b),1.0,GMP_RNDU);
-        free_memory(numerator);
-        free_memory(denominator);
-        free_memory(deriv);
-        free_memory(temp);
-        free_memory(temp2);
-        return;
+        myderiv = differentiate(numerator);
+        myrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        myrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        mpfr_init2(*(myrange.a),mpfr_get_prec(*(yrange.a)));
+        mpfr_init2(*(myrange.b),mpfr_get_prec(*(yrange.b)));
+        evaluateRangeFunctionFast(myrange,numerator,myderiv,xrange,prec);
+        free_memory(myderiv);
+        if (mpfr_sgn(*(myrange.a)) * mpfr_sgn(*(myrange.b)) == 1) {
+          mpfr_clear(*(myrange.a));
+          mpfr_clear(*(myrange.b));
+          free(myrange.a);
+          free(myrange.b);
+          mpfr_set_d(*(yrange.a),1.0,GMP_RNDD);
+          mpfr_set_d(*(yrange.b),1.0,GMP_RNDU);
+          free_memory(numerator);
+          free_memory(denominator);
+          free_memory(deriv);
+          free_memory(temp);
+          free_memory(temp2);
+          return;
+        } else {
+          f = copyTree(temp2);
+        }
       } else {
         myderiv = differentiate(numerator);
         myrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));

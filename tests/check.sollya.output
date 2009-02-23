@@ -3,6 +3,31 @@ Warning: the given expression is undefined or numerically unstable.
 @NaN@
 Warning: the given expression is undefined or numerically unstable.
 @NaN@
+1
+Warning: the given expression is undefined or numerically unstable.
+@NaN@
+1
+sin(x) / cos(1.57079632679489661923132169163975144209858469968754 + x)
+[@NaN@;@NaN@]
+[-@Inf@;@Inf@]
+[1;1]
+[-@Inf@;@Inf@]
+1
+1
+-1
+[@NaN@;@NaN@]
+[-@Inf@;@Inf@]
+[1;1]
+[-@Inf@;@Inf@]
+[1;1]
+[1;1]
+[1;1]
+[-1.00000000000000000000000000000000000000000000000004;-0.99999999999999999999999999999999999999999999999997]
+The tool has been restarted.
+Warning: the given expression is undefined or numerically unstable.
+@NaN@
+Warning: the given expression is undefined or numerically unstable.
+@NaN@
 Warning: the given expression is undefined or numerically unstable.
 @NaN@
 Warning: the given expression is undefined or numerically unstable.
