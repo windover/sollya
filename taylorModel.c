@@ -71,6 +71,33 @@ tModel* createEmptytModel(int n,  mpfi_t x){ //mpfr_t x0,
   return t;
 }
 
+
+tModel* createConsttModel(int n,  mpfi_t x, mpfi_t ct){ //mpfr_t x0,
+  tModel* t;
+  int i;
+ // printf("\nin createEmptyTM\n ");
+  t= (tModel *)safeMalloc(sizeof(tModel));
+  mpfi_init2(t->rem_bound, getToolPrecision());
+  mpfi_init2(t->poly_bound,getToolPrecision());
+  mpfi_init2(t->x,getToolPrecision());
+  mpfi_set(t->x,x);
+  //mpfr_init2(t->x0,getToolPrecision());
+  //mpfr_set(t->x0,x0,GMP_RNDN);
+  t->n=n;
+  t->poly_array= (mpfi_t *)safeMalloc((n+1)*sizeof(mpfi_t));
+  for(i=0;i<=n;i++){
+    mpfi_init2(t->poly_array[i], getToolPrecision());
+    mpfi_set_ui(t->poly_array[i],0);
+  }
+  
+  mpfi_set(t->poly_array[0],ct);
+  mpfi_set(t->poly_bound,ct);
+  mpfi_set(t->rem_bound,0); 
+  return t;
+}
+
+
+
 /*This function dealocates a taylor model
 */
 void cleartModel(tModel *t){
@@ -454,78 +481,7 @@ void  multiplication_TM(tModel *t,tModel *c1, tModel *c2){
 
 
 
-/*void  natPower_TM(tModel *t,tModel *c1, int k){
-  //we will multiply two taylor models of order n; and obtain a new taylor model of order n;
-  int n,i,j;
-  mpfi_t *r;
-  tModel *tt;
-  printf("in multiplication TM");
-  n=t->n;
-  //aux tm for doing the multiplications
-  
-  tt=createEmptytModel(n,t->x);
-  
-  r= (mpfi_t *)safeMalloc((n)*sizeof(mpfi_t));
-  
-  for(i=0;i<=n-1;i++){
-    mpfi_init2(r[i], getToolPrecision());
-    mpfi_set_ui(r[i],0);
-  }
-  mpfi_t temp1, temp2;
-  mpfi_init2(temp1, getToolPrecision());
-  mpfi_init2(temp2, getToolPrecision());
-  
- 
-  //i1*p2+i2*p1+i1*i2
-  mpfi_mul(temp1, c1->rem_bound, c2->rem_bound);
-  mpfi_mul(temp2, c1->poly_bound, c2->rem_bound);
-  mpfi_add(tt->rem_bound,temp1,temp2);
-  mpfi_mul(temp1, c1->rem_bound, c2->poly_bound);
-  mpfi_add(tt->rem_bound, tt->rem_bound, temp1);
-  //new polynomial;
-  for(i=0; i<=n;i++)
-    for (j=0;j<=n;j++){
-      mpfi_mul(temp1,c1->poly_array[i], c2->poly_array[j]);
-      if ((i+j)<=n )
-        mpfi_add(tt->poly_array[i+j],tt->poly_array[i+j],temp1);
-      else
-        mpfi_add(r[i+j-n-1],r[i+j-n-1],temp1);
-    }
-   //compute the bound for poly from x^(n+1)...x^(2*n)
-   //----------------------------------------
-   //polynomialBound(&temp1, n-1,r,t->x);
-   //--------------------------------------
-   
-   polynomialBoundSharp(&temp1, n-1,r,t->x);
-   
-   //printInterval(temp1);
-   //we have to multiply by x^(n+1);
-   mpfi_set_ui(temp2,n+1);
-   mpfi_pow(temp2,t->x,temp2);
-   //printInterval(temp2);
-   mpfi_mul(temp1,temp1,temp2);
-   //we set the bound for the remainder;
-   mpfi_add(tt->rem_bound,tt->rem_bound,temp1);
-   
-  //we compute the new polynomial bound for the new model
-  //----------------------------------------
-  //polynomialBound(&temp1, n,tt->poly_array,t->x);   
-  //
-  polynomialBoundSharp(&temp1, n,tt->poly_array,t->x);   
-  mpfi_set(tt->poly_bound,temp1);
-  
-  mpfi_clear(temp1);
-  mpfi_clear(temp2);
-  for(i=0;i<=n-1;i++)
-    mpfi_clear(r[i]);
-  free(r); 
-  
-  //set the result
-  settModel(t,tt);
-  //clear the aux tm;
-  cleartModel(tt);
- }
-*/
+
 //-----------------------------------------------------------
 
 /*This function computes the tm for addition of two 
@@ -684,9 +640,11 @@ pag. 386
 void log_TM(tModel *t, tModel *child1_tm){
   int i,n;
   
-  mpfi_t cf,logcf, powcf, inti,temp,powx,pown,int01;
+  mpfi_t cf,logcf, powcf, inti,temp,powx,pown,int01, temp1, temp2;
   tModel *tt,*tc, *partialResult_tm, *partialResult2_tm;
-  //printf("in log_TM");
+  
+  mpfr_t inftemp2,suptemp2;
+  printf("in log_TM");
   n=t->n;
   
   //additional tms for computations
@@ -758,28 +716,95 @@ void log_TM(tModel *t, tModel *child1_tm){
   mpfi_mul(powcf,powcf,cf);
   mpfi_init2(temp, getToolPrecision());
   mpfi_add(temp, tc->poly_bound,tc->rem_bound);//bound on the tc
+  
+  mpfi_init2(temp1, getToolPrecision());
+  mpfi_set(temp1, temp);
+  
+  mpfi_init2(temp2, getToolPrecision());
+  mpfi_set(temp2, temp);
+  
     
   mpfi_init2(pown,getToolPrecision());
   mpfi_set_ui(pown,n+1);
   
   mpfi_init2(powx,getToolPrecision());
-  mpfi_pow(powx,temp, pown);
+  mpfi_pow(powx,temp1, pown);
   mpfi_div(powx,powx,powcf); 
   mpfi_div(powx,powx,inti);
     
   mpfi_init2(int01,getToolPrecision());
   mpfi_interv_ui(int01,0,1);
-  mpfi_mul(temp,temp,int01);
-  mpfi_div(temp,temp,cf);
-  mpfi_add_ui(temp,temp,1);  
-  mpfi_pow(temp,temp,pown);
-  mpfi_div(temp,powx,temp);
-  //printf("bound=");
-  //printInterval(temp);
-  mpfi_add(tt->rem_bound,tt->rem_bound,temp);
+  mpfi_mul(temp1,temp1,int01);
+  mpfi_div(temp1,temp1,cf);
+  mpfi_add_ui(temp1,temp1,1);  
+  mpfi_pow(temp1,temp1,pown);
+  mpfi_div(temp1,powx,temp1);
+  
+  
+  
+  
+  
+  
+  printf("bound1=");
+  printInterval(temp1);
+  
+  
+  
+  mpfi_init2(pown,getToolPrecision());
+  mpfi_set_ui(pown,n+1);
+  /*
+  mpfi_init2(powx,getToolPrecision());
+  mpfi_init2(int01,getToolPrecision());
+  mpfi_interv_ui(int01,0,1);
+  mpfi_div(temp2,cf,temp2);
+  mpfi_add(temp2,temp2,int01);
+  mpfi_ui_div(temp2,1,temp2);
+  mpfi_pow(temp2,temp2,pown);
+  
+  
+  */
+  printf("initially z=");
+  printInterval(temp2);
+  mpfr_init2(inftemp2, getToolPrecision());
+  mpfr_init2(suptemp2, getToolPrecision());
+  
+  mpfi_get_left(inftemp2,temp2);
+  mpfi_get_right(suptemp2,temp2);
+  
+  mpfi_init2(int01,getToolPrecision());
+  mpfi_interv_ui(int01,0,1);
+  
+  mpfi_init2(powx,getToolPrecision());
+  mpfi_mul_fr(powx,int01,inftemp2);
+  mpfi_add(powx,cf,powx);
+  mpfi_fr_div(powx,inftemp2,powx);
+  mpfi_pow(powx, powx, pown);
+  mpfi_get_left(inftemp2,powx);
+  
+  mpfi_mul_fr(powx,int01,suptemp2);
+  mpfi_add(powx,cf,powx);
+  mpfi_fr_div(powx,suptemp2,powx);
+  mpfi_pow(powx, powx, pown);
+  mpfi_get_right(suptemp2,powx);
+  
+  mpfi_interv_fr(temp2,inftemp2,suptemp2);
+  
+  mpfi_div(temp2,temp2,inti);
+  
+  
+  
+  
+   printf("bound2=");
+  printInterval(temp2);
+  
+  mpfi_intersect(temp1,temp1,temp2);
+  
+  mpfi_add(tt->rem_bound,tt->rem_bound,temp1);
     
     
   mpfi_clear(temp);
+  mpfi_clear(temp1);
+  mpfi_clear(temp2);
   mpfi_clear(powx);
   mpfi_clear(pown);
   mpfi_clear(powcf);
@@ -854,10 +879,10 @@ void sin_TM(tModel *t, tModel *child1_tm){
     multiplication_TM(partialResult_tm, partialResult_tm, tc);
     //printf("i= %d  ",i);
     //printtModel(partialResult_tm);
-    //div by i!
-    ctDivision_TM(partialResult_tm, fact);
     //mul by sin,cos,-sin,-cos
     settModel(partialResult2_tm,partialResult_tm);
+    //div by i!
+    ctDivision_TM(partialResult2_tm, fact);
     if ((i%4)==0) 
       mpfi_set(inti,sincf);
     else if ((i%4)==1) 
@@ -944,7 +969,7 @@ void cos_TM(tModel *t, tModel *child1_tm){
   
   mpfi_t cf,sincf, coscf, fact,temp,powx,pown,int01,inti;
   tModel *tt,*tc, *partialResult_tm,*partialResult2_tm;
-  //printf("in cos_TM");
+  printf("in cos_TM");
   n=t->n;
   
   //additional tms for computations
@@ -994,10 +1019,10 @@ void cos_TM(tModel *t, tModel *child1_tm){
     multiplication_TM(partialResult_tm, partialResult_tm, tc);
     //printf("i= %d  ",i);
     //printtModel(partialResult_tm);
-    //div by i!
-    ctDivision_TM(partialResult_tm, fact);
     //mul by cos,-sin,-cos,sin
     settModel(partialResult2_tm,partialResult_tm);
+    //div by i!
+    ctDivision_TM(partialResult2_tm, fact);
     if ((i%4)==0) 
       mpfi_set(inti,coscf);
     else if ((i%4)==1) {
@@ -1074,6 +1099,250 @@ void cos_TM(tModel *t, tModel *child1_tm){
 }
 
 
+
+void sinh_TM(tModel *t, tModel *child1_tm){
+  int i,n;
+  
+  mpfi_t cf,sinhcf, coshcf, fact,temp,powx,pown,int01,inti;
+  tModel *tt,*tc, *partialResult_tm,*partialResult2_tm;
+  //printf("in sinh_TM");
+  n=t->n;
+  
+  //additional tms for computations
+  tt=createEmptytModel(n,t->x);
+  settModel(tt,t);
+  tc=createEmptytModel(n,t->x);
+  settModel(tc,child1_tm);
+    
+  //take the constant coefficient
+  mpfi_init2(cf,getToolPrecision());
+  mpfi_set(cf,tc->poly_array[0]);
+  mpfi_sub(tc->poly_bound,tc->poly_bound,cf);
+  //compute sinh(cf)
+  mpfi_init2(sinhcf,getToolPrecision());
+  mpfi_sinh(sinhcf,cf);
+  //compute cos(cf)
+  mpfi_init2(coshcf,getToolPrecision());
+  mpfi_cosh(coshcf,cf);
+  
+  mpfi_set_ui(tc->poly_array[0],0);
+  
+  //we have the taylor model tc; we use tm_addition and tm_multiplication to obtain the new tm;
+  mpfi_init2(fact, getToolPrecision());
+  mpfi_set_ui(fact, 1);
+  
+  mpfi_init2(inti, getToolPrecision());
+  mpfi_set_ui(inti, 1);
+  
+  partialResult_tm=createEmptytModel(n,t->x);
+  partialResult2_tm=createEmptytModel(n,t->x);
+  //make this tm a constant
+  mpfi_set_ui(partialResult_tm->poly_bound,1);
+  mpfi_set_ui(partialResult_tm->poly_array[0],1);
+  mpfi_set_ui(partialResult_tm->rem_bound,0);
+    
+  mpfi_set(tt->poly_bound,sinhcf);
+  mpfi_set(tt->poly_array[0],sinhcf);
+  mpfi_set_ui(tt->rem_bound,0);
+  //printf("partial result");  
+  //printtModel(partialResult_tm);
+  //printf("child:");
+  //printtModel(tc);    
+  for(i=1;i<=n;i++){
+    //compute i!
+    mpfi_mul_ui(fact,fact, i);
+    //compute (child1_tm)^i
+    multiplication_TM(partialResult_tm, partialResult_tm, tc);
+    //printf("i= %d  ",i);
+    //printtModel(partialResult_tm);
+    
+    //mul by sinh,cosh
+    settModel(partialResult2_tm,partialResult_tm);
+    //div by i!
+    ctDivision_TM(partialResult2_tm, fact);
+    if ((i%2)==0) 
+      mpfi_set(inti,sinhcf);
+    else 
+      mpfi_set(inti,coshcf);
+    
+    ctMultiplication_TM(partialResult2_tm,inti);
+    //add with previous result
+    addition_TM(tt,tt,partialResult2_tm);
+    }
+  //printf("Taylor model obtained:");
+  //printtModel(tt);
+  //we have the polynomial of taylor model for log(...)
+    
+  //we work on the bound;
+  //1/(k+1)!  f^(n+1) * J -> cos, -sin,-cos,sin
+  mpfi_mul_ui(fact,fact,n+1);
+      
+    
+  mpfi_init2(temp, getToolPrecision());
+  mpfi_add(temp, tc->poly_bound,tc->rem_bound);//bound on the tc
+    
+  mpfi_init2(pown,getToolPrecision());
+  mpfi_set_ui(pown,n+1);
+  
+  mpfi_init2(powx,getToolPrecision());
+  mpfi_pow(powx,temp, pown);
+  mpfi_div(powx,powx,fact); 
+    
+  mpfi_init2(int01,getToolPrecision());
+  mpfi_interv_ui(int01,0,1);
+  mpfi_mul(temp,temp,int01);
+  
+  if ((n%2)==0) 
+      mpfi_cosh(temp,temp);
+  else 
+      mpfi_sinh(temp,temp);
+      
+  mpfi_mul(temp,temp,powx);
+  //printf("bound=");
+  //printInterval(temp);
+  mpfi_add(tt->rem_bound,tt->rem_bound,temp);
+    
+    
+  mpfi_clear(temp);
+  mpfi_clear(powx);
+  mpfi_clear(pown);
+  mpfi_clear(coshcf);
+  mpfi_clear(sinhcf);
+  mpfi_clear(int01);
+  mpfi_clear(inti);
+  settModel(t,tt);
+  //clear old taylor models
+  cleartModel(partialResult_tm);
+  cleartModel(partialResult2_tm);
+  cleartModel(tc);
+  cleartModel(tt);
+}
+
+
+/*This function computes the tm for cosh(given_tm)
+It uses the taylor series expansion given in :
+Makino-Berz : Taylor Models and Other Validated Functional Inclusion Methods
+2003,International jurnal of pure and applied mathematics, 379-456
+pag. 388
+*/
+void cosh_TM(tModel *t, tModel *child1_tm){
+  int i,n;
+  
+  mpfi_t cf,sinhcf, coshcf, fact,temp,powx,pown,int01,inti;
+  tModel *tt,*tc, *partialResult_tm,*partialResult2_tm;
+  //printf("in cosh_TM");
+  n=t->n;
+  
+  //additional tms for computations
+  tt=createEmptytModel(n,t->x);
+  settModel(tt,t);
+  tc=createEmptytModel(n,t->x);
+  settModel(tc,child1_tm);
+    
+  //take the constant coefficient
+  mpfi_init2(cf,getToolPrecision());
+  mpfi_set(cf,tc->poly_array[0]);
+  mpfi_sub(tc->poly_bound,tc->poly_bound,cf);
+  //compute sinh(cf)
+  mpfi_init2(sinhcf,getToolPrecision());
+  mpfi_sinh(sinhcf,cf);
+  //compute cosh(cf)
+  mpfi_init2(coshcf,getToolPrecision());
+  mpfi_cosh(coshcf,cf);
+  
+  mpfi_set_ui(tc->poly_array[0],0);
+  
+  //we have the taylor model tc; we use tm_addition and tm_multiplication to obtain the new tm;
+  mpfi_init2(fact, getToolPrecision());
+  mpfi_set_ui(fact, 1);
+  
+  mpfi_init2(inti, getToolPrecision());
+  mpfi_set_ui(inti, 1);
+  
+  partialResult_tm=createEmptytModel(n,t->x);
+  partialResult2_tm=createEmptytModel(n,t->x);
+  //make this tm a constant
+  mpfi_set_ui(partialResult_tm->poly_bound,1);
+  mpfi_set_ui(partialResult_tm->poly_array[0],1);
+  mpfi_set_ui(partialResult_tm->rem_bound,0);
+    
+  mpfi_set(tt->poly_bound,coshcf);
+  mpfi_set(tt->poly_array[0],coshcf);
+  mpfi_set_ui(tt->rem_bound,0);
+  //printf("partial result");  
+  //printtModel(partialResult_tm);
+  //printf("child:");
+  //printtModel(tc);    
+  for(i=1;i<=n;i++){
+    //compute i!
+    mpfi_mul_ui(fact,fact, i);
+    //compute (child1_tm)^i
+    multiplication_TM(partialResult_tm, partialResult_tm, tc);
+    //printf("i= %d  ",i);
+    //printtModel(partialResult_tm);
+   
+    //mul by cos,-sin,-cos,sin
+    settModel(partialResult2_tm,partialResult_tm);
+     //div by i!
+    ctDivision_TM(partialResult2_tm, fact);
+    if ((i%2)==0) 
+      mpfi_set(inti,coshcf);
+    else 
+      mpfi_set(inti,sinhcf);
+      
+     
+    ctMultiplication_TM(partialResult2_tm,inti);
+    //add with previous result
+    addition_TM(tt,tt,partialResult2_tm);
+    }
+  //printf("Taylor model obtained:");
+  //printtModel(tt);
+  //we have the polynomial of taylor model for log(...)
+    
+  //we work on the bound;
+  //1/(k+1)!  f^(n+1) * J -> cos, -sin,-cos,sin
+  mpfi_mul_ui(fact,fact,n+1);
+      
+    
+  mpfi_init2(temp, getToolPrecision());
+  mpfi_add(temp, tc->poly_bound,tc->rem_bound);//bound on the tc
+    
+  mpfi_init2(pown,getToolPrecision());
+  mpfi_set_ui(pown,n+1);
+  
+  mpfi_init2(powx,getToolPrecision());
+  mpfi_pow(powx,temp, pown);
+  mpfi_div(powx,powx,fact); 
+    
+  mpfi_init2(int01,getToolPrecision());
+  mpfi_interv_ui(int01,0,1);
+  mpfi_mul(temp,temp,int01);
+  
+  if ((n%2)==0) 
+      mpfi_sinh(temp,temp);
+  else 
+      mpfi_cosh(temp,temp);
+  mpfi_mul(temp,temp,powx);
+  //printf("bound=");
+  //printInterval(temp);
+  mpfi_add(tt->rem_bound,tt->rem_bound,temp);
+    
+    
+  mpfi_clear(temp);
+  mpfi_clear(powx);
+  mpfi_clear(pown);
+  mpfi_clear(coshcf);
+  mpfi_clear(sinhcf);
+  mpfi_clear(int01);
+  mpfi_clear(inti);
+  settModel(t,tt);
+  //clear old taylor models
+  cleartModel(partialResult_tm);
+  cleartModel(partialResult2_tm);
+  cleartModel(tc);
+  cleartModel(tt);
+}
+
 /*This function computes the tm for 1/(given_tm)
 It uses the taylor series expansion given in :
 Makino-Berz : Taylor Models and Other Validated Functional Inclusion Methods
@@ -1093,7 +1362,8 @@ void inv_TM(tModel *t, tModel *c1){
   settModel(tt,t);
   tc=createEmptytModel(n,t->x);
   settModel(tc,c1);
-    
+  //printf("Before inverting");
+  //printtModel(tc);  
   //take the constant coefficient
   mpfi_init2(cf,getToolPrecision());
   mpfi_set(cf,tc->poly_array[0]);
@@ -1520,6 +1790,55 @@ void sqrt_TM(tModel *t, tModel *c1){
   cleartModel(tc);
   cleartModel(tt);
 }
+/*This function computes the tm for the integer power function
+of two taylor models
+K must be an integer
+*/
+
+void  natPower_TM(tModel *t,tModel *tc, int k){
+  //we will raise at power k a taylor model of order n; and obtain a new taylor model of order n;
+  int n,i;
+  
+  tModel *partialResult_tm, *powChild;
+  printf("in natPower TM");
+  n=t->n;
+  //aux tm for doing the multiplications
+  
+ 
+  partialResult_tm=createEmptytModel(n,t->x);
+  
+  mpfi_set_ui(partialResult_tm->poly_bound,1);
+  mpfi_set_ui(partialResult_tm->rem_bound,0);
+  mpfi_set_ui(partialResult_tm->poly_array[0],1);
+  powChild=createEmptytModel(n,t->x);
+  if (k<0){
+    inv_TM(powChild, tc);
+    k=-k;
+  }
+  else
+  settModel(powChild, tc);
+  printf("\nbefore raising at power");
+  
+  printtModel(powChild); 
+  for(i=1;i<=k;i++){
+    
+    //compute (powChild)^i
+    multiplication_TM(partialResult_tm, partialResult_tm, powChild);
+    
+    printtModel(partialResult_tm);
+   // settModel(partialResult_tm, partialResult_tm2);
+   }
+  //set the result
+  settModel(t,partialResult_tm);
+  //clear the aux tm;
+  cleartModel(partialResult_tm);
+  cleartModel(powChild);
+ }
+
+
+
+
+
 
 /*This function computes the tm for the power function
 of two taylor models
@@ -1565,18 +1884,19 @@ void taylor_model(tModel *t, node *f) {
  // mpfi_t *res1, *res2, *res3, *res4, *res5, *res6;
   //mpfi_t *rem_bound1, *rem_bound2;
  // mpfr_t minusOne;
-  //node *simplifiedChild1, *simplifiedChild2;
-  //mpfi_t temp1,temp2;
+  
+  node *simplifiedChild1, *simplifiedChild2;
+  mpfi_t temp1,temp2;
   node **coefficients;
   mpfi_t *rpoly, *boundRpoly;
   tModel *child1_tm, *child2_tm;
   int d,n;
   mpfi_t powx,powy;
-  
+  mpfi_t ct;
   n=t->n;
   //printf("We entered taylor model order: %d\n",n);
   if (isPolynomial(f) ){
-  //printf("We found a polynomial!!!!!!!\n");
+  //printf("We found a polynomial!!!\n");
     getCoefficients(&d, &coefficients, f);
     //for(i=0;i<=d;i++) if (coefficients[i]!=NULL) printTree(coefficients[i]);
     if (d<=n){
@@ -1590,7 +1910,7 @@ void taylor_model(tModel *t, node *f) {
       //compute the bound for the polynomial, put the bound for tm= 0;
       boundRpoly=(mpfi_t *)safeMalloc(sizeof(mpfi_t));
       mpfi_init2(*boundRpoly,getToolPrecision());
-      polynomialBound(boundRpoly,d,t->poly_array,t->x);
+      polynomialBoundSharp(boundRpoly,d,t->poly_array,t->x);
       mpfi_set(t->poly_bound,*boundRpoly);
       mpfi_clear(*boundRpoly); 
       mpfi_set_ui(t->rem_bound,0);
@@ -1601,7 +1921,7 @@ void taylor_model(tModel *t, node *f) {
       //we keep the bound on the n degree polynomial
         boundRpoly=(mpfi_t *)safeMalloc(sizeof(mpfi_t));
         mpfi_init2(*boundRpoly,getToolPrecision());
-        polynomialBound(boundRpoly,n,t->poly_array,t->x);
+        polynomialBoundSharp(boundRpoly,n,t->poly_array,t->x);
         //printInterval(*boundRpoly);
         mpfi_set(t->poly_bound,*boundRpoly);
         
@@ -1615,7 +1935,7 @@ void taylor_model(tModel *t, node *f) {
         mpfi_init2(rpoly[i-n-1], getToolPrecision());
         mpfi_set_node( &rpoly[i-n-1], coefficients[i]);
       }
-        polynomialBound(boundRpoly,d-n-1,rpoly,t->x);
+        polynomialBoundSharp(boundRpoly,d-n-1,rpoly,t->x);
         //printInterval(*boundRpoly);
         //we have to multiply by x^(n+1);
         mpfi_init2(powx,getToolPrecision());
@@ -1754,6 +2074,7 @@ void taylor_model(tModel *t, node *f) {
   break;
   
   case LOG:
+  printf("loogggg");
   //create a new empty taylor model the child
     child1_tm=createEmptytModel(n, t->x);
     //call taylor_model on the child
@@ -1795,11 +2116,33 @@ void taylor_model(tModel *t, node *f) {
   break;
   
   case TAN:
+  break;
   case ASIN:
+  break;
   case ACOS:
+  break;
   case ATAN:
+  break;
   case SINH:
+  //create a new empty taylor model the child
+    child1_tm=createEmptytModel(n, t->x);
+    //call taylor_model on the child
+    taylor_model(child1_tm, f->child1);
+    //compute sinh for the taylor model obtained
+    sinh_TM(t,child1_tm);
+    //clear old child
+    cleartModel(child1_tm);
+  break;
   case COSH:
+  //create a new empty taylor model the child
+    child1_tm=createEmptytModel(n, t->x);
+    //call taylor_model on the child
+    taylor_model(child1_tm, f->child1);
+    //compute cosh for the taylor model obtained
+    cosh_TM(t,child1_tm);
+    //clear old child
+    cleartModel(child1_tm);
+  break;
   case TANH:
   case ASINH:
   case ACOSH:
@@ -1819,23 +2162,117 @@ void taylor_model(tModel *t, node *f) {
     break;
   case POW:
   //power f^g = exp(g * log f)
-  //printf(" power \n ");
-  //create a new empty taylor model the child1
-    child1_tm=createEmptytModel(n, t->x);
-    //call taylor_model on the child
-    taylor_model(child1_tm, f->child1);
+  printf(" power \n ");
   
-  //create a new empty taylor model the child2
-    child2_tm=createEmptytModel(n, t->x);
-    //call taylor_model on the child
-    taylor_model(child2_tm, f->child2);
+  //we will try to create more cases just in case it will be better
+ 
+ //var^constant -> polynomial, not likely to appear
+  
+ /*if (((f->child2)->nodeType==CONSTANT) && ((f->child1)->nodeType==VARIABLE)){
+        
+        //create a new empty taylor model for the child
+        child1_tm=createEmptytModel(n, t->x);
+        //call taylor_model on the child
+        taylor_model(child1_tm, f->child1);
+        
+        //compute ctpower for the taylor model obtained
+        mpfi_init2(ct, getToolPrecision());
+        if (mpfr_integer_p(*((f->child2)->value))!=0) {  //it is an integer
+         //use natPower_TM();
+         natPower_TM(t,child1_tm,mpfr_get_si(*((f->child2)->value),GMP_RNDN));        
+        }
+        else{
+        mpfi_set_fr(ct, *((f->child2)->value));
+       // ctPower_TM(t,child1_tm,ct);
+        //clear old child
+        cleartModel(child1_tm);
+        mpfi_clear(ct);
+        }
+    }
+    else{*/
+      simplifiedChild2=simplifyTreeErrorfree(f->child2);
+      simplifiedChild1=simplifyTreeErrorfree(f->child1);
+      
+      if ((simplifiedChild2->nodeType==CONSTANT) &&(simplifiedChild1->nodeType==CONSTANT)) { //we have the ct1^ct2 case
+         // printf("We are in the  ct1^ct2 case");       
+         mpfi_init2(temp1, getToolPrecision());
+         mpfi_set_fr(temp1, *(simplifiedChild1->value));
+         mpfi_init2(temp2, getToolPrecision());
+         mpfi_set_fr(temp2, *(simplifiedChild2->value));
+         mpfi_pow(temp1,temp1,temp2);
+         child1_tm=createConsttModel(n, t->x,temp1 );
+         settModel(t, child1_tm);
+         cleartModel(child1_tm);
+         mpfi_clear(temp1);
+         mpfi_clear(temp2);
+      }
+      else if (simplifiedChild2->nodeType==CONSTANT) { //we have the f^p case
+        //printf("We are in the  f^p case");        
+          //create a new empty taylor model for the child
+        child1_tm=createEmptytModel(n, t->x);
+        //call taylor_model on the child
+        taylor_model(child1_tm, f->child1);
+        //compute ctpower for the taylor model obtained
+        mpfi_init2(ct, getToolPrecision());
+        if (mpfr_integer_p(*((f->child2)->value))!=0) {  //it is an integer
+         //use natPower_TM();
+         natPower_TM(t,child1_tm,mpfr_get_si(*((f->child2)->value),GMP_RNDN));        
+        }
+        else{
+          //compute ctpower for the taylor series obtained
+          mpfi_init2(ct, getToolPrecision());
+          mpfi_set_fr(ct, *(simplifiedChild2->value));
+          // ctPower_TM(t,child1_tm,ct);
+          //clear old child
+          cleartModel(child1_tm);
+          mpfi_clear(ct);  
+        }
+      }   
+       else if (simplifiedChild1->nodeType==CONSTANT) { //we have the p^f case
+        //printf("We are in the  p^f case");   
+        //create a new empty taylor model the child1
+        child1_tm=createEmptytModel(n, t->x);
+        //call taylor_model on the child
+        taylor_model(child1_tm, f->child1);
+  
+        //create a new empty taylor model the child2
+        child2_tm=createEmptytModel(n, t->x);
+        //call taylor_model on the child
+        taylor_model(child2_tm, f->child2);
     
-    pow_TM(t, child1_tm, child2_tm);
+        pow_TM(t, child1_tm, child2_tm);
   
   
-  //clear old child
-  cleartModel(child1_tm);
-  cleartModel(child2_tm);
+        //clear old child
+        cleartModel(child1_tm);
+        cleartModel(child2_tm);  
+        
+      } 
+      else {
+        //printf("We are in the  f^g case");  
+        //create a new empty taylor model the child1
+        child1_tm=createEmptytModel(n, t->x);
+        //call taylor_model on the child
+        taylor_model(child1_tm, f->child1);
+  
+        //create a new empty taylor model the child2
+        child2_tm=createEmptytModel(n, t->x);
+        //call taylor_model on the child
+        taylor_model(child2_tm, f->child2);
+    
+        pow_TM(t, child1_tm, child2_tm);
+  
+  
+        //clear old child
+        cleartModel(child1_tm);
+        cleartModel(child2_tm);   
+      
+    }
+    free_memory(simplifiedChild2);
+    free_memory(simplifiedChild1);
+ 
+  
+ 
   
    
    break;
