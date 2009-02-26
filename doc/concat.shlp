@@ -1,5 +1,5 @@
 #NAME $CONCAT
-#QUICK_DESCRIPTION concatenates two lists or strings.
+#QUICK_DESCRIPTION concatenates two lists or strings or applies a list as arguments to a procedure
 
 #CALLING <L1>$COMMAND<L2>
 #TYPE ($LIST_TYPE, $LIST_TYPE) -> $LIST_TYPE
@@ -7,12 +7,20 @@
 #CALLING <string1>$COMMAND<string2>
 #TYPE ($STRING_TYPE, $STRING_TYPE) -> $STRING_TYPE
 
+#CALLING <proc>$COMMAND<L1>
+#TYPE ($STRING_TYPE, $STRING_TYPE) -> $STRING_TYPE
+
+
 #PARAMETERS <L1> and <L2> are two lists.
 #PARAMETERS <string1> and <string2> are two strings.
-
+#PARAMETERS <proc> is a procedure.
 
 #DESCRIPTION 
-$COMMAND concatenates two lists or strings.
+In its first usage form, $COMMAND concatenates two lists or strings.
+
+#DESCRIPTION
+In its second usage form, $COMMAND applies the elements of a list as
+arguments to a procedure.
 
 #EXAMPLE
 [|1,...,3|]@[|7,8,9|];
@@ -20,9 +28,15 @@ $COMMAND concatenates two lists or strings.
 #EXAMPLE
 "Hello "@"World!";
 
+#EXAMPLE
+procedure cool(a,b,c) { 
+write(a,", ", b," and ",c," are cool guys.\n");
+};
+cool @ [| "Christoph", "Mioara", "Sylvain" |];
 
 #SEEALSO $PREPEND
 #SEEALSO $APPEND
+#SEEALSO $PROCEDURE
 
 
 

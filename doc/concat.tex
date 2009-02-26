@@ -1,21 +1,26 @@
 \subsection{concat}
 \label{labconcat}
 \noindent Name: \textbf{@}\\
-concatenates two lists or strings.\\
+concatenates two lists or strings or applies a list as arguments to a procedure\\
 
 \noindent Usage: 
 \begin{center}
 \emph{L1}\textbf{@}\emph{L2} : (\textsf{list}, \textsf{list}) $\rightarrow$ \textsf{list}\\
 \emph{string1}\textbf{@}\emph{string2} : (\textsf{string}, \textsf{string}) $\rightarrow$ \textsf{string}\\
+\emph{proc}\textbf{@}\emph{L1} : (\textsf{string}, \textsf{string}) $\rightarrow$ \textsf{string}\\
 \end{center}
 Parameters: 
 \begin{itemize}
 \item \emph{L1} and \emph{L2} are two lists.
 \item \emph{string1} and \emph{string2} are two strings.
+\item \emph{proc} is a procedure.
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{@} concatenates two lists or strings.
+\item In its first usage form, \textbf{@} concatenates two lists or strings.
+
+\item In its second usage form, \textbf{@} applies the elements of a list as
+   arguments to a procedure.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
@@ -29,4 +34,13 @@ Parameters:
 Hello World!
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{.:} (\ref{labprepend}), \textbf{:.} (\ref{labappend})
+\noindent Example 3: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> procedure cool(a,b,c) { 
+> write(a,", ", b," and ",c," are cool guys.\n");
+> };
+> cool @ [| "Christoph", "Mioara", "Sylvain" |];
+Christoph, Mioara and Sylvain are cool guys.
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{.:} (\ref{labprepend}), \textbf{:.} (\ref{labappend}), \textbf{procedure} (\ref{labprocedure})

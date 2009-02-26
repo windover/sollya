@@ -12862,6 +12862,24 @@ node *evaluateThingInner(node *tree) {
 			free(copy->child1);
 			free(copy->child2);
 			if (timingString != NULL) popTimeCounter(timingString);
+		      } else {
+			if (isProcedure(copy->child1) && isList(copy->child2)) {
+			  tempChain = copyChainWithoutReversal(copy->child2->arguments, evaluateThingInnerOnVoid);
+			  tempNode = evaluateThingInner(copy->child1);
+			  tempNode2 = NULL;
+			  if (executeProcedure(&tempNode2, tempNode, tempChain)) {
+			    if (tempNode2 != NULL) {
+			      freeThing(copy);
+			      copy = tempNode2;
+			    } 
+			  } else {
+			    printMessage(1,"Warning: an error occurred while executing a procedure.\n");
+			    freeThing(copy);
+			    copy = makeError();
+			  }
+			  freeChain(tempChain, freeThingOnVoid);
+			  freeThing(tempNode);
+			}
 		      }
 		    }
 		  }
