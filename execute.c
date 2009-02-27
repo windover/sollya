@@ -2047,8 +2047,8 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
     if (!res) {
       if (!noMessage) {
 	if (!noRoundingWarnings) {
-	  printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate.\n");
-	  printMessage(1,"A faithful evaluation is not possible. Will use a floating-point evaluation.\n");
+	  printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate and");
+	  printMessage(1,"a faithful evaluation is not possible. Will use a floating-point evaluation.\n");
 	} 
       } else {
 	if (!noRoundingWarnings) {
@@ -2061,7 +2061,7 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
       if (simplified->nodeType != CONSTANT) {
 	if (!noMessage) {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate.\n");
+	    printMessage(2,"Information: the given expression is not a constant but an expression to evaluate.\n");
 	  }
 	}
       }
