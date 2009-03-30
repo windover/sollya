@@ -1671,7 +1671,6 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   mpfr_clear(ar); 
   mpfr_clear(bl); 
   mpfr_clear(br);
-
   return excludes;
 }
 
@@ -1782,7 +1781,6 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
     else 
       printMessage(25,"Warning: no Taylor evaluation is possible because no derivative has been given.\n");
     
-
     excludes = evaluateI(result, func, x, prec, 1, hopitalrecursions+1, NULL, theo);
     if(mpfi_nan_p(result)) {
       mpfr_set_nan(leftX);

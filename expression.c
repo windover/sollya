@@ -804,11 +804,12 @@ char *sprintValue(mpfr_t *aValue) {
   char *tempBufOld;
   char *str4;
   mpfr_t temp;
-  mp_prec_t prec2, prec, p;
+  mp_prec_t prec2, prec, p, pp;
   mpfr_t *value, myValue;
   char *res;
   
   p = mpfr_get_prec(*aValue);  
+  pp = p;
   mpfr_init2(myValue,p);
   simplifyMpfrPrec(myValue, *aValue);
   if ((p > tools_precision) && (mpfr_get_prec(myValue) < tools_precision)) {
