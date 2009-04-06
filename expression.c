@@ -2387,6 +2387,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
   mp_prec_t prec, p;
   int alpha, beta;
   node *temp1, *temp2, *temp3, *temp4;
+  rangetype xrange, yrange;
 
   
   if ((tree->nodeType == DIV) && 
@@ -3542,9 +3543,45 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
       } else {
 	free_memory(simplChild1);
       }
-    } else {
-      simplified->nodeType = DOUBLE;
-      simplified->child1 = simplChild1;
+    } else {     
+      if (isConstant(simplChild1)) {
+        xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        mpfr_init2(*(yrange.a),4* tools_precision);
+        mpfr_init2(*(yrange.b),4 * tools_precision);
+        mpfr_init2(*(xrange.a),tools_precision);
+        mpfr_init2(*(xrange.b),tools_precision);
+        mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
+        mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
+        evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
+        mpfr_round_to_double(*(xrange.a),*(yrange.a));
+        mpfr_round_to_double(*(xrange.b),*(yrange.b));
+        if (mpfr_number_p(*(xrange.a)) && 
+            mpfr_number_p(*(xrange.b)) &&
+            (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
+          simplified->nodeType = CONSTANT;
+          value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+          mpfr_init2(*value,tools_precision);
+          simplified->value = value;
+          mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+        } else {
+          simplified->nodeType = DOUBLE;
+          simplified->child1 = simplChild1;
+        }
+        mpfr_clear(*(xrange.a));
+        mpfr_clear(*(xrange.b));
+        mpfr_clear(*(yrange.a));
+        mpfr_clear(*(yrange.b));
+        free(xrange.a);
+        free(xrange.b);
+        free(yrange.a);
+        free(yrange.b);
+      } else {
+        simplified->nodeType = DOUBLE;
+        simplified->child1 = simplChild1;
+      }
     }
     break;
   case DOUBLEDOUBLE:
@@ -3565,8 +3602,44 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
 	free_memory(simplChild1);
       }
     } else {
-      simplified->nodeType = DOUBLEDOUBLE;
-      simplified->child1 = simplChild1;
+      if (isConstant(simplChild1)) {
+        xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        mpfr_init2(*(yrange.a),4* tools_precision);
+        mpfr_init2(*(yrange.b),4 * tools_precision);
+        mpfr_init2(*(xrange.a),tools_precision);
+        mpfr_init2(*(xrange.b),tools_precision);
+        mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
+        mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
+        evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
+        mpfr_round_to_doubledouble(*(xrange.a),*(yrange.a));
+        mpfr_round_to_doubledouble(*(xrange.b),*(yrange.b));
+        if (mpfr_number_p(*(xrange.a)) && 
+            mpfr_number_p(*(xrange.b)) &&
+            (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
+          simplified->nodeType = CONSTANT;
+          value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+          mpfr_init2(*value,tools_precision);
+          simplified->value = value;
+          mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+        } else {
+          simplified->nodeType = DOUBLEDOUBLE;
+          simplified->child1 = simplChild1;
+        }
+        mpfr_clear(*(xrange.a));
+        mpfr_clear(*(xrange.b));
+        mpfr_clear(*(yrange.a));
+        mpfr_clear(*(yrange.b));
+        free(xrange.a);
+        free(xrange.b);
+        free(yrange.a);
+        free(yrange.b);
+      } else {
+        simplified->nodeType = DOUBLEDOUBLE;
+        simplified->child1 = simplChild1;
+      }
     }
     break;
   case TRIPLEDOUBLE:
@@ -3587,8 +3660,44 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
 	free_memory(simplChild1);
       }
     } else {
-      simplified->nodeType = TRIPLEDOUBLE;
-      simplified->child1 = simplChild1;
+      if (isConstant(simplChild1)) {
+        xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        mpfr_init2(*(yrange.a),4* tools_precision);
+        mpfr_init2(*(yrange.b),4 * tools_precision);
+        mpfr_init2(*(xrange.a),tools_precision);
+        mpfr_init2(*(xrange.b),tools_precision);
+        mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
+        mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
+        evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
+        mpfr_round_to_tripledouble(*(xrange.a),*(yrange.a));
+        mpfr_round_to_tripledouble(*(xrange.b),*(yrange.b));
+        if (mpfr_number_p(*(xrange.a)) && 
+            mpfr_number_p(*(xrange.b)) &&
+            (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
+          simplified->nodeType = CONSTANT;
+          value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+          mpfr_init2(*value,tools_precision);
+          simplified->value = value;
+          mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+        } else {
+          simplified->nodeType = TRIPLEDOUBLE;
+          simplified->child1 = simplChild1;
+        }
+        mpfr_clear(*(xrange.a));
+        mpfr_clear(*(xrange.b));
+        mpfr_clear(*(yrange.a));
+        mpfr_clear(*(yrange.b));
+        free(xrange.a);
+        free(xrange.b);
+        free(yrange.a);
+        free(yrange.b);
+      } else {
+        simplified->nodeType = TRIPLEDOUBLE;
+        simplified->child1 = simplChild1;
+      }
     }
     break;
   case ERF: 
@@ -3697,8 +3806,44 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
 	free_memory(simplChild1);
       }
     } else {
-      simplified->nodeType = DOUBLEEXTENDED;
-      simplified->child1 = simplChild1;
+      if (isConstant(simplChild1)) {
+        xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        mpfr_init2(*(yrange.a),4* tools_precision);
+        mpfr_init2(*(yrange.b),4 * tools_precision);
+        mpfr_init2(*(xrange.a),tools_precision);
+        mpfr_init2(*(xrange.b),tools_precision);
+        mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
+        mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
+        evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
+        mpfr_round_to_doubleextended(*(xrange.a),*(yrange.a));
+        mpfr_round_to_doubleextended(*(xrange.b),*(yrange.b));
+        if (mpfr_number_p(*(xrange.a)) && 
+            mpfr_number_p(*(xrange.b)) &&
+            (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
+          simplified->nodeType = CONSTANT;
+          value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+          mpfr_init2(*value,tools_precision);
+          simplified->value = value;
+          mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+        } else {
+          simplified->nodeType = DOUBLEEXTENDED;
+          simplified->child1 = simplChild1;
+        }
+        mpfr_clear(*(xrange.a));
+        mpfr_clear(*(xrange.b));
+        mpfr_clear(*(yrange.a));
+        mpfr_clear(*(yrange.b));
+        free(xrange.a);
+        free(xrange.b);
+        free(yrange.a);
+        free(yrange.b);
+      } else {
+        simplified->nodeType = DOUBLEEXTENDED;
+        simplified->child1 = simplChild1;
+      }
     }
     break;
   case LIBRARYFUNCTION:
@@ -3726,8 +3871,44 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
 	free_memory(simplChild1);
       }
     } else {
-      simplified->nodeType = CEIL;
-      simplified->child1 = simplChild1;
+      if (isConstant(simplChild1)) {
+        xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        mpfr_init2(*(yrange.a),4* tools_precision);
+        mpfr_init2(*(yrange.b),4 * tools_precision);
+        mpfr_init2(*(xrange.a),tools_precision);
+        mpfr_init2(*(xrange.b),tools_precision);
+        mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
+        mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
+        evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
+        mpfr_ceil(*(xrange.a),*(yrange.a));
+        mpfr_ceil(*(xrange.b),*(yrange.b));
+        if (mpfr_number_p(*(xrange.a)) && 
+            mpfr_number_p(*(xrange.b)) &&
+            (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
+          simplified->nodeType = CONSTANT;
+          value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+          mpfr_init2(*value,tools_precision);
+          simplified->value = value;
+          mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+        } else {
+          simplified->nodeType = CEIL;
+          simplified->child1 = simplChild1;
+        }
+        mpfr_clear(*(xrange.a));
+        mpfr_clear(*(xrange.b));
+        mpfr_clear(*(yrange.a));
+        mpfr_clear(*(yrange.b));
+        free(xrange.a);
+        free(xrange.b);
+        free(yrange.a);
+        free(yrange.b);
+      } else {
+        simplified->nodeType = CEIL;
+        simplified->child1 = simplChild1;
+      }
     }
     break;
   case FLOOR:
@@ -3748,8 +3929,44 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
 	free_memory(simplChild1);
       }
     } else {
-      simplified->nodeType = FLOOR;
-      simplified->child1 = simplChild1;
+      if (isConstant(simplChild1)) {
+        xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        mpfr_init2(*(yrange.a),tools_precision);
+        mpfr_init2(*(yrange.b),tools_precision);
+        mpfr_init2(*(xrange.a),4 * tools_precision);
+        mpfr_init2(*(xrange.b),4 * tools_precision);
+        mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
+        mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
+        evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
+        mpfr_floor(*(xrange.a),*(yrange.a));
+        mpfr_floor(*(xrange.b),*(yrange.b));
+        if (mpfr_number_p(*(xrange.a)) && 
+            mpfr_number_p(*(xrange.b)) &&
+            (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
+          simplified->nodeType = CONSTANT;
+          value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+          mpfr_init2(*value,tools_precision);
+          simplified->value = value;
+          mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+        } else {
+          simplified->nodeType = FLOOR;
+          simplified->child1 = simplChild1;
+        }
+        mpfr_clear(*(xrange.a));
+        mpfr_clear(*(xrange.b));
+        mpfr_clear(*(yrange.a));
+        mpfr_clear(*(yrange.b));
+        free(xrange.a);
+        free(xrange.b);
+        free(yrange.a);
+        free(yrange.b);
+      } else {
+        simplified->nodeType = FLOOR;
+        simplified->child1 = simplChild1;
+      }
     }
     break;
   case PI_CONST:
