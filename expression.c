@@ -3861,8 +3861,8 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_ceil(*value, *(simplChild1->value)) != 0) || 
-	  (!mpfr_number_p(*value))) {
+      mpfr_ceil(*value, *(simplChild1->value));
+      if ((!mpfr_number_p(*value))) {
 	simplified->nodeType = CEIL;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -3919,8 +3919,8 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_floor(*value, *(simplChild1->value)) != 0) || 
-	  (!mpfr_number_p(*value))) {
+      mpfr_floor(*value, *(simplChild1->value));
+      if ((!mpfr_number_p(*value))) {
 	simplified->nodeType = FLOOR;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
