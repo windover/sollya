@@ -89,6 +89,7 @@ int timecounting = 0;
 chain *timeStack=NULL;
 int fullParentheses=0;
 int midpointMode = 0;
+int rationalMode = 0;
 int noRoundingWarnings = 0;
 int hopitalrecursions = DEFAULTHOPITALRECURSIONS;
 mpfr_t statediam;

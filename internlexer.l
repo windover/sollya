@@ -297,6 +297,7 @@ TIMING          "timing"
 FULLPARENTHESES "fullparentheses"
 MIDPOINTMODE    "midpointmode"
 SUPPRESSWARNINGS "roundingwarnings"
+RATIONALMODE    "rationalmode"
 
 LIBRARY         "library"
 
@@ -544,6 +545,7 @@ NOP             "nop"
 {FULLPARENTHESES} 			    {  return FULLPARENTHESESTOKEN; } 					       
 {MIDPOINTMODE}    			    {  return MIDPOINTMODETOKEN; }    					       
 {SUPPRESSWARNINGS}			    {  return SUPPRESSWARNINGSTOKEN; }    					       
+{RATIONALMODE}			            {  return RATIONALMODETOKEN; }    					       
 {HOPITALRECURSIONS}			    {  return HOPITALRECURSIONSTOKEN; }					       
 					    											       
 {ON}              			    {  return ONTOKEN; }              					       

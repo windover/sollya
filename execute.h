@@ -243,6 +243,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #define FIXED 236
 #define FLOATING 237
 #define FPMINIMAX 238
+#define RATIONALMODEASSIGN 239
+#define RATIONALMODESTILLASSIGN 240
+#define RATIONALMODEDEREF 241
 
 int executeCommand(node *);
 
@@ -293,6 +296,8 @@ node *makeTaylorRecursAssign(node *thing);
 node *makeTimingAssign(node *thing);
 node *makeFullParenAssign(node *thing);
 node *makeMidpointAssign(node *thing);
+node *makeRationalModeAssign(node *thing);
+node *makeRationalModeStillAssign(node *thing);
 node *makeSuppressWarningsAssign(node *thing);
 node *makeSuppressWarningsStillAssign(node *thing);
 node *makeHopitalRecursAssign(node *thing);
@@ -424,6 +429,7 @@ node *makeTaylorRecursDeref();
 node *makeTimingDeref();
 node *makeFullParenDeref();
 node *makeMidpointDeref();
+node *makeRationalModeDeref();
 node *makeSuppressWarningsDeref();
 node *makeHopitalRecursDeref();
 node *makeAssignmentInIndexing(node *, node *, node *);

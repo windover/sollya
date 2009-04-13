@@ -299,6 +299,7 @@ TIMING          "timing"
 FULLPARENTHESES "fullparentheses"
 MIDPOINTMODE    "midpointmode"
 SUPPRESSWARNINGS "roundingwarnings"
+RATIONALMODE    "rationalmode"
 
 LIBRARY         "library"
 
@@ -621,6 +622,7 @@ NOP             "nop"
 {FULLPARENTHESES} 			    { newTokenLexed(); return FULLPARENTHESESTOKEN; } 					       
 {MIDPOINTMODE}    			    { newTokenLexed(); return MIDPOINTMODETOKEN; }    					       
 {SUPPRESSWARNINGS}			    { newTokenLexed(); return SUPPRESSWARNINGSTOKEN; }    					       
+{RATIONALMODE}			            { newTokenLexed(); return RATIONALMODETOKEN; }    					       
 {HOPITALRECURSIONS}			    { newTokenLexed(); return HOPITALRECURSIONSTOKEN; }					       
 					    											       
 {ON}              			    { newTokenLexed(); return ONTOKEN; }              					       

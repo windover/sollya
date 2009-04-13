@@ -488,7 +488,10 @@ node *copyThing(node *tree) {
     break;  		
   case MIDPOINTASSIGN:
     copy->child1 = copyThing(tree->child1);
-    break; 			
+    break;
+  case RATIONALMODEASSIGN:
+    copy->child1 = copyThing(tree->child1);
+    break; 			 			
   case SUPPRESSWARNINGSASSIGN:
     copy->child1 = copyThing(tree->child1);
     break; 			
@@ -527,7 +530,10 @@ node *copyThing(node *tree) {
     break;  		
   case MIDPOINTSTILLASSIGN:
     copy->child1 = copyThing(tree->child1);
-    break; 		
+    break;
+  case RATIONALMODESTILLASSIGN:
+    copy->child1 = copyThing(tree->child1);
+    break; 		 		
   case SUPPRESSWARNINGSSTILLASSIGN:
     copy->child1 = copyThing(tree->child1);
     break; 		
@@ -906,6 +912,8 @@ node *copyThing(node *tree) {
     break; 			
   case MIDPOINTDEREF:
     break;
+  case RATIONALMODEDEREF:
+    break;
   case SUPPRESSWARNINGSDEREF:
     break; 			
   case HOPITALRECURSDEREF:
@@ -1185,6 +1193,9 @@ char *getTimingStringForThing(node *tree) {
   case MIDPOINTASSIGN:
     constString = "assigning the midpoint printing mode";
     break; 			
+  case RATIONALMODEASSIGN:
+    constString = "assigning the midpoint printing mode";
+    break; 			
   case SUPPRESSWARNINGSASSIGN:
     constString = "assigning the warning activation";
     break; 			
@@ -1222,6 +1233,9 @@ char *getTimingStringForThing(node *tree) {
     constString = NULL;
     break;  		
   case MIDPOINTSTILLASSIGN:
+    constString = NULL;
+    break;
+  case RATIONALMODESTILLASSIGN:
     constString = NULL;
     break;
   case SUPPRESSWARNINGSSTILLASSIGN:
@@ -1600,6 +1614,9 @@ char *getTimingStringForThing(node *tree) {
     constString = "dereferencing the full parenthezation mode state of the tool";
     break; 			
   case MIDPOINTDEREF:
+    constString = "dereferencing the midpoint mode state of the tool";
+    break; 			
+  case RATIONALMODEDEREF:
     constString = "dereferencing the midpoint mode state of the tool";
     break; 			
   case SUPPRESSWARNINGSDEREF:
@@ -3359,6 +3376,10 @@ char *sRawPrintThing(node *tree) {
     res = newString("midpointmode = ");
     res = concatAndFree(res, sRawPrintThing(tree->child1));
     break; 			
+  case RATIONALMODEASSIGN:
+    res = newString("rationalmode = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 			
   case SUPPRESSWARNINGSASSIGN:
     res = newString("roundingwarnings = ");
     res = concatAndFree(res, sRawPrintThing(tree->child1));
@@ -3418,6 +3439,11 @@ char *sRawPrintThing(node *tree) {
     res = concatAndFree(res, newString("!"));
     break;  		
   case MIDPOINTSTILLASSIGN:
+    res = newString("midpointmode = ");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString("!"));
+    break;
+  case RATIONALMODESTILLASSIGN:
     res = newString("midpointmode = ");
     res = concatAndFree(res, sRawPrintThing(tree->child1));
     res = concatAndFree(res, newString("!"));
@@ -4092,6 +4118,9 @@ char *sRawPrintThing(node *tree) {
   case MIDPOINTDEREF:
     res = newString("midpointmode = ?");
     break; 			
+  case RATIONALMODEDEREF:
+    res = newString("rationalmode = ?");
+    break; 			
   case SUPPRESSWARNINGSDEREF:
     res = newString("roundingwarnings = ?");
     break; 			
@@ -4575,14 +4604,14 @@ void printExternalProcedureUsage(node *tree) {
 
 void autoprint(node *thing, int inList) {
   mpfr_t a,b;
-  node *temp_node, *tempNode2, *tempNode3, *tempNode4;
+  node *temp_node, *tempNode2, *tempNode3, *tempNode4, *tempNode5;
   chain *curr;
   int freeThingAfterwards;
   int okay, shown, shown2;
 
   shown = 0; shown2 = 0;
   if (isPureTree(thing)) {
-    if (treeSize(thing) < CHEAPSIMPLIFYSIZE) {
+    if ((treeSize(thing) < CHEAPSIMPLIFYSIZE) || rationalMode) {
       tempNode2 = simplifyTreeErrorfree(thing);
       freeThingAfterwards = 1;
     } else {
@@ -4593,49 +4622,69 @@ void autoprint(node *thing, int inList) {
       if (tempNode2->nodeType == CONSTANT) {
 	printValue(tempNode2->value);
       } else { 
-	mpfr_init2(a,tools_precision);
-	mpfr_init2(b,tools_precision);
-	mpfr_set_d(b,1.0,GMP_RNDN);
-	if (evaluateFaithful(a,tempNode2,b,tools_precision)) {
-	  if (mpfr_number_p(a)) {
-	    if (!noRoundingWarnings) {
-	      if (!shown) printMessage(1,"Warning: rounding has happened. The value displayed is a faithful rounding of the true result.\n");
-	      shown = 1;
-	    }
-	  } else {
-	    if (mpfr_nan_p(a)) {
-	      printMessage(1,"Warning: the given expression is undefined or numerically unstable.\n");
-	    }
-	  }
-	  printValue(&a);
+	if (rationalMode && 
+	    (tempNode2->nodeType == DIV) &&
+	    (tempNode2->child1->nodeType == CONSTANT) &&
+	    (tempNode2->child2->nodeType == CONSTANT) && 
+	    mpfr_number_p(*(tempNode2->child1->value)) && 
+	    mpfr_number_p(*(tempNode2->child2->value)) && 
+	    (!mpfr_zero_p(*(tempNode2->child2->value)))) {
+	    printTree(tempNode2);
 	} else {
-	  evaluate(a,tempNode2,b,tools_precision * 256);
-	  if (mpfr_number_p(a)) {
-	    if (!noRoundingWarnings) {
-	      if (!shown) {
-		if (verbosity >= 1) {
-		  printMessage(1,"Warning: rounding has happened. The value displayed is ");
-		  saveMode();
-		  warningMode(); blinkMode();
-		  printf("*NOT*");
-		  unblinkMode(); 
-		  restoreMode();
-		  printMessage(1," a faithful rounding of the true result.\n");
-		}
+	  mpfr_init2(a,tools_precision);
+	  mpfr_init2(b,tools_precision);
+	  mpfr_set_d(b,1.0,GMP_RNDN);
+	  if (evaluateFaithful(a,tempNode2,b,tools_precision)) {
+	    if (mpfr_number_p(a)) {
+	      if (!noRoundingWarnings) {
+		if (!shown) printMessage(1,"Warning: rounding has happened. The value displayed is a faithful rounding of the true result.\n");
 		shown = 1;
 	      }
+	    } else {
+	      if (mpfr_nan_p(a)) {
+		printMessage(1,"Warning: the given expression is undefined or numerically unstable.\n");
+	      }
 	    }
+	    printValue(&a);
 	  } else {
-	    printMessage(1,"Warning: the given expression is undefined or numerically unstable.\n");
-            mpfr_set_nan(a);
+	    tempNode5 = simplifyRationalErrorfree(tempNode2);
+	    if (tempNode5->nodeType == CONSTANT) {
+	      mpfr_set_prec(a,mpfr_get_prec(*(tempNode5->value)));
+	      mpfr_set(a,*(tempNode5->value),GMP_RNDN);
+	    } else {
+	      evaluate(a,tempNode5,b,tools_precision * 256);
+	      if (mpfr_number_p(a)) {
+		if (!noRoundingWarnings) {
+		  if (!shown) {
+		    if (verbosity >= 1) {
+		      printMessage(1,"Warning: rounding has happened. The value displayed is ");
+		      saveMode();
+		      warningMode(); blinkMode();
+		      printf("*NOT*");
+		      unblinkMode(); 
+		      restoreMode();
+		      printMessage(1," a faithful rounding of the true result.\n");
+		    }
+		    shown = 1;
+		  }
+		}
+	      } else {
+		printMessage(1,"Warning: the given expression is undefined or numerically unstable.\n");
+		mpfr_set_nan(a);
+	      }
+	    }
+	    printValue(&a);
+	    freeThing(tempNode5);
 	  }
-	  printValue(&a);
+	  mpfr_clear(a);
+	  mpfr_clear(b);
 	}
-	mpfr_clear(a);
-	mpfr_clear(b);
       }
     } else {
-      tempNode3 = simplifyTree(tempNode2);
+      if (rationalMode)
+	tempNode3 = simplifyAllButDivision(tempNode2); 
+      else 
+	tempNode3 = simplifyTree(tempNode2); 
       if (!isSyntacticallyEqual(tempNode3,tempNode2)) {
 	if (!noRoundingWarnings) {
 	  if (!shown) printMessage(1,"Warning: rounding may have happened.\n");
@@ -4652,7 +4701,10 @@ void autoprint(node *thing, int inList) {
 	okay = 0;
 	do {
 	  if (canonical) temp_node = makeCanonical(tempNode3,tools_precision); else temp_node = horner(tempNode3);
-	  tempNode4 = simplifyTree(temp_node);
+	  if (rationalMode) 
+	    tempNode4 = simplifyAllButDivision(temp_node); 
+	  else 
+	    tempNode4 = simplifyTree(temp_node);
 	  if (!isSyntacticallyEqual(tempNode4,temp_node)) {
 	    if (!noRoundingWarnings) {
 	      if (!shown) printMessage(1,"Warning: rounding may have happened.\n");
@@ -6365,6 +6417,19 @@ int executeCommandInner(node *tree) {
       printMessage(1,"This command will have no effect.\n");
     }
     break; 			
+  case RATIONALMODEASSIGN:
+    defaultVal = 0;
+    if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
+      rationalMode = resA;     outputMode();
+      if (rationalMode) 
+	printf("Rational mode has been activated.\n");
+      else 
+	printf("Rational mode has been deactivated.\n");
+    } else {
+      printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
+      printMessage(1,"This command will have no effect.\n");
+    }
+    break; 			
   case SUPPRESSWARNINGSASSIGN:
     defaultVal = eliminatePromptBackup;
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
@@ -6509,6 +6574,15 @@ int executeCommandInner(node *tree) {
     defaultVal = 1;
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
       midpointMode = resA;
+    } else {
+      printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
+      printMessage(1,"This command will have no effect.\n");
+    }
+    break; 		
+  case RATIONALMODESTILLASSIGN:
+    defaultVal = 0;
+    if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
+      rationalMode = resA;
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -7112,6 +7186,19 @@ node *makeMidpointAssign(node *thing) {
 
 }
 
+node *makeRationalModeAssign(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = RATIONALMODEASSIGN;
+  res->child1 = thing;
+
+  return res;
+
+}
+
+
+
 node *makeSuppressWarningsAssign(node *thing) {
   node *res;
 
@@ -7255,6 +7342,18 @@ node *makeMidpointStillAssign(node *thing) {
   return res;
 
 }
+
+node *makeRationalModeStillAssign(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = RATIONALMODESTILLASSIGN;
+  res->child1 = thing;
+
+  return res;
+
+}
+
 
 node *makeSuppressWarningsStillAssign(node *thing) {
   node *res;
@@ -8645,6 +8744,17 @@ node *makeMidpointDeref() {
 
 }
 
+node *makeRationalModeDeref() {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = RATIONALMODEDEREF;
+
+  return res;
+
+}
+
+
 node *makeSuppressWarningsDeref() {
   node *res;
 
@@ -9051,6 +9161,10 @@ void freeThing(node *tree) {
     freeThing(tree->child1);
     free(tree);
     break; 			
+  case RATIONALMODEASSIGN:
+    freeThing(tree->child1);
+    free(tree);
+    break; 			
   case SUPPRESSWARNINGSASSIGN:
     freeThing(tree->child1);
     free(tree);
@@ -9100,6 +9214,10 @@ void freeThing(node *tree) {
     free(tree);
     break;  		
   case MIDPOINTSTILLASSIGN:
+    freeThing(tree->child1);
+    free(tree);
+    break; 		
+  case RATIONALMODESTILLASSIGN:
     freeThing(tree->child1);
     free(tree);
     break; 		
@@ -9596,6 +9714,9 @@ void freeThing(node *tree) {
   case MIDPOINTDEREF:
     free(tree);
     break; 			
+  case RATIONALMODEDEREF:
+    free(tree);
+    break; 			
   case SUPPRESSWARNINGSDEREF:
     free(tree);
     break; 			
@@ -9908,6 +10029,9 @@ int isEqualThing(node *tree, node *tree2) {
   case MIDPOINTASSIGN:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 			
+  case RATIONALMODEASSIGN:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break; 			
   case SUPPRESSWARNINGSASSIGN:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 			
@@ -9945,6 +10069,9 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break;  		
   case MIDPOINTSTILLASSIGN:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break; 		
+  case RATIONALMODESTILLASSIGN:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 		
   case SUPPRESSWARNINGSSTILLASSIGN:
@@ -10303,6 +10430,8 @@ int isEqualThing(node *tree, node *tree2) {
   case FULLPARENDEREF:
     break; 			
   case MIDPOINTDEREF:
+    break; 			
+  case RATIONALMODEDEREF:
     break; 			
   case SUPPRESSWARNINGSDEREF:
     break; 			
@@ -15525,6 +15654,16 @@ node *evaluateThingInner(node *tree) {
     if (timingString != NULL) pushTimeCounter();      
     freeThing(copy);
     if (midpointMode) {
+      copy = makeOn();
+    } else {
+      copy = makeOff();
+    }
+    if (timingString != NULL) popTimeCounter(timingString);
+    break; 			
+  case RATIONALMODEDEREF:
+    if (timingString != NULL) pushTimeCounter();      
+    freeThing(copy);
+    if (rationalMode) {
       copy = makeOn();
     } else {
       copy = makeOff();

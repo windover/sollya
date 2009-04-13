@@ -194,7 +194,8 @@ void yyerror(char *message) {
 %token  TIMINGTOKEN;            					       
 %token  FULLPARENTHESESTOKEN;   					       
 %token  MIDPOINTMODETOKEN;      					       
-%token  SUPPRESSWARNINGSTOKEN;    					       
+%token  SUPPRESSWARNINGSTOKEN;
+%token  RATIONALMODETOKEN;    					       
 %token  HOPITALRECURSIONSTOKEN;  					       
 											       
 %token  ONTOKEN;                					       
@@ -791,6 +792,10 @@ stateassignment:        PRECTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeMidpointAssign($3);
 			  }
+                      | RATIONALMODETOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeRationalModeAssign($3);
+			  }
                       | SUPPRESSWARNINGSTOKEN EQUALTOKEN thing      					       
                           {
 			    $$ = makeSuppressWarningsAssign($3);
@@ -844,6 +849,10 @@ stillstateassignment:   PRECTOKEN EQUALTOKEN thing
                       | MIDPOINTMODETOKEN EQUALTOKEN thing      					       
                           {
 			    $$ = makeMidpointStillAssign($3);
+			  }
+                      | RATIONALMODETOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeRationalModeStillAssign($3);
 			  }
                       | SUPPRESSWARNINGSTOKEN EQUALTOKEN thing      					       
                           {
@@ -1690,6 +1699,10 @@ statedereference:       PRECTOKEN egalquestionmark
                           {
 			    $$ = makeMidpointDeref();
 			  }
+                      | RATIONALMODETOKEN egalquestionmark			       
+                          {
+			    $$ = makeRationalModeDeref();
+			  }
                       | SUPPRESSWARNINGSTOKEN egalquestionmark			       
                           {
 			    $$ = makeSuppressWarningsDeref();
@@ -2431,7 +2444,15 @@ help:                   CONSTANTTOKEN
 #else
 			    outputMode(); printf("Global environment variable midpoint mode.\n");
 #endif
-                          }                 	
+                          }
+                      | RATIONALMODETOKEN
+                          {
+#ifdef HELP_RATIONALMODE_TEXT
+			    outputMode(); printf(HELP_RATIONALMODE_TEXT);
+#else
+			    outputMode(); printf("Global environment variable rational mode.\n");
+#endif
+                          }                 	                 	
                       | SUPPRESSWARNINGSTOKEN
                           {
 #ifdef HELP_ROUNDINGWARNINGS_TEXT
