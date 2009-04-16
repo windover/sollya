@@ -799,14 +799,15 @@ char *sprintValue(mpfr_t *aValue) {
   mpfr_t y;
   char *str, *str2, *str3;
   mp_exp_t e, expo;
-  int t, l, i;
+  int l, i, len;
   char *buffer, *tempBuf, *finalBuffer;
   char *tempBufOld;
   char *str4;
   mpfr_t temp;
-  mp_prec_t prec2, prec, p, pp;
+  mp_prec_t prec2, prec, p, pp, prec3;
   mpfr_t *value, myValue;
   char *res;
+  mpfr_t two128;
   
   p = mpfr_get_prec(*aValue);  
   pp = p;
@@ -831,6 +832,10 @@ char *sprintValue(mpfr_t *aValue) {
     return res;
   } 
 
+  mpfr_init2(two128,12);
+  mpfr_set_ui(two128,2,GMP_RNDN);
+  mpfr_mul_2ui(two128,two128,128,GMP_RNDN);
+
   prec = mpfr_get_prec(*value);
 
   if (mpfr_number_p(*value)) {
@@ -850,14 +855,42 @@ char *sprintValue(mpfr_t *aValue) {
     if (prec2 < tools_precision) prec2 = tools_precision;
     prec = prec2;
   }
-  buffer = safeCalloc(2 * prec + 7 + (sizeof(mp_exp_t) * 4) + 1, sizeof(char));
+  prec3 = prec;
+  if (mpfr_get_prec(*value) > prec3) prec3 = mpfr_get_prec(*value);
+  buffer = safeCalloc(3 * prec3 + 7 + (sizeof(mp_exp_t) * 4) + 1, sizeof(char));
   tempBuf = buffer;
   mpfr_init2(y,prec);
 
-  t = mpfr_get_si(*value,GMP_RNDN);
-  mpfr_set_si(y,t,GMP_RNDN);
-  if ((mpfr_cmp(y,*value) == 0) && (mpfr_number_p(*value))) {
-    tempBuf += sprintf(tempBuf,"%d",t);
+  if (mpfr_zero_p(*value) || 
+      (mpfr_number_p(*value) && 
+       mpfr_integer_p(*value) &&
+       (mpfr_cmpabs(*value,two128) < 0))) {
+    if (mpfr_zero_p(*value)) {
+      tempBuf += sprintf(tempBuf,"0");
+    } else {
+      mpfr_set(y,*value,GMP_RNDN);
+      if (mpfr_sgn(y) < 0) {
+        tempBuf += sprintf(tempBuf,"-"); mpfr_neg(y,y,GMP_RNDN);
+      }
+      str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
+      len = strlen(str);
+      if (len >= e) {
+        for (i=0;i<e;i++) {
+          *tempBuf = str[i];
+          tempBuf++;
+        }
+      } else {
+        for (i=0;i<len;i++) {
+          *tempBuf = str[i];
+          tempBuf++;
+        }
+        for (i=0;i<e-len;i++) {
+          *tempBuf = '0';
+          tempBuf++;
+        }
+      }
+      mpfr_free_str(str);
+    }
   } else { 
     mpfr_set(y,*value,GMP_RNDN);
     if (mpfr_sgn(y) < 0) {
@@ -956,15 +989,16 @@ char *sprintValue(mpfr_t *aValue) {
       } else {
 	tempBuf += sprintf(tempBuf,"%s",str);
       }
-      mpfr_free_str(str);      
+      mpfr_free_str(str);
     }
   }
   mpfr_clear(y);
-  
+
   finalBuffer = (char *) safeCalloc(strlen(buffer)+1,sizeof(char));
   sprintf(finalBuffer,"%s",buffer);
   free(buffer);
   mpfr_clear(myValue);
+  mpfr_clear(two128);
   return finalBuffer;
 }
 

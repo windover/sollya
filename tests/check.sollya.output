@@ -1,4 +1,20 @@
 The tool has been restarted.
+Warning: rounding may have happened.
+If there is rounding, the displayed value is *NOT* guaranteed to be a faithful rounding of the true result.
+0
+Warning: rounding has happened.
+The displayed value is *NOT* guaranteed to be a faithful rounding of the true result.
+The displayed value has been computed using plain floating-point arithmetic and might be completely wrong.
+-5.2672331945605609510698374476395405103035179241388e12715
+Warning: rounding has happened.
+The displayed value is *NOT* guaranteed to be a faithful rounding of the true result.
+The displayed value has been computed using plain floating-point arithmetic and might be completely wrong.
+-0.6154138956554673381485474094428967527572078572788
+Warning: the given expression is undefined or numerically unstable.
+@NaN@
+Warning: the given expression is undefined or numerically unstable.
+@NaN@
+The tool has been restarted.
 0x7f7fffff
 0x7f7fffff
 0x7f7fffff

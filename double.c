@@ -96,7 +96,7 @@ int mpfr_round_to_double(mpfr_t rop, mpfr_t op) {
 
   if (mpfr_get_prec(op) < 53) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: rounding a value computed on less than 53 bits to double precision.\n");
+      printMessage(2,"Information: rounding a value computed on less than 53 bits to double precision.\n");
     }
   }
 
@@ -122,7 +122,7 @@ int mpfr_round_to_doubledouble(mpfr_t rop, mpfr_t op) {
   prec = mpfr_get_prec(op);
   if (prec < 106) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: rounding a value computed on less than 106 bits to double-double precision.\n");
+      printMessage(2,"Information: rounding a value computed on less than 106 bits to double-double precision.\n");
     }
     prec = 106;
   }
@@ -181,7 +181,7 @@ int mpfr_round_to_tripledouble(mpfr_t rop, mpfr_t op) {
   prec = mpfr_get_prec(op);
   if (prec < 159) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: rounding a value computed on less than 159 bits to triple-double precision\n");
+      printMessage(2,"Information: rounding a value computed on less than 159 bits to triple-double precision\n");
     }
     prec = 159;
   }
@@ -645,7 +645,7 @@ int mpfr_round_to_doubleextended(mpfr_t rop, mpfr_t op) {
 
   if (mpfr_get_prec(op) < 64) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: rounding a value computed on less than 64 bits to doubleextended precision.\n");
+      printMessage(2,"Information: rounding a value computed on less than 64 bits to doubleextended precision.\n");
     }
   }
 

@@ -717,6 +717,7 @@ void initToolDefaults() {
   canonical = 0;
   fileNumber = 0;
   autosimplify = 1;
+  rationalMode = 0;
   timecounting = 0;
   if (timeStack != NULL) freeCounter();
   timeStack=NULL;

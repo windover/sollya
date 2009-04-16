@@ -4607,7 +4607,8 @@ void autoprint(node *thing, int inList) {
   node *temp_node, *tempNode2, *tempNode3, *tempNode4, *tempNode5;
   chain *curr;
   int freeThingAfterwards;
-  int okay, shown, shown2;
+  int okay, shown, shown2, extraMessage;
+  rangetype xrange, yrange;
 
   shown = 0; shown2 = 0;
   if (isPureTree(thing)) {
@@ -4652,19 +4653,45 @@ void autoprint(node *thing, int inList) {
 	      mpfr_set_prec(a,mpfr_get_prec(*(tempNode5->value)));
 	      mpfr_set(a,*(tempNode5->value),GMP_RNDN);
 	    } else {
-	      evaluate(a,tempNode5,b,tools_precision * 256);
+              xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+              xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+              yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+              yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+              mpfr_init2(*(xrange.a),tools_precision);
+              mpfr_init2(*(xrange.b),tools_precision);
+              mpfr_init2(*(yrange.a),tools_precision * 256);
+              mpfr_init2(*(yrange.b),tools_precision * 256);
+              mpfr_set_ui(*(xrange.a),1.0,GMP_RNDD);
+              mpfr_set_ui(*(xrange.b),1.0,GMP_RNDU);
+              evaluateRangeFunction(yrange, tempNode5, xrange, tools_precision * 256 + 10);
+              extraMessage = 0;
+              if (mpfr_number_p(*(yrange.a)) &&
+                  mpfr_number_p(*(yrange.b)) &&
+                  (mpfr_sgn(*(yrange.a)) * mpfr_sgn(*(yrange.b)) < 0)) {
+                mpfr_set_ui(a,0,GMP_RNDN);
+                if (!noRoundingWarnings) {
+		  if (!shown) {
+                    printMessage(1,"Warning: rounding may have happened.\nIf there is rounding, the displayed value is *NOT* guaranteed to be a faithful rounding of the true result.\n");
+		    shown = 1;
+		  }
+		}
+              } else {
+                evaluate(a,tempNode5,b,tools_precision * 256);
+                if (!(mpfr_number_p(*(yrange.a)) && mpfr_number_p(*(yrange.b)))) extraMessage = 1;
+              }
+              mpfr_clear(*(xrange.a));
+              mpfr_clear(*(xrange.b));
+              mpfr_clear(*(yrange.a));
+              mpfr_clear(*(yrange.b));
+              free(xrange.a);
+              free(xrange.b);
+              free(yrange.a);
+              free(yrange.b);
 	      if (mpfr_number_p(a)) {
 		if (!noRoundingWarnings) {
 		  if (!shown) {
-		    if (verbosity >= 1) {
-		      printMessage(1,"Warning: rounding has happened. The value displayed is ");
-		      saveMode();
-		      warningMode(); blinkMode();
-		      printf("*NOT*");
-		      unblinkMode(); 
-		      restoreMode();
-		      printMessage(1," a faithful rounding of the true result.\n");
-		    }
+                    printMessage(1,"Warning: rounding has happened.\nThe displayed value is *NOT* guaranteed to be a faithful rounding of the true result.\n");
+                    if (extraMessage) printMessage(1,"The displayed value has been computed using plain floating-point arithmetic and might be completely wrong.\n");
 		    shown = 1;
 		  }
 		}
