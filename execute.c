@@ -1991,6 +1991,7 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
   mpfr_t tempMpfr, tempResult;
   int res, noMessage;
   int exact, notfaithful;
+  rangetype xrange, yrange;
 
   notfaithful = 0;
   exact = 0;
@@ -2062,17 +2063,52 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
     }
 
     if (!res) {
-      if (!noMessage) {
-	if (!noRoundingWarnings) {
-	  printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate and\n");
-	  printMessage(1,"a faithful evaluation is not possible. Will use a floating-point evaluation.\n");
-	} 
+      xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+      xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+      yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+      yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*(xrange.a),tools_precision);
+      mpfr_init2(*(xrange.b),tools_precision);
+      mpfr_init2(*(yrange.a),tools_precision * 256);
+      mpfr_init2(*(yrange.b),tools_precision * 256);
+      mpfr_set_ui(*(xrange.a),1.0,GMP_RNDD);
+      mpfr_set_ui(*(xrange.b),1.0,GMP_RNDU);
+      evaluateRangeFunction(yrange, simplified, xrange, tools_precision * 256 + 10);
+      if (mpfr_number_p(*(yrange.a)) &&
+          mpfr_number_p(*(yrange.b)) &&
+          (mpfr_sgn(*(yrange.a)) * mpfr_sgn(*(yrange.b)) < 0)) {
+        mpfr_set_ui(tempResult,0,GMP_RNDN);
+        if (!noMessage) {
+          if (!noRoundingWarnings) {
+            printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate and\n");
+            printMessage(1,"a faithful evaluation is not possible. Will consider the constant to be 0.\n");
+          } 
+        } else {
+          if (!noRoundingWarnings) {
+            printMessage(1,"Warning: the expression could not be faithfully evaluated.\n");
+          }
+        }
       } else {
-	if (!noRoundingWarnings) {
-	  printMessage(1,"Warning: the expression could not be faithfully evaluated.\n");
-	}
+        if (!noMessage) {
+          if (!noRoundingWarnings) {
+            printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate and\n");
+            printMessage(1,"a faithful evaluation is not possible.\nWill use a plain floating-point evaluation, which might yield a completely wrong value.\n");
+          } 
+        } else {
+          if (!noRoundingWarnings) {
+            printMessage(1,"Warning: the expression could not be faithfully evaluated.\n");
+          }
+        }
+        evaluate(tempResult, simplified, tempMpfr, defaultprecision * 256);
       }
-      evaluate(tempResult, simplified, tempMpfr, defaultprecision * 256);
+      mpfr_clear(*(xrange.a));
+      mpfr_clear(*(xrange.b));
+      mpfr_clear(*(yrange.a));
+      mpfr_clear(*(yrange.b));
+      free(xrange.a);
+      free(xrange.b);
+      free(yrange.a);
+      free(yrange.b);
       notfaithful = 1;
     } else {
       if (simplified->nodeType != CONSTANT) {
