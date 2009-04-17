@@ -1,3 +1,449 @@
+2009-04-16 21:14  clauter
+
+	* execute.c: Adapted evaluation to a constant (when a constant is
+	  needed for a
+	  subsequent command) to the new behaviour w.r.t. not-faithful
+	  values
+	  that might be zero.
+	  
+	  ATTENTION:
+	  
+	  MUST STILL UPDATE HELP TEXTS AND DOCUMENTATION.
+
+2009-04-16 20:46  clauter
+
+	* double.c, execute.c, expression.c, general.c, tests/check.sollya,
+	  tests/check.sollya.output: (1)
+	  
+	  Corrected a bug in reproducibility of the displaying of values:
+	  
+	  For precisions prec set between 32 and 64, integer values between
+	  2^31
+	  and 2^63-1 were displayed differently on machines for which
+	  sizeof(int) = 8 than for those for which sizeof(int) = 16.
+	  
+	  (2)
+	  
+	  Degraded 4 warnings on D, DD, TD, DE
+	  
+	  "Warning: rounding a value computed on less than 53 bits to
+	  double
+	  precision."
+	  
+	  to an information.
+	  
+	  (3)
+	  
+	  Changed the behaviour of the tool on automatic printing (on the
+	  prompt) if no faithful rounding can be determined for a constant
+	  expression.
+	  
+	  For constant expressions f(c) for which it can be proved that it
+	  exists two reals (not including infinity) a and b such that
+	  
+	  a <= f(c) <= b
+	  
+	  and a * b < 0, 0 is displayed instead of some FP-determined value
+	  if
+	  no faithful rounding for f(c) can be determined.
+	  
+	  The warning texts have significantly been changed, hence an
+	  update of
+	  the check files.
+	  
+	  The change might involve issue with backward compatibility.
+	  
+	  ATTENTION:
+	  
+	  The help text and documentation files have not been updated yet.
+	  
+	  THIS MUST BE DONE AS SOON AS POSSIBLE.
+	  
+	  
+	  (4)
+	  
+	  Corrected a bug concerning rationalmode. The value of that global
+	  constant did not get reset to its default value on restart.
+
+2009-04-13 05:35  clauter
+
+	* execute.c, execute.h, expression.c, expression.h, general.c,
+	  general.h, internlexer.l, internparser.y, lexer.l, parser.y:
+	  Added a rational computations mode.
+	  
+	  Still needs documentation.
+	  
+	  No expected changes in behaviour unless rationalmode = on; is
+	  issued.
+
+2009-04-06 06:50  clauter
+
+	* expression.c: Corrected a bug
+
+2009-04-06 06:32  clauter
+
+	* expression.c: Made exact simplifier *finally* simplify things
+	  like D(sin(3)), DD(exp(3)), TD(const), DE(const), floor(const),
+	  ceil(const) - where possible with a little more than the working
+	  precision
+
+2009-03-30 19:19  clauter
+
+	* expression.c, infnorm.c: Synchonization after debugging
+
+2009-03-28 00:06  clauter
+
+	* execute.c: Corrected a bug
+
+2009-02-27 21:14  clauter
+
+	* doc/CommandsAndFunctions.tex, doc/printfloat.tex,
+	  doc/printhexa.tex, doc/sollya.pdf, doc/sollya.tex, execute.c,
+	  help.h: Moved verbosity of annoying message "the given expression
+	  is not a
+	  constant but an expression to evaluate" from warning to
+	  information -
+	  at least if the evaluation is a faithful rounding.
+	  
+	  Recompiled documentation in order to reflect the change.
+
+2009-02-26 07:15  clauter
+
+	* configure.ac, doc/concat.shlp, doc/concat.tex, doc/sollya.pdf,
+	  doc/sollya.tex, execute.c, help.h: Started working on support of
+	  procedures with varying arity.
+
+2009-02-24 13:19  jmio17
+
+	* taylorModel.c: Corrected polynomial bounding for initial
+	  polynomial found. Improved
+	  remainder for log.
+
+2009-02-23 22:09  clauter
+
+	* double.c, tests/check.sollya, tests/check.sollya.output: Second
+	  and hopefully final version of the patch for bug
+	  #7085 Rounding to simplie value with infinity overflow is wrong.
+	  
+	  The bug (and several bugs hidden by the bug [un bogue peut en
+	  cacher
+	  un autre]) was due to double rounding issues. The double
+	  roundings
+	  either occurred because of:
+	  
+	  - a first rounding to double precision or
+	  
+	  - a rounding to 24 bits with unbounded exponent range or
+	  
+	  - a rounding to 24 bits with unbounded exponent range followed by
+	  a
+	  rounding to double precision followed by a rounding to single
+	  precision.
+	  
+	  Everthing's should be fine now.
+
+2009-02-23 21:00  clauter
+
+	* double.c: First version of patch for bug #7085 Rounding to simple
+	  value with
+	  infinity overflow is wrong.
+	  
+	  The bug submitted is patched. Code shows now a double rounding
+	  issue
+	  the single precision subnormal range.
+
+2009-02-23 19:23  clauter
+
+	* infnorm.c, tests/check.sollya, tests/check.sollya.output: Small
+	  changes for #6844 "0/0 not evaluated to NaN in all cases"
+	  
+	  Checks for #6844 "0/0 not evaluated to NaN in all cases"
+
+2009-02-23 18:41  clauter
+
+	* execute.c, infnorm.c, tests/check.sollya.output: Tried to correct
+	  bug #6844 "0/0 not evaluated to NaN in all cases".
+	  
+	  Need check file needed because patch induces a change in over-all
+	  behaviour.
+	  
+	  Remark: the new check file does not include checks for that bug.
+
+2009-02-18 10:08  schevill
+
+	* expression.c: Fixed the typo "a integer" (see bug #7312)
+
+2009-02-18 07:29  clauter
+
+	* expression.c: Patched bug 7216, No parentheses when displaying
+	  numbers in binary format leads to an incorrect value when parsed
+	  again
+
+2009-02-18 07:00  clauter
+
+	* expression.c: Patched bug #7312, Colouring and English grammar
+	  are wrong in warning message
+
+2009-02-18 06:46  clauter
+
+	* expression.c: Correct bug with tracker #7215, Binary display
+	  prints numbers in a way that cannot be read again
+
+2009-02-12 14:42  schevill
+
+	* doc/length.shlp, doc/length.tex, doc/sollya.pdf, help.h:
+	  Corrected a typo in an example of the documentation of length
+
+2009-02-11 09:09  jmio17
+
+	* tadiff.c: added f^ctPower case.
+
+2009-02-10 17:50  jmio17
+
+	* tadiff.c, tadiff.h: TADIFF formulas implemented for: sin, cos,
+	  exp, log, ct, var,
+	  mul,add,div - (not completely tested).
+
+2009-02-09 14:53  jmio17
+
+	* taylorModel.h: Demo version of Taylor Models.
+
+2009-02-09 14:52  jmio17
+
+	* taylorModel.c: Demo version of Taylor Models.
+
+2009-01-21 16:36  schevill
+
+	* fpminimax.cpp: Bug of infinite loop (see bug report #7217)
+	  temporarily patched. If fpminimax has too many loops it fails.
+
+2009-01-21 13:51  schevill
+
+	* README, fpminimax.cpp: Fpminimax exhibitted an infinite loop in a
+	  particular case.
+	  When the coefficients are floating-point numbers, the algorithm
+	  has to guess the exponents of the coefficients first.
+	  Then, fpminimax is launched and we check afterwards that the
+	  coefficients have the same exponent as we guessed.
+	  If it is not the case, we correct the exponents and loop.
+	  
+	  I knew that it could lead theoretically to an infinite loop. Yet,
+	  it was never oberved in practice.
+	  Mioara found the following instance that effectively leads to an
+	  infinite loop:
+	  f=sqrt(x); d=[1+12/512, 1+13/512]; fpminimax(f, 2, [|18, 10,
+	  14|], d);
+	  
+	  It turns out that the algorithm loops over the two polynomials
+	  p=-1.00100001000101_2 * 2^(-3) * x^2 + 1.10010001_2 * 2^(-1) * x
+	  + 1.0110111010000111_2 * 2^(-2)
+	  q=-1.100110000101_2 * 2^(-4) * x^2 + 1.011001011_2 * 2^(-1) * x +
+	  1.10011011000101111_2 * 2^(-2)
+	  
+	  Surprinsingly, the coefficients of x^2 is not the same at all in
+	  both polynomials.
+	  
+	  I patched the algorithm with the following trick: when more than
+	  MAXLOOP trials have been performed, we stop as soon as a
+	  polynomial fits in the formats.
+	  This still ensures that the result of the algorithm has the good
+	  form. This avoids the previous infinite loop but the theoretical
+	  possibility of an infinite loop stays.
+
+2008-11-17 17:34  clauter
+
+	* execute.c, infnorm.c, infnorm.h, tests/check.sollya,
+	  tests/check.sollya.output: Changed 0 * infty behaviour --
+	  behaviour was due to MPFI - discussion needed - bug 0/0 remains
+
+2008-10-15 15:26  schevill
+
+	* autodiff.c, sturm.c: Removed a useless line in autodiff.c and
+	  sturm.c
+
+2008-10-07 10:00  schevill
+
+	* remez.c, tests/check.sollya.output: Rewrote Newton's algorithm
+	  making it more readable.
+
+2008-10-06 12:11  schevill
+
+	* INSTALL, remez.c, tests/check.sollya, tests/check.sollya.output:
+	  Corrected a bug in dirtyfindzeros: in the case of a second order
+	  zero, the convergence is only linear. It lead to an
+	  overestimation of the precision by a factor ~= 2
+
+2008-10-05 20:07  clauter
+
+	* execute.c: Patched bug when external procedure was renamed
+
+2008-10-03 16:05  clauter
+
+	* INSTALL, configure.ac: Changed required version of automake for
+	  overcoming a problem on Guillaume's machine
+
+2008-10-02 16:12  clauter
+
+	* expression.c: Changed simplification size in differentiation
+
+2008-10-01 15:15  clauter
+
+	* tests/check.sollya.output: New test cases
+
+2008-10-01 14:57  clauter
+
+	* execute.c, execute.h, expression.c, internparser.y, parser.y,
+	  tests/check.sollya, tests/check.sollya.output: Patched midpoint
+	  mode and range -- added mixed mode mpfi like interval arithmetic
+
+2008-10-01 09:45  schevill
+
+	* autodiff.c, library.c: Added expm1 base case in autodiff.
+	  Set a warning mode for the error messages of library.c
+
+2008-10-01 09:05  schevill
+
+	* remez.c: In guessdegree: even (or odd) functions on symetrical
+	  intervals used to disturb the algorithm. As a result, it was
+	  quite slow and returned poor intervals such as [0;14] or [27;43].
+	  I corrected it by adding a small random pertubation in the points
+	  used for the interpolation (the same trick was already used for a
+	  while in Remez algorithm with good results).
+
+2008-09-30 09:44  schevill
+
+	* fpminimax.cpp, remez.c, tests/check.sollya,
+	  tests/check.sollya.output: Corrected two bugs (comparison between
+	  a signed and an unsigned int). Added a test case for the bug.
+
+2008-09-29 01:06  clauter
+
+	* tests/check.sollya.output: New test cases
+
+2008-09-29 01:01  clauter
+
+	* execute.c, infnorm.h: Added simple MPFI-like interval arithmetic
+	  to Sollya language
+
+2008-09-25 14:12  schevill
+
+	* remez.c: Corrected a typo.
+
+2008-09-25 14:02  schevill
+
+	* INSTALL, README, assignment.c, assignment.h, chain.c, chain.h,
+	  doc/accurateinfnorm.shlp, doc/accurateinfnorm.tex,
+	  doc/checkinfnorm.shlp, doc/checkinfnorm.tex,
+	  doc/dirtyinfnorm.shlp, doc/dirtyinfnorm.tex,
+	  doc/guessdegree.shlp, doc/guessdegree.tex, doc/infnorm.shlp,
+	  doc/infnorm.tex, doc/introExample8.sollya, doc/introExample8.tex,
+	  doc/remez.shlp, doc/remez.tex, doc/sollya.pdf, doc/sollya.tex,
+	  double.c, double.h, execute.c, execute.h, expansion.c,
+	  expression.c, expression.h, external.c, external.h,
+	  externalfun.c, externalproc.c, fpminimax.cpp, fpminimax.h,
+	  general.c, general.h, help.h, implement.c, implement.h,
+	  infnorm.c, infnorm.h, integral.c, integral.h, internlexer.l,
+	  internparser.y, lexer.l, library.c, library.h,
+	  libsollyaexample.c, main.c, main.h, minilexer.l, miniparser.y,
+	  parser.y, plot.c, plot.h, proof.c, proof.h, remez.c, remez.h,
+	  sollya.h, taylor.c, taylor.h, worstcase.c, worstcase.h, xml.c,
+	  xml.h: Changed "infinite norm" to "infinity norm" everywhere.
+
+2008-09-25 08:33  clauter
+
+	* tests/check.sollya, tests/check.sollya.output: New test cases
+
+2008-09-24 17:29  clauter
+
+	* execute.c: Patched new evaluate behaviour
+
+2008-09-24 15:56  clauter
+
+	* INSTALL, configure.ac, doc/sollya.pdf, doc/sollya.tex: Patched
+	  affiliation, changed revision version number
+
+2008-09-24 12:30  schevill
+
+	* doc/evaluate.shlp, doc/evaluate.tex, doc/sollya.pdf, help.h:
+	  Updated the documentation of evaluate with the new feature
+	  evaluate(f,[a;a]).
+
+2008-09-24 11:33  clauter
+
+	* tests/check.sollya, tests/check.sollya.output: New test cases
+
+2008-09-24 11:26  clauter
+
+	* execute.c: Patched midpoint mode parsing if bounds are inverted
+
+2008-09-24 10:58  clauter
+
+	* execute.c, internlexer.l, lexer.l: Patched midpoint mode, changed
+	  slightly the behaviour of evaluate
+
+2008-09-23 18:01  clauter
+
+	* execute.c: Made inequality test finally safe - warnings are
+	  displayed iff floating-point evaluation changes a result
+
+2008-09-23 13:05  clauter
+
+	* tests/check.sollya, tests/check.sollya.output: New check files
+
+2008-09-23 12:59  schevill
+
+	* tests/check.sollya.output: Nothing
+
+2008-09-23 12:42  clauter
+
+	* execute.c, expression.c, internlexer.l, lexer.l: Patched
+	  displaying of decimal constants having a decimal exponent
+	  different from 0 and only one decimal to be displayed.
+	  
+	  Added %precision%constant parsing capability for numerical point
+	  constants.
+
+2008-09-23 12:30  schevill
+
+	* remez.c, tests/check.sollya: Patched a case of infinite looping
+	  in Newton's algorithm.
+
+2008-09-23 10:39  schevill
+
+	* doc/sollya.pdf, help.h: Nothing
+
+2008-09-23 10:36  schevill
+
+	* INSTALL, doc/sollya.pdf, doc/tail.shlp, doc/tail.tex, help.h,
+	  tests/check.sollya.output: corrected a type error in tail
+	  documentation. Updated check file.
+
+2008-09-23 09:36  clauter
+
+	* lexer.l, tests/Makefile.am: Made shebangs possible
+
+2008-09-22 12:23  schevill
+
+	* remez.c: Patched a bug about the estimation of the precision
+	  given by a numerical root in Newton's algorithm
+
+2008-09-21 15:27  clauter
+
+	* execute.c: Some changes for testing (2)
+
+2008-09-21 15:25  clauter
+
+	* execute.c: Some changes for testing
+
+2008-09-21 14:54  clauter
+
+	* expression.c, tests/check.sollya, tests/check.sollya.output:
+	  Patched bugs in midpointmode
+
+2008-09-18 14:25  clauter
+
+	* ChangeLog: New Changelog
+
 2008-09-18 14:23  schevill
 
 	* sollya.h: Added defined constant FLOATING, FIXED, ABSOLUTESYM,
@@ -4214,5 +4660,5 @@
 
 2006-05-02 08:45  
 
-	* branches, tags, .: New repository initialized by cvs2svn.
+	* .: New repository initialized by cvs2svn.
 
