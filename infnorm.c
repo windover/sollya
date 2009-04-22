@@ -55,6 +55,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "general.h"
 #include "proof.h"
 
+
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
@@ -4393,4 +4394,552 @@ int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutof
   res = evaluateFaithfulWithCutOffFast(result, func, deriv, x, cutoff, startprec);
   if (deriv != NULL) free_memory(deriv);
   return res;
+}
+
+
+node *makeDoubleConstant(double d) {
+  node *tempNode;
+
+  tempNode = (node *) safeMalloc(sizeof(node));
+  tempNode->nodeType = CONSTANT;
+  tempNode->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*(tempNode->value),53);
+  mpfr_set_d(*(tempNode->value),d,GMP_RNDN);
+  
+  return tempNode;
+}
+
+int evaluateSign(int *s, node *func);
+
+node *convertConstantToFunctionInPiInner(node *tree) {
+  node *res;
+  int a;
+
+  if (tree->nodeType == PI_CONST) {
+    res = (node *) safeMalloc(sizeof(node));
+    res->nodeType = VARIABLE;
+    return res;
+  } 
+
+  a = arity(tree);
+  switch (a) {
+  case 0:
+    res = copyTree(tree);
+    break;
+  case 1:
+    res = (node *) safeMalloc(sizeof(node));
+    res->nodeType = tree->nodeType;
+    if (tree->nodeType == LIBRARYFUNCTION) {
+      res->libFun = tree->libFun;
+      res->libFunDeriv = tree->libFunDeriv;
+    }
+    res->child1 = convertConstantToFunctionInPiInner(tree->child1);
+    break;
+  case 2:
+    res = (node *) safeMalloc(sizeof(node));
+    res->nodeType = tree->nodeType;
+    res->child1 = convertConstantToFunctionInPiInner(tree->child1);
+    res->child2 = convertConstantToFunctionInPiInner(tree->child2);
+    break;
+  default:
+    fprintf(stderr,"Error: convertConstantToFunctionInPiInner: unknown arity (%d).\n",a);
+    exit(1);
+  }
+
+  return res;
+}
+
+node *convertConstantToFunctionInPi(node *tree) {
+  if (!isConstant(tree)) return NULL;
+  return convertConstantToFunctionInPiInner(tree);
+}
+
+
+int containsPi(node *tree) {
+  int a;
+
+  if (tree->nodeType == PI_CONST) return 1;
+  
+  a = arity(tree);
+  switch (a) {
+  case 0:
+    return 0;
+    break;
+  case 1:
+    return containsPi(tree->child1);
+    break;
+  case 2:
+    return (containsPi(tree->child1) || containsPi(tree->child2));
+  default:
+    fprintf(stderr,"Error: containsPi: unknown arity (%d).\n",a);
+    exit(1);
+  }
+  return 0;
+}
+
+
+int compareConstant(int *cmp, node *func1, node *func2) {
+  node *diff, *rawDiff, *rawDiff2;
+  int res, okay;
+  mpfr_t value, dummyX;
+  int okayA, okayB, signA, signB;
+  node *tempNode;
+  node **coefficients;
+  int degree, i;
+  int allZero, allOkay;
+
+  okay = 0;
+  rawDiff = makeSub(copyTree(func1),copyTree(func2));
+  rawDiff2 = simplifyRationalErrorfree(rawDiff);
+  diff = simplifyTreeErrorfree(rawDiff2);
+  free_memory(rawDiff);
+  free_memory(rawDiff2);
+  mpfr_init2(value,12);
+  mpfr_init2(dummyX,12);
+  mpfr_set_ui(dummyX,1,GMP_RNDN);
+  if (evaluateFaithful(value, diff, dummyX, defaultprecision) &&
+      mpfr_number_p(value)) { 
+    res = mpfr_sgn(value);
+    okay = 1;
+  } else {
+    if ((func1->nodeType == DIV) && 
+	evaluateSign(&signA,func1->child2) && 
+	(signA != 0)) {
+      tempNode = makeMul(copyTree(func1->child2),copyTree(func2));
+      okayB = compareConstant(&signB, func1->child1, tempNode);
+      if (okayB) {
+	okay = 1;
+	res = signB;
+      }
+      free_memory(tempNode);
+    } 
+    if (!okay) {
+      if ((func2->nodeType == DIV) && 
+	  evaluateSign(&signA,func2->child2) && 
+	  (signA != 0)) {
+	tempNode = makeMul(copyTree(func2->child2),copyTree(func1));
+	okayB = compareConstant(&signB, tempNode, func2->child1);
+	if (okayB) {
+	  okay = 1;
+	  res = signB;
+	}
+	free_memory(tempNode);
+      } 
+      if (!okay) {
+	if (((func1->nodeType == EXP) && (func2->nodeType == EXP)) ||
+	    ((func1->nodeType == SINH) && (func2->nodeType == SINH)) || 
+	    ((func1->nodeType == TANH) && (func2->nodeType == TANH)) || 
+	    ((func1->nodeType == ASINH) && (func2->nodeType == ASINH)) || 
+	    ((func1->nodeType == ERF) && (func2->nodeType == ERF)) || 
+	    ((func1->nodeType == EXP_M1) && (func2->nodeType == EXP_M1))) {
+	  okayA = compareConstant(&signA, func1->child1, func2->child1);
+	  if (okayA) {
+	    okay = 1;
+	    res = signA;
+	  }
+	}
+	if (!okay) {
+	  if (((func1->nodeType == ERFC) && (func2->nodeType == ERFC)) ||
+	      ((func1->nodeType == NEG) && (func2->nodeType == NEG))) {
+	    okayA = compareConstant(&signA, func1->child1, func2->child1);
+	    if (okayA) {
+	      okay = 1;
+	      res = -signA;
+	    }
+	  }
+	  if (!okay) {
+	    if (containsPi(diff)) {
+	      if ((tempNode = convertConstantToFunctionInPi(diff)) != NULL) {
+		if (isPolynomial(tempNode)) {
+		  // Here we have tempNode(pi) = diff and tempNode a polynomial
+		  //
+		  getCoefficients(&degree, &coefficients, tempNode);
+		  if (degree >= 0) {
+		    allZero = 1; allOkay = 1;
+		    for (i=0;i<=degree;i++) {
+		      if (coefficients[i] != NULL) {
+			if (evaluateSign(&signA, coefficients[i])) {
+			  if (signA != 0) {
+			    allZero = 0;
+			    break;
+			  }
+			} else {
+			  allOkay = 0;
+			  break;
+			}
+		      }
+		    }
+		    if (allOkay && allZero) {
+		      okay = 1;
+		      res = 0;
+		    }
+		    for (i=0;i<=degree;i++) 
+		      if (coefficients[i] != NULL) free_memory(coefficients[i]);
+		    free(coefficients);
+		  }
+		}
+		free_memory(tempNode);
+	      }
+	    }
+	    // Put next case here
+	  }
+	}
+      }
+    }
+  }
+
+  mpfr_clear(dummyX);
+  mpfr_clear(value);
+  free_memory(diff);
+
+  if (okay) *cmp = res;
+  return okay;
+}
+
+int evaluateSignTrigoUnsafe(int *s, node *child, int nodeType) {
+  mpfr_t value, value2;
+  mpfr_t piHalf;
+  mpfr_t dummyX;
+  int okay, res;
+  node *tempNode;
+  int signA;
+
+  okay = 0;
+
+  mpfr_init2(value,defaultprecision);
+  mpfr_init2(piHalf,defaultprecision);
+  mpfr_init2(dummyX,12);
+  mpfr_set_ui(dummyX,1,GMP_RNDN);
+  if (evaluateFaithful(value, child, dummyX, defaultprecision) &&
+      mpfr_number_p(value)) { 
+    mpfr_const_pi(piHalf,GMP_RNDN);
+    mpfr_div_2ui(piHalf,piHalf,1,GMP_RNDN);
+    mpfr_div(value,value,piHalf,GMP_RNDN);
+    mpfr_rint(value,value,GMP_RNDN);
+    mpfr_div_2ui(value,value,1,GMP_RNDN);
+    // Here, diff is approximately value * pi
+    // and value * 2 is an integer
+    tempNode = makeMul(makeConstant(value),makePi());
+    if (compareConstant(&signA, child, tempNode)) {
+      if (signA == 0) {
+	// Here, we have proven that child is equal to value * pi
+	//
+	mpfr_init2(value2,defaultprecision);
+	mpfr_rint(value2,value,GMP_RNDN);      // exact, same precision
+	mpfr_sub(value,value,value2,GMP_RNDN); // exact, Sterbenz
+	// Here, we know that child is equal to (n + value) * pi for
+	// some integer n. We know that value can only be 0 or +/- 0.5
+	switch (nodeType) {
+	case SIN:
+	  // sin is zero for all n * pi, n in Z
+	  if (mpfr_zero_p(value)) {
+	    okay = 1;
+	    res = 0;
+	  }
+	  break;
+	case COS:
+	  // cos is zero for all (n + 1/2) * pi, n in Z
+	  if (!mpfr_zero_p(value)) {
+	    okay = 1;
+	    res = 0;
+	  }
+	  break;
+	case TAN:
+	  // tan is zero for all n * pi, n in Z
+	  if (mpfr_zero_p(value)) {
+	    okay = 1;
+	    res = 0;
+	  }
+	  break;
+	default:
+	  fprintf(stderr,"Error: evaluateSignTrigoUnsafe: unknown identifier (%d) in the tree\n",nodeType);
+	  exit(1);
+	}
+	mpfr_clear(value2);
+      }
+    }
+    free_memory(tempNode);
+  }
+  mpfr_clear(dummyX);
+  mpfr_clear(piHalf);
+  mpfr_clear(value);
+
+  if (okay) *s = res;
+  return okay;
+}
+
+
+
+int evaluateSign(int *s, node *rawFunc) {
+  int sign, okay, okayA, okayB, okayC;
+  mpfr_t value, dummyX;
+  int signA, signB, signC;
+  node *tempNode, *tempNode2;
+  node *func, *rawFunc2;
+  
+  okay = 0;
+  if (!isConstant(rawFunc)) return 0;
+
+  if ((rawFunc->nodeType == CONSTANT) &&
+      (!mpfr_number_p(*(rawFunc->value)))) return 0;
+
+  mpfr_init2(value,12);
+  mpfr_init2(dummyX,12);
+  mpfr_set_ui(dummyX,1,GMP_RNDN);
+  if (evaluateFaithful(value, rawFunc, dummyX, defaultprecision) &&
+      mpfr_number_p(value)) { 
+    sign = mpfr_sgn(value);
+    okay = 1;
+  } else {
+    rawFunc2 = simplifyRationalErrorfree(rawFunc);
+    func = simplifyTreeErrorfree(rawFunc2);
+    free_memory(rawFunc2);
+    if (evaluateFaithful(value, func, dummyX, defaultprecision) &&
+	mpfr_number_p(value)) {
+      sign = mpfr_sgn(value);
+      okay = 1;
+    } else {
+      switch (func->nodeType) {
+      case CONSTANT:
+	sign = mpfr_sgn(*(func->value));
+	okay = 1;
+	break;
+      case ADD:
+	tempNode = makeNeg(copyTree(func->child2));
+	okay = compareConstant(&sign, func->child1, func->child2);
+	free_memory(tempNode);
+	break;
+      case SUB:
+	okay = compareConstant(&sign, func->child1, func->child2);
+	break;
+      case MUL:
+	okay = (evaluateSign(&signA, func->child1) && evaluateSign(&signB, func->child2));
+	sign = signA * signB;
+	break;
+      case DIV:
+	okayA = (evaluateSign(&signA, func->child1) && evaluateSign(&signB, func->child2));
+	if (okayA && (signB != 0)) {
+	  okay = 1;
+	  sign = signA * signB;
+	}
+	break;
+      case SQRT:
+	okayA = evaluateSign(&signA, func->child1);
+	if (okayA && (signA >= 0)) {
+	  okay = 1;
+	  sign = signA;
+	}
+	break;
+      case EXP:
+	okayA = evaluateSign(&signA, func->child1);
+	if (okayA) {
+	  okay = 1;
+	  sign = 1;
+	}
+	break;
+      case LOG:
+	// fall-through
+      case LOG_2:
+	// fall-through
+      case LOG_10:
+	tempNode = makeDoubleConstant(1.0);
+	okayA = compareConstant(&signA, func->child1, tempNode);
+	okayB = evaluateSign(&signB, func->child1);
+	if (okayA && okayB && (signB > 0)) {
+	  okay = 1;
+	  sign = signA;
+	}
+	free_memory(tempNode);
+	break;
+      case SIN:
+	// fall-through
+      case COS:
+	// fall-through
+      case TAN:
+	okayA = evaluateSign(&signA, func->child1);
+	if (okayA && (signA == 0)) {
+	  okay = 1;
+	  sign = 0;
+	} else {
+	  okay = evaluateSignTrigoUnsafe(&sign, func->child1, func->nodeType);
+	}
+	break;
+      case ASIN:
+	okayA = evaluateSign(&signA, func->child1);
+	tempNode = makeAbs(copyTree(func->child1));
+	tempNode2 = makeDoubleConstant(1.0);
+	okayB = compareConstant(&signB, tempNode, tempNode2);
+	if (okayA && okayB && (signB <= 0)) {
+	  okay = 1;
+	  sign = signA;
+	}
+	free_memory(tempNode);
+	free_memory(tempNode2);
+	break;
+      case ACOS:
+	okayA = evaluateSign(&signA, func->child1);
+	tempNode = makeAbs(copyTree(func->child1));
+	tempNode2 = makeDoubleConstant(1.0);
+	okayB = compareConstant(&signB, tempNode, tempNode2);
+	okayC = compareConstant(&signC, func->child1, tempNode2);
+	if (okayA && okayB && okayC && (signB <= 0)) {
+	  okay = 1;
+	  if (signC == 0) sign = 0; else sign = 1;
+	}
+	free_memory(tempNode);
+	free_memory(tempNode2);
+	break;
+      case ATAN:
+	okay = evaluateSign(&sign, func->child1);
+	break;
+      case SINH:
+	okay = evaluateSign(&sign, func->child1);
+	break;
+      case COSH:
+	okay = 1;
+	sign = 1;
+	break;
+      case TANH:
+	okay = evaluateSign(&sign, func->child1);
+	break;
+      case ASINH:
+	okay = evaluateSign(&sign, func->child1);
+	break;
+      case ACOSH:
+	tempNode = makeDoubleConstant(1.0);
+	okayA = compareConstant(&signA, func->child1, tempNode);
+	if (okayA && (signA >= 0)) {
+	  okay = 1;
+	  sign = 1;
+	}
+	free_memory(tempNode);
+	break;
+      case ATANH:
+	okayA = evaluateSign(&signA, func->child1);
+	tempNode = makeAbs(copyTree(func->child1));
+	tempNode2 = makeDoubleConstant(1.0);
+	okayB = compareConstant(&signB, tempNode, tempNode2);
+	if (okayA && okayB && (signB < 0)) {
+	  okay = 1;
+	  sign = signA;
+	}
+	free_memory(tempNode);
+	free_memory(tempNode2);
+	break;
+      case POW:
+	okayA = evaluateSign(&signA, func->child1);
+	okayB = evaluateSign(&signB, func->child1);
+	if (okayA && okayB) {
+	  if (okayB == 0) {
+	    if (okayA != 0) {
+	      okay = 1;
+	      sign = 1;
+	    }
+	  } else {
+	    if (okayA == 0) {
+	      okay = 1;
+	      sign = 0;
+	    }
+	  }
+	}
+	break;
+      case NEG:
+	okay = evaluateSign(&signA, func->child1);
+	sign = -1 * signA;
+	break;
+      case ABS:
+	okayA = evaluateSign(&signA, func->child1);
+	if (okayA) {
+	  okay = 1;
+	  if (signA == 0) sign = 0; else sign = 1;
+	}
+	break;
+      case DOUBLE:
+	break;
+      case DOUBLEDOUBLE:
+	break;
+      case TRIPLEDOUBLE:
+	break;
+      case ERF:
+	okay = evaluateSign(&sign, func->child1); 
+	break;
+      case ERFC:
+	okay = 1;
+	sign = 1;
+	break;
+      case LOG_1P:
+	tempNode = makeDoubleConstant(-1.0);
+	okayA = compareConstant(&signA, func->child1, tempNode);
+	okayB = evaluateSign(&signB, func->child1);
+	if (okayA && okayB && (signA > 0)) {
+	  okay = 1;
+	  sign = signB;
+	}
+	free_memory(tempNode);
+	break;
+      case EXP_M1:
+	okay = evaluateSign(&sign, func->child1);
+	break;
+      case DOUBLEEXTENDED:
+	break;
+      case LIBRARYFUNCTION:
+	break;
+      case CEIL:
+	okayA = evaluateSign(&signA, func->child1);
+	tempNode = makeDoubleConstant(-1.0);
+	if (okayA) 
+	  okayB = compareConstant(&signB, func->child1, tempNode);
+	else
+	  okayB = 0;
+	if (okayA && okayB) {
+	  okay = 1;
+	  if (signB <= 0) {
+	    sign = -1;
+	  } else {
+	    if (signA <= 0) {
+	      sign = 0;
+	    } else {
+	      sign = 1;
+	    }
+	  }
+	}
+	free_memory(tempNode);
+	break;
+      case FLOOR:
+	okayA = evaluateSign(&signA, func->child1);
+	tempNode = makeDoubleConstant(1.0);
+	if (okayA) 
+	  okayB = compareConstant(&signB, func->child1, tempNode);
+	else
+	  okayB = 0;
+	if (okayA && okayB) {
+	  okay = 1;
+	  if (signA < 0) {
+	    sign = -1;
+	  } else {
+	    if (signB < 0) {
+	      sign = 0;
+	    } else {
+	      sign = 1;
+	    }
+	  }
+	}
+	free_memory(tempNode);
+	break;
+      case PI_CONST:
+	okay = 1;
+	sign = 1;
+	break;
+      default:
+	fprintf(stderr,"Error: evaluateSign: unknown identifier (%d) in the tree\n",func->nodeType);
+	exit(1);
+      }
+    }
+    free_memory(func);
+  }
+  mpfr_clear(value);
+  mpfr_clear(dummyX);
+
+  if (okay) *s = sign;
+  return okay;
 }

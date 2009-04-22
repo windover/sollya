@@ -1,6 +1,4 @@
 The tool has been restarted.
-Warning: rounding may have happened.
-If there is rounding, the displayed value is *NOT* guaranteed to be a faithful rounding of the true result.
 0
 Warning: rounding has happened.
 The displayed value is *NOT* guaranteed to be a faithful rounding of the true result.

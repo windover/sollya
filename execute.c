@@ -1992,6 +1992,7 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
   int res, noMessage;
   int exact, notfaithful;
   rangetype xrange, yrange;
+  int okaySign, sign;
 
   notfaithful = 0;
   exact = 0;
@@ -2063,53 +2064,60 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
     }
 
     if (!res) {
-      xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-      xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-      yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-      yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*(xrange.a),tools_precision);
-      mpfr_init2(*(xrange.b),tools_precision);
-      mpfr_init2(*(yrange.a),tools_precision * 256);
-      mpfr_init2(*(yrange.b),tools_precision * 256);
-      mpfr_set_ui(*(xrange.a),1.0,GMP_RNDD);
-      mpfr_set_ui(*(xrange.b),1.0,GMP_RNDU);
-      evaluateRangeFunction(yrange, simplified, xrange, tools_precision * 256 + 10);
-      if (mpfr_number_p(*(yrange.a)) &&
-          mpfr_number_p(*(yrange.b)) &&
-          (mpfr_sgn(*(yrange.a)) * mpfr_sgn(*(yrange.b)) < 0)) {
-        mpfr_set_ui(tempResult,0,GMP_RNDN);
-        if (!noMessage) {
-          if (!noRoundingWarnings) {
-            printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate and\n");
-            printMessage(1,"a faithful evaluation is not possible. Will consider the constant to be 0.\n");
-          } 
-        } else {
-          if (!noRoundingWarnings) {
-            printMessage(1,"Warning: the expression could not be faithfully evaluated.\n");
-          }
-        }
+      okaySign = evaluateSign(&sign,simplified);
+      if (okaySign && (sign == 0)) {
+	mpfr_set_ui(tempResult,0,GMP_RNDN);
+	exact = 1;
+	res = 1;
       } else {
-        if (!noMessage) {
-          if (!noRoundingWarnings) {
-            printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate and\n");
-            printMessage(1,"a faithful evaluation is not possible.\nWill use a plain floating-point evaluation, which might yield a completely wrong value.\n");
-          } 
-        } else {
-          if (!noRoundingWarnings) {
-            printMessage(1,"Warning: the expression could not be faithfully evaluated.\n");
-          }
-        }
-        evaluate(tempResult, simplified, tempMpfr, defaultprecision * 256);
+	xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*(xrange.a),tools_precision);
+	mpfr_init2(*(xrange.b),tools_precision);
+	mpfr_init2(*(yrange.a),tools_precision * 256);
+	mpfr_init2(*(yrange.b),tools_precision * 256);
+	mpfr_set_ui(*(xrange.a),1.0,GMP_RNDD);
+	mpfr_set_ui(*(xrange.b),1.0,GMP_RNDU);
+	evaluateRangeFunction(yrange, simplified, xrange, tools_precision * 256 + 10);
+	if (mpfr_number_p(*(yrange.a)) &&
+	    mpfr_number_p(*(yrange.b)) &&
+	    (mpfr_sgn(*(yrange.a)) * mpfr_sgn(*(yrange.b)) < 0)) {
+	  mpfr_set_ui(tempResult,0,GMP_RNDN);
+	  if (!noMessage) {
+	    if (!noRoundingWarnings) {
+	      printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate and\n");
+	      printMessage(1,"a faithful evaluation is not possible. Will consider the constant to be 0.\n");
+	    } 
+	  } else {
+	    if (!noRoundingWarnings) {
+	      printMessage(1,"Warning: the expression could not be faithfully evaluated.\n");
+	    }
+	  }
+	} else {
+	  if (!noMessage) {
+	    if (!noRoundingWarnings) {
+	      printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate and\n");
+	      printMessage(1,"a faithful evaluation is not possible.\nWill use a plain floating-point evaluation, which might yield a completely wrong value.\n");
+	    } 
+	  } else {
+	    if (!noRoundingWarnings) {
+	      printMessage(1,"Warning: the expression could not be faithfully evaluated.\n");
+	    }
+	  }
+	  evaluate(tempResult, simplified, tempMpfr, defaultprecision * 256);
+	}
+	mpfr_clear(*(xrange.a));
+	mpfr_clear(*(xrange.b));
+	mpfr_clear(*(yrange.a));
+	mpfr_clear(*(yrange.b));
+	free(xrange.a);
+	free(xrange.b);
+	free(yrange.a);
+	free(yrange.b);
+	notfaithful = 1;
       }
-      mpfr_clear(*(xrange.a));
-      mpfr_clear(*(xrange.b));
-      mpfr_clear(*(yrange.a));
-      mpfr_clear(*(yrange.b));
-      free(xrange.a);
-      free(xrange.b);
-      free(yrange.a);
-      free(yrange.b);
-      notfaithful = 1;
     } else {
       if (simplified->nodeType != CONSTANT) {
 	if (!noMessage) {
@@ -4645,6 +4653,7 @@ void autoprint(node *thing, int inList) {
   int freeThingAfterwards;
   int okay, shown, shown2, extraMessage;
   rangetype xrange, yrange;
+  int okaySign, sign;
 
   shown = 0; shown2 = 0;
   if (isPureTree(thing)) {
@@ -4689,52 +4698,57 @@ void autoprint(node *thing, int inList) {
 	      mpfr_set_prec(a,mpfr_get_prec(*(tempNode5->value)));
 	      mpfr_set(a,*(tempNode5->value),GMP_RNDN);
 	    } else {
-              xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-              xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-              yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-              yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-              mpfr_init2(*(xrange.a),tools_precision);
-              mpfr_init2(*(xrange.b),tools_precision);
-              mpfr_init2(*(yrange.a),tools_precision * 256);
-              mpfr_init2(*(yrange.b),tools_precision * 256);
-              mpfr_set_ui(*(xrange.a),1.0,GMP_RNDD);
-              mpfr_set_ui(*(xrange.b),1.0,GMP_RNDU);
-              evaluateRangeFunction(yrange, tempNode5, xrange, tools_precision * 256 + 10);
-              extraMessage = 0;
-              if (mpfr_number_p(*(yrange.a)) &&
-                  mpfr_number_p(*(yrange.b)) &&
-                  (mpfr_sgn(*(yrange.a)) * mpfr_sgn(*(yrange.b)) < 0)) {
-                mpfr_set_ui(a,0,GMP_RNDN);
-                if (!noRoundingWarnings) {
-		  if (!shown) {
-                    printMessage(1,"Warning: rounding may have happened.\nIf there is rounding, the displayed value is *NOT* guaranteed to be a faithful rounding of the true result.\n");
-		    shown = 1;
-		  }
-		}
-              } else {
-                evaluate(a,tempNode5,b,tools_precision * 256);
-                if (!(mpfr_number_p(*(yrange.a)) && mpfr_number_p(*(yrange.b)))) extraMessage = 1;
-              }
-              mpfr_clear(*(xrange.a));
-              mpfr_clear(*(xrange.b));
-              mpfr_clear(*(yrange.a));
-              mpfr_clear(*(yrange.b));
-              free(xrange.a);
-              free(xrange.b);
-              free(yrange.a);
-              free(yrange.b);
-	      if (mpfr_number_p(a)) {
-		if (!noRoundingWarnings) {
-		  if (!shown) {
-                    printMessage(1,"Warning: rounding has happened.\nThe displayed value is *NOT* guaranteed to be a faithful rounding of the true result.\n");
-                    if (extraMessage) printMessage(1,"The displayed value has been computed using plain floating-point arithmetic and might be completely wrong.\n");
-		    shown = 1;
-		  }
-		}
+	      okaySign = evaluateSign(&sign,tempNode2);
+	      if (okaySign && (sign == 0)) {
+		mpfr_set_ui(a,0,GMP_RNDN);
 	      } else {
-		printMessage(1,"Warning: the given expression is undefined or numerically unstable.\n");
-		mpfr_set_nan(a);
-	      }
+		xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+		xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+		yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+		yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+		mpfr_init2(*(xrange.a),tools_precision);
+		mpfr_init2(*(xrange.b),tools_precision);
+		mpfr_init2(*(yrange.a),tools_precision * 256);
+		mpfr_init2(*(yrange.b),tools_precision * 256);
+		mpfr_set_ui(*(xrange.a),1.0,GMP_RNDD);
+		mpfr_set_ui(*(xrange.b),1.0,GMP_RNDU);
+		evaluateRangeFunction(yrange, tempNode5, xrange, tools_precision * 256 + 10);
+		extraMessage = 0;
+		if (mpfr_number_p(*(yrange.a)) &&
+		    mpfr_number_p(*(yrange.b)) &&
+		    (mpfr_sgn(*(yrange.a)) * mpfr_sgn(*(yrange.b)) < 0)) {
+		  mpfr_set_ui(a,0,GMP_RNDN);
+		  if (!noRoundingWarnings) {
+		    if (!shown) {
+		      printMessage(1,"Warning: rounding may have happened.\nIf there is rounding, the displayed value is *NOT* guaranteed to be a faithful rounding of the true result.\n");
+		      shown = 1;
+		    }
+		  }
+		} else {
+		  evaluate(a,tempNode5,b,tools_precision * 256);
+		  if (!(mpfr_number_p(*(yrange.a)) && mpfr_number_p(*(yrange.b)))) extraMessage = 1;
+		}
+		mpfr_clear(*(xrange.a));
+		mpfr_clear(*(xrange.b));
+		mpfr_clear(*(yrange.a));
+		mpfr_clear(*(yrange.b));
+		free(xrange.a);
+		free(xrange.b);
+		free(yrange.a);
+		free(yrange.b);
+		if (mpfr_number_p(a)) {
+		  if (!noRoundingWarnings) {
+		    if (!shown) {
+		      printMessage(1,"Warning: rounding has happened.\nThe displayed value is *NOT* guaranteed to be a faithful rounding of the true result.\n");
+		      if (extraMessage) printMessage(1,"The displayed value has been computed using plain floating-point arithmetic and might be completely wrong.\n");
+		      shown = 1;
+		    }
+		  }
+		} else {
+		  printMessage(1,"Warning: the given expression is undefined or numerically unstable.\n");
+		  mpfr_set_nan(a);
+		}
+	      }  
 	    }
 	    printValue(&a);
 	    freeThing(tempNode5);
@@ -12754,9 +12768,12 @@ node *evaluateThingInner(node *tree) {
 	    if (resA == 1) mpfr_nextbelow(a);
 	    if (resB == 1) mpfr_nextabove(b);
 	  }
-	  if ((mpfr_cmp(a,b) < 0) != resC) 
-	    printMessage(1,"Warning: inequality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
-	  else 
+	  if ((mpfr_cmp(a,b) < 0) != resC) {
+	    if (compareConstant(&resD, copy->child1, copy->child2)) {
+	      resC = (resD < 0);
+	    } else 
+	      printMessage(1,"Warning: inequality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+	  } else 
 	    printMessage(2,"Information: inequality test relies on floating-point result.\n");
 	}
 	if (resC) {
@@ -12797,9 +12814,12 @@ node *evaluateThingInner(node *tree) {
 	    if (resA == 1) mpfr_nextabove(a);
 	    if (resB == 1) mpfr_nextbelow(b);
 	  }
-	  if ((mpfr_cmp(a,b) > 0) != resC) 
-	    printMessage(1,"Warning: inequality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
-	  else 
+	  if ((mpfr_cmp(a,b) > 0) != resC) {
+	    if (compareConstant(&resD, copy->child1, copy->child2)) {
+	      resC = (resD > 0);
+	    } else 
+	      printMessage(1,"Warning: inequality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+	  } else 
 	    printMessage(2,"Information: inequality test relies on floating-point result.\n");
 	}
 	if (resC) {
@@ -12840,9 +12860,12 @@ node *evaluateThingInner(node *tree) {
 	    if (resA == 1) mpfr_nextbelow(a);
 	    if (resB == 1) mpfr_nextabove(b);
 	  }
-	  if ((mpfr_cmp(a,b) <= 0) != resC) 
-	    printMessage(1,"Warning: inequality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
-	  else 
+	  if ((mpfr_cmp(a,b) <= 0) != resC) {
+	    if (compareConstant(&resD, copy->child1, copy->child2)) {
+	      resC = (resD <= 0);
+	    } else 
+	      printMessage(1,"Warning: inequality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+	  } else 
 	    printMessage(2,"Information: inequality test relies on floating-point result.\n");
 	}
 	if (resC) {
@@ -12883,9 +12906,12 @@ node *evaluateThingInner(node *tree) {
 	    if (resA == 1) mpfr_nextabove(a);
 	    if (resB == 1) mpfr_nextbelow(b);
 	  }
-	  if ((mpfr_cmp(a,b) >= 0) != resC) 
-	    printMessage(1,"Warning: inequality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
-	  else 
+	  if ((mpfr_cmp(a,b) >= 0) != resC) {
+	    if (compareConstant(&resD, copy->child1, copy->child2)) {
+	      resC = (resD >= 0);
+	    } else  
+	      printMessage(1,"Warning: inequality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+	  } else 
 	    printMessage(2,"Information: inequality test relies on floating-point result.\n");
 	}
 	if (resC) {

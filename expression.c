@@ -10930,3 +10930,4 @@ int readDecimalConstant(mpfr_t result, char *str) {
 
   return ternary;
 }
+
