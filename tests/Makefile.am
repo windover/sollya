@@ -3,7 +3,13 @@ EXTRA_DIST= check.sollya check.sollya.output check.proto
 TESTS_ENVIRONMENT=$(SHELL) 
 TESTS= check.sh 
 
-TESTFILES= check.sollya 
+TESTFILES= check.sollya
+
+.PHONY: $(top_builddir)/sollya
+
+$(top_builddir)/sollya:
+	cd $(top_builddir); make all
+
 
 check.sh: $(top_builddir)/sollya check.proto $(TESTFILES)
 	echo "#!/bin/sh" > check.sh
