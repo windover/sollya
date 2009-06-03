@@ -9578,15 +9578,15 @@ node *differentiatePolynomialUnsafe(node *tree) {
        
     getCoefficients(&degree,&monomials,tree);
  
-  
     if (monomials[degree] == NULL) {
-      fprintf(stderr,
-	     "Error: differentiatePolynomialUnsafe: an error occurred. The coefficient of a monomial with the polynomial's degree exponent is zero.\n"
-	     );
-      exit(1);
-      return NULL;
+      copy = (node*) safeMalloc(sizeof(node));
+      copy->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      mpfr_set_d(*value,0.0,GMP_RNDN);
+      copy->value = value;
+      monomials[degree] = copy;
     }
-    
     
     if (degree >= 2) {
       if (degree > 2) {
