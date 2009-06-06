@@ -45,510 +45,1730 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
 
 */
-
 %{
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include "expression.h"
+#include "chain.h"
 #include "general.h"
+#include "execute.h"
 #include "miniparser.h"
-#include "double.h"
 
 #define YYERROR_VERBOSE 1
 
-extern int miniyylex();
+extern int miniyylex(YYSTYPE *lvalp, void *scanner);
 
-void miniyyerror(char *message) {
+void miniyyerror(void *myScanner, char *message) {
     printMessage(1,"Warning: %s. Will try to continue parsing (expecting \";\"). May leak memory.\n",message);
 }
 
-
 %}
 
+%parse-param {void *myScanner}
+%lex-param {void *myScanner}
+
 %defines
+
 %name-prefix="miniyy" 
 
+%expect 1
+
+%pure_parser
+
 %union {
-	char *value;
-        node *tree;
-        mpfr_t *constantval;
-  	void *other;
+  doubleNode *dblnode;
+  char *value;
+  node *tree;
+  chain *list;
+  int *integerval;
+  int count;
+  void *other;
 };
 
 
-%token  <value> CONSTTOKEN
-%token  <value> DYADICCONSTTOKEN
-%token  <value> BINARYCONSTTOKEN
-%token  <value> HEXCONSTTOKEN
-%token  PITOKEN
-%token  ETOKEN
-%token  <value> VARIABLETOKEN
-%token	LPARTOKEN        
-%token	RPARTOKEN        
-%token	PLUSTOKEN        
-%token	MINUSTOKEN       
-%token	MULTOKEN             
-%token	DIVTOKEN         
-%token	POWTOKEN         
-%token	SQRTTOKEN        
-%token	EXPTOKEN         
-%token	LOGTOKEN         
-%token	LOG2TOKEN        
-%token	LOG10TOKEN       
-%token	SINTOKEN             
-%token	COSTOKEN         
-%token	TANTOKEN         
-%token	ASINTOKEN        
-%token	ACOSTOKEN        
-%token	ATANTOKEN        
-%token	SINHTOKEN        
-%token	COSHTOKEN        
-%token	TANHTOKEN        
-%token	ASINHTOKEN       
-%token	ACOSHTOKEN       
-%token	ATANHTOKEN       
-%token	ABSTOKEN         
-%token	ERFTOKEN         
-%token	ERFCTOKEN         
-%token	LOG1PTOKEN         
-%token	EXPM1TOKEN         
-%token  DOUBLETOKEN
-%token  DOUBLEDOUBLETOKEN
-%token  TRIPLEDOUBLETOKEN
-%token  DOUBLEEXTENDEDTOKEN
-%token  CEILTOKEN
-%token  FLOORTOKEN
+%token  <value> CONSTANTTOKEN;          					       
+%token  <value> MIDPOINTCONSTANTTOKEN;          					       
+%token  <value> DYADICCONSTANTTOKEN;   					       
+%token  <value> HEXCONSTANTTOKEN;       		
+%token  <value> HEXADECIMALCONSTANTTOKEN;   			       
+%token  <value> BINARYCONSTANTTOKEN;    					       
+											       
+%token  PITOKEN;                					       
+											       
+%token  <value> IDENTIFIERTOKEN;          					       
+											       
+%token  <value> STRINGTOKEN;            					       
+											       
+%token  LPARTOKEN;              					       
+%token  RPARTOKEN;              					       
+%token  LBRACKETTOKEN;          					       
+%token  RBRACKETTOKEN;          					       
+%token  EQUALTOKEN;             					       
+%token  ASSIGNEQUALTOKEN;
+%token  COMPAREEQUALTOKEN;             					       
+%token  COMMATOKEN;             					       
+%token  EXCLAMATIONTOKEN;  						       
+%token  SEMICOLONTOKEN;         					       
+%token  STARLEFTANGLETOKEN;         					       
+%token  LEFTANGLETOKEN;         					       
+%token  RIGHTANGLEUNDERSCORETOKEN;  					       
+%token  RIGHTANGLEDOTTOKEN;   					       
+%token  RIGHTANGLESTARTOKEN;         					       
+%token  RIGHTANGLETOKEN;        					       
+%token  DOTSTOKEN;              					       
+%token  QUESTIONMARKTOKEN;  						       
+%token  VERTBARTOKEN;  						       
+%token  ATTOKEN;  							       
+%token  DOUBLECOLONTOKEN;
+%token  DOTCOLONTOKEN;
+%token  COLONDOTTOKEN;
+%token  EXCLAMATIONEQUALTOKEN;
+%token  APPROXTOKEN;
+%token  ANDTOKEN;
+%token  ORTOKEN;
+	       										       
+%token  PLUSTOKEN;              					       
+%token  MINUSTOKEN;             					       
+%token  MULTOKEN;            						       
+%token  DIVTOKEN;              					       
+%token  POWTOKEN;              					       
+											       
+%token  SQRTTOKEN;              					       
+%token  EXPTOKEN;               					       
+%token  LOGTOKEN;               					       
+%token  LOG2TOKEN;              					       
+%token  LOG10TOKEN;             					       
+%token  SINTOKEN;               					       
+%token  COSTOKEN;               					       
+%token  TANTOKEN;               					       
+%token  ASINTOKEN;              					       
+%token  ACOSTOKEN;              					       
+%token  ATANTOKEN;              					       
+%token  SINHTOKEN;              					       
+%token  COSHTOKEN;              					       
+%token  TANHTOKEN;              					       
+%token  ASINHTOKEN;             					       
+%token  ACOSHTOKEN;             					       
+%token  ATANHTOKEN;             					       
+%token  ABSTOKEN;               					       
+%token  ERFTOKEN;               					       
+%token  ERFCTOKEN;              					       
+%token  LOG1PTOKEN;             					       
+%token  EXPM1TOKEN;             					       
+%token  DOUBLETOKEN;            					       
+%token  DOUBLEDOUBLETOKEN;  						       
+%token  TRIPLEDOUBLETOKEN;      					       
+%token  DOUBLEEXTENDEDTOKEN;    					       
+%token  CEILTOKEN;              					       
+%token  FLOORTOKEN;             			
 
-%type <other> start
-%type <tree> fun
-%type <tree> prefixfunction
-%type <constantval> constant
-%type <tree> variable 
-%type <tree> term
-%type <tree> subterm
-%type <tree> primary
+%token  HEADTOKEN;
+%token  REVERTTOKEN;
+%token  SORTTOKEN;
+%token  TAILTOKEN;		       
+%token  MANTISSATOKEN;
+%token  EXPONENTTOKEN;
+%token  PRECISIONTOKEN;
+%token  ROUNDCORRECTLYTOKEN;
+											       
+%token  PRECTOKEN;              					       
+%token  POINTSTOKEN;            					       
+%token  DIAMTOKEN;              					       
+%token  DISPLAYTOKEN;            					       
+%token  VERBOSITYTOKEN;         					       
+%token  CANONICALTOKEN;         					       
+%token  AUTOSIMPLIFYTOKEN;      					       
+%token  TAYLORRECURSIONSTOKEN;  					       
+%token  TIMINGTOKEN;            					       
+%token  FULLPARENTHESESTOKEN;   					       
+%token  MIDPOINTMODETOKEN;      					       
+%token  SUPPRESSWARNINGSTOKEN;    					       
+%token  HOPITALRECURSIONSTOKEN;  					       
+%token  RATIONALMODETOKEN;  
+											       
+%token  ONTOKEN;                					       
+%token  OFFTOKEN;               					       
+%token  DYADICTOKEN;  						       
+%token  POWERSTOKEN;            					       
+%token  BINARYTOKEN;            					       
+%token  HEXADECIMALTOKEN;            					       
+%token  FILETOKEN;              					       
+%token  POSTSCRIPTTOKEN;        					       
+%token  POSTSCRIPTFILETOKEN;    					       
+%token  PERTURBTOKEN;           					       
+%token  MINUSWORDTOKEN;         					       
+%token  PLUSWORDTOKEN;          					       
+%token  ZEROWORDTOKEN;          					       
+%token  NEARESTTOKEN;           					       
+%token  HONORCOEFFPRECTOKEN;   					       
+%token  TRUETOKEN;  							       
+%token  FALSETOKEN;  							       
+%token  DEFAULTTOKEN;											       
+%token  ABSOLUTETOKEN;
+%token  DECIMALTOKEN;
+%token  RELATIVETOKEN;
+%token  FIXEDTOKEN;
+%token  FLOATINGTOKEN;
+
+%token  ERRORTOKEN;			
+		       											       
+%token  LIBRARYTOKEN;           					       
+											       
+%token  DIFFTOKEN;              					       
+%token  SIMPLIFYTOKEN;  						       
+%token  REMEZTOKEN;             					       
+%token  FPMINIMAXTOKEN;             					       
+%token  HORNERTOKEN;            					       
+%token  EXPANDTOKEN;            					       
+%token  SIMPLIFYSAFETOKEN;  						       
+%token  TAYLORTOKEN;           					       
+%token  DEGREETOKEN;            					       
+%token  NUMERATORTOKEN;         					       
+%token  DENOMINATORTOKEN;       					       
+%token  SUBSTITUTETOKEN;        					       
+%token  COEFFTOKEN;             					       
+%token  SUBPOLYTOKEN;           					       
+%token  ROUNDCOEFFICIENTSTOKEN;   					       
+%token  RATIONALAPPROXTOKEN;    					       
+%token  ACCURATEINFNORMTOKEN;    					       
+%token  ROUNDTOFORMATTOKEN;     					       
+%token  EVALUATETOKEN;          					       
+%token  LENGTHTOKEN;
+%token  INFTOKEN;
+%token  MIDTOKEN;
+%token  SUPTOKEN;
+
+%token  READXMLTOKEN;											       
+%token  PARSETOKEN;             					       
+											       
+%token  PRINTTOKEN;             					       
+%token  PRINTXMLTOKEN;             					       
+%token  PLOTTOKEN;              					       
+%token  PRINTHEXATOKEN;         					       
+%token  PRINTFLOATTOKEN;         					       
+%token  PRINTBINARYTOKEN;       					       
+%token  PRINTEXPANSIONTOKEN;    					       
+%token  BASHEXECUTETOKEN;       					       
+%token  EXTERNALPLOTTOKEN;      					       
+%token  WRITETOKEN;             					       
+%token  ASCIIPLOTTOKEN;    
+%token  RENAMETOKEN;    	       
+											       
+											       
+%token  INFNORMTOKEN;           					       
+%token  FINDZEROSTOKEN;         					       
+%token  FPFINDZEROSTOKEN;       					       
+%token  DIRTYINFNORMTOKEN;      					       
+%token  INTEGRALTOKEN;          					       
+%token  DIRTYINTEGRALTOKEN;  						       
+%token  WORSTCASETOKEN;         					       
+%token  IMPLEMENTPOLYTOKEN;  						       
+%token  CHECKINFNORMTOKEN;      					       
+%token  ZERODENOMINATORSTOKEN;  					       
+%token  ISEVALUABLETOKEN;       					       
+%token  SEARCHGALTOKEN;         					       
+%token  GUESSDEGREETOKEN;       					       
+%token  DIRTYFINDZEROSTOKEN;    					       
+											       
+%token  IFTOKEN;  							       
+%token  THENTOKEN;  							       
+%token  ELSETOKEN;  							       
+%token  FORTOKEN;  							       
+%token  INTOKEN;  							       
+%token  FROMTOKEN;  							       
+%token  TOTOKEN;  							       
+%token  BYTOKEN;  							       
+%token  DOTOKEN;  							       
+%token  BEGINTOKEN;  							       
+%token  ENDTOKEN;  							       
+%token  WHILETOKEN;  							       
+
+%token  READFILETOKEN;                                                      
+
+%token  ISBOUNDTOKEN;
+
+%token  EXECUTETOKEN;
+
+%token  FALSERESTARTTOKEN;
+%token  FALSEQUITTOKEN;
+
+%token  EXTERNALPROCTOKEN; 
+%token  VOIDTOKEN;    
+%token  CONSTANTTYPETOKEN; 
+%token  FUNCTIONTOKEN;  
+%token  RANGETOKEN;  
+%token  INTEGERTOKEN;   
+%token  STRINGTYPETOKEN;    
+%token  BOOLEANTOKEN;    
+%token  LISTTOKEN;    
+%token  OFTOKEN;    
+
+%token  VARTOKEN;    
+%token  PROCTOKEN;
+%token  PROCEDURETOKEN;
+%token  RETURNTOKEN;
+%token  NOPTOKEN;
+
+
+%type <other> startsymbol;
+%type <other> egalquestionmark;
+%type <count> unaryplusminus;
+%type <tree>  startsymbolwitherr;
+%type <tree>  command;
+%type <tree>  procbody;
+%type <tree>  variabledeclaration;
+%type <tree>  simplecommand;
+%type <list>  commandlist;
+%type <list>  variabledeclarationlist;
+%type <list>  identifierlist;
+%type <tree>  thing;
+%type <list>  thinglist;
+%type <tree>  ifcommand;
+%type <tree>  forcommand;
+%type <tree>  assignment;
+%type <tree>  simpleassignment;
+%type <tree>  stateassignment;
+%type <tree>  stillstateassignment;
+%type <tree>  basicthing;
+%type <tree>  list;
+%type <tree>  constant;
+%type <list>  simplelist;
+%type <tree>  range;
+%type <tree>  debound;
+%type <tree>  headfunction;
+%type <tree>  term;
+%type <tree>  hyperterm;
+%type <tree>  subterm;
+%type <tree>  megaterm;
+%type <tree>  statedereference;
+%type <dblnode>  indexing;
+%type <integerval> externalproctype;
+%type <integerval> extendedexternalproctype;
+%type <list>  externalproctypesimplelist;
+%type <list>  externalproctypelist;
+
 
 %%
 
+startsymbol:            startsymbolwitherr
+                          {
+			    minitree = $1;
+			    $$ = NULL;
+			    YYACCEPT;
+			  }
+;
 
-start:                          fun
-                           {
-			     minitree = $1;   
-			     $$ = NULL;
-			   }
+
+startsymbolwitherr:     thing 
+                          {
+			    $$ = $1;
+			  }
+                      | error
+                          {
+			    $$ = NULL;
+			  }
+;
+
+
+command:                simplecommand
+                          {
+			    $$ = $1;
+			  }
+                      | BEGINTOKEN commandlist ENDTOKEN
+                          {
+			    $$ = makeCommandList($2);
+                          }
+                      | BEGINTOKEN variabledeclarationlist commandlist ENDTOKEN
+                          {			    
+			    $$ = makeCommandList(concatChains($2, $3));
+                          }
+                      | BEGINTOKEN variabledeclarationlist ENDTOKEN
+                          {
+			    $$ = makeCommandList($2);
+                          }
+                      | BEGINTOKEN ENDTOKEN
+                          {
+			    $$ = makeNop();
+                          }
+                      | IFTOKEN ifcommand
+                          {
+			    $$ = $2;
+			  }
+                      | WHILETOKEN thing DOTOKEN command
+                          {
+			    $$ = makeWhile($2, $4);
+			  }
+                      | FORTOKEN forcommand
+                          {
+			    $$ = $2;
+			  }
+;
+
+ifcommand:              thing THENTOKEN command 
+                          {
+			    $$ = makeIf($1, $3);
+                          }
+                      | thing THENTOKEN command ELSETOKEN command 
+                          {
+			    $$ = makeIfElse($1,$3,$5);
+                          }
 ;
 
 
 
-fun:     			term						
-                           {
-			     $$ = $1;
-                           }   									
-      			|	fun PLUSTOKEN term			
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = ADD;
-			     temp_node->child1 = $1;
-			     temp_node->child2 = $3;
-			     $$ = temp_node;
-                           }										
-			|	fun MINUSTOKEN term			
-		           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = SUB;
-			     temp_node->child1 = $1;
-			     temp_node->child2 = $3;
-			     $$ = temp_node;
-                           }				   			
+forcommand:             IDENTIFIERTOKEN FROMTOKEN thing TOTOKEN thing DOTOKEN command
+                          {
+			    $$ = makeFor($1, $3, $5, makeConstantDouble(1.0), $7);
+			    free($1);
+                          }
+                      | IDENTIFIERTOKEN FROMTOKEN thing TOTOKEN thing BYTOKEN thing DOTOKEN command
+                          {
+			    $$ = makeFor($1, $3, $5, $7, $9);
+			    free($1);
+                          }
+                      | IDENTIFIERTOKEN INTOKEN thing DOTOKEN command
+                          {
+			    $$ = makeForIn($1, $3, $5);
+			    free($1);
+                          }
 ;
 
-		
-prefixfunction:                 SQRTTOKEN LPARTOKEN fun RPARTOKEN    
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = SQRT;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       EXPTOKEN LPARTOKEN fun RPARTOKEN    
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = EXP;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       LOGTOKEN LPARTOKEN fun RPARTOKEN
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = LOG;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       LOG2TOKEN LPARTOKEN fun RPARTOKEN
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = LOG_2;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       LOG10TOKEN LPARTOKEN fun RPARTOKEN
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = LOG_10;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       SINTOKEN LPARTOKEN fun RPARTOKEN
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = SIN;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       COSTOKEN LPARTOKEN fun RPARTOKEN
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = COS;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       TANTOKEN LPARTOKEN fun RPARTOKEN
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = TAN;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       ASINTOKEN LPARTOKEN fun RPARTOKEN
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = ASIN;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       ACOSTOKEN LPARTOKEN fun RPARTOKEN    
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = ACOS;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       ATANTOKEN LPARTOKEN fun RPARTOKEN    
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = ATAN;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       SINHTOKEN LPARTOKEN fun RPARTOKEN    
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = SINH;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       COSHTOKEN LPARTOKEN fun RPARTOKEN    
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = COSH;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       TANHTOKEN LPARTOKEN fun RPARTOKEN    
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = TANH;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       ASINHTOKEN LPARTOKEN fun RPARTOKEN   
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = ASINH;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       ACOSHTOKEN LPARTOKEN fun RPARTOKEN   
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = ACOSH;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       ATANHTOKEN LPARTOKEN fun RPARTOKEN   
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = ATANH;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       ABSTOKEN LPARTOKEN fun RPARTOKEN     						
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = ABS;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       ERFTOKEN LPARTOKEN fun RPARTOKEN     						
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = ERF;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       ERFCTOKEN LPARTOKEN fun RPARTOKEN     						
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = ERFC;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       LOG1PTOKEN LPARTOKEN fun RPARTOKEN     						
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = LOG_1P;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       EXPM1TOKEN LPARTOKEN fun RPARTOKEN     						
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = EXP_M1;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       DOUBLETOKEN LPARTOKEN fun RPARTOKEN     						
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = DOUBLE;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       DOUBLEDOUBLETOKEN LPARTOKEN fun RPARTOKEN     			  		
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = DOUBLEDOUBLE;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       TRIPLEDOUBLETOKEN LPARTOKEN fun RPARTOKEN     			   	
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = TRIPLEDOUBLE;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }		
-                        |       DOUBLEEXTENDEDTOKEN LPARTOKEN fun RPARTOKEN     			   	
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = DOUBLEEXTENDED;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }
-                        |       CEILTOKEN LPARTOKEN fun RPARTOKEN     			   	
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = CEIL;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }
-                        |       FLOORTOKEN LPARTOKEN fun RPARTOKEN     			   	
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = FLOOR;
-			     temp_node->child1 = $3;
-			     $$ = temp_node;
-                           }
+
+commandlist:            command SEMICOLONTOKEN
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | command SEMICOLONTOKEN commandlist
+                          {
+			    $$ = addElement($3, $1);
+			  }
+;
+
+variabledeclarationlist: variabledeclaration SEMICOLONTOKEN
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | variabledeclaration SEMICOLONTOKEN variabledeclarationlist
+                          {
+			    $$ = addElement($3, $1);
+			  }
+;
+
+variabledeclaration:    VARTOKEN identifierlist
+                          {
+			    $$ = makeVariableDeclaration($2);
+			  }
+;
+
+
+identifierlist:         IDENTIFIERTOKEN
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | IDENTIFIERTOKEN COMMATOKEN identifierlist
+                          {
+			    $$ = addElement($3, $1);
+			  }
+;
+
+procbody:               LPARTOKEN RPARTOKEN BEGINTOKEN commandlist ENDTOKEN
+                          {
+			    $$ = makeProc(NULL, makeCommandList($4), makeUnit());
+                          }
+                      | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist ENDTOKEN
+                          {			    
+			    $$ = makeProc(NULL, makeCommandList(concatChains($4, $5)), makeUnit());
+                          }
+                      | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist ENDTOKEN
+                          {
+			    $$ = makeProc(NULL, makeCommandList($4), makeUnit());
+                          }
+                      | LPARTOKEN RPARTOKEN BEGINTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc(NULL, makeCommandList(addElement(NULL,makeNop())), makeUnit());
+                          }
+                      | LPARTOKEN RPARTOKEN BEGINTOKEN commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc(NULL, makeCommandList($4), $6);
+                          }
+                      | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {			    
+			    $$ = makeProc(NULL, makeCommandList(concatChains($4, $5)), $7);
+                          }
+                      | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc(NULL, makeCommandList($4), $6);
+                          }
+                      | LPARTOKEN RPARTOKEN BEGINTOKEN RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc(NULL, makeCommandList(addElement(NULL,makeNop())), $5);
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN commandlist ENDTOKEN
+                          {
+			    $$ = makeProc($2, makeCommandList($5), makeUnit());
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist ENDTOKEN
+                          {			    
+			    $$ = makeProc($2, makeCommandList(concatChains($5, $6)), makeUnit());
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist ENDTOKEN
+                          {
+			    $$ = makeProc($2, makeCommandList($5), makeUnit());
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc($2, makeCommandList(addElement(NULL,makeNop())), makeUnit());
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc($2, makeCommandList($5), $7);
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {			    
+			    $$ = makeProc($2, makeCommandList(concatChains($5, $6)), $8);
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc($2, makeCommandList($5), $7);
+                          }
+                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                          {
+			    $$ = makeProc($2, makeCommandList(addElement(NULL, makeNop())), $6);
+                          }
 ;
 
 
 
-
-term:				subterm						
-			   {
-			     $$ = $1;
-                           }			
-			|	MINUSTOKEN subterm			
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = NEG;
-			     temp_node->child1 = $2;
-			     $$ = temp_node;
-                           }									
-			|	PLUSTOKEN subterm			
-                           {
-			     $$ = $2;
-                           }									
-			|	term MULTOKEN subterm				
-			   {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = MUL;
-			     temp_node->child1 = $1;
-			     temp_node->child2 = $3;
-			     $$ = temp_node;
-                           }							
-										
-			|	term DIVTOKEN subterm				
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = DIV;
-			     temp_node->child1 = $1;
-			     temp_node->child2 = $3;
-			     $$ = temp_node;
-                           }					
+simplecommand:          FALSEQUITTOKEN 
+                          {
+			    $$ = makeQuit();
+			  }
+                      | FALSERESTARTTOKEN 
+                          {
+			    $$ = makeFalseRestart();
+			  }
+                      | NOPTOKEN
+                          {
+			    $$ = makeNop();
+			  }
+		      | PRINTTOKEN LPARTOKEN thinglist RPARTOKEN            					       
+                          {
+			    $$ = makePrint($3);
+			  }
+                      | PRINTTOKEN LPARTOKEN thinglist RPARTOKEN RIGHTANGLETOKEN thing           	
+                          {
+			    $$ = makeNewFilePrint($6, $3);
+			  }				       
+                      | PRINTTOKEN LPARTOKEN thinglist RPARTOKEN RIGHTANGLETOKEN RIGHTANGLETOKEN thing           	
+                          {
+			    $$ = makeAppendFilePrint($7, $3);
+			  }				       
+                      | PLOTTOKEN LPARTOKEN thing COMMATOKEN thinglist RPARTOKEN               	
+                          {
+			    $$ = makePlot(addElement($5, $3));
+			  }				       
+                      | PRINTHEXATOKEN LPARTOKEN thing RPARTOKEN         	
+                          {
+			    $$ = makePrintHexa($3);
+			  }		
+                      | PRINTFLOATTOKEN LPARTOKEN thing RPARTOKEN         	
+                          {
+			    $$ = makePrintFloat($3);
+			  }				       
+                      | PRINTBINARYTOKEN LPARTOKEN thing RPARTOKEN      	
+                          {
+			    $$ = makePrintBinary($3);
+			  }				       
+                      | PRINTEXPANSIONTOKEN LPARTOKEN thing RPARTOKEN   	
+                          {
+			    $$ = makePrintExpansion($3);
+			  }				       
+                      | BASHEXECUTETOKEN LPARTOKEN thing RPARTOKEN      	
+                          {
+			    $$ = makeBashExecute($3);
+			  }				       
+                      | EXTERNALPLOTTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN     	
+                          {
+			    $$ = makeExternalPlot(addElement(addElement(addElement(addElement($11,$9),$7),$5),$3));
+			  }				       
+                      | WRITETOKEN LPARTOKEN thinglist RPARTOKEN            	
+                          {
+			    $$ = makeWrite($3);
+			  }				       
+                      | WRITETOKEN LPARTOKEN thinglist RPARTOKEN RIGHTANGLETOKEN thing           	
+                          {
+			    $$ = makeNewFileWrite($6, $3);
+			  }				       
+                      | WRITETOKEN LPARTOKEN thinglist RPARTOKEN RIGHTANGLETOKEN RIGHTANGLETOKEN thing           	
+                          {
+			    $$ = makeAppendFileWrite($7, $3);
+			  }				       
+                      | ASCIIPLOTTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeAsciiPlot($3, $5);
+			  }				       
+                      | PRINTXMLTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makePrintXml($3);
+			  }	
+                      | EXECUTETOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeExecute($3);
+			  }				       			       
+                      | PRINTXMLTOKEN LPARTOKEN thing RPARTOKEN RIGHTANGLETOKEN thing
+                          {
+			    $$ = makePrintXmlNewFile($3,$6);
+			  }				       
+                      | PRINTXMLTOKEN LPARTOKEN thing RPARTOKEN RIGHTANGLETOKEN RIGHTANGLETOKEN thing
+                          {
+			    $$ = makePrintXmlAppendFile($3,$7);
+			  }				       
+                      | WORSTCASETOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeWorstCase(addElement(addElement(addElement(addElement($11, $9), $7), $5), $3));
+			  }         					       
+                      | RENAMETOKEN LPARTOKEN IDENTIFIERTOKEN COMMATOKEN IDENTIFIERTOKEN RPARTOKEN        	
+                          {
+			    $$ = makeRename($3, $5);
+			    free($3);
+			    free($5);
+			  }	
+                      | EXTERNALPROCTOKEN LPARTOKEN IDENTIFIERTOKEN COMMATOKEN thing COMMATOKEN externalproctypelist MINUSTOKEN RIGHTANGLETOKEN extendedexternalproctype RPARTOKEN        	
+                          {
+			    $$ = makeExternalProc($3, $5, addElement($7, $10));
+			    free($3);
+			  }				       			       
+                      | assignment
+                          {
+			    $$ = $1;
+			  }
+                      | thinglist
+                          {
+			    $$ = makeAutoprint($1);
+			  }
+                      | PROCEDURETOKEN IDENTIFIERTOKEN procbody
+                          {
+			    $$ = makeAssignment($2, $3);
+			    free($2);
+			  }  
 ;
 
-subterm:                        primary
-                           {
-			     $$ = $1;
-                           }
-                        |       primary POWTOKEN subterm
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = POW;
-			     temp_node->child1 = $1;
-			     temp_node->child2 = $3;
-			     $$ = temp_node;
-                           }
+assignment:             stateassignment 
+                          {
+			    $$ = $1;
+			  }
+                      | stillstateassignment EXCLAMATIONTOKEN
+                          {
+			    $$ = $1;
+			  }
+                      | simpleassignment
+                          {
+			    $$ = $1;
+			  }
+                      | simpleassignment EXCLAMATIONTOKEN
+                          {
+			    $$ = $1;
+			  }
 ;
 
-primary:			variable					
-			   {
-			     $$ = $1;
-                           }	  									
-			|       constant  
-			   {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = CONSTANT;
-			     temp_node->value = $1;
-			     $$ = temp_node;
-                           }									
-                        |       PITOKEN
-                           {
-                             temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = PI_CONST;
-			     $$ = temp_node;
-			   }
-			|	LPARTOKEN fun RPARTOKEN			
-			   {
-			     $$ = $2;
-                           }	
-                        |       prefixfunction
-                           {
-                             $$ = $1;
-                           }
+simpleassignment:       IDENTIFIERTOKEN EQUALTOKEN thing 
+                          {
+			    $$ = makeAssignment($1, $3);
+			    free($1);
+			  }
+                      | IDENTIFIERTOKEN ASSIGNEQUALTOKEN thing 
+                          {
+			    $$ = makeFloatAssignment($1, $3);
+			    free($1);
+			  }
+                      | IDENTIFIERTOKEN EQUALTOKEN LIBRARYTOKEN LPARTOKEN thing RPARTOKEN 
+                          {
+			    $$ = makeLibraryBinding($1, $5);
+			    free($1);
+			  }
+                      | indexing EQUALTOKEN thing 
+                          {
+			    $$ = makeAssignmentInIndexing($1->a,$1->b,$3);
+			    free($1);
+			  }
+                      | indexing ASSIGNEQUALTOKEN thing 
+                          {
+			    $$ = makeFloatAssignmentInIndexing($1->a,$1->b,$3);
+			    free($1);
+			  }
+;
+
+stateassignment:        PRECTOKEN EQUALTOKEN thing              					       
+                          {
+			    $$ = makePrecAssign($3);
+			  }
+                      | POINTSTOKEN EQUALTOKEN thing            					       
+                          {
+			    $$ = makePointsAssign($3);
+			  }
+                      | DIAMTOKEN EQUALTOKEN thing              					       
+                          {
+			    $$ = makeDiamAssign($3);
+			  }
+                      | DISPLAYTOKEN EQUALTOKEN thing            					       
+                          {
+			    $$ = makeDisplayAssign($3);
+			  }
+                      | VERBOSITYTOKEN EQUALTOKEN thing         					       
+                          {
+			    $$ = makeVerbosityAssign($3);
+			  }
+                      | CANONICALTOKEN EQUALTOKEN thing         					       
+                          {
+			    $$ = makeCanonicalAssign($3);
+			  }
+                      | AUTOSIMPLIFYTOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeAutoSimplifyAssign($3);
+			  }
+                      | TAYLORRECURSIONSTOKEN EQUALTOKEN thing  					       
+                          {
+			    $$ = makeTaylorRecursAssign($3);
+			  }
+                      | TIMINGTOKEN EQUALTOKEN thing            					       
+                          {
+			    $$ = makeTimingAssign($3);
+			  }
+                      | FULLPARENTHESESTOKEN EQUALTOKEN thing   					       
+                          {
+			    $$ = makeFullParenAssign($3);
+			  }
+                      | MIDPOINTMODETOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeMidpointAssign($3);
+			  }
+                      | RATIONALMODETOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeRationalModeAssign($3);
+			  }
+                      | SUPPRESSWARNINGSTOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeSuppressWarningsAssign($3);
+			  }
+                      | HOPITALRECURSIONSTOKEN EQUALTOKEN thing  					       
+                          {
+			    $$ = makeHopitalRecursAssign($3);
+			  }
+;
+
+stillstateassignment:   PRECTOKEN EQUALTOKEN thing              					       
+                          {
+			    $$ = makePrecStillAssign($3);
+			  }
+                      | POINTSTOKEN EQUALTOKEN thing            					       
+                          {
+			    $$ = makePointsStillAssign($3);
+			  }
+                      | DIAMTOKEN EQUALTOKEN thing              					       
+                          {
+			    $$ = makeDiamStillAssign($3);
+			  }
+                      | DISPLAYTOKEN EQUALTOKEN thing            					       
+                          {
+			    $$ = makeDisplayStillAssign($3);
+			  }
+                      | VERBOSITYTOKEN EQUALTOKEN thing         					       
+                          {
+			    $$ = makeVerbosityStillAssign($3);
+			  }
+                      | CANONICALTOKEN EQUALTOKEN thing         					       
+                          {
+			    $$ = makeCanonicalStillAssign($3);
+			  }
+                      | AUTOSIMPLIFYTOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeAutoSimplifyStillAssign($3);
+			  }
+                      | TAYLORRECURSIONSTOKEN EQUALTOKEN thing  					       
+                          {
+			    $$ = makeTaylorRecursStillAssign($3);
+			  }
+                      | TIMINGTOKEN EQUALTOKEN thing            					       
+                          {
+			    $$ = makeTimingStillAssign($3);
+			  }
+                      | FULLPARENTHESESTOKEN EQUALTOKEN thing   					       
+                          {
+			    $$ = makeFullParenStillAssign($3);
+			  }
+                      | MIDPOINTMODETOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeMidpointStillAssign($3);
+			  }
+                      | RATIONALMODETOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeRationalModeStillAssign($3);
+			  }
+                      | SUPPRESSWARNINGSTOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeSuppressWarningsStillAssign($3);
+			  }
+                      | HOPITALRECURSIONSTOKEN EQUALTOKEN thing  					       
+                          {
+			    $$ = makeHopitalRecursStillAssign($3);
+			  }
+;
+
+thinglist:              thing
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | thing COMMATOKEN thinglist
+                          {
+			    $$ = addElement($3, $1);
+			  }
+;
+
+thing:                  megaterm
+                          {
+			    $$ = $1;
+			  }
+                      | thing ANDTOKEN megaterm
+                          {
+			    $$ = makeAnd($1, $3);
+			  }
+                      | thing ORTOKEN megaterm
+                          {
+			    $$ = makeOr($1, $3);
+			  }
+                      | EXCLAMATIONTOKEN megaterm
+                          {
+			    $$ = makeNegation($2);
+			  }
+;
+
+indexing:               basicthing LBRACKETTOKEN thing RBRACKETTOKEN 
+                          {
+			    $$ = (doubleNode *) safeMalloc(sizeof(doubleNode));
+			    $$->a = $1;
+			    $$->b = $3;
+			  }
 ;
 
 
-variable: VARIABLETOKEN
-                           {
-			     if (variablename == NULL) {
-			       variablename = (char *) safeCalloc(strlen($1) + 1,sizeof(char));
-			       strcpy(variablename,$1);
-			     }
-			     if (strcmp(variablename,$1) != 0) {
-				 printMessage(1,"Warning: the identifier \"%s\" is not equal to the bound current variable.\n",$1);
-				 printMessage(1,"Will interpret \"%s\" as \"%s\".\n",$1,variablename);
-			     }
-			     temp_node = (node*) safeMalloc(sizeof(node));
-			     temp_node->nodeType = VARIABLE;
-			     free($1);
-			     $$ = temp_node;
-			   }
+megaterm:               hyperterm
+                          {
+			    $$ = $1;
+			  }
+                      | megaterm COMPAREEQUALTOKEN hyperterm
+                          {
+			    $$ = makeCompareEqual($1, $3);
+			  }
+                      | megaterm LEFTANGLETOKEN hyperterm
+                          {
+			    $$ = makeCompareLess($1, $3);
+			  }
+                      | megaterm RIGHTANGLETOKEN hyperterm
+                          {
+			    $$ = makeCompareGreater($1, $3);
+			  }
+                      | megaterm LEFTANGLETOKEN EQUALTOKEN hyperterm
+                          {
+			    $$ = makeCompareLessEqual($1, $4);
+			  }
+                      | megaterm RIGHTANGLETOKEN EQUALTOKEN hyperterm
+                          {
+			    $$ = makeCompareGreaterEqual($1, $4);
+			  }
+                      | megaterm EXCLAMATIONEQUALTOKEN hyperterm
+                          {
+			    $$ = makeCompareNotEqual($1, $3);
+			  }
+;
+
+hyperterm:                term
+                          {
+			    $$ = $1;
+			  }
+                      | hyperterm PLUSTOKEN term
+                          {
+			    $$ = makeAdd($1, $3);
+			  }
+                      | hyperterm MINUSTOKEN term
+                          {
+			    $$ = makeSub($1, $3);
+			  }
+                      | hyperterm ATTOKEN term
+                          {
+			    $$ = makeConcat($1, $3);
+			  }
+                      | hyperterm DOUBLECOLONTOKEN term
+                          {
+			    $$ = makeAddToList($1, $3);
+			  }
+                      | hyperterm DOTCOLONTOKEN term
+                          {
+			    $$ = makePrepend($1, $3);
+			  }
+                      | hyperterm COLONDOTTOKEN term
+                          {
+			    $$ = makeAppend($1, $3);
+			  }
+;
+
+unaryplusminus:         PLUSTOKEN
+                          {           
+                            $$ = 0;
+                          }
+                      | MINUSTOKEN
+                          {   
+                            $$ = 1;	        
+                          } 
+                      | PLUSTOKEN unaryplusminus
+                          {
+  	                    $$ = $2;
+  	                  }
+                      | MINUSTOKEN unaryplusminus
+  	                  {
+  	                    $$ = $2+1;
+                          }
+;
+
+                           
+term:                   subterm						
+			  {
+			    $$ = $1;
+                          }
+                      | unaryplusminus subterm
+                          { 	                           
+			    tempNode = $2;
+			    for (tempInteger=0;tempInteger<$1;tempInteger++)
+			      tempNode = makeNeg(tempNode);
+			    $$ = tempNode;			
+			  }
+		      |	APPROXTOKEN subterm			
+                          {
+			    $$ = makeEvalConst($2);
+                          }												
+		      |	term MULTOKEN subterm				
+			  {
+			    $$ = makeMul($1, $3);
+                          }														
+		      |	term DIVTOKEN subterm				
+                          {
+			    $$ = makeDiv($1, $3);
+                          }	
+                      | term MULTOKEN unaryplusminus subterm
+                          { 	                           
+			    tempNode = $4;
+			    for (tempInteger=0;tempInteger<$3;tempInteger++)
+			      tempNode = makeNeg(tempNode);
+			    $$ = makeMul($1, tempNode);
+			  }
+                      | term DIVTOKEN unaryplusminus subterm
+                          { 	                           
+			    tempNode = $4;
+			    for (tempInteger=0;tempInteger<$3;tempInteger++)
+			      tempNode = makeNeg(tempNode);
+			    $$ = makeDiv($1, tempNode);
+			  }
+                      | term MULTOKEN APPROXTOKEN subterm
+                          { 	                           
+			    $$ = makeMul($1, makeEvalConst($4));
+			  }
+                      | term DIVTOKEN APPROXTOKEN subterm
+                          { 	                           
+			    $$ = makeDiv($1, makeEvalConst($4));
+			  }
+;
+
+subterm:                basicthing
+                          {
+			    $$ = $1;
+                          }
+                      | basicthing POWTOKEN subterm
+                          {
+			    $$ = makePow($1, $3);
+                          }
+                      | basicthing POWTOKEN unaryplusminus subterm
+                          { 	                           
+			    tempNode = $4;
+			    for (tempInteger=0;tempInteger<$3;tempInteger++)
+			      tempNode = makeNeg(tempNode);
+			    $$ = makePow($1, tempNode);
+			  }
+                      | basicthing POWTOKEN APPROXTOKEN subterm
+                          { 	                           
+			    $$ = makePow($1, makeEvalConst($4));
+			  }
 ;
 
 
-constant: CONSTTOKEN 
-                           {
-			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,tools_precision);
-			     mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp2,tools_precision);
-			     mpfr_set_str(*mpfr_temp,$1,10,GMP_RNDD);
-			     mpfr_set_str(*mpfr_temp2,$1,10,GMP_RNDU);
-			     if (mpfr_cmp(*mpfr_temp,*mpfr_temp2) != 0) {
-			       if (!noRoundingWarnings) {
-				 printMessage(1,
-					      "Warning: Rounding occurred when converting constant \"%s\" to floating-point with %d bits.\n",
-					      $1,(int) tools_precision);
-				 printMessage(1,"If safe computation is needed, try to increase the precision.\n");
-			       }
-			       mpfr_set_str(*mpfr_temp,$1,10,GMP_RNDN);
-			     } 
-			     mpfr_clear(*mpfr_temp2);
-			     free(mpfr_temp2);
-			     free($1);
-			     $$ = mpfr_temp;
-			   }
-        | DYADICCONSTTOKEN {
-                             mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,tools_precision);
-			     if (!readDyadic(*mpfr_temp,$1)) {
-			       if (!noRoundingWarnings) {
-				 printMessage(1,
-					      "Warning: Rounding occurred when converting the dyadic constant \"%s\" to floating-point with %d bits.\n",
-					      $1,(int) tools_precision);
-				 printMessage(1,"If safe computation is needed, try to increase the precision.\n");
-			       }
-			     }
-			     if (!mpfr_number_p(*mpfr_temp)) {
-			       printMessage(1,
-			  "Error: overflow occurred during the conversion of the dyadic constant \"%s\". Will abort the computation.\n",$1);
-			       recoverFromError();
-			     }
-			     $$ = mpfr_temp;
-	                   }
-        | BINARYCONSTTOKEN {
-			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,tools_precision);
-			     mpfr_temp2 = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp2,tools_precision);
-			     mpfr_set_str(*mpfr_temp,$1,2,GMP_RNDD);
-			     mpfr_set_str(*mpfr_temp2,$1,2,GMP_RNDU);
-			     if (mpfr_cmp(*mpfr_temp,*mpfr_temp2) != 0) {
-			       if (!noRoundingWarnings) {
-				 printMessage(1,
-					      "Warning: Rounding occurred when converting constant \"%s_2\" to floating-point with %d bits.\n",
-					      $1,(int) tools_precision);
-				 printMessage(1,"If safe computation is needed, try to increase the precision.\n");
-			       }
-			       mpfr_set_str(*mpfr_temp,$1,10,GMP_RNDN);
-			     } 
-			     mpfr_clear(*mpfr_temp2);
-			     free(mpfr_temp2);
-			     free($1);
-			     $$ = mpfr_temp;
-	                   }
-        | HEXCONSTTOKEN    {
-	                     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,tools_precision);
-			     if (!readHexa(*mpfr_temp,$1)) {
-			       if (!noRoundingWarnings) {
-				 printMessage(1,
-					      "Warning: Rounding occurred when converting the hexadecimal constant \"%s\" to floating-point with %d bits.\n",
-					      $1,(int) tools_precision);
-				 printMessage(1,"If safe computation is needed, try to increase the precision.\n");
-			       }
-			     }
-			     if (!mpfr_number_p(*mpfr_temp)) {
-			       printMessage(1,
-			  "Error: overflow occurred during the conversion of the hexadecimal constant \"%s\". Will abort the computation.\n",$1);
-			       recoverFromError();
-			     }
-	                     $$ = mpfr_temp;
-	                   }
-        | ETOKEN 
-                           {
-			     printMessage(1,"Warning: The e constant in the expression will be represented on %d bits\n",
-				    (int) tools_precision);
-			     mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-			     mpfr_init2(*mpfr_temp,tools_precision);
-			     mpfr_set_d(*mpfr_temp,1.0,GMP_RNDN);
-			     mpfr_exp(*mpfr_temp,*mpfr_temp,GMP_RNDN);
-			     $$ = mpfr_temp;
-			   }
+basicthing:             ONTOKEN                 					       
+                          {
+			    $$ = makeOn();
+			  }
+                      | OFFTOKEN                					       
+                          {
+			    $$ = makeOff();
+			  }
+                      | DYADICTOKEN   						       
+                          {
+			    $$ = makeDyadic();
+			  }
+                      | POWERSTOKEN             					                                
+                          {
+			    $$ = makePowers();
+			  }
+                      | BINARYTOKEN             					       
+                          {
+			    $$ = makeBinaryThing();
+			  }
+                      | HEXADECIMALTOKEN             					       
+                          {
+			    $$ = makeHexadecimalThing();
+			  }
+                      | FILETOKEN               					       
+                          {
+			    $$ = makeFile();
+			  }
+                      | POSTSCRIPTTOKEN         					       
+                          {
+			    $$ = makePostscript();
+			  }
+                      | POSTSCRIPTFILETOKEN     					       
+                          {
+			    $$ = makePostscriptFile();
+			  }
+                      | PERTURBTOKEN            					       
+                          {
+			    $$ = makePerturb();
+			  }
+                      | MINUSWORDTOKEN          					       
+                          {
+			    $$ = makeRoundDown();
+			  }
+                      | PLUSWORDTOKEN           					       
+                          {
+			    $$ = makeRoundUp();
+			  }
+                      | ZEROWORDTOKEN           					       
+                          {
+			    $$ = makeRoundToZero();
+			  }
+                      | NEARESTTOKEN            					       
+                          {
+			    $$ = makeRoundToNearest();
+			  }
+                      | HONORCOEFFPRECTOKEN    					       
+                          {
+			    $$ = makeHonorCoeff();
+			  }
+                      | TRUETOKEN   							       
+                          {
+			    $$ = makeTrue();
+			  }
+                      | VOIDTOKEN   							       
+                          {
+			    $$ = makeUnit();
+			  }
+                      | FALSETOKEN   							       
+                          {
+			    $$ = makeFalse();
+			  }
+                      | DEFAULTTOKEN   							       
+                          {
+			    $$ = makeDefault();
+			  }
+                      | DECIMALTOKEN   							       
+                          {
+			    $$ = makeDecimal();
+			  }
+                      | ABSOLUTETOKEN   							       
+                          {
+			    $$ = makeAbsolute();
+			  }
+                      | RELATIVETOKEN   							       
+                          {
+			    $$ = makeRelative();
+			  }
+                      | FIXEDTOKEN   							       
+                          {
+			    $$ = makeFixed();
+			  }
+                      | FLOATINGTOKEN   							       
+                          {
+			    $$ = makeFloating();
+			  }
+                      | ERRORTOKEN   							       
+                          {
+			    $$ = makeError();
+			  }
+                      | DOUBLETOKEN             					       
+                          {
+			    $$ = makeDoubleSymbol();
+			  }
+                      | DOUBLEEXTENDEDTOKEN             					       
+                          {
+			    $$ = makeDoubleextendedSymbol();
+			  }
+                      | DOUBLEDOUBLETOKEN   						       
+                          {
+			    $$ = makeDoubleDoubleSymbol();
+			  }
+                      | TRIPLEDOUBLETOKEN       					       
+                          {
+			    $$ = makeTripleDoubleSymbol();
+			  }
+                      | STRINGTOKEN
+                          {
+			    tempString = safeCalloc(strlen($1) + 1, sizeof(char));
+			    strcpy(tempString, $1);
+			    free($1);
+			    tempString2 = safeCalloc(strlen(tempString) + 1, sizeof(char));
+			    strcpy(tempString2, tempString);
+			    free(tempString);
+			    $$ = makeString(tempString2);
+			    free(tempString2);
+			  }
+                      | constant
+                          {
+			    $$ = $1;
+			  }
+                      | IDENTIFIERTOKEN
+                          {
+			    $$ = makeTableAccess($1);
+			    free($1);
+			  }
+                      | ISBOUNDTOKEN LPARTOKEN IDENTIFIERTOKEN RPARTOKEN
+                          {
+			    $$ = makeIsBound($3);
+			    free($3);
+			  }
+                      | IDENTIFIERTOKEN LPARTOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeTableAccessWithSubstitute($1, $3);
+			    free($1);
+			  }
+                      | IDENTIFIERTOKEN LPARTOKEN RPARTOKEN
+                          {
+			    $$ = makeTableAccessWithSubstitute($1, NULL);
+			    free($1);
+			  }
+                      | list 
+                          {
+			    $$ = $1;
+			  }
+                      | range 
+                          {
+			    $$ = $1;
+			  }
+                      | debound 
+                          {
+			    $$ = $1;
+			  }
+                      | headfunction 
+                          {
+			    $$ = $1;
+			  }
+                      | LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = $2;
+			  }
+                      | statedereference
+                          {
+			    $$ = $1;
+			  }
+                      | indexing
+                          {
+			    $$ = makeIndex($1->a, $1->b);
+			    free($1);
+			  }
+                      | LPARTOKEN thing RPARTOKEN LPARTOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeApply($2,$5);
+			  }
+                      | PROCTOKEN procbody
+                          {
+			    $$ = $2;
+			  }
+;
+
+
+
+constant:               CONSTANTTOKEN          					       
+                          {
+			    $$ = makeDecimalConstant($1);
+			    free($1);
+			  }
+                      | MIDPOINTCONSTANTTOKEN   					       
+                          {
+			    $$ = makeMidpointConstant($1);
+			    free($1);
+			  }
+                      | DYADICCONSTANTTOKEN   					       
+                          {
+			    $$ = makeDyadicConstant($1);
+			  }
+                      | HEXCONSTANTTOKEN       					       
+                          {
+			    $$ = makeHexConstant($1);
+			  }
+                      | HEXADECIMALCONSTANTTOKEN       					       
+                          {
+			    $$ = makeHexadecimalConstant($1);
+			  }
+                      | BINARYCONSTANTTOKEN    					       
+                          {
+			    $$ = makeBinaryConstant($1);
+			  }
+                      | PITOKEN
+                          {
+			    $$ = makePi();
+			  }
+;
+
+
+
+list:                   LBRACKETTOKEN VERTBARTOKEN VERTBARTOKEN RBRACKETTOKEN  
+                          {
+			    $$ = makeEmptyList();
+			  }
+                      | LBRACKETTOKEN ORTOKEN RBRACKETTOKEN  
+                          {
+			    $$ = makeEmptyList();
+			  }
+		      | LBRACKETTOKEN VERTBARTOKEN simplelist VERTBARTOKEN RBRACKETTOKEN
+                          {
+			    $$ = makeList($3);
+			  }
+                      | LBRACKETTOKEN VERTBARTOKEN simplelist DOTSTOKEN VERTBARTOKEN RBRACKETTOKEN
+                          {
+			    $$ = makeFinalEllipticList($3);
+			  }
+;
+
+simplelist:             thing
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | thing COMMATOKEN simplelist
+                          {
+			    $$ = addElement($3, $1);
+			  }
+                      | thing COMMATOKEN DOTSTOKEN COMMATOKEN simplelist
+                          {
+			    $$ = addElement(addElement($5, makeElliptic()), $1);
+			  }
+;
+
+
+range:                  LBRACKETTOKEN thing COMMATOKEN thing RBRACKETTOKEN
+                          {
+			    $$ = makeRange($2, $4);
+			  }
+                      | LBRACKETTOKEN thing SEMICOLONTOKEN thing RBRACKETTOKEN
+                          {
+			    $$ = makeRange($2, $4);
+			  }
+                      | LBRACKETTOKEN thing RBRACKETTOKEN
+                          {
+			    $$ = makeRange($2, copyThing($2));
+			  }
+;
+
+debound:                STARLEFTANGLETOKEN thing RIGHTANGLESTARTOKEN
+                          {
+			    $$ = makeDeboundMax($2);
+			  }
+                      | STARLEFTANGLETOKEN thing RIGHTANGLEDOTTOKEN
+                          {
+			    $$ = makeDeboundMid($2);
+			  }
+                      | STARLEFTANGLETOKEN thing RIGHTANGLEUNDERSCORETOKEN
+                          {
+			    $$ = makeDeboundMin($2);
+			  }
+                      | SUPTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeDeboundMax($3);
+			  }
+                      | MIDTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeDeboundMid($3);
+			  }
+                      | INFTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeDeboundMin($3);
+			  }
+;
+
+headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeDiff($3);
+			  }              					       
+                      | SIMPLIFYTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeSimplify($3);
+			  }  						       
+                      | REMEZTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeRemez(addElement(addElement($7, $5), $3));
+			  }             					       
+                      | FPMINIMAXTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeFPminimax(addElement(addElement(addElement($9, $7), $5), $3));
+			  }
+                      | HORNERTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeHorner($3);
+			  }   
+                      | CANONICALTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeCanonicalThing($3);
+			  }            					       
+                      | EXPANDTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeExpand($3);
+			  }            					       
+                      | SIMPLIFYSAFETOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeSimplifySafe($3);
+			  }  						       
+                      | TAYLORTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeTaylor($3, $5, $7);
+			  }           					       
+                      | DEGREETOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeDegree($3);
+			  }            					       
+                      | NUMERATORTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeNumerator($3);
+			  }         					       
+                      | DENOMINATORTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeDenominator($3);
+			  }       					       
+                      | SUBSTITUTETOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeSubstitute($3, $5);
+			  }        					       
+                      | COEFFTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeCoeff($3, $5);
+			  }             					       
+                      | SUBPOLYTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeSubpoly($3, $5);
+			  }           					       
+                      | ROUNDCOEFFICIENTSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeRoundcoefficients($3, $5);
+			  }   					       
+                      | RATIONALAPPROXTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeRationalapprox($3, $5);
+			  }    					       
+                      | ACCURATEINFNORMTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeAccurateInfnorm(addElement(addElement($7, $5), $3));
+			  }    					       
+                      | ROUNDTOFORMATTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeRoundToFormat($3, $5, $7);
+			  }     					       
+                      | EVALUATETOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeEvaluate($3, $5);
+			  }          					       
+                      | PARSETOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeParse($3);
+			  }             					       
+                      | READXMLTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeReadXml($3);
+			  }             					       
+                      | INFNORMTOKEN LPARTOKEN thing COMMATOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeInfnorm(addElement($5, $3));
+			  }           					       
+                      | FINDZEROSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeFindZeros($3, $5);
+			  }         					       
+                      | FPFINDZEROSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeFPFindZeros($3, $5);
+			  }       					       
+                      | DIRTYINFNORMTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeDirtyInfnorm($3, $5);
+			  }      					       
+                      | INTEGRALTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeIntegral($3, $5);
+			  }          					       
+                      | DIRTYINTEGRALTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeDirtyIntegral($3, $5);
+			  }  						       
+                      | IMPLEMENTPOLYTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeImplementPoly(addElement(addElement(addElement(addElement(addElement($13, $11), $9), $7), $5), $3));
+			  }  						       
+                      | CHECKINFNORMTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeCheckInfnorm($3, $5, $7);
+			  }      					       
+                      | ZERODENOMINATORSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeZeroDenominators($3, $5);
+			  }  					       
+                      | ISEVALUABLETOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeIsEvaluable($3, $5);
+			  }       					       
+                      | SEARCHGALTOKEN LPARTOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeSearchGal($3);
+			  }         					       
+                      | GUESSDEGREETOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeGuessDegree(addElement(addElement($7, $5), $3));
+			  }       					       
+                      | DIRTYFINDZEROSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeDirtyFindZeros($3, $5);
+			  }    					       
+                      | HEADTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeHead($3);
+			  }              					       
+                      | ROUNDCORRECTLYTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeRoundCorrectly($3);
+			  }              					       
+                      | READFILETOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeReadFile($3);
+			  }              					       
+                      | REVERTTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeRevert($3);
+			  }              					       
+                      | SORTTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeSort($3);
+			  }              					       
+                      | MANTISSATOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeMantissa($3);
+			  }              					       
+                      | EXPONENTTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeExponent($3);
+			  }              					       
+                      | PRECISIONTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makePrecision($3);
+			  }              					       
+                      | TAILTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeTail($3);
+			  }              					       
+                      | SQRTTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeSqrt($3);
+			  }              					       
+                      | EXPTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeExp($3);
+			  }               					       
+                      | LOGTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeLog($3);
+			  }               					       
+                      | LOG2TOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeLog2($3);
+			  }              					       
+                      | LOG10TOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeLog10($3);
+			  }             					       
+                      | SINTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeSin($3);
+			  }               					       
+                      | COSTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeCos($3);
+			  }               					       
+                      | TANTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeTan($3);
+			  }               					       
+                      | ASINTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeAsin($3);
+			  }              					       
+                      | ACOSTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeAcos($3);
+			  }              					       
+                      | ATANTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeAtan($3);
+			  }              					       
+                      | SINHTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeSinh($3);
+			  }              					       
+                      | COSHTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeCosh($3);
+			  }              					       
+                      | TANHTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeTanh($3);
+			  }              					       
+                      | ASINHTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeAsinh($3);
+			  }             					       
+                      | ACOSHTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeAcosh($3);
+			  }             					       
+                      | ATANHTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeAtanh($3);
+			  }             					       
+                      | ABSTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeAbs($3);
+			  }               					       
+                      | ERFTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeErf($3);
+			  }               					       
+                      | ERFCTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeErfc($3);
+			  }              					       
+                      | LOG1PTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeLog1p($3);
+			  }             					       
+                      | EXPM1TOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeExpm1($3);
+			  }             					       
+                      | DOUBLETOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeDouble($3);
+			  }            					       
+                      | DOUBLEDOUBLETOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeDoubledouble($3);
+			  }  						       
+                      | TRIPLEDOUBLETOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeTripledouble($3);
+			  }      					       
+                      | DOUBLEEXTENDEDTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeDoubleextended($3);
+			  }    					       
+                      | CEILTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeCeil($3);
+			  }              					       
+                      | FLOORTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeFloor($3);
+			  }             					       
+                      | LENGTHTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeLength($3);
+			  }
+;
+
+egalquestionmark:       EQUALTOKEN QUESTIONMARKTOKEN
+                          {
+			    $$ = NULL;
+			  }
+                      | 
+                          {
+			    $$ = NULL;
+			  }
+;
+
+
+statedereference:       PRECTOKEN egalquestionmark
+                          {
+			    $$ = makePrecDeref();
+			  }
+                      | POINTSTOKEN egalquestionmark            					       
+                          {
+			    $$ = makePointsDeref();
+			  }
+                      | DIAMTOKEN egalquestionmark              					       
+                          {
+			    $$ = makeDiamDeref();
+			  }
+                      | DISPLAYTOKEN egalquestionmark            					       
+                          {
+			    $$ = makeDisplayDeref();
+			  }
+                      | VERBOSITYTOKEN egalquestionmark         					       
+                          {
+			    $$ = makeVerbosityDeref();
+			  }
+                      | CANONICALTOKEN egalquestionmark         					       
+                          {
+			    $$ = makeCanonicalDeref();
+			  }
+                      | AUTOSIMPLIFYTOKEN egalquestionmark				       
+                          {
+			    $$ = makeAutoSimplifyDeref();
+			  }
+                      | TAYLORRECURSIONSTOKEN egalquestionmark				       
+                          {
+			    $$ = makeTaylorRecursDeref();
+			  }
+                      | TIMINGTOKEN egalquestionmark			       
+                          {
+			    $$ = makeTimingDeref();
+			  }
+                      | FULLPARENTHESESTOKEN egalquestionmark					       
+                          {
+			    $$ = makeFullParenDeref();
+			  }
+                      | MIDPOINTMODETOKEN egalquestionmark			       
+                          {
+			    $$ = makeMidpointDeref();
+			  }
+                      | RATIONALMODETOKEN egalquestionmark			       
+                          {
+			    $$ = makeRationalModeDeref();
+			  }
+                      | SUPPRESSWARNINGSTOKEN egalquestionmark			       
+                          {
+			    $$ = makeSuppressWarningsDeref();
+			  }
+                      | HOPITALRECURSIONSTOKEN egalquestionmark				       
+                          {
+			    $$ = makeHopitalRecursDeref();
+			  }
+;
+
+
+externalproctype:       CONSTANTTYPETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = CONSTANT_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | FUNCTIONTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = FUNCTION_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | RANGETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = RANGE_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | INTEGERTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = INTEGER_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | STRINGTYPETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = STRING_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | BOOLEANTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = BOOLEAN_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN CONSTANTTYPETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = CONSTANT_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN FUNCTIONTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = FUNCTION_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN RANGETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = RANGE_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN INTEGERTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = INTEGER_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN STRINGTYPETOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = STRING_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN BOOLEANTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = BOOLEAN_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+;
+
+extendedexternalproctype: VOIDTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = VOID_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | externalproctype
+		          {
+			    $$ = $1;
+		          }
+;
+
+
+externalproctypesimplelist:   externalproctype
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | externalproctype COMMATOKEN externalproctypesimplelist
+                          {
+			    $$ = addElement($3, $1);
+			  }
+;
+
+externalproctypelist:       extendedexternalproctype
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | LPARTOKEN externalproctypesimplelist RPARTOKEN 
+                          {
+			    $$ = $2;
+			  }
 ;
 
 

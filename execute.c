@@ -69,6 +69,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "implement.h"
 #include "taylor.h"
 #include "xml.h"
+#include "miniparser.h"
 #include <setjmp.h>
 
 #define READBUFFERSIZE 16000
@@ -79,12 +80,82 @@ extern void internyylex_destroy(void *);
 extern int internyylex_init(void **);
 extern void internyyset_in(FILE *, void *);
 
+extern void *startMiniparser(void *scanner, char *str);
+extern void endMiniparser(void *buf, void *scanner);
+
 extern void initSignalHandler();
 extern void blockSignals();
 
 node *makeExternalProcedureUsage(libraryProcedure *);
-
+node *copyThing(node *);
+node *evaluateThingInner(node *);
+node *evaluateThing(node *);
 void *copyThingOnVoid(void *);
+
+/*
+
+
+  oldParsedThingIntern = parsedThingIntern;
+  internyylex_init(&myScanner);
+  internyyset_in(fd, myScanner);
+
+  while (1) {
+    parsedThingIntern = NULL;
+    parseAbort = internyyparse(myScanner);
+    if (parsedThingIntern != NULL) {
+      commands = addElement(commands,parsedThingIntern);
+    }
+    if (parseAbort) break;
+  }
+
+  internyylex_destroy(myScanner);
+  parsedThingIntern = oldParsedThingIntern;
+  
+
+*/
+
+/*
+
+
+
+void startBuffer(char *str) {
+  miniyy_switch_to_buffer(miniyy_scan_string(str));
+}
+
+void endBuffer(void) {
+  miniyy_delete_buffer(YY_CURRENT_BUFFER);
+}
+
+*/
+
+node *parseString(char *str) {
+  node *result;
+  node *oldMinitree;
+  void *myScanner;
+  void *buffer;
+
+  blockSignals();
+  oldMinitree = minitree;
+  minitree = NULL;
+  miniyylex_init(&myScanner);
+  miniyyset_in(stdin, myScanner);
+  buffer = startMiniparser(myScanner,str);
+  if (!miniyyparse(myScanner)) {
+    if (minitree != NULL) {
+      result = evaluateThing(minitree);
+    } else {
+      result = NULL;
+    }
+  } else {
+    result = NULL;
+  }
+  minitree = oldMinitree;
+  endMiniparser(buffer, myScanner);
+  miniyylex_destroy(myScanner);
+  initSignalHandler();
+
+  return result;
+}
 
 rangetype guessDegreeWrapper(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) {
   rangetype result;
@@ -194,9 +265,6 @@ char *readFileIntoString(FILE *fd) {
 }
 
 
-node *copyThing(node *);
-node *evaluateThingInner(node *);
-node *evaluateThing(node *);
 
 node *copyThing(node *tree) {
   node *copy;

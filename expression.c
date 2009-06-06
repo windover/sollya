@@ -56,7 +56,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include <errno.h>
 #include "general.h"
 #include "double.h"
-#include "miniparser.h"
 #include "chain.h"
 
 #define MAXDIFFSIMPLSIZE 100
@@ -10883,21 +10882,6 @@ node *makeAcosh(node *op1) {
 
 node *makeAtanh(node *op1) {
   return makeUnary(op1,ATANH);
-}
-
-
-node *parseString(char *str) {
-  node *result;
-
-  startBuffer(str);
-  if (!miniyyparse()) {
-    result = minitree;
-  } else {
-    result = NULL;
-  }
-  endBuffer();
-
-  return result;
 }
 
 

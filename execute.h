@@ -55,6 +55,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "general.h"
 #include "expression.h"
 
+extern int miniyyparse();
+extern void startBuffer(char *str);
+extern void endBuffer(void);
+
 #define COMMANDLIST 50			
 #define WHILE 51				
 #define IFELSE 52				
@@ -445,5 +449,7 @@ node *makeUnit();
 node *makeVariableDeclaration(chain *stringlist);
 node *makeProc(chain *stringlist, node *body, node *returnVal);
 node *makeApply(node *thing, chain *thinglist);
+
+node *parseString(char *str); 
 
 #endif /* ifdef EXECUTE_H*/

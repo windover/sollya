@@ -55,9 +55,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "chain.h"
 #include "library.h"
 
-extern int miniyyparse();
-extern void startBuffer(char *str);
-extern void endBuffer(void);
 
 #define VARIABLE 0
 #define CONSTANT 1
@@ -220,7 +217,7 @@ node *makeAsinh(node *op1);
 node *makeAcosh(node *op1);
 node *makeAtanh(node *op1);
 
-node *parseString(char *str); 
+
 
 
 #endif /* ifdef EXPRESSION_H*/
