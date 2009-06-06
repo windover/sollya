@@ -2122,7 +2122,7 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal) {
       if (simplified->nodeType != CONSTANT) {
 	if (!noMessage) {
 	  if (!noRoundingWarnings) {
-	    printMessage(2,"Information: the given expression is not a constant but an expression to evaluate.\n");
+	    printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation will be used.\n");
 	  }
 	}
       }
