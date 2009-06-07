@@ -22,6 +22,7 @@ AC_LIBTOOL_DLOPEN
 AC_DISABLE_SHARED
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
+AC_CONFIG_MACRO_DIR([m4])
 
 #Check whether flex and bison support interactive and pure parsers
 

@@ -3,7 +3,6 @@ EXTRA_DIST = autogen.sh sollya.h libsollyaexample.c compile.sh expansion.c expan
 
 check_PROGRAMS = sollya
 
-
 AM_YFLAGS = -d
 AM_LFLAGS = -o$(LEX_OUTPUT_ROOT).c
 
