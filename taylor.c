@@ -7,8 +7,8 @@ UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
 Contributors Ch. Lauter, S. Chevillard, N. Jourdan
 
-christoph.lauter@ens-lyon.fr
-sylvain.chevillard@ens-lyon.fr
+christoph.lauter@ens-lyon.org
+sylvain.chevillard@ens-lyon.org
 nicolas.jourdan@ens-lyon.fr
 
 This software is a computer program whose purpose is to provide an

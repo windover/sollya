@@ -5,7 +5,7 @@
  * Author  : David Defour, Catherine Daramy, Florent de Dinechin, Christoph Lauter
  *
  * Contact : David.Defour@ens-lyon.fr, catherine_daramy@ens-lyon.fr,
- * florent.de.dinechin@ens-lyon.fr, christoph.lauter@ens-lyon.fr
+ * florent.de.dinechin@ens-lyon.fr, christoph.lauter@ens-lyon.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by

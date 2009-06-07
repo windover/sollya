@@ -28,7 +28,7 @@ command $INTEGRAL instead.
 #DESCRIPTION
 Warning: this command is known to be currently unsatisfactory. If you really
 need to compute integrals, think of using an other tool or report a feature
-request to sylvain.chevillard@ens-lyon.fr.
+request to sylvain.chevillard@ens-lyon.org.
 
 #EXAMPLE
 sin(10);
