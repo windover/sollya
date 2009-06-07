@@ -157,7 +157,8 @@ void miniyyerror(void *myScanner, char *message) {
 %token  ERFCTOKEN;              					       
 %token  LOG1PTOKEN;             					       
 %token  EXPM1TOKEN;             					       
-%token  DOUBLETOKEN;            					       
+%token  DOUBLETOKEN;
+%token  SINGLETOKEN;            					       
 %token  DOUBLEDOUBLETOKEN;  						       
 %token  TRIPLEDOUBLETOKEN;      					       
 %token  DOUBLEEXTENDEDTOKEN;    					       
@@ -1105,6 +1106,10 @@ basicthing:             ONTOKEN
                           {
 			    $$ = makeDoubleSymbol();
 			  }
+                      | SINGLETOKEN             					       
+                          {
+			    $$ = makeSingleSymbol();
+			  }
                       | DOUBLEEXTENDEDTOKEN             					       
                           {
 			    $$ = makeDoubleextendedSymbol();
@@ -1567,6 +1572,10 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                       | DOUBLETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeDouble($3);
+			  }            					       
+                      | SINGLETOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeSingle($3);
 			  }            					       
                       | DOUBLEDOUBLETOKEN LPARTOKEN thing RPARTOKEN
                           {

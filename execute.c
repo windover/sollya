@@ -326,6 +326,9 @@ node *copyThing(node *tree) {
   case DOUBLE:
     copy->child1 = copyThing(tree->child1);
     break;
+  case SINGLE:
+    copy->child1 = copyThing(tree->child1);
+    break;
   case DOUBLEDOUBLE:
     copy->child1 = copyThing(tree->child1);
     break;
@@ -678,6 +681,8 @@ node *copyThing(node *tree) {
   case ERRORSPECIAL:
     break; 			
   case DOUBLESYMBOL:
+    break;  			
+  case SINGLESYMBOL:
     break;  			
   case DOUBLEEXTENDEDSYMBOL:
     break;  			
@@ -1051,6 +1056,9 @@ char *getTimingStringForThing(node *tree) {
   case DOUBLE:
     constString = NULL;
     break;
+  case SINGLE:
+    constString = NULL;
+    break;
   case DOUBLEDOUBLE:
     constString = NULL;
     break;
@@ -1394,6 +1402,9 @@ char *getTimingStringForThing(node *tree) {
     constString = NULL;
     break; 			
   case DOUBLESYMBOL:
+    constString = NULL;
+    break;  			
+  case SINGLESYMBOL:
     constString = NULL;
     break;  			
   case DOUBLEEXTENDEDSYMBOL:
@@ -1755,6 +1766,9 @@ int isPureTree(node *tree) {
   case DOUBLE:
     return isPureTree(tree->child1);
     break;
+  case SINGLE:
+    return isPureTree(tree->child1);
+    break;
   case DOUBLEDOUBLE:
     return isPureTree(tree->child1);
     break;
@@ -1935,12 +1949,24 @@ int isRoundingSymbol(node *tree) {
 }
 
 int isExpansionFormat(node *tree) {
+  if (tree->nodeType == SINGLESYMBOL) return 1;
   if (tree->nodeType == DOUBLESYMBOL) return 1;
   if (tree->nodeType == DOUBLEDOUBLESYMBOL) return 1;
   if (tree->nodeType == TRIPLEDOUBLESYMBOL) return 1;
   if (tree->nodeType == DOUBLEEXTENDEDSYMBOL) return 1;
   return 0;
 }
+
+int isExtendedExpansionFormat(node *tree) {
+  if (tree->nodeType == SINGLESYMBOL) return 1;
+  if (tree->nodeType == DOUBLESYMBOL) return 1;
+  if (tree->nodeType == DOUBLEDOUBLESYMBOL) return 1;
+  if (tree->nodeType == TRIPLEDOUBLESYMBOL) return 1;
+  if (tree->nodeType == DOUBLEEXTENDEDSYMBOL) return 1;
+  if (isPureTree(tree) && isConstant(tree)) return 1;
+  return 0;
+}
+
 
 int isRestrictedExpansionFormat(node *tree) {
   if (tree->nodeType == DOUBLESYMBOL) return 1;
@@ -2419,6 +2445,9 @@ int evaluateThingToExpansionFormat(int *result, node *tree) {
     case DOUBLEEXTENDEDSYMBOL:
       *result = 4;
       break;
+    case SINGLESYMBOL:
+      *result = 5;
+      break;
     }
     freeThing(evaluatedResult);
     return 1;
@@ -2427,6 +2456,54 @@ int evaluateThingToExpansionFormat(int *result, node *tree) {
   freeThing(evaluatedResult);
   return 0;
 }
+
+int evaluateThingToExtendedExpansionFormat(int *result, node *tree) {
+  node *evaluatedResult;
+  int resA;
+
+  evaluatedResult = evaluateThing(tree);
+
+  if (isPureTree(evaluatedResult) && isConstant(evaluatedResult)) {
+    if (!evaluateThingToInteger(&resA,evaluatedResult,NULL)) { 
+      freeThing(evaluatedResult);
+      return 0;
+    }
+    if (resA < 2) {
+      printMessage(1,"Warning: the precision of numbers must be at least 2 bits.\n");
+      printMessage(1,"Will change the precision indication to 2 bits.\n");
+      resA = 2;
+    } 
+    *result = resA + 6;
+    freeThing(evaluatedResult);
+    return 1;
+  }
+
+  if (isExtendedExpansionFormat(evaluatedResult)) {
+    switch (evaluatedResult->nodeType) {
+    case DOUBLESYMBOL:
+      *result = 1;
+      break;
+    case DOUBLEDOUBLESYMBOL:
+      *result = 2;
+      break;
+    case TRIPLEDOUBLESYMBOL:
+      *result = 3;
+      break;
+    case DOUBLEEXTENDEDSYMBOL:
+      *result = 4;
+      break;
+    case SINGLESYMBOL:
+      *result = 5;
+      break;
+    }
+    freeThing(evaluatedResult);
+    return 1;
+  }
+  
+  freeThing(evaluatedResult);
+  return 0;
+}
+
 
 int evaluateThingToRestrictedExpansionFormat(int *result, node *tree) {
   node *evaluatedResult;
@@ -2656,6 +2733,62 @@ int evaluateThingToExpansionFormatList(chain **ch, node *tree) {
     curr = evaluatedResult->arguments; i = 0;
     while (curr != NULL) {
       if (!evaluateThingToExpansionFormat(&resA,(node *) (curr->value))) {
+	freeThing(evaluatedResult);
+	free(arrayRes);
+	return 0;
+      } else {
+	arrayRes[i] = resA;
+      }
+      i++;
+      curr = curr->next;
+    }
+    curr = NULL;
+    for (k=0;k<i;k++) {
+      resPtr = (int *) safeMalloc(sizeof(int));
+      *resPtr = arrayRes[k];
+      curr = addElement(curr, resPtr);
+    }
+    if (finalelliptic) {
+      resPtr = (int *) safeMalloc(sizeof(int));
+      *resPtr = -1;
+      curr = addElement(curr, resPtr);
+    }
+    free(arrayRes);
+    freeThing(evaluatedResult);
+    *ch = curr;
+    return 1;
+  }
+  
+
+  freeThing(evaluatedResult);
+  return 0;
+}
+
+int evaluateThingToExtendedExpansionFormatList(chain **ch, node *tree) {
+  node *evaluatedResult;
+  chain *curr;
+  int *arrayRes, *resPtr;
+  int i, resA, k;
+  int finalelliptic;
+
+  evaluatedResult = evaluateThing(tree);
+
+  if (isPureList(evaluatedResult) || isPureFinalEllipticList(evaluatedResult)) {
+    if (isList(evaluatedResult)) finalelliptic = 0; else finalelliptic = 1;
+    curr = evaluatedResult->arguments;
+    i = 0;
+    while (curr != NULL) {
+      if (!isExtendedExpansionFormat((node *) (curr->value))) {
+	freeThing(evaluatedResult);
+	return 0;
+      }
+      i++;
+      curr = curr->next;
+    }
+    arrayRes = (int *) safeCalloc(i,sizeof(int));
+    curr = evaluatedResult->arguments; i = 0;
+    while (curr != NULL) {
+      if (!evaluateThingToExtendedExpansionFormat(&resA,(node *) (curr->value))) {
 	freeThing(evaluatedResult);
 	free(arrayRes);
 	return 0;
@@ -2977,6 +3110,11 @@ char *sRawPrintThing(node *tree) {
     break;
   case DOUBLE:
     res = concatAndFree(newString("double("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case SINGLE:
+    res = concatAndFree(newString("single("),
 			concatAndFree(sRawPrintThing(tree->child1),
 				      newString(")")));
     break;
@@ -3705,6 +3843,9 @@ char *sRawPrintThing(node *tree) {
     break; 			
   case DOUBLESYMBOL:
     res = newString("double");
+    break;  			
+  case SINGLESYMBOL:
+    res = newString("single");
     break;  			
   case DOUBLEEXTENDEDSYMBOL:
     res = newString("doubleextended");
@@ -7918,6 +8059,17 @@ node *makeDoubleSymbol() {
 
 }
 
+node *makeSingleSymbol() {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = SINGLESYMBOL;
+
+  return res;
+
+}
+
+
 node *makeDoubleextendedSymbol() {
   node *res;
 
@@ -9026,6 +9178,10 @@ void freeThing(node *tree) {
     freeThing(tree->child1);
     free(tree);
     break;
+  case SINGLE:
+    freeThing(tree->child1);
+    free(tree);
+    break;
   case DOUBLEDOUBLE:
     freeThing(tree->child1);
     free(tree);
@@ -9483,6 +9639,9 @@ void freeThing(node *tree) {
     free(tree);
     break; 			
   case DOUBLESYMBOL:
+    free(tree);
+    break;  			
+  case SINGLESYMBOL:
     free(tree);
     break;  			
   case DOUBLEEXTENDEDSYMBOL:
@@ -9956,6 +10115,9 @@ int isEqualThing(node *tree, node *tree2) {
   case DOUBLE:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break;
+  case SINGLE:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break;
   case DOUBLEDOUBLE:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break;
@@ -10296,6 +10458,8 @@ int isEqualThing(node *tree, node *tree2) {
     break; 			
   case DOUBLESYMBOL:
     break;  			
+  case SINGLESYMBOL:
+    break;  			
   case DOUBLEEXTENDEDSYMBOL:
     break;  			
   case DOUBLEDOUBLESYMBOL:
@@ -10585,6 +10749,7 @@ int isCorrectlyTypedBaseSymbol(node *tree) {
   case FIXED:
   case FLOATING:
   case DOUBLESYMBOL:
+  case SINGLESYMBOL:
   case DOUBLEEXTENDEDSYMBOL:
   case DOUBLEDOUBLESYMBOL:
   case TRIPLEDOUBLESYMBOL:
@@ -10689,6 +10854,7 @@ int evaluateFormatsListForFPminimax(chain **res, node *list, int n) {
   i = 1;
   while(i <= n) {
     switch(((node *)(curr->value))->nodeType) {
+    case SINGLESYMBOL: a=24; break;
     case DOUBLESYMBOL: a=53; break;
     case DOUBLEDOUBLESYMBOL: a=107; break;
     case TRIPLEDOUBLESYMBOL: a=161; break;
@@ -12374,6 +12540,28 @@ node *evaluateThingInner(node *tree) {
       mpfi_clear(tempIC);
     }
     break;
+  case SINGLE:
+    copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_round_to_single(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
+    break;
   case DOUBLEDOUBLE:
     copy->child1 = evaluateThingInner(tree->child1);
     if (isRange(copy->child1)) {
@@ -13285,6 +13473,8 @@ node *evaluateThingInner(node *tree) {
   case ERRORSPECIAL:
     break; 			
   case DOUBLESYMBOL:
+    break;  			
+  case SINGLESYMBOL:
     break;  			
   case DOUBLEEXTENDEDSYMBOL:
     break;  			
@@ -14468,7 +14658,7 @@ node *evaluateThingInner(node *tree) {
     copy->child2 = evaluateThingInner(tree->child2);
     if (isPureTree(copy->child1) &&
 	(isPureList(copy->child2) || isPureFinalEllipticList(copy->child2))) {
-      if (evaluateThingToExpansionFormatList(&tempChain, copy->child2)) {
+      if (evaluateThingToExtendedExpansionFormatList(&tempChain, copy->child2)) {
 	if (timingString != NULL) pushTimeCounter();      
 	tempNode = roundPolynomialCoefficients(copy->child1, tempChain, tools_precision);
 	freeThing(copy);
@@ -14580,7 +14770,9 @@ node *evaluateThingInner(node *tree) {
     curr = copy->arguments;
     if (isPureTree((node *) (curr->value))) {
       curr = curr->next;
-      if (isPureTree((node *) (curr->value)) || isDefault((node *) (curr->value))) {
+      if (isPureTree((node *) (curr->value)) || 
+	  isDefault((node *) (curr->value))  ||
+	  isExpansionFormat((node *) (curr->value))) {
 	curr = curr->next;
 	if (isRoundingSymbol((node *) (curr->value)) || isDefault((node *) (curr->value))) {
 	  curr = copy->arguments;
@@ -14588,30 +14780,60 @@ node *evaluateThingInner(node *tree) {
 	  if (evaluateThingToConstant(a,(node *) (curr->value),NULL)) {
 	    curr = curr->next;
 	    resB = tools_precision;
-	    if (evaluateThingToInteger(&resA,(node *) (curr->value),&resB) &&
-		(resA > 0)) {
-	      curr = curr->next;
-	      resD = GMP_RNDN;
-	      if (evaluateThingToRoundingSymbol(&resC,(node *) (curr->value),&resD)) {		
-		if (timingString != NULL) pushTimeCounter();      
-		mpfr_init2(b,tools_precision);
-		resE = round_to_format(b, a, resA, resC);
-		if (verbosity >= 2) {
-		  if (resE == 0) {
-		    printMessage(2,"Information: no rounding has happened.\n");
-		  } else {
-		    if (resE < 0) {
-		      printMessage(2,"Information: rounding down has happened.\n");
+	    if (isPureTree((node *) (curr->value)) || 
+		isDefault((node *) (curr->value))) {
+	      if (evaluateThingToInteger(&resA,(node *) (curr->value),&resB) &&
+		  (resA > 0)) {
+		curr = curr->next;
+		resD = GMP_RNDN;
+		if (evaluateThingToRoundingSymbol(&resC,(node *) (curr->value),&resD)) {		
+		  if (timingString != NULL) pushTimeCounter();      
+		  mpfr_init2(b,tools_precision);
+		  if (timingString != NULL) pushTimeCounter();      
+		  resE = round_to_format(b, a, resA, resC);
+		  if (timingString != NULL) popTimeCounter(timingString);
+		  if (verbosity >= 2) {
+		    if (resE == 0) {
+		      printMessage(2,"Information: no rounding has happened.\n");
 		    } else {
-		      printMessage(2,"Information: rounding up has happened.\n");
+		      if (resE < 0) {
+			printMessage(2,"Information: rounding down has happened.\n");
+		      } else {
+			printMessage(2,"Information: rounding up has happened.\n");
+		      }
 		    }
 		  }
+		  tempNode = makeConstant(b);
+		  mpfr_clear(b);
+		  freeThing(copy);
+		  copy = tempNode;
 		}
-		tempNode = makeConstant(b);
-		mpfr_clear(b);
-		freeThing(copy);
-		copy = tempNode;
-		if (timingString != NULL) popTimeCounter(timingString);
+	      }
+	    } else {
+	      if (evaluateThingToExpansionFormat(&resA,(node *) (curr->value))) {
+		curr = curr->next;
+		resD = GMP_RNDN;
+		if (evaluateThingToRoundingSymbol(&resC,(node *) (curr->value),&resD)) {		
+		  mpfr_init2(b,tools_precision);
+		  if (timingString != NULL) pushTimeCounter();      
+		  resE = round_to_expansion_format(b, a, resA, resC);
+		  if (timingString != NULL) popTimeCounter(timingString);
+		  if (verbosity >= 2) {
+		    if (resE == 0) {
+		      printMessage(2,"Information: no rounding has happened.\n");
+		    } else {
+		      if (resE < 0) {
+			printMessage(2,"Information: rounding down has happened.\n");
+		      } else {
+			printMessage(2,"Information: rounding up has happened.\n");
+		      }
+		    }
+		  }
+		  tempNode = makeConstant(b);
+		  mpfr_clear(b);
+		  freeThing(copy);
+		  copy = tempNode;
+		}
 	      }
 	    }
 	  }

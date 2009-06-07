@@ -90,15 +90,11 @@ int round_to_format(mpfr_t rop, mpfr_t op, int prec, mp_rnd_t mode) {
   return round_dir;
 }
 
+
+
 int mpfr_round_to_double(mpfr_t rop, mpfr_t op) {
   double d;
   int res;
-
-  if (mpfr_get_prec(op) < 53) {
-    if (!noRoundingWarnings) {
-      printMessage(2,"Information: rounding a value computed on less than 53 bits to double precision.\n");
-    }
-  }
 
   d = mpfr_get_d(op,GMP_RNDN);
   if (mpfr_set_d(rop,d,GMP_RNDN) != 0) {
@@ -113,6 +109,253 @@ int mpfr_round_to_double(mpfr_t rop, mpfr_t op) {
   return res;
 }
 
+int mpfr_round_to_double_mode(mpfr_t rop, mpfr_t op, mp_rnd_t mode) {
+  double d;
+  int res;
+
+  d = mpfr_get_d(op,mode);
+  if (mpfr_set_d(rop,d,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the double precision rounding operator.\n");
+      printMessage(1,"Try to increase the working precision.\n");
+    }
+  }
+  
+  res = mpfr_cmp(rop,op);
+
+  return res;
+}
+
+
+int mpfr_round_to_prec(mpfr_t rop, mpfr_t op, mp_prec_t prec) {
+  mp_prec_t p;
+  mpfr_t temp;
+  int res;
+
+  if (prec < 6) p = 6; else p = prec;
+  mpfr_init2(temp,p);
+  mpfr_set(temp,op,GMP_RNDN);
+  if (mpfr_set(rop,temp,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the double precision rounding operator.\n");
+      printMessage(1,"Try to increase the working precision.\n");
+    }
+  }
+  mpfr_clear(temp);
+  
+  res = mpfr_cmp(rop,op);
+
+  return res;
+}
+
+
+int mpfr_round_to_single(mpfr_t rop, mpfr_t x) {
+  int res;
+  double d, dd;
+  mpfr_t temp, tempRound, temp2;
+  fl_number xfl;
+  float xfloat;
+
+  mpfr_init2(temp,mpfr_get_prec(x));
+  mpfr_init2(temp2,mpfr_get_prec(x));
+  mpfr_init2(tempRound,24);
+
+  mpfr_set(tempRound,x,GMP_RNDN);
+
+  d = mpfr_get_d(tempRound,GMP_RNDN);
+  xfloat = d;
+  dd = xfloat;
+  if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+    }
+  }
+  
+  res = mpfr_cmp(temp,x);
+  if (res && mpfr_number_p(x) && mpfr_number_p(temp)) {
+    xfl.f = xfloat;
+    if (xfl.i == 0x80000000U) {
+      xfl.i = 0x80000001U;
+    } else {
+      if (res < 0) {
+        if (xfl.i >= 0) {
+          xfl.i++;
+        } else {
+          xfl.i--;
+        }
+      } else {
+        if (xfl.i < 0) {
+          xfl.i--;
+        } else {
+          xfl.i++;
+        }
+      }
+    }
+    dd = xfl.f;
+    if (mpfr_set_d(temp2,dd,GMP_RNDN) != 0) {
+      if (!noRoundingWarnings) {
+        printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+      }
+    }
+    mpfr_sub(temp,temp,x,GMP_RNDN);
+    mpfr_sub(temp2,temp2,x,GMP_RNDN);
+    if (mpfr_cmpabs(temp2,temp) < 0) {
+      xfloat = dd;
+      if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
+        if (!noRoundingWarnings) {
+          printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+        }
+      }
+    }
+  }
+
+  dd = xfloat;
+
+  if (mpfr_set_d(rop,dd,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the single rounding operator.\n");
+      printMessage(1,"Try to increase the working precision.\n");
+    }
+  }
+
+  res = mpfr_cmp(rop,x);
+
+  mpfr_clear(temp);
+  mpfr_clear(temp2);
+  mpfr_clear(tempRound);
+  return res;
+}
+
+int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
+  int res;
+  double d, dd;
+  mpfr_t temp, tempRound, temp2;
+  fl_number xfl;
+  float xfloat;
+
+  mpfr_init2(temp,mpfr_get_prec(x));
+  mpfr_init2(temp2,mpfr_get_prec(x));
+  mpfr_init2(tempRound,24);
+
+  mpfr_set(tempRound,x,GMP_RNDN);
+
+  d = mpfr_get_d(tempRound,GMP_RNDN);
+  xfloat = d;
+  dd = xfloat;
+  if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+    }
+  }
+  
+  res = mpfr_cmp(temp,x);
+  if ((res != 0) && mpfr_number_p(x) && mpfr_number_p(temp)) {
+    xfl.f = xfloat;
+    if (xfl.i == 0x80000000U) {
+      xfl.i = 0x80000001U;
+    } else {
+      if (res < 0) {
+        if (xfl.i >= 0) {
+          xfl.i++;
+        } else {
+          xfl.i--;
+        }
+      } else {
+        if (xfl.i < 0) {
+          xfl.i--;
+        } else {
+          xfl.i++;
+        }
+      }
+    }
+    dd = xfl.f;
+    if (mpfr_set_d(temp2,dd,GMP_RNDN) != 0) {
+      if (!noRoundingWarnings) {
+        printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+      }
+    }
+    mpfr_sub(temp,temp,x,GMP_RNDN);
+    mpfr_sub(temp2,temp2,x,GMP_RNDN);
+    if (mpfr_cmpabs(temp2,temp) < 0) {
+      xfloat = dd;
+      if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
+        if (!noRoundingWarnings) {
+          printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+        }
+      }
+    }
+  }
+
+  dd = xfloat;
+  if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+    }
+  }
+
+  // Now, temp is equal to the single rounding of x under round to nearest
+  //
+  res = mpfr_cmp(temp,x);
+  if ((mode != GMP_RNDN) && 
+      mpfr_number_p(x) && 
+      mpfr_number_p(temp) && 
+      (res != 0))  {
+    // Here, we have an inexact single rounding to nearest that is a number
+    // but we must produce a directed rounding
+    if ((res < 0) && 
+	((mode == GMP_RNDU) || 
+	 ((mode == GMP_RNDZ) && (mpfr_sgn(x) < 0)))) {
+      // The rounded value is too small
+      xfl.f = xfloat;
+      if (xfl.i >= 0) {
+	xfl.i++;
+      } else {
+	xfl.i--;
+      }
+      dd = xfl.f;
+      if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
+	if (!noRoundingWarnings) {
+	  printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+	}
+      }
+    } else {
+      if ((res > 0) && 
+	  ((mode == GMP_RNDD) || 
+	   ((mode == GMP_RNDZ) && (mpfr_sgn(x) > 0)))) {
+	// The rounded value is too great
+	xfl.f = xfloat;
+	if (xfl.i >= 0) {
+	  xfl.i--;
+	} else {
+	  xfl.i++;
+	}
+	dd = xfl.f;
+	if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+	  }
+	}
+      } 
+    }
+  }
+
+  if (mpfr_set(rop,temp,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the single rounding operator.\n");
+      printMessage(1,"Try to increase the working precision.\n");
+    }
+  }
+
+  res = mpfr_cmp(rop,x);
+
+  mpfr_clear(temp);
+  mpfr_clear(temp2);
+  mpfr_clear(tempRound);
+  return res;
+}
+
+
+
 int mpfr_round_to_doubledouble(mpfr_t rop, mpfr_t op) {
   double d;
   mpfr_t accu, temp, rest;
@@ -121,9 +364,6 @@ int mpfr_round_to_doubledouble(mpfr_t rop, mpfr_t op) {
 
   prec = mpfr_get_prec(op);
   if (prec < 106) {
-    if (!noRoundingWarnings) {
-      printMessage(2,"Information: rounding a value computed on less than 106 bits to double-double precision.\n");
-    }
     prec = 106;
   }
 
@@ -172,6 +412,63 @@ int mpfr_round_to_doubledouble(mpfr_t rop, mpfr_t op) {
   return res;
 }
 
+int mpfr_round_to_doubledouble_mode(mpfr_t rop, mpfr_t op, mp_rnd_t mode) {
+  double d;
+  mpfr_t accu, temp, rest;
+  mp_prec_t prec;
+  int res;
+
+  prec = mpfr_get_prec(op);
+  if (prec < 106) {
+    prec = 106;
+  }
+
+  mpfr_init2(accu, prec);
+  mpfr_init2(temp, prec);
+  mpfr_init2(rest, prec);
+
+  d = mpfr_get_d(op,GMP_RNDN);
+  if (mpfr_set_d(accu,d,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
+      printMessage(1,"The rounding occurred on recasting to MPFR. This should not occur.\n");
+    }
+  }
+  if (mpfr_sub(rest,op,accu,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
+      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+    }
+  }
+  d = mpfr_get_d(rest,mode);
+  if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
+      printMessage(1,"The rounding occurred on recasting to MPFR. This should not occur.\n");
+    }
+  }
+  if (mpfr_add(accu,accu,temp,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
+      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+    }
+  }
+  if (mpfr_set(rop,accu,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
+      printMessage(1,"Try to increase the working precision.\n");
+    }
+  }
+
+  res = mpfr_cmp(rop,op);
+
+  mpfr_clear(accu);
+  mpfr_clear(temp);
+  mpfr_clear(rest);
+  return res;
+}
+
+
 int mpfr_round_to_tripledouble(mpfr_t rop, mpfr_t op) {
   double d;
   mpfr_t accu, temp, rest;
@@ -180,9 +477,6 @@ int mpfr_round_to_tripledouble(mpfr_t rop, mpfr_t op) {
 
   prec = mpfr_get_prec(op);
   if (prec < 159) {
-    if (!noRoundingWarnings) {
-      printMessage(2,"Information: rounding a value computed on less than 159 bits to triple-double precision\n");
-    }
     prec = 159;
   }
 
@@ -223,6 +517,82 @@ int mpfr_round_to_tripledouble(mpfr_t rop, mpfr_t op) {
     }
   }
   d = mpfr_get_d(rest,GMP_RNDN);
+  if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,"The rounding occurred on recasting to MPFR. This should not occur.\n");
+    }
+  }
+  if (mpfr_add(accu,accu,temp,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+    }
+  }
+  if (mpfr_set(rop,accu,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,"Try to increase the working precision.\n");
+    }
+  }
+
+  res = mpfr_cmp(rop,op);
+
+  mpfr_clear(accu);
+  mpfr_clear(temp);
+  mpfr_clear(rest);
+
+  return res;
+}
+
+int mpfr_round_to_tripledouble_mode(mpfr_t rop, mpfr_t op, mp_rnd_t mode) {
+  double d;
+  mpfr_t accu, temp, rest;
+  mp_prec_t prec;
+  int res;
+
+  prec = mpfr_get_prec(op);
+  if (prec < 159) {
+    prec = 159;
+  }
+
+  mpfr_init2(accu, prec);
+  mpfr_init2(temp, prec);
+  mpfr_init2(rest, prec);
+
+  d = mpfr_get_d(op,GMP_RNDN);
+  if (mpfr_set_d(accu,d,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,"The rounding occurred on recasting to MPFR. This should not occur.\n");
+    }
+  }
+  if (mpfr_sub(rest,op,accu,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+    }
+  }
+  d = mpfr_get_d(rest,GMP_RNDN);
+  if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,"The rounding occurred on recasting to MPFR. This should not occur.\n");
+    }
+  }
+  if (mpfr_add(accu,accu,temp,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+    }
+  }
+  if (mpfr_sub(rest,op,accu,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+    }
+  }
+  d = mpfr_get_d(rest,mode);
   if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
       printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
@@ -595,6 +965,9 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
       mpfr_set_d(fpcoefficients[i],0.0,GMP_RNDN);
     }
     switch (formatsArray[i]) {
+    case 5:
+      if (mpfr_round_to_single(tempMpfr, fpcoefficients[i]) != 0) res = 1;
+      break;
     case 4:
       if (mpfr_round_to_doubleextended(tempMpfr, fpcoefficients[i]) != 0) res = 1;
       break;
@@ -608,8 +981,13 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
       if (mpfr_round_to_double(tempMpfr, fpcoefficients[i]) != 0) res = 1;
       break;
     default:
-      printMessage(1,"Warning: unknown expansion format found. No rounding will be performed.\n");
-      mpfr_set(tempMpfr,fpcoefficients[i],GMP_RNDN);
+      if (formatsArray[i] > 5) {
+	if (mpfr_round_to_prec(tempMpfr, fpcoefficients[i], (mp_prec_t) (formatsArray[i] - 6)) != 0) 
+	  res = 1;
+      } else {
+	printMessage(1,"Warning: unknown expansion format found. No rounding will be performed.\n");
+	mpfr_set(tempMpfr,fpcoefficients[i],GMP_RNDN);
+      }
     }
     if (mpfr_set(fpcoefficients[i],tempMpfr,GMP_RNDN) != 0) {
       if (!noRoundingWarnings) {
@@ -643,14 +1021,28 @@ int mpfr_round_to_doubleextended(mpfr_t rop, mpfr_t op) {
   mpfr_t intermediate;
   int res;
 
-  if (mpfr_get_prec(op) < 64) {
-    if (!noRoundingWarnings) {
-      printMessage(2,"Information: rounding a value computed on less than 64 bits to doubleextended precision.\n");
-    }
-  }
-
   mpfr_init2(intermediate,64);
   mpfr_set(intermediate,op,GMP_RNDN);
+  if (mpfr_set(rop,intermediate,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the doubleextended precision rounding operator.\n");
+      printMessage(1,"Try to increase the working precision.\n");
+    }
+  }
+  
+  mpfr_clear(intermediate);
+
+  res = mpfr_cmp(rop,op);
+
+  return res;
+}
+
+int mpfr_round_to_doubleextended_mode(mpfr_t rop, mpfr_t op, mp_rnd_t mode) {
+  mpfr_t intermediate;
+  int res;
+
+  mpfr_init2(intermediate,64);
+  mpfr_set(intermediate,op,mode);
   if (mpfr_set(rop,intermediate,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
       printMessage(1,"Warning: double rounding occurred on invoking the doubleextended precision rounding operator.\n");
@@ -686,7 +1078,7 @@ int printDoubleExpansion(mpfr_t x) {
     }
     roundingOccured = 1;
   }
-
+  
   if (!mpfr_number_p(temp)) {
     printMessage(1,"Warning: will not print a number that is not real as a double expansion.\n");
     printValue(&temp);
@@ -849,6 +1241,9 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
 
 void mpfr_round_to_format(mpfr_t rop, mpfr_t op, int format) {
   switch (format) {
+  case 5:
+    mpfr_round_to_single(rop, op);
+    break;
   case 4:
     mpfr_round_to_doubleextended(rop, op);
     break;
@@ -866,6 +1261,35 @@ void mpfr_round_to_format(mpfr_t rop, mpfr_t op, int format) {
     exit(1);
   }
 }
+
+int round_to_expansion_format(mpfr_t rop, mpfr_t op, int format, mp_rnd_t mode) {
+  int res;
+  switch (format) {
+  case 5:
+    mpfr_round_to_single_mode(rop, op, mode);
+    break;
+  case 4:
+    mpfr_round_to_doubleextended_mode(rop, op, mode);
+    break;
+  case 3:
+    mpfr_round_to_tripledouble_mode(rop, op, mode);
+    break;
+  case 2:
+    mpfr_round_to_doubledouble_mode(rop, op, mode);
+    break;
+  case 1:
+    mpfr_round_to_double_mode(rop, op, mode);
+    break;
+  default:
+    fprintf(stderr,"Error: round_to_expansion_format: unknown format type.\n");
+    exit(1);
+  }
+
+  res = mpfr_cmp(rop,op);
+
+  return res;
+}
+
 
 
 int mpfr_mant_exp(mpfr_t rop, mp_exp_t *expo, mpfr_t op) {

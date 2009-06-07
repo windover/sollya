@@ -150,18 +150,21 @@ INFNORM         "infnorm"
 DIAM            "diam"
 
 DOUBLELONG       "double"
+SINGLELONG       "single"
 DOUBLEDOUBLELONG "doubledouble"
 TRIPLEDOUBLELONG "tripledouble"
 DOUBLEEXTENDEDLONG "doubleextended"
 
 
 DOUBLESHORT      "D"
+SINGLESHORT      "SG"
 DOUBLEDOUBLESHORT "DD"
 TRIPLEDOUBLESHORT "TD"
 DOUBLEEXTENDEDSHORT "DE"
 
 
 DOUBLE          ({DOUBLELONG}|{DOUBLESHORT})
+SINGLE          ({SINGLELONG}|{SINGLESHORT})
 DOUBLEDOUBLE    ({DOUBLEDOUBLELONG}|{DOUBLEDOUBLESHORT})
 TRIPLEDOUBLE    ({TRIPLEDOUBLELONG}|{TRIPLEDOUBLESHORT})
 DOUBLEEXTENDED  ({DOUBLEEXTENDEDLONG}|{DOUBLEEXTENDEDSHORT})
@@ -604,6 +607,7 @@ NOP             "nop"
 {LOG1P}           			    { newTokenLexed(); return LOG1PTOKEN; }           					       
 {EXPM1}           			    { newTokenLexed(); return EXPM1TOKEN; }           					       
 {DOUBLE}          			    { newTokenLexed(); return DOUBLETOKEN; }          					       
+{SINGLE}          			    { newTokenLexed(); return SINGLETOKEN; }          					       
 {DOUBLEDOUBLE}				    { newTokenLexed(); return DOUBLEDOUBLETOKEN; }				      	       
 {TRIPLEDOUBLE}    			    { newTokenLexed(); return TRIPLEDOUBLETOKEN; }    					       
 {DOUBLEEXTENDED}  			    { newTokenLexed(); return DOUBLEEXTENDEDTOKEN; }  					       

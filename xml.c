@@ -232,6 +232,12 @@ void fPrintXmlInner(FILE *fd, node *tree) {
     fPrintXmlInner(fd, tree->child1);
     fprintf(fd,"</apply>\n");
     break;
+  case SINGLE:
+    fprintf(fd,"<apply>\n");
+    fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">single</csymbol>\n");
+    fPrintXmlInner(fd, tree->child1);
+    fprintf(fd,"</apply>\n");
+    break;
   case DOUBLEDOUBLE:
     fprintf(fd,"<apply>\n");
     fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">doubledouble</csymbol>\n");
@@ -444,6 +450,7 @@ node* xml_make_ath (node* n1,node* n2) {UNUSED_PARAM(n2); if (n1)     return mak
 node* xml_make_pow (node* n1,node* n2) {if (n1&&n2) return makePow(n1,n2); return 0; }
 node* xml_make_abs (node* n1,node* n2) {UNUSED_PARAM(n2); if (n1)     return makeAbs  (n1);  return 0; }
 node* xml_make_db  (node* n1,node* n2) {UNUSED_PARAM(n2); if (n1)     return makeDouble(n1); return 0; }
+node* xml_make_sg  (node* n1,node* n2) {UNUSED_PARAM(n2); if (n1)     return makeSingle(n1); return 0; }
 node* xml_make_db2 (node* n1,node* n2) {UNUSED_PARAM(n2); if (n1)     return makeDoubledouble(n1); return 0; }
 node* xml_make_db3 (node* n1,node* n2) {UNUSED_PARAM(n2); if (n1)     return makeTripledouble(n1); return 0; }
 node* xml_make_dbex(node* n1,node* n2) {UNUSED_PARAM(n2); if (n1)     return makeDoubleextended(n1); return 0; }
@@ -544,6 +551,7 @@ int search_math_tree (xmlTextReaderPtr reader)
 	  else if (!strcmp((char*)xml_value,"erfc"))		mthis->operator=xml_make_erfc;
 	  else if (!strcmp((char*)xml_value,"log1p"))	mthis->operator=xml_make_log1p;
 	  else if (!strcmp((char*)xml_value,"expm1"))	mthis->operator=xml_make_expm1;
+	  else if (!strcmp((char*)xml_value,"single"))	mthis->operator=xml_make_sg;
 	  else if (!strcmp((char*)xml_value,"double"))	mthis->operator=xml_make_db;
 	  else if (!strcmp((char*)xml_value,"doubledouble"))	mthis->operator=xml_make_db2;
 	  else if (!strcmp((char*)xml_value,"tripledouble"))	mthis->operator=xml_make_db3;

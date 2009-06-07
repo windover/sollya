@@ -137,7 +137,7 @@ struct libraryProcedureStruct
 #define FLOATING 237
 #define ABSOLUTESYM 197
 #define RELATIVESYM 198
-
+#define SINGLE 39
 
 typedef struct nodeStruct node;
 struct nodeStruct 

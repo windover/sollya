@@ -250,6 +250,7 @@ extern void endBuffer(void);
 #define RATIONALMODEASSIGN 239
 #define RATIONALMODESTILLASSIGN 240
 #define RATIONALMODEDEREF 241
+#define SINGLESYMBOL 242
 
 int executeCommand(node *);
 
@@ -357,6 +358,7 @@ node *makeFixed();
 node *makeFloating();
 node *makeError();
 node *makeDoubleSymbol();
+node *makeSingleSymbol();
 node *makeDoubleDoubleSymbol();
 node *makeTripleDoubleSymbol();
 node *makeString(char *string);

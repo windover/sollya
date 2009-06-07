@@ -236,6 +236,32 @@ void mpfi_round_to_double(mpfi_t rop, mpfi_t op) {
   mpfr_clear(rres);
 }
 
+
+void mpfi_round_to_single(mpfi_t rop, mpfi_t op) {
+  mpfr_t l,r, lres, rres;
+  mp_prec_t prec;
+
+  prec = mpfi_get_prec(op) + 10;
+  mpfr_init2(l,prec);
+  mpfr_init2(r,prec);
+  mpfr_init2(lres,prec);
+  mpfr_init2(rres,prec);
+
+  mpfi_get_left(l,op);
+  mpfi_get_right(r,op);
+
+  mpfr_round_to_single(lres,l);
+  mpfr_round_to_single(rres,r);
+
+  mpfi_interv_fr(rop,lres,rres);
+
+  mpfr_clear(l);
+  mpfr_clear(r);
+  mpfr_clear(lres);
+  mpfr_clear(rres);
+}
+
+
 void mpfi_round_to_doubledouble(mpfi_t rop, mpfi_t op) {
   mpfr_t l,r, lres, rres;
   mp_prec_t prec;
@@ -1574,6 +1600,13 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   case DOUBLE:
     excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
     mpfi_round_to_double(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
+    break;
+  case SINGLE:
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo);
+    mpfi_round_to_single(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
@@ -3771,6 +3804,9 @@ chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t pre
   case DOUBLE:
     return uncertifiedZeroDenominators(tree->child1,a,b,prec);
     break;
+  case SINGLE:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
   case DOUBLEDOUBLE:
     return uncertifiedZeroDenominators(tree->child1,a,b,prec);
     break;
@@ -4855,6 +4891,8 @@ int evaluateSign(int *s, node *rawFunc) {
 	}
 	break;
       case DOUBLE:
+	break;
+      case SINGLE:
 	break;
       case DOUBLEDOUBLE:
 	break;

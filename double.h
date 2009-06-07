@@ -54,7 +54,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "chain.h"
 
 int round_to_format(mpfr_t rop, mpfr_t op, int prec, mp_rnd_t mode);
+int round_to_expansion_format(mpfr_t rop, mpfr_t op, int format, mp_rnd_t mode);
 int mpfr_round_to_double(mpfr_t rop, mpfr_t op);
+int mpfr_round_to_single(mpfr_t rop, mpfr_t op);
 int mpfr_round_to_doubledouble(mpfr_t rop, mpfr_t op);
 int mpfr_round_to_tripledouble(mpfr_t rop, mpfr_t op);
 int mpfr_round_to_doubleextended(mpfr_t rop, mpfr_t op);

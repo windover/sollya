@@ -95,7 +95,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #define CEIL 36
 #define FLOOR 37
 #define PI_CONST 38
-
+#define SINGLE 39
 
 typedef struct nodeStruct node;
 
@@ -200,6 +200,7 @@ node *makePow(node *op1, node *op2);
 node *makeNeg(node *op1);
 node *makeAbs(node *op1);
 node *makeDouble(node *op1);
+node *makeSingle(node *op1);
 node *makeDoubledouble(node *op1);
 node *makeTripledouble(node *op1);
 node *makeErf(node *op1);
