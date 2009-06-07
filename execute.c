@@ -92,42 +92,6 @@ node *evaluateThingInner(node *);
 node *evaluateThing(node *);
 void *copyThingOnVoid(void *);
 
-/*
-
-
-  oldParsedThingIntern = parsedThingIntern;
-  internyylex_init(&myScanner);
-  internyyset_in(fd, myScanner);
-
-  while (1) {
-    parsedThingIntern = NULL;
-    parseAbort = internyyparse(myScanner);
-    if (parsedThingIntern != NULL) {
-      commands = addElement(commands,parsedThingIntern);
-    }
-    if (parseAbort) break;
-  }
-
-  internyylex_destroy(myScanner);
-  parsedThingIntern = oldParsedThingIntern;
-  
-
-*/
-
-/*
-
-
-
-void startBuffer(char *str) {
-  miniyy_switch_to_buffer(miniyy_scan_string(str));
-}
-
-void endBuffer(void) {
-  miniyy_delete_buffer(YY_CURRENT_BUFFER);
-}
-
-*/
-
 node *parseString(char *str) {
   node *result;
   node *oldMinitree;

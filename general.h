@@ -115,6 +115,8 @@ extern mpfr_t statediam;
 extern jmp_buf recoverEnvironmentError;
 extern node *parsedThingIntern;
 extern int *tempIntPtr;
+extern FILE *inputFile;
+extern int inputFileOpened;
 
 extern void *rpl_malloc(size_t n);
 

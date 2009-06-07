@@ -120,6 +120,10 @@ chain *declaredSymbolTable = NULL;
 
 int oldrlwrapcompatible = 0;
 
+FILE *inputFile = NULL;
+int inputFileOpened = 0;
+
+
 /* END OF STATE OF THE TOOL */
 
 /* HELPER VARIABLES FOR THE LEXER/ PARSER */
@@ -775,6 +779,10 @@ void initTool() {
 
 void finishTool() {
   freeTool();
+  if (inputFileOpened) {
+    fclose(inputFile);
+    inputFileOpened = 0;
+  }
 }
 
 mp_prec_t getToolPrecision() {
@@ -835,6 +843,9 @@ int general(int argc, char *argv[]) {
   struct termios termAttr;
   int parseAbort, executeAbort;
   int i;
+  FILE *fd;
+  
+  inputFileOpened = 0;
 
   if (tcgetattr(0,&termAttr) == -1) {
     eliminatePromptBackup = 1;
@@ -855,14 +866,32 @@ int general(int argc, char *argv[]) {
       printf("\nFor help on %s commands type \"help;\" on the %s prompt\n",PACKAGE_NAME,PACKAGE_NAME);
       printf("More documentation on %s is available on the %s website.\nFor bug reports send an email to %s.\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
       return 1;
-    }
-    if (strcmp(argv[i],"--nocolor") == 0) noColor = 1;
-    if (strcmp(argv[i],"--noprompt") == 0) eliminatePromptBackup = 1;
-    if (strcmp(argv[i],"--oldrlwrapcompatible") == 0) oldrlwrapcompatible = 1;
+    } else 
+      if (strcmp(argv[i],"--nocolor") == 0) noColor = 1; else
+	if (strcmp(argv[i],"--noprompt") == 0) eliminatePromptBackup = 1; else
+	  if (strcmp(argv[i],"--oldrlwrapcompatible") == 0) oldrlwrapcompatible = 1; else {
+	    if (!inputFileOpened) {
+	      fd = fopen(argv[i],"r");
+	      if (fd != NULL) {
+		inputFile = fd;
+		inputFileOpened = 1;
+		eliminatePromptBackup = 1;
+	      } else {
+		printf("Error: the file \"%s\" could not be opened: %s\n",argv[i],strerror(errno));
+		return 1;
+	      }
+	    } else {
+	      printf("Error: another input file besides \"%s\" has been indicated and opened.\n",argv[i]);
+	      return 1;
+	    }
+	  } 
   }
 
   yylex_init(&scanner);
-  
+  if (inputFileOpened) { 
+    yyset_in(inputFile, scanner);
+  }
+
   initSignalHandler();
   blockSignals();
   mp_set_memory_functions(safeMalloc,wrapSafeRealloc,NULL);
@@ -931,6 +960,11 @@ int general(int argc, char *argv[]) {
   freeTool();
 
   if (!eliminatePromptBackup) printf("\n");
+
+  if (inputFileOpened) {
+    fclose(inputFile);
+    inputFileOpened = 0;
+  }
 
   return 0;
 }
