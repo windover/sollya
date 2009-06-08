@@ -203,6 +203,20 @@ AM_LDFLAGS="$AM_LDFLAGS -Wl,-export-dynamic"
 
 LDFLAGS="$OLDLDFLAGS"
 
+CFLAGS="$OLDCFLAGS"
+LDFLAGS="$OLDLDFLAGS -Xlinker --allow-multiple-definition"
+
+AC_MSG_CHECKING([for -Xlinker --allow-multiple-definition support])
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]], [[exit(0);]])],
+[AC_MSG_RESULT(yes) 
+AM_LDFLAGS="$AM_LDFLAGS -Xlinker --allow-multiple-definition"
+],[AC_MSG_RESULT(no)
+])
+
+LDFLAGS="$OLDLDFLAGS"
+
+
+
 # Checks for header files.
 AC_FUNC_ALLOCA
 AC_HEADER_STDC
