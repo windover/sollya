@@ -115,7 +115,6 @@ node *parseString(char *str) {
   }
   minitree = oldMinitree;
   endMiniparser(buffer, myScanner);
-  miniyylex_destroy(myScanner);
   initSignalHandler();
 
   return result;
