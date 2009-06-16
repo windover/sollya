@@ -91,6 +91,32 @@ AC_ARG_WITH(fplll,
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
   ])
 
+AC_ARG_WITH(z-include,
+   [  --with-z-include=DIR  z include directory ],
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval")
+AC_ARG_WITH(z-lib,
+   [  --with-z-lib=DIR      z lib directory ], [
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval"
+  ])
+AC_ARG_WITH(z,
+   [  --with-z=DIR          z install directory ], [
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
+  ])
+
+AC_ARG_WITH(iconv-include,
+   [  --with-iconv-include=DIR  iconv include directory ],
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval")
+AC_ARG_WITH(iconv-lib,
+   [  --with-iconv-lib=DIR      iconv lib directory ], [
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval"
+  ])
+AC_ARG_WITH(iconv,
+   [  --with-iconv=DIR          iconv install directory ], [
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
+   AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
+  ])
+
 
 XML2INCLUDEGIVEN=""
 XML2LIBGIVEN=""
@@ -128,7 +154,16 @@ AC_ARG_WITH(mpfi,
 
 #Add xml2 include and lib
 
+XML2CONFIGGIVEN=""
+AC_ARG_WITH(xml2-config,
+   [  --with-xml2-config=executable XML2 config tool ], [
+      XML2CONFIG="$withval"
+      XML2CONFIGGIVEN=1
+   ])
+
+if test "x$XML2CONFIGGIVEN" = "x"; then
 AC_CHECK_PROG(XML2CONFIG,xml2-config,[xml2-config],[false])
+fi
 
 if test "x$XML2INCLUDEGIVEN" = "x"; then
   AM_CPPFLAGS="$AM_CPPFLAGS "`$XML2CONFIG --cflags`
@@ -136,7 +171,7 @@ fi
 
 if test "x$XML2LIBGIVEN" = "x"; then
   XML2LIBS=`$XML2CONFIG --libs`
-  AC_SEARCH_LIBS([xmlTextReaderIsEmptyElement], [$XML2LIBS])
+  AC_SEARCH_LIBS([xmlTextReaderIsEmptyElement], [$XML2LIBS], [])
 fi
 
 
@@ -162,6 +197,8 @@ AC_CHECK_LIB([gmp], [__gmpz_bin_uiui], [], AC_MSG_ERROR([libgmp version too old]
 AC_CHECK_LIB([gmp], [__gmpz_export], [], AC_MSG_ERROR([libgmp version too old]))
 AC_CHECK_LIB([mpfr], [mpfr_init], [], AC_MSG_ERROR([libmpfr unusable]))
 AC_CHECK_LIB([mpfr], [mpfr_erfc], [], AC_MSG_ERROR([libmpfr version too old]))
+AC_CHECK_LIB([z], [gzdopen], [], AC_MSG_RESULT(no))
+AC_CHECK_LIB([iconv], [libiconv_open], [], AC_MSG_RESULT(no))
 AC_CHECK_LIB([xml2], [xmlTextReaderIsEmptyElement], [], AC_MSG_ERROR([libxml2 unusable]))
 AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unusable]))
 
