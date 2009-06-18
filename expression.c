@@ -9057,24 +9057,56 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
     mpfr_init2(y,8 * sizeof(int) + 10);
     mpfr_set_si(y,k,GMP_RNDN);
     if ((mpfr_cmp(y,*(poly->child2->value)) == 0) &&
-	(k > 0) && 
-	((mpd = getMaxPowerDivider(poly->child1)) > 0)) {
-      temp = dividePolynomialByPowerOfVariableUnsafe(poly->child1, mpd);
-      temp2 = (node *) safeMalloc(sizeof(node));
-      temp2->nodeType = POW;
-      temp2->child1 = temp;
-      temp2->child2 = copyTree(poly->child2);
-      getCoefficients(&degree1, &coefficients1, temp2);
-      free_memory(temp2);
-      for (i=0;i<=degree1;i++) 
-	(*coefficients)[i + k * mpd] = coefficients1[i];
-      free(coefficients1);    
-      mpfr_clear(y);
-      return;
-    }
+	(k > 0)) {
+      if ((mpd = getMaxPowerDivider(poly->child1)) > 0) {
+        temp = dividePolynomialByPowerOfVariableUnsafe(poly->child1, mpd);
+        temp2 = (node *) safeMalloc(sizeof(node));
+        temp2->nodeType = POW;
+        temp2->child1 = temp;
+        temp2->child2 = copyTree(poly->child2);
+        getCoefficients(&degree1, &coefficients1, temp2);
+        free_memory(temp2);
+        for (i=0;i<=degree1;i++) 
+          (*coefficients)[i + k * mpd] = coefficients1[i];
+        free(coefficients1);    
+        mpfr_clear(y);
+        return;
+      }
+
+      if (k == 2) {
+        getCoefficients(&degree1, &coefficients1, poly->child1);
+        getCoefficients(&degree2, &coefficients2, poly->child1);
+        for (i=0;i<=degree1;i++) {
+          for (k=0;k<=degree2;k++) {
+            if ((coefficients1[i] != NULL) && (coefficients2[k] != NULL)) {
+              j = i + k;
+              temp = (node *) safeMalloc(sizeof(node));
+              temp->nodeType = MUL;
+              temp->child1 = copyTree(coefficients1[i]);
+              temp->child2 = copyTree(coefficients2[k]);
+              if ((*coefficients)[j] == NULL) {
+                (*coefficients)[j] = temp;
+              } else {
+                temp2 = (node *) safeMalloc(sizeof(node));
+                temp2->nodeType = ADD;
+                temp2->child1 = (*coefficients)[j];
+                temp2->child2 = temp;
+                (*coefficients)[j] = temp2;
+              }
+            }
+          }
+        }
+        for (i=0;i<=degree1;i++) free_memory(coefficients1[i]);
+        for (i=0;i<=degree2;i++) free_memory(coefficients2[i]);
+        free(coefficients1);
+        free(coefficients2);
+        mpfr_clear(y);
+        return;
+      }
+
+    } 
     mpfr_clear(y);
   }
-
 
   temp = simplifyTreeErrorfree(poly);
   temp2 = expandPowerInPolynomialUnsafe(temp);
@@ -9738,7 +9770,6 @@ node *differentiatePolynomialUnsafe(node *tree) {
     mpfr_set_d(*value,0.0,GMP_RNDN);
     copy->value = value;
   } else {
-       
     getCoefficients(&degree,&monomials,tree);
  
     if (monomials[degree] == NULL) {
