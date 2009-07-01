@@ -5233,7 +5233,7 @@ int executeCommand(node *tree) {
 
 
 int executeCommandInner(node *tree) {
-  int result, res, intTemp, resA, resB, resC, resD, resE, defaultVal, i;  
+  int result, res, intTemp, resA, resB, resC, resD, resE, resF, defaultVal, i;  
   chain *curr, *tempList, *tempList2; 
   mpfr_t a, b, c, d, e;
   node *tempNode, *tempNode2, *tempNode3, *tempNode4;
@@ -5644,7 +5644,7 @@ int executeCommandInner(node *tree) {
     evaluateThingListToThingArray(&resA, &array, tree->arguments);
     if (evaluateThingToString(&tempString,array[0])) {
       resB = RELATIVE;
-      if (evaluateThingToExternalPlotMode(&resA,array[1],&resB)) {
+      if (evaluateThingToExternalPlotMode(&resF,array[1],&resB)) {
 	if (evaluateThingToPureTree(&tempNode,array[2])) {
 	  mpfr_init2(a,tools_precision);
 	  mpfr_init2(b,tools_precision);
@@ -5708,7 +5708,7 @@ int executeCommandInner(node *tree) {
 		resD = 1;
 	      } 
 	      if (resD) {
-		externalPlot(tempString, a, b, (mp_prec_t) resB, resC, tempNode, resA, tools_precision, tempString2, resE);
+		externalPlot(tempString, a, b, (mp_prec_t) resB, resC, tempNode, resF, tools_precision, tempString2, resE);
 	      }
 	      if (tempString2 != NULL) free(tempString2);
 	    } else {

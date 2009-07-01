@@ -86,6 +86,7 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
   char *dataname;
   char *outputname;
 
+
   gmp_randinit_default (state);
 
   if(samplingPrecision > prec) {
