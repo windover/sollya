@@ -59,6 +59,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "chain.h"
 #include "execute.h"
 
+#ifndef RTLD_LOCAL
+#define RTLD_LOCAL 0
+#endif
+
 chain *openedLibraries = NULL;
 chain *openedProcLibraries = NULL;
 
@@ -76,7 +80,7 @@ libraryHandle *getLibraryHandle(char *libraryName) {
   }
 
   dlerror(); 
-  dlfcnHandle = dlopen(libraryName, RTLD_NOW);
+  dlfcnHandle = dlopen(libraryName, RTLD_LOCAL | RTLD_NOW);
   if (dlfcnHandle == NULL) 
     return NULL;
 
@@ -209,7 +213,7 @@ procLibraryHandle *getProcLibraryHandle(char *libraryName) {
   }
 
   dlerror(); 
-  dlfcnHandle = dlopen(libraryName, RTLD_NOW);
+  dlfcnHandle = dlopen(libraryName, RTLD_LOCAL | RTLD_NOW);
   if (dlfcnHandle == NULL) 
     return NULL;
 

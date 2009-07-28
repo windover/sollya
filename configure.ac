@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.60)
+AC_PREREQ(2.59)
 AC_INIT([sollya], [1.1.3], [christoph.lauter@ens-lyon.org, sylvain.chevillard@ens-lyon.org, mioara.joldes@ens-lyon.fr])
 AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([1.6 no-define dist-zip dist-bzip2])
@@ -263,16 +263,16 @@ AC_CHECK_HEADERS([inttypes.h libintl.h malloc.h stddef.h stdlib.h string.h sys/i
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_HEADER_STDBOOL
-AC_TYPE_INT32_T
+#AC_TYPE_INT32_T
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
-AC_TYPE_INT16_T
-AC_TYPE_INT8_T
+#AC_TYPE_INT16_T
+#AC_TYPE_INT8_T
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
-AC_TYPE_UINT16_T
-AC_TYPE_UINT32_T
-AC_TYPE_UINT8_T
+#AC_TYPE_UINT16_T
+#AC_TYPE_UINT32_T
+#AC_TYPE_UINT8_T
 
 
 # Checks for library functions.

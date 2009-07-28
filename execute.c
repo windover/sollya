@@ -97,13 +97,16 @@ node *parseString(char *str) {
   node *oldMinitree;
   void *myScanner;
   void *buffer;
+  char *myStr;
 
   blockSignals();
+  myStr = (char *) safeCalloc(strlen(str)+1,sizeof(char));
+  strcpy(myStr,str);
   oldMinitree = minitree;
   minitree = NULL;
   miniyylex_init(&myScanner);
   miniyyset_in(stdin, myScanner);
-  buffer = startMiniparser(myScanner,str);
+  buffer = startMiniparser(myScanner,myStr);
   if (!miniyyparse(myScanner)) {
     if (minitree != NULL) {
       result = evaluateThing(minitree);
@@ -114,7 +117,7 @@ node *parseString(char *str) {
     result = NULL;
   }
   minitree = oldMinitree;
-  endMiniparser(buffer, myScanner);
+  free(myStr);
   initSignalHandler();
 
   return result;
