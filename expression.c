@@ -7261,6 +7261,7 @@ int isPolynomial(node *tree) {
 int getDegreeUnsafe(node *tree) {
   int l, r;
   mpfr_t temp;
+  node *simplifiedExponent;
 
   if (isConstant(tree)) return 0;
 
@@ -7294,29 +7295,50 @@ int getDegreeUnsafe(node *tree) {
     {
       l = getDegreeUnsafe(tree->child1);
       if (tree->child2->nodeType != CONSTANT) {
-	fprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is not constant.\n");
-	exit(1);
-      }
-      if (!mpfr_integer_p(*(tree->child2->value))) {
-	fprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is not integer.\n");
-	exit(1);
-      }
-      if (mpfr_sgn(*(tree->child2->value)) < 0) {
-	fprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is negative.\n");
-	exit(1);
-      }
+        simplifiedExponent = simplifyRationalErrorfree(tree->child2);
+        if ((simplifiedExponent->nodeType == CONSTANT) && 
+            mpfr_integer_p(*(simplifiedExponent->value)) &&
+            (mpfr_sgn(*(simplifiedExponent->value)) >= 0)) {
+          r = (int) mpfr_get_d(*(simplifiedExponent->value),GMP_RNDN);
+          mpfr_init2(temp,mpfr_get_prec(*(simplifiedExponent->value)) + 10);
+          mpfr_set_si(temp,r,GMP_RNDN);
+          if (mpfr_cmp(*(simplifiedExponent->value),temp) != 0) {
+            printMessage(1, "Warning: tried to compute polynomial degree of an expression using a power operator with an exponent");
+            printMessage(1," which cannot be represented on an integer variable.\n");
+            mpfr_clear(temp);
+            free_memory(simplifiedExponent);
+            return -1;
+          }
+          mpfr_clear(temp);
+          free_memory(simplifiedExponent);
+          return l * r;
+        } else {
+          fprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is not constant, not integer or not non-negative.\n");
+          exit(1);
+        }
+        free_memory(simplifiedExponent);
+      } else {
+        if (!mpfr_integer_p(*(tree->child2->value))) {
+          fprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is not integer.\n");
+          exit(1);
+        }
+        if (mpfr_sgn(*(tree->child2->value)) < 0) {
+          fprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is negative.\n");
+          exit(1);
+        }
 
-      r = (int) mpfr_get_d(*(tree->child2->value),GMP_RNDN);
-      mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
-      mpfr_set_si(temp,r,GMP_RNDN);
-      if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
-	printMessage(1, "Warning: tried to compute polynomial degree of an expression using a power operator with an exponent");
-	printMessage(1," which cannot be represented on an integer variable.\n");
-	mpfr_clear(temp);
-	return -1;
+        r = (int) mpfr_get_d(*(tree->child2->value),GMP_RNDN);
+        mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
+        mpfr_set_si(temp,r,GMP_RNDN);
+        if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
+          printMessage(1, "Warning: tried to compute polynomial degree of an expression using a power operator with an exponent");
+          printMessage(1," which cannot be represented on an integer variable.\n");
+          mpfr_clear(temp);
+          return -1;
+        }
+        mpfr_clear(temp);
+        return l * r;
       }
-      mpfr_clear(temp);
-      return l * r;
     }
     break;
   case NEG:
