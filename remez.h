@@ -65,4 +65,6 @@ node* remezWithWeight(node *func, node *weight, chain *monomials, mpfr_t a, mpfr
 rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps);
 node *constructPolynomial(mpfr_t *coeff, chain *monomials, mp_prec_t prec);
 
+int newtonFaithful(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, mp_prec_t prec);
+
 #endif /* ifdef REMEZ_H*/

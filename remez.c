@@ -411,7 +411,9 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
       if(verbosity>=6) {
 	changeToWarningMode();
 	printf("Entering in a rescue case of Newton's algorithm\n");
-	printMpfr(xNew);
+	printf("xNew = "); printMpfr(xNew);
+        printf("u = "); printMpfr(u);
+        printf("v = "); printMpfr(v);
 	restoreMode();
       }
       
@@ -504,6 +506,15 @@ void newton(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, mp
   return;
 }
 
+// Yet another wrapper compatible with Christoph's old newtonMPFR routine
+int newtonFaithful(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, mp_prec_t prec) {
+  mpfr_t yA;
+  mpfr_init2(yA,prec);
+  evaluateFaithful(yA,f,a,prec);
+  findZero(res, f, f_diff, a, b, mpfr_sgn(yA), NULL, 0, prec);
+  mpfr_clear(yA);
+  return 1;
+}
 
 // Finds the zeros of a function on an interval.
 chain *uncertifiedFindZeros(node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec) {
