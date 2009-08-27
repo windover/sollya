@@ -1,5 +1,5 @@
-#NAME $PERTURB
-#QUICK_DESCRIPTION indicates a relative error for $EXTERNALPLOT
+#NAME $RELATIVE
+#QUICK_DESCRIPTION indicates a relative error for $EXTERNALPLOT or $FPMINIMAX
 #CALLING $COMMAND
 #TYPE $APPROXERROR_TYPE
 
@@ -9,11 +9,17 @@ plotting in $EXTERNALPLOT a relative error is to be considered.
 §§ § §§
 See $EXTERNALPLOT for details.
 
+Used with $FPMINIMAX, $COMMAND indicates that $FPMINIMAX must try to minimize
+the relative error.
+§§ § §§
+See $FPMINIMAX for details
+
 #EXAMPLE
 bashexecute("gcc -fPIC -c externalplotexample.c");
 bashexecute("gcc -shared -o externalplotexample externalplotexample.o -lgmp -lmpfr");
-externalplot("./externalplotexample",relative,exp(x),[-1/2;1/2],12,perturb);
+externalplot("./externalplotexample",absolute,exp(x),[-1/2;1/2],12,perturb);
 
 #SEEALSO $EXTERNALPLOT
+#SEEALSO $FPMINIMAX
 #SEEALSO $ABSOLUTE
 #SEEALSO $BASHEXECUTE
