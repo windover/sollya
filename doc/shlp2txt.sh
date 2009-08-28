@@ -339,11 +339,12 @@ main() {
 	sed -i -n 's/$/\\n/g;p' $target
 	index=`echo $source | sed -n 's/\.shlp//;p' | tr 'a-z' 'A-Z'`
 	cat $target | tr -d '\n' > $tempfile
-	replacement="#define HELP_"$index"_TEXT \""`cat $tempfile`"\""
 	
 	sed -i -n 's/\(^#define HELP_'"$index"'_TEXT\)\(.*\)//;p' $helpFile
 	sed -i -n 's/\(#endif\)\(.*\)//;p' $helpFile
-	echo "$replacement" >> $helpFile
+	echo -n "#define HELP_"$index"_TEXT \"" >> $helpFile
+	cat $tempfile  >> $helpFile
+	echo "\"" >> $helpFile
 	echo "#endif /* ifdef HELP_H*/" >> $helpFile
 	
 	rm $target

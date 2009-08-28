@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/dash
 
 sollyaBin="../sollya"
 
@@ -112,11 +112,11 @@ processName() {
  fi
 
  if [ $nLines -eq 1 ]
-   then echo -n "\noindent Name: " >> $target
-   else echo -n "\noindent Names: " >> $target
+   then printf "\\\\noindent Name: " >> $target
+   else printf "\\\\noindent Names: " >> $target
  fi
  grep "#NAME" $tempfile | sed -n 's/#NAME //;p' | sed -n 's/$/, /;p' | tr -d "\n" | sed -n 's/, $//;p' >> $target
- echo "\\\\" >> $target
+ printf "\\\\\\\\\n" >> $target
 }
 
 processQuickDescription() {
@@ -128,7 +128,7 @@ processQuickDescription() {
  if quickDescr=`grep "#QUICK_DESCRIPTION" $tempfile`
  then
    echo -n "$quickDescr" | sed -n 's/#QUICK_DESCRIPTION //;p' >> $target
-   echo "\\\\" >> $target
+   printf "\\\\\\\\" >> $target
    echo "" >> $target
  fi
 }
@@ -146,19 +146,18 @@ processCallingAndTypes() {
  fi
 
  i=1;
- echo "\noindent Usage: " >> $target
- echo "\begin{center}" >> $target
+ printf "\\\\noindent Usage: \n" >> $target
+ printf "\\\\begin{center}\n" >> $target
  while [ $i -le $nLines ]
    do
-   calling=`grep "#CALLING" $tempfile | head -n $i | tail -n 1 | sed -n 's/#CALLING //;p'`
-   type=`grep "#TYPE" $tempfile | head -n $i | tail -n 1 | sed -n 's/#TYPE //;p'`
-   type=`echo $type | sed -n 's/->/$\\\rightarrow$/g;p'`
+   ( grep "#CALLING" $tempfile | head -n $i | tail -n 1 | sed -n 's/#CALLING //;p' | tr -d '\n'; \
+       printf " : " ; \
+       grep "#TYPE" $tempfile | head -n $i | tail -n 1 | sed -n 's/#TYPE //;p' | sed -n 's/->/$\\rightarrow$/g;p' )>> $target
 #   type=`echo $type | sed -n 's/|/$|$/g;p'`
-   echo "$calling"" : "$type"\\\\" >> $target
    i=`expr $i + 1`
  done
  
- echo "\end{center}" >> $target
+ printf "\\\\end{center}\n" >> $target
 }
 
 processParameters() {
@@ -169,16 +168,14 @@ processParameters() {
 
  i=1;
  echo "Parameters: " >> $target
- echo "\begin{itemize}" >> $target
+ printf "\\\\begin{itemize}\n" >> $target
  while [ $i -le $nLines ]
    do
-   parameter=`grep "#PARAMETERS" $tempfile | head -n $i | tail -n 1 | sed -n 's/#PARAMETERS //;p'`
-
-   echo "\item ""$parameter" >> $target
+   (printf "\\\\item "; grep "#PARAMETERS" $tempfile | head -n $i | tail -n 1 | sed -n 's/#PARAMETERS //;p' ) >> $target
    i=`expr $i + 1`
  done
  
- echo "\end{itemize}" >> $target
+ printf "\\\\end{itemize}\n" >> $target
 }
 
 processDescriptions() {
@@ -191,35 +188,36 @@ processDescriptions() {
  i=1;
  mode="off"
  firstLine="off"
- echo -n "\noindent Description: " >> $target
- echo "\begin{itemize}" >> $target
+ printf "\\\\noindent Description: " >> $target
+ printf "\\\\begin{itemize}\n" >> $target
  while [ $i -le $nLines ]
  do
-   line=`cat $tempfile | head -n $i | tail -n 1`
-   if echo "$line" | grep "#DESCRIPTION" > /dev/null
+   # little trick to escape the backslashes
+   line=`cat $tempfile | head -n $i | tail -n 1 | sed -n 's/\\\\/\\\\\\\\/g;p'`
+   if printf "$line" | grep "#DESCRIPTION" > /dev/null
    then
      firstLine="on"
      mode="on"
      echo "" >> $target
-     echo -n "\item " >> $target
+     printf "\\\\item " >> $target
    else
      if [ $mode = "on" -a -n "$line" ]
      then
-       if echo "$line" | grep -e "^#" > /dev/null
+       if printf "$line" | grep -e "^#" > /dev/null
        then  i=`expr $nLines + 1`
        else
          if [ $firstLine = "on" ]
            then firstLine="off"
            else echo -n "   " >> $target
          fi
-         echo "$line" >> $target 
+         printf "$line""\n" >> $target 
        fi
      fi
    fi
    i=`expr $i + 1`
  done
  
- echo "\end{itemize}" >> $target
+ printf "\\\\end{itemize}\n" >> $target
 }
 
 processExampleFile() {
@@ -239,8 +237,8 @@ processExampleFile() {
    countlocal=$total
    ilocal=`expr $ilocal + 1`
  done
- echo "\end{Verbatim}" >> $target
- echo "\end{minipage}\end{center}" >> $target
+ printf "\\\\end{Verbatim}\n" >> $target
+ printf "\\\\end{minipage}\\\\end{center}\n" >> $target
 }
 
 processExamples() {
@@ -261,8 +259,8 @@ processExamples() {
      if [ -e $exampleFile ]
        then rm $exampleFile; touch $exampleFile
      fi
-     echo "\noindent Example "$count": " >> $target
-     echo "\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]" >> $target
+     printf "\\\\noindent Example "$count": \n" >> $target
+     printf "\\\\begin{center}\\\\begin{minipage}{15cm}\\\\begin{Verbatim}[frame=single]\n" >> $target
      count=`expr $count + 1`
    else
      if [ $mode = "on" -a -n "$line" ]
@@ -309,8 +307,8 @@ processFile() {
   sed -n -i 's/$SOLLYA/'"$sollya_name"'/g;p' $tempfile
 
 
-  echo "\subsection{"$sectionName"}" >> $target
-  echo "\label{lab"$sectionName"}" | sed -n 's/ //g;p' >> $target
+  printf "\\\\subsection{"$sectionName"}\n" >> $target
+  printf "\\\\label{lab"$sectionName"}\n" | sed -n 's/ //g;p' >> $target
   processName
   processQuickDescription
   processCallingAndTypes
@@ -345,10 +343,10 @@ main() {
       target=`echo $source | sed -n 's/\.shlp/\.tex/;p'`
       echo "Processing file "$source
       processFile
-      if grep `echo "\input{$source}" | sed -n 's/\.shlp//;p'` $listOfCommands > /dev/null
+      if grep `printf "\\\\input{$source}\n" | sed -n 's/\.shlp//;p'` $listOfCommands > /dev/null
       then echo "Nothing to change in "$listOfCommands
       else
-        echo "\input{"`echo $source | sed -n 's/\.shlp//;p'`"}" >> $listOfCommands
+        printf "\\\\input{"`echo $source | sed -n 's/\.shlp//;p'`"}\n" >> $listOfCommands
       fi
     else
       echo "File "$file" does not exist!"
