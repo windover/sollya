@@ -2,12 +2,11 @@
 \label{labwrite}
 \noindent Name: \textbf{write}\\
 prints an expression without separators\\
-
 \noindent Usage: 
 \begin{center}
-\textbf{write}(\emph{expr1},...,\emph{exprn}) : (\textsf{any type},..., \textsf{any type}) $\rightarrow$ \textsf{void}\\
-\textbf{write}(\emph{expr1},...,\emph{exprn}) $>$ \emph{filename} : (\textsf{any type},..., \textsf{any type}, \textsf{string}) $\rightarrow$ \textsf{void}\\
-\textbf{write}(\emph{expr1},...,\emph{exprn}) $>>$ \emph{filename} : (\textsf{any type},...,\textsf{any type}, \textsf{string}) $\rightarrow$ \textsf{void}\\
+\textbf{write}(\emph{expr1},...,\emph{exprn}) : (\textsf{any type},..., \textsf{any type}) $\rightarrow$ \textsf{void}
+\textbf{write}(\emph{expr1},...,\emph{exprn}) $>$ \emph{filename} : (\textsf{any type},..., \textsf{any type}, \textsf{string}) $\rightarrow$ \textsf{void}
+\textbf{write}(\emph{expr1},...,\emph{exprn}) $>>$ \emph{filename} : (\textsf{any type},...,\textsf{any type}, \textsf{string}) $\rightarrow$ \textsf{void}
 \end{center}
 Parameters: 
 \begin{itemize}
@@ -42,25 +41,32 @@ Parameters:
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > write(x + 2 + exp(sin(x))); 
-> write("Hello\n");
+> write("Hello
+> ");
 x + 2 + exp(sin(x))Hello
-> write("Hello","world\n");
+> write("Hello","world
+> ");
 Helloworld
-> write("Hello","you", 4 + 3, "other persons.\n");
+> write("Hello","you", 4 + 3, "other persons.
+> ");
 Helloyou7other persons.
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> write("Hello","\n");
+> write("Hello","
+> ");
 Hello
-> write([|"Hello"|],"\n");
+> write([|"Hello"|],"
+> ");
 [|"Hello"|]
 > s = "Hello";
-> write(s,[|s|],"\n");
+> write(s,[|s|],"
+> ");
 Hello[|"Hello"|]
-> t = "Hello\tyou";
-> write(t,[|t|],"\n");
+> t = "Hello    you";
+> write(t,[|t|],"
+> ");
 Hello    you[|"Hello    you"|]
 \end{Verbatim}
 \end{minipage}\end{center}

@@ -2,12 +2,11 @@
 \label{labconcat}
 \noindent Name: \textbf{@}\\
 concatenates two lists or strings or applies a list as arguments to a procedure\\
-
 \noindent Usage: 
 \begin{center}
-\emph{L1}\textbf{@}\emph{L2} : (\textsf{list}, \textsf{list}) $\rightarrow$ \textsf{list}\\
-\emph{string1}\textbf{@}\emph{string2} : (\textsf{string}, \textsf{string}) $\rightarrow$ \textsf{string}\\
-\emph{proc}\textbf{@}\emph{L1} : (\textsf{string}, \textsf{string}) $\rightarrow$ \textsf{string}\\
+\emph{L1}\textbf{@}\emph{L2} : (\textsf{list}, \textsf{list}) $\rightarrow$ \textsf{list}
+\emph{string1}\textbf{@}\emph{string2} : (\textsf{string}, \textsf{string}) $\rightarrow$ \textsf{string}
+\emph{proc}\textbf{@}\emph{L1} : (\textsf{string}, \textsf{string}) $\rightarrow$ \textsf{string}
 \end{center}
 Parameters: 
 \begin{itemize}
@@ -37,7 +36,8 @@ Hello World!
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > procedure cool(a,b,c) { 
-> write(a,", ", b," and ",c," are cool guys.\n");
+> write(a,", ", b," and ",c," are cool guys.
+> ");
 > };
 > cool @ [| "Christoph", "Mioara", "Sylvain" |];
 Christoph, Mioara and Sylvain are cool guys.

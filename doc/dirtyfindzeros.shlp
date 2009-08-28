@@ -21,14 +21,14 @@ More precisely, the algorithm relies on global variables $PREC and $POINTS and
 is the following: let §§n§$n$§§ be the value of variable $POINTS and §§t§$t$§§ be the value
 of variable $PREC.
 §§ §\begin{itemize}§§
-§§   -§\item §§ Evaluate §§|f|§$|f|$§§ at §§n§$n$§§ evenly distributed points in the interval §§I§$I$§§.
+§§   -§\item§§ Evaluate §§|f|§$|f|$§§ at §§n§$n$§§ evenly distributed points in the interval §§I§$I$§§.
 §§    § §§ the precision used is automatically chosen in order to ensure that the sign
 §§    § §§ is correct.
-§§   -§\item §§ Whenever §§f§$f$§§ changes its sign for two consecutive points,
+§§   -§\item§§ Whenever §§f§$f$§§ changes its sign for two consecutive points,
 §§    § §§ find an approximation §§x§$x$§§ of its zero with precision §§t§$t$§§ using
 §§    § §§ Newton's algorithm. The number of steps in Newton's iteration depends on §§t§$t$§§:
 §§    § §§ the precision of the approximation is supposed to be doubled at each step.
-§§   -§\item §§ Add this value to the list.
+§§   -§\item§§ Add this value to the list.
 §§ §\end{itemize}§§
 
 #EXAMPLE
