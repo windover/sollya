@@ -6,7 +6,8 @@ keywords_defs="./keywords.def"
 types_defs="./types.def"
 sollya_name="Sollya"
 helpFile="../help.h"
-listOfCommands="./ListOfCommands.php"
+listOfCommandsTmp="./ListOfCommandsTmp"
+listOfCommandsPHP="./ListOfCommands.php"
 
 tempfile="/tmp/hlp2html_tempfile"
 tempfile2="/tmp/hlp2html_tempfile2"
@@ -83,6 +84,7 @@ preprocessTeX() {
   fi
 
   test="true"
+  testOpenedLi="false"
   i=1
   while [ $i -le $nLines ]
   do
@@ -95,6 +97,7 @@ preprocessTeX() {
     if [ $test = "true" ]
     then 
 	head -n $i $tempfile | tail -n 1 | sed -n 's/§§\([^§]*\)§\\\\§§/<br>/g;p' \
+	                                 | sed -n 's/§§ § §§/<br><br>/g;p' \
                                          | sed -n 's/§§\([^§]*\)§\\begin{itemize}§§/<ul><LI>/g;p' \
 	                                 | sed -n 's/§§\([^§]*\)§\\end{itemize}§§/<\/li><\/ul>/g;p' \
 	                                 | sed -n 's/§§\([^§]*\)§\\item§§/<\/li><li>/g;p' \
@@ -147,7 +150,8 @@ processCallingAndTypes() {
  fi
 
  i=1;
- echo "<h2 class=\"category\">Usage</h2>" >> $target
+ echo "<div class=\"divUsage\">" >> $target
+ echo "<h2 class=\"category\">Usage: </h2>" >> $target
  while [ $i -le $nLines ]
    do
    calling=`grep "#CALLING" $tempfile | head -n $i | tail -n 1 | sed -n 's/#CALLING //;p'`
@@ -158,6 +162,8 @@ processCallingAndTypes() {
  done
  
  echo "" >> $target
+ echo "</div>" >> $target
+
 }
 
 processParameters() {
@@ -167,6 +173,7 @@ processParameters() {
  fi
 
  i=1;
+ echo "<div class=\"divParameters\">" >> $target
  echo "<h2 class=\"category\">Parameters: </h2>" >> $target
  echo "<ul>" >> $target
  while [ $i -le $nLines ]
@@ -178,6 +185,7 @@ processParameters() {
  done
  
  echo "" >> $target
+ echo "</div>" >> $target
 }
 
 processDescriptions() {
@@ -189,8 +197,8 @@ processDescriptions() {
  nLines=`cat $tempfile | wc -l`
  i=1;
  mode="off"
- firstLine="off"
  mustCloseLI="off"
+ echo "<div class=\"divDescription\">" >> $target
  echo -n "<h2 class=\"category\">Description: </h2>" >> $target
  echo "<ul>" >> $target
  while [ $i -le $nLines ]
@@ -198,7 +206,6 @@ processDescriptions() {
    line=`cat $tempfile | head -n $i | tail -n 1`
    if echo "$line" | grep "#DESCRIPTION" > /dev/null
    then
-     firstLine="on"
      mode="on"
      if [ $mustCloseLI = "on" ]
      then echo -n "</li><li>" >> $target
@@ -211,10 +218,6 @@ processDescriptions() {
        if echo "$line" | grep -e "^#" > /dev/null
        then  i=`expr $nLines + 1`
        else
-         if [ $firstLine = "on" ]
-           then firstLine="off"
-           else echo -n "   " >> $target
-         fi
          echo "$line" >> $target 
        fi
      fi
@@ -223,8 +226,19 @@ processDescriptions() {
  done
  
  echo "</ul>" >> $target
+ echo "</div>" >> $target
+
 }
 
+# This function supposes that $exampleFile is filled with the source code of an example
+# It process $exampleFile line by line. For each line, it outputs:
+#    > currentLine <br>
+# Then, it produces a script containing all the lines of the example until
+# the current one (included) and runs Sollya on it, producing $tempfile2.
+# Finally, it keeps only the trailing lines of this output (that correspond to the output
+# of the current line) and formats them.
+# Once the example is completely processed, it closes the <div> (that has been opened by
+# function processExamples.
 processExampleFile() {
  nLineslocal=`cat $exampleFile | wc -l`
  ilocal=1;
@@ -232,19 +246,27 @@ processExampleFile() {
  total=0;
  while [ $ilocal -le $nLineslocal ]
  do
-   echo -n "   > " >> $target
-   cat $exampleFile | head -n $ilocal | tail -n 1 | sed -n 's/$/<br>/;p' >> $target
+   printf "&nbsp;&nbsp;&nbsp;> " >> $target
+   cat $exampleFile | head -n $ilocal | tail -n 1 | sed -n 's/$/<br>/;p' | sed -n 's/  /\&nbsp;\&nbsp;/g;p' | sed -n 's/\&nbsp; /\&nbsp;\&nbsp;/g;p'  >> $target
    echo "verbosity=0!; roundingwarnings=on!;" "`head -n $ilocal $exampleFile`" | $sollyaBin > $tempfile2
    sed -i -n 's/^/   /;p' $tempfile2
    total=`cat $tempfile2 | wc -l`
    countlocal=`expr $total - $countlocal`
-   tail -n $countlocal $tempfile2 | sed -n 's/$/<br>/;p' >> $target
+   tail -n $countlocal $tempfile2 | sed -n 's/$/<br>/;p' | sed -n 's/  /\&nbsp;\&nbsp;/g;p' | sed -n 's/\&nbsp; /\&nbsp;\&nbsp;/g;p' >> $target
    countlocal=$total
    ilocal=`expr $ilocal + 1`
  done
  echo "</div>" >> $target
 }
 
+# This function process the .shlp file looking for #EXAMPLE directives
+# When it finds one, it outputs:
+#   <div class="divExample">
+#   <h2 class="category">Example n: </h2>
+#
+# and fills $exampleFile with the source code of the #EXAMPLE.
+# Once an example is finished, function processExampleFile is launched.
+# etc. until the last example.
 processExamples() {
  nLines=`cat $tempfile | wc -l`
  i=1;
@@ -290,10 +312,45 @@ processSeeAlso() {
  then return
  fi
 
+ echo "<div class=\"divSeeAlso\">" >> $target
  echo -n "<span class=\"category\">See also: </span>" >> $target
  grep "#SEEALSO" $tempfile | sed -n 's/#SEEALSO //;p' | sed -n 's/$/, /;p' | tr -d "\n" | sed -n 's/, $//;p' >> $target
  echo "" >> $target
+ echo "</div>" >> $target
 }
+
+
+removeLI() {  # removes the unwanted first <LI></li> of each itemize
+  statut="closed"
+  nLines=`cat $tempfile| wc -l` 
+  i=1
+  while [ $i -le $nLines ]
+  do
+    ligne=`head -n $i $tempfile |  tail -n 1`; if [ $statut = "opened" ]
+    then
+	echo "$ligne" |grep "<\/li>" > /dev/null; if [ $? = "0" ]
+	then
+	    statut="closed"
+	    ligne=`echo "$ligne" | sed -n 's/\([^<]*\)<\/li>\(.*\)/\1\2/;p'`
+	fi
+    fi
+    echo $ligne | grep "<LI>" > /dev/null; if [ $? = "0" ]
+    then
+	echo $ligne |grep -e "<LI>.*</li>" > /dev/null; if [ $? = "0" ]
+	then 
+	    echo "$ligne" | sed -n 's/\(.*\)<LI>[^<]*<\/li>\(.*\)/\1\2/g;p'
+	else 
+	    statut="opened"
+	    echo "$ligne" | sed -n 's/\(.\)<LI>.*/\1/;p'
+	fi
+    else
+	echo "$ligne" 
+    fi
+    i=`expr $i + 1`
+  done > $tempfile2
+  mv $tempfile2 $tempfile
+}
+
 
 processFile() {
   if [ -e $target ]
@@ -303,36 +360,37 @@ processFile() {
   echo "<div class=\"helpBlock\">" > $target
 
   cat $source > $tempfile
-  getCommand
+  getCommand   # defines the variable $command which is for instance "$GT"
   sed -n -i 's/\(\$COMMAND\)/'$command'/g;p' $tempfile
-  preprocessMeta
-  preprocessKeywords
+  preprocessMeta  
+  preprocessKeywords   # transforms the name of keywords (e.g. $GT) by their value (e.g. >)
   preprocessTypes
   preprocessTeX
+  removeLI
+  command=`echo $command | sed -n 's/\$\(.*\)/\1/;p'`  # removes the initial "$" of $command (e.g. GT)
+  nameOfCommand=`cat $keywords_defs | grep "^$command=" | sed -n 's/\(=.*\)//;p' | tr 'A-Z' 'a-z'` # name of the command (e.g. gt) used to name the files
+  realNameOfCommand=`cat $keywords_defs | grep "^$command=" | sed -n 's/\(.*="\)\(.*\)\("\)/\2/;p' | sed -n 's/§§\([^§]*\)§\([^§]*\)§§/\1/g;p'`  # name of the command really used in Sollya (e.g. >)
+
+
   sed -n -i 's/$SOLLYA/'"$sollya_name"'/g;p' $tempfile
 
-  echo "<a name=\""$command"\"></a>" > $target
+  
+  echo "<a name=\""$nameOfCommand"\"></a>" > $target
   echo "<div class=\"divName\">" >> $target
   processName
   processQuickDescription
   echo "</div>" >> $target
-  echo "<div class=\"divUsage\">" >> $target
+
   processCallingAndTypes
-  echo "</div>" >> $target
-  echo "<div class=\"divParameters\">" >> $target
   processParameters
-  echo "</div>" >> $target
-  echo "<div class=\"divDescription\">" >> $target
   processDescriptions
-  echo "</div>" >> $target
+
   echo "<div class=\"divExamples\">" >> $target
   processExamples
   echo "</div>" >> $target
-  echo "<div class=\"divSeeAlso\">" >> $target
-  processSeeAlso
-  echo "</div>" >> $target
 
-  echo "</div>" >> $target
+  processSeeAlso
+
   if [ -e $tempfile ]
     then rm $tempfile
   fi
@@ -344,12 +402,14 @@ processFile() {
   fi
 }
 
+
 main() {
   if [ $# -eq 0 ]
   then liste=`/bin/ls *.shlp`
   else liste=$*
   fi
 
+  cat $listOfCommandsPHP | head -n -2 | tail -n +3 | sed -n 's/,$//;p' > $listOfCommandsTmp
   for file in $liste
   do
     if [ -e $file ]
@@ -359,18 +419,24 @@ main() {
       target=`echo $source | sed -n 's/\.shlp/\.php/;p'`
       echo "Processing file "$source
       processFile
-#      if grep `echo "\input{$source}" | sed -n 's/\.shlp//;p'` $listOfCommands > /dev/null
-#      then echo "Nothing to change in "$listOfCommands
-#      else
-#        echo "\input{"`echo $source | sed -n 's/\.shlp//;p'`"}" >> $listOfCommands
-#      fi
+      
+      if grep  "\"$nameOfCommand\"" $listOfCommandsTmp > /dev/null
+      then
+	  echo "Nothing to change in "$listOfCommandsPHP
+      else
+ 	  echo "\""$nameOfCommand"\",\""$realNameOfCommand"\"" >> $listOfCommandsTmp
+      fi
     else
-      echo "File "$file" does not exist!"
+	echo "File "$file" does not exist!"
     fi
   done
+  echo "<?php" > $listOfCommandsPHP
+  echo "\$listOfCommands=array(" >> $listOfCommandsPHP
 
-#  sort $listOfCommands > $tempfile
-#  mv $tempfile $listOfCommands
+  sort $listOfCommandsTmp | sed -n 's/$/,/;p' >> $listOfCommandsPHP
+  echo ");" >> $listOfCommandsPHP
+  echo "?>" >> $listOfCommandsPHP
+  rm $listOfCommandsTmp
 }
 
 main $*
