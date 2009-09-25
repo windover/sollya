@@ -4238,7 +4238,8 @@ int evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
   mpfr_set_d(cutoff,0.0,GMP_RNDN);
 
   res = evaluateFaithfulWithCutOffFast(result, tree, NULL, x, cutoff, startPrec);
-  
+  if (res==3) res=0;
+
   mpfr_clear(cutoff);
 
   if (!res) {
@@ -4482,7 +4483,13 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
   return okay;
 }
 
-
+/* Tries to evaluate func(x) with faithful rounding to the precision of result                            */
+/* If it can be proven that |func(x)|<cutoff, the returned value is 2 and result ~ func(x)                */
+/* If the faithful value can successfully be computed, it is stored in result and the returned value is 1 */
+/* If after increasing the precision many times, a satisfying value has not been obtained, result is set  */
+/* to NaN and the returned value is:                                                                      */
+/*    3 if the last computed value was NaN, or Inf                                                        */
+/*    0 if the last computed value was a regular number (in which case, func(x) might be an exact 0)      */
 int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec) {
   mp_prec_t p, prec, oldPrec, oldPrec2;
   rangetype xrange, yrange;
@@ -4553,6 +4560,7 @@ int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_
     mpfr_set(result,resUp,GMP_RNDN);
   } else {
     mpfr_set_nan(result);
+    if( (!mpfr_number_p(resUp)) || (!mpfr_number_p(resDown))) okay=3;
   }
   
   free(yrange.a);
@@ -4580,6 +4588,7 @@ int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutof
     deriv = differentiate(func); 
   }else deriv = NULL;
   res = evaluateFaithfulWithCutOffFast(result, func, deriv, x, cutoff, startprec);
+  if (res==3) res=0;
   if (deriv != NULL) free_memory(deriv);
   return res;
 }

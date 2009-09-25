@@ -284,219 +284,426 @@ node *constructPolynomial(mpfr_t *coeff, chain *monomials, mp_prec_t prec) {
 // If n<>0, n steps are computed.
 // The algorithm uses Newton's method
 // It is assumed that f(a)f(b)<=0 and x0 in [a;b]
+// If x0=NULL the algorithm is free to use any initial guess
 void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, mpfr_t *x0, int n, mp_prec_t prec) {
+  
+  /* Sketch of the algorithm :
+     During the algorithm, we will work with an interval [u,v]
+     that surely contains a zero of f.
+     Whenever a step of Newton's algorithm does not work, we perform a bisection step on [u,v]
+     to ensure the convergence of the algorithm.
+
+     1) It is necessary that [u,v] does not contain 0. This ensures that the range of
+     possible exponents for x is bounded.
+ 
+     So, if 0<a or b<0,  let [u,v]=[a,b] and go directly to step 2.
+
+     Otherwise:
+       Let epsa= max(-2^(-2p), a)    and   epsb = min(2^(-2p), b):
+       hence a <= epsa <= 0 <= epsb <= b.
+       Let signepsa = sign(f(epsa)), sign0 = sign(f(0)) and signepsb = sign(f(epsb)).
+       Here sign can be -1,0,1 or NaN if the evaluation of f fails.
+       We separate the different cases for (signepsa, sign0, signepsb):
+
+	 (   *       0      *   ) -> f(0)=0 exactly
+	 (   0       *      *   ) -> f(epsa)=0 exactly
+	 (   *       *      0   ) -> f(epsb)=0 exactly
+	 (-sgnfa     *      *   ) -> we can set [u,v] = [a, epsa] (note that epsa<0 in this case)
+	 (   *       *     sgnfa) -> we can set [u,v] = [epsb, b] (note that epsb>0 in this case)
+
+	 (   *     sgnfa  -sgnfa) -> f changes its sign in [0,epsb] but f(0) != 0.
+	                             The zero of f cannot be determined accurately.
+				     We can return epsb for instance with an error message.
+	 ( sgnfa  -sgnfa    *   ) -> idem with [epsa,0]
+	 
+	 ( sgnfa    NaN   -sgnfa) -> f changes its sign in [epsa, epsb].
+	                             It is likely that f(0)=0 but we cannot prove it.
+				     We can return 0 with an error message.
+	 
+	 ( sgnfa    NaN     NaN ) -> This case is likely to be b=0 (hence epsb=0)
+	                             We cannot prove much but it is reasonnable to return 0
+	 (  NaN     NaN   -sgnfa) -> idem with a=0
+	 (  NaN     NaN     NaN ) -> idem with a=0=b
+
+	 (  *      sgnfa    NaN ) -> We are really in trouble here since f(0) is provably non zero
+                                     but we do not know if f vanishes in [0,epsb] or [epsb, b].
+				     We should better stop with a huge ERROR
+	 (  NaN   -sgnfa     *  ) -> idem with [a, epsa] or [epsa, 0]
+
+
+     2) Now we are sure that [u,v] does not contain 0.
+     
+     During the algorithm, we will consider an approximation x of the zero z of f.
+     From x, we compute a new approximation xNew.
+     We assume that xNew is a very good approximation of z. Thus we can estimate the
+     relative error between x and z by |xNew-x|/|xNew|.
+     If this error is smaller than 2^(-prec), x is an accurate estimation of z and a fortiori
+     xNew is accurate as well.
+
+     Let x be somewhere in [u,v] (in the beginning, x=x0 if x0 is defined and lies in [u,v]).
+     We compute xNew = iterator(x) = x - f(x)/f'(x)
+
+       If (xNew<u) or (xNew>v) or xNew=NaN, we perform a bisection step:
+       replaced by either [u, m] of [m, u] where m=(u+v)/2 and xNew is defined as
+       the middle of the new interval
+       
+       Otherwise: xNew gives a valid new value. We compute yNew=f(xNew).
+       We have 4 cases depending on sgn(yNew):
+         sgnfa -> we can replace [u,v] by [xNew,v]
+	-sgnfa -> we can replace [u,v] by [u, xNew]
+	   0   -> xNew is an exact zero of f. We can stop
+	  NaN  -> we leave [u,v] as is. Most likely the iterator(xNew) will be NaN and the next
+	          step will be a bisection step.
+  */
+
+  mpfr_t zero_mpfr;
+  mpfr_t u, v, epsa, fepsa, epsb, fepsb, f0;
+  int sgnfepsa, sgnfepsb, sgnf0;
+  int codefa, codeNegfa;
+  int stop_algo = 0;
+  int skip_step1 = 0;
+  mp_prec_t prec_bounds;
+  int r;
+
   node *iterator;
-  node *temp1;
-  mpfr_t u, v, x, xNew, temp, y, zero_mpfr;
-  mpfr_t * ptr;
+  node *temp;
+  mpfr_t x, xNew, yNew, tmp_mpfr;
   int estim_prec, estim_prec2;
-  int r, nbr_iter,test, sgnfu, sgn_bound;
+  int nbr_iter;
 
-  sgnfu = sgnfa;
-
-  mpfr_init2(x,prec);
-  mpfr_init2(xNew,prec);
-  mpfr_init2(y, 15);
-  mpfr_init2(temp, 15);
-  mpfr_init2(u, mpfr_get_prec(a));
-  mpfr_init2(v, mpfr_get_prec(b));
-
-  mpfr_init2(zero_mpfr,53);
-
-  mpfr_set(u,a,GMP_RNDD);
-  mpfr_set(v,b,GMP_RNDU); // both exacts
-
-  if(x0!=NULL) mpfr_set(x,*x0,GMP_RNDN);
-  else mpfr_set(x,a,GMP_RNDU); /* We choose arbitrarily a.
-				  Note that choosing (a+b)/2 leads to
-				  an infinite loop if the first step
-				  of the algorithm is a bisection step. */
-
-  if(verbosity>=7) {
+  if(verbosity>=8) {
     changeToWarningMode();
-    printf("Newton's call with parameters :"); printTree(f); printf("\n");
-    printMpfr(a); printMpfr(b);
-    printMpfr(x); evaluateFaithful(y,f,x,prec); printMpfr(y);
+    printf("Information (Newton's algorithm): entering in Newton's algorithm. Parameters are:\n");
+    printf("Information (Newton's algorithm): f = "); printTree(f); printf("\n");
+    printf("Information (Newton's algorithm): a = "); printMpfr(a);
+    printf("Information (Newton's algorithm): b = "); printMpfr(b);
+    if (x0!=NULL) { printf("Information (Newton's algorithm): x0 = "); printMpfr(*x0);}
     restoreMode();
   }
-
-  mpfr_set_d(zero_mpfr,0.,GMP_RNDN);
-  estim_prec = 0;
-
-  iterator = safeMalloc(sizeof(node));
-  iterator->nodeType = SUB;
-  temp1 = safeMalloc(sizeof(node));
-  temp1->nodeType = VARIABLE;
-  iterator->child1 = temp1;
   
-  temp1 = safeMalloc(sizeof(node));
-  temp1->nodeType = DIV;
-  temp1->child1 = copyTree(f);
-  temp1->child2 = copyTree(f_diff);
-  iterator->child2 = temp1;
+  prec_bounds = (mpfr_get_prec(a)>mpfr_get_prec(b)) ? mpfr_get_prec(a) : mpfr_get_prec(b);
+  if (prec>prec_bounds) prec_bounds = prec;
 
-  nbr_iter=1;
-  test=1;
+  mpfr_init2(u, prec_bounds);
+  mpfr_init2(v, prec_bounds);
+  mpfr_init2(zero_mpfr, prec);
+  
+  mpfr_set_si(zero_mpfr, 0, GMP_RNDN);
 
-  /* First we exclude 0 from the interval */
-  if (mpfr_sgn(u)*mpfr_sgn(v) <= 0) {
-    r = evaluateFaithfulWithCutOffFast(y, f, f_diff, zero_mpfr, zero_mpfr, prec);
-    if(r==0) mpfr_set_d(y,0,GMP_RNDN);
+  if ( (mpfr_cmp_ui(a,0)>0) || mpfr_cmp_ui(b,0)<0 ) {
+    mpfr_set(u, a, GMP_RNDU); // exact
+    mpfr_set(v, b, GMP_RNDD); // exact
+    skip_step1 = 1;
+  }
 
-    if (mpfr_zero_p(y)) { 
-      printMessage(4,"Information: an exact zero has been found by Newton's algorithm\n");
-      mpfr_set_ui(x, 0, GMP_RNDN);
-      test=0;
+  /**************    STEP 1 : removing zero from the range    **************/
+  if (!skip_step1) {
+    mpfr_init2(epsa, prec);
+    mpfr_init2(epsb, prec);
+    mpfr_init2(fepsa, prec);
+    mpfr_init2(fepsb, prec);
+    mpfr_init2(f0, prec);
+    
+    mpfr_set_si(epsa, -1, GMP_RNDU);
+    mpfr_div_2ui(epsa, epsa, 2*prec, GMP_RNDU);
+    if (mpfr_cmp(a,epsa)>0) mpfr_set(epsa, a, GMP_RNDU);
+
+    mpfr_set_si(epsb, 1, GMP_RNDD);
+    mpfr_div_2ui(epsb, epsb, 2*prec, GMP_RNDD);
+    if (mpfr_cmp(epsb,b)>0) mpfr_set(epsb, b, GMP_RNDD);
+
+    /* For the signs, we use the following convention:
+        0 is coded by 0
+	1 is coded by 1
+       -1 is coded by 2
+	NaN is coded by 3
+    */ 
+    r = evaluateFaithfulWithCutOffFast(fepsa, f, f_diff, epsa, zero_mpfr, prec);
+    if(r==0) mpfr_set_d(fepsa,0,GMP_RNDN);
+    if (!mpfr_number_p(fepsa)) sgnfepsa = 3;
+    else {
+      sgnfepsa = mpfr_sgn(fepsa);
+      if (sgnfepsa!=0) sgnfepsa = (sgnfepsa>0) ? 1 : 2;
     }
-    if(!mpfr_number_p(y)) {
-      fprintf(stderr,"Warning: Newton's algorithm encountered numerical problems\n");
-      if(verbosity>=2) {
-	changeToWarningMode();
-	printf("The function "); printTree(f); printf(" seems to be undefined at this point: ");  printMpfr(xNew);
-	restoreMode();
-      }
-      mpfr_set_ui(x, 0, GMP_RNDN);
-      test=0;
-      }
 
-    if (test) { /* y is a non zero number */
-      if(sgnfu==mpfr_sgn(y)) { 
-	mpfr_set_ui(u,1,GMP_RNDD);
-	mpfr_div_2ui(u, u, 2*prec, GMP_RNDD);
-	ptr = &u;
-	sgn_bound = sgnfu;
+    r = evaluateFaithfulWithCutOffFast(f0, f, f_diff, zero_mpfr, zero_mpfr, prec);
+    if(r==0) mpfr_set_d(f0,0,GMP_RNDN);
+    if (!mpfr_number_p(f0)) sgnf0 = 3;
+    else {
+      sgnf0 = mpfr_sgn(f0);
+      if (sgnf0!=0) sgnf0 = (sgnf0>0) ? 1 : 2;
+    }
+
+    r = evaluateFaithfulWithCutOffFast(fepsb, f, f_diff, epsb, zero_mpfr, prec);
+    if(r==0) mpfr_set_d(fepsb,0,GMP_RNDN);
+    if (!mpfr_number_p(fepsb)) sgnfepsb = 3;
+    else {
+      sgnfepsb = mpfr_sgn(fepsb);
+      if (sgnfepsb!=0) sgnfepsb = (sgnfepsb>0) ? 1 : 2;
+    }
+
+    if (sgnfa==1) { codefa = 1; codeNegfa = 2; }
+    else { codefa = 2; codeNegfa = 1; }
+    
+    if ( ((sgnfepsa==0) && (sgnf0==0) && (sgnfepsb==0)) ||
+	 ((sgnfepsa==1) && (sgnf0==0) && (sgnfepsb==0)) ||
+	 ((sgnfepsa==2) && (sgnf0==0) && (sgnfepsb==0)) ||
+	 ((sgnfepsa==3) && (sgnf0==0) && (sgnfepsb==0)) ||
+	 ((sgnfepsa==0) && (sgnf0==0) && (sgnfepsb==1)) ||
+	 ((sgnfepsa==1) && (sgnf0==0) && (sgnfepsb==1)) ||
+	 ((sgnfepsa==2) && (sgnf0==0) && (sgnfepsb==1)) ||
+	 ((sgnfepsa==3) && (sgnf0==0) && (sgnfepsb==1)) ||
+	 ((sgnfepsa==0) && (sgnf0==0) && (sgnfepsb==2)) ||
+	 ((sgnfepsa==1) && (sgnf0==0) && (sgnfepsb==2)) ||
+	 ((sgnfepsa==2) && (sgnf0==0) && (sgnfepsb==2)) ||
+	 ((sgnfepsa==3) && (sgnf0==0) && (sgnfepsb==2)) ||
+	 ((sgnfepsa==0) && (sgnf0==0) && (sgnfepsb==3)) ||
+	 ((sgnfepsa==1) && (sgnf0==0) && (sgnfepsb==3)) ||
+	 ((sgnfepsa==2) && (sgnf0==0) && (sgnfepsb==3)) ||
+	 ((sgnfepsa==3) && (sgnf0==0) && (sgnfepsb==3)) ) {
+      printMessage(5, "Information (Newton's algorithm): 0 is an exact 0.\n");
+      mpfr_set(res, zero_mpfr, GMP_RNDN);
+      stop_algo = 1;
+    }
+    if ( ((sgnfepsa==0) && (sgnf0==1) && (sgnfepsb==0)) ||
+	 ((sgnfepsa==0) && (sgnf0==2) && (sgnfepsb==0)) ||
+	 ((sgnfepsa==0) && (sgnf0==3) && (sgnfepsb==0)) ||
+	 ((sgnfepsa==0) && (sgnf0==1) && (sgnfepsb==1)) ||
+	 ((sgnfepsa==0) && (sgnf0==2) && (sgnfepsb==1)) ||
+	 ((sgnfepsa==0) && (sgnf0==3) && (sgnfepsb==1)) ||
+	 ((sgnfepsa==0) && (sgnf0==1) && (sgnfepsb==2)) ||
+	 ((sgnfepsa==0) && (sgnf0==2) && (sgnfepsb==2)) ||
+	 ((sgnfepsa==0) && (sgnf0==3) && (sgnfepsb==2)) ||
+	 ((sgnfepsa==0) && (sgnf0==1) && (sgnfepsb==3)) ||
+	 ((sgnfepsa==0) && (sgnf0==2) && (sgnfepsb==3)) ||
+	 ((sgnfepsa==0) && (sgnf0==3) && (sgnfepsb==3)) ) {
+      printMessage(5, "Information (Newton's algorithm): an exact 0 has been discovered.\n");
+      mpfr_set(res, epsa, GMP_RNDN);
+      stop_algo = 1;
+    }
+    if ( ((sgnfepsa==1) && (sgnf0==1) && (sgnfepsb==0)) ||
+	 ((sgnfepsa==2) && (sgnf0==1) && (sgnfepsb==0)) ||
+	 ((sgnfepsa==3) && (sgnf0==1) && (sgnfepsb==0)) ||
+	 ((sgnfepsa==1) && (sgnf0==2) && (sgnfepsb==0)) ||
+	 ((sgnfepsa==2) && (sgnf0==2) && (sgnfepsb==0)) ||
+	 ((sgnfepsa==3) && (sgnf0==2) && (sgnfepsb==0)) ||
+	 ((sgnfepsa==1) && (sgnf0==3) && (sgnfepsb==0)) ||
+	 ((sgnfepsa==2) && (sgnf0==3) && (sgnfepsb==0)) ||
+	 ((sgnfepsa==3) && (sgnf0==3) && (sgnfepsb==0)) ) {
+      printMessage(5, "Information (Newton's algorithm): an exact 0 has been discovered.\n");
+      mpfr_set(res, epsb, GMP_RNDN);
+      stop_algo = 1;
+    }
+    /* The cases (-sngfa, * *) and (* * sgnfa) can be separated into subcases : */
+    if ((sgnfepsa==codeNegfa) && (sgnf0==3) && (sgnfepsb==codefa)) {
+      printMessage(3, "Warning (Newton's algorithm): the function has more than one zero in the interval\n");
+      printMessage(3, "Warning (Newton's algorithm): 0 seems to be one of them but wa cannot prove it\n");
+      mpfr_set(res, zero_mpfr, GMP_RNDN);
+      stop_algo = 1;
+    }
+    if ((sgnfepsa==codeNegfa) && (sgnf0==codefa) && (sgnfepsb==codefa)) {
+      printMessage(3, "Warning (Newton's algorithm): the function has more than one zero in the interval\n");
+      printMessage(3, "Warning (Newton's algorithm): one of them is too close to zero for being accurately determined\n");
+      mpfr_set(res, epsa, GMP_RNDU);
+      stop_algo = 1;
+    }
+    if ((sgnfepsa==codeNegfa) && (sgnf0==codeNegfa) && (sgnfepsb==codefa)) {
+      printMessage(3, "Warning (Newton's algorithm): the function has more than one zero in the interval\n");
+      printMessage(3, "Warning (Newton's algorithm): one of them is too close to zero for being accurately determined\n");
+      mpfr_set(res, epsb, GMP_RNDD);
+      stop_algo = 1;
+    }
+    if ( ((sgnfepsa==codeNegfa) && (sgnf0==1) && (sgnfepsb==codeNegfa)) ||
+	 ((sgnfepsa==codeNegfa) && (sgnf0==2) && (sgnfepsb==codeNegfa)) ||
+	 ((sgnfepsa==codeNegfa) && (sgnf0==3) && (sgnfepsb==codeNegfa)) ||
+	 ((sgnfepsa==codeNegfa) && (sgnf0==1) && (sgnfepsb==3)) ||
+	 ((sgnfepsa==codeNegfa) && (sgnf0==2) && (sgnfepsb==3)) ||
+	 ((sgnfepsa==codeNegfa) && (sgnf0==3) && (sgnfepsb==3)) ) {
+      mpfr_set(u, a, GMP_RNDD);
+      mpfr_set(v, epsa, GMP_RNDU);
+    }
+    if ( ((sgnfepsa==codefa) && (sgnf0==1) && (sgnfepsb==codefa)) ||
+	 ((sgnfepsa==codefa) && (sgnf0==2) && (sgnfepsb==codefa)) ||
+	 ((sgnfepsa==codefa) && (sgnf0==3) && (sgnfepsb==codefa)) ||
+	 ((sgnfepsa==3) && (sgnf0==1) && (sgnfepsb==codefa)) ||
+	 ((sgnfepsa==3) && (sgnf0==2) && (sgnfepsb==codefa)) ||
+	 ((sgnfepsa==3) && (sgnf0==3) && (sgnfepsb==codefa)) ) {
+      mpfr_set(u, epsb, GMP_RNDD);
+      mpfr_set(v, b, GMP_RNDU);
+    }
+    /* End of the subcases */
+    if ( ((sgnfepsa==codefa) && (sgnf0==codefa) && (sgnfepsb==codeNegfa)) ||
+	 ((sgnfepsa==3) && (sgnf0==codefa) && (sgnfepsb==codeNegfa)) ) {
+      printMessage(2, "Warning (Newton's algorithm): the zero of f is too close to zero for being accurately determined\n");
+      mpfr_set(res, epsb, GMP_RNDN);
+      stop_algo = 1;
+    }
+    if ( ((sgnfepsa==codefa) && (sgnf0==codeNegfa) && (sgnfepsb==codeNegfa)) ||
+	 ((sgnfepsa==codefa) && (sgnf0==codeNegfa) && (sgnfepsb==3)) ) {
+      printMessage(2, "Warning (Newton's algorithm): the zero of f is too close to zero for being accurately determined\n");
+      mpfr_set(res, epsa, GMP_RNDN);
+      stop_algo = 1;
+    }
+    if ((sgnfepsa==codefa) && (sgnf0==3) && (sgnfepsb==codeNegfa)) {
+      printMessage(2, "Warning (Newton's algorithm): 0 seems to be an exact zero but we cannot prove it\n");
+      mpfr_set(res, zero_mpfr, GMP_RNDN);
+      stop_algo = 1;
+    }
+    if ((sgnfepsa==codefa) && (sgnf0==3) && (sgnfepsb==3)) {
+      if (mpfr_cmp_ui(b,0)==0) {
+	printMessage(2, "Warning (Newton's algorithm): 0 seems to be an exact zero but we cannot prove it\n");
+	mpfr_set(res, zero_mpfr, GMP_RNDN);
+	stop_algo = 1;
       }
       else {
-	mpfr_set_si(v,-1,GMP_RNDU);
-	mpfr_div_2ui(v, v, 2*prec, GMP_RNDU);
-	ptr = &v;
-	sgn_bound = -sgnfu;
-      } 
-      
-      r = evaluateFaithfulWithCutOffFast(y, f, f_diff, *ptr, zero_mpfr, prec);
-      if(r==0) mpfr_set_d(y,0,GMP_RNDN);
-      if (mpfr_zero_p(y)) { 
-	printMessage(4,"Information: an exact zero has been found by Newton's algorithm\n");
-	mpfr_set(x, *ptr, GMP_RNDN);
-	test=0;
+	fprintf(stderr, "Error (Newton's algorithm): numerical problems have been encountered. Failed\n");
+	mpfr_set_nan(res);
+	stop_algo = 1;
       }
-      if(!mpfr_number_p(y)) {
-	fprintf(stderr,"Warning: Newton's algorithm encountered numerical problems\n");
-	if(verbosity>=2) {
-	  changeToWarningMode();
-	  printf("The function "); printTree(f); printf(" seems to be undefined at this point: ");  printMpfr(xNew);
-	  restoreMode();
+    }
+    if ((sgnfepsa==3) && (sgnf0==3) && (sgnfepsb==codeNegfa)) {
+      if (mpfr_cmp_ui(a,0)==0) {
+	printMessage(2, "Warning (Newton's algorithm): 0 seems to be an exact zero but we cannot prove it\n");
+	mpfr_set(res, zero_mpfr, GMP_RNDN);
+	stop_algo = 1;
+      }
+      else {
+	fprintf(stderr, "Error (Newton's algorithm): numerical problems have been encountered. Failed\n");
+	mpfr_set_nan(res);
+	stop_algo = 1;
+      }
+    }
+    if ((sgnfepsa==3) && (sgnf0==3) && (sgnfepsb==3)) {
+      if ( (mpfr_cmp_ui(a,0)==0)&&(mpfr_cmp_ui(b,0)==0) ) {
+	printMessage(2, "Warning (Newton's algorithm): 0 seems to be an exact zero but we cannot prove it\n");
+	mpfr_set(res, zero_mpfr, GMP_RNDN);
+	stop_algo = 1;
+      }
+      else {
+	fprintf(stderr, "Error (Newton's algorithm): numerical problems have been encountered. Failed\n");
+	mpfr_set_nan(res);
+	stop_algo = 1;
+      }
+    }
+    if ( ((sgnfepsa==codefa) && (sgnf0==codefa) && (sgnfepsb==3)) ||
+	 ((sgnfepsa==3) && (sgnf0==codefa) && (sgnfepsb==3)) ) { 
+      fprintf(stderr, "Error (Newton's algorithm): failed to locate the zero\n");
+      mpfr_set_nan(res);
+      stop_algo = 1;
+    }
+    if ( ((sgnfepsa==3) && (sgnf0==codeNegfa) && (sgnfepsb==codeNegfa)) ||
+	 ((sgnfepsa==3) && (sgnf0==codeNegfa) && (sgnfepsb==3)) ) { 
+      fprintf(stderr, "Error (Newton's algorithm): failed to locate the zero\n");
+      mpfr_set_nan(res);
+      stop_algo = 1;
+    }
+
+    mpfr_clear(epsa);
+    mpfr_clear(epsb);
+    mpfr_clear(fepsa);
+    mpfr_clear(fepsb);
+    mpfr_clear(f0);
+  }
+  /*************************************************************************/
+
+
+  
+  /**************    STEP 2 : iterating Newton's algorithm    **************/
+  if (!stop_algo) {
+    mpfr_init2(x, prec);
+    mpfr_init2(xNew, prec);
+    mpfr_init2(yNew, prec);
+    mpfr_init2(tmp_mpfr, 53);
+
+    if(x0!=NULL) mpfr_set(x,*x0,GMP_RNDN);
+    else { mpfr_add(x, u, v, GMP_RNDU); mpfr_div_2ui(x, x, 1, GMP_RNDN); }
+
+    iterator = safeMalloc(sizeof(node));
+    iterator->nodeType = SUB;
+    temp = safeMalloc(sizeof(node));
+    temp->nodeType = VARIABLE;
+    iterator->child1 = temp;
+    
+    temp = safeMalloc(sizeof(node));
+    temp->nodeType = DIV;
+    temp->child1 = copyTree(f);
+    temp->child2 = copyTree(f_diff);
+    iterator->child2 = temp;
+
+
+    /* Main loop */
+    nbr_iter = 0;
+    while(!stop_algo) {
+      r = evaluateFaithfulWithCutOffFast(xNew, iterator, NULL, x, zero_mpfr, prec);
+      if(r==0) mpfr_set_d(xNew,0,GMP_RNDN);
+    
+      if( (mpfr_cmp(u,xNew)>0) || (mpfr_cmp(xNew,v)>0) || ((!mpfr_number_p(xNew)) && (r==1)) ) {
+	printMessage(5, "Information (Newton's algorithm): performing a bisection step\n");
+	mpfr_add(xNew,u,v,GMP_RNDN);
+	mpfr_div_2ui(xNew, xNew, 1, GMP_RNDN);
+	if (mpfr_cmp(x, xNew)==0) {
+	  printMessage(5, "Warning (Newton's algorithm): performing a trisection step\n");
+	  mpfr_sub(xNew,v,u,GMP_RNDN);
+	  mpfr_div_ui(xNew, xNew, 3, GMP_RNDN);
+	  mpfr_add(xNew, u, xNew, GMP_RNDN);
 	}
-	mpfr_set_ui(x,0,GMP_RNDN);
-	test=0;
-      }
-      if(test && (mpfr_sgn(y)!=sgn_bound)) {
-	printMessage(8, "Warning: in Newton's algorithm: the zero seems to be 0 but it cannot be proven\n");
-	mpfr_set_ui(x, 0, GMP_RNDN);
-	test=0;
-      }
-    }
-  }
-  /******************************************/
-  
-  /* We update x: it must be in [u,v] */
-  if ( test && ((mpfr_cmp(u,x)>0) || (mpfr_cmp(x,v)>0)) ) mpfr_set(x, u, GMP_RNDU);
-
-  while(test) {
-    r = evaluateFaithfulWithCutOffFast(xNew, iterator, NULL, x, zero_mpfr, prec);
-    if(r==0) mpfr_set_d(xNew,0,GMP_RNDN);
-
-    /* A problem occured: xNew \not\in [u,v] or xNew=NaN. We do a step of bisection */
-    if( (mpfr_cmp(u,xNew)>0) || (mpfr_cmp(xNew,v)>0) || ((!mpfr_number_p(xNew)) && (r==1)) ) {
-      if(verbosity>=6) {
-	changeToWarningMode();
-	printf("Entering in a rescue case of Newton's algorithm\n");
-	printf("xNew = "); printMpfr(xNew);
-        printf("u = "); printMpfr(u);
-        printf("v = "); printMpfr(v);
-	restoreMode();
       }
       
-      // We do a step of binary search
-      mpfr_add(xNew,u,v,GMP_RNDN);
-      mpfr_div_2ui(xNew, xNew, 1, GMP_RNDN);
-    }
-    /******************************* End of bisection *******************************/
-
-    r = evaluateFaithfulWithCutOffFast(y, f, f_diff, xNew, zero_mpfr, prec); // y=f[xNew]
-
-    /* We cannot compute f(xNew) */
-    if((!mpfr_number_p(y)) && (r==1)) {
-      fprintf(stderr,"Warning: Newton's algorithm encountered numerical problems\n");
-      if(verbosity>=2) {
-	changeToWarningMode();
-	printf("The function "); printTree(f); printf(" seems to be undefined at this point: ");  printMpfr(xNew);
-	restoreMode();
+      r = evaluateFaithfulWithCutOffFast(yNew, f, f_diff, xNew, zero_mpfr, prec); /* yNew=f[xNew] */
+      if(r==0) mpfr_set_d(yNew, 0, GMP_RNDN);
+      
+      if (mpfr_number_p(yNew)) {
+	if (mpfr_cmp_ui(yNew, 0)==0) {
+	  printMessage(5, "Information (Newton's algorithm): an exact 0 has been discovered.\n");
+	  mpfr_set(res, xNew, GMP_RNDN);
+	  stop_algo = 1;
+	}
+	else {
+	  if (mpfr_cmp_ui(yNew, 0)*sgnfa>0) mpfr_set(u, xNew, GMP_RNDN);
+	  else mpfr_set(v, xNew, GMP_RNDN);
+	}
       }
-      break;
+      
+      
+      mpfr_sub(tmp_mpfr, xNew, x, GMP_RNDU);
+      if (!mpfr_zero_p(tmp_mpfr)) estim_prec=(mpfr_get_exp(xNew)-mpfr_get_exp(tmp_mpfr));
+      
+      mpfr_sub(tmp_mpfr,v,u,GMP_RNDN);
+      if(mpfr_cmp_abs(v,u)>0) estim_prec2 = mpfr_get_exp(u) - mpfr_get_exp(tmp_mpfr);
+      else estim_prec2 = mpfr_get_exp(v) - mpfr_get_exp(tmp_mpfr);
+      
+      if(estim_prec2 > estim_prec) estim_prec = estim_prec2;
+      
+      nbr_iter++;
+      if ( ((n!=0) && (nbr_iter==n)) || mpfr_equal_p(x,xNew) || (estim_prec>(int)prec)) {
+	mpfr_set(res, xNew, GMP_RNDN);
+	stop_algo=1;
+      }
+      
+      mpfr_set(x,xNew,GMP_RNDN);
     }
-
-    /* y=f[xNew] is an exact 0 */
-    if ((r==0) || mpfr_zero_p(y)) { 
-      printMessage(4,"Information: an exact zero has been found by Newton's algorithm\n");
-      break;
-    }
-
-    /* Just to be sure: normally, now y is a non-zero real number */
-    if(mpfr_zero_p(y) || !mpfr_number_p(y))
-      fprintf(stderr, "This message means that there is a bug in Newton's algorithm. Please report.\n");
-
-    if(sgnfu==mpfr_sgn(y))  mpfr_set(u,xNew,GMP_RNDD);
-    else mpfr_set(v,xNew,GMP_RNDU);
-
-    if (mpfr_equal_p(u,v)) {
-      printMessage(4,"Information: in Newton's algorithm, the interval has been reducted to a single point.\n");
-      break;
-    }
-
-
-    /* We assume that xNew is almost exact compared to x */
-    /* Thus x gave an estimation of the exact zero with precision -log2(|x-xNew|/|xNew|) */
-    mpfr_sub(temp, xNew, x, GMP_RNDU);
-    if (!mpfr_zero_p(temp)) estim_prec=(mpfr_get_exp(xNew)-mpfr_get_exp(temp));
-
-    mpfr_sub(temp,v,u,GMP_RNDN);
-    if(mpfr_cmp_abs(v,u)>0) estim_prec2 = mpfr_get_exp(u) - mpfr_get_exp(temp);
-    else estim_prec2 = mpfr_get_exp(v) - mpfr_get_exp(temp);
-
-    if(estim_prec2 > estim_prec) estim_prec = estim_prec2;
-
-    if ( ((n!=0) && (nbr_iter==n)) || mpfr_equal_p(x,xNew) || (estim_prec>(int)prec)) test=0;
-
-    nbr_iter++;
-    mpfr_set(x,xNew,GMP_RNDN);
+ 
+    free_memory(iterator);
+    mpfr_clear(x);
+    mpfr_clear(xNew);
+    mpfr_clear(yNew);
+    mpfr_clear(tmp_mpfr);
   }
 
-  nbr_iter--;
+  /*************************************************************************/
 
-  if(verbosity>=7) {
+
+  printMessage(7, "Information (Newton's algorithm): finished after %d steps.\n", nbr_iter);
+  if(verbosity>=8) {
     changeToWarningMode();
-    printf("Newton made %d iterations\n",nbr_iter);
+    printf("Information (Newton's algorithm): x = "); printMpfr(res);
     restoreMode();
   }
   
-  if(verbosity>=7) {
-    changeToWarningMode();
-    printf("Newton's result :");
-    printMpfr(x); evaluateFaithful(y,f,x,prec); printMpfr(y);
-    restoreMode();
-  }
-
-  mpfr_set(res, x, GMP_RNDN);
-
-  free_memory(iterator);
-  mpfr_clear(x);
-  mpfr_clear(xNew);
-  mpfr_clear(y);
+  mpfr_clear(zero_mpfr);
   mpfr_clear(u);
   mpfr_clear(v);
-  mpfr_clear(temp);
-  mpfr_clear(zero_mpfr);
+
   return;
 }
 
