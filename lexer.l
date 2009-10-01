@@ -299,6 +299,7 @@ PARSE           "parse"
 AUTOSIMPLIFY    "autosimplify"
 
 TIMING          "timing"
+TIME            "time"
 FULLPARENTHESES "fullparentheses"
 MIDPOINTMODE    "midpointmode"
 SUPPRESSWARNINGS "roundingwarnings"
@@ -623,6 +624,7 @@ NOP             "nop"
 {AUTOSIMPLIFY}    			    { newTokenLexed(); return AUTOSIMPLIFYTOKEN; }    					       
 {TAYLORRECURSIONS}			    { newTokenLexed(); return TAYLORRECURSIONSTOKEN; }					       
 {TIMING}          			    { newTokenLexed(); return TIMINGTOKEN; }          					       
+{TIME}          			    { newTokenLexed(); return TIMETOKEN; }          					       
 {FULLPARENTHESES} 			    { newTokenLexed(); return FULLPARENTHESESTOKEN; } 					       
 {MIDPOINTMODE}    			    { newTokenLexed(); return MIDPOINTMODETOKEN; }    					       
 {SUPPRESSWARNINGS}			    { newTokenLexed(); return SUPPRESSWARNINGSTOKEN; }    					       

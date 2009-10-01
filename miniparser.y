@@ -308,6 +308,7 @@ void miniyyerror(void *myScanner, char *message) {
 
 %token  VARTOKEN;    
 %token  PROCTOKEN;
+%token  TIMETOKEN;
 %token  PROCEDURETOKEN;
 %token  RETURNTOKEN;
 %token  NOPTOKEN;
@@ -1194,6 +1195,10 @@ basicthing:             ONTOKEN
                           {
 			    $$ = $2;
 			  }
+                      | TIMETOKEN LPARTOKEN command RPARTOKEN
+                          {
+			    $$ = makeTime($3);
+                          }
 ;
 
 

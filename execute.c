@@ -772,6 +772,9 @@ node *copyThing(node *tree) {
   case SIMPLIFYSAFE:
     copy->child1 = copyThing(tree->child1);
     break;  			
+  case TIME:
+    copy->child1 = copyThing(tree->child1);
+    break;  			
   case REMEZ:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     break; 			 	
@@ -1486,6 +1489,9 @@ char *getTimingStringForThing(node *tree) {
     break;  			
   case SIMPLIFYSAFE:
     constString = "simplifying without rounding";
+    break;  	
+  case TIME:
+    constString = "timing a command";
     break;  			
   case REMEZ:
     constString = "computing a minimax approximation";
@@ -3971,6 +3977,11 @@ char *sRawPrintThing(node *tree) {
 			concatAndFree(sRawPrintThing(tree->child1),
 				      newString(")")));
     break;  			
+  case TIME:
+    res = concatAndFree(newString("time("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;  			
   case REMEZ:
     res = newString("remez(");
     curr = tree->arguments;
@@ -5233,7 +5244,47 @@ int executeCommand(node *tree) {
   return res;
 }
 
+int timeCommand(mpfr_t time, node *tree) {
+  int res;
+  struct timeval *before;
+  struct timeval *after;
+  long int seconds, microseconds;
+  unsigned int sec, usec;
+  mpfr_t tmp;
+  
+  before = safeMalloc(sizeof(struct timeval));
+  after = safeMalloc(sizeof(struct timeval));
+  if(gettimeofday(before,NULL)!=0)
+    printMessage(1, "Warning: unable to use the timer. Measures may be untrustable\n");
+  res = executeCommand(tree);
+  if(gettimeofday(after,NULL)!=0)
+    printMessage(1, "Warning: unable to use the timer. Measures may be untrustable\n");
 
+  seconds = (long int)(after->tv_sec) - (long int)(before->tv_sec);
+  microseconds = (long int)(after->tv_usec) - (long int)(before->tv_usec);
+  free(before);
+  free(after);
+  
+  if (microseconds < 0) {
+    microseconds += 1000000l;
+    seconds--;
+  }
+
+  sec = seconds;
+  usec = microseconds;
+
+  mpfr_init2(tmp,10 + 20 + 8 * sizeof(sec));
+
+  mpfr_set_ui(tmp,sec,GMP_RNDN);
+  mpfr_mul_ui(tmp,tmp,1000000,GMP_RNDN);
+  mpfr_add_ui(tmp,tmp,usec,GMP_RNDN);
+  mpfr_div_ui(tmp,tmp,1000000,GMP_RNDN);
+
+  mpfr_set(time,tmp,GMP_RNDN);
+  mpfr_clear(tmp);
+  
+  return res;
+}
 
 int executeCommandInner(node *tree) {
   int result, res, intTemp, resA, resB, resC, resD, resE, resF, defaultVal, i;  
@@ -7410,6 +7461,17 @@ node *makeTimingAssign(node *thing) {
 
   res = (node *) safeMalloc(sizeof(node));
   res->nodeType = TIMINGASSIGN;
+  res->child1 = thing;
+
+  return res;
+
+}
+
+node *makeTime(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = TIME;
   res->child1 = thing;
 
   return res;
@@ -9748,6 +9810,10 @@ void freeThing(node *tree) {
     freeThing(tree->child1);
     free(tree);
     break;  			
+  case TIME:
+    freeThing(tree->child1);
+    free(tree);
+    break;  			
   case REMEZ:
     freeChain(tree->arguments, freeThingOnVoid);
     free(tree);
@@ -10525,6 +10591,9 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break;  			
   case SIMPLIFYSAFE:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break;  			
+  case TIME:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break;  			
   case REMEZ:
@@ -14408,6 +14477,18 @@ node *evaluateThingInner(node *tree) {
       freeThing(copy);
       copy = tempNode; 
       if (timingString != NULL) popTimeCounter(timingString);
+    }
+    break;  			
+  case TIME:
+    mpfr_init2(a,tools_precision);
+    if (timingString != NULL) pushTimeCounter();      
+    resA = timeCommand(a,tree->child1);
+    if (timingString != NULL) popTimeCounter(timingString);
+    free(copy);
+    copy = makeConstant(a);
+    mpfr_clear(a);
+    if (resA) {
+      printMessage(1,"Warning: a command executed in a timed environment required quitting the tool. This is not possible. The quit command has been discarded.\n");
     }
     break;  			
   case REMEZ:

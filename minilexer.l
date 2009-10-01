@@ -297,6 +297,7 @@ PARSE           "parse"
 AUTOSIMPLIFY    "autosimplify"
 
 TIMING          "timing"
+TIME            "time"
 FULLPARENTHESES "fullparentheses"
 MIDPOINTMODE    "midpointmode"
 SUPPRESSWARNINGS "roundingwarnings"
@@ -546,6 +547,7 @@ NOP             "nop"
 {AUTOSIMPLIFY}    			    {  return AUTOSIMPLIFYTOKEN; }    					       
 {TAYLORRECURSIONS}			    {  return TAYLORRECURSIONSTOKEN; }					       
 {TIMING}          			    {  return TIMINGTOKEN; }          					       
+{TIME}          			    {  return TIMETOKEN; }          					       
 {FULLPARENTHESES} 			    {  return FULLPARENTHESESTOKEN; } 					       
 {MIDPOINTMODE}    			    {  return MIDPOINTMODETOKEN; }    					       
 {SUPPRESSWARNINGS}			    {  return SUPPRESSWARNINGSTOKEN; }    					       

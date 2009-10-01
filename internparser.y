@@ -316,6 +316,7 @@ extern FILE *internyyget_in(void *scanner);
 
 %token  VARTOKEN;    
 %token  PROCTOKEN;
+%token  TIMETOKEN;
 %token  PROCEDURETOKEN;
 %token  RETURNTOKEN;
 %token  NOPTOKEN;
@@ -1202,6 +1203,10 @@ basicthing:             ONTOKEN
                           {
 			    $$ = $2;
 			  }
+                      | TIMETOKEN LPARTOKEN command RPARTOKEN
+                          {
+			    $$ = makeTime($3);
+                          }
 ;
 
 

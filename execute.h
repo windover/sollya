@@ -251,6 +251,7 @@ extern void endBuffer(void);
 #define RATIONALMODESTILLASSIGN 240
 #define RATIONALMODEDEREF 241
 #define SINGLESYMBOL 242
+#define TIME 243
 
 int executeCommand(node *);
 
@@ -299,6 +300,7 @@ node *makeCanonicalAssign(node *thing);
 node *makeAutoSimplifyAssign(node *thing);
 node *makeTaylorRecursAssign(node *thing);
 node *makeTimingAssign(node *thing);
+node *makeTime(node *thing);
 node *makeFullParenAssign(node *thing);
 node *makeMidpointAssign(node *thing);
 node *makeRationalModeAssign(node *thing);
