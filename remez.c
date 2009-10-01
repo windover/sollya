@@ -57,6 +57,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include <errno.h>
 
 #define coeff(i,j,n) ((i)-1)*(n)+(j)-1
+#define NEWTON_STEPS 2
 
 void myPrintValue(mpfr_t *x, mp_prec_t prec) {
   mpfr_t y;
@@ -442,7 +443,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
       if (sgnfepsb!=0) sgnfepsb = (sgnfepsb>0) ? 1 : 2;
     }
 
-    if (sgnfa==1) { codefa = 1; codeNegfa = 2; }
+    if (sgnfa>0) { codefa = 1; codeNegfa = 2; }
     else { codefa = 2; codeNegfa = 1; }
     
     if ( ((sgnfepsa==0) && (sgnf0==0) && (sgnfepsb==0)) ||
@@ -630,6 +631,9 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
     temp->child2 = copyTree(f_diff);
     iterator->child2 = temp;
 
+    temp = simplifyTreeErrorfree(iterator);
+    free_memory(iterator);
+    iterator = temp;
 
     /* Main loop */
     nbr_iter = 0;
@@ -1420,24 +1424,24 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
       if(s[0]==0) mpfr_set(z[0], a, GMP_RNDN);
       else {
 	if(s[1]==0) mpfr_set(z[0], y[1], GMP_RNDN);
-	else findZero(z[0], error_diff, error_diff2,y[0],y[1],s[0],NULL,2,prec);
+	else findZero(z[0], error_diff, error_diff2,y[0],y[1],s[0],NULL, NEWTON_STEPS,prec);
       }
     }
     if((case1 || case2b) && (s[0]*s[1]>0)) mpfr_set(z[0], a, GMP_RNDN);
-    if(case2 || case3) findZero(z[0], error_diff, error_diff2, y[0], y[1], s[0], &x[0], 2, prec);
+    if(case2 || case3) findZero(z[0], error_diff, error_diff2, y[0], y[1], s[0], &x[0], NEWTON_STEPS, prec);
     
-    for(i=1;i<=n-2;i++) findZero(z[i], error_diff, error_diff2, y[i], y[i+1], s[i], &x[i], 2, prec);
+    for(i=1;i<=n-2;i++) findZero(z[i], error_diff, error_diff2, y[i], y[i+1], s[i], &x[i], NEWTON_STEPS, prec);
 
     if((case1 || case2) && (s[n-1]*s[n]<=0)) {
       if(s[n]==0) mpfr_set(z[n-1], b, GMP_RNDN);
       else {
 	if(s[n-1]==0) mpfr_set(z[n-1], y[n-1], GMP_RNDN);
-	else findZero(z[n-1], error_diff, error_diff2, y[n-1], y[n], s[n-1], NULL, 2, prec);
+	else findZero(z[n-1], error_diff, error_diff2, y[n-1], y[n], s[n-1], NULL, NEWTON_STEPS, prec);
       }
     }
 
     if((case1 || case2) && (s[n-1]*s[n]>0)) mpfr_set(z[n-1],b,GMP_RNDN);
-    if(case2b || case3) findZero(z[n-1], error_diff, error_diff2, y[n-1], y[n], s[n-1], &x[n-1], 2, prec);
+    if(case2b || case3) findZero(z[n-1], error_diff, error_diff2, y[n-1], y[n], s[n-1], &x[n-1], NEWTON_STEPS, prec);
 
 
 
@@ -1734,7 +1738,8 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     mpfr_mul_2ui(perturb, perturb, 1, GMP_RNDN);
     mpfr_sub_ui(perturb, perturb, 1, GMP_RNDN);
     mpfr_div_2ui(perturb, perturb, 2, GMP_RNDN); // perturb \in [-1/4; 1/4]
-
+    /* mpfr_set_d(perturb,0.,GMP_RNDN); // if no perturbation is desired */
+    
     mpfr_sub(var1, x[i-1], x[i-2], GMP_RNDN);
     mpfr_sub(var2, x[i], x[i-1], GMP_RNDN);
     if (mpfr_cmpabs(var1,var2)>0) mpfr_mul(var3, var2, perturb, GMP_RNDN);

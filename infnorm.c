@@ -2862,191 +2862,254 @@ int isTrivialInfnormCase(rangetype result, node *func) {
   return isTrivial;
 }
 
+void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec) {
+  mpfr_t x1, x2, x3, step, y1, y2, y3, max, cutoff;
+  mpfr_t ystar, y1diff, y3diff, xstar;
+  mpfr_t zero_mpfr;
 
-void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec) {
-  mpfr_t z, max, temp, x1, x2, y1, y2, step, s, derivCutOff;
-  node *deriv;
-  node *derivsecond;
-  int newtonWorked;
-  int i,k;
   mp_prec_t prec_bound = prec;
-  
+  node *f_diff, *f_diff2;
+  int r;
+  int count=0;
+  int stop_algo = 0;
+  const mp_prec_t INIT_PREC = 20;
+
   if (mpfr_get_prec(a) > prec_bound) prec_bound = mpfr_get_prec(a);
   if (mpfr_get_prec(b) > prec_bound) prec_bound = mpfr_get_prec(b);
 
-  mpfr_init2(x1, prec_bound);
-  mpfr_init2(x2, prec_bound);
-  mpfr_init2(step, prec);
-  mpfr_init2(y1, prec);
-  mpfr_init2(y2, prec);
-  mpfr_init2(s, prec);
 
+  /**************************** Dealing with special cases ****************************/
   if ( (!mpfr_number_p(a)) || (!mpfr_number_p(b)) ) {
     printMessage(1,"Warning: a bound of the interval is infinite or NaN.\n");
     printMessage(1,"This command cannot handle such intervals.\n");
     mpfr_set_nan(result);
-    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(step); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(s);
     return;
   }
 
-  mpfr_sub(step, b, a, GMP_RNDN);
-  mpfr_div_ui(step, step, points, GMP_RNDN);
-
-  if (mpfr_sgn(step) == 0) {
+  if (mpfr_equal_p(a,b)) {
     printMessage(1,"Warning: the given interval is reduced to one point.\n");
-    evaluateFaithful(y1,tree,a,prec);
-    mpfr_abs(result,y1,GMP_RNDU);
-    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(step); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(s);
+    evaluateFaithful(result,f,a,prec);
+    mpfr_abs(result,result,GMP_RNDU);
     return;
   }
 
-  if (mpfr_sgn(step) < 0) {
+  if (mpfr_greater_p(a,b)) {
     printMessage(1,"Warning: the interval is empty.\n");
     mpfr_set_d(result,0.,GMP_RNDN);
-    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(step); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(s);
     return;
   }
 
-  if (isConstant(tree)) {
-    evaluateFaithful(y1,tree,a,prec);
+  if (isConstant(f)) {
     printMessage(1,"Warning: the expression is constant.\n");
-    mpfr_abs(result,y1,GMP_RNDU);
-    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(step); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(s);
+    evaluateFaithful(result,f,a,prec);
+    mpfr_abs(result,result,GMP_RNDU);
     return;
   }
- 
-  mpfr_init2(z,prec);
-  mpfr_init2(max,prec);
-  mpfr_init2(temp,prec);
-  mpfr_init2(derivCutOff,prec);
-  mpfr_set_d(derivCutOff,1.0,GMP_RNDN);
-  mpfr_div_2ui(derivCutOff,derivCutOff,4 * prec,GMP_RNDN);
+  /************************************************************************************/
 
-  deriv = differentiate(tree);
-  derivsecond = differentiate(deriv);
 
-  evaluateFaithful(temp, tree, a, prec);
-  if (!mpfr_nan_p(temp)) {
-    mpfr_abs(max, temp, GMP_RNDU);
+  mpfr_init2(zero_mpfr, 53);
+  mpfr_set_d(zero_mpfr, 0., GMP_RNDN);
+
+  mpfr_init2(step, prec);
+  mpfr_sub(step, b, a, GMP_RNDU); /* since a<b and step is computed with rounding upwards, step>O */
+  mpfr_div_ui(step, step, points, GMP_RNDN);
+
+  mpfr_init2(x1, prec_bound);
+  mpfr_init2(x2, prec_bound);
+  mpfr_init2(x3, prec_bound);
+  mpfr_init2(y1, prec);
+  mpfr_init2(y2, prec);
+  mpfr_init2(y3, prec);
+
+  mpfr_init2(ystar, prec);
+  mpfr_init2(y1diff, prec);
+  mpfr_init2(y3diff, prec);
+  mpfr_init2(xstar, prec_bound);
+
+  mpfr_init2(max, prec);
+  mpfr_set_d(max, 0., GMP_RNDN);
+  mpfr_init2(cutoff, prec);
+  mpfr_set_d(cutoff, 0., GMP_RNDN);
+
+  f_diff = differentiate(f);
+  f_diff2 = NULL;
+
+  
+  /* Initial value of x1 */
+  mpfr_set(x1, a, GMP_RNDN); /* exact */
+  do {
+    count++;
+    if (mpfr_greaterequal_p(x1,b)) {
+      mpfr_set(x1, b, GMP_RNDN); /* exact */
+      stop_algo = 1;
+    }
+    r = evaluateFaithfulWithCutOffFast(y1, f, f_diff, x1, cutoff, INIT_PREC);
+    if (r==0) mpfr_set_d(y1, 0. , GMP_RNDN);
+
+    if (!mpfr_number_p(y1)) {
+      if(verbosity >= 1) {
+	printf("Warning: the evaluation of the given function in ");
+	printValue(&x1); printf(" gives NaN.\n");
+	printf("This (possibly maximum) point will be excluded from the infnorm result.\n");
+      }
+      mpfr_add(x1, x1, step, GMP_RNDU); /* rounding up ensures that x1(new) > x1(old) */
+    }
+  } while ( (!mpfr_number_p(y1)) && (!stop_algo) );
+
+  mpfr_abs(max, y1, GMP_RNDU);
+  if (verbosity >= 3) { 
+    changeToWarningMode();
+    printf("Information: current max is "); printValue(&max);
+    printf(" and is reached at "); printMpfr(x1);
+    restoreMode();
+  }
+
+  mpfr_div_2ui(cutoff, max, 1, GMP_RNDU);
+
+
+  /* Initial value of x2 */
+  mpfr_set(x2, x1, GMP_RNDN); /* exact */
+  do {
+    count++;
+    mpfr_add(x2, x2, step, GMP_RNDU); /* rounding up ensures that x2 > x1 */
+    if (mpfr_greaterequal_p(x2,b)) {
+      mpfr_set(x2, b, GMP_RNDN); /* exact */
+      stop_algo = 1;
+    }
+    
+    r = evaluateFaithfulWithCutOffFast(y2, f, f_diff, x2, cutoff, INIT_PREC);
+    if (r==2) mpfr_set_d(y2, 0. , GMP_RNDN); /* under the cutoff */
+    
+    if (!mpfr_number_p(y2)) {
+      if(verbosity >= 1) {
+	printf("Warning: the evaluation of the given function in ");
+	printValue(&x2); printf(" gives NaN.\n");
+	printf("This (possibly maximum) point will be excluded from the infnorm result.\n");
+      }
+    }
+  } while ( (!mpfr_number_p(y2)) && (!stop_algo) );
+
+  if (mpfr_cmpabs(y2, max) > 0) { /* evaluates to false when y2=NaN */
+    mpfr_abs(max, y2, GMP_RNDU); 
     if (verbosity >= 3) { 
       changeToWarningMode();
       printf("Information: current max is "); printValue(&max);
-      printf(" and is reached at "); printMpfr(a);
+      printf(" and is reached at "); printMpfr(x2);
       restoreMode();
     }
-  } else {
-    printMessage(1,"Warning: the evaluation of the given function in ");
-    mpfr_set(z,a,GMP_RNDN);
-    if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z); restoreMode(); }
-    printMessage(1," gives NaN.\n");
-    printMessage(1,"This point will be excluded from the infnorm result.\n");
-    mpfr_set_d(max,1.0,GMP_RNDU);
-    mpfr_div_2ui(max,max,(prec * 64),GMP_RNDN);
-  }
-  evaluateFaithful(temp, tree, b, prec);
-  if (!mpfr_nan_p(temp)) {
-      mpfr_abs(temp, temp, GMP_RNDU);
-      if ((verbosity >= 3) && (mpfr_cmp(b, max) > 0)) { 
-	changeToWarningMode();
-	printf("Information: current max is "); printValue(&temp);
-	printf(" and is reached at "); printMpfr(b);
-	restoreMode();
-      }
-      mpfr_max(max, max, temp, GMP_RNDU);
-  } else {
-    printMessage(1,"Warning: the evaluation of the given function in ");
-    mpfr_set(z,b,GMP_RNDN);
-    if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z); restoreMode(); }
-    printMessage(1," gives NaN\n");
-    printMessage(1,"This point will be excluded from the infnorm result.\n");
+    mpfr_div_2ui(cutoff, max, 1, GMP_RNDU);
   }
 
-  mpfr_set(x1,a,GMP_RNDN);
-  mpfr_add(x2,x1,step,GMP_RNDU);
-  if (mpfr_cmp(x2,b)>0) mpfr_set(x2,b,GMP_RNDN);
-  evaluateFaithful(y1,deriv,x1,prec);
-  evaluateFaithful(y2,deriv,x2,prec);
-  i = 0; k = 0;
-  while(mpfr_less_p(x1,b)) {
-    i++; k++;
-    if (i == 100) {
-      i = 0;
-      printMessage(2,"Information: %d out of %d points have been handled.\n",k,points);
-    }
+
+  /* Main loop */
+  while(!stop_algo) {
+    mpfr_set(x3, x2, GMP_RNDN); /* exact */
+    do {
+      count++;
+      if( count % 100 == 0) printMessage(2,"Information: %d out of %d points have been handled.\n",count,points);
+
+      mpfr_add(x3, x3, step, GMP_RNDU); /* rounding up ensures that x3 > x2 */
+      if (mpfr_greaterequal_p(x3,b)) {
+	mpfr_set(x3, b, GMP_RNDN); /* exact */
+	stop_algo = 1;
+      }
+      
+      r = evaluateFaithfulWithCutOffFast(y3, f, f_diff, x3, cutoff, INIT_PREC);
+      if (r==2) mpfr_set_d(y3, 0. , GMP_RNDN); /* under the cutoff */
+      
+      if (!mpfr_number_p(y3)) {
+	if(verbosity >= 1) {
+	  printf("Warning: the evaluation of the given function in ");
+	  printValue(&x3); printf(" gives NaN.\n");
+	  printf("This (possibly maximum) point will be excluded from the infnorm result.\n");
+	}
+      }
+    } while ( (!mpfr_number_p(y3)) && (!stop_algo) );
     
-    evaluateFaithful(s,tree,x1,2 * prec);
-    if ((mpfr_cmpabs(s,max) > 0) || (!mpfr_number_p(s))) {
-      evaluateFaithfulWithCutOffFast(s,tree,deriv,x1,max,prec);
-    }
-    if (mpfr_number_p(s)) {
-      mpfr_abs(s,s,GMP_RNDN);
-      if ((verbosity >= 3) && (mpfr_cmp(s, max) > 0)) { 
+    if (mpfr_cmpabs(y3, max) > 0) { /* evaluates to false when y3=NaN */
+      mpfr_abs(max, y3, GMP_RNDU); 
+      if (verbosity >= 3) { 
 	changeToWarningMode();
-	printf("Information: current max is "); printValue(&s);
-	printf(" and is reached at "); printMpfr(x1);
+	printf("Information: current max is "); printValue(&max);
+	printf(" and is reached at "); printMpfr(x3);
 	restoreMode();
       }
-      mpfr_max(max,max,s,GMP_RNDU);
+      mpfr_div_2ui(cutoff, max, 1, GMP_RNDU);
     }
-    if (mpfr_sgn(y1) != mpfr_sgn(y2)) {
-      newtonWorked = newtonMPFRFaithful(z, deriv, derivsecond, x1, x2, prec);
-      if (!newtonWorked) {
-	printMessage(1,"Warning: zero-search by Newton's method did not converge\n");
-	printMessage(2,"The function was\n");
-	if (verbosity >= 2) { 	changeToWarningMode(); printTree(deriv); restoreMode(); }
-	printMessage(2,"\nThe interval was\n[");
-	if (verbosity >= 2) { 	changeToWarningMode(); printValue(&x1); restoreMode(); }
-	printMessage(2,";");
-	if (verbosity >= 2) { 	changeToWarningMode(); printValue(&x2); restoreMode(); }
-	printMessage(2,"]\n");
-	printMessage(1,"This (possibly maximum) point will be excluded from the infnorm result.\n");
-      } else {
-	if (!(mpfr_number_p(z))) {
-	  printMessage(1,"Warning: zero-search by Newton's method produces infinity or NaN.\n");
-	  printMessage(1,"Will replace the zero point of the derivative by the mid-point of\nthe considered interval [");
-	  if (verbosity >= 1) { 	changeToWarningMode(); printValue(&x1); restoreMode(); }
-	  printMessage(1,";");
-	  if (verbosity >= 1) { 	changeToWarningMode(); printValue(&x2); restoreMode(); }
-	  printMessage(1,"]\n");
-	  mpfr_add(z,x1,x2,GMP_RNDN);
-	  mpfr_div_ui(z,z,2,GMP_RNDN);
+    
+    /* Call to Newton's algorithm if necessary */
+    if ( (mpfr_cmpabs(y2,y1)>=0) && (mpfr_cmpabs(y2,y3)>=0) && (mpfr_cmp_d(y2,0.)!=0) ) {
+      if (f_diff2 == NULL) f_diff2 = differentiate(f_diff);
+
+      r = evaluateFaithfulWithCutOffFast(y1diff, f_diff, f_diff2, x1, zero_mpfr, prec+10);
+      if (r==0) mpfr_set_d(y1diff, 0. , GMP_RNDN);
+
+      r = evaluateFaithfulWithCutOffFast(y3diff, f_diff, f_diff2, x3, zero_mpfr, prec+10);
+      if (r==0) mpfr_set_d(y3diff, 0. , GMP_RNDN);
+      
+      if ( (!mpfr_number_p(y1diff)) || (!mpfr_number_p(y3diff)) ) {
+	if(verbosity >= 1) {
+	  printf("Warning: the evaluation of the derivative of the given function in ");
+	  printValue(&x1); printf(" or "); printValue(&x3); printf(" gives NaN.\n");
+	  printf("Newton's algorithm will not be used on this interval\n");
 	}
-	evaluateFaithfulWithCutOff(temp,tree,z,max,prec);
-	if (!mpfr_nan_p(temp)) {
-	  mpfr_abs(temp, temp, GMP_RNDU);
-	  if ((verbosity >= 3) && (mpfr_cmp(temp, max) > 0)) { 
-	    changeToWarningMode();
-	    printf("Information: current max is "); printValue(&temp);
-	    printf(" and is reached at "); printMpfr(z);
-	    restoreMode();
+      }
+      else if(mpfr_sgn(y1diff)*mpfr_sgn(y3diff)<=0) {
+	findZero(xstar, f_diff, f_diff2, x1, x3, mpfr_sgn(y1diff), NULL, 0, prec_bound);
+	
+	/* If xstar = NaN, a warning has already been produced by Newton's algorithm. */
+	/* There is no need to print a warning again here.                            */
+	if(mpfr_number_p(xstar)) { 
+	  r = evaluateFaithfulWithCutOffFast(ystar, f, f_diff, xstar, cutoff, prec+10);
+	  if (r==2) mpfr_set_d(ystar, 0. , GMP_RNDN); /* under the cutoff */
+	  
+	  if (!mpfr_number_p(ystar)) {
+	    if(verbosity >= 1) {
+	      printf("Warning: the evaluation of the given function in ");
+	      printValue(&xstar); printf(" gives NaN.\n");
+	      printf("This (possibly maximum) point will be excluded from the infnorm result.\n");
+	    }
 	  }
-	  mpfr_max(max, max, temp, GMP_RNDU);
-	} else {
-	  printMessage(1,"Warning: the evaluation of the given function in ");
-	  if (verbosity >= 1) { 	changeToWarningMode(); printValue(&z); restoreMode(); }
-	  printMessage(1," gives NaN.\n");
-	  printMessage(1,"This (possibly maximum) point will be excluded from the infnorm result.\n");
+	  if (mpfr_cmpabs(ystar, max) > 0) { /* evaluates to false when ystar=NaN */
+	    mpfr_abs(max, ystar, GMP_RNDU); 
+	    if (verbosity >= 3) { 
+	      changeToWarningMode();
+	      printf("Information: current max is "); printValue(&max);
+	      printf(" and is reached at "); printMpfr(xstar);
+	      restoreMode();
+	    }
+	    mpfr_div_2ui(cutoff, max, 1, GMP_RNDU);
+	  }
 	}
-      }
+      }    
     }
     
-    mpfr_set(x1,x2,GMP_RNDN);
-    mpfr_set(y1,y2,GMP_RNDN);
-    mpfr_add(x2,x1,step, GMP_RNDU);
-    if (mpfr_cmp(x2,b)>0) mpfr_set(x2,b,GMP_RNDN);
-    evaluateFaithful(y2,deriv,x2,prec);
-
+    mpfr_set(x1,x2,GMP_RNDN); /* exact */
+    mpfr_set(y1,y2,GMP_RNDN); /* exact */
+    mpfr_set(x2,x3,GMP_RNDN); /* exact */
+    mpfr_set(y2,y3,GMP_RNDN); /* exact */
   }
-  
-  mpfr_set(result,max,GMP_RNDU);
 
-  free_memory(deriv);
-  free_memory(derivsecond);
-    mpfr_clear(x1); mpfr_clear(x2); mpfr_clear(step); mpfr_clear(y1); mpfr_clear(y2); mpfr_clear(s);
-  mpfr_clear(z); mpfr_clear(max); mpfr_clear(temp); mpfr_clear(derivCutOff);
-  return;
+  mpfr_set(result, max, GMP_RNDU);
+
+  free_memory(f_diff);
+  free_memory(f_diff2);
+  mpfr_clear(x1);
+  mpfr_clear(x2);
+  mpfr_clear(x3);
+  mpfr_clear(step);
+  mpfr_clear(y1);
+  mpfr_clear(y2);
+  mpfr_clear(y3);
+  mpfr_clear(ystar);
+  mpfr_clear(y1diff);
+  mpfr_clear(y3diff);
+  mpfr_clear(xstar);
+  mpfr_clear(zero_mpfr);
+  mpfr_clear(max);
+  mpfr_clear(cutoff);
 }
-
 
 
 
@@ -4498,7 +4561,17 @@ int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_
 
 
   prec = mpfr_get_prec(result);
+  mpfr_init2(resUp,prec);
+  mpfr_init2(resDown,prec);
+
   p = mpfr_get_prec(x);
+  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*(xrange.a),p);
+  mpfr_init2(*(xrange.b),p);
+  mpfr_set(*(xrange.a),x,GMP_RNDD);
+  mpfr_set(*(xrange.b),x,GMP_RNDU);
+
   if (p > prec) prec = p;
   if (startprec > prec) prec = startprec;
 
@@ -4508,24 +4581,15 @@ int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_
   tools_precision = prec;
   defaultprecision = prec;
 
-  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-  
-  mpfr_init2(resUp,prec);
-  mpfr_init2(resDown,prec);
 
   yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
   yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 
-  p = 4 * prec;
+  p=startprec;
   okay = 0;
   while (p < prec * 512) {
     mpfr_init2(*(yrange.a),p);
     mpfr_init2(*(yrange.b),p);
-    mpfr_init2(*(xrange.a),p);
-    mpfr_init2(*(xrange.b),p);
-    mpfr_set(*(xrange.a),x,GMP_RNDD);
-    mpfr_set(*(xrange.b),x,GMP_RNDU);
     evaluateRangeFunctionFast(yrange, func, deriv, xrange, p);
     mpfr_set(resDown,*(yrange.a),GMP_RNDN);
     mpfr_set(resUp,*(yrange.b),GMP_RNDN);
@@ -4550,11 +4614,11 @@ int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_
     }
     mpfr_clear(*(yrange.a));
     mpfr_clear(*(yrange.b));
-    mpfr_clear(*(xrange.a));
-    mpfr_clear(*(xrange.b));
     if (okay > 0) break;
     p *= 2;
   }
+  mpfr_clear(*(xrange.a));
+  mpfr_clear(*(xrange.b));
 
   if (okay > 0) {
     mpfr_set(result,resUp,GMP_RNDN);
