@@ -2949,9 +2949,11 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 
     if (!mpfr_number_p(y1)) {
       if(verbosity >= 1) {
+        changeToWarningMode();
 	printf("Warning: the evaluation of the given function in ");
 	printValue(&x1); printf(" gives NaN.\n");
 	printf("This (possibly maximum) point will be excluded from the infnorm result.\n");
+        restoreMode();
       }
       mpfr_add(x1, x1, step, GMP_RNDU); /* rounding up ensures that x1(new) > x1(old) */
     }
@@ -2983,9 +2985,11 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
     
     if (!mpfr_number_p(y2)) {
       if(verbosity >= 1) {
+	changeToWarningMode();
 	printf("Warning: the evaluation of the given function in ");
 	printValue(&x2); printf(" gives NaN.\n");
 	printf("This (possibly maximum) point will be excluded from the infnorm result.\n");
+        restoreMode();
       }
     }
   } while ( (!mpfr_number_p(y2)) && (!stop_algo) );
@@ -3007,7 +3011,9 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
     mpfr_set(x3, x2, GMP_RNDN); /* exact */
     do {
       count++;
-      if( count % 100 == 0) printMessage(2,"Information: %d out of %d points have been handled.\n",count,points);
+      if (verbosity >= 2) {
+          if( count % 100 == 0) printMessage(2,"Information: %d out of %d points have been handled.\n",count,points);
+      }
 
       mpfr_add(x3, x3, step, GMP_RNDU); /* rounding up ensures that x3 > x2 */
       if (mpfr_greaterequal_p(x3,b)) {
@@ -3020,9 +3026,11 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
       
       if (!mpfr_number_p(y3)) {
 	if(verbosity >= 1) {
+	  changeToWarningMode();
 	  printf("Warning: the evaluation of the given function in ");
 	  printValue(&x3); printf(" gives NaN.\n");
 	  printf("This (possibly maximum) point will be excluded from the infnorm result.\n");
+          restoreMode();
 	}
       }
     } while ( (!mpfr_number_p(y3)) && (!stop_algo) );
@@ -3039,7 +3047,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
     }
     
     /* Call to Newton's algorithm if necessary */
-    if ( (mpfr_cmpabs(y2,y1)>=0) && (mpfr_cmpabs(y2,y3)>=0) && (mpfr_cmp_d(y2,0.)!=0) ) {
+    if ( (mpfr_cmpabs(y2,y1)>0) && (mpfr_cmpabs(y2,y3)>0) && (mpfr_cmp_d(y2,0.)!=0) ) {
       if (f_diff2 == NULL) f_diff2 = differentiate(f_diff);
 
       r = evaluateFaithfulWithCutOffFast(y1diff, f_diff, f_diff2, x1, zero_mpfr, prec+10);
@@ -3050,9 +3058,11 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
       
       if ( (!mpfr_number_p(y1diff)) || (!mpfr_number_p(y3diff)) ) {
 	if(verbosity >= 1) {
+          changeToWarningMode();
 	  printf("Warning: the evaluation of the derivative of the given function in ");
 	  printValue(&x1); printf(" or "); printValue(&x3); printf(" gives NaN.\n");
 	  printf("Newton's algorithm will not be used on this interval\n");
+          restoreMode();
 	}
       }
       else if(mpfr_sgn(y1diff)*mpfr_sgn(y3diff)<=0) {
@@ -3066,9 +3076,11 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 	  
 	  if (!mpfr_number_p(ystar)) {
 	    if(verbosity >= 1) {
+	      changeToWarningMode();
 	      printf("Warning: the evaluation of the given function in ");
 	      printValue(&xstar); printf(" gives NaN.\n");
 	      printf("This (possibly maximum) point will be excluded from the infnorm result.\n");
+              restoreMode();
 	    }
 	  }
 	  if (mpfr_cmpabs(ystar, max) > 0) { /* evaluates to false when ystar=NaN */
