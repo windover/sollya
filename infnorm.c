@@ -3047,7 +3047,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
     }
     
     /* Call to Newton's algorithm if necessary */
-    if ( (mpfr_cmpabs(y2,y1)>0) && (mpfr_cmpabs(y2,y3)>0) && (mpfr_cmp_d(y2,0.)!=0) ) {
+    if ( (mpfr_cmpabs(y2,y1)>=0) && (mpfr_cmpabs(y2,y3)>=0) && (mpfr_cmp_d(y2,0.)!=0) ) {
       if (f_diff2 == NULL) f_diff2 = differentiate(f_diff);
 
       r = evaluateFaithfulWithCutOffFast(y1diff, f_diff, f_diff2, x1, zero_mpfr, prec+10);
@@ -3065,7 +3065,10 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
           restoreMode();
 	}
       }
-      else if(mpfr_sgn(y1diff)*mpfr_sgn(y3diff)<=0) {
+      else if(mpfr_sgn(y1diff)*mpfr_sgn(y3diff)<0) { /* If y1diff=0 or y3diff=0, there is no need to */
+                                                     /* use Newton's algorithm since we already have */
+                                                     /* the zero. Moreover, note that y1 and y3 have */
+                                                     /* already been taken into account in max.      */
 	findZero(xstar, f_diff, f_diff2, x1, x3, mpfr_sgn(y1diff), NULL, 0, prec_bound);
 	
 	/* If xstar = NaN, a warning has already been produced by Newton's algorithm. */
