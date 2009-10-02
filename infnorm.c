@@ -2992,7 +2992,10 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
         restoreMode();
       }
     }
-  } while ( (!mpfr_number_p(y2)) && (!stop_algo) );
+  } while ( ( (!mpfr_number_p(y2)) || mpfr_equal_p(y1,y2) )
+	    &&
+	    (!stop_algo)
+	    );
 
   if (mpfr_cmpabs(y2, max) > 0) { /* evaluates to false when y2=NaN */
     mpfr_abs(max, y2, GMP_RNDU); 
@@ -3005,6 +3008,9 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
     mpfr_div_2ui(cutoff, max, 1, GMP_RNDU);
   }
 
+  /* Remark: at this point, it is possible that y1=y2 and stop_algo is true. */
+  /* In this case, it means that f is constant over the interval and it is   */
+  /* hence not necessary to run Newton's algorithm anyway.                   */
 
   /* Main loop */
   while(!stop_algo) {
@@ -3033,7 +3039,10 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
           restoreMode();
 	}
       }
-    } while ( (!mpfr_number_p(y3)) && (!stop_algo) );
+    } while ( ( (!mpfr_number_p(y3))|| mpfr_equal_p(y2,y3) )
+	      &&
+	      (!stop_algo)
+	      );
     
     if (mpfr_cmpabs(y3, max) > 0) { /* evaluates to false when y3=NaN */
       mpfr_abs(max, y3, GMP_RNDU); 
