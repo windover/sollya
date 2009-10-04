@@ -2863,9 +2863,10 @@ int isTrivialInfnormCase(rangetype result, node *func) {
 }
 
 void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec) {
-  mpfr_t x1, x2, x3, step, y1, y2, y3, max, cutoff;
+  mpfr_t current_x, x1, x2, x3, step, y1, y2, y3, max, cutoff;
   mpfr_t ystar, y1diff, y3diff, xstar;
   mpfr_t zero_mpfr;
+  mpfr_t perturb;
 
   mp_prec_t prec_bound = prec;
   node *f_diff, *f_diff2;
@@ -2873,6 +2874,8 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
   int count=0;
   int stop_algo = 0;
   const mp_prec_t INIT_PREC = 20;
+  gmp_randstate_t random_state;
+
 
   if (mpfr_get_prec(a) > prec_bound) prec_bound = mpfr_get_prec(a);
   if (mpfr_get_prec(b) > prec_bound) prec_bound = mpfr_get_prec(b);
@@ -2908,6 +2911,10 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
   /************************************************************************************/
 
 
+  gmp_randinit_default(random_state);
+  gmp_randseed_ui(random_state, 65845285);
+  mpfr_init2(perturb, prec);
+
   mpfr_init2(zero_mpfr, 53);
   mpfr_set_d(zero_mpfr, 0., GMP_RNDN);
 
@@ -2915,6 +2922,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
   mpfr_sub(step, b, a, GMP_RNDU); /* since a<b and step is computed with rounding upwards, step>O */
   mpfr_div_ui(step, step, points, GMP_RNDN);
 
+  mpfr_init2(current_x, prec_bound);
   mpfr_init2(x1, prec_bound);
   mpfr_init2(x2, prec_bound);
   mpfr_init2(x3, prec_bound);
@@ -2938,6 +2946,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
   
   /* Initial value of x1 */
   mpfr_set(x1, a, GMP_RNDN); /* exact */
+  mpfr_set(current_x, a, GMP_RNDN);
   do {
     count++;
     if (mpfr_greaterequal_p(x1,b)) {
@@ -2955,7 +2964,11 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 	printf("This (possibly maximum) point will be excluded from the infnorm result.\n");
         restoreMode();
       }
-      mpfr_add(x1, x1, step, GMP_RNDU); /* rounding up ensures that x1(new) > x1(old) */
+      mpfr_add(current_x, current_x, step, GMP_RNDU); /* rounding up ensures that x1(new) > x1(old) */
+      mpfr_urandomb(perturb, random_state); mpfr_mul_2ui(perturb, perturb, 1, GMP_RNDN);
+      mpfr_sub_ui(perturb, perturb, 1, GMP_RNDN); mpfr_div_2ui(perturb, perturb, 2, GMP_RNDN);
+      mpfr_mul(perturb, perturb, step, GMP_RNDN); // perturb \in [-step/4; step/4]
+      mpfr_add(x1, current_x, perturb, GMP_RNDU);
     }
   } while ( (!mpfr_number_p(y1)) && (!stop_algo) );
 
@@ -2971,10 +2984,14 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 
 
   /* Initial value of x2 */
-  mpfr_set(x2, x1, GMP_RNDN); /* exact */
   do {
     count++;
-    mpfr_add(x2, x2, step, GMP_RNDU); /* rounding up ensures that x2 > x1 */
+    mpfr_add(current_x, current_x, step, GMP_RNDU); /* rounding up ensures that x2 > x1 */
+    mpfr_urandomb(perturb, random_state); mpfr_mul_2ui(perturb, perturb, 1, GMP_RNDN);
+    mpfr_sub_ui(perturb, perturb, 1, GMP_RNDN); mpfr_div_2ui(perturb, perturb, 2, GMP_RNDN);
+    mpfr_mul(perturb, perturb, step, GMP_RNDN); // perturb \in [-step/4; step/4]
+    mpfr_add(x2, current_x, perturb, GMP_RNDU);
+
     if (mpfr_greaterequal_p(x2,b)) {
       mpfr_set(x2, b, GMP_RNDN); /* exact */
       stop_algo = 1;
@@ -3014,14 +3031,18 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 
   /* Main loop */
   while(!stop_algo) {
-    mpfr_set(x3, x2, GMP_RNDN); /* exact */
     do {
       count++;
       if (verbosity >= 2) {
           if( count % 100 == 0) printMessage(2,"Information: %d out of %d points have been handled.\n",count,points);
       }
 
-      mpfr_add(x3, x3, step, GMP_RNDU); /* rounding up ensures that x3 > x2 */
+      mpfr_add(current_x, current_x, step, GMP_RNDU); /* rounding up ensures that x3 > x2 */
+      mpfr_urandomb(perturb, random_state); mpfr_mul_2ui(perturb, perturb, 1, GMP_RNDN);
+      mpfr_sub_ui(perturb, perturb, 1, GMP_RNDN); mpfr_div_2ui(perturb, perturb, 2, GMP_RNDN);
+      mpfr_mul(perturb, perturb, step, GMP_RNDN); // perturb \in [-step/4; step/4]
+      mpfr_add(x3, current_x, perturb, GMP_RNDU);
+
       if (mpfr_greaterequal_p(x3,b)) {
 	mpfr_set(x3, b, GMP_RNDN); /* exact */
 	stop_algo = 1;
@@ -3119,6 +3140,10 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 
   free_memory(f_diff);
   free_memory(f_diff2);
+
+  gmp_randclear(random_state);
+  mpfr_clear(perturb);
+  mpfr_clear(current_x);
   mpfr_clear(x1);
   mpfr_clear(x2);
   mpfr_clear(x3);
