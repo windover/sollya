@@ -599,11 +599,19 @@ simplecommand:          QUITTOKEN
                           {
 			    $$ = makeNop();
 			  }
+                      | NOPTOKEN LPARTOKEN thing RPARTOKEN 
+                          {
+			    $$ = makeNopArg($3);
+			  }
+                      | NOPTOKEN LPARTOKEN RPARTOKEN 
+                          {
+			    $$ = makeNopArg(makeDefault());
+			  }
                       | RESTARTTOKEN
                           {
 			    $$ = makeRestart();
 			  }
-                      | PRINTTOKEN LPARTOKEN thinglist RPARTOKEN            					       
+                      | PRINTTOKEN LPARTOKEN thinglist RPARTOKEN 
                           {
 			    $$ = makePrint($3);
 			  }

@@ -555,6 +555,14 @@ simplecommand:          FALSEQUITTOKEN
                           {
 			    $$ = makeNop();
 			  }
+                      | NOPTOKEN LPARTOKEN thing RPARTOKEN 
+                          {
+			    $$ = makeNopArg($3);
+			  }
+                      | NOPTOKEN LPARTOKEN RPARTOKEN 
+                          {
+			    $$ = makeNopArg(makeDefault());
+			  }
 		      | PRINTTOKEN LPARTOKEN thinglist RPARTOKEN            					       
                           {
 			    $$ = makePrint($3);

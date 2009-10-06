@@ -252,6 +252,7 @@ extern void endBuffer(void);
 #define RATIONALMODEDEREF 241
 #define SINGLESYMBOL 242
 #define TIME 243
+#define NOPARG 244
 
 int executeCommand(node *);
 
@@ -336,6 +337,7 @@ node *makePrepend(node *thing1, node *thing2);
 node *makeAppend(node *thing1, node *thing2); 
 node *makeOn();
 node *makeNop();
+node *makeNopArg(node *thing1);
 node *makeOff();
 node *makeDyadic();
 node *makePowers();

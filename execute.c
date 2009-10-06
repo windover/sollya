@@ -408,6 +408,9 @@ node *copyThing(node *tree) {
     break; 	
   case NOP:
     break;
+  case NOPARG:
+    copy->child1 = copyThing(tree->child1);
+    break;
   case NEWFILEPRINT:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     copy->child1 = copyThing(tree->child1);
@@ -1122,6 +1125,9 @@ char *getTimingStringForThing(node *tree) {
     break; 
   case NOP:
     constString = NULL;
+    break; 
+  case NOPARG:
+    constString = "doing nothing";
     break; 
   case FALSEQUIT:
     constString = NULL;
@@ -3256,6 +3262,11 @@ char *sRawPrintThing(node *tree) {
   case NOP:
     res = newString("nop");
     break;
+  case NOPARG:
+    res = newString("nop(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(")\n"));
+    break;
   case FALSEQUIT:
     res = newString("quit");
     break; 			
@@ -5288,6 +5299,21 @@ int timeCommand(mpfr_t time, node *tree) {
   return res;
 }
 
+void doNothing(int n) {
+  volatile int k, l;
+  int i, j, t;
+
+  k = 1;
+  l = 1;
+  for (j=0;j<n;j++) {
+    for (i=0;i<1000000;i++) {
+      t = k + l;
+      l = k;
+      k = t;
+    }
+  }
+}
+
 int executeCommandInner(node *tree) {
   int result, res, intTemp, resA, resB, resC, resD, resE, resF, defaultVal, i;  
   chain *curr, *tempList, *tempList2; 
@@ -5463,6 +5489,20 @@ int executeCommandInner(node *tree) {
     result = 1;
     break; 
   case NOP:
+    result = 0;
+    break;
+  case NOPARG:
+    defaultVal = 1; 
+    if (evaluateThingToInteger(&resA, tree->child1, &defaultVal)) {
+      if (resA < 1) {
+	resA = 1;
+	printMessage(1,"Warning: at least 1 operation must be executed.\n");
+      }
+      doNothing(resA);
+    } else {
+      printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
+      printMessage(1,"This command will have no effect.\n");
+    }
     result = 0;
     break;
   case FALSEQUIT:
@@ -6101,7 +6141,7 @@ int executeCommandInner(node *tree) {
     tempNode = evaluateThing(tree->child1);
     if (isPureTree(tempNode) && isConstant(tempNode)) {
       mpfr_init2(a, tools_precision);
-      if (evaluateThingToConstant(a, tempNode, NULL,0))  {
+      if (evaluateThingToConstant(a, tempNode, NULL,1))  {
 	freeThing(tempNode);
 	tempNode = makeConstant(a);
       }
@@ -6308,7 +6348,7 @@ int executeCommandInner(node *tree) {
 	      tempNode2 = evaluateThing((node *) (curr->value));
 	      if (isPureTree(tempNode2) && isConstant(tempNode2)) {
 		mpfr_init2(a, tools_precision);
-		if (evaluateThingToConstant(a, tempNode2, NULL,0))  {
+		if (evaluateThingToConstant(a, tempNode2, NULL,1))  {
 		  freeThing(tempNode2);
 		  tempNode2 = makeConstant(a);
 		}
@@ -6388,7 +6428,7 @@ int executeCommandInner(node *tree) {
 		curr = tree->arguments;
 		if (isPureTree(tempNode3) && isConstant(tempNode3)) {
 		  mpfr_init2(a, tools_precision);
-		  if (evaluateThingToConstant(a, tempNode3, NULL, 0))  {
+		  if (evaluateThingToConstant(a, tempNode3, NULL, 1))  {
 		    freeThing(tempNode3);
 		    tempNode3 = makeConstant(a);
 		  }
@@ -6420,7 +6460,7 @@ int executeCommandInner(node *tree) {
 		tempNode2 = evaluateThing((node *) (curr->value));
 		if (isPureTree(tempNode2) && isConstant(tempNode2)) {
 		  mpfr_init2(a, tools_precision);
-		  if (evaluateThingToConstant(a, tempNode2, NULL, 0))  {
+		  if (evaluateThingToConstant(a, tempNode2, NULL, 1))  {
 		    freeThing(tempNode2);
 		    tempNode2 = makeConstant(a);
 		  }
@@ -6430,7 +6470,7 @@ int executeCommandInner(node *tree) {
 		curr = tree->arguments;
 		if (isPureTree(tempNode3) && isConstant(tempNode3)) {
 		  mpfr_init2(a, tools_precision);
-		  if (evaluateThingToConstant(a, tempNode3, NULL, 0))  {
+		  if (evaluateThingToConstant(a, tempNode3, NULL, 1))  {
 		    freeThing(tempNode3);
 		    tempNode3 = makeConstant(a);
 		  }
@@ -6470,7 +6510,7 @@ int executeCommandInner(node *tree) {
 		      curr = tree->arguments;
 		      if (isPureTree(tempNode3) && isConstant(tempNode3)) {
 			mpfr_init2(a, tools_precision);
-			if (evaluateThingToConstant(a, tempNode3, NULL, 0))  {
+			if (evaluateThingToConstant(a, tempNode3, NULL, 1))  {
 			  freeThing(tempNode3);
 			  tempNode3 = makeConstant(a);
 			}
@@ -7031,6 +7071,17 @@ node *makeNop() {
 
   res = (node *) safeMalloc(sizeof(node));
   res->nodeType = NOP;
+
+  return res;
+
+}
+
+node *makeNopArg(node *thing1) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = NOPARG;
+  res->child1 = thing1;
 
   return res;
 
@@ -9326,6 +9377,10 @@ void freeThing(node *tree) {
   case NOP:
     free(tree);
     break;
+  case NOPARG:
+    freeThing(tree->child1);
+    free(tree);
+    break;
   case FALSEQUIT:
     free(tree);
     break; 			
@@ -10246,6 +10301,9 @@ int isEqualThing(node *tree, node *tree2) {
   case QUIT:
     break; 
   case NOP:
+    break;
+  case NOPARG:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break;
   case FALSEQUIT:
     break; 			
