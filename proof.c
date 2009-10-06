@@ -58,7 +58,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "general.h"
 
 
-void doNothing(void *arg) {
+void nothing(void *arg) {
   UNUSED_PARAM(arg);
   return;
 }
@@ -708,7 +708,7 @@ int fprintNoZeroTheo(FILE *fd, noZeroTheo *theo, int start) {
     curr = curr->next;
   }
   temp = copyChain(zeroFree,copyMpfiPtr);
-  freeChain(zeroFree,doNothing);
+  freeChain(zeroFree,nothing);
   zeroFree = temp;
   joinedZeroFree = joinAdjacentIntervalsMaximally(zeroFree);
   freeChain(zeroFree,freeMpfiPtr);
@@ -850,7 +850,7 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
     curr = curr->next;
   }
   temp = copyChain(zeroFree,copyMpfiPtr);
-  freeChain(zeroFree,doNothing);
+  freeChain(zeroFree,nothing);
   zeroFree = temp;
   joinedZeroFree = joinAdjacentIntervalsMaximally(zeroFree);
   freeChain(zeroFree,freeMpfiPtr);

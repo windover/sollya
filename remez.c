@@ -1933,7 +1933,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       /*     plotList=addElement(plotList, plotTemp); */
       /*     plotTree(plotList,u,v,defaultpoints,prec,NULL,0); */
       /*     free_memory(plotTemp); */
-      //    freeChain(plotList, doNothing);
+      //    freeChain(plotList, nothing);
 
       // Computing the useful derivatives of functions
       if(verbosity>=8) {
