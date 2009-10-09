@@ -14435,7 +14435,7 @@ node *evaluateThingInner(node *tree) {
       tempNode = simplifyTreeErrorfree(copy->child1);
       if (isConstant(tempNode)) {
 	mpfr_init2(a,tools_precision);
-	if (evaluateThingToConstant(a,tempNode,NULL,0)) {
+	if (evaluateThingToConstant(a,tempNode,NULL,1)) {
 	  tempNode2 = makeConstant(a);
 	  freeThing(copy->child1);
 	  copy = tempNode2;
