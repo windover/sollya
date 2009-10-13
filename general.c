@@ -122,7 +122,7 @@ int oldrlwrapcompatible = 0;
 
 FILE *inputFile = NULL;
 int inputFileOpened = 0;
-
+int flushOutput = 0;
 
 /* END OF STATE OF THE TOOL */
 
@@ -846,6 +846,7 @@ int general(int argc, char *argv[]) {
   FILE *fd;
   
   inputFileOpened = 0;
+  flushOutput = 0;
 
   if (tcgetattr(0,&termAttr) == -1) {
     eliminatePromptBackup = 1;
@@ -861,6 +862,7 @@ int general(int argc, char *argv[]) {
       printf(".\n\nUsage: %s [options]\n\nPossible options are:\n",argv[0]);
       printf("--nocolor : do not color the output using ANSI escape sequences\n");
       printf("--noprompt : do not print a prompt symbol\n");
+      printf("--flush : flush standard output and standard error after each command\n");
       printf("--oldrlwrapcompatible : acheive some compatibilty with old rlwrap versions by emitting wrong ANSI sequences (deprecated)\n");
       printf("--help : print this help text\n");
       printf("\nFor help on %s commands type \"help;\" on the %s prompt\n",PACKAGE_NAME,PACKAGE_NAME);
@@ -869,7 +871,8 @@ int general(int argc, char *argv[]) {
     } else 
       if (strcmp(argv[i],"--nocolor") == 0) noColor = 1; else
 	if (strcmp(argv[i],"--noprompt") == 0) eliminatePromptBackup = 1; else
-	  if (strcmp(argv[i],"--oldrlwrapcompatible") == 0) oldrlwrapcompatible = 1; else {
+	  if (strcmp(argv[i],"--oldrlwrapcompatible") == 0) oldrlwrapcompatible = 1; else
+              if (strcmp(argv[i],"--flush") == 0) flushOutput = 1; else {
 	    if (!inputFileOpened) {
 	      fd = fopen(argv[i],"r");
 	      if (fd != NULL) {
@@ -921,12 +924,20 @@ int general(int argc, char *argv[]) {
 	  printMessage(4,"Information: corrupted timing stack. Releasing the stack.\n");
 	  freeCounter();
 	}
+        if (flushOutput) {
+            fflush(stdout); 
+            fflush(stderr);
+        }
 	pushTimeCounter();
 	executeAbort = executeCommand(parsedThing);
 	popTimeCounter("full execution of the last parse chunk");
 	if((!timecounting) && (timeStack!=NULL)) {
 	  freeCounter();
 	}
+        if (flushOutput) {
+            fflush(stdout); 
+            fflush(stderr);
+        }
 	blockSignals();
 	recoverEnvironmentReady = 0;
       } else {
