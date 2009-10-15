@@ -19,7 +19,7 @@
 $COMMAND computes an approximation of the function §§f§$f$§§ with respect to 
 the weight function §§w§$w$§§ on the interval <range>. More precisely, it 
 searches a polynomial §§p§$p$§§ such that §§||p*w-f||§$\|pw-f\|_{\infty}$§§ is 
-(almost minimal) among all polynomials §§p§$p$§§ of a certain form. The norm is
+(almost) minimal among all polynomials §§p§$p$§§ of a certain form. The norm is
 the infinity norm, e.g. §§||g|| = max {|g(x)|, x in <range>}.§$\|g\|_{\infty} = \max \{|g(x)|, x \in \mathrm{range}\}.$§§
 
 #DESCRIPTION
