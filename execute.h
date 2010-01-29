@@ -253,6 +253,7 @@ extern void endBuffer(void);
 #define SINGLESYMBOL 242
 #define TIME 243
 #define NOPARG 244
+#define PROCILLIM 245
 
 int executeCommand(node *);
 
@@ -454,6 +455,7 @@ node *makeExternalProc(char *, node *, chain *);
 node *makeUnit();
 node *makeVariableDeclaration(chain *stringlist);
 node *makeProc(chain *stringlist, node *body, node *returnVal);
+node *makeProcIllim(char *arg, node *body, node *returnVal);
 node *makeApply(node *thing, chain *thinglist);
 
 node *parseString(char *str); 

@@ -937,6 +937,11 @@ node *copyThing(node *tree) {
     copy->child2 = copyThing(tree->child2);
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyString);
     break;
+  case PROCILLIM:
+    copy->child1 = copyThing(tree->child1);
+    copy->child2 = copyThing(tree->child2);
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyString);
+    break;
   case PRECDEREF:
     break; 			
   case POINTSDEREF:
@@ -1642,6 +1647,9 @@ char *getTimingStringForThing(node *tree) {
   case PROC:
     constString = "executing a procedure";
     break;
+  case PROCILLIM:
+    constString = "executing a procedure";
+    break;
   case PRECDEREF:
     constString = "dereferencing the precision of the tool";
     break; 			
@@ -1931,6 +1939,7 @@ int isExternalProcedureUsage(node *tree) {
 
 int isProcedure(node *tree) {
   if (tree->nodeType == PROC) return 1;
+  if (tree->nodeType == PROCILLIM) return 1;
   return 0;
 }
 
@@ -4318,6 +4327,21 @@ char *sRawPrintThing(node *tree) {
       curr = curr->next;
     }
     res = concatAndFree(res, newString(")\nbegin\n"));
+    curr = tree->child1->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      res = concatAndFree(res, newString(";\n")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString("return "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(";\nend"));
+    break;
+  case PROCILLIM:
+    res = newString("proc(");
+    curr = tree->arguments;
+    res = concatAndFree(res, newString((char *) (curr->value)));
+    res = concatAndFree(res, newString(" = ...)\nbegin\n"));
     curr = tree->child1->arguments;
     while (curr != NULL) {
       res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
@@ -9001,7 +9025,19 @@ node *makeProc(chain *stringlist, node *body, node *returnVal) {
   return res;
 }
 
+node *makeProcIllim(char *arg, node *body, node *returnVal) {
+  node *res;
+  chain *argList;
 
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = PROCILLIM;
+  argList = addElement(NULL,arg);
+  res->arguments = argList;
+  res->child1 = body;
+  res->child2 = returnVal;
+
+  return res;
+}
 
 node *makePrecDeref() {
   node *res;
@@ -10074,6 +10110,12 @@ void freeThing(node *tree) {
     freeChain(tree->arguments, free);
     free(tree);
     break;
+  case PROCILLIM:
+    freeThing(tree->child1);
+    freeThing(tree->child2);
+    freeChain(tree->arguments, free);
+    free(tree);
+    break;
   case PRECDEREF:
     free(tree);
     break; 			
@@ -10813,6 +10855,11 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualStringOnVoid)) return 0;
     break;
+  case PROCILLIM:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualThing(tree->child2,tree2->child2)) return 0;
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualStringOnVoid)) return 0;
+    break;
   case PRECDEREF:
     break; 			
   case POINTSDEREF:
@@ -10888,6 +10935,7 @@ int isCorrectlyTypedBaseSymbol(node *tree) {
   case EMPTYLIST:
   case EXTERNALPROCEDUREUSAGE:
   case PROC:
+  case PROCILLIM:
     return 1;
   default:
     return 0;
@@ -11163,16 +11211,19 @@ void freeArgumentForExternalProc(void* arg, int type) {
 
 }
 
-int executeProcedureInner(node **resultThing, node *proc, chain *args) {
+int executeProcedureInner(node **resultThing, node *proc, chain *args, int elliptic) {
   int result, res, noError;
   chain *curr, *curr2;
+  node *tempNode;
   
-  if (lengthChain(proc->arguments) != lengthChain(args)) {
-    if (!((lengthChain(args) == 1) && 
-	(isUnit((node *) (args->value))) && 
-	  (lengthChain(proc->arguments) == 0))) {
-      *resultThing = NULL;
-      return 1;
+  if (proc->nodeType != PROCILLIM) {
+    if (lengthChain(proc->arguments) != lengthChain(args)) {
+      if (!((lengthChain(args) == 1) && 
+	    (isUnit((node *) (args->value))) && 
+	    (lengthChain(proc->arguments) == 0))) {
+	*resultThing = NULL;
+	return 1;
+      }
     }
   }
 
@@ -11219,7 +11270,22 @@ int executeProcedureInner(node **resultThing, node *proc, chain *args) {
 	} else {
 	  if (declaredSymbolTable != NULL) {
 	    noError = 1;
-	    declaredSymbolTable = declareNewEntry(declaredSymbolTable, (char *) (curr->value), (node *) (curr2->value), copyThingOnVoid);
+	    if (proc->nodeType != PROCILLIM) {
+	      declaredSymbolTable = declareNewEntry(declaredSymbolTable, (char *) (curr->value), (node *) (curr2->value), copyThingOnVoid);
+	    } else {
+	      if (curr2 == NULL) {
+		tempNode = makeEmptyList();
+		declaredSymbolTable = declareNewEntry(declaredSymbolTable, (char *) (curr->value), tempNode, copyThingOnVoid);
+		freeThing(tempNode);
+	      } else {
+		if (elliptic) 
+		  tempNode = makeFinalEllipticList(copyChainWithoutReversal(curr2, copyThingOnVoid));
+		else
+		  tempNode = makeList(copyChainWithoutReversal(curr2, copyThingOnVoid));
+		declaredSymbolTable = declareNewEntry(declaredSymbolTable, (char *) (curr->value), tempNode, copyThingOnVoid);
+		freeThing(tempNode);
+	      }
+	    }
 	  } else {
 	    printMessage(1,"Warning: previous command interruptions have corrupted the frame system.\n");
 	    printMessage(1,"The formal parameter \"%s\" cannot be bound to its actual value.\nThe procedure cannot be executed.\n",(char *) (curr->value));
@@ -11231,6 +11297,9 @@ int executeProcedureInner(node **resultThing, node *proc, chain *args) {
       result = 1;
       break;
     }
+
+    if (proc->nodeType == PROCILLIM) break;
+
     curr = curr->next;
     curr2 = curr2->next;
   }  
@@ -11274,7 +11343,7 @@ int executeProcedureInner(node **resultThing, node *proc, chain *args) {
   return 1;
 }
 
-int executeProcedure(node **resultThing, node *proc, chain *args) {
+int executeProcedure(node **resultThing, node *proc, chain *args, int elliptic) {
   jmp_buf oldEnvironment;
   int res;
 
@@ -11282,7 +11351,7 @@ int executeProcedure(node **resultThing, node *proc, chain *args) {
   
   memmove(&oldEnvironment,&recoverEnvironmentError,sizeof(oldEnvironment));
   if (!setjmp(recoverEnvironmentError)) {
-    res = executeProcedureInner(resultThing, proc, args);
+    res = executeProcedureInner(resultThing, proc, args, elliptic);
   } else {
     printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
     res = 0;
@@ -13433,11 +13502,13 @@ node *evaluateThingInner(node *tree) {
 			free(copy->child2);
 			if (timingString != NULL) popTimeCounter(timingString);
 		      } else {
-			if (isProcedure(copy->child1) && isList(copy->child2)) {
+			if (isProcedure(copy->child1) && 
+			    (isList(copy->child2) || 
+			     ((copy->child1->nodeType == PROCILLIM) && isFinalEllipticList(copy->child2)))) {
 			  tempChain = copyChainWithoutReversal(copy->child2->arguments, evaluateThingInnerOnVoid);
 			  tempNode = evaluateThingInner(copy->child1);
 			  tempNode2 = NULL;
-			  if (executeProcedure(&tempNode2, tempNode, tempChain)) {
+			  if (executeProcedure(&tempNode2, tempNode, tempChain, isFinalEllipticList(copy->child2))) {
 			    if (tempNode2 != NULL) {
 			      freeThing(copy);
 			      copy = tempNode2;
@@ -13449,6 +13520,22 @@ node *evaluateThingInner(node *tree) {
 			  }
 			  freeChain(tempChain, freeThingOnVoid);
 			  freeThing(tempNode);
+			} else {
+			  if (isProcedure(copy->child1) && isEmptyList(copy->child2)) {
+			    tempNode = evaluateThingInner(copy->child1);
+			    tempNode2 = NULL;
+			    if (executeProcedure(&tempNode2, tempNode, NULL, 0)) {
+			      if (tempNode2 != NULL) {
+				freeThing(copy);
+				copy = tempNode2;
+			      } 
+			    } else {
+			      printMessage(1,"Warning: an error occurred while executing a procedure.\n");
+			      freeThing(copy);
+			      copy = makeError();
+			    }
+			    freeThing(tempNode);
+			  } 
 			}
 		      }
 		    }
@@ -13758,7 +13845,7 @@ node *evaluateThingInner(node *tree) {
 	if (isProcedure(tempNode)) {
 	  tempChain = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
 	  tempNode2 = NULL;
-	  if (executeProcedure(&tempNode2, tempNode, tempChain)) {
+	  if (executeProcedure(&tempNode2, tempNode, tempChain, 0)) {
 	    if (tempNode2 != NULL) {
 	      free(copy);
 	      copy = tempNode2;
@@ -13865,7 +13952,7 @@ node *evaluateThingInner(node *tree) {
 	if (isProcedure(tempNode)) {
 	  tempChain = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
 	  tempNode2 = NULL;
-	  if (executeProcedure(&tempNode2, tempNode, tempChain)) {
+	  if (executeProcedure(&tempNode2, tempNode, tempChain, 0)) {
 	    if (tempNode2 != NULL) {
 	      free(copy);
 	      copy = tempNode2;
@@ -16315,6 +16402,10 @@ node *evaluateThingInner(node *tree) {
     if (timingString != NULL) popTimeCounter(timingString);
     break;  	 
   case PROC:
+    free(copy);
+    copy = copyThing(tree);
+    break;
+  case PROCILLIM:
     free(copy);
     copy = copyThing(tree);
     break;
