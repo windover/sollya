@@ -97,5 +97,6 @@ void mpfi_erf(mpfi_t rop, mpfi_t op);
 void mpfi_erfc(mpfi_t rop, mpfi_t op);
 void mpfi_ceil(mpfi_t rop, mpfi_t op);
 void mpfi_floor(mpfi_t rop, mpfi_t op);
+void mpfi_nearestint(mpfi_t rop, mpfi_t op);
 
 #endif /* ifdef INFNORM_H*/

@@ -1248,6 +1248,7 @@ void taylor_series(tSeries *t, node *f) {
   case DOUBLEEXTENDED:
   case CEIL:
   case FLOOR:
+  case NEARESTINT:
 
     break;
   case POW:

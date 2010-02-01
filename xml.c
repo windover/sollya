@@ -323,6 +323,12 @@ void fPrintXmlInner(FILE *fd, node *tree) {
     fPrintXmlInner(fd, tree->child1);
     fprintf(fd,"</apply>\n");
     break;
+  case NEARESTINT:
+    fprintf(fd,"<apply>\n");
+    fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">nearestint</csymbol>\n");
+    fPrintXmlInner(fd, tree->child1);
+    fprintf(fd,"</apply>\n");
+    break;
   case PI_CONST:
     fprintf(fd,"<pi/>");
     break;

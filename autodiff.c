@@ -1189,6 +1189,8 @@ void baseFunction_diff(mpfi_t *res, int nodeType, mpfi_t x, int n) {
     break;
   case FLOOR:
     break;
+  case NEARESTINT:
+    break;
   default:
     fprintf(stderr,"Error: AD: unknown unary function (%d) in the tree\n",nodeType);
     exit(1);
@@ -1445,6 +1447,7 @@ void auto_diff(mpfi_t* res, node *f, mpfi_t x, int n) {
   case DOUBLEEXTENDED:
   case CEIL:
   case FLOOR:
+  case NEARESTINT:
 
     res1 = (mpfi_t *)safeMalloc((n+1)*sizeof(mpfi_t));
     res2 = (mpfi_t *)safeMalloc((n+1)*sizeof(mpfi_t));

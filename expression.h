@@ -96,6 +96,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #define FLOOR 37
 #define PI_CONST 38
 #define SINGLE 39
+#define NEARESTINT 40
 
 typedef struct nodeStruct node;
 
@@ -210,6 +211,7 @@ node *makeExpm1(node *op1);
 node *makeDoubleextended(node *op1);
 node *makeCeil(node *op1);
 node *makeFloor(node *op1);
+node *makeNearestInt(node *op1);
 node *makePi();
 node *makeSinh(node *op1);
 node *makeCosh(node *op1);
@@ -217,7 +219,7 @@ node *makeTanh(node *op1);
 node *makeAsinh(node *op1);
 node *makeAcosh(node *op1);
 node *makeAtanh(node *op1);
-
+int mpfr_nearestint(mpfr_t rop, mpfr_t op);
 
 
 

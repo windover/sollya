@@ -172,6 +172,7 @@ extern FILE *internyyget_in(void *scanner);
 %token  DOUBLEEXTENDEDTOKEN;    					       
 %token  CEILTOKEN;              					       
 %token  FLOORTOKEN;             			
+%token  NEARESTINTTOKEN;
 
 %token  HEADTOKEN;
 %token  REVERTTOKEN;
@@ -1649,6 +1650,10 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                       | FLOORTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeFloor($3);
+			  }             					       
+                      | NEARESTINTTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeNearestInt($3);
 			  }             					       
                       | LENGTHTOKEN LPARTOKEN thing RPARTOKEN
                           {

@@ -138,6 +138,7 @@ struct libraryProcedureStruct
 #define ABSOLUTESYM 197
 #define RELATIVESYM 198
 #define SINGLE 39
+#define NEARESTINT 40
 
 typedef struct nodeStruct node;
 struct nodeStruct 
@@ -211,6 +212,7 @@ extern node *makeExpm1(node *op1);
 extern node *makeDoubleextended(node *op1);
 extern node *makeCeil(node *op1);
 extern node *makeFloor(node *op1);
+extern node *makeNearestInt(node *op1);
 extern node *makePi();
 extern node *makeSinh(node *op1);
 extern node *makeCosh(node *op1);

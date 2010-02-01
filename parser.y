@@ -173,7 +173,8 @@ void yyerror(char *message) {
 %token  TRIPLEDOUBLETOKEN;      					       
 %token  DOUBLEEXTENDEDTOKEN;    					       
 %token  CEILTOKEN;              					       
-%token  FLOORTOKEN;             			
+%token  FLOORTOKEN;
+%token  NEARESTINTTOKEN;             			
 
 %token  HEADTOKEN;
 %token  REVERTTOKEN;
@@ -1693,6 +1694,10 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeFloor($3);
 			  }             					       
+                      | NEARESTINTTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeNearestInt($3);
+			  }             					       
                       | LENGTHTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeLength($3);
@@ -2369,6 +2374,14 @@ help:                   CONSTANTTOKEN
 			    outputMode(); printf(HELP_FLOOR_TEXT);
 #else
 			    outputMode(); printf("Floor.\n");
+#endif
+                          }                 					                        			
+                      | NEARESTINTTOKEN
+                          {
+#ifdef HELP_NEARESTINT_TEXT
+			    outputMode(); printf(HELP_NEARESTINT_TEXT);
+#else
+			    outputMode(); printf("Nearest integer with even tie cases rule.\n");
 #endif
                           }                 					                        			
                       | HEADTOKEN

@@ -431,6 +431,30 @@ void mpfi_floor(mpfi_t rop, mpfi_t op) {
   mpfr_clear(ropr);
 }
 
+void mpfi_nearestint(mpfi_t rop, mpfi_t op) {
+  mpfr_t opl, opr, ropl, ropr;
+
+  mpfr_init2(opl,mpfi_get_prec(op));
+  mpfr_init2(opr,mpfi_get_prec(op));
+
+  mpfr_init2(ropl,mpfi_get_prec(op));
+  mpfr_init2(ropr,mpfi_get_prec(op));
+  
+  mpfi_get_left(opl,op);
+  mpfi_get_right(opr,op);
+  
+  mpfr_nearestint(ropl,opr);
+  mpfr_nearestint(ropr,opl);
+
+  mpfi_interv_fr(rop,ropl,ropr);
+  mpfi_revert_if_needed(rop);
+
+  mpfr_clear(opl);
+  mpfr_clear(opr);
+  mpfr_clear(ropl);
+  mpfr_clear(ropr);
+}
+
 
 int newtonMPFRWithStartPoint(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mpfr_t start, mp_prec_t prec) {
   mpfr_t x, x2, temp1, temp2, am, bm;
@@ -1836,6 +1860,13 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
   case FLOOR:
     excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
     mpfi_floor(stack3, stack1);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
+    break;
+  case NEARESTINT:
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
+    mpfi_nearestint(stack3, stack1);
     if (internalTheo != NULL) {
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
@@ -4124,6 +4155,9 @@ chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t pre
   case FLOOR:
     return uncertifiedZeroDenominators(tree->child1,a,b,prec);
     break;
+  case NEARESTINT:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
   default:
    fprintf(stderr,"Error: uncertifiedZeroDenominators: unknown identifier (%d) in the tree\n",tree->nodeType);
    exit(1);
@@ -5350,6 +5384,27 @@ int evaluateSign(int *s, node *rawFunc) {
 	free_memory(tempNode);
 	break;
       case FLOOR:
+	okayA = evaluateSign(&signA, func->child1);
+	tempNode = makeDoubleConstant(1.0);
+	if (okayA) 
+	  okayB = compareConstant(&signB, func->child1, tempNode);
+	else
+	  okayB = 0;
+	if (okayA && okayB) {
+	  okay = 1;
+	  if (signA < 0) {
+	    sign = -1;
+	  } else {
+	    if (signB < 0) {
+	      sign = 0;
+	    } else {
+	      sign = 1;
+	    }
+	  }
+	}
+	free_memory(tempNode);
+	break;
+      case NEARESTINT:
 	okayA = evaluateSign(&signA, func->child1);
 	tempNode = makeDoubleConstant(1.0);
 	if (okayA) 

@@ -313,6 +313,7 @@ DIRTYFINDZEROS  "dirtyfindzeros"
 
 CEIL            "ceil"
 FLOOR           "floor"
+NEARESTINT      "nearestint"
 
 HEAD            "head"
 TAIL            "tail"
@@ -537,6 +538,7 @@ NOP             "nop"
 {DOUBLEEXTENDED}  			    {  return DOUBLEEXTENDEDTOKEN; }  					       
 {CEIL}            			    {  return CEILTOKEN; }            					       
 {FLOOR}           			    {  return FLOORTOKEN; }           					       
+{NEARESTINT}           			    {  return NEARESTINTTOKEN; }           					       
 					    											       
 {PREC}            			    {  return PRECTOKEN; }            					       
 {POINTS}          			    {  return POINTSTOKEN; }          					       

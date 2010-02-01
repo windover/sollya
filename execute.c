@@ -365,6 +365,9 @@ node *copyThing(node *tree) {
   case FLOOR:
     copy->child1 = copyThing(tree->child1);
     break;
+  case NEARESTINT:
+    copy->child1 = copyThing(tree->child1);
+    break;
   case PI_CONST:
     break;
   case COMMANDLIST:
@@ -1104,6 +1107,9 @@ char *getTimingStringForThing(node *tree) {
   case FLOOR:
     constString = NULL;
     break;
+  case NEARESTINT:
+    constString = NULL;
+    break;
   case PI_CONST:
     constString = NULL;
     break;
@@ -1821,6 +1827,9 @@ int isPureTree(node *tree) {
     return isPureTree(tree->child1);
     break;
   case FLOOR:
+    return isPureTree(tree->child1);
+    break;
+  case NEARESTINT:
     return isPureTree(tree->child1);
     break;
   case PI_CONST:
@@ -3200,6 +3209,11 @@ char *sRawPrintThing(node *tree) {
     break;
   case FLOOR:
     res = concatAndFree(newString("floor("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case NEARESTINT:
+    res = concatAndFree(newString("nearestint("),
 			concatAndFree(sRawPrintThing(tree->child1),
 				      newString(")")));
     break;
@@ -9375,6 +9389,10 @@ void freeThing(node *tree) {
     freeThing(tree->child1);
     free(tree);
     break;
+  case NEARESTINT:
+    freeThing(tree->child1);
+    free(tree);
+    break;
   case PI_CONST:
     free(tree);
     break;
@@ -10315,6 +10333,9 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break;
   case FLOOR:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break;
+  case NEARESTINT:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break;
   case PI_CONST:
@@ -12985,6 +13006,28 @@ node *evaluateThingInner(node *tree) {
       mpfi_clear(tempIC);
     }
     break;
+  case NEARESTINT:
+    copy->child1 = evaluateThingInner(tree->child1);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      mpfi_nearestint(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
+    break;
   case PI_CONST:
     break;
   case AND:
@@ -13123,9 +13166,13 @@ node *evaluateThingInner(node *tree) {
     }
     break; 				
   case COMPAREEQUAL:
-    copy->child1 = evaluateThingInner(tree->child1);
-    copy->child2 = evaluateThingInner(tree->child2);
+    copy->child1 = evaluateThing(tree->child1);
+    copy->child2 = evaluateThing(tree->child2);
     if (timingString != NULL) pushTimeCounter();
+    if ((isError(copy->child1) && (!isError(tree->child1)) && (!isError(tree->child2))) ||
+	(isError(copy->child2) && (!isError(tree->child2)) && (!isError(tree->child1)))) {
+	  printMessage(1,"Warning: the evaluation of one of the sides of an equality test yields error due to a syntax error or an error on a side-effect.\nThe other side either also yields error due to an syntax or side-effect error or does not evaluate to error.\nThe boolean returned may be meaningless.\n");
+    } 
     if (isEqualThing(copy->child1,copy->child2)) {
       if (!isError(copy->child1)) {
 	freeThing(copy);
@@ -13165,8 +13212,8 @@ node *evaluateThingInner(node *tree) {
     if (timingString != NULL) popTimeCounter(timingString);
     break; 			
   case COMPARELESS:
-    copy->child1 = evaluateThingInner(tree->child1);
-    copy->child2 = evaluateThingInner(tree->child2);
+    copy->child1 = evaluateThing(tree->child1);
+    copy->child2 = evaluateThing(tree->child2);
     if (isPureTree(copy->child1) && 
 	isPureTree(copy->child2) &&
 	isConstant(copy->child1) && 
@@ -13211,8 +13258,8 @@ node *evaluateThingInner(node *tree) {
     }
     break; 			
   case COMPAREGREATER:
-    copy->child1 = evaluateThingInner(tree->child1);
-    copy->child2 = evaluateThingInner(tree->child2);
+    copy->child1 = evaluateThing(tree->child1);
+    copy->child2 = evaluateThing(tree->child2);
     if (isPureTree(copy->child1) && 
 	isPureTree(copy->child2) &&
 	isConstant(copy->child1) && 
@@ -13257,8 +13304,8 @@ node *evaluateThingInner(node *tree) {
     }
     break; 			
   case COMPARELESSEQUAL:
-    copy->child1 = evaluateThingInner(tree->child1);
-    copy->child2 = evaluateThingInner(tree->child2);
+    copy->child1 = evaluateThing(tree->child1);
+    copy->child2 = evaluateThing(tree->child2);
     if (isPureTree(copy->child1) && 
 	isPureTree(copy->child2) &&
 	isConstant(copy->child1) && 
@@ -13303,8 +13350,8 @@ node *evaluateThingInner(node *tree) {
     }
     break; 		
   case COMPAREGREATEREQUAL:
-    copy->child1 = evaluateThingInner(tree->child1);
-    copy->child2 = evaluateThingInner(tree->child2);
+    copy->child1 = evaluateThing(tree->child1);
+    copy->child2 = evaluateThing(tree->child2);
     if (isPureTree(copy->child1) && 
 	isPureTree(copy->child2) &&
 	isConstant(copy->child1) && 
@@ -13349,9 +13396,13 @@ node *evaluateThingInner(node *tree) {
     }
     break;		
   case COMPARENOTEQUAL:
-    copy->child1 = evaluateThingInner(tree->child1);
-    copy->child2 = evaluateThingInner(tree->child2);
+    copy->child1 = evaluateThing(tree->child1);
+    copy->child2 = evaluateThing(tree->child2);
     if (timingString != NULL) pushTimeCounter();
+    if ((isError(copy->child1) && (!isError(tree->child1)) && (!isError(tree->child2))) ||
+	(isError(copy->child2) && (!isError(tree->child2)) && (!isError(tree->child1)))) {
+	  printMessage(1,"Warning: the evaluation of one of the sides of an inequality test yields error due to a syntax error or an error on a side-effect.\nThe other side either also yields error due to an syntax or side-effect error or does not evaluate to error.\nThe boolean returned may be meaningless.\n");
+    } 
     if (isEqualThing(copy->child1,copy->child2)) {
       if (!isError(copy->child1)) {
 	freeThing(copy);
