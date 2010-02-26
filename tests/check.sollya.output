@@ -916,7 +916,6 @@ error
 Warning: at least one of the given expressions or a subexpression is not correctly typed
 or its evaluation has failed because of some error on a side-effect.
 Warning: the given expression or command could not be handled.
-Warning: the given expression or command could not be handled.
 error
 The tool has been restarted.
 =============== Test number 164 ================

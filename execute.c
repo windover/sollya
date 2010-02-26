@@ -4983,7 +4983,7 @@ void autoprint(node *thing, int inList) {
 		  }
 		} else {
 		  printMessage(1,"Warning: the given expression is undefined or numerically unstable.\n");
-		  mpfr_set_nan(a);
+		  if (!isAffine(tempNode5)) mpfr_set_nan(a);
 		}
 	      }  
 	    }
@@ -11002,8 +11002,10 @@ node *evaluateThing(node *tree) {
 
   if (!isCorrectlyTyped(evaluated)) {
     if (evaluated->nodeType == ERRORSPECIAL) {
-      if (tree->nodeType != ERRORSPECIAL) 
+      if ((tree->nodeType != ERRORSPECIAL) && 
+          (tree->nodeType != TABLEACCESS)) {
 	printMessage(1,"Warning: the given expression or command could not be handled.\n");
+      } 
     } else {
       printMessage(1,"Warning: at least one of the given expressions or a subexpression is not correctly typed\nor its evaluation has failed because of some error on a side-effect.\n");
       if (verbosity >= 2) {

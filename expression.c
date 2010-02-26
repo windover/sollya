@@ -3718,7 +3718,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
       if ((mpfr_pow(*value, *(simplChild1->value), *(simplChild2->value), GMP_RNDN) != 0) || 
-	  (!mpfr_number_p(*value))) {
+	  (!mpfr_number_p(*value)) || (!mpfr_number_p(*(simplChild1->value)))) {
 	simplified->nodeType = POW;
 	simplified->child1 = simplChild1;
 	simplified->child2 = simplChild2;
@@ -3779,7 +3779,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
       mpfr_init2(*value,prec);
       simplified->value = value;
       if ((mpfr_neg(*value, *(simplChild1->value), GMP_RNDN) != 0) || 
-	  (!mpfr_number_p(*value))) {
+	  (mpfr_nan_p(*value))) {
 	simplified->nodeType = NEG;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
@@ -7404,6 +7404,155 @@ int isPolynomial(node *tree) {
   }
  return res;
 }
+
+int isAffine(node *tree) {
+  int res;
+  node *temp;
+
+  switch (tree->nodeType) {
+  case VARIABLE:
+    res = 1;
+    break;
+  case CONSTANT:
+    res = 1;
+    break;
+  case ADD:
+    res = isAffine(tree->child1) && isAffine(tree->child2);
+    break;
+  case SUB:
+    res = isAffine(tree->child1) && isAffine(tree->child2);
+    break;
+  case MUL:
+    res = isAffine(tree->child1) && isAffine(tree->child2);
+    break;
+  case DIV:
+    res = 0;
+    break;
+  case SQRT:
+    res = 0;
+    break;
+  case EXP:
+    res = 0;
+    break;
+  case LOG:
+    res = 0;
+    break;
+  case LOG_2:
+    res = 0;
+    break;
+  case LOG_10:
+    res = 0;
+    break;
+  case SIN:
+    res = 0;
+    break;
+  case COS:
+    res = 0;
+    break;
+  case TAN:
+    res = 0;
+    break;
+  case ASIN:
+    res = 0;
+    break;
+  case ACOS:
+    res = 0;
+    break;
+  case ATAN:
+    res = 0;
+    break;
+  case SINH:
+    res = 0;
+    break;
+  case COSH:
+    res = 0;
+    break;
+  case TANH:
+    res = 0;
+    break;
+  case ASINH:
+    res = 0;
+    break;
+  case ACOSH:
+    res = 0;
+    break;
+  case ATANH:
+    res = 0;
+    break;
+  case POW:
+    {
+      res = 0;
+      if (isAffine(tree->child1)) {
+        if (tree->child2->nodeType == CONSTANT) 
+          temp = tree->child2; 
+        else 
+          temp = simplifyTreeErrorfree(tree->child2);
+        if (temp->nodeType == CONSTANT) {
+          if (mpfr_number_p(*(temp->value)) && mpfr_integer_p(*(temp->value))) {
+            if (mpfr_sgn(*(temp->value)) > 0) {
+              res = 1;
+            }
+          }
+        }
+        if (tree->child2->nodeType != CONSTANT) free_memory(temp);
+      }
+    }
+    break;
+  case NEG:
+    res = isAffine(tree->child1);
+    break;
+  case ABS:
+    res = 0;
+    break;
+  case DOUBLE:
+    res = 0;
+    break;
+  case SINGLE:
+    res = 0;
+    break;
+  case DOUBLEDOUBLE:
+    res = 0;
+    break;
+  case TRIPLEDOUBLE:
+    res = 0;
+    break;
+  case ERF:
+    res = 0;
+    break;
+  case ERFC:
+    res = 0;
+    break;
+  case LOG_1P:
+    res = 0;
+    break;
+  case EXP_M1:
+    res = 0;
+    break;
+  case DOUBLEEXTENDED:
+    res = 0;
+    break;
+  case LIBRARYFUNCTION:
+    res = 0;
+    break;
+  case CEIL:
+    res = 0;
+    break;
+  case FLOOR:
+    res = 0;
+    break;
+  case NEARESTINT:
+    res = 0;
+    break;
+  case PI_CONST:
+    res = 1;
+    break;
+  default:
+    fprintf(stderr,"Error: isAffine: unknown identifier in the tree\n");
+    exit(1);
+  }
+ return res;
+}
+
 
 #define MAX(a,b) (a) > (b) ? (a) : (b)
 #define MIN(a,b) (a) < (b) ? (a) : (b)

@@ -150,6 +150,7 @@ node *substitute(node* tree, node *t);
 int readDyadic(mpfr_t res, char *c);
 int readHexadecimal(mpfr_t res, char *c);
 int isPolynomial(node *tree);
+int isAffine(node *tree);
 int arity(node *tree);
 void fprintValue(FILE *fd, mpfr_t value);
 void fprintTree(FILE *fd, node *tree);

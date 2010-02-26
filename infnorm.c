@@ -141,9 +141,39 @@ void mpfi_pow(mpfi_t z, mpfi_t x, mpfi_t y) {
 
   if ((mpfr_cmp(l,r) == 0) && (mpfr_integer_p(l))) {
     if (mpfr_zero_p(l)) {
-      mpfi_set_d(res,1.0);
+      if (!mpfi_bounded_p(x)) {
+        precx = mpfi_get_prec(x);
+
+        mpfr_init2(lx,precx);
+        mpfr_init2(rx,precx);
+
+        mpfi_get_right(rx,x);
+        mpfi_get_left(lx,x);
+
+        if (mpfr_number_p(lx)) { 
+          mpfr_set_d(lx,1.0,GMP_RNDN);
+        } else {
+          mpfr_set_nan(lx);
+        }
+
+        if (mpfr_number_p(rx)) {
+          mpfr_set_d(rx,1.0,GMP_RNDN);
+        } else {
+          mpfr_set_nan(rx);
+        }
+
+        mpfi_interv_fr(res,lx,rx);
+        mpfi_revert_if_needed(res);
+
+        mpfr_clear(lx);
+        mpfr_clear(rx);
+      } else {
+        mpfi_set_d(res,1.0);
+      }
     } else {
       precx = mpfi_get_prec(x);
+      if (mpfi_get_prec(res) > precx) 
+        precx = mpfi_get_prec(res);
 
       mpfr_init2(lx,precx);
       mpfr_init2(rx,precx);
@@ -158,7 +188,7 @@ void mpfi_pow(mpfi_t z, mpfi_t x, mpfi_t y) {
 	must_divide = 0;
       }
       if (mpfi_has_zero(x)) {
-		mpfr_div_2ui(r,l,1,GMP_RNDN);
+        mpfr_div_2ui(r,l,1,GMP_RNDN);
 	if (mpfr_integer_p(r)) {   /* l is even */
 	  mpfr_pow(lx,lx,l,GMP_RNDU);
 	  mpfr_pow(rx,rx,l,GMP_RNDU);
@@ -203,7 +233,17 @@ void mpfi_pow(mpfi_t z, mpfi_t x, mpfi_t y) {
   } else {
     mpfi_log(res,x);
     mpfi_mul(res,res,y);
-    mpfi_exp(res,res);
+    mpfi_get_right(r,res);
+    mpfi_get_left(l,res);
+    if (!(mpfr_inf_p(l) &&
+          mpfr_inf_p(r) &&
+          (mpfr_sgn(l) < 0) &&
+          (mpfr_sgn(r) < 0))) {
+      mpfi_exp(res,res);
+    } else {
+      mpfr_set_nan(l);
+      mpfi_interv_fr(res,l,l);
+    }
   }
   mpfr_clear(l);
   mpfr_clear(r);
@@ -2011,7 +2051,6 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
       mpfi_interv_fr(result, leftX, leftX);
     }
 
-
     mpfr_clear(leftX);
     mpfr_clear(rightX);
     
@@ -3470,7 +3509,15 @@ void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_pr
 
   temp = differentiate(func);
   deriv = horner(temp);
-  temp2 = horner(func);
+
+  if ((func->nodeType == POW) && 
+      (func->child1->nodeType == VARIABLE) &&
+      (func->child2->nodeType == CONSTANT) &&
+      mpfr_zero_p(*(func->child2->value))) {
+    temp2 = copyTree(func);
+  } else {
+    temp2 = horner(func);
+  }
 
   f = NULL;
 
