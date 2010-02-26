@@ -10218,7 +10218,7 @@ int isEqualThing(node *tree, node *tree2) {
   case VARIABLE:
     break;
   case CONSTANT:
-    if (mpfr_cmp(*(tree->value),*(tree2->value)) != 0) return 0;
+    if (!mpfr_equal_p(*(tree->value),*(tree2->value))) return 0;
     break;
   case ADD:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
@@ -13194,7 +13194,7 @@ node *evaluateThingInner(node *tree) {
 	mpfr_init2(b,tools_precision);
 	if (evaluateThingToConstant(a,copy->child1,NULL,1) && 
 	    evaluateThingToConstant(b,copy->child2,NULL,1)) {
-	  if (mpfr_cmp(a,b) == 0) {
+	  if (mpfr_equal_p(a,b)) {
 	    freeThing(copy);
 	    copy = makeTrue();		    
 	  } else {
@@ -13228,7 +13228,7 @@ node *evaluateThingInner(node *tree) {
 	  (resB = evaluateThingToConstant(b,copy->child2,NULL,1))) {
 	if ((resA == 3) || (resB == 3)) 
 	  printMessage(1,"Warning: inequality test relies on floating-point result that is not faithfully evaluated.\n");
-	resC = (mpfr_cmp(a,b) < 0);
+	resC = ((mpfr_cmp(a,b) < 0) && (!mpfr_unordered_p(a,b)));
 	if ((resA == 1) || (resB == 1)) {
 	  if (resC) {
 	    /* a < b */
@@ -13274,7 +13274,7 @@ node *evaluateThingInner(node *tree) {
 	  (resB = evaluateThingToConstant(b,copy->child2,NULL,1))) {
 	if ((resA == 3) || (resB == 3)) 
 	  printMessage(1,"Warning: inequality test relies on floating-point result that is not faithfully evaluated.\n");
-	resC = (mpfr_cmp(a,b) > 0);
+	resC = ((mpfr_cmp(a,b) > 0) && (!mpfr_unordered_p(a,b)));
 	if ((resA == 1) || (resB == 1)) {
 	  if (resC) {
 	    /* a > b */
@@ -13320,7 +13320,7 @@ node *evaluateThingInner(node *tree) {
 	  (resB = evaluateThingToConstant(b,copy->child2,NULL,1))) {
 	if ((resA == 3) || (resB == 3)) 
 	  printMessage(1,"Warning: inequality test relies on floating-point result that is not faithfully evaluated.\n");
-	resC = (mpfr_cmp(a,b) <= 0);
+	resC = ((mpfr_cmp(a,b) <= 0) && (!mpfr_unordered_p(a,b)));
 	if ((resA == 1) || (resB == 1)) {
 	  if (resC) {
 	    /* a <= b */
@@ -13366,7 +13366,7 @@ node *evaluateThingInner(node *tree) {
 	  (resB = evaluateThingToConstant(b,copy->child2,NULL,1))) {
 	if ((resA == 3) || (resB == 3)) 
 	  printMessage(1,"Warning: inequality test relies on floating-point result that is not faithfully evaluated.\n");
-	resC = (mpfr_cmp(a,b) >= 0);
+	resC = ((mpfr_cmp(a,b) >= 0) && (!mpfr_unordered_p(a,b)));
 	if ((resA == 1) || (resB == 1)) {
 	  if (resC) {
 	    /* a >= b */
@@ -13424,7 +13424,7 @@ node *evaluateThingInner(node *tree) {
 	mpfr_init2(b,tools_precision);
 	if (evaluateThingToConstant(a,copy->child1,NULL,1) && 
 	    evaluateThingToConstant(b,copy->child2,NULL,1)) {
-	  if (mpfr_cmp(a,b) == 0) {
+	  if (mpfr_equal_p(a,b) || mpfr_unordered_p(a,b)) {
 	    freeThing(copy);
 	    copy = makeFalse();		    
 	  } else {
