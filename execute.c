@@ -11878,6 +11878,7 @@ node *evaluateThingInner(node *tree) {
   mp_prec_t pTemp, pTemp2;
   int undoVariableTrick;
   mpfi_t tempIA, tempIB, tempIC;
+  int alreadyDisplayed;
 
   if (tree == NULL) return NULL;
 
@@ -14338,7 +14339,12 @@ node *evaluateThingInner(node *tree) {
   case ELLIPTIC:
     break; 			
   case RANGE:
+    alreadyDisplayed = 0;
     if (tree->child1->nodeType == DECIMALCONSTANT) {
+      if (tree->child2->nodeType == DECIMALCONSTANT) {
+        if (!strcmp(tree->child1->string,tree->child2->string)) 
+          alreadyDisplayed = 1;
+      }
       resA = 0;
       tempString2 = strchr(tree->child1->string,'%');
       tempString3 = strrchr(tree->child1->string,'%');
@@ -14458,7 +14464,7 @@ node *evaluateThingInner(node *tree) {
         mpfr_set_str(a,tempString,10,GMP_RNDD);
         mpfr_set_str(b,tempString,10,GMP_RNDU);    
         if (mpfr_cmp(a,b) != 0) {
-          if (!noRoundingWarnings) {
+          if ((!noRoundingWarnings) && (!alreadyDisplayed)) {
             printMessage(1,
                          "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
                          tempString,(int) pTemp);
