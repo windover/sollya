@@ -6130,7 +6130,9 @@ int executeCommandInner(node *tree) {
 	else 
 	  printExternalProcedureUsage(tempNode);
 	freeThing(tempNode);
-	if (curr->next != NULL) printf(", ");
+	if (oldAutoPrint) {
+	  if (curr->next != NULL) printf(", ");
+	}
 	curr = curr->next;
       }
       printf("\n");
@@ -11367,19 +11369,21 @@ int executeProcedureInner(node **resultThing, node *proc, chain *args, int ellip
 }
 
 int executeProcedure(node **resultThing, node *proc, chain *args, int elliptic) {
-  jmp_buf oldEnvironment;
+  jmp_buf *oldEnvironment;
   int res;
 
   pushTimeCounter();  
   
-  memmove(&oldEnvironment,&recoverEnvironmentError,sizeof(oldEnvironment));
+  oldEnvironment = (jmp_buf *) safeMalloc(sizeof(jmp_buf));
+  memmove(oldEnvironment,&recoverEnvironmentError,sizeof(oldEnvironment));
   if (!setjmp(recoverEnvironmentError)) {
     res = executeProcedureInner(resultThing, proc, args, elliptic);
   } else {
     printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
     res = 0;
   }
-  memmove(&recoverEnvironmentError,&oldEnvironment,sizeof(recoverEnvironmentError));
+  memmove(&recoverEnvironmentError,oldEnvironment,sizeof(recoverEnvironmentError));
+  free(oldEnvironment);
 
   popTimeCounter("executing a procedure");
 
@@ -11861,6 +11865,10 @@ int executeExternalProcedure(node **resultThing, libraryProcedure *proc, chain *
 
 void *evaluateThingInnerOnVoid(void *tree) {
   return (void *) evaluateThingInner((node *) tree);
+}
+
+void *evaluateThingOnVoid(void *tree) {
+  return (void *) evaluateThing((node *) tree);
 }
 
 node *evaluateThingInner(node *tree) {
@@ -13559,8 +13567,8 @@ node *evaluateThingInner(node *tree) {
 			if (isProcedure(copy->child1) && 
 			    (isList(copy->child2) || 
 			     ((copy->child1->nodeType == PROCILLIM) && isFinalEllipticList(copy->child2)))) {
-			  tempChain = copyChainWithoutReversal(copy->child2->arguments, evaluateThingInnerOnVoid);
-			  tempNode = evaluateThingInner(copy->child1);
+			  tempChain = copyChainWithoutReversal(copy->child2->arguments, evaluateThingOnVoid);
+			  tempNode = evaluateThing(copy->child1);
 			  tempNode2 = NULL;
 			  if (executeProcedure(&tempNode2, tempNode, tempChain, isFinalEllipticList(copy->child2))) {
 			    if (tempNode2 != NULL) {
@@ -13576,7 +13584,7 @@ node *evaluateThingInner(node *tree) {
 			  freeThing(tempNode);
 			} else {
 			  if (isProcedure(copy->child1) && isEmptyList(copy->child2)) {
-			    tempNode = evaluateThingInner(copy->child1);
+			    tempNode = evaluateThing(copy->child1);
 			    tempNode2 = NULL;
 			    if (executeProcedure(&tempNode2, tempNode, NULL, 0)) {
 			      if (tempNode2 != NULL) {
@@ -13897,7 +13905,7 @@ node *evaluateThingInner(node *tree) {
 	}
       } else {
 	if (isProcedure(tempNode)) {
-	  tempChain = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+	  tempChain = copyChainWithoutReversal(tree->arguments, evaluateThingOnVoid);
 	  tempNode2 = NULL;
 	  if (executeProcedure(&tempNode2, tempNode, tempChain, 0)) {
 	    if (tempNode2 != NULL) {
@@ -14004,7 +14012,7 @@ node *evaluateThingInner(node *tree) {
 	}
       } else {
 	if (isProcedure(tempNode)) {
-	  tempChain = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+	  tempChain = copyChainWithoutReversal(tree->arguments, evaluateThingOnVoid);
 	  tempNode2 = NULL;
 	  if (executeProcedure(&tempNode2, tempNode, tempChain, 0)) {
 	    if (tempNode2 != NULL) {

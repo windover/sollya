@@ -2264,6 +2264,7 @@ node* copyTree(node *tree) {
   node *copy;
   mpfr_t *value;
   mp_prec_t prec, p;
+  mpfr_t temp;
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -2277,8 +2278,11 @@ node* copyTree(node *tree) {
     prec = tools_precision;
     p = mpfr_get_prec(*(tree->value));
     if (p > prec) prec = p;
-    mpfr_init2(*value,prec);
-    simplifyMpfrPrec(*value,*(tree->value));
+    mpfr_init2(temp,prec);
+    simplifyMpfrPrec(temp,*(tree->value));
+    mpfr_init2(*value,mpfr_get_prec(temp));
+    mpfr_set(*value,temp,GMP_RNDN);
+    mpfr_clear(temp);
     copy->value = value;
     break;
   case ADD:
@@ -2791,8 +2795,11 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     simplified = (node*) safeMalloc(sizeof(node));
     simplified->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*value,mpfr_get_prec(*(tree->value)) + 10);
-    simplifyMpfrPrec(*value, *(tree->value));
+    mpfr_init2(temp,mpfr_get_prec(*(tree->value)) + 10);
+    simplifyMpfrPrec(temp, *(tree->value));
+    mpfr_init2(*value,mpfr_get_prec(temp));
+    mpfr_set(*value,temp,GMP_RNDN);
+    mpfr_clear(temp);
     simplified->value = value;
     break;
   case ADD:
@@ -5577,6 +5584,7 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
 node* simplifyTreeInner(node *tree) {
   node *simplChild1, *simplChild2, *simplified;
   mpfr_t *value;
+  mpfr_t temp;
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -5587,8 +5595,11 @@ node* simplifyTreeInner(node *tree) {
     simplified = (node*) safeMalloc(sizeof(node));
     simplified->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*value,tools_precision);
-    simplifyMpfrPrec(*value,*(tree->value));
+    mpfr_init2(temp,tools_precision);
+    simplifyMpfrPrec(temp,*(tree->value));
+    mpfr_init2(*value,mpfr_get_prec(temp));
+    mpfr_set(*value,temp,GMP_RNDN);
+    mpfr_clear(temp);
     simplified->value = value;
     break;
   case ADD:
@@ -6251,6 +6262,7 @@ node* simplifyTreeInner(node *tree) {
 node* simplifyAllButDivisionInner(node *tree) {
   node *simplChild1, *simplChild2, *simplified;
   mpfr_t *value;
+  mpfr_t temp;
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -6261,8 +6273,11 @@ node* simplifyAllButDivisionInner(node *tree) {
     simplified = (node*) safeMalloc(sizeof(node));
     simplified->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*value,tools_precision);
-    simplifyMpfrPrec(*value,*(tree->value));
+    mpfr_init2(temp,tools_precision);
+    simplifyMpfrPrec(temp,*(tree->value));
+    mpfr_init2(*value,mpfr_get_prec(temp));
+    mpfr_set(*value,temp,GMP_RNDN);
+    mpfr_clear(temp);
     simplified->value = value;
     break;
   case ADD:
@@ -8034,6 +8049,7 @@ node* expandPowerInPolynomial(node *tree) {
 node* expandDivision(node *tree) {
   node *copy, *left, *right, *tempNode;
   mpfr_t *value;
+  mpfr_t temp;
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -8044,8 +8060,11 @@ node* expandDivision(node *tree) {
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*value,tools_precision);
-    simplifyMpfrPrec(*value,*(tree->value));
+    mpfr_init2(temp,tools_precision);
+    simplifyMpfrPrec(temp,*(tree->value));
+    mpfr_init2(*value,mpfr_get_prec(temp));
+    mpfr_set(*value,temp,GMP_RNDN);
+    mpfr_clear(temp);
     copy->value = value;
     break;
   case ADD:
@@ -8618,6 +8637,7 @@ node* expandPolynomial(node *tree) {
 node* expandUnsimplified(node *tree) {
   node *copy;
   mpfr_t *value;
+  mpfr_t temp;
 
   if (!isConstant(tree) && isPolynomial(tree)) return expandPolynomial(tree);
 
@@ -8630,8 +8650,11 @@ node* expandUnsimplified(node *tree) {
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*value,tools_precision);
-    simplifyMpfrPrec(*value,*(tree->value));
+    mpfr_init2(temp,tools_precision);
+    simplifyMpfrPrec(temp,*(tree->value));
+    mpfr_init2(*value,mpfr_get_prec(temp));
+    mpfr_set(*value,temp,GMP_RNDN);
+    mpfr_clear(temp);
     copy->value = value;
     break;
   case ADD:
@@ -9682,6 +9705,7 @@ node* hornerPolynomial(node *tree) {
 node* hornerUnsimplified(node *tree) {
   node *copy;
   mpfr_t *value;
+  mpfr_t temp;
 
   if (isPolynomial(tree)) return hornerPolynomial(tree);
 
@@ -9694,8 +9718,11 @@ node* hornerUnsimplified(node *tree) {
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*value,tools_precision);
-    simplifyMpfrPrec(*value,*(tree->value));
+    mpfr_init2(temp,tools_precision);
+    simplifyMpfrPrec(temp,*(tree->value));
+    mpfr_init2(*value,mpfr_get_prec(temp));
+    mpfr_set(*value,temp,GMP_RNDN);
+    mpfr_clear(temp);
     copy->value = value;
     break;
   case ADD:
@@ -10273,6 +10300,7 @@ int getNumeratorDenominator(node **numerator, node **denominator, node *tree) {
 node *substitute(node* tree, node *t) {
   node *copy;
   mpfr_t *value;
+  mpfr_t temp;
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -10282,8 +10310,11 @@ node *substitute(node* tree, node *t) {
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*value,mpfr_get_prec(*(tree->value)));
-    simplifyMpfrPrec(*value,*(tree->value));
+    mpfr_init2(temp,mpfr_get_prec(*(tree->value)));
+    simplifyMpfrPrec(temp,*(tree->value));
+    mpfr_init2(*value,mpfr_get_prec(temp));
+    mpfr_set(*value,temp,GMP_RNDN);
+    mpfr_clear(temp);
     copy->value = value;
     break;
   case ADD:
@@ -11031,6 +11062,7 @@ int isCanonical(node *tree) {
 node *makeCanonical(node *tree, mp_prec_t prec) {
   node *copy;
   mpfr_t *value;
+  mpfr_t temp;
 
   if (isCanonical(tree)) {
     printMessage(7,"Information: no canonical form simplification will be performed because the given tree is already canonical.\n");
@@ -11048,8 +11080,11 @@ node *makeCanonical(node *tree, mp_prec_t prec) {
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CONSTANT;
     value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*value,tools_precision);
-    simplifyMpfrPrec(*value,*(tree->value));
+    mpfr_init2(temp,tools_precision);
+    simplifyMpfrPrec(temp,*(tree->value));
+    mpfr_init2(*value,mpfr_get_prec(temp));
+    mpfr_set(*value,temp,GMP_RNDN);
+    mpfr_clear(temp);
     copy->value = value;
     break;
   case ADD:

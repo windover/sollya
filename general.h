@@ -70,6 +70,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 #define UNUSED_PARAM(_unused_param_x) ((void)(_unused_param_x))
 
+extern int oldAutoPrint;
 extern char *variablename;
 extern mp_prec_t defaultprecision;
 extern mp_prec_t tools_precision;
