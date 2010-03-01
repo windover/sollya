@@ -849,6 +849,7 @@ int general(int argc, char *argv[]) {
   struct rlimit rlim;
   char *error;
   int doNotModifyStackSize;
+  int repeatSetRLimit;
 
   doNotModifyStackSize = 0;
   inputFileOpened = 0;
@@ -907,15 +908,27 @@ int general(int argc, char *argv[]) {
   }
 
   if (!doNotModifyStackSize) {
+#if defined(RLIMIT_STACK)
     if (getrlimit(RLIMIT_STACK,&rlim) == 0) {
       rlim.rlim_cur = rlim.rlim_max;
-      if (setrlimit(RLIMIT_STACK,&rlim) != 0) {
-	if ((error = strerror(errno)) != NULL) {
-	  printMessage(1,"Warning: during initial setup, the following error occurred: \"%s\"\nTry using --donotmodifystacksize when invoking the tool.\n",error);
-	} else {
-	  printMessage(1,"Warning: during initial setup, an unknown error occurred.\nTry using --donotmodifystacksize when invoking the tool.\n");
-	}
-      } 
+      setrlimit(RLIMIT_STACK,&rlim);
+#if !defined(__CYGWIN__)
+      repeatSetRLimit = 0;
+      if (getrlimit(RLIMIT_STACK,&rlim) == 0) {
+        repeatSetRLimit = (rlim.rlim_cur != rlim.rlim_max);
+      } else {
+        repeatSetRLimit = 1;
+      }
+      if (repeatSetRLimit) {
+        if (setrlimit(RLIMIT_STACK,&rlim) != 0) {
+          if ((error = strerror(errno)) != NULL) {
+            printMessage(1,"Warning: during initial setup, the following error occurred: \"%s\"\nTry using --donotmodifystacksize when invoking the tool.\n",error);
+          } else {
+            printMessage(1,"Warning: during initial setup, an unknown error occurred.\nTry using --donotmodifystacksize when invoking the tool.\n");
+          }
+        } 
+      }
+#endif
     } else {
       if ((error = strerror(errno)) != NULL) {
 	printMessage(1,"Warning: during initial setup, the following error occurred: \"%s\"\nTry using --donotmodifystacksize when invoking the tool.\n",error);
@@ -923,6 +936,7 @@ int general(int argc, char *argv[]) {
 	printMessage(1,"Warning: during initial setup, an unknown error occurred.\nTry using --donotmodifystacksize when invoking the tool.\n");
       }
     }
+#endif 
   }
   initSignalHandler();
   blockSignals();
