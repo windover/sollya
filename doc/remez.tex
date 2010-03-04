@@ -21,7 +21,7 @@ Parameters:
 \item \textbf{remez} computes an approximation of the function $f$ with respect to 
    the weight function $w$ on the interval \emph{range}. More precisely, it 
    searches a polynomial $p$ such that $\|pw-f\|_{\infty}$ is 
-   (almost minimal) among all polynomials $p$ of a certain form. The norm is
+   (almost) minimal among all polynomials $p$ of a certain form. The norm is
    the infinity norm, e.g. $\|g\|_{\infty} = \max \{|g(x)|, x \in \mathrm{range}\}.$
 
 \item If $w=1$ (the default case), it consists in searching the best 
@@ -53,7 +53,7 @@ Parameters:
 > degree(p);
 5
 > dirtyinfnorm(p-exp(x),[0;1]);
-1.12956984638214536849843017679626063762687503980789e-6
+1.12956984638214536849843017679626063762687501534126e-6
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
@@ -61,10 +61,10 @@ Parameters:
 > p = remez(1,[|0,2,4,6,8|],[0,Pi/4],1/cos(x));
 > canonical=on!;
 > p;
-0.99999999994393749280444571988532724907643631727379 + -0.4999999957155746773720
-49316308368345636630397481628 * x^2 + 4.1666613233501090518825397221274871865177
-52418561e-2 * x^4 + -1.38865291475286141707180658383176799662601690152622e-3 * x
-^6 + 2.43726791911116269422173866792791676168996590663655e-5 * x^8
+0.99999999994393749280444571988532724907643631727381 + -0.4999999957155746773720
+4931630836834563663039748203 * x^2 + 4.16666132335010905188253972212748718651775
+241902969e-2 * x^4 + -1.38865291475286141707180658383176799662601691348739e-3 * 
+x^6 + 2.437267919111162694221738667927916761689966804242e-5 * x^8
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
@@ -73,11 +73,11 @@ Parameters:
 > p2 = remez(exp(x),5,[0;1],default,1e-10);
 > p3 = remez(exp(x),5,[0;1],default,1e-15);
 > dirtyinfnorm(p1-exp(x),[0;1]);
-1.12956984638214536849843017679626063762687503980789e-6
+1.12956984638214536849843017679626063762687501534126e-6
 > dirtyinfnorm(p2-exp(x),[0;1]);
-1.1295698022747868733217420751772838986192666255395e-6
+1.12956980227478687332174207517728389861926659249056e-6
 > dirtyinfnorm(p3-exp(x),[0;1]);
-1.1295698022747868733217420751772838986192666255395e-6
+1.12956980227478687332174207517728389861926659249056e-6
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{dirtyinfnorm} (\ref{labdirtyinfnorm}), \textbf{infnorm} (\ref{labinfnorm})

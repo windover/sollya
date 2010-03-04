@@ -141,7 +141,7 @@ Parameters:
 > P = fpminimax(cos(x),6,[|DD, DD, D...|],[-1b-5;1b-5]);
 > printexpansion(P);
 (0x3ff0000000000000 + 0xbc09fda20235c100) + x * ((0x3b29ecd485d34781 + 0xb7c1cbc
-971529754) + x * (0xbfdfffffffffff98 + x * (0xbbfa6e0b3183cb0d + x * (0x3fa55555
+97120359a) + x * (0xbfdfffffffffff98 + x * (0xbbfa6e0b3183cb0d + x * (0x3fa55555
 55145337 + x * (0x3ca3540480618939 + x * 0xbf56c138142d8c3b)))))
 \end{Verbatim}
 \end{minipage}\end{center}
@@ -174,9 +174,9 @@ x * (1 + x^2 * (-357913941 * 2^(-31) + x^2 * (35789873 * 2^(-32))))
 > P3 = fpminimax(f, 5, [|D, D, D, 24...|], listpoints, absolute, default, defaul
 t, pstar);
 > print("Error of pstar: ", dirtyinfnorm(f-pstar, [-1b-7; 1b-7]));
-Error of pstar:  7.9048441305459735089729959012929935583117743626123e-16
+Error of pstar:  7.9048441305459735102879831325718745399379329453102e-16
 > print("Error of P1:    ", dirtyinfnorm(f-P1, [-1b-7; 1b-7]));
-Error of P1:     7.9048441305459735037264690498318851723556197996005e-16
+Error of P1:     7.9048441305459735159848647089192667442047469404883e-16
 > print("Error of P2:    ", dirtyinfnorm(f-P2, [-1b-7; 1b-7]));
 Error of P2:     8.2477144579950871061147021597406077993657714575238e-16
 > print("Error of P3:    ", dirtyinfnorm(f-P3, [-1b-7; 1b-7]));
