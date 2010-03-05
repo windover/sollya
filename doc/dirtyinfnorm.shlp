@@ -27,14 +27,14 @@ Use $INFNORM instead.
 The following algorithm is used: let §§n§$n$§§ be the value of variable $POINTS
 and §§t§$t$§§ be the value of variable $PREC.
 §§ §\begin{itemize}§§
-§§   -§\item §§ Evaluate §§|f|§$|f|$§§ at §§n§$n$§§ evenly distributed points in the
+§§   -§\item§§ Evaluate §§|f|§$|f|$§§ at §§n§$n$§§ evenly distributed points in the
 §§    § §§ interval §§I§$I$§§. The evaluation are faithful roundings of the exact
 §§    § §§ results at precision §§t§$t$§§.
 
-§§   -§\item §§ Whenever the derivative of §§f§$f$§§ changes its sign for two consecutive 
+§§   -§\item§§ Whenever the derivative of §§f§$f$§§ changes its sign for two consecutive 
 §§    § §§ points, find an approximation §§x§$x$§§ of its zero with precision §§t§$t$§§.
 §§    § §§ Then compute a faithful rounding of §§|f(x)|§$|f(x)|$§§ at precision §§t§$t$§§.
-§§   -§\item §§ Return the maximum of all computed values.
+§§   -§\item§§ Return the maximum of all computed values.
 §§ §\end{itemize}§§
 
 #EXAMPLE

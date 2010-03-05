@@ -409,7 +409,11 @@ main() {
   else liste=$*
   fi
 
-  cat $listOfCommandsPHP | head -n -2 | tail -n +3 | sed -n 's/,$//;p' > $listOfCommandsTmp
+  if [ -e $listOfCommandsPHP ]
+  then cat $listOfCommandsPHP | head -n -2 | tail -n +3 | sed -n 's/,$//;p' > $listOfCommandsTmp
+  else touch $listOfCommandsTmp
+  fi
+
   for file in $liste
   do
     if [ -e $file ]
