@@ -125,7 +125,7 @@ processQuickDescription() {
  then return
  fi
 
- if quickDescr=`grep "#QUICK_DESCRIPTION" $tempfile`
+ if quickDescr=`grep "#QUICK_DESCRIPTION" $tempfile | sed -e 's/\\\\/\\\\\\\\/g;'`
  then
    echo -n "$quickDescr" | sed -n 's/#QUICK_DESCRIPTION //;p' >> $target
    printf "\\\\\\\\" >> $target
@@ -152,7 +152,8 @@ processCallingAndTypes() {
    do
    ( grep "#CALLING" $tempfile | head -n $i | tail -n 1 | sed -n 's/#CALLING //;p' | tr -d '\n'; \
        printf " : " ; \
-       grep "#TYPE" $tempfile | head -n $i | tail -n 1 | sed -n 's/#TYPE //;p' | sed -n 's/->/$\\rightarrow$/g;p' )>> $target
+       grep "#TYPE" $tempfile | head -n $i | tail -n 1 | sed -n 's/#TYPE //;p' | sed -n 's/->/$\\rightarrow$/g;p' ; \
+       printf "\\\\\\\\ \n" )>> $target
 #   type=`echo $type | sed -n 's/|/$|$/g;p'`
    i=`expr $i + 1`
  done
