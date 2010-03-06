@@ -28,13 +28,13 @@ Parameters:
 \item The following algorithm is used: let $n$ be the value of variable \textbf{points}
    and $t$ be the value of variable \textbf{prec}.
    \begin{itemize}
-   \item  Evaluate $|f|$ at $n$ evenly distributed points in the
+   \item Evaluate $|f|$ at $n$ evenly distributed points in the
      interval $I$. The evaluation are faithful roundings of the exact
      results at precision $t$.
-   \item  Whenever the derivative of $f$ changes its sign for two consecutive 
+   \item Whenever the derivative of $f$ changes its sign for two consecutive 
      points, find an approximation $x$ of its zero with precision $t$.
      Then compute a faithful rounding of $|f(x)|$ at precision $t$.
-   \item  Return the maximum of all computed values.
+   \item Return the maximum of all computed values.
    \end{itemize}
 \end{itemize}
 \noindent Example 1: 
