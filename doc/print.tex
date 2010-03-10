@@ -4,12 +4,9 @@
 prints an expression\\
 \noindent Usage: 
 \begin{center}
-\textbf{print}(\emph{expr1},...,\emph{exprn}) : (\textsf{any type},..., \textsf{any type}) $\rightarrow$ \textsf{void}
-\\ 
-\textbf{print}(\emph{expr1},...,\emph{exprn}) $>$ \emph{filename} : (\textsf{any type},..., \textsf{any type}, \textsf{string}) $\rightarrow$ \textsf{void}
-\\ 
-\textbf{print}(\emph{expr1},...,\emph{exprn}) $>>$ \emph{filename} : (\textsf{any type},...,\textsf{any type}, \textsf{string}) $\rightarrow$ \textsf{void}
-\\ 
+\textbf{print}(\emph{expr1},...,\emph{exprn}) : (\textsf{any type},..., \textsf{any type}) $\rightarrow$ \textsf{void}\\
+\textbf{print}(\emph{expr1},...,\emph{exprn}) $>$ \emph{filename} : (\textsf{any type},..., \textsf{any type}, \textsf{string}) $\rightarrow$ \textsf{void}\\
+\textbf{print}(\emph{expr1},...,\emph{exprn}) $>>$ \emph{filename} : (\textsf{any type},...,\textsf{any type}, \textsf{string}) $\rightarrow$ \textsf{void}\\
 \end{center}
 Parameters: 
 \begin{itemize}
@@ -57,7 +54,7 @@ Hello
 > s = "Hello";
 > print(s,[|s|]);
 Hello [|"Hello"|]
-> t = "Hello    you";
+> t = "Hello\tyou";
 > print(t,[|t|]);
 Hello    you [|"Hello    you"|]
 \end{Verbatim}
