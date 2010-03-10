@@ -266,7 +266,7 @@ processExamples() {
        if printf "$line" | grep -e "^#" > /dev/null
        then  i=`expr $nLines + 1`
        else
-         printf "$line\n" >> $exampleFile 
+         cat $tempfile | head -n $i | tail -n 1 >> $exampleFile 
        fi
      fi
    fi
@@ -303,8 +303,17 @@ processFile() {
   preprocessTeX
   sed -n -i 's/$SOLLYA/'"$sollya_name"'/g;p' $tempfile
 
+  command=`echo $command | sed -n 's/\$\(.*\)/\1/;p'`  # removes the initial "$" of $command (e.g. GT)
+  nameOfCommand=`cat $keywords_defs | grep "^$command=" | sed -n 's/\(=.*\)//;p' | tr 'A-Z' 'a-z'` # name of the command (e.g. gt) used to name the files
+  realNameOfCommand=`cat $keywords_defs | grep "^$command=" | sed -n 's/\(.*="\)\(.*\)\("\)/\2/;p' | sed -n 's/§§\([^§]*\)§\([^§]*\)§§/\2/g;p'`  # name of the command really used in Sollya (e.g. >)
 
-  printf "\\\\subsection{"$sectionName"}\n" >> $target
+  # Interpretiation of the following line: the content of the quotes is first evaluated,
+  # hence $realNameOfCommand becomes its content (e.g. "\\&\\&") and the line becomes e.g.
+  # printf "\\&\\&" | sed -n 's/\\\\/\\/g;p'
+  # this is evaluated and, in turn, gives  "\&\&"
+  realNameOfCommand=`printf $realNameOfCommand | sed -n 's/\\\\\\\\/\\\\/g;p'`
+  
+  printf "\\\\subsection{"$realNameOfCommand"}\n" >> $target
   printf "\\\\label{lab"$sectionName"}\n" | sed -n 's/ //g;p' >> $target
   processName
   processQuickDescription

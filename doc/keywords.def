@@ -17,7 +17,7 @@ PLUS="§§+§$+$§§"
 MULT="§§*§$*$§§"
 MINUS="§§-§$-$§§"
 DIVIDE="\/"
-POWER="§§^§\\\^§§"
+POWER="§§^§$\\mathbf{\\hat{~}}$§§"
 
 APPROX="§§~§$\\sim$§§"
 
