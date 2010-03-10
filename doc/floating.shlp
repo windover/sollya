@@ -5,7 +5,7 @@
 
 #DESCRIPTION 
 The use of $COMMAND in the command $FPMINIMAX indicates that the list of
-formats given as argument is to be considered as a list of floating-point
+formats given as argument is to be considered to be a list of floating-point
 formats.
 See $FPMINIMAX for details.
 

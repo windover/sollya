@@ -9,8 +9,8 @@ binds an external mathematical function to a variable in \sollya\\
 \end{center}
 \noindent Description: \begin{itemize}
 
-\item The command \textbf{library} lets you extends the set of mathematical
-   functions known by \sollya.
+\item The command \textbf{library} lets you extend the set of mathematical
+   functions known to \sollya.
    By default, \sollya knows the most common mathematical functions such
    as \textbf{exp}, \textbf{sin}, \textbf{erf}, etc. Within \sollya, these functions may be
    composed. This way, \sollya should satisfy the needs of a lot of
@@ -20,32 +20,38 @@ binds an external mathematical function to a variable in \sollya\\
 
 \item \textbf{library} makes it possible to let \sollya know about new functions. In
    order to let it know, you have to provide an implementation of the
-   function you are interested with. This implementation is a C file containing
+   function you are interested in. This implementation is a C file containing
    a function of the form:
    \begin{verbatim} int my_ident(mpfi_t result, mpfi_t op, int n)\end{verbatim}
    The semantic of this function is the following: it is an implementation of
    the function and its derivatives in interval arithmetic.
    \verb|my_ident(result, I, n)| shall store in \verb|result| an enclosure 
-   of the image set of the n-th derivative
+   of the image set of the $n$-th derivative
    of the function f over \verb|I|: $f^{(n)}(I) \subseteq \mathrm{result}$.
 
-\item The integer returned value has no meaning currently.
+\item The integer returned value currently has no meaning.
 
-\item You must not provide a non trivial implementation for any \verb|n|. Most functions
-   of \sollya needs a relevant implementation of $f$, $f'$ and $f''$. For higher 
+\item You do not need to provide a working implementation for any \verb|n|. Most functions
+   of \sollya requires a relevant implementation only for $f$, $f'$ and $f''$. For higher 
    derivatives, its is not so critical and the implementation may just store 
    $[-\infty,\,+\infty]$ in result whenever $n>2$.
 
 \item Note that you should respect somehow MPFI standards in your implementation:
    \verb|result| has its own precision and you should perform the 
-   intermediate computations so that \verb|result| is as tighter as possible.
+   intermediate computations so that \verb|result| is as tight as possible.
 
 \item You can include sollya.h in your implementation and use library 
-   functionnalities of \sollya for your implementation.
+   functionnalities of \sollya for your implementation. However, this requires to have compiled
+   \sollya with \texttt{-fPIC} in order to make teh \sollya executable code position 
+   independent and to use a system on with programs, using \texttt{dlopen} to open
+   dynamic routines can dynamically open themselves.
 
 \item To bind your function into \sollya, you must use the same identifier as the
    function name used in your implementation file (\verb|my_ident| in the previous
-   example).
+   example). Once the function code has been bound to an identifier, you can use a simple assignment
+   to assign the bound identifier to yet another identifier. This way, you may use convenient
+   names inside \sollya even if your implementation environment requires you to use a less
+   convenient name.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]

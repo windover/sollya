@@ -17,7 +17,7 @@ unevaluated expression.
 
 #DESCRIPTION
 When called on a real number <x>, $COMMAND considers it as an interval formed
-of a single point: [x, x]. In other words, $COMMAND behaves like the identity.
+of a single point: §§[x, x]§$\left[ x, x\right]$§§. In other words, $COMMAND behaves like the identity.
 
 #EXAMPLE
 mid([1;3]);

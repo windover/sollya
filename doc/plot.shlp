@@ -34,7 +34,7 @@
 This command plots one or several functions <f1>, ... ,<fn> on an interval <I>.
 Functions can be either given as parameters of $COMMAND or as a list <L>
 which elements are functions.
-Functions are plotted on the same graphic with different colors.
+The functions are drawn on the same plot with different colors.
 
 #DESCRIPTION
 If <L> contains an element that is not a function (or a constant), an error
@@ -49,27 +49,27 @@ big precision. Each point is finally plotted.
 This avoid numerical artefacts such as critical cancellations.
 
 #DESCRIPTION
-You can save the graphic either as a data file or as a postscript file.
+You can save the function plot either as a data file or as a postscript file.
 
 #DESCRIPTION
 If you use argument $FILE with a string <name>, $SOLLYA will save a data file
 called name.dat and a gnuplot directives file called name.p. Invoking gnuplot
-on name.p will plots datas stored in name.dat.
+on name.p will plot the data stored in name.dat.
 
 #DESCRIPTION
 If you use argument $POSTSCRIPT with a string <name>, $SOLLYA will save a 
-postscript file called name.eps representing your graphic.
+postscript file called name.eps representing your plot.
 
 #DESCRIPTION
 If you use argument $POSTSCRIPTFILE with a string <name>, $SOLLYA will 
 produce the corresponding name.dat, name.p and name.eps.
 
 #DESCRIPTION
-This command uses gnuplot to produce the final graphic.
-If your terminal is not graphic (typically if you use $SOLLYA by 
+This command uses gnuplot to produce the final plot.
+If your terminal is not graphic (typically if you use $SOLLYA through 
 ssh without -X)
 gnuplot should be able to detect it and produce an ASCII-art version on the
-standard output. If it is not the case, you can either store the graphic in a
+standard output. If it is not the case, you can either store the plot in a
 postscript file to view it locally, or use $ASCIIPLOT command.
 
 #DESCRIPTION

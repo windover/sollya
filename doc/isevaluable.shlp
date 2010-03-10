@@ -10,7 +10,7 @@
 $COMMAND applied to function <function> and a constant <constant> returns
 a boolean indicating whether or not a subsequent call to $EVALUATE on the
 same function <function> and constant <constant> will produce a numerical
-result or NaN. I.e. $COMMAND returns false iff $EVALUATE will return NaN.
+result or NaN. This means $COMMAND returns false iff $EVALUATE will return NaN.
 
 #EXAMPLE
 isevaluable(sin(pi * 1/x), 0.75);

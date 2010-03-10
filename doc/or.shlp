@@ -8,7 +8,7 @@
 #DESCRIPTION 
 $COMMAND evaluates to the boolean OR of the two
 boolean expressions <expr1> and <expr2>. $COMMAND evaluates to 
-true iff at least one of <expr1> or <expr2> evaluate to true.
+true iff at least one of <expr1> or <expr2> evaluates to true.
 
 #EXAMPLE
 false || false;

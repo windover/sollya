@@ -23,8 +23,8 @@ Parameters:
 \item If \emph{filename} is given, a proof in English will be produced (and stored in file
    called \emph{filename}) proving that  $\max_{x \in I} \{|f(x)|\} \subseteq J$.
 
-\item If a list \emph{IList} of intervals \emph{I1}, ... ,\emph{In} is given, the infinity norm will
-   be computed on $I \ (I_1 \cup \dots \cup I_n)$.
+\item If a list \emph{IList} of intervals $I_1, \dots, I_n$ is given, the infinity norm will
+   be computed on $I \backslash (I_1 \cup \dots \cup I_n)$.
 
 \item The function \emph{f} is assumed to be at least twice continuous on \emph{I}. More 
    generally, if \emph{f} is $\mathcal{C}^k$, global variables \textbf{hopitalrecursions} and
@@ -34,7 +34,7 @@ Parameters:
    interval containing the exact absolute value of \emph{f} at this point.
 
 \item If the interval is not bound, the result will be $[0,\,+\infty]$ 
-   which is true but perfectly useless. \textbf{infnorm} is not meant to be used with 
+   which is correct but perfectly useless. \textbf{infnorm} is not meant to be used with 
    infinite intervals.
 
 \item The result of this command depends on the global variables \textbf{prec}, \textbf{diam},
@@ -52,7 +52,7 @@ Parameters:
      interval during the algorithm.
    \item  To perform the evaluation of a function on an interval, Taylor's rule is
      applied, e.g. $f([a,b]) \subseteq f(m) + [a-m,\,b-m] \cdot f'([a,\,b])$
-     where $m=\frac{a+b}{2}$. This rule is applied recursively $n$ times
+     where $m=\frac{a+b}{2}$. This rule is recursively applied $n$ times
      where $n$ is the value of variable \textbf{taylorrecursions}. Roughly speaking,
      the evaluations will avoid decorrelation up to order $n$.
    \item  When a function of the form $\frac{g}{h}$ has to be evaluated on an
@@ -61,7 +61,7 @@ Parameters:
      $\frac{g(z)}{h(z)}=\frac{0}{0}$ does not make any sense. In this case, L'Hopital's rule
      may be used and $\left(\frac{g}{h}\right)([a,\,b]) \subseteq \left(\frac{g'}{h'}\right)([a,\,b])$.
      Since the same can occur with the ratio $\frac{g'}{h'}$, the rule is applied
-     recursively. Variable \textbf{hopitalrecursions} controls the number of 
+     recursively. The variable \textbf{hopitalrecursions} controls the number of 
      recursion steps.
    \end{itemize}
 

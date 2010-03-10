@@ -13,8 +13,18 @@ If the character sequence does not contain a well-defined expression,
 a warning is displayed indicating a syntax error and $COMMAND returns
 a $ERROR of type $ERROR_TYPE.
 
+#DESCRIPTION
+The character sequence to be parsed by $COMMAND may contain commands that 
+return expressions, including $COMMAND itself. Those commands get executed after the string has been parsed.
+$COMMAND(<string>) will return the expression computed by the commands contained in the character 
+sequence <string>.
+
 #EXAMPLE
 parse("exp(x)");
+
+#EXAMPLE
+text = "remez(exp(x),5,[-1;1])";
+print("The string", text, "gives", parse(text));
 
 #EXAMPLE
 verbosity = 1!;
@@ -22,4 +32,5 @@ parse("5 + * 3");
 
 #SEEALSO $EXECUTE
 #SEEALSO $READFILE
+#SEEALSO $PRINT
 

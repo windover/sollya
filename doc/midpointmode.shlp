@@ -3,8 +3,8 @@
 
 #DESCRIPTION 
 $COMMAND is a global variable. When its value is $OFF, intervals are displayed
-as usual (with the form [a;b]).
-When its value is $ON, and if a and b have the same first significant digits,
+as usual (in the form §§[a;b]§$\left[ a;b\right]$§§).
+When its value is $ON, and if §§a§$a$§§ and §§b§$b$§§ have the same first significant digits,
 the interval in displayed in a way that lets one immediately see the common
 digits of the two bounds.
 

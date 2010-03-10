@@ -14,11 +14,11 @@ controls the number of recursion steps when applying L'Hopital's rule.\\
    in $I$, a direct evaluation leads to NaN.
    \sollya implements a safe heuristic to avoid this, based on L'Hopital's rule: in 
    such a case, it can be shown that $(f/g)(I) \subseteq (f'/g')(I)$. Since
-   the same problem may hold for $f'/g'$, the rule is applied recursively.
+   the same problem may exist for $f'/g'$, the rule is applied recursively.
    The number of step in this recursion process is controlled by \textbf{hopitalrecursions}.
 
-\item Setting \textbf{hopitalrecursions} to 0 makes \sollya use this rule only one time ;
-   setting it to 1 makes \sollya use the rule two times, and so on.
+\item Setting \textbf{hopitalrecursions} to 0 makes \sollya use this rule only once;
+   setting it to 1 makes \sollya use the rule twice, and so on.
    In particular: the rule is always applied at least once, if necessary.
 \end{itemize}
 \noindent Example 1: 

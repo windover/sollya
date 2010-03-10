@@ -91,7 +91,7 @@ In both directions (argument and result values), empty lists are
 represented by §§chain * NULL§\texttt{chain * NULL}§§ pointers.
 §§ § §§
 In contrast to internal procedures, externally bounded procedures can
-be considered as objects inside $SOLLYA that can be assigned to other
+be considered to be objects inside $SOLLYA that can be assigned to other
 variables, stored in list etc.
 
 #EXAMPLE

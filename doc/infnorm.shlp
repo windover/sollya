@@ -21,8 +21,8 @@ If <filename> is given, a proof in English will be produced (and stored in file
 called <filename>) proving that  §§max {|f(x)|, x in I} C J§$\max_{x \in I} \{|f(x)|\} \subseteq J$§§.
 
 #DESCRIPTION
-If a list <IList> of intervals <I1>, ... ,<In> is given, the infinity norm will
-be computed on §§I \ (I1 U ... U I2)§$I \ (I_1 \cup \dots \cup I_n)$§§.
+If a list <IList> of intervals §§<I1>, ... ,<In>§$I_1, \dots, I_n$§§ is given, the infinity norm will
+be computed on §§I \ (I1 U ... U I2)§$I \backslash (I_1 \cup \dots \cup I_n)$§§.
 
 #DESCRIPTION
 The function <f> is assumed to be at least twice continuous on <I>. More 
@@ -35,7 +35,7 @@ interval containing the exact absolute value of <f> at this point.
 
 #DESCRIPTION
 If the interval is not bound, the result will be §§[0, +Inf]§$[0,\,+\infty]$§§ 
-which is true but perfectly useless. $COMMAND is not meant to be used with 
+which is correct but perfectly useless. $COMMAND is not meant to be used with 
 infinite intervals.
 
 #DESCRIPTION
@@ -54,7 +54,7 @@ not easy even to analyse.
 §§    § §§ interval during the algorithm.
 §§   -§\item §§ To perform the evaluation of a function on an interval, Taylor's rule is
 §§    § §§ applied, e.g. §§f([a,b]) C f(m) + [a-m, b-m]*f'([a,b])§$f([a,b]) \subseteq f(m) + [a-m,\,b-m] \cdot f'([a,\,b])$§§
-§§    § §§ where §§m=(a+b)/2§$m=\frac{a+b}{2}$§§. This rule is applied recursively §§n§$n$§§ times
+§§    § §§ where §§m=(a+b)/2§$m=\frac{a+b}{2}$§§. This rule is recursively applied §§n§$n$§§ times
 §§    § §§ where §§n§$n$§§ is the value of variable $TAYLORRECURSIONS. Roughly speaking,
 §§    § §§ the evaluations will avoid decorrelation up to order §§n§$n$§§.
 §§   -§\item §§ When a function of the form §§g/h§$\frac{g}{h}$§§ has to be evaluated on an
@@ -63,7 +63,7 @@ not easy even to analyse.
 §§    § §§ §§g(z)/h(z)=0/0§$\frac{g(z)}{h(z)}=\frac{0}{0}$§§ does not make any sense. In this case, L'Hopital's rule
 §§    § §§ may be used and §§(g/h)([a,b]) C (g'/h')([a,b])§$\left(\frac{g}{h}\right)([a,\,b]) \subseteq \left(\frac{g'}{h'}\right)([a,\,b])$§§.
 §§    § §§ Since the same can occur with the ratio §§g'/h'§$\frac{g'}{h'}$§§, the rule is applied
-§§    § §§ recursively. Variable $HOPITALRECURSIONS controls the number of 
+§§    § §§ recursively. The variable $HOPITALRECURSIONS controls the number of 
 §§    § §§ recursion steps.
 §§ §\end{itemize}§§
 

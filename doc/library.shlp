@@ -5,8 +5,8 @@
 #TYPE $STRING_TYPE -> $FUNCTION_TYPE
 
 #DESCRIPTION 
-The command $COMMAND lets you extends the set of mathematical
-functions known by $SOLLYA.
+The command $COMMAND lets you extend the set of mathematical
+functions known to $SOLLYA.
 By default, $SOLLYA knows the most common mathematical functions such
 as $EXP, $SIN, $ERF, etc. Within $SOLLYA, these functions may be
 composed. This way, $SOLLYA should satisfy the needs of a lot of
@@ -17,38 +17,44 @@ defined by an integral or even a particular solution of an ODE.
 #DESCRIPTION 
 $COMMAND makes it possible to let $SOLLYA know about new functions. In
 order to let it know, you have to provide an implementation of the
-function you are interested with. This implementation is a C file containing
+function you are interested in. This implementation is a C file containing
 a function of the form:
 §§             §\begin{verbatim}§§ int my_ident(mpfi_t result, mpfi_t op, int n)§§ §\end{verbatim}§§
 
 The semantic of this function is the following: it is an implementation of
 the function and its derivatives in interval arithmetic.
 §§my_ident(result, I, n)§\verb|my_ident(result, I, n)|§§ shall store in §§result§\verb|result|§§ an enclosure 
-of the image set of the n-th derivative
+of the image set of the §§n§$n$§§-th derivative
 of the function f over §§I§\verb|I|§§: §§f^(n)(I) C result§$f^{(n)}(I) \subseteq \mathrm{result}$§§.
 
 #DESCRIPTION
-The integer returned value has no meaning currently.
+The integer returned value currently has no meaning.
 
 #DESCRIPTION
-You must not provide a non trivial implementation for any §§n§\verb|n|§§. Most functions
-of $SOLLYA needs a relevant implementation of §§f§$f$§§, §§f'§$f'$§§ and §§f''§$f''$§§. For higher 
+You do not need to provide a working implementation for any §§n§\verb|n|§§. Most functions
+of $SOLLYA requires a relevant implementation only for §§f§$f$§§, §§f'§$f'$§§ and §§f''§$f''$§§. For higher 
 derivatives, its is not so critical and the implementation may just store 
 §§[-Inf, +Inf]§$[-\infty,\,+\infty]$§§ in result whenever §§n>2§$n>2$§§.
 
 #DESCRIPTION
 Note that you should respect somehow MPFI standards in your implementation:
 §§result§\verb|result|§§ has its own precision and you should perform the 
-intermediate computations so that §§result§\verb|result|§§ is as tighter as possible.
+intermediate computations so that §§result§\verb|result|§§ is as tight as possible.
 
 #DESCRIPTION
 You can include sollya.h in your implementation and use library 
-functionnalities of $SOLLYA for your implementation.
+functionnalities of $SOLLYA for your implementation. However, this requires to have compiled
+$SOLLYA with §§-fPIC§\texttt{-fPIC}§§ in order to make teh $SOLLYA executable code position 
+independent and to use a system on with programs, using §§dlopen§\texttt{dlopen}§§ to open
+dynamic routines can dynamically open themselves.
 
 #DESCRIPTION
 To bind your function into $SOLLYA, you must use the same identifier as the
 function name used in your implementation file (§§my_ident§\verb|my_ident|§§ in the previous
-example).
+example). Once the function code has been bound to an identifier, you can use a simple assignment
+to assign the bound identifier to yet another identifier. This way, you may use convenient
+names inside $SOLLYA even if your implementation environment requires you to use a less
+convenient name.
 
 #EXAMPLE
 bashexecute("gcc -fPIC -Wall -c libraryexample.c");

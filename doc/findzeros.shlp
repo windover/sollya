@@ -8,11 +8,11 @@
 #PARAMETERS <I> is an interval.
 
 #DESCRIPTION
-$COMMAND(<f>,<I>) returns a list of intervals <I1>, ... ,<In> such that, for 
+$COMMAND(<f>,<I>) returns a list of intervals §§<I1>, ... ,<In>§$I_1, \dots, I_n$§§ such that, for 
 every zero §§z§$z$§§ of §§f§$f$§§, there exists some §§k§$k$§§ such that §§z is in Ik§$z \in I_k$§§.
 
 #DESCRIPTION
-The list may contain intervals <Ik> that do not contain any zero of <f>.
+The list may contain intervals §§<Ik>§$I_k$§§ that do not contain any zero of <f>.
 An interval <Ik> may contain many zeros of <f>.
 
 #DESCRIPTION

@@ -44,7 +44,7 @@ Parameters:
    instance, if formats[0] is 35, the coefficient of degree 0 of the 
    polynomial will fit a floating-point format of 35 bits. If formats[1] 
    is D, the coefficient of degree 1 will be representable by a floating-point
-   number with a precision of 53 bits (that is not necessarily an IEEE double
+   number with a precision of 53 bits (which is not necessarily an IEEE 754 double
    precision number. See the remark below), etc.
 
 \item The second argument may be either an integer or a list of integers
@@ -59,7 +59,7 @@ Parameters:
    degree 2 is searched as a number of precision 107, and so on.
 
 \item The list of formats may contain either integers or format types (\textbf{double},
-   \textbf{doubledouble}, \textbf{tripledouble} and \textbf{doubleextended}). The list may be too big
+   \textbf{doubledouble}, \textbf{tripledouble} and \textbf{doubleextended}). The list may be too large
    or even infinite. Only the first indications will be considered. For 
    instance, for a degree $n$ polynomial, $\mathrm{formats}[n+1]$ and above will
    be discarded. This lets one use elliptical indications for the last
@@ -97,10 +97,10 @@ Parameters:
    If you give a range, the list of points will be automatically computed.
 
 \item The fifth, sixth and seventh arguments are optional. By default, \textbf{fpminimax}
-   will approximate $f$ optimizing the relative error, and interpreting
+   will approximate $f$ while optimizing the relative error, and interpreting
    the list of formats as a list of floating-point formats.\\
    This default behavior may be changed with these optional arguments. You
-   may provide zero, one, two or three of the arguments and in any order.
+   may provide zero, one, two or three of the arguments in any order.
    This lets the user indicate only the non-default arguments.\\
    The three possible arguments are: \begin{itemize}
    \item \textbf{relative} or \textbf{absolute}: the error to be optimized;
@@ -129,16 +129,16 @@ Parameters:
    them each time.
    \\
    Note that in the case when a constrained part is given, the minimax 
-   polynomial must take it into account. For instance, in the previous
+   polynomial must take that into account. For instance, in the previous
    example, the minimax would be obtained by the following command:
           \begin{center}\verb~P = remez(1-(1+x+x^2/2)/exp(x), [|3,4|], range, 1/exp(x));~\end{center}
    Note that the constrained part is not to be added to $P$.
 
 \item Note that \textbf{fpminimax} internally computes a minimax polynomial (using
    the same algorithm as \textbf{remez} command). Thus \textbf{fpminimax} may encounter
-   the same problems as \textbf{remez}. In particular, it may be very long 
+   the same problems as \textbf{remez}. In particular, it may be very slow 
    when Haar condition is not fulfilled. Another consequence is that
-   currently \textbf{fpminimax} has to be run with a sufficiently high precision.
+   currently \textbf{fpminimax} has to be run with a sufficiently high working precision.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]

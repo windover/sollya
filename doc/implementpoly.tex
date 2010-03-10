@@ -35,7 +35,7 @@ implements a polynomial using double, double-double and triple-double arithmetic
    needed in each evaluation step to its strict minimum and as it applies
    renormalization to double-double and triple-double precision
    coefficients to bring them to a round-to-nearest expansion form, the
-   polynomial return may differ from the polynomial
+   returned polynomial may differ from the polynomial
    \emph{polynomial}. Nevertheless the difference will be small enough that
    the rounding error bound with regard to the polynomial \emph{polynomial}
    (estimated at its first order) will be less than the given error
@@ -67,7 +67,7 @@ implements a polynomial using double, double-double and triple-double arithmetic
    polynomials often are very sensitive in terms of error propagation with
    regard to their coefficients' values. Indicating \textbf{honorcoeffprec}
    prevents the \textbf{implementpoly} command from rounding the coefficients and
-   altering by many orders of magnitude approximation error of the
+   altering by many orders of magnitude the approximation error of the
    polynomial with regard to the function it approximates.
     
    The implementer behind the \textbf{implementpoly} command makes some assumptions on
