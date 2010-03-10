@@ -6,7 +6,7 @@
 #DESCRIPTION 
 $COMMAND is a function that computes the nearest floating-point number with
 64 bits of mantissa to a given number. Since it is a function, it can be
-composed with other functions of $SOLLYA such as $EXP, $SIN, etc.
+composed with other $SOLLYA functions such as $EXP, $SIN, etc.
 
 #DESCRIPTION
 It does not handle subnormal numbers. The range of possible exponents is the 
@@ -21,7 +21,8 @@ with other functions (and thus be plotted and so on).
 
 #DESCRIPTION
 Be aware that $COMMAND cannot be used as a constant to represent a format in the
-commands $ROUNDCOEFFICIENTS and $IMPLEMENTPOLY (contrary to $D, $DD,and $TD).
+commands $ROUNDCOEFFICIENTS and $IMPLEMENTPOLY (contrary to $D, $DD,and $TD). However, it
+can be used in $ROUND.
 
 #EXAMPLE
 display=binary!;
@@ -38,6 +39,7 @@ f = sin(DE(x));
 f(pi);
 g = sin(round(x,64,RN));
 
+#SEEALSO $ROUNDCOEFFICIENTS
 #SEEALSO $DOUBLE
 #SEEALSO $DOUBLEDOUBLE
 #SEEALSO $TRIPLEDOUBLE

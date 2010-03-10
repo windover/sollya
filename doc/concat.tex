@@ -8,7 +8,7 @@ concatenates two lists or strings or applies a list as arguments to a procedure\
 \\ 
 \emph{string1}\textbf{@}\emph{string2} : (\textsf{string}, \textsf{string}) $\rightarrow$ \textsf{string}
 \\ 
-\emph{proc}\textbf{@}\emph{L1} : (\textsf{string}, \textsf{string}) $\rightarrow$ \textsf{string}
+\emph{proc}\textbf{@}\emph{L1} : (\textsf{procedure}, \textsf{list}) $\rightarrow$ \textsf{any type}
 \\ 
 \end{center}
 Parameters: 
@@ -22,7 +22,13 @@ Parameters:
 \item In its first usage form, \textbf{@} concatenates two lists or strings.
 
 \item In its second usage form, \textbf{@} applies the elements of a list as
-   arguments to a procedure.
+   arguments to a procedure. In the case when \emph{proc} is a procedure 
+   with a fixed number of arguments, a check is done if the number of
+   elements in the list corresponds to the number of formal parameters
+   of the procedure. An empty list can therefore applied only to a 
+   procedure that does not take any argument. In the case of a 
+   procedure with an arbitrary number of arguments, no such check is 
+   performed.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
@@ -46,4 +52,35 @@ Hello World!
 Christoph, Mioara and Sylvain are cool guys.
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{.:} (\ref{labprepend}), \textbf{:.} (\ref{labappend}), \textbf{procedure} (\ref{labprocedure})
+\noindent Example 4: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> procedure sayhello() { 
+> "Hello! how are you?";
+> };
+> sayhello();
+Hello! how are you?
+> sayhello @ [||];
+Hello! how are you?
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 5: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> procedure add(l = ...) {
+> var acc, i;
+> acc = 0;
+> for i in l do acc = i + acc;
+> return acc;
+> };
+> add(1,2);
+3
+> add(1,2,3);
+6
+> add @ [|1, 2|];
+3
+> add @ [|1, 2, 3|];
+6
+> add @ [||];
+0
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{.:} (\ref{labprepend}), \textbf{:.} (\ref{labappend}), \textbf{procedure} (\ref{labprocedure}), \textbf{proc} (\ref{labproc})

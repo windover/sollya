@@ -9,6 +9,7 @@ plotting in $EXTERNALPLOT an absolute error is to be considered.
 §§ § §§
 See $EXTERNALPLOT for details.
 
+#DESCRIPTION
 Used with $FPMINIMAX, $COMMAND indicates that $FPMINIMAX must try to minimize
 the absolute error.
 §§ § §§

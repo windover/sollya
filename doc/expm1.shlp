@@ -1,11 +1,11 @@
 #NAME $EXPM1
-#QUICK_DESCRIPTION translated exponential function.
+#QUICK_DESCRIPTION shifted exponential function.
 
 #DESCRIPTION 
 $COMMAND is defined by §§expm1(x) = exp(x)-1§${\rm expm1}(x) = \exp(x)-1$§§.
 
 #DESCRIPTION
-It is defined for every real number x.
+It is defined for every real number §§x§$x$§§.
 
 #SEEALSO $EXP
 

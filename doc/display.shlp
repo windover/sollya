@@ -21,7 +21,7 @@ is $POWERS, all numbers will be output as dyadic numbers with a
 notation compatible with Maple and PARI/GP.  If the global notation
 variable $COMMAND is $BINARY, all numbers will be output in binary
 notation.  If the global notation variable $COMMAND is $HEXADECIMAL,
-all numbers will be output in C99/ IEEE754R notation.  All output
+all numbers will be output in C99/ IEEE754-2008 notation.  All output
 notations can be parsed back by $SOLLYA, inducing no error if the input
 and output precisions are the same (see $PREC).
 §§ § §§

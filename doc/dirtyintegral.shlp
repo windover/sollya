@@ -26,7 +26,7 @@ integral. It should not be used if safety is critical. In this case, use
 command $INTEGRAL instead.
 
 #DESCRIPTION
-Warning: this command is known to be currently unsatisfactory. If you really
+Warning: this command is currently known to be unsatisfactory. If you really
 need to compute integrals, think of using an other tool or report a feature
 request to sylvain.chevillard@ens-lyon.org.
 

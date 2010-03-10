@@ -11,7 +11,7 @@
 $COMMAND adds the element <x> at the end of the list <L>.
 
 #DESCRIPTION
-Note that since <x> may be of any type, it can be in particular a list.
+Note that since <x> may be of any type, it can in particular be a list.
 
 #EXAMPLE
 [|2,3,4|]:.5;

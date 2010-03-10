@@ -8,7 +8,7 @@
 #TYPE ($STRING_TYPE, $STRING_TYPE) -> $STRING_TYPE
 
 #CALLING <proc>$COMMAND<L1>
-#TYPE ($STRING_TYPE, $STRING_TYPE) -> $STRING_TYPE
+#TYPE ($PROCEDURE_TYPE, $LIST_TYPE) -> $ANY_TYPE
 
 
 #PARAMETERS <L1> and <L2> are two lists.
@@ -20,7 +20,13 @@ In its first usage form, $COMMAND concatenates two lists or strings.
 
 #DESCRIPTION
 In its second usage form, $COMMAND applies the elements of a list as
-arguments to a procedure.
+arguments to a procedure. In the case when <proc> is a procedure 
+with a fixed number of arguments, a check is done if the number of
+elements in the list corresponds to the number of formal parameters
+of the procedure. An empty list can therefore applied only to a 
+procedure that does not take any argument. In the case of a 
+procedure with an arbitrary number of arguments, no such check is 
+performed.
 
 #EXAMPLE
 [|1,...,3|]@[|7,8,9|];
@@ -34,9 +40,31 @@ write(a,", ", b," and ",c," are cool guys.\n");
 };
 cool @ [| "Christoph", "Mioara", "Sylvain" |];
 
+#EXAMPLE
+procedure sayhello() { 
+"Hello! how are you?";
+};
+sayhello();
+sayhello @ [||];
+
+#EXAMPLE
+procedure add(l = ...) {
+var acc, i;
+acc = 0;
+for i in l do acc = i + acc;
+return acc;
+};
+
+add(1,2);
+add(1,2,3);
+add @ [|1, 2|];
+add @ [|1, 2, 3|];
+add @ [||];
+
 #SEEALSO $PREPEND
 #SEEALSO $APPEND
 #SEEALSO $PROCEDURE
+#SEEALSO $PROC
 
 
 

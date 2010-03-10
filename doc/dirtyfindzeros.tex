@@ -22,12 +22,12 @@ Parameters:
    forgotten. This command should be considered as a numerical algorithm and
    should not be used if safety is critical.
 
-\item More precisely, the algorithm relies on global variables \textbf{prec} and \textbf{points} and
-   is the following: let $n$ be the value of variable \textbf{points} and $t$ be the value
+\item More precisely, the algorithm relies on global variables \textbf{prec} and \textbf{points} and it performs tje following steps: 
+   let $n$ be the value of variable \textbf{points} and $t$ be the value
    of variable \textbf{prec}.
    \begin{itemize}
    \item Evaluate $|f|$ at $n$ evenly distributed points in the interval $I$.
-     the precision used is automatically chosen in order to ensure that the sign
+     The working precision to be used is automatically chosen in order to ensure that the sign
      is correct.
    \item Whenever $f$ changes its sign for two consecutive points,
      find an approximation $x$ of its zero with precision $t$ using

@@ -2,8 +2,8 @@
 #QUICK_DESCRIPTION the arccosine function.
 
 #DESCRIPTION 
-$COMMAND is the inverse of the function $COS: $COMMAND(y) is the unique number 
-§§x in [0; Pi]§$x \in [0; \pi]$§§ such that $COS(x)=y.
+$COMMAND is the inverse of the function $COS: $COMMAND(§§y§$y$§§) is the unique number 
+§§x in [0; Pi]§$x \in [0; \pi]$§§ such that $COS(§§x§$x$§§)=§§y§$y$§§.
 
 #DESCRIPTION
 It is defined only for §§y in [-1; 1]§$y \in [-1;1]$§§.

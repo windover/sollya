@@ -39,9 +39,9 @@ Parameters:
 \item In the case when the second argument is a range that is reduced to a
    single point (such that $[1;\,1]$ for instance), the evaluation
    is performed in the same way as when the second argument is a constant but
-   it produces a range as a result: \textbf{evaluate} automatically adjust the precision
-   of the intern computations and returns a range that contains at most three
-   consecutive numbers of precision \textbf{prec}. This correponds to the same accuracy
+   it produces a range as a result: \textbf{evaluate} automatically adjusts the precision
+   of the intern computations and returns a range that contains at most three floating-point
+   consecutive numbers in precision \textbf{prec}. This correponds to the same accuracy
    as a faithful rounding of the actual result. If such a faithful rounding
    is not possible, \textbf{evaluate} has the same behavior as in the case when the
    second argument is a constant.

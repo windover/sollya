@@ -4,13 +4,13 @@
 parameter used in safe algorithms of \sollya and controlling the maximal length of the involved intervals.\\
 \noindent Description: \begin{itemize}
 
-\item \textbf{diam} is a global variable. Its value represents the maximal length allowed
+\item \textbf{diam} is a global variable. Its value represents the maximal width allowed
    for intervals involved in safe algorithms of \sollya (namely \textbf{infnorm},
    \textbf{checkinfnorm}, \textbf{accurateinfnorm}, \textbf{integral}, \textbf{findzeros}).
 
-\item More precisely, \textbf{diam} is relative to the diameter of the input interval of
+\item More precisely, \textbf{diam} is relative to the width of the input interval of
    the command. For instance, suppose that \textbf{diam}=1e-5: if \textbf{infnorm} is called
-   on interval $[0,\,1]$, the maximal length of an interval will be 1e-5. But if it
-   is called on interval $[0,\,1\mathrm{e}{-3}]$, the maximal length will be 1e-8.
+   on interval $[0,\,1]$, the maximal width of an interval will be 1e-5. But if it
+   is called on interval $[0,\,1\mathrm{e}{-3}]$, the maximal width will be 1e-8.
 \end{itemize}
 See also: \textbf{infnorm} (\ref{labinfnorm}), \textbf{checkinfnorm} (\ref{labcheckinfnorm}), \textbf{accurateinfnorm} (\ref{labaccurateinfnorm}), \textbf{integral} (\ref{labintegral}), \textbf{findzeros} (\ref{labfindzeros})

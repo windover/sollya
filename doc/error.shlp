@@ -15,7 +15,7 @@ evaluate to $COMMAND.
 Remark that in contrast to all other elements of the $SOLLYA language,
 $COMMAND compares neither equal nor unequal to itself. This provides a
 means of detecting syntax errors inside the $SOLLYA language itself
-without introducing issues of two different wrongly typed input being
+without introducing issues of two different wrongly typed inputs being
 equal.
 
 #EXAMPLE

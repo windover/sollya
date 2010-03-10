@@ -12,7 +12,9 @@ expressions that are not constants and that evaluate to the same
 floating-point number with the global precision $PREC. The user should
 be aware of the fact that because of floating-point evaluation, the
 operator $COMMAND is not exactly the same as the mathematical
-equality.
+equality. Further remark that according to IEEE 754-2008 floating-point
+rules, which $SOLLYA emulates, floating-point data which are NaN do not
+compare equal to any other floating-point datum, including NaN. 
 
 
 #EXAMPLE
@@ -35,6 +37,12 @@ prec = 12;
 
 #EXAMPLE
 error == error;
+
+#EXAMPLE
+a = "Biba";
+b = NaN;
+a == a;
+b == b;
 
 #SEEALSO $NEQ
 #SEEALSO $GT

@@ -2,8 +2,8 @@
 #QUICK_DESCRIPTION the arcsine function.
 
 #DESCRIPTION 
-$COMMAND is the inverse of the function $SIN: $COMMAND(y) is the unique number 
-§§x in [-Pi/2; Pi/2]§$x \in [-\pi/2; \pi/2]$§§ such that $SIN(x)=y.
+$COMMAND is the inverse of the function $SIN: $COMMAND(§§y§$y$§§) is the unique number 
+§§x in [-Pi/2; Pi/2]§$x \in [-\pi/2; \pi/2]$§§ such that $SIN(§§x§$x$§§)=§§y§$y$§§.
 
 #DESCRIPTION
 It is defined only for §§y in [-1; 1]§$y \in [-1;1]$§§.

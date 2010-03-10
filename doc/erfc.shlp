@@ -5,7 +5,7 @@
 $COMMAND is the complementary error function defined by §§erfc(x) = 1 - erf(x)§$\mathrm{erfc}(x) = 1 - \mathrm{erf}(x)$§§.
 
 #DESCRIPTION
-It is defined for every real number x.
+It is defined for every real number §§x§$x$§§.
 
 #SEEALSO $ERF
 

@@ -1,5 +1,5 @@
 #NAME $COEFF
-#QUICK_DESCRIPTION gives the coefficient of degree n of a polynomial
+#QUICK_DESCRIPTION gives the coefficient of degree §§n§$n$§§ of a polynomial
 
 #CALLING $COMMAND(<f>,<n>)
 #TYPE ($FUNCTION_TYPE, $INTEGER_TYPE) -> $CONSTANT_TYPE
