@@ -850,6 +850,7 @@ int general(int argc, char *argv[]) {
   char *error;
   int doNotModifyStackSize;
   int repeatSetRLimit;
+  int lastWasError;
 
   doNotModifyStackSize = 0;
   inputFileOpened = 0;
@@ -946,10 +947,12 @@ int general(int argc, char *argv[]) {
   exitInsteadOfRecover = 0;
   helpNotFinished = 0;
   printPrompt();
+  lastWasError = 0;
   while (1) {
     executeAbort = 0;
     parsedThing = NULL;
     parseAbort = yyparse(scanner);
+    lastWasError = 0;
     if (parsedThing != NULL) {
       
       handlingCtrlC = 0;
@@ -986,6 +989,7 @@ int general(int argc, char *argv[]) {
       } else {
 	displayColor = -1; normalMode();
 	blockSignals();
+	lastWasError = 1;
 	if (handlingCtrlC) 
 	  printMessage(1,"Warning: the last command has been interrupted. May leak memory.\n");
 	else 
@@ -1005,6 +1009,8 @@ int general(int argc, char *argv[]) {
       }
 
       freeThing(parsedThing);
+    } else {
+	lastWasError = 1;
     } 
     if (parseAbort || executeAbort) break;
     promptToBePrinted = 1;
@@ -1020,6 +1026,6 @@ int general(int argc, char *argv[]) {
     inputFileOpened = 0;
   }
 
-  return 0;
+  if (lastWasError) return 1; else return 0;
 }
 
