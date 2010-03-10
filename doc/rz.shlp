@@ -4,7 +4,7 @@
 #DESCRIPTION 
 $COMMAND is used in command $ROUND to specify that the value must be rounded
 to the closest floating-point number towards zero. It just consists in 
-truncate the value to the desired format.
+truncating the value to the desired format.
 
 #EXAMPLE
 display=binary!;

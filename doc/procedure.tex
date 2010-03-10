@@ -8,11 +8,16 @@ defines and assigns a \sollya procedure\\
 \\ 
 \textbf{procedure} \emph{identifier}(\emph{formal parameter1}, \emph{formal parameter2},..., \emph{formal parameter n}) \textbf{begin} \emph{procedure body} \textbf{return} \emph{expression}; \textbf{end} : \textsf{any type} $\rightarrow$ \textsf{void}
 \\ 
+\textbf{procedure} \emph{identifier}(\emph{formal list parameter}) \textbf{begin} \emph{procedure body} \textbf{end} : \textsf{void} $\rightarrow$ \textsf{void}
+\\ 
+\textbf{procedure} \emph{identifier}(\emph{formal list parameter}) \textbf{begin} \emph{procedure body} \textbf{return} \emph{expression}; \textbf{end} : \textsf{any type} $\rightarrow$ \textsf{void}
+\\ 
 \end{center}
 Parameters: 
 \begin{itemize}
 \item \emph{identifier} represents the name of the procedure to be defined and assigned
 \item \emph{formal parameter1}, \emph{formal parameter2} through \emph{formal parameter n} represent identifiers used as formal parameters
+\item \emph{formal list parameter} represents an identifier used as a formal parameter for the list of an arbitrary number of parameters
 \item \emph{procedure body} represents the imperative statements in the body of the procedure
 \item \emph{expression} represents the expression \textbf{procedure} shall evaluate to
 \end{itemize}
@@ -38,6 +43,20 @@ begin
 nop;
 return (n) + (1);
 end
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> procedure myprint(l = ...) { var i; for i in l do i; };
+> myprint("Lyon","Nancy","Beaverton","Coye-la-Foret","Amberg","Nizhny Novgorod",
+"Cluj-Napoca");
+Lyon
+Nancy
+Beaverton
+Coye-la-Foret
+Amberg
+Nizhny Novgorod
+Cluj-Napoca
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{proc} (\ref{labproc}), \textbf{var} (\ref{labvar})

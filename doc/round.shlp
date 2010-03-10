@@ -3,30 +3,42 @@
 
 #CALLING $COMMAND(<x>,<n>,<mode>)
 #TYPE ($CONSTANT_TYPE, $INTEGER_TYPE, $RD §§|§$|$§§ $RU §§|§$|$§§ $RN §§|§$|$§§ $RZ) -> $CONSTANT_TYPE
+#CALLING $COMMAND(<x>,<format>,<mode>)
+#TYPE ($CONSTANT_TYPE, $FORMAT_TYPE, $RD §§|§$|$§§ $RU §§|§$|$§§ $RN §§|§$|$§§ $RZ) -> $CONSTANT_TYPE
+
 
 #PARAMETERS <x> is a constant to be rounded.
 #PARAMETERS <n> is the precision of the target format.
+#PARAMETERS <format> is the name of a supported floating-point format.
 #PARAMETERS <mode> is the desired rounding mode.
 
 #DESCRIPTION 
-$COMMAND(<x>,<n>,<mode>) rounds <x> to a floating-point number with 
+If used with an integer parameter <n>, $COMMAND(<x>,<n>,<mode>) rounds <x> to a floating-point number with 
 precision <n>, according to rounding-mode <mode>. 
 
+#DESCRIPTION 
+If used with a format parameter <format>, $COMMAND(<x>,<format>,<mode>) rounds <x> to a floating-point number in the 
+floating-point format <format>, according to rounding-mode <mode>. 
+
 #DESCRIPTION
-Subnormal numbers are not handled. The range of possible exponents is the 
+Subnormal numbers are not handled are handled only if a <format> parameter is given
+that is different from $DOUBLEEXTENDED. The range of possible exponents is the 
 range used for all numbers represented in $SOLLYA (e.g. basically the range 
-used in the library MPFR). Please use the functions $DOUBLE, $DOUBLEEXTENDED,
-$DOUBLEDOUBLE and $TRIPLEDOUBLE for roundings to classical formats with their
-range of exponents.
+used in the library MPFR). 
 
 #EXAMPLE
 display=binary!;
 round(Pi,20,RN);
 
 #EXAMPLE
+printhexa(round(exp(17),53,RU));
+printhexa(D(exp(17)));
+
+#EXAMPLE
 display=binary!;
 a=2^(-1100);
 round(a,53,RN);
+round(a,D,RN);
 double(a);
 
 #SEEALSO $RN
@@ -39,4 +51,5 @@ double(a);
 #SEEALSO $TRIPLEDOUBLE
 #SEEALSO $ROUNDCOEFFICIENTS
 #SEEALSO $ROUNDCORRECTLY
+#SEEALSO $PRINTHEXA
 

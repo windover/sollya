@@ -4,7 +4,7 @@
 #TYPE $VOID_TYPE -> $VOID_TYPE
 
 #DESCRIPTION 
-The command $COMMAND, when executed abandons the execution of a $SOLLYA
+The command $COMMAND, when executed, stops the execution of a $SOLLYA
 script and leaves the $SOLLYA interpreter unless the $COMMAND command 
 is executed in a $SOLLYA script read into a main $SOLLYA script by
 $EXECUTE or §§#include§$\#$include§§.
@@ -13,7 +13,7 @@ Upon exiting the $SOLLYA interpreter, all state is thrown away, all
 memory is deallocated, all bound libraries are unbound and the
 temporary files produced by $PLOT and $EXTERNALPLOT are deleted.
 §§ § §§
-If the $COMMAND command does not lead to the abandon of the $SOLLYA
+If the $COMMAND command does not lead to a halt of the $SOLLYA
 interpreter, a warning is displayed.
 
 #EXAMPLE

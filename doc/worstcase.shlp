@@ -1,5 +1,5 @@
 #NAME $WORSTCASE
-#QUICK_DESCRIPTION searches for hard-to-round
+#QUICK_DESCRIPTION searches for hard-to-round cases of a function
 #CALLING $COMMAND(<function>, <preimage precision>, <preimage exponent range>, <image precision>, <error bound>)
 #TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $RANGE_TYPE, $INTEGER_TYPE, $CONSTANT_TYPE) -> $VOID_TYPE
 #CALLING $COMMAND(<function>, <preimage precision>, <preimage exponent range>, <image precision>, <error bound>, <filename>)
@@ -12,7 +12,7 @@
 #PARAMETERS <filename> represents a character sequence containing a filename
 
 #DESCRIPTION 
-The $COMMAND command is deprecated. It searches hard-to-round cases of
+The $COMMAND command is deprecated. It searches for hard-to-round cases of
 a function. The command $SEARCHGAL has a comparable functionality.
 
 #EXAMPLE 

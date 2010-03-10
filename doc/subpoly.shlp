@@ -12,9 +12,9 @@ the list <list>.
 §§ § §§
 If <polynomial> represents a function that is not a polynomial, subpoly returns 0.
 §§ § §§
-If <list> is a list that is end-elliptic, let be j the last value explicitly specified
+If <list> is a list that is end-elliptic, let be §§j§$j$§§ the last value explicitly specified
 in the list. All coefficients of the polynomial associated to monomials greater or
-equal to j are taken.
+equal to §§j§$j$§§ are taken.
 
 #EXAMPLE
 p = taylor(exp(x),5,0);

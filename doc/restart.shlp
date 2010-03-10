@@ -14,7 +14,7 @@ in a $SOLLYA script included by a §§#include§$\#$include§§ macro.
 Using the $COMMAND command in nested elements of imperative
 programming like for or while loops is possible. Since in most cases
 abandoning the current state of $SOLLYA means altering a loop
-invariant, warnings of the impossibility of continuing a loop may
+invariant, warnings for the impossibility of continuing a loop may
 follow unless the state is rebuilt.
 
 

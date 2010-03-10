@@ -27,7 +27,7 @@ type $STRING_TYPE, the character sequence <expri> evaluates to is
 displayed. However, if <expri> is of type $LIST_TYPE and this list
 contains a variable of type $STRING_TYPE, the expression for the list
 is displayed, i.e.  all character sequences get displayed surrounded
-by quotes ('"'). Nevertheless, escape sequences used upon defining
+by double quotes ("). Nevertheless, escape sequences used upon defining
 character sequences are interpreted immediately.
 
 #EXAMPLE

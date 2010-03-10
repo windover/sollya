@@ -1,7 +1,7 @@
 \subsection{searchgal}
 \label{labsearchgal}
 \noindent Name: \textbf{searchgal}\\
-searches for a preimage of a function such that the rounding the image commits an error smaller than a constant\\
+searches for a preimage of a function such that the rounding the image yields an error smaller than a constant\\
 \noindent Usage: 
 \begin{center}
 \textbf{searchgal}(\emph{function}, \emph{start}, \emph{preimage precision}, \emph{steps}, \emph{format}, \emph{error bound}) : (\textsf{function}, \textsf{constant}, \textsf{integer}, \textsf{integer}, \textsf{D$|$double$|$DD$|$doubledouble$|$DE$|$doubleextended$|$TD$|$tripledouble}, \textsf{constant}) $\rightarrow$ \textsf{list}
@@ -14,7 +14,7 @@ Parameters:
 \item \emph{function} represents the function to be considered
 \item \emph{start} represents a value around which the search is to be performed
 \item \emph{preimage precision} represents the precision (discretisation) for the eligible preimage values
-\item \emph{steps} represents the log2 of the number of search steps to be performed
+\item \emph{steps} represents the binary logarithm ($\log_2$) of the number of search steps to be performed
 \item \emph{format} represents the format the image of the function is to be rounded to
 \item \emph{error bound} represents a upper bound on the relative rounding error when rounding the image
 \item \emph{list of functions} represents the functions to be considered
@@ -23,7 +23,7 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item The command \textbf{searchgal} searches for a preimage $z$ of a function
+\item The command \textbf{searchgal} searches for a preimage $z$ of function
    \emph{function} or a list of functions \emph{list of functions} such that
    $z$ is a floating-point number with \emph{preimage precision}
    significant mantissa bits and the image $y$ of the function,
@@ -31,7 +31,7 @@ Parameters:
    format \emph{format} respectively to the corresponding format in \emph{list of format} 
    with a relative rounding error less than \emph{error bound}
    respectively the corresponding value in \emph{list of error bounds}. During
-   this search, at most 2 raised to \emph{steps} attempts are made. The search
+   this search, at most $2^{steps}$ attempts are made. The search
    starts with a preimage value equal to \emph{start}. This value is then
    increased and decreased by $1$ ulp in precision \emph{preimage precision} 
    until a value is found or the step limit is reached.

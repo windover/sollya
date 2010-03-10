@@ -15,8 +15,8 @@ This rule can be applied recursively.
 The number of step in this recursion process is controlled by $COMMAND.
 
 #DESCRIPTION
-Setting $COMMAND to 0 makes $SOLLYA use this rule only one time;
-setting it to 1 makes $SOLLYA use the rule two times, and so on.
+Setting $COMMAND to 0 makes $SOLLYA use this rule only once;
+setting it to 1 makes $SOLLYA use the rule twice, and so on.
 In particular: the rule is always applied at least once.
 
 #EXAMPLE

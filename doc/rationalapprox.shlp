@@ -25,7 +25,7 @@ for every elements of §§[xl,xu]§$[x_l,\,x_u]$§§. The corresponding fraction
 
 #DESCRIPTION
 Since rational numbers are not a primitive object of $SOLLYA, the fraction is
-returned as a constant function. It can be quite amazing, because $SOLLYA
+returned as a constant function. This can be quite amazing, because $SOLLYA
 immediately simplifies a constant function by evaluating it when the constant
 has to be displayed.
 To avoid this, you can use $PRINT (that displays the expression representing

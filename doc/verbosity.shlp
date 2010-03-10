@@ -1,10 +1,10 @@
 #NAME $VERBOSITY
-#QUICK_DESCRIPTION global variable controlling the quantity of information displayed by commands.
+#QUICK_DESCRIPTION global variable controlling the amount of information displayed by commands.
 
 #DESCRIPTION 
 $COMMAND accepts any integer value. At level 0, commands do not display anything
-on standard out. Note that very critical information may however be displayed on
-standard err.
+on standard output. Note that very critical information may however be displayed on
+standard error.
 
 #DESCRIPTION
 Default level is 1. It displays important information such as warnings when 

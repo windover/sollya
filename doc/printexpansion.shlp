@@ -1,7 +1,7 @@
 #NAME $PRINTEXPANSION
 #QUICK_DESCRIPTION prints a polynomial in Horner form with its coefficients written as a expansions of double precision numbers
 #CALLING $COMMAND(<polynomial>)
-#TYPE ($FUNCTION_TYPE) -> $VOID_TYPE
+#TYPE $FUNCTION_TYPE -> $VOID_TYPE
 #PARAMETERS <polynomial> represents the polynomial to be printed
 
 #DESCRIPTION 

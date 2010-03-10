@@ -4,7 +4,12 @@
 #TYPE $VOID_TYPE -> $PROCEDURE_TYPE
 #CALLING $COMMAND(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) $BEGIN <procedure body> $RETURN <expression>; $END
 #TYPE $ANY_TYPE -> $PROCEDURE_TYPE
+#CALLING $COMMAND(<formal list parameter> = ...) $BEGIN <procedure body> $END
+#TYPE $VOID_TYPE -> $PROCEDURE_TYPE
+#CALLING $COMMAND(<formal list parameter> = ...) $BEGIN <procedure body> $RETURN <expression>; $END
+#TYPE $ANY_TYPE -> $PROCEDURE_TYPE
 #PARAMETERS <formal parameter1>, <formal parameter2> through <formal parameter n> represent identifiers used as formal parameters
+#PARAMETERS <formal list parameter> represents an identifier used as a formal parameter for the list of an arbitrary number of parameters
 #PARAMETERS <procedure body> represents the imperative statements in the body of the procedure
 #PARAMETERS <expression> represents the expression $COMMAND shall evaluate to
 
@@ -13,7 +18,7 @@ The $COMMAND keyword allows for defining procedures in the $SOLLYA
 language. These procedures are common $SOLLYA objects that can be
 applied to actual parameters after definition. Upon such an
 application, the $SOLLYA interpreter applies the actual parameters to
-the formal parameters <formal parameter1> through <formal parameter n>
+the formal parameters <formal parameter1> through <formal parameter n> (resp. builds up the list of arguments and applies it to the list <formal list parameter>) 
 and executes the <procedure body>. The procedure applied to actual
 parameters evaluates then to the expression <expression> in the
 $RETURN statement after the <procedure body> or to $VOID, if no return
@@ -34,9 +39,12 @@ Upon definition of a $SOLLYA procedure using $COMMAND, no type check
 is performed. More precisely, the statements in <procedure body> are
 merely parsed but not interpreted upon procedure definition with
 $COMMAND. Type checks are performed once the procedure is applied to
-actual parameters or to $VOID. At this time, it is checked whether the
+actual parameters or to $VOID. At this time, if the procedure was defined using several different formal 
+parameters <formal parameter 1> through <formal parameter n>, it is checked whether the
 number of actual parameters corresponds to the number of formal
-parameters. Type checks are further performed upon execution of each
+parameters. If the procedure was defined using the syntax for a procedure with 
+an arbitrary number of parameters by giving a <formal list parameter>, the number of actual arguments is not checked but only 
+a list <formal list parameter> of appropriate length is built up. Type checks are further performed upon execution of each
 statement in <procedure body> and upon evaluation of the expression
 <expression> to be returned.
 §§ § §§
@@ -46,10 +54,10 @@ the $SOLLYA interpreter checks beforehand for such a statement. If one
 is found, the application of the procedure to its arguments evaluates
 to $ERROR. A warning is displayed. Remark that in contrast to other
 type or semantic correctness checks, this check is really performed
-before interpreting any other statement in body of the procedure.
+before interpreting any other statement in the body of the procedure.
 
 #DESCRIPTION
-By means provided by the $VAR keyword, it is possible to declare local
+Through the $VAR keyword it is possible to declare local
 variables and thus to have full support of recursive procedures. This
 means a procedure defined using $COMMAND may contain in its <procedure body> 
 an application of itself to some actual parameters: it suffices
@@ -128,9 +136,21 @@ makeadd = proc(n) { var add; print("n =",n); add = proc(m,n) { return n + m; }; 
 makeadd(4);
 (makeadd(4))(5,6);
 
+#EXAMPLE
+sumall = proc(l = ...) { var acc, i; acc = 0; for i in l do acc = acc + i; return acc; };
+sumall;
+sumall();
+sumall(2);
+sumall(2,5);
+sumall(2,5,7,9,16);
+sumall @ [|1,...,10|];
+
 #SEEALSO $RETURN
 #SEEALSO $EXTERNALPROC
 #SEEALSO $VOID
 #SEEALSO $QUIT
 #SEEALSO $RESTART
 #SEEALSO $VAR
+#SEEALSO $CONCAT
+
+

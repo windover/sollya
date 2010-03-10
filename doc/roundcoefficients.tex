@@ -20,16 +20,16 @@ Parameters:
 
 \item If \emph{p} is not a polynomial, \textbf{roundcoefficients} does not do anything.
 
-\item If \emph{L} contains other elements than \textbf{D}, \textbf{double}, \textbf{DD}, \textbf{doubledouble}, \textbf{TD} and
+\item If \emph{L} contains other elements than \textbf{D}, \textbf{double}, \textbf{DD}, \textbf{doubledouble}, \textbf{TD} and
    \textbf{tripledouble}, an error occurs.
 
 \item The coefficients in \emph{p} corresponding to $X^i$ is rounded to the 
    format L[i]. If \emph{L} does not contain enough elements
    (e.g. if \textbf{length}(L) $<$ \textbf{degree}(p)+1), a warning is displayed. However, the
-   coefficients corresponding to an element of \emph{L} are rounded. The last 
+   coefficients corresponding to an element of \emph{L} are rounded. The trailing 
    coefficients (that do not have a corresponding element in \emph{L}) are kept with
    their own precision.
-   If \emph{L} contains too much elements, the last useless elements are ignored.
+   If \emph{L} contains too much elements, the trailing useless elements are ignored.
    In particular \emph{L} may be end-elliptic in which case \textbf{roundcoefficients} has the 
    natural behavior.
 \end{itemize}

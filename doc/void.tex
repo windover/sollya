@@ -18,11 +18,14 @@ the functional result of a side-effect or empty argument resp. the corresponding
    is not printed at the prompt. However, it is possible to print it out
    in a print statement or in complex data types such as lists.
     
-   The \textbf{void} argument is implicit when giving not argument to a
-   procedure or an external procedure when applied. It can be explicitly given
-   nevertheless.  For example, suppose that foo is a procedure or an
+   The \textbf{void} argument is implicit when giving no argument to a
+   procedure or an external procedure when applied. It can nevertheless be given
+   explicitly.  For example, suppose that foo is a procedure or an
    external procedure with a void argument. Then foo() and foo(void) are
-   correct calls to foo.
+   correct calls to foo. This even applies to functions with having an
+   arbitrary number of arguments. In this case, any implicit or explicit \textbf{void}
+   as the only parameter to a call of such a procedure gets converted into 
+   an empty list of arguments.
 
 \item \textbf{void} is used also as a type identifier for
    \textbf{externalproc}. Typically, an external procedure taking \textbf{void} as an
@@ -70,6 +73,17 @@ Hello from the external world.
 > print(foo());
 Hello from the external world.
 void
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 4: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> procedure blub(l = ...) { print("Argument list:", l); };
+> blub(1);
+Argument list: [|1|]
+> blub();
+Argument list: [| |]
+> blub(void); 
+Argument list: [|void|]
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{error} (\ref{laberror}), \textbf{proc} (\ref{labproc}), \textbf{externalproc} (\ref{labexternalproc})

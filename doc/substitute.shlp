@@ -21,8 +21,8 @@ way as if you type the expression <f> replacing instances of the free variable
 by <t>).
 
 #DESCRIPTION
-If <f> is stored in a variable <F>. It is absolutely equivalent to 
-writing <F(g)> or <F(t)>.
+If <f> is stored in a variable <F>, the effect of the commands $COMMAND(<F>,<g>) or $COMMAND(<F>,<t>) is absolutely equivalent to 
+writing <F(g)> resp. <F(t)>.
 
 #EXAMPLE
 f=sin(x);

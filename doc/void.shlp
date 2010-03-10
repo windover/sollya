@@ -13,11 +13,14 @@ The $COMMAND result produced by a procedure or an external procedure
 is not printed at the prompt. However, it is possible to print it out
 in a print statement or in complex data types such as lists.
 §§ § §§
-The $COMMAND argument is implicit when giving not argument to a
-procedure or an external procedure when applied. It can be explicitly given
-nevertheless.  For example, suppose that foo is a procedure or an
+The $COMMAND argument is implicit when giving no argument to a
+procedure or an external procedure when applied. It can nevertheless be given
+explicitly.  For example, suppose that foo is a procedure or an
 external procedure with a void argument. Then foo() and foo(void) are
-correct calls to foo.
+correct calls to foo. This even applies to functions with having an
+arbitrary number of arguments. In this case, any implicit or explicit $COMMAND
+as the only parameter to a call of such a procedure gets converted into 
+an empty list of arguments.
 
 #DESCRIPTION
 $COMMAND is used also as a type identifier for
@@ -45,6 +48,12 @@ foo;
 foo();
 foo(void);
 print(foo());
+
+#EXAMPLE
+procedure blub(l = ...) { print("Argument list:", l); };
+blub(1);
+blub();
+blub(void); 
 
 #SEEALSO $ERROR
 #SEEALSO $PROC
