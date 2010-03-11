@@ -30,8 +30,7 @@ the range is bounded by the given bound.
 
 #EXAMPLE 
 checkinfnorm(sin(x),[0;1.75], 1);
-checkinfnorm(sin(x),[0;1.75], 1/2); checkinfnorm(sin(x),[0;20/39],
-1/2);
+checkinfnorm(sin(x),[0;1.75], 1/2); checkinfnorm(sin(x),[0;20/39],1/2);
 
 #EXAMPLE
 p = remez(exp(x), 5, [-1;1]);

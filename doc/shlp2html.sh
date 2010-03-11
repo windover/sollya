@@ -28,8 +28,8 @@ preprocessKeywords() {
     pattern=\$`cat $keywords_defs | grep "=" | head -n $i | tail -n 1 | sed -n 's/\(=.*\)//;p'`
     replacement=`cat $keywords_defs | grep "=" | head -n $i | tail -n 1 | sed -n 's/\(.*="\)\(.*\)\("\)/\2/;p'`
     nameOfCommand=`cat $keywords_defs | grep "=" | head -n $i | tail -n 1 | sed -n 's/\(=.*\)//;p' | tr 'A-Z' 'a-z'`
-    sed -n -i 's/\('"$pattern"'\)\([^[:upper:][:digit:]_]\)/<a class="command" href="help.php?name='$nameOfCommand'#'$nameOfCommand'">'"$replacement"'<\/a>\2/g;p' $tempfile
-
+#    sed -n -i 's/\('"$pattern"'\)\([^[:upper:][:digit:]_]\)/<a class="command" href="help.php?name='$nameOfCommand'#'$nameOfCommand'">'"$replacement"'<\/a>\2/g;p' $tempfile
+    sed -n -i 's/\('"$pattern"'\)\([^[:upper:][:digit:]_]\)/<?php linkTo("command","'$nameOfCommand'","'"$replacement"'");?>\2/g;p' $tempfile
     i=`expr $i + 1`
   done
   sed -n -i 's/\(a$\)//;p' $tempfile
@@ -246,13 +246,13 @@ processExampleFile() {
  total=0;
  while [ $ilocal -le $nLineslocal ]
  do
-   printf "&nbsp;&nbsp;&nbsp;> " >> $target
+   printf "&nbsp;&nbsp;&nbsp;&gt; " >> $target
    cat $exampleFile | head -n $ilocal | tail -n 1 | sed -n 's/$/<br>/;p' | sed -n 's/  /\&nbsp;\&nbsp;/g;p' | sed -n 's/\&nbsp; /\&nbsp;\&nbsp;/g;p'  >> $target
    echo "verbosity=0!; roundingwarnings=on!;" "`head -n $ilocal $exampleFile`" | $sollyaBin > $tempfile2
    sed -i -n 's/^/   /;p' $tempfile2
    total=`cat $tempfile2 | wc -l`
    countlocal=`expr $total - $countlocal`
-   tail -n $countlocal $tempfile2 | sed -n 's/$/<br>/;p' | sed -n 's/  /\&nbsp;\&nbsp;/g;p' | sed -n 's/\&nbsp; /\&nbsp;\&nbsp;/g;p' >> $target
+   tail -n $countlocal $tempfile2 | sed -n 's/  /\&nbsp;\&nbsp;/g;p' | sed -n 's/\&nbsp; /\&nbsp;\&nbsp;/g;p' | sed -n 's/</\&lt;/g;p' | sed -n 's/>/\&gt;/g;p' | sed -n 's/$/<br>/;p' >> $target
    countlocal=$total
    ilocal=`expr $ilocal + 1`
  done
