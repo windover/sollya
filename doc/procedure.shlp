@@ -3,11 +3,11 @@
 #CALLING $COMMAND <identifier>(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) $BEGIN <procedure body> $END
 #TYPE $VOID_TYPE -> $VOID_TYPE
 #CALLING $COMMAND <identifier>(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) $BEGIN <procedure body> $RETURN <expression>; $END
-#TYPE $ANY_TYPE -> $VOID_TYPE
-#CALLING $COMMAND <identifier>(<formal list parameter>) $BEGIN <procedure body> $END
 #TYPE $VOID_TYPE -> $VOID_TYPE
-#CALLING $COMMAND <identifier>(<formal list parameter>) $BEGIN <procedure body> $RETURN <expression>; $END
-#TYPE $ANY_TYPE -> $VOID_TYPE
+#CALLING $COMMAND <identifier>(<formal list parameter> = ...) $BEGIN <procedure body> $END
+#TYPE $VOID_TYPE -> $VOID_TYPE
+#CALLING $COMMAND <identifier>(<formal list parameter> = ...) $BEGIN <procedure body> $RETURN <expression>; $END
+#TYPE $VOID_TYPE -> $VOID_TYPE
 #PARAMETERS <identifier> represents the name of the procedure to be defined and assigned
 #PARAMETERS <formal parameter1>, <formal parameter2> through <formal parameter n> represent identifiers used as formal parameters
 #PARAMETERS <formal list parameter> represents an identifier used as a formal parameter for the list of an arbitrary number of parameters

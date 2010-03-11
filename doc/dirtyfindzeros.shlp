@@ -17,7 +17,7 @@ forgotten. This command should be considered as a numerical algorithm and
 should not be used if safety is critical.
 
 #DESCRIPTION
-More precisely, the algorithm relies on global variables $PREC and $POINTS and it performs tje following steps: 
+More precisely, the algorithm relies on global variables $PREC and $POINTS and it performs the following steps: 
 let §§n§$n$§§ be the value of variable $POINTS and §§t§$t$§§ be the value
 of variable $PREC.
 §§ §\begin{itemize}§§

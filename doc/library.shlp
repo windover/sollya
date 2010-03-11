@@ -11,7 +11,7 @@ By default, $SOLLYA knows the most common mathematical functions such
 as $EXP, $SIN, $ERF, etc. Within $SOLLYA, these functions may be
 composed. This way, $SOLLYA should satisfy the needs of a lot of
 users. However, for particular applications, one may want to
-manipulates other functions such as Bessel functions, or functions
+manipulate other functions such as Bessel functions, or functions
 defined by an integral or even a particular solution of an ODE.
 
 #DESCRIPTION 
@@ -28,7 +28,7 @@ of the image set of the §§n§$n$§§-th derivative
 of the function f over §§I§\verb|I|§§: §§f^(n)(I) C result§$f^{(n)}(I) \subseteq \mathrm{result}$§§.
 
 #DESCRIPTION
-The integer returned value currently has no meaning.
+The integer value returned by the function implementation currently has no meaning.
 
 #DESCRIPTION
 You do not need to provide a working implementation for any §§n§\verb|n|§§. Most functions
@@ -44,7 +44,7 @@ intermediate computations so that §§result§\verb|result|§§ is as tight as p
 #DESCRIPTION
 You can include sollya.h in your implementation and use library 
 functionnalities of $SOLLYA for your implementation. However, this requires to have compiled
-$SOLLYA with §§-fPIC§\texttt{-fPIC}§§ in order to make teh $SOLLYA executable code position 
+$SOLLYA with §§-fPIC§\texttt{-fPIC}§§ in order to make the $SOLLYA executable code position 
 independent and to use a system on with programs, using §§dlopen§\texttt{dlopen}§§ to open
 dynamic routines can dynamically open themselves.
 

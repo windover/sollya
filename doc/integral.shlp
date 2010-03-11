@@ -31,5 +31,5 @@ integral(cos(x),[0;10]);
 diam=1e-5!;
 integral(cos(x),[0;10]);
 
-#SEEALSO $POINTS
+#SEEALSO $DIAM
 #SEEALSO $DIRTYINTEGRAL

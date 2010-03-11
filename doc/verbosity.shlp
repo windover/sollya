@@ -1,5 +1,14 @@
 #NAME $VERBOSITY
 #QUICK_DESCRIPTION global variable controlling the amount of information displayed by commands.
+#CALLING $COMMAND = <n>
+#TYPE $INTEGER_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = <n> !
+#TYPE $INTEGER_TYPE -> $VOID_TYPE
+#CALLING $COMMAND
+#TYPE $CONSTANT_TYPE
+
+#PARAMETERS <n> controls the amount of information to be displayed
+
 
 #DESCRIPTION 
 $COMMAND accepts any integer value. At level 0, commands do not display anything

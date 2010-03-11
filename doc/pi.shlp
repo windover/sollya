@@ -5,7 +5,7 @@
 $COMMAND is the constant §§Pi§$\pi$§§, defined as half the period of sine and cosine.
 
 #DESCRIPTION
-In $SOLLYA, $COMMAND is considered as a 0-ary function. This way, the constant 
+In $SOLLYA, $COMMAND is considered a 0-ary function. This way, the constant 
 is not evaluated at the time of its definition but at the time of its use. For 
 instance, when you define a constant or a function relating to §§Pi§$\pi$§§, the current
 precision at the time of the definition does not matter. What is important is 
@@ -25,6 +25,7 @@ prec=20!;
 a;
 
 #EXAMPLE
+display=binary;
 prec=12!;
 d = [pi; 5];
 d;

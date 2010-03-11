@@ -1,6 +1,15 @@
 #NAME $POINTS
 #QUICK_DESCRIPTION controls the number of points chosen by $SOLLYA in certain commands.
 
+#CALLING $COMMAND = <n>
+#TYPE $INTEGER_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = <n> !
+#TYPE $INTEGER_TYPE -> $VOID_TYPE
+#CALLING $COMMAND
+#TYPE $CONSTANT_TYPE
+
+#PARAMETERS <n> represents the number of points
+
 #DESCRIPTION 
 $COMMAND is a global variable. Its value represents the number of points
 used in numerical algorithms of $SOLLYA (namely $DIRTYINFNORM,

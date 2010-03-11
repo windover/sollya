@@ -4,6 +4,8 @@
 #TYPE $DISPLAY_TYPE -> $VOID_TYPE
 #CALLING $COMMAND = <notation value> !
 #TYPE $DISPLAY_TYPE -> $VOID_TYPE
+#CALLING $COMMAND
+#TYPE $DISPLAY_TYPE
 
 #PARAMETERS <notation value> represents a variable of type $DISPLAY_TYPE
 

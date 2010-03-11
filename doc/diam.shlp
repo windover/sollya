@@ -1,6 +1,16 @@
 #NAME $DIAM
 #QUICK_DESCRIPTION parameter used in safe algorithms of $SOLLYA and controlling the maximal length of the involved intervals.
 
+#CALLING $COMMAND = <width>
+#TYPE $CONSTANT_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = <width> !
+#TYPE $CONSTANT_TYPE -> $VOID_TYPE
+#CALLING $COMMAND
+#TYPE $CONSTANT_TYPE
+
+#PARAMETERS <width> represents the maximal relative width of the intervals used
+
+
 #DESCRIPTION 
 $COMMAND is a global variable. Its value represents the maximal width allowed
 for intervals involved in safe algorithms of $SOLLYA (namely $INFNORM,

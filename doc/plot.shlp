@@ -45,8 +45,8 @@ $COMMAND relies on the value of global variable $POINTS. Let §§n§$n$§§ be t
 value of this variable. The algorithm is the following: each function is 
 evaluated at §§n§$n$§§ evenly distributed points in <I>. At each point, the 
 computed value is a faithful rounding of the exact value with a sufficiently
-big precision. Each point is finally plotted.
-This avoid numerical artefacts such as critical cancellations.
+high precision. Each point is finally plotted.
+This should avoid numerical artefacts such as critical cancellations.
 
 #DESCRIPTION
 You can save the function plot either as a data file or as a postscript file.
@@ -68,7 +68,7 @@ produce the corresponding name.dat, name.p and name.eps.
 This command uses gnuplot to produce the final plot.
 If your terminal is not graphic (typically if you use $SOLLYA through 
 ssh without -X)
-gnuplot should be able to detect it and produce an ASCII-art version on the
+gnuplot should be able to detect that and produce an ASCII-art version on the
 standard output. If it is not the case, you can either store the plot in a
 postscript file to view it locally, or use $ASCIIPLOT command.
 

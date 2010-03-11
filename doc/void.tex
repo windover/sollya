@@ -21,10 +21,11 @@ the functional result of a side-effect or empty argument resp. the corresponding
    procedure or an external procedure when applied. It can nevertheless be given
    explicitly.  For example, suppose that foo is a procedure or an
    external procedure with a void argument. Then foo() and foo(void) are
-   correct calls to foo. This even applies to functions with having an
-   arbitrary number of arguments. In this case, any implicit or explicit \textbf{void}
+   correct calls to foo. Here, a distinction must be made for procedures having an
+   arbitrary number of arguments. In this case, an implicit \textbf{void}
    as the only parameter to a call of such a procedure gets converted into 
-   an empty list of arguments.
+   an empty list of arguments, an explicit \textbf{void} gets passed as-is in the
+   formal list of parameters the procedure receives.
 
 \item \textbf{void} is used also as a type identifier for
    \textbf{externalproc}. Typically, an external procedure taking \textbf{void} as an

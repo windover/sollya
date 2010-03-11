@@ -1,5 +1,14 @@
 #NAME $TAYLORRECURSIONS
 #QUICK_DESCRIPTION controls the number of recursion steps when applying Taylor's rule.
+#CALLING $COMMAND = <n>
+#TYPE $INTEGER_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = <n> !
+#TYPE $INTEGER_TYPE -> $VOID_TYPE
+#CALLING $COMMAND
+#TYPE $CONSTANT_TYPE
+
+#PARAMETERS <n> represents the number of recursions
+
 
 #DESCRIPTION 
 $COMMAND is a global variable. Its value represents the number of steps

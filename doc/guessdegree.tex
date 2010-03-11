@@ -16,9 +16,9 @@ Parameters:
 \noindent Description: \begin{itemize}
 
 \item \textbf{guessdegree} tries to find the minimal degree needed to approximate \emph{f}
-   on \emph{I} by a polynomial with an infinity norm not greater than \emph{eps}.
+   on \emph{I} by a polynomial with an error $\epsilon=p w - f$ whose infinity norm not greater than \emph{eps}.
    More precisely, it finds $n$ minimal such that there exists a
-   polynomial $p$ of degree $n$ such that $\|pw-f\|_{\infty} < \mathrm{eps}$.
+   polynomial $p$ of degree $n$ such that $\|p w-f\|_{\infty} < \mathrm{eps}$.
 
 \item \textbf{guessdegree} returns an interval: for common cases, this interval is reduced to a 
    single number (e.g. the minimal degree). But in certain cases, \textbf{guessdegree} does

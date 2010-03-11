@@ -3,27 +3,28 @@
 #CALLING $COMMAND(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) $BEGIN <procedure body> $END
 #TYPE $VOID_TYPE -> $PROCEDURE_TYPE
 #CALLING $COMMAND(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) $BEGIN <procedure body> $RETURN <expression>; $END
-#TYPE $ANY_TYPE -> $PROCEDURE_TYPE
+#TYPE $VOID_TYPE -> $PROCEDURE_TYPE
 #CALLING $COMMAND(<formal list parameter> = ...) $BEGIN <procedure body> $END
 #TYPE $VOID_TYPE -> $PROCEDURE_TYPE
 #CALLING $COMMAND(<formal list parameter> = ...) $BEGIN <procedure body> $RETURN <expression>; $END
-#TYPE $ANY_TYPE -> $PROCEDURE_TYPE
+#TYPE $VOID_TYPE -> $PROCEDURE_TYPE
 #PARAMETERS <formal parameter1>, <formal parameter2> through <formal parameter n> represent identifiers used as formal parameters
 #PARAMETERS <formal list parameter> represents an identifier used as a formal parameter for the list of an arbitrary number of parameters
 #PARAMETERS <procedure body> represents the imperative statements in the body of the procedure
 #PARAMETERS <expression> represents the expression $COMMAND shall evaluate to
 
-#DESCRIPTION 
+#DESCRIPTION
 The $COMMAND keyword allows for defining procedures in the $SOLLYA
 language. These procedures are common $SOLLYA objects that can be
 applied to actual parameters after definition. Upon such an
 application, the $SOLLYA interpreter applies the actual parameters to
-the formal parameters <formal parameter1> through <formal parameter n> (resp. builds up the list of arguments and applies it to the list <formal list parameter>) 
-and executes the <procedure body>. The procedure applied to actual
-parameters evaluates then to the expression <expression> in the
-$RETURN statement after the <procedure body> or to $VOID, if no return
-statement is given (i.e. a $RETURN $VOID statement is implicitly
-given).
+the formal parameters <formal parameter1> through <formal parameter n>
+(resp. builds up the list of arguments and applies it to the list
+<formal list parameter>) and executes the <procedure body>. The
+procedure applied to actual parameters evaluates then to the
+expression <expression> in the $RETURN statement after the <procedure
+body> or to $VOID, if no return statement is given (i.e. a $RETURN
+$VOID statement is implicitly given).
 
 #DESCRIPTION
 $SOLLYA procedures defined by $COMMAND have no name. They can be bound
@@ -39,14 +40,16 @@ Upon definition of a $SOLLYA procedure using $COMMAND, no type check
 is performed. More precisely, the statements in <procedure body> are
 merely parsed but not interpreted upon procedure definition with
 $COMMAND. Type checks are performed once the procedure is applied to
-actual parameters or to $VOID. At this time, if the procedure was defined using several different formal 
-parameters <formal parameter 1> through <formal parameter n>, it is checked whether the
-number of actual parameters corresponds to the number of formal
-parameters. If the procedure was defined using the syntax for a procedure with 
-an arbitrary number of parameters by giving a <formal list parameter>, the number of actual arguments is not checked but only 
-a list <formal list parameter> of appropriate length is built up. Type checks are further performed upon execution of each
-statement in <procedure body> and upon evaluation of the expression
-<expression> to be returned.
+actual parameters or to $VOID. At this time, if the procedure was
+defined using several different formal parameters <formal parameter 1>
+through <formal parameter n>, it is checked whether the number of
+actual parameters corresponds to the number of formal parameters. If
+the procedure was defined using the syntax for a procedure with an
+arbitrary number of parameters by giving a <formal list parameter>,
+the number of actual arguments is not checked but only a list <formal
+list parameter> of appropriate length is built up. Type checks are
+further performed upon execution of each statement in <procedure body>
+and upon evaluation of the expression <expression> to be returned.
 §§ § §§
 Procedures defined by $PROC containing a $QUIT or $RESTART command
 cannot be executed (i.e. applied). Upon application of a procedure,

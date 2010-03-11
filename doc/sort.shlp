@@ -8,7 +8,7 @@
 
 #DESCRIPTION 
 If <L> contains only constant values, $COMMAND(<L>) returns the same list, but
-sorted increasingly.
+sorted in increasing order.
 
 #DESCRIPTION
 If <L> contains at least one element that is not a constant, the command fails 

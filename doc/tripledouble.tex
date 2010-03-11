@@ -10,7 +10,7 @@ represents a number as the sum of three IEEE doubles.\\
    as the sum of three double precision numbers.
 
 \item The algorithm used to compute \textbf{tripledouble}($x$) is the following: let $x_h$ = \textbf{double}($x$),
-   let $x_m$ = \textbf{doubledouble}($x-x_h$) and let $x_l$ = \textbf{doubledouble}($x-x_h-x_m$). 
+   let $x_m$ = \textbf{double}($x-x_h$) and let $x_l$ = \textbf{double}($x-x_h-x_m$). 
    Return the number $x_h+x_m+x_l$. Note that if the
    current precision is not sufficient to represent exactly $x_h+x_m+x_l$, a rounding will
    occur and the result of \textbf{tripledouble}(x) will be useless.

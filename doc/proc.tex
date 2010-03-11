@@ -5,9 +5,9 @@ defines a \sollya procedure\\
 \noindent Usage: 
 \begin{center}
 \textbf{proc}(\emph{formal parameter1}, \emph{formal parameter2},..., \emph{formal parameter n}) \textbf{begin} \emph{procedure body} \textbf{end} : \textsf{void} $\rightarrow$ \textsf{procedure}\\
-\textbf{proc}(\emph{formal parameter1}, \emph{formal parameter2},..., \emph{formal parameter n}) \textbf{begin} \emph{procedure body} \textbf{return} \emph{expression}; \textbf{end} : \textsf{any type} $\rightarrow$ \textsf{procedure}\\
+\textbf{proc}(\emph{formal parameter1}, \emph{formal parameter2},..., \emph{formal parameter n}) \textbf{begin} \emph{procedure body} \textbf{return} \emph{expression}; \textbf{end} : \textsf{void} $\rightarrow$ \textsf{procedure}\\
 \textbf{proc}(\emph{formal list parameter} = ...) \textbf{begin} \emph{procedure body} \textbf{end} : \textsf{void} $\rightarrow$ \textsf{procedure}\\
-\textbf{proc}(\emph{formal list parameter} = ...) \textbf{begin} \emph{procedure body} \textbf{return} \emph{expression}; \textbf{end} : \textsf{any type} $\rightarrow$ \textsf{procedure}\\
+\textbf{proc}(\emph{formal list parameter} = ...) \textbf{begin} \emph{procedure body} \textbf{return} \emph{expression}; \textbf{end} : \textsf{void} $\rightarrow$ \textsf{procedure}\\
 \end{center}
 Parameters: 
 \begin{itemize}
@@ -22,12 +22,13 @@ Parameters:
    language. These procedures are common \sollya objects that can be
    applied to actual parameters after definition. Upon such an
    application, the \sollya interpreter applies the actual parameters to
-   the formal parameters \emph{formal parameter1} through \emph{formal parameter n} (resp. builds up the list of arguments and applies it to the list \emph{formal list parameter}) 
-   and executes the \emph{procedure body}. The procedure applied to actual
-   parameters evaluates then to the expression \emph{expression} in the
-   \textbf{return} statement after the \emph{procedure body} or to \textbf{void}, if no return
-   statement is given (i.e. a \textbf{return} \textbf{void} statement is implicitly
-   given).
+   the formal parameters \emph{formal parameter1} through \emph{formal parameter n}
+   (resp. builds up the list of arguments and applies it to the list
+   \emph{formal list parameter}) and executes the \emph{procedure body}. The
+   procedure applied to actual parameters evaluates then to the
+   expression \emph{expression} in the \textbf{return} statement after the <procedure
+   body> or to \textbf{void}, if no return statement is given (i.e. a \textbf{return}
+   \textbf{void} statement is implicitly given).
 
 \item \sollya procedures defined by \textbf{proc} have no name. They can be bound
    to an identifier by assigning the procedure object a \textbf{proc}
@@ -41,14 +42,16 @@ Parameters:
    is performed. More precisely, the statements in \emph{procedure body} are
    merely parsed but not interpreted upon procedure definition with
    \textbf{proc}. Type checks are performed once the procedure is applied to
-   actual parameters or to \textbf{void}. At this time, if the procedure was defined using several different formal 
-   parameters \emph{formal parameter 1} through \emph{formal parameter n}, it is checked whether the
-   number of actual parameters corresponds to the number of formal
-   parameters. If the procedure was defined using the syntax for a procedure with 
-   an arbitrary number of parameters by giving a \emph{formal list parameter}, the number of actual arguments is not checked but only 
-   a list \emph{formal list parameter} of appropriate length is built up. Type checks are further performed upon execution of each
-   statement in \emph{procedure body} and upon evaluation of the expression
-   \emph{expression} to be returned.
+   actual parameters or to \textbf{void}. At this time, if the procedure was
+   defined using several different formal parameters \emph{formal parameter 1}
+   through \emph{formal parameter n}, it is checked whether the number of
+   actual parameters corresponds to the number of formal parameters. If
+   the procedure was defined using the syntax for a procedure with an
+   arbitrary number of parameters by giving a \emph{formal list parameter},
+   the number of actual arguments is not checked but only a list <formal
+   list parameter> of appropriate length is built up. Type checks are
+   further performed upon execution of each statement in \emph{procedure body}
+   and upon evaluation of the expression \emph{expression} to be returned.
     
    Procedures defined by \textbf{proc} containing a \textbf{quit} or \textbf{restart} command
    cannot be executed (i.e. applied). Upon application of a procedure,

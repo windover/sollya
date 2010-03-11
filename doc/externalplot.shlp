@@ -21,7 +21,7 @@ error function is plotted on all floating-point numbers with
 <precision> significant mantissa bits in the range <range>. 
 §§ § §§
 If the sixth argument of the command $COMMAND is given and evaluates to
-$PERTURB, each of the floating-point numbers the function is evluated at gets perturbed by a
+$PERTURB, each of the floating-point numbers the function is evaluated at gets perturbed by a
 random value that is uniformly distributed in §§+/-1§$\pm1$§§ ulp
 around the original <precision> bit floating-point variable.
 §§ § §§

@@ -4,6 +4,9 @@
 #TYPE $ONOFF_TYPE -> $VOID_TYPE
 #CALLING $COMMAND = <activation value> !
 #TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND
+#TYPE $ONOFF_TYPE
+
 
 #PARAMETERS <activation value> represents $ON or $OFF, i.e. activation or deactivation
 
