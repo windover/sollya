@@ -24,9 +24,9 @@
 
 \newcommand{\ligne}[1]{\texttt{#1}\\}
 
-\title{Users' manual for the \sollya tool \\ {\large Release 1.1.3} \\ ~ \\ {\large \'Equipe-projet Ar\'enaire\\Laboratoire de l'Informatique du Parall\'elisme \\ UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668}}
+\title{Users' manual for the \sollya tool \\ {\large Release 2.0 alpha} \\ ~ \\ {\large \'Equipe-projet Ar\'enaire\\Laboratoire de l'Informatique du Parall\'elisme \\ UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668}}
 
-\author{Sylvain Chevillard \\ \small{\url{sylvain.chevillard@ens-lyon.org}} \and Christoph Lauter \\ \small{\url{christoph.lauter@ens-lyon.org}} \and Nicolas Jourdan \\ \small{\url{nicolas.jourdan@ens-lyon.fr}} \and Mioara Joldes \\ \small{\url{mioara.joldes@ens-lyon.fr}} }
+\author{Sylvain Chevillard \\ \small{\url{sylvain.chevillard@ens-lyon.org}} \and Christoph Lauter \\ \small{\url{christoph.lauter@ens-lyon.org}} \and Mioara Joldes \\ \small{\url{mioara.joldes@ens-lyon.fr}} }
 
 \date{\today}
 
@@ -37,7 +37,7 @@
 
 \section*{License}
 
-The \sollya tool is copyright \copyright~ 2008 Laboratoire de
+The \sollya tool is copyright \copyright~ 2008-2010 Laboratoire de
 l'Informatique du Parall\'elisme - UMR CNRS - ENS Lyon - UCB Lyon 1 -
 INRIA 5668.  
 
@@ -61,8 +61,8 @@ The \sollya distribution can be compiled and installed using the usual
 procedure. Besides a \texttt{C} compiler, \sollya needs the following
 software libraries and tools to be installed. The \texttt{./configure}
 script checks for the installation of the libraries. However \sollya
-will build without error if some of its external tools is not
-installed. In this case an error will be produced at runtime.
+will build without error if some of its external tools are not
+installed. In this case an error will be displayed at runtime.
 \begin{itemize}
 \item \texttt{GMP}
 \item \texttt{MPFR}
@@ -72,26 +72,33 @@ installed. In this case an error will be produced at runtime.
 \item \texttt{gnuplot}
 \end{itemize}
 The use of the external tool \texttt{rlwrap} is highly recommended but
-not indispensable. Use the \texttt{-A} options of \texttt{rlwrap} for
+not required. Use the \texttt{-A} options of \texttt{rlwrap} for
 correctly displayed ANSI X3.64/ ISO/IEC 6429 colored prompts (see
 below).
 
 \subsection{\sollya command line options}
 
-In principle \sollya reads all its input on standard input and responds
-on standard output. Reading of files is internally supported but no
-file names can be given for input when the tool is started. Remark that 
-it is nevertheless possible to use \sollya on input contained in a file; 
-just redirect standard input to the file, writing on \texttt{bash} for example:
+\sollya can read input on standard input or in a file whose name is given 
+as an argument when \sollya is invoked. The tool will always produce its 
+output on standard output, unless specificly instructed by a particular
+\sollya command that writes to a file.
+The following lines are valid invocations of \sollya, assuming that 
+\texttt{bash} is used as a shell:
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-~/% sollya < myfile.sollya 
+~/% sollya
+...
+~/% sollya myfile.sollya
+...
+~/% sollya < myfile.sollya
 \end{Verbatim}
 \end{minipage}\end{center}
+If a file given as an input does not exist, an error message is displayed.
 
 All configurations of the internal state of the tool are done by
-commands given on the \sollya prompt. Nevertheless, some command line
-options are supported; they work at a very basic I/O-level and can
-therefore not be implemented as commands.
+commands given on the \sollya prompt or in \sollya
+scripts. Nevertheless, some command line options are supported; they
+work at a very basic I/O-level and can therefore not be implemented as
+commands.
 
 The following options are supported when calling \sollya:
 \begin{itemize}
@@ -105,11 +112,20 @@ The following options are supported when calling \sollya:
   connected on standard input to a pseudo-file that is a terminal. The
   option deactivates the prompt.
 \item \texttt{--oldrlwrapcompatible}: This option is deprecated. It
-  makes \sollya emit a wrong coloring escape sequence for making it
-  compatible with versions of \texttt{rlwrap} that do not support the
-  \texttt{-A} option. The option is considered as a hack since it is
-  known to garble the output of the tool under some particular
-  circumstances.
+  makes \sollya emit a non ANSI X3.64 compliant coloring escape
+  sequence for making it compatible with versions of \texttt{rlwrap}
+  that do not support the \texttt{-A} option. The option is considered
+  as a hack since it is known to garble the output of the tool under
+  some particular circumstances.
+\item \texttt{--donotmodifystacksize}: When invoked, \sollya trys to increase
+the stack size that is available to a user process to the maximum size
+supported by the kernel. On some systems, the correspondent \texttt{ioctl} 
+does not work properly. Use the option to prevent \sollya from changing the 
+stack size.
+\item \texttt{--oldautoprint}: The behaviour of an undocumented
+feature for displaying values has changed in \sollya from version 1.1
+to version 2.0. The old feature is deprecated. If you wish to use it
+nevertheless, use this deprecated option.
 \item \texttt{--help}: Prints help on the usage of the tool and quits.
 \end{itemize}
 
@@ -117,7 +133,7 @@ The following options are supported when calling \sollya:
 \section{Introduction}
 \sollya is an interactive tool for handling numerical functions and working with arbitrary precision. It can evaluate functions accurately, compute polynomial approximations of functions, automatically implement polynomials for use in math libraries, plot functions, compute infinity norms, etc. The language \sollya comes with is a full-featured script programming language with support for procedures etc. 
 
-Let us begin this manual with an example. \sollya does not allow command line edition; since that may quickly become uncomfortable, we highly suggest to use the software \rlwrap with \sollya:
+Let us begin this manual with an example. \sollya does not allow command line edition; since that may quickly become uncomfortable, we highly suggest to use the \rlwrap tool with \sollya:
 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 ~/% rlwrap sollya
@@ -137,7 +153,7 @@ If you really want to unbound $x$, you can use the \com{rename} command and chan
 
 \input{introExample3}
 
-As you have seen, you can name functions and easily work with. The basic thing to do with a function is to evaluate it at some point:
+As you have seen, you can name functions and easily work with them. The basic thing to do with a function is to evaluate it at some point:
 
 \input{introExample4}
 
@@ -145,7 +161,7 @@ The printed value is generally a faithful rounding of the exact value at the wor
 
 \input{introExample5}
 
-Sometimes, a faithful rounding cannot easily be computed. In such a case, an approximated value is printed:
+Sometimes a faithful rounding cannot easily be computed. In such a case, an approximated value is printed:
 
 \input{introExample6}
 
@@ -163,21 +179,21 @@ In this example, we define a function $f$, an interval $d$ and we compute the be
 Note that you do not really need to use such a script for computing infinity norm; as we will see, the command \com{dirtyinfnorm} does this for you.
 
 \section{General principles}
-The first goal of \sollya is to help people to use numerical functions and numerical algorithms in a safe way. It is first designed to be used interactively but it can also be used in scripts\footnote{Remark: some of the behaviors of \sollya slightly change when used in scripts. For example, no prompt is printed.}.
+The first goal of \sollya is to help people to use numerical functions and numerical algorithms in a safe way. It is first designed to be used interactively but it can also be used in scripts\footnote{Remark: some of the behaviors of \sollya slightly change when it is used in scripts. For example, no prompt is printed.}.
 
-One of the particularities of \sollya is to work with multi-precision arithmetic (it uses the \texttt{MPFR} library). For safety purposes, \sollya knows how to use interval arithmetic. It uses the interval arithmetic to produce tight and safe results with the precision required by the user.
+One of the particularities of \sollya is to work with multi-precision arithmetic (it uses the \texttt{MPFR} library). For safety purposes, \sollya knows how to use interval arithmetic. It uses interval arithmetic to produce tight and safe results with the precision required by the user.
 
 The general philosophy of \sollya is: \emph{When you can make a computation exactly and sufficiently quickly, do it; when you cannot, do not, unless you have been explicitly asked for.}
 
-The precision of the tools is set by the global variable \key{prec}. It indicates the number of bits used to represent the constants in \sollya. In general, the variable \key{prec} determines the precision of the outputs of commands: more precisely, the command will internally determine what precision should be used during the computations in order to ensure that the output is a faithfully rounded result with \key{prec} bits.
+The precision of the tools is set by the global variable \key{prec}. In general, the variable \key{prec} determines the precision of the outputs of commands: more precisely, the command will internally determine what precision should be used during the computations in order to ensure that the output is a faithfully rounded result with \key{prec} bits.
 
-For decidability and efficiency reasons, this general principle cannot be applied every time, so be careful. Moreover certain commands are known to be unsafe: they give in general excellent results and give almost \key{prec} correct bits in output for everyday examples. However they are just heuristic and should not be used when the result must be safe. See the documentation of each command to know precisely how confident you can be with its result.
+For decidability and efficiency reasons, this general principle cannot be applied every time, so be careful. Moreover certain commands are known to be unsafe: they give in general excellent results and give almost \key{prec} correct bits in output for everyday examples. However they are merely based on heuristics and should not be used when the result must be safe. See the documentation of each command to know precisely how confident you can be with their result.
 
-A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user by a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When set to $0$, \sollya becomes completely silent on stdout and prints only very important messages on stderr. Increase \key{verbosity} if you want more information about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use \texttt{!}:
+A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When set to $0$, \sollya becomes completely silent on stdout and prints only very important messages on stderr. Increase \key{verbosity} if you want more information about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use \texttt{!}:
 
 \input{introExample9}
 
-For conviviality reasons, values are displayed in decimal by default. This lets a normal human being understand the numbers he or she manipulates. But since constants are internally represented in binary, this causes permanent conversions that are sources of roundings. Thus you are loosing in accuracy and \sollya is always complaining about inexact results. If you just want to store or communicate your results (to another tools for instance) you can use bit-exact representations available in \sollya. The global variable \key{display} defines the way constants are displayed. Here is an example of the five available modes:
+For conviviality reasons, values are displayed in decimal by default. This lets a normal human being understand the numbers they manipulate. But since constants are internally represented in binary, this causes permanent conversions that are sources of roundings. Thus you are loosing in accuracy and \sollya is always complaining about inexact results. If you just want to store or communicate your results (to another tools for instance) you can use bit-exact representations available in \sollya. The global variable \key{display} defines the way constants are displayed. Here is an example of the five available modes:
 
 \input{introExample10}
 
@@ -276,7 +292,18 @@ If you define a function that refers to some variable, the precision of the vari
 
 \input{introExample15}
 
-\subsection{Intervals}
+TODO Add paragraph on infinity and on NaN.
+
+\subsection{Rational numbers and rational arithmetic}
+
+TODO Add section on rational arithmetic supported when enabled by the user (rationalmode = on).
+
+
+\subsection{Intervals and interval arithmetic}
+
+TODO Add paragraph on interval arithmetic supported natively.
+TODO Add paragraph on thin intervals defined by one number [x], including their displaying in midpointmode.
+
 Intervals are composed of two numbers or constant expressions representing the lower and the upper bound. These values are separated either by commas or semi-colons:
 
 \input{introExample16}
