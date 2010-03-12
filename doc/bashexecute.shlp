@@ -16,7 +16,7 @@ $COMMAND does not return anything. It just executes its argument. However, if
 with help of commands like $EXECUTE, $READFILE and $PARSE.
 
 #EXAMPLE
-bashexecute("ls /");
+bashexecute("LANG=C date");
 
 #SEEALSO $EXECUTE
 #SEEALSO $READFILE
