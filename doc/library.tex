@@ -54,7 +54,7 @@ binds an external mathematical function to a variable in \sollya\\
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> bashexecute("gcc -fPIC -Wall -c libraryexample.c");
+> bashexecute("gcc -fPIC -Wall -c libraryexample.c -I$HOME/.local/include");
 > bashexecute("gcc -shared -o libraryexample libraryexample.o -lgmp -lmpfr");
 > myownlog = library("./libraryexample");
 > evaluate(log(x), 2);

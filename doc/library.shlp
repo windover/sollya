@@ -57,7 +57,7 @@ names inside $SOLLYA even if your implementation environment requires you to use
 convenient name.
 
 #EXAMPLE
-bashexecute("gcc -fPIC -Wall -c libraryexample.c");
+bashexecute("gcc -fPIC -Wall -c libraryexample.c -I$HOME/.local/include");
 bashexecute("gcc -shared -o libraryexample libraryexample.o -lgmp -lmpfr");
 myownlog = library("./libraryexample");
 evaluate(log(x), 2);
