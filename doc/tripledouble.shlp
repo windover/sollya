@@ -11,7 +11,7 @@ as the sum of three double precision numbers.
 
 #DESCRIPTION
 The algorithm used to compute $COMMAND(§§x§$x$§§) is the following: let §§xh§$x_h$§§ = $DOUBLE(§§x§$x$§§),
-let §§xm§$x_m$§§ = $DOUBLE(§§x - xh§$x-x_h$§§) and let §§xl§$x_l$§§ = $DOUBLE(§§x - xh - x_m§$x-x_h-x_m$§§). 
+let §§xm§$x_m$§§ = $DOUBLE(§§x - xh§$x-x_h$§§) and let §§xl§$x_l$§§ = $DOUBLE(§§x - xh - xm§$x-x_h-x_m$§§). 
 Return the number §§xh + xm + xl§$x_h+x_m+x_l$§§. Note that if the
 current precision is not sufficient to represent exactly §§xh + xm + xl§$x_h+x_m+x_l$§§, a rounding will
 occur and the result of $COMMAND(x) will be useless.
