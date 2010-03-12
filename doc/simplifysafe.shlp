@@ -26,4 +26,6 @@ print(simplifysafe((log(x - x + 1) + asin(1)) - (atan(1) * 2)));
 
 #SEEALSO $SIMPLIFY
 #SEEALSO $AUTOSIMPLIFY
+#SEEALSO $RATIONALMODE
+
 

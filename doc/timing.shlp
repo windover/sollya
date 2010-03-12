@@ -1,6 +1,14 @@
 #NAME $TIMING
 #QUICK_DESCRIPTION global variable controlling timing measures in $SOLLYA.
+#CALLING $COMMAND = <activation value>
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = <activation value> !
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND
+#TYPE $ONOFF_TYPE
 
+#PARAMETERS <activation value> controls if timing should be performed or not
+\
 #DESCRIPTION 
 $COMMAND is a global variable. When its value is $ON, the time spent in each 
 command is measured and displayed (for $VERBOSITY levels higher than 1).
@@ -12,3 +20,5 @@ p=remez(sin(x),10,[-1;1]);
 
 #SEEALSO $ON
 #SEEALSO $OFF
+#SEEALSO $TIME
+

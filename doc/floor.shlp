@@ -8,3 +8,5 @@ $COMMAND is defined as usual: $COMMAND(§§x§$x$§§) is the greatest integer y
 It is defined for every real number §§x§$x$§§.
 
 #SEEALSO $CEIL
+#SEEALSO $FLOOR
+

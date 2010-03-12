@@ -1,0 +1,45 @@
+#NAME $RATIONALMODE
+#QUICK_DESCRIPTION global variable controlling if rational arithmetic is used or not.
+#CALLING $COMMAND = <activation value>
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = <activation value> !
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND
+#TYPE $ONOFF_TYPE
+
+#PARAMETERS <activation value> controls if rational arithmetic should be used or not
+
+#DESCRIPTION 
+$COMMAND is a global variable. When its value is $OFF, which is the default,
+$SOLLYA will not use rational arithmetic to simplify expressions. All computations,
+including the evaluation of constant expressions given on the $SOLLYA prompt,
+will be performed using floating-point and interval arithmetic. Constant expressions
+will be approximated by floating-point numbers, which are in most cases faithful 
+roundings of the expressions, when shown at the prompt. 
+
+#DESCRIPTION
+When the value of the global variable $COMMAND is $ON, $SOLLYA will use 
+rational arithmetic when simplifying expressions. Constant expressions, given 
+at the $SOLLYA prompt, will be simplified to rational numbers and displayed 
+as such when they are in the set of the rational numbers. Otherwise, flaoting-point
+and interval arithmetic will be used to compute a floating-point approximation,
+which is in most cases a faithful rounding of the constant expression.
+
+#EXAMPLE
+rationalmode=off!;
+19/17 + 3/94;
+rationalmode=on!;
+19/17 + 3/94;
+
+#EXAMPLE
+rationalmode=off!;
+exp(19/17 + 3/94);
+rationalmode=on!;
+exp(19/17 + 3/94);
+
+#SEEALSO $ON
+#SEEALSO $OFF
+#SEEALSO $NUMERATOR
+#SEEALSO $DENOMINATOR
+#SEEALSO $SIMPLIFYSAFE
+

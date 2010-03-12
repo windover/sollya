@@ -179,3 +179,10 @@ VOID="void"
 WORSTCASE="worstcase"
 WRITE="write"
 ZERODENOMINATORS="zerodenominators"
+SINGLE="single"
+SG="SG"
+NEARESTINT="nearestint"
+TIME="time"
+RATIONALMODE="rationalmode"
+
+

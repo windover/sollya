@@ -8,3 +8,5 @@ $COMMAND is defined as usual: $COMMAND(§§x§$x$§§) is the smallest integer �
 It is defined for every real number §§x§$x$§§.
 
 #SEEALSO $FLOOR
+#SEEALSO $NEARESTINT
+

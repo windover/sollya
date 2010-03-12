@@ -9,6 +9,7 @@ HONORCOEFF_TYPE="honorcoeffprec"
 APPROXERROR_TYPE="§§absolute|relative§absolute$|$relative§§"
 FPFORMAT_TYPE="§§fixed|floating§fixed$|$floating§§"
 
+CODE_TYPE="code"
 VOID_TYPE="void"
 LIST_TYPE="list"
 STRING_TYPE="string"

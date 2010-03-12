@@ -49,7 +49,7 @@ verbosity=1!;
 display=binary!;
 roundcoefficients(p,[|DD,D|]);
 
-
+#SEEALSO $SINGLE
 #SEEALSO $DOUBLE
 #SEEALSO $DOUBLEDOUBLE
 #SEEALSO $TRIPLEDOUBLE

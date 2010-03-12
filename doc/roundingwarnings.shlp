@@ -1,5 +1,14 @@
 #NAME $ROUNDINGWARNINGS
 #QUICK_DESCRIPTION global variable controlling whether or not a warning is displayed when roundings occur.
+#CALLING $COMMAND = <activation value>
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = <activation value> !
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND
+#TYPE $ONOFF_TYPE
+
+#PARAMETERS <activation value> controls if warnings should be shown or not
+
 
 #DESCRIPTION 
 $COMMAND is a global variable. When its value is $ON, warnings are
@@ -26,3 +35,5 @@ exp(0.1);
 #SEEALSO $OFF
 #SEEALSO $VERBOSITY
 #SEEALSO $MIDPOINTMODE
+#SEEALSO $RATIONALMODE
+

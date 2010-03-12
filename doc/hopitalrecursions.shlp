@@ -1,12 +1,11 @@
 #NAME $HOPITALRECURSIONS
 #QUICK_DESCRIPTION controls the number of recursion steps when applying L'Hopital's rule.
-
 #CALLING $COMMAND = <n>
 #TYPE $INTEGER_TYPE -> $VOID_TYPE
 #CALLING $COMMAND = <n> !
 #TYPE $INTEGER_TYPE -> $VOID_TYPE
 #CALLING $COMMAND
-#TYPE $CONSTANT_TYPE
+#TYPE $INTEGER_TYPE
 
 #PARAMETERS <n> represents the number of recursions
 

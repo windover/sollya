@@ -5,7 +5,7 @@
 #CALLING $COMMAND = <n> !
 #TYPE $INTEGER_TYPE -> $VOID_TYPE
 #CALLING $COMMAND
-#TYPE $CONSTANT_TYPE
+#TYPE $INTEGER_TYPE
 
 #PARAMETERS <n> controls the amount of information to be displayed
 
