@@ -1,0 +1,17 @@
+3/0;
+(-3)/0;
+infty/infty;
+infty + infty;
+infty - infty;
+f = exp(x) + 5;
+f(NaN);
+NaN == 5;
+NaN == NaN;
+NaN != NaN;
+X = "Vive la Republique!";
+!(X == X);
+X = 5;
+!(X == X);
+X = NaN;
+!(X == X);
+

@@ -1,0 +1,8 @@
+f(-infty);
+evaluate(f,[-infty;infty]);
+f(infty);
+[-infty;5] * [3;4];
+-infty < 5;
+log(0);
+[log(0);17];
+

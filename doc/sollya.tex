@@ -178,7 +178,7 @@ In this example, we define a function $f$, an interval $d$ and we compute the be
 
 Note that you do not really need to use such a script for computing infinity norm; as we will see, the command \com{dirtyinfnorm} does this for you.
 
-\section{General principles}
+\section{General principles}\label{sec:general_principles}
 The first goal of \sollya is to help people to use numerical functions and numerical algorithms in a safe way. It is first designed to be used interactively but it can also be used in scripts\footnote{Remark: some of the behaviors of \sollya slightly change when it is used in scripts. For example, no prompt is printed.}.
 
 One of the particularities of \sollya is to work with multi-precision arithmetic (it uses the \texttt{MPFR} library). For safety purposes, \sollya knows how to use interval arithmetic. It uses interval arithmetic to produce tight and safe results with the precision required by the user.
@@ -292,7 +292,45 @@ If you define a function that refers to some variable, the precision of the vari
 
 \input{introExample15}
 
-TODO Add paragraph on infinity and on NaN.
+\sollya is an environment that uses floating-point arithmetic. The
+IEEE 754-2008 standard on floating-point arithmetic does not only
+define floating-point numbers that represent real numbers but also
+floating-point data representing infinities and Not-a-Numbers (NaNs).
+\sollya also supports infinities and NaNs in the spirit of the IEEE
+754-2008 standard without taking the standard's choices literally. 
+
+\begin{itemize}
+\item Signed infinities are available through the \sollya objects
+\texttt{infty, -infty, @Inf@} and \texttt{-@Inf@}.
+\item Not-a-Numbers are supported through the \sollya objects
+\texttt{NaN} and \texttt{@NaN@}. \sollya does not have support for NaN
+payloads, signaling or quiet NaNs or signs of NaNs. Signalling NaNs
+are supported for input for single and double precision memory
+notation (see section \ref{sec:general_principles}). However, they
+immediately get converted to plain \sollya NaNs.
+\end{itemize}
+
+The evaluation of an expression involving a NaN or the evaluation of a
+function at a point being NaN always results in a NaN. 
+
+Infinities are considered to be the limits of expressions tending to
+infinity. They are supported as bounds of intervals in some
+cases. Howevert, particular commands might prohibit their use even
+though there might be a mathematical meaning attached to such
+expressions. For example, while \sollya will evaluate expressions such
+as $\lim\limits_{x \rightarrow -\infty} e^x$, expressed e.g. through
+\texttt{evaluate(exp(x),[-infty;0])}, it will not accept to compute
+the (finite) value of
+$$\int\limits_{-\infty}^0 e^x.$$
+
+The following examples give an idea of what can be done with \sollya
+infinities and NaNs.
+
+Let's think about infinities first:
+\input{introExample32}
+
+and now let's think about NaNs:
+\input{introExample33}
 
 \subsection{Rational numbers and rational arithmetic}
 
