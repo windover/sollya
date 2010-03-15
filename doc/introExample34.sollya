@@ -1,0 +1,16 @@
+verbosity = 1!; /* hidden */
+1/3 - 1/7;
+rationalmode = on;
+1/3 - 1/7;
+(2 + 1/7)^2 + (6/7)^2 + 2 * (2 + 1/7) * 6/7;
+rationalmode = off;
+(2 + 1/7)^2 + (6/7)^2 + 2 * (2 + 1/7) * 6/7;
+rationalmode = on;
+asin(1)/pi;
+sin(1/6 * pi);
+exp(1/7 - 3/21) / 7;
+rationalmode = off;
+exp(1/7 - 3/21) / 7;
+print(1/7 - 3/21);
+rationalmode = on;
+print(1/7 - 3/21);

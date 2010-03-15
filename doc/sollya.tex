@@ -26,7 +26,7 @@
 
 \title{Users' manual for the \sollya tool \\ {\large Release 2.0 alpha} \\ ~ \\ {\large \'Equipe-projet Ar\'enaire\\Laboratoire de l'Informatique du Parall\'elisme \\ UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668}}
 
-\author{Sylvain Chevillard \\ \small{\url{sylvain.chevillard@ens-lyon.org}} \and Christoph Lauter \\ \small{\url{christoph.lauter@ens-lyon.org}} \and Mioara Joldes \\ \small{\url{mioara.joldes@ens-lyon.fr}} }
+\author{Sylvain Chevillard \\ \small{\url{sylvain.chevillard@ens-lyon.org}} \and Christoph Lauter \\ \small{\url{christoph.lauter@ens-lyon.org}} \and Mioara Jolde\c{s} \\ \small{\url{mioara.joldes@ens-lyon.fr}} }
 
 \date{\today}
 
@@ -324,23 +324,71 @@ the (finite) value of
 $$\int\limits_{-\infty}^0 e^x.$$
 
 The following examples give an idea of what can be done with \sollya
-infinities and NaNs.
-
-Let's think about infinities first:
+infinities and NaNs. Here is what can be done with infinities:
 \input{introExample32}
-
-and now let's think about NaNs:
+And the following example illustrates NaN behavior.
 \input{introExample33}
 
 \subsection{Rational numbers and rational arithmetic}
 
-TODO Add section on rational arithmetic supported when enabled by the user (rationalmode = on).
+The \sollya tool is mainly based on floating-point arithmetic:
+wherever possible, floating-point algorithms, including algorithms
+using interval arithmetic, are used to produce approximate but safe
+results. For some particular cases, floating-point arithmetic is not
+sufficient: some algorithms just require natural and rational numbers
+to be handled exactly. More importantly, for these applications, it is
+required that rational numbers be displayed as such.
 
+\sollya implements a particular mode that offers a lightweight support
+for rational arithmetic. When needed, it can be enabled by assigning
+\com{on} to the global variable \com{rationalmode}. It is disabled by
+assigning \com{off}; the default is \com{off}.
+
+When the mode for rational arithmetic is enabled, \sollya's behavior
+will change as follows:
+\begin{itemize}
+\item When a constant expression is given at the \sollya prompt,
+  \sollya will first try to simplify the expression to a rational
+  number. If such an evaluation to a rational number is possible,
+  \sollya will display that number as an integer or a fraction of two
+  integers. Only if \sollya is not able to simplify the constant
+  expression to a rational number, it will launch the default behavior
+  of evaluating constant expressions to floating-point numbers that
+  are generally faithful roundings of the expressions.
+\item When the global mode \com{autosimplify} is \com{on}, which is
+  the default, \sollya will additionally use rational arithmetic while
+  trying to simplify expressions given in argument of commands. 
+\end{itemize}
+
+Even when \com{rationalmode} is \com{on}, \sollya will not able to
+exhibit integer ratios between transcendental quantities. For example,
+\sollya will not display $\frac{1}{6}$ for $\arcsin\left(
+\frac{1}{2} \right) / \pi$ but $0.16666\dots$. \sollya's evaluator
+for rational arithmetic is only able to simplify rational expressions
+based on addition, subtraction, multiplication, division, negation,
+perfect squares (for square root) and integer powers.
+
+The following example illustrates what can and what cannot be done
+with \sollya's mode for rational arithmetic: 
+
+\input{introExample34}
 
 \subsection{Intervals and interval arithmetic}
 
-TODO Add paragraph on interval arithmetic supported natively.
-TODO Add paragraph on thin intervals defined by one number [x], including their displaying in midpointmode.
+%% TODO Add paragraph on interval arithmetic supported natively.
+%% TODO Add paragraph on thin intervals defined by one number [x], 
+%% including their displaying in midpointmode.
+%% TODO Passer sur les aides des fonctions plus, moins, fois, 
+%% diviser et puissance: c'est des fonctions bivariées avec un 
+%% comportement particulier pour ce qui est des intervalles.
+%% TODO Rajouter une explication pour la syntaxe [x].
+%% TODO Dire que pour les intervalles meme si affiche un warning, la propriete 
+%% d'inclusion est verifiee; meme si l'arrondi n'est pas faithful: 
+%% exemple [log(3)/log(17) - log2(3)/log2(17)]
+%% Ce n'etait pas comme ca dans Sollya version 1.1
+%% TODO Dire que meme en mode rationalmode, les bornes d'intervalles restent des flottants.
+%% Il y a soit le mode rationalmode avant les intervalles ou les intervalles avant 
+%% le rationalmode.
 
 Intervals are composed of two numbers or constant expressions representing the lower and the upper bound. These values are separated either by commas or semi-colons:
 
@@ -348,11 +396,11 @@ Intervals are composed of two numbers or constant expressions representing the l
 
 If bounds are defined by constant expressions, these are evaluated to floating-point numbers using the current precision. Numbers or variables containing numbers keep their precision for the interval bounds. Interval bound evaluation is performed in a way that ensures the inclusion property: all points
 in the original, unevaluated interval will be contained in the interval with its bounds evaluated to floating-point numbers. Remark that 
-evaluation bounds defined by constant expressions includes $\pi$:
+evaluation bounds defined by constant expressions include $\pi$:
 
 \input{introExample17}
 
-You can get the upper-bound (respectively the lower-bound)) of an interval with the function \com{sup} (respectively \com{inf}). The middle of the interval is got with the function \com{mid}. Note that these functions can also be used on numbers (in that case, the number is interpreted as an interval containing only one single point. Thus the functions \com{inf}, \com{mid} and \com{sup} are just the identity):
+You can get the upper-bound (respectively the lower-bound)) of an interval with the command \com{sup} (respectively \com{inf}). The middle of the interval can be computed with the command \com{mid}. Note that these commands can also be used on numbers (in that case, the number is interpreted as an interval containing only one single point. In that case the commands \com{inf}, \com{mid} and \com{sup} are just the identity):
 
 \input{introExample18}
 
@@ -373,9 +421,12 @@ The basic functions available in \sollya are the following:
 \item \com{exp}, \com{expm1} (defined as $\mathrm{expm1}(x) = \exp(x)-1$)
 \item \com{log} (natural logarithm), \com{log2} (binary logarithm), \com{log10} (decimal logarithm), \com{log1p} (defined as $\mathrm{log1p}(x) = \log(1+x)$)
 \item \com{erf}, \com{erfc}
+\item \com{single}, \com{double}, \com{doubleextended}, \com{doubledouble}, \com{tripledouble} (see sections \ref{labsingle}, \ref{labdouble}, \ref{labdoubleextended}, \ref{labdoubledouble} and \ref{labtripledouble})
+\item \com{SG}, \com{D}, \com{DE}, \com{DD}, \com{TD} (see sections \ref{labsingle}, \ref{labdouble}, \ref{labdoubleextended}, \ref{labdoubledouble} and \ref{labtripledouble})
+\item \com{floor}, \com{ceil}, \com{nearestint}.
 \end{itemize}
 
-The constant $\pi$ is available through the keyword \key{pi} as a $0$-ary function: its behavior is exactly the same as if it were a constant with an infinite precision:
+The constant $\pi$ is available through the keyword \key{pi} as a $0$-ary function: 
 
 \input{introExample19}
 
@@ -395,7 +446,7 @@ Strings may contain the following escape sequences:
 meaning.
 
 \subsection{Particular values}
-\sollya knows some particular values. These values do not really have a type but they can be stored in variables and in lists. A (possibly not exhaustive) list of such values is the following:
+\sollya knows about some particular values. These values do not really have a type but they can be stored in variables and in lists. A (possibly not exhaustive) list of such values is the following:
 
 \begin{itemize}
 \item \com{on}, \com{off} (see sections \ref{labon} and \ref{laboff})
@@ -404,8 +455,8 @@ meaning.
 \item \com{RU}, \com{RD}, \com{RN}, \com{RZ} (see sections \ref{labru}, \ref{labrd}, \ref{labrn} and \ref{labrz})
 \item \com{absolute}, \com{relative} (see sections \ref{lababsolute} and \ref{labrelative})
 \item \com{floating}, \com{fixed} (see sections \ref{labfloating} and \ref{labfixed})
-\item \com{double}, \com{doubleextended}, \com{doubledouble}, \com{tripledouble} (see sections \ref{labdouble}, \ref{labdoubleextended}, \ref{labdoubledouble} and \ref{labtripledouble})
-\item \com{D}, \com{DE}, \com{DD}, \com{TD} (see sections \ref{labdouble}, \ref{labdoubleextended}, \ref{labdoubledouble} and \ref{labtripledouble})
+\item \com{single}, \com{double}, \com{doubleextended}, \com{doubledouble}, \com{tripledouble} (see sections \ref{labsingle}, \ref{labdouble}, \ref{labdoubleextended}, \ref{labdoubledouble} and \ref{labtripledouble})
+\item \com{SG}, \com{D}, \com{DE}, \com{DD}, \com{TD} (see sections \ref{labsingle}, \ref{labdouble}, \ref{labdoubleextended}, \ref{labdoubledouble} and \ref{labtripledouble})
 \item \com{perturb} (see section \ref{labperturb})
 \item \com{honorcoeffprec} (see section \ref{labhonorcoeffprec})
 \item \com{default} (see section \ref{labdefault})
@@ -416,7 +467,7 @@ meaning.
 \subsection{Lists}
 Objects can be grouped into lists. A list can contain elements with different types. As for strings, you can concatenate two lists with \com{@}. The function \com{length} gives also the length of a list.
 
-You can prepend an element to a list using \com{.:} (in $\mathcal{O}(1)$) and you can append an element to a list using \com{:.} (in $\mathcal{O}(n)$). The following example illustrates some features:
+You can prepend an element to a list using \com{.:} and you can append an element to a list using \com{:.}. The following example illustrates some features:
 
 \input{introExample21}
 
@@ -458,10 +509,10 @@ following examples:
 
 \subsection{Blocks}
 
-Statements in \sollya can be regrouped in blocks, so-called
+Statements in \sollya can be grouped in blocks, so-called
 begin-end-blocks.  This can be done using the keywords \key{begin} and
 \key{end} or their shorter variants \key{$\lbrace$} and
-\key{$\rbrace$}. Blocks declared this way are considered as one single
+\key{$\rbrace$}. Blocks declared this way are considered to be one single
 statement. As already explained in section \ref{variables}, using
 begin-end-blocks also opens the possibility of declaring variables
 through the keyword \key{var}. 
@@ -502,7 +553,7 @@ statements:
 
 \sollya supports conditional statements expressed with the keywords
 \key{if}, \key{then} and optionally \key{else}. Remark that only
-conditional statements are supported not conditional expressions. 
+conditional statements are supported and not conditional expressions. 
 
 The following examples illustrate both syntax and semantic of
 conditional statements in \sollya. Concerning syntax, remark also that there must not be any semicolon
@@ -529,7 +580,7 @@ again, syntax and semantic are best explained with an example:
 
 \input{introExample28}
 
-The third kind of loops are loops on a variables ranging on values
+The third kind of loops are loops on a variable ranging on values
 contained in a list. In order to ensure the termination of the loop,
 that list must not be end-elliptic. The loop is expressed using the
 keywords \key{for}, \key{in} and \key{do} as in the following
@@ -538,7 +589,7 @@ examples:
 \input{introExample29}
 
 For both types of \key{for} loops, assigning the loop variable is
-allowed and possible. If the loop terminates, the loop variable will
+allowed and possible. When the loop terminates, the loop variable will
 contain the value that made the loop condition fail. Consider the
 following examples:
 
@@ -553,7 +604,7 @@ programming objects are called \emph{procedures} in \sollya.
 \sollya procedures are common objects that can be, for example,
 assigned to variables or stored in lists. Procedures are declared by
 the \key{proc} keyword; see section \ref{labproc} for details. The
-returned procedure object must then be assigned to a variable and can
+returned procedure object must then be assigned to a variable. It can
 hence be applied to arguments with common application syntax. The
 \key{procedure} keyword provides an abbreviation for declaring and
 assigning a procedure; see section \ref{labprocedure} for details.
@@ -565,15 +616,34 @@ further can take any type of object in argument, in particular also
 other procedures that are then applied to arguments. Procedures can
 be declared inside other procedures. 
 
-Remark that declaring a procedure does not involve any evaluation or
+Common \sollya procedures are declared with a certain number of formal
+parameters. When the procedure is applied to actual parameters, a
+check is performed if the right number of actual parameters is
+given. Then the actual parameters are applied to the formal
+parameters. In some cases, it is required that the number of
+parameters of a procedure be variable. \sollya provides support for
+the case by procedures with an arbitrary number of actual arguments.
+When the procedure is called, those actual arguments are gathered in a
+list which is applied to the only formal list parameter of a procedure
+with an arbitrary number of arguments. See section \ref{labprocedure}
+for the exact syntax and details; an example is given just below.
+
+Let us remark that declaring a procedure does not involve any evaluation or
 other interpretation of the procedure body. In particular, this means
 that constants are evaluated to floating-point values inside \sollya
 when the procedure is applied to actual parameters and the global
 precision valid at this moment.
 
-\sollya procedures are well illustrated by the following examples:
+\sollya procedures are well illustrated with the following examples:
 
 \input{introExample31}
+
+\input{introExample35}
+
+\input{introExample36}
+
+\input{introExample37}
+
 
 \sollya also supports external procedures, i.e. procedures written in
 \texttt{C} (or some other language) and dynamically bound to \sollya

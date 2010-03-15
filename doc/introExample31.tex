@@ -10,36 +10,5 @@ begin
 nop;
 return (n) + (1);
 end
-> add = proc(m,n) { var res; res := m + n; return res; };
-> add(5,6);
-11
-> hey = proc() { print("Hello world."); };
-> hey();
-Hello world.
-> print(hey());
-Hello world.
-void
-> hey;
-proc()
-begin
-print("Hello world.");
-return void;
-end
-> fac = proc(n) { var res; if (n == 0) then res := 1 else res := n * fac(n - 1);
- return res; };
-> fac(5);
-120
-> fac(11);
-39916800
-> fac;
-proc(n)
-begin
-var res;
-if (n) == (0) then
-res := 1
-else
-res := (n) * (fac((n) - (1)));
-return res;
-end
 \end{Verbatim}
 \end{minipage}\end{center}

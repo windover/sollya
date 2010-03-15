@@ -1,0 +1,4 @@
+fac = proc(n) { var res; if (n == 0) then res := 1 else res := n * fac(n - 1); return res; };
+fac(5);
+fac(11);
+fac;

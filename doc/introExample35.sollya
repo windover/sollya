@@ -1,0 +1,6 @@
+add = proc(m,n) { var res; res := m + n; return res; };
+add(5,6);
+hey = proc() { print("Hello world."); };
+hey();
+print(hey());
+hey;
