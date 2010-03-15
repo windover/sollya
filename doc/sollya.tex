@@ -136,7 +136,7 @@ nevertheless, use this deprecated option.
 Let us begin this manual with an example. \sollya does not allow command line edition; since that may quickly become uncomfortable, we highly suggest to use the \rlwrap tool with \sollya:
 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-~/% rlwrap sollya
+~/% rlwrap -A sollya
 >
 \end{Verbatim}
 \end{minipage}\end{center}
@@ -197,7 +197,7 @@ For conviviality reasons, values are displayed in decimal by default. This lets 
 
 \input{introExample10}
 
-Remark that it is possible to maintain the general verbosity level at
+Please note that it is possible to maintain the general verbosity level at
 some higher setting while deactivating all warnings on roundings. This
 feature is controlled using the \key{roundingwarnings} global
 variable. It may be set to \key{on} or \key{off}. By default, the
@@ -215,7 +215,7 @@ You can also use memory-dump hexadecimal notation frequently used to represent I
 \input{introExample11}
 
 \sollya can parse these memory-dump hexadecimal notation back in any
-\key{display} mode. Remark that the difference of this memory-dump
+\key{display} mode. The difference of this memory-dump
 notation with the hexadecimal notation (as defined above) is made by
 the presence or absence of a \texttt{p} indicator.
 
@@ -256,7 +256,7 @@ The following code examples illustrate the usage of variables.
 
 \input{introExample12}
 
-Remark that a variable identifier, just as every identifier in
+Let us state that a variable identifier, just as every identifier in
 \sollya, contains at least one character, starting with a ASCII letter
 or one of the special symbols ``\texttt{\_}'', ``\texttt{\$}'' or
 ``\texttt{\S}'' and continuing with ASCII letters, special symbols or
@@ -276,7 +276,7 @@ The comparison operators \key{==} and \key{!=} are polymorphic. You can use it t
 
 \input{introExample13}
 
-\subsection{Numbers}
+\subsection{Numbers} \label{sec:numbers}
 \sollya represents numbers as binary multi-precision floating-point values. For integer values and values in dyadic, binary, hexadecimal or memory dump notation, it 
 automatically uses a precision needed for representing the value exactly. Additionally, automatic precision adaption takes place for all 
 integer values (even in decimal notation) written without the exponent sign \texttt{e} or with the exponent sign \texttt{e} and an exponent sufficiently 
@@ -329,7 +329,7 @@ infinities and NaNs. Here is what can be done with infinities:
 And the following example illustrates NaN behavior.
 \input{introExample33}
 
-\subsection{Rational numbers and rational arithmetic}
+\subsection{Rational numbers and rational arithmetic}\label{sec:rationalmode}
 
 The \sollya tool is mainly based on floating-point arithmetic:
 wherever possible, floating-point algorithms, including algorithms
@@ -375,28 +375,56 @@ with \sollya's mode for rational arithmetic:
 
 \subsection{Intervals and interval arithmetic}
 
-%% TODO Add paragraph on interval arithmetic supported natively.
-%% TODO Add paragraph on thin intervals defined by one number [x], 
-%% including their displaying in midpointmode.
-%% TODO Passer sur les aides des fonctions plus, moins, fois, 
-%% diviser et puissance: c'est des fonctions bivariées avec un 
-%% comportement particulier pour ce qui est des intervalles.
-%% TODO Rajouter une explication pour la syntaxe [x].
-%% TODO Dire que pour les intervalles meme si affiche un warning, la propriete 
-%% d'inclusion est verifiee; meme si l'arrondi n'est pas faithful: 
-%% exemple [log(3)/log(17) - log2(3)/log2(17)]
-%% Ce n'etait pas comme ca dans Sollya version 1.1
-%% TODO Dire que meme en mode rationalmode, les bornes d'intervalles restent des flottants.
-%% Il y a soit le mode rationalmode avant les intervalles ou les intervalles avant 
-%% le rationalmode.
-
-Intervals are composed of two numbers or constant expressions representing the lower and the upper bound. These values are separated either by commas or semi-colons:
+\sollya intervals are generally closed subsets of the real
+numbers. Two ways of defining intervals exist in \sollya. There is the
+most common way where intervals are composed of two numbers or
+constant expressions representing the lower and the upper bound. These
+values are separated either by commas or semi-colons:
 
 \input{introExample16}
 
-If bounds are defined by constant expressions, these are evaluated to floating-point numbers using the current precision. Numbers or variables containing numbers keep their precision for the interval bounds. Interval bound evaluation is performed in a way that ensures the inclusion property: all points
-in the original, unevaluated interval will be contained in the interval with its bounds evaluated to floating-point numbers. Remark that 
-evaluation bounds defined by constant expressions include $\pi$:
+\sollya has a mode for printing intervals that are that thin that
+their bounds have a number of decimal digits in common when
+printed. That mode is called \com{midpointmode}; see section
+\ref{labmidpointmode} for details. As \sollya must be able to parse
+back its own output, a syntax is provided to input intervals in
+midpoint mode:
+
+\input{introExample41}
+
+In some cases, intervals become infinitely thin in theory, in which
+case one tends to think of point intervals even if their
+floating-point representation is not infinitely thin. \sollya provides
+a very covenient way for input of such point intervals. Instead of
+writing \texttt{[a;a]}, it is possible to just write
+\texttt{[a]}. \sollya will expand the notation while making sure that
+the inclusion property is satisfied:
+
+\input{introExample38}
+
+When the mode \com{midpointmode} is set to \com{on} (see
+\ref{labmidpointmode}), \sollya will display intervals that are
+provably reduced to one point in this extended interval syntax. It
+will use \com{midpointmode} syntax for intervals that are sufficiently
+thin but not reduced to one point (see section \ref{labmidpointmode}
+for details):
+
+\input{introExample40}
+
+\sollya intervals are internally represented with floating-point
+numbers as bounds; rational numbers are not supported here. If bounds
+are defined by constant expressions, these are evaluated to
+floating-point numbers using the current precision. Numbers or
+variables containing numbers keep their precision for the interval
+bounds. Interval bound evaluation is performed in a way that ensures
+the inclusion property: all points in the original, unevaluated
+interval will be contained in the interval with its bounds evaluated
+to floating-point numbers. 
+
+Constant expressions get evaluated to floating-point values
+immediately; this includes $\pi$ and rational numbers, even in when
+\com{rationalmode} is \com{on} (see section \ref{sec:rationalmode} for
+this mode).
 
 \input{introExample17}
 
@@ -404,12 +432,54 @@ You can get the upper-bound (respectively the lower-bound)) of an interval with 
 
 \input{introExample18}
 
-Remark that the \com{mid} operator never provokes a rounding. It is
-rewritten as an unevaluated expression in terms of \com{inf} and
-\com{sup}.
+Let us mention that the \com{mid} operator never provokes a
+rounding. It is rewritten as an unevaluated expression in terms of
+\com{inf} and \com{sup}.
+
+\sollya permits intervals to also have non-real bounds, such as
+infinities or NaNs. When evaluating certain expressions, in particular
+given as interval bounds, \sollya will itself generate intervals
+containing infinities or NaNs. When evaluation yield an interval with
+a NaN bound, the given expression is most likely undefined or
+numerically unstable. Such results should not be trusted; a warning is
+displayed.
+
+While computations on intervals with bounds being NaN will always
+fail, \sollya will try to interpret infinities in the common way as
+limits. However, this is not guaranteed to work, even if it is
+guaranteed that no unsafe results will be produced. See also section
+\ref{sec:numbers} for more detail on infinities in \sollya.
+
+\input{introExample39}
+
+\sollya internally uses interval arithmetic extensively to provide
+safe answers. In order to provide for algorithms written in the
+\sollya language being able to use interval arithmetic, \sollya offers
+native support of interval arithmetic. Intervals can be added,
+subtracted, multiplied, divided, raised to powers, for short, given in
+argument to any \sollya function. The tool will apply the rules of
+interval arithmetic in order to compute output intervals that safe
+encompass the hull of the image of the function on the given interval:
+
+\input{introExample42}
+
+When such expressions involving intervals are given, \sollya will
+follow the rules of interval arithmetic in precision \com{prec} for
+immediately evaluating them to interval enclosures. While \sollya's
+evaluator will always guarantee the inclusion property, it applies
+some optimisations in some cases in order to make the image interval
+as thin as possible. For example, \sollya will use a Taylor expansion
+based evaluation if a composed function, call it $f$, is applied to an
+interval. In other words, in this case \sollya will behave as if the
+\com{evaluate} command (see section \ref{labevaluate}) were implicitly
+used. In most cases, the result will be different from the one obtained
+by replacing all occurences of the free variable of a function by the 
+interval the function is to be evaluated on:
+
+\input{introExample43}
 
 \subsection{Functions}
-\sollya knows only functions with one single variable. The first time in a session that an unbound name is used (without being assigned) it determines the name used to refer to the free variable.
+\sollya knows only about functions with one single variable. The first time in a session that an unbound name is used (without being assigned) it determines the name used to refer to the free variable.
 
 The basic functions available in \sollya are the following:
 \begin{itemize}
@@ -477,8 +547,8 @@ following example illustrates this point:
 
 \input{introExample22}
 
-Remark that the complexity for accessing an element of the list using
-indices is $\mathcal{O}(n)$.
+Please be aware of the fact that the complexity for accessing an
+element of the list using indices is $\mathcal{O}(n)$.
 
 Lists may contain ellipses indicated by \texttt{,...,} between
 elements that are constant and evaluate to integers that are
@@ -496,7 +566,7 @@ explicitly be given. If the last element given is a constant
 expression that evaluates to an integer, the list is considered as
 continued to infinity by all integers greater than that last
 element. If the last element is another object, the list is considered
-as continued to infinity by re-duplicating this last element. Remark
+as continued to infinity by re-duplicating this last element. Let us remark
 that bracket notation is supported for such end-elliptic lists even
 for implicitly given elements. However, evaluation complexity is
 high. Combinations of ellipses inside a list and in its end are
@@ -552,7 +622,7 @@ statements:
 \subsection{Conditional statements}
 
 \sollya supports conditional statements expressed with the keywords
-\key{if}, \key{then} and optionally \key{else}. Remark that only
+\key{if}, \key{then} and optionally \key{else}. Let us mention that only
 conditional statements are supported and not conditional expressions. 
 
 The following examples illustrate both syntax and semantic of
@@ -565,9 +635,9 @@ before the \key{else} keyword.
 
 \sollya supports three kinds of loops. General \emph{while-condition}
 loops can be expressed using the keywords \key{while} and
-\key{do}. Remark that the condition test is executed always before the
-loop, there is no \emph{do-until-condition} loop. Consider the following 
-examples for both syntax and semantic:
+\key{do}. One has to be aware of the fact that the condition test is
+executed always before the loop, there is no \emph{do-until-condition}
+loop. Consider the following examples for both syntax and semantic:
 
 \input{introExample27}
 

@@ -1,0 +1,6 @@
+evaluate(exp(x),[-infty;0]);
+dirtyinfnorm(exp(x),[-infty;0]);
+
+f = log(x);
+[f(0); f(1)];
+

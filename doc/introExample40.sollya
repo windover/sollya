@@ -1,0 +1,7 @@
+midpointmode = off;
+[17;17];
+[exp(pi);exp(pi)];
+midpointmode = on;
+[17;17];
+[exp(pi);exp(pi)];
+

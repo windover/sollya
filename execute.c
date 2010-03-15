@@ -14501,7 +14501,13 @@ node *evaluateThingInner(node *tree) {
       resA = evaluateThingToConstant(a,copy->child1,NULL,0);
       if(resA) {
 	mpfr_init2(b,tools_precision);
-	resB = evaluateThingToConstant(b,copy->child2,NULL,0);
+        if (isSyntacticallyEqual(copy->child1,copy->child2)) {
+          resB = resA;
+          mpfr_set_prec(b,mpfr_get_prec(a));
+          mpfr_set(b,a,GMP_RNDN);
+        } else {
+          resB = evaluateThingToConstant(b,copy->child2,NULL,0);
+        }
 	if(resB) {
 	  if ((resA == 3) || (resB == 3)) {
 	    xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
