@@ -1,14 +1,12 @@
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> f = exp(x) + 5;
 > f(-infty);
-Warning: the identifier "f" is bound to the current free variable. In a function
-al context it will be considered as the identity function.
--@Inf@
+5
 > evaluate(f,[-infty;infty]);
-[-@Inf@;@Inf@]
+[5;@Inf@]
 > f(infty);
-Warning: the identifier "f" is bound to the current free variable. In a function
-al context it will be considered as the identity function.
-@Inf@
+Warning: the given expression is undefined or numerically unstable.
+@NaN@
 > [-infty;5] * [3;4];
 [-@Inf@;20]
 > -infty < 5;

@@ -1,3 +1,4 @@
+f = exp(x) + 5;
 f(-infty);
 evaluate(f,[-infty;infty]);
 f(infty);

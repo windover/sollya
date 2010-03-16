@@ -189,7 +189,7 @@ The precision of the tools is set by the global variable \key{prec}. In general,
 
 For decidability and efficiency reasons, this general principle cannot be applied every time, so be careful. Moreover certain commands are known to be unsafe: they give in general excellent results and give almost \key{prec} correct bits in output for everyday examples. However they are merely based on heuristics and should not be used when the result must be safe. See the documentation of each command to know precisely how confident you can be with their result.
 
-A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When set to $0$, \sollya becomes completely silent on stdout and prints only very important messages on stderr. Increase \key{verbosity} if you want more information about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use \texttt{!}:
+A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When the variable is set to $0$, \sollya becomes completely silent on standard output and prints only very important messages on standard error. Increase \key{verbosity} if you want more information about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use \texttt{!}:
 
 \input{introExample9}
 
@@ -228,7 +228,7 @@ left-hand-side of an assignment. This global and unique free variable is
 a variable in the mathematical sense of the term. 
 
 \sollya also provides variables in the sense programming languages
-give to the term.  These variables, that must be different in their
+give to the term.  These variables, which must be different in their
 name from the global free variable, may be global or declared and
 attached to a block of statements, i.e. a begin-end-block. These
 programming language variables may hold any object of the \sollya
@@ -304,7 +304,7 @@ floating-point data representing infinities and Not-a-Numbers (NaNs).
 \texttt{infty, -infty, @Inf@} and \texttt{-@Inf@}.
 \item Not-a-Numbers are supported through the \sollya objects
 \texttt{NaN} and \texttt{@NaN@}. \sollya does not have support for NaN
-payloads, signaling or quiet NaNs or signs of NaNs. Signalling NaNs
+payloads, signaling or quiet NaNs or signs of NaNs. Signaling NaNs
 are supported for input for single and double precision memory
 notation (see section \ref{sec:general_principles}). However, they
 immediately get converted to plain \sollya NaNs.
@@ -315,13 +315,13 @@ function at a point being NaN always results in a NaN.
 
 Infinities are considered to be the limits of expressions tending to
 infinity. They are supported as bounds of intervals in some
-cases. Howevert, particular commands might prohibit their use even
+cases. However, particular commands might prohibit their use even
 though there might be a mathematical meaning attached to such
 expressions. For example, while \sollya will evaluate expressions such
 as $\lim\limits_{x \rightarrow -\infty} e^x$, expressed e.g. through
 \texttt{evaluate(exp(x),[-infty;0])}, it will not accept to compute
 the (finite) value of
-$$\int\limits_{-\infty}^0 e^x.$$
+$$\int\limits_{-\infty}^0 e^x \,\mbox{d}x.$$
 
 The following examples give an idea of what can be done with \sollya
 infinities and NaNs. Here is what can be done with infinities:
@@ -360,7 +360,7 @@ will change as follows:
   trying to simplify expressions given in argument of commands. 
 \end{itemize}
 
-Even when \com{rationalmode} is \com{on}, \sollya will not able to
+Even when \com{rationalmode} is \com{on}, \sollya will not be able to
 exhibit integer ratios between transcendental quantities. For example,
 \sollya will not display $\frac{1}{6}$ for $\arcsin\left(
 \frac{1}{2} \right) / \pi$ but $0.16666\dots$. \sollya's evaluator
@@ -376,7 +376,7 @@ with \sollya's mode for rational arithmetic:
 \subsection{Intervals and interval arithmetic}
 
 \sollya intervals are generally closed subsets of the real
-numbers. Two ways of defining intervals exist in \sollya. There is the
+numbers. Several ways of defining intervals exist in \sollya. There is the
 most common way where intervals are composed of two numbers or
 constant expressions representing the lower and the upper bound. These
 values are separated either by commas or semi-colons:
@@ -458,7 +458,7 @@ safe answers. In order to provide for algorithms written in the
 native support of interval arithmetic. Intervals can be added,
 subtracted, multiplied, divided, raised to powers, for short, given in
 argument to any \sollya function. The tool will apply the rules of
-interval arithmetic in order to compute output intervals that safe
+interval arithmetic in order to compute output intervals that safely
 encompass the hull of the image of the function on the given interval:
 
 \input{introExample42}
@@ -466,7 +466,7 @@ encompass the hull of the image of the function on the given interval:
 When such expressions involving intervals are given, \sollya will
 follow the rules of interval arithmetic in precision \com{prec} for
 immediately evaluating them to interval enclosures. While \sollya's
-evaluator will always guarantee the inclusion property, it applies
+evaluator always guarantees the inclusion property, it also applies
 some optimisations in some cases in order to make the image interval
 as thin as possible. For example, \sollya will use a Taylor expansion
 based evaluation if a composed function, call it $f$, is applied to an
@@ -535,13 +535,13 @@ meaning.
 \end{itemize}
 
 \subsection{Lists}
-Objects can be grouped into lists. A list can contain elements with different types. As for strings, you can concatenate two lists with \com{@}. The function \com{length} gives also the length of a list.
+Objects can be grouped into lists. A list can contain elements with different types. As for strings, you can concatenate two lists with \com{@}. The function \com{length} also gives the length of a list.
 
 You can prepend an element to a list using \com{.:} and you can append an element to a list using \com{:.}. The following example illustrates some features:
 
 \input{introExample21}
 
-Lists can be considered as arrays and elements of lists can be
+Lists can be considered arrays and elements of lists can be
 referenced using brackets. Possible indices start at $0$. The
 following example illustrates this point:
 
@@ -555,7 +555,7 @@ elements that are constant and evaluate to integers that are
 incrementally ordered. \sollya translates such ellipses to the full
 list upon evaluation. Using ellipses between elements that are not
 constants is not allowed. This feature is provided for ease of
-programming; remark that the complexity of expanding such lists is
+programming; remark that the complexity for expanding such lists is
 high. For illustration, see the following example:
 
 \input{introExample23}
@@ -596,7 +596,7 @@ expressions. For instance, \texttt{i = i + 1;} will dereferentiate the
 identifier \texttt{i} with some content, notate it $y$, build up the
 expression (function) $y + 1$ and assign this expression back to
 \texttt{i}. In the example, if \texttt{i} stood for the value $1000$,
-the statement \texttt{i = i + 1;} will assign $1000 + 1$ -- and not
+the statement \texttt{i = i + 1;} would assign $1000 + 1$ -- and not
 $1001$ -- to \texttt{i}. The assignment operator \texttt{:=} evaluates
 constant functional expressions before assigning them. On other
 expressions it behaves like \texttt{=}. Still in the example, the
@@ -626,7 +626,7 @@ statements:
 conditional statements are supported and not conditional expressions. 
 
 The following examples illustrate both syntax and semantic of
-conditional statements in \sollya. Concerning syntax, remark also that there must not be any semicolon
+conditional statements in \sollya. Concerning syntax, be aware that there must not be any semicolon
 before the \key{else} keyword.
 
 \input{introExample26}
@@ -692,7 +692,7 @@ check is performed if the right number of actual parameters is
 given. Then the actual parameters are applied to the formal
 parameters. In some cases, it is required that the number of
 parameters of a procedure be variable. \sollya provides support for
-the case by procedures with an arbitrary number of actual arguments.
+the case with procedures with an arbitrary number of actual arguments.
 When the procedure is called, those actual arguments are gathered in a
 list which is applied to the only formal list parameter of a procedure
 with an arbitrary number of arguments. See section \ref{labprocedure}
