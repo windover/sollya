@@ -13,7 +13,7 @@ main() {
 
   for exampleFile in $liste
   do
-    echo "Processing file "$exampleFile
+    printf "Processing file "$exampleFile"\n"
     targetTeX=`basename $exampleFile .sollya`".tex"
     targetHTML=`basename $exampleFile .sollya`".php"
 
@@ -22,8 +22,8 @@ main() {
     touch $targetHTML
     rm $targetHTML
 
-    echo "\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]" > $targetTeX
-    echo "<div class=\"divExample\">" > $targetHTML
+    printf "\\\\begin{center}\\\\begin{minipage}{15cm}\\\\begin{Verbatim}[frame=single]\n" > $targetTeX
+    printf "<div class=\"divExample\">\n" > $targetHTML
 
     nLines=`cat $exampleFile | wc -l`
     i=1;
@@ -40,7 +40,7 @@ main() {
 	cat $exampleFile | head -n $i | tail -n 1 | sed -n 's/\t/    /g;p' | sed -n 's/\(..............................................................................\)/\1\n/g;p' >> $targetTeX
 	cat $exampleFile | head -n $i | tail -n 1 | sed -n 's/$/<br>/;p' | sed -n 's/  /\&nbsp;\&nbsp;/g;p' | sed -n 's/\&nbsp; /\&nbsp;\&nbsp;/g;p'  >> $targetHTML
 
-	echo "roundingwarnings=on!;" "`head -n $i $exampleFile`" | $sollyaBin > $tempfile
+	printf "roundingwarnings=on!;""`head -n $i $exampleFile`\n" | $sollyaBin > $tempfile
 	sed -i -n 's/^//;p' $tempfile
 	total=`cat $tempfile | wc -l`
 	count=`expr $total - $count`
@@ -53,10 +53,10 @@ main() {
 
     i=`expr $i + 1`
     done
-    echo "\end{Verbatim}" >> $targetTeX
-    echo "\end{minipage}\end{center}" >> $targetTeX
+    printf "\\\\end{Verbatim}\n" >> $targetTeX
+    printf "\\\\end{minipage}\\\\end{center}\n" >> $targetTeX
 
-    echo "</div>" >> $targetHTML
+    printf "</div>\n" >> $targetHTML
   done
 }
 

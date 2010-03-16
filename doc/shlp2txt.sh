@@ -102,15 +102,15 @@ preprocessTeX() {
 processName() {
  nLines=`cat $tempfile | grep "#NAME" | wc -l`
  if [ $nLines -eq 0 ]
- then echo "Error: you must specify at least one name. Exiting"; exit 1
+ then printf "Error: you must specify at least one name. Exiting\n"; exit 1
  fi
 
  if [ $nLines -eq 1 ]
-   then echo -n "Name: " >> $target
-   else echo -n "Names: " >> $target
+   then printf "Name: " >> $target
+   else printf "Names: " >> $target
  fi
  grep "#NAME" $tempfile | sed -n 's/#NAME //;p' | sed -n 's/$/, /;p' | tr -d "\n" | sed -n 's/, $//;p' >> $target
- echo "" >> $target
+ printf "\n" >> $target
 }
 
 processQuickDescription() {
@@ -119,18 +119,16 @@ processQuickDescription() {
  then return
  fi
 
- if quickDescr=`grep "#QUICK_DESCRIPTION" $tempfile`
- then
-   echo -n "==> " >> $target
-   echo "$quickDescr" | sed -n 's/#QUICK_DESCRIPTION //;p' >> $target
-   echo "" >> $target
- fi
+ ( printf "==> "; \
+   grep "#QUICK_DESCRIPTION" $tempfile | \
+   sed -n 's/#QUICK_DESCRIPTION //;p';
+   printf "\n" ) >> $target
 }
 
 processCallingAndTypes() {
  if [ `grep "#CALLING" $tempfile | wc -l` != `grep "#TYPE" $tempfile |wc -l` ]
  then
-   echo "ASSERT failed : there shall be the same number of #CALLING and #TYPE instructions. Exits."
+   printf "ASSERT failed : there shall be the same number of #CALLING and #TYPE instructions. Exits.\n"
    exit 1
  fi
 
@@ -140,17 +138,18 @@ processCallingAndTypes() {
  fi
 
  i=1;
- echo "Usage: " >> $target
+ printf "Usage: \n" >> $target
  while [ $i -le $nLines ]
    do
-   calling=`grep "#CALLING" $tempfile | head -n $i | tail -n 1 | sed -n 's/#CALLING //;p'`
-   type=`grep "#TYPE" $tempfile | head -n $i | tail -n 1 | sed -n 's/#TYPE //;p'`
-
-   echo "   ""$calling"" : "$type >> $target
+   ( printf "   "; \
+     grep "#CALLING" $tempfile | head -n $i | tail -n 1 | sed -n 's/#CALLING //;p' | tr -d '\n'; \
+     printf " : "; \
+     grep "#TYPE" $tempfile | head -n $i | tail -n 1 | sed -n 's/#TYPE //;p' | tr -d '\n' ;\
+     printf "\n" ) >> $target
    i=`expr $i + 1`
  done
  
- echo "" >> $target
+ printf "\n" >> $target
 }
 
 processParameters() {
@@ -160,16 +159,14 @@ processParameters() {
  fi
 
  i=1;
- echo "Parameters: " >> $target
+ printf "Parameters: \n" >> $target
  while [ $i -le $nLines ]
    do
-   parameter=`grep "#PARAMETERS" $tempfile | head -n $i | tail -n 1 | sed -n 's/#PARAMETERS //;p'`
-
-   echo "   ""$parameter" >> $target
+   ( printf "   "; grep "#PARAMETERS" $tempfile | head -n $i | tail -n 1 | sed -n 's/#PARAMETERS //;p' | tr -d '\n'; printf "\n") >> $target
    i=`expr $i + 1`
  done
  
- echo "" >> $target
+ printf "\n" >> $target
 }
 
 processDescriptions() {
@@ -182,34 +179,34 @@ processDescriptions() {
  i=1;
  mode="off"
  firstLine="off"
- echo -n "Description: " >> $target
+ printf "Description: " >> $target
  while [ $i -le $nLines ]
  do
    line=`cat $tempfile | head -n $i | tail -n 1`
-   if echo "$line" | grep "#DESCRIPTION" > /dev/null
+   if cat $tempfile | head -n $i | tail -n 1 | grep "#DESCRIPTION" > /dev/null
    then
      firstLine="on"
      mode="on"
-     echo "" >> $target
-     echo -n "   * " >> $target
+     printf "\n" >> $target
+     printf "   * " >> $target
    else
      if [ $mode = "on" -a -n "$line" ]
      then
-       if echo "$line" | grep -e "^#" > /dev/null
+       if cat $tempfile | head -n $i | tail -n 1| grep -e "^#" > /dev/null
        then  i=`expr $nLines + 1`
        else
          if [ $firstLine = "on" ]
            then firstLine="off"
-           else echo -n "   " >> $target
+           else printf "   " >> $target
          fi
-         echo "$line" >> $target 
+         cat $tempfile | head -n $i | tail -n 1 >> $target 
        fi
      fi
    fi
    i=`expr $i + 1`
  done
  
- echo "" >> $target
+ printf "\n" >> $target
 }
 
 processExampleFile() {
@@ -219,9 +216,9 @@ processExampleFile() {
  total=0;
  while [ $ilocal -le $nLineslocal ]
  do
-   echo -n "   > " >> $target
+   printf "   > " >> $target
    cat $exampleFile | head -n $ilocal | tail -n 1 >> $target
-   echo "verbosity=0!; roundingwarnings=on!;" "`head -n $ilocal $exampleFile`" | $sollyaBin > $tempfile2
+   printf "verbosity=0!; roundingwarnings=on!;""`head -n $ilocal $exampleFile`\n" | $sollyaBin > $tempfile2
    sed -i -n 's/^/   /;p' $tempfile2
    total=`cat $tempfile2 | wc -l`
    countlocal=`expr $total - $countlocal`
@@ -229,7 +226,7 @@ processExampleFile() {
    countlocal=$total
    ilocal=`expr $ilocal + 1`
  done
- echo "" >> $target
+ printf "\n" >> $target
 }
 
 processExamples() {
@@ -241,7 +238,7 @@ processExamples() {
  while [ $i -le $nLines ]
  do
    line=`cat $tempfile | head -n $i | tail -n 1`
-   if echo "$line" | grep "#EXAMPLE" > /dev/null
+   if cat $tempfile | head -n $i | tail -n 1| grep "#EXAMPLE" > /dev/null
    then
      if [ $mode = "on" ]
        then processExampleFile
@@ -250,15 +247,15 @@ processExamples() {
      if [ -e $exampleFile ]
        then rm $exampleFile; touch $exampleFile
      fi
-     echo "Example "$count": " >> $target
+     printf "Example "$count": \n" >> $target
      count=`expr $count + 1`
    else
      if [ $mode = "on" -a -n "$line" ]
      then
-       if echo "$line" | grep -e "^#" > /dev/null
+       if cat $tempfile | head -n $i | tail -n 1| grep -e "^#" > /dev/null
        then  i=`expr $nLines + 1`
        else
-         echo "$line" >> $exampleFile 
+        cat $tempfile | head -n $i | tail -n 1 >> $exampleFile 
        fi
      fi
    fi
@@ -276,9 +273,9 @@ processSeeAlso() {
  then return
  fi
 
- echo -n "See also: " >> $target
+ printf "See also: " >> $target
  grep "#SEEALSO" $tempfile | sed -n 's/#SEEALSO //;p' | sed -n 's/$/, /;p' | tr -d "\n" | sed -n 's/, $//;p' >> $target
- echo "" >> $target
+ printf "\n" >> $target
 }
 
 processFile() {
@@ -288,7 +285,7 @@ processFile() {
 
   getCommand
   sed -n 's/\(\$COMMAND\)/'$command'/g;p' $source > $tempfile
-  echo "" >> $tempfile
+  printf "\n" >> $tempfile
   preprocessKeywords
   preprocessTypes
   preprocessMeta
@@ -325,8 +322,8 @@ main() {
     if [ -e $file ]
     then
         source=$file
-	target=`echo $source | sed -n 's/\.shlp/\.txt/;p'`
-	echo "Processing file "$source
+	target=`printf $source | sed -n 's/\.shlp/\.txt/;p'`
+	printf "Processing file "$source"\n"
 	processFile
 	
 	if [ $verbosity -eq 1 ]
@@ -337,18 +334,18 @@ main() {
 	sed -i -n 's/"/\\"/g;p' $target
 	sed -i -n 's/\t/\\t/g;p' $target
 	sed -i -n 's/$/\\n/g;p' $target
-	index=`echo $source | sed -n 's/\.shlp//;p' | tr 'a-z' 'A-Z'`
+	index=`printf $source | sed -n 's/\.shlp//;p' | tr 'a-z' 'A-Z'`
 	cat $target | tr -d '\n' > $tempfile
 	
 	sed -i -n 's/\(^#define HELP_'"$index"'_TEXT\)\(.*\)//;p' $helpFile
 	sed -i -n 's/\(#endif\)\(.*\)//;p' $helpFile
-	echo -n "#define HELP_"$index"_TEXT \"" >> $helpFile
+	printf "#define HELP_"$index"_TEXT \"" >> $helpFile
 	cat $tempfile  >> $helpFile
-	echo "\"" >> $helpFile
-	echo "#endif /* ifdef HELP_H*/" >> $helpFile
+	printf "\"\n" >> $helpFile
+	printf "#endif /* ifdef HELP_H*/\n" >> $helpFile
 	
 	rm $target
-    else echo "File "$file" does not exist!"
+    else printf "File "$file" does not exist!\n"
     fi
   done
 

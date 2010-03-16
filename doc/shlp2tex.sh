@@ -26,7 +26,7 @@ preprocessKeywords() {
   do
     pattern2=`cat $keywords_defs | grep "=" | head -n $i | tail -n 1 | sed -n 's/\(=.*\)//;p'`
     pattern=\$"$pattern2"
-    pattern2=`echo $pattern2 | tr A-Z a-z`
+    pattern2=`printf $pattern2 | tr A-Z a-z`
 
     replacement=`cat $keywords_defs | grep "=" | head -n $i | tail -n 1 | sed -n 's/\(.*="\)\(.*\)\("\)/\2/;p'`
 
@@ -303,7 +303,7 @@ processFile() {
   preprocessTeX
   sed -n -i 's/$SOLLYA/'"$sollya_name"'/g;p' $tempfile
 
-  command=`echo $command | sed -n 's/\$\(.*\)/\1/;p'`  # removes the initial "$" of $command (e.g. GT)
+  command=`printf $command | sed -n 's/\$\(.*\)/\1/;p'`  # removes the initial "$" of $command (e.g. GT)
   nameOfCommand=`cat $keywords_defs | grep "^$command=" | sed -n 's/\(=.*\)//;p' | tr 'A-Z' 'a-z'` # name of the command (e.g. gt) used to name the files
   realNameOfCommand=`cat $keywords_defs | grep "^$command=" | sed -n 's/\(.*="\)\(.*\)\("\)/\2/;p' | sed -n 's/§§\([^§]*\)§\([^§]*\)§§/\2/g;p'`  # name of the command really used in Sollya (e.g. >)
 
@@ -311,10 +311,10 @@ processFile() {
   # hence $realNameOfCommand becomes its content (e.g. "\\&\\&") and the line becomes e.g.
   # printf "\\&\\&" | sed -n 's/\\\\/\\/g;p'
   # this is evaluated and, in turn, gives  "\&\&"
-  realNameOfCommand=`printf $realNameOfCommand | sed -n 's/\\\\\\\\/\\\\/g;p'`
+  realNameOfCommand=`printf "$realNameOfCommand" | sed -n 's/\\\\\\\\/\\\\/g;p'`
   
-  printf "\\\\subsection{"$realNameOfCommand"}\n" >> $target
-  printf "\\\\label{lab"$sectionName"}\n" | sed -n 's/ //g;p' >> $target
+  printf "\\\\subsection{$realNameOfCommand}\n" >> $target
+  printf "\\\\label{lab$sectionName}\n" | sed -n 's/ //g;p' >> $target
   processName
   processQuickDescription
   processCallingAndTypes
@@ -345,14 +345,14 @@ main() {
     if [ -e $file ]
     then
       source=$file
-      sectionName=`echo $source | sed -n 's/\.shlp//;p'`
-      target=`echo $source | sed -n 's/\.shlp/\.tex/;p'`
+      sectionName=`printf $source | sed -n 's/\.shlp//;p'`
+      target=`printf $source | sed -n 's/\.shlp/\.tex/;p'`
       printf "Processing file "$source"\n"
       processFile
       if grep `printf "\\\\input{$source}\n" | sed -n 's/\.shlp//;p'` $listOfCommands > /dev/null
       then printf "Nothing to change in "$listOfCommands"\n"
       else
-        printf "\\\\input{"`echo $source | sed -n 's/\.shlp//;p'`"}\n" >> $listOfCommands
+        printf "\\\\input{"`printf $source | sed -n 's/\.shlp//;p'`"}\n" >> $listOfCommands
       fi
     else
       printf "File "$file" does not exist!\n"
