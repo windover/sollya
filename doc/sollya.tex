@@ -131,7 +131,7 @@ nevertheless, use this deprecated option.
 
 
 \section{Introduction}
-\sollya is an interactive tool for handling numerical functions and working with arbitrary precision. It can evaluate functions accurately, compute polynomial approximations of functions, automatically implement polynomials for use in math libraries, plot functions, compute infinity norms, etc. The language \sollya comes with is a full-featured script programming language with support for procedures etc. 
+\sollya is an interactive tool for handling numerical functions and working with arbitrary precision. It can evaluate functions accurately, compute polynomial approximations of functions, automatically implement polynomials for use in math libraries, plot functions, compute infinity norms, etc. The language \sollya comes with is a full-featured script programming language with support for procedures~etc.
 
 Let us begin this manual with an example. \sollya does not allow command line edition; since that may quickly become uncomfortable, we highly suggest to use the \rlwrap tool with \sollya:
 
@@ -165,7 +165,7 @@ Sometimes a faithful rounding cannot easily be computed. In such a case, an appr
 
 \input{introExample6}
 
-The philosophy of \sollya is: whenever something is not exact, print a warning. This explains the warnings in the previous examples. If the result can be shown to be exact, there is no warning:
+The philosophy of \sollya is: \emph{Whenever something is not exact, print a warning}. This explains the warnings in the previous examples. If the result can be shown to be exact, there is no warning:
 
 \input{introExample7}
 
@@ -185,11 +185,11 @@ One of the particularities of \sollya is to work with multi-precision arithmetic
 
 The general philosophy of \sollya is: \emph{When you can make a computation exactly and sufficiently quickly, do it; when you cannot, do not, unless you have been explicitly asked for.}
 
-The precision of the tools is set by the global variable \key{prec}. In general, the variable \key{prec} determines the precision of the outputs of commands: more precisely, the command will internally determine what precision should be used during the computations in order to ensure that the output is a faithfully rounded result with \key{prec} bits.
+The precision of the tool is set by the global variable \key{prec}. In general, the variable \key{prec} determines the precision of the outputs of commands: more precisely, the command will internally determine what precision should be used during the computations in order to ensure that the output is a faithfully rounded result with \key{prec} bits.
 
 For decidability and efficiency reasons, this general principle cannot be applied every time, so be careful. Moreover certain commands are known to be unsafe: they give in general excellent results and give almost \key{prec} correct bits in output for everyday examples. However they are merely based on heuristics and should not be used when the result must be safe. See the documentation of each command to know precisely how confident you can be with their result.
 
-A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When the variable is set to $0$, \sollya becomes completely silent on standard output and prints only very important messages on standard error. Increase \key{verbosity} if you want more information about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use \texttt{!}:
+A second principle (that comes together with the first one) is: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When the variable is set to $0$, \sollya becomes completely silent on standard output and prints only very important messages on standard error. Increase \key{verbosity} if you want more information about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use~\texttt{!}:
 
 \input{introExample9}
 
