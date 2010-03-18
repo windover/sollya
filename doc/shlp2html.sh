@@ -201,7 +201,7 @@ processDescriptions() {
  while [ $i -le $nLines ]
  do
    line=`cat $tempfile | head -n $i | tail -n 1`
-   if printf "$line" | grep "#DESCRIPTION" > /dev/null
+   if cat $tempfile | head -n $i | tail -n 1 | grep "#DESCRIPTION" > /dev/null
    then
      mode="on"
      if [ $mustCloseLI = "on" ]
@@ -212,7 +212,7 @@ processDescriptions() {
    else
      if [ $mode = "on" -a -n "$line" ]
      then
-       if printf "$line" | grep -e "^#" > /dev/null
+       if cat $tempfile | head -n $i | tail -n 1 | grep -e "^#" > /dev/null
        then  i=`expr $nLines + 1`
        else
          cat $tempfile | head -n $i | tail -n 1 >> $target 
