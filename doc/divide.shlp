@@ -2,8 +2,15 @@
 #QUICK_DESCRIPTION division function
 #CALLING <function1> $COMMAND <function2>
 #TYPE ($FUNCTION_TYPE, $FUNCTION_TYPE) -> $FUNCTION_TYPE
+#CALLING <interval1> $COMMAND <interval2>
+#TYPE ($RANGE_TYPE, $RANGE_TYPE) -> $RANGE_TYPE
+#CALLING <interval1> $COMMAND <constant>
+#TYPE ($RANGE_TYPE, $CONSTANT_TYPE) -> $RANGE_TYPE
+#CALLING <interval1> $COMMAND <constant>
+#TYPE ($CONSTANT_TYPE, $RANGE_TYPE) -> $RANGE_TYPE
 #PARAMETERS <function1> and <function2> represent functions
-
+#PARAMETERS <interval1> and <interval2> represent intervals (ranges)
+#PARAMETERS <constant> represents a constant or constant expression
 
 #DESCRIPTION 
 $COMMAND represents the division (function) on reals. 
@@ -11,6 +18,18 @@ The expression <function1> $COMMAND <function2> stands for
 the function composed of the division function and the two
 functions <function1> and <function2>, where <function1> is
 the numerator and <function2> the denominator.
+
+#DESCRIPTION
+$COMMAND can be used for interval arithmetic on intervals
+(ranges). $COMMAND will evaluate to an interval that safely
+encompasses all images of the division function with arguments
+varying in the given intervals. If the intervals given contain points
+where the division function is not defined, infinities and NaNs will be
+produced in the output interval.  Any combination of intervals with
+intervals or constants (resp. constant expressions) is
+supported. However, it is not possible to represent families of
+functions using an interval as one argument and a function (varying in
+the free variable) as the other one.
 
 #EXAMPLE
 5 / 2;
@@ -26,6 +45,11 @@ x / x;
 
 #EXAMPLE
 diff(sin(x) / exp(x));
+
+#EXAMPLE
+[1;2] / [3;4];
+[1;2] / 17;
+-13 / [4;17];
 
 #SEEALSO $PLUS
 #SEEALSO $MINUS

@@ -3,7 +3,7 @@
 
 #DESCRIPTION 
 $COMMAND is a special value used to activate certain functionnalities of $SOLLYA
-(namely $CANONICAL, $TIMING, $FULLPARENTHESES, $MIDPOINTMODE).
+(namely $CANONICAL, $TIMING, $FULLPARENTHESES, $MIDPOINTMODE and $RATIONALMODE).
 
 #DESCRIPTION
 As any value it can be affected to a variable and stored in lists.
@@ -20,3 +20,4 @@ p;
 #SEEALSO $TIMING
 #SEEALSO $FULLPARENTHESES
 #SEEALSO $MIDPOINTMODE
+#SEEALSO $RATIONALMODE

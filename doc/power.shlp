@@ -2,8 +2,15 @@
 #QUICK_DESCRIPTION power function
 #CALLING <function1> $COMMAND <function2>
 #TYPE ($FUNCTION_TYPE, $FUNCTION_TYPE) -> $FUNCTION_TYPE
+#CALLING <interval1> $COMMAND <interval2>
+#TYPE ($RANGE_TYPE, $RANGE_TYPE) -> $RANGE_TYPE
+#CALLING <interval1> $COMMAND <constant>
+#TYPE ($RANGE_TYPE, $CONSTANT_TYPE) -> $RANGE_TYPE
+#CALLING <interval1> $COMMAND <constant>
+#TYPE ($CONSTANT_TYPE, $RANGE_TYPE) -> $RANGE_TYPE
 #PARAMETERS <function1> and <function2> represent functions
-
+#PARAMETERS <interval1> and <interval2> represent intervals (ranges)
+#PARAMETERS <constant> represents a constant or constant expression
 
 #DESCRIPTION 
 $COMMAND represents the power (function) on reals. 
@@ -20,6 +27,19 @@ Note that whenever several $COMMAND are composed, the priority goes
 to the last $COMMAND. This corresponds to the natural way of
 thinking when a tower of powers is written on a paper.
 Thus, §§2^3^5§\verb|2^3^5| is read as $2^{3^5}$ and§§ is interpreted as §§2^(3^5)§$2^{(3^5)}$§§.
+
+#DESCRIPTION
+$COMMAND can be used for interval arithmetic on intervals
+(ranges). $COMMAND will evaluate to an interval that safely
+encompasses all images of the power function with arguments
+varying in the given intervals. If the intervals given contain points
+where the power function is not defined, infinities and NaNs will be
+produced in the output interval.  Any combination of intervals with
+intervals or constants (resp. constant expressions) is
+supported. However, it is not possible to represent families of
+functions using an interval as one argument and a function (varying in
+the free variable) as the other one.
+
 
 #EXAMPLE
 5 ^ 2;
@@ -40,6 +60,11 @@ diff(sin(x) ^ exp(x));
 2^3^5;
 (2^3)^5;
 2^(3^5);
+
+#EXAMPLE
+[1;2] ^ [3;4];
+[1;2] ^ 17;
+13 ^ [-4;17];
 
 #SEEALSO $PLUS
 #SEEALSO $MINUS
