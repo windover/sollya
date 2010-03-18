@@ -192,7 +192,7 @@ processDescriptions() {
  do
    # little trick to escape the backslashes
    line=`cat $tempfile | head -n $i | tail -n 1 | sed -n 's/\\\\/\\\\\\\\/g;p'`
-   if printf "$line" | grep "#DESCRIPTION" > /dev/null
+   if printf "%s" "$line" | grep "#DESCRIPTION" > /dev/null
    then
      firstLine="on"
      mode="on"
@@ -201,14 +201,14 @@ processDescriptions() {
    else
      if [ $mode = "on" -a -n "$line" ]
      then
-       if printf "$line" | grep -e "^#" > /dev/null
+       if printf "%s" "$line" | grep -e "^#" > /dev/null
        then  i=`expr $nLines + 1`
        else
          if [ $firstLine = "on" ]
            then firstLine="off"
            else printf "   " >> $target
          fi
-         printf "$line""\n" >> $target 
+         printf "%s" "$line\n" >> $target 
        fi
      fi
    fi
@@ -248,7 +248,7 @@ processExamples() {
  while [ $i -le $nLines ]
  do
    line=`cat $tempfile | head -n $i | tail -n 1`
-   if  cat $tempfile | head -n $i | tail -n 1 | grep "#EXAMPLE" > /dev/null
+   if printf "%s" "$line" | grep "#EXAMPLE" > /dev/null
    then
      if [ $mode = "on" ]
        then processExampleFile
@@ -263,10 +263,10 @@ processExamples() {
    else
      if [ $mode = "on" -a -n "$line" ]
      then
-       if cat $tempfile | head -n $i | tail -n 1 | grep -e "^#" > /dev/null
+       if printf "%s" "$line" | grep -e "^#" > /dev/null
        then  i=`expr $nLines + 1`
        else
-         cat $tempfile | head -n $i | tail -n 1 >> $exampleFile 
+         printf "%s" "$line\n" >> $exampleFile 
        fi
      fi
    fi
