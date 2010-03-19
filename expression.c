@@ -10529,7 +10529,8 @@ int readHexadecimal(mpfr_t rop, char *c) {
   c2 = (char *) safeCalloc(strlen(c) + 2, sizeof(char));
   strcpy(c2, c);
 
-  if (c2[strlen(c2) - 1] == 'p') c2[strlen(c2)] = '0';
+  if ((c2[strlen(c2) - 1] == 'p') || 
+      (c2[strlen(c2) - 1] == 'P')) c2[strlen(c2)] = '0';
 
 
   p = mpfr_get_prec(rop);

@@ -80,7 +80,7 @@ CONSTANT        ({ACONSTANT})|((("%")({NUMBER})({NUMBER}+)("%"))({ACONSTANT}))
 DYADICCONSTANT  ({NUMBER}+)([bB])([+-]?)({NUMBER}+)
 HEXCONSTANT     ("0x")({HEXNUMBER}{16}|{HEXNUMBER}{8})
 
-HEXADECIMALCONSTANT ("0x")(({HEXNUMBER}*"."{HEXNUMBER}+)|({HEXNUMBER}+((".")?)))("p"(([+-])?)({NUMBER}*))
+HEXADECIMALCONSTANT ("0x"|"0X")(({HEXNUMBER}*"."{HEXNUMBER}+)|({HEXNUMBER}+((".")?)))(("p"|"P")(([+-])?)({NUMBER}*))
 
 BINARYCONSTANT  (([0-1])+|(([0-1])*"."([0-1])+))"_2"
 
