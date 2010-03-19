@@ -291,7 +291,7 @@ processExamples() {
        if printf "%s" "$line" | grep -e "^#" > /dev/null
        then  i=`expr $nLines + 1`
        else
-         printf "%b" "$line\n" >> $exampleFile 
+         cat $tempfile | head -n $i | tail -n 1 >> $exampleFile 
        fi
      fi
    fi
