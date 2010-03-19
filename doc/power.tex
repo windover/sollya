@@ -17,79 +17,35 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{$\mathbf{\hat{~}}$} represents the power (function) on reals. 
-   The expression \emph{function1} \textbf{$\mathbf{\hat{~}}$} \emph{function2} stands for
-   the function composed of the power function and the two
-   functions \emph{function1} and \emph{function2}, where \emph{function1} is
-   the base and \emph{function2} the exponent.
-   If \emph{function2} is a constant integer, \textbf{$\mathbf{\hat{~}}$} is defined
-   on negative values of \emph{function1}. Otherwise \textbf{$\mathbf{\hat{~}}$}
-   is defined as $e^{y \cdot \ln x}$.
-
-\item Note that whenever several \textbf{$\mathbf{\hat{~}}$} are composed, the priority goes
-   to the last \textbf{$\mathbf{\hat{~}}$}. This corresponds to the natural way of
-   thinking when a tower of powers is written on a paper.
-   Thus, \verb|2^3^5| is read as $2^{3^5}$ and is interpreted as $2^{(3^5)}$.
-
-\item \textbf{$\mathbf{\hat{~}}$} can be used for interval arithmetic on intervals
-   (ranges). \textbf{$\mathbf{\hat{~}}$} will evaluate to an interval that safely
-   encompasses all images of the power function with arguments
-   varying in the given intervals. If the intervals given contain points
-   where the power function is not defined, infinities and NaNs will be
-   produced in the output interval.  Any combination of intervals with
-   intervals or constants (resp. constant expressions) is
-   supported. However, it is not possible to represent families of
-   functions using an interval as one argument and a function (varying in
-   the free variable) as the other one.
-\end{itemize}
+\item \\textbf{$\\mathbf{\\hat{~}}$} represents the power (function) on reals. \n   The expression \\emph{function1} \\textbf{$\\mathbf{\\hat{~}}$} \\emph{function2} stands for\n   the function composed of the power function and the two\n   functions \\emph{function1} and \\emph{function2}, where \\emph{function1} is\n   the base and \\emph{function2} the exponent.\n   If \\emph{function2} is a constant integer, \\textbf{$\\mathbf{\\hat{~}}$} is defined\n   on negative values of \\emph{function1}. Otherwise \\textbf{$\\mathbf{\\hat{~}}$}\n   is defined as $e^{y \\cdot \\ln x}$.\n
+\item Note that whenever several \\textbf{$\\mathbf{\\hat{~}}$} are composed, the priority goes\n   to the last \\textbf{$\\mathbf{\\hat{~}}$}. This corresponds to the natural way of\n   thinking when a tower of powers is written on a paper.\n   Thus, \\verb|2^3^5| is read as $2^{3^5}$ and is interpreted as $2^{(3^5)}$.\n
+\item \\textbf{$\\mathbf{\\hat{~}}$} can be used for interval arithmetic on intervals\n   (ranges). \\textbf{$\\mathbf{\\hat{~}}$} will evaluate to an interval that safely\n   encompasses all images of the power function with arguments\n   varying in the given intervals. If the intervals given contain points\n   where the power function is not defined, infinities and NaNs will be\n   produced in the output interval.  Any combination of intervals with\n   intervals or constants (resp. constant expressions) is\n   supported. However, it is not possible to represent families of\n   functions using an interval as one argument and a function (varying in\n   the free variable) as the other one.\n\end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> 5 ^ 2;
-25
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> x ^ 2;
-x^2
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> 3 ^ (-5);
-4.1152263374485596707818930041152263374485596707818e-3
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> (-3) ^ (-2.5);
-@NaN@
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 5: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> diff(sin(x) ^ exp(x));
-sin(x)^exp(x) * ((cos(x) * exp(x)) / sin(x) + exp(x) * log(sin(x)))
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 6: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> 2^3^5;
-1.4134776518227074636666380005943348126619871175005e73
-> (2^3)^5;
-32768
-> 2^(3^5);
-1.4134776518227074636666380005943348126619871175005e73
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 7: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> [1;2] ^ [3;4];
-[1;1.60000000000000000000000000000000000000000000000007e1]
-> [1;2] ^ 17;
-[1;131072]
-> 13 ^ [-4;17];
-[3.501277966457757081334687160813696999404782745702e-5;8650415919381337933]
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{$+$} (\ref{labplus}), \textbf{$-$} (\ref{labminus}), \textbf{$*$} (\ref{labmult}), \textbf{/} (\ref{labdivide})

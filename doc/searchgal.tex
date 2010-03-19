@@ -21,47 +21,17 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item The command \textbf{searchgal} searches for a preimage $z$ of function
-   \emph{function} or a list of functions \emph{list of functions} such that
-   $z$ is a floating-point number with \emph{preimage precision}
-   significant mantissa bits and the image $y$ of the function,
-   respectively each image $y_i$ of the functions, rounds to
-   format \emph{format} respectively to the corresponding format in \emph{list of format} 
-   with a relative rounding error less than \emph{error bound}
-   respectively the corresponding value in \emph{list of error bounds}. During
-   this search, at most $2^{steps}$ attempts are made. The search
-   starts with a preimage value equal to \emph{start}. This value is then
-   increased and decreased by $1$ ulp in precision \emph{preimage precision} 
-   until a value is found or the step limit is reached.
-    
-   If the search finds an appropriate preimage $z$, \textbf{searchgal}
-   evaluates to a list containing this value. Otherwise, \textbf{searchgal}
-   evaluates to an empty list.
-\end{itemize}
+\item The command \\textbf{searchgal} searches for a preimage $z$ of function\n   \\emph{function} or a list of functions \\emph{list of functions} such that\n   $z$ is a floating-point number with \\emph{preimage precision}\n   significant mantissa bits and the image $y$ of the function,\n   respectively each image $y_i$ of the functions, rounds to\n   format \\emph{format} respectively to the corresponding format in \\emph{list of format} \n   with a relative rounding error less than \\emph{error bound}\n   respectively the corresponding value in \\emph{list of error bounds}. During\n   this search, at most $2^{steps}$ attempts are made. The search\n   starts with a preimage value equal to \\emph{start}. This value is then\n   increased and decreased by $1$ ulp in precision \\emph{preimage precision} \n   until a value is found or the step limit is reached.\n    \n   If the search finds an appropriate preimage $z$, \\textbf{searchgal}\n   evaluates to a list containing this value. Otherwise, \\textbf{searchgal}\n   evaluates to an empty list.\n\end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> searchgal(log(x),2,53,15,DD,1b-112);
-[| |]
-> searchgal(log(x),2,53,18,DD,1b-112);
-[|2.0000000000384972054234822280704975128173828125|]
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> f = exp(x);
-> s = searchgal(f,2,53,18,DD,1b-112);
-> if (s != [||]) then {
->    v = s[0];
->    print("The rounding error is 2^(",evaluate(log2(abs(DD(f)/f - 1)),v),")");
-> } else print("No value found");
-The rounding error is 2^( -1.12106878438809380148206984258358542322113874177832e
-2 )
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> searchgal([|sin(x),cos(x)|],1,53,15,[|D,D|],[|1b-62,1b-60|]);
-[|1.00000000000159494639717649988597258925437927246094|]
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{round} (\ref{labround}), \textbf{double} (\ref{labdouble}), \textbf{doubledouble} (\ref{labdoubledouble}), \textbf{tripledouble} (\ref{labtripledouble}), \textbf{evaluate} (\ref{labevaluate}), \textbf{worstcase} (\ref{labworstcase})

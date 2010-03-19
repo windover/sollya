@@ -4,21 +4,10 @@
 special value for certain global variables.\\
 \noindent Description: \begin{itemize}
 
-\item \textbf{on} is a special value used to activate certain functionnalities of \sollya
-   (namely \textbf{canonical}, \textbf{timing}, \textbf{fullparentheses}, \textbf{midpointmode} and \textbf{rationalmode}).
-
-\item As any value it can be affected to a variable and stored in lists.
-\end{itemize}
+\item \\textbf{on} is a special value used to activate certain functionnalities of \\sollya\n   (namely \\textbf{canonical}, \\textbf{timing}, \\textbf{fullparentheses}, \\textbf{midpointmode} and \\textbf{rationalmode}).\n
+\item As any value it can be affected to a variable and stored in lists.\n\end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> p=1+x+x^2;
-> mode=on;
-> p;
-1 + x * (1 + x)
-> canonical=mode;
-Canonical automatic printing output has been activated.
-> p;
-1 + x + x^2
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{off} (\ref{laboff}), \textbf{canonical} (\ref{labcanonical}), \textbf{timing} (\ref{labtiming}), \textbf{fullparentheses} (\ref{labfullparentheses}), \textbf{midpointmode} (\ref{labmidpointmode}), \textbf{rationalmode} (\ref{labrationalmode})

@@ -13,56 +13,20 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{dirtyinfnorm}(\emph{f},\emph{I}) computes an approximation of the infinity norm of the 
-   given function $f$ on the interval $I$, e.g. $\max_{x \in I} \{|f(x)|\}$.
-
-\item The interval must be bound. If the interval contains one of -Inf or +Inf, the 
-   result of \textbf{dirtyinfnorm} is NaN.
-
-\item The result of this command depends on the global variables \textbf{prec} and \textbf{points}.
-   Therefore, the returned result is generally a good approximation of the exact
-   infinity norm, with precision \textbf{prec}. However, the result is generally 
-   underestimated and should not be used when safety is critical.
-   Use \textbf{infnorm} instead.
-
-\item The following algorithm is used: let $n$ be the value of variable \textbf{points}
-   and $t$ be the value of variable \textbf{prec}.
-   \begin{itemize}
-   \item Evaluate $|f|$ at $n$ evenly distributed points in the
-     interval $I$. The evaluation are faithful roundings of the exact
-     results at precision $t$.
-   \item Whenever the derivative of $f$ changes its sign for two consecutive 
-     points, find an approximation $x$ of its zero with precision $t$.
-     Then compute a faithful rounding of $|f(x)|$ at precision $t$.
-   \item Return the maximum of all computed values.
-   \end{itemize}
-\end{itemize}
+\item \\textbf{dirtyinfnorm}(\\emph{f},\\emph{I}) computes an approximation of the infinity norm of the \n   given function $f$ on the interval $I$, e.g. $\\max_{x \\in I} \\{|f(x)|\\}$.\n
+\item The interval must be bound. If the interval contains one of -Inf or +Inf, the \n   result of \\textbf{dirtyinfnorm} is NaN.\n
+\item The result of this command depends on the global variables \\textbf{prec} and \\textbf{points}.\n   Therefore, the returned result is generally a good approximation of the exact\n   infinity norm, with precision \\textbf{prec}. However, the result is generally \n   underestimated and should not be used when safety is critical.\n   Use \\textbf{infnorm} instead.\n
+\item The following algorithm is used: let $n$ be the value of variable \\textbf{points}\n   and $t$ be the value of variable \\textbf{prec}.\n   \\begin{itemize}\n   \\item Evaluate $|f|$ at $n$ evenly distributed points in the\n     interval $I$. The evaluation are faithful roundings of the exact\n     results at precision $t$.\n   \\item Whenever the derivative of $f$ changes its sign for two consecutive \n     points, find an approximation $x$ of its zero with precision $t$.\n     Then compute a faithful rounding of $|f(x)|$ at precision $t$.\n   \\item Return the maximum of all computed values.\n   \\end{itemize}\n\end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> dirtyinfnorm(sin(x),[-10;10]);
-1
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> prec=15!;
-> dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
-1.45856
-> prec=40!;
-> dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
-1.458528537135
-> prec=100!;
-> dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
-1.458528537136237644438147455024
-> prec=200!;
-> dirtyinfnorm(exp(cos(x))*sin(x),[0;5]);
-1.458528537136237644438147455023841718299214087993682374094153
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> dirtyinfnorm(x^2, [log(0);log(1)]);
-@NaN@
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{prec} (\ref{labprec}), \textbf{points} (\ref{labpoints}), \textbf{infnorm} (\ref{labinfnorm}), \textbf{checkinfnorm} (\ref{labcheckinfnorm})

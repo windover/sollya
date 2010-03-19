@@ -4,25 +4,10 @@
 global variable controlling the way intervals are displayed.\\
 \noindent Description: \begin{itemize}
 
-\item \textbf{midpointmode} is a global variable. When its value is \textbf{off}, intervals are displayed
-   as usual (in the form $\left[ a;b\right]$).
-   When its value is \textbf{on}, and if $a$ and $b$ have the same first significant digits,
-   the interval in displayed in a way that lets one immediately see the common
-   digits of the two bounds.
-
-\item This mode is supported only with \textbf{display} set to \textbf{decimal}. In other modes of 
-   display, \textbf{midpointmode} value is simply ignored.
-\end{itemize}
+\item \\textbf{midpointmode} is a global variable. When its value is \\textbf{off}, intervals are displayed\n   as usual (in the form $\\left[ a;b\\right]$).\n   When its value is \\textbf{on}, and if $a$ and $b$ have the same first significant digits,\n   the interval in displayed in a way that lets one immediately see the common\n   digits of the two bounds.\n
+\item This mode is supported only with \\textbf{display} set to \\textbf{decimal}. In other modes of \n   display, \\textbf{midpointmode} value is simply ignored.\n\end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> a = round(Pi,30,RD);
-> b = round(Pi,30,RU);
-> d = [a,b];
-> d;
-[3.1415926516056060791015625;3.1415926553308963775634765625]
-> midpointmode=on!;
-> d;
-0.314159265~1/6~e1
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{on} (\ref{labon}), \textbf{off} (\ref{laboff}), \textbf{roundingwarnings} (\ref{labroundingwarnings})

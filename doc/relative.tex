@@ -8,21 +8,9 @@ indicates a relative error for \textbf{externalplot} or \textbf{fpminimax}\\
 \end{center}
 \noindent Description: \begin{itemize}
 
-\item The use of \textbf{relative} in the command \textbf{externalplot} indicates that during
-   plotting in \textbf{externalplot} a relative error is to be considered.
-    
-   See \textbf{externalplot} for details.
-   Used with \textbf{fpminimax}, \textbf{relative} indicates that \textbf{fpminimax} must try to minimize
-   the relative error.
-    
-   See \textbf{fpminimax} for details.
-\end{itemize}
+\item The use of \\textbf{relative} in the command \\textbf{externalplot} indicates that during\n   plotting in \\textbf{externalplot} a relative error is to be considered.\n    \n   See \\textbf{externalplot} for details.\n   Used with \\textbf{fpminimax}, \\textbf{relative} indicates that \\textbf{fpminimax} must try to minimize\n   the relative error.\n    \n   See \\textbf{fpminimax} for details.\n\end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> bashexecute("gcc -fPIC -c externalplotexample.c");
-> bashexecute("gcc -shared -o externalplotexample externalplotexample.o -lgmp -l
-mpfr");
-> externalplot("./externalplotexample",absolute,exp(x),[-1/2;1/2],12,perturb);
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{externalplot} (\ref{labexternalplot}), \textbf{fpminimax} (\ref{labfpminimax}), \textbf{absolute} (\ref{lababsolute}), \textbf{bashexecute} (\ref{labbashexecute})

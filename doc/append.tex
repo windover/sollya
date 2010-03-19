@@ -13,26 +13,18 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{:.} adds the element \emph{x} at the end of the list \emph{L}.
-
-\item Note that since \emph{x} may be of any type, it can in particular be a list.
-\end{itemize}
+\item \\textbf{:.} adds the element \\emph{x} at the end of the list \\emph{L}.\n
+\item Note that since \\emph{x} may be of any type, it can in particular be a list.\n\end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> [|2,3,4|]:.5;
-[|2, 3, 4, 5|]
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> [|1,2,3|]:.[|4,5,6|];
-[|1, 2, 3, [|4, 5, 6|]|]
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> [||]:.1;
-[|1|]
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{.:} (\ref{labprepend}), \textbf{@} (\ref{labconcat})

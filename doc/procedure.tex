@@ -19,40 +19,13 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item The \textbf{procedure} keyword allows for defining and assigning procedures in
-   the \sollya language. It is an abbreviation to a procedure definition
-   using \textbf{proc} with the same formal parameters, procedure body and
-   return-expression followed by an assignment of the procedure (object)
-   to the identifier \emph{identifier}. In particular, all rules concerning
-   local variables declared using the \textbf{var} keyword apply for \textbf{procedure}.
-\end{itemize}
+\item The \\textbf{procedure} keyword allows for defining and assigning procedures in\n   the \\sollya language. It is an abbreviation to a procedure definition\n   using \\textbf{proc} with the same formal parameters, procedure body and\n   return-expression followed by an assignment of the procedure (object)\n   to the identifier \\emph{identifier}. In particular, all rules concerning\n   local variables declared using the \\textbf{var} keyword apply for \\textbf{procedure}.\n\end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> procedure succ(n) { return n + 1; };
-> succ(5);
-6
-> 3 + succ(0);
-4
-> succ;
-proc(n)
-begin
-nop;
-return (n) + (1);
-end
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> procedure myprint(l = ...) { var i; for i in l do i; };
-> myprint("Lyon","Nancy","Beaverton","Coye-la-Foret","Amberg","Nizhny Novgorod",
-"Cluj-Napoca");
-Lyon
-Nancy
-Beaverton
-Coye-la-Foret
-Amberg
-Nizhny Novgorod
-Cluj-Napoca
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{proc} (\ref{labproc}), \textbf{var} (\ref{labvar})

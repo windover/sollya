@@ -17,52 +17,26 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{$*$} represents the multiplication (function) on reals. 
-   The expression \emph{function1} \textbf{$*$} \emph{function2} stands for
-   the function composed of the multiplication function and the two
-   functions \emph{function1} and \emph{function2}.
-
-\item \textbf{$*$} can be used for interval arithmetic on intervals
-   (ranges). \textbf{$*$} will evaluate to an interval that safely
-   encompasses all images of the multiplication function with arguments varying
-   in the given intervals.  Any combination of intervals with intervals
-   or constants (resp. constant expressions) is supported. However, it is
-   not possible to represent families of functions using an interval as
-   one argument and a function (varying in the free variable) as the
-   other one.
-\end{itemize}
+\item \\textbf{$*$} represents the multiplication (function) on reals. \n   The expression \\emph{function1} \\textbf{$*$} \\emph{function2} stands for\n   the function composed of the multiplication function and the two\n   functions \\emph{function1} and \\emph{function2}.\n
+\item \\textbf{$*$} can be used for interval arithmetic on intervals\n   (ranges). \\textbf{$*$} will evaluate to an interval that safely\n   encompasses all images of the multiplication function with arguments varying\n   in the given intervals.  Any combination of intervals with intervals\n   or constants (resp. constant expressions) is supported. However, it is\n   not possible to represent families of functions using an interval as\n   one argument and a function (varying in the free variable) as the\n   other one.\n\end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> 5 * 2;
-10
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> x * 2;
-x * 2
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> x * x;
-x^2
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> diff(sin(x) * exp(x));
-sin(x) * exp(x) + exp(x) * cos(x)
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 5: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> [1;2] * [3;4];
-[3;8]
-> [1;2] * 17;
-[17;34]
-> 13 * [-4;17];
-[-52;221]
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{$+$} (\ref{labplus}), \textbf{$-$} (\ref{labminus}), \textbf{/} (\ref{labdivide}), \textbf{$\mathbf{\hat{~}}$} (\ref{labpower})
