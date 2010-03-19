@@ -215,7 +215,7 @@ processDescriptions() {
        if printf "%s" "$line" | grep -e "^#" > /dev/null
        then  i=`expr $nLines + 1`
        else
-         printf "%s" "$line\n"  >> $target 
+         printf "%b" "$line\n"  >> $target 
        fi
      fi
    fi
@@ -291,7 +291,7 @@ processExamples() {
        if printf "%s" "$line" | grep -e "^#" > /dev/null
        then  i=`expr $nLines + 1`
        else
-         printf "%s" "$line\n" >> $exampleFile 
+         printf "%b" "$line\n" >> $exampleFile 
        fi
      fi
    fi
@@ -325,23 +325,23 @@ removeLI() {  # removes the unwanted first <LI></li> of each itemize
     ligne=`head -n $i $tempfile |  tail -n 1 | sed -n 's/\\\\/\\\\\\\\/g;p'`;
     if [ $statut = "opened" ]
     then
-	printf "%s" "$ligne" |grep "<\/li>" > /dev/null; if [ $? = "0" ]
+	printf "%b" "$ligne" |grep "<\/li>" > /dev/null; if [ $? = "0" ]
 	then
 	    statut="closed"
-	    ligne=`printf "%s" "$ligne" | sed -n 's/\([^<]*\)<\/li>\(.*\)/\1\2/;p' | sed -n 's/\\\\/\\\\\\\\/g;p'`
+	    ligne=`printf "%b" "$ligne" | sed -n 's/\([^<]*\)<\/li>\(.*\)/\1\2/;p' | sed -n 's/\\\\/\\\\\\\\/g;p'`
 	fi
     fi
-    printf "%s" "$ligne" | grep "<LI>" > /dev/null; if [ $? = "0" ]	
+    printf "%b" "$ligne" | grep "<LI>" > /dev/null; if [ $? = "0" ]	
     then
-	printf "%s" "$ligne" |grep -e "<LI>.*</li>" > /dev/null; if [ $? = "0" ]
+	printf "%b" "$ligne" |grep -e "<LI>.*</li>" > /dev/null; if [ $? = "0" ]
 	then 
-	    printf "%s" "$ligne\n" | sed -n 's/\(.*\)<LI>[^<]*<\/li>\(.*\)/\1\2/g;p'
+	    printf "%b" "$ligne\n" | sed -n 's/\(.*\)<LI>[^<]*<\/li>\(.*\)/\1\2/g;p'
 	else 
 	    statut="opened"
-	    printf "%s" "$ligne\n" | sed -n 's/\(.\)<LI>.*/\1/;p'
+	    printf "%b" "$ligne\n" | sed -n 's/\(.\)<LI>.*/\1/;p'
 	fi
     else
-	printf "%s" "$ligne\n" 
+	printf "%b" "$ligne\n" 
     fi
     i=`expr $i + 1`
   done > $tempfile2

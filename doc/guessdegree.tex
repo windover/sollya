@@ -15,14 +15,30 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \\textbf{guessdegree} tries to find the minimal degree needed to approximate \\emph{f}\n   on \\emph{I} by a polynomial with an error $\\epsilon=p w - f$ whose infinity norm not greater than \\emph{eps}.\n   More precisely, it finds $n$ minimal such that there exists a\n   polynomial $p$ of degree $n$ such that $\\|p w-f\\|_{\\infty} < \\mathrm{eps}$.\n
-\item \\textbf{guessdegree} returns an interval: for common cases, this interval is reduced to a \n   single number (e.g. the minimal degree). But in certain cases, \\textbf{guessdegree} does\n   not succeed in finding the minimal degree. In such cases the returned interval\n   is of the form $[n,\\,p]$ such that:\n   \\begin{itemize}\n   \\item no polynomial of degree $n-1$ gives an error less than \\emph{eps}.\n   \\item there exists a polynomial of degree $p$ giving an error less than \\emph{eps}. \n   \\end{itemize}\n\end{itemize}
+\item \textbf{guessdegree} tries to find the minimal degree needed to approximate \emph{f}
+   on \emph{I} by a polynomial with an error $\epsilon=p w - f$ whose infinity norm not greater than \emph{eps}.
+   More precisely, it finds $n$ minimal such that there exists a
+   polynomial $p$ of degree $n$ such that $\|p w-f\|_{\infty} < \mathrm{eps}$.
+
+\item \textbf{guessdegree} returns an interval: for common cases, this interval is reduced to a 
+   single number (e.g. the minimal degree). But in certain cases, \textbf{guessdegree} does
+   not succeed in finding the minimal degree. In such cases the returned interval
+   is of the form $[n,\,p]$ such that:
+   \begin{itemize}
+   \item no polynomial of degree $n-1$ gives an error less than \emph{eps}.
+   \item there exists a polynomial of degree $p$ giving an error less than \emph{eps}. 
+   \end{itemize}
+\end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> guessdegree(exp(x),[-1;1],1e-10);
+[10;10]
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> guessdegree(1, [-1;1], 1e-8, 1/exp(x));
+[8;9]
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{dirtyinfnorm} (\ref{labdirtyinfnorm}), \textbf{remez} (\ref{labremez})

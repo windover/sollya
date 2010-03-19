@@ -199,7 +199,7 @@ processDescriptions() {
            then firstLine="off"
            else printf "   " >> $target
          fi
-         printf "%s" "$line\n" >> $target 
+         printf "%b" "$line\n" >> $target 
        fi
      fi
    fi
@@ -255,7 +255,7 @@ processExamples() {
        if printf "%s" "$line"| grep -e "^#" > /dev/null
        then  i=`expr $nLines + 1`
        else
-        printf "%s" "$line\n" >> $exampleFile 
+        printf "%b" "$line\n" >> $exampleFile 
        fi
      fi
    fi

@@ -10,19 +10,38 @@ no operation\\
 \end{center}
 \noindent Description: \begin{itemize}
 
-\item The command \\textbf{nop} does nothing. This means it is an explicit parse\n   element in the \\sollya language that finally does not produce any\n   result or side-effect.\n
-\item The command \\textbf{nop} may take an optional positive integer argument \\emph{n}. The argument controls how much (useless) integer additions \\sollya performs while doing nothing. \n   With this behaviour, \\textbf{nop} can be used for calibration of timing tests.\n
-\item The keyword \\textbf{nop} is implicit in some procedure\n   definitions. Procedures without imperative body get parsed as if they\n   had an imperative body containing one \\textbf{nop} statement.\n\end{itemize}
+\item The command \textbf{nop} does nothing. This means it is an explicit parse
+   element in the \sollya language that finally does not produce any
+   result or side-effect.
+
+\item The command \textbf{nop} may take an optional positive integer argument \emph{n}. The argument controls how much (useless) integer additions \sollya performs while doing nothing. 
+   With this behaviour, \textbf{nop} can be used for calibration of timing tests.
+
+\item The keyword \textbf{nop} is implicit in some procedure
+   definitions. Procedures without imperative body get parsed as if they
+   had an imperative body containing one \textbf{nop} statement.
+\end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> nop;
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> nop(100);
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> succ = proc(n) { return n + 1; };
+> succ;
+proc(n)
+begin
+nop;
+return (n) + (1);
+end
+> succ(5);
+6
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{proc} (\ref{labproc})

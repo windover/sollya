@@ -14,9 +14,24 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \\textbf{timing} is a global variable. When its value is \\textbf{on}, the time spent in each \n   command is measured and displayed (for \\textbf{verbosity} levels higher than 1).\n\end{itemize}
+\item \textbf{timing} is a global variable. When its value is \textbf{on}, the time spent in each 
+   command is measured and displayed (for \textbf{verbosity} levels higher than 1).
+\end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity=1!;
+> timing=on;
+Timing has been activated.
+> p=remez(sin(x),10,[-1;1]);
+Information: Remez: computing the matrix spent 1 ms
+Information: Remez: computing the quality of approximation spent 12 ms
+Information: Remez: computing the matrix spent 1 ms
+Information: Remez: computing the quality of approximation spent 11 ms
+Information: Remez: computing the matrix spent 1 ms
+Information: Remez: computing the quality of approximation spent 12 ms
+Information: computing a minimax approximation spent 209 ms
+Information: assignment spent 209 ms
+Information: full execution of the last parse chunk spent 209 ms
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{on} (\ref{labon}), \textbf{off} (\ref{laboff}), \textbf{time} (\ref{labtime})

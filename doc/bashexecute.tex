@@ -12,10 +12,17 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \\textbf{bashexecute}(\\emph{command}) lets the shell interpret \\emph{command}. It is useful to execute\n   some external code within \\sollya.\n
-\item \\textbf{bashexecute} does not return anything. It just executes its argument. However, if\n   \\emph{command} produces an output in a file, this result can be imported in \\sollya\n   with help of commands like \\textbf{execute}, \\textbf{readfile} and \\textbf{parse}.\n\end{itemize}
+\item \textbf{bashexecute}(\emph{command}) lets the shell interpret \emph{command}. It is useful to execute
+   some external code within \sollya.
+
+\item \textbf{bashexecute} does not return anything. It just executes its argument. However, if
+   \emph{command} produces an output in a file, this result can be imported in \sollya
+   with help of commands like \textbf{execute}, \textbf{readfile} and \textbf{parse}.
+\end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> bashexecute("LANG=C date");
+Fri Mar 19 02:29:01 CET 2010
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{execute} (\ref{labexecute}), \textbf{readfile} (\ref{labreadfile}), \textbf{parse} (\ref{labparse})
