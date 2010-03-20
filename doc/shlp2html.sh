@@ -426,13 +426,14 @@ main() {
       then
 	  printf "Nothing to change in "$listOfCommandsPHP"\n"
       else
- 	  printf "\""$nameOfCommand"\",\"$realNameOfCommand\",\n" >> $listOfCommandsTmp
+ 	  printf "\""$nameOfCommand"\",\"$realNameOfCommand\"\n" >> $listOfCommandsTmp
       fi
     else
 	printf "File "$file" does not exist!\n"
     fi
   done
 
+  sed -n -i 's/$/,/;p' $listOfCommandsTmp
   printf "<?php\n" > $listOfCommandsPHP
   printf "\$listOfCommands=array(\n" >> $listOfCommandsPHP
 
