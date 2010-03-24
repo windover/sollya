@@ -1,6 +1,15 @@
 #NAME $MIDPOINTMODE
 #QUICK_DESCRIPTION global variable controlling the way intervals are displayed.
 
+#CALLING $COMMAND = <activation value>
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = <activation value> !
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND
+#TYPE $ONOFF_TYPE
+
+#PARAMETERS <activation value> enables or disables the mode.
+
 #DESCRIPTION 
 $COMMAND is a global variable. When its value is $OFF, intervals are displayed
 as usual (in the form §§[a;b]§$\left[ a;b\right]$§§).
