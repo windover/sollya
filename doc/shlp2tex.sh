@@ -192,7 +192,7 @@ processDescriptions() {
  do
    # little trick to escape the backslashes
    line=`cat $tempfile | head -n $i | tail -n 1 | sed -n 's/\\\\/\\\\\\\\/g;p'`
-   if printf "%s" "$line" | grep "#DESCRIPTION" > /dev/null
+   if printf "%b" "$line" | grep "#DESCRIPTION" > /dev/null
    then
      firstLine="on"
      mode="on"
@@ -201,7 +201,7 @@ processDescriptions() {
    else
      if [ $mode = "on" -a -n "$line" ]
      then
-       if printf "%s" "$line" | grep -e "^#" > /dev/null
+       if printf "%b" "$line" | grep -e "^#" > /dev/null
        then  i=`expr $nLines + 1`
        else
          if [ $firstLine = "on" ]
@@ -248,7 +248,7 @@ processExamples() {
  while [ $i -le $nLines ]
  do
    line=`cat $tempfile | head -n $i | tail -n 1`
-   if printf "%s" "$line" | grep "#EXAMPLE" > /dev/null
+   if printf "%b" "$line" | grep "#EXAMPLE" > /dev/null
    then
      if [ $mode = "on" ]
        then processExampleFile
@@ -263,7 +263,7 @@ processExamples() {
    else
      if [ $mode = "on" -a -n "$line" ]
      then
-       if printf "%s" "$line" | grep -e "^#" > /dev/null
+       if printf "%b" "$line" | grep -e "^#" > /dev/null
        then  i=`expr $nLines + 1`
        else
          cat $tempfile | head -n $i | tail -n 1 >> $exampleFile 
@@ -307,13 +307,11 @@ processFile() {
   nameOfCommand=`cat $keywords_defs | grep "^$command=" | sed -n 's/\(=.*\)//;p' | tr 'A-Z' 'a-z'` # name of the command (e.g. gt) used to name the files
   realNameOfCommand=`cat $keywords_defs | grep "^$command=" | sed -n 's/\(.*="\)\(.*\)\("\)/\2/;p' | sed -n 's/§§\([^§]*\)§\([^§]*\)§§/\2/g;p'`  # name of the command really used in Sollya (e.g. >)
 
-  # Interpretiation of the following line: the content of the quotes is first evaluated,
-  # hence $realNameOfCommand becomes its content (e.g. "\\&\\&") and the line becomes e.g.
-  # printf "\\&\\&" | sed -n 's/\\\\/\\/g;p'
-  # this is evaluated and, in turn, gives  "\&\&"
-  realNameOfCommand=`printf "$realNameOfCommand" | sed -n 's/\\\\\\\\/\\\\/g;p'`
-  
-  printf "\\\\subsection{$realNameOfCommand}\n" >> $target
+  # Interpretiation of the following lines: $realNameOfCommand may contain echapment
+  # characters for '/' (typically for divide) due to its use in preprocessKeywords.
+  # We simulate a use of sed to remove this echapment sequences.
+  printf "\\\\subsection{AAA}\n" >> $target
+  sed -n -i 's/subsection{AAA}/subsection{'"$realNameOfCommand"'}/;p' $target
   printf "\\\\label{lab$sectionName}\n" | sed -n 's/ //g;p' >> $target
   processName
   processQuickDescription
