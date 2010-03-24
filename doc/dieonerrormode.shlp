@@ -20,6 +20,35 @@ When the value of the $COMMAND variable is $ON, $SOLLYA will exit
 on any syntax, typing, side-effect errors. A warning message will
 be printed in these cases at appropriate $VERBOSITY levels. 
 
+#EXAMPLE
+verbosity = 1!;
+dieonerrormode = off;
+for i from true to false do i + "Salut";
+exp(17);
+
+#EXAMPLE
+verbosity = 1!;
+dieonerrormode = off!;
+5 */  4;
+exp(17);
+
+#EXAMPLE
+verbosity = 1!;
+dieonerrormode;
+dieonerrormode = on!;
+dieonerrormode;
+for i from true to false do i + "Salut";
+
+#EXAMPLE
+verbosity = 1!;
+dieonerrormode = on!;
+5 */  4;
+
+#EXAMPLE
+verbosity = 0!;
+dieonerrormode = on!;
+5 */  4;
+
 #SEEALSO $ON
 #SEEALSO $OFF
 #SEEALSO $VERBOSITY
