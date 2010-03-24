@@ -68,6 +68,7 @@ extern FILE *internyyget_in(void *scanner);
  void internyyerror(void *myScanner, char *message) {
    if (!feof(internyyget_in(myScanner))) {
      printMessage(1,"Warning: %s.\nWill skip input until next semicolon after the unexpected token. May leak memory.\n",message);
+     considerDyingOnError();
    }
  }
 
@@ -194,6 +195,7 @@ extern FILE *internyyget_in(void *scanner);
 %token  TIMINGTOKEN;            					       
 %token  FULLPARENTHESESTOKEN;   					       
 %token  MIDPOINTMODETOKEN;      					       
+%token  DIEONERRORMODETOKEN;      					       
 %token  SUPPRESSWARNINGSTOKEN;    					       
 %token  HOPITALRECURSIONSTOKEN;  					       
 %token  RATIONALMODETOKEN;  
@@ -795,6 +797,10 @@ stateassignment:        PRECTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeMidpointAssign($3);
 			  }
+                      | DIEONERRORMODETOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeDieOnErrorAssign($3);
+			  }
                       | RATIONALMODETOKEN EQUALTOKEN thing      					       
                           {
 			    $$ = makeRationalModeAssign($3);
@@ -852,6 +858,10 @@ stillstateassignment:   PRECTOKEN EQUALTOKEN thing
                       | MIDPOINTMODETOKEN EQUALTOKEN thing      					       
                           {
 			    $$ = makeMidpointStillAssign($3);
+			  }
+                      | DIEONERRORMODETOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeDieOnErrorStillAssign($3);
 			  }
                       | RATIONALMODETOKEN EQUALTOKEN thing      					       
                           {
@@ -1715,6 +1725,10 @@ statedereference:       PRECTOKEN egalquestionmark
                       | MIDPOINTMODETOKEN egalquestionmark			       
                           {
 			    $$ = makeMidpointDeref();
+			  }
+                      | DIEONERRORMODETOKEN egalquestionmark			       
+                          {
+			    $$ = makeDieOnErrorDeref();
 			  }
                       | RATIONALMODETOKEN egalquestionmark			       
                           {

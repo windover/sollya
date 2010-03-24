@@ -75,6 +75,7 @@ void yyerror(char *message) {
     printMessage(1,"Warning: %s.\nThe last symbol read has been \"%s\".\nWill skip input until next semicolon after the unexpected token. May leak memory.\n",message,str);
     free(str);
     promptToBePrinted = 1;
+    considerDyingOnError();
   } 
 }
 
@@ -199,6 +200,7 @@ void yyerror(char *message) {
 %token  TIMETOKEN;
 %token  FULLPARENTHESESTOKEN;   					       
 %token  MIDPOINTMODETOKEN;      					       
+%token  DIEONERRORMODETOKEN;      					       
 %token  SUPPRESSWARNINGSTOKEN;
 %token  RATIONALMODETOKEN;    					       
 %token  HOPITALRECURSIONSTOKEN;  					       
@@ -837,6 +839,10 @@ stateassignment:        PRECTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeMidpointAssign($3);
 			  }
+                      | DIEONERRORMODETOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeDieOnErrorAssign($3);
+			  }
                       | RATIONALMODETOKEN EQUALTOKEN thing      					       
                           {
 			    $$ = makeRationalModeAssign($3);
@@ -894,6 +900,10 @@ stillstateassignment:   PRECTOKEN EQUALTOKEN thing
                       | MIDPOINTMODETOKEN EQUALTOKEN thing      					       
                           {
 			    $$ = makeMidpointStillAssign($3);
+			  }
+                      | DIEONERRORMODETOKEN EQUALTOKEN thing      					       
+                          {
+			    $$ = makeDieOnErrorStillAssign($3);
 			  }
                       | RATIONALMODETOKEN EQUALTOKEN thing      					       
                           {
@@ -1759,6 +1769,10 @@ statedereference:       PRECTOKEN egalquestionmark
                       | MIDPOINTMODETOKEN egalquestionmark			       
                           {
 			    $$ = makeMidpointDeref();
+			  }
+                      | DIEONERRORMODETOKEN egalquestionmark			       
+                          {
+			    $$ = makeDieOnErrorDeref();
 			  }
                       | RATIONALMODETOKEN egalquestionmark			       
                           {
@@ -2734,6 +2748,17 @@ help:                   CONSTANTTOKEN
 			    outputMode(); printf("Global environment variable midpoint mode.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for MIDPOINTMODE"
+#endif
+#endif
+                          }
+                      | DIEONERRORMODETOKEN
+                          {
+#ifdef HELP_DIEONERRORMODE_TEXT
+			    outputMode(); printf(HELP_DIEONERRORMODE_TEXT);
+#else
+			    outputMode(); printf("Global environment variable for die-on-error mode.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for DIEONERRORMODE"
 #endif
 #endif
                           }

@@ -304,6 +304,7 @@ FULLPARENTHESES "fullparentheses"
 MIDPOINTMODE    "midpointmode"
 SUPPRESSWARNINGS "roundingwarnings"
 RATIONALMODE    "rationalmode"
+DIEONERRORMODE  "dieonerrormode"
 
 LIBRARY         "library"
 
@@ -458,6 +459,7 @@ NOP             "nop"
                            printf("Warning: the file \"%s\" could not be opened for reading: ",newReadFilenameTemp);
                            printf("\"%s\".\n",strerror(errno));
 			   printf("The last command will have no effect. No memory will be lost.\n");
+                           considerDyingOnError();
                            restoreMode();
                         }
                         promptToBePrinted = 1; 
@@ -629,6 +631,7 @@ NOP             "nop"
 {TIME}          			    { newTokenLexed(); return TIMETOKEN; }          					       
 {FULLPARENTHESES} 			    { newTokenLexed(); return FULLPARENTHESESTOKEN; } 					       
 {MIDPOINTMODE}    			    { newTokenLexed(); return MIDPOINTMODETOKEN; }    					       
+{DIEONERRORMODE}    			    { newTokenLexed(); return DIEONERRORMODETOKEN; }    					       
 {SUPPRESSWARNINGS}			    { newTokenLexed(); return SUPPRESSWARNINGSTOKEN; }    					       
 {RATIONALMODE}			            { newTokenLexed(); return RATIONALMODETOKEN; }    					       
 {HOPITALRECURSIONS}			    { newTokenLexed(); return HOPITALRECURSIONSTOKEN; }					       

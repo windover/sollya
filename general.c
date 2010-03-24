@@ -91,6 +91,7 @@ int timecounting = 0;
 chain *timeStack=NULL;
 int fullParentheses=0;
 int midpointMode = 0;
+int dieOnErrorMode = 0;
 int rationalMode = 0;
 int noRoundingWarnings = 0;
 int hopitalrecursions = DEFAULTHOPITALRECURSIONS;
@@ -159,9 +160,31 @@ extern void yylex_destroy(void *);
 extern int yylex_init(void **);
 extern int yylex(void *);
 
-
-
 #define BACKTRACELENGTH 100
+
+void freeTool();
+
+void makeToolDie() {
+  freeTool();
+
+  if (!eliminatePromptBackup) printf("\n");
+
+  if (inputFileOpened) {
+    fclose(inputFile);
+    inputFileOpened = 0;
+  }
+
+  exit(1);
+}
+
+void considerDyingOnError() {
+  if (!dieOnErrorMode) return;
+
+  printMessage(1,"Warning: some syntax, typing or side-effect error has occurred.\n");
+  printMessage(1,"As the die-on-error mode is activated, the tool will be exited.\n");
+
+  makeToolDie();
+}
 
 void normalMode() {
   if (noColor) return;
@@ -992,8 +1015,10 @@ int general(int argc, char *argv[]) {
 	lastWasError = 1;
 	if (handlingCtrlC) 
 	  printMessage(1,"Warning: the last command has been interrupted. May leak memory.\n");
-	else 
+	else { 
 	  printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
+          considerDyingOnError();
+        }
 	if (declaredSymbolTable != NULL) {
 	  if (!handlingCtrlC) 
 	    printMessage(1,"Warning: releasing the variable frame stack.\n");

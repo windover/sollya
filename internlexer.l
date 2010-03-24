@@ -300,6 +300,7 @@ TIMING          "timing"
 TIME            "time"
 FULLPARENTHESES "fullparentheses"
 MIDPOINTMODE    "midpointmode"
+DIEONERRORMODE  "dieonerrormode"
 SUPPRESSWARNINGS "roundingwarnings"
 RATIONALMODE    "rationalmode"
 
@@ -552,6 +553,7 @@ NOP             "nop"
 {TIME}          			    {  return TIMETOKEN; }          					       
 {FULLPARENTHESES} 			    {  return FULLPARENTHESESTOKEN; } 					       
 {MIDPOINTMODE}    			    {  return MIDPOINTMODETOKEN; }    					       
+{DIEONERRORMODE}    			    {  return DIEONERRORMODETOKEN; }    					       
 {SUPPRESSWARNINGS}			    {  return SUPPRESSWARNINGSTOKEN; }    					       
 {RATIONALMODE}			            {  return RATIONALMODETOKEN; }    					       
 {HOPITALRECURSIONS}			    {  return HOPITALRECURSIONSTOKEN; }					       

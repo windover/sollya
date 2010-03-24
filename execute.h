@@ -254,6 +254,9 @@ extern void endBuffer(void);
 #define TIME 243
 #define NOPARG 244
 #define PROCILLIM 245
+#define DIEONERRORMODEASSIGN 246
+#define DIEONERRORMODESTILLASSIGN 247
+#define DIEONERRORMODEDEREF 248
 
 int executeCommand(node *);
 
@@ -305,6 +308,7 @@ node *makeTimingAssign(node *thing);
 node *makeTime(node *thing);
 node *makeFullParenAssign(node *thing);
 node *makeMidpointAssign(node *thing);
+node *makeDieOnErrorAssign(node *thing);
 node *makeRationalModeAssign(node *thing);
 node *makeRationalModeStillAssign(node *thing);
 node *makeSuppressWarningsAssign(node *thing);
@@ -321,6 +325,7 @@ node *makeTaylorRecursStillAssign(node *thing);
 node *makeTimingStillAssign(node *thing);
 node *makeFullParenStillAssign(node *thing);
 node *makeMidpointStillAssign(node *thing);
+node *makeDieOnErrorStillAssign(node *thing);
 node *makeHopitalRecursStillAssign(node *thing);
 node *makeAnd(node *thing1, node *thing2);
 node *makeOr(node *thing1, node *thing2);
@@ -440,6 +445,7 @@ node *makeTaylorRecursDeref();
 node *makeTimingDeref();
 node *makeFullParenDeref();
 node *makeMidpointDeref();
+node *makeDieOnErrorDeref();
 node *makeRationalModeDeref();
 node *makeSuppressWarningsDeref();
 node *makeHopitalRecursDeref();

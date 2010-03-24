@@ -1,0 +1,27 @@
+#NAME $DIEONERRORMODE
+#QUICK_DESCRIPTION global variable controlling if $SOLLYA is exited on an error or not.
+#CALLING $COMMAND = <activation value>
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = <activation value> !
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND
+#TYPE $ONOFF_TYPE
+
+#PARAMETERS <activation value> controls if $SOLLYA is exited on an error or not.
+
+#DESCRIPTION 
+$COMMAND is a global variable. When its value is $OFF, which is the default,
+$SOLLYA will not exit on any syntax, typing, side-effect errors. These
+errors will be caught by the tool, even if a memory might be leaked at 
+that point. On evaluation, the $ERROR special will be produced.
+
+#DESCRIPTION
+When the value of the $COMMAND variable is $ON, $SOLLYA will exit
+on any syntax, typing, side-effect errors. A warning message will
+be printed in these cases at appropriate $VERBOSITY levels. 
+
+#SEEALSO $ON
+#SEEALSO $OFF
+#SEEALSO $VERBOSITY
+#SEEALSO $ERROR
+
