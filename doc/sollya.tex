@@ -24,7 +24,7 @@
 
 \newcommand{\ligne}[1]{\texttt{#1}\\}
 
-\title{Users' manual for the \sollya tool \\ {\large Release 2.0 alpha} \\ ~ \\ {\large \'Equipe-projet Ar\'enaire\\Laboratoire de l'Informatique du Parall\'elisme \\ UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668}}
+\title{Users' manual for the \sollya tool \\ {\large Release 2.0 alpha}}
 
 \author{Sylvain Chevillard \\ \small{\url{sylvain.chevillard@ens-lyon.org}} \and Christoph Lauter \\ \small{\url{christoph.lauter@ens-lyon.org}} \and Mioara Jolde\c{s} \\ \small{\url{mioara.joldes@ens-lyon.fr}} }
 
@@ -37,11 +37,13 @@
 
 \section*{License}
 
-The \sollya tool is copyright \copyright~ 2008-2010 Laboratoire de
+The \sollya tool is\\
+\indent copyright \copyright~2008-2010 Laboratoire de
 l'Informatique du Parall\'elisme - UMR CNRS - ENS Lyon - UCB Lyon 1 -
-INRIA 5668.  
+INRIA 5668, Lyon, France,\\
+\indent copyright \copyright~2010 LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2) Nancy, France.\\[0.2cm]
 
-The \sollya tool is open software. It is distributed and can be used,
+\noindent The \sollya tool is open software. It is distributed and can be used,
 modified and redistributed under the terms of the CeCILL-C licence
 available at \url{http://www.cecill.info/} and reproduced in the
 \texttt{COPYING} file of the distribution. The distribution contains
@@ -428,7 +430,7 @@ this mode).
 
 \input{introExample17}
 
-You can get the upper-bound (respectively the lower-bound)) of an interval with the command \com{sup} (respectively \com{inf}). The middle of the interval can be computed with the command \com{mid}. Note that these commands can also be used on numbers (in that case, the number is interpreted as an interval containing only one single point. In that case the commands \com{inf}, \com{mid} and \com{sup} are just the identity):
+You can get the upper-bound (respectively the lower-bound) of an interval with the command \com{sup} (respectively \com{inf}). The middle of the interval can be computed with the command \com{mid}. Note that these commands can also be used on numbers (in that case, the number is interpreted as an interval containing only one single point. In that case the commands \com{inf}, \com{mid} and \com{sup} are just the identity):
 
 \input{introExample18}
 
@@ -439,7 +441,7 @@ rounding. It is rewritten as an unevaluated expression in terms of
 \sollya permits intervals to also have non-real bounds, such as
 infinities or NaNs. When evaluating certain expressions, in particular
 given as interval bounds, \sollya will itself generate intervals
-containing infinities or NaNs. When evaluation yield an interval with
+containing infinities or NaNs. When evaluation yields an interval with
 a NaN bound, the given expression is most likely undefined or
 numerically unstable. Such results should not be trusted; a warning is
 displayed.
@@ -487,7 +489,7 @@ The basic functions available in \sollya are the following:
 \item \com{sqrt}
 \item \com{abs}
 \item \com{sin}, \com{cos}, \com{tan}, \com{sinh}, \com{cosh}, \com{tanh}
-\item \com{asin}, \com{acos}, \com{atan}, \com{asinh}, \com{atanh}
+\item \com{asin}, \com{acos}, \com{atan}, \com{asinh}, \com{acosh}, \com{atanh}
 \item \com{exp}, \com{expm1} (defined as $\mathrm{expm1}(x) = \exp(x)-1$)
 \item \com{log} (natural logarithm), \com{log2} (binary logarithm), \com{log10} (decimal logarithm), \com{log1p} (defined as $\mathrm{log1p}(x) = \log(1+x)$)
 \item \com{erf}, \com{erfc}
@@ -537,7 +539,7 @@ meaning.
 \subsection{Lists}
 Objects can be grouped into lists. A list can contain elements with different types. As for strings, you can concatenate two lists with \com{@}. The function \com{length} also gives the length of a list.
 
-You can prepend an element to a list using \com{.:} and you can append an element to a list using \com{:.}. The following example illustrates some features:
+You can prepend an element to a list using \com{.:} and you can append an element to a list using \com{:.}\\ The following example illustrates some features:
 
 \input{introExample21}
 
@@ -548,7 +550,7 @@ following example illustrates this point:
 \input{introExample22}
 
 Please be aware of the fact that the complexity for accessing an
-element of the list using indices is $\mathcal{O}(n)$.
+element of the list using indices is~$\mathcal{O}(n)$.
 
 Lists may contain ellipses indicated by \texttt{,...,} between
 elements that are constant and evaluate to integers that are
@@ -596,8 +598,8 @@ expressions. For instance, \texttt{i = i + 1;} will dereferentiate the
 identifier \texttt{i} with some content, notate it $y$, build up the
 expression (function) $y + 1$ and assign this expression back to
 \texttt{i}. In the example, if \texttt{i} stood for the value $1000$,
-the statement \texttt{i = i + 1;} would assign $1000 + 1$ -- and not
-$1001$ -- to \texttt{i}. The assignment operator \texttt{:=} evaluates
+the statement \texttt{i = i + 1;} would assign ``$1000 + 1$'' -- and not
+``$1001$'' -- to \texttt{i}. The assignment operator \texttt{:=} evaluates
 constant functional expressions before assigning them. On other
 expressions it behaves like \texttt{=}. Still in the example, the
 statement \texttt{i := i + 1;} really assigns $1001$ to \texttt{i}.
