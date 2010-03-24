@@ -49,6 +49,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #ifndef SOLLYA_H
 #define SOLLYA_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdlib.h>
 #include <mpfr.h>
 #include <mpfi.h>
@@ -289,4 +293,9 @@ extern void *safeMalloc (size_t size);
 extern void printInterval(mpfi_t);
 extern void printValue(mpfr_t *);
 extern node* simplifyTreeErrorfree(node *tree);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif
