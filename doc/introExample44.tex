@@ -5,7 +5,7 @@ The precision has been set to 24 bits.
 Warning: Rounding occurred when converting the constant "0.1" to floating-point 
 with 24 bits.
 If safe computation is needed, try to increase the precision.
-> b = 33554432;
+> b = 33554433;
 > prec = 64;
 The precision has been set to 64 bits.
 > display = binary;
@@ -22,12 +22,15 @@ Warning: Rounding occurred when converting the constant "0.1" to floating-point
 with 24 bits.
 If safe computation is needed, try to increase the precision.
 1.10011001100110011001101_2 * 2^(-4)
-> c = 33554432;
+> c = 33554433;
 > b;
-1_2 * 2^(25)
+1.0000000000000000000000001_2 * 2^(25)
 > c;
-1_2 * 2^(25)
-> %24%33554432;
+1.0000000000000000000000001_2 * 2^(25)
+> %24%33554433;
+Warning: Rounding occurred when converting the constant "33554433" to floating-p
+oint with 24 bits.
+If safe computation is needed, try to increase the precision.
 1_2 * 2^(25)
 > 
 > 
