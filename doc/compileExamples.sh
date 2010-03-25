@@ -40,7 +40,7 @@ main() {
 	cat $exampleFile | head -n $i | tail -n 1 | sed -n 's/\t/    /g;p' | sed -n 's/\(..............................................................................\)/\1\n/g;p' >> $targetTeX
 	cat $exampleFile | head -n $i | tail -n 1 | sed -n 's/$/<br>/;p' | sed -n 's/  /\&nbsp;\&nbsp;/g;p' | sed -n 's/\&nbsp; /\&nbsp;\&nbsp;/g;p'  >> $targetHTML
 
-	printf "roundingwarnings=on!;""`head -n $i $exampleFile`\n" | $sollyaBin > $tempfile
+	printf "%b" "roundingwarnings=on!;""`head -n $i $exampleFile`\n" | $sollyaBin > $tempfile
 	sed -i -n 's/^//;p' $tempfile
 	total=`cat $tempfile | wc -l`
 	count=`expr $total - $count`
