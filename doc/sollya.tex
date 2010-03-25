@@ -259,10 +259,8 @@ The following code examples illustrate the usage of variables.
 \input{introExample12}
 
 Let us state that a variable identifier, just as every identifier in
-\sollya, contains at least one character, starting with a ASCII letter
-or one of the special symbols ``\texttt{\_}'', ``\texttt{\$}'' or
-``\texttt{\S}'' and continuing with ASCII letters, special symbols or
-numerical digits.
+\sollya, contains at least one character, starts with a ASCII letter
+and continuing with ASCII letters or numerical digits.
 
 
 
@@ -274,15 +272,15 @@ There are two special values \key{true} and \key{false}. Boolean expressions can
 
 The comparison operators \key{<}, \key{<=}, \key{>} and \key{>=} can only be used between two numbers or constant expressions.
 
-The comparison operators \key{==} and \key{!=} are polymorphic. You can use it to compare any two objects, like two strings, two intervals, etc. Note that testing the equality between two functions will return \key{true} if and only if the expression trees representing the two functions are exactly the same. See \ref{laberror} for an exception concerning the special object \key{error}. Example:
+The comparison operators \key{==} and \key{!=} are polymorphic. You can use it to compare any two objects, like two strings, two intervals, etc. As a matter of fact, polymorphism is allowed on both sides: it is possible to compare objects of different type. Such objects of different type, as they can never be syntactically equal, will always compare unequal (see exception for \key{error}, section \ref{laberror}) and never equal. Note that testing the equality between two functions will return \key{true} if and only if the expression trees representing the two functions are exactly the same. See \ref{laberror} for an exception concerning the special object \key{error}. Example:
 
 \input{introExample13}
 
 \subsection{Numbers} \label{sec:numbers}
 \sollya represents numbers as binary multi-precision floating-point values. For integer values and values in dyadic, binary, hexadecimal or memory dump notation, it 
-automatically uses a precision needed for representing the value exactly. Additionally, automatic precision adaption takes place for all 
+automatically uses a precision needed for representing the value exactly (unless this behaviour is overridden using the syntax given below). Additionally, automatic precision adaption takes place for all 
 integer values (even in decimal notation) written without the exponent sign \texttt{e} or with the exponent sign \texttt{e} and an exponent sufficiently 
-small that they are less than $10^{999}$. Otherwise the values are represented with the current precision \com{prec}. A number in an expression is rounded to the precision \com{prec} when the expression gets evaluated:
+small that they are less than $10^{999}$. Otherwise the values are represented with the current precision \com{prec}. When a number must be rounded, it is rounded to the precision \com{prec} before the expression get evaluated:
 
 \input{introExample14}
 
@@ -293,6 +291,22 @@ The same way, if you define a function that refers to some constant, this consta
 If you define a function that refers to some variable, the precision of the variable is kept, independently of the current precision:
 
 \input{introExample15}
+
+In some rare cases, it is necessary to read in decimal constants with
+a particular precision being used in the conversion to the binary
+floating-point format, which \sollya uses. Setting \key{prec} to that
+precision may prove to be an insufficient means for doing so, for
+example when several different precisions have to be used in one
+expression. For these rare cases, \sollya provides the following
+syntax: decimal constants may be written {\tt
+  \%}\emph{precision}{\tt\%}\emph{constant}, where \emph{precision} is
+a constant integer, written in decimal, and \emph{constant} is the
+decimal constant. \sollya will convert the constant \emph{constant}
+with precision \emph{precision}, regardless of the global variable
+\key{prec} and regardless if \emph{constant} is an integer or would
+otherwise be representable.
+
+\input{introExample44}
 
 \sollya is an environment that uses floating-point arithmetic. The
 IEEE 754-2008 standard on floating-point arithmetic does not only
@@ -377,7 +391,7 @@ with \sollya's mode for rational arithmetic:
 
 \subsection{Intervals and interval arithmetic}
 
-\sollya intervals are generally closed subsets of the real
+\sollya intervals are closed subsets of the real
 numbers. Several ways of defining intervals exist in \sollya. There is the
 most common way where intervals are composed of two numbers or
 constant expressions representing the lower and the upper bound. These
@@ -550,7 +564,7 @@ following example illustrates this point:
 \input{introExample22}
 
 Please be aware of the fact that the complexity for accessing an
-element of the list using indices is~$\mathcal{O}(n)$.
+element of the list using indices is~$\mathcal{O}(n)$, where $n$ is the length of the whole list.
 
 Lists may contain ellipses indicated by \texttt{,...,} between
 elements that are constant and evaluate to integers that are
