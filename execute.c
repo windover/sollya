@@ -1174,10 +1174,10 @@ char *getTimingStringForThing(node *tree) {
     constString = "plot statement";
     break;			
   case PRINTHEXA:
-    constString = "printhexa statement";
+    constString = "printdouble statement";
     break; 
   case PRINTFLOAT:
-    constString = "printfloat statement";
+    constString = "printsingle statement";
     break; 
   case PRINTBINARY:
     constString = "printbinary statement";
@@ -3239,7 +3239,7 @@ char *sRawPrintThing(node *tree) {
     res = newString("pi");
     break;
   case COMMANDLIST:
-    res = newString("begin\n");
+    res = newString("{\n");
     curr = tree->arguments;
     while (curr != NULL) {
       res = concatAndFree(res,
@@ -3247,7 +3247,7 @@ char *sRawPrintThing(node *tree) {
       res = concatAndFree(res,newString(";\n"));
       curr = curr->next;
     }
-    res = concatAndFree(res,newString("end"));
+    res = concatAndFree(res,newString("}"));
     break;			
   case WHILE:
     res = newString("while ");
@@ -3369,12 +3369,12 @@ char *sRawPrintThing(node *tree) {
     res = concatAndFree(res, newString(")"));
     break;			
   case PRINTHEXA:
-    res = concatAndFree(newString("printhexa("),
+    res = concatAndFree(newString("printdouble("),
 			concatAndFree(sRawPrintThing(tree->child1),
 				      newString(")")));
     break; 
   case PRINTFLOAT:
-    res = concatAndFree(newString("printfloat("),
+    res = concatAndFree(newString("printsingle("),
 			concatAndFree(sRawPrintThing(tree->child1),
 				      newString(")")));
     break; 
@@ -4367,7 +4367,7 @@ char *sRawPrintThing(node *tree) {
       if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
       curr = curr->next;
     }
-    res = concatAndFree(res, newString(")\nbegin\n"));
+    res = concatAndFree(res, newString(")\n{\n"));
     curr = tree->child1->arguments;
     while (curr != NULL) {
       res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
@@ -4376,13 +4376,13 @@ char *sRawPrintThing(node *tree) {
     }
     res = concatAndFree(res, newString("return "));
     res = concatAndFree(res, sRawPrintThing(tree->child2));
-    res = concatAndFree(res, newString(";\nend"));
+    res = concatAndFree(res, newString(";\n}"));
     break;
   case PROCILLIM:
     res = newString("proc(");
     curr = tree->arguments;
     res = concatAndFree(res, newString((char *) (curr->value)));
-    res = concatAndFree(res, newString(" = ...)\nbegin\n"));
+    res = concatAndFree(res, newString(" = ...)\n{\n"));
     curr = tree->child1->arguments;
     while (curr != NULL) {
       res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
@@ -4391,52 +4391,52 @@ char *sRawPrintThing(node *tree) {
     }
     res = concatAndFree(res, newString("return "));
     res = concatAndFree(res, sRawPrintThing(tree->child2));
-    res = concatAndFree(res, newString(";\nend"));
+    res = concatAndFree(res, newString(";\n}"));
     break;
   case PRECDEREF:
-    res = newString("prec = ?");
+    res = newString("prec");
     break; 			
   case POINTSDEREF:
-    res = newString("points = ?");
+    res = newString("points");
     break; 			
   case DIAMDEREF:
-    res = newString("diam = ?");
+    res = newString("diam");
     break; 			
   case DISPLAYDEREF:
-    res = newString("display = ?");
+    res = newString("display");
     break; 			
   case VERBOSITYDEREF:
-    res = newString("verbosity = ?");
+    res = newString("verbosity");
     break; 			
   case CANONICALDEREF:
-    res = newString("canonical = ?");
+    res = newString("canonical");
     break; 			
   case AUTOSIMPLIFYDEREF:
-    res = newString("autosimplify = ?");
+    res = newString("autosimplify");
     break; 		
   case TAYLORRECURSDEREF:
-    res = newString("taylorrecursions = ?");
+    res = newString("taylorrecursions");
     break; 		
   case TIMINGDEREF:
-    res = newString("timing = ?");
+    res = newString("timing");
     break; 			
   case FULLPARENDEREF:
-    res = newString("fullparentheses = ?");
+    res = newString("fullparentheses");
     break; 			
   case MIDPOINTDEREF:
-    res = newString("midpointmode = ?");
+    res = newString("midpointmode");
     break; 			
   case DIEONERRORMODEDEREF:
-    res = newString("dieonerrormode = ?");
+    res = newString("dieonerrormode");
     break; 			
   case RATIONALMODEDEREF:
-    res = newString("rationalmode = ?");
+    res = newString("rationalmode");
     break; 			
   case SUPPRESSWARNINGSDEREF:
-    res = newString("roundingwarnings = ?");
+    res = newString("roundingwarnings");
     break; 			
   case HOPITALRECURSDEREF:
-    res = newString("hopitalrecursions = ?");
+    res = newString("hopitalrecursions");
     break;  	       
   default:
     fprintf(stderr,"Error: sRawPrintThing: unknown identifier (%d) in the tree\n",tree->nodeType);

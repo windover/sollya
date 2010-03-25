@@ -34,11 +34,11 @@ Parameters:
 6
 > succ;
 proc(n)
-begin
+{
 var res;
 res := (n) + (1);
 return res;
-end
+}
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
@@ -48,10 +48,10 @@ end
 Hello world
 > hey;
 proc(s)
-begin
+{
 print("Hello", s);
 return void;
-end
+}
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{proc} (\ref{labproc}), \textbf{void} (\ref{labvoid})

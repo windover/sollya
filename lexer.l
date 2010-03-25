@@ -236,8 +236,8 @@ CHECKINFNORM    "checkinfnorm"
 
 TAYLORRECURSIONS "taylorrecursions"
 
-PRINTHEXA       "printhexa"
-PRINTFLOAT      "printfloat"
+PRINTHEXA       ("printhexa"|"printdouble")
+PRINTFLOAT      ("printfloat"|"printsingle")
 PRINTBINARY     "printbinary"
 
 ROUNDCOEFFICIENTS "roundcoefficients"

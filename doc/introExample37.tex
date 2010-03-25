@@ -3,13 +3,13 @@
 i; return acc; };
 > sumall;
 proc(args = ...)
-begin
+{
 var i, acc;
 acc = 0;
 for i in args do
 acc = (acc) + (i);
 return acc;
-end
+}
 > sumall();
 0
 > sumall(1);

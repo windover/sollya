@@ -89,10 +89,10 @@ Parameters:
 4
 > succ;
 proc(n)
-begin
+{
 nop;
 return (n) + (1);
-end
+}
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
@@ -102,11 +102,11 @@ end
 11
 > add;
 proc(m, n)
-begin
+{
 var res;
 res := (m) + (n);
 return res;
-end
+}
 > verbosity = 1!;
 > add(3);
 Warning: at least one of the given expressions or a subexpression is not correct
@@ -140,10 +140,10 @@ Hello world.
 void
 > hey;
 proc()
-begin
+{
 print("Hello world.");
 return void;
-end
+}
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 5: 
@@ -156,14 +156,14 @@ end
 39916800
 > fac;
 proc(n)
-begin
+{
 var res;
 if (n) == (0) then
 res := 1
 else
 res := (n) * (fac((n) - (1)));
 return res;
-end
+}
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 6: 
@@ -188,11 +188,11 @@ end
 > myquit = proc(n) { print(n); quit; };
 > myquit;
 proc(n)
-begin
+{
 print(n);
 quit;
 return void;
-end
+}
 > myquit(5);
 Warning: a quit or restart command may not be part of a procedure body.
 The procedure will not be executed.
@@ -216,10 +216,10 @@ Successor of 5 is 6
 > makeadd(4);
 n = 4
 proc(m, n)
-begin
+{
 nop;
 return (n) + (m);
-end
+}
 > (makeadd(4))(5,6);
 n = 4
 11
@@ -231,13 +231,13 @@ n = 4
 urn acc; };
 > sumall;
 proc(l = ...)
-begin
+{
 var acc, i;
 acc = 0;
 for i in l do
 acc = (acc) + (i);
 return acc;
-end
+}
 > sumall();
 0
 > sumall(2);
