@@ -8,15 +8,15 @@ Automatic pure tree simplification has been deactivated.
 > i := i + 1;
 > print(i);
 1002
-> l = [|1,...,5|];
-> print(l);
+> L = [|1,...,5|];
+> print(L);
 [|1, 2, 3, 4, 5|]
-> l[3] = l[3] + 1;
-> l[4] := l[4] + 1;
-> print(l);
+> L[3] = L[3] + 1;
+> L[4] := L[4] + 1;
+> print(L);
 [|1, 2, 3, 4 + 1, 6|]
-> l[5] = true;
-> l;
+> L[5] = true;
+> L;
 [|1, 2, 3, 5, 6, true|]
 > s = "Hello world";
 > s;
@@ -24,11 +24,14 @@ Hello world
 > s[1] = "a";
 > s;
 Hallo world
-> l = [|true,1,...,5,9...|];
-> l;
+> s[2] = "foo";
+Warning: the string to be assigned is not of length 1.
+This command will have no effect.
+> L = [|true,1,...,5,9...|];
+> L;
 [|true, 1, 2, 3, 4, 5, 9...|]
-> l[13] = "Hello";
-> l;
+> L[13] = "Hello";
+> L;
 [|true, 1, 2, 3, 4, 5, 9, 10, 11, 12, 13, 14, 15, "Hello"...|]
 \end{Verbatim}
 \end{minipage}\end{center}

@@ -29,7 +29,7 @@ succ(5);
 succ;
 
 #EXAMPLE
-procedure myprint(l = ...) { var i; for i in l do i; };
+procedure myprint(L = ...) { var i; for i in L do i; };
 myprint("Lyon","Nancy","Beaverton","Coye-la-Foret","Amberg","Nizhny Novgorod","Cluj-Napoca");
 
 #SEEALSO $PROC

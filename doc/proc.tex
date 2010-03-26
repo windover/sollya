@@ -227,14 +227,14 @@ n = 4
 \end{minipage}\end{center}
 \noindent Example 10: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> sumall = proc(l = ...) { var acc, i; acc = 0; for i in l do acc = acc + i; ret
+> sumall = proc(L = ...) { var acc, i; acc = 0; for i in L do acc = acc + i; ret
 urn acc; };
 > sumall;
-proc(l = ...)
+proc(L = ...)
 {
 var acc, i;
 acc = 0;
-for i in l do
+for i in L do
 acc = (acc) + (i);
 return acc;
 }

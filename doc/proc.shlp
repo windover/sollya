@@ -140,7 +140,7 @@ makeadd(4);
 (makeadd(4))(5,6);
 
 #EXAMPLE
-sumall = proc(l = ...) { var acc, i; acc = 0; for i in l do acc = acc + i; return acc; };
+sumall = proc(L = ...) { var acc, i; acc = 0; for i in L do acc = acc + i; return acc; };
 sumall;
 sumall();
 sumall(2);

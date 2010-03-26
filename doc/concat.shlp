@@ -48,10 +48,10 @@ sayhello();
 sayhello @ [||];
 
 #EXAMPLE
-procedure add(l = ...) {
+procedure add(L = ...) {
 var acc, i;
 acc = 0;
-for i in l do acc = i + acc;
+for i in L do acc = i + acc;
 return acc;
 };
 

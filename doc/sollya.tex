@@ -159,7 +159,7 @@ As you have seen, you can name functions and easily work with them. The basic th
 
 \input{introExample4}
 
-The printed value is generally a faithful rounding of the exact value at the working precision. The working precision is controlled by the global variable \com{prec}:
+The printed value is generally a faithful rounding of the exact value at the working precision (i.e. one of the two floating-point numbers enclosing the exact value). Internally \sollya represents numbers as floating-point numbers in arbitrary precision with radix~$2$: the fact that a faithful rounding is performed in binary does not imply anything on the exactness of the digits displayed in decimal. The working precision is controlled by the global variable \com{prec}:
 
 \input{introExample5}
 
@@ -171,7 +171,7 @@ The philosophy of \sollya is: \emph{Whenever something is not exact, print a war
 
 \input{introExample7}
 
-Let us finish this Section with a small complete example that shows a bit of what can be done with \sollya:
+Let us finish this Section with a small complete example that shows a bit of what can be done with~\sollya:
 
 % Warning: this file must be manually corrected: delete the extra ">"
 \input{introExample8}
@@ -391,11 +391,14 @@ with \sollya's mode for rational arithmetic:
 
 \subsection{Intervals and interval arithmetic}
 
-\sollya intervals are closed subsets of the real
+\sollya can manipulate intervals that are closed subsets of the real
 numbers. Several ways of defining intervals exist in \sollya. There is the
 most common way where intervals are composed of two numbers or
 constant expressions representing the lower and the upper bound. These
-values are separated either by commas or semi-colons:
+values are separated either by commas or semi-colons. Interval bound 
+evaluation is performed in a way that ensures the inclusion property:
+all points in the original, unevaluated interval will be contained in
+the interval with its bounds evaluated to floating-point numbers. 
 
 \input{introExample16}
 
@@ -404,7 +407,10 @@ their bounds have a number of decimal digits in common when
 printed. That mode is called \com{midpointmode}; see section
 \ref{labmidpointmode} for details. As \sollya must be able to parse
 back its own output, a syntax is provided to input intervals in
-midpoint mode:
+midpoint~mode. However, please note that the notation used in 
+midpoint~mode generally increases the width of intervals: hence when
+an interval is displayed in midpoint~mode and read again, the resulting
+interval may be wider than the original interval.
 
 \input{introExample41}
 
@@ -432,10 +438,7 @@ numbers as bounds; rational numbers are not supported here. If bounds
 are defined by constant expressions, these are evaluated to
 floating-point numbers using the current precision. Numbers or
 variables containing numbers keep their precision for the interval
-bounds. Interval bound evaluation is performed in a way that ensures
-the inclusion property: all points in the original, unevaluated
-interval will be contained in the interval with its bounds evaluated
-to floating-point numbers. 
+bounds.
 
 Constant expressions get evaluated to floating-point values
 immediately; this includes $\pi$ and rational numbers, even in when
@@ -626,14 +629,19 @@ this way, that right-hand side must evaluate to a string of length
 $1$. End-elliptic lists are supported with their usual semantic for
 this kind of assignment.  When referencing and assigning a value in
 the implicit part of the end-elliptic list, the list gets expanded to
-the corresponding length. The indexing of lists on left-hand sides of
-assignments is reduced to the first order. Multiple indexing of lists
-of lists is not supported for complexity reasons. 
+the corresponding length.
 
 The following examples well illustrate the behavior of assignment
 statements:
 
 \input{introExample25}
+
+
+The indexing of lists on left-hand sides of
+assignments is reduced to the first order. Multiple indexing of lists
+of lists is not supported for complexity reasons. 
+
+\input{introExample45}
 
 \subsection{Conditional statements}
 

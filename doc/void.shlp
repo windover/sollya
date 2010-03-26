@@ -51,7 +51,7 @@ foo(void);
 print(foo());
 
 #EXAMPLE
-procedure blub(l = ...) { print("Argument list:", l); };
+procedure blub(L = ...) { print("Argument list:", L); };
 blub(1);
 blub();
 blub(void); 
