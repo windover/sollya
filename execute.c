@@ -2197,8 +2197,8 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal, int s
 	  mpfr_set_ui(tempResult,0,GMP_RNDN);
 	  if (!noMessage) {
 	    if (!noRoundingWarnings) {
-	      printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate and\n");
-	      printMessage(1,"a faithful evaluation is not possible. Will consider the constant to be 0.\n");
+	      printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate\n");
+	      printMessage(1,"and a faithful evaluation is not possible. Will consider the constant to be 0.\n");
 	    } 
 	  } else {
 	    if (!noRoundingWarnings) {
@@ -2208,8 +2208,9 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal, int s
 	} else {
 	  if (!noMessage) {
 	    if (!noRoundingWarnings) {
-	      printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate and\n");
-	      printMessage(1,"a faithful evaluation is not possible.\nWill use a plain floating-point evaluation, which might yield a completely wrong value.\n");
+	      printMessage(1,"Warning: the given expression is not a constant but an expression to evaluate\n");
+	      printMessage(1,"and a faithful evaluation is not possible.\n");
+              printMessage(1,"Will use a plain floating-point evaluation, which might yield a completely wrong value.\n");
 	    } 
 	  } else {
 	    if (!noRoundingWarnings) {
@@ -15078,7 +15079,7 @@ node *evaluateThingInner(node *tree) {
     else{
       if( (!evaluateThingToIntegerList(&tempChain, &resA, secondArg)) ||
 	  (resA=0) ) {
-	printMessage(1, "The second argument of fpminimax must be either an integer or a finite list of integers\n");
+	printMessage(1, "The second argument of fpminimax must be either an integer or a finite list of integers.\n");
       }
     }
   
@@ -15086,7 +15087,7 @@ node *evaluateThingInner(node *tree) {
     if( (thirdArg->nodeType == LIST) || (thirdArg->nodeType == FINALELLIPTICLIST) )
       evaluateFormatsListForFPminimax(&tempChain2, thirdArg, lengthChain(tempChain));
     else
-      printMessage(1, "The third argument of fpminimax must be a list of formats indications\n");
+      printMessage(1, "The third argument of fpminimax must be a list of formats indications.\n");
 
 
     tempChain3 = NULL;

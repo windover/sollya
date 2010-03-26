@@ -497,20 +497,20 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
     }
     /* The cases (-sngfa, * *) and (* * sgnfa) can be separated into subcases : */
     if ((sgnfepsa==codeNegfa) && (sgnf0==3) && (sgnfepsb==codefa)) {
-      printMessage(3, "Warning (Newton's algorithm): the function has more than one zero in the interval\n");
-      printMessage(3, "Warning (Newton's algorithm): 0 seems to be one of them but wa cannot prove it\n");
+      printMessage(3, "Warning (Newton's algorithm): the function has more than one zero in the interval.\n");
+      printMessage(3, "Warning (Newton's algorithm): 0 seems to be one of them but wa cannot prove it.\n");
       mpfr_set(res, zero_mpfr, GMP_RNDN);
       stop_algo = 1;
     }
     if ((sgnfepsa==codeNegfa) && (sgnf0==codefa) && (sgnfepsb==codefa)) {
-      printMessage(3, "Warning (Newton's algorithm): the function has more than one zero in the interval\n");
-      printMessage(3, "Warning (Newton's algorithm): one of them is too close to zero for being accurately determined\n");
+      printMessage(3, "Warning (Newton's algorithm): the function has more than one zero in the interval.\n");
+      printMessage(3, "Warning (Newton's algorithm): one of them is too close to zero for being accurately determined.\n");
       mpfr_set(res, epsa, GMP_RNDU);
       stop_algo = 1;
     }
     if ((sgnfepsa==codeNegfa) && (sgnf0==codeNegfa) && (sgnfepsb==codefa)) {
-      printMessage(3, "Warning (Newton's algorithm): the function has more than one zero in the interval\n");
-      printMessage(3, "Warning (Newton's algorithm): one of them is too close to zero for being accurately determined\n");
+      printMessage(3, "Warning (Newton's algorithm): the function has more than one zero in the interval.\n");
+      printMessage(3, "Warning (Newton's algorithm): one of them is too close to zero for being accurately determined.\n");
       mpfr_set(res, epsb, GMP_RNDD);
       stop_algo = 1;
     }
@@ -535,53 +535,53 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
     /* End of the subcases */
     if ( ((sgnfepsa==codefa) && (sgnf0==codefa) && (sgnfepsb==codeNegfa)) ||
 	 ((sgnfepsa==3) && (sgnf0==codefa) && (sgnfepsb==codeNegfa)) ) {
-      printMessage(2, "Warning (Newton's algorithm): the zero of f is too close to zero for being accurately determined\n");
+      printMessage(2, "Warning (Newton's algorithm): the zero of f is too close to zero for being accurately determined.\n");
       mpfr_set(res, epsb, GMP_RNDN);
       stop_algo = 1;
     }
     if ( ((sgnfepsa==codefa) && (sgnf0==codeNegfa) && (sgnfepsb==codeNegfa)) ||
 	 ((sgnfepsa==codefa) && (sgnf0==codeNegfa) && (sgnfepsb==3)) ) {
-      printMessage(2, "Warning (Newton's algorithm): the zero of f is too close to zero for being accurately determined\n");
+      printMessage(2, "Warning (Newton's algorithm): the zero of f is too close to zero for being accurately determined.\n");
       mpfr_set(res, epsa, GMP_RNDN);
       stop_algo = 1;
     }
     if ((sgnfepsa==codefa) && (sgnf0==3) && (sgnfepsb==codeNegfa)) {
-      printMessage(2, "Warning (Newton's algorithm): 0 seems to be an exact zero but we cannot prove it\n");
+      printMessage(2, "Warning (Newton's algorithm): 0 seems to be an exact zero but we cannot prove it.\n");
       mpfr_set(res, zero_mpfr, GMP_RNDN);
       stop_algo = 1;
     }
     if ((sgnfepsa==codefa) && (sgnf0==3) && (sgnfepsb==3)) {
       if (mpfr_cmp_ui(b,0)==0) {
-	printMessage(2, "Warning (Newton's algorithm): 0 seems to be an exact zero but we cannot prove it\n");
+	printMessage(2, "Warning (Newton's algorithm): 0 seems to be an exact zero but we cannot prove it.\n");
 	mpfr_set(res, zero_mpfr, GMP_RNDN);
 	stop_algo = 1;
       }
       else {
-	fprintf(stderr, "Error (Newton's algorithm): numerical problems have been encountered. Failed\n");
+	fprintf(stderr, "Error (Newton's algorithm): numerical problems have been encountered. Failed.\n");
 	mpfr_set_nan(res);
 	stop_algo = 1;
       }
     }
     if ((sgnfepsa==3) && (sgnf0==3) && (sgnfepsb==codeNegfa)) {
       if (mpfr_cmp_ui(a,0)==0) {
-	printMessage(2, "Warning (Newton's algorithm): 0 seems to be an exact zero but we cannot prove it\n");
+	printMessage(2, "Warning (Newton's algorithm): 0 seems to be an exact zero but we cannot prove it.\n");
 	mpfr_set(res, zero_mpfr, GMP_RNDN);
 	stop_algo = 1;
       }
       else {
-	fprintf(stderr, "Error (Newton's algorithm): numerical problems have been encountered. Failed\n");
+	fprintf(stderr, "Error (Newton's algorithm): numerical problems have been encountered. Failed.\n");
 	mpfr_set_nan(res);
 	stop_algo = 1;
       }
     }
     if ((sgnfepsa==3) && (sgnf0==3) && (sgnfepsb==3)) {
       if ( (mpfr_cmp_ui(a,0)==0)&&(mpfr_cmp_ui(b,0)==0) ) {
-	printMessage(2, "Warning (Newton's algorithm): 0 seems to be an exact zero but we cannot prove it\n");
+	printMessage(2, "Warning (Newton's algorithm): 0 seems to be an exact zero but we cannot prove it.\n");
 	mpfr_set(res, zero_mpfr, GMP_RNDN);
 	stop_algo = 1;
       }
       else {
-	fprintf(stderr, "Error (Newton's algorithm): numerical problems have been encountered. Failed\n");
+	fprintf(stderr, "Error (Newton's algorithm): numerical problems have been encountered. Failed.\n");
 	mpfr_set_nan(res);
 	stop_algo = 1;
       }
@@ -646,7 +646,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 	mpfr_add(xNew,u,v,GMP_RNDN);
 	mpfr_div_2ui(xNew, xNew, 1, GMP_RNDN);
 	if (mpfr_cmp(x, xNew)==0) {
-	  printMessage(5, "Warning (Newton's algorithm): performing a trisection step\n");
+	  printMessage(5, "Warning (Newton's algorithm): performing a trisection step.\n");
 	  mpfr_sub(xNew,v,u,GMP_RNDN);
 	  mpfr_div_ui(xNew, xNew, 3, GMP_RNDN);
 	  mpfr_add(xNew, u, xNew, GMP_RNDN);
@@ -1463,7 +1463,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
     }
   
     if (!test) {
-      printMessage(1,"Warning in Remez: main heuristic failed. A slower algorithm is used for this step\n");
+      printMessage(1,"Warning in Remez: main heuristic failed. A slower algorithm is used for this step.\n");
       quickFindZeros(z, x, error, error_diff, error_diff2, monomials_tree, w, lambdai_vect, epsilon, HaarCompliant, freeDegrees-1, a, b, prec);
 
       if(crash_report==-1) {
