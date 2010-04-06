@@ -1,3 +1,3 @@
 a = 17.25; /* hidden */
-printhexa(a);
-printfloat(a);
+printdouble(a);
+printsingle(a);
