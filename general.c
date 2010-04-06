@@ -891,7 +891,7 @@ int general(int argc, char *argv[]) {
 	printf("a regular file");
       else
 	printf("a terminal");
-      printf(".\n\nUsage: %s [options]\n\nPossible options are:\n",argv[0]);
+      printf(".\n\nUsage: %s [options]\n\nPossible options are:\n",PACKAGE_NAME);
       printf("--nocolor : do not color the output using ANSI escape sequences\n");
       printf("--noprompt : do not print a prompt symbol\n");
       printf("--flush : flush standard output and standard error after each command\n");
@@ -900,7 +900,8 @@ int general(int argc, char *argv[]) {
       printf("--oldautoprint : print commas between autoprinted elements separated by commas\n");
       printf("--help : print this help text\n");
       printf("\nFor help on %s commands type \"help;\" on the %s prompt\n",PACKAGE_NAME,PACKAGE_NAME);
-      printf("More documentation on %s is available on the %s website.\nFor bug reports send an email to %s.\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
+      printf("More documentation on %s is available on the %s website http://sollya.gforge.inria.fr/.\nFor bug reports send an email to %s.\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
+      printf("\n%s is Copyright 2008-2010 by\n    Laboratoire de l'Informatique du Parallelisme,\n    UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668, Lyon, France,\nand by\n    LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France.\nAll rights reserved.\n\nContributors are S. Chevillard, N. Jourdan, M. Joldes and Chr. Lauter.\n\nThis software is governed by the CeCILL-C license under French law and\nabiding by the rules of distribution of free software.  You can  use,\nmodify and/ or redistribute the software under the terms of the CeCILL-C\nlicense as circulated by CEA, CNRS and INRIA at the following URL\n\"http://www.cecill.info\".\n\n",PACKAGE_STRING);
       return 1;
     } else 
       if (strcmp(argv[i],"--nocolor") == 0) noColor = 1; else
