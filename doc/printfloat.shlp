@@ -15,12 +15,12 @@ is first rounded to the nearest single precision number before it is
 displayed. A warning is displayed in this case.
 
 #EXAMPLE
-printfloat(3);
+printsingle(3);
 
 #EXAMPLE
 prec=100!;
 verbosity = 1!;
-printfloat(exp(5));
+printsingle(exp(5));
 
 #SEEALSO $PRINTHEXA
 

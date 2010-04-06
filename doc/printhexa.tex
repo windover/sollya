@@ -1,10 +1,10 @@
-\subsection{printhexa}
+\subsection{printdouble}
 \label{labprinthexa}
-\noindent Name: \textbf{printhexa}\\
+\noindent Name: \textbf{printdouble}\\
 prints a constant value as a hexadecimal double precision number\\
 \noindent Usage: 
 \begin{center}
-\textbf{printhexa}(\emph{constant}) : \textsf{constant} $\rightarrow$ \textsf{void}\\
+\textbf{printdouble}(\emph{constant}) : \textsf{constant} $\rightarrow$ \textsf{void}\\
 \end{center}
 Parameters: 
 \begin{itemize}
@@ -23,7 +23,7 @@ Parameters:
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> printhexa(3);
+> printdouble(3);
 0x4008000000000000
 \end{Verbatim}
 \end{minipage}\end{center}
@@ -31,11 +31,11 @@ Parameters:
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > prec=100!;
 > verbosity = 1!;
-> printhexa(exp(5));
+> printdouble(exp(5));
 Warning: the given expression is not a constant but an expression to evaluate. A
  faithful evaluation will be used.
 Warning: rounding down occurred before printing a value as a double.
 0x40628d389970338f
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{printfloat} (\ref{labprintfloat}), \textbf{printexpansion} (\ref{labprintexpansion})
+See also: \textbf{printsingle} (\ref{labprintfloat}), \textbf{printexpansion} (\ref{labprintexpansion})
