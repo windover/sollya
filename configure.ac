@@ -122,7 +122,7 @@ XML2INCLUDEGIVEN=""
 XML2LIBGIVEN=""
 AC_ARG_WITH(xml2-include,
    [  --with-xml2-include=DIR  XML2 include directory ],[
-   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval"
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval -I$withval/libxml2"
    XML2INCLUDEGIVEN=1
    ])
 AC_ARG_WITH(xml2-lib,
@@ -132,7 +132,7 @@ AC_ARG_WITH(xml2-lib,
   ])
 AC_ARG_WITH(xml2,
    [  --with-xml2=DIR          XML2 install directory ], [
-   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
+   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include -I$withval/include/libxml2"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
    XML2INCLUDEGIVEN=1
    XML2LIBGIVEN=1
@@ -200,7 +200,6 @@ AC_CHECK_LIB([mpfr], [mpfr_erfc], [], AC_MSG_ERROR([libmpfr version too old]))
 AC_CHECK_LIB([z], [gzdopen], [], AC_MSG_RESULT(no))
 AC_CHECK_LIB([iconv], [libiconv_open], [], [])
 AC_CHECK_LIB([xml2], [xmlTextReaderIsEmptyElement], [], AC_MSG_ERROR([libxml2 unusable]))
-AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unusable]))
 
 #Special check for fplll
 AC_LANG_PUSH([C++])
@@ -213,6 +212,8 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
 ],[AC_MSG_ERROR([fplll unusable (or g++ too new -- see README)])
 ])
 AC_LANG_POP([C++])	
+
+AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unusable]))
 
 #Check for -Wl,-export-dynamic etc.
 
