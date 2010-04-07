@@ -6,7 +6,7 @@ AC_INIT([sollya], [2.0 alpha], [christoph.lauter@ens-lyon.org, sylvain.chevillar
 AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([1.6 no-define dist-zip dist-bzip2])
 
-
+ 
 # Checks for programs.
 AC_PROG_YACC
 AC_PROG_CC
@@ -198,7 +198,7 @@ AC_CHECK_LIB([gmp], [__gmpz_export], [], AC_MSG_ERROR([libgmp version too old]))
 AC_CHECK_LIB([mpfr], [mpfr_init], [], AC_MSG_ERROR([libmpfr unusable]))
 AC_CHECK_LIB([mpfr], [mpfr_erfc], [], AC_MSG_ERROR([libmpfr version too old]))
 AC_CHECK_LIB([z], [gzdopen], [], AC_MSG_RESULT(no))
-AC_CHECK_LIB([iconv], [libiconv_open], [], AC_MSG_RESULT(no))
+AC_CHECK_LIB([iconv], [libiconv_open], [], [])
 AC_CHECK_LIB([xml2], [xmlTextReaderIsEmptyElement], [], AC_MSG_ERROR([libxml2 unusable]))
 AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unusable]))
 

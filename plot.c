@@ -91,11 +91,11 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   int overflow;
 
   pp = prec;
-  if (prec < 128) pp = 128;
+  if (prec < 64) pp = 64;
 
   mpfr_init2(x, pp);
   mpfr_init2(step, pp);
-  mpfr_init2(y, 128);
+  mpfr_init2(y, 64);
  
   mpfr_sub(step, b, a, GMP_RNDN);
   mpfr_div_ui(step, step, points, GMP_RNDN);
@@ -201,8 +201,8 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   mpfr_init2(cutoff, pp);
   mpfr_set_d(cutoff,1.0,GMP_RNDN);
   p = prec;
-  if (p < 128) p = 128;
-  mpfr_div_2ui(cutoff,cutoff,p,GMP_RNDN);
+  if (p < 64) p = 64;
+  mpfr_div_2ui(cutoff,cutoff,4*p,GMP_RNDN);
  
   overflow = 0;
   flush = 0;
