@@ -197,7 +197,7 @@ AC_CHECK_LIB([gmp], [__gmpz_bin_uiui], [], AC_MSG_ERROR([libgmp version too old]
 AC_CHECK_LIB([gmp], [__gmpz_export], [], AC_MSG_ERROR([libgmp version too old]))
 AC_CHECK_LIB([mpfr], [mpfr_init], [], AC_MSG_ERROR([libmpfr unusable]))
 AC_CHECK_LIB([mpfr], [mpfr_erfc], [], AC_MSG_ERROR([libmpfr version too old]))
-AC_CHECK_LIB([z], [gzdopen], [], AC_MSG_RESULT(no))
+AC_CHECK_LIB([z], [gzdopen], [], [])
 AC_CHECK_LIB([iconv], [libiconv_open], [], [])
 AC_CHECK_LIB([xml2], [xmlTextReaderIsEmptyElement], [], AC_MSG_ERROR([libxml2 unusable]))
 
