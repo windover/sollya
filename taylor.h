@@ -1,15 +1,13 @@
 /*
 
-Copyright 2008 by 
+Copyright 2006-2009 by 
 
 Laboratoire de l'Informatique du Parallélisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
-Contributors Ch. Lauter, S. Chevillard, N. Jourdan
+Contributor Ch. Lauter
 
 christoph.lauter@ens-lyon.org
-sylvain.chevillard@ens-lyon.org
-nicolas.jourdan@ens-lyon.fr
 
 This software is a computer program whose purpose is to provide an
 environment for safe floating-point code development. It is

@@ -1,6 +1,6 @@
 /*
 
-Copyright 2008 by 
+Copyright 2007-2010 by 
 
 Laboratoire de l'Informatique du Parallélisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
@@ -9,7 +9,6 @@ Contributors Ch. Lauter, S. Chevillard, N. Jourdan
 
 christoph.lauter@ens-lyon.org
 sylvain.chevillard@ens-lyon.org
-nicolas.jourdan@ens-lyon.fr
 
 This software is a computer program whose purpose is to provide an
 environment for safe floating-point code development. It is
@@ -345,7 +344,7 @@ void fPrintXml(FILE *fd, node *tree) {
   fprintf(fd,"<!-- syntax: printxml(...);   example: printxml(x^2-2*x+5); -->\n");
   //  fprintf(fd,"<!DOCTYPE math PUBLIC \"-//W3C//DTD MathML 2.0//EN\" \"http://www.w3.org/Math/DTD/mathml2/mathml2.dtd\" >\n");
   //  fprintf(fd,"<!-- MathML-Content (section 4 of MathML 2.0) -->\n");
-  fprintf(fd,"<?xml-stylesheet type=\"text/xsl\" href=\"http://perso.ens-lyon.fr/nicolas.jourdan/mathmlc2p-web.xsl\"?>\n");
+  fprintf(fd,"<?xml-stylesheet type=\"text/xsl\" href=\"http://sollya.gforge.inria.fr/mathmlc2p-web.xsl\"?>\n");
   fprintf(fd,"<?xml-stylesheet type=\"text/xsl\" href=\"mathmlc2p-web.xsl\"?>\n");
   fprintf(fd,"<!-- This stylesheet allows direct web browsing of MathML-c XML files (http:// or file://) -->\n");
   fprintf(fd,"\n<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n");
