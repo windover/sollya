@@ -679,10 +679,10 @@ The tool has been restarted.
 The tool has been restarted.
 =============== Test number 121 ================
 proc(n)
-begin
+{
 nop;
 return (n) + (1);
-end
+}
 6
 The tool has been restarted.
 =============== Test number 122 ================
@@ -888,28 +888,28 @@ The tool has been restarted.
 6
 4
 proc(n)
-begin
+{
 nop;
 return (n) + (1);
-end
+}
 The tool has been restarted.
 =============== Test number 162 ================
 6
 4
 proc(n)
-begin
+{
 nop;
 return (n) + (1);
-end
+}
 The tool has been restarted.
 =============== Test number 163 ================
 11
 proc(m, n)
-begin
+{
 var res;
 res := (m) + (n);
 return res;
-end
+}
 Warning: at least one of the given expressions or a subexpression is not correctly typed
 or its evaluation has failed because of some error on a side-effect.
 error
@@ -927,23 +927,23 @@ Hello world.
 Hello world.
 void
 proc()
-begin
+{
 print("Hello world.");
 return void;
-end
+}
 The tool has been restarted.
 =============== Test number 166 ================
 120
 39916800
 proc(n)
-begin
+{
 var res;
 if (n) == (0) then
 res := 1
 else
 res := (n) * (fac((n) - (1)));
 return res;
-end
+}
 The tool has been restarted.
 =============== Test number 167 ================
 11
@@ -953,11 +953,11 @@ The tool has been restarted.
 The tool has been restarted.
 =============== Test number 168 ================
 proc(n)
-begin
+{
 print(n);
 quit;
 return void;
-end
+}
 Warning: a quit or restart command may not be part of a procedure body.
 The procedure will not be executed.
 Warning: an error occurred while executing a procedure.
@@ -970,10 +970,10 @@ The tool has been restarted.
 =============== Test number 170 ================
 n = 4
 proc(m, n)
-begin
+{
 nop;
 return (n) + (m);
-end
+}
 n = 4
 11
 The tool has been restarted.
@@ -1063,19 +1063,19 @@ The tool has been restarted.
 =============== Test number 187 ================
 6
 proc(n)
-begin
+{
 var res;
 res := (n) + (1);
 return res;
-end
+}
 The tool has been restarted.
 =============== Test number 188 ================
 Hello world
 proc(s)
-begin
+{
 print("Hello", s);
 return void;
-end
+}
 The tool has been restarted.
 =============== Test number 189 ================
 [| |]
@@ -1228,10 +1228,10 @@ void
 The tool has been restarted.
 =============== Test number 228 ================
 proc()
-begin
+{
 print("Hello world.");
 return void;
-end
+}
 Hello world.
 Hello world.
 Hello world.
@@ -1263,9 +1263,9 @@ Warning in Remez: a slower algorithm is used for this step
 (0x3ff0000000000000 + 0xbc09fda20235c100) + x * ((0x3b29ecd485d34781 + 0xb7c1cbc97120359a) + x * (0xbfdfffffffffff98 + x * (0xbbfa6e0b3183cb0d + x * (0x3fa5555555145337 + x * (0x3ca3540480618939 + x * 0xbf56c138142d8c3b)))))
 x * (1 + x^2 * (-357913941 * 2^(-31) + x^2 * (35789873 * 2^(-32))))
 Warning in Remez: a slower algorithm is used for this step
-Warning in Remez: main heuristic failed. A slower algorithm is used for this step
-Warning in Remez: main heuristic failed. A slower algorithm is used for this step
-Warning in Remez: main heuristic failed. A slower algorithm is used for this step
+Warning in Remez: main heuristic failed. A slower algorithm is used for this step.
+Warning in Remez: main heuristic failed. A slower algorithm is used for this step.
+Warning in Remez: main heuristic failed. A slower algorithm is used for this step.
 1 + x * (1 + x * (1 * 2^(-1) + x * (375300225001191 * 2^(-51) + x * (5592621 * 2^(-27)))))
 Error of pstar:  41623862533526995219855274593333067596572580995543 * 2^(-215)
 Error of P1:     41623862533526995249852857301809387823617141062435 * 2^(-215)

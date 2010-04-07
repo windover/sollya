@@ -1,7 +1,7 @@
 verbosity=0!;
 yardstick = time(nop(5000));
 i = 0;
-variance= 1 + [-0.25;0.25];
+variance = [1/10;10];
 
 i;
 t = time(p = remez(exp(x),15,[-1b-1;1b-1]))/yardstick;
