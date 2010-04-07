@@ -964,6 +964,10 @@ megaterm:               hyperterm
                           {
 			    $$ = makeCompareEqual($1, $3);
 			  }
+                      | megaterm INTOKEN hyperterm
+                          {
+			    $$ = makeCompareIn($1, $3);
+			  }
                       | megaterm LEFTANGLETOKEN hyperterm
                           {
 			    $$ = makeCompareLess($1, $3);
@@ -3651,8 +3655,15 @@ help:                   CONSTANTTOKEN
                           }                 					             							       
                       | INTOKEN
                           {
-			    outputMode(); printf("For construct: for i in list do command.\n");
-                          }                 					             							       
+#ifdef HELP_IN_TEXT
+			    outputMode(); printf(HELP_IN_TEXT);
+#else
+			    outputMode(); printf("In construct: for in construct and containment operator.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for IN"
+#endif
+#endif
+                          }                 					               					       			       
                       | FROMTOKEN
                           {
 			    outputMode(); printf("For construct: for i from const to const2 [by const3] do command.\n");

@@ -257,6 +257,7 @@ extern void endBuffer(void);
 #define DIEONERRORMODEASSIGN 246
 #define DIEONERRORMODESTILLASSIGN 247
 #define DIEONERRORMODEDEREF 248
+#define COMPAREIN 249
 
 int executeCommand(node *);
 
@@ -332,6 +333,7 @@ node *makeOr(node *thing1, node *thing2);
 node *makeNegation(node *thing);
 node *makeIndex(node *thing1, node *thing2);
 node *makeCompareEqual(node *thing1, node *thing2);
+node *makeCompareIn(node *thing1, node *thing2);
 node *makeCompareLess(node *thing1, node *thing2);
 node *makeCompareGreater(node *thing1, node *thing2);
 node *makeCompareLessEqual(node *thing1, node *thing2);

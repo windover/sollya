@@ -611,6 +611,10 @@ node *copyThing(node *tree) {
     copy->child1 = copyThing(tree->child1);
     copy->child2 = copyThing(tree->child2);
     break; 			
+  case COMPAREIN:
+    copy->child1 = copyThing(tree->child1);
+    copy->child2 = copyThing(tree->child2);
+    break; 			
   case COMPARELESS:
     copy->child1 = copyThing(tree->child1);
     copy->child2 = copyThing(tree->child2);
@@ -1337,6 +1341,9 @@ char *getTimingStringForThing(node *tree) {
     break; 				
   case COMPAREEQUAL:
     constString = "compare equal";
+    break; 			
+  case COMPAREIN:
+    constString = "compare if in interval";
     break; 			
   case COMPARELESS:
     constString = "compare less";
@@ -3772,6 +3779,13 @@ char *sRawPrintThing(node *tree) {
     res = concatAndFree(newString("("),
 			concatAndFree(sRawPrintThing(tree->child1),
 				      concatAndFree(newString(") == ("),
+						    concatAndFree(sRawPrintThing(tree->child2),
+								  newString(")")))));
+    break; 			
+  case COMPAREIN:
+    res = concatAndFree(newString("("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      concatAndFree(newString(") in ("),
 						    concatAndFree(sRawPrintThing(tree->child2),
 								  newString(")")))));
     break; 			
@@ -8050,6 +8064,18 @@ node *makeCompareEqual(node *thing1, node *thing2) {
 
 }
 
+node *makeCompareIn(node *thing1, node *thing2) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = COMPAREIN;
+  res->child1 = thing1;
+  res->child2 = thing2;
+
+  return res;
+
+}
+
 node *makeCompareLess(node *thing1, node *thing2) {
   node *res;
 
@@ -9919,6 +9945,11 @@ void freeThing(node *tree) {
     freeThing(tree->child2);
     free(tree);
     break; 			
+  case COMPAREIN:
+    freeThing(tree->child1);
+    freeThing(tree->child2);
+    free(tree);
+    break; 			
   case COMPARELESS:
     freeThing(tree->child1);
     freeThing(tree->child2);
@@ -10793,6 +10824,10 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     break; 				
   case COMPAREEQUAL:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualThing(tree->child2,tree2->child2)) return 0;
+    break; 			
+  case COMPAREIN:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     break; 			
@@ -13467,7 +13502,116 @@ node *evaluateThingInner(node *tree) {
       }
     }
     if (timingString != NULL) popTimeCounter(timingString);
-    break; 			
+    break; 
+  case COMPAREIN:
+    copy->child1 = evaluateThing(tree->child1);
+    copy->child2 = evaluateThing(tree->child2);
+    resE = 0;
+    if (isPureTree(copy->child1) && 
+	isConstant(copy->child1) && 
+	isRange(copy->child2)) {
+      if (timingString != NULL) pushTimeCounter();
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfr_init2(c,tools_precision);
+      if ((resA = evaluateThingToConstant(a,copy->child1,NULL,1)) && 
+	  evaluateThingToRange(b,c,copy->child2)) {
+	if (resA == 3) 
+	  printMessage(1,"Warning: containment test relies on floating-point result that is not faithfully evaluated.\n");
+	resC = ((mpfr_cmp(b,a) <= 0) && 
+		(mpfr_cmp(a,c) <= 0) && 
+		(!mpfr_unordered_p(a,b)) && 
+		(!mpfr_unordered_p(a,c)));
+	resB = 0;
+	if (resA == 1) {
+	  mpfr_init2(d,mpfr_get_prec(a));
+	  mpfr_set(d,a,GMP_RNDN);
+	  if (resC) {
+	    /* b <= a <= c */
+	    mpfr_nextbelow(a);
+	    resB = (resC != ((mpfr_cmp(b,a) <= 0) && 
+			     (mpfr_cmp(a,c) <= 0) && 
+			     (!mpfr_unordered_p(a,b)) && 
+			     (!mpfr_unordered_p(a,c))));
+	    if (!resB) {
+	      mpfr_set(a,d,GMP_RNDN);
+	      mpfr_nextabove(a);
+	      resB = (resC != ((mpfr_cmp(b,a) <= 0) && 
+			     (mpfr_cmp(a,c) <= 0) && 
+			     (!mpfr_unordered_p(a,b)) && 
+			     (!mpfr_unordered_p(a,c))));
+	    }
+	  } else {
+	    /* a < b or c < a */
+	    mpfr_nextabove(a);
+	    resB = (resC != ((mpfr_cmp(b,a) <= 0) && 
+			     (mpfr_cmp(a,c) <= 0) && 
+			     (!mpfr_unordered_p(a,b)) && 
+			     (!mpfr_unordered_p(a,c))));
+	    if (!resB) {
+	      mpfr_set(a,d,GMP_RNDN);
+	      mpfr_nextbelow(a);
+	      resB = (resC != ((mpfr_cmp(b,a) <= 0) && 
+			     (mpfr_cmp(a,c) <= 0) && 
+			     (!mpfr_unordered_p(a,b)) && 
+			     (!mpfr_unordered_p(a,c))));
+	    }
+	  }
+	  if (resB) {
+	    tempNode = makeConstant(b);
+	    tempNode2 = makeConstant(c);
+	    if (compareConstant(&resA, tempNode, copy->child1) && 
+		compareConstant(&resB, copy->child1, tempNode2)) {
+	      resC = (resA <= 0) && (resB <= 0);
+	    } else
+	      printMessage(1,"Warning: containment test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+	    freeThing(tempNode);
+	    freeThing(tempNode2);
+	  } else 
+	    printMessage(2,"Information: containment test relies on floating-point result.\n");
+	  mpfr_clear(d);
+	}
+	if (resC) {
+	  freeThing(copy);
+	  copy = makeTrue();		    
+	} else {
+	  freeThing(copy);
+	  copy = makeFalse();		    
+	}
+	resE = 1;
+      }
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfr_clear(c);
+      if (timingString != NULL) popTimeCounter(timingString);
+    }
+    if ((!resE) && 
+	isRange(copy->child1) && 
+	isRange(copy->child1)) {
+      if (timingString != NULL) pushTimeCounter();
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfr_init2(c,tools_precision);
+      mpfr_init2(d,tools_precision);
+      if (evaluateThingToRange(a,b,copy->child1) && 
+	  evaluateThingToRange(c,d,copy->child2)) {
+	resC = ((mpfr_cmp(c,a) <= 0) && (!mpfr_unordered_p(c,a)) && 
+		(mpfr_cmp(b,d) <= 0) && (!mpfr_unordered_p(b,d)));
+	if (resC) {
+	  freeThing(copy);
+	  copy = makeTrue();		    
+	} else {
+	  freeThing(copy);
+	  copy = makeFalse();		    
+	}
+      }
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfr_clear(c);
+      mpfr_clear(d);
+      if (timingString != NULL) popTimeCounter(timingString);
+    } 
+    break; 						
   case COMPARELESS:
     copy->child1 = evaluateThing(tree->child1);
     copy->child2 = evaluateThing(tree->child2);

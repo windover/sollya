@@ -1,0 +1,49 @@
+#NAME $IN
+#QUICK_DESCRIPTION containment test operator
+#CALLING <expr> $COMMAND <range1>
+#TYPE ($CONSTANT_TYPE, $RANGE_TYPE) -> $BOOLEAN_TYPE
+#CALLING <range1> $COMMAND <range2>
+#TYPE ($RANGE_TYPE, $RANGE_TYPE) -> $BOOLEAN_TYPE
+#PARAMETERS <expr> represents a constant expression
+#PARAMETERS <range1> and <range2> represent ranges (intervals)
+
+#DESCRIPTION 
+When its first operand is a constant expression <expr>,
+the operator $COMMAND evaluates to true iff the constant value
+of the expression <expr> is contained in the interval <range1>.
+
+#DESCRIPTION 
+When both its operands are ranges (intervals), 
+the operator $COMMAND evaluates to true iff all values
+in <range1> are contained in the interval <range2>.
+
+#DESCRIPTION 
+$COMMAND is also used as a keyword for loops over the different
+elements of a list.
+
+#EXAMPLE
+5 in [-4;7];
+4 in [-1;1];
+0 in sin([-17;17]);
+
+#EXAMPLE
+[5;7] in [2;8];
+[2;3] in [4;5];
+[2;3] in [2.5;5];
+
+#EXAMPLE
+for i in [|1,...,5|] do print(i);
+
+
+#SEEALSO $EQUAL
+#SEEALSO $NEQ
+#SEEALSO $GE
+#SEEALSO $GT
+#SEEALSO $LE
+#SEEALSO $LT
+#SEEALSO $NOT
+#SEEALSO $AND
+#SEEALSO $OR
+#SEEALSO $PREC
+#SEEALSO $PRINT
+

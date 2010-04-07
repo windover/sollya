@@ -913,6 +913,10 @@ megaterm:               hyperterm
                           {
 			    $$ = makeCompareEqual($1, $3);
 			  }
+                      | megaterm INTOKEN hyperterm
+                          {
+			    $$ = makeCompareIn($1, $3);
+			  }
                       | megaterm LEFTANGLETOKEN hyperterm
                           {
 			    $$ = makeCompareLess($1, $3);
