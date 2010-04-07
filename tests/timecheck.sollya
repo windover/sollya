@@ -1,0 +1,40 @@
+verbosity=0!;
+yardstick = time(nop(5000));
+i = 0;
+variance= 1 + [-0.25;0.25];
+
+i;
+t = time(p = remez(exp(x),15,[-1b-1;1b-1]))/yardstick;
+if (t in 7.55e-2 * variance) then "Okay" else round(t,12,RN);
+i := i + 1;
+
+i;
+t = time(p = remez(1,[|1,...,15|],[-1b-1;1b-1],1/sin(x)))/yardstick;
+if (t in 0.4906005859375 * variance) then "Okay" else round(t,12,RN);
+i := i + 1;
+
+i;
+t = time(c = coeff(p,7))/yardstick;
+if (t in 2.4579465389251708984375e-5 * variance) then "Okay" else round(t,12,RN);
+i := i + 1;
+
+i;
+t = time(eps = dirtyinfnorm(p/sin(x)-1,[-1b-1;1b-1]))/yardstick;
+if (t in 9.429931640625e-2 * variance) then "Okay" else round(t,12,RN);
+i := i + 1;
+
+i;
+t = time(p = horner((x - (x + 3)^2)^17)/yardstick;
+if (t in 9.429931640625e-2 * variance) then "Okay" else round(t,12,RN);
+i := i + 1;
+
+i;
+t = time(h = (diff(horner((x - (x + 3)^2)^17))(0))/yardstick;
+if (t in 9.429931640625e-2 * variance) then "Okay" else round(t,12,RN);
+i := i + 1;
+
+i;
+t = time(w = evaluate(sin(pi * x),5))/yardstick;
+if (t in 6.595703125 * variance) then "Okay" else round(t,12,RN);
+i := i + 1;
+

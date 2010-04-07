@@ -18,6 +18,7 @@ if test "$LEX" != flex; then
   AC_SUBST(LEX_OUTPUT_ROOT, lex.yy)
   AC_SUBST(LEXLIB, '')
 fi
+AC_PROG_RANLIB
 AC_LIBTOOL_DLOPEN
 AC_DISABLE_SHARED
 AC_PROG_LIBTOOL
@@ -259,7 +260,7 @@ LDFLAGS="$OLDLDFLAGS"
 AC_FUNC_ALLOCA
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([inttypes.h libintl.h malloc.h stddef.h stdlib.h string.h sys/ioctl.h sys/time.h termios.h unistd.h])
+AC_CHECK_HEADERS([inttypes.h libintl.h malloc.h stddef.h stdlib.h string.h sys/ioctl.h sys/time.h termios.h unistd.h limits.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -282,7 +283,9 @@ AC_FUNC_FORK
 AC_PROG_GCC_TRADITIONAL
 AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([gettimeofday memset memmove strerror strtol backtrace])
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
+AC_CHECK_FUNCS([gettimeofday memmove memset strchr strerror strrchr strtol backtrace])
 
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(AM_CFLAGS)
