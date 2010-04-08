@@ -235,6 +235,8 @@ char *readFileIntoString(FILE *fd) {
 
   if (newString == NULL) newString = safeCalloc(1,sizeof(char));
 
+  free(readBuf);
+
   return newString;
 }
 
