@@ -115,12 +115,14 @@ node *parseString(char *str) {
   if (!miniyyparse(myScanner)) {
     if (minitree != NULL) {
       result = evaluateThing(minitree);
+      freeThing(minitree);
     } else {
       result = NULL;
     }
   } else {
     result = NULL;
   }
+  miniyylex_destroy(myScanner);
   minitree = oldMinitree;
   free(myStr);
   initSignalHandler();
