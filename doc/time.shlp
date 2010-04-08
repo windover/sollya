@@ -23,7 +23,7 @@ t = time(p=remez(sin(x),10,[-1;1]));
 write(t,"s were spent computing p = ",p,"\n");
 
 #EXAMPLE
-write(time({ p=remez(sin(x),10,[-1;1]); write("The error is 2^(", log2(dirtyinfnorm(p-sin(x),[-1;1])), ")\n"); }), "were spent\n");
+write(time({ p=remez(sin(x),10,[-1;1]); write("The error is 2^(", log2(dirtyinfnorm(p-sin(x),[-1;1])), ")\n"); }), " s were spent\n");
 
 #EXAMPLE
 t = time(bashexecute("sleep 10"));

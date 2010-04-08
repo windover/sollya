@@ -34,3 +34,5 @@ asciiplot(5,[-1;1]);
 asciiplot(exp(x),[1;1]);
 
 #SEEALSO $PLOT
+#SEEALSO $EXTERNALPLOT
+

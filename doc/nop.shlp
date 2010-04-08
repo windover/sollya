@@ -34,4 +34,6 @@ succ;
 succ(5);
 
 #SEEALSO $PROC
+#SEEALSO $TIME
+
 

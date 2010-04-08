@@ -33,3 +33,5 @@ integral(cos(x),[0;10]);
 
 #SEEALSO $DIAM
 #SEEALSO $DIRTYINTEGRAL
+#SEEALSO $PREC
+

@@ -37,6 +37,8 @@ incorrect = 5 + "foo";
 
 #SEEALSO $VOID
 #SEEALSO $PARSE
+#SEEALSO $EQUAL
+#SEEALSO $NEQ
 
 
 

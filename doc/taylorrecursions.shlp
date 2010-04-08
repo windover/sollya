@@ -35,3 +35,8 @@ taylorrecursions=0;
 evaluate(f-p, [0;1]);
 taylorrecursions=1;
 evaluate(f-p, [0;1]);
+
+#SEEALSO $HOPITALRECURSIONS
+#SEEALSO $EVALUATE
+#SEEALSO $INFNORM
+

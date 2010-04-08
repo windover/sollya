@@ -22,3 +22,7 @@ printbinary(roundcorrectly([1.00001_2; 1.001_2]));
 roundcorrectly([-1; 1]);
 
 #SEEALSO $ROUND
+#SEEALSO $MANTISSA
+#SEEALSO $EXPONENT
+#SEEALSO $PRECISION
+

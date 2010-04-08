@@ -35,3 +35,6 @@ a=1;
 f=sin(x);
 substitute(f,a);
 f(a);
+
+#SEEALSO $EVALUATE
+

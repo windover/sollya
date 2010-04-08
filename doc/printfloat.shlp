@@ -23,4 +23,6 @@ verbosity = 1!;
 printsingle(exp(5));
 
 #SEEALSO $PRINTHEXA
+#SEEALSO $SINGLE
+
 

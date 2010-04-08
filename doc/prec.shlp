@@ -16,3 +16,6 @@ dirtyinfnorm(exp(x),[1;2]);
 prec=100;
 dirtyinfnorm(exp(x),[1;2]);
 
+#SEEALSO $EVALUATE
+#SEEALSO $DIAM
+

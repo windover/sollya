@@ -34,3 +34,9 @@ hopitalrecursions=0;
 evaluate(log(1+x)^2/x^2,[-1/2; 1]);
 hopitalrecursions=1;
 evaluate(log(1+x)^2/x^2,[-1/2; 1]);
+
+#SEEALSO $TAYLORRECURSIONS
+#SEEALSO $INFNORM
+#SEEALSO $FINDZEROS
+#SEEALSO $EVALUATE
+

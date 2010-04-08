@@ -23,5 +23,7 @@ readxml("readxmlexample.xml");
 #SEEALSO $PRINTXML
 #SEEALSO $READFILE
 #SEEALSO $PARSE
+#SEEALSO $ERROR
+
 
 

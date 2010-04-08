@@ -31,8 +31,8 @@ display=binary!;
 round(Pi,20,RN);
 
 #EXAMPLE
-printhexa(round(exp(17),53,RU));
-printhexa(D(exp(17)));
+printdouble(round(exp(17),53,RU));
+printdouble(D(exp(17)));
 
 #EXAMPLE
 display=binary!;
@@ -54,4 +54,8 @@ double(a);
 #SEEALSO $ROUNDCORRECTLY
 #SEEALSO $PRINTHEXA
 #SEEALSO $PRINTFLOAT
+#SEEALSO $CEIL
+#SEEALSO $FLOOR
+#SEEALSO $NEARESTINT
+
 

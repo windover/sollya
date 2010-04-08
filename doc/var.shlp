@@ -27,4 +27,6 @@ a = 3;
 a;
 
 #SEEALSO $ERROR
+#SEEALSO $PROC
+
 

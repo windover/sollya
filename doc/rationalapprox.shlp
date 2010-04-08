@@ -49,3 +49,5 @@ print(simplify(floor(-log2(abs((b-a)/a)))), "bits.");
 #SEEALSO $PRINT
 #SEEALSO $NUMERATOR
 #SEEALSO $DENOMINATOR
+#SEEALSO $RATIONALMODE
+

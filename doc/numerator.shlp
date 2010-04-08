@@ -34,3 +34,5 @@ print(a);
 print(b);
 
 #SEEALSO $DENOMINATOR
+#SEEALSO $RATIONALMODE
+

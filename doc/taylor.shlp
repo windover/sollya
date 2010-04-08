@@ -27,3 +27,5 @@ print(taylor(asin(x),7,0));
 print(taylor(erf(x),6,0));
 
 #SEEALSO $REMEZ
+#SEEALSO $FPMINIMAX
+
