@@ -3873,6 +3873,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
           mpfr_init2(*value,tools_precision);
           simplified->value = value;
           mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+	  free_memory(simplChild1);
         } else {
           simplified->nodeType = DOUBLE;
           simplified->child1 = simplChild1;
@@ -3931,6 +3932,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
           mpfr_init2(*value,tools_precision);
           simplified->value = value;
           mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+	  free_memory(simplChild1);
         } else {
           simplified->nodeType = SINGLE;
           simplified->child1 = simplChild1;
@@ -3989,6 +3991,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
           mpfr_init2(*value,tools_precision);
           simplified->value = value;
           mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+	  free_memory(simplChild1);
         } else {
           simplified->nodeType = DOUBLEDOUBLE;
           simplified->child1 = simplChild1;
@@ -4047,6 +4050,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
           mpfr_init2(*value,tools_precision);
           simplified->value = value;
           mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+	  free_memory(simplChild1);
         } else {
           simplified->nodeType = TRIPLEDOUBLE;
           simplified->child1 = simplChild1;
@@ -4193,6 +4197,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
           mpfr_init2(*value,tools_precision);
           simplified->value = value;
           mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+	  free_memory(simplChild1);
         } else {
           simplified->nodeType = DOUBLEEXTENDED;
           simplified->child1 = simplChild1;
@@ -4258,6 +4263,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
           mpfr_init2(*value,tools_precision);
           simplified->value = value;
           mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+	  free_memory(simplChild1);
         } else {
           simplified->nodeType = CEIL;
           simplified->child1 = simplChild1;
@@ -4316,6 +4322,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
           mpfr_init2(*value,tools_precision);
           simplified->value = value;
           mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+	  free_memory(simplChild1);
         } else {
           simplified->nodeType = FLOOR;
           simplified->child1 = simplChild1;
@@ -4374,6 +4381,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
           mpfr_init2(*value,tools_precision);
           simplified->value = value;
           mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+	  free_memory(simplChild1);
         } else {
           simplified->nodeType = NEARESTINT;
           simplified->child1 = simplChild1;
