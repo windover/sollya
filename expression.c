@@ -2507,6 +2507,7 @@ int mpfr_to_mpq( mpq_t y, mpfr_t x){
       mpq_div_2exp(aux,aux,(unsigned int)(-expo));
     mpq_set(y,aux);
     mpq_clear(aux);
+    mpz_clear(mant);
     return 1;
   }
   else return 0;
