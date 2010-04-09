@@ -2264,6 +2264,8 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal, int s
     } else {
       if (exact) return 2; else return 1;
     }
+  } else {
+    freeThing(evaluatedResult);
   }
   
   return 0;
@@ -6288,10 +6290,12 @@ int executeCommandInner(node *tree) {
   case ASSIGNMENT:
     tempNode = evaluateThing(tree->child1);
     if (!assignThingToTable(tree->string, tempNode)) {
+      freeThing(tempNode);
       printMessage(1,"Warning: the last assignment will have no effect.\n");
       considerDyingOnError();
+    } else {
+      freeThing(tempNode);
     }
-    freeThing(tempNode);
     break; 	
   case FLOATASSIGNMENT:
     tempNode = evaluateThing(tree->child1);
@@ -11281,12 +11285,14 @@ node *evaluateThing(node *tree) {
 
   if (!isCorrectlyTyped(evaluated)) {
     if (evaluated->nodeType == ERRORSPECIAL) {
+      freeThing(evaluated);
       if ((tree->nodeType != ERRORSPECIAL) && 
           (tree->nodeType != TABLEACCESS)) {
 	printMessage(1,"Warning: the given expression or command could not be handled.\n");
         considerDyingOnError();
       } 
     } else {
+      freeThing(evaluated);
       printMessage(1,"Warning: at least one of the given expressions or a subexpression is not correctly typed\nor its evaluation has failed because of some error on a side-effect.\n");
       if (verbosity >= 2) {
 	changeToWarningMode();
@@ -11300,7 +11306,6 @@ node *evaluateThing(node *tree) {
 
     printMessage(3,"Information: evaluation creates an error special symbol.\n");
 
-    freeThing(evaluated);
     evaluated = makeError();
   }
 
