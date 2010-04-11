@@ -11292,7 +11292,6 @@ node *evaluateThing(node *tree) {
         considerDyingOnError();
       } 
     } else {
-      freeThing(evaluated);
       printMessage(1,"Warning: at least one of the given expressions or a subexpression is not correctly typed\nor its evaluation has failed because of some error on a side-effect.\n");
       if (verbosity >= 2) {
 	changeToWarningMode();
@@ -11301,6 +11300,7 @@ node *evaluateThing(node *tree) {
 	printf("\n");     
 	restoreMode();
       }
+      freeThing(evaluated);
       considerDyingOnError();
     }
 
