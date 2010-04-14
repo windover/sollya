@@ -13616,21 +13616,50 @@ node *evaluateThingInner(node *tree) {
 	  isPureTree(copy->child2) && 
 	  isConstant(copy->child1) &&
 	  isConstant(copy->child2)) {
-	printMessage(2,"Information: equality test relies on floating-point result.\n");
 	mpfr_init2(a,tools_precision);
 	mpfr_init2(b,tools_precision);
-	if (evaluateThingToConstant(a,copy->child1,NULL,1) && 
-	    evaluateThingToConstant(b,copy->child2,NULL,1)) {
-	  if (mpfr_equal_p(a,b)) {
+	if ((resA = evaluateThingToConstant(a,copy->child1,NULL,1)) && 
+	    (resB = evaluateThingToConstant(b,copy->child2,NULL,1))) {
+	  if ((resA == 3) || (resB == 3)) 
+	    printMessage(1,"Warning: equality test relies on floating-point result that is not faithfully evaluated.\n");
+	  resC = mpfr_equal_p(a,b);
+	  if ((resA == 1) || (resB == 1)) {
+	    if (mpfr_number_p(a) && mpfr_number_p(b)) {
+	      resE = 0;
+	      if (resC) {
+		/* a == b */
+		resE = 1;
+	      } else {
+		/* a != b */
+		if (mpfr_cmp(a,b) < 0) {
+		  /* a < b */
+		  if (resA == 1) mpfr_nextabove(a);
+		  if (resB == 1) mpfr_nextbelow(b);
+		  resE = (mpfr_cmp(a,b) >= 0);
+		} else {
+		  /* b < a */
+		  if (resA == 1) mpfr_nextbelow(a);
+		  if (resB == 1) mpfr_nextabove(b);
+		  resE = (mpfr_cmp(a,b) <= 0);
+		}
+	      }
+	      if (resE) {
+		if (compareConstant(&resD, copy->child1, copy->child2)) {
+		  resC = (resD == 0);
+		} else 
+		  printMessage(1,"Warning: equality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+	      } else 
+		printMessage(2,"Information: equality test relies on floating-point result.\n");
+	    } else 
+	      printMessage(1,"Warning: equality test relies on floating-point result that is faithfully evaluated and at least one of the sides is not a real number.\n");
+	  }
+	  if (resC) {
 	    freeThing(copy);
 	    copy = makeTrue();		    
 	  } else {
 	    freeThing(copy);
 	    copy = makeFalse();		    
 	  }
-	} else {
-	  freeThing(copy);
-	  copy = makeFalse();		    
 	}
 	mpfr_clear(a);
 	mpfr_clear(b);
@@ -13955,21 +13984,50 @@ node *evaluateThingInner(node *tree) {
 	  isPureTree(copy->child2) && 
 	  isConstant(copy->child1) &&
 	  isConstant(copy->child2)) {
-	printMessage(2,"Information: equality test relies on floating-point result.\n");
 	mpfr_init2(a,tools_precision);
 	mpfr_init2(b,tools_precision);
-	if (evaluateThingToConstant(a,copy->child1,NULL,1) && 
-	    evaluateThingToConstant(b,copy->child2,NULL,1)) {
-	  if (mpfr_equal_p(a,b) || mpfr_unordered_p(a,b)) {
-	    freeThing(copy);
-	    copy = makeFalse();		    
-	  } else {
+	if ((resA = evaluateThingToConstant(a,copy->child1,NULL,1)) && 
+	    (resB = evaluateThingToConstant(b,copy->child2,NULL,1))) {
+	  if ((resA == 3) || (resB == 3)) 
+	    printMessage(1,"Warning: equality test relies on floating-point result that is not faithfully evaluated.\n");
+	  resC = !(mpfr_equal_p(a,b) || mpfr_unordered_p(a,b));
+	  if ((resA == 1) || (resB == 1)) {
+	    if (mpfr_number_p(a) && mpfr_number_p(b)) {
+	      resE = 0;
+	      if (!resC) {
+		/* a == b */
+		resE = 1;
+	      } else {
+		/* a != b */
+		if (mpfr_cmp(a,b) < 0) {
+		  /* a < b */
+		  if (resA == 1) mpfr_nextabove(a);
+		  if (resB == 1) mpfr_nextbelow(b);
+		  resE = (mpfr_cmp(a,b) >= 0);
+		} else {
+		  /* b < a */
+		  if (resA == 1) mpfr_nextbelow(a);
+		  if (resB == 1) mpfr_nextabove(b);
+		  resE = (mpfr_cmp(a,b) <= 0);
+		}
+	      }
+	      if (resE) {
+		if (compareConstant(&resD, copy->child1, copy->child2)) {
+		  resC = (resD != 0);
+		} else 
+		  printMessage(1,"Warning: equality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+	      } else 
+		printMessage(2,"Information: equality test relies on floating-point result.\n");
+	    } else 
+	      printMessage(1,"Warning: equality test relies on floating-point result that is faithfully evaluated and at least one of the sides is not a real number.\n");
+	  }
+	  if (resC) {
 	    freeThing(copy);
 	    copy = makeTrue();		    
+	  } else {
+	    freeThing(copy);
+	    copy = makeFalse();		    
 	  }
-	} else {
-	  freeThing(copy);
-	  copy = makeTrue();		    
 	}
 	mpfr_clear(a);
 	mpfr_clear(b);
