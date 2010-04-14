@@ -243,7 +243,9 @@ void yyerror(char *message) {
 %token  HORNERTOKEN;            					       
 %token  EXPANDTOKEN;            					       
 %token  SIMPLIFYSAFETOKEN;  						       
-%token  TAYLORTOKEN;           					       
+%token  TAYLORTOKEN;
+%token  TAYLORFORMTOKEN;           					       
+%token  AUTODIFFTOKEN;           					       
 %token  DEGREETOKEN;            					       
 %token  NUMERATORTOKEN;         					       
 %token  DENOMINATORTOKEN;       					       
@@ -281,6 +283,7 @@ void yyerror(char *message) {
 %token  FINDZEROSTOKEN;         					       
 %token  FPFINDZEROSTOKEN;       					       
 %token  DIRTYINFNORMTOKEN;      					       
+%token  NUMBERROOTSTOKEN;      					       
 %token  INTEGRALTOKEN;          					       
 %token  DIRTYINTEGRALTOKEN;  						       
 %token  WORSTCASETOKEN;         					       
@@ -1453,6 +1456,14 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeTaylor($3, $5, $7);
 			  }           					       
+                      | TAYLORFORMTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
+                          {
+                            $$ = makeTaylorform(addElement(addElement($7, $5), $3));
+			  }           					       
+                      | AUTODIFFTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+                            $$ = makeAutodiff(addElement(addElement(addElement(NULL, $7), $5), $3));
+			  }           					       
                       | DEGREETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeDegree($3);
@@ -1520,6 +1531,10 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                       | DIRTYINFNORMTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeDirtyInfnorm($3, $5);
+			  }      					       
+                      | NUMBERROOTSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeNumberRoots($3, $5);
 			  }      					       
                       | INTEGRALTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
@@ -3194,6 +3209,28 @@ help:                   CONSTANTTOKEN
 #endif
 #endif
                           }                 					                      					       
+                      | TAYLORFORMTOKEN
+                          {
+#ifdef HELP_TAYLORFORM_TEXT
+			    outputMode(); printf(HELP_TAYLORFORM_TEXT);
+#else
+			    outputMode(); printf("Taylor form computation.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for TAYLORFORM"
+#endif
+#endif
+                          }                 					                      					       
+                      | AUTODIFFTOKEN
+                          {
+#ifdef HELP_AUTODIFF_TEXT
+			    outputMode(); printf(HELP_AUTODIFF_TEXT);
+#else
+			    outputMode(); printf("Automatic differentiation.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for AUTODIFF"
+#endif
+#endif
+                          }                 					                      					       
                       | DEGREETOKEN
                           {
 #ifdef HELP_DEGREE_TEXT
@@ -3523,6 +3560,14 @@ help:                   CONSTANTTOKEN
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DIRTYINFNORM"
 #endif
+#endif
+                          }                 					                 					       
+                      | NUMBERROOTSTOKEN
+                          {
+#ifdef HELP_NUMBERROOTS_TEXT
+			    outputMode(); printf(HELP_NUMBERROOTS_TEXT);
+#else
+			    outputMode(); printf("Computes the number of real roots of a polynomial on a domain.\n");
 #endif
                           }                 					                 					       
                       | INTEGRALTOKEN
@@ -3987,6 +4032,7 @@ help:                   CONSTANTTOKEN
 			    printf("- asinh\n");
 			    printf("- atan\n");
 			    printf("- atanh\n");
+			    printf("- autodiff\n");
 			    printf("- autosimplify\n");
 			    printf("- bashexecute\n");
 			    printf("- begin\n");
@@ -4067,6 +4113,7 @@ help:                   CONSTANTTOKEN
 			    printf("- mid\n");
 			    printf("- midpointmode\n");
 			    printf("- nearestint\n");
+			    printf("- numberroots\n");
 			    printf("- nop\n");
 			    printf("- numerator\n");
 			    printf("- of\n");
@@ -4125,6 +4172,7 @@ help:                   CONSTANTTOKEN
 			    printf("- tan\n");
 			    printf("- tanh\n");
 			    printf("- taylor\n");
+			    printf("- taylorform\n");
 			    printf("- taylorrecursions\n");
 			    printf("- then\n");
 			    printf("- time\n");

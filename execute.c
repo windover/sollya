@@ -59,10 +59,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include <errno.h>
 #include <sys/time.h>
 #include <time.h>
+#include <limits.h>
 #include "general.h"
 #include "expression.h"
 #include "infnorm.h"
 #include "assignment.h"
+#include "autodiff.h"
 #include "library.h"
 #include "external.h"
 #include "plot.h"
@@ -73,6 +75,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "worstcase.h"
 #include "implement.h"
 #include "taylor.h"
+#include "taylorform.h"
 #include "xml.h"
 #include "miniparser.h"
 #include <setjmp.h>
@@ -819,6 +822,12 @@ node *copyThing(node *tree) {
   case TAYLOR:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     break; 			 	
+  case TAYLORFORM:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+    break; 			 	
+  case AUTODIFF:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+    break; 			 	
   case DEGREE:
     copy->child1 = copyThing(tree->child1);
     break; 			 	
@@ -879,6 +888,10 @@ node *copyThing(node *tree) {
     copy->child2 = copyThing(tree->child2);
     break; 			
   case DIRTYINFNORM:
+    copy->child1 = copyThing(tree->child1);
+    copy->child2 = copyThing(tree->child2);
+    break; 			
+  case NUMBERROOTS:
     copy->child1 = copyThing(tree->child1);
     copy->child2 = copyThing(tree->child2);
     break; 			
@@ -1559,6 +1572,12 @@ char *getTimingStringForThing(node *tree) {
   case TAYLOR:
     constString = "taylor";
     break; 			 	
+  case TAYLORFORM:
+    constString = "taylorform";
+    break; 			 	
+  case AUTODIFF:
+    constString = "autodiff";
+    break; 			 	
   case DEGREE:
     constString = "getting the degree";
     break; 			 	
@@ -1612,6 +1631,9 @@ char *getTimingStringForThing(node *tree) {
     break; 			
   case DIRTYINFNORM:
     constString = "computing an infinity norm dirtily";
+    break; 			
+  case NUMBERROOTS:
+    constString = "computing the number of real roots of a polynomial";
     break; 			
   case INTEGRAL:
     constString = "computing an integral";
@@ -2272,7 +2294,7 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal, int s
 }
 
 int evaluateThingToInteger(int *result, node *tree, int *defaultVal) {
-  mpfr_t *defaultValMpfr, resultMpfr;
+  mpfr_t *defaultValMpfr, resultMpfr, resInt;
   int res, tempResult;
 
   if (defaultVal != NULL) {
@@ -2289,10 +2311,27 @@ int evaluateThingToInteger(int *result, node *tree, int *defaultVal) {
 
   if (res) {
     tempResult = mpfr_get_si(resultMpfr, GMP_RNDN);
-    
+
     mpfr_sub_si(resultMpfr, resultMpfr, tempResult, GMP_RNDN);
 
     if (!mpfr_zero_p(resultMpfr)) {
+      mpfr_init2(resInt,8 * sizeof(int) + 10);
+      mpfr_set_si(resInt,tempResult,GMP_RNDN);
+
+      if (mpfr_sgn(resInt) != mpfr_sgn(resultMpfr)) {
+	if (mpfr_sgn(resultMpfr) == 0) {
+	  tempResult = 0;
+	} else {
+	  if (mpfr_sgn(resultMpfr) > 0) {
+	    tempResult = INT_MAX;
+	  } else {
+	    tempResult = INT_MIN;
+	  }
+	}
+      }
+
+      mpfr_clear(resInt);
+
       if (!noRoundingWarnings) {
 	printMessage(1,"Warning: the given expression does not evaluate to a machine integer.\n");
 	printMessage(1,"Will round it to the nearest machine integer.\n");
@@ -4114,6 +4153,26 @@ char *sRawPrintThing(node *tree) {
     }
     res = concatAndFree(res, newString(")"));
     break; 			 	
+  case TAYLORFORM:
+    res = newString("taylorform(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 			 	
+  case AUTODIFF:
+    res = newString("autodiff(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 			 	
   case DEGREE:
     res = concatAndFree(newString("degree("),
 			concatAndFree(sRawPrintThing(tree->child1),
@@ -4232,6 +4291,13 @@ char *sRawPrintThing(node *tree) {
     break; 			
   case DIRTYINFNORM:
     res = newString("dirtyinfnorm(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case NUMBERROOTS:
+    res = newString("numberroots(");
     res = concatAndFree(res, sRawPrintThing(tree->child1));
     res = concatAndFree(res, newString(", "));
     res = concatAndFree(res, sRawPrintThing(tree->child2));
@@ -8837,6 +8903,28 @@ node *makeTaylor(node *thing1, node *thing2, node *thing3) {
 
 }
 
+node *makeTaylorform(chain *thinglist) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = TAYLORFORM;
+  res->arguments = thinglist;
+
+  return res;
+
+}
+
+node *makeAutodiff(chain *thinglist) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = AUTODIFF;
+  res->arguments = thinglist;
+
+  return res;
+
+}
+
 node *makeDegree(node *thing) {
   node *res;
 
@@ -9038,6 +9126,18 @@ node *makeDirtyInfnorm(node *thing1, node *thing2) {
 
   res = (node *) safeMalloc(sizeof(node));
   res->nodeType = DIRTYINFNORM;
+  res->child1 = thing1;
+  res->child2 = thing2;
+
+  return res;
+
+}
+
+node *makeNumberRoots(node *thing1, node *thing2) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = NUMBERROOTS;
   res->child1 = thing1;
   res->child2 = thing2;
 
@@ -10217,6 +10317,14 @@ void freeThing(node *tree) {
     freeChain(tree->arguments, freeThingOnVoid);
     free(tree);
     break; 			 	
+  case TAYLORFORM:
+    freeChain(tree->arguments, freeThingOnVoid);
+    free(tree);
+    break; 			 	
+  case AUTODIFF:
+    freeChain(tree->arguments, freeThingOnVoid);
+    free(tree);
+    break; 			 	
   case DEGREE:
     freeThing(tree->child1);
     free(tree);
@@ -10294,6 +10402,11 @@ void freeThing(node *tree) {
     free(tree);
     break; 			
   case DIRTYINFNORM:
+    freeThing(tree->child1);
+    freeThing(tree->child2);
+    free(tree);
+    break; 			
+  case NUMBERROOTS:
     freeThing(tree->child1);
     freeThing(tree->child2);
     free(tree);
@@ -11018,6 +11131,12 @@ int isEqualThing(node *tree, node *tree2) {
   case TAYLOR:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
     break; 			 	
+  case TAYLORFORM:
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
+    break; 			 	
+  case AUTODIFF:
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
+    break; 			 	
   case DEGREE:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 			 	
@@ -11078,6 +11197,10 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     break; 			
   case DIRTYINFNORM:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualThing(tree->child2,tree2->child2)) return 0;
+    break; 			
+  case NUMBERROOTS:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     break; 			
@@ -12171,7 +12294,7 @@ node *evaluateThingInner(node *tree) {
   char *tempString, *tempString2, *timingString, *tempString3, *tempString4, *tempString5;
   char *str1, *str2, *str3;
   mpfr_t a, b, c, d;
-  chain *tempChain, *curr, *newChain, *tempChain2, *tempChain3;
+  chain *tempChain, *curr, *newChain, *tempChain2, *tempChain3, *curr2, *tempChain4;
   rangetype yrange, xrange, yrange2;
   node *firstArg, *secondArg, *thirdArg, *fourthArg, *fifthArg, *sixthArg, *seventhArg, *eighthArg;
   rangetype *rangeTempPtr;
@@ -12182,7 +12305,10 @@ node *evaluateThingInner(node *tree) {
   int undoVariableTrick;
   mpfi_t tempIA, tempIB, tempIC;
   int alreadyDisplayed;
-
+  mpfi_t *tmpInterv1, *tmpInterv2;
+  mpfi_t *tmpInterv11;
+  mpfr_t bb,cc;
+  mpfi_t tempIA2;
   if (tree == NULL) return NULL;
 
   timingString = NULL;
@@ -15421,6 +15547,224 @@ node *evaluateThingInner(node *tree) {
       }
     }
     break; 			 	
+  case TAYLORFORM:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+    curr = copy->arguments;
+    if (isPureTree((node *) (curr->value))) {
+      curr = curr->next;
+      if (isPureTree((node *) (curr->value)) &&
+	  evaluateThingToInteger(&resA,(node *) (curr->value),NULL)) {
+	curr = curr->next;
+	tmpInterv11 = NULL;
+        intptr = NULL;
+        resB = 1;
+        if (curr != NULL) { 
+          if (isRange((node *) (curr->value)) || isPureTree((node *) (curr->value))) {
+            if (isRange((node *) (curr->value))) {
+              mpfr_init2(bb,tools_precision);
+              mpfr_init2(cc,tools_precision);
+              if (evaluateThingToRange(bb,cc,(node *) (curr->value))) {
+                pTemp = mpfr_get_prec(bb);
+                pTemp2 = mpfr_get_prec(cc);
+                if (pTemp2 > pTemp) pTemp = pTemp2;
+                mpfi_init2(tempIA2,pTemp);
+                mpfi_interv_fr(tempIA2,bb,cc);
+                tmpInterv11 = &tempIA2;
+              } else { 
+                resB = 0;
+              }
+              mpfr_clear(bb);
+              mpfr_clear(cc); 
+            } else {
+              if (isPureTree((node *) (curr->value))) {
+                mpfr_init2(bb,tools_precision);
+                if (evaluateThingToConstant(bb,(node *) (curr->value),NULL,0)) {
+                  mpfi_init2(tempIA2,tools_precision);
+                  mpfi_interv_fr(tempIA2,bb,bb);
+                  tmpInterv11 = &tempIA2;
+                } else {
+                  resB = 0;
+                }
+                mpfr_clear(bb);
+              } else {
+                resB = 0;
+              }
+            }
+            curr = curr->next;
+            tmpInterv1 = NULL;
+            intptr = NULL;
+            resB = 1;
+            if (curr != NULL) { 
+              if (isRange((node *) (curr->value))) {
+                mpfr_init2(b,tools_precision);
+                mpfr_init2(c,tools_precision);
+                if (evaluateThingToRange(b,c,(node *) (curr->value))) {
+                  pTemp = mpfr_get_prec(b);
+                  pTemp2 = mpfr_get_prec(c);
+                  if (pTemp2 > pTemp) pTemp = pTemp2;
+                  mpfi_init2(tempIA,pTemp);
+                  mpfi_interv_fr(tempIA,b,c);
+                  tmpInterv1 = &tempIA;
+                } else {
+                  resB = 0;
+                }
+                mpfr_clear(b);
+                mpfr_clear(c);
+                curr = curr->next;
+                if (curr != NULL) {
+                  if (isExternalPlotMode((node *) (curr->value)) ||
+                      isDefault((node *) (curr->value))) {
+                    resC = ABSOLUTE;
+                    if (evaluateThingToExternalPlotMode(&resD, 
+                                                        (node *) (curr->value), 
+                                                        &resC)) {
+                      intptr = &resD;
+                    } else {
+                      resB = 0;
+                    }
+                  } else {
+                    resB = 0;
+                  }
+                }
+              } else {
+                if (isExternalPlotMode((node *) (curr->value)) ||
+                    isDefault((node *) (curr->value))) {
+                  resC = ABSOLUTE;
+                  if (evaluateThingToExternalPlotMode(&resD, 
+                                                      (node *) (curr->value), 
+                                                      &resC)) {
+                    intptr = &resD;
+                  } else {
+                    resB = 0;
+                  }
+                } else {
+                  resB = 0;
+                }
+              }
+            }
+
+            if (resB) {
+              curr = copy->arguments;
+              if (timingString != NULL) pushTimeCounter();
+              tempNode2 = NULL;
+              tempChain2 = NULL;
+              tmpInterv2 = NULL;
+              if (intptr != NULL) 
+                resC = *intptr;
+              else
+                resC = ABSOLUTE;
+              taylorform(&tempNode2, &tempChain2, &tmpInterv2,
+                         (node *) (curr->value), resA, tmpInterv11,
+                         tmpInterv1, resC);
+              if (timingString != NULL) popTimeCounter(timingString);
+              if (tempNode2 != NULL) {
+                tempChain3 = NULL;
+                curr2 = tempChain2;
+                while (curr2 != NULL) {
+                  pTemp = mpfi_get_prec(*((mpfi_t *) (curr2->value)));
+                  mpfr_init2(b,pTemp);
+                  mpfr_init2(c,pTemp);
+                  mpfi_get_left(b,*((mpfi_t *) (curr2->value)));
+                  mpfi_get_right(c,*((mpfi_t *) (curr2->value)));
+                  tempChain3 = addElement(tempChain3,makeRange(makeConstant(b),
+                                                               makeConstant(c)));
+                  mpfr_clear(b);
+                  mpfr_clear(c);
+                  curr2 = curr2->next;
+                }
+                tempChain4 = copyChain(tempChain3,copyThingOnVoid);
+                freeChain(tempChain3,freeThingOnVoid);
+                tempChain3 = addElement(addElement(NULL,tempNode2),makeList(tempChain4));
+                if (tmpInterv2 != NULL) {
+                  pTemp = mpfi_get_prec(*tmpInterv2);
+                  mpfr_init2(b,pTemp);
+                  mpfr_init2(c,pTemp);
+                  mpfi_get_left(b,*tmpInterv2);
+                  mpfi_get_right(c,*tmpInterv2);
+                  tempChain3 = addElement(tempChain3,makeRange(makeConstant(b),
+                                                               makeConstant(c)));
+                  mpfr_clear(b);
+                  mpfr_clear(c);
+                }
+                tempChain4 = copyChain(tempChain3,copyThingOnVoid);
+                freeChain(tempChain3,freeThingOnVoid);
+                tempNode = makeList(tempChain4);
+                freeThing(copy);
+                copy = tempNode;
+              }
+              if (tempChain2 != NULL) {
+                freeChain(tempChain2, freeMpfiPtr);
+              }
+              if (tmpInterv2 != NULL) {
+                mpfi_clear(*tmpInterv2);
+                free(tmpInterv2);
+              }
+            }
+            if (tmpInterv1 != NULL) mpfi_clear(*tmpInterv1);
+          }
+        }
+      }
+    }
+    break; 			 	
+  case AUTODIFF:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+    curr = copy->arguments;
+    if (isPureTree((node *) (curr->value))) {
+      curr = curr->next;
+      if (isPureTree((node *) (curr->value)) &&
+	  evaluateThingToInteger(&resA,(node *) (curr->value),NULL)) {
+        if (resA >= 0) {
+          curr = curr->next;
+          mpfr_init2(a,tools_precision);
+          mpfr_init2(b,tools_precision);
+          resC = (isRange((node *) (curr->value)) &&
+                  evaluateThingToRange(a,b,(node *) (curr->value)));
+          if (resC || 
+              (isPureTree((node *) (curr->value)) && 
+               evaluateThingToConstant(a,(node *) (curr->value),NULL,0))) {
+            if (!resC) {
+              mpfr_set_prec(b,mpfr_get_prec(a));
+              mpfr_set(b,a,GMP_RNDN);
+            }
+            if (timingString != NULL) pushTimeCounter();
+            pTemp = mpfr_get_prec(a);
+            if (mpfr_get_prec(b) > pTemp) pTemp = mpfr_get_prec(b);
+            mpfi_init2(tempIA,pTemp);
+            mpfi_interv_fr(tempIA,a,b);
+            tmpInterv1 = (mpfi_t *) safeCalloc(resA + 1, sizeof(mpfi_t));
+            for (resB=0;resB<resA+1;resB++) {
+              mpfi_init2(tmpInterv1[resB],tools_precision);
+            }
+            auto_diff(tmpInterv1, (node *) (copy->arguments->value), tempIA, resA);
+            curr = NULL;
+            for (resB=resA;resB>=0;resB--) {
+              pTemp = mpfi_get_prec(tmpInterv1[resB]);
+              mpfr_init2(c,pTemp);
+              mpfr_init2(d,pTemp);
+              mpfi_get_left(c,tmpInterv1[resB]);
+              mpfi_get_right(d,tmpInterv1[resB]);
+              curr = addElement(curr,makeRange(makeConstant(c), makeConstant(d)));
+              mpfr_clear(c);
+              mpfr_clear(d);
+            }
+            tempNode = makeList(curr);
+            freeThing(copy);
+            copy = tempNode;
+            for (resB=0;resB<resA+1;resB++) {
+              mpfi_clear(tmpInterv1[resB]);
+            }
+            free(tmpInterv1);
+            mpfi_clear(tempIA);
+            if (timingString != NULL) popTimeCounter(timingString);
+          } 
+          mpfr_clear(a);
+          mpfr_clear(b);
+        } else {
+          printMessage(1,"Warning: the degree of differentiation in autodiff must not be negative.\n");
+        }
+      }
+    }
+    break;
   case DEGREE:
     copy->child1 = evaluateThingInner(tree->child1);
     if (isPureTree(copy->child1)) {
@@ -16026,6 +16370,32 @@ node *evaluateThingInner(node *tree) {
 	free(xrange.b);
 	freeThing(copy);
 	copy = tempNode;
+      } 
+      mpfr_clear(a);
+      mpfr_clear(b);
+    }
+    break; 			
+  case NUMBERROOTS:
+    copy->child1 = evaluateThingInner(tree->child1);
+    copy->child2 = evaluateThingInner(tree->child2);
+    if (isPureTree(copy->child1) &&
+	isRange(copy->child2)) {
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      if (evaluateThingToRange(a,b,copy->child2)) {
+	mpfr_init2(c,tools_precision);
+        mpfi_init2(tempIA,tools_precision);
+        mpfi_interv_fr(tempIA,a,b);
+	if (timingString != NULL) pushTimeCounter(); 
+	resA = getNrRoots(c, copy->child1, tempIA);
+	if (timingString != NULL) popTimeCounter(timingString);
+        mpfi_clear(tempIA);
+        if (resA) {
+            tempNode = makeConstant(c);
+            freeThing(copy);
+            copy = tempNode;
+        }
+	mpfr_clear(c);
       } 
       mpfr_clear(a);
       mpfr_clear(b);

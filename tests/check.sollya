@@ -1938,3 +1938,174 @@ X = -41166165720757628181777558633249450796232650243605b-170;
 (inf(I) <= X) && (X <= sup(I));
 dirtyinfnorm(f,I);                                                                  
 f(X);                                                                               
+
+/*********************************************************************************/
+restart;
+print("=============== Test number 239 ================");
+
+numberroots(0.25*x^3 - x^2 + 1,[2;7]);
+numberroots(0.25*x^3 - x^2 + 1,[1;7]);
+numberroots(0.25*x^3 - x^2 + 1,[-5;7]);
+numberroots(exp(1)*x-18,[2;7]);
+numberroots(exp(x),[2;7]);
+
+restart;
+print("=============== Test number 240 ================");
+
+autodiff(sin(x),5,17);
+autodiff(sin(x),5,[17]);
+autodiff(x^x,5,17);
+autodiff(2^x,5,17);
+autodiff(x^18,5,17);
+autodiff(x^0,5,17);
+autodiff(x^2,5,17);
+autodiff(1^x,5,17);
+autodiff(exp(sin(x))^log2(1 + sin(x)^2) * erf(x),80,[1;2]);
+autodiff(exp(sin(x))^log2(1 + sin(x)^2) * erf(x),80,1);
+autodiff(exp(sin(x))^log2(1 + sin(x)^2) * erf(x),80,[1]);
+
+restart;
+print("=============== Test number 241 ================");
+
+taylorform(exp(x),5,0);
+taylorform(sin(x),17,0);
+taylorform(sin(exp(x)) + 2 - x,7,0);
+taylorform(sin(exp(x)) + 2 - x,7,[-1;1]);
+taylorform(sin(exp(x)) + 2 - x,7,0,[-1;1]);
+taylorform(sin(exp(x)) + 2 - x,7,[-1;1],[-1;1]);
+taylorform(sin(exp(x)) + 2 - x,7,[-1;1],[-1;1],absolute);
+taylorform(sin(exp(x)) + 2 - x,7,[-1;1],[-1;1],relative);
+taylorform(sin(exp(x)) + 2 - x,7,0,[-1b-8;1b-7]);
+taylorform(sin(exp(x)) + 2 - x,7,0,[-1b-8;1b-7],absolute);
+taylorform(sin(exp(x)) + 2 - x,7,0,[-1b-8;1b-7],relative);
+taylorform(sin(x)^4 + x^5 * exp(17 * x),7,0,[-1b-8;1b-7],relative);
+taylorform(2^x,7,0,[-1b-8;1b-7],relative);
+taylorform(x^17,7,0,[-1b-8;1b-7],relative);
+taylorform(x^5,7,0,[-1b-8;1b-7],relative);
+taylorform(1 + 2 * x + 3 * x^2 + 4 * x^3,7,0,[-1b-8;1b-7],relative);
+taylorform(2 * x + 3 * x^2 + 4 * x^3,7,0,[-1b-8;1b-7],relative);
+taylorform(exp(sin(x))^log2(1 + sin(x)^2) * erf(x),7,0,[-1b-8;1b-7],relative);
+taylorform(exp(sin(x))^log2(1 + sin(x)^2) * erf(x),7,0,[-1b-8;1b-7]);
+
+restart;
+print("=============== Test number 242 ================");
+
+5 in [-1;17];
+5 in [5;17];
+5 in [-1;5];
+5 in [-1;4];
+5 in [6;17];
+
+5 in [-4;7];
+4 in [-1;1];
+0 in sin([-17;17]);
+
+[5;7] in [2;8];
+[2;3] in [4;5];
+[2;3] in [2.5;5];
+
+restart;
+print("=============== Test number 243 ================");
+
+nearestint(exp(17));
+nearestint(2.5);
+nearestint(3.5);
+nearestint(-exp(17));
+nearestint(-2.5);
+nearestint(-3.5);
+
+restart;
+print("=============== Test number 243 ================");
+
+
+SG(exp(5));
+SG(1b-170);
+round(1b-170,SG,RN);
+round(1b-170,SG,RD);
+round(1b-170,SG,RU);
+round(1b-170,SG,RZ);
+
+restart;
+print("=============== Test number 244 ================");
+
+
+
+succ = proc(n) { return n + 1; };
+succ(5);
+3 + succ(0);
+succ;
+
+
+add = proc(m,n) { var res; res := m + n; return res; };
+add(5,6);
+add;
+verbosity = 1!;
+add(3);
+add(true,false);
+
+
+
+succ = proc(n) { return n + 1; };
+succ(5);
+succ(x);
+
+
+hey = proc() { print("Hello world."); };
+hey();
+print(hey());
+hey;
+
+
+
+fac = proc(n) { var res; if (n == 0) then res := 1 else res := n * fac(n - 1); return res; };
+fac(5);
+fac(11);
+fac;
+
+
+myprocs = [| proc(m,n) { return m + n; }, proc(m,n) { return m - n; } |];
+(myprocs[0])(5,6);
+(myprocs[1])(5,6);
+succ = proc(n) { return n + 1; };
+pred = proc(n) { return n - 1; };
+applier = proc(p,n) { return p(n); };
+applier(succ,5);
+applier(pred,5);
+
+
+verbosity = 1!;
+myquit = proc(n) { print(n); quit; };
+myquit;
+myquit(5);
+
+
+printsucc = proc(n) { var succ; succ = proc(n) { return n + 1; }; print("Successor of",n,"is",succ(n)); };
+printsucc(5);
+
+
+makeadd = proc(n) { var add; print("n =",n); add = proc(m,n) { return n + m; }; return add; };
+makeadd(4);
+(makeadd(4))(5,6);
+
+
+sumall = proc(L = ...) { var acc, i; acc = 0; for i in L do acc = acc + i; return acc; };
+sumall;
+sumall();
+sumall(2);
+sumall(2,5);
+sumall(2,5,7,9,16);
+sumall @ [|1,...,10|];
+
+restart;
+print("=============== Test number 245 ================");
+
+nop(17);
+
+restart;
+print("=============== Test number 246 ================");
+
+parse("remez(exp(x),5,[-1;1])");
+
+
+
+

@@ -250,8 +250,8 @@ extern void endBuffer(void);
 #define RATIONALMODESTILLASSIGN 240
 #define RATIONALMODEDEREF 241
 #define SINGLESYMBOL 242
-
-
+#define TAYLORFORM 243
+#define NUMBERROOTS 244
 #define TIME 245
 #define NOPARG 246
 #define PROCILLIM 247
@@ -259,6 +259,7 @@ extern void endBuffer(void);
 #define DIEONERRORMODESTILLASSIGN 249
 #define DIEONERRORMODEDEREF 250
 #define COMPAREIN 251
+#define AUTODIFF 252
 
 int executeCommand(node *);
 
@@ -402,6 +403,8 @@ node *makeHorner(node *thing);
 node *makeCanonicalThing(node *thing);
 node *makeExpand(node *thing);
 node *makeTaylor(node *thing1, node *thing2, node *thing3);
+node *makeTaylorform(chain *thinglist);
+node *makeAutodiff(chain *thinglist);
 node *makeDegree(node *thing);
 node *makeNumerator(node *thing);
 node *makeDenominator(node *thing);
@@ -418,6 +421,7 @@ node *makeInfnorm(chain *thinglist);
 node *makeFindZeros(node *thing1, node *thing2);
 node *makeFPFindZeros(node *thing1, node *thing2);
 node *makeDirtyInfnorm(node *thing1, node *thing2);
+node *makeNumberRoots(node *thing1, node *thing2);
 node *makeIntegral(node *thing1, node *thing2);
 node *makeDirtyIntegral(node *thing1, node *thing2);
 node *makeImplementPoly(chain *thinglist);

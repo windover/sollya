@@ -176,10 +176,13 @@ SIMPLIFYSAFE2   "simplifysafe"
 SIMPLIFYSAFE    ({SIMPLIFYSAFE1}|{SIMPLIFYSAFE2})
 
 TAYLOR          "taylor"
+TAYLORFORM      "taylorform"
+AUTODIFF        "autodiff"
 
 FINDZEROS       "findzeros"
 FPFINDZEROS     "fpfindzeros"
 DIRTYINFNORM    "dirtyinfnorm"
+NUMBERROOTS     "numberroots"
 
 EVALUATE        "evaluate"
 
@@ -613,6 +616,8 @@ NOP             "nop"
 {EXPAND}          			    {  return EXPANDTOKEN; }          					       
 {SIMPLIFYSAFE}				    {  return SIMPLIFYSAFETOKEN; }				      	       
 {TAYLOR}         			    {  return TAYLORTOKEN; }         					       
+{TAYLORFORM}         			    {  return TAYLORFORMTOKEN; }         					       
+{AUTODIFF}         			    {  return AUTODIFFTOKEN; }         					       
 {DEGREE}          			    {  return DEGREETOKEN; }          					       
 {NUMERATOR}       			    {  return NUMERATORTOKEN; }       					       
 {DENOMINATOR}     			    {  return DENOMINATORTOKEN; }     					       
@@ -647,6 +652,7 @@ NOP             "nop"
 {FINDZEROS}       			    {  return FINDZEROSTOKEN; }       					       
 {FPFINDZEROS}     			    {  return FPFINDZEROSTOKEN; }     					       
 {DIRTYINFNORM}    			    {  return DIRTYINFNORMTOKEN; }    					       
+{NUMBERROOTS}    			    {  return NUMBERROOTSTOKEN; }    					       
 {INTEGRAL}        			    {  return INTEGRALTOKEN; }        					       
 {DIRTYINTEGRAL}				    {  return DIRTYINTEGRALTOKEN; }				      	       
 {WORSTCASE}       			    {  return WORSTCASETOKEN; }       					       

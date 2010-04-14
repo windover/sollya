@@ -178,10 +178,13 @@ SIMPLIFYSAFE2   "simplifysafe"
 SIMPLIFYSAFE    ({SIMPLIFYSAFE1}|{SIMPLIFYSAFE2})
 
 TAYLOR          "taylor"
+TAYLORFORM      "taylorform"
+AUTODIFF        "autodiff"
 
 FINDZEROS       "findzeros"
 FPFINDZEROS     "fpfindzeros"
 DIRTYINFNORM    "dirtyinfnorm"
+NUMBERROOTS     "numberroots"
 
 EVALUATE        "evaluate"
 
@@ -695,7 +698,9 @@ NOP             "nop"
 {HORNER}          			    { newTokenLexed(); return HORNERTOKEN; }          					       
 {EXPAND}          			    { newTokenLexed(); return EXPANDTOKEN; }          					       
 {SIMPLIFYSAFE}				    { newTokenLexed(); return SIMPLIFYSAFETOKEN; }				      	       
-{TAYLOR}         			    { newTokenLexed(); return TAYLORTOKEN; }         					       
+{TAYLOR}         			    { newTokenLexed(); return TAYLORTOKEN; }
+{TAYLORFORM}         			    { newTokenLexed(); return TAYLORFORMTOKEN; }         					       
+{AUTODIFF}         			    { newTokenLexed(); return AUTODIFFTOKEN; }         					       
 {DEGREE}          			    { newTokenLexed(); return DEGREETOKEN; }          					       
 {NUMERATOR}       			    { newTokenLexed(); return NUMERATORTOKEN; }       					       
 {DENOMINATOR}     			    { newTokenLexed(); return DENOMINATORTOKEN; }     					       
@@ -729,6 +734,7 @@ NOP             "nop"
 {FINDZEROS}       			    { newTokenLexed(); return FINDZEROSTOKEN; }       					       
 {FPFINDZEROS}     			    { newTokenLexed(); return FPFINDZEROSTOKEN; }     					       
 {DIRTYINFNORM}    			    { newTokenLexed(); return DIRTYINFNORMTOKEN; }    					       
+{NUMBERROOTS}    			    { newTokenLexed(); return NUMBERROOTSTOKEN; }    					       
 {INTEGRAL}        			    { newTokenLexed(); return INTEGRALTOKEN; }        					       
 {DIRTYINTEGRAL}				    { newTokenLexed(); return DIRTYINTEGRALTOKEN; }				      	       
 {WORSTCASE}       			    { newTokenLexed(); return WORSTCASETOKEN; }       					       

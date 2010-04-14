@@ -1,24 +1,62 @@
 /*
-  For compiling this file:
-    gcc -fPIC -Wall -c sturm.c
-    gcc -fPIC -shared -o sturm sturm.o
 
+Copyright 2008 by 
 
-  Within Sollya:
-    > externalproc(getNrRoots, "./sturm", (function, range) -> integer);
+Laboratoire de l'Informatique du Parallélisme, 
+UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
-  And then, for instance:
-    > getNrRoots(x+1, [2.5; 2.6]);
+Contributors Ch. Lauter, S. Chevillard, N. Jourdan
+
+christoph.lauter@ens-lyon.org
+sylvain.chevillard@ens-lyon.org
+nicolas.jourdan@ens-lyon.fr
+
+This software is a computer program whose purpose is to provide an
+environment for safe floating-point code development. It is
+particularily targeted to the automatized implementation of
+mathematical floating-point libraries (libm). Amongst other features,
+it offers a certified infinity norm, an automatic polynomial
+implementer and a fast Remez algorithm.
+
+This software is governed by the CeCILL-C license under French law and
+abiding by the rules of distribution of free software.  You can  use, 
+modify and/ or redistribute the software under the terms of the CeCILL-C
+license as circulated by CEA, CNRS and INRIA at the following URL
+"http://www.cecill.info". 
+
+As a counterpart to the access to the source code and  rights to copy,
+modify and redistribute granted by the license, users are provided only
+with a limited warranty  and the software's author,  the holder of the
+economic rights,  and the successive licensors  have only  limited
+liability. 
+
+In this respect, the user's attention is drawn to the risks associated
+with loading,  using,  modifying and/or developing or reproducing the
+software by the user in light of its specific status of free software,
+that may mean  that it is complicated to manipulate,  and  that  also
+herefore means  that it is reserved for developers  and  experienced
+professionals having in-depth computer knowledge. Users are therefore
+encouraged to load and test the software's suitability as regards their
+requirements in conditions enabling the security of their systems and/or 
+data to be ensured and,  more generally, to use and operate it in the 
+same conditions as regards security. 
+
+The fact that you are presently reading this means that you have had
+knowledge of the CeCILL-C license and that you accept its terms.
 
 */
 
-
-#include "sollya.h"
 #include <gmp.h>
-#include <limits.h>
+#include <mpfr.h>
+#include "chain.h"
+#include "general.h"
+#include "infnorm.h"
+#include "execute.h"
+#include "expression.h"
+#include <stdio.h> /* fprintf, fopen, fclose, */
+#include <stdlib.h> /* exit, free, mktemp */
+#include <errno.h>
 
-extern int noRoundingWarnings;
-extern int verbosity;
 
 //these are the functions that work on mpq_t
 
@@ -31,9 +69,6 @@ int sturm_mpfi(int *n, mpq_t *p, int p_degree, mpfi_t x);
 int polynomialDivide_mpfi(mpfi_t *quotient, int *quotient_degree, mpfi_t *rest, int *rest_degree, mpfi_t *p, int p_degree, mpfi_t *q, int q_degree, mp_prec_t prec) ;
 int polynomialDeriv_mpfi(mpfi_t **derivCoeff, int *deriv_degree, mpfi_t *p, int p_degree, mp_prec_t prec);
 int polynomialEval_mpfi( mpfi_t *res, mpfi_t x, mpfi_t *p, int p_degree);
-
-
-int mpfr_to_mpq( mpq_t y, mpfr_t x);
 
 
 void printMpq(mpq_t x) {
@@ -75,254 +110,6 @@ void printMpq(mpq_t x) {
 
 }
 
-
-int tryEvaluateConstantTermToMpq(mpq_t res, node *tree) {
-  mpq_t resA, resB, resC;
-  int result;
-  mpz_t num, denom;
-  mpz_t num2, denom2;
-  signed long int expo;
-
-  if (tree == NULL) return 0;
-
-  mpq_init(resA);
-  mpq_init(resB);
-  mpq_init(resC);
-
-  result = 1;
-  switch (tree->nodeType) {
-  case CONSTANT:
-    mpfr_to_mpq(resC,*(tree->value));
-    break;
-  case ADD:
-    if (tryEvaluateConstantTermToMpq(resA, tree->child1) && 
-	tryEvaluateConstantTermToMpq(resB, tree->child2)) {
-      mpq_add(resC,resA,resB);
-    } else result = 0;
-    break;
-  case SUB:
-    if (tryEvaluateConstantTermToMpq(resA, tree->child1) && 
-	tryEvaluateConstantTermToMpq(resB, tree->child2)) {
-      mpq_sub(resC,resA,resB);
-    } else result = 0;
-    break;
-  case MUL:
-    if (tryEvaluateConstantTermToMpq(resA, tree->child1) && 
-	tryEvaluateConstantTermToMpq(resB, tree->child2)) {
-      mpq_mul(resC,resA,resB);
-    } else result = 0;
-    break;
-  case DIV:
-    if (tryEvaluateConstantTermToMpq(resA, tree->child1) && 
-	tryEvaluateConstantTermToMpq(resB, tree->child2)) {
-      mpq_div(resC,resA,resB);
-    } else result = 0;
-    break;
-  case SQRT:
-    if (tryEvaluateConstantTermToMpq(resA, tree->child1)) {
-      mpz_init(num);
-      mpz_init(denom);
-      mpq_get_num(num,resA);
-      mpq_get_den(denom,resA);
-      if (mpz_root(num,num,2) && mpz_root(denom,denom,2)) {
-	mpq_set_num(resC,num);
-	mpq_set_den(resC,denom);
-	mpq_canonicalize(resC);
-      } else {
-	result = 0;
-      }
-      mpz_clear(num);
-      mpz_clear(denom);
-    } else result = 0;
-    break;
-  case POW:
-    if (tryEvaluateConstantTermToMpq(resA, tree->child1) && 
-	tryEvaluateConstantTermToMpq(resB, tree->child2)) {
-      mpz_init(num);
-      mpz_init(denom);
-      mpq_get_num(num,resB);
-      mpq_get_den(denom,resB);
-      if (mpz_cmp_ui(denom,1) == 0) {
-	/* Must set resC to resA^num */
-	mpz_init(num2);
-	mpz_init(denom2);
-	if (mpz_sgn(num) < 0) {
-	  mpq_get_num(denom2,resA);
-	  mpq_get_den(num2,resA);
-	  mpz_neg(num,num);
-	} else {
-	  mpq_get_num(num2,resA);
-	  mpq_get_den(denom2,resA);
-	}
-	/* Must set resC to (num2^num)/(denom2^num), num is positive */
-	if (mpz_fits_slong_p(num)) {
-	  expo = mpz_get_si(num);
-	  /* Must set resC to (num2^expo)/(denom2^expo), expo is positive */
-	  mpz_pow_ui(num2, num2, (unsigned long int) expo);
-	  mpz_pow_ui(denom2, denom2, (unsigned long int) expo);
-	  mpq_set_num(resC,num2);
-	  mpq_set_den(resC,denom2);
-	  mpq_canonicalize(resC);
-	} else result = 0;
-	mpz_clear(num2);
-	mpz_clear(denom2);
-      } else result = 0;
-      mpz_clear(num);
-      mpz_clear(denom);
-    } else result = 0;
-    break;
-  case NEG:
-    if (tryEvaluateConstantTermToMpq(resA, tree->child1)) {
-      mpq_neg(resC,resA);
-    } else result = 0;
-    break;
-  default:
-    result = 0;
-  }
-
-  if (result) mpq_set(res,resC);
-
-  mpq_clear(resA);
-  mpq_clear(resB);
-  mpq_clear(resC);
-
-  return result;
-}
-
-
-
-
-
-int getNrRoots(int *res, void **args) {
-  node *f;
-  mpfi_t x;
-  int degree,i,nr;
-  node **coefficients;
-  mpq_t  *qCoefficients;
-  int r;
-  mpfr_t tempValue, tempValue2;
-  node *tempTree;
-  int deg;
-  int resMpfi;
-  mp_prec_t prec;
-  
-  prec=getToolPrecision();
-
-  f = (node *)args[0];
-  
-  mpfi_init2(x, mpfi_get_prec(*( (mpfi_t *)args[1] )));
-  mpfi_set(x, *( (mpfi_t *)args[1] ));
-
-  getCoefficients(&degree,&coefficients,f);
-
-  if (degree < 0) {
-    fprintf(stderr,"Error: getNrRoots: an error occurred. Could not extract the coefficients of the given polynomial.\n");
-    exit(1);
-  }
-  
-  qCoefficients = (mpq_t *) safeCalloc(degree+1,sizeof(mpq_t));
-  for (i=0;i<=degree;i++) {
-    mpq_init(qCoefficients[i]);
-  }  
-
-  mpfr_init2(tempValue,prec);
-  mpfr_set_d(tempValue,1.0,GMP_RNDN);
-  mpfr_init2(tempValue2,prec);
-  for (i=0;i<=degree;i++) {
-    if (coefficients[i] != NULL) {
-      tempTree = simplifyTreeErrorfree(coefficients[i]);
-      free_memory(coefficients[i]);
-      if (!isConstant(tempTree)) {
-	fprintf(stderr,"Error: getNrRoots: an error occurred. A polynomial coefficient is not constant.\n");
-	exit(1);
-      }
-      if (tempTree->nodeType != CONSTANT) {
-	if (tryEvaluateConstantTermToMpq(qCoefficients[i], tempTree)) {
-	  if (verbosity >= 3) {
-	    changeToWarningMode();
-	    printf("Information: in getNrRoots: evaluated the %dth coefficient to ",i);
-	    printMpq(qCoefficients[i]);
-	    printf("\n");
-	    restoreMode();
-	  }
-	} else {
-	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: the %dth coefficient of the polynomial is neither a floating point\n",i);
-	    printMessage(1,"constant nor can be evaluated without rounding to a floating point constant.\n");
-	    printMessage(1,"Will faithfully evaluate it with the current precision (%d bits) \n",prec);
-	  }
-	  r=evaluateFaithful(tempValue2, tempTree, tempValue, prec);
-	  if (!r){
-	    mpfr_set_ui(tempValue2,0,GMP_RNDN);
-	    if (!noRoundingWarnings) {
-	      printMessage(1,"Warning: Rounded the coefficient %d to 0.\n",i);
-	    }
-	  }
-	  mpfr_to_mpq(qCoefficients[i], tempValue2);
-	  if (verbosity >= 3) {
-	    changeToWarningMode();
-	    printf("Information: evaluated the %dth coefficient to ",i);
-	    printMpq(qCoefficients[i]);
-	    printf("\n");
-	    restoreMode();
-	  }
-	}
-      } 
-      else {
-	mpfr_to_mpq(qCoefficients[i], *(tempTree->value));
-      }
-      free_memory(tempTree);
-    } else {
-      mpq_set_ui(qCoefficients[i],0,1);
-    }
-  }
-  free(coefficients);
-  mpfr_clear(tempValue); 
-  mpfr_clear(tempValue2);
-
-  for(deg = degree; deg >= 0 && (mpq_sgn(qCoefficients[deg]) == 0); deg--); 
-
-  if (deg >= 0) {
-    resMpfi = sturm_mpfi(&nr, qCoefficients, deg,x);
-    if (!resMpfi) {
-      printMessage(1,"Warning: using slower GMP MPQ version\n");
-      sturm_mpq(&nr, qCoefficients, deg,x);
-    }
-    *res = nr;
-  } else {
-    printMessage(1,"Warning: the given polynomial is the zero polynomial. Its number of zeros is infinite.\n");
-    *res = INT_MAX;
-  }
-
-  mpfi_clear(x);
-  for (i=0;i<=degree;i++) {
-    mpq_clear(qCoefficients[i]);
-  }
-  free(qCoefficients);
-  
-  return 1;
-}
-
-int mpfr_to_mpq( mpq_t y, mpfr_t x){
-  mpz_t mant;
-  mp_exp_t expo;
-  mpq_t aux;
-  if (mpfr_number_p(x)) {
-    mpz_init(mant);
-    expo = mpfr_get_z_exp(mant,x);
-    mpq_init(aux);    
-    mpq_set_z(aux,mant);
-    
-    if (expo>=0)
-      mpq_mul_2exp(aux,aux,(unsigned int)expo);
-    else
-      mpq_div_2exp(aux,aux,(unsigned int)(-expo));
-    mpq_set(y,aux);
-    mpq_clear(aux);
-    return 1;
-  }
-  else return 0;
-}
 
 
 
@@ -373,11 +160,6 @@ int polynomialEval_mpq( mpq_t *res, mpq_t x, mpq_t *p, int p_degree){
 }
 
 
-
-
-
-
-
 int polynomialDivide_mpq(mpq_t *quotient, int *quotient_degree, mpq_t *rest, int *rest_degree, mpq_t *p, int p_degree, mpq_t *q, int q_degree) {
   
   int i,step,k;
@@ -416,13 +198,6 @@ int polynomialDivide_mpq(mpq_t *quotient, int *quotient_degree, mpq_t *rest, int
   mpq_clear(aux);
   return 1;
 }  
-
-
-
-
-
-
-
 
 
 int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
@@ -652,19 +427,6 @@ int polynomialDivide_mpfi(mpfi_t *quotient, int *quotient_degree, mpfi_t *rest, 
   return okay;
 }  
 
-mp_prec_t getMpzPrecision(mpz_t x) {
-  mp_prec_t prec;
-  int p, dyadicValue;
-
-  prec = mpz_sizeinbase(x, 2);
-  dyadicValue = mpz_scan1(x, 0);
-  p = prec - dyadicValue;
-  if (p < 12) prec = 12; else prec = p; 
-
-  return prec;
-}
-
-
 int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
   mpfi_t *quotient, *rest, *dp;
   int quotient_degree, rest_degree, dp_degree;
@@ -854,4 +616,117 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
   return resultat;
 }
 
+
+int getNrRoots(mpfr_t res, node *f, mpfi_t range) {
+  mpfi_t x;
+  int degree,i,nr;
+  node **coefficients;
+  mpq_t  *qCoefficients;
+  int r;
+  mpfr_t tempValue, tempValue2;
+  node *tempTree;
+  int deg;
+  int resMpfi;
+  mp_prec_t prec;
+  
+  if (!isPolynomial(f)) {
+      printMessage(1,"Warning: the given function must be a polynomial in this context.\n");
+      return 0;
+  }
+
+  prec=getToolPrecision();
+  
+  mpfi_init2(x, mpfi_get_prec(range));
+  mpfi_set(x, range);
+
+  getCoefficients(&degree,&coefficients,f);
+
+  if (degree < 0) {
+    printMessage(1,"Warning: the given function is not a polynomial.\n");
+    mpfi_clear(x);
+    return 0;
+  }
+  
+  qCoefficients = (mpq_t *) safeCalloc(degree+1,sizeof(mpq_t));
+  for (i=0;i<=degree;i++) {
+    mpq_init(qCoefficients[i]);
+  }  
+
+  mpfr_init2(tempValue,prec);
+  mpfr_set_d(tempValue,1.0,GMP_RNDN);
+  mpfr_init2(tempValue2,prec);
+  for (i=0;i<=degree;i++) {
+    if (coefficients[i] != NULL) {
+      tempTree = simplifyTreeErrorfree(coefficients[i]);
+      free_memory(coefficients[i]);
+      if (!isConstant(tempTree)) {
+	fprintf(stderr,"Error: getNrRoots: an error occurred. A polynomial coefficient is not constant.\n");
+	exit(1);
+      }
+      if (tempTree->nodeType != CONSTANT) {
+	if (tryEvaluateConstantTermToMpq(qCoefficients[i], tempTree)) {
+	  if (verbosity >= 3) {
+	    changeToWarningMode();
+	    printf("Information: in getNrRoots: evaluated the %dth coefficient to ",i);
+	    printMpq(qCoefficients[i]);
+	    printf("\n");
+	    restoreMode();
+	  }
+	} else {
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"Warning: the %dth coefficient of the polynomial is neither a floating point\n",i);
+	    printMessage(1,"constant nor can be evaluated without rounding to a floating point constant.\n");
+	    printMessage(1,"Will faithfully evaluate it with the current precision (%d bits) \n",prec);
+	  }
+	  r=evaluateFaithful(tempValue2, tempTree, tempValue, prec);
+	  if (!r){
+	    mpfr_set_ui(tempValue2,0,GMP_RNDN);
+	    if (!noRoundingWarnings) {
+	      printMessage(1,"Warning: Rounded the coefficient %d to 0.\n",i);
+	    }
+	  }
+	  mpfr_to_mpq(qCoefficients[i], tempValue2);
+	  if (verbosity >= 3) {
+	    changeToWarningMode();
+	    printf("Information: evaluated the %dth coefficient to ",i);
+	    printMpq(qCoefficients[i]);
+	    printf("\n");
+	    restoreMode();
+	  }
+	}
+      } 
+      else {
+	mpfr_to_mpq(qCoefficients[i], *(tempTree->value));
+      }
+      free_memory(tempTree);
+    } else {
+      mpq_set_ui(qCoefficients[i],0,1);
+    }
+  }
+  free(coefficients);
+  mpfr_clear(tempValue); 
+  mpfr_clear(tempValue2);
+
+  for(deg = degree; deg >= 0 && (mpq_sgn(qCoefficients[deg]) == 0); deg--); 
+
+  if (deg >= 0) {
+    resMpfi = sturm_mpfi(&nr, qCoefficients, deg,x);
+    if (!resMpfi) {
+      printMessage(1,"Warning: using slower GMP MPQ version\n");
+      sturm_mpq(&nr, qCoefficients, deg,x);
+    }
+    mpfr_set_si(res,nr,GMP_RNDN);
+  } else {
+    printMessage(1,"Warning: the given polynomial is the zero polynomial. Its number of zeros is infinite.\n");
+    mpfr_set_inf(res,1);
+  }
+
+  mpfi_clear(x);
+  for (i=0;i<=degree;i++) {
+    mpq_clear(qCoefficients[i]);
+  }
+  free(qCoefficients);
+  
+  return 1;
+}
 

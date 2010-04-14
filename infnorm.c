@@ -125,6 +125,18 @@ void special_mpfi_mul(mpfi_t rop, mpfi_t a, mpfi_t b) {
 }
 
 
+int mpfi_equal_p(mpfi_t r1, mpfi_t r2) {
+  mpfr_t x1, x2;
+  int test = 0;
+  mpfr_init2(x1, mpfi_get_prec(r1));
+  mpfr_init2(x2, mpfi_get_prec(r2));
+
+  mpfi_get_left(x1, r1); mpfi_get_left(x2, r2); test = mpfr_equal_p(x1, x2);
+  mpfi_get_right(x1, r1); mpfi_get_right(x2, r2); test = test && mpfr_equal_p(x1, x2);
+  
+  mpfr_clear(x1); mpfr_clear(x2);
+  return test;
+}
 
 void mpfi_pow(mpfi_t z, mpfi_t x, mpfi_t y) {
   mpfr_t l,r,lx,rx;

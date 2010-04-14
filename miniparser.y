@@ -226,6 +226,8 @@ void miniyyerror(void *myScanner, char *message) {
 %token  EXPANDTOKEN;            					       
 %token  SIMPLIFYSAFETOKEN;  						       
 %token  TAYLORTOKEN;           					       
+%token  TAYLORFORMTOKEN;
+%token  AUTODIFFTOKEN;
 %token  DEGREETOKEN;            					       
 %token  NUMERATORTOKEN;         					       
 %token  DENOMINATORTOKEN;       					       
@@ -263,6 +265,7 @@ void miniyyerror(void *myScanner, char *message) {
 %token  FINDZEROSTOKEN;         					       
 %token  FPFINDZEROSTOKEN;       					       
 %token  DIRTYINFNORMTOKEN;      					       
+%token  NUMBERROOTSTOKEN;      					       
 %token  INTEGRALTOKEN;          					       
 %token  DIRTYINTEGRALTOKEN;  						       
 %token  WORSTCASETOKEN;         					       
@@ -1399,6 +1402,14 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeTaylor($3, $5, $7);
 			  }           					       
+                      | TAYLORFORMTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
+                          {
+                            $$ = makeTaylorform(addElement(addElement($7, $5), $3));
+			  }           					       
+                      | AUTODIFFTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+                            $$ = makeAutodiff(addElement(addElement(addElement(NULL, $7), $5), $3));
+			  }           					       
                       | DEGREETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeDegree($3);
@@ -1466,6 +1477,10 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                       | DIRTYINFNORMTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeDirtyInfnorm($3, $5);
+			  }      					       
+                      | NUMBERROOTSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeNumberRoots($3, $5);
 			  }      					       
                       | INTEGRALTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {

@@ -65,7 +65,9 @@ chain* findZerosFunction(node *func, rangetype range, mp_prec_t prec, mpfr_t dia
 void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec);
 void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_prec_t prec);
 void evaluateRangeFunctionFast(rangetype yrange, node *func, node *deriv, rangetype xrange, mp_prec_t prec);
+void evaluateInterval(mpfi_t y, node *func, node *deriv, mpfi_t x);
 void fprintInterval(FILE *fd, mpfi_t interval);
+void printInterval(mpfi_t interval);
 
 chain *joinAdjacentIntervalsMaximally(chain *intervals);
 int checkInfnorm(node *func, rangetype range, mpfr_t infnormval, mpfr_t diam, mp_prec_t prec);

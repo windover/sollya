@@ -30,6 +30,7 @@ rem_bound - bound for the remainder
 poly_array - array of coeffs for the polynomial (mpfi's)
 poly_bound - bound for the polynomial (helpful for computations)
 x- interval on which the tm is computed
+x0 - expansion point
 */
 typedef struct tmdl {
 int n; 
@@ -37,7 +38,7 @@ mpfi_t rem_bound;
 mpfi_t *poly_array;
 mpfi_t poly_bound;
 mpfi_t x;
-//mpfr_t x0;
+mpfr_t x0;
 } tModel;
 
 

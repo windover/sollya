@@ -25,6 +25,8 @@ minilexer.l \
 help.h \
 assignment.c \
 assignment.h \
+autodiff.c \
+autodiff.h \
 chain.c \
 chain.h \
 double.c \
@@ -57,6 +59,10 @@ remez.c \
 remez.h \
 taylor.c \
 taylor.h \
+taylorform.c \
+taylorform.h \
+sturm.c \
+sturm.h \
 worstcase.c \
 worstcase.h \
 xml.c \
@@ -78,6 +84,8 @@ minilexer.l \
 help.h \
 assignment.c \
 assignment.h \
+autodiff.c \
+autodiff.h \
 chain.c \
 chain.h \
 double.c \
@@ -106,6 +114,10 @@ fpminimax.cpp \
 fpminimax.h \
 remez.c \
 remez.h \
+taylorform.c \
+taylorform.h \
+sturm.c \
+sturm.h \
 taylor.c \
 taylor.h \
 worstcase.c \

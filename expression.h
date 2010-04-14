@@ -179,6 +179,8 @@ void simplifyMpfrPrec(mpfr_t rop, mpfr_t op);
 node *simplifyRationalErrorfree(node *tree);
 int tryEvaluateConstantTermToMpq(mpq_t res, node *tree);
 node *simplifyAllButDivision(node *tree);
+int mpfr_to_mpq( mpq_t y, mpfr_t x);
+mp_prec_t getMpzPrecision(mpz_t x);
 
 node *makeVariable();
 node *makeConstant(mpfr_t x);
