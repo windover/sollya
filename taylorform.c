@@ -1236,66 +1236,6 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
 }
   return;
 }
-
-node *constructPoly(mpfr_t *coeff, int n, mpfi_t x0) {
-  int i=1;
-  chain *curr;
-  node *temp1;
-  node *temp2;
-  node *temp3;
-  node *temp4;
-  node *temp5;
-  node *temp6;
-
-  node *poly;
-  mpfr_t *ptr;
-
-  poly = (node*)safeMalloc(sizeof(node));
-  poly->nodeType = CONSTANT;
-  ptr = (mpfr_t*)safeMalloc(sizeof(mpfr_t));
-  mpfr_init2(*ptr, getToolPrecision());
-  mpfr_set(*ptr,coeff[0], GMP_RNDN);
-  poly->value = ptr;
-
-  
-  for (i=1;i<=n;i++) {
-    temp1 = (node*)safeMalloc(sizeof(node));
-    temp1->nodeType = ADD;
-
-    temp2 =(node*) safeMalloc(sizeof(node));
-    temp2->nodeType = MUL;
-
-    temp3 = (node*)safeMalloc(sizeof(node));
-    temp3->nodeType = CONSTANT;
-    ptr = (mpfr_t*)safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*ptr, getToolPrecision());
-    mpfr_set(*ptr, coeff[i], GMP_RNDN);
-    temp3->value = ptr;
-
-    temp4 = (node*)safeMalloc(sizeof(node));
-    temp4->nodeType = POW;
-
-    temp5 = (node*)safeMalloc(sizeof(node));
-    temp5->nodeType = VARIABLE;
-
-    temp6 = (node*)safeMalloc(sizeof(node));
-    temp6->nodeType = CONSTANT;
-    ptr = (mpfr_t*)safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*ptr, getToolPrecision());
-    mpfr_set_si(*ptr, i, GMP_RNDN);
-    temp6->value = ptr;
-
-    temp4->child1 = temp5;
-    temp4->child2 = temp6;
-    temp2->child1 = temp3;
-    temp2->child2 = temp4;
-    temp1->child1 = temp2;
-    temp1->child2 = poly;
-    poly = temp1;
-   }
-
-  return poly;
-}
 chain *constructChain(mpfi_t *err, int n){
   chain *l;
   mpfi_t *elem;
@@ -1378,7 +1318,7 @@ void taylorform(node **T, chain **errors, mpfi_t **delta,
   mpfr_get_poly(coeffsMpfr, coeffsErrors, *rest, t->n -1,t->poly_array, t->x0,t->x);
  
   //create T; 
-  *T=constructPoly(coeffsMpfr, t->n-1, t->x0);
+  *T=makePolynomial(coeffsMpfr, (t->n)-1);
 
   //create errors;
   err=constructChain(coeffsErrors,t->n-1);
