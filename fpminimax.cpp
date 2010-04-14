@@ -48,7 +48,17 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 
 #include <iostream>
+
+#ifdef HAVE_SPECIAL_FPLLL_INCLUDE
+#if HAVE_SPECIAL_FPLLL_INCLUDE
+#include <fplll/fplll.h>
+#else
 #include <fplll.h>
+#endif
+#else
+#include <fplll.h>
+#endif
+
 #include <gmp.h>
 #include <mpfr.h>
 #include <stdio.h>
