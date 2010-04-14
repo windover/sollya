@@ -15703,6 +15703,7 @@ node *evaluateThingInner(node *tree) {
             if (tmpInterv1 != NULL) mpfi_clear(*tmpInterv1);
           }
         }
+	if (tmpInterv11 != NULL) mpfi_clear(*tmpInterv11);
       }
     }
     break; 			 	

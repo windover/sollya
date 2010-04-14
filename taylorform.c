@@ -1412,9 +1412,10 @@ void taylorform(node **T, chain **errors, mpfi_t **delta,
     
   for(i=0;i<n;i++){
     mpfr_clear(coeffsMpfr[i]);
-    mpfr_clear(coeffsErrors[i]);
+    mpfi_clear(coeffsErrors[i]);
   }
   free(coeffsMpfr);
+  free(coeffsErrors);
   mpfi_clear(x0Int);
   cleartModel(t);
 
