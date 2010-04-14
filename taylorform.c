@@ -1365,7 +1365,7 @@ void taylorform(node **T, chain **errors, mpfi_t **delta,
   //printtModel(t);
 
   coeffsMpfr= (mpfr_t *)safeCalloc((n),sizeof(mpfr_t));
-  coeffsErrors= (mpfi_t *)safeCalloc((n),sizeof(mpfi_t));
+  coeffsErrors = (mpfi_t *)safeCalloc((n),sizeof(mpfi_t));
 
   rest= (mpfi_t*)safeMalloc(sizeof(mpfi_t));
   mpfi_init2(*rest,getToolPrecision());
@@ -1412,6 +1412,7 @@ void taylorform(node **T, chain **errors, mpfi_t **delta,
     
   for(i=0;i<n;i++){
     mpfr_clear(coeffsMpfr[i]);
+    mpfr_clear(coeffsErrors[i]);
   }
   free(coeffsMpfr);
   mpfi_clear(x0Int);
