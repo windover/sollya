@@ -52,6 +52,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "config.h"
 #endif
 
+#undef malloc
+#undef realloc
+
 #ifdef HAVE_SPECIAL_FPLLL_INCLUDE
 #if HAVE_SPECIAL_FPLLL_INCLUDE
 #include <fplll/fplll.h>
