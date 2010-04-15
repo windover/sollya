@@ -18,7 +18,7 @@ if test "$LEX" != flex; then
   AC_SUBST(LEX_OUTPUT_ROOT, lex.yy)
   AC_SUBST(LEXLIB, '')
 fi
-AC_PROG_RANLIB
+#AC_PROG_RANLIB
 AC_LIBTOOL_DLOPEN
 AC_DISABLE_SHARED
 AC_PROG_LIBTOOL
@@ -217,7 +217,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
 if [[ $FPLLLUSABLE == "no" ]] ; then
 FPLLLSPECIALINCLUDE="yes"
 AC_LANG_PUSH([C++])
-AC_MSG_CHECKING([for fplll support])
+AC_MSG_CHECKING([for Debian-like fplll support])
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
 [[#include <fplll/fplll.h>]] 
 [[#include <gmp.h>]]
