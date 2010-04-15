@@ -270,13 +270,6 @@ void warningMode() {
 }
 
 
-void *rpl_malloc(size_t n) {
-  if (n == 0)
-    n = 1;
-  return malloc (n);
-}
-
-
 void *safeCalloc (size_t nmemb, size_t size) {
   void *ptr;
   ptr = calloc(nmemb,size);
@@ -1052,5 +1045,20 @@ int general(int argc, char *argv[]) {
   }
 
   if (lastWasError) return 1; else return 0;
+}
+
+#undef malloc
+#undef realloc
+
+void *rpl_malloc(size_t n) {
+  if (n == 0)
+    n = 1;
+  return malloc (n);
+}
+
+void *rpl_realloc(void *ptr, size_t n) {
+  if (n == 0)
+    n = 1;
+  return realloc (ptr, n);
 }
 
