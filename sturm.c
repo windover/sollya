@@ -129,7 +129,7 @@ int polynomialDeriv_mpq(mpq_t **derivCoeff, int *deriv_degree, mpq_t *p, int p_d
   mpq_init(aux);
   
   for (i=1; i<=p_degree;i++){
-    mpq_init((*derivCoeff)[i-1]);
+    if (i-1!=0) mpq_init((*derivCoeff)[i-1]);
     mpq_set_ui(aux,i,1);
     mpq_mul((*derivCoeff)[i-1],p[i],aux);
   }
@@ -145,7 +145,7 @@ int polynomialEval_mpq( mpq_t *res, mpq_t x, mpq_t *p, int p_degree){
   mpq_set_ui(pow,1,1);
   mpq_init(aux);
   mpq_set_ui(aux,1,1); 
-  mpq_init(*res);//is set to 0/1
+  mpq_set_ui(*res,0,1);//is set to 0/1
   for (i=0; i<=p_degree; i++) {
     mpq_mul(aux,p[i],pow);
     mpq_add(*res, aux, *res);
@@ -229,7 +229,12 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
   mpfr_to_mpq(bq,b);
   
   evalResA = (mpq_t *)safeMalloc((p_degree+1)*sizeof(mpq_t));  
-  evalResB = (mpq_t *)safeMalloc((p_degree+1)*sizeof(mpq_t));    
+  evalResB = (mpq_t *)safeMalloc((p_degree+1)*sizeof(mpq_t));
+  for (i=0; i<=p_degree; i++){ 
+    mpq_init(evalResA[i]);
+    mpq_init(evalResB[i]);
+  }
+    
   s0=(mpq_t *)safeMalloc((p_degree+1)*sizeof(mpq_t));
   quotient=(mpq_t *)safeMalloc((p_degree+1)*sizeof(mpq_t));
   rest=(mpq_t *)safeMalloc((p_degree+1)*sizeof(mpq_t));
@@ -250,8 +255,7 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
     
   polynomialEval_mpq( &evalRes, aq, s0, s0_degree);
   if (mpq_cmp_ui(evalRes,0,1)!=0){
-    mpq_init(evalResA[na]);
-    mpq_set(evalResA[na],evalRes);
+     mpq_set(evalResA[na],evalRes);
     na++;
   }
   else nrRoots++; /*if the left extremity is a root we count it here
@@ -259,7 +263,6 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
                     roots between a and b, a<b*/  
   polynomialEval_mpq( &evalRes, bq, s0, s0_degree);
   if (mpq_cmp_ui(evalRes,0,1)!=0){
-    mpq_init(evalResB[nb]);
     mpq_set(evalResB[nb],evalRes);
     nb++;
   }
@@ -269,14 +272,12 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
 
     polynomialEval_mpq( &evalRes, aq, dp, dp_degree);
     if (mpq_cmp_ui(evalRes,0,1)!=0){
-      mpq_init(evalResA[na]);
       mpq_set(evalResA[na],evalRes);
       na++;
     }
   
     polynomialEval_mpq( &evalRes, bq, dp, dp_degree);
     if (mpq_cmp_ui(evalRes,0,1)!=0){
-      mpq_init(evalResB[nb]);
       mpq_set(evalResB[nb],evalRes);
       nb++;
     }
@@ -302,7 +303,6 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
     
     polynomialEval_mpq( &evalRes, aq, s1, s1_degree);
     if (mpq_cmp_ui(evalRes,0,1)!=0){
-      mpq_init(evalResA[na]);
       mpq_set(evalResA[na],evalRes);
       na++;
     }
@@ -310,7 +310,6 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
   
     polynomialEval_mpq( &evalRes, bq, s1, s1_degree);
     if (mpq_cmp_ui(evalRes,0,1)!=0){
-      mpq_init(evalResB[nb]);
       mpq_set(evalResB[nb],evalRes);
       nb++;
     }
@@ -331,12 +330,28 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
 
   *n=(((varSignA-varSignB)>0)?(varSignA-varSignB+nrRoots):(varSignB-varSignA+nrRoots) );
 
+  for (i=0; i<=p_degree; i++){
+    mpq_clear(s0[i]);
+    mpq_clear(quotient[i]);
+    mpq_clear(rest[i]);
+    mpq_clear(evalResA[i]);
+    mpq_clear(evalResB[i]);
+  }
+  for (i=0; i<=dp_degree; i++){ 
+    mpq_clear(dp[i]);
+  }
+  free(dp);
+  free(s0);
   free(evalResA);
   free(evalResB);
-  free(s0); 
   free(quotient); 
   free(rest); 
-  
+  mpfr_clear(a);
+  mpfr_clear(b);
+  mpq_clear(aq);
+  mpq_clear(bq);
+  mpq_clear(evalRes);
+
   return 1;
 }
 
@@ -357,7 +372,7 @@ int polynomialDeriv_mpfi(mpfi_t **derivCoeff, int *deriv_degree, mpfi_t *p, int 
   mpfi_init2(aux,prec);
   
   for (i=1; i<=p_degree;i++){
-    mpfi_init2((*derivCoeff)[i-1],prec);
+    if (i-1!=0) mpfi_init2((*derivCoeff)[i-1],prec);
     mpfi_set_ui(aux,i);
     mpfi_mul((*derivCoeff)[i-1],p[i],aux);
   }
@@ -487,6 +502,8 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
   quotient=(mpfi_t *)safeMalloc((p_degree+1)*sizeof(mpfi_t));
   rest=(mpfi_t *)safeMalloc((p_degree+1)*sizeof(mpfi_t));
   for (i=0; i<=p_degree; i++){ 
+    mpfi_init2(evalResA[i],prec);
+    mpfi_init2(evalResB[i],prec);
     mpfi_init2(quotient[i],prec);
     mpfi_init2(rest[i],prec);
   }
@@ -499,11 +516,9 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
   }
         
   polynomialDeriv_mpfi(&dp, &dp_degree, p, p_degree, prec);
-  mpfi_init2(evalRes,prec);
     
   polynomialEval_mpfi( &evalRes, aq, s0, s0_degree);
   if (!mpfi_has_zero(evalRes)){
-    mpfi_init2(evalResA[na],prec);
     mpfi_set(evalResA[na],evalRes);
     na++;
   }
@@ -517,7 +532,6 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
 
   polynomialEval_mpfi( &evalRes, bq, s0, s0_degree);
   if (!mpfi_has_zero(evalRes)){
-    mpfi_init2(evalResB[nb],prec);
     mpfi_set(evalResB[nb],evalRes);
     nb++;
   } else {
@@ -530,7 +544,6 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
 
     polynomialEval_mpfi( &evalRes, aq, dp, dp_degree);
     if (!mpfi_has_zero(evalRes)){
-      mpfi_init2(evalResA[na],prec);
       mpfi_set(evalResA[na],evalRes);
       na++;
     } else {
@@ -539,7 +552,6 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
   
     polynomialEval_mpfi( &evalRes, bq, dp, dp_degree);
     if (!mpfi_has_zero(evalRes)){
-      mpfi_init2(evalResB[nb],prec);
       mpfi_set(evalResB[nb],evalRes);
       nb++;
     } else {
@@ -572,7 +584,6 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
       
       polynomialEval_mpfi( &evalRes, aq, s1, s1_degree);
       if (!mpfi_has_zero(evalRes)){
-	mpfi_init2(evalResA[na],prec);
 	mpfi_set(evalResA[na],evalRes);
 	na++;
       } else {
@@ -581,7 +592,6 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
       
       polynomialEval_mpfi( &evalRes, bq, s1, s1_degree);
       if (!mpfi_has_zero(evalRes)){
-	mpfi_init2(evalResB[nb],prec);
 	mpfi_set(evalResB[nb],evalRes);
 	nb++;
       } else {
@@ -601,12 +611,27 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
 
   *n=(((varSignA-varSignB)>0)?(varSignA-varSignB+nrRoots):(varSignB-varSignA+nrRoots) );
 
+  for (i=0; i<=p_degree; i++){ 
+    mpfi_clear(evalResA[i]);
+    mpfi_clear(evalResB[i]);
+    mpfi_clear(s0[i]);
+    mpfi_clear(quotient[i]);
+    mpfi_clear(rest[i]);
+  }
+  for (i=0; i<=dp_degree; i++){ 
+    mpfi_clear(dp[i]);
+  }
+  free(dp);
   free(evalResA);
   free(evalResB);
   free(s0); 
   free(quotient); 
   free(rest); 
   mpfi_clear(evalRes);
+  mpfr_clear(a);
+  mpfr_clear(b);
+  mpfi_clear(aq);
+  mpfi_clear(bq);
 
   for (i=0;i<=p_degree;i++) {
     mpfi_clear(p[i]);
