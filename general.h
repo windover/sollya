@@ -125,6 +125,7 @@ extern int inputFileOpened;
 extern int flushOutput;
 
 extern void *rpl_malloc(size_t n);
+extern void *rpl_realloc(void *, size_t n);
 
 int general(int argc, char *argv[]);
 void printPrompt(void);
