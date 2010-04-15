@@ -54,7 +54,11 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "chain.h"
 #include "library.h"
 #include <setjmp.h>
+
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
+
 
 #define DEFAULTPOINTS 501
 #define DEFAULTPRECISION 165

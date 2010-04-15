@@ -1,6 +1,6 @@
 /*
 
-Copyright 2008 by 
+Copyright 2008-2010 by 
 
 Laboratoire de l'Informatique du Parallélisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
@@ -9,7 +9,6 @@ Contributors Ch. Lauter, S. Chevillard, N. Jourdan
 
 christoph.lauter@ens-lyon.org
 sylvain.chevillard@ens-lyon.org
-nicolas.jourdan@ens-lyon.fr
 
 This software is a computer program whose purpose is to provide an
 environment for safe floating-point code development. It is
@@ -48,6 +47,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 
 #include <iostream>
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #ifdef HAVE_SPECIAL_FPLLL_INCLUDE
 #if HAVE_SPECIAL_FPLLL_INCLUDE

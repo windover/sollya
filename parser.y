@@ -57,7 +57,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "parser.h"
 #include "library.h"
 #include "help.h"
+
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 #define YYERROR_VERBOSE 1
 #define YYPARSE_PARAM scanner

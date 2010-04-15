@@ -64,7 +64,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "general.h"
 #include "infnorm.h"
 #include "chain.h"
+
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 extern int fileNumber;
 

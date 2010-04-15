@@ -1,6 +1,6 @@
 /*
 
-Copyright 2006-2009 by 
+Copyright 2006-2010 by 
 
 Laboratoire de l'Informatique du Parallélisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
@@ -61,7 +61,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "plot.h"
 #include "infnorm.h"
 #include "general.h"
+
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 extern int fileNumber;
 

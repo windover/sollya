@@ -56,8 +56,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "general.h"
 #include "expression.h"
 #include "xml.h"
-#include "config.h"
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 void printXml(node *tree) {
   fPrintXml(stdout,tree);
