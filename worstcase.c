@@ -223,7 +223,7 @@ int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t
   mpfr_t yCurrLeftRound, yCurrRightRound;
   mpfr_t errorLeft, errorRight;
   mp_prec_t p;
-  unsigned long long int t;
+  mpfr_t t, one;
   int res;
   int numberFuncs, numberFormats, numberEpsilons;
   chain *myFuncs;
@@ -276,10 +276,13 @@ int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t
     }
   }
 
-  t = 1;
-  t <<= steps;
+  mpfr_init2(t,128);
+  mpfr_init2(one,12);
+  mpfr_set_si(t,1,GMP_RNDN);
+  mpfr_set_si(one,1,GMP_RNDN);
+  mpfr_mul_2ui(t,t,steps,GMP_RNDN);
   res = 1;
-  while (t > 0) {
+  while (mpfr_sgn(t) > 0) {
     res = 1;
     currFunc = myFuncs;
     currFormat = imageFormats;
@@ -324,7 +327,7 @@ int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t
     }
     mpfr_nextbelow(currLeft);
     mpfr_nextabove(currRight);
-    t--;
+    mpfr_sub(t,t,one,GMP_RNDN); // exact
   }
   
   mpfr_clear(currLeft);
@@ -335,6 +338,8 @@ int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t
   mpfr_clear(yCurrRightRound);
   mpfr_clear(errorLeft);
   mpfr_clear(errorRight);
+  mpfr_clear(one);
+  mpfr_clear(t);
 
   freeChain(myFuncs, freeMemoryOnVoid);
 

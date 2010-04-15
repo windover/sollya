@@ -341,12 +341,7 @@ void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_t perturb;
   gmp_randstate_t random_state;
   int sizeX, sizeY, i, k, drawXAxis, drawYAxis, xAxis, yAxis;
-  struct winsize {
-        unsigned short  ws_row;     /* rows in characters */
-        unsigned short  ws_col;     /* columns in characters */
-        unsigned short  ws_xpixel;  /* horizontal size in pixels (not used) */
-        unsigned short  ws_ypixel;  /* vertical size in pixels (not used) */
-  } size;
+  struct winsize size;
   mpfr_t *values;
   char **lines;
   char *curr;

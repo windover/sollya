@@ -7577,8 +7577,8 @@ int isAffine(node *tree) {
 }
 
 
-#define MAX(a,b) (a) > (b) ? (a) : (b)
-#define MIN(a,b) (a) < (b) ? (a) : (b)
+#define MAX_MACRO(a,b) (a) > (b) ? (a) : (b)
+#define MIN_MACRO(a,b) (a) < (b) ? (a) : (b)
 
 int getDegreeUnsafe(node *tree) {
   int l, r;
@@ -7598,12 +7598,12 @@ int getDegreeUnsafe(node *tree) {
   case ADD:
     l = getDegreeUnsafe(tree->child1);
     r = getDegreeUnsafe(tree->child2);
-    return MAX(l,r);
+    return MAX_MACRO(l,r);
     break;
   case SUB:
     l = getDegreeUnsafe(tree->child1);
     r = getDegreeUnsafe(tree->child2);
-    return MAX(l,r);
+    return MAX_MACRO(l,r);
     break;
   case MUL:
     l = getDegreeUnsafe(tree->child1);
@@ -7621,7 +7621,7 @@ int getDegreeUnsafe(node *tree) {
         if ((simplifiedExponent->nodeType == CONSTANT) && 
             mpfr_integer_p(*(simplifiedExponent->value)) &&
             (mpfr_sgn(*(simplifiedExponent->value)) >= 0)) {
-          r = (int) mpfr_get_d(*(simplifiedExponent->value),GMP_RNDN);
+          r = mpfr_get_si(*(simplifiedExponent->value),GMP_RNDN);
           mpfr_init2(temp,mpfr_get_prec(*(simplifiedExponent->value)) + 10);
           mpfr_set_si(temp,r,GMP_RNDN);
           if (mpfr_cmp(*(simplifiedExponent->value),temp) != 0) {
@@ -7649,7 +7649,7 @@ int getDegreeUnsafe(node *tree) {
           exit(1);
         }
 
-        r = (int) mpfr_get_d(*(tree->child2->value),GMP_RNDN);
+        r = mpfr_get_si(*(tree->child2->value),GMP_RNDN);
         mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
         mpfr_set_si(temp,r,GMP_RNDN);
         if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
@@ -7694,12 +7694,12 @@ int getMaxPowerDividerUnsafe(node *tree) {
   case ADD:
     l = getMaxPowerDividerUnsafe(tree->child1);
     r = getMaxPowerDividerUnsafe(tree->child2);
-    return MIN(l,r);
+    return MIN_MACRO(l,r);
     break;
   case SUB:
     l = getMaxPowerDividerUnsafe(tree->child1);
     r = getMaxPowerDividerUnsafe(tree->child2);
-    return MIN(l,r);
+    return MIN_MACRO(l,r);
     break;
   case MUL:
     l = getMaxPowerDividerUnsafe(tree->child1);
@@ -7725,7 +7725,7 @@ int getMaxPowerDividerUnsafe(node *tree) {
 	exit(1);
       }
 
-      r = (int) mpfr_get_d(*(tree->child2->value),GMP_RNDN);
+      r = mpfr_get_si(*(tree->child2->value),GMP_RNDN);
       mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
       mpfr_set_si(temp,r,GMP_RNDN);
       if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
@@ -7897,7 +7897,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	exit(1);
       }
 
-      r = (int) mpfr_get_d(*(tree->child2->value),GMP_RNDN);
+      r = mpfr_get_si(*(tree->child2->value),GMP_RNDN);
       mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
       mpfr_set_si(temp,r,GMP_RNDN);
       if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
