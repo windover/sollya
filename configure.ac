@@ -238,10 +238,11 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
 [[#include <gmp.h>]]
 , [[ZZ_mat<mpz_t> * M; M = new ZZ_mat<mpz_t>(3,3); if(M!=NULL) exit(0); else exit(1);]])],
 [AC_MSG_RESULT(yes) 
-FPLLLSPECIALINCLUDE=yes
+FPLLLSPECIALINCLUDE="yes"
 ],[
 if [[ $WITH_LIB_GIVEN == "yes" ]] ; then 
 AC_MSG_WARN([fplll found unusable during configure. However, as dynamically linked libraries are given, libtool used for compilation might fix up the problem during compilation. (see README)])
+FPLLLSPECIALINCLUDE="no"
 else
 AC_MSG_ERROR([fplll unusable (or g++ too new -- see README)])
 fi
