@@ -1,19 +1,21 @@
 \subsection{taylorform}
 \label{labtaylorform}
 \noindent Name: \textbf{taylorform}\\
-computes a rigorous polynomial approximation (polynomial, interval error bound) for a function, based on Taylor expansions\\
+computes a rigorous polynomial approximation (polynomial, interval error bound) for a function, based on Taylor expansions.\\
 \noindent Usage: 
 \begin{center}
-\textbf{taylorform}(\emph{f}, \emph{n}, \emph{$x_0$} \emph{I}, \emph{errorType}) : (\textsf{function}, \textsf{integer}, \textsf{constant}, \textsf{range}, \textsf{absolute$|$relative}) $\rightarrow$ \textsf{list}\\
-\textbf{taylorform}(\emph{f}, \emph{n}, \emph{$x_0$} \emph{I}, \emph{errorType}) : (\textsf{function}, \textsf{integer}, \textsf{range}, \textsf{range}, \textsf{absolute$|$relative}) $\rightarrow$ \textsf{list}\\
+\textbf{taylorform}(\emph{f}, \emph{n}, \emph{$x_0$}, \emph{I}, \emph{errorType}) : (\textsf{function}, \textsf{integer}, \textsf{constant}, \textsf{range}, \textsf{absolute$|$relative}) $\rightarrow$ \textsf{list}\\
+\textbf{taylorform}(\emph{f}, \emph{n}, \emph{$x_0$}, \emph{I}, \emph{errorType}) : (\textsf{function}, \textsf{integer}, \textsf{range}, \textsf{range}, \textsf{absolute$|$relative}) $\rightarrow$ \textsf{list}\\
+\textbf{taylorform}(\emph{f}, \emph{n}, \emph{$x_0$}, \emph{errorType}) : (\textsf{function}, \textsf{integer}, \textsf{constant}, \textsf{range}, \textsf{absolute$|$relative}) $\rightarrow$ \textsf{list}\\
+\textbf{taylorform}(\emph{f}, \emph{n}, \emph{$x_0$}, \emph{errorType}) : (\textsf{function}, \textsf{integer}, \textsf{range}, \textsf{range}, \textsf{absolute$|$relative}) $\rightarrow$ \textsf{list}\\
 \end{center}
 Parameters: 
 \begin{itemize}
-\item \emph{f} is the function to be approximated
-\item \emph{n} is the order of the Taylor form, meaning $\emph{n}-1$ is the degree of the polynomial that must approximate \emph{f}
-\item \emph{$x_0$} is the point (it can be a real number or an interval) where the Taylor exansion of the function is to be considered
-\item \emph{I} is the interval over which the function is to be approximated
-\item \emph{errorType} is the type of error to be considered. See the detailed description below.
+\item \emph{f} is the function to be approximated.
+\item \emph{n} is the order of the Taylor form, meaning $\emph{n}-1$ is the degree of the polynomial that must approximate \emph{f}.
+\item \emph{$x_0$} is the point (it can be a real number or an interval) where the Taylor exansion of the function is to be considered.
+\item \emph{I} is the interval over which the function is to be approximated. If this parameter is omitted, the behavior is changed (see detailed description below).
+\item \emph{errorType} (optional) is the type of error to be considered. See the detailed description below. Default is \textbf{absolute}.
 \end{itemize}
 \noindent Description: \begin{itemize}
 
@@ -25,19 +27,23 @@ Parameters:
    \item $\Delta$ is an interval that provides a bound for the approximation error between $p$ and $f$. Its significance depends on the \emph{errorType} considered.
    \end{itemize}
 
-\item Please note that $x_0$ can be an interval. In general, it is meant to be a small interval approximating a non representable value. For instance, if one desires to compute a Taylor approximation at point $\pi$, it is possible to set $x_0$ to the (almost) point-interval $[\pi]$. It is also possible to use a large interval for $x_0$, though it is not obvious to give an intuitive sense to the result of \textbf{taylorform} in that case.
-
-\item More formally, the mathematical property ensured by the algorithm may be stated as follows. For all $xi_0$ in $x_0$, there exist (small) values $\varepsilon_i \in \textrm{coeffsErrors}[i]$ such that:
-   \\
-   If \emph{errorType} is \textbf{absolute}, $\forall x \in I, \exists \delta \in \Delta,\, f(x)-p(x-xi_0) = \sum\limits_{i=0}^{n-1} \varepsilon_i\, (x-xi_0)^i + \delta$.
-   \\
-   If \emph{errorType} is \textbf{relative}, $\forall x \in I, \exists \delta \in \Delta,\, f(x)-p(x-xi_0) = \sum\limits_{i=0}^{n-1} \varepsilon_i\, (x-xi_0)^i + \delta\,(x-xi_0)^n$.
-
 \item The polynomial $p$ and the bound  $\Delta$ are obtained using Taylor Models principles.
 
-\item Note: The relative case is especially useful when functions with removable singularities are considered. In such a case, this routine is able to compute a finite remainder bound, provided that the expansion point given is the problematic removable singularity point.
+\item Please note that $x_0$ can be an interval. In general, it is meant to be a small interval approximating a non representable value. If $x_0$ is given as a constant expression, it is first numerically evaluated (leading to a faithful rounding $\tilde{x_0}$ at precision \textbf{prec}, and it is then replaced by the (exactly representable) point-interval $[\tilde{x_0},\,\tilde{x_0}]$. In particular, it is not the same to call \textbf{taylorform} with $x_0 = \textbf{pi}$ and with $x_0 = [\textbf{pi}]$, for instance. In general, if the point around which one desires to compute the polynomial is not exactly representable, one should preferably use a small interval for~$x_0$.
 
-\item Note: the algorithm does not guarantee that by increasing the degree of the approximation, the remainder bound will become smaller. Moreover, it may 
+\item More formally, the mathematical property ensured by the algorithm may be stated as follows. For all $\csi_0$ in $x_0$, there exist (small) values $\varepsilon_i \in \textrm{coeffsErrors}[i]$ such that:
+   \\
+   If \emph{errorType} is \textbf{absolute}, $\forall x \in I, \exists \delta \in \Delta,\, f(x)-p(x-\csi_0) = \sum\limits_{i=0}^{n-1} \varepsilon_i\, (x-\csi_0)^i + \delta$.
+   \\
+   If \emph{errorType} is \textbf{relative}, $\forall x \in I, \exists \delta \in \Delta,\, f(x)-p(x-\csi_0) = \sum\limits_{i=0}^{n-1} \varepsilon_i\, (x-\csi_0)^i + \delta\,(x-\csi_0)^n$.
+
+\item It is also possible to use a large interval for $x_0$, though it is not obvious to give an intuitive sense to the result of \textbf{taylorform} in that case. A particular case that might be interesting is when $x_0 = I$ in relative mode. In that case, denoting by $p_i$ the coefficient of $p$ of order $i$, the interval $p_i + \textrm{coeffsError}[i]$ gives an enclosure of $f^{(i)}(I)/i!$. However, the command \textbf{autodiff} is more convenient for computing such enclosures.
+
+\item When the interval $I$ is not given, the approximated Taylor polynomial is computed but no remainder is produced. In that case the returned list is $L = \left[p, \textrm{coeffErrors}\right]$.
+
+\item The relative case is especially useful when functions with removable singularities are considered. In such a case, this routine is able to compute a finite remainder bound, provided that the expansion point given is the problematic removable singularity point.
+
+\item The algorithm does not guarantee that by increasing the degree of the approximation, the remainder bound will become smaller. Moreover, it may 
    even become larger due to the dependecy phenomenon present with interval arithmetic. In order to reduce this phenomenon, a possible solution is to split the definition domain $I$ into several smaller intervals. 
 \end{itemize}
 \noindent Example 1: 
@@ -45,7 +51,6 @@ Parameters:
 > TL=taylorform(exp(x), 10, 0, [-1,1], absolute);
 > p=TL[0];
 > Delta=TL[2];
-> errors=TL[1];
 > p; Delta;
 1 + x * (1 + x * (0.5 + x * (0.1666666666666666666666666666666666666666666666666
 7 + x * (4.1666666666666666666666666666666666666666666666667e-2 + x * (8.3333333
@@ -64,6 +69,22 @@ Parameters:
 > p=TL[0];
 > Delta=TL[2];
 > errors=TL[1];
+> for epsi in errors do epsi;
+[0;0]
+[0;0]
+[0;5.3455294201843912922810729343029637576303937602101e-51]
+[0;0]
+[-3.3409558876152445576756705839393523485189961001313e-52;3.34095588761524455767
+56705839393523485189961001313e-52]
+[0;0]
+[-1.04404871487976392427364705748104760891218628129103e-53;1.0440487148797639242
+7364705748104760891218628129103e-53]
+[0;0]
+[-1.63132611699963113167757352731413688892529106451724e-55;1.6313261169996311316
+7757352731413688892529106451724e-55]
+[0;0]
+[-1.91171029335894273243465647732125416670932546623114e-57;1.9117102933589427324
+3465647732125416670932546623114e-57]
 > p; Delta;
 1 + x^2 * (-0.16666666666666666666666666666666666666666666666667 + x^2 * (8.3333
 333333333333333333333333333333333333333333333e-3 + x^2 * (-1.9841269841269841269
@@ -74,3 +95,26 @@ Parameters:
 99806203254010793747502812764e-10]
 \end{Verbatim}
 \end{minipage}\end{center}
+\noindent Example 3: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> TL1 = taylorform(exp(x), 10, log2(10), [-1,1], absolute);
+> TL2 = taylorform(exp(x), 10, [log2(10)], [-1,1], absolute);
+> TL1==TL2;
+false
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 4: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> TL1 = taylorform(exp(x), 3, 0, [0,1], relative);
+> TL2 = taylorform(exp(x), 3, 0, relative);
+> TL1[0]==TL2[0];
+true
+> TL1[1]==TL2[1];
+true
+> length(TL1);
+3
+> length(TL2);
+2
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{diff} (\ref{labdiff}), \textbf{autodiff} (\ref{labautodiff}), \textbf{taylor} (\ref{labtaylor})

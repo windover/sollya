@@ -1,19 +1,24 @@
 #NAME $TAYLORFORM
-#QUICK_DESCRIPTION computes a rigorous polynomial approximation (polynomial, interval error bound) for a function, based on Taylor expansions
-#CALLING $COMMAND(<f>, <n>, <§§x0§$x_0$§§> <I>, <errorType>)
+#QUICK_DESCRIPTION computes a rigorous polynomial approximation (polynomial, interval error bound) for a function, based on Taylor expansions.
 
+#CALLING $COMMAND(<f>, <n>, <§§x0§$x_0$§§>, <I>, <errorType>)
 #TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $CONSTANT_TYPE, $RANGE_TYPE, $APPROXERROR_TYPE) -> $LIST_TYPE
 
-#CALLING $COMMAND(<f>, <n>, <§§x0§$x_0$§§> <I>, <errorType>)
+#CALLING $COMMAND(<f>, <n>, <§§x0§$x_0$§§>, <I>, <errorType>)
+#TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $RANGE_TYPE, $RANGE_TYPE, $APPROXERROR_TYPE) -> $LIST_TYPE
+
+#CALLING $COMMAND(<f>, <n>, <§§x0§$x_0$§§>, <errorType>)
+#TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $CONSTANT_TYPE, $RANGE_TYPE, $APPROXERROR_TYPE) -> $LIST_TYPE
+
+#CALLING $COMMAND(<f>, <n>, <§§x0§$x_0$§§>, <errorType>)
 #TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $RANGE_TYPE, $RANGE_TYPE, $APPROXERROR_TYPE) -> $LIST_TYPE
 
 
-
-#PARAMETERS <f> is the function to be approximated
-#PARAMETERS <n> is the order of the Taylor form, meaning §§<n>-1§$<n>-1$§§ is the degree of the polynomial that must approximate <f>
-#PARAMETERS <§§x0§$x_0$§§> is the point (it can be a real number or an interval) where the Taylor exansion of the function is to be considered
-#PARAMETERS <I> is the interval over which the function is to be approximated
-#PARAMETERS <errorType> is the type of error to be considered. See the detailed description below.
+#PARAMETERS <f> is the function to be approximated.
+#PARAMETERS <n> is the order of the Taylor form, meaning §§<n>-1§$<n>-1$§§ is the degree of the polynomial that must approximate <f>.
+#PARAMETERS <§§x0§$x_0$§§> is the point (it can be a real number or an interval) where the Taylor exansion of the function is to be considered.
+#PARAMETERS <I> is the interval over which the function is to be approximated. If this parameter is omitted, the behavior is changed (see detailed description below).
+#PARAMETERS <errorType> (optional) is the type of error to be considered. See the detailed description below. Default is $ABSOLUTE.
 
 #DESCRIPTION 
 $COMMAND computes an approximation polynomial and an interval error bound for function §§f§$f$§§. More precisely, it 
@@ -24,24 +29,30 @@ returns a list §§L=[p, coeffErrors, Delta]§$L = \left[p, \textrm{coeffErrors}
 §§  -§\item§§ §§Delta§$\Delta$§§ is an interval that provides a bound for the approximation error between §§p§$p$§§ and §§f§$f$§§. Its significance depends on the <errorType> considered.
 §§ §\end{itemize}§§
 
-#DESCRIPTION
-Please note that §§x0§$x_0$§§ can be an interval. In general, it is meant to be a small interval approximating a non representable value. For instance, if one desires to compute a Taylor approximation at point §§pi§$\pi$§§, it is possible to set §§x0§$x_0$§§ to the (almost) point-interval §§[pi]§$[\pi]$§§. It is also possible to use a large interval for §§x0§$x_0$§§, though it is not obvious to give an intuitive sense to the result of $COMMAND in that case.
-
-#DESCRIPTION 
-More formally, the mathematical property ensured by the algorithm may be stated as follows. For all §§xi0§$xi_0$§§ in §§x0§$x_0$§§, there exist (small) values §§eps[i] in coeffsErrors[i]§$\varepsilon_i \in \textrm{coeffsErrors}[i]$§§ such that:
-§§ §\\§§
-If <errorType> is $ABSOLUTE, §§for all x in I, there exists delta in Delta such that f(x) - p(x-xi0) = sum{i=0...n-1} eps[i]*(x-xi0)^i + delta§$\forall x \in I, \exists \delta \in \Delta,\, f(x)-p(x-xi_0) = \sum\limits_{i=0}^{n-1} \varepsilon_i\, (x-xi_0)^i + \delta$§§.
-§§ §\\§§
-If <errorType> is $RELATIVE, §§for all x in I, there exists delta in Delta such that f(x) - p(x-xi0) = sum{i=0...n-1} eps[i]*(x-xi0)^i + delta*(x-xi0)^n§$\forall x \in I, \exists \delta \in \Delta,\, f(x)-p(x-xi_0) = \sum\limits_{i=0}^{n-1} \varepsilon_i\, (x-xi_0)^i + \delta\,(x-xi_0)^n$§§.
-
 #DESCRIPTION 
 The polynomial §§p§$p$§§ and the bound  §§Delta§$\Delta$§§ are obtained using Taylor Models principles.
 
-#DESCRIPTION 
-Note: The relative case is especially useful when functions with removable singularities are considered. In such a case, this routine is able to compute a finite remainder bound, provided that the expansion point given is the problematic removable singularity point.
+#DESCRIPTION
+Please note that §§x0§$x_0$§§ can be an interval. In general, it is meant to be a small interval approximating a non representable value. If §§x0§$x_0$§§ is given as a constant expression, it is first numerically evaluated (leading to a faithful rounding §§xapprox0§$\tilde{x_0}$§§ at precision $PREC, and it is then replaced by the (exactly representable) point-interval §§[xapprox0, xapprox0]§$[\tilde{x_0},\,\tilde{x_0}]$§§. In particular, it is not the same to call $COMMAND with §§x0 = pi§$x_0 = $PI$§§ and with §§x0 = [pi]§$x_0 = [$PI]$§§, for instance. In general, if the point around which one desires to compute the polynomial is not exactly representable, one should preferably use a small interval for§§ x0§~$x_0$§§.
 
 #DESCRIPTION 
-Note: the algorithm does not guarantee that by increasing the degree of the approximation, the remainder bound will become smaller. Moreover, it may 
+More formally, the mathematical property ensured by the algorithm may be stated as follows. For all §§xi0§$\csi_0$§§ in §§x0§$x_0$§§, there exist (small) values §§eps[i] in coeffsErrors[i]§$\varepsilon_i \in \textrm{coeffsErrors}[i]$§§ such that:
+§§ §\\§§
+If <errorType> is $ABSOLUTE, §§for all x in I, there exists delta in Delta such that f(x) - p(x-xi0) = sum{i=0...n-1} eps[i]*(x-xi0)^i + delta§$\forall x \in I, \exists \delta \in \Delta,\, f(x)-p(x-\csi_0) = \sum\limits_{i=0}^{n-1} \varepsilon_i\, (x-\csi_0)^i + \delta$§§.
+§§ §\\§§
+If <errorType> is $RELATIVE, §§for all x in I, there exists delta in Delta such that f(x) - p(x-xi0) = sum{i=0...n-1} eps[i]*(x-xi0)^i + delta*(x-xi0)^n§$\forall x \in I, \exists \delta \in \Delta,\, f(x)-p(x-\csi_0) = \sum\limits_{i=0}^{n-1} \varepsilon_i\, (x-\csi_0)^i + \delta\,(x-\csi_0)^n$§§.
+
+#DESCRIPTION
+It is also possible to use a large interval for §§x0§$x_0$§§, though it is not obvious to give an intuitive sense to the result of $COMMAND in that case. A particular case that might be interesting is when §§x0=I§$x_0 = I$§§ in relative mode. In that case, denoting by §§p_i§$p_i$§§ the coefficient of §§p§$p$§§ of order §§i§$i$§§, the interval §§p_i + coeffsError[i]§$p_i + \textrm{coeffsError}[i]$§§ gives an enclosure of §§f^(i)(I)/i!§$f^{(i)}(I)/i!$§§. However, the command $AUTODIFF is more convenient for computing such enclosures.
+
+#DESCRIPTION 
+When the interval §§I§$I$§§ is not given, the approximated Taylor polynomial is computed but no remainder is produced. In that case the returned list is §§L=[p, coeffErrors]§$L = \left[p, \textrm{coeffErrors}\right]$§§.
+
+#DESCRIPTION 
+The relative case is especially useful when functions with removable singularities are considered. In such a case, this routine is able to compute a finite remainder bound, provided that the expansion point given is the problematic removable singularity point.
+
+#DESCRIPTION 
+The algorithm does not guarantee that by increasing the degree of the approximation, the remainder bound will become smaller. Moreover, it may 
 even become larger due to the dependecy phenomenon present with interval arithmetic. In order to reduce this phenomenon, a possible solution is to split the definition domain §§I§$I$§§ into several smaller intervals. 
 
 
@@ -49,13 +60,30 @@ even become larger due to the dependecy phenomenon present with interval arithme
 TL=taylorform(exp(x), 10, 0, [-1,1], absolute);
 p=TL[0];
 Delta=TL[2];
-errors=TL[1];
 p; Delta;
+
 
 #EXAMPLE
 TL=taylorform(sin(x)/x, 10, 0, [-1,1], relative);
 p=TL[0];
 Delta=TL[2];
 errors=TL[1];
+for epsi in errors do epsi;
 p; Delta;
 
+#EXAMPLE
+TL1 = taylorform(exp(x), 10, log2(10), [-1,1], absolute);
+TL2 = taylorform(exp(x), 10, [log2(10)], [-1,1], absolute);
+TL1==TL2;
+
+#EXAMPLE
+TL1 = taylorform(exp(x), 3, 0, [0,1], relative);
+TL2 = taylorform(exp(x), 3, 0, relative);
+TL1[0]==TL2[0];
+TL1[1]==TL2[1];
+length(TL1);
+length(TL2);
+
+#SEEALSO $DIFF
+#SEEALSO $AUTODIFF
+#SEEALSO $TAYLOR

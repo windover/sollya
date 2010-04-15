@@ -1,0 +1,18 @@
+#NAME $AUTODIFF
+#QUICK_DESCRIPTION nothing
+
+#CALLING $COMMAND(<f>, <n>, <I>)
+#TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $RANGE_TYPE) -> $LIST_TYPE
+
+
+#PARAMETERS <f> is the function to be approximated.
+#PARAMETERS <n> is the order of differentiation.
+#PARAMETERS <I> is the interval over which the function is differentiated.
+
+#DESCRIPTION 
+Nothing.
+
+#EXAMPLE
+L = autodiff(exp(x), 5, 0);
+
+#SEEALSO $DIFF
