@@ -53,17 +53,20 @@ fi
 
 # withs...
 
+WITH_LIB_GIVEN="no"
 AC_ARG_WITH(gmp-include,
    [  --with-gmp-include=DIR  GMP include directory ],
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval")
 AC_ARG_WITH(gmp-lib,
    [  --with-gmp-lib=DIR      GMP lib directory ], [
+   WITH_LIB_GIVEN="yes"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval"
   ])
 AC_ARG_WITH(gmp,
    [  --with-gmp=DIR          GMP install directory ], [
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
+   WITH_LIB_GIVEN="yes"	   
   ])
 
 AC_ARG_WITH(mpfr-include,
@@ -72,11 +75,13 @@ AC_ARG_WITH(mpfr-include,
 AC_ARG_WITH(mpfr-lib,
    [  --with-mpfr-lib=DIR      MPFR lib directory ], [
    AM_LDFLAGS="$AM_LDFLAGS -L$withval"
+   WITH_LIB_GIVEN="yes"
   ])
 AC_ARG_WITH(mpfr,
    [  --with-mpfr=DIR          MPFR install directory ], [
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
+   WITH_LIB_GIVEN="yes"	   
   ])
 
 AC_ARG_WITH(fplll-include,
@@ -85,11 +90,13 @@ AC_ARG_WITH(fplll-include,
 AC_ARG_WITH(fplll-lib,
    [  --with-fplll-lib=DIR      fplll lib directory ], [
    AM_LDFLAGS="$AM_LDFLAGS -L$withval"
+   WITH_LIB_GIVEN="yes"
   ])
 AC_ARG_WITH(fplll,
    [  --with-fplll=DIR          fplll install directory ], [
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
+   WITH_LIB_GIVEN="yes"
   ])
 
 AC_ARG_WITH(z-include,
@@ -98,11 +105,13 @@ AC_ARG_WITH(z-include,
 AC_ARG_WITH(z-lib,
    [  --with-z-lib=DIR      z lib directory ], [
    AM_LDFLAGS="$AM_LDFLAGS -L$withval"
+   WITH_LIB_GIVEN="yes"
   ])
 AC_ARG_WITH(z,
    [  --with-z=DIR          z install directory ], [
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
+   WITH_LIB_GIVEN="yes"
   ])
 
 AC_ARG_WITH(iconv-include,
@@ -111,11 +120,13 @@ AC_ARG_WITH(iconv-include,
 AC_ARG_WITH(iconv-lib,
    [  --with-iconv-lib=DIR      iconv lib directory ], [
    AM_LDFLAGS="$AM_LDFLAGS -L$withval"
+   WITH_LIB_GIVEN="yes"
   ])
 AC_ARG_WITH(iconv,
    [  --with-iconv=DIR          iconv install directory ], [
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
+   WITH_LIB_GIVEN="yes"
   ])
 
 
@@ -130,6 +141,7 @@ AC_ARG_WITH(xml2-lib,
    [  --with-xml2-lib=DIR      XML2 lib directory ], [
    AM_LDFLAGS="$AM_LDFLAGS -L$withval"
    XML2LIBGIVEN=1
+   WITH_LIB_GIVEN="yes"
   ])
 AC_ARG_WITH(xml2,
    [  --with-xml2=DIR          XML2 install directory ], [
@@ -137,6 +149,7 @@ AC_ARG_WITH(xml2,
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
    XML2INCLUDEGIVEN=1
    XML2LIBGIVEN=1
+   WITH_LIB_GIVEN="yes"
   ])
 
 AC_ARG_WITH(mpfi-include,
@@ -145,11 +158,13 @@ AC_ARG_WITH(mpfi-include,
 AC_ARG_WITH(mpfi-lib,
    [  --with-mpfi-lib=DIR      MPFI lib directory ], [
    AM_LDFLAGS="$AM_LDFLAGS -L$withval"
+   WITH_LIB_GIVEN="yes"
   ])
 AC_ARG_WITH(mpfi,
    [  --with-mpfi=DIR          MPFI install directory ], [
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
+   WITH_LIB_GIVEN="yes"
   ])
 
 
@@ -224,7 +239,12 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
 , [[ZZ_mat<mpz_t> * M; M = new ZZ_mat<mpz_t>(3,3); if(M!=NULL) exit(0); else exit(1);]])],
 [AC_MSG_RESULT(yes) 
 FPLLLSPECIALINCLUDE=yes
-],[AC_MSG_ERROR([fplll unusable (or g++ too new -- see README)])
+],[
+if [[ $WITH_LIB_GIVEN == "yes" ]] ; then 
+AC_MSG_ERROR([fplll found unusable during configure. However, as dynamically linked libraries are given, libtool used for compilation might fix up the problem during compilation. (see README)])
+else
+AC_MSG_ERROR([fplll unusable (or g++ too new -- see README)])
+fi
 ])
 fi
 if [[ $FPLLLSPECIALINCLUDE == "yes" ]] ; then 
