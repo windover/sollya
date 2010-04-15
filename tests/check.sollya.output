@@ -1548,3 +1548,48 @@ The tool has been restarted.
 The tool has been restarted.
 =============== Test number 246 ================
 1.00004475029055070643077052482053398765426158966754 + x * (1.00003834652983970735244541124504033817544233075356 + x * (0.49919698262882986492168824494240374771969012861297 + x * (0.166424656075155194415920597322727380932279602909199 + x * (4.37936963873280470271257566207183496659575464236489e-2 + x * 8.7381910388065551140158420278330960479960476713376e-3))))
+The tool has been restarted.
+=============== Test number 247 ================
+Display mode is binary numbers.
+x^(1.1_2 * 2^(1))
+x^(1.11_2 * 2^(1))  x^(1.11_2 * 2^(1))
+x^(1.11_2 * 2^(1))
+x^(1.11_2 * 2^(1))
+
+This is a test x^(1.00011_2 * 2^(4)) x^(1.00001_2 * 2^(4)) x
+proc(n)
+{
+var res;
+res = (n) * ((x) ^ (17));
+return res;
+}
+The tool has been restarted.
+=============== Test number 248 ================
+Display mode is dyadic numbers in integer-power-of-2 notation.
+x^(7 * 2^(-1))
+x^(7 * 2^(-1))  x^(7 * 2^(-1))
+x^(7 * 2^(-1))
+x^(7 * 2^(-1))
+
+This is a test x^(35 * 2^(-1)) x^(33 * 2^(-1)) x
+proc(n)
+{
+var res;
+res = (n) * ((x) ^ (17));
+return res;
+}
+The tool has been restarted.
+=============== Test number 249 ================
+Display mode is binary numbers.
+x^(1.11_2 * 2^(1))
+x^(1.11_2 * 2^(1))x^(1.11_2 * 2^(1))
+x^(1.11_2 * 2^(1))
+x^(1.11_2 * 2^(1))
+
+This is a test x^(1.00011_2 * 2^(4)) x^(1.00001_2 * 2^(4)) x
+proc(n)
+{
+var res;
+res = (n) * ((x) ^ (17));
+return res;
+}

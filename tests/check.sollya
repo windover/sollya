@@ -2106,6 +2106,73 @@ print("=============== Test number 246 ================");
 
 parse("remez(exp(x),5,[-1;1])");
 
+restart;
+print("=============== Test number 247 ================");
+display=binary;
+x^3;
+write(x^3.5); 
 
+print(" ", x^3.5);
+
+write(x^3.5) > "foo.sol";
+readfile("foo.sol");
+
+print(x^3.5) > "foo.sol";
+readfile("foo.sol");
+
+"This is a test " @ x^17.5 @ " " @ x^16.5 @ " " @ x^1 ; 
+
+procedure giveNTimes17thPower(n) {
+var res;
+res = n * x^17;
+return res;
+};
+giveNTimes17thPower;
+
+restart;
+print("=============== Test number 248 ================");
+display=powers;
+x^3.5;
+write(x^3.5); 
+
+print(" ",x^3.5);
+
+write(x^3.5) > "foo.sol";
+readfile("foo.sol");
+
+print(x^3.5) > "foo.sol";
+readfile("foo.sol");
+
+"This is a test " @ x^17.5 @ " " @ x^16.5 @ " " @ x^1 ; 
+
+procedure giveNTimes17thPower(n) {
+var res;
+res = n * x^17;
+return res;
+};
+giveNTimes17thPower;
+
+restart;
+print("=============== Test number 249 ================");
+display=binary;
+x^3.5;
+write(x^3.5); 
+
+print(x^3.5);
+
+write(x^3.5) > "foo.sol";
+readfile("foo.sol");
+
+print(x^3.5) > "foo.sol";
+readfile("foo.sol");
+
+"This is a test " @ x^17.5 @ " " @ x^16.5 @ " " @ x^1 ; 
+
+procedure giveNTimes17thPower(n) {
+var res;
+res = n * x^17;
+return res;
+};
+giveNTimes17thPower;
 
 
