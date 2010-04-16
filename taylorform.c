@@ -385,17 +385,19 @@ void ctMultiplication_TM(tModel*d, tModel*s, mpfi_t c,int mode){
 }
 
 #define MONOTONE_REMAINDER_BASE_FUNCTION 0
-#define MONOTONE_REMAINDER_INV 1
-#define MONOTONE_REMAINDER_CONSTPOWERVAR 2
-#define MONOTONE_REMAINDER_VARCONSTPOWER 3
+#define MONOTONE_REMAINDER_LIBRARY_FUNCTION 1
+#define MONOTONE_REMAINDER_INV 2
+#define MONOTONE_REMAINDER_CONSTPOWERVAR 3
+#define MONOTONE_REMAINDER_VARCONSTPOWER 4
 
 /* This function computes a taylor remainder for a function on an interval, assuming
    the n-th derivative is monotone.
    typeOfFunction is used to separate the cases:
-   * MONOTONE_REMAINDER_BASE_FUNCTION --> we consider a base function, represented by its nodeType (p is useless)
-   * MONOTONE_REMAINDER_INV  --> we consider (x -> 1/x) (nodeType and p are useless)
-   * MONOTONE_REMAINDER_CONSTPOWERVAR --> we consider (x -> p^x) (nodeType is useless)
-   * MONOTONE_REMAINDER_VARCONSTPOWER --> we consider (x -> x^p) (nodeType is useless)
+   * MONOTONE_REMAINDER_BASE_FUNCTION --> we consider a base function, represented by its nodeType (p and f are useless)
+   * MONOTONE_REMAINDER_LIBRARY_FUNCTION --> we consider a base function, represented by its nodeType (p and nodeType are useless)
+   * MONOTONE_REMAINDER_INV  --> we consider (x -> 1/x) (nodeType, f, and p are useless)
+   * MONOTONE_REMAINDER_CONSTPOWERVAR --> we consider (x -> p^x) (nodeType and f are useless)
+   * MONOTONE_REMAINDER_VARCONSTPOWER --> we consider (x -> x^p) (nodeType and f are useless)
 
    The coeffs of the series
    expansion are given as an array of mpfi's, developed over x, in x0.
@@ -403,7 +405,7 @@ void ctMultiplication_TM(tModel*d, tModel*s, mpfi_t c,int mode){
 */
 
 /* FIXME: maybe boundx0 can be safely replaced by [0] */
-void computeMonotoneRemainder(mpfi_t *bound, int typeOfFunction, int nodeType, mpfr_t p,
+void computeMonotoneRemainder(mpfi_t *bound, int typeOfFunction, int nodeType, node *f, mpfr_t p,
                               int n, mpfi_t *poly_array, mpfi_t x0, mpfi_t x, int *silent){
   mpfi_t xinf, xsup;
   mpfr_t xinfFr, xsupFr;
@@ -433,6 +435,11 @@ void computeMonotoneRemainder(mpfi_t *bound, int typeOfFunction, int nodeType, m
     baseFunction_diff(&boundf1,nodeType,xinf,0, silent);
     baseFunction_diff(&boundf2,nodeType,xsup,0, silent);
     if (((n-1)%2)!=0)   baseFunction_diff(&boundfx0,nodeType,x0,0, silent);
+    break;
+  case MONOTONE_REMAINDER_LIBRARY_FUNCTION:
+    libraryFunction_diff(&boundf1, f, xinf, 0, silent);
+    libraryFunction_diff(&boundf2, f, xsup, 0, silent);
+    if (((n-1)%2)!=0) libraryFunction_diff(&boundfx0, f, x0, 0, silent);
     break;
   case MONOTONE_REMAINDER_INV:
     mpfi_inv(boundf1, xinf);
@@ -482,7 +489,7 @@ void computeMonotoneRemainder(mpfi_t *bound, int typeOfFunction, int nodeType, m
 
 /* This function computes a taylor model for a function, with the same convention
    as with computeMonotoneRemainder */
-void base_TMAux(tModel *t, int typeOfFunction, int nodeType, mpfr_t p, int n, mpfi_t x0, mpfi_t x, int mode, int *silent){
+void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, int n, mpfi_t x0, mpfi_t x, int mode, int *silent){
   int i;
   tModel *tt;
   mpfi_t *nDeriv, *nDeriv2;
@@ -501,6 +508,10 @@ void base_TMAux(tModel *t, int typeOfFunction, int nodeType, mpfr_t p, int n, mp
   case MONOTONE_REMAINDER_BASE_FUNCTION:
     baseFunction_diff(tt->poly_array,nodeType,x0, n-1, silent);
     baseFunction_diff(nDeriv, nodeType, x, n+1, silent);
+    break;
+  case MONOTONE_REMAINDER_LIBRARY_FUNCTION:
+    libraryFunction_diff(tt->poly_array, f, x0, n-1, silent);
+    libraryFunction_diff(nDeriv, f, x, n+1, silent);
     break;
   case MONOTONE_REMAINDER_INV: 
     mpfr_init2(minusOne, prec);
@@ -525,7 +536,7 @@ void base_TMAux(tModel *t, int typeOfFunction, int nodeType, mpfr_t p, int n, mp
   /* Use Zumkeller technique to improve the bound in the absolute case,
      when the (n+1)th derivative has constant sign */
   if((mode==ABSOLUTE)&&((mpfi_is_nonpos(nDeriv[n+1]) > 0)||(mpfi_is_nonneg(nDeriv[n+1]) > 0))){ 
-    computeMonotoneRemainder(&tt->rem_bound, typeOfFunction, nodeType, p, n, tt->poly_array, x0,x, silent);
+    computeMonotoneRemainder(&tt->rem_bound, typeOfFunction, nodeType, f, p, n, tt->poly_array, x0,x, silent);
   }
   else{
     /* just keep the bound obtained using AD */
@@ -929,7 +940,7 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
     }  
       inv_tm=createEmptytModel(n,gx0,rangeg);
     
-      base_TMAux(inv_tm, MONOTONE_REMAINDER_INV, 0, NULL, n, gx0, rangeg,mode,&silent);
+      base_TMAux(inv_tm, MONOTONE_REMAINDER_INV, 0, NULL, NULL, n, gx0, rangeg,mode,&silent);
     composition_TM(ttt,inv_tm,child2_tm,mode);
     
     multiplication_TM(tt, ttt, child1_tm,mode);
@@ -981,7 +992,8 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
   case EXP_M1:  
   case DOUBLEEXTENDED:
   case CEIL:
-  case FLOOR:
+  case FLOOR: 
+  case LIBRARYFUNCTION:
     tt=createEmptytModel(n,x0,x); 
    //create a new empty taylor model the child
     child1_tm=createEmptytModel(n,x0,x);
@@ -1009,12 +1021,12 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
     }
 
     child2_tm=createEmptytModel(n,fx0,rangef);
-    base_TMAux(child2_tm, MONOTONE_REMAINDER_BASE_FUNCTION, f->nodeType, NULL, n, fx0, rangef,mode,&silent);
-    //printtModel(child2_tm);
-    //printtModel(child1_tm);
+
+    if (f->nodeType == LIBRARYFUNCTION)
+      base_TMAux(child2_tm, MONOTONE_REMAINDER_LIBRARY_FUNCTION, 0, f, NULL, n, fx0, rangef,mode,&silent);
+    else
+      base_TMAux(child2_tm, MONOTONE_REMAINDER_BASE_FUNCTION, f->nodeType, NULL, NULL, n, fx0, rangef,mode,&silent);
     composition_TM(tt,child2_tm, child1_tm,mode);
-    //printtModel(tt);
-    //clear old child
     cleartModel(child1_tm);
     cleartModel(child2_tm);
     copytModel(t,tt);
@@ -1073,7 +1085,7 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
         //create tm for x^p over ragef in fx0
         ctPowVar_tm=createEmptytModel(n,fx0,rangef);
         
-        base_TMAux(ctPowVar_tm, MONOTONE_REMAINDER_CONSTPOWERVAR, 0, *(simplifiedChild2->value), n, fx0,rangef,mode,&silent);
+        base_TMAux(ctPowVar_tm, MONOTONE_REMAINDER_CONSTPOWERVAR, 0, NULL, *(simplifiedChild2->value), n, fx0,rangef,mode,&silent);
         
         //printf("\n\n-----------taylormodel child1: \n");
         //printtModel(ctPowVar_tm);
@@ -1118,7 +1130,7 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
         //create tm for p^x over ragef in fx0
         varCtPower_tm=createEmptytModel(n,fx0,rangef);
         
-        base_TMAux(varCtPower_tm, MONOTONE_REMAINDER_VARCONSTPOWER, 0, *(simplifiedChild1->value), n, fx0,rangef,mode,&silent );
+        base_TMAux(varCtPower_tm, MONOTONE_REMAINDER_VARCONSTPOWER, 0, NULL, *(simplifiedChild1->value), n, fx0,rangef,mode,&silent );
         composition_TM(tt,varCtPower_tm,child2_tm,mode);
     
         //clear old child
@@ -1163,7 +1175,7 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
         }
         
         logx_tm=createEmptytModel(n,fx0,rangef);
-        base_TMAux(logx_tm, MONOTONE_REMAINDER_BASE_FUNCTION, LOG, NULL, n, fx0, rangef,mode, &silent);
+        base_TMAux(logx_tm, MONOTONE_REMAINDER_BASE_FUNCTION, LOG, NULL, NULL, n, fx0, rangef,mode, &silent);
         logf_tm=createEmptytModel(n,x0,x);
         composition_TM(logf_tm,logx_tm,child1_tm,mode);
         //-------------------------------------------
@@ -1190,7 +1202,7 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
           mpfi_add(rangef,ttt->rem_bound, ttt->poly_bound);
         }    
         expx_tm=createEmptytModel(n,gx0,rangef);
-        base_TMAux(expx_tm, MONOTONE_REMAINDER_BASE_FUNCTION, EXP, NULL, n, gx0, rangef, mode, &silent);
+        base_TMAux(expx_tm, MONOTONE_REMAINDER_BASE_FUNCTION, EXP, NULL, NULL, n, gx0, rangef, mode, &silent);
         composition_TM(tt,expx_tm,ttt,mode);
                
     
@@ -1212,29 +1224,8 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
     }
     free_memory(simplifiedChild2);
     free_memory(simplifiedChild1);
-  break;
-  
-  
-  
-  
-  
-  case LIBRARYFUNCTION:
-
-    // COMMENT BY CHRISTOPH:
-    //
-    // The typical line for getting the n-th derivative of a library
-    // function is
-    //
-    //     tree->libFun->code(y, x, tree->libFunDeriv + n);
-    //
-    // Here, tree->libFunDeriv indicates the number of times that the
-    // library function has already been "symbolically" derivated
-    // using diff.
-    //
-
-
-  break;
-
+    break;
+    
   default:
    fprintf(stderr,"Error: TM: unknown identifier (%d) in the tree\n",f->nodeType);
    exit(1);
