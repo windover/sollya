@@ -1,19 +1,68 @@
 #NAME $AUTODIFF
-#QUICK_DESCRIPTION nothing
+#QUICK_DESCRIPTION Computes the first §§n§$n$§§ derivatives of a function at a point or over an interval.
+
+#CALLING $COMMAND(<f>, <n>, <§§x0§$x_0$§§>)
+#TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $CONSTANT_TYPE) -> $LIST_TYPE
 
 #CALLING $COMMAND(<f>, <n>, <I>)
 #TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $RANGE_TYPE) -> $LIST_TYPE
 
-
-#PARAMETERS <f> is the function to be approximated.
+#PARAMETERS <f> is the function to be differentiated.
 #PARAMETERS <n> is the order of differentiation.
+#PARAMETERS <§§x0§$x_0$§§> is the point at which the function is differentiated.
 #PARAMETERS <I> is the interval over which the function is differentiated.
 
 #DESCRIPTION 
-Nothing.
+$COMMAND computes the first §§n§$n$§§ derivatives of §§f§$f$§§ at point §§x0§$x_0$§§. The computation
+is performed numerically, without symbolically differentiating the expression
+of §§f§$f$§§. Yet, the computation is safe since small interval enclosures are
+produced. More precisely, $COMMAND returns a list §§[f_0, ..., f_n]§$[f_0,\,\dots,\,f_n]$§§ such that,
+for each §§i§$i$§§, §§f_i§$f_i$§§ is a small interval enclosing the exact value of §§f^(i)(x0)§$f^{(i)}(x_0)$§§.
+
+#DESCRIPTION
+Since it does not perform any symbolic differentiation, $COMMAND is much 
+more efficient than $DIFF and should be prefered when only numerical values
+are necessary.
+
+#DESCRIPTION
+If an interval §§I§$I$§§ is provided instead of a point §§x0§$x_0$§§, the list returned by
+$COMMAND satisfies: §§for each i, f^(i)(I) is included in f_i§$\forall i,\, f^{(i)}(I) \subseteq f_i$§§. A particular use
+is when one wants to know the successive derivatives of a function at a non
+representable point such as §§pi§$\pi$§§. In this case, it suffices to call $COMMAND
+with the (almost) point interval §§I = [$PI]§$I = [$PI]$§§.
+
+#DESCRIPTION
+When §§I§$I$§§ is almost a point interval, the returned enclosures §§f_i§$f_i$§§ are also
+almost point intervals. However, when the interval §§I§$I$§§ begins to be fairly
+large, the enclosures can be deeply overestimated due to the dependecy
+phenomenon present with interval arithmetic.
+
+#DESCRIPTION
+As a particular case, §§f_0§$f_0$§§ is an enclosure of the image of §§f§$f$§§ over §§I§$I$§§.
+However, since the algorithm is not specially designed for this purpose it is
+not very efficient for this particular task. In particular, it is not able to
+return a finite enclosure for functions with removable singularities
+(e.g. §§sin(x)/x§$\sin(x)/x$§§ at §§0§$0$§§). The command $EVALUATE is much more efficient for
+computing an accurate enclosure of the image of a function over an interval.
 
 #EXAMPLE
-L = autodiff(exp(x), 5, 0);
+L = autodiff(exp(cos(x))+sin(exp(x)), 5, 0);
+midpointmode = on!;
+for f_i in L do f_i;
+
+#EXAMPLE
+f = log(cos(x)+x);
+L = autodiff(log(cos(x)+x), 5, [2,4]);
+L[0];
+evaluate(f, [2,4]);
+fprime = diff(f);
+L[1];
+evaluate(fprime,[2,4]);
+
+#EXAMPLE
+L = autodiff(sin(x)/x, 0, [-1,1]);
+L[0];
+evaluate(sin(x)/x, [-1,1]);
 
 #SEEALSO $DIFF
 #SEEALSO $EVALUATE
