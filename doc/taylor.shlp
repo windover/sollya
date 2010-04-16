@@ -28,4 +28,5 @@ print(taylor(erf(x),6,0));
 
 #SEEALSO $REMEZ
 #SEEALSO $FPMINIMAX
+#SEEALSO $TAYLORFORM
 

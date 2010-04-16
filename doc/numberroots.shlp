@@ -1,0 +1,22 @@
+#NAME $NUMBERROOTS
+#QUICK_DESCRIPTION Computes the number of roots of a polynomial in a given range
+
+#CALLING $COMMAND(<p>, <I>)
+#TYPE ($FUNCTION_TYPE, $RANGE_TYPE) -> $INTEGER_TYPE
+
+
+#PARAMETERS <p> is the polynomials to be analyzed.
+#PARAMETERS <I> is the interval over which the polynomial is to be analyzed.
+
+#DESCRIPTION 
+Nothing.
+
+#EXAMPLE
+numberroots(0.25*x^3 - x^2 + 1,[1;7]);
+findzeros(0.25*x^3 - x^2 + 1,[1;7]);
+
+#SEEALSO $DIRTYFINDZEROS
+#SEEALSO $FINDZEROS
+#SEEALSO $AUTODIFF
+#SEEALSO $TAYLORFORM
+

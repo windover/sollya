@@ -1,0 +1,26 @@
+\subsection{numberroots}
+\label{labnumberroots}
+\noindent Name: \textbf{numberroots}\\
+Computes the number of roots of a polynomial in a given range\\
+\noindent Usage: 
+\begin{center}
+\textbf{numberroots}(\emph{p}, \emph{I}) : (\textsf{function}, \textsf{range}) $\rightarrow$ \textsf{integer}\\
+\end{center}
+Parameters: 
+\begin{itemize}
+\item \emph{p} is the polynomials to be analyzed.
+\item \emph{I} is the interval over which the polynomial is to be analyzed.
+\end{itemize}
+\noindent Description: \begin{itemize}
+
+\item Nothing.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> numberroots(0.25*x^3 - x^2 + 1,[1;7]);
+2
+> findzeros(0.25*x^3 - x^2 + 1,[1;7]);
+[|[1.193359375;1.194091796875], [3.709228515625;3.7099609375]|]
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{dirtyfindzeros} (\ref{labdirtyfindzeros}), \textbf{findzeros} (\ref{labfindzeros}), \textbf{autodiff} (\ref{labautodiff}), \textbf{taylorform} (\ref{labtaylorform})

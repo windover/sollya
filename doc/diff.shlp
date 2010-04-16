@@ -24,3 +24,5 @@ diff(x);
 diff(x^x);
 
 #SEEALSO $LIBRARY
+#SEEALSO $AUTODIFF
+

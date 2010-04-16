@@ -64,4 +64,5 @@ print(evaluate(sin(pi * x), 2 + 0.25 * x));
 print(evaluate(sin(pi * 1/x), 0));
 
 #SEEALSO $ISEVALUABLE
+#SEEALSO $AUTODIFF
 
