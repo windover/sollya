@@ -77,25 +77,16 @@ Parameters:
    even become larger due to the dependecy phenomenon present with interval
    arithmetic. In order to reduce this phenomenon, a possible solution is to
    split the definition domain $I$ into several smaller intervals. 
+
+\item The command \textbf{taylor} also computes a Taylor polynomial of a function. However
+   it does not provide a bound on the remainder. Besides, \textbf{taylor} is a somehow
+   symbolic command: each coefficient of the Taylor polynomial is computed
+   exactly and returned as an expression tree exactly equal to theoretical
+   value. It is henceforth much more inefficient than \textbf{taylorform} and \textbf{taylorform}
+   should be prefered if only numercial (yet safe) computations are required.
+   The same difference exists between commands \textbf{diff} and \textbf{autodiff}.
 \end{itemize}
 \noindent Example 1: 
-\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> TL=taylorform(exp(x), 10, 0, [-1,1], absolute);
-> p=TL[0];
-> Delta=TL[2];
-> p; Delta;
-1 + x * (1 + x * (0.5 + x * (0.1666666666666666666666666666666666666666666666666
-7 + x * (4.1666666666666666666666666666666666666666666666667e-2 + x * (8.3333333
-333333333333333333333333333333333333333333e-3 + x * (1.3888888888888888888888888
-8888888888888888888888889e-3 + x * (1.984126984126984126984126984126984126984126
-98412698e-4 + x * (2.4801587301587301587301587301587301587301587301587e-5 + x * 
-(2.75573192239858906525573192239858906525573192239859e-6 + x * 2.755731922398589
-0652557319223985890652557319223986e-7)))))))))
-[-2.31142719641187619441242534182684745832539555102969e-8;2.73126607556424744202
-06278018039434042553645532164e-8]
-\end{Verbatim}
-\end{minipage}\end{center}
-\noindent Example 2: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > TL=taylorform(sin(x)/x, 10, 0, [-1,1], relative);
 > p=TL[0];
@@ -127,6 +118,23 @@ Parameters:
 99806203254010793747502812764e-10]
 \end{Verbatim}
 \end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> TL=taylorform(exp(x), 10, 0, [-1,1], absolute);
+> p=TL[0];
+> Delta=TL[2];
+> p; Delta;
+1 + x * (1 + x * (0.5 + x * (0.1666666666666666666666666666666666666666666666666
+7 + x * (4.1666666666666666666666666666666666666666666666667e-2 + x * (8.3333333
+333333333333333333333333333333333333333333e-3 + x * (1.3888888888888888888888888
+8888888888888888888888889e-3 + x * (1.984126984126984126984126984126984126984126
+98412698e-4 + x * (2.4801587301587301587301587301587301587301587301587e-5 + x * 
+(2.75573192239858906525573192239858906525573192239859e-6 + x * 2.755731922398589
+0652557319223985890652557319223986e-7)))))))))
+[-2.31142719641187619441242534182684745832539555102969e-8;2.73126607556424744202
+06278018039434042553645532164e-8]
+\end{Verbatim}
+\end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > TL1 = taylorform(exp(x), 10, log2(10), [-1,1], absolute);
@@ -147,6 +155,18 @@ true
 3
 > length(TL2);
 2
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 5: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> f = exp(cos(x)); x0 = 0;
+> TL = taylorform(f, 3, x0);
+> T1 = TL[0];
+> T2 = taylor(f, 3, x0);
+> print(coeff(T1, 2));
+-1.35914091422952261768014373567633124887862354684999
+> print(coeff(T2, 2));
+-(0.5 * exp(1))
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{diff} (\ref{labdiff}), \textbf{autodiff} (\ref{labautodiff}), \textbf{taylor} (\ref{labtaylor}), \textbf{remez} (\ref{labremez})

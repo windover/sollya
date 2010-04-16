@@ -87,13 +87,14 @@ even become larger due to the dependecy phenomenon present with interval
 arithmetic. In order to reduce this phenomenon, a possible solution is to
 split the definition domain §§I§$I$§§ into several smaller intervals. 
 
-
-#EXAMPLE
-TL=taylorform(exp(x), 10, 0, [-1,1], absolute);
-p=TL[0];
-Delta=TL[2];
-p; Delta;
-
+#DESCRIPTION
+The command $TAYLOR also computes a Taylor polynomial of a function. However
+it does not provide a bound on the remainder. Besides, $TAYLOR is a somehow
+symbolic command: each coefficient of the Taylor polynomial is computed
+exactly and returned as an expression tree exactly equal to theoretical
+value. It is henceforth much more inefficient than $COMMAND and $COMMAND
+should be prefered if only numercial (yet safe) computations are required.
+The same difference exists between commands $DIFF and $AUTODIFF.
 
 #EXAMPLE
 TL=taylorform(sin(x)/x, 10, 0, [-1,1], relative);
@@ -101,6 +102,12 @@ p=TL[0];
 Delta=TL[2];
 errors=TL[1];
 for epsi in errors do epsi;
+p; Delta;
+
+#EXAMPLE
+TL=taylorform(exp(x), 10, 0, [-1,1], absolute);
+p=TL[0];
+Delta=TL[2];
 p; Delta;
 
 #EXAMPLE
@@ -115,6 +122,14 @@ TL1[0]==TL2[0];
 TL1[1]==TL2[1];
 length(TL1);
 length(TL2);
+
+#EXAMPLE
+f = exp(cos(x)); x0 = 0;
+TL = taylorform(f, 3, x0);
+T1 = TL[0];
+T2 = taylor(f, 3, x0);
+print(coeff(T1, 2));
+print(coeff(T2, 2));
 
 #SEEALSO $DIFF
 #SEEALSO $AUTODIFF
