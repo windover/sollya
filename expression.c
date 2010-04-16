@@ -2648,6 +2648,39 @@ int tryEvaluateConstantTermToMpq(mpq_t res, node *tree) {
 
 node *dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha);
 
+int containsNotANumbers(node * tree) {
+  int numberChilds;
+
+  if (tree->nodeType == CONSTANT) {
+    if (mpfr_nan_p(*(tree->value))) 
+      return 1;
+    else
+      return 0;
+  }
+
+  if (tree->nodeType == VARIABLE) {
+    return 0;
+  }
+
+  numberChilds = arity(tree);
+  switch (numberChilds) {
+  case 0:
+    return 0;
+    break;
+  case 1:
+    return containsNotANumbers(tree->child1);
+    break;
+  case 2:
+    return (containsNotANumbers(tree->child1) ||
+	    containsNotANumbers(tree->child2));
+    break;
+  default:
+    fprintf(stderr,"Error: containsNotANumbers: unknown arity of tree node symbol.\n");
+    exit(1);
+  }
+
+  return 1;
+}
 
 node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
   node *simplChild1, *simplChild2, *simplified, *recsimplified;
@@ -2659,7 +2692,33 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
   rangetype xrange, yrange;
   mpq_t resMpq;
   mpfr_t num, denom, resDiv, resA, resB;
+  int numberChilds;
 
+  if ((tree->nodeType == CONSTANT) && (mpfr_nan_p(*(tree->value)))) return copyTree(tree);
+  if (tree->nodeType != VARIABLE) {
+    numberChilds = arity(tree);
+    switch (numberChilds) {
+    case 0:
+      break;
+    case 1:
+      if ((tree->child1->nodeType == CONSTANT) && (mpfr_nan_p(*(tree->child1->value)))) return copyTree(tree->child1);
+      break;
+    case 2:
+      if ((tree->child1->nodeType == CONSTANT) && (mpfr_nan_p(*(tree->child1->value)))) {
+	if (isConstant(tree)) return copyTree(tree->child1);
+	return copyTree(tree);
+      }
+      if ((tree->child2->nodeType == CONSTANT) && (mpfr_nan_p(*(tree->child2->value)))) {
+	if (isConstant(tree)) return copyTree(tree->child2);
+	return copyTree(tree);
+      }
+      break;
+    default:
+      fprintf(stderr,"Error: simplifyTreeErrorfreeInner: unknown arity of tree node symbol.\n");
+      exit(1);
+    }
+  }
+  
   if (doRational && isConstant(tree) && (tree->nodeType != CONSTANT)) {
     mpq_init(resMpq);
     if (tryEvaluateConstantTermToMpq(resMpq, tree)) {
@@ -2697,6 +2756,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
   }
 
   if ((tree->nodeType == DIV) && 
+      (!containsNotANumbers(tree)) &&
       (isPolynomial(tree->child1)) &&
       (isPolynomial(tree->child1)) &&
       ((alpha = getMaxPowerDivider(tree->child1)) > 0) && 
@@ -2942,7 +3002,8 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	    } else {
 	      if ((simplChild1->nodeType == EXP) &&
 		  (simplChild2->nodeType == CONSTANT) &&
-		  (mpfr_cmp_d(*(simplChild2->value),1.0) == 0)) {
+		  (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) &&
+		  (!mpfr_nan_p(*(simplChild2->value)))) {
 		simplified->nodeType = EXP_M1;
 		simplified->child1 = copyTree(simplChild1->child1);
 		free_memory(simplChild1);
@@ -2996,19 +3057,20 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->value = value;
 	mpfr_set_d(*value,0.0,GMP_RNDN);
       } else {
-	if ((simplChild1->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild1->value),1.0) == 0)) {
+	if ((simplChild1->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild1->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild1->value)))) {
 	  free_memory(simplChild1);
 	  free(simplified);
 	  simplified = simplChild2;
 	} else {
-	  if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0)) {
+	  if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild2->value)))) {
 	    free_memory(simplChild2);
 	    free(simplified);
 	    simplified = simplChild1;
 	  } else {
 	    if ((simplChild1->nodeType == DIV) &&
 		(simplChild1->child1->nodeType == CONSTANT) &&
-		(mpfr_cmp_d(*(simplChild1->child1->value),1.0) == 0)) {
+		(mpfr_cmp_d(*(simplChild1->child1->value),1.0) == 0) &&
+		(!mpfr_nan_p(*(simplChild1->child1->value)))) {
 	      simplified->nodeType = DIV;
 	      simplified->child1 = simplChild2;
 	      simplified->child2 = copyTree(simplChild1->child2);
@@ -3016,7 +3078,8 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	    } else {
 	      if ((simplChild2->nodeType == DIV) &&
 		  (simplChild2->child1->nodeType == CONSTANT) &&
-		  (mpfr_cmp_d(*(simplChild2->child1->value),1.0) == 0)) {
+		  (mpfr_cmp_d(*(simplChild2->child1->value),1.0) == 0) &&
+		  (!mpfr_nan_p(*(simplChild2->child1->value)))) {
 		simplified->nodeType = DIV;
 		simplified->child1 = simplChild1;
 		simplified->child2 = copyTree(simplChild2->child2);
@@ -3170,7 +3233,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->value = value;
 	mpfr_set_d(*value,0.0,GMP_RNDN);
       } else {
-	if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0)) {
+	if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild2->value)))) {
 	  free_memory(simplChild2);
 	  free(simplified);
 	  simplified = simplChild1;
@@ -3280,7 +3343,8 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     } else {
       if ((simplChild1->nodeType == POW) &&
 	  (simplChild1->child2->nodeType == CONSTANT) &&
-	  (mpfr_cmp_d(*(simplChild1->child2->value),2.0) == 0.0)) {
+	  (mpfr_cmp_d(*(simplChild1->child2->value),2.0) == 0.0) && 
+	  (!mpfr_nan_p(*(simplChild1->child2->value)))) {
 	simplified->nodeType = ABS;
 	simplified->child1 = copyTree(simplChild1->child1);
 	free_memory(simplChild1);
@@ -3332,14 +3396,16 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     } else {
       if ((simplChild1->nodeType == ADD) &&
 	  (simplChild1->child1->nodeType == CONSTANT) &&
-	  (mpfr_cmp_d(*(simplChild1->child1->value),1.0) == 0.0)) {
+	  (mpfr_cmp_d(*(simplChild1->child1->value),1.0) == 0.0) &&
+	  (!mpfr_nan_p(*(simplChild1->child1->value)))) {
 	simplified->nodeType = LOG_1P;
 	simplified->child1 = copyTree(simplChild1->child2);
 	free_memory(simplChild1);
       } else {
 	if ((simplChild1->nodeType == ADD) &&
 	    (simplChild1->child2->nodeType == CONSTANT) &&
-	    (mpfr_cmp_d(*(simplChild1->child2->value),1.0) == 0.0)) {
+	    (mpfr_cmp_d(*(simplChild1->child2->value),1.0) == 0.0) &&
+	    (!mpfr_nan_p(*(simplChild1->child2->value)))) {
 	  simplified->nodeType = LOG_1P;
 	  simplified->child1 = copyTree(simplChild1->child1);
 	  free_memory(simplChild1);
@@ -3472,7 +3538,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     if (simplChild1->nodeType == CONSTANT) {
       mpfr_init2(temp,53);
       mpfr_set_ui(temp,1,GMP_RNDN);
-      if (mpfr_cmp(temp, *(simplChild1->value)) == 0) {
+      if ((mpfr_cmp(temp, *(simplChild1->value)) == 0) && (!mpfr_nan_p(*(simplChild1->value)))) {
 	mpfr_set_ui(*(simplChild1->value),2,GMP_RNDN);
 	simplified->child2 = simplChild1;
 	simplified->nodeType = DIV;
@@ -3480,7 +3546,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->child1->nodeType = PI_CONST;
       } else {
 	mpfr_set_si(temp,-1,GMP_RNDN);
-	if (mpfr_cmp(temp, *(simplChild1->value)) == 0) {
+	if ((mpfr_cmp(temp, *(simplChild1->value)) == 0) && (!mpfr_nan_p(*(simplChild1->value)))) {
 	  mpfr_set_si(*(simplChild1->value),-2,GMP_RNDN);
 	  simplified->child2 = simplChild1;
 	  simplified->nodeType = DIV;
@@ -3514,7 +3580,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     if (simplChild1->nodeType == CONSTANT) {
       mpfr_init2(temp,53);
       mpfr_set_si(temp,-1,GMP_RNDN);
-      if (mpfr_cmp(temp, *(simplChild1->value)) == 0) {
+      if ((mpfr_cmp(temp, *(simplChild1->value)) == 0) && (!mpfr_nan_p(*(simplChild1->value)))) {
 	mpfr_set_ui(*(simplChild1->value),1,GMP_RNDN);
 	simplified->child2 = simplChild1;
 	simplified->nodeType = DIV;
@@ -3547,7 +3613,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     if (simplChild1->nodeType == CONSTANT) {
       mpfr_init2(temp,53);
       mpfr_set_ui(temp,1,GMP_RNDN);
-      if (mpfr_cmp(temp, *(simplChild1->value)) == 0) {
+      if ((mpfr_cmp(temp, *(simplChild1->value)) == 0) && (!mpfr_nan_p(*(simplChild1->value)))) {
 	mpfr_set_ui(*(simplChild1->value),4,GMP_RNDN);
 	simplified->child2 = simplChild1;
 	simplified->nodeType = DIV;
@@ -3555,7 +3621,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->child1->nodeType = PI_CONST;
       } else {
 	mpfr_set_si(temp,-1,GMP_RNDN);
-	if (mpfr_cmp(temp, *(simplChild1->value)) == 0) {
+	if ((mpfr_cmp(temp, *(simplChild1->value)) == 0) && (!mpfr_nan_p(*(simplChild1->value)))) {
 	  mpfr_set_si(*(simplChild1->value),-4,GMP_RNDN);
 	  simplified->child2 = simplChild1;
 	  simplified->nodeType = DIV;
@@ -3736,7 +3802,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	free_memory(simplChild2);
       }
     } else {
-      if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0)) {
+      if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild2->value)))) {
 	free(simplified);
 	free_memory(simplChild2);
 	simplified = simplChild1;
@@ -3758,6 +3824,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	  free(value);
 	  if ((simplChild2->nodeType == CONSTANT) &&
 	      (mpfr_cmp_d(*(simplChild2->value),2.0) == 0) &&
+	      (!mpfr_nan_p(*(simplChild2->value))) &&
 	      (simplChild1->nodeType == SQRT)) {	    
 	    free(simplified);
 	    simplified = copyTree(simplChild1->child1);
@@ -4418,6 +4485,7 @@ node *simplifyRationalErrorfree(node *tree) {
 
 node *simplifyTreeErrorfree(node *tree) {
   node *temp;
+
   temp = simplifyTreeErrorfreeInner(tree,1,rationalMode);
   if (verbosity >= 7) {
     if (!isSyntacticallyEqual(temp,tree)) {
@@ -5593,6 +5661,32 @@ node* simplifyTreeInner(node *tree) {
   node *simplChild1, *simplChild2, *simplified;
   mpfr_t *value;
   mpfr_t temp;
+  int numberChilds;
+
+  if ((tree->nodeType == CONSTANT) && (mpfr_nan_p(*(tree->value)))) return copyTree(tree);
+  if (tree->nodeType != VARIABLE) {
+    numberChilds = arity(tree);
+    switch (numberChilds) {
+    case 0:
+      break;
+    case 1:
+      if ((tree->child1->nodeType == CONSTANT) && (mpfr_nan_p(*(tree->child1->value)))) return copyTree(tree);
+      break;
+    case 2:
+      if ((tree->child1->nodeType == CONSTANT) && (mpfr_nan_p(*(tree->child1->value)))) {
+	if (isConstant(tree)) return copyTree(tree->child1);
+	return copyTree(tree);
+      }
+      if ((tree->child2->nodeType == CONSTANT) && (mpfr_nan_p(*(tree->child2->value)))) {
+	if (isConstant(tree)) return copyTree(tree->child2);
+	return copyTree(tree);
+      }
+      break;
+    default:
+      fprintf(stderr,"Error: simplifyTreeInner: unknown arity of tree node symbol.\n");
+      exit(1);
+    }
+  }
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -5693,12 +5787,12 @@ node* simplifyTreeInner(node *tree) {
 	simplified->value = value;
 	mpfr_set_d(*value,0.0,GMP_RNDN);
       } else {
-	if ((simplChild1->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild1->value),1.0) == 0)) {
+	if ((simplChild1->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild1->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild1->value)))) {
 	  free_memory(simplChild1);
 	  free(simplified);
 	  simplified = simplChild2;
 	} else {
-	  if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0)) {
+	  if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild2->value)))) {
 	    free_memory(simplChild2);
 	    free(simplified);
 	    simplified = simplChild1;
@@ -5734,9 +5828,15 @@ node* simplifyTreeInner(node *tree) {
 	mpfr_set_d(*value,0.0,GMP_RNDN);
       } else {
 	if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0)) {
-	  free_memory(simplChild2);
-	  free(simplified);
-	  simplified = simplChild1;
+	  if (mpfr_nan_p(*(simplChild2->value))) {
+	    simplified->nodeType = MUL;
+	    simplified->child1 = simplChild1;
+	    simplified->child2 = simplChild2;
+	  } else {
+	    free_memory(simplChild2);
+	    free(simplified);
+	    simplified = simplChild1;
+	  }
 	} else {
 	  simplified->nodeType = DIV;
 	  simplified->child1 = simplChild1;
@@ -6013,7 +6113,7 @@ node* simplifyTreeInner(node *tree) {
       free_memory(simplChild1);
       free_memory(simplChild2);
     } else {
-      if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0)) {
+      if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild2->value)))) {
 	free(simplified);
 	free_memory(simplChild2);
 	simplified = simplChild1;
@@ -6371,12 +6471,12 @@ node* simplifyAllButDivisionInner(node *tree) {
 	simplified->value = value;
 	mpfr_set_d(*value,0.0,GMP_RNDN);
       } else {
-	if ((simplChild1->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild1->value),1.0) == 0)) {
+	if ((simplChild1->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild1->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild1->value)))) {
 	  free_memory(simplChild1);
 	  free(simplified);
 	  simplified = simplChild2;
 	} else {
-	  if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0)) {
+	  if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild2->value)))) {
 	    free_memory(simplChild2);
 	    free(simplified);
 	    simplified = simplChild1;
@@ -6665,7 +6765,7 @@ node* simplifyAllButDivisionInner(node *tree) {
       free_memory(simplChild1);
       free_memory(simplChild2);
     } else {
-      if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0)) {
+      if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild2->value)))) {
 	free(simplified);
 	free_memory(simplChild2);
 	simplified = simplChild1;
@@ -6926,6 +7026,7 @@ node *simplifyTree(node *tree) {
   temp = simplifyTreeErrorfree(tree);
   temp2 = simplifyTreeInner(temp);
   free_memory(temp);
+
   return temp2;
 }
 
@@ -9421,7 +9522,7 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
     k = mpfr_get_si(*(poly->child2->value),GMP_RNDN);
     mpfr_init2(y,8 * sizeof(int) + 10);
     mpfr_set_si(y,k,GMP_RNDN);
-    if ((mpfr_cmp(y,*(poly->child2->value)) == 0) &&
+    if ((mpfr_cmp(y,*(poly->child2->value)) == 0) && (!mpfr_nan_p(*(poly->child2->value))) &&
 	(k > 0)) {
       if ((mpd = getMaxPowerDivider(poly->child1)) > 0) {
         temp = dividePolynomialByPowerOfVariableUnsafe(poly->child1, mpd);

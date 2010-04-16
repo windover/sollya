@@ -659,6 +659,11 @@ int getNrRoots(mpfr_t res, node *f, mpfi_t range) {
       return 0;
   }
 
+  if (!mpfi_bounded_p(range)) {
+      printMessage(1,"Warning: the given interval must have finite bounds.\n");
+      return 0;
+  }
+
   prec=getToolPrecision();
   
   mpfi_init2(x, mpfi_get_prec(range));
