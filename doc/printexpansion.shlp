@@ -8,7 +8,7 @@
 The command $COMMAND prints the polynomial <polynomial> in Horner form
 writing its coefficients as expansions of double precision
 numbers. The double precision numbers themselves are displayed in
-hexadecimal memory notation (see $PRINTHEXA). 
+hexadecimal memory notation (see $PRINTDOUBLE). 
 §§ § §§
 If some of the coefficients of the polynomial <polynomial> are not
 floating-point constants but constant expressions, they are evaluated
@@ -34,7 +34,7 @@ verbosity = 1!;
 prec = 3500!;
 printexpansion(pi);
 
-#SEEALSO $PRINTHEXA
+#SEEALSO $PRINTDOUBLE
 #SEEALSO $HORNER
 #SEEALSO $PRINT
 #SEEALSO $PREC

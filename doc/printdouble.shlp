@@ -1,4 +1,4 @@
-#NAME $PRINTHEXA
+#NAME $PRINTDOUBLE
 #QUICK_DESCRIPTION prints a constant value as a hexadecimal double precision number
 #CALLING $COMMAND(<constant>)
 #TYPE $CONSTANT_TYPE -> $VOID_TYPE
@@ -22,7 +22,7 @@ prec=100!;
 verbosity = 1!;
 printdouble(exp(5));
 
-#SEEALSO $PRINTFLOAT
+#SEEALSO $PRINTSINGLE
 #SEEALSO $PRINTEXPANSION
 #SEEALSO $DOUBLE
 

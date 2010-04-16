@@ -1,4 +1,4 @@
-#NAME $PRINTFLOAT
+#NAME $PRINTSINGLE
 #QUICK_DESCRIPTION prints a constant value as a hexadecimal single precision number
 #CALLING $COMMAND(<constant>)
 #TYPE $CONSTANT_TYPE -> $VOID_TYPE
@@ -22,7 +22,7 @@ prec=100!;
 verbosity = 1!;
 printsingle(exp(5));
 
-#SEEALSO $PRINTHEXA
+#SEEALSO $PRINTDOUBLE
 #SEEALSO $SINGLE
 
 

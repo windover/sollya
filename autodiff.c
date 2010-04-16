@@ -146,7 +146,7 @@ void composition_AD(mpfi_t *res, mpfi_t *g, mpfi_t *f, int n) {
 }
 
 
-void binary_function_diff(mpfi_t *res, int nodeType, mpfi_t x0, node *f, node *g, int n) {
+void binary_function_diff(mpfi_t *res, int nodeType, mpfi_t x0, node *f, node *g, int n, int *silent) {
   int i;
   mpfi_t *res1, *res2, *temp_array;
   mpfr_t minusOne;
@@ -178,7 +178,7 @@ void binary_function_diff(mpfi_t *res, int nodeType, mpfi_t x0, node *f, node *g
 
     /* temp_array corresponds to x->1/x at point h(x0) */
     mpfr_init2(minusOne, prec);  mpfr_set_si(minusOne, -1, GMP_RNDN);
-    constantPower_diff(temp_array, res2[0], minusOne, n);
+    constantPower_diff(temp_array, res2[0], minusOne, n, silent);
     mpfr_clear(minusOne);
 
     /* temp_array corresponds to (x->1/x)(h) = 1/h */
@@ -207,7 +207,7 @@ void binary_function_diff(mpfi_t *res, int nodeType, mpfi_t x0, node *f, node *g
 
 /* Computes the successive derivatives of y -> y^p at point x          */ 
 /* [x^p/0!    p*x^(p-1)/1!   ...   p*(p-1)*...*(p-n+1)*x^(p-n)/n! ]    */
-void constantPower_diff(mpfi_t *res, mpfi_t x, mpfr_t p, int n) {
+void constantPower_diff(mpfi_t *res, mpfi_t x, mpfr_t p, int n, int *silent) {
   mpfi_t expo, acc;
   mp_prec_t prec_expo, prec;
   int i;
@@ -242,7 +242,7 @@ void constantPower_diff(mpfi_t *res, mpfi_t x, mpfr_t p, int n) {
 
 /* the power function is: p^x, where p is a positive constant */
 /* [p^x/0!, log(p)p^x/1!, ... , log(p)^n p^x / n! ] */
-void powerFunction_diff(mpfi_t *res, mpfr_t p, mpfi_t x, int n) {
+void powerFunction_diff(mpfi_t *res, mpfr_t p, mpfi_t x, int n, int *silent) {
   int i;
   mpfi_t temp1,temp2;
   mp_prec_t prec;
@@ -267,7 +267,7 @@ void powerFunction_diff(mpfi_t *res, mpfr_t p, mpfi_t x, int n) {
   return;
 }
 
-void exp_diff(mpfi_t *res, mpfi_t x, int n) {
+void exp_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i;
   mpfi_t temp;
   mp_prec_t prec;
@@ -285,14 +285,14 @@ void exp_diff(mpfi_t *res, mpfi_t x, int n) {
   return;
 }
 
-void expm1_diff(mpfi_t *res, mpfi_t x, int n) {
-  exp_diff(res, x, n);
+void expm1_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
+  exp_diff(res, x, n, silent);
   mpfi_sub_ui(res[0], res[0], 1);
   return;
 }
 
 
-void log_diff(mpfi_t *res, mpfi_t x, int n) {
+void log_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   mpfr_t minusOne;
   mp_prec_t prec;
   int i;
@@ -304,14 +304,14 @@ void log_diff(mpfi_t *res, mpfi_t x, int n) {
   if(n>=1) {
     mpfr_init2(minusOne, prec);
     mpfr_set_si(minusOne, -1, GMP_RNDN);
-    constantPower_diff(res+1, x, minusOne, n-1);
+    constantPower_diff(res+1, x, minusOne, n-1, silent);
     mpfr_clear(minusOne);
   }
   for(i=1;i<=n;i++) mpfi_div_ui(res[i], res[i], i);
   return;
 }
 
-void log1p_diff(mpfi_t *res, mpfi_t x, int n) {
+void log1p_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   mpfr_t minusOne;
   mpfi_t u;
   int i;
@@ -326,7 +326,7 @@ void log1p_diff(mpfi_t *res, mpfi_t x, int n) {
     mpfi_add_ui(u, x, 1);
     mpfr_init2(minusOne, prec);
     mpfr_set_si(minusOne, -1, GMP_RNDN);
-    constantPower_diff(res+1, u, minusOne, n-1);
+    constantPower_diff(res+1, u, minusOne, n-1, silent);
     mpfr_clear(minusOne);
     mpfi_clear(u);
   }
@@ -337,7 +337,7 @@ void log1p_diff(mpfi_t *res, mpfi_t x, int n) {
 }
 
 /* log2(x) = log(x) * (1/log(2)) */
-void log2_diff(mpfi_t *res, mpfi_t x, int n) {
+void log2_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i;
   mpfi_t log2;
   mp_prec_t prec;
@@ -346,7 +346,7 @@ void log2_diff(mpfi_t *res, mpfi_t x, int n) {
   mpfi_init2(log2, prec);
 
   mpfi_set_ui(log2, 2); mpfi_log(log2, log2);
-  log_diff(res,x,n);
+  log_diff(res,x,n,silent);
   for(i=0;i<=n;i++) mpfi_div(res[i], res[i], log2);
 
   mpfi_clear(log2);
@@ -354,7 +354,7 @@ void log2_diff(mpfi_t *res, mpfi_t x, int n) {
 }
 
 /* idem */
-void log10_diff(mpfi_t *res, mpfi_t x, int n) {
+void log10_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i;
   mpfi_t log10;
   mp_prec_t prec;
@@ -363,14 +363,14 @@ void log10_diff(mpfi_t *res, mpfi_t x, int n) {
   mpfi_init2(log10, prec);
 
   mpfi_set_ui(log10, 10); mpfi_log(log10, log10);
-  log_diff(res,x,n);
+  log_diff(res,x,n,silent);
   for(i=0;i<=n;i++) mpfi_div(res[i], res[i], log10);
 
   mpfi_clear(log10);
   return;
 }
 
-void sin_diff(mpfi_t *res, mpfi_t x, int n) {
+void sin_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i;
   mp_prec_t prec;
 
@@ -389,7 +389,7 @@ void sin_diff(mpfi_t *res, mpfi_t x, int n) {
   return;
 }
 
-void cos_diff(mpfi_t *res, mpfi_t x, int n) {
+void cos_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i;
   mp_prec_t prec;
 
@@ -408,7 +408,7 @@ void cos_diff(mpfi_t *res, mpfi_t x, int n) {
   return;
 }
 
-void sinh_diff(mpfi_t *res, mpfi_t x, int n) {
+void sinh_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i;
   mp_prec_t prec;
 
@@ -425,7 +425,7 @@ void sinh_diff(mpfi_t *res, mpfi_t x, int n) {
   return;
 }
 
-void cosh_diff(mpfi_t *res, mpfi_t x, int n) {
+void cosh_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i;
   mp_prec_t prec;
 
@@ -501,7 +501,7 @@ recurrence formula: p_(n+1)(u) = (p_n(u))' / (n+1) = p'_n(u) * (1+u^2) / (n+1)
    -> p_n of degree n+1
 */
 
-void tan_diff(mpfi_t *res, mpfi_t x, int n) {
+void tan_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i,index;
   mpfi_t *coeffs_array;
   mpfi_t u;
@@ -556,7 +556,7 @@ recurrence formula: p_(n+1)(u) = (p_n(u))' / (n+1) = p'_n(u) * (1-u^2) / (n+1)
    -> p_n of degree n+1
 */
 
-void tanh_diff(mpfi_t *res, mpfi_t x, int n) {
+void tanh_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i,index;
   mpfi_t *coeffs_array;
   mpfi_t u;
@@ -612,7 +612,7 @@ void tanh_diff(mpfi_t *res, mpfi_t x, int n) {
 
    --> degree of p_n is (n-1)
 */
-void atan_diff(mpfi_t *res, mpfi_t x, int n) {
+void atan_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i,index;
   mpfi_t *coeffs_array, *coeffs_array_diff;
   mpfi_t u, temp;
@@ -693,7 +693,7 @@ void atan_diff(mpfi_t *res, mpfi_t x, int n) {
 
    --> degree of p_n is (n-1)
 */
-void atanh_diff(mpfi_t *res, mpfi_t x, int n) {
+void atanh_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i,index;
   mpfi_t *coeffs_array, *coeffs_array_diff;
   mpfi_t u, temp;
@@ -776,7 +776,7 @@ void atanh_diff(mpfi_t *res, mpfi_t x, int n) {
 
    --> degree of p_n is (n-1)
 */
-void asin_diff(mpfi_t *res, mpfi_t x, int n) {
+void asin_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i,index;
   mpfi_t *coeffs_array, *coeffs_array_diff;
   mpfi_t u, temp;
@@ -853,10 +853,10 @@ void asin_diff(mpfi_t *res, mpfi_t x, int n) {
 
 
 /* acos_diff : except for the res[0], all the terms are equal to -asin^(n)(x)/n! */
-void acos_diff(mpfi_t *res, mpfi_t x, int n) {
+void acos_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i; 
 
-  asin_diff(res,x,n);
+  asin_diff(res,x,n,silent);
 
   mpfi_acos(res[0], x);
 
@@ -873,7 +873,7 @@ void acos_diff(mpfi_t *res, mpfi_t x, int n) {
 
    --> degree of p_n is (n-1)
 */
-void asinh_diff(mpfi_t *res, mpfi_t x, int n) {
+void asinh_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i,index;
   mpfi_t *coeffs_array, *coeffs_array_diff;
   mpfi_t u, temp;
@@ -955,7 +955,7 @@ void asinh_diff(mpfi_t *res, mpfi_t x, int n) {
 
    --> degree of p_n is (n-1)
 */
-void acosh_diff(mpfi_t *res, mpfi_t x, int n) {
+void acosh_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i,index;
   mpfi_t *coeffs_array, *coeffs_array_diff;
   mpfi_t u, temp;
@@ -1034,7 +1034,7 @@ void acosh_diff(mpfi_t *res, mpfi_t x, int n) {
 /* with p_1(x) = 2/sqrt(pi)                    */
 /* and p_(n+1)(x) = (p_n'(x) - 2xp_n(x))/(n+1) */
 /*  -> degree of p_n is n-1                    */
-void erf_diff(mpfi_t *res, mpfi_t x, int n) {
+void erf_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i,index;
   mpfi_t *coeffs_array, *coeffs_array_diff;
   mpfi_t u, temp;
@@ -1105,10 +1105,10 @@ void erf_diff(mpfi_t *res, mpfi_t x, int n) {
   return;  
 }
 
-void erfc_diff(mpfi_t *res, mpfi_t x, int n) {
+void erfc_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int i; 
 
-  erf_diff(res,x,n);
+  erf_diff(res, x, n, silent);
 
   mpfi_erfc(res[0], x);
 
@@ -1117,7 +1117,7 @@ void erfc_diff(mpfi_t *res, mpfi_t x, int n) {
   return;
 }
 
-void abs_diff(mpfi_t *res, mpfi_t x, int n) {
+void abs_diff(mpfi_t *res, mpfi_t x, int n, int *silent) {
   int s, i;
   mpfi_t temp;
   mpfr_t temp2;
@@ -1136,8 +1136,11 @@ void abs_diff(mpfi_t *res, mpfi_t x, int n) {
     mpfr_init2(temp2, prec);
     mpfr_set_nan(temp2);
 
-    printMessage(1, "Warning: the absolute value is not twice differentiable.\n");
-    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+    if (!(*silent)) {
+      *silent = 1;
+      printMessage(1, "Warning: the absolute value is not twice differentiable.\n");
+      printMessage(1, "Will return [@NaN@, @NaN@].\n");
+    }
     for(i=2;i<=n;i++) mpfi_set_fr(res[i], temp2);
     mpfr_clear(temp2);
   }
@@ -1145,7 +1148,7 @@ void abs_diff(mpfi_t *res, mpfi_t x, int n) {
   return;
 }
 
-void single_diff(mpfi_t *res, mpfi_t x, int n){
+void single_diff(mpfi_t *res, mpfi_t x, int n, int *silent){
   int i;
   mpfr_t temp;
   mp_prec_t prec;
@@ -1154,13 +1157,16 @@ void single_diff(mpfi_t *res, mpfi_t x, int n){
   mpfr_init2(temp, prec);
   mpfr_set_nan(temp);
 
-  printMessage(1, "Warning: the single rounding operator is not differentiable.\n");
-  printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  if (!(*silent)) {
+    *silent = 1;
+    printMessage(1, "Warning: the single rounding operator is not differentiable.\n");
+    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  }
   for(i=0;i<=n;i++) mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
 }
 
-void double_diff(mpfi_t *res, mpfi_t x, int n){
+void double_diff(mpfi_t *res, mpfi_t x, int n, int *silent){
   int i;
   mpfr_t temp;
   mp_prec_t prec;
@@ -1169,13 +1175,16 @@ void double_diff(mpfi_t *res, mpfi_t x, int n){
   mpfr_init2(temp, prec);
   mpfr_set_nan(temp);
 
-  printMessage(1, "Warning: the double rounding operator is not differentiable.\n");
-  printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  if (!(*silent)) {
+    *silent = 1;
+    printMessage(1, "Warning: the double rounding operator is not differentiable.\n");
+    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  }
   for(i=0;i<=n;i++) mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
 }
 
-void double_double_diff(mpfi_t *res, mpfi_t x, int n){
+void double_double_diff(mpfi_t *res, mpfi_t x, int n, int *silent){
   int i;
   mpfr_t temp;
   mp_prec_t prec;
@@ -1184,13 +1193,16 @@ void double_double_diff(mpfi_t *res, mpfi_t x, int n){
   mpfr_init2(temp, prec);
   mpfr_set_nan(temp);
 
-  printMessage(1, "Warning: the doubledouble rounding operator is not differentiable.\n");
-  printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  if (!(*silent)) {
+    *silent = 1;
+    printMessage(1, "Warning: the doubledouble rounding operator is not differentiable.\n");
+    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  }
   for(i=0;i<=n;i++) mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
 }
 
-void triple_double_diff(mpfi_t *res, mpfi_t x, int n){
+void triple_double_diff(mpfi_t *res, mpfi_t x, int n, int *silent){
   int i;
   mpfr_t temp;
   mp_prec_t prec;
@@ -1199,13 +1211,16 @@ void triple_double_diff(mpfi_t *res, mpfi_t x, int n){
   mpfr_init2(temp, prec);
   mpfr_set_nan(temp);
 
-  printMessage(1, "Warning: the tripledouble rounding operator is not differentiable.\n");
-  printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  if (!(*silent)) {
+    *silent = 1;
+    printMessage(1, "Warning: the tripledouble rounding operator is not differentiable.\n");
+    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  }
   for(i=0;i<=n;i++) mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
 }
 
-void double_extended_diff(mpfi_t *res, mpfi_t x, int n){
+void double_extended_diff(mpfi_t *res, mpfi_t x, int n, int *silent){
   int i;
   mpfr_t temp;
   mp_prec_t prec;
@@ -1214,13 +1229,16 @@ void double_extended_diff(mpfi_t *res, mpfi_t x, int n){
   mpfr_init2(temp, prec);
   mpfr_set_nan(temp);
 
-  printMessage(1, "Warning: the doubleextended rounding operator is not differentiable.\n");
-  printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  if (!(*silent)) {
+    *silent = 1;
+    printMessage(1, "Warning: the doubleextended rounding operator is not differentiable.\n");
+    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  }
   for(i=0;i<=n;i++) mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
 }
 
-void ceil_diff(mpfi_t *res, mpfi_t x, int n){
+void ceil_diff(mpfi_t *res, mpfi_t x, int n, int *silent){
   int i;
   mpfr_t temp;
   mp_prec_t prec;
@@ -1229,13 +1247,16 @@ void ceil_diff(mpfi_t *res, mpfi_t x, int n){
   mpfr_init2(temp, prec);
   mpfr_set_nan(temp);
 
-  printMessage(1, "Warning: the ceil operator is not differentiable.\n");
-  printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  if (!(*silent)) {
+    *silent = 1;
+    printMessage(1, "Warning: the ceil operator is not differentiable.\n");
+    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  }
   for(i=0;i<=n;i++) mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
 }
 
-void floor_diff(mpfi_t *res, mpfi_t x, int n){
+void floor_diff(mpfi_t *res, mpfi_t x, int n, int *silent){
   int i;
   mpfr_t temp;
   mp_prec_t prec;
@@ -1244,13 +1265,16 @@ void floor_diff(mpfi_t *res, mpfi_t x, int n){
   mpfr_init2(temp, prec);
   mpfr_set_nan(temp);
 
-  printMessage(1, "Warning: the floor operator is not differentiable.\n");
-  printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  if (!(*silent)) {
+    *silent = 1;
+    printMessage(1, "Warning: the floor operator is not differentiable.\n");
+    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  }
   for(i=0;i<=n;i++) mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
 }
 
-void nearestint_diff(mpfi_t *res, mpfi_t x, int n){
+void nearestint_diff(mpfi_t *res, mpfi_t x, int n, int *silent){
   int i;
   mpfr_t temp;
   mp_prec_t prec;
@@ -1259,13 +1283,16 @@ void nearestint_diff(mpfi_t *res, mpfi_t x, int n){
   mpfr_init2(temp, prec);
   mpfr_set_nan(temp);
 
-  printMessage(1, "Warning: the nearestint operator is not differentiable.\n");
-  printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  if (!(*silent)) {
+    *silent = 1;
+    printMessage(1, "Warning: the nearestint operator is not differentiable.\n");
+    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  }
   for(i=0;i<=n;i++) mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
 }
 
-void libraryFunction_diff(mpfi_t *res, node *f, mpfi_t x, int n) {
+void libraryFunction_diff(mpfi_t *res, node *f, mpfi_t x, int n, int *silent) {
   mpfi_t fact;
   mp_prec_t prec;
   int i;
@@ -1282,7 +1309,7 @@ void libraryFunction_diff(mpfi_t *res, node *f, mpfi_t x, int n) {
   mpfi_clear(fact);
 }
 
-void baseFunction_diff(mpfi_t *res, int nodeType, mpfi_t x, int n) {
+void baseFunction_diff(mpfi_t *res, int nodeType, mpfi_t x, int n, int *silent) {
   mpfr_t oneHalf;
   mp_prec_t prec;
   prec = getToolPrecision();
@@ -1301,95 +1328,95 @@ void baseFunction_diff(mpfi_t *res, int nodeType, mpfi_t x, int n) {
   case SQRT:
     mpfr_init2(oneHalf, prec);
     mpfr_set_d(oneHalf, 0.5, GMP_RNDN);
-    constantPower_diff(res, x, oneHalf, n);
+    constantPower_diff(res, x, oneHalf, n, silent);
     mpfr_clear(oneHalf);
     break;
   case ERF:
-    erf_diff(res, x, n);
+    erf_diff(res, x, n, silent);
     break;
   case ERFC:
-    erfc_diff(res, x, n);
+    erfc_diff(res, x, n, silent);
     break;
   case EXP:
-    exp_diff(res, x, n);
+    exp_diff(res, x, n, silent);
     break;
   case EXP_M1:
-    expm1_diff(res,x,n);
+    expm1_diff(res, x, n, silent);
     break;
   case LOG_1P:
-    log1p_diff(res, x, n);
+    log1p_diff(res, x, n, silent);
     break;
   case LOG:
-    log_diff(res,x,n);
+    log_diff(res, x, n, silent);
     break;
   case LOG_2:
-    log2_diff(res,x,n);
+    log2_diff(res, x, n, silent);
     break;
   case LOG_10:
-    log10_diff(res,x,n);
+    log10_diff(res, x, n, silent);
     break;
   case SIN:
-    sin_diff(res,x,n);
+    sin_diff(res, x, n, silent);
     break;
   case COS:
-    cos_diff(res,x,n);
+    cos_diff(res, x, n, silent);
     break;
   case TAN:
-    tan_diff(res,x,n);
+    tan_diff(res, x, n, silent);
     break;
   case ASIN:
-    asin_diff(res,x,n);
+    asin_diff(res, x, n, silent);
     break;
   case ACOS:
-    acos_diff(res,x,n);
+    acos_diff(res, x, n, silent);
     break;
   case ATAN:
-     atan_diff(res,x,n);
+     atan_diff(res, x, n, silent);
     break;
   case SINH:
-    sinh_diff(res,x,n);
+    sinh_diff(res, x, n, silent);
     break;
   case COSH:
-    cosh_diff(res,x,n);
+    cosh_diff(res, x, n, silent);
     break;
   case TANH:
-    tanh_diff(res,x,n);
+    tanh_diff(res, x, n, silent);
     break;
   case ASINH:
-    asinh_diff(res,x,n);
+    asinh_diff(res, x, n, silent);
     break;
   case ACOSH:
-    acosh_diff(res,x,n);
+    acosh_diff(res, x, n, silent);
     break;
   case ATANH:
-    atanh_diff(res,x,n);
+    atanh_diff(res, x, n, silent);
     break;
   case ABS:
-    abs_diff(res, x, n);
+    abs_diff(res, x, n, silent);
     break;
   case SINGLE:
-    single_diff(res, x, n);
+    single_diff(res, x, n, silent);
     break;
   case DOUBLE:
-    double_diff(res, x, n);
+    double_diff(res, x, n, silent);
     break;
   case DOUBLEDOUBLE:
-    double_double_diff(res, x, n);
+    double_double_diff(res, x, n, silent);
     break;
   case TRIPLEDOUBLE:
-    triple_double_diff(res, x, n);
+    triple_double_diff(res, x, n, silent);
     break;
   case DOUBLEEXTENDED:
-    double_extended_diff(res, x, n);
+    double_extended_diff(res, x, n, silent);
     break;
   case CEIL:
-    ceil_diff(res, x, n);
+    ceil_diff(res, x, n, silent);
     break;
   case FLOOR:
-    floor_diff(res, x, n);
+    floor_diff(res, x, n, silent);
     break;
   case NEARESTINT:
-    nearestint_diff(res, x, n);
+    nearestint_diff(res, x, n, silent);
     break;
   default:
     fprintf(stderr,"Error: AD: unknown unary function (%d) in the tree\n", nodeType);
@@ -1409,6 +1436,7 @@ void auto_diff_scaled(mpfi_t* res, node *f, mpfi_t x0, int n) {
   node *simplifiedChild1, *simplifiedChild2, *tempTree;
   mpfi_t temp1, temp2;
   mp_prec_t prec;
+  int silent = 0;
 
   prec = getToolPrecision();
   switch (f->nodeType) {
@@ -1439,7 +1467,7 @@ void auto_diff_scaled(mpfi_t* res, node *f, mpfi_t x0, int n) {
   case SUB:
   case MUL:
   case DIV:
-    binary_function_diff(res, f->nodeType, x0, f->child1, f->child2, n);
+    binary_function_diff(res, f->nodeType, x0, f->child1, f->child2, n, &silent);
     break;
 
   case SQRT:
@@ -1481,8 +1509,8 @@ void auto_diff_scaled(mpfi_t* res, node *f, mpfi_t x0, int n) {
     }
 
     auto_diff_scaled(res1, f->child1, x0, n);
-    if(f->nodeType==LIBRARYFUNCTION) libraryFunction_diff(res2, f, res1[0], n);
-    else baseFunction_diff(res2, f->nodeType, res1[0], n);
+    if(f->nodeType==LIBRARYFUNCTION) libraryFunction_diff(res2, f, res1[0], n, &silent);
+    else baseFunction_diff(res2, f->nodeType, res1[0], n, &silent);
     composition_AD(res, res2, res1, n);
 
     for(i=0;i<=n;i++) {
@@ -1500,13 +1528,13 @@ void auto_diff_scaled(mpfi_t* res, node *f, mpfi_t x0, int n) {
     /* x^p case */
     if ( (simplifiedChild1->nodeType == VARIABLE) &&
 	 (simplifiedChild2->nodeType == CONSTANT) ) {
-      constantPower_diff(res, x0, *(simplifiedChild2->value), n);
+      constantPower_diff(res, x0, *(simplifiedChild2->value), n, &silent);
     }
 
     /* p^x case */
     else if ( (simplifiedChild1->nodeType == CONSTANT) &&
 	      (simplifiedChild2->nodeType == VARIABLE) ) {
-      powerFunction_diff(res, *(simplifiedChild1->value), x0, n);
+      powerFunction_diff(res, *(simplifiedChild1->value), x0, n, &silent);
     }
 
     /* p^q case */
@@ -1536,11 +1564,11 @@ void auto_diff_scaled(mpfi_t* res, node *f, mpfi_t x0, int n) {
       
       if (simplifiedChild1->nodeType == CONSTANT) { /* p^f */
 	auto_diff_scaled(res1, simplifiedChild2, x0, n);
-	powerFunction_diff(res2, *(simplifiedChild1->value), res1[0], n);
+	powerFunction_diff(res2, *(simplifiedChild1->value), res1[0], n, &silent);
       }
       else { /* f^p */
 	auto_diff_scaled(res1, simplifiedChild1, x0, n);
-	constantPower_diff(res2, res1[0], *(simplifiedChild2->value), n);
+	constantPower_diff(res2, res1[0], *(simplifiedChild2->value), n, &silent);
       }
       
       composition_AD(res, res2, res1, n); 

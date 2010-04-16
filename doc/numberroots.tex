@@ -13,15 +13,31 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{numberroots} rigorously computes the number of roots of polynomial the $p$ in the interval $I$. The technique used is Sturm's algorithm. The value returned is not just a numerical estimation of the number of roots of $p$ in $I$: it is the exact number of roots.
+\item \textbf{numberroots} rigorously computes the number of roots of polynomial the $p$ in
+   the interval $I$. The technique used is Sturm's algorithm. The value returned
+   is not just a numerical estimation of the number of roots of $p$ in $I$: it is
+   the exact number of roots.
 
-\item The command \textbf{findzeros} computes safe enclosures of all the zeros of a function, without forgetting any, but it is not guaranteed to separate them all in distinct intervals. \textbf{numberroots} is more accurate since it guarantees the exact number of roots. However, it does not compute them. It may be used, for instance, to certify that \textbf{findzeros} did not put two distinct roots in the same interval.
+\item The command \textbf{findzeros} computes safe enclosures of all the zeros of a
+   function, without forgetting any, but it is not guaranteed to separate them
+   all in distinct intervals. \textbf{numberroots} is more accurate since it guarantees 
+   the exact number of roots. However, it does not compute them. It may be used,
+   for instance, to certify that \textbf{findzeros} did not put two distinct roots in 
+   the same interval.
 
 \item Multiple roots are counted only once.
 
-\item The interval $I$ must be bounded. The algorithm cannot handle unbounded intervals. Moreover, the interval is considered as a closed interval: if one (or both) of the endpoints of $I$ are roots of $p$, they are counted.
+\item The interval $I$ must be bounded. The algorithm cannot handle unbounded
+   intervals. Moreover, the interval is considered as a closed interval: if one
+   (or both) of the endpoints of $I$ are roots of $p$, they are counted.
 
-\item The argument $p$ can be any expression, but if \sollya fails to prove that it is a polynomial an error is produced. Also, please note that if the coefficients of $p$ or the endpoints of $I$ are not exactly representable, they are first numerically evaluated, before the algorithm is used. In that case, the counted number of roots corresponds to the rounded polynomial on the rounded interval \textbf{and not} to the exact parameters given by the user. A warning is displayed to inform the user.
+\item The argument $p$ can be any expression, but if \sollya fails to prove that
+   it is a polynomial an error is produced. Also, please note that if the
+   coefficients of $p$ or the endpoints of $I$ are not exactly representable,
+   they are first numerically evaluated, before the algorithm is used. In that
+   case, the counted number of roots corresponds to the rounded polynomial on
+   the rounded interval \textbf{and not} to the exact parameters given by the user.
+   A warning is displayed to inform the user.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]

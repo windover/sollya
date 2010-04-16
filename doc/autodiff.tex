@@ -16,15 +16,33 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{autodiff} computes the first $n$ derivatives of $f$ at point $x_0$. The computation is performed numerically, without symbolically differentiating the expression of $f$. Yet, the computation is safe since small interval enclosures are produced. More precisely, \textbf{autodiff} returns a list $[f_0,\,\dots,\,f_n]$ such that, for each $i$, $f_i$ is a small interval enclosing the exact value of $f^{(i)}(x_0)$.
+\item \textbf{autodiff} computes the first $n$ derivatives of $f$ at point $x_0$. The computation
+   is performed numerically, without symbolically differentiating the expression
+   of $f$. Yet, the computation is safe since small interval enclosures are
+   produced. More precisely, \textbf{autodiff} returns a list $[f_0,\,\dots,\,f_n]$ such that,
+   for each $i$, $f_i$ is a small interval enclosing the exact value of $f^{(i)}(x_0)$.
 
-\item Since it does not perform any symbolic differentiation, \textbf{autodiff} is much more efficient than \textbf{diff} and should be prefered when only numerical values are necessary.
+\item Since it does not perform any symbolic differentiation, \textbf{autodiff} is much 
+   more efficient than \textbf{diff} and should be prefered when only numerical values
+   are necessary.
 
-\item If an interval $I$ is provided instead of a point $x_0$, the list returned by \textbf{autodiff} satisfies: $\forall i,\, f^{(i)}(I) \subseteq f_i$. A particular use is when one wants to know the successive derivatives of a function at a non representable point such as $\pi$. In this case, it suffices to call \textbf{autodiff} with the (almost) point interval $I = [\textbf{pi}]$.
+\item If an interval $I$ is provided instead of a point $x_0$, the list returned by
+   \textbf{autodiff} satisfies: $\forall i,\, f^{(i)}(I) \subseteq f_i$. A particular use
+   is when one wants to know the successive derivatives of a function at a non
+   representable point such as $\pi$. In this case, it suffices to call \textbf{autodiff}
+   with the (almost) point interval $I = [\textbf{pi}]$.
 
-\item When $I$ is almost a point interval, the returned enclosures $f_i$ are also almost point intervals. However, when the interval $I$ begins to be fairly large, the enclosures can be deeply overestimated due to the dependecy phenomenon present with interval arithmetic.
+\item When $I$ is almost a point interval, the returned enclosures $f_i$ are also
+   almost point intervals. However, when the interval $I$ begins to be fairly
+   large, the enclosures can be deeply overestimated due to the dependecy
+   phenomenon present with interval arithmetic.
 
-\item As a particular case, $f_0$ is an enclosure of the image of $f$ over $I$. However, since the algorithm is not specially designed for this purpose it is not very efficient for this particular task. In particular, it is not able to return a finite enclosure for functions with removable singularities (e.g. $\sin(x)/x$ at $0$). The command \textbf{evaluate} is much more efficient for computing an accurate enclosure of the image of a function over an interval.
+\item As a particular case, $f_0$ is an enclosure of the image of $f$ over $I$.
+   However, since the algorithm is not specially designed for this purpose it is
+   not very efficient for this particular task. In particular, it is not able to
+   return a finite enclosure for functions with removable singularities
+   (e.g. $\sin(x)/x$ at $0$). The command \textbf{evaluate} is much more efficient for
+   computing an accurate enclosure of the image of a function over an interval.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
