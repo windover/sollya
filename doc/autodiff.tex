@@ -1,0 +1,24 @@
+\subsection{autodiff}
+\label{labautodiff}
+\noindent Name: \textbf{autodiff}\\
+nothing\\
+\noindent Usage: 
+\begin{center}
+\textbf{autodiff}(\emph{f}, \emph{n}, \emph{I}) : (\textsf{function}, \textsf{integer}, \textsf{range}) $\rightarrow$ \textsf{list}\\
+\end{center}
+Parameters: 
+\begin{itemize}
+\item \emph{f} is the function to be approximated.
+\item \emph{n} is the order of differentiation.
+\item \emph{I} is the interval over which the function is differentiated.
+\end{itemize}
+\noindent Description: \begin{itemize}
+
+\item Nothing.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> L = autodiff(exp(x), 5, 0);
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{diff} (\ref{labdiff})
