@@ -6,8 +6,8 @@ computes a rigorous polynomial approximation (polynomial, interval error bound) 
 \begin{center}
 \textbf{taylorform}(\emph{f}, \emph{n}, \emph{$x_0$}, \emph{I}, \emph{errorType}) : (\textsf{function}, \textsf{integer}, \textsf{constant}, \textsf{range}, \textsf{absolute$|$relative}) $\rightarrow$ \textsf{list}\\
 \textbf{taylorform}(\emph{f}, \emph{n}, \emph{$x_0$}, \emph{I}, \emph{errorType}) : (\textsf{function}, \textsf{integer}, \textsf{range}, \textsf{range}, \textsf{absolute$|$relative}) $\rightarrow$ \textsf{list}\\
-\textbf{taylorform}(\emph{f}, \emph{n}, \emph{$x_0$}, \emph{errorType}) : (\textsf{function}, \textsf{integer}, \textsf{constant}, \textsf{range}, \textsf{absolute$|$relative}) $\rightarrow$ \textsf{list}\\
-\textbf{taylorform}(\emph{f}, \emph{n}, \emph{$x_0$}, \emph{errorType}) : (\textsf{function}, \textsf{integer}, \textsf{range}, \textsf{range}, \textsf{absolute$|$relative}) $\rightarrow$ \textsf{list}\\
+\textbf{taylorform}(\emph{f}, \emph{n}, \emph{$x_0$}, \emph{errorType}) : (\textsf{function}, \textsf{integer}, \textsf{constant}, \textsf{absolute$|$relative}) $\rightarrow$ \textsf{list}\\
+\textbf{taylorform}(\emph{f}, \emph{n}, \emph{$x_0$}, \emph{errorType}) : (\textsf{function}, \textsf{integer}, \textsf{range}, \textsf{absolute$|$relative}) $\rightarrow$ \textsf{list}\\
 \end{center}
 Parameters: 
 \begin{itemize}
@@ -19,32 +19,64 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{taylorform} computes an approximation polynomial and an interval error bound for function $f$. More precisely, it 
-   returns a list $L = \left[p, \textrm{coeffErrors}, \Delta \right]$ where:
+\item \textbf{taylorform} computes an approximation polynomial and an interval error bound
+   for function $f$. More precisely, it returns a list $L = \left[p, \textrm{coeffErrors},\Delta \right]$
+   where:
    \begin{itemize}
-   \item $p$ is an approximation polynomial of degree $n-1$ which is roughly speaking a numerical Taylor expansion of $f$ at the point $x_0$.
-   \item coeffsErrors is a list of $n$ intervals. Each interval coeffsErrors[$i$] contains an enclosure of all the errors accumulated when computing the $i$-th coefficient of $p$.
-   \item $\Delta$ is an interval that provides a bound for the approximation error between $p$ and $f$. Its significance depends on the \emph{errorType} considered.
+   \item $p$ is an approximation polynomial of degree $n-1$ which is roughly speaking
+   a numerical Taylor expansion of $f$ at the point $x_0$.
+   \item coeffsErrors is a list of $n$ intervals. Each interval coeffsErrors[$i$]
+   contains an enclosure of all the errors accumulated when computing the $i$-th
+   coefficient of $p$.
+   \item $\Delta$ is an interval that provides a bound for the approximation error
+   between $p$ and $f$. Its significance depends on the \emph{errorType} considered.
    \end{itemize}
 
-\item The polynomial $p$ and the bound  $\Delta$ are obtained using Taylor Models principles.
+\item The polynomial $p$ and the bound  $\Delta$ are obtained using Taylor Models
+   principles.
 
-\item Please note that $x_0$ can be an interval. In general, it is meant to be a small interval approximating a non representable value. If $x_0$ is given as a constant expression, it is first numerically evaluated (leading to a faithful rounding $\tilde{x_0}$ at precision \textbf{prec}, and it is then replaced by the (exactly representable) point-interval $[\tilde{x_0},\,\tilde{x_0}]$. In particular, it is not the same to call \textbf{taylorform} with $x_0 = \textbf{pi}$ and with $x_0 = [\textbf{pi}]$, for instance. In general, if the point around which one desires to compute the polynomial is not exactly representable, one should preferably use a small interval for~$x_0$.
+\item Please note that $x_0$ can be an interval. In general, it is meant to be a
+   small interval approximating a non representable value. If $x_0$ is given as a
+   constant expression, it is first numerically evaluated (leading to a faithful
+   rounding $\tilde{x_0}$ at precision \textbf{prec}), and it is then replaced by the (exactly
+   representable) point-interval $[\tilde{x_0},\,\tilde{x_0}]$. In particular, it is not
+   the same to call \textbf{taylorform} with $x_0 = \textbf{pi}$ and with $x_0 = [\textbf{pi}]$, for instance.
+   In general, if the point around which one desires to compute the polynomial
+   is not exactly representable, one should preferably use a small interval
+   for~$x_0$.
 
-\item More formally, the mathematical property ensured by the algorithm may be stated as follows. For all $\csi_0$ in $x_0$, there exist (small) values $\varepsilon_i \in \textrm{coeffsErrors}[i]$ such that:
+\item More formally, the mathematical property ensured by the algorithm may be
+   stated as follows. For all $\csi_0$ in $x_0$, there exist (small) values
+   $\varepsilon_i \in \textrm{coeffsErrors}[i]$ such that:
    \\
-   If \emph{errorType} is \textbf{absolute}, $\forall x \in I, \exists \delta \in \Delta,\, f(x)-p(x-\csi_0) = \sum\limits_{i=0}^{n-1} \varepsilon_i\, (x-\csi_0)^i + \delta$.
+   If \emph{errorType} is \textbf{absolute}, $\forall x \in I, \exists \delta \in \Delta,\,$
+   $f(x)-p(x-\csi_0) = \sum\limits_{i=0}^{n-1} \varepsilon_i\, (x-\csi_0)^i + \delta$.
    \\
-   If \emph{errorType} is \textbf{relative}, $\forall x \in I, \exists \delta \in \Delta,\, f(x)-p(x-\csi_0) = \sum\limits_{i=0}^{n-1} \varepsilon_i\, (x-\csi_0)^i + \delta\,(x-\csi_0)^n$.
+   If \emph{errorType} is \textbf{relative}, $\forall x \in I, \exists \delta \in \Delta,\,$
+   $f(x)-p(x-\csi_0) = \sum\limits_{i=0}^{n-1} \varepsilon_i\, (x-\csi_0)^i + \delta\,(x-\csi_0)^n$.
 
-\item It is also possible to use a large interval for $x_0$, though it is not obvious to give an intuitive sense to the result of \textbf{taylorform} in that case. A particular case that might be interesting is when $x_0 = I$ in relative mode. In that case, denoting by $p_i$ the coefficient of $p$ of order $i$, the interval $p_i + \textrm{coeffsError}[i]$ gives an enclosure of $f^{(i)}(I)/i!$. However, the command \textbf{autodiff} is more convenient for computing such enclosures.
+\item It is also possible to use a large interval for $x_0$, though it is not
+   obvious to give an intuitive sense to the result of \textbf{taylorform} in that case.
+   A particular case that might be interesting is when $x_0 = I$ in relative mode.
+   In that case, denoting by $p_i$ the coefficient of $p$ of order $i$, the interval
+   $p_i + \textrm{coeffsError}[i]$ gives an enclosure of $f^{(i)}(I)/i!$.
+   However, the command \textbf{autodiff} is more convenient for computing such
+   enclosures.
 
-\item When the interval $I$ is not given, the approximated Taylor polynomial is computed but no remainder is produced. In that case the returned list is $L = \left[p, \textrm{coeffErrors}\right]$.
+\item When the interval $I$ is not given, the approximated Taylor polynomial is
+   computed but no remainder is produced. In that case the returned list
+   is $L = \left[p, \textrm{coeffErrors}\right]$.
 
-\item The relative case is especially useful when functions with removable singularities are considered. In such a case, this routine is able to compute a finite remainder bound, provided that the expansion point given is the problematic removable singularity point.
+\item The relative case is especially useful when functions with removable
+   singularities are considered. In such a case, this routine is able to compute
+   a finite remainder bound, provided that the expansion point given is the
+   problematic removable singularity point.
 
-\item The algorithm does not guarantee that by increasing the degree of the approximation, the remainder bound will become smaller. Moreover, it may 
-   even become larger due to the dependecy phenomenon present with interval arithmetic. In order to reduce this phenomenon, a possible solution is to split the definition domain $I$ into several smaller intervals. 
+\item The algorithm does not guarantee that by increasing the degree of the
+   approximation, the remainder bound will become smaller. Moreover, it may 
+   even become larger due to the dependecy phenomenon present with interval
+   arithmetic. In order to reduce this phenomenon, a possible solution is to
+   split the definition domain $I$ into several smaller intervals. 
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
@@ -117,4 +149,4 @@ true
 2
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{diff} (\ref{labdiff}), \textbf{autodiff} (\ref{labautodiff}), \textbf{taylor} (\ref{labtaylor}), \textbf{remez} (\ref{labremez}), \textbf{numberroots} (\ref{labnumberroots})
+See also: \textbf{diff} (\ref{labdiff}), \textbf{autodiff} (\ref{labautodiff}), \textbf{taylor} (\ref{labtaylor}), \textbf{remez} (\ref{labremez})

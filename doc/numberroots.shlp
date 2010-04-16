@@ -1,22 +1,60 @@
 #NAME $NUMBERROOTS
-#QUICK_DESCRIPTION Computes the number of roots of a polynomial in a given range
+#QUICK_DESCRIPTION Computes the number of roots of a polynomial in a given range.
 
 #CALLING $COMMAND(<p>, <I>)
 #TYPE ($FUNCTION_TYPE, $RANGE_TYPE) -> $INTEGER_TYPE
 
-
-#PARAMETERS <p> is the polynomials to be analyzed.
-#PARAMETERS <I> is the interval over which the polynomial is to be analyzed.
+#PARAMETERS <p> is a polynomial.
+#PARAMETERS <I> is an interval.
 
 #DESCRIPTION 
-Nothing.
+$COMMAND rigorously computes the number of roots of polynomial the §§p§$p$§§ in
+the interval §§I§$I$§§. The technique used is Sturm's algorithm. The value returned
+is not just a numerical estimation of the number of roots of §§p§$p$§§ in §§I§$I$§§: it is
+the exact number of roots.
+
+#DESCRIPTION
+The command $FINDZEROS computes safe enclosures of all the zeros of a
+function, without forgetting any, but it is not guaranteed to separate them
+all in distinct intervals. $COMMAND is more accurate since it guarantees 
+the exact number of roots. However, it does not compute them. It may be used,
+for instance, to certify that $FINDZEROS did not put two distinct roots in 
+the same interval.
+
+#DESCRIPTION
+Multiple roots are counted only once.
+
+#DESCRIPTION
+The interval §§I§$I$§§ must be bounded. The algorithm cannot handle unbounded
+intervals. Moreover, the interval is considered as a closed interval: if one
+(or both) of the endpoints of §§I§$I$§§ are roots of §§p§$p$§§, they are counted.
+
+#DESCRIPTION
+The argument §§p§$p$§§ can be any expression, but if $SOLLYA fails to prove that
+it is a polynomial an error is produced. Also, please note that if the
+coefficients of §§p§$p$§§ or the endpoints of §§I§$I$§§ are not exactly representable,
+they are first numerically evaluated, before the algorithm is used. In that
+case, the counted number of roots corresponds to the rounded polynomial on
+the rounded interval §§*and not*§\textbf{and not}§§ to the exact parameters given by the user.
+A warning is displayed to inform the user.
 
 #EXAMPLE
-numberroots(0.25*x^3 - x^2 + 1,[1;7]);
-findzeros(0.25*x^3 - x^2 + 1,[1;7]);
+numberroots(1+x-x^2, [1,2]);
+findzeros(1+x-x^2, [1,2]);
+
+#EXAMPLE
+numberroots((1+x)*(1-x), [-1,1]);
+numberroots(x^2, [-1,1]);
+
+#EXAMPLE
+verbosity = 1!;
+numberroots(x-pi, [0,4]);
+
+#EXAMPLE
+verbosity = 1!;
+numberroots(1+x-x^2, [0, @Inf@]);
+numberroots(exp(x), [0, 1]);
 
 #SEEALSO $DIRTYFINDZEROS
 #SEEALSO $FINDZEROS
-#SEEALSO $AUTODIFF
-#SEEALSO $TAYLORFORM
 
