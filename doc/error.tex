@@ -46,10 +46,13 @@ false
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > correct = 5 + 6;
 > incorrect = 5 + "foo";
-> (correct == error || correct != error);
+> correct == correct;
 true
-> (incorrect == error || incorrect != error);
+> incorrect == incorrect;
 false
+> errorhappened = !(incorrect == incorrect);
+> errorhappened;
+true
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{void} (\ref{labvoid}), \textbf{parse} (\ref{labparse}), \textbf{$==$} (\ref{labequal}), \textbf{!$=$} (\ref{labneq})

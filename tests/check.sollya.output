@@ -405,6 +405,9 @@ The tool has been restarted.
 Warning: at least one of the given expressions or a subexpression is not correctly typed
 or its evaluation has failed because of some error on a side-effect.
 true
+Warning: the evaluation of one of the sides of an equality test yields error due to a syntax error or an error on a side-effect.
+The other side either also yields error due to an syntax or side-effect error or does not evaluate to error.
+The boolean returned may be meaningless.
 false
 The tool has been restarted.
 =============== Test number 57 ================
@@ -1639,3 +1642,7 @@ The tool has been restarted.
 =============== Test number 251 ================
 5.53427734375e1
 5.53427734375e1
+The tool has been restarted.
+=============== Test number 252 ================
+Warning: using slower GMP MPQ version
+0
