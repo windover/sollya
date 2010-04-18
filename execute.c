@@ -14032,8 +14032,13 @@ node *evaluateThingInner(node *tree) {
 	mpfr_clear(a);
 	mpfr_clear(b);
       } else {
-	freeThing(copy);
-	copy = makeTrue();
+	if (!(isError(copy->child1) || isError(copy->child2))) {
+	  freeThing(copy);
+	  copy = makeTrue();		    
+	} else {
+	  freeThing(copy);
+	  copy = makeFalse();		    
+	}
       }
     }
     if (timingString != NULL) popTimeCounter(timingString);
