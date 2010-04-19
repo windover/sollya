@@ -2243,3 +2243,17 @@ p=43196308294462357981024142731744116362697650584913 * 2^(-162) + x * (189407878
 I = [1;2];
 numberroots(p,I);
 
+restart;
+print("=============== Test number 253 ================");
+NaN < 17;
+17 <= NaN;
+NaN < NaN;
+NaN == NaN ;
+NaN == 17 ;
+NaN == "aaa" ;
+NaN != NaN ;
+NaN != 17 ;
+NaN != "aaa" ;
+NaN != error ;
+NaN == error;
+

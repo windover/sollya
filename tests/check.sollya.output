@@ -1646,3 +1646,16 @@ The tool has been restarted.
 =============== Test number 252 ================
 Warning: using slower GMP MPQ version
 0
+The tool has been restarted.
+=============== Test number 253 ================
+false
+false
+false
+false
+false
+false
+false
+false
+true
+false
+false
