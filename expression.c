@@ -91,12 +91,17 @@ void simplifyMpfrPrec(mpfr_t rop, mpfr_t op) {
     mpfr_clear(x);
     mpz_clear(mant);
   } else {
-    prec = mpfr_get_prec(op);
-    mpfr_init2(x,prec);
-    mpfr_set(x,op,GMP_RNDN);
-    mpfr_set_prec(rop,prec);
-    mpfr_set(rop,x,GMP_RNDN);
-    mpfr_clear(x);
+    if (mpfr_zero_p(op)) {
+      mpfr_set_prec(rop,12);
+      mpfr_set(rop,op,GMP_RNDN);
+    } else {
+      prec = mpfr_get_prec(op);
+      mpfr_init2(x,prec);
+      mpfr_set(x,op,GMP_RNDN);
+      mpfr_set_prec(rop,prec);
+      mpfr_set(rop,x,GMP_RNDN);
+      mpfr_clear(x);
+    } 
   }
 }
 

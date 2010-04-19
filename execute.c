@@ -2146,7 +2146,8 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal, int s
   evaluatedResult = evaluateThing(tree);
 
   if ((defaultVal != NULL) && (isDefault(evaluatedResult))) {
-    mpfr_set(result,*defaultVal,GMP_RNDN);
+    mpfr_set_prec(result,mpfr_get_prec(*defaultVal));
+    simplifyMpfrPrec(result, *defaultVal);
     freeThing(evaluatedResult);
     return 1;
   }
@@ -2159,7 +2160,6 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal, int s
       evaluatedResult = simplified2;
     }
 
-    
     simplified = simplifyTreeErrorfree(evaluatedResult);
     free_memory(evaluatedResult);
 
@@ -2277,7 +2277,8 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal, int s
 
     free_memory(simplified);
     mpfr_set(result,tempResult,GMP_RNDN);
-    
+    simplifyMpfrPrec(result,tempResult);
+
     mpfr_clear(tempMpfr);
     mpfr_clear(tempResult);
 
@@ -2292,6 +2293,7 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal, int s
   
   return 0;
 }
+
 
 int evaluateThingToInteger(int *result, node *tree, int *defaultVal) {
   mpfr_t *defaultValMpfr, resultMpfr, resInt;
