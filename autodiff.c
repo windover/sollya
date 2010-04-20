@@ -1521,7 +1521,7 @@ void auto_diff_scaled(mpfi_t* res, node *f, mpfi_t x0, int n) {
     free(res2);
     break;
 
-  case POW:    
+  case POW:
     simplifiedChild2 = simplifyTreeErrorfree(f->child2);
     simplifiedChild1 = simplifyTreeErrorfree(f->child1);
     

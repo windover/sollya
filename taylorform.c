@@ -459,7 +459,7 @@ void computeMonotoneRemainder(mpfi_t *bound, int typeOfFunction, int nodeType, n
     if (((n-1)%2)!=0)  mpfi_pow(boundfx0, p_interv, x0);
     break;
   default:
-    fprintf(stderr, "Error in tayloform: unkown type of function used with Zumkeller's technique\n");
+    fprintf(stderr, "Error in taylorform: unkown type of function used with Zumkeller's technique\n");
     return;
   }
   
@@ -529,7 +529,7 @@ void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, 
     powerFunction_diff(nDeriv, p, x, n+1, silent);
     break;
   default: 
-    fprintf(stderr, "Error in tayloform: unkown type of function used with Zumkeller's technique\n");
+    fprintf(stderr, "Error in taylorform: unkown type of function used with Zumkeller's technique\n");
     return;
   }
   
@@ -956,26 +956,18 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
     
     mpfi_clear(gx0);
     break;
+
   case SQRT:
-    
   case EXP:
-  
   case LOG:
-  
   case LOG_2:
-   
   case LOG_10:
-   
   case SIN:
   case COS:
   case TAN:
-  
   case ASIN:
-  
   case ACOS:
-  
   case ATAN:
-  
   case SINH:
   case COSH:
   case TANH:
@@ -983,6 +975,7 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
   case ACOSH:
   case ATANH:
   case ABS:
+  case SINGLE:
   case DOUBLE:
   case DOUBLEDOUBLE:
   case TRIPLEDOUBLE:
@@ -993,6 +986,7 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
   case DOUBLEEXTENDED:
   case CEIL:
   case FLOOR: 
+  case NEARESTINT: 
   case LIBRARYFUNCTION:
     tt=createEmptytModel(n,x0,x); 
    //create a new empty taylor model the child
