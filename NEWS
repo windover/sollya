@@ -1,5 +1,58 @@
-Changes from version 1.0 to version 1.1:
+Changes from version 1.1 to version 2.0:
+========================================
+Changes of syntax and output:
+  * When the evaluation of an expression seems to be zero but cannot be proven to be exactly zero, the value zero is now returned (instead of a very small value as before)
+  * Added %precision%constant parsing capability for numerical point constants
+  * printhexa, printfloat are now deprecated. They should be replaced by printdouble and printsingle
+  * Syntax like prec = ? is still supported but deprecated. It should be replaced by prec (or any other global variable)
+  * The syntax *< interval >*, *< interval >_, *<interval>. is deprecated. It should be replaced by sup(), inf() and mid()
+  * The read keyword is deprecated. It should be replaced by #include or even execute()
+  * The begin and end keywords are deprecated. They should be replaced by { and }
+  * Polymorphic prepend :: is now deprecated. It should be replaced by .: and :.
 
+Major new functionnalities:
+  * Added nearestint function
+  * Added single precision rounding function
+  * Added taylorform command
+  * Added autodiff command
+  * Added numberroots command
+  * Added support for procedures with an arbitrary number of arguments
+  * Added time command
+  * Made Sollya accept an input file as a command line argument (in particular, it makes shebangs possible)
+  * Updated parse command with all new functionnalities
+  * Added rationalmode mode
+  * Added support for interval arithmetic
+  * Added "in" operator for testing if a value belongs to an interval
+  * Equality and inequality tests now automatically adapt the precision for guaranteeing safe results whenever possible (or display a warning)
+
+Minor new functionnalities:
+  * Added dieonerror mode
+  * Added --flush option to Sollya
+  * Added support for integer arguments in nop
+  * Extended syntax of roundcoefficients command
+  * Extended syntax of round command
+
+Improvements in internal handling:
+  * Added smart sign test used for proving that some constant expressions are constant zero
+  * Made exact simplifier simplify things like D(sin(3)), ceil(log(pi)), etc. where possible with a little more than the working precision
+  * Improvement of fpminimax (some infinite loops are now avoided)
+  * Infinities and NaN behavior is now IEEE-like
+  * Rewrote dirtyinfnorm command and remez command for better performance
+  * Randomized sampling in plot in order to avoid regular patterns
+
+Others:
+  * Enable linkage of sollya.h with C++
+  * Added -Xlinker --allow-multiple-definition for CygWin users
+  * Added --help option
+  * Slight changes in the behavior of autoprint. Introduced new option --oldautoprint for recovering the old behavior
+  * The option --oldrlwrapcompatible is now deprecated. Users should use a recent version of rlwrap supporting "-A" option.
+
+And fixes many bug.
+
+
+
+Changes from version 1.0 to version 1.1:
+========================================
 Critical bug fixes:
   * Patched expansion of polynomial terms. Signs and coefficient values could be completely wrong
     All results previously obtained using Sollya should be re-checked
@@ -33,7 +86,3 @@ Others:
   * Added --help, --oldrlwrapcompatible, --nocolor and --noprompt command-line options
   * Added check environment
   * Added color printing
-
-
-
-
