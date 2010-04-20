@@ -2257,3 +2257,6 @@ NaN != "aaa" ;
 NaN != error ;
 NaN == error;
 
+restart;
+print("=============== Test number 254 ================");
+read "checkTMandAD.sollya";
