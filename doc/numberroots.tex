@@ -69,7 +69,11 @@ Will faithfully evaluate it with the current precision (165 bits)
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > verbosity = 1!;
 > numberroots(1+x-x^2, [0, @Inf@]);
-1
+Warning: the given interval must have finite bounds.
+Warning: at least one of the given expressions or a subexpression is not correct
+ly typed
+or its evaluation has failed because of some error on a side-effect.
+error
 > numberroots(exp(x), [0, 1]);
 Warning: the given function must be a polynomial in this context.
 Warning: at least one of the given expressions or a subexpression is not correct
