@@ -18,24 +18,10 @@ In order to compile the software you will need the following packages installed:
 - fplll (available at url http://perso.ens-lyon.fr/damien.stehle/english.html#software)
 - libtool
 
-- bison version 2.3 or later
-- flex version 2.5.33 or later
-
-
-Bison and flex are really needed if you compile a fresh svn checkout
-or if you modify the grammar files contained in the
-distribution. Otherwise, precompiled versions are found in the
-distribution and can be used.
-
 In order to compile, use the makefile by invoking it using the following command:
 
 ./configure
 make
-
-When compiling a fresh svn checkout, launch first the autogen.sh shell
-script before executing the two steps indicated above. 
-Users compiling fresh svn checkouts are recommanded to use the 
---enable-strict-lexer-parser-check option of the configure script.
 
 The configure script coming with this distribution of Sollya supports
 several --with-*** switches. These switches, as usual, enable the libraries
@@ -50,11 +36,11 @@ At special occasions, when one of the --with-*** switches is given,
 MPFR is used as a dynamic library that cannot be found in the standard
 search pathes for dynamic libraries (including LD_LIBRARY_PATH), it
 might be the case that the use of the FPLLL library is not correctly
-detected by the configure script. However, in those cases, Sollya can
-usually be compiled correctly by libtool, which is used to compile the
-tool. Just, as libtool cannot be used in the configure script, the
-FPLLL detection gives a false negative. As the situation is known, the
-failure of the configure script is replaced by a warning in those
+detected by the configure script. In this case, you will get the following warning from the configure script:
+
+     WARNING: fplll found unusable during configure. However, as dynamically linked libraries are given, libtool used for compilation might fix up the problem during compilation. (see README)
+
+However, in those cases, Sollya can usually be compiled correctly by libtool, which is used to compile the tool. Just, as libtool cannot be used in the configure script, the FPLLL detection gives a false negative. As the situation is known, the failure of the configure script is replaced by a warning in those
 cases.
 
 
@@ -68,3 +54,19 @@ make install
 
 The use of the readline-wrapper rlwrap is highly recommended for interactive 
 work with sollya.
+
+
+If you wish to compile and install Sollya from a fresh svn checkout, you further need:
+
+- bison version 2.3 or later
+- flex version 2.5.33 or later
+
+Bison and flex are really needed if you compile a fresh svn checkout
+or if you modify the grammar files contained in the
+distribution. Otherwise, precompiled versions are found in the
+distribution and can be used.
+
+When compiling a fresh svn checkout, launch first the autogen.sh shell
+script before executing the two steps indicated above. 
+Users compiling fresh svn checkouts are recommanded to use the 
+--enable-strict-lexer-parser-check option of the configure script.

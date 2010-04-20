@@ -1,9 +1,9 @@
-EXTRA_DIST= check.sollya checkTMandAD.sollya check.sollya.output timecheck.sollya timecheck.sollya.output check.proto
+EXTRA_DIST= check.sollya checkTMandAD.sollya check.sollya.output check.proto
 
 TESTS_ENVIRONMENT=$(SHELL) 
 TESTS= check.sh 
 
-TESTFILES= check.sollya timecheck.sollya
+TESTFILES= check.sollya
 
 .PHONY: $(top_builddir)/sollya
 
