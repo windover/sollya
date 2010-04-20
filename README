@@ -37,8 +37,28 @@ script before executing the two steps indicated above.
 Users compiling fresh svn checkouts are recommanded to use the 
 --enable-strict-lexer-parser-check option of the configure script.
 
+The configure script coming with this distribution of Sollya supports
+several --with-*** switches. These switches, as usual, enable the libraries
+Sollya depends on to be installed in non-standard directories.
+Please use 
 
-You can then use the software typing
+./configure --help
+
+to get an overview over the different switches.
+
+At special occasions, when one of the --with-*** switches is given,
+MPFR is used as a dynamic library that cannot be found in the standard
+search pathes for dynamic libraries (including LD_LIBRARY_PATH), it
+might be the case that the use of the FPLLL library is not correctly
+detected by the configure script. However, in those cases, Sollya can
+usually be compiled correctly by libtool, which is used to compile the
+tool. Just, as libtool cannot be used in the configure script, the
+FPLLL detection gives a false negative. As the situation is known, the
+failure of the configure script is replaced by a warning in those
+cases.
+
+
+You can finally use the software typing
 
 ./sollya
 
