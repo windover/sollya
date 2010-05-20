@@ -8727,6 +8727,20 @@ node *makeList(chain *thinglist) {
 
 }
 
+node *makeRevertedList(chain *thinglist) {
+  node *res;
+  chain *tempList;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = LIST;
+  tempList = copyChain(thinglist,copyThingOnVoid);
+  freeChain(thinglist,freeThingOnVoid);
+  res->arguments = tempList;
+
+  return res;
+
+}
+
 node *makeFinalEllipticList(chain *thinglist) {
   node *res;
 
@@ -8737,6 +8751,21 @@ node *makeFinalEllipticList(chain *thinglist) {
   return res;
 
 }
+
+node *makeRevertedFinalEllipticList(chain *thinglist) {
+  node *res;
+  chain *tempList;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = FINALELLIPTICLIST;
+  tempList = copyChain(thinglist,copyThingOnVoid);
+  freeChain(thinglist,freeThingOnVoid);
+  res->arguments = tempList;
+
+  return res;
+
+}
+
 
 node *makeElliptic() {
   node *res;

@@ -264,6 +264,7 @@ extern void endBuffer(void);
 int executeCommand(node *);
 
 node *copyThing(node *);
+void *copyThingOnVoid(void *);
 void freeThing(node *);
 void rawPrintThing(node *);
 void freeThingOnVoid(void *);
@@ -388,6 +389,8 @@ node *makeBinaryConstant(char *string);
 node *makeEmptyList();
 node *makeList(chain *thinglist);
 node *makeFinalEllipticList(chain *thinglist);
+node *makeRevertedList(chain *thinglist);
+node *makeRevertedFinalEllipticList(chain *thinglist);
 node *makeElliptic();
 node *makeRange(node *thing1, node *thing2);
 node *makeDeboundMax(node *thing);

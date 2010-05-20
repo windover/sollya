@@ -1360,11 +1360,11 @@ list:                   LBRACKETTOKEN VERTBARTOKEN VERTBARTOKEN RBRACKETTOKEN
 			  }
 		      | LBRACKETTOKEN VERTBARTOKEN simplelist VERTBARTOKEN RBRACKETTOKEN
                           {
-			    $$ = makeList($3);
+			    $$ = makeRevertedList($3);
 			  }
                       | LBRACKETTOKEN VERTBARTOKEN simplelist DOTSTOKEN VERTBARTOKEN RBRACKETTOKEN
                           {
-			    $$ = makeFinalEllipticList($3);
+			    $$ = makeRevertedFinalEllipticList($3);
 			  }
 ;
 
@@ -1372,13 +1372,13 @@ simplelist:             thing
                           {
 			    $$ = addElement(NULL, $1);
 			  }
-                      | thing COMMATOKEN simplelist
+                      | simplelist COMMATOKEN thing 
                           {
-			    $$ = addElement($3, $1);
+			    $$ = addElement($1, $3);
 			  }
-                      | thing COMMATOKEN DOTSTOKEN COMMATOKEN simplelist
+                      | simplelist COMMATOKEN DOTSTOKEN COMMATOKEN thing
                           {
-			    $$ = addElement(addElement($5, makeElliptic()), $1);
+			    $$ = addElement(addElement($1, makeElliptic()), $5);
 			  }
 ;
 
