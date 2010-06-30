@@ -55,6 +55,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "infnorm.h"
 #include "autodiff.h"
 #include "general.h"
+#include "execute.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -1227,6 +1228,23 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
 }
   return;
 }
+
+/* Construct the expression of the polynomial sum_{i=0}^n c_i*x^i   */
+/* where c_i are coefficients given in coeff.                       */
+/* Please note that the polynomial is constructed in reversed order */
+/* compared to what does makePolynomial.                            */
+node *constructPoly(mpfr_t *coeff, int n) {
+  node *poly;
+  int i;
+  poly = makeConstant(coeff[0]);
+  for (i=1;i<=n;i++) { 
+    poly = makeAdd(makeMul(makeConstant(coeff[i]),
+                           makePow(makeVariable(), makeConstantDouble((double)i))),
+                   poly);
+  }
+  return poly;
+}
+
 chain *constructChain(mpfi_t *err, int n){
   chain *l;
   mpfi_t *elem;
@@ -1309,7 +1327,12 @@ void taylorform(node **T, chain **errors, mpfi_t **delta,
   mpfr_get_poly(coeffsMpfr, coeffsErrors, *rest, t->n -1,t->poly_array, t->x0,t->x);
  
   //create T; 
-  *T=makePolynomial(coeffsMpfr, (t->n)-1);
+  *T=constructPoly(coeffsMpfr, (t->n)-1);
+  /* Note: it would be interesting to use makePolynomial, since it has been
+     designed for this purpose. We introduced it in revision 1008. However,
+     we figured out that it makes the translation of a polynomial created
+     with taylorform very long. So we reverted at revision 1079. */
+  // *T=makePolynomial(coeffsMpfr, (t->n)-1);
 
   //create errors;
   err=constructChain(coeffsErrors,t->n-1);
