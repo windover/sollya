@@ -9428,8 +9428,105 @@ void getCoefficientsCanonical(node **coefficients, node *poly) {
 
 int isHorner(node *);
 int isCanonical(node *);
-
 node *dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha);
+node *makePowerOfConstant(node *constTree, int k);
+node *makeBinomialCoefficient(unsigned int n, unsigned int k);
+
+// Computes the coefficients of the polynomial p^k where p is 
+// given by the coefficients in input
+//
+void computePowerOfPolynomialCoefficients(int *degreeRes, node ***coeffRes, 
+                                          node **coeffs, int degree, int k) {
+  int i, t;
+  node **coeffsQ;
+  int degreeQ;
+  node *binom;
+  node *constPow;
+  node *factor;
+  node *temp;
+
+  *degreeRes = k * degree;
+  *coeffRes = (node **) safeCalloc(*degreeRes+1,sizeof(node *));
+
+  if (k == 0) {
+    for (i=1;i<=*degreeRes;i++) {
+      (*coeffRes)[i] = makeConstantDouble(0.0);
+    }
+    (*coeffRes)[0] = makeConstantDouble(1.0);
+    return;
+  }
+
+  if (degree == 0) {
+    for (i=1;i<=*degreeRes;i++) {
+      (*coeffRes)[i] = makeConstantDouble(0.0);
+    }
+    if (coeffs[0] != NULL) {
+      (*coeffRes)[0] = makePowerOfConstant(coeffs[0],k);
+    } else {
+      (*coeffRes)[0] = makeConstantDouble(0.0);
+    }
+    return;
+  }
+
+  if (k == 1) {
+    for (i=1;i<=*degreeRes;i++) {
+      if (coeffs[i] != NULL) {
+        (*coeffRes)[i] = copyTree(coeffs[i]);
+      } else {
+        (*coeffRes)[i] = makeConstantDouble(0.0);
+      }
+    }
+    return;
+  }
+
+  for (i=0;i<=*degreeRes;i++) {
+    (*coeffRes)[i] = makeConstantDouble(0.0);
+  }
+
+  for (t=0;t<=k;t++) {
+    if ((coeffs[0] != NULL) && 
+        (!((coeffs[0]->nodeType == CONSTANT) &&
+           (mpfr_zero_p(*(coeffs[0]->value)))))) {
+      computePowerOfPolynomialCoefficients(&degreeQ, &coeffsQ, 
+                                           &(coeffs[1]), degree - 1, t);
+      binom = makeBinomialCoefficient(k, t);
+      constPow = makePowerOfConstant(coeffs[0],k-t);
+      factor = makeMul(binom,constPow);
+      for (i=t;i<=t+degreeQ;i++) {
+        if (coeffsQ[i-t] != NULL) {
+          (*coeffRes)[i] = makeAdd((*coeffRes)[i],
+                                   makeMul(copyTree(factor),
+                                           coeffsQ[i-t]));
+        }
+      }
+      free(coeffsQ);
+      free_memory(factor);
+    } else {
+      if (k == t) {
+        computePowerOfPolynomialCoefficients(&degreeQ, &coeffsQ, 
+                                             &(coeffs[1]), degree - 1, t);
+        factor = makeBinomialCoefficient(k, t);
+        for (i=t;i<=t+degreeQ;i++) {
+          if (coeffsQ[i-t] != NULL) {
+            (*coeffRes)[i] = makeAdd((*coeffRes)[i],
+                                     makeMul(copyTree(factor),
+                                             coeffsQ[i-t]));
+          }
+        }
+        free(coeffsQ);
+        free_memory(factor);
+      }
+    }
+  }
+
+  for (i=0;i<=*degreeRes;i++) {
+    if ((*coeffRes)[i] != NULL) {
+      temp = simplifyTreeErrorfree((*coeffRes)[i]);
+      free_memory((*coeffRes)[i]);
+      (*coeffRes)[i] = temp;
+    }
+  }
+}
 
 void getCoefficients(int *degree, node ***coefficients, node *poly) {
   node *temp, *temp2, *temp3, *temp4;
@@ -9575,6 +9672,37 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
         return;
       }
 
+      getCoefficients(&degree1, &coefficients1, poly->child1);
+      for (i=0;i<=degree1;i++) {
+        if (coefficients1[i] == NULL) 
+          coefficients1[i] = makeConstantDouble(0.0);
+      }
+
+      computePowerOfPolynomialCoefficients(&degree2, &coefficients2, 
+                                           coefficients1, degree1, 
+                                           k);
+      for (i=0;i<=degree2;i++) {
+        if (coefficients2[i] != NULL) {
+          temp = simplifyTreeErrorfree(coefficients2[i]);
+          free_memory(coefficients2[i]);
+          coefficients2[i] = temp;
+        }
+      }
+
+      for (i=0;i<=degree2;i++) {
+        if ((coefficients2[i] != NULL) && 
+            (!((coefficients2[i]->nodeType == CONSTANT) &&
+               (mpfr_zero_p(*(coefficients2[i]->value)))))) {
+          (*coefficients)[i] = copyTree(coefficients2[i]);
+        }
+      }
+
+      for (i=0;i<=degree1;i++) free_memory(coefficients1[i]);
+      free(coefficients1);
+      for (i=0;i<=degree2;i++) free_memory(coefficients2[i]);
+      free(coefficients2);
+      mpfr_clear(y);
+      return;
     } 
     mpfr_clear(y);
   }
@@ -10410,11 +10538,228 @@ int getNumeratorDenominator(node **numerator, node **denominator, node *tree) {
   }
 }
 
+node *makeBinomialCoefficient(unsigned int n, unsigned int k) {
+  mpz_t coeffGMP;
+  mp_prec_t prec;
+  mpfr_t *coeffVal;
+  node *res;
+
+  mpz_init(coeffGMP);
+  mpz_bin_uiui(coeffGMP,n,k);
+  prec = mpz_sizeinbase(coeffGMP, 2) + 10;
+  if (prec < tools_precision) prec = tools_precision;
+  coeffVal = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*coeffVal,prec);
+  if(mpfr_set_z(*coeffVal,coeffGMP,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: rounding occurred when calculating a binomial coefficient.\n");
+      printMessage(1,"Try to increase the working precision.\n");
+    }
+  }
+  mpz_clear(coeffGMP);
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = CONSTANT;
+  res->value = coeffVal;
+  return res;
+}
+
+node *makePowerOfConstant(node *constTree, int k) {
+  node *temp, *res;
+
+  if (k == 1) {
+    return copyTree(constTree);
+  }
+  temp = (node *) safeMalloc(sizeof(node));
+  temp->nodeType = CONSTANT;
+  temp->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*(temp->value),8 * sizeof(k) + 10);
+  mpfr_set_si(*(temp->value),k,GMP_RNDN);
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = POW;
+  res->child1 = copyTree(constTree);
+  res->child2 = temp;
+
+  return res;
+}
+
+// polynomialShiftAndScaleAbscissaUnsafe(poly, a, b) returns
+//
+// p(a + b * x)
+// 
+// for a polynomial p and a, b constant nodes
+//
+// If poly is not a polynomial the tool is terminated.
+// If a or b is not a constant expression, the shifting and
+// scaling is performed as if they were.
+//
+node *polynomialShiftAndScaleAbscissaUnsafe(node *poly, node *a, node *b) {
+  node *res;
+  node **coeffs;
+  node **coeffsRes;
+  node *temp;
+  int degree;
+  int i,k;
+ 
+  getCoefficients(&degree, &coeffs, poly);
+  if (degree < 0) {
+    fprintf(stderr,"Error: polynomialShiftAndScaleAbscissaUnsafe: the given expression is not a polynomial\n");
+    exit(1);
+  }
+  for (i=0;i<=degree;i++) {
+    if (coeffs[i] == NULL) {
+      coeffs[i] = makeConstantDouble(0.0);
+    }
+  }
+
+  coeffsRes = (node **) safeCalloc(degree+1,sizeof(node *));
+  for (i=0;i<=degree;i++) {
+    coeffsRes[i] = makeConstantDouble(0.0);
+  }
+
+  for (i=0;i<=degree;i++) {
+    for (k=0;k<=i;k++) {
+      temp = makeMul(copyTree(coeffs[i]),
+                     makeMul(makeBinomialCoefficient(i,k),
+                             makeMul(makePowerOfConstant(a, i-k),
+                                     makePowerOfConstant(b, k))));
+      coeffsRes[k] = makeAdd(coeffsRes[k],temp);
+    }
+  }
+
+  for (i=0;i<=degree;i++) {
+    if (coeffsRes[i] != NULL) {
+      temp = simplifyTreeErrorfree(coeffsRes[i]);
+      free_memory(coeffsRes[i]);
+      coeffsRes[i] = temp;
+    }
+  }
+
+  res = makePolynomialConstantExpressions(coeffsRes, degree);
+
+  for (i=0;i<=degree;i++) {
+    if (coeffs[i] != NULL) free_memory(coeffs[i]);
+    if (coeffsRes[i] != NULL) free_memory(coeffsRes[i]);
+  }
+  free(coeffs);
+  free(coeffsRes);
+
+  return res;
+}
+
+// Returns p(q)
+//
+node *substitutePolynomialUnsafe(node *p, node *q) {
+  node *res;
+  node **coeffsP, **coeffsQ, **coeffs, **coeffsQPi;
+  int degP, degQ, deg, i, k, degQPi;
+  node *temp;
+
+  getCoefficients(&degP, &coeffsP, p);
+  if (degP < 0) {
+    fprintf(stderr,"Error: substitutePolynomialUnsafe: the given expression is not a polynomial\n");
+    exit(1);
+  }
+
+  getCoefficients(&degQ, &coeffsQ, q);
+  if (degQ < 0) {
+    fprintf(stderr,"Error: substitutePolynomialUnsafe: the given expression is not a polynomial\n");
+    exit(1);
+  }
+  for (i=0;i<=degQ;i++) {
+    if (coeffsQ[i] == NULL) {
+      coeffsQ[i] = makeConstantDouble(0.0);
+    }
+  }
+
+  deg = degP * degQ;
+  coeffs = (node **) safeCalloc(deg+1,sizeof(node *));
+  for (i=0;i<=deg;i++) {
+    coeffs[i] = makeConstantDouble(0.0);
+  }
+
+  for (i=0;i<=degP;i++) {
+    if (coeffsP[i] != NULL) {
+      computePowerOfPolynomialCoefficients(&degQPi, &coeffsQPi, 
+                                           coeffsQ, degQ, i);
+      for (k=0;k<=degQPi;k++) {
+        if (coeffsQPi[k] != NULL) {
+          coeffs[k] = makeAdd(coeffs[k],
+                              makeMul(copyTree(coeffsP[i]),
+                                      coeffsQPi[k]));
+        }
+      }
+      free(coeffsQPi);
+    }
+  }
+
+  for (i=0;i<=deg;i++) {
+    if (coeffs[i] != NULL) {
+      temp = simplifyTreeErrorfree(coeffs[i]);
+      free_memory(coeffs[i]);
+      coeffs[i] = temp;
+    }
+  }
+
+  res = makePolynomialConstantExpressions(coeffs, deg);
+
+  for (i=0;i<=degP;i++) {
+    if (coeffsP[i] != NULL) free_memory(coeffsP[i]);
+  }
+  free(coeffsP);
+
+  for (i=0;i<=degQ;i++) {
+    if (coeffsQ[i] != NULL) free_memory(coeffsQ[i]);
+  }
+  free(coeffsQ);
+
+  for (i=0;i<=deg;i++) {
+    if (coeffs[i] != NULL) free_memory(coeffs[i]);
+  }
+  free(coeffs);
+
+  return res;
+}
 
 node *substitute(node* tree, node *t) {
   node *copy;
   mpfr_t *value;
   mpfr_t temp;
+  node **coeffs;
+  int degree;
+  int i;
+
+  if (isPolynomial(tree) && 
+      isPolynomial(t)) {
+    if ((getDegree(t) == 1) &&
+        (getDegree(tree) >= 2)) {
+      getCoefficients(&degree, &coeffs, t);
+      if (degree == 1) {
+        for (i=0;i<=degree;i++) {
+          if (coeffs[i] == NULL) {
+            coeffs[i] = makeConstantDouble(0.0);
+          }
+        }
+
+        copy = polynomialShiftAndScaleAbscissaUnsafe(tree, coeffs[0], coeffs[1]);
+
+        for (i=0;i<=degree;i++) {
+          if (coeffs[i] != NULL) free_memory(coeffs[i]);
+        }
+        free(coeffs);
+        return copy;
+      }
+      for (i=0;i<=degree;i++) {
+        if (coeffs[i] != NULL) free_memory(coeffs[i]);
+      }
+      free(coeffs);
+    }
+
+    if ((getDegree(t) >= 2) && 
+        (getDegree(tree) >= 2)) {
+      copy = substitutePolynomialUnsafe(tree,t);
+      return copy;
+    }
+  }
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -10743,6 +11088,101 @@ int readDyadic(mpfr_t res, char *c) {
   free(mantissa);
   free(exponent);
   return rounding;
+}
+
+node *makePolynomialConstantExpressions(node **coeffs, int deg) {
+  node *copy;
+  int i, degree, e, k;
+  node *temp;
+  node *temp2;
+  node *temp3;
+  mpfr_t *value;
+  node *temp4;
+
+  if (deg < 0) {
+    fprintf(stderr,"Error: makePolynomialConstantExpressions: degree of polynomial to be built is negative\n");
+    exit(1);
+  }
+
+  degree = deg;
+  while ((degree > 0) && 
+         ((coeffs[degree] == NULL) || 
+          ((coeffs[degree]->nodeType == CONSTANT) && 
+           (mpfr_zero_p(*(coeffs[degree]->value)))))) degree--;
+
+  if (degree == 0) {
+    if (coeffs[0] == NULL) return makeConstantDouble(0.0);
+    return copyTree(coeffs[0]);
+  }
+
+  copy = copyTree(coeffs[degree]);
+  for (i=degree-1;i>=0;i--) {
+    if ((coeffs[i] == NULL) || 
+        ((coeffs[i]->nodeType == CONSTANT) && 
+         (mpfr_zero_p(*(coeffs[i]->value))))) {
+      if ((i == 0)) {
+	temp = (node *) safeMalloc(sizeof(node));
+	temp->nodeType = MUL;
+	temp2 = (node *) safeMalloc(sizeof(node));
+	temp2->nodeType = VARIABLE;
+	temp->child1 = temp2;
+	temp->child2 = copy;
+	copy = temp;
+      } else {
+	for (k=i-1;(((coeffs[k] == NULL) || 
+                     ((coeffs[k]->nodeType == CONSTANT) && 
+                      (mpfr_zero_p(*(coeffs[k]->value))))) && (k > 0));k--);
+	e = (i - k) + 1;
+	temp = (node *) safeMalloc(sizeof(node));
+	temp->nodeType = MUL;
+	temp2 = (node *) safeMalloc(sizeof(node));
+	temp2->nodeType = VARIABLE;
+	temp3 = (node *) safeMalloc(sizeof(node));
+	temp3->nodeType = CONSTANT;
+	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*value,(tools_precision > (8 * sizeof(e) + 10) ? tools_precision : (8 * sizeof(e) + 10)));
+	if (mpfr_set_si(*value,e,GMP_RNDN) != 0) {
+	  if (!noRoundingWarnings) {
+	    printMessage(1,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
+			 (int) mpfr_get_prec(*value));
+	    printMessage(1,"Try to increase the precision.\n");
+	  }
+	}
+	temp3->value = value;
+	temp4 = (node *) safeMalloc(sizeof(node));
+	temp4->nodeType = POW;
+	temp4->child1 = temp2;
+	temp4->child2 = temp3;
+	temp->child1 = temp4;
+	temp->child2 = copy;
+	copy = temp;
+	if (!((coeffs[k] == NULL) || 
+              ((coeffs[k]->nodeType == CONSTANT) && 
+               (mpfr_zero_p(*(coeffs[k]->value)))))) {
+	  temp = (node *) safeMalloc(sizeof(node));
+	  temp->nodeType = ADD;
+	  temp->child1 = copyTree(coeffs[k]);
+	  temp->child2 = copy;
+	  copy = temp;
+	}
+	i = k;
+      }
+    } else {
+      temp = (node *) safeMalloc(sizeof(node));
+      temp->nodeType = MUL;
+      temp2 = (node *) safeMalloc(sizeof(node));
+      temp2->nodeType = VARIABLE;
+      temp->child1 = temp2;
+      temp->child2 = copy;
+      copy = temp;
+      temp = (node *) safeMalloc(sizeof(node));
+      temp->nodeType = ADD;
+      temp->child1 = copyTree(coeffs[i]);
+      temp->child2 = copy;
+      copy = temp;
+    }
+  }
+  return copy;
 }
 
 node *makePolynomial(mpfr_t *coefficients, int degree) {
@@ -11411,6 +11851,18 @@ node *makeVariable() {
 
   res = (node *) safeMalloc(sizeof(node));
   res->nodeType = VARIABLE;
+
+  return res;
+}
+
+node *makeConstantDouble(double d) {
+  node *res;
+  
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = CONSTANT;
+  res->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*(res->value),53);
+  mpfr_set_d(*(res->value),d,GMP_RNDN);
 
   return res;
 }

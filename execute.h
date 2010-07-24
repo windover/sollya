@@ -274,7 +274,6 @@ node *makeWhile(node *thing1, node *thing2);
 node *makeIfElse(node *thing1, node *thing2, node *thing3);
 node *makeIf(node *thing1, node *thing2);
 node *makeFor(char *string, node *thing1, node *thing2, node *thing3, node *thing4);
-node *makeConstantDouble(double d);
 node *makeForIn(char *string, node *thing1, node *thing2);
 node *makeQuit();
 node *makeFalseQuit();

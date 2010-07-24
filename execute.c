@@ -7346,19 +7346,6 @@ node *makeFor(char *string, node *thing1, node *thing2, node *thing3, node *thin
 
 }
 
-node *makeConstantDouble(double d) {
-  node *res;
-  
-  res = (node *) safeMalloc(sizeof(node));
-  res->nodeType = CONSTANT;
-  res->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-  mpfr_init2(*(res->value),53);
-  mpfr_set_d(*(res->value),d,GMP_RNDN);
-
-  return res;
-}
-
-
 node *makeForIn(char *string, node *thing1, node *thing2) {
   node *res;
 
