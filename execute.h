@@ -260,6 +260,9 @@ extern void endBuffer(void);
 #define DIEONERRORMODEDEREF 250
 #define COMPAREIN 251
 #define AUTODIFF 252
+#define MIN 253
+#define MAX 254
+
 
 int executeCommand(node *);
 
@@ -400,6 +403,8 @@ node *makeDiff(node *thing);
 node *makeSimplify(node *thing);
 node *makeSimplifySafe(node *thing);
 node *makeRemez(chain *thinglist);
+node *makeMin(chain *thinglist);
+node *makeMax(chain *thinglist);
 node *makeFPminimax(chain *thinglist);
 node *makeHorner(node *thing);
 node *makeCanonicalThing(node *thing);

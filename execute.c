@@ -807,6 +807,12 @@ node *copyThing(node *tree) {
   case REMEZ:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     break; 			 	
+  case MIN:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+    break; 			 	
+  case MAX:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+    break; 			 	
   case FPMINIMAX:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     break; 			 	
@@ -1556,6 +1562,12 @@ char *getTimingStringForThing(node *tree) {
     break;  			
   case REMEZ:
     constString = "computing a minimax approximation";
+    break; 			 	
+  case MIN:
+    constString = "computing a minimum";
+    break; 			 	
+  case MAX:
+    constString = "computing a maximum";
     break; 			 	
   case FPMINIMAX:
     constString = "computing a fpminimax approximation";
@@ -4112,6 +4124,26 @@ char *sRawPrintThing(node *tree) {
     break;  			
   case REMEZ:
     res = newString("remez(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 			 	
+  case MIN:
+    res = newString("min(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 			 	
+  case MAX:
+    res = newString("max(");
     curr = tree->arguments;
     while (curr != NULL) {
       res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
@@ -8855,6 +8887,28 @@ node *makeRemez(chain *thinglist) {
 
 }
 
+node *makeMax(chain *thinglist) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = MAX;
+  res->arguments = thinglist;
+
+  return res;
+
+}
+
+node *makeMin(chain *thinglist) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = MIN;
+  res->arguments = thinglist;
+
+  return res;
+
+}
+
 node *makeFPminimax(chain *thinglist) {
   node *res;
 
@@ -10315,6 +10369,14 @@ void freeThing(node *tree) {
     freeChain(tree->arguments, freeThingOnVoid);
     free(tree);
     break; 			 	
+  case MIN:
+    freeChain(tree->arguments, freeThingOnVoid);
+    free(tree);
+    break; 			 	
+  case MAX:
+    freeChain(tree->arguments, freeThingOnVoid);
+    free(tree);
+    break; 			 	
   case FPMINIMAX:
     freeChain(tree->arguments, freeThingOnVoid);
     free(tree);
@@ -11132,6 +11194,12 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break;  			
   case REMEZ:
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
+    break; 			 	
+  case MIN:
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
+    break; 			 	
+  case MAX:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
     break; 			 	
   case FPMINIMAX:
@@ -13843,6 +13911,142 @@ node *evaluateThingInner(node *tree) {
       if (timingString != NULL) popTimeCounter(timingString);
     }
     break; 			
+  case MIN:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+    curr = copy->arguments;
+    resE = 1;
+    while (curr != NULL) {
+      if (!(isPureTree((node *) (curr->value)) && 
+            isConstant((node *) (curr->value)))) {
+        resE = 0;
+        break;
+      }
+      curr = curr->next;
+    }
+    if (resE) {
+      if (timingString != NULL) pushTimeCounter();
+      curr = copy->arguments;
+      if (curr->next == NULL) {
+        tempNode = copyThing((node *) (curr->value));
+        freeThing(copy);
+        copy = tempNode;
+      } else {
+        tempNode = (node *) (curr->value);
+        curr = curr->next;
+        while (curr != NULL) {
+          tempNode2 = (node *) (curr->value);
+          mpfr_init2(a,tools_precision);
+          mpfr_init2(b,tools_precision);
+          if ((resA = evaluateThingToConstant(a,tempNode,NULL,1)) && 
+              (resB = evaluateThingToConstant(b,tempNode2,NULL,1))) {
+            if ((resA == 3) || (resB == 3)) 
+              printMessage(1,"Warning: minimum computation relies on floating-point result that is not faithfully evaluated.\n");
+            resC = ((mpfr_cmp(a,b) < 0) && (!mpfr_unordered_p(a,b)));
+            if ((resA == 1) || (resB == 1)) {
+              if (resC) {
+                /* a < b */
+                if (resA == 1) mpfr_nextabove(a);
+                if (resB == 1) mpfr_nextbelow(b);
+              } else {
+                /* a >= b */
+                if (resA == 1) mpfr_nextbelow(a);
+                if (resB == 1) mpfr_nextabove(b);
+              }
+              if ((mpfr_cmp(a,b) < 0) != resC) {
+                if (compareConstant(&resD, tempNode, tempNode2)) {
+                  resC = (resD < 0);
+                } else 
+                  printMessage(1,"Warning: minimum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+              } else 
+                printMessage(2,"Information: minimum computation relies on floating-point result.\n");
+            }
+            if (!resC) {
+              tempNode = tempNode2;
+            } 
+          } else {
+            resE = 0;
+          }
+          mpfr_clear(a);
+          mpfr_clear(b);
+          curr = curr->next;
+        }
+        if (resE) {
+          tempNode3 = copyThing(tempNode);
+          freeThing(copy);
+          copy = tempNode3;
+        }
+      }
+      if (timingString != NULL) popTimeCounter(timingString);
+    }
+    break;
+  case MAX:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+    curr = copy->arguments;
+    resE = 1;
+    while (curr != NULL) {
+      if (!(isPureTree((node *) (curr->value)) && 
+            isConstant((node *) (curr->value)))) {
+        resE = 0;
+        break;
+      }
+      curr = curr->next;
+    }
+    if (resE) {
+      if (timingString != NULL) pushTimeCounter();
+      curr = copy->arguments;
+      if (curr->next == NULL) {
+        tempNode = copyThing((node *) (curr->value));
+        freeThing(copy);
+        copy = tempNode;
+      } else {
+        tempNode = (node *) (curr->value);
+        curr = curr->next;
+        while (curr != NULL) {
+          tempNode2 = (node *) (curr->value);
+          mpfr_init2(a,tools_precision);
+          mpfr_init2(b,tools_precision);
+          if ((resA = evaluateThingToConstant(a,tempNode,NULL,1)) && 
+              (resB = evaluateThingToConstant(b,tempNode2,NULL,1))) {
+            if ((resA == 3) || (resB == 3)) 
+              printMessage(1,"Warning: maximum computation relies on floating-point result that is not faithfully evaluated.\n");
+            resC = ((mpfr_cmp(a,b) < 0) && (!mpfr_unordered_p(a,b)));
+            if ((resA == 1) || (resB == 1)) {
+              if (resC) {
+                /* a < b */
+                if (resA == 1) mpfr_nextabove(a);
+                if (resB == 1) mpfr_nextbelow(b);
+              } else {
+                /* a >= b */
+                if (resA == 1) mpfr_nextbelow(a);
+                if (resB == 1) mpfr_nextabove(b);
+              }
+              if ((mpfr_cmp(a,b) < 0) != resC) {
+                if (compareConstant(&resD, tempNode, tempNode2)) {
+                  resC = (resD < 0);
+                } else 
+                  printMessage(1,"Warning: maximum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+              } else 
+                printMessage(2,"Information: maximum computation relies on floating-point result.\n");
+            }
+            if (resC) {
+              tempNode = tempNode2;
+            } 
+          } else {
+            resE = 0;
+          }
+          mpfr_clear(a);
+          mpfr_clear(b);
+          curr = curr->next;
+        }
+        if (resE) {
+          tempNode3 = copyThing(tempNode);
+          freeThing(copy);
+          copy = tempNode3;
+        }
+      }
+      if (timingString != NULL) popTimeCounter(timingString);
+    }
+    break;
   case COMPAREGREATER:
     copy->child1 = evaluateThing(tree->child1);
     copy->child2 = evaluateThing(tree->child2);

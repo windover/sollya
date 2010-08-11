@@ -243,6 +243,8 @@ void miniyyerror(void *myScanner, char *message) {
 %token  INFTOKEN;
 %token  MIDTOKEN;
 %token  SUPTOKEN;
+%token  MINTOKEN;
+%token  MAXTOKEN;
 
 %token  READXMLTOKEN;											       
 %token  PARSETOKEN;             					       
@@ -1376,6 +1378,14 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                       | REMEZTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeRemez(addElement(addElement($7, $5), $3));
+			  }             					       
+                      | MINTOKEN LPARTOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeMin($3);
+			  }             					       
+                      | MAXTOKEN LPARTOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeMax($3);
 			  }             					       
                       | FPMINIMAXTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {

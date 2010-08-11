@@ -364,6 +364,9 @@ INF             "inf"
 MID             "mid"
 SUP             "sup"
 
+MIN             "min"
+MAX             "max"
+
 READXML         "readxml"
 
 MANTISSA        "mantissa"
@@ -589,6 +592,8 @@ NOP             "nop"
 {INF}   				    {  return INFTOKEN; }				 
 {MID}   				    {  return MIDTOKEN; }				 
 {SUP}   				    {  return SUPTOKEN; }				 
+{MIN}   				    {  return MINTOKEN; }				 
+{MAX}   				    {  return MAXTOKEN; }				 
 {READXML}   				    {  return READXMLTOKEN; }				 
 {LENGTH}   				    {  return LENGTHTOKEN; }				 
 {ABSOLUTE}   				    {  return ABSOLUTETOKEN; }				 
