@@ -3516,6 +3516,20 @@ void evaluateInterval(mpfi_t y, node *func, node *deriv, mpfi_t x) {
   evaluateITaylor(y, func, deriv, x, prec, taylorrecursions, NULL, 1);
 }
 
+void evaluateConstantExpressionToInterval(mpfi_t y, node *func) {
+  mpfi_t x;
+
+  if (!isConstant(func)) {
+    printMessage(1,"Warning: the given expression is not constant. Evaluating it at 1.\n");
+  }
+
+  mpfi_init2(x,12);
+  mpfi_set_si(x,1);
+
+  evaluateInterval(y, func, NULL, x);
+
+  mpfi_clear(x);
+}
 
 void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_prec_t prec) {
   node *deriv, *temp, *temp2, *numerator, *denominator, *f;
