@@ -3167,6 +3167,28 @@ help:                   CONSTANTTOKEN
 #endif
 #endif
                           }                 					                        					       
+                      | MINTOKEN
+                          {
+#ifdef HELP_MIN_TEXT
+			    outputMode(); printf(HELP_MIN_TEXT);
+#else
+			    outputMode(); printf("min(val1,val2,...,valn): computes the minimum of the constant expressions vali.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for MIN"
+#endif
+#endif
+                          }                 					                        					       
+                      | MAXTOKEN
+                          {
+#ifdef HELP_MAX_TEXT
+			    outputMode(); printf(HELP_MAX_TEXT);
+#else
+			    outputMode(); printf("max(val1,val2,...,valn): computes the maximum of the constant expressions vali.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for MAX"
+#endif
+#endif
+                          }                 					                        					       
                       | FPMINIMAXTOKEN
                           {
 #ifdef HELP_FPMINIMAX_TEXT
