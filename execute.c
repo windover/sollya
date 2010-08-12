@@ -13914,137 +13914,275 @@ node *evaluateThingInner(node *tree) {
   case MIN:
     copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
     curr = copy->arguments;
-    resE = 1;
-    while (curr != NULL) {
-      if (!(isPureTree((node *) (curr->value)) && 
-            isConstant((node *) (curr->value)))) {
-        resE = 0;
-        break;
-      }
-      curr = curr->next;
-    }
-    if (resE) {
-      if (timingString != NULL) pushTimeCounter();
-      curr = copy->arguments;
-      if (curr->next == NULL) {
-        tempNode = copyThing((node *) (curr->value));
-        freeThing(copy);
-        copy = tempNode;
-      } else {
-        tempNode = (node *) (curr->value);
+    if (isList((node *) (curr->value))) {
+      curr = ((node *) (curr->value))->arguments;
+      resE = 1;
+      while (curr != NULL) {
+        if (!(isPureTree((node *) (curr->value)) && 
+              isConstant((node *) (curr->value)))) {
+          resE = 0;
+          break;
+        }
         curr = curr->next;
-        while (curr != NULL) {
-          tempNode2 = (node *) (curr->value);
-          mpfr_init2(a,tools_precision);
-          mpfr_init2(b,tools_precision);
-          if ((resA = evaluateThingToConstant(a,tempNode,NULL,1)) && 
-              (resB = evaluateThingToConstant(b,tempNode2,NULL,1))) {
-            if ((resA == 3) || (resB == 3)) 
-              printMessage(1,"Warning: minimum computation relies on floating-point result that is not faithfully evaluated.\n");
-            resC = ((mpfr_cmp(a,b) < 0) && (!mpfr_unordered_p(a,b)));
-            if ((resA == 1) || (resB == 1)) {
-              if (resC) {
-                /* a < b */
-                if (resA == 1) mpfr_nextabove(a);
-                if (resB == 1) mpfr_nextbelow(b);
-              } else {
-                /* a >= b */
-                if (resA == 1) mpfr_nextbelow(a);
-                if (resB == 1) mpfr_nextabove(b);
-              }
-              if ((mpfr_cmp(a,b) < 0) != resC) {
-                if (compareConstant(&resD, tempNode, tempNode2)) {
-                  resC = (resD < 0);
-                } else 
-                  printMessage(1,"Warning: minimum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
-              } else 
-                printMessage(2,"Information: minimum computation relies on floating-point result.\n");
-            }
-            if (!resC) {
-              tempNode = tempNode2;
-            } 
-          } else {
-            resE = 0;
-          }
-          mpfr_clear(a);
-          mpfr_clear(b);
-          curr = curr->next;
-        }
-        if (resE) {
-          tempNode3 = copyThing(tempNode);
-          freeThing(copy);
-          copy = tempNode3;
-        }
       }
-      if (timingString != NULL) popTimeCounter(timingString);
+      if (resE) {
+        if (timingString != NULL) pushTimeCounter();
+        curr = copy->arguments;
+        curr = ((node *) (curr->value))->arguments;
+        if (curr->next == NULL) {
+          tempNode = copyThing((node *) (curr->value));
+          freeThing(copy);
+          copy = tempNode;
+        } else {
+          tempNode = (node *) (curr->value);
+          curr = curr->next;
+          while (curr != NULL) {
+            tempNode2 = (node *) (curr->value);
+            mpfr_init2(a,tools_precision);
+            mpfr_init2(b,tools_precision);
+            if ((resA = evaluateThingToConstant(a,tempNode,NULL,1)) && 
+                (resB = evaluateThingToConstant(b,tempNode2,NULL,1))) {
+              if ((resA == 3) || (resB == 3)) 
+                printMessage(1,"Warning: minimum computation relies on floating-point result that is not faithfully evaluated.\n");
+              resC = ((mpfr_cmp(a,b) < 0) && (!mpfr_unordered_p(a,b)));
+              if ((resA == 1) || (resB == 1)) {
+                if (resC) {
+                  /* a < b */
+                  if (resA == 1) mpfr_nextabove(a);
+                  if (resB == 1) mpfr_nextbelow(b);
+                } else {
+                  /* a >= b */
+                  if (resA == 1) mpfr_nextbelow(a);
+                  if (resB == 1) mpfr_nextabove(b);
+                }
+                if ((mpfr_cmp(a,b) < 0) != resC) {
+                  if (compareConstant(&resD, tempNode, tempNode2)) {
+                    resC = (resD < 0);
+                  } else 
+                    printMessage(1,"Warning: minimum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+                } else 
+                  printMessage(2,"Information: minimum computation relies on floating-point result.\n");
+              }
+              if (!resC) {
+                tempNode = tempNode2;
+              } 
+            } else {
+              resE = 0;
+            }
+            mpfr_clear(a);
+            mpfr_clear(b);
+            curr = curr->next;
+          }
+          if (resE) {
+            tempNode3 = copyThing(tempNode);
+            freeThing(copy);
+            copy = tempNode3;
+          }
+        }
+        if (timingString != NULL) popTimeCounter(timingString);
+      }
+    } else {
+      resE = 1;
+      while (curr != NULL) {
+        if (!(isPureTree((node *) (curr->value)) && 
+              isConstant((node *) (curr->value)))) {
+          resE = 0;
+          break;
+        }
+        curr = curr->next;
+      }
+      if (resE) {
+        if (timingString != NULL) pushTimeCounter();
+        curr = copy->arguments;
+        if (curr->next == NULL) {
+          tempNode = copyThing((node *) (curr->value));
+          freeThing(copy);
+          copy = tempNode;
+        } else {
+          tempNode = (node *) (curr->value);
+          curr = curr->next;
+          while (curr != NULL) {
+            tempNode2 = (node *) (curr->value);
+            mpfr_init2(a,tools_precision);
+            mpfr_init2(b,tools_precision);
+            if ((resA = evaluateThingToConstant(a,tempNode,NULL,1)) && 
+                (resB = evaluateThingToConstant(b,tempNode2,NULL,1))) {
+              if ((resA == 3) || (resB == 3)) 
+                printMessage(1,"Warning: minimum computation relies on floating-point result that is not faithfully evaluated.\n");
+              resC = ((mpfr_cmp(a,b) < 0) && (!mpfr_unordered_p(a,b)));
+              if ((resA == 1) || (resB == 1)) {
+                if (resC) {
+                  /* a < b */
+                  if (resA == 1) mpfr_nextabove(a);
+                  if (resB == 1) mpfr_nextbelow(b);
+                } else {
+                  /* a >= b */
+                  if (resA == 1) mpfr_nextbelow(a);
+                  if (resB == 1) mpfr_nextabove(b);
+                }
+                if ((mpfr_cmp(a,b) < 0) != resC) {
+                  if (compareConstant(&resD, tempNode, tempNode2)) {
+                    resC = (resD < 0);
+                  } else 
+                    printMessage(1,"Warning: minimum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+                } else 
+                  printMessage(2,"Information: minimum computation relies on floating-point result.\n");
+              }
+              if (!resC) {
+                tempNode = tempNode2;
+              } 
+            } else {
+              resE = 0;
+            }
+            mpfr_clear(a);
+            mpfr_clear(b);
+            curr = curr->next;
+          }
+          if (resE) {
+            tempNode3 = copyThing(tempNode);
+            freeThing(copy);
+            copy = tempNode3;
+          }
+        }
+        if (timingString != NULL) popTimeCounter(timingString);
+      }
     }
     break;
   case MAX:
     copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
     curr = copy->arguments;
-    resE = 1;
-    while (curr != NULL) {
-      if (!(isPureTree((node *) (curr->value)) && 
-            isConstant((node *) (curr->value)))) {
-        resE = 0;
-        break;
-      }
-      curr = curr->next;
-    }
-    if (resE) {
-      if (timingString != NULL) pushTimeCounter();
-      curr = copy->arguments;
-      if (curr->next == NULL) {
-        tempNode = copyThing((node *) (curr->value));
-        freeThing(copy);
-        copy = tempNode;
-      } else {
-        tempNode = (node *) (curr->value);
+    if (isList((node *) (curr->value))) {
+      curr = ((node *) (curr->value))->arguments;
+      resE = 1;
+      while (curr != NULL) {
+        if (!(isPureTree((node *) (curr->value)) && 
+              isConstant((node *) (curr->value)))) {
+          resE = 0;
+          break;
+        }
         curr = curr->next;
-        while (curr != NULL) {
-          tempNode2 = (node *) (curr->value);
-          mpfr_init2(a,tools_precision);
-          mpfr_init2(b,tools_precision);
-          if ((resA = evaluateThingToConstant(a,tempNode,NULL,1)) && 
-              (resB = evaluateThingToConstant(b,tempNode2,NULL,1))) {
-            if ((resA == 3) || (resB == 3)) 
-              printMessage(1,"Warning: maximum computation relies on floating-point result that is not faithfully evaluated.\n");
-            resC = ((mpfr_cmp(a,b) < 0) && (!mpfr_unordered_p(a,b)));
-            if ((resA == 1) || (resB == 1)) {
-              if (resC) {
-                /* a < b */
-                if (resA == 1) mpfr_nextabove(a);
-                if (resB == 1) mpfr_nextbelow(b);
-              } else {
-                /* a >= b */
-                if (resA == 1) mpfr_nextbelow(a);
-                if (resB == 1) mpfr_nextabove(b);
-              }
-              if ((mpfr_cmp(a,b) < 0) != resC) {
-                if (compareConstant(&resD, tempNode, tempNode2)) {
-                  resC = (resD < 0);
-                } else 
-                  printMessage(1,"Warning: maximum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
-              } else 
-                printMessage(2,"Information: maximum computation relies on floating-point result.\n");
-            }
-            if (resC) {
-              tempNode = tempNode2;
-            } 
-          } else {
-            resE = 0;
-          }
-          mpfr_clear(a);
-          mpfr_clear(b);
-          curr = curr->next;
-        }
-        if (resE) {
-          tempNode3 = copyThing(tempNode);
-          freeThing(copy);
-          copy = tempNode3;
-        }
       }
-      if (timingString != NULL) popTimeCounter(timingString);
+      if (resE) {
+        if (timingString != NULL) pushTimeCounter();
+        curr = copy->arguments;
+        curr = ((node *) (curr->value))->arguments;
+        if (curr->next == NULL) {
+          tempNode = copyThing((node *) (curr->value));
+          freeThing(copy);
+          copy = tempNode;
+        } else {
+          tempNode = (node *) (curr->value);
+          curr = curr->next;
+          while (curr != NULL) {
+            tempNode2 = (node *) (curr->value);
+            mpfr_init2(a,tools_precision);
+            mpfr_init2(b,tools_precision);
+            if ((resA = evaluateThingToConstant(a,tempNode,NULL,1)) && 
+                (resB = evaluateThingToConstant(b,tempNode2,NULL,1))) {
+              if ((resA == 3) || (resB == 3)) 
+                printMessage(1,"Warning: minimum computation relies on floating-point result that is not faithfully evaluated.\n");
+              resC = ((mpfr_cmp(a,b) < 0) && (!mpfr_unordered_p(a,b)));
+              if ((resA == 1) || (resB == 1)) {
+                if (resC) {
+                  /* a < b */
+                  if (resA == 1) mpfr_nextabove(a);
+                  if (resB == 1) mpfr_nextbelow(b);
+                } else {
+                  /* a >= b */
+                  if (resA == 1) mpfr_nextbelow(a);
+                  if (resB == 1) mpfr_nextabove(b);
+                }
+                if ((mpfr_cmp(a,b) < 0) != resC) {
+                  if (compareConstant(&resD, tempNode, tempNode2)) {
+                    resC = (resD < 0);
+                  } else 
+                    printMessage(1,"Warning: minimum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+                } else 
+                  printMessage(2,"Information: minimum computation relies on floating-point result.\n");
+              }
+              if (resC) {
+                tempNode = tempNode2;
+              } 
+            } else {
+              resE = 0;
+            }
+            mpfr_clear(a);
+            mpfr_clear(b);
+            curr = curr->next;
+          }
+          if (resE) {
+            tempNode3 = copyThing(tempNode);
+            freeThing(copy);
+            copy = tempNode3;
+          }
+        }
+        if (timingString != NULL) popTimeCounter(timingString);
+      }
+    } else {
+      resE = 1;
+      while (curr != NULL) {
+        if (!(isPureTree((node *) (curr->value)) && 
+              isConstant((node *) (curr->value)))) {
+          resE = 0;
+          break;
+        }
+        curr = curr->next;
+      }
+      if (resE) {
+        if (timingString != NULL) pushTimeCounter();
+        curr = copy->arguments;
+        if (curr->next == NULL) {
+          tempNode = copyThing((node *) (curr->value));
+          freeThing(copy);
+          copy = tempNode;
+        } else {
+          tempNode = (node *) (curr->value);
+          curr = curr->next;
+          while (curr != NULL) {
+            tempNode2 = (node *) (curr->value);
+            mpfr_init2(a,tools_precision);
+            mpfr_init2(b,tools_precision);
+            if ((resA = evaluateThingToConstant(a,tempNode,NULL,1)) && 
+                (resB = evaluateThingToConstant(b,tempNode2,NULL,1))) {
+              if ((resA == 3) || (resB == 3)) 
+                printMessage(1,"Warning: minimum computation relies on floating-point result that is not faithfully evaluated.\n");
+              resC = ((mpfr_cmp(a,b) < 0) && (!mpfr_unordered_p(a,b)));
+              if ((resA == 1) || (resB == 1)) {
+                if (resC) {
+                  /* a < b */
+                  if (resA == 1) mpfr_nextabove(a);
+                  if (resB == 1) mpfr_nextbelow(b);
+                } else {
+                  /* a >= b */
+                  if (resA == 1) mpfr_nextbelow(a);
+                  if (resB == 1) mpfr_nextabove(b);
+                }
+                if ((mpfr_cmp(a,b) < 0) != resC) {
+                  if (compareConstant(&resD, tempNode, tempNode2)) {
+                    resC = (resD < 0);
+                  } else 
+                    printMessage(1,"Warning: minimum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+                } else 
+                  printMessage(2,"Information: minimum computation relies on floating-point result.\n");
+              }
+              if (resC) {
+                tempNode = tempNode2;
+              } 
+            } else {
+              resE = 0;
+            }
+            mpfr_clear(a);
+            mpfr_clear(b);
+            curr = curr->next;
+          }
+          if (resE) {
+            tempNode3 = copyThing(tempNode);
+            freeThing(copy);
+            copy = tempNode3;
+          }
+        }
+        if (timingString != NULL) popTimeCounter(timingString);
+      }
     }
     break;
   case COMPAREGREATER:
