@@ -2260,3 +2260,4 @@ NaN == error;
 restart;
 print("=============== Test number 254 ================");
 execute("checkTMandAD.sollya");
+
