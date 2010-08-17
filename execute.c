@@ -15917,7 +15917,7 @@ node *evaluateThingInner(node *tree) {
     }
     else{
       if( (!evaluateThingToIntegerList(&tempChain, &resA, secondArg)) ||
-	  (resA=0) ) {
+	  (resA==0) ) {
 	printMessage(1, "The second argument of fpminimax must be either an integer or a finite list of integers.\n");
       }
     }
