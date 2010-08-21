@@ -417,26 +417,30 @@ void fprintHeadFunction(FILE *fd,node *tree, char *x, char *y) {
     break;
   case LIBRARYFUNCTION:
     {
+      fprintf(fd,"(");
       for (i=1;i<=tree->libFunDeriv;i++) {
 	fprintf(fd,"diff(");
       }
-      fprintf(fd,"%s(%s)",tree->libFun->functionName,x);
+      fprintf(fd,"%s",tree->libFun->functionName);
       for (i=1;i<=tree->libFunDeriv;i++) {
 	fprintf(fd,")");
       }
+      fprintf(fd,")(%s)",x);
     }
     break;
   case PROCEDUREFUNCTION:
     {
+      fprintf(fd,"(");
       for (i=1;i<=tree->libFunDeriv;i++) {
 	fprintf(fd,"diff(");
       }
-      fprintf(fd,"(function(");
-      fPrintThing(fd, tree->child2);
-      fprintf(fd,"))(%s)",x);
+      fprintf(fd,"function(");
+      fPrintThing(fd,tree->child2);
+      fprintf(fd,")");
       for (i=1;i<=tree->libFunDeriv;i++) {
 	fprintf(fd,")");
       }
+      fprintf(fd,")(%s)",x);
     }
     break;
   case CEIL:
@@ -1305,41 +1309,69 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
     break;
   case LIBRARYFUNCTION:
     {
-      for (i=1;i<=tree->libFunDeriv;i++) {
-	fprintf(fd,"diff(");
-      }
-      fprintf(fd,"%s(",tree->libFun->functionName);
-      fprintTreeWithPrintMode(fd,tree->child1);
-      fprintf(fd,")");
-      for (i=1;i<=tree->libFunDeriv;i++) {
-	fprintf(fd,")");
+      if (tree->child1->nodeType == VARIABLE) {
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  fprintf(fd,"diff(");
+	}
+	fprintf(fd,"%s",tree->libFun->functionName);
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  fprintf(fd,")");
+	}
+      } else {
+	if (tree->libFunDeriv == 0) {
+	  fprintf(fd,"%s(",tree->libFun->functionName);
+	  fprintTreeWithPrintMode(fd,tree->child1);
+	  fprintf(fd,")");
+	} else {
+	  fprintf(fd,"(");
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    fprintf(fd,"diff(");
+	  }
+	  fprintf(fd,"%s",tree->libFun->functionName);
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    fprintf(fd,")");
+	  }
+	  fprintf(fd,")(");
+	  fprintTreeWithPrintMode(fd,tree->child1);
+	  fprintf(fd,")");
+	}
       }
     }
     break;
   case PROCEDUREFUNCTION:
     {
       if (tree->child1->nodeType == VARIABLE) {
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          fprintf(fd,"diff(");
-        }
-        fprintf(fd,"function(");
-        fPrintThing(fd, tree->child2);
-        fprintf(fd,")");
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          fprintf(fd,")");
-        }
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  fprintf(fd,"diff(");
+	}
+	fprintf(fd,"function(");
+	fPrintThing(fd,tree->child2);
+	fprintf(fd,")");
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  fprintf(fd,")");
+	}
       } else {
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          fprintf(fd,"diff(");
-        }
-        fprintf(fd,"(function(");
-        fPrintThing(fd, tree->child2);
-        fprintf(fd,"))(");
-        fprintTreeWithPrintMode(fd,tree->child1);
-        fprintf(fd,")");
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          fprintf(fd,")");
-        }
+	if (tree->libFunDeriv == 0) {
+	  fprintf(fd,"(function(");
+	  fPrintThing(fd,tree->child2);
+	  fprintf(fd,"))(");
+	  fprintTreeWithPrintMode(fd,tree->child1);
+	  fprintf(fd,")");
+	} else {
+	  fprintf(fd,"(");
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    fprintf(fd,"diff(");
+	  }
+	  fprintf(fd,"function(");
+	  fPrintThing(fd,tree->child2);
+	  fprintf(fd,")");
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    fprintf(fd,")");
+	  }
+	  fprintf(fd,")(");
+	  fprintTreeWithPrintMode(fd,tree->child1);
+	  fprintf(fd,")");
+	}
       }
     }
     break;
@@ -1734,41 +1766,69 @@ void printTree(node *tree) {
     break;
   case LIBRARYFUNCTION:
     {
-      for (i=1;i<=tree->libFunDeriv;i++) {
-	printf("diff(");
-      }
-      printf("%s(",tree->libFun->functionName);
-      printTree(tree->child1);
-      printf(")");
-      for (i=1;i<=tree->libFunDeriv;i++) {
-	printf(")");
+      if (tree->child1->nodeType == VARIABLE) {
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  printf("diff(");
+	}
+	printf("%s",tree->libFun->functionName);
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  printf(")");
+	}
+      } else {
+	if (tree->libFunDeriv == 0) {
+	  printf("%s(",tree->libFun->functionName);
+	  printTree(tree->child1);
+	  printf(")");
+	} else {
+	  printf("(");
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    printf("diff(");
+	  }
+	  printf("%s",tree->libFun->functionName);
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    printf(")");
+	  }
+	  printf(")(");
+	  printTree(tree->child1);
+	  printf(")");
+	}
       }
     }
     break;
   case PROCEDUREFUNCTION:
     {
       if (tree->child1->nodeType == VARIABLE) {
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          printf("diff(");
-        }
-        printf("function(");
-        printThing(tree->child2);
-        printf(")");
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          printf(")");
-        }
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  printf("diff(");
+	}
+	printf("function(");
+	printThing(tree->child2);
+	printf(")");
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  printf(")");
+	}
       } else {
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          printf("diff(");
-        }
-        printf("(function(");
-        printThing(tree->child2);
-        printf("))(");
-        printTree(tree->child1);
-        printf(")");
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          printf(")");
-        }
+	if (tree->libFunDeriv == 0) {
+	  printf("(function(");
+	  printThing(tree->child2);
+	  printf("))(");
+	  printTree(tree->child1);
+	  printf(")");
+	} else {
+	  printf("(");
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    printf("diff(");
+	  }
+	  printf("function(");
+	  printThing(tree->child2);
+	  printf(")");
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    printf(")");
+	  }
+	  printf(")(");
+	  printTree(tree->child1);
+	  printf(")");
+	}
       }
     }
     break;
@@ -2050,42 +2110,83 @@ char *sprintTree(node *tree) {
   case LIBRARYFUNCTION:
     {
       buffer1 = sprintTree(tree->child1);
-      buffer = (char *) safeCalloc(strlen(buffer1) + strlen(tree->libFun->functionName) + 4 + (6 * tree->libFunDeriv),sizeof(char));
-      tempBuf = buffer;
-      for (i=1;i<=tree->libFunDeriv;i++) {
-	tempBuf += sprintf(tempBuf,"diff(");
-      }
-      tempBuf += sprintf(tempBuf,"%s(%s)",tree->libFun->functionName,buffer1);
-      for (i=1;i<=tree->libFunDeriv;i++) {
-	tempBuf += sprintf(tempBuf,")");
+      if (tree->child1->nodeType == VARIABLE) {
+	buffer = (char *) safeCalloc(strlen(tree->libFun->functionName) + 6 * tree->libFunDeriv + 1, sizeof(char));
+	tempBuf = buffer;
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  tempBuf += sprintf(tempBuf,"diff(");
+	}
+	tempBuf += sprintf(tempBuf,"%s",tree->libFun->functionName);
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  tempBuf += sprintf(tempBuf,")");
+	}
+      } else {
+	if (tree->libFunDeriv == 0) {
+	  buffer = (char *) safeCalloc(strlen(tree->libFun->functionName) + strlen(buffer1) + 2 + 1, sizeof(char));
+	  tempBuf = buffer;
+	  tempBuf += sprintf(tempBuf,"%s(",tree->libFun->functionName);
+	  tempBuf += sprintf(tempBuf,"%s",buffer1);
+	  tempBuf += sprintf(tempBuf,")");
+	} else {
+	  buffer = (char *) safeCalloc(strlen(tree->libFun->functionName) + strlen(buffer1) + 6 * tree->libFunDeriv + 3 + 1, sizeof(char));
+	  tempBuf = buffer;
+	  tempBuf += sprintf(tempBuf,"(");
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    tempBuf += sprintf(tempBuf,"diff(");
+	  }
+	  tempBuf += sprintf(tempBuf,"%s",tree->libFun->functionName);
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    tempBuf += sprintf(tempBuf,")");
+	  }
+	  tempBuf += sprintf(tempBuf,")(");
+	  tempBuf += sprintf(tempBuf,"%s",buffer1);
+	  tempBuf += sprintf(tempBuf,")");
+	}
       }
     }
     break;
   case PROCEDUREFUNCTION:
     {
+      buffer1 = sprintTree(tree->child1);
+      buffer2 = sPrintThing(tree->child2);
       if (tree->child1->nodeType == VARIABLE) {
-        buffer2 = sPrintThing(tree->child2);
-        buffer = (char *) safeCalloc(strlen(buffer2) + 1 + 4 + (6 * tree->libFunDeriv),sizeof(char));
-        tempBuf = buffer;
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          tempBuf += sprintf(tempBuf,"diff(");
-        }
-        tempBuf += sprintf(tempBuf,"function(%s)",buffer2);
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          tempBuf += sprintf(tempBuf,")");
-        }
+	buffer = (char *) safeCalloc(strlen(buffer2) + 6 * tree->libFunDeriv + 10 + 1, sizeof(char));
+	tempBuf = buffer;
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  tempBuf += sprintf(tempBuf,"diff(");
+	}
+	tempBuf += sprintf(tempBuf,"function(");
+	tempBuf += sprintf(tempBuf,"%s",buffer2);
+	tempBuf += sprintf(tempBuf,")");
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  tempBuf += sprintf(tempBuf,")");
+	}
       } else {
-        buffer1 = sprintTree(tree->child1);
-        buffer2 = sPrintThing(tree->child2);
-        buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 1 + 4 + (6 * tree->libFunDeriv),sizeof(char));
-        tempBuf = buffer;
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          tempBuf += sprintf(tempBuf,"diff(");
-        }
-        tempBuf += sprintf(tempBuf,"(function(%s))(%s)",buffer2,buffer1);
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          tempBuf += sprintf(tempBuf,")");
-        }
+	if (tree->libFunDeriv == 0) {
+	  buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 14 + 1, sizeof(char));
+	  tempBuf = buffer;
+	  tempBuf += sprintf(tempBuf,"(function(");
+	  tempBuf += sprintf(tempBuf,"%s",buffer2);
+	  tempBuf += sprintf(tempBuf,"))(");
+	  tempBuf += sprintf(tempBuf,"%s",buffer1);
+	  tempBuf += sprintf(tempBuf,")");
+	} else {
+	  buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 6 * tree->libFunDeriv + 14 + 1, sizeof(char));
+	  tempBuf = buffer;
+	  tempBuf += sprintf(tempBuf,"(");
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    tempBuf += sprintf(tempBuf,"diff(");
+	  }
+	  tempBuf += sprintf(tempBuf,"function(");
+	  tempBuf += sprintf(tempBuf,"%s",buffer2); 
+	  tempBuf += sprintf(tempBuf,")");
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    tempBuf += sprintf(tempBuf,")");
+	  }
+	  tempBuf += sprintf(tempBuf,")(");
+	  tempBuf += sprintf(tempBuf,"%s",buffer1);
+	  tempBuf += sprintf(tempBuf,")");
+	}
       }
     }
     break;
@@ -2344,43 +2445,71 @@ void fprintTree(FILE *fd, node *tree) {
     fprintTree(fd,tree->child1);
     fprintf(fd,")");
     break;
-  case LIBRARYFUNCTION:
+    case LIBRARYFUNCTION:
     {
-      for (i=1;i<=tree->libFunDeriv;i++) {
-	fprintf(fd,"diff(");
-      }
-      fprintf(fd,"%s(",tree->libFun->functionName);
-      fprintTree(fd,tree->child1);
-      fprintf(fd,")");
-      for (i=1;i<=tree->libFunDeriv;i++) {
-	fprintf(fd,")");
+      if (tree->child1->nodeType == VARIABLE) {
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  fprintf(fd,"diff(");
+	}
+	fprintf(fd,"%s",tree->libFun->functionName);
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  fprintf(fd,")");
+	}
+      } else {
+	if (tree->libFunDeriv == 0) {
+	  fprintf(fd,"%s(",tree->libFun->functionName);
+	  fprintTree(fd,tree->child1);
+	  fprintf(fd,")");
+	} else {
+	  fprintf(fd,"(");
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    fprintf(fd,"diff(");
+	  }
+	  fprintf(fd,"%s",tree->libFun->functionName);
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    fprintf(fd,")");
+	  }
+	  fprintf(fd,")(");
+	  fprintTree(fd,tree->child1);
+	  fprintf(fd,")");
+	}
       }
     }
     break;
   case PROCEDUREFUNCTION:
     {
       if (tree->child1->nodeType == VARIABLE) {
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          fprintf(fd,"diff(");
-        }
-        fprintf(fd,"function(");
-        fPrintThing(fd, tree->child2);
-        fprintf(fd,")");
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          fprintf(fd,")");
-        }
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  fprintf(fd,"diff(");
+	}
+	fprintf(fd,"function(");
+	fPrintThing(fd,tree->child2);
+	fprintf(fd,")");
+	for (i=1;i<=tree->libFunDeriv;i++) {
+	  fprintf(fd,")");
+	}
       } else {
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          fprintf(fd,"diff(");
-        }
-        fprintf(fd,"(function(");
-        fPrintThing(fd, tree->child2);
-        fprintf(fd,"))(");
-        fprintTree(fd,tree->child1);
-        fprintf(fd,")");
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          fprintf(fd,")");
-        }
+	if (tree->libFunDeriv == 0) {
+	  fprintf(fd,"(function(");
+	  fPrintThing(fd,tree->child2);
+	  fprintf(fd,"))(");
+	  fprintTree(fd,tree->child1);
+	  fprintf(fd,")");
+	} else {
+	  fprintf(fd,"(");
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    fprintf(fd,"diff(");
+	  }
+	  fprintf(fd,"function(");
+	  fPrintThing(fd,tree->child2);
+	  fprintf(fd,")");
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    fprintf(fd,")");
+	  }
+	  fprintf(fd,")(");
+	  fprintTree(fd,tree->child1);
+	  fprintf(fd,")");
+	}
       }
     }
     break;

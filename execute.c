@@ -3351,16 +3351,34 @@ char *sRawPrintThing(node *tree) {
     break;
   case LIBRARYFUNCTION:
     {
-      res = newString("");
-      for (i=1;i<=tree->libFunDeriv;i++) {
-	res = concatAndFree(res,newString("diff("));
-      }
-      res = concatAndFree(res,newString(tree->libFun->functionName));
-      res = concatAndFree(res, newString("("));
-      res = concatAndFree(res, sRawPrintThing(tree->child1));
-      res = concatAndFree(res, newString(")"));
-      for (i=1;i<=tree->libFunDeriv;i++) {
-	res = concatAndFree(res, newString(")"));
+      if (isPureTree(tree->child1) && (tree->child1->nodeType == VARIABLE)) {
+        res = newString("");
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          res = concatAndFree(res,newString("diff("));
+        }
+        res = concatAndFree(res, newString(tree->libFun->functionName));
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          res = concatAndFree(res, newString(")"));
+        }
+      } else {
+	if (tree->libFunDeriv == 0) {
+	  res = newString(tree->libFun->functionName);
+	  res = concatAndFree(res, newString("("));
+	  res = concatAndFree(res, sRawPrintThing(tree->child1));
+	  res = concatAndFree(res, newString(")"));
+	} else {
+	  res = newString("(");
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    res = concatAndFree(res,newString("diff("));
+	  }
+	  res = concatAndFree(res,newString(tree->libFun->functionName));
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    res = concatAndFree(res, newString(")"));
+	  }
+	  res = concatAndFree(res, newString(")("));
+	  res = concatAndFree(res, sRawPrintThing(tree->child1));
+	  res = concatAndFree(res, newString(")"));
+	}
       }
     }
     break;
@@ -3378,18 +3396,27 @@ char *sRawPrintThing(node *tree) {
           res = concatAndFree(res, newString(")"));
         }
       } else {
-        res = newString("");
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          res = concatAndFree(res,newString("diff("));
-        }
-        res = concatAndFree(res, newString("(function("));
-        res = concatAndFree(res, sRawPrintThing(tree->child2));
-        res = concatAndFree(res, newString("))("));
-        res = concatAndFree(res, sRawPrintThing(tree->child1));
-        res = concatAndFree(res, newString(")"));
-        for (i=1;i<=tree->libFunDeriv;i++) {
-          res = concatAndFree(res, newString(")"));
-        }
+	if (tree->libFunDeriv == 0) {
+	  res = newString("(function(");
+	  res = concatAndFree(res, sRawPrintThing(tree->child2));
+	  res = concatAndFree(res, newString("))("));
+	  res = concatAndFree(res, sRawPrintThing(tree->child1));
+	  res = concatAndFree(res, newString(")"));
+	} else {
+	  res = newString("(");
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    res = concatAndFree(res,newString("diff("));
+	  }
+	  res = concatAndFree(res,newString("function("));
+	  res = concatAndFree(res, sRawPrintThing(tree->child2));
+	  res = concatAndFree(res,newString(")"));
+	  for (i=1;i<=tree->libFunDeriv;i++) {
+	    res = concatAndFree(res, newString(")"));
+	  }
+	  res = concatAndFree(res, newString(")("));
+	  res = concatAndFree(res, sRawPrintThing(tree->child1));
+	  res = concatAndFree(res, newString(")"));
+	}
       }
     }
     break;
@@ -12019,10 +12046,13 @@ int executeProcedure(node **resultThing, node *proc, chain *args, int elliptic) 
 }
 
 void computeFunctionWithProcedure(mpfi_t y, node *proc, mpfi_t x, unsigned int derivN) {
-  mpfr_t derivNAsMpfr, xleft, xright;
+  mpfr_t derivNAsMpfr, xleft, xright, precAsMpfr;
   chain *args;
   int res;
   node *resThing;
+
+  mpfr_init2(precAsMpfr,8 * sizeof(mp_prec_t) + 10);
+  mpfr_set_ui(precAsMpfr,(unsigned int) mpfi_get_prec(y),GMP_RNDU);
 
   mpfr_init2(derivNAsMpfr,8 * sizeof(derivN) + 10);
   mpfr_set_ui(derivNAsMpfr,derivN,GMP_RNDN);
@@ -12032,7 +12062,8 @@ void computeFunctionWithProcedure(mpfi_t y, node *proc, mpfi_t x, unsigned int d
   mpfi_get_left(xleft,x);
   mpfi_get_right(xright,x);
 
-  args = addElement(addElement(NULL, makeConstant(derivNAsMpfr)),
+  args = addElement(addElement(addElement(NULL,makeConstant(precAsMpfr)),
+			       makeConstant(derivNAsMpfr)),
                     makeRange(makeConstant(xleft),makeConstant(xright)));
 
   res = executeProcedure(&resThing, proc, args, 0);
@@ -12055,6 +12086,7 @@ void computeFunctionWithProcedure(mpfi_t y, node *proc, mpfi_t x, unsigned int d
   mpfr_clear(xright);
   mpfr_clear(xleft);
   mpfr_clear(derivNAsMpfr);
+  mpfr_clear(precAsMpfr);
 }
 
 void computeFunctionWithProcedureMpfr(mpfr_t rop, node *proc, mpfr_t op, unsigned int derivN) {
