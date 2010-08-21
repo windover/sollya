@@ -303,6 +303,7 @@ node *makeAssignment(char *string, node *thing);
 node *makeFloatAssignment(char *string, node *thing);
 node *makeLibraryBinding(char *string, node *thing);
 node *makePrecAssign(node *thing);
+node *makeProcedureFunction(node *thing);
 node *makePointsAssign(node *thing);
 node *makeDiamAssign(node *thing);
 node *makeDisplayAssign(node *thing);
@@ -479,5 +480,12 @@ node *makeProcIllim(char *arg, node *body, node *returnVal);
 node *makeApply(node *thing, chain *thinglist);
 
 node *parseString(char *str); 
+
+void computeFunctionWithProcedure(mpfi_t y, node *proc, mpfi_t x, unsigned int derivN);
+void computeFunctionWithProcedureMpfr(mpfr_t rop, node *proc, mpfr_t op, unsigned int derivN);
+int isEqualThing(node *tree, node *tree2);
+void fPrintThing(FILE *fd, node *thing);
+void printThing(node *thing);
+char *sPrintThing(node *thing);
 
 #endif /* ifdef EXECUTE_H*/

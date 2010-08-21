@@ -96,6 +96,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #define PI_CONST 38
 #define SINGLE 39
 #define NEARESTINT 40
+#define PROCEDUREFUNCTION 41
 
 typedef struct nodeStruct node;
 

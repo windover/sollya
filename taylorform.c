@@ -389,12 +389,14 @@ void ctMultiplication_TM(tModel*d, tModel*s, mpfi_t c,int mode){
 #define MONOTONE_REMAINDER_INV 2
 #define MONOTONE_REMAINDER_CONSTPOWERVAR 3
 #define MONOTONE_REMAINDER_VARCONSTPOWER 4
+#define MONOTONE_REMAINDER_PROCEDURE_FUNCTION 5
 
 /* This function computes a taylor remainder for a function on an interval, assuming
    the n-th derivative is monotone.
    typeOfFunction is used to separate the cases:
    * MONOTONE_REMAINDER_BASE_FUNCTION --> we consider a base function, represented by its nodeType (p and f are useless)
    * MONOTONE_REMAINDER_LIBRARY_FUNCTION --> we consider a base function, represented by its nodeType (p and nodeType are useless)
+   * MONOTONE_REMAINDER_PROCEDURE_FUNCTION --> we consider a base function, represented by its nodeType (p and nodeType are useless)
    * MONOTONE_REMAINDER_INV  --> we consider (x -> 1/x) (nodeType, f, and p are useless)
    * MONOTONE_REMAINDER_CONSTPOWERVAR --> we consider (x -> p^x) (nodeType and f are useless)
    * MONOTONE_REMAINDER_VARCONSTPOWER --> we consider (x -> x^p) (nodeType and f are useless)
@@ -440,6 +442,11 @@ void computeMonotoneRemainder(mpfi_t *bound, int typeOfFunction, int nodeType, n
     libraryFunction_diff(&boundf1, f, xinf, 0, silent);
     libraryFunction_diff(&boundf2, f, xsup, 0, silent);
     if (((n-1)%2)!=0) libraryFunction_diff(&boundfx0, f, x0, 0, silent);
+    break;
+  case MONOTONE_REMAINDER_PROCEDURE_FUNCTION:
+    procedureFunction_diff(&boundf1, f, xinf, 0, silent);
+    procedureFunction_diff(&boundf2, f, xsup, 0, silent);
+    if (((n-1)%2)!=0) procedureFunction_diff(&boundfx0, f, x0, 0, silent);
     break;
   case MONOTONE_REMAINDER_INV:
     mpfi_inv(boundf1, xinf);
@@ -512,6 +519,10 @@ void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, 
   case MONOTONE_REMAINDER_LIBRARY_FUNCTION:
     libraryFunction_diff(tt->poly_array, f, x0, n-1, silent);
     libraryFunction_diff(nDeriv, f, x, n+1, silent);
+    break;
+  case MONOTONE_REMAINDER_PROCEDURE_FUNCTION:
+    procedureFunction_diff(tt->poly_array, f, x0, n-1, silent);
+    procedureFunction_diff(nDeriv, f, x, n+1, silent);
     break;
   case MONOTONE_REMAINDER_INV: 
     mpfr_init2(minusOne, prec);
@@ -988,6 +999,7 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
   case FLOOR: 
   case NEARESTINT: 
   case LIBRARYFUNCTION:
+  case PROCEDUREFUNCTION:
     tt=createEmptytModel(n,x0,x); 
    //create a new empty taylor model the child
     child1_tm=createEmptytModel(n,x0,x);
@@ -1018,6 +1030,8 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
 
     if (f->nodeType == LIBRARYFUNCTION)
       base_TMAux(child2_tm, MONOTONE_REMAINDER_LIBRARY_FUNCTION, 0, f, NULL, n, fx0, rangef,mode,&silent);
+    else if (f->nodeType == PROCEDUREFUNCTION)
+      base_TMAux(child2_tm, MONOTONE_REMAINDER_PROCEDURE_FUNCTION, 0, f, NULL, n, fx0, rangef,mode,&silent);
     else
       base_TMAux(child2_tm, MONOTONE_REMAINDER_BASE_FUNCTION, f->nodeType, NULL, NULL, n, fx0, rangef,mode,&silent);
     composition_TM(tt,child2_tm, child1_tm,mode);

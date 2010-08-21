@@ -382,7 +382,7 @@ chain *copyChainAndReplaceNth(chain *c, int k, void *obj, void * (*f) (void *)) 
 }
 
 int isEqualStringOnVoid(void *s, void *s2) {
-  if (strcmp((char *) s, (char *) s2)) return 1; else return 0;
+  if (strcmp((char *) s, (char *) s2) == 0) return 1; else return 0;
 }
 
 int isEqualIntPtrOnVoid(void *a, void *b) {

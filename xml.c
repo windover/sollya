@@ -56,6 +56,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "general.h"
 #include "expression.h"
 #include "xml.h"
+#include "execute.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -67,6 +68,8 @@ void printXml(node *tree) {
 
 
 void fPrintXmlInner(FILE *fd, node *tree) {
+  char *procString;
+
   if (tree == NULL) return;
   switch (tree->nodeType) {
   case VARIABLE:
@@ -307,6 +310,37 @@ void fPrintXmlInner(FILE *fd, node *tree) {
       fprintf(fd,"<apply>\n");
       fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">%s</csymbol>\n",
 	      tree->libFun->functionName);
+      fPrintXmlInner(fd, tree->child1);
+      fprintf(fd,"</apply>\n");	 
+      fprintf(fd,"</apply>\n");
+    }
+    break;
+  case PROCEDUREFUNCTION:
+    if (tree->libFunDeriv == 0) {
+      procString = sPrintThing(tree->child2);
+      fprintf(fd,"<apply>\n");
+      fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">function(%s)</csymbol>\n",
+	      procString);
+      free(procString);
+      fPrintXmlInner(fd, tree->child1);
+      fprintf(fd,"</apply>\n");	 
+    } else {
+      fprintf(fd,"<apply>\n");
+      fprintf(fd,"<diff/>\n");
+      fprintf(fd,"<bvar>\n");
+      if (variablename == NULL) 
+	fprintf(fd,"<ci> x </ci>\n");
+      else 
+	fprintf(fd,"<ci> %s </ci>\n",variablename);
+      fprintf(fd,"<degree>\n");
+      fprintf(fd,"<cn> %d </cn>\n",tree->libFunDeriv);
+      fprintf(fd,"</degree>\n");
+      fprintf(fd,"</bvar>\n");
+      fprintf(fd,"<apply>\n");
+      procString = sPrintThing(tree->child2);
+      fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">function(%s)</csymbol>\n",
+	      procString);
+      free(procString);
       fPrintXmlInner(fd, tree->child1);
       fprintf(fd,"</apply>\n");	 
       fprintf(fd,"</apply>\n");

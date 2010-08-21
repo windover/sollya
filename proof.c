@@ -217,7 +217,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
   if (theo->theoLeftLinear != NULL) nextnumber = fprintExprBoundTheo(fd,theo->theoLeftLinear, nextnumber);
   if (theo->theoRightLinear != NULL) nextnumber = fprintExprBoundTheo(fd,theo->theoRightLinear,nextnumber);
   theo->number = nextnumber; nextnumber++; 
-  if ((theo->simplificationUsed == TAYLOR) || (theo->simplificationUsed == MONOTONOCITY)) {
+  if ((theo->simplificationUsed == TAYLORPROOF) || (theo->simplificationUsed == MONOTONOCITY)) {
     fprintDerivativeLemma(fd, theo->function, theo->leftDerivative, theo->number, 1);
   }
   if ((theo->simplificationUsed == DECORRELATE) || 
@@ -238,7 +238,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
     fprintf(fd,"The given expression is a polynomial. The given bound can be verified by the Gappa tool.\n");
   } else {
     switch (theo->simplificationUsed) {
-    case TAYLOR:
+    case TAYLORPROOF:
       fprintf(fd,"Theorem %d shows that for all %s in the given domain the given expression is bounded by ",
 	      theo->theoLeft->number, variablename);
       fprintInterval(fd,*(theo->boundLeft));

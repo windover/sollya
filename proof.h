@@ -55,7 +55,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "chain.h"
 
 
-#define TAYLOR 1
+#define TAYLORPROOF 1
 #define HOPITAL_ON_POINT 2
 #define NUMERATOR_IS_ZERO 3
 #define HOPITAL 4

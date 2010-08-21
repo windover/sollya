@@ -58,6 +58,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "general.h"
 #include "proof.h"
 #include "remez.h"
+#include "execute.h"
 
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
@@ -1905,6 +1906,13 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
       mpfi_set(*(internalTheo->boundLeft),stack1);
     }
     break;
+  case PROCEDUREFUNCTION:
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
+    computeFunctionWithProcedure(stack3, tree->child2, stack1, (unsigned int) tree->libFunDeriv);
+    if (internalTheo != NULL) {
+      mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
+    break;
   case CEIL:
     excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
     mpfi_ceil(stack3, stack1);
@@ -2229,7 +2237,7 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
       excludes = concatChains(directExcludes,taylorExcludes);
       if (theo != NULL) {
 	if (theo->functionType != POLYNOMIAL) {
-	  theo->simplificationUsed = TAYLOR;
+	  theo->simplificationUsed = TAYLORPROOF;
 	  theo->theoLeft = directTheo;
 	  theo->theoLeftConstant = constantTheo;
 	  theo->theoLeftLinear = linearTheo;
@@ -4225,6 +4233,9 @@ chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t pre
   case LIBRARYFUNCTION:
     return uncertifiedZeroDenominators(tree->child1,a,b,prec);
     break;
+  case PROCEDUREFUNCTION:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
   case CEIL:
     return uncertifiedZeroDenominators(tree->child1,a,b,prec);
     break;
@@ -4985,6 +4996,10 @@ node *convertConstantToFunctionInPiInner(node *tree) {
       res->libFun = tree->libFun;
       res->libFunDeriv = tree->libFunDeriv;
     }
+    if (tree->nodeType == PROCEDUREFUNCTION) {
+      res->libFunDeriv = tree->libFunDeriv;
+      res->child2 = copyThing(tree->child1);
+    }
     res->child1 = convertConstantToFunctionInPiInner(tree->child1);
     break;
   case 2:
@@ -5437,6 +5452,8 @@ int evaluateSign(int *s, node *rawFunc) {
       case DOUBLEEXTENDED:
 	break;
       case LIBRARYFUNCTION:
+	break;
+      case PROCEDUREFUNCTION:
 	break;
       case CEIL:
 	okayA = evaluateSign(&signA, func->child1);

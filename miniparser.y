@@ -1571,6 +1571,14 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeExp($3);
 			  }               					       
+                      | FUNCTIONTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeProcedureFunction($3);
+			  }               					       
+                      | FUNCTIONTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeSubstitute(makeProcedureFunction($3),$5);
+			  }               					       
                       | LOGTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeLog($3);

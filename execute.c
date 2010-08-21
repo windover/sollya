@@ -430,6 +430,11 @@ node *copyThing(node *tree) {
     copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = copyThing(tree->child1);
     break;
+  case PROCEDUREFUNCTION:
+    copy->libFunDeriv = tree->libFunDeriv;
+    copy->child1 = copyThing(tree->child1);
+    copy->child2 = copyThing(tree->child2);
+    break;
   case CEIL:
     copy->child1 = copyThing(tree->child1);
     break;
@@ -1200,6 +1205,9 @@ char *getTimingStringForThing(node *tree) {
   case LIBRARYFUNCTION:
     constString = NULL;
     break;
+  case PROCEDUREFUNCTION:
+    constString = NULL;
+    break;
   case CEIL:
     constString = NULL;
     break;
@@ -1947,6 +1955,9 @@ int isPureTree(node *tree) {
     return isPureTree(tree->child1);
     break;
   case LIBRARYFUNCTION:
+    return isPureTree(tree->child1);
+    break;
+  case PROCEDUREFUNCTION:
     return isPureTree(tree->child1);
     break;
   case CEIL:
@@ -3152,10 +3163,13 @@ char *sRawPrintThing(node *tree) {
 
   switch (tree->nodeType) {
   case VARIABLE:
-    if (variablename != NULL) 
-      res = newString(variablename);
-    else 
-      res = newString("undefined");
+    if (variablename == NULL) {
+      printMessage(1,"Warning: the global free variable has not been bound before being printed.\n");
+      printMessage(1,"As such a binding is required, the variable will now be bound to \"x\"\n");
+      variablename = (char *) safeCalloc(2,sizeof(char));
+      variablename[0] = 'x';
+    }
+    res = newString(variablename);
     break;
   case CONSTANT:
     res = sprintValue(tree->value);
@@ -3342,11 +3356,40 @@ char *sRawPrintThing(node *tree) {
 	res = concatAndFree(res,newString("diff("));
       }
       res = concatAndFree(res,newString(tree->libFun->functionName));
-      res = concatAndFree(res, newString(")"));
+      res = concatAndFree(res, newString("("));
       res = concatAndFree(res, sRawPrintThing(tree->child1));
       res = concatAndFree(res, newString(")"));
       for (i=1;i<=tree->libFunDeriv;i++) {
 	res = concatAndFree(res, newString(")"));
+      }
+    }
+    break;
+  case PROCEDUREFUNCTION:
+    {
+      if (isPureTree(tree->child1) && (tree->child1->nodeType == VARIABLE)) {
+        res = newString("");
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          res = concatAndFree(res,newString("diff("));
+        }
+        res = concatAndFree(res, newString("function("));
+        res = concatAndFree(res, sRawPrintThing(tree->child2));
+        res = concatAndFree(res, newString(")"));
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          res = concatAndFree(res, newString(")"));
+        }
+      } else {
+        res = newString("");
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          res = concatAndFree(res,newString("diff("));
+        }
+        res = concatAndFree(res, newString("(function("));
+        res = concatAndFree(res, sRawPrintThing(tree->child2));
+        res = concatAndFree(res, newString("))("));
+        res = concatAndFree(res, sRawPrintThing(tree->child1));
+        res = concatAndFree(res, newString(")"));
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          res = concatAndFree(res, newString(")"));
+        }
       }
     }
     break;
@@ -5214,6 +5257,7 @@ void autoprint(node *thing, int inList) {
 	tempNode3 = simplifyAllButDivision(tempNode2); 
       else 
 	tempNode3 = simplifyTree(tempNode2); 
+
       if (!isSyntacticallyEqual(tempNode3,tempNode2)) {
 	if (!noRoundingWarnings) {
 	  if (!shown) printMessage(1,"Warning: rounding may have happened.\n");
@@ -7828,6 +7872,19 @@ node *makePrecAssign(node *thing) {
 
 }
 
+node *makeProcedureFunction(node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = PROCEDUREFUNCTION;
+  res->libFunDeriv = 0;
+  res->child2 = thing;
+  res->child1 = makeVariable();
+
+  return res;
+
+}
+
 node *makePointsAssign(node *thing) {
   node *res;
 
@@ -9868,6 +9925,11 @@ void freeThing(node *tree) {
     freeThing(tree->child1);
     free(tree);
     break;
+  case PROCEDUREFUNCTION:
+    freeThing(tree->child1);
+    freeThing(tree->child2);
+    free(tree);
+    break;
   case CEIL:
     freeThing(tree->child1);
     free(tree);
@@ -10852,6 +10914,11 @@ int isEqualThing(node *tree, node *tree2) {
     if (tree->libFun != tree2->libFun) return 0;
     if (tree->libFunDeriv != tree2->libFunDeriv) return 0;
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break;
+  case PROCEDUREFUNCTION:
+    if (tree->libFunDeriv != tree2->libFunDeriv) return 0;
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     break;
   case CEIL:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
@@ -11951,7 +12018,59 @@ int executeProcedure(node **resultThing, node *proc, chain *args, int elliptic) 
   return res;
 }
 
+void computeFunctionWithProcedure(mpfi_t y, node *proc, mpfi_t x, unsigned int derivN) {
+  mpfr_t derivNAsMpfr, xleft, xright;
+  chain *args;
+  int res;
+  node *resThing;
 
+  mpfr_init2(derivNAsMpfr,8 * sizeof(derivN) + 10);
+  mpfr_set_ui(derivNAsMpfr,derivN,GMP_RNDN);
+
+  mpfr_init2(xleft,mpfi_get_prec(x));
+  mpfr_init2(xright,mpfi_get_prec(x));
+  mpfi_get_left(xleft,x);
+  mpfi_get_right(xright,x);
+
+  args = addElement(addElement(NULL, makeConstant(derivNAsMpfr)),
+                    makeRange(makeConstant(xleft),makeConstant(xright)));
+
+  res = executeProcedure(&resThing, proc, args, 0);
+
+  if (res) {
+    if (isRange(resThing)) {
+      mpfi_interv_fr(y,*(resThing->child1->value),*(resThing->child2->value));
+    } else {
+      mpfr_set_nan(xleft);
+      mpfi_interv_fr(y,xleft,xleft);
+    }
+    freeThing(resThing);
+  } else {
+    mpfr_set_nan(xleft);
+    mpfi_interv_fr(y,xleft,xleft);
+  }
+
+  freeChain(args, freeThingOnVoid);
+
+  mpfr_clear(xright);
+  mpfr_clear(xleft);
+  mpfr_clear(derivNAsMpfr);
+}
+
+void computeFunctionWithProcedureMpfr(mpfr_t rop, node *proc, mpfr_t op, unsigned int derivN) {
+  mpfi_t opI, ropI;
+
+  mpfi_init2(opI,mpfr_get_prec(op));
+  mpfi_init2(ropI,mpfr_get_prec(rop)+2);
+  mpfi_set_fr(opI,op);
+
+  computeFunctionWithProcedure(ropI,proc,opI,derivN);
+  
+  mpfi_mid(rop,ropI);
+
+  mpfi_clear(opI);
+  mpfi_clear(ropI);
+}
 
 int executeExternalProcedureInner(node **resultThing, libraryProcedure *proc, chain *args) {
   chain *myArgs, *myArgSignature, *curr, *curr2;
@@ -13538,6 +13657,30 @@ node *evaluateThingInner(node *tree) {
       mpfi_clear(tempIC);
     }
     break;
+  case PROCEDUREFUNCTION:
+    copy->libFunDeriv = tree->libFunDeriv;
+    copy->child1 = evaluateThingInner(tree->child1);
+    copy->child2 = evaluateThingInner(tree->child2);
+    if (isRange(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      mpfi_init2(tempIA,pTemp);
+      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      mpfi_init2(tempIC,tools_precision);
+      computeFunctionWithProcedure(tempIC, copy->child2, tempIA, (unsigned int) copy->libFunDeriv);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      mpfi_get_left(a,tempIC);
+      mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      mpfi_clear(tempIA);
+      mpfi_clear(tempIC);
+    }
+    break;
   case CEIL:
     copy->child1 = evaluateThingInner(tree->child1);
     if (isRange(copy->child1)) {
@@ -14925,6 +15068,12 @@ node *evaluateThingInner(node *tree) {
 	    variablename = (char *) safeCalloc(2, sizeof(char));
 	    variablename[0] = 'x';
 	  }
+	  if ((tempNode->nodeType == PROCEDUREFUNCTION) && (variablename == NULL)) {
+	    printMessage(1,"Warning: the current free variable is not bound to an identifier. Dereferencing a procedure-based function requires this binding.\n");
+	    printMessage(1,"Will bind the current free variable to the identifier \"x\"\n");
+	    variablename = (char *) safeCalloc(2, sizeof(char));
+	    variablename[0] = 'x';
+	  }
 	  free(copy);
 	  if (tempNode->nodeType == VARIABLE) {
 	    printMessage(1,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
@@ -15033,6 +15182,12 @@ node *evaluateThingInner(node *tree) {
 	if (evaluateThingToPureTree(&tempNode2,(node *) (tree->arguments->value))) {
 	  if ((tempNode->nodeType == LIBRARYFUNCTION) && (variablename == NULL)) {
 	    printMessage(1,"Warning: the current free variable is not bound to an identifier. Dereferencing library function \"%s\" requires this binding.\n",tempNode->libFun->functionName);
+	    printMessage(1,"Will bind the current free variable to the identifier \"x\"\n");
+	    variablename = (char *) safeCalloc(2, sizeof(char));
+	    variablename[0] = 'x';
+	  }
+	  if ((tempNode->nodeType == PROCEDUREFUNCTION) && (variablename == NULL)) {
+	    printMessage(1,"Warning: the current free variable is not bound to an identifier. Dereferencing a procedure-based function requires this binding.\n");
 	    printMessage(1,"Will bind the current free variable to the identifier \"x\"\n");
 	    variablename = (char *) safeCalloc(2, sizeof(char));
 	    variablename[0] = 'x';

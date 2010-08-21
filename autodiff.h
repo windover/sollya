@@ -90,6 +90,7 @@ void nearestint_diff(mpfi_t *res, mpfi_t x, int n, int *silent);
 void single_diff(mpfi_t *res, mpfi_t x, int n, int *silent);
 void triple_double_diff(mpfi_t *res, mpfi_t x, int n, int *silent);
 void libraryFunction_diff(mpfi_t *res, node *f, mpfi_t x, int n, int *silent);
+void procedureFunction_diff(mpfi_t *res, node *f, mpfi_t x, int n, int *silent);
 
 void powerFunction_diff(mpfi_t *res, mpfr_t p, mpfi_t x0, int n, int *silent);
 void constantPower_diff(mpfi_t *res, mpfi_t x0, mpfr_t p, int n, int *silent);

@@ -56,6 +56,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "general.h"
 #include "double.h"
 #include "chain.h"
+#include "execute.h"
 
 #define MAXDIFFSIMPLSIZE 100
 #define MAXDIFFSIMPLDEGREE 25
@@ -274,6 +275,11 @@ void free_memory(node *tree) {
     free_memory(tree->child1);
     free(tree);
     break;
+  case PROCEDUREFUNCTION:
+    free_memory(tree->child1);
+    freeThing(tree->child2);
+    free(tree);
+    break;
   case CEIL:
     free_memory(tree->child1);
     free(tree);
@@ -415,6 +421,19 @@ void fprintHeadFunction(FILE *fd,node *tree, char *x, char *y) {
 	fprintf(fd,"diff(");
       }
       fprintf(fd,"%s(%s)",tree->libFun->functionName,x);
+      for (i=1;i<=tree->libFunDeriv;i++) {
+	fprintf(fd,")");
+      }
+    }
+    break;
+  case PROCEDUREFUNCTION:
+    {
+      for (i=1;i<=tree->libFunDeriv;i++) {
+	fprintf(fd,"diff(");
+      }
+      fprintf(fd,"(function(");
+      fPrintThing(fd, tree->child2);
+      fprintf(fd,"))(%s)",x);
       for (i=1;i<=tree->libFunDeriv;i++) {
 	fprintf(fd,")");
       }
@@ -1297,6 +1316,33 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
       }
     }
     break;
+  case PROCEDUREFUNCTION:
+    {
+      if (tree->child1->nodeType == VARIABLE) {
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          fprintf(fd,"diff(");
+        }
+        fprintf(fd,"function(");
+        fPrintThing(fd, tree->child2);
+        fprintf(fd,")");
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          fprintf(fd,")");
+        }
+      } else {
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          fprintf(fd,"diff(");
+        }
+        fprintf(fd,"(function(");
+        fPrintThing(fd, tree->child2);
+        fprintf(fd,"))(");
+        fprintTreeWithPrintMode(fd,tree->child1);
+        fprintf(fd,")");
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          fprintf(fd,")");
+        }
+      }
+    }
+    break;
   case CEIL:
     fprintf(fd,"ceil(");
     fprintTreeWithPrintMode(fd,tree->child1);
@@ -1459,7 +1505,15 @@ void printTree(node *tree) {
 
   switch (tree->nodeType) {
   case VARIABLE:
-    printf("%s",variablename);
+    if (variablename != NULL) {
+      printf("%s",variablename);
+    } else {
+      printMessage(1,"Warning: the current free variable has not been bound. Nevertheless it must be printed.\n");
+      printMessage(1,"Will bind the current free variable to \"x\".\n");
+      variablename = (char *) safeCalloc(2,sizeof(char));
+      variablename[0] = 'x';
+      printf("%s",variablename);
+    }
     break;
   case CONSTANT:
     printValue(tree->value);
@@ -1691,6 +1745,33 @@ void printTree(node *tree) {
       }
     }
     break;
+  case PROCEDUREFUNCTION:
+    {
+      if (tree->child1->nodeType == VARIABLE) {
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          printf("diff(");
+        }
+        printf("function(");
+        printThing(tree->child2);
+        printf(")");
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          printf(")");
+        }
+      } else {
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          printf("diff(");
+        }
+        printf("(function(");
+        printThing(tree->child2);
+        printf("))(");
+        printTree(tree->child1);
+        printf(")");
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          printf(")");
+        }
+      }
+    }
+    break;
   case CEIL:
     printf("ceil(");
     printTree(tree->child1);
@@ -1725,6 +1806,12 @@ char *sprintTree(node *tree) {
   if (fullParentheses) pred = 100; else pred = precedence(tree);
   switch (tree->nodeType) {
   case VARIABLE:
+    if (variablename == NULL) {
+      printMessage(1,"Warning: the current free variable has not been bound. Nevertheless it must be printed.\n");
+      printMessage(1,"Will bind the current free variable to \"x\".\n");
+      variablename = (char *) safeCalloc(2,sizeof(char));
+      variablename[0] = 'x';
+    }
     buffer = (char *) safeCalloc(strlen(variablename)+1,sizeof(char));
     sprintf(buffer,"%s",variablename);
     break;
@@ -1974,6 +2061,34 @@ char *sprintTree(node *tree) {
       }
     }
     break;
+  case PROCEDUREFUNCTION:
+    {
+      if (tree->child1->nodeType == VARIABLE) {
+        buffer2 = sPrintThing(tree->child2);
+        buffer = (char *) safeCalloc(strlen(buffer2) + 1 + 4 + (6 * tree->libFunDeriv),sizeof(char));
+        tempBuf = buffer;
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          tempBuf += sprintf(tempBuf,"diff(");
+        }
+        tempBuf += sprintf(tempBuf,"function(%s)",buffer2);
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          tempBuf += sprintf(tempBuf,")");
+        }
+      } else {
+        buffer1 = sprintTree(tree->child1);
+        buffer2 = sPrintThing(tree->child2);
+        buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 1 + 4 + (6 * tree->libFunDeriv),sizeof(char));
+        tempBuf = buffer;
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          tempBuf += sprintf(tempBuf,"diff(");
+        }
+        tempBuf += sprintf(tempBuf,"(function(%s))(%s)",buffer2,buffer1);
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          tempBuf += sprintf(tempBuf,")");
+        }
+      }
+    }
+    break;
   case CEIL:
     buffer1 = sprintTree(tree->child1);
     buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
@@ -2013,7 +2128,13 @@ void fprintTree(FILE *fd, node *tree) {
   if (tree == NULL) return;
   switch (tree->nodeType) {
   case VARIABLE:
-    if (variablename != NULL) fprintf(fd,"%s",variablename); else fprintf(fd,"x");
+    if (variablename == NULL) {
+      printMessage(1,"Warning: the current free variable has not been bound. Nevertheless it must be printed.\n");
+      printMessage(1,"Will bind the current free variable to \"x\".\n");
+      variablename = (char *) safeCalloc(2,sizeof(char));
+      variablename[0] = 'x';
+    }
+    fprintf(fd,"%s",variablename);
     break;
   case CONSTANT:
     fprintValue(fd,*(tree->value));
@@ -2233,6 +2354,33 @@ void fprintTree(FILE *fd, node *tree) {
       fprintf(fd,")");
       for (i=1;i<=tree->libFunDeriv;i++) {
 	fprintf(fd,")");
+      }
+    }
+    break;
+  case PROCEDUREFUNCTION:
+    {
+      if (tree->child1->nodeType == VARIABLE) {
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          fprintf(fd,"diff(");
+        }
+        fprintf(fd,"function(");
+        fPrintThing(fd, tree->child2);
+        fprintf(fd,")");
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          fprintf(fd,")");
+        }
+      } else {
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          fprintf(fd,"diff(");
+        }
+        fprintf(fd,"(function(");
+        fPrintThing(fd, tree->child2);
+        fprintf(fd,"))(");
+        fprintTree(fd,tree->child1);
+        fprintf(fd,")");
+        for (i=1;i<=tree->libFunDeriv;i++) {
+          fprintf(fd,")");
+        }
       }
     }
     break;
@@ -2465,6 +2613,13 @@ node* copyTree(node *tree) {
     copy->libFun = tree->libFun;
     copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = copyTree(tree->child1);
+    break;
+  case PROCEDUREFUNCTION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = PROCEDUREFUNCTION;
+    copy->libFunDeriv = tree->libFunDeriv;
+    copy->child1 = copyTree(tree->child1);
+    copy->child2 = copyThing(tree->child2);
     break;
   case CEIL:
     copy = (node*) safeMalloc(sizeof(node));
@@ -4295,6 +4450,13 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     simplified->libFunDeriv = tree->libFunDeriv;
     simplified->child1 = simplifyTreeErrorfreeInner(tree->child1,rec, doRational);
     break;
+  case PROCEDUREFUNCTION:
+    simplified = (node*) safeMalloc(sizeof(node));
+    simplified->nodeType = PROCEDUREFUNCTION;
+    simplified->libFunDeriv = tree->libFunDeriv;
+    simplified->child2 = copyThing(tree->child2);
+    simplified->child1 = simplifyTreeErrorfreeInner(tree->child1,rec, doRational);
+    break;
   case CEIL:
     simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec, doRational);
     simplified = (node*) safeMalloc(sizeof(node));
@@ -5356,6 +5518,20 @@ node* differentiateUnsimplified(node *tree) {
 	temp_node2->child1 = g_copy;    
 	derivative = temp_node;
 	break;
+      case PROCEDUREFUNCTION:
+	g_copy = copyTree(tree->child1);
+	g_diff = differentiateUnsimplified(tree->child1);
+	temp_node = (node*) safeMalloc(sizeof(node));
+	temp_node->nodeType = MUL;
+	temp_node->child2 = g_diff;
+	temp_node2 = (node*) safeMalloc(sizeof(node));
+	temp_node2->nodeType = PROCEDUREFUNCTION;
+        temp_node2->child2 = copyThing(tree->child2);
+	temp_node2->libFunDeriv = tree->libFunDeriv + 1;
+	temp_node->child1 = temp_node2;
+	temp_node2->child1 = g_copy;    
+	derivative = temp_node;
+	break;
       case CEIL:
 	printMessage(1,
 		     "Warning: the ceil operator is not differentiable.\nReplacing it by a constant function when differentiating.\n");
@@ -5632,6 +5808,11 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
     mpfr_from_mpfi(result, stack1, tree->libFunDeriv, tree->libFun->code);
+    break;
+  case PROCEDUREFUNCTION:
+    isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
+    if (!isConstant) break;
+    computeFunctionWithProcedureMpfr(result, tree->child2, stack1, (unsigned int) tree->libFunDeriv);
     break;
   case CEIL:
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
@@ -6311,6 +6492,23 @@ node* simplifyTreeInner(node *tree) {
       simplified->libFunDeriv = tree->libFunDeriv;
     }
     break;
+  case PROCEDUREFUNCTION:
+    simplChild1 = simplifyTreeInner(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      computeFunctionWithProcedureMpfr(*value, tree->child2, *(simplChild1->value), (unsigned int) tree->libFunDeriv);
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = PROCEDUREFUNCTION;
+      simplified->child1 = simplChild1;
+      simplified->child2 = copyThing(tree->child2);
+      simplified->libFunDeriv = tree->libFunDeriv;
+    }
+    break;
   case CEIL:
     simplChild1 = simplifyTreeInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
@@ -6963,6 +7161,23 @@ node* simplifyAllButDivisionInner(node *tree) {
       simplified->libFunDeriv = tree->libFunDeriv;
     }
     break;
+  case PROCEDUREFUNCTION:
+    simplChild1 = simplifyAllButDivisionInner(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      computeFunctionWithProcedureMpfr(*value, tree->child2, *(simplChild1->value), (unsigned int) tree->libFunDeriv);
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = PROCEDUREFUNCTION;
+      simplified->child1 = simplChild1;
+      simplified->child2 = copyThing(tree->child2);
+      simplified->libFunDeriv = tree->libFunDeriv;
+    }
+    break;
   case CEIL:
     simplChild1 = simplifyAllButDivisionInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
@@ -7199,6 +7414,10 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
     evaluate(stack1, tree->child1, x, prec);
     mpfr_from_mpfi(result, stack1, tree->libFunDeriv, tree->libFun->code);
     break;
+  case PROCEDUREFUNCTION:
+    evaluate(stack1, tree->child1, x, prec);
+    computeFunctionWithProcedureMpfr(result, tree->child2, stack1, (unsigned int) tree->libFunDeriv);
+    break;
   case CEIL:
     evaluate(stack1, tree->child1, x, prec);
     mpfr_ceil(result, stack1);
@@ -7335,6 +7554,9 @@ int arity(node *tree) {
   case LIBRARYFUNCTION:
     return 1;
     break;
+  case PROCEDUREFUNCTION:
+    return 1;
+    break;
   case CEIL:
     return 1;
     break;
@@ -7357,6 +7579,9 @@ int isSyntacticallyEqual(node *tree1, node *tree2) {
   if (tree1->nodeType == PI_CONST) return 1;
   if ((tree1->nodeType == LIBRARYFUNCTION) && 
       ((tree1->libFun != tree2->libFun) ||
+       (tree1->libFunDeriv != tree2->libFunDeriv))) return 0;
+  if ((tree1->nodeType == PROCEDUREFUNCTION) && 
+      ((!isEqualThing(tree1->child2, tree2->child2)) ||
        (tree1->libFunDeriv != tree2->libFunDeriv))) return 0;
   if (tree1->nodeType == CONSTANT) {
     if (mpfr_equal_p(*(tree1->value),*(tree2->value))) 
@@ -7515,6 +7740,9 @@ int isPolynomial(node *tree) {
   case LIBRARYFUNCTION:
     res = 0;
     break;
+  case PROCEDUREFUNCTION:
+    res = 0;
+    break;
   case CEIL:
     res = 0;
     break;
@@ -7661,6 +7889,9 @@ int isAffine(node *tree) {
     res = 0;
     break;
   case LIBRARYFUNCTION:
+    res = 0;
+    break;
+  case PROCEDUREFUNCTION:
     res = 0;
     break;
   case CEIL:
@@ -8370,6 +8601,13 @@ node* expandDivision(node *tree) {
     copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = expandDivision(tree->child1);
     break;
+  case PROCEDUREFUNCTION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = PROCEDUREFUNCTION;
+    copy->libFunDeriv = tree->libFunDeriv;
+    copy->child1 = expandDivision(tree->child1);
+    copy->child2 = copyThing(tree->child2);
+    break;
   case CEIL:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CEIL;
@@ -8948,6 +9186,13 @@ node* expandUnsimplified(node *tree) {
     copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = expand(tree->child1);
     break;
+  case PROCEDUREFUNCTION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = PROCEDUREFUNCTION;
+    copy->libFunDeriv = tree->libFunDeriv;
+    copy->child1 = expand(tree->child1);
+    copy->child2 = copyThing(tree->child2);
+    break;
   case CEIL:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CEIL;
@@ -9095,6 +9340,9 @@ int isConstant(node *tree) {
     return isConstant(tree->child1);
     break;
   case LIBRARYFUNCTION:
+    return isConstant(tree->child1);
+    break;
+  case PROCEDUREFUNCTION:
     return isConstant(tree->child1);
     break;
   case CEIL:
@@ -10144,6 +10392,13 @@ node* hornerUnsimplified(node *tree) {
     copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = horner(tree->child1);
     break;
+  case PROCEDUREFUNCTION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = PROCEDUREFUNCTION;
+    copy->libFunDeriv = tree->libFunDeriv;
+    copy->child1 = horner(tree->child1);
+    copy->child2 = copyThing(tree->child2);
+    break;
   case CEIL:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CEIL;
@@ -10953,6 +11208,13 @@ node *substitute(node* tree, node *t) {
     copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = substitute(tree->child1,t);
     break;
+  case PROCEDUREFUNCTION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = PROCEDUREFUNCTION;
+    copy->libFunDeriv = tree->libFunDeriv;
+    copy->child1 = substitute(tree->child1,t);
+    copy->child2 = copyThing(tree->child2);
+    break;
   case CEIL:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = CEIL;
@@ -11327,6 +11589,9 @@ int treeSize(node *tree) {
     return treeSize(tree->child1) + 1;
     break;
   case LIBRARYFUNCTION:    
+    return treeSize(tree->child1) + 1;
+    break;
+  case PROCEDUREFUNCTION:    
     return treeSize(tree->child1) + 1;
     break;
   case CEIL:
@@ -11818,6 +12083,13 @@ node *makeCanonical(node *tree, mp_prec_t prec) {
     copy->libFun = tree->libFun;
     copy->libFunDeriv = tree->libFunDeriv;
     copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case PROCEDUREFUNCTION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = PROCEDUREFUNCTION;
+    copy->libFunDeriv = tree->libFunDeriv;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    copy->child2 = copyThing(tree->child2);
     break;
   case CEIL:
     copy = (node*) safeMalloc(sizeof(node));
