@@ -12051,47 +12051,55 @@ void computeFunctionWithProcedure(mpfi_t y, node *proc, mpfi_t x, unsigned int d
   int res;
   node *resThing;
 
-  mpfr_init2(precAsMpfr,8 * sizeof(mp_prec_t) + 10);
-  mpfr_set_ui(precAsMpfr,(unsigned int) mpfi_get_prec(y),GMP_RNDU);
+  if (isProcedure(proc)) {
 
-  mpfr_init2(derivNAsMpfr,8 * sizeof(derivN) + 10);
-  mpfr_set_ui(derivNAsMpfr,derivN,GMP_RNDN);
+    mpfr_init2(precAsMpfr,8 * sizeof(mp_prec_t) + 10);
+    mpfr_set_ui(precAsMpfr,(unsigned int) mpfi_get_prec(y),GMP_RNDU);
 
-  mpfr_init2(xleft,mpfi_get_prec(x));
-  mpfr_init2(xright,mpfi_get_prec(x));
-  mpfi_get_left(xleft,x);
-  mpfi_get_right(xright,x);
+    mpfr_init2(derivNAsMpfr,8 * sizeof(derivN) + 10);
+    mpfr_set_ui(derivNAsMpfr,derivN,GMP_RNDN);
 
-  args = addElement(addElement(addElement(NULL,makeConstant(precAsMpfr)),
-			       makeConstant(derivNAsMpfr)),
-                    makeRange(makeConstant(xleft),makeConstant(xright)));
+    mpfr_init2(xleft,mpfi_get_prec(x));
+    mpfr_init2(xright,mpfi_get_prec(x));
+    mpfi_get_left(xleft,x);
+    mpfi_get_right(xright,x);
 
-  res = executeProcedure(&resThing, proc, args, 0);
+    args = addElement(addElement(addElement(NULL,makeConstant(precAsMpfr)),
+				 makeConstant(derivNAsMpfr)),
+		      makeRange(makeConstant(xleft),makeConstant(xright)));
 
-  if (res) {
-    if (resThing != NULL) {
-      if (isRange(resThing)) {
-	mpfi_interv_fr(y,*(resThing->child1->value),*(resThing->child2->value));
+    res = executeProcedure(&resThing, proc, args, 0);
+
+    if (res) {
+      if (resThing != NULL) {
+	if (isRange(resThing)) {
+	  mpfi_interv_fr(y,*(resThing->child1->value),*(resThing->child2->value));
+	} else {
+	  mpfr_set_nan(xleft);
+	  mpfi_interv_fr(y,xleft,xleft);
+	}
+	freeThing(resThing);
       } else {
 	mpfr_set_nan(xleft);
 	mpfi_interv_fr(y,xleft,xleft);
       }
-      freeThing(resThing);
     } else {
       mpfr_set_nan(xleft);
       mpfi_interv_fr(y,xleft,xleft);
     }
+
+    freeChain(args, freeThingOnVoid);
+
+    mpfr_clear(xright);
+    mpfr_clear(xleft);
+    mpfr_clear(derivNAsMpfr);
+    mpfr_clear(precAsMpfr);
   } else {
+    mpfr_init2(xleft,mpfi_get_prec(y));
     mpfr_set_nan(xleft);
     mpfi_interv_fr(y,xleft,xleft);
+    mpfr_clear(xleft);
   }
-
-  freeChain(args, freeThingOnVoid);
-
-  mpfr_clear(xright);
-  mpfr_clear(xleft);
-  mpfr_clear(derivNAsMpfr);
-  mpfr_clear(precAsMpfr);
 }
 
 void computeFunctionWithProcedureMpfr(mpfr_t rop, node *proc, mpfr_t op, unsigned int derivN) {
