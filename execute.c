@@ -12069,13 +12069,18 @@ void computeFunctionWithProcedure(mpfi_t y, node *proc, mpfi_t x, unsigned int d
   res = executeProcedure(&resThing, proc, args, 0);
 
   if (res) {
-    if (isRange(resThing)) {
-      mpfi_interv_fr(y,*(resThing->child1->value),*(resThing->child2->value));
+    if (resThing != NULL) {
+      if (isRange(resThing)) {
+	mpfi_interv_fr(y,*(resThing->child1->value),*(resThing->child2->value));
+      } else {
+	mpfr_set_nan(xleft);
+	mpfi_interv_fr(y,xleft,xleft);
+      }
+      freeThing(resThing);
     } else {
       mpfr_set_nan(xleft);
       mpfi_interv_fr(y,xleft,xleft);
     }
-    freeThing(resThing);
   } else {
     mpfr_set_nan(xleft);
     mpfi_interv_fr(y,xleft,xleft);
