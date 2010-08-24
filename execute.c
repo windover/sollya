@@ -1078,7 +1078,7 @@ node *copyThing(node *tree) {
   case HOPITALRECURSDEREF:
     break;  	       
   default:
-    fprintf(stderr,"Error: copyThing: unknown identifier (%d) in the tree\n",tree->nodeType);
+    sollyaFprintf(stderr,"Error: copyThing: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);
   }
 
@@ -1833,7 +1833,7 @@ char *getTimingStringForThing(node *tree) {
     constString = "dereferencing the numbers of recursions for Hopital";
     break;  	       
   default:
-    fprintf(stderr,"Error: getTimingStringForThing: unknown identifier (%d) in the tree\n",tree->nodeType);
+    sollyaFprintf(stderr,"Error: getTimingStringForThing: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);
   }
 
@@ -3025,42 +3025,42 @@ void printThingWithFullStrings(node *thing) {
       if (midpointMode && (dyadic == 0)) {
 	temp = sprintMidpointMode(*(thing->child1->value), *(thing->child2->value));
 	if (temp != NULL) {
-	  printf("%s",temp);
+	  sollyaPrintf("%s",temp);
 	  free(temp);
 	} else {
-	  printf("[");
+	  sollyaPrintf("[");
 	  printValue(thing->child1->value);
-	  printf(";");
+	  sollyaPrintf(";");
 	  printValue(thing->child2->value);
-	  printf("]");
+	  sollyaPrintf("]");
 	}
       } else {
-	printf("[");
+	sollyaPrintf("[");
 	printValue(thing->child1->value);
-	printf(";");
+	sollyaPrintf(";");
 	printValue(thing->child2->value);
-	printf("]");
+	sollyaPrintf("]");
       }
     } else {
       if (isList(thing)) {
 	curr = thing->arguments;
-	printf("[|");
+	sollyaPrintf("[|");
 	while (curr != NULL) {
 	  printThingWithFullStrings((node *) (curr->value));
-	  if (curr->next != NULL) printf(", ");
+	  if (curr->next != NULL) sollyaPrintf(", ");
 	  curr = curr->next;
 	}
-	printf("|]");
+	sollyaPrintf("|]");
       } else {
 	if (isFinalEllipticList(thing)) {
 	  curr = thing->arguments;
-	  printf("[|");
+	  sollyaPrintf("[|");
 	  while (curr != NULL) {
 	    printThingWithFullStrings((node *) (curr->value));
-	    if (curr->next != NULL) printf(", ");
+	    if (curr->next != NULL) sollyaPrintf(", ");
 	    curr = curr->next;
 	  }
-	  printf("...|]");
+	  sollyaPrintf("...|]");
 	} else {
 	  rawPrintThing(thing);
 	}
@@ -3081,45 +3081,45 @@ void printThing(node *thing) {
       if (midpointMode && (dyadic == 0)) {
 	temp = sprintMidpointMode(*(thing->child1->value), *(thing->child2->value));
 	if (temp != NULL) {
-	  printf("%s",temp);
+	  sollyaPrintf("%s",temp);
 	  free(temp);
 	} else {
-	  printf("[");
+	  sollyaPrintf("[");
 	  printValue(thing->child1->value);
-	  printf(";");
+	  sollyaPrintf(";");
 	  printValue(thing->child2->value);
-	  printf("]");
+	  sollyaPrintf("]");
 	}
       } else {
-	printf("[");
+	sollyaPrintf("[");
 	printValue(thing->child1->value);
-	printf(";");
+	sollyaPrintf(";");
 	printValue(thing->child2->value);
-	printf("]");
+	sollyaPrintf("]");
       }
     } else {
       if (isList(thing)) {
 	curr = thing->arguments;
-	printf("[|");
+	sollyaPrintf("[|");
 	while (curr != NULL) {
 	  printThingWithFullStrings((node *) (curr->value));
-	  if (curr->next != NULL) printf(", ");
+	  if (curr->next != NULL) sollyaPrintf(", ");
 	  curr = curr->next;
 	}
-	printf("|]");
+	sollyaPrintf("|]");
       } else {
 	if (isFinalEllipticList(thing)) {
 	  curr = thing->arguments;
-	  printf("[|");
+	  sollyaPrintf("[|");
 	  while (curr != NULL) {
 	    printThingWithFullStrings((node *) (curr->value));
-	    if (curr->next != NULL) printf(", ");
+	    if (curr->next != NULL) sollyaPrintf(", ");
 	    curr = curr->next;
 	  }
-	  printf("...|]");
+	  sollyaPrintf("...|]");
 	} else {
 	  if (isString(thing)) {
-	    printf("%s",thing->string);
+	    sollyaPrintf("%s",thing->string);
 	  } else {
 	    rawPrintThing(thing);
 	  }
@@ -3713,7 +3713,7 @@ char *sRawPrintThing(node *tree) {
 	  break;
 	case CONSTANT_TYPE:
 	  res = concatAndFree(res, newString("constant"));
-	  printf("constant");
+	  sollyaPrintf("constant");
 	  break;
 	case FUNCTION_TYPE:
 	  res = concatAndFree(res, newString("function"));
@@ -4693,7 +4693,7 @@ char *sRawPrintThing(node *tree) {
     res = newString("hopitalrecursions");
     break;  	       
   default:
-    fprintf(stderr,"Error: sRawPrintThing: unknown identifier (%d) in the tree\n",tree->nodeType);
+    sollyaFprintf(stderr,"Error: sRawPrintThing: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);
   }
   return res;
@@ -4902,42 +4902,42 @@ void fPrintThingWithFullStrings(FILE *fd, node *thing) {
       if (midpointMode && (dyadic == 0)) {
 	temp = sprintMidpointMode(*(thing->child1->value), *(thing->child2->value));
 	if (temp != NULL) {
-	  fprintf(fd,"%s",temp);
+	  sollyaFprintf(fd,"%s",temp);
 	  free(temp);
 	} else {
-	  fprintf(fd,"[");
+	  sollyaFprintf(fd,"[");
 	  fprintValueWithPrintMode(fd,*(thing->child1->value));
-	  fprintf(fd,";");
+	  sollyaFprintf(fd,";");
 	  fprintValueWithPrintMode(fd,*(thing->child2->value));
-	  fprintf(fd,"]");
+	  sollyaFprintf(fd,"]");
 	}
       } else {
-	fprintf(fd,"[");
+	sollyaFprintf(fd,"[");
 	fprintValueWithPrintMode(fd,*(thing->child1->value));
-	fprintf(fd,";");
+	sollyaFprintf(fd,";");
 	fprintValueWithPrintMode(fd,*(thing->child2->value));
-	fprintf(fd,"]");
+	sollyaFprintf(fd,"]");
       }
     } else {
       if (isList(thing)) {
 	curr = thing->arguments;
-	fprintf(fd,"[|");
+	sollyaFprintf(fd,"[|");
 	while (curr != NULL) {
 	  fPrintThingWithFullStrings(fd,(node *) (curr->value));
-	  if (curr->next != NULL) fprintf(fd,", ");
+	  if (curr->next != NULL) sollyaFprintf(fd,", ");
 	  curr = curr->next;
 	}
-	fprintf(fd,"|]");
+	sollyaFprintf(fd,"|]");
       } else {
 	if (isFinalEllipticList(thing)) {
 	  curr = thing->arguments;
-	  fprintf(fd,"[|");
+	  sollyaFprintf(fd,"[|");
 	  while (curr != NULL) {
 	    fPrintThingWithFullStrings(fd,(node *) (curr->value));
-	    if (curr->next != NULL) fprintf(fd,", ");
+	    if (curr->next != NULL) sollyaFprintf(fd,", ");
 	    curr = curr->next;
 	  }
-	  fprintf(fd,"...|]");
+	  sollyaFprintf(fd,"...|]");
 	} else {
 	  fRawPrintThing(fd,thing);
 	}
@@ -4958,45 +4958,45 @@ void fPrintThing(FILE *fd, node *thing) {
       if (midpointMode && (dyadic == 0)) {
 	temp = sprintMidpointMode(*(thing->child1->value), *(thing->child2->value));
 	if (temp != NULL) {
-	  fprintf(fd,"%s",temp);
+	  sollyaFprintf(fd,"%s",temp);
 	  free(temp);
 	} else {
-	  fprintf(fd,"[");
+	  sollyaFprintf(fd,"[");
 	  fprintValueWithPrintMode(fd,*(thing->child1->value));
-	  fprintf(fd,";");
+	  sollyaFprintf(fd,";");
 	  fprintValueWithPrintMode(fd,*(thing->child2->value));
-	  fprintf(fd,"]");
+	  sollyaFprintf(fd,"]");
 	}
       } else {
-	fprintf(fd,"[");
+	sollyaFprintf(fd,"[");
 	fprintValueWithPrintMode(fd,*(thing->child1->value));
-	fprintf(fd,";");
+	sollyaFprintf(fd,";");
 	fprintValueWithPrintMode(fd,*(thing->child2->value));
-	fprintf(fd,"]");
+	sollyaFprintf(fd,"]");
       }
     } else {
       if (isList(thing)) {
 	curr = thing->arguments;
-	fprintf(fd,"[|");
+	sollyaFprintf(fd,"[|");
 	while (curr != NULL) {
 	  fPrintThingWithFullStrings(fd,(node *) (curr->value));
-	  if (curr->next != NULL) fprintf(fd,", ");
+	  if (curr->next != NULL) sollyaFprintf(fd,", ");
 	  curr = curr->next;
 	}
-	fprintf(fd,"|]");
+	sollyaFprintf(fd,"|]");
       } else {
 	if (isFinalEllipticList(thing)) {
 	  curr = thing->arguments;
-	  fprintf(fd,"[|");
+	  sollyaFprintf(fd,"[|");
 	  while (curr != NULL) {
 	    fPrintThingWithFullStrings(fd,(node *) (curr->value));
-	    if (curr->next != NULL) fprintf(fd,", ");
+	    if (curr->next != NULL) sollyaFprintf(fd,", ");
 	    curr = curr->next;
 	  }
-	  fprintf(fd,"...|]");
+	  sollyaFprintf(fd,"...|]");
 	} else {
 	  if (isString(thing)) {
-	    fprintf(fd,"%s",thing->string);
+	    sollyaFprintf(fd,"%s",thing->string);
 	  } else {
 	    fRawPrintThing(fd,thing);
 	  }
@@ -5072,98 +5072,98 @@ node *getThingFromTable(char *identifier) {
 void printExternalProcedureUsage(node *tree) {
   chain *curr;
   if (isExternalProcedureUsage(tree)) {
-    printf("%s(",tree->libProc->procedureName);
+    sollyaPrintf("%s(",tree->libProc->procedureName);
     curr = tree->libProc->signature->next;
     while (curr != NULL) {
       switch (*((int *) (curr->value))) {
       case VOID_TYPE:
-	printf("void");
+	sollyaPrintf("void");
 	break;
       case CONSTANT_TYPE:
-	printf("constant");
+	sollyaPrintf("constant");
 	break;
       case FUNCTION_TYPE:
-	printf("function");
+	sollyaPrintf("function");
 	break;
       case RANGE_TYPE:
-	printf("range");
+	sollyaPrintf("range");
 	break;
       case INTEGER_TYPE:
-	printf("integer");
+	sollyaPrintf("integer");
 	break;
       case STRING_TYPE:
-	printf("string");
+	sollyaPrintf("string");
 	break;
       case BOOLEAN_TYPE:
-	printf("boolean");
+	sollyaPrintf("boolean");
 	break;
       case CONSTANT_LIST_TYPE:
-	printf("list of constant");
+	sollyaPrintf("list of constant");
 	break;
       case FUNCTION_LIST_TYPE:
-	printf("list of function");
+	sollyaPrintf("list of function");
 	break;
       case RANGE_LIST_TYPE:
-	printf("list of range");
+	sollyaPrintf("list of range");
 	break;
       case INTEGER_LIST_TYPE:
-	printf("list of integer");
+	sollyaPrintf("list of integer");
 	break;
       case STRING_LIST_TYPE:
-	printf("list of string");
+	sollyaPrintf("list of string");
 	break;
       case BOOLEAN_LIST_TYPE:
-	printf("list of boolean");
+	sollyaPrintf("list of boolean");
 	break;
       default:
-	printf("unknown type");
+	sollyaPrintf("unknown type");
       }
-      if (curr->next != NULL) printf(", ");
+      if (curr->next != NULL) sollyaPrintf(", ");
       curr = curr->next;
     }
-    printf(") -> ");
+    sollyaPrintf(") -> ");
     switch (*((int *) (tree->libProc->signature->value))) {
     case VOID_TYPE:
-      printf("void");
+      sollyaPrintf("void");
       break;
     case CONSTANT_TYPE:
-      printf("constant");
+      sollyaPrintf("constant");
       break;
     case FUNCTION_TYPE:
-      printf("function");
+      sollyaPrintf("function");
       break;
     case RANGE_TYPE:
-      printf("range");
+      sollyaPrintf("range");
       break;
     case INTEGER_TYPE:
-      printf("integer");
+      sollyaPrintf("integer");
       break;
     case STRING_TYPE:
-      printf("string");
+      sollyaPrintf("string");
       break;
     case BOOLEAN_TYPE:
-      printf("boolean");
+      sollyaPrintf("boolean");
       break;
     case CONSTANT_LIST_TYPE:
-      printf("list of constant");
+      sollyaPrintf("list of constant");
       break;
     case FUNCTION_LIST_TYPE:
-      printf("list of function");
+      sollyaPrintf("list of function");
       break;
     case RANGE_LIST_TYPE:
-      printf("list of range");
+      sollyaPrintf("list of range");
       break;
     case INTEGER_LIST_TYPE:
-      printf("list of integer");
+      sollyaPrintf("list of integer");
       break;
     case STRING_LIST_TYPE:
-      printf("list of string");
+      sollyaPrintf("list of string");
       break;
     case BOOLEAN_LIST_TYPE:
-      printf("list of boolean");
+      sollyaPrintf("list of boolean");
       break;
     default:
-      printf("unknown type");
+      sollyaPrintf("unknown type");
     }
   }
 }
@@ -5339,24 +5339,24 @@ void autoprint(node *thing, int inList) {
     if (freeThingAfterwards) free_memory(tempNode2);
   } else {
     if (isList(thing)) {
-      printf("[|");
+      sollyaPrintf("[|");
       curr = thing->arguments;
       while (curr != NULL) {
 	autoprint((node *) (curr->value),1);
-	if (curr->next != NULL) printf(", ");
+	if (curr->next != NULL) sollyaPrintf(", ");
 	curr = curr->next;
       }
-      printf("|]");
+      sollyaPrintf("|]");
     } else {
       if (isFinalEllipticList(thing)) {
-	printf("[|");
+	sollyaPrintf("[|");
 	curr = thing->arguments;
 	while (curr != NULL) {
 	  autoprint((node *) (curr->value),1);
-	  if (curr->next != NULL) printf(", ");
+	  if (curr->next != NULL) sollyaPrintf(", ");
 	  curr = curr->next;
 	}
-	printf("...|]");
+	sollyaPrintf("...|]");
       } else {
 	if (inList) 
 	  printThingWithFullStrings(thing);
@@ -5854,7 +5854,7 @@ int executeCommandInner(node *tree) {
   case RESTART:
     restartTool();
     outputMode();
-    printf("The tool has been restarted.\n");
+    sollyaPrintf("The tool has been restarted.\n");
     result = 0;
     break;  	
   case VARIABLEDECLARATION:
@@ -5897,10 +5897,10 @@ int executeCommandInner(node *tree) {
       tempNode = evaluateThing((node *) (curr->value));
       printThing(tempNode);
       freeThing(tempNode);
-      if (curr->next != NULL) printf(" ");
+      if (curr->next != NULL) sollyaPrintf(" ");
       curr = curr->next;
     }
-    printf("\n");
+    sollyaPrintf("\n");
     break; 				
   case NEWFILEPRINT:
     if (evaluateThingToString(&tempString, tree->child1)) {
@@ -5911,10 +5911,10 @@ int executeCommandInner(node *tree) {
 	  tempNode = evaluateThing((node *) (curr->value));
 	  fPrintThing(fd,tempNode);
 	  freeThing(tempNode);
-	  if (curr->next != NULL) fprintf(fd," ");
+	  if (curr->next != NULL) sollyaFprintf(fd," ");
 	  curr = curr->next;
 	}
-	fprintf(fd,"\n");
+	sollyaFprintf(fd,"\n");
 	fclose(fd);
       } else {
 	printMessage(1,"Warning: the file \"%s\" could not be opened for writing.\n",tempString);
@@ -5937,10 +5937,10 @@ int executeCommandInner(node *tree) {
 	  tempNode = evaluateThing((node *) (curr->value));
 	  fPrintThing(fd,tempNode);
 	  freeThing(tempNode);
-	  if (curr->next != NULL) fprintf(fd," ");
+	  if (curr->next != NULL) sollyaFprintf(fd," ");
 	  curr = curr->next;
 	}
-	fprintf(fd,"\n");
+	sollyaFprintf(fd,"\n");
 	fclose(fd);
       } else {
 	printMessage(1,"Warning: the file \"%s\" could not be opened for writing.\n",tempString);
@@ -6050,7 +6050,7 @@ int executeCommandInner(node *tree) {
     mpfr_init2(a,tools_precision);
     if (evaluateThingToConstant(a, tree->child1, NULL, 0)) {
       outputMode();
-      printBinary(a); printf("\n");
+      printBinary(a); sollyaPrintf("\n");
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a constant value.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -6066,7 +6066,7 @@ int executeCommandInner(node *tree) {
 	  printMessage(1,"\nWarning: rounding occurred while printing.");
 	}
       }
-      printf("\n");
+      sollyaPrintf("\n");
       freeThing(tempNode);
     } else {
       printMessage(1,"Warning: the given expression does not evaluate to a function.\n");
@@ -6274,7 +6274,7 @@ int executeCommandInner(node *tree) {
     break;			
   case PRINTXML:
     if (evaluateThingToPureTree(&tempNode, tree->child1)) {
-      printf("\n");
+      sollyaPrintf("\n");
       outputMode();
       printXml(tempNode);
       freeThing(tempNode);
@@ -6427,7 +6427,7 @@ int executeCommandInner(node *tree) {
     for (i=0;i<resA;i++)
       freeThing(array[i]);
     free(array);
-    printf("\n");
+    sollyaPrintf("\n");
     break; 			
   case RENAME:
     if (variablename == NULL) {
@@ -6460,7 +6460,7 @@ int executeCommandInner(node *tree) {
 	  outputMode();
 	  printExternalProcedureUsage(tempNode);
 	}
-	printf("\n");
+	sollyaPrintf("\n");
       } 
       freeThing(tempNode);
     } else {
@@ -6473,11 +6473,11 @@ int executeCommandInner(node *tree) {
 	  printExternalProcedureUsage(tempNode);
 	freeThing(tempNode);
 	if (oldAutoPrint) {
-	  if (curr->next != NULL) printf(", ");
+	  if (curr->next != NULL) sollyaPrintf(", ");
 	}
 	curr = curr->next;
       }
-      printf("\n");
+      sollyaPrintf("\n");
     }
     break;  		
   case EXTERNALPROC:
@@ -7026,7 +7026,7 @@ int executeCommandInner(node *tree) {
       defaultprecision = resA;
       tools_precision = resA;
       outputMode();
-      printf("The precision has been set to %d bits.\n",resA);
+      sollyaPrintf("The precision has been set to %d bits.\n",resA);
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -7042,7 +7042,7 @@ int executeCommandInner(node *tree) {
       }
       defaultpoints = resA;
       outputMode();
-      printf("The number of points has been set to %d.\n",resA);
+      sollyaPrintf("The number of points has been set to %d.\n",resA);
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -7058,7 +7058,7 @@ int executeCommandInner(node *tree) {
       mpfr_init2(statediam,mpfr_get_prec(a));
       mpfr_set(statediam,a,GMP_RNDN);
       outputMode();
-      printf("The diameter has been set to ");
+      sollyaPrintf("The diameter has been set to ");
       printMpfr(a);
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
@@ -7075,22 +7075,22 @@ int executeCommandInner(node *tree) {
       outputMode();
       switch (dyadic) {	     
       case 0:
-	printf("Display mode is decimal numbers.\n");
+	sollyaPrintf("Display mode is decimal numbers.\n");
 	break;
       case 1:
-	printf("Display mode is dyadic numbers.\n");
+	sollyaPrintf("Display mode is dyadic numbers.\n");
 	break;
       case 2:
-	printf("Display mode is dyadic numbers in integer-power-of-2 notation.\n");
+	sollyaPrintf("Display mode is dyadic numbers in integer-power-of-2 notation.\n");
 	break;
       case 3:
-	printf("Display mode is binary numbers.\n");
+	sollyaPrintf("Display mode is binary numbers.\n");
 	break;
       case 4:
-	printf("Display mode is hexadecimal numbers.\n");
+	sollyaPrintf("Display mode is hexadecimal numbers.\n");
 	break;
       default:
-	printf("Display mode in unknown state.\n");
+	sollyaPrintf("Display mode in unknown state.\n");
       }
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to default, dyadic, powers, hexadecimal or binary.\n");
@@ -7107,7 +7107,7 @@ int executeCommandInner(node *tree) {
       }
       verbosity = resA;
       outputMode();
-      printf("The verbosity level has been set to %d.\n",resA);
+      sollyaPrintf("The verbosity level has been set to %d.\n",resA);
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -7120,9 +7120,9 @@ int executeCommandInner(node *tree) {
       canonical = resA;
       outputMode();
       if (canonical) 
-	printf("Canonical automatic printing output has been activated.\n");
+	sollyaPrintf("Canonical automatic printing output has been activated.\n");
       else 
-	printf("Canonical automatic printing output has been deactivated.\n");
+	sollyaPrintf("Canonical automatic printing output has been deactivated.\n");
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -7135,9 +7135,9 @@ int executeCommandInner(node *tree) {
       autosimplify = resA;
       outputMode();
       if (autosimplify) 
-	printf("Automatic pure tree simplification has been activated.\n");
+	sollyaPrintf("Automatic pure tree simplification has been activated.\n");
       else 
-	printf("Automatic pure tree simplification has been deactivated.\n");
+	sollyaPrintf("Automatic pure tree simplification has been deactivated.\n");
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -7152,7 +7152,7 @@ int executeCommandInner(node *tree) {
 	printMessage(1,"Warning: the number of recursions for Taylor evaluation must not be negative.\n");
       }
       taylorrecursions = resA;     outputMode();
-      printf("The number of recursions for Taylor evaluation has been set to %d.\n",resA);
+      sollyaPrintf("The number of recursions for Taylor evaluation has been set to %d.\n",resA);
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -7164,9 +7164,9 @@ int executeCommandInner(node *tree) {
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
       timecounting = resA;     outputMode();
       if (timecounting) 
-	printf("Timing has been activated.\n");
+	sollyaPrintf("Timing has been activated.\n");
       else 
-	printf("Timing has been deactivated.\n");
+	sollyaPrintf("Timing has been deactivated.\n");
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -7178,9 +7178,9 @@ int executeCommandInner(node *tree) {
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
       fullParentheses = resA;     outputMode();
       if (fullParentheses) 
-	printf("Full parentheses mode has been activated.\n");
+	sollyaPrintf("Full parentheses mode has been activated.\n");
       else 
-	printf("Full parentheses mode has been deactivated.\n");
+	sollyaPrintf("Full parentheses mode has been deactivated.\n");
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -7192,9 +7192,9 @@ int executeCommandInner(node *tree) {
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
       midpointMode = resA;     outputMode();
       if (midpointMode) 
-	printf("Midpoint mode has been activated.\n");
+	sollyaPrintf("Midpoint mode has been activated.\n");
       else 
-	printf("Midpoint mode has been deactivated.\n");
+	sollyaPrintf("Midpoint mode has been deactivated.\n");
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -7206,9 +7206,9 @@ int executeCommandInner(node *tree) {
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
       dieOnErrorMode = resA;     outputMode();
       if (dieOnErrorMode) 
-	printf("Die-on-error mode has been activated.\n");
+	sollyaPrintf("Die-on-error mode has been activated.\n");
       else 
-	printf("Die-on-error mode has been deactivated.\n");
+	sollyaPrintf("Die-on-error mode has been deactivated.\n");
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -7220,9 +7220,9 @@ int executeCommandInner(node *tree) {
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
       rationalMode = resA;     outputMode();
       if (rationalMode) 
-	printf("Rational mode has been activated.\n");
+	sollyaPrintf("Rational mode has been activated.\n");
       else 
-	printf("Rational mode has been deactivated.\n");
+	sollyaPrintf("Rational mode has been deactivated.\n");
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -7234,9 +7234,9 @@ int executeCommandInner(node *tree) {
     if (evaluateThingToOnOff(&resA, tree->child1, &defaultVal)) {
       noRoundingWarnings = !resA;     outputMode();
       if (noRoundingWarnings) 
-	printf("Rounding warning mode has been deactivated.\n");
+	sollyaPrintf("Rounding warning mode has been deactivated.\n");
       else 
-	printf("Rounding warning mode has been activated.\n");
+	sollyaPrintf("Rounding warning mode has been activated.\n");
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to on or off.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -7251,7 +7251,7 @@ int executeCommandInner(node *tree) {
 	printMessage(1,"Warning: the number of recursions for Hopital's rule must not be negative.\n");
       }
       hopitalrecursions = resA;     outputMode();
-      printf("The number of recursions for Hopital's rule has been set to %d.\n",resA);
+      sollyaPrintf("The number of recursions for Hopital's rule has been set to %d.\n",resA);
     } else {
       printMessage(1,"Warning: the expression given does not evaluate to a machine integer.\n");
       printMessage(1,"This command will have no effect.\n");
@@ -7436,7 +7436,7 @@ int executeCommandInner(node *tree) {
     }
     break;  	
   default:
-    fprintf(stderr,"Error: executeCommand: unknown identifier (%d) in the tree\n",tree->nodeType);
+    sollyaFprintf(stderr,"Error: executeCommand: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);
   }
   
@@ -10790,7 +10790,7 @@ void freeThing(node *tree) {
     free(tree);
     break;  	       
   default:
-    fprintf(stderr,"Error: freeThing: unknown identifier (%d) in the tree\n",tree->nodeType);
+    sollyaFprintf(stderr,"Error: freeThing: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);
   }
   return;
@@ -10803,7 +10803,7 @@ void fRawPrintThing(FILE *fd, node *tree) {
   
   if (tree == NULL) return;
   str = sRawPrintThing(tree);
-  fprintf(fd,"%s",str);
+  sollyaFprintf(fd,"%s",str);
   free(str);
   return;
 }
@@ -11556,7 +11556,7 @@ int isEqualThing(node *tree, node *tree2) {
   case HOPITALRECURSDEREF:
     break;  	       
   default:
-    fprintf(stderr,"Error: isEqualThing: unknown identifier (%d) in the tree\n",tree->nodeType);
+    sollyaFprintf(stderr,"Error: isEqualThing: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);
   }
 
@@ -11660,7 +11660,7 @@ node *evaluateThing(node *tree) {
 	changeToWarningMode();
 	printMessage(2,"Information: the expression or a partial evaluation of it has been the following:\n");
 	printThing(evaluated);
-	printf("\n");     
+	sollyaPrintf("\n");     
 	restoreMode();
       }
       freeThing(evaluated);
@@ -11828,7 +11828,7 @@ int evaluateArgumentForExternalProc(void **res, node *argument, int type) {
       retVal = evaluateThingToBooleanList((chain **) res, argument);    
     break;
   default:
-    fprintf(stderr, "Error in evaluateArgumentForExternalProc: unknown type.\n");
+    sollyaFprintf(stderr, "Error in evaluateArgumentForExternalProc: unknown type.\n");
     exit(1);
   }
 
@@ -11879,7 +11879,7 @@ void freeArgumentForExternalProc(void* arg, int type) {
     freeChain((chain *) arg, freeIntPtr);
     break;
   default:
-    fprintf(stderr, "Error in freeArgumentForExternalProc: unknown type.\n");
+    sollyaFprintf(stderr, "Error in freeArgumentForExternalProc: unknown type.\n");
     exit(1);
   }
 
@@ -12357,7 +12357,7 @@ int executeExternalProcedureInner(node **resultThing, libraryProcedure *proc, ch
       }
       break;
     default:
-      fprintf(stderr, "Error in executeExternalProcedure: unknown type.\n");
+      sollyaFprintf(stderr, "Error in executeExternalProcedure: unknown type.\n");
       exit(1);
     }
   } else {
@@ -12546,7 +12546,7 @@ int executeExternalProcedureInner(node **resultThing, libraryProcedure *proc, ch
       }
       break;
     default:
-      fprintf(stderr, "Error in executeExternalProcedure: unknown type.\n");
+      sollyaFprintf(stderr, "Error in executeExternalProcedure: unknown type.\n");
       exit(1);
     }
   }
@@ -17916,7 +17916,7 @@ node *evaluateThingInner(node *tree) {
       copy = makeHexadecimalThing();
       break;
     default:
-      fprintf(stderr,"Error: display mode in unknown state.\n");
+      sollyaFprintf(stderr,"Error: display mode in unknown state.\n");
       exit(1);
     }
     if (timingString != NULL) popTimeCounter(timingString);
@@ -18037,7 +18037,7 @@ node *evaluateThingInner(node *tree) {
     copy = copyThing(tree);
     break;
   default:
-    fprintf(stderr,"Error: evaluateThingInner: unknown identifier (%d) in the tree\n",tree->nodeType);
+    sollyaFprintf(stderr,"Error: evaluateThingInner: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);
   }
 

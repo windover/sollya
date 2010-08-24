@@ -186,11 +186,11 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
     printMessage(1,"This procedure is not able to implement the polynomial correctly in this case.\n");
     if (verbosity >= 3) {
       changeToWarningMode();
-      printf("Information: the subpolynomial q(%s) that has already been handled is\n",variablename);
+      sollyaPrintf("Information: the subpolynomial q(%s) that has already been handled is\n",variablename);
       printTree(qCopy);
-      printf("\nThe current coefficient is c = \n");
+      sollyaPrintf("\nThe current coefficient is c = \n");
       printMpfr(coefficients[0]);
-      printf("|| %s * q(%s) / c || is approximately ",variablename,variablename);
+      sollyaPrintf("|| %s * q(%s) / c || is approximately ",variablename,variablename);
       printMpfr(temp);
       restoreMode();
     }
@@ -306,7 +306,7 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
 	coeffPrec = 53;
 	break;
       default: 
-	fprintf(stderr,"Error: in determinePrecisions: unknown expansion format.\n");
+	sollyaFprintf(stderr,"Error: in determinePrecisions: unknown expansion format.\n");
       }
      
       if (coeffPrec > currentPrec) {
@@ -2049,7 +2049,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 
 
   /* Issue the variable definitions and the code */
-  if (fprintf(fd,"%s\n\n%s\n\n",variables,code) < 0) res = 0;
+  if (sollyaFprintf(fd,"%s\n\n%s\n\n",variables,code) < 0) res = 0;
   
   free(powers);
   free(operand1);
@@ -2104,7 +2104,7 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 	}
 	res = 0;
       }
-      fprintf(fd,"#define %s_coeff_%dh %1.80e\n",name,i,current);
+      sollyaFprintf(fd,"#define %s_coeff_%dh %1.80e\n",name,i,current);
       constHi = current;
       current = mpfr_get_d(temp,GMP_RNDN);
       if (current != 0.0) {
@@ -2120,7 +2120,7 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 	  }
 	  res = 0;
 	}
-	fprintf(fd,"#define %s_coeff_%dm %1.80e\n",name,i,current);
+	sollyaFprintf(fd,"#define %s_coeff_%dm %1.80e\n",name,i,current);
 	constMi = current;
 	current = mpfr_get_d(temp,GMP_RNDN);
 	if (current != 0.0) {
@@ -2136,7 +2136,7 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 	    }
 	    res = 0;
 	  }
-	  fprintf(fd,"#define %s_coeff_%dl %1.80e\n",name,i,current); 
+	  sollyaFprintf(fd,"#define %s_coeff_%dl %1.80e\n",name,i,current); 
 	  constLo = current;
 	}
       }
@@ -2151,7 +2151,7 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
     }
   }
  
-  fprintf(fd,"\n\n");
+  sollyaFprintf(fd,"\n\n");
 
   mpfr_clear(temp);
   mpfr_clear(temp2);
@@ -5792,7 +5792,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
   } /* End loop on degrees */
 
   /* Issue the variable definitions and the code to the file */
-  if (fprintf(fd,"%s\n\n%s\n\n",variables,code) < 0) res = 0;
+  if (sollyaFprintf(fd,"%s\n\n%s\n\n",variables,code) < 0) res = 0;
 
   free(code);
   free(variables);
@@ -5914,7 +5914,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   getCoefficients(&degree,&coefficients,simplifiedFunc);
 
   if (degree < 0) {
-    fprintf(stderr,"Error: implementpoly: an error occurred. Could not extract the coefficients of the given polynomial.\n");
+    sollyaFprintf(stderr,"Error: implementpoly: an error occurred. Could not extract the coefficients of the given polynomial.\n");
     exit(1);
   }
 
@@ -5932,7 +5932,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
       tempTree = simplifyTreeErrorfree(coefficients[i]);
       free_memory(coefficients[i]);
       if (!isConstant(tempTree)) {
-	fprintf(stderr,"Error: implementpoly: an error occurred. A polynomial coefficient is not constant.\n");
+	sollyaFprintf(stderr,"Error: implementpoly: an error occurred. A polynomial coefficient is not constant.\n");
 	exit(1);
       }
       if (tempTree->nodeType != CONSTANT) {
@@ -5986,9 +5986,9 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   implementedPoly = makePolynomial(fpCoefficients,degree);
   if (verbosity >= 2) {
     changeToWarningMode();
-    printf("Information: the polynomial that will be implemented is:\n");
+    sollyaPrintf("Information: the polynomial that will be implemented is:\n");
     printTree(implementedPoly);
-    printf("\n");
+    sollyaPrintf("\n");
     restoreMode();
   }
 
@@ -6006,21 +6006,21 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
     printMessage(1,"The produced implementation may be incorrect.\n");
   }
 
-  fprintf(fd,"void %s(",name);
+  sollyaFprintf(fd,"void %s(",name);
   mpfr_log2(temp,*accur,GMP_RNDD);
   targetPrec = -mpfr_get_si(temp,GMP_RNDN);
   
   if (targetPrec >= 102) {
-    if (fprintf(fd,"double *%s_resh, double *%s_resm, double *%s_resl, ",name,name,name) < 0) 
+    if (sollyaFprintf(fd,"double *%s_resh, double *%s_resm, double *%s_resl, ",name,name,name) < 0) 
       printMessage(1,"Warning: could not write to the file for the implementation.\n");
     if (gappaFD != NULL) proof->resultType = 3;
   } else {
     if (targetPrec >= 54) {
-      if (fprintf(fd,"double *%s_resh, double *%s_resm, ",name,name) < 0)
+      if (sollyaFprintf(fd,"double *%s_resh, double *%s_resm, ",name,name) < 0)
 	printMessage(1,"Warning: could not write to the file for the implementation.\n");
       if (gappaFD != NULL) proof->resultType = 2;
     } else {
-      if (fprintf(fd,"double *%s_resh, ",name) < 0) 
+      if (sollyaFprintf(fd,"double *%s_resh, ",name) < 0) 
 	printMessage(1,"Warning: could not write to the file for the implementation.\n");
       if (gappaFD != NULL) proof->resultType = 1;
     }
@@ -6028,15 +6028,15 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
 
   switch (variablePrecision) {
   case 3:
-    if (fprintf(fd,"double %sh, double %sm, double %sl) {\n",variablename,variablename,variablename) < 0) 
+    if (sollyaFprintf(fd,"double %sh, double %sm, double %sl) {\n",variablename,variablename,variablename) < 0) 
       printMessage(1,"Warning: could not write to the file for the implementation.\n");
     break;
   case 2:
-    if (fprintf(fd,"double %sh, double %sm) {\n",variablename,variablename) < 0) 
+    if (sollyaFprintf(fd,"double %sh, double %sm) {\n",variablename,variablename) < 0) 
       printMessage(1,"Warning: could not write to the file for the implementation.\n");
     break;
   case 1:
-    if (fprintf(fd,"double %s) {\n",variablename) < 0) 
+    if (sollyaFprintf(fd,"double %s) {\n",variablename) < 0) 
       printMessage(1,"Warning: could not write to the file for the implementation.\n");
     break;
   default:
@@ -6055,7 +6055,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
     printMessage(1,"The produced implementation may be incorrect.\n");
   }
 
-  if (fprintf(fd,"}\n") < 0) 
+  if (sollyaFprintf(fd,"}\n") < 0) 
     printMessage(1,"Warning: could not write to the file for the implementation.\n");
 
   if (gappaFD != NULL) {

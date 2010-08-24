@@ -296,7 +296,7 @@ void free_memory(node *tree) {
     free(tree);
     break;
   default:
-   fprintf(stderr,"Error: free_memory: unknown identifier (%d) in the tree\n",tree->nodeType);
+   sollyaFprintf(stderr,"Error: free_memory: unknown identifier (%d) in the tree\n",tree->nodeType);
    exit(1);
   }
   return;
@@ -311,152 +311,152 @@ void fprintHeadFunction(FILE *fd,node *tree, char *x, char *y) {
   if (tree == NULL) return;
   switch (tree->nodeType) {
   case VARIABLE:
-    if (x != NULL) fprintf(fd,"%s",x); else fprintf(fd,"x");
+    if (x != NULL) sollyaFprintf(fd,"%s",x); else sollyaFprintf(fd,"x");
     break;
   case CONSTANT:
     fprintValue(fd,*(tree->value));
     break;
   case ADD:
-    fprintf(fd,"%s + %s",x,y);
+    sollyaFprintf(fd,"%s + %s",x,y);
     break;
   case SUB:
-    fprintf(fd,"%s - %s",x,y);
+    sollyaFprintf(fd,"%s - %s",x,y);
     break;
   case MUL:
-    fprintf(fd,"%s * %s",x,y);
+    sollyaFprintf(fd,"%s * %s",x,y);
     break;
   case DIV:
-    fprintf(fd,"%s / %s",x,y);
+    sollyaFprintf(fd,"%s / %s",x,y);
     break;
   case SQRT:
-    fprintf(fd,"sqrt(%s)",x);
+    sollyaFprintf(fd,"sqrt(%s)",x);
     break;
   case EXP:
-    fprintf(fd,"exp(%s)",x);
+    sollyaFprintf(fd,"exp(%s)",x);
     break;
   case LOG:
-    fprintf(fd,"log(%s)",x);
+    sollyaFprintf(fd,"log(%s)",x);
     break;
   case LOG_2:
-    fprintf(fd,"log2(%s)",x);
+    sollyaFprintf(fd,"log2(%s)",x);
     break;
   case LOG_10:
-    fprintf(fd,"log10(%s)",x);
+    sollyaFprintf(fd,"log10(%s)",x);
     break;
   case SIN:
-    fprintf(fd,"sin(%s)",x);
+    sollyaFprintf(fd,"sin(%s)",x);
     break;
   case COS:
-    fprintf(fd,"cos(%s)",x);
+    sollyaFprintf(fd,"cos(%s)",x);
     break;
   case TAN:
-    fprintf(fd,"tan(%s)",x);
+    sollyaFprintf(fd,"tan(%s)",x);
     break;
   case ASIN:
-    fprintf(fd,"asin(%s)",x);
+    sollyaFprintf(fd,"asin(%s)",x);
     break;
   case ACOS:
-    fprintf(fd,"acos(%s)",x);
+    sollyaFprintf(fd,"acos(%s)",x);
     break;
   case ATAN:
-    fprintf(fd,"atan(%s)",x);
+    sollyaFprintf(fd,"atan(%s)",x);
     break;
   case SINH:
-    fprintf(fd,"sinh(%s)",x);
+    sollyaFprintf(fd,"sinh(%s)",x);
     break;
   case COSH:
-    fprintf(fd,"cosh(%s)",x);
+    sollyaFprintf(fd,"cosh(%s)",x);
     break;
   case TANH:
-    fprintf(fd,"tanh(%s)",x);
+    sollyaFprintf(fd,"tanh(%s)",x);
     break;
   case ASINH:
-    fprintf(fd,"asinh(%s)",x);
+    sollyaFprintf(fd,"asinh(%s)",x);
     break;
   case ACOSH:
-    fprintf(fd,"acosh(%s)",x);
+    sollyaFprintf(fd,"acosh(%s)",x);
     break;
   case ATANH:
-    fprintf(fd,"atanh(%s)",x);
+    sollyaFprintf(fd,"atanh(%s)",x);
     break;
   case POW:
-    fprintf(fd,"%s^%s",x,y);
+    sollyaFprintf(fd,"%s^%s",x,y);
     break;
   case NEG:
-    fprintf(fd,"-%s",x);
+    sollyaFprintf(fd,"-%s",x);
     break;
   case ABS:
-    fprintf(fd,"abs(%s)",x);
+    sollyaFprintf(fd,"abs(%s)",x);
     break;
   case DOUBLE:
-    fprintf(fd,"double(%s)",x);
+    sollyaFprintf(fd,"double(%s)",x);
     break;
   case SINGLE:
-    fprintf(fd,"single(%s)",x);
+    sollyaFprintf(fd,"single(%s)",x);
     break;
   case DOUBLEDOUBLE:
-    fprintf(fd,"doubledouble(%s)",x);
+    sollyaFprintf(fd,"doubledouble(%s)",x);
     break;
   case TRIPLEDOUBLE:
-    fprintf(fd,"tripledouble(%s)",x);
+    sollyaFprintf(fd,"tripledouble(%s)",x);
     break;
   case ERF: 
-    fprintf(fd,"erf(%s)",x);
+    sollyaFprintf(fd,"erf(%s)",x);
     break;
   case ERFC:
-    fprintf(fd,"erfc(%s)",x);
+    sollyaFprintf(fd,"erfc(%s)",x);
     break;
   case LOG_1P:
-    fprintf(fd,"log1p(%s)",x);
+    sollyaFprintf(fd,"log1p(%s)",x);
     break;
   case EXP_M1:
-    fprintf(fd,"expm1(%s)",x);
+    sollyaFprintf(fd,"expm1(%s)",x);
     break;
   case DOUBLEEXTENDED:
-    fprintf(fd,"doubleextended(%s)",x);
+    sollyaFprintf(fd,"doubleextended(%s)",x);
     break;
   case LIBRARYFUNCTION:
     {
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
       for (i=1;i<=tree->libFunDeriv;i++) {
-	fprintf(fd,"diff(");
+	sollyaFprintf(fd,"diff(");
       }
-      fprintf(fd,"%s",tree->libFun->functionName);
+      sollyaFprintf(fd,"%s",tree->libFun->functionName);
       for (i=1;i<=tree->libFunDeriv;i++) {
-	fprintf(fd,")");
+	sollyaFprintf(fd,")");
       }
-      fprintf(fd,")(%s)",x);
+      sollyaFprintf(fd,")(%s)",x);
     }
     break;
   case PROCEDUREFUNCTION:
     {
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
       for (i=1;i<=tree->libFunDeriv;i++) {
-	fprintf(fd,"diff(");
+	sollyaFprintf(fd,"diff(");
       }
-      fprintf(fd,"function(");
+      sollyaFprintf(fd,"function(");
       fPrintThing(fd,tree->child2);
-      fprintf(fd,")");
+      sollyaFprintf(fd,")");
       for (i=1;i<=tree->libFunDeriv;i++) {
-	fprintf(fd,")");
+	sollyaFprintf(fd,")");
       }
-      fprintf(fd,")(%s)",x);
+      sollyaFprintf(fd,")(%s)",x);
     }
     break;
   case CEIL:
-    fprintf(fd,"ceil(%s)",x);
+    sollyaFprintf(fd,"ceil(%s)",x);
     break;
   case FLOOR:
-    fprintf(fd,"floor(%s)",x);
+    sollyaFprintf(fd,"floor(%s)",x);
     break;
   case NEARESTINT:
-    fprintf(fd,"nearestint(%s)",x);
+    sollyaFprintf(fd,"nearestint(%s)",x);
     break;
   case PI_CONST:
-    fprintf(fd,"pi");
+    sollyaFprintf(fd,"pi");
     break;
   default:
-   fprintf(stderr,"fprintHeadFunction: unknown identifier (%d) in the tree\n",tree->nodeType);
+   sollyaFprintf(stderr,"fprintHeadFunction: unknown identifier (%d) in the tree\n",tree->nodeType);
    exit(1);
   }
   return;
@@ -541,7 +541,7 @@ void printValue(mpfr_t *value) {
   char *str;
 
   str = sprintValue(value);
-  printf("%s",str);
+  sollyaPrintf("%s",str);
   free(str);
 }
 
@@ -702,7 +702,7 @@ char *sPrintBinary(mpfr_t x) {
   if (mpfr_sgn(x) < 0) negative = 1;
   raw = mpfr_get_str(NULL,&expo,2,0,xx,GMP_RNDN);
   if (raw == NULL) {
-    printf("Error: unable to get a string for the given number.\n");
+    sollyaPrintf("Error: unable to get a string for the given number.\n");
     recoverFromError();
   } else {
     formatted = safeCalloc(strlen(raw) + 3, sizeof(char));
@@ -772,7 +772,7 @@ char *sPrintHexadecimal(mpfr_t x) {
   if (mpfr_sgn(x) < 0) negative = 1;
   raw = mpfr_get_str(NULL,&expo,16,0,xx,GMP_RNDN);
   if (raw == NULL) {
-    printf("Error: unable to get a string for the given number.\n");
+    sollyaPrintf("Error: unable to get a string for the given number.\n");
     recoverFromError();
   } else {
     formatted = safeCalloc(strlen(raw) + 3, sizeof(char));
@@ -821,7 +821,7 @@ void printBinary(mpfr_t x) {
   char *str;
 
   str = sPrintBinary(x);
-  printf("%s",str);
+  sollyaPrintf("%s",str);
   free(str);
 }
 
@@ -829,7 +829,7 @@ void printHexadecimalValue(mpfr_t x) {
   char *str;
 
   str = sPrintHexadecimal(x);
-  printf("%s",str);
+  sollyaPrintf("%s",str);
   free(str);
 }
 
@@ -1052,7 +1052,7 @@ void printMpfr(mpfr_t x) {
   mpfr_set(tmp,x,GMP_RNDN);
 
   printValue(&tmp);
-  printf("\n");
+  sollyaPrintf("\n");
 
   mpfr_clear(tmp);
 }
@@ -1068,7 +1068,7 @@ void fprintValueWithPrintMode(FILE *fd, mpfr_t value) {
   mpfr_set(temp,value,GMP_RNDN);
   str = sprintValue(&temp);
   mpfr_clear(temp);
-  fprintf(fd,"%s",str);
+  sollyaFprintf(fd,"%s",str);
   free(str);
   
 }
@@ -1081,13 +1081,13 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
   switch (tree->nodeType) {
   case VARIABLE:
     if (variablename != NULL) {
-      fprintf(fd,"%s",variablename);
+      sollyaFprintf(fd,"%s",variablename);
     } else {
       printMessage(1,"Warning: the current free variable has not been bound. Nevertheless it must be printed.\n");
       printMessage(1,"Will bind the current free variable to \"x\".\n");
       variablename = (char *) safeCalloc(2,sizeof(char));
       variablename[0] = 'x';
-      fprintf(fd,"%s",variablename);
+      sollyaFprintf(fd,"%s",variablename);
     }
     break;
   case CONSTANT:
@@ -1095,245 +1095,245 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
     break;
   case ADD:
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      fprintf(fd,")");
-    fprintf(fd," + ");
+      sollyaFprintf(fd,")");
+    sollyaFprintf(fd," + ");
     if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child2);
     if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
-      fprintf(fd,")");
+      sollyaFprintf(fd,")");
     break;
   case SUB:
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      fprintf(fd,")");
-    fprintf(fd," - ");
+      sollyaFprintf(fd,")");
+    sollyaFprintf(fd," - ");
     if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child2);
     if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
-      fprintf(fd,")");
+      sollyaFprintf(fd,")");
     break;
   case MUL:
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      fprintf(fd,")");
-    fprintf(fd," * ");
+      sollyaFprintf(fd,")");
+    sollyaFprintf(fd," * ");
     if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child2);
     if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
-      fprintf(fd,")");
+      sollyaFprintf(fd,")");
     break;
   case DIV:
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      fprintf(fd,")");
-    fprintf(fd," / ");
+      sollyaFprintf(fd,")");
+    sollyaFprintf(fd," / ");
     if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child2);
     if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
-      fprintf(fd,")");
+      sollyaFprintf(fd,")");
     break;
   case SQRT:
-    fprintf(fd,"sqrt(");
+    sollyaFprintf(fd,"sqrt(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case EXP:
-    fprintf(fd,"exp(");
+    sollyaFprintf(fd,"exp(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case LOG:
-    fprintf(fd,"log(");
+    sollyaFprintf(fd,"log(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case LOG_2:
-    fprintf(fd,"log2(");
+    sollyaFprintf(fd,"log2(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case LOG_10:
-    fprintf(fd,"log10(");
+    sollyaFprintf(fd,"log10(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case SIN:
-    fprintf(fd,"sin(");
+    sollyaFprintf(fd,"sin(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case COS:
-    fprintf(fd,"cos(");
+    sollyaFprintf(fd,"cos(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case TAN:
-    fprintf(fd,"tan(");
+    sollyaFprintf(fd,"tan(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ASIN:
-    fprintf(fd,"asin(");
+    sollyaFprintf(fd,"asin(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ACOS:
-    fprintf(fd,"acos(");
+    sollyaFprintf(fd,"acos(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ATAN:
-    fprintf(fd,"atan(");
+    sollyaFprintf(fd,"atan(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case SINH:
-    fprintf(fd,"sinh(");
+    sollyaFprintf(fd,"sinh(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case COSH:
-    fprintf(fd,"cosh(");
+    sollyaFprintf(fd,"cosh(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case TANH:
-    fprintf(fd,"tanh(");
+    sollyaFprintf(fd,"tanh(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ASINH:
-    fprintf(fd,"asinh(");
+    sollyaFprintf(fd,"asinh(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ACOSH:
-    fprintf(fd,"acosh(");
+    sollyaFprintf(fd,"acosh(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ATANH:
-    fprintf(fd,"atanh(");
+    sollyaFprintf(fd,"atanh(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case POW:
     if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
     if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
-      fprintf(fd,")");
-    fprintf(fd,"^");
+      sollyaFprintf(fd,")");
+    sollyaFprintf(fd,"^");
     if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
 				  || ((tree->child2->nodeType == CONSTANT) 
 				      && ((dyadic == 2) || (dyadic == 3))))) {
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     }
     fprintTreeWithPrintMode(fd,tree->child2);
     if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
 				  || ((tree->child2->nodeType == CONSTANT) 
 				      && ((dyadic == 2) || (dyadic == 3))))) {
-      fprintf(fd,")");
+      sollyaFprintf(fd,")");
     }
     break;
   case NEG:
-    fprintf(fd,"-");
+    sollyaFprintf(fd,"-");
     if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
     if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
-      fprintf(fd,")");
+      sollyaFprintf(fd,")");
     break;
   case ABS:
-    fprintf(fd,"abs(");
+    sollyaFprintf(fd,"abs(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case DOUBLE:
-    fprintf(fd,"double(");
+    sollyaFprintf(fd,"double(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case SINGLE:
-    fprintf(fd,"single(");
+    sollyaFprintf(fd,"single(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case DOUBLEDOUBLE:
-    fprintf(fd,"doubledouble(");
+    sollyaFprintf(fd,"doubledouble(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case TRIPLEDOUBLE:
-    fprintf(fd,"tripledouble(");
+    sollyaFprintf(fd,"tripledouble(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ERF: 
-    fprintf(fd,"erf(");
+    sollyaFprintf(fd,"erf(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ERFC:
-    fprintf(fd,"erfc(");
+    sollyaFprintf(fd,"erfc(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case LOG_1P:
-    fprintf(fd,"log1p(");
+    sollyaFprintf(fd,"log1p(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case EXP_M1:
-    fprintf(fd,"expm1(");
+    sollyaFprintf(fd,"expm1(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case DOUBLEEXTENDED:
-    fprintf(fd,"doubleextended(");
+    sollyaFprintf(fd,"doubleextended(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case LIBRARYFUNCTION:
     {
       if (tree->child1->nodeType == VARIABLE) {
 	for (i=1;i<=tree->libFunDeriv;i++) {
-	  fprintf(fd,"diff(");
+	  sollyaFprintf(fd,"diff(");
 	}
-	fprintf(fd,"%s",tree->libFun->functionName);
+	sollyaFprintf(fd,"%s",tree->libFun->functionName);
 	for (i=1;i<=tree->libFunDeriv;i++) {
-	  fprintf(fd,")");
+	  sollyaFprintf(fd,")");
 	}
       } else {
 	if (tree->libFunDeriv == 0) {
-	  fprintf(fd,"%s(",tree->libFun->functionName);
+	  sollyaFprintf(fd,"%s(",tree->libFun->functionName);
 	  fprintTreeWithPrintMode(fd,tree->child1);
-	  fprintf(fd,")");
+	  sollyaFprintf(fd,")");
 	} else {
-	  fprintf(fd,"(");
+	  sollyaFprintf(fd,"(");
 	  for (i=1;i<=tree->libFunDeriv;i++) {
-	    fprintf(fd,"diff(");
+	    sollyaFprintf(fd,"diff(");
 	  }
-	  fprintf(fd,"%s",tree->libFun->functionName);
+	  sollyaFprintf(fd,"%s",tree->libFun->functionName);
 	  for (i=1;i<=tree->libFunDeriv;i++) {
-	    fprintf(fd,")");
+	    sollyaFprintf(fd,")");
 	  }
-	  fprintf(fd,")(");
+	  sollyaFprintf(fd,")(");
 	  fprintTreeWithPrintMode(fd,tree->child1);
-	  fprintf(fd,")");
+	  sollyaFprintf(fd,")");
 	}
       }
     }
@@ -1342,59 +1342,59 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
     {
       if (tree->child1->nodeType == VARIABLE) {
 	for (i=1;i<=tree->libFunDeriv;i++) {
-	  fprintf(fd,"diff(");
+	  sollyaFprintf(fd,"diff(");
 	}
-	fprintf(fd,"function(");
+	sollyaFprintf(fd,"function(");
 	fPrintThing(fd,tree->child2);
-	fprintf(fd,")");
+	sollyaFprintf(fd,")");
 	for (i=1;i<=tree->libFunDeriv;i++) {
-	  fprintf(fd,")");
+	  sollyaFprintf(fd,")");
 	}
       } else {
 	if (tree->libFunDeriv == 0) {
-	  fprintf(fd,"(function(");
+	  sollyaFprintf(fd,"(function(");
 	  fPrintThing(fd,tree->child2);
-	  fprintf(fd,"))(");
+	  sollyaFprintf(fd,"))(");
 	  fprintTreeWithPrintMode(fd,tree->child1);
-	  fprintf(fd,")");
+	  sollyaFprintf(fd,")");
 	} else {
-	  fprintf(fd,"(");
+	  sollyaFprintf(fd,"(");
 	  for (i=1;i<=tree->libFunDeriv;i++) {
-	    fprintf(fd,"diff(");
+	    sollyaFprintf(fd,"diff(");
 	  }
-	  fprintf(fd,"function(");
+	  sollyaFprintf(fd,"function(");
 	  fPrintThing(fd,tree->child2);
-	  fprintf(fd,")");
+	  sollyaFprintf(fd,")");
 	  for (i=1;i<=tree->libFunDeriv;i++) {
-	    fprintf(fd,")");
+	    sollyaFprintf(fd,")");
 	  }
-	  fprintf(fd,")(");
+	  sollyaFprintf(fd,")(");
 	  fprintTreeWithPrintMode(fd,tree->child1);
-	  fprintf(fd,")");
+	  sollyaFprintf(fd,")");
 	}
       }
     }
     break;
   case CEIL:
-    fprintf(fd,"ceil(");
+    sollyaFprintf(fd,"ceil(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case FLOOR:
-    fprintf(fd,"floor(");
+    sollyaFprintf(fd,"floor(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case NEARESTINT:
-    fprintf(fd,"nearestint(");
+    sollyaFprintf(fd,"nearestint(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case PI_CONST:
-    fprintf(fd,"pi");
+    sollyaFprintf(fd,"pi");
     break;
   default:
-   fprintf(stderr,"Error: fprintTreeWithPrintMode: unknown identifier in the tree\n");
+   sollyaFprintf(stderr,"Error: fprintTreeWithPrintMode: unknown identifier in the tree\n");
    exit(1);
   }
   return;
@@ -1412,17 +1412,17 @@ void fprintValue(FILE *fd, mpfr_t value) {
   mp_prec_t prec;
 
   if (mpfr_zero_p(value)) {
-    fprintf(fd,"0");
+    sollyaFprintf(fd,"0");
   } else {
     prec = mpfr_get_prec(value);
     mpfr_init2(y,prec+10);
     mpfr_set(y,value,GMP_RNDN);
     if (mpfr_sgn(y) < 0) {
-      fprintf(fd,"-"); mpfr_neg(y,y,GMP_RNDN);
+      sollyaFprintf(fd,"-"); mpfr_neg(y,y,GMP_RNDN);
     }
     if (!mpfr_number_p(value)) {
       str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
-      fprintf(fd,"%s",str);
+      sollyaFprintf(fd,"%s",str);
     } else {
       expo = mpfr_get_exp(y);
       if (mpfr_set_exp(y,prec+10)) {
@@ -1442,7 +1442,7 @@ void fprintValue(FILE *fd, mpfr_t value) {
       str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
       str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
       strncpy(str2,str,e);
-      fprintf(fd,"%sb%d",str2,(int)expo);
+      sollyaFprintf(fd,"%sb%d",str2,(int)expo);
       free(str2);
     }
     free(str);
@@ -1458,7 +1458,7 @@ void fprintValueForXml(FILE *fd, mpfr_t value) {
   int negate, val;
 
   if (mpfr_zero_p(value)) {
-    fprintf(fd,"<cn type=\"integer\" base=\"10\"> 0 </cn>\n");
+    sollyaFprintf(fd,"<cn type=\"integer\" base=\"10\"> 0 </cn>\n");
   } else {
     prec = mpfr_get_prec(value);
     mpfr_init2(y,prec+10);
@@ -1468,7 +1468,7 @@ void fprintValueForXml(FILE *fd, mpfr_t value) {
     mpfr_set_si(h,val,GMP_RNDN);
     if (mpfr_number_p(y) && (mpfr_cmp(h,y) == 0)) {
       mpfr_clear(h);
-      fprintf(fd,"<cn type=\"integer\" base=\"10\"> %d </cn>\n",val);
+      sollyaFprintf(fd,"<cn type=\"integer\" base=\"10\"> %d </cn>\n",val);
     } else {
       mpfr_clear(h);
       negate = 0;
@@ -1478,9 +1478,9 @@ void fprintValueForXml(FILE *fd, mpfr_t value) {
       if (!mpfr_number_p(value)) {
 	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
 	if (!negate) 
-	  fprintf(fd,"<cn type=\"real\"> %s </cn>\n",str);
+	  sollyaFprintf(fd,"<cn type=\"real\"> %s </cn>\n",str);
 	else 
-	  fprintf(fd,"<cn type=\"real\"> -%s </cn>\n",str);
+	  sollyaFprintf(fd,"<cn type=\"real\"> -%s </cn>\n",str);
       } else {
 	expo = mpfr_get_exp(y);
 	if (mpfr_set_exp(y,prec+10)) {
@@ -1501,25 +1501,25 @@ void fprintValueForXml(FILE *fd, mpfr_t value) {
 	str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
 	strncpy(str2,str,e);
 	if (!negate) {
-	  fprintf(fd,"<apply>\n");
-	  fprintf(fd,"<times/>\n");
-	  fprintf(fd,"<cn type=\"integer\" base=\"10\"> %s </cn>\n",str2);
-	  fprintf(fd,"<apply>\n");
-	  fprintf(fd,"<power/>\n");
-	  fprintf(fd,"<cn type=\"integer\" base=\"10\"> 2 </cn>\n");
-	  fprintf(fd,"<cn type=\"integer\" base=\"10\"> %d </cn>\n",(int) expo);
-	  fprintf(fd,"</apply>\n");
-	  fprintf(fd,"</apply>\n");
+	  sollyaFprintf(fd,"<apply>\n");
+	  sollyaFprintf(fd,"<times/>\n");
+	  sollyaFprintf(fd,"<cn type=\"integer\" base=\"10\"> %s </cn>\n",str2);
+	  sollyaFprintf(fd,"<apply>\n");
+	  sollyaFprintf(fd,"<power/>\n");
+	  sollyaFprintf(fd,"<cn type=\"integer\" base=\"10\"> 2 </cn>\n");
+	  sollyaFprintf(fd,"<cn type=\"integer\" base=\"10\"> %d </cn>\n",(int) expo);
+	  sollyaFprintf(fd,"</apply>\n");
+	  sollyaFprintf(fd,"</apply>\n");
 	} else {
-	  fprintf(fd,"<apply>\n");
-	  fprintf(fd,"<times/>\n");
-	  fprintf(fd,"<cn type=\"integer\" base=\"10\"> -%s </cn>\n",str2);
-	  fprintf(fd,"<apply>\n");
-	  fprintf(fd,"<power/>\n");
-	  fprintf(fd,"<cn type=\"integer\" base=\"10\"> 2 </cn>\n");
-	  fprintf(fd,"<cn type=\"integer\" base=\"10\"> %d </cn>\n",(int) expo);
-	  fprintf(fd,"</apply>\n");
-	  fprintf(fd,"</apply>\n");
+	  sollyaFprintf(fd,"<apply>\n");
+	  sollyaFprintf(fd,"<times/>\n");
+	  sollyaFprintf(fd,"<cn type=\"integer\" base=\"10\"> -%s </cn>\n",str2);
+	  sollyaFprintf(fd,"<apply>\n");
+	  sollyaFprintf(fd,"<power/>\n");
+	  sollyaFprintf(fd,"<cn type=\"integer\" base=\"10\"> 2 </cn>\n");
+	  sollyaFprintf(fd,"<cn type=\"integer\" base=\"10\"> %d </cn>\n",(int) expo);
+	  sollyaFprintf(fd,"</apply>\n");
+	  sollyaFprintf(fd,"</apply>\n");
 	}
 	free(str2);
       }
@@ -1538,13 +1538,13 @@ void printTree(node *tree) {
   switch (tree->nodeType) {
   case VARIABLE:
     if (variablename != NULL) {
-      printf("%s",variablename);
+      sollyaPrintf("%s",variablename);
     } else {
       printMessage(1,"Warning: the current free variable has not been bound. Nevertheless it must be printed.\n");
       printMessage(1,"Will bind the current free variable to \"x\".\n");
       variablename = (char *) safeCalloc(2,sizeof(char));
       variablename[0] = 'x';
-      printf("%s",variablename);
+      sollyaPrintf("%s",variablename);
     }
     break;
   case CONSTANT:
@@ -1552,245 +1552,245 @@ void printTree(node *tree) {
     break;
   case ADD:
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      printf("(");
+      sollyaPrintf("(");
     printTree(tree->child1);
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      printf(")");
-    printf(" + ");
+      sollyaPrintf(")");
+    sollyaPrintf(" + ");
     if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
-      printf("(");
+      sollyaPrintf("(");
     printTree(tree->child2);
     if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
-      printf(")");
+      sollyaPrintf(")");
     break;
   case SUB:
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      printf("(");
+      sollyaPrintf("(");
     printTree(tree->child1);
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      printf(")");
-    printf(" - ");
+      sollyaPrintf(")");
+    sollyaPrintf(" - ");
     if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
-      printf("(");
+      sollyaPrintf("(");
     printTree(tree->child2);
     if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
-      printf(")");
+      sollyaPrintf(")");
     break;
   case MUL:
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      printf("(");
+      sollyaPrintf("(");
     printTree(tree->child1);
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      printf(")");
-    printf(" * ");
+      sollyaPrintf(")");
+    sollyaPrintf(" * ");
     if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
-      printf("(");
+      sollyaPrintf("(");
     printTree(tree->child2);
     if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
-      printf(")");
+      sollyaPrintf(")");
     break;
   case DIV:
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      printf("(");
+      sollyaPrintf("(");
     printTree(tree->child1);
     if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
-      printf(")");
-    printf(" / ");
+      sollyaPrintf(")");
+    sollyaPrintf(" / ");
     if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
-      printf("(");
+      sollyaPrintf("(");
     printTree(tree->child2);
     if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
-      printf(")");
+      sollyaPrintf(")");
     break;
   case SQRT:
-    printf("sqrt(");
+    sollyaPrintf("sqrt(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case EXP:
-    printf("exp(");
+    sollyaPrintf("exp(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case LOG:
-    printf("log(");
+    sollyaPrintf("log(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case LOG_2:
-    printf("log2(");
+    sollyaPrintf("log2(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case LOG_10:
-    printf("log10(");
+    sollyaPrintf("log10(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case SIN:
-    printf("sin(");
+    sollyaPrintf("sin(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case COS:
-    printf("cos(");
+    sollyaPrintf("cos(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case TAN:
-    printf("tan(");
+    sollyaPrintf("tan(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case ASIN:
-    printf("asin(");
+    sollyaPrintf("asin(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case ACOS:
-    printf("acos(");
+    sollyaPrintf("acos(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case ATAN:
-    printf("atan(");
+    sollyaPrintf("atan(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case SINH:
-    printf("sinh(");
+    sollyaPrintf("sinh(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case COSH:
-    printf("cosh(");
+    sollyaPrintf("cosh(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case TANH:
-    printf("tanh(");
+    sollyaPrintf("tanh(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case ASINH:
-    printf("asinh(");
+    sollyaPrintf("asinh(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case ACOSH:
-    printf("acosh(");
+    sollyaPrintf("acosh(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case ATANH:
-    printf("atanh(");
+    sollyaPrintf("atanh(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case POW:
     if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
-      printf("(");
+      sollyaPrintf("(");
     printTree(tree->child1);
     if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
-      printf(")");
-    printf("^");
+      sollyaPrintf(")");
+    sollyaPrintf("^");
     if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
 				  || ((tree->child2->nodeType == CONSTANT) 
 				      && ((dyadic == 2) || (dyadic == 3))))) {
-      printf("(");
+      sollyaPrintf("(");
     }
     printTree(tree->child2);
     if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
 				  || ((tree->child2->nodeType == CONSTANT) 
 				      && ((dyadic == 2) || (dyadic == 3))))) {
-      printf(")");
+      sollyaPrintf(")");
     }
     break;
   case NEG:
-    printf("-");
+    sollyaPrintf("-");
     if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
-      printf("(");
+      sollyaPrintf("(");
     printTree(tree->child1);
     if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
-      printf(")");
+      sollyaPrintf(")");
     break;
   case ABS:
-    printf("abs(");
+    sollyaPrintf("abs(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case DOUBLE:
-    printf("double(");
+    sollyaPrintf("double(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case SINGLE:
-    printf("single(");
+    sollyaPrintf("single(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case DOUBLEDOUBLE:
-    printf("doubledouble(");
+    sollyaPrintf("doubledouble(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case TRIPLEDOUBLE:
-    printf("tripledouble(");
+    sollyaPrintf("tripledouble(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case ERF: 
-    printf("erf(");
+    sollyaPrintf("erf(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case ERFC:
-    printf("erfc(");
+    sollyaPrintf("erfc(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case LOG_1P:
-    printf("log1p(");
+    sollyaPrintf("log1p(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case EXP_M1:
-    printf("expm1(");
+    sollyaPrintf("expm1(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case DOUBLEEXTENDED:
-    printf("doubleextended(");
+    sollyaPrintf("doubleextended(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case LIBRARYFUNCTION:
     {
       if (tree->child1->nodeType == VARIABLE) {
 	for (i=1;i<=tree->libFunDeriv;i++) {
-	  printf("diff(");
+	  sollyaPrintf("diff(");
 	}
-	printf("%s",tree->libFun->functionName);
+	sollyaPrintf("%s",tree->libFun->functionName);
 	for (i=1;i<=tree->libFunDeriv;i++) {
-	  printf(")");
+	  sollyaPrintf(")");
 	}
       } else {
 	if (tree->libFunDeriv == 0) {
-	  printf("%s(",tree->libFun->functionName);
+	  sollyaPrintf("%s(",tree->libFun->functionName);
 	  printTree(tree->child1);
-	  printf(")");
+	  sollyaPrintf(")");
 	} else {
-	  printf("(");
+	  sollyaPrintf("(");
 	  for (i=1;i<=tree->libFunDeriv;i++) {
-	    printf("diff(");
+	    sollyaPrintf("diff(");
 	  }
-	  printf("%s",tree->libFun->functionName);
+	  sollyaPrintf("%s",tree->libFun->functionName);
 	  for (i=1;i<=tree->libFunDeriv;i++) {
-	    printf(")");
+	    sollyaPrintf(")");
 	  }
-	  printf(")(");
+	  sollyaPrintf(")(");
 	  printTree(tree->child1);
-	  printf(")");
+	  sollyaPrintf(")");
 	}
       }
     }
@@ -1799,59 +1799,59 @@ void printTree(node *tree) {
     {
       if (tree->child1->nodeType == VARIABLE) {
 	for (i=1;i<=tree->libFunDeriv;i++) {
-	  printf("diff(");
+	  sollyaPrintf("diff(");
 	}
-	printf("function(");
+	sollyaPrintf("function(");
 	printThing(tree->child2);
-	printf(")");
+	sollyaPrintf(")");
 	for (i=1;i<=tree->libFunDeriv;i++) {
-	  printf(")");
+	  sollyaPrintf(")");
 	}
       } else {
 	if (tree->libFunDeriv == 0) {
-	  printf("(function(");
+	  sollyaPrintf("(function(");
 	  printThing(tree->child2);
-	  printf("))(");
+	  sollyaPrintf("))(");
 	  printTree(tree->child1);
-	  printf(")");
+	  sollyaPrintf(")");
 	} else {
-	  printf("(");
+	  sollyaPrintf("(");
 	  for (i=1;i<=tree->libFunDeriv;i++) {
-	    printf("diff(");
+	    sollyaPrintf("diff(");
 	  }
-	  printf("function(");
+	  sollyaPrintf("function(");
 	  printThing(tree->child2);
-	  printf(")");
+	  sollyaPrintf(")");
 	  for (i=1;i<=tree->libFunDeriv;i++) {
-	    printf(")");
+	    sollyaPrintf(")");
 	  }
-	  printf(")(");
+	  sollyaPrintf(")(");
 	  printTree(tree->child1);
-	  printf(")");
+	  sollyaPrintf(")");
 	}
       }
     }
     break;
   case CEIL:
-    printf("ceil(");
+    sollyaPrintf("ceil(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case FLOOR:
-    printf("floor(");
+    sollyaPrintf("floor(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case NEARESTINT:
-    printf("nearestint(");
+    sollyaPrintf("nearestint(");
     printTree(tree->child1);
-    printf(")");
+    sollyaPrintf(")");
     break;
   case PI_CONST:
-    printf("pi");
+    sollyaPrintf("pi");
     break;
   default:
-   fprintf(stderr,"Error: printTree: unknown identifier in the tree\n");
+   sollyaFprintf(stderr,"Error: printTree: unknown identifier in the tree\n");
    exit(1);
   }
   return;
@@ -2210,7 +2210,7 @@ char *sprintTree(node *tree) {
     sprintf(buffer,"pi");
     break;
   default:
-   fprintf(stderr,"Error: sprintTree: unknown identifier in the tree\n");
+   sollyaFprintf(stderr,"Error: sprintTree: unknown identifier in the tree\n");
    exit(1);
   }
 
@@ -2235,243 +2235,243 @@ void fprintTree(FILE *fd, node *tree) {
       variablename = (char *) safeCalloc(2,sizeof(char));
       variablename[0] = 'x';
     }
-    fprintf(fd,"%s",variablename);
+    sollyaFprintf(fd,"%s",variablename);
     break;
   case CONSTANT:
     fprintValue(fd,*(tree->value));
     break;
   case ADD:
     if (isInfix(tree->child1)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child1);
     if (isInfix(tree->child1)) 
-      fprintf(fd,")");
-    fprintf(fd," + ");
+      sollyaFprintf(fd,")");
+    sollyaFprintf(fd," + ");
     if (isInfix(tree->child2)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child2);
     if (isInfix(tree->child2)) 
-      fprintf(fd,")");
+      sollyaFprintf(fd,")");
     break;
   case SUB:
     if (isInfix(tree->child1)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child1);
     if (isInfix(tree->child1)) 
-      fprintf(fd,")");
-    fprintf(fd," - ");
+      sollyaFprintf(fd,")");
+    sollyaFprintf(fd," - ");
     if (isInfix(tree->child2)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child2);
     if (isInfix(tree->child2)) 
-      fprintf(fd,")");
+      sollyaFprintf(fd,")");
     break;
   case MUL:
     if (isInfix(tree->child1)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child1);
     if (isInfix(tree->child1)) 
-      fprintf(fd,")");
-    fprintf(fd," * ");
+      sollyaFprintf(fd,")");
+    sollyaFprintf(fd," * ");
     if (isInfix(tree->child2)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child2);
     if (isInfix(tree->child2)) 
-      fprintf(fd,")");
+      sollyaFprintf(fd,")");
     break;
   case DIV:
     if (isInfix(tree->child1)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child1);
     if (isInfix(tree->child1)) 
-      fprintf(fd,")");
-    fprintf(fd," / ");
+      sollyaFprintf(fd,")");
+    sollyaFprintf(fd," / ");
     if (isInfix(tree->child2)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child2);
     if (isInfix(tree->child2)) 
-      fprintf(fd,")");
+      sollyaFprintf(fd,")");
     break;
   case SQRT:
-    fprintf(fd,"sqrt(");
+    sollyaFprintf(fd,"sqrt(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case EXP:
-    fprintf(fd,"exp(");
+    sollyaFprintf(fd,"exp(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case LOG:
-    fprintf(fd,"log(");
+    sollyaFprintf(fd,"log(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case LOG_2:
-    fprintf(fd,"log2(");
+    sollyaFprintf(fd,"log2(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case LOG_10:
-    fprintf(fd,"log10(");
+    sollyaFprintf(fd,"log10(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case SIN:
-    fprintf(fd,"sin(");
+    sollyaFprintf(fd,"sin(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case COS:
-    fprintf(fd,"cos(");
+    sollyaFprintf(fd,"cos(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case TAN:
-    fprintf(fd,"tan(");
+    sollyaFprintf(fd,"tan(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ASIN:
-    fprintf(fd,"asin(");
+    sollyaFprintf(fd,"asin(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ACOS:
-    fprintf(fd,"acos(");
+    sollyaFprintf(fd,"acos(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ATAN:
-    fprintf(fd,"atan(");
+    sollyaFprintf(fd,"atan(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case SINH:
-    fprintf(fd,"sinh(");
+    sollyaFprintf(fd,"sinh(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case COSH:
-    fprintf(fd,"cosh(");
+    sollyaFprintf(fd,"cosh(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case TANH:
-    fprintf(fd,"tanh(");
+    sollyaFprintf(fd,"tanh(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ASINH:
-    fprintf(fd,"asinh(");
+    sollyaFprintf(fd,"asinh(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ACOSH:
-    fprintf(fd,"acosh(");
+    sollyaFprintf(fd,"acosh(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ATANH:
-    fprintf(fd,"atanh(");
+    sollyaFprintf(fd,"atanh(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case POW:
     if (isInfix(tree->child1)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child1);
     if (isInfix(tree->child1)) 
-      fprintf(fd,")");
-    fprintf(fd,"^(");
+      sollyaFprintf(fd,")");
+    sollyaFprintf(fd,"^(");
     fprintTree(fd,tree->child2);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case NEG:
-    fprintf(fd,"-");
+    sollyaFprintf(fd,"-");
     if (isInfix(tree->child1)) 
-      fprintf(fd,"(");
+      sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child1);
     if (isInfix(tree->child1)) 
-      fprintf(fd,")");
+      sollyaFprintf(fd,")");
     break;
   case ABS:
-    fprintf(fd,"abs(");
+    sollyaFprintf(fd,"abs(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case DOUBLE:
-    fprintf(fd,"double(");
+    sollyaFprintf(fd,"double(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case SINGLE:
-    fprintf(fd,"single(");
+    sollyaFprintf(fd,"single(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case DOUBLEDOUBLE:
-    fprintf(fd,"doubledouble(");
+    sollyaFprintf(fd,"doubledouble(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case TRIPLEDOUBLE:
-    fprintf(fd,"tripledouble(");
+    sollyaFprintf(fd,"tripledouble(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ERF: 
-    fprintf(fd,"erf(");
+    sollyaFprintf(fd,"erf(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case ERFC:
-    fprintf(fd,"erfc(");
+    sollyaFprintf(fd,"erfc(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case LOG_1P:
-    fprintf(fd,"log1p(");
+    sollyaFprintf(fd,"log1p(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case EXP_M1:
-    fprintf(fd,"expm1(");
+    sollyaFprintf(fd,"expm1(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case DOUBLEEXTENDED:
-    fprintf(fd,"doubleextended(");
+    sollyaFprintf(fd,"doubleextended(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
     case LIBRARYFUNCTION:
     {
       if (tree->child1->nodeType == VARIABLE) {
 	for (i=1;i<=tree->libFunDeriv;i++) {
-	  fprintf(fd,"diff(");
+	  sollyaFprintf(fd,"diff(");
 	}
-	fprintf(fd,"%s",tree->libFun->functionName);
+	sollyaFprintf(fd,"%s",tree->libFun->functionName);
 	for (i=1;i<=tree->libFunDeriv;i++) {
-	  fprintf(fd,")");
+	  sollyaFprintf(fd,")");
 	}
       } else {
 	if (tree->libFunDeriv == 0) {
-	  fprintf(fd,"%s(",tree->libFun->functionName);
+	  sollyaFprintf(fd,"%s(",tree->libFun->functionName);
 	  fprintTree(fd,tree->child1);
-	  fprintf(fd,")");
+	  sollyaFprintf(fd,")");
 	} else {
-	  fprintf(fd,"(");
+	  sollyaFprintf(fd,"(");
 	  for (i=1;i<=tree->libFunDeriv;i++) {
-	    fprintf(fd,"diff(");
+	    sollyaFprintf(fd,"diff(");
 	  }
-	  fprintf(fd,"%s",tree->libFun->functionName);
+	  sollyaFprintf(fd,"%s",tree->libFun->functionName);
 	  for (i=1;i<=tree->libFunDeriv;i++) {
-	    fprintf(fd,")");
+	    sollyaFprintf(fd,")");
 	  }
-	  fprintf(fd,")(");
+	  sollyaFprintf(fd,")(");
 	  fprintTree(fd,tree->child1);
-	  fprintf(fd,")");
+	  sollyaFprintf(fd,")");
 	}
       }
     }
@@ -2480,59 +2480,59 @@ void fprintTree(FILE *fd, node *tree) {
     {
       if (tree->child1->nodeType == VARIABLE) {
 	for (i=1;i<=tree->libFunDeriv;i++) {
-	  fprintf(fd,"diff(");
+	  sollyaFprintf(fd,"diff(");
 	}
-	fprintf(fd,"function(");
+	sollyaFprintf(fd,"function(");
 	fPrintThing(fd,tree->child2);
-	fprintf(fd,")");
+	sollyaFprintf(fd,")");
 	for (i=1;i<=tree->libFunDeriv;i++) {
-	  fprintf(fd,")");
+	  sollyaFprintf(fd,")");
 	}
       } else {
 	if (tree->libFunDeriv == 0) {
-	  fprintf(fd,"(function(");
+	  sollyaFprintf(fd,"(function(");
 	  fPrintThing(fd,tree->child2);
-	  fprintf(fd,"))(");
+	  sollyaFprintf(fd,"))(");
 	  fprintTree(fd,tree->child1);
-	  fprintf(fd,")");
+	  sollyaFprintf(fd,")");
 	} else {
-	  fprintf(fd,"(");
+	  sollyaFprintf(fd,"(");
 	  for (i=1;i<=tree->libFunDeriv;i++) {
-	    fprintf(fd,"diff(");
+	    sollyaFprintf(fd,"diff(");
 	  }
-	  fprintf(fd,"function(");
+	  sollyaFprintf(fd,"function(");
 	  fPrintThing(fd,tree->child2);
-	  fprintf(fd,")");
+	  sollyaFprintf(fd,")");
 	  for (i=1;i<=tree->libFunDeriv;i++) {
-	    fprintf(fd,")");
+	    sollyaFprintf(fd,")");
 	  }
-	  fprintf(fd,")(");
+	  sollyaFprintf(fd,")(");
 	  fprintTree(fd,tree->child1);
-	  fprintf(fd,")");
+	  sollyaFprintf(fd,")");
 	}
       }
     }
     break;
   case CEIL:
-    fprintf(fd,"ceil(");
+    sollyaFprintf(fd,"ceil(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case FLOOR:
-    fprintf(fd,"floor(");
+    sollyaFprintf(fd,"floor(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case NEARESTINT:
-    fprintf(fd,"nearestint(");
+    sollyaFprintf(fd,"nearestint(");
     fprintTree(fd,tree->child1);
-    fprintf(fd,")");
+    sollyaFprintf(fd,")");
     break;
   case PI_CONST:
-    fprintf(fd,"pi");
+    sollyaFprintf(fd,"pi");
     break;
   default:
-   fprintf(stderr,"Error: fprintTree: unknown identifier in the tree\n");
+   sollyaFprintf(stderr,"Error: fprintTree: unknown identifier in the tree\n");
    exit(1);
   }
   return;
@@ -2770,7 +2770,7 @@ node* copyTree(node *tree) {
     copy->nodeType = PI_CONST;
     break;
   default:
-   fprintf(stderr,"Error: copyTree: unknown identifier in the tree\n");
+   sollyaFprintf(stderr,"Error: copyTree: unknown identifier in the tree\n");
    exit(1);
   }
   return copy;
@@ -2964,7 +2964,7 @@ int containsNotANumbers(node * tree) {
 	    containsNotANumbers(tree->child2));
     break;
   default:
-    fprintf(stderr,"Error: containsNotANumbers: unknown arity of tree node symbol.\n");
+    sollyaFprintf(stderr,"Error: containsNotANumbers: unknown arity of tree node symbol.\n");
     exit(1);
   }
 
@@ -3003,7 +3003,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
       }
       break;
     default:
-      fprintf(stderr,"Error: simplifyTreeErrorfreeInner: unknown arity of tree node symbol.\n");
+      sollyaFprintf(stderr,"Error: simplifyTreeErrorfreeInner: unknown arity of tree node symbol.\n");
       exit(1);
     }
   }
@@ -4768,7 +4768,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     simplified->nodeType = PI_CONST;
     break;
   default:
-    fprintf(stderr,"Error: simplifyTreeErrorfreeInner: unknown identifier in the tree\n");
+    sollyaFprintf(stderr,"Error: simplifyTreeErrorfreeInner: unknown identifier in the tree\n");
     exit(1);
   }
 
@@ -5704,7 +5704,7 @@ node* differentiateUnsimplified(node *tree) {
 	derivative = temp_node;    
 	break;
       default:
-	fprintf(stderr,"Error: differentiateUnsimplified: unknown identifier in the tree\n");
+	sollyaFprintf(stderr,"Error: differentiateUnsimplified: unknown identifier in the tree\n");
 	exit(1);
       }
     }
@@ -5724,7 +5724,7 @@ node* differentiate(node *tree) {
     changeToWarningMode();
     printMessage(11,"Information: differentiating the expression '");
     printTree(tree);
-    printf("'\n");
+    sollyaPrintf("'\n");
     restoreMode();
   }
 
@@ -5963,7 +5963,7 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
     isConstant = 1;
     break;
   default:
-    fprintf(stderr,"Error: evaluateConstantExpression: unknown identifier in the tree\n");
+    sollyaFprintf(stderr,"Error: evaluateConstantExpression: unknown identifier in the tree\n");
     exit(1);
   }
 
@@ -5998,7 +5998,7 @@ node* simplifyTreeInner(node *tree) {
       }
       break;
     default:
-      fprintf(stderr,"Error: simplifyTreeInner: unknown arity of tree node symbol.\n");
+      sollyaFprintf(stderr,"Error: simplifyTreeInner: unknown arity of tree node symbol.\n");
       exit(1);
     }
   }
@@ -6692,7 +6692,7 @@ node* simplifyTreeInner(node *tree) {
     simplified->value = value;
     break;
   default:
-    fprintf(stderr,"Error: simplifyTreeInner: unknown identifier (%d) in the tree\n",tree->nodeType);
+    sollyaFprintf(stderr,"Error: simplifyTreeInner: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);
   }
 
@@ -7361,7 +7361,7 @@ node* simplifyAllButDivisionInner(node *tree) {
     simplified->value = value;
     break;
   default:
-    fprintf(stderr,"Error: simplifyAllButDivisionInner: unknown identifier (%d) in the tree\n",tree->nodeType);
+    sollyaFprintf(stderr,"Error: simplifyAllButDivisionInner: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);
   }
 
@@ -7563,7 +7563,7 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
     mpfr_const_pi(result, GMP_RNDN);
     break;
   default:
-    fprintf(stderr,"Error: evaluate: unknown identifier in the tree\n");
+    sollyaFprintf(stderr,"Error: evaluate: unknown identifier in the tree\n");
     exit(1);
   }
 
@@ -7696,7 +7696,7 @@ int arity(node *tree) {
     return 1;
     break;
   default:
-    fprintf(stderr,"Error: arity: unknown identifier in the tree\n");
+    sollyaFprintf(stderr,"Error: arity: unknown identifier in the tree\n");
     exit(1);
   }
 }
@@ -7885,7 +7885,7 @@ int isPolynomial(node *tree) {
     res = 1;
     break;
   default:
-    fprintf(stderr,"Error: isPolynomial: unknown identifier in the tree\n");
+    sollyaFprintf(stderr,"Error: isPolynomial: unknown identifier in the tree\n");
     exit(1);
   }
  return res;
@@ -8036,7 +8036,7 @@ int isAffine(node *tree) {
     res = 1;
     break;
   default:
-    fprintf(stderr,"Error: isAffine: unknown identifier in the tree\n");
+    sollyaFprintf(stderr,"Error: isAffine: unknown identifier in the tree\n");
     exit(1);
   }
  return res;
@@ -8101,17 +8101,17 @@ int getDegreeUnsafe(node *tree) {
           free_memory(simplifiedExponent);
           return l * r;
         } else {
-          fprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is not constant, not integer or not non-negative.\n");
+          sollyaFprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is not constant, not integer or not non-negative.\n");
           exit(1);
         }
         free_memory(simplifiedExponent);
       } else {
         if (!mpfr_integer_p(*(tree->child2->value))) {
-          fprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is not integer.\n");
+          sollyaFprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is not integer.\n");
           exit(1);
         }
         if (mpfr_sgn(*(tree->child2->value)) < 0) {
-          fprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is negative.\n");
+          sollyaFprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is negative.\n");
           exit(1);
         }
 
@@ -8133,7 +8133,7 @@ int getDegreeUnsafe(node *tree) {
     return getDegreeUnsafe(tree->child1);
     break;
   default:
-    fprintf(stderr,"Error: getDegreeUnsafe: an error occurred on handling the expression tree\n");
+    sollyaFprintf(stderr,"Error: getDegreeUnsafe: an error occurred on handling the expression tree\n");
     exit(1);
   }
 }
@@ -8179,15 +8179,15 @@ int getMaxPowerDividerUnsafe(node *tree) {
     {
       l = getMaxPowerDividerUnsafe(tree->child1);
       if (tree->child2->nodeType != CONSTANT) {
-	fprintf(stderr,"Error: getMaxPowerDividerUnsafe: an error occurred. The exponent in a power operator is not constant.\n");
+	sollyaFprintf(stderr,"Error: getMaxPowerDividerUnsafe: an error occurred. The exponent in a power operator is not constant.\n");
 	exit(1);
       }
       if (!mpfr_integer_p(*(tree->child2->value))) {
-	fprintf(stderr,"Error: getMaxPowerDividerUnsafe: an error occurred. The exponent in a power operator is not integer.\n");
+	sollyaFprintf(stderr,"Error: getMaxPowerDividerUnsafe: an error occurred. The exponent in a power operator is not integer.\n");
 	exit(1);
       }
       if (mpfr_sgn(*(tree->child2->value)) < 0) {
-	fprintf(stderr,"Error: getMaxPowerDividerUnsafe: an error occurred. The exponent in a power operator is negative.\n");
+	sollyaFprintf(stderr,"Error: getMaxPowerDividerUnsafe: an error occurred. The exponent in a power operator is negative.\n");
 	exit(1);
       }
 
@@ -8209,7 +8209,7 @@ int getMaxPowerDividerUnsafe(node *tree) {
     return getMaxPowerDividerUnsafe(tree->child1);
     break;
   default:
-    fprintf(stderr,"Error: getMaxPowerDividerUnsafe: an error occurred on handling the expression tree\n");
+    sollyaFprintf(stderr,"Error: getMaxPowerDividerUnsafe: an error occurred on handling the expression tree\n");
     exit(1);
   }
 }
@@ -8351,15 +8351,15 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
     {
       left = expandPowerInPolynomialUnsafe(tree->child1);
       if (tree->child2->nodeType != CONSTANT) {
-	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. The exponent in a power operator is not constant.\n");
+	sollyaFprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. The exponent in a power operator is not constant.\n");
 	exit(1);
       }
       if (!mpfr_integer_p(*(tree->child2->value))) {
-	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. The exponent in a power operator is not integer.\n");
+	sollyaFprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. The exponent in a power operator is not integer.\n");
 	exit(1);
       }
       if (mpfr_sgn(*(tree->child2->value)) < 0) {
-	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. The exponent in a power operator is negative.\n");
+	sollyaFprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. The exponent in a power operator is negative.\n");
 	exit(1);
       }
 
@@ -8367,8 +8367,8 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
       mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
       mpfr_set_si(temp,r,GMP_RNDN);
       if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
-	fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. Tried to expand an expression using a power operator with an exponent ");
-	fprintf(stderr,"which cannot be represented on an integer variable.\n");
+	sollyaFprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. Tried to expand an expression using a power operator with an exponent ");
+	sollyaFprintf(stderr,"which cannot be represented on an integer variable.\n");
 	mpfr_clear(temp);
 	exit(1);
       }
@@ -8477,7 +8477,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	default:
 	  if (isConstant(left)) return copyTree(tree);
 
-	  fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred on handling the expanded expression subtree\n");
+	  sollyaFprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred on handling the expanded expression subtree\n");
 	  exit(1);
 	}
 	copy = expandPowerInPolynomialUnsafe(tempTree);
@@ -8508,7 +8508,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 
     if (isConstant(tree)) return copyTree(tree);
 
-    fprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred on handling the expression tree\n");
+    sollyaFprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred on handling the expression tree\n");
     exit(1);
   }
 }
@@ -8757,7 +8757,7 @@ node* expandDivision(node *tree) {
     copy->nodeType = PI_CONST;
     break;
   default:
-   fprintf(stderr,"Error: expandDivision: unknown identifier in the tree\n");
+   sollyaFprintf(stderr,"Error: expandDivision: unknown identifier in the tree\n");
    exit(1);
   }
   return copy;
@@ -8962,7 +8962,7 @@ node* expandPolynomialUnsafe(node *tree) {
 	  return copy;
 	}
       } else {
-	fprintf(stderr,"Error: expandPolynomialUnsafe: an error occurred on handling the MUL left rewritten expression subtree\n");
+	sollyaFprintf(stderr,"Error: expandPolynomialUnsafe: an error occurred on handling the MUL left rewritten expression subtree\n");
 	exit(1);
       }
     }
@@ -9081,7 +9081,7 @@ node* expandPolynomialUnsafe(node *tree) {
       if (isConstant(left)) {
 	return copyTree(tree);
       } else {
-	fprintf(stderr,"Error: expandPolynomialUnsafe: an error occurred on handling the DIV left rewritten expression subtree\n");
+	sollyaFprintf(stderr,"Error: expandPolynomialUnsafe: an error occurred on handling the DIV left rewritten expression subtree\n");
 	exit(1);
       }
     }
@@ -9098,7 +9098,7 @@ node* expandPolynomialUnsafe(node *tree) {
     if (isConstant(tree)) {
       return copyTree(tree);
     } else {
-      fprintf(stderr,"Error: expandPolynomialUnsafe: an error occurred on handling the expression tree\n");
+      sollyaFprintf(stderr,"Error: expandPolynomialUnsafe: an error occurred on handling the expression tree\n");
       exit(1);
     }
   }
@@ -9342,7 +9342,7 @@ node* expandUnsimplified(node *tree) {
     copy->nodeType = PI_CONST;
     break;
   default:
-   fprintf(stderr,"Error: expand: unknown identifier in the tree\n");
+   sollyaFprintf(stderr,"Error: expand: unknown identifier in the tree\n");
    exit(1);
   }
   return copy;
@@ -9484,7 +9484,7 @@ int isConstant(node *tree) {
     return isConstant(tree->child1);
     break;
   default:
-   fprintf(stderr,"Error: isConstant: unknown identifier in the tree\n");
+   sollyaFprintf(stderr,"Error: isConstant: unknown identifier in the tree\n");
    exit(1);
   }
 }
@@ -9571,7 +9571,7 @@ node* getCoefficientsInMonomialUnsafe(node *polynom) {
     return coeffs;
   }
 
-  fprintf(stderr,"Error: getCoefficientsInMonomialUnsafe: an error occurred. The expression does not have the correct monomial form.\n");
+  sollyaFprintf(stderr,"Error: getCoefficientsInMonomialUnsafe: an error occurred. The expression does not have the correct monomial form.\n");
   exit(1);
   return NULL;
 }
@@ -9641,7 +9641,7 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
     printMessage(7,"Warning: recursion on coefficients extraction:\n");
     printTree(polynom);
     printMessage(7,"\ntransformed to\n");
-    printTree(simplified); printf("\n");
+    printTree(simplified); sollyaPrintf("\n");
     restoreMode();
   }
 
@@ -10124,7 +10124,7 @@ node* hornerPolynomialUnsafe(node *tree) {
   }
 
   if (monomials[degree] == NULL) {
-    fprintf(stderr,
+    sollyaFprintf(stderr,
 "Error: hornerPolynomialUnsafe: an error occurred. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
     exit(1);
     return NULL;
@@ -10224,7 +10224,7 @@ node* dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha) {
 
 
   if (monomials[degree] == NULL) {
-    fprintf(stderr,
+    sollyaFprintf(stderr,
 "Error: hornerPolynomialUnsafe: an error occurred. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
     exit(1);
     return NULL;
@@ -10548,7 +10548,7 @@ node* hornerUnsimplified(node *tree) {
     copy->nodeType = PI_CONST;
     break;
   default:
-   fprintf(stderr,"Error: horner: unknown identifier in the tree\n");
+   sollyaFprintf(stderr,"Error: horner: unknown identifier in the tree\n");
    exit(1);
   }
   return copy;
@@ -10986,7 +10986,7 @@ node *polynomialShiftAndScaleAbscissaUnsafe(node *poly, node *a, node *b) {
  
   getCoefficients(&degree, &coeffs, poly);
   if (degree < 0) {
-    fprintf(stderr,"Error: polynomialShiftAndScaleAbscissaUnsafe: the given expression is not a polynomial\n");
+    sollyaFprintf(stderr,"Error: polynomialShiftAndScaleAbscissaUnsafe: the given expression is not a polynomial\n");
     exit(1);
   }
   for (i=0;i<=degree;i++) {
@@ -11040,13 +11040,13 @@ node *substitutePolynomialUnsafe(node *p, node *q) {
 
   getCoefficients(&degP, &coeffsP, p);
   if (degP < 0) {
-    fprintf(stderr,"Error: substitutePolynomialUnsafe: the given expression is not a polynomial\n");
+    sollyaFprintf(stderr,"Error: substitutePolynomialUnsafe: the given expression is not a polynomial\n");
     exit(1);
   }
 
   getCoefficients(&degQ, &coeffsQ, q);
   if (degQ < 0) {
-    fprintf(stderr,"Error: substitutePolynomialUnsafe: the given expression is not a polynomial\n");
+    sollyaFprintf(stderr,"Error: substitutePolynomialUnsafe: the given expression is not a polynomial\n");
     exit(1);
   }
   for (i=0;i<=degQ;i++) {
@@ -11364,7 +11364,7 @@ node *substitute(node* tree, node *t) {
     copy->nodeType = PI_CONST;
     break;
   default:
-   fprintf(stderr,"Error: substitute: unknown identifier in the tree\n");
+   sollyaFprintf(stderr,"Error: substitute: unknown identifier in the tree\n");
    exit(1);
   }
   return copy;
@@ -11491,7 +11491,7 @@ node *makePolynomialConstantExpressions(node **coeffs, int deg) {
   node *temp4;
 
   if (deg < 0) {
-    fprintf(stderr,"Error: makePolynomialConstantExpressions: degree of polynomial to be built is negative\n");
+    sollyaFprintf(stderr,"Error: makePolynomialConstantExpressions: degree of polynomial to be built is negative\n");
     exit(1);
   }
 
@@ -11733,7 +11733,7 @@ int treeSize(node *tree) {
     return treeSize(tree->child1) + 1;
     break;
   default:
-   fprintf(stderr,"Error: treeSize: unknown identifier (%d) in the tree\n",tree->nodeType);
+   sollyaFprintf(stderr,"Error: treeSize: unknown identifier (%d) in the tree\n",tree->nodeType);
    exit(1);
   }
   return -1;
@@ -11759,7 +11759,7 @@ int highestDegreeOfPolynomialSubexpression(node *tree) {
     return getDegree(tree);
     break;
   default: 
-    fprintf(stderr,"Error: unknown arity of an operator.\n");
+    sollyaFprintf(stderr,"Error: unknown arity of an operator.\n");
     exit(1);
   }
 
@@ -12240,7 +12240,7 @@ node *makeCanonical(node *tree, mp_prec_t prec) {
     copy->nodeType = PI_CONST;
     break;
   default:
-   fprintf(stderr,"Error: makeCanonical: unknown identifier in the tree\n");
+   sollyaFprintf(stderr,"Error: makeCanonical: unknown identifier in the tree\n");
    exit(1);
   }
   return copy;

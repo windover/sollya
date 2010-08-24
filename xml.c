@@ -74,333 +74,333 @@ void fPrintXmlInner(FILE *fd, node *tree) {
   switch (tree->nodeType) {
   case VARIABLE:
     if (variablename == NULL) 
-      fprintf(fd,"<ci> x </ci>\n");
+      sollyaFprintf(fd,"<ci> x </ci>\n");
     else 
-      fprintf(fd,"<ci> %s </ci>\n",variablename);
+      sollyaFprintf(fd,"<ci> %s </ci>\n",variablename);
     break;
   case CONSTANT:
     fprintValueForXml(fd, *(tree->value));
     break;
   case ADD:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<plus/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<plus/>\n");
     fPrintXmlInner(fd, tree->child1);
     fPrintXmlInner(fd, tree->child2);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case SUB:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<minus/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<minus/>\n");
     fPrintXmlInner(fd, tree->child1);
     fPrintXmlInner(fd, tree->child2);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case MUL:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<times/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<times/>\n");
     fPrintXmlInner(fd, tree->child1);
     fPrintXmlInner(fd, tree->child2);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case DIV:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<divide/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<divide/>\n");
     fPrintXmlInner(fd, tree->child1);
     fPrintXmlInner(fd, tree->child2);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case SQRT:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<root/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<root/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case EXP:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<exp/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<exp/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case LOG:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<ln/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<ln/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case LOG_2:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<log/><logbase><cn>2</cn></logbase>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<log/><logbase><cn>2</cn></logbase>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case LOG_10:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<log/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<log/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case SIN:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<sin/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<sin/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case COS:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<cos/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<cos/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case TAN:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<tan/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<tan/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case ASIN:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<arcsin/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<arcsin/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case ACOS:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<arccos/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<arccos/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case ATAN:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<arctan/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<arctan/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case SINH:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<sinh/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<sinh/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case COSH:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<cosh/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<cosh/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case TANH:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<tanh/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<tanh/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case ASINH:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<arcsinh/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<arcsinh/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case ACOSH:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<arccosh/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<arccosh/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case ATANH:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<arctanh/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<arctanh/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case POW:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<power/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<power/>\n");
     fPrintXmlInner(fd, tree->child1);
     fPrintXmlInner(fd, tree->child2);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case NEG:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<minus/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<minus/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case ABS:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<abs/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<abs/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case DOUBLE:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">double</csymbol>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">double</csymbol>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case SINGLE:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">single</csymbol>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">single</csymbol>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case DOUBLEDOUBLE:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">doubledouble</csymbol>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">doubledouble</csymbol>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case TRIPLEDOUBLE:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">tripledouble</csymbol>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">tripledouble</csymbol>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case ERF: 
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<csymbol definitionURL=\"http://www.openmath.org/CDs/errorFresnelInts.ocd\" encoding=\"OpenMath\">erf</csymbol>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.openmath.org/CDs/errorFresnelInts.ocd\" encoding=\"OpenMath\">erf</csymbol>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case ERFC:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<csymbol definitionURL=\"http://www.openmath.org/CDs/errorFresnelInts.ocd\" encoding=\"OpenMath\">erfc</csymbol>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.openmath.org/CDs/errorFresnelInts.ocd\" encoding=\"OpenMath\">erfc</csymbol>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case LOG_1P:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">log1p</csymbol>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">log1p</csymbol>\n");
     //    fprintf(fd,"<log/><apply><plus/><cn>1</cn>\n");
     fPrintXmlInner(fd, tree->child1);
     //    fprintf(fd,"</apply></apply>\n");
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case EXP_M1:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">expm1</csymbol>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">expm1</csymbol>\n");
     //    fprintf(fd,"<apply><minus/><apply><exp>\n");
     fPrintXmlInner(fd, tree->child1);
     //    fprintf(fd,"</apply><cn>1</cn></apply>\n");
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case DOUBLEEXTENDED:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">doubleextended</csymbol>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">doubleextended</csymbol>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case LIBRARYFUNCTION:
     if (tree->libFunDeriv == 0) {
-      fprintf(fd,"<apply>\n");
-      fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">%s</csymbol>\n",
+      sollyaFprintf(fd,"<apply>\n");
+      sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">%s</csymbol>\n",
 	      tree->libFun->functionName);
       fPrintXmlInner(fd, tree->child1);
-      fprintf(fd,"</apply>\n");	 
+      sollyaFprintf(fd,"</apply>\n");	 
     } else {
-      fprintf(fd,"<apply>\n");
-      fprintf(fd,"<diff/>\n");
-      fprintf(fd,"<bvar>\n");
+      sollyaFprintf(fd,"<apply>\n");
+      sollyaFprintf(fd,"<diff/>\n");
+      sollyaFprintf(fd,"<bvar>\n");
       if (variablename == NULL) 
-	fprintf(fd,"<ci> x </ci>\n");
+	sollyaFprintf(fd,"<ci> x </ci>\n");
       else 
-	fprintf(fd,"<ci> %s </ci>\n",variablename);
-      fprintf(fd,"<degree>\n");
-      fprintf(fd,"<cn> %d </cn>\n",tree->libFunDeriv);
-      fprintf(fd,"</degree>\n");
-      fprintf(fd,"</bvar>\n");
-      fprintf(fd,"<apply>\n");
-      fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">%s</csymbol>\n",
+	sollyaFprintf(fd,"<ci> %s </ci>\n",variablename);
+      sollyaFprintf(fd,"<degree>\n");
+      sollyaFprintf(fd,"<cn> %d </cn>\n",tree->libFunDeriv);
+      sollyaFprintf(fd,"</degree>\n");
+      sollyaFprintf(fd,"</bvar>\n");
+      sollyaFprintf(fd,"<apply>\n");
+      sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">%s</csymbol>\n",
 	      tree->libFun->functionName);
       fPrintXmlInner(fd, tree->child1);
-      fprintf(fd,"</apply>\n");	 
-      fprintf(fd,"</apply>\n");
+      sollyaFprintf(fd,"</apply>\n");	 
+      sollyaFprintf(fd,"</apply>\n");
     }
     break;
   case PROCEDUREFUNCTION:
     if (tree->libFunDeriv == 0) {
       procString = sPrintThing(tree->child2);
-      fprintf(fd,"<apply>\n");
-      fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">function(%s)</csymbol>\n",
+      sollyaFprintf(fd,"<apply>\n");
+      sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">function(%s)</csymbol>\n",
 	      procString);
       free(procString);
       fPrintXmlInner(fd, tree->child1);
-      fprintf(fd,"</apply>\n");	 
+      sollyaFprintf(fd,"</apply>\n");	 
     } else {
-      fprintf(fd,"<apply>\n");
-      fprintf(fd,"<diff/>\n");
-      fprintf(fd,"<bvar>\n");
+      sollyaFprintf(fd,"<apply>\n");
+      sollyaFprintf(fd,"<diff/>\n");
+      sollyaFprintf(fd,"<bvar>\n");
       if (variablename == NULL) 
-	fprintf(fd,"<ci> x </ci>\n");
+	sollyaFprintf(fd,"<ci> x </ci>\n");
       else 
-	fprintf(fd,"<ci> %s </ci>\n",variablename);
-      fprintf(fd,"<degree>\n");
-      fprintf(fd,"<cn> %d </cn>\n",tree->libFunDeriv);
-      fprintf(fd,"</degree>\n");
-      fprintf(fd,"</bvar>\n");
-      fprintf(fd,"<apply>\n");
+	sollyaFprintf(fd,"<ci> %s </ci>\n",variablename);
+      sollyaFprintf(fd,"<degree>\n");
+      sollyaFprintf(fd,"<cn> %d </cn>\n",tree->libFunDeriv);
+      sollyaFprintf(fd,"</degree>\n");
+      sollyaFprintf(fd,"</bvar>\n");
+      sollyaFprintf(fd,"<apply>\n");
       procString = sPrintThing(tree->child2);
-      fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">function(%s)</csymbol>\n",
+      sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">function(%s)</csymbol>\n",
 	      procString);
       free(procString);
       fPrintXmlInner(fd, tree->child1);
-      fprintf(fd,"</apply>\n");	 
-      fprintf(fd,"</apply>\n");
+      sollyaFprintf(fd,"</apply>\n");	 
+      sollyaFprintf(fd,"</apply>\n");
     }
     break;
   case CEIL:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<ceiling/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<ceiling/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case FLOOR:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<floor/>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<floor/>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case NEARESTINT:
-    fprintf(fd,"<apply>\n");
-    fprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">nearestint</csymbol>\n");
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">nearestint</csymbol>\n");
     fPrintXmlInner(fd, tree->child1);
-    fprintf(fd,"</apply>\n");
+    sollyaFprintf(fd,"</apply>\n");
     break;
   case PI_CONST:
-    fprintf(fd,"<pi/>");
+    sollyaFprintf(fd,"<pi/>");
     break;
   default:
-    fprintf(stderr,"Error: fPrintXml: unknown identifier (%d) in the tree\n",tree->nodeType);
+    sollyaFprintf(stderr,"Error: fPrintXml: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);
   }
   return;  
 }
 
 void fPrintXml(FILE *fd, node *tree) {
-  fprintf(fd,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-  fprintf(fd,"<!-- generated by %s: http://sollya.gforge.inria.fr/ -->\n",PACKAGE_NAME);
-  fprintf(fd,"<!-- syntax: printxml(...);   example: printxml(x^2-2*x+5); -->\n");
+  sollyaFprintf(fd,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+  sollyaFprintf(fd,"<!-- generated by %s: http://sollya.gforge.inria.fr/ -->\n",PACKAGE_NAME);
+  sollyaFprintf(fd,"<!-- syntax: printxml(...);   example: printxml(x^2-2*x+5); -->\n");
   //  fprintf(fd,"<!DOCTYPE math PUBLIC \"-//W3C//DTD MathML 2.0//EN\" \"http://www.w3.org/Math/DTD/mathml2/mathml2.dtd\" >\n");
   //  fprintf(fd,"<!-- MathML-Content (section 4 of MathML 2.0) -->\n");
-  fprintf(fd,"<?xml-stylesheet type=\"text/xsl\" href=\"http://sollya.gforge.inria.fr/mathmlc2p-web.xsl\"?>\n");
-  fprintf(fd,"<?xml-stylesheet type=\"text/xsl\" href=\"mathmlc2p-web.xsl\"?>\n");
-  fprintf(fd,"<!-- This stylesheet allows direct web browsing of MathML-c XML files (http:// or file://) -->\n");
-  fprintf(fd,"\n<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n");
-  fprintf(fd,"<semantics>\n");
-  fprintf(fd,"<annotation-xml encoding=\"MathML-Content\">\n");
-  fprintf(fd,"<lambda>\n");
+  sollyaFprintf(fd,"<?xml-stylesheet type=\"text/xsl\" href=\"http://sollya.gforge.inria.fr/mathmlc2p-web.xsl\"?>\n");
+  sollyaFprintf(fd,"<?xml-stylesheet type=\"text/xsl\" href=\"mathmlc2p-web.xsl\"?>\n");
+  sollyaFprintf(fd,"<!-- This stylesheet allows direct web browsing of MathML-c XML files (http:// or file://) -->\n");
+  sollyaFprintf(fd,"\n<math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n");
+  sollyaFprintf(fd,"<semantics>\n");
+  sollyaFprintf(fd,"<annotation-xml encoding=\"MathML-Content\">\n");
+  sollyaFprintf(fd,"<lambda>\n");
   if (variablename != NULL) 
-    fprintf(fd,"<bvar><ci> %s </ci></bvar>\n",variablename);
+    sollyaFprintf(fd,"<bvar><ci> %s </ci></bvar>\n",variablename);
   else 
-    fprintf(fd,"<bvar><ci> x </ci></bvar>\n");
-  fprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<bvar><ci> x </ci></bvar>\n");
+  sollyaFprintf(fd,"<apply>\n");
   fPrintXmlInner(fd,tree);
-  fprintf(fd,"</apply>\n");
-  fprintf(fd,"</lambda>\n");
-  fprintf(fd,"</annotation-xml>\n");
-  fprintf(fd,"<annotation encoding=\"sollya/text\">");
+  sollyaFprintf(fd,"</apply>\n");
+  sollyaFprintf(fd,"</lambda>\n");
+  sollyaFprintf(fd,"</annotation-xml>\n");
+  sollyaFprintf(fd,"<annotation encoding=\"sollya/text\">");
   fprintTree(fd, tree);
-  fprintf(fd,"</annotation>\n");
-  fprintf(fd,"</semantics>\n");
-  fprintf(fd,"</math>\n\n");
+  sollyaFprintf(fd,"</annotation>\n");
+  sollyaFprintf(fd,"</semantics>\n");
+  sollyaFprintf(fd,"</math>\n\n");
 }
 
 // Nico:
@@ -785,7 +785,7 @@ streamXmlFile(const char *filename) {
   xmlTextReaderPtr reader;
 
   reader = xmlReaderForFile(filename, NULL, 0);
-  if (reader == NULL) { printf("Unable to open %s\n", filename); return NULL; }
+  if (reader == NULL) { printMessage(1,"Warning: Unable to open %s\n", filename); return NULL; }
   for(result_node=NULL,current_depth=0;processNode(reader)==1 && !result_node;);
   xmlFreeTextReader(reader);
   return result_node;
@@ -828,8 +828,8 @@ node *readXml(char *filename) {
 
 #else
 node *readXml(char *filename) {
-  printf("We should now read the XML file \"%s\".\n",filename);
-  printf("XInclude support not compiled in, cannot parse XML file.\n");
+  printMessage(1,"Warning: We should now read the XML file \"%s\".\n",filename);
+  printMessage(1,"XInclude support not compiled in, cannot parse XML file.\n");
   return NULL;
 }
 #endif

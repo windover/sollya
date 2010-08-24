@@ -389,7 +389,7 @@ startsymbol:            command SEMICOLONTOKEN
                       | helpmeta SEMICOLONTOKEN		      
                           {
 			    outputMode();
-                            printf("This is %s.\nType 'help help;' for the list of available commands. Type 'help <command>;' for help on the specific command <command>.\nType 'quit;' for quitting the %s interpreter.\n\nYou can get moral support and help with bugs by writing to %s.\n\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
+                            sollyaPrintf("This is %s.\nType 'help help;' for the list of available commands. Type 'help <command>;' for help on the specific command <command>.\nType 'quit;' for quitting the %s interpreter.\n\nYou can get moral support and help with bugs by writing to %s.\n\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
 			    parsedThing = NULL;
 			    $$ = NULL;
 			    YYACCEPT;
@@ -397,7 +397,7 @@ startsymbol:            command SEMICOLONTOKEN
                       | QUESTIONMARKTOKEN
                           {
 			    outputMode();
-                            printf("This is %s.\nType 'help help;' for the list of available commands. Type 'help <command>;' for help on the specific command <command>.\nType 'quit;' for quitting the %s interpreter.\n\nYou can get moral support and help with bugs by writing to %s.\n\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
+                            sollyaPrintf("This is %s.\nType 'help help;' for the list of available commands. Type 'help <command>;' for help on the specific command <command>.\nType 'quit;' for quitting the %s interpreter.\n\nYou can get moral support and help with bugs by writing to %s.\n\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
 			    parsedThing = NULL;
 			    $$ = NULL;
 			    YYACCEPT;
@@ -411,7 +411,7 @@ startsymbol:            command SEMICOLONTOKEN
                       | VERSIONTOKEN SEMICOLONTOKEN
                           {
 			    outputMode();
-			    printf("This is\n\n\t%s.\n\nCopyright 2006-2010 by\n    Laboratoire de l'Informatique du Parallelisme,\n    UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668, Lyon, France,\nand by\n    LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France.\nAll rights reserved.\n\nContributors are S. Chevillard, N. Jourdan, M. Joldes and Chr. Lauter.\n\nThis software is governed by the CeCILL-C license under French law and\nabiding by the rules of distribution of free software.  You can  use,\nmodify and/ or redistribute the software under the terms of the CeCILL-C\nlicense as circulated by CEA, CNRS and INRIA at the following URL\n\"http://www.cecill.info\".\n\nPlease send bug reports to %s.\n",PACKAGE_STRING,PACKAGE_BUGREPORT);
+			    sollyaPrintf("This is\n\n\t%s.\n\nCopyright 2006-2010 by\n    Laboratoire de l'Informatique du Parallelisme,\n    UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668, Lyon, France,\nand by\n    LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France.\nAll rights reserved.\n\nContributors are S. Chevillard, N. Jourdan, M. Joldes and Chr. Lauter.\n\nThis software is governed by the CeCILL-C license under French law and\nabiding by the rules of distribution of free software.  You can  use,\nmodify and/ or redistribute the software under the terms of the CeCILL-C\nlicense as circulated by CEA, CNRS and INRIA at the following URL\n\"http://www.cecill.info\".\n\nPlease send bug reports to %s.\n",PACKAGE_STRING,PACKAGE_BUGREPORT);
 			    parsedThing = NULL;
 			    $$ = NULL;
 			    YYACCEPT;
@@ -1937,35 +1937,35 @@ externalproctypelist:       extendedexternalproctype
 
 help:                   CONSTANTTOKEN
                           {
-			    outputMode(); printf("\"%s\" is recognized as a base 10 constant.\n",$1);
+			    outputMode(); sollyaPrintf("\"%s\" is recognized as a base 10 constant.\n",$1);
 			    free($1);
 			  }          					       
                       | DYADICCONSTANTTOKEN
                           {
-			    outputMode(); printf("\"%s\" is recognized as a dyadic number constant.\n",$1);
+			    outputMode(); sollyaPrintf("\"%s\" is recognized as a dyadic number constant.\n",$1);
 			    free($1);
                           }   					       
                       | HEXCONSTANTTOKEN
                           {
-			    outputMode(); printf("\"%s\" is recognized as a double or single precision constant.\n",$1);
+			    outputMode(); sollyaPrintf("\"%s\" is recognized as a double or single precision constant.\n",$1);
 			    free($1);
                           }       					       
                       | HEXADECIMALCONSTANTTOKEN
                           {
-			    outputMode(); printf("\"%s\" is recognized as a hexadecimal constant.\n",$1);
+			    outputMode(); sollyaPrintf("\"%s\" is recognized as a hexadecimal constant.\n",$1);
 			    free($1);
                           }       					       
                       | BINARYCONSTANTTOKEN
                           {
-			    outputMode(); printf("\"%s_2\" is recognized as a base 2 constant.\n",$1);
+			    outputMode(); sollyaPrintf("\"%s_2\" is recognized as a base 2 constant.\n",$1);
 			    free($1);
                           }    					       
                       | PITOKEN
                           {
 #ifdef HELP_PI_TEXT
-			    outputMode(); printf(HELP_PI_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PI_TEXT);
 #else
-			    outputMode(); printf("Ratio circonference and diameter of a circle.\n");
+			    outputMode(); sollyaPrintf("Ratio circonference and diameter of a circle.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PI"
 #endif
@@ -1973,44 +1973,44 @@ help:                   CONSTANTTOKEN
                           }                					       
                       | IDENTIFIERTOKEN
                           {
-			    outputMode(); printf("\"%s\" is an identifier.\n",$1);
+			    outputMode(); sollyaPrintf("\"%s\" is an identifier.\n",$1);
 			    free($1);
                           }          					       
                       | STRINGTOKEN
                           {
-			    outputMode(); printf("\"%s\" is a string constant.\n",$1);
+			    outputMode(); sollyaPrintf("\"%s\" is a string constant.\n",$1);
 			    free($1);
                           }            					       
                       | LPARTOKEN
                           {
-			    outputMode(); printf("Left parenthesis.\n");
+			    outputMode(); sollyaPrintf("Left parenthesis.\n");
                           }                  					       
                       | RPARTOKEN
                           {
-			    outputMode(); printf("Right parenthesis.\n");
+			    outputMode(); sollyaPrintf("Right parenthesis.\n");
                           }                  					       
                       | LBRACKETTOKEN
                           {
-			    outputMode(); printf("Left bracket - indicates a range.\n");
+			    outputMode(); sollyaPrintf("Left bracket - indicates a range.\n");
                           }              					       
                       | RBRACKETTOKEN
                           {
-			    outputMode(); printf("Right bracket - indicates a range.\n");
+			    outputMode(); sollyaPrintf("Right bracket - indicates a range.\n");
                           }
                       | LBRACKETTOKEN VERTBARTOKEN
                           {
-			    outputMode(); printf("Left bracket-bar - indicates a list.\n");
+			    outputMode(); sollyaPrintf("Left bracket-bar - indicates a list.\n");
                           }              					       
                       | VERTBARTOKEN RBRACKETTOKEN 
                           {
-			    outputMode(); printf("Bar-right bracket - indicates a list.\n");
+			    outputMode(); sollyaPrintf("Bar-right bracket - indicates a list.\n");
                           }              					       
                       | EQUALTOKEN
                           {
 #ifdef HELP_ASSIGNMENT_TEXT
-			    outputMode(); printf(HELP_ASSIGNMENT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ASSIGNMENT_TEXT);
 #else
-			    outputMode(); printf("Assignment operator.\n");
+			    outputMode(); sollyaPrintf("Assignment operator.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ASSIGNMENT"
 #endif
@@ -2019,9 +2019,9 @@ help:                   CONSTANTTOKEN
                       | ASSIGNEQUALTOKEN
                           {
 #ifdef HELP_FLOATASSIGNMENT_TEXT
-			    outputMode(); printf(HELP_FLOATASSIGNMENT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_FLOATASSIGNMENT_TEXT);
 #else
-			    outputMode(); printf("Evaluating assignment operator.\n");
+			    outputMode(); sollyaPrintf("Evaluating assignment operator.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for FLOATASSIGNMENT"
 #endif
@@ -2030,9 +2030,9 @@ help:                   CONSTANTTOKEN
                       | COMPAREEQUALTOKEN
                           {
 #ifdef HELP_EQUAL_TEXT
-			    outputMode(); printf(HELP_EQUAL_TEXT);
+			    outputMode(); sollyaPrintf(HELP_EQUAL_TEXT);
 #else
-			    outputMode(); printf("Equality test.\n");
+			    outputMode(); sollyaPrintf("Equality test.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for EQUAL"
 #endif
@@ -2040,14 +2040,14 @@ help:                   CONSTANTTOKEN
                           }                 					       
                       | COMMATOKEN
                           {
-			    outputMode(); printf("Separator in lists or ranges.\n");
+			    outputMode(); sollyaPrintf("Separator in lists or ranges.\n");
                           }                 					       
                       | EXCLAMATIONTOKEN
                           {
 #ifdef HELP_NOT_TEXT
-			    outputMode(); printf(HELP_NOT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_NOT_TEXT);
 #else
-			    outputMode(); printf("Suppresses output on assignments or boolean negation.\n");
+			    outputMode(); sollyaPrintf("Suppresses output on assignments or boolean negation.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for NOT"
 #endif
@@ -2055,14 +2055,14 @@ help:                   CONSTANTTOKEN
                           }      						       
                       | STARLEFTANGLETOKEN
                           {
-			    outputMode(); printf("Dereferences range bounds.\n");
+			    outputMode(); sollyaPrintf("Dereferences range bounds.\n");
                           }             					       
                       | LEFTANGLETOKEN
                           {
 #ifdef HELP_LT_TEXT
-			    outputMode(); printf(HELP_LT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_LT_TEXT);
 #else
-			    outputMode(); printf("Comparison less than.\n");
+			    outputMode(); sollyaPrintf("Comparison less than.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for LT"
 #endif
@@ -2071,9 +2071,9 @@ help:                   CONSTANTTOKEN
                       | LEFTANGLETOKEN EQUALTOKEN
                           {
 #ifdef HELP_LE_TEXT
-			    outputMode(); printf(HELP_LE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_LE_TEXT);
 #else
-			    outputMode(); printf("Comparison less than or equal to.\n");
+			    outputMode(); sollyaPrintf("Comparison less than or equal to.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for LE"
 #endif
@@ -2081,18 +2081,18 @@ help:                   CONSTANTTOKEN
                           }             					       
                       | RIGHTANGLEUNDERSCORETOKEN
                           {
-			    outputMode(); printf("Dereferences the lower range bound.\n");
+			    outputMode(); sollyaPrintf("Dereferences the lower range bound.\n");
                           }      					       
                       | RIGHTANGLEDOTTOKEN
                           {
-			    outputMode(); printf("Dereferences the mid-point of a range.\n");
+			    outputMode(); sollyaPrintf("Dereferences the mid-point of a range.\n");
                           }       					       
                       | RIGHTANGLETOKEN EQUALTOKEN
                           {
 #ifdef HELP_GE_TEXT
-			    outputMode(); printf(HELP_GE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_GE_TEXT);
 #else
-			    outputMode(); printf("Comparison greater than or equal to.\n");
+			    outputMode(); sollyaPrintf("Comparison greater than or equal to.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for GE"
 #endif
@@ -2100,14 +2100,14 @@ help:                   CONSTANTTOKEN
 			  }
                       | RIGHTANGLESTARTOKEN
                           {
-			    outputMode(); printf("Dereferences the upper range bound.\n");
+			    outputMode(); sollyaPrintf("Dereferences the upper range bound.\n");
                           }             					       
                       | RIGHTANGLETOKEN
                           {
 #ifdef HELP_GT_TEXT
-			    outputMode(); printf(HELP_GT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_GT_TEXT);
 #else
-			    outputMode(); printf("Comparison greater than.\n");
+			    outputMode(); sollyaPrintf("Comparison greater than.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for GT"
 #endif
@@ -2115,22 +2115,22 @@ help:                   CONSTANTTOKEN
                           }            					       
                       | DOTSTOKEN
                           {
-			    outputMode(); printf("Ellipsis.\n");
+			    outputMode(); sollyaPrintf("Ellipsis.\n");
                           }                  					       
                       | QUESTIONMARKTOKEN
                           {
-			    outputMode(); printf("Dereferences global environment variables.\n");
+			    outputMode(); sollyaPrintf("Dereferences global environment variables.\n");
                           }      						       
                       | VERTBARTOKEN
                           {
-			    outputMode(); printf("Starts or ends a list.\n");
+			    outputMode(); sollyaPrintf("Starts or ends a list.\n");
                           }      						       
                       | ATTOKEN
                           {
 #ifdef HELP_CONCAT_TEXT
-			    outputMode(); printf(HELP_CONCAT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_CONCAT_TEXT);
 #else
-			    outputMode(); printf("Concatenation of lists or strings.\n");
+			    outputMode(); sollyaPrintf("Concatenation of lists or strings.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for CONCAT"
 #endif
@@ -2138,14 +2138,14 @@ help:                   CONSTANTTOKEN
                           }      							       
                       | DOUBLECOLONTOKEN
                           {
-			    outputMode(); printf("a::b prepends a to list b or appends b to list a, preprending list a to list b if both are lists.\n");
+			    outputMode(); sollyaPrintf("a::b prepends a to list b or appends b to list a, preprending list a to list b if both are lists.\n");
                           }    
                       | DOTCOLONTOKEN
                           {
 #ifdef HELP_PREPEND_TEXT
-			    outputMode(); printf(HELP_PREPEND_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PREPEND_TEXT);
 #else
-			    outputMode(); printf("a.:b prepends a to list b.\n");
+			    outputMode(); sollyaPrintf("a.:b prepends a to list b.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PREPEND"
 #endif
@@ -2154,9 +2154,9 @@ help:                   CONSTANTTOKEN
                       | COLONDOTTOKEN
                           {
 #ifdef HELP_APPEND_TEXT
-			    outputMode(); printf(HELP_APPEND_TEXT);
+			    outputMode(); sollyaPrintf(HELP_APPEND_TEXT);
 #else
-			    outputMode(); printf("a:.b appends b to list a.\n");
+			    outputMode(); sollyaPrintf("a:.b appends b to list a.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for APPEND"
 #endif
@@ -2165,9 +2165,9 @@ help:                   CONSTANTTOKEN
                       | EXCLAMATIONEQUALTOKEN
                           {
 #ifdef HELP_NEQ_TEXT
-			    outputMode(); printf(HELP_NEQ_TEXT);
+			    outputMode(); sollyaPrintf(HELP_NEQ_TEXT);
 #else
-			    outputMode(); printf("Comparison not equal.\n");
+			    outputMode(); sollyaPrintf("Comparison not equal.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for NEQ"
 #endif
@@ -2176,9 +2176,9 @@ help:                   CONSTANTTOKEN
                       | ANDTOKEN
                           {
 #ifdef HELP_AND_TEXT
-			    outputMode(); printf(HELP_AND_TEXT);
+			    outputMode(); sollyaPrintf(HELP_AND_TEXT);
 #else
-			    outputMode(); printf("Boolean and.\n");
+			    outputMode(); sollyaPrintf("Boolean and.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for AND"
 #endif
@@ -2187,9 +2187,9 @@ help:                   CONSTANTTOKEN
                       | ORTOKEN
                           {
 #ifdef HELP_OR_TEXT
-			    outputMode(); printf(HELP_OR_TEXT);
+			    outputMode(); sollyaPrintf(HELP_OR_TEXT);
 #else
-			    outputMode(); printf("Boolean or.\n");
+			    outputMode(); sollyaPrintf("Boolean or.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for OR"
 #endif
@@ -2198,9 +2198,9 @@ help:                   CONSTANTTOKEN
                       | PLUSTOKEN
                           {
 #ifdef HELP_PLUS_TEXT
-			    outputMode(); printf(HELP_PLUS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PLUS_TEXT);
 #else
-			    outputMode(); printf("Addition.\n");
+			    outputMode(); sollyaPrintf("Addition.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PLUS"
 #endif
@@ -2209,9 +2209,9 @@ help:                   CONSTANTTOKEN
                       | MINUSTOKEN
                           {
 #ifdef HELP_MINUS_TEXT
-			    outputMode(); printf(HELP_MINUS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_MINUS_TEXT);
 #else
-			    outputMode(); printf("Substraction.\n");
+			    outputMode(); sollyaPrintf("Substraction.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for MINUS"
 #endif
@@ -2220,9 +2220,9 @@ help:                   CONSTANTTOKEN
                       | APPROXTOKEN
                           {
 #ifdef HELP_APPROX_TEXT
-			    outputMode(); printf(HELP_APPROX_TEXT);
+			    outputMode(); sollyaPrintf(HELP_APPROX_TEXT);
 #else
-			    outputMode(); printf("Floating-point approximation of a constant expression.\n");
+			    outputMode(); sollyaPrintf("Floating-point approximation of a constant expression.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for APPROX"
 #endif
@@ -2231,9 +2231,9 @@ help:                   CONSTANTTOKEN
                       | MULTOKEN
                           {
 #ifdef HELP_MULT_TEXT
-			    outputMode(); printf(HELP_MULT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_MULT_TEXT);
 #else
-			    outputMode(); printf("Multiplication.\n");
+			    outputMode(); sollyaPrintf("Multiplication.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for MULT"
 #endif
@@ -2242,9 +2242,9 @@ help:                   CONSTANTTOKEN
                       | DIVTOKEN
                           {
 #ifdef HELP_DIVIDE_TEXT
-			    outputMode(); printf(HELP_DIVIDE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DIVIDE_TEXT);
 #else
-			    outputMode(); printf("Division.\n");
+			    outputMode(); sollyaPrintf("Division.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DIVIDE"
 #endif
@@ -2253,9 +2253,9 @@ help:                   CONSTANTTOKEN
                       | POWTOKEN
                           {
 #ifdef HELP_POWER_TEXT
-			    outputMode(); printf(HELP_POWER_TEXT);
+			    outputMode(); sollyaPrintf(HELP_POWER_TEXT);
 #else
-			    outputMode(); printf("Exponentiation.\n");
+			    outputMode(); sollyaPrintf("Exponentiation.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for POWER"
 #endif
@@ -2264,9 +2264,9 @@ help:                   CONSTANTTOKEN
                       | SQRTTOKEN
                           {
 #ifdef HELP_SQRT_TEXT
-			    outputMode(); printf(HELP_SQRT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_SQRT_TEXT);
 #else
-			    outputMode(); printf("Square root.\n");
+			    outputMode(); sollyaPrintf("Square root.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for SQRT"
 #endif
@@ -2275,9 +2275,9 @@ help:                   CONSTANTTOKEN
                       | EXPTOKEN
                           {
 #ifdef HELP_EXP_TEXT
-			    outputMode(); printf(HELP_EXP_TEXT);
+			    outputMode(); sollyaPrintf(HELP_EXP_TEXT);
 #else
-			    outputMode(); printf("Exponential.\n");
+			    outputMode(); sollyaPrintf("Exponential.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for EXP"
 #endif
@@ -2286,9 +2286,9 @@ help:                   CONSTANTTOKEN
                       | LOGTOKEN
                           {
 #ifdef HELP_LOG_TEXT
-			    outputMode(); printf(HELP_LOG_TEXT);
+			    outputMode(); sollyaPrintf(HELP_LOG_TEXT);
 #else
-			    outputMode(); printf("Natural logarithm.\n");
+			    outputMode(); sollyaPrintf("Natural logarithm.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for LOG"
 #endif
@@ -2297,9 +2297,9 @@ help:                   CONSTANTTOKEN
                       | LOG2TOKEN
                           {
 #ifdef HELP_LOG2_TEXT
-			    outputMode(); printf(HELP_LOG2_TEXT);
+			    outputMode(); sollyaPrintf(HELP_LOG2_TEXT);
 #else
-			    outputMode(); printf("Logarithm in base 2.\n");
+			    outputMode(); sollyaPrintf("Logarithm in base 2.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for LOG2"
 #endif
@@ -2308,9 +2308,9 @@ help:                   CONSTANTTOKEN
                       | LOG10TOKEN
                           {
 #ifdef HELP_LOG10_TEXT
-			    outputMode(); printf(HELP_LOG10_TEXT);
+			    outputMode(); sollyaPrintf(HELP_LOG10_TEXT);
 #else
-			    outputMode(); printf("Logarithm in base 10.\n");
+			    outputMode(); sollyaPrintf("Logarithm in base 10.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for LOG10"
 #endif
@@ -2319,9 +2319,9 @@ help:                   CONSTANTTOKEN
                       | SINTOKEN
                           {
 #ifdef HELP_SIN_TEXT
-			    outputMode(); printf(HELP_SIN_TEXT);
+			    outputMode(); sollyaPrintf(HELP_SIN_TEXT);
 #else
-			    outputMode(); printf("Sine.\n");
+			    outputMode(); sollyaPrintf("Sine.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for SIN"
 #endif
@@ -2330,9 +2330,9 @@ help:                   CONSTANTTOKEN
                       | COSTOKEN
                           {
 #ifdef HELP_COS_TEXT
-			    outputMode(); printf(HELP_COS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_COS_TEXT);
 #else
-			    outputMode(); printf("Cosine.\n");
+			    outputMode(); sollyaPrintf("Cosine.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for COS"
 #endif
@@ -2341,9 +2341,9 @@ help:                   CONSTANTTOKEN
                       | TANTOKEN
                           {
 #ifdef HELP_TAN_TEXT
-			    outputMode(); printf(HELP_TAN_TEXT);
+			    outputMode(); sollyaPrintf(HELP_TAN_TEXT);
 #else
-			    outputMode(); printf("Tangent.\n");
+			    outputMode(); sollyaPrintf("Tangent.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for TAN"
 #endif
@@ -2352,9 +2352,9 @@ help:                   CONSTANTTOKEN
                       | ASINTOKEN
                           {
 #ifdef HELP_ASIN_TEXT
-			    outputMode(); printf(HELP_ASIN_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ASIN_TEXT);
 #else
-			    outputMode(); printf("Arcsine.\n");
+			    outputMode(); sollyaPrintf("Arcsine.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ASIN"
 #endif
@@ -2363,9 +2363,9 @@ help:                   CONSTANTTOKEN
                       | ACOSTOKEN
                           {
 #ifdef HELP_ACOS_TEXT
-			    outputMode(); printf(HELP_ACOS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ACOS_TEXT);
 #else
-			    outputMode(); printf("Arcosine.\n");
+			    outputMode(); sollyaPrintf("Arcosine.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ACOS"
 #endif
@@ -2374,9 +2374,9 @@ help:                   CONSTANTTOKEN
                       | ATANTOKEN
                           {
 #ifdef HELP_ATAN_TEXT
-			    outputMode(); printf(HELP_ATAN_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ATAN_TEXT);
 #else
-			    outputMode(); printf("Arctangent.\n");
+			    outputMode(); sollyaPrintf("Arctangent.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ATAN"
 #endif
@@ -2385,9 +2385,9 @@ help:                   CONSTANTTOKEN
                       | SINHTOKEN
                           {
 #ifdef HELP_SINH_TEXT
-			    outputMode(); printf(HELP_SINH_TEXT);
+			    outputMode(); sollyaPrintf(HELP_SINH_TEXT);
 #else
-			    outputMode(); printf("Hyperbolic sine.\n");
+			    outputMode(); sollyaPrintf("Hyperbolic sine.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for SINH"
 #endif
@@ -2396,9 +2396,9 @@ help:                   CONSTANTTOKEN
                       | COSHTOKEN
                           {
 #ifdef HELP_COSH_TEXT
-			    outputMode(); printf(HELP_COSH_TEXT);
+			    outputMode(); sollyaPrintf(HELP_COSH_TEXT);
 #else
-			    outputMode(); printf("Hyperbolic cosine.\n");
+			    outputMode(); sollyaPrintf("Hyperbolic cosine.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for COSH"
 #endif
@@ -2407,9 +2407,9 @@ help:                   CONSTANTTOKEN
                       | TANHTOKEN
                           {
 #ifdef HELP_TANH_TEXT
-			    outputMode(); printf(HELP_TANH_TEXT);
+			    outputMode(); sollyaPrintf(HELP_TANH_TEXT);
 #else
-			    outputMode(); printf("Hyperbolic tangent.\n");
+			    outputMode(); sollyaPrintf("Hyperbolic tangent.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for TANH"
 #endif
@@ -2418,9 +2418,9 @@ help:                   CONSTANTTOKEN
                       | ASINHTOKEN
                           {
 #ifdef HELP_ASINH_TEXT
-			    outputMode(); printf(HELP_ASINH_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ASINH_TEXT);
 #else
-			    outputMode(); printf("Area sine.\n");
+			    outputMode(); sollyaPrintf("Area sine.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ASINH"
 #endif
@@ -2429,9 +2429,9 @@ help:                   CONSTANTTOKEN
                       | ACOSHTOKEN
                           {
 #ifdef HELP_ACOSH_TEXT
-			    outputMode(); printf(HELP_ACOSH_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ACOSH_TEXT);
 #else
-			    outputMode(); printf("Area cosine.\n");
+			    outputMode(); sollyaPrintf("Area cosine.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ACOSH"
 #endif
@@ -2440,10 +2440,10 @@ help:                   CONSTANTTOKEN
                       | ATANHTOKEN
                           {
 #ifdef HELP_ATANH_TEXT
-			    outputMode(); printf(HELP_ATANH_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ATANH_TEXT);
 #else
 
-			    outputMode(); printf("Area tangent.\n");
+			    outputMode(); sollyaPrintf("Area tangent.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ATANH"
 #endif
@@ -2452,9 +2452,9 @@ help:                   CONSTANTTOKEN
                       | ABSTOKEN
                           {
 #ifdef HELP_ABS_TEXT
-			    outputMode(); printf(HELP_ABS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ABS_TEXT);
 #else
-			    outputMode(); printf("Absolute value.\n");
+			    outputMode(); sollyaPrintf("Absolute value.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ABS"
 #endif
@@ -2463,9 +2463,9 @@ help:                   CONSTANTTOKEN
                       | ERFTOKEN
                           {
 #ifdef HELP_ERF_TEXT
-			    outputMode(); printf(HELP_ERF_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ERF_TEXT);
 #else
-			    outputMode(); printf("Error function.\n");
+			    outputMode(); sollyaPrintf("Error function.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ERF"
 #endif
@@ -2474,9 +2474,9 @@ help:                   CONSTANTTOKEN
                       | ERFCTOKEN
                           {
 #ifdef HELP_ERFC_TEXT
-			    outputMode(); printf(HELP_ERFC_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ERFC_TEXT);
 #else
-			    outputMode(); printf("Complementary error function.\n");
+			    outputMode(); sollyaPrintf("Complementary error function.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ERFC"
 #endif
@@ -2485,9 +2485,9 @@ help:                   CONSTANTTOKEN
                       | LOG1PTOKEN
                           {
 #ifdef HELP_LOG1P_TEXT
-			    outputMode(); printf(HELP_LOG1P_TEXT);
+			    outputMode(); sollyaPrintf(HELP_LOG1P_TEXT);
 #else
-			    outputMode(); printf("Natural logarithm of 1 plus argument.\n");
+			    outputMode(); sollyaPrintf("Natural logarithm of 1 plus argument.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for LOG1P"
 #endif
@@ -2496,9 +2496,9 @@ help:                   CONSTANTTOKEN
                       | EXPM1TOKEN
                           {
 #ifdef HELP_EXPM1_TEXT
-			    outputMode(); printf(HELP_EXPM1_TEXT);
+			    outputMode(); sollyaPrintf(HELP_EXPM1_TEXT);
 #else
-			    outputMode(); printf("Exponential of argument minus 1.\n");
+			    outputMode(); sollyaPrintf("Exponential of argument minus 1.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for EXPM1"
 #endif
@@ -2507,9 +2507,9 @@ help:                   CONSTANTTOKEN
                       | DOUBLETOKEN
                           {
 #ifdef HELP_DOUBLE_TEXT
-			    outputMode(); printf(HELP_DOUBLE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DOUBLE_TEXT);
 #else
-			    outputMode(); printf("Double precision rounding operator.\n");
+			    outputMode(); sollyaPrintf("Double precision rounding operator.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DOUBLE"
 #endif
@@ -2518,9 +2518,9 @@ help:                   CONSTANTTOKEN
                       | SINGLETOKEN
                           {
 #ifdef HELP_SINGLE_TEXT
-			    outputMode(); printf(HELP_SINGLE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_SINGLE_TEXT);
 #else
-			    outputMode(); printf("Single precision rounding operator.\n");
+			    outputMode(); sollyaPrintf("Single precision rounding operator.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for SINGLE"
 #endif
@@ -2529,9 +2529,9 @@ help:                   CONSTANTTOKEN
                       | DOUBLEDOUBLETOKEN
                           {
 #ifdef HELP_DOUBLEDOUBLE_TEXT
-			    outputMode(); printf(HELP_DOUBLEDOUBLE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DOUBLEDOUBLE_TEXT);
 #else
-			    outputMode(); printf("Double-double precision rounding operator.\n");
+			    outputMode(); sollyaPrintf("Double-double precision rounding operator.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DOUBLEDOUBLE"
 #endif
@@ -2540,9 +2540,9 @@ help:                   CONSTANTTOKEN
                       | TRIPLEDOUBLETOKEN
                           {
 #ifdef HELP_TRIPLEDOUBLE_TEXT
-			    outputMode(); printf(HELP_TRIPLEDOUBLE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_TRIPLEDOUBLE_TEXT);
 #else
-			    outputMode(); printf("Triple-double precision rounding operator.\n");
+			    outputMode(); sollyaPrintf("Triple-double precision rounding operator.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for TRIPLEDOUBLE"
 #endif
@@ -2551,9 +2551,9 @@ help:                   CONSTANTTOKEN
                       | DOUBLEEXTENDEDTOKEN
                           {
 #ifdef HELP_DOUBLEEXTENDED_TEXT
-			    outputMode(); printf(HELP_DOUBLEEXTENDED_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DOUBLEEXTENDED_TEXT);
 #else
-			    outputMode(); printf("Double-extended precision rounding operator.\n");
+			    outputMode(); sollyaPrintf("Double-extended precision rounding operator.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DOUBLEEXTENDED"
 #endif
@@ -2562,9 +2562,9 @@ help:                   CONSTANTTOKEN
                       | CEILTOKEN
                           {
 #ifdef HELP_CEIL_TEXT
-			    outputMode(); printf(HELP_CEIL_TEXT);
+			    outputMode(); sollyaPrintf(HELP_CEIL_TEXT);
 #else
-			    outputMode(); printf("Ceiling.\n");
+			    outputMode(); sollyaPrintf("Ceiling.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for CEIL"
 #endif
@@ -2573,9 +2573,9 @@ help:                   CONSTANTTOKEN
                       | FLOORTOKEN
                           {
 #ifdef HELP_FLOOR_TEXT
-			    outputMode(); printf(HELP_FLOOR_TEXT);
+			    outputMode(); sollyaPrintf(HELP_FLOOR_TEXT);
 #else
-			    outputMode(); printf("Floor.\n");
+			    outputMode(); sollyaPrintf("Floor.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for FLOOR"
 #endif
@@ -2584,9 +2584,9 @@ help:                   CONSTANTTOKEN
                       | NEARESTINTTOKEN
                           {
 #ifdef HELP_NEARESTINT_TEXT
-			    outputMode(); printf(HELP_NEARESTINT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_NEARESTINT_TEXT);
 #else
-			    outputMode(); printf("Nearest integer with even tie cases rule.\n");
+			    outputMode(); sollyaPrintf("Nearest integer with even tie cases rule.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for NEARESTINT"
 #endif
@@ -2595,9 +2595,9 @@ help:                   CONSTANTTOKEN
                       | HEADTOKEN
                           {
 #ifdef HELP_HEAD_TEXT
-			    outputMode(); printf(HELP_HEAD_TEXT);
+			    outputMode(); sollyaPrintf(HELP_HEAD_TEXT);
 #else
-			    outputMode(); printf("Head of a list.\n");
+			    outputMode(); sollyaPrintf("Head of a list.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for HEAD"
 #endif
@@ -2606,9 +2606,9 @@ help:                   CONSTANTTOKEN
                       | ROUNDCORRECTLYTOKEN
                           {
 #ifdef HELP_ROUNDCORRECTLY_TEXT
-			    outputMode(); printf(HELP_ROUNDCORRECTLY_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ROUNDCORRECTLY_TEXT);
 #else
-			    outputMode(); printf("Round a bounding to the nearest floating-point value such that correct rounding is possible.\n");
+			    outputMode(); sollyaPrintf("Round a bounding to the nearest floating-point value such that correct rounding is possible.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ROUNDCORRECTLY"
 #endif
@@ -2617,9 +2617,9 @@ help:                   CONSTANTTOKEN
                       | READFILETOKEN
                           {
 #ifdef HELP_READFILE_TEXT
-			    outputMode(); printf(HELP_READFILE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_READFILE_TEXT);
 #else
-			    outputMode(); printf("Reads a file into a string.\n");
+			    outputMode(); sollyaPrintf("Reads a file into a string.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for READFILE"
 #endif
@@ -2628,9 +2628,9 @@ help:                   CONSTANTTOKEN
                       | REVERTTOKEN
                           {
 #ifdef HELP_REVERT_TEXT
-			    outputMode(); printf(HELP_REVERT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_REVERT_TEXT);
 #else
-			    outputMode(); printf("Reverts a list that is not finally elliptic.\n");
+			    outputMode(); sollyaPrintf("Reverts a list that is not finally elliptic.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for REVERT"
 #endif
@@ -2639,9 +2639,9 @@ help:                   CONSTANTTOKEN
                       | SORTTOKEN
                           {
 #ifdef HELP_SORT_TEXT
-			    outputMode(); printf(HELP_SORT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_SORT_TEXT);
 #else
-			    outputMode(); printf("Sorts a list of constants in ascending order.\n");
+			    outputMode(); sollyaPrintf("Sorts a list of constants in ascending order.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for SORT"
 #endif
@@ -2650,9 +2650,9 @@ help:                   CONSTANTTOKEN
                       | TAILTOKEN
                           {
 #ifdef HELP_TAIL_TEXT
-			    outputMode(); printf(HELP_TAIL_TEXT);
+			    outputMode(); sollyaPrintf(HELP_TAIL_TEXT);
 #else
-			    outputMode(); printf("Tail of a list.\n");
+			    outputMode(); sollyaPrintf("Tail of a list.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for TAIL"
 #endif
@@ -2661,9 +2661,9 @@ help:                   CONSTANTTOKEN
                       | PRECTOKEN
                           {
 #ifdef HELP_PREC_TEXT
-			    outputMode(); printf(HELP_PREC_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PREC_TEXT);
 #else
-			    outputMode(); printf("Global environment variable precision.\n");
+			    outputMode(); sollyaPrintf("Global environment variable precision.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PREC"
 #endif
@@ -2672,9 +2672,9 @@ help:                   CONSTANTTOKEN
                       | POINTSTOKEN
                           {
 #ifdef HELP_POINTS_TEXT
-			    outputMode(); printf(HELP_POINTS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_POINTS_TEXT);
 #else
-			    outputMode(); printf("Global environment variable number of points.\n");
+			    outputMode(); sollyaPrintf("Global environment variable number of points.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for POINTS"
 #endif
@@ -2683,9 +2683,9 @@ help:                   CONSTANTTOKEN
                       | DIAMTOKEN
                           {
 #ifdef HELP_DIAM_TEXT
-			    outputMode(); printf(HELP_DIAM_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DIAM_TEXT);
 #else
-			    outputMode(); printf("Global environment variable diameter.\n");
+			    outputMode(); sollyaPrintf("Global environment variable diameter.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DIAM"
 #endif
@@ -2694,9 +2694,9 @@ help:                   CONSTANTTOKEN
                       | DISPLAYTOKEN
                           {
 #ifdef HELP_DISPLAY_TEXT
-			    outputMode(); printf(HELP_DISPLAY_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DISPLAY_TEXT);
 #else
-			    outputMode(); printf("Global environment variable display mode.\n");
+			    outputMode(); sollyaPrintf("Global environment variable display mode.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DISPLAY"
 #endif
@@ -2705,9 +2705,9 @@ help:                   CONSTANTTOKEN
                       | VERBOSITYTOKEN
                           {
 #ifdef HELP_VERBOSITY_TEXT
-			    outputMode(); printf(HELP_VERBOSITY_TEXT);
+			    outputMode(); sollyaPrintf(HELP_VERBOSITY_TEXT);
 #else
-			    outputMode(); printf("Global environment variable verbosity.\n");
+			    outputMode(); sollyaPrintf("Global environment variable verbosity.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for VERBOSITY"
 #endif
@@ -2716,9 +2716,9 @@ help:                   CONSTANTTOKEN
                       | CANONICALTOKEN
                           {
 #ifdef HELP_CANONICAL_TEXT
-			    outputMode(); printf(HELP_CANONICAL_TEXT);
+			    outputMode(); sollyaPrintf(HELP_CANONICAL_TEXT);
 #else
-			    outputMode(); printf("Global environment variable canonical output.\n");
+			    outputMode(); sollyaPrintf("Global environment variable canonical output.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for CANONICAL"
 #endif
@@ -2727,9 +2727,9 @@ help:                   CONSTANTTOKEN
                       | AUTOSIMPLIFYTOKEN
                           {
 #ifdef HELP_AUTOSIMPLIFY_TEXT
-			    outputMode(); printf(HELP_AUTOSIMPLIFY_TEXT);
+			    outputMode(); sollyaPrintf(HELP_AUTOSIMPLIFY_TEXT);
 #else
-			    outputMode(); printf("Global environment variable automatic simplification.\n");
+			    outputMode(); sollyaPrintf("Global environment variable automatic simplification.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for AUTOSIMPLIFY"
 #endif
@@ -2738,9 +2738,9 @@ help:                   CONSTANTTOKEN
                       | TAYLORRECURSIONSTOKEN
                           {
 #ifdef HELP_TAYLORRECURSIONS_TEXT
-			    outputMode(); printf(HELP_TAYLORRECURSIONS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_TAYLORRECURSIONS_TEXT);
 #else
-			    outputMode(); printf("Global environment variable recursions of Taylor evaluation.\n");
+			    outputMode(); sollyaPrintf("Global environment variable recursions of Taylor evaluation.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for TAYLORRECURSIONS"
 #endif
@@ -2749,9 +2749,9 @@ help:                   CONSTANTTOKEN
                       | TIMINGTOKEN
                           {
 #ifdef HELP_TIMING_TEXT
-			    outputMode(); printf(HELP_TIMING_TEXT);
+			    outputMode(); sollyaPrintf(HELP_TIMING_TEXT);
 #else
-			    outputMode(); printf("Global environment variable timing of computations.\n");
+			    outputMode(); sollyaPrintf("Global environment variable timing of computations.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for TIMING"
 #endif
@@ -2760,9 +2760,9 @@ help:                   CONSTANTTOKEN
                       | TIMETOKEN
                           {
 #ifdef HELP_TIME_TEXT
-			    outputMode(); printf(HELP_TIME_TEXT);
+			    outputMode(); sollyaPrintf(HELP_TIME_TEXT);
 #else
-			    outputMode(); printf("High-level time procedure.\n");
+			    outputMode(); sollyaPrintf("High-level time procedure.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for TIME"
 #endif
@@ -2771,9 +2771,9 @@ help:                   CONSTANTTOKEN
                       | FULLPARENTHESESTOKEN
                           {
 #ifdef HELP_FULLPARENTHESES_TEXT
-			    outputMode(); printf(HELP_FULLPARENTHESES_TEXT);
+			    outputMode(); sollyaPrintf(HELP_FULLPARENTHESES_TEXT);
 #else
-			    outputMode(); printf("Global environment variable fully parenthized mode.\n");
+			    outputMode(); sollyaPrintf("Global environment variable fully parenthized mode.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for FULLPARENTHESES"
 #endif
@@ -2782,9 +2782,9 @@ help:                   CONSTANTTOKEN
                       | MIDPOINTMODETOKEN
                           {
 #ifdef HELP_MIDPOINTMODE_TEXT
-			    outputMode(); printf(HELP_MIDPOINTMODE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_MIDPOINTMODE_TEXT);
 #else
-			    outputMode(); printf("Global environment variable midpoint mode.\n");
+			    outputMode(); sollyaPrintf("Global environment variable midpoint mode.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for MIDPOINTMODE"
 #endif
@@ -2793,9 +2793,9 @@ help:                   CONSTANTTOKEN
                       | DIEONERRORMODETOKEN
                           {
 #ifdef HELP_DIEONERRORMODE_TEXT
-			    outputMode(); printf(HELP_DIEONERRORMODE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DIEONERRORMODE_TEXT);
 #else
-			    outputMode(); printf("Global environment variable for die-on-error mode.\n");
+			    outputMode(); sollyaPrintf("Global environment variable for die-on-error mode.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DIEONERRORMODE"
 #endif
@@ -2804,9 +2804,9 @@ help:                   CONSTANTTOKEN
                       | RATIONALMODETOKEN
                           {
 #ifdef HELP_RATIONALMODE_TEXT
-			    outputMode(); printf(HELP_RATIONALMODE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_RATIONALMODE_TEXT);
 #else
-			    outputMode(); printf("Global environment variable rational mode.\n");
+			    outputMode(); sollyaPrintf("Global environment variable rational mode.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for RATIONALMODE"
 #endif
@@ -2815,9 +2815,9 @@ help:                   CONSTANTTOKEN
                       | SUPPRESSWARNINGSTOKEN
                           {
 #ifdef HELP_ROUNDINGWARNINGS_TEXT
-			    outputMode(); printf(HELP_ROUNDINGWARNINGS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ROUNDINGWARNINGS_TEXT);
 #else
-			    outputMode(); printf("Global environment variable activating warnings about rounding.\n");
+			    outputMode(); sollyaPrintf("Global environment variable activating warnings about rounding.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ROUNDINGWARNINGS"
 #endif
@@ -2826,9 +2826,9 @@ help:                   CONSTANTTOKEN
                       | HOPITALRECURSIONSTOKEN
                           {
 #ifdef HELP_HOPITALRECURSIONS_TEXT
-			    outputMode(); printf(HELP_HOPITALRECURSIONS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_HOPITALRECURSIONS_TEXT);
 #else
-			    outputMode(); printf("Global environment variable recursions of Hopital evaluation.\n");
+			    outputMode(); sollyaPrintf("Global environment variable recursions of Hopital evaluation.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for HOPITALRECURSIONS"
 #endif
@@ -2837,9 +2837,9 @@ help:                   CONSTANTTOKEN
                       | ONTOKEN
                           {
 #ifdef HELP_ON_TEXT
-			    outputMode(); printf(HELP_ON_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ON_TEXT);
 #else
-			    outputMode(); printf("Something is switched on.\n");
+			    outputMode(); sollyaPrintf("Something is switched on.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ON"
 #endif
@@ -2848,9 +2848,9 @@ help:                   CONSTANTTOKEN
                       | OFFTOKEN
                           {
 #ifdef HELP_OFF_TEXT
-			    outputMode(); printf(HELP_OFF_TEXT);
+			    outputMode(); sollyaPrintf(HELP_OFF_TEXT);
 #else
-			    outputMode(); printf("Something is switched off.\n");
+			    outputMode(); sollyaPrintf("Something is switched off.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for OFF"
 #endif
@@ -2859,9 +2859,9 @@ help:                   CONSTANTTOKEN
                       | DYADICTOKEN
                           {
 #ifdef HELP_DYADIC_TEXT
-			    outputMode(); printf(HELP_DYADIC_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DYADIC_TEXT);
 #else
-			    outputMode(); printf("Display mode is dyadic output.\n");
+			    outputMode(); sollyaPrintf("Display mode is dyadic output.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DYADIC"
 #endif
@@ -2870,9 +2870,9 @@ help:                   CONSTANTTOKEN
                       | POWERSTOKEN
                           {
 #ifdef HELP_POWERS_TEXT
-			    outputMode(); printf(HELP_POWERS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_POWERS_TEXT);
 #else
-			    outputMode(); printf("Display mode is dyadic output with powers.\n");
+			    outputMode(); sollyaPrintf("Display mode is dyadic output with powers.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for POWERS"
 #endif
@@ -2881,9 +2881,9 @@ help:                   CONSTANTTOKEN
                       | BINARYTOKEN
                           {
 #ifdef HELP_BINARY_TEXT
-			    outputMode(); printf(HELP_BINARY_TEXT);
+			    outputMode(); sollyaPrintf(HELP_BINARY_TEXT);
 #else
-			    outputMode(); printf("Display mode is binary.\n");
+			    outputMode(); sollyaPrintf("Display mode is binary.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for BINARY"
 #endif
@@ -2892,9 +2892,9 @@ help:                   CONSTANTTOKEN
                       | HEXADECIMALTOKEN
                           {
 #ifdef HELP_HEXADECIMAL_TEXT
-			    outputMode(); printf(HELP_HEXADECIMAL_TEXT);
+			    outputMode(); sollyaPrintf(HELP_HEXADECIMAL_TEXT);
 #else
-			    outputMode(); printf("Display mode is hexadecimal.\n");
+			    outputMode(); sollyaPrintf("Display mode is hexadecimal.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for HEXADECIMAL"
 #endif
@@ -2903,9 +2903,9 @@ help:                   CONSTANTTOKEN
                       | FILETOKEN
                           {
 #ifdef HELP_FILE_TEXT
-			    outputMode(); printf(HELP_FILE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_FILE_TEXT);
 #else
-			    outputMode(); printf("A file will be specified.\n");
+			    outputMode(); sollyaPrintf("A file will be specified.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for FILE"
 #endif
@@ -2914,9 +2914,9 @@ help:                   CONSTANTTOKEN
                       | POSTSCRIPTTOKEN
                           {
 #ifdef HELP_POSTSCRIPT_TEXT
-			    outputMode(); printf(HELP_POSTSCRIPT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_POSTSCRIPT_TEXT);
 #else
-			    outputMode(); printf("A postscript file will be specified.\n");
+			    outputMode(); sollyaPrintf("A postscript file will be specified.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for POSTSCRIPT"
 #endif
@@ -2925,9 +2925,9 @@ help:                   CONSTANTTOKEN
                       | POSTSCRIPTFILETOKEN
                           {
 #ifdef HELP_POSTSCRIPTFILE_TEXT
-			    outputMode(); printf(HELP_POSTSCRIPTFILE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_POSTSCRIPTFILE_TEXT);
 #else
-			    outputMode(); printf("A postscript file and a file will be specified.\n");
+			    outputMode(); sollyaPrintf("A postscript file and a file will be specified.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for POSTSCRIPTFILE"
 #endif
@@ -2936,9 +2936,9 @@ help:                   CONSTANTTOKEN
                       | PERTURBTOKEN
                           {
 #ifdef HELP_PERTURB_TEXT
-			    outputMode(); printf(HELP_PERTURB_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PERTURB_TEXT);
 #else
-			    outputMode(); printf("Perturbation is demanded.\n");
+			    outputMode(); sollyaPrintf("Perturbation is demanded.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PERTURB"
 #endif
@@ -2947,9 +2947,9 @@ help:                   CONSTANTTOKEN
                       | MINUSWORDTOKEN
                           {
 #ifdef HELP_RD_TEXT
-			    outputMode(); printf(HELP_RD_TEXT);
+			    outputMode(); sollyaPrintf(HELP_RD_TEXT);
 #else
-			    outputMode(); printf("Round towards minus infinity.\n");
+			    outputMode(); sollyaPrintf("Round towards minus infinity.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for RD"
 #endif
@@ -2958,9 +2958,9 @@ help:                   CONSTANTTOKEN
                       | PLUSWORDTOKEN
                           {
 #ifdef HELP_RU_TEXT
-			    outputMode(); printf(HELP_RU_TEXT);
+			    outputMode(); sollyaPrintf(HELP_RU_TEXT);
 #else
-			    outputMode(); printf("Round towards plus infinity.\n");
+			    outputMode(); sollyaPrintf("Round towards plus infinity.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for RU"
 #endif
@@ -2969,9 +2969,9 @@ help:                   CONSTANTTOKEN
                       | ZEROWORDTOKEN
                           {
 #ifdef HELP_RZ_TEXT
-			    outputMode(); printf(HELP_RZ_TEXT);
+			    outputMode(); sollyaPrintf(HELP_RZ_TEXT);
 #else
-			    outputMode(); printf("Round towards zero.\n");
+			    outputMode(); sollyaPrintf("Round towards zero.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for RZ"
 #endif
@@ -2980,9 +2980,9 @@ help:                   CONSTANTTOKEN
                       | NEARESTTOKEN
                           {
 #ifdef HELP_RN_TEXT
-			    outputMode(); printf(HELP_RN_TEXT);
+			    outputMode(); sollyaPrintf(HELP_RN_TEXT);
 #else
-			    outputMode(); printf("Round to nearest.\n");
+			    outputMode(); sollyaPrintf("Round to nearest.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for RN"
 #endif
@@ -2991,9 +2991,9 @@ help:                   CONSTANTTOKEN
                       | HONORCOEFFPRECTOKEN
                           {
 #ifdef HELP_HONORCOEFFPREC_TEXT
-			    outputMode(); printf(HELP_HONORCOEFFPREC_TEXT);
+			    outputMode(); sollyaPrintf(HELP_HONORCOEFFPREC_TEXT);
 #else
-			    outputMode(); printf("Honorate the precision of the coefficients.\n");
+			    outputMode(); sollyaPrintf("Honorate the precision of the coefficients.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for HONORCOEFFPREC"
 #endif
@@ -3002,9 +3002,9 @@ help:                   CONSTANTTOKEN
                       | TRUETOKEN
                           {
 #ifdef HELP_TRUE_TEXT
-			    outputMode(); printf(HELP_TRUE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_TRUE_TEXT);
 #else
-			    outputMode(); printf("Boolean constant true.\n");
+			    outputMode(); sollyaPrintf("Boolean constant true.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for TRUE"
 #endif
@@ -3013,9 +3013,9 @@ help:                   CONSTANTTOKEN
                       | FALSETOKEN
                           {
 #ifdef HELP_FALSE_TEXT
-			    outputMode(); printf(HELP_FALSE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_FALSE_TEXT);
 #else
-			    outputMode(); printf("Boolean constant false.\n");
+			    outputMode(); sollyaPrintf("Boolean constant false.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for FALSE"
 #endif
@@ -3024,9 +3024,9 @@ help:                   CONSTANTTOKEN
                       | DEFAULTTOKEN
                           {
 #ifdef HELP_DEFAULT_TEXT
-			    outputMode(); printf(HELP_DEFAULT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DEFAULT_TEXT);
 #else
-			    outputMode(); printf("Default value.\n");
+			    outputMode(); sollyaPrintf("Default value.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DEFAULT"
 #endif
@@ -3035,9 +3035,9 @@ help:                   CONSTANTTOKEN
                       | ABSOLUTETOKEN
                           {
 #ifdef HELP_ABSOLUTE_TEXT
-			    outputMode(); printf(HELP_ABSOLUTE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ABSOLUTE_TEXT);
 #else
-			    outputMode(); printf("Consider an absolute error.\n");
+			    outputMode(); sollyaPrintf("Consider an absolute error.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ABSOLUTE"
 #endif
@@ -3046,9 +3046,9 @@ help:                   CONSTANTTOKEN
                       | DECIMALTOKEN
                           {
 #ifdef HELP_DECIMAL_TEXT
-			    outputMode(); printf(HELP_DECIMAL_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DECIMAL_TEXT);
 #else
-			    outputMode(); printf("Display mode is decimal.\n");
+			    outputMode(); sollyaPrintf("Display mode is decimal.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DECIMAL"
 #endif
@@ -3057,9 +3057,9 @@ help:                   CONSTANTTOKEN
                       | RELATIVETOKEN
                           {
 #ifdef HELP_RELATIVE_TEXT
-			    outputMode(); printf(HELP_RELATIVE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_RELATIVE_TEXT);
 #else
-			    outputMode(); printf("Consider a relative error.\n");
+			    outputMode(); sollyaPrintf("Consider a relative error.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for RELATIVE"
 #endif
@@ -3068,9 +3068,9 @@ help:                   CONSTANTTOKEN
                       | FIXEDTOKEN
                           {
 #ifdef HELP_FIXED_TEXT
-			    outputMode(); printf(HELP_FIXED_TEXT);
+			    outputMode(); sollyaPrintf(HELP_FIXED_TEXT);
 #else
-			    outputMode(); printf("Consider fixed-point numbers.\n");
+			    outputMode(); sollyaPrintf("Consider fixed-point numbers.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for FIXED"
 #endif
@@ -3079,9 +3079,9 @@ help:                   CONSTANTTOKEN
                       | FLOATINGTOKEN
                           {
 #ifdef HELP_FLOATING_TEXT
-			    outputMode(); printf(HELP_FLOATING_TEXT);
+			    outputMode(); sollyaPrintf(HELP_FLOATING_TEXT);
 #else
-			    outputMode(); printf("Consider floating-point numbers.\n");
+			    outputMode(); sollyaPrintf("Consider floating-point numbers.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for FLOATING"
 #endif
@@ -3090,9 +3090,9 @@ help:                   CONSTANTTOKEN
                       | ERRORTOKEN
                           {
 #ifdef HELP_ERROR_TEXT
-			    outputMode(); printf(HELP_ERROR_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ERROR_TEXT);
 #else
-			    outputMode(); printf("Type error meta-value.\n");
+			    outputMode(); sollyaPrintf("Type error meta-value.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ERROR"
 #endif
@@ -3101,9 +3101,9 @@ help:                   CONSTANTTOKEN
                       | QUITTOKEN
                           {
 #ifdef HELP_QUIT_TEXT
-			    outputMode(); printf(HELP_QUIT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_QUIT_TEXT);
 #else
-			    outputMode(); printf("Exit from the tool.\n");
+			    outputMode(); sollyaPrintf("Exit from the tool.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for QUIT"
 #endif
@@ -3112,9 +3112,9 @@ help:                   CONSTANTTOKEN
                       | FALSEQUITTOKEN
                           {
 #ifdef HELP_QUIT_TEXT
-			    outputMode(); printf(HELP_QUIT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_QUIT_TEXT);
 #else
-			    outputMode(); printf("Exit from the tool - help is called inside a read macro.\n");
+			    outputMode(); sollyaPrintf("Exit from the tool - help is called inside a read macro.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for QUIT"
 #endif
@@ -3123,9 +3123,9 @@ help:                   CONSTANTTOKEN
                       | RESTARTTOKEN
                           {
 #ifdef HELP_RESTART_TEXT
-			    outputMode(); printf(HELP_RESTART_TEXT);
+			    outputMode(); sollyaPrintf(HELP_RESTART_TEXT);
 #else
-			    outputMode(); printf("Restart the tool.\n");
+			    outputMode(); sollyaPrintf("Restart the tool.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for RESTART"
 #endif
@@ -3134,9 +3134,9 @@ help:                   CONSTANTTOKEN
                       | LIBRARYTOKEN
                           {
 #ifdef HELP_LIBRARY_TEXT
-			    outputMode(); printf(HELP_LIBRARY_TEXT);
+			    outputMode(); sollyaPrintf(HELP_LIBRARY_TEXT);
 #else
-			    outputMode(); printf("Library binding dereferencer.\n");
+			    outputMode(); sollyaPrintf("Library binding dereferencer.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for LIBRARY"
 #endif
@@ -3145,9 +3145,9 @@ help:                   CONSTANTTOKEN
                       | DIFFTOKEN
                           {
 #ifdef HELP_DIFF_TEXT
-			    outputMode(); printf(HELP_DIFF_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DIFF_TEXT);
 #else
-			    outputMode(); printf("Differentiation: diff(func).\n");
+			    outputMode(); sollyaPrintf("Differentiation: diff(func).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DIFF"
 #endif
@@ -3156,9 +3156,9 @@ help:                   CONSTANTTOKEN
                       | SIMPLIFYTOKEN
                           {
 #ifdef HELP_SIMPLIFY_TEXT
-			    outputMode(); printf(HELP_SIMPLIFY_TEXT);
+			    outputMode(); sollyaPrintf(HELP_SIMPLIFY_TEXT);
 #else
-			    outputMode(); printf("Simplify: simplify(func).\n");
+			    outputMode(); sollyaPrintf("Simplify: simplify(func).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for SIMPLIFY"
 #endif
@@ -3167,9 +3167,9 @@ help:                   CONSTANTTOKEN
                       | REMEZTOKEN
                           {
 #ifdef HELP_REMEZ_TEXT
-			    outputMode(); printf(HELP_REMEZ_TEXT);
+			    outputMode(); sollyaPrintf(HELP_REMEZ_TEXT);
 #else
-			    outputMode(); printf("Remez: remez(func,degree|monoms,range[,weight[,quality]]).\n");
+			    outputMode(); sollyaPrintf("Remez: remez(func,degree|monoms,range[,weight[,quality]]).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for REMEZ"
 #endif
@@ -3178,9 +3178,9 @@ help:                   CONSTANTTOKEN
                       | MINTOKEN
                           {
 #ifdef HELP_MIN_TEXT
-			    outputMode(); printf(HELP_MIN_TEXT);
+			    outputMode(); sollyaPrintf(HELP_MIN_TEXT);
 #else
-			    outputMode(); printf("min(val1,val2,...,valn): computes the minimum of the constant expressions vali.\n");
+			    outputMode(); sollyaPrintf("min(val1,val2,...,valn): computes the minimum of the constant expressions vali.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for MIN"
 #endif
@@ -3189,9 +3189,9 @@ help:                   CONSTANTTOKEN
                       | MAXTOKEN
                           {
 #ifdef HELP_MAX_TEXT
-			    outputMode(); printf(HELP_MAX_TEXT);
+			    outputMode(); sollyaPrintf(HELP_MAX_TEXT);
 #else
-			    outputMode(); printf("max(val1,val2,...,valn): computes the maximum of the constant expressions vali.\n");
+			    outputMode(); sollyaPrintf("max(val1,val2,...,valn): computes the maximum of the constant expressions vali.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for MAX"
 #endif
@@ -3200,9 +3200,9 @@ help:                   CONSTANTTOKEN
                       | FPMINIMAXTOKEN
                           {
 #ifdef HELP_FPMINIMAX_TEXT
-			    outputMode(); printf(HELP_FPMINIMAX_TEXT);
+			    outputMode(); sollyaPrintf(HELP_FPMINIMAX_TEXT);
 #else
-			    outputMode(); printf("Fpminimax: fpminimax(func,degree|monoms,formats,range|pointslist[,absolute|relative[,fixed|floating[,constrainedPart[, minimaxpoly]]]]).\n");
+			    outputMode(); sollyaPrintf("Fpminimax: fpminimax(func,degree|monoms,formats,range|pointslist[,absolute|relative[,fixed|floating[,constrainedPart[, minimaxpoly]]]]).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for FPMINIMAX"
 #endif
@@ -3211,9 +3211,9 @@ help:                   CONSTANTTOKEN
                       | HORNERTOKEN
                           {
 #ifdef HELP_HORNER_TEXT
-			    outputMode(); printf(HELP_HORNER_TEXT);
+			    outputMode(); sollyaPrintf(HELP_HORNER_TEXT);
 #else
-			    outputMode(); printf("Horner: horner(func)\n");
+			    outputMode(); sollyaPrintf("Horner: horner(func)\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for HORNER"
 #endif
@@ -3222,9 +3222,9 @@ help:                   CONSTANTTOKEN
                       | EXPANDTOKEN
                           {
 #ifdef HELP_EXPAND_TEXT
-			    outputMode(); printf(HELP_EXPAND_TEXT);
+			    outputMode(); sollyaPrintf(HELP_EXPAND_TEXT);
 #else
-			    outputMode(); printf("Expand: expand(func).\n");
+			    outputMode(); sollyaPrintf("Expand: expand(func).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for EXPAND"
 #endif
@@ -3233,9 +3233,9 @@ help:                   CONSTANTTOKEN
                       | SIMPLIFYSAFETOKEN
                           {
 #ifdef HELP_SIMPLIFYSAFE_TEXT
-			    outputMode(); printf(HELP_SIMPLIFYSAFE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_SIMPLIFYSAFE_TEXT);
 #else
-			    outputMode(); printf("Safe simplification: simplifysafe(func).\n");
+			    outputMode(); sollyaPrintf("Safe simplification: simplifysafe(func).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for SIMPLIFYSAFE"
 #endif
@@ -3244,9 +3244,9 @@ help:                   CONSTANTTOKEN
                       | TAYLORTOKEN
                           {
 #ifdef HELP_TAYLOR_TEXT
-			    outputMode(); printf(HELP_TAYLOR_TEXT);
+			    outputMode(); sollyaPrintf(HELP_TAYLOR_TEXT);
 #else
-			    outputMode(); printf("Taylor expansion: taylor(func,degree,point).\n");
+			    outputMode(); sollyaPrintf("Taylor expansion: taylor(func,degree,point).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for TAYLOR"
 #endif
@@ -3255,9 +3255,9 @@ help:                   CONSTANTTOKEN
                       | TAYLORFORMTOKEN
                           {
 #ifdef HELP_TAYLORFORM_TEXT
-			    outputMode(); printf(HELP_TAYLORFORM_TEXT);
+			    outputMode(); sollyaPrintf(HELP_TAYLORFORM_TEXT);
 #else
-			    outputMode(); printf("Taylor form computation.\n");
+			    outputMode(); sollyaPrintf("Taylor form computation.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for TAYLORFORM"
 #endif
@@ -3266,9 +3266,9 @@ help:                   CONSTANTTOKEN
                       | AUTODIFFTOKEN
                           {
 #ifdef HELP_AUTODIFF_TEXT
-			    outputMode(); printf(HELP_AUTODIFF_TEXT);
+			    outputMode(); sollyaPrintf(HELP_AUTODIFF_TEXT);
 #else
-			    outputMode(); printf("Automatic differentiation.\n");
+			    outputMode(); sollyaPrintf("Automatic differentiation.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for AUTODIFF"
 #endif
@@ -3277,9 +3277,9 @@ help:                   CONSTANTTOKEN
                       | DEGREETOKEN
                           {
 #ifdef HELP_DEGREE_TEXT
-			    outputMode(); printf(HELP_DEGREE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DEGREE_TEXT);
 #else
-			    outputMode(); printf("Degree of a polynomial: degree(func).\n");
+			    outputMode(); sollyaPrintf("Degree of a polynomial: degree(func).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DEGREE"
 #endif
@@ -3288,9 +3288,9 @@ help:                   CONSTANTTOKEN
                       | NUMERATORTOKEN
                           {
 #ifdef HELP_NUMERATOR_TEXT
-			    outputMode(); printf(HELP_NUMERATOR_TEXT);
+			    outputMode(); sollyaPrintf(HELP_NUMERATOR_TEXT);
 #else
-			    outputMode(); printf("Numerator of an expression: numerator(func).\n");
+			    outputMode(); sollyaPrintf("Numerator of an expression: numerator(func).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for NUMERATOR"
 #endif
@@ -3299,9 +3299,9 @@ help:                   CONSTANTTOKEN
                       | DENOMINATORTOKEN
                           {
 #ifdef HELP_DENOMINATOR_TEXT
-			    outputMode(); printf(HELP_DENOMINATOR_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DENOMINATOR_TEXT);
 #else
-			    outputMode(); printf("Denominator of an expression: denominator(func).\n");
+			    outputMode(); sollyaPrintf("Denominator of an expression: denominator(func).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DENOMINATOR"
 #endif
@@ -3310,9 +3310,9 @@ help:                   CONSTANTTOKEN
                       | SUBSTITUTETOKEN
                           {
 #ifdef HELP_SUBSTITUTE_TEXT
-			    outputMode(); printf(HELP_SUBSTITUTE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_SUBSTITUTE_TEXT);
 #else
-			    outputMode(); printf("Substitute func2 for free variable in func: substitute(func,func2).\n");
+			    outputMode(); sollyaPrintf("Substitute func2 for free variable in func: substitute(func,func2).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for SUBSTITUTE"
 #endif
@@ -3321,9 +3321,9 @@ help:                   CONSTANTTOKEN
                       | COEFFTOKEN
                           {
 #ifdef HELP_COEFF_TEXT
-			    outputMode(); printf(HELP_COEFF_TEXT);
+			    outputMode(); sollyaPrintf(HELP_COEFF_TEXT);
 #else
-			    outputMode(); printf("i-th coefficient of a polynomial: coeff(func,degree).\n");
+			    outputMode(); sollyaPrintf("i-th coefficient of a polynomial: coeff(func,degree).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for COEFF"
 #endif
@@ -3332,9 +3332,9 @@ help:                   CONSTANTTOKEN
                       | SUBPOLYTOKEN
                           {
 #ifdef HELP_SUBPOLY_TEXT
-			    outputMode(); printf(HELP_SUBPOLY_TEXT);
+			    outputMode(); sollyaPrintf(HELP_SUBPOLY_TEXT);
 #else
-			    outputMode(); printf("Subpolynomial consisting in monomials: subpoly(func,list of degrees).\n");
+			    outputMode(); sollyaPrintf("Subpolynomial consisting in monomials: subpoly(func,list of degrees).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for SUBPOLY"
 #endif
@@ -3343,9 +3343,9 @@ help:                   CONSTANTTOKEN
                       | ROUNDCOEFFICIENTSTOKEN
                           {
 #ifdef HELP_ROUNDCOEFFICIENTS_TEXT
-			    outputMode(); printf(HELP_ROUNDCOEFFICIENTS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ROUNDCOEFFICIENTS_TEXT);
 #else
-			    outputMode(); printf("Round coefficients of a polynomial to format: roundcoefficients(func,list of formats).\n");
+			    outputMode(); sollyaPrintf("Round coefficients of a polynomial to format: roundcoefficients(func,list of formats).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ROUNDCOEFFICIENTS"
 #endif
@@ -3354,9 +3354,9 @@ help:                   CONSTANTTOKEN
                       | RATIONALAPPROXTOKEN
                           {
 #ifdef HELP_RATIONALAPPROX_TEXT
-			    outputMode(); printf(HELP_RATIONALAPPROX_TEXT);
+			    outputMode(); sollyaPrintf(HELP_RATIONALAPPROX_TEXT);
 #else
-			    outputMode(); printf("Rational approximation: rationalapprox(constant).\n");
+			    outputMode(); sollyaPrintf("Rational approximation: rationalapprox(constant).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for RATIONALAPPROX"
 #endif
@@ -3365,9 +3365,9 @@ help:                   CONSTANTTOKEN
                       | ACCURATEINFNORMTOKEN
                           {
 #ifdef HELP_ACCURATEINFNORM_TEXT
-			    outputMode(); printf(HELP_ACCURATEINFNORM_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ACCURATEINFNORM_TEXT);
 #else
-			    outputMode(); printf("Faithful rounded infinity norm: accurateinfnorm(func,bits,range,domains to exclude).\n");
+			    outputMode(); sollyaPrintf("Faithful rounded infinity norm: accurateinfnorm(func,bits,range,domains to exclude).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ACCURATEINFNORM"
 #endif
@@ -3376,9 +3376,9 @@ help:                   CONSTANTTOKEN
                       | ROUNDTOFORMATTOKEN
                           {
 #ifdef HELP_ROUND_TEXT
-			    outputMode(); printf(HELP_ROUND_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ROUND_TEXT);
 #else
-			    outputMode(); printf("Round to a given format: round(constant,precision,rounding mode).\n");
+			    outputMode(); sollyaPrintf("Round to a given format: round(constant,precision,rounding mode).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ROUND"
 #endif
@@ -3387,9 +3387,9 @@ help:                   CONSTANTTOKEN
                       | EVALUATETOKEN
                           {
 #ifdef HELP_EVALUATE_TEXT
-			    outputMode(); printf(HELP_EVALUATE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_EVALUATE_TEXT);
 #else
-			    outputMode(); printf("Evaluate a function in a point or interval: round(func,constant|range).\n");
+			    outputMode(); sollyaPrintf("Evaluate a function in a point or interval: round(func,constant|range).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for EVALUATE"
 #endif
@@ -3398,9 +3398,9 @@ help:                   CONSTANTTOKEN
                       | LENGTHTOKEN
                           {
 #ifdef HELP_LENGTH_TEXT
-			    outputMode(); printf(HELP_LENGTH_TEXT);
+			    outputMode(); sollyaPrintf(HELP_LENGTH_TEXT);
 #else
-			    outputMode(); printf("Length of a list: length(list).\n");
+			    outputMode(); sollyaPrintf("Length of a list: length(list).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for LENGTH"
 #endif
@@ -3409,9 +3409,9 @@ help:                   CONSTANTTOKEN
                       | PARSETOKEN
                           {
 #ifdef HELP_PARSE_TEXT
-			    outputMode(); printf(HELP_PARSE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PARSE_TEXT);
 #else
-			    outputMode(); printf("Parse a string to function: parse(string).\n");
+			    outputMode(); sollyaPrintf("Parse a string to function: parse(string).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PARSE"
 #endif
@@ -3420,9 +3420,9 @@ help:                   CONSTANTTOKEN
                       | PRINTTOKEN
                           {
 #ifdef HELP_PRINT_TEXT
-			    outputMode(); printf(HELP_PRINT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PRINT_TEXT);
 #else
-			    outputMode(); printf("Print something: print(thing1, thing2, ...).\n");
+			    outputMode(); sollyaPrintf("Print something: print(thing1, thing2, ...).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PRINT"
 #endif
@@ -3431,9 +3431,9 @@ help:                   CONSTANTTOKEN
                       | PRINTXMLTOKEN
                           {
 #ifdef HELP_PRINTXML_TEXT
-			    outputMode(); printf(HELP_PRINTXML_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PRINTXML_TEXT);
 #else
-			    outputMode(); printf("Print a function in XML: printxml(func).\n");
+			    outputMode(); sollyaPrintf("Print a function in XML: printxml(func).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PRINTXML"
 #endif
@@ -3442,9 +3442,9 @@ help:                   CONSTANTTOKEN
                       | READXMLTOKEN
                           {
 #ifdef HELP_READXML_TEXT
-			    outputMode(); printf(HELP_READXML_TEXT);
+			    outputMode(); sollyaPrintf(HELP_READXML_TEXT);
 #else
-			    outputMode(); printf("Reads a function in XML: readxml(filename).\n");
+			    outputMode(); sollyaPrintf("Reads a function in XML: readxml(filename).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for READXML"
 #endif
@@ -3453,10 +3453,10 @@ help:                   CONSTANTTOKEN
                       | PLOTTOKEN
                           {
 #ifdef HELP_PLOT_TEXT
-			    outputMode(); printf(HELP_PLOT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PLOT_TEXT);
 #else
-			    outputMode(); printf("Plot (a) function(s) in a range: plot(func,func2,...,range).\n");
-			    outputMode(); printf("There are further options.\n");
+			    outputMode(); sollyaPrintf("Plot (a) function(s) in a range: plot(func,func2,...,range).\n");
+			    outputMode(); sollyaPrintf("There are further options.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PLOT"
 #endif
@@ -3465,9 +3465,9 @@ help:                   CONSTANTTOKEN
                       | PRINTHEXATOKEN
                           {
 #ifdef HELP_PRINTHEXA_TEXT
-			    outputMode(); printf(HELP_PRINTHEXA_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PRINTHEXA_TEXT);
 #else
-			    outputMode(); printf("Print a constant in hexadecimal: printhexa(constant).\n");
+			    outputMode(); sollyaPrintf("Print a constant in hexadecimal: printhexa(constant).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PRINTHEXA"
 #endif
@@ -3476,9 +3476,9 @@ help:                   CONSTANTTOKEN
                       | PRINTFLOATTOKEN
                           {
 #ifdef HELP_PRINTFLOAT_TEXT
-			    outputMode(); printf(HELP_PRINTFLOAT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PRINTFLOAT_TEXT);
 #else
-			    outputMode(); printf("Print a constant in hexadecimal simple precision: printfloat(constant).\n");
+			    outputMode(); sollyaPrintf("Print a constant in hexadecimal simple precision: printfloat(constant).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PRINTFLOAT"
 #endif
@@ -3487,9 +3487,9 @@ help:                   CONSTANTTOKEN
                       | PRINTBINARYTOKEN
                           {
 #ifdef HELP_PRINTBINARY_TEXT
-			    outputMode(); printf(HELP_PRINTBINARY_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PRINTBINARY_TEXT);
 #else
-			    outputMode(); printf("Print a constant in binary: printbinary(constant).\n");
+			    outputMode(); sollyaPrintf("Print a constant in binary: printbinary(constant).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PRINTBINARY"
 #endif
@@ -3498,9 +3498,9 @@ help:                   CONSTANTTOKEN
                       | PRINTEXPANSIONTOKEN
                           {
 #ifdef HELP_PRINTEXPANSION_TEXT
-			    outputMode(); printf(HELP_PRINTEXPANSION_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PRINTEXPANSION_TEXT);
 #else
-			    outputMode(); printf("Print a polynomial as an expansion of double precision numbers: printexpansion(func).\n");
+			    outputMode(); sollyaPrintf("Print a polynomial as an expansion of double precision numbers: printexpansion(func).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PRINTEXPANSION"
 #endif
@@ -3509,9 +3509,9 @@ help:                   CONSTANTTOKEN
                       | BASHEXECUTETOKEN
                           {
 #ifdef HELP_BASHEXECUTE_TEXT
-			    outputMode(); printf(HELP_BASHEXECUTE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_BASHEXECUTE_TEXT);
 #else
-			    outputMode(); printf("Execute a command in a shell: bashexecute(string).\n");
+			    outputMode(); sollyaPrintf("Execute a command in a shell: bashexecute(string).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for BASHEXECUTE"
 #endif
@@ -3520,9 +3520,9 @@ help:                   CONSTANTTOKEN
                       | EXTERNALPLOTTOKEN
                           {
 #ifdef HELP_EXTERNALPLOT_TEXT
-			    outputMode(); printf(HELP_EXTERNALPLOT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_EXTERNALPLOT_TEXT);
 #else
-			    outputMode(); printf("Here should be some help text.\n");
+			    outputMode(); sollyaPrintf("Here should be some help text.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for EXTERNALPLOT"
 #endif
@@ -3531,9 +3531,9 @@ help:                   CONSTANTTOKEN
                       | WRITETOKEN
                           {
 #ifdef HELP_WRITE_TEXT
-			    outputMode(); printf(HELP_WRITE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_WRITE_TEXT);
 #else
-			    outputMode(); printf("Write something without adding spaces and newlines: write(thing1, thing2, ...).\n");
+			    outputMode(); sollyaPrintf("Write something without adding spaces and newlines: write(thing1, thing2, ...).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for WRITE"
 #endif
@@ -3542,9 +3542,9 @@ help:                   CONSTANTTOKEN
                       | ASCIIPLOTTOKEN
                           {
 #ifdef HELP_ASCIIPLOT_TEXT
-			    outputMode(); printf(HELP_ASCIIPLOT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ASCIIPLOT_TEXT);
 #else
-			    outputMode(); printf("Plot a function in a range using an ASCII terminal: asciiplot(func,range).\n");
+			    outputMode(); sollyaPrintf("Plot a function in a range using an ASCII terminal: asciiplot(func,range).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ASCIIPLOT"
 #endif
@@ -3553,9 +3553,9 @@ help:                   CONSTANTTOKEN
                       | RENAMETOKEN
                           {
 #ifdef HELP_RENAME_TEXT
-			    outputMode(); printf(HELP_RENAME_TEXT);
+			    outputMode(); sollyaPrintf(HELP_RENAME_TEXT);
 #else
-			    outputMode(); printf("Rename free variable string1 to string2: rename(string1, string2).\n");
+			    outputMode(); sollyaPrintf("Rename free variable string1 to string2: rename(string1, string2).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for RENAME"
 #endif
@@ -3564,9 +3564,9 @@ help:                   CONSTANTTOKEN
                       | INFNORMTOKEN
                           {
 #ifdef HELP_INFNORM_TEXT
-			    outputMode(); printf(HELP_INFNORM_TEXT);
+			    outputMode(); sollyaPrintf(HELP_INFNORM_TEXT);
 #else
-			    outputMode(); printf("Certified infinity norm: infnorm(func,range[,prooffile[,list of funcs]]).\n");
+			    outputMode(); sollyaPrintf("Certified infinity norm: infnorm(func,range[,prooffile[,list of funcs]]).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for INFNORM"
 #endif
@@ -3575,9 +3575,9 @@ help:                   CONSTANTTOKEN
                       | FINDZEROSTOKEN
                           {
 #ifdef HELP_FINDZEROS_TEXT
-			    outputMode(); printf(HELP_FINDZEROS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_FINDZEROS_TEXT);
 #else
-			    outputMode(); printf("Certified bounding of zeros: findzeros(func,range).\n");
+			    outputMode(); sollyaPrintf("Certified bounding of zeros: findzeros(func,range).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for FINDZEROS"
 #endif
@@ -3586,9 +3586,9 @@ help:                   CONSTANTTOKEN
                       | FPFINDZEROSTOKEN
                           {
 #ifdef HELP_FPFINDZEROS_TEXT
-			    outputMode(); printf(HELP_FPFINDZEROS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_FPFINDZEROS_TEXT);
 #else
-			    outputMode(); printf("Approximate zeros of a function: fpfindzeros(func,range).\n");
+			    outputMode(); sollyaPrintf("Approximate zeros of a function: fpfindzeros(func,range).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for FPFINDZEROS"
 #endif
@@ -3597,9 +3597,9 @@ help:                   CONSTANTTOKEN
                       | DIRTYINFNORMTOKEN
                           {
 #ifdef HELP_DIRTYINFNORM_TEXT
-			    outputMode(); printf(HELP_DIRTYINFNORM_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DIRTYINFNORM_TEXT);
 #else
-			    outputMode(); printf("Floating-point infinity norm: dirtyinfnorm(func,range).\n");
+			    outputMode(); sollyaPrintf("Floating-point infinity norm: dirtyinfnorm(func,range).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DIRTYINFNORM"
 #endif
@@ -3608,17 +3608,17 @@ help:                   CONSTANTTOKEN
                       | NUMBERROOTSTOKEN
                           {
 #ifdef HELP_NUMBERROOTS_TEXT
-			    outputMode(); printf(HELP_NUMBERROOTS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_NUMBERROOTS_TEXT);
 #else
-			    outputMode(); printf("Computes the number of real roots of a polynomial on a domain.\n");
+			    outputMode(); sollyaPrintf("Computes the number of real roots of a polynomial on a domain.\n");
 #endif
                           }                 					                 					       
                       | INTEGRALTOKEN
                           {
 #ifdef HELP_INTEGRAL_TEXT
-			    outputMode(); printf(HELP_INTEGRAL_TEXT);
+			    outputMode(); sollyaPrintf(HELP_INTEGRAL_TEXT);
 #else
-			    outputMode(); printf("Certified integral: integral(func,range).\n");
+			    outputMode(); sollyaPrintf("Certified integral: integral(func,range).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for INTEGRAL"
 #endif
@@ -3627,9 +3627,9 @@ help:                   CONSTANTTOKEN
                       | DIRTYINTEGRALTOKEN
                           {
 #ifdef HELP_DIRTYINTEGRAL_TEXT
-			    outputMode(); printf(HELP_DIRTYINTEGRAL_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DIRTYINTEGRAL_TEXT);
 #else
-			    outputMode(); printf("Floating-point integral: dirtyintegral(func,range).\n");
+			    outputMode(); sollyaPrintf("Floating-point integral: dirtyintegral(func,range).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DIRTYINTEGRAL"
 #endif
@@ -3638,9 +3638,9 @@ help:                   CONSTANTTOKEN
                       | WORSTCASETOKEN
                           {
 #ifdef HELP_WORSTCASE_TEXT
-			    outputMode(); printf(HELP_WORSTCASE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_WORSTCASE_TEXT);
 #else
-			    outputMode(); printf("Print all worst-cases under a certain bound: worstcase(func,constant,range,constant,constant[,file]).\n");
+			    outputMode(); sollyaPrintf("Print all worst-cases under a certain bound: worstcase(func,constant,range,constant,constant[,file]).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for WORSTCASE"
 #endif
@@ -3649,10 +3649,10 @@ help:                   CONSTANTTOKEN
                       | IMPLEMENTPOLYTOKEN
                           {
 #ifdef HELP_IMPLEMENTPOLY_TEXT
-			    outputMode(); printf(HELP_IMPLEMENTPOLY_TEXT);
+			    outputMode(); sollyaPrintf(HELP_IMPLEMENTPOLY_TEXT);
 #else
-			    outputMode(); printf("Implement a polynomial in C: implementpoly(func,range,constant,format,string,string2[,honorcoeffprec[,string3]]).\n");
-			    outputMode(); printf("Implements func in range with error constant with entering format named in function\nstring writing to file string2 honoring the precision of the coefficients or not with a proof in file string3.\n");
+			    outputMode(); sollyaPrintf("Implement a polynomial in C: implementpoly(func,range,constant,format,string,string2[,honorcoeffprec[,string3]]).\n");
+			    outputMode(); sollyaPrintf("Implements func in range with error constant with entering format named in function\nstring writing to file string2 honoring the precision of the coefficients or not with a proof in file string3.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for IMPLEMENTPOLY"
 #endif
@@ -3661,9 +3661,9 @@ help:                   CONSTANTTOKEN
                       | CHECKINFNORMTOKEN
                           {
 #ifdef HELP_CHECKINFNORM_TEXT
-			    outputMode(); printf(HELP_CHECKINFNORM_TEXT);
+			    outputMode(); sollyaPrintf(HELP_CHECKINFNORM_TEXT);
 #else
-			    outputMode(); printf("Checks whether an infinity norm is bounded: checkinfnorm(func,range,constant).\n");
+			    outputMode(); sollyaPrintf("Checks whether an infinity norm is bounded: checkinfnorm(func,range,constant).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for CHECKINFNORM"
 #endif
@@ -3672,9 +3672,9 @@ help:                   CONSTANTTOKEN
                       | ZERODENOMINATORSTOKEN
                           {
 #ifdef HELP_ZERODENOMINATORS_TEXT
-			    outputMode(); printf(HELP_ZERODENOMINATORS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ZERODENOMINATORS_TEXT);
 #else
-			    outputMode(); printf("Searches floating-point approximations to zeros of denominators: zerodenominators(func,range).\n");
+			    outputMode(); sollyaPrintf("Searches floating-point approximations to zeros of denominators: zerodenominators(func,range).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ZERODENOMINATORS"
 #endif
@@ -3683,9 +3683,9 @@ help:                   CONSTANTTOKEN
                       | ISEVALUABLETOKEN
                           {
 #ifdef HELP_ISEVALUABLE_TEXT
-			    outputMode(); printf(HELP_ISEVALUABLE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ISEVALUABLE_TEXT);
 #else
-			    outputMode(); printf("Tests if func is evaluable on range: isevaluable(func,range).\n");
+			    outputMode(); sollyaPrintf("Tests if func is evaluable on range: isevaluable(func,range).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ISEVALUABLE"
 #endif
@@ -3694,9 +3694,9 @@ help:                   CONSTANTTOKEN
                       | SEARCHGALTOKEN
                           {
 #ifdef HELP_SEARCHGAL_TEXT
-			    outputMode(); printf(HELP_SEARCHGAL_TEXT);
+			    outputMode(); sollyaPrintf(HELP_SEARCHGAL_TEXT);
 #else
-			    outputMode(); printf("Searches Gal values for func (or list of func): searchgal(func|list of func, constant, integer, integer, format|list of formats, constant|list of constants).\n");
+			    outputMode(); sollyaPrintf("Searches Gal values for func (or list of func): searchgal(func|list of func, constant, integer, integer, format|list of formats, constant|list of constants).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for SEARCHGAL"
 #endif
@@ -3705,9 +3705,9 @@ help:                   CONSTANTTOKEN
                       | GUESSDEGREETOKEN
                           {
 #ifdef HELP_GUESSDEGREE_TEXT
-			    outputMode(); printf(HELP_GUESSDEGREE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_GUESSDEGREE_TEXT);
 #else
-			    outputMode(); printf("Guesses the degree needed for approximating func: guessdegree(func,range,constant[,weight]).\n");
+			    outputMode(); sollyaPrintf("Guesses the degree needed for approximating func: guessdegree(func,range,constant[,weight]).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for GUESSDEGREE"
 #endif
@@ -3716,9 +3716,9 @@ help:                   CONSTANTTOKEN
                       | DIRTYFINDZEROSTOKEN
                           {
 #ifdef HELP_DIRTYFINDZEROS_TEXT
-			    outputMode(); printf(HELP_DIRTYFINDZEROS_TEXT);
+			    outputMode(); sollyaPrintf(HELP_DIRTYFINDZEROS_TEXT);
 #else
-			    outputMode(); printf("Finds zeros of a function dirtily: dirtyfindzeros(func,range).\n");
+			    outputMode(); sollyaPrintf("Finds zeros of a function dirtily: dirtyfindzeros(func,range).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DIRTYFINDZEROS"
 #endif
@@ -3726,26 +3726,26 @@ help:                   CONSTANTTOKEN
                           }                 					               					       
                       | IFTOKEN
                           {
-			    outputMode(); printf("If construct: if condition then command or if condition then command else command.\n");
+			    outputMode(); sollyaPrintf("If construct: if condition then command or if condition then command else command.\n");
                           }                 					             							       
                       | THENTOKEN
                           {
-			    outputMode(); printf("If construct: if condition then command or if condition then command else command.\n");
+			    outputMode(); sollyaPrintf("If construct: if condition then command or if condition then command else command.\n");
                           }                 					             							       
                       | ELSETOKEN
                           {
-			    outputMode(); printf("If construct: if condition then command else command\n");
+			    outputMode(); sollyaPrintf("If construct: if condition then command else command\n");
                           }                 					             							       
                       | FORTOKEN
                           {
-			    outputMode(); printf("For construct: for i from const to const2 [by const3] do command\nor for i in list do command.\n");
+			    outputMode(); sollyaPrintf("For construct: for i from const to const2 [by const3] do command\nor for i in list do command.\n");
                           }                 					             							       
                       | INTOKEN
                           {
 #ifdef HELP_IN_TEXT
-			    outputMode(); printf(HELP_IN_TEXT);
+			    outputMode(); sollyaPrintf(HELP_IN_TEXT);
 #else
-			    outputMode(); printf("In construct: for in construct and containment operator.\n");
+			    outputMode(); sollyaPrintf("In construct: for in construct and containment operator.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for IN"
 #endif
@@ -3753,39 +3753,39 @@ help:                   CONSTANTTOKEN
                           }                 					               					       			       
                       | FROMTOKEN
                           {
-			    outputMode(); printf("For construct: for i from const to const2 [by const3] do command.\n");
+			    outputMode(); sollyaPrintf("For construct: for i from const to const2 [by const3] do command.\n");
                           }                 					             							       
                       | TOTOKEN
                           {
-			    outputMode(); printf("For construct: for i from const to const2 [by const3] do command.\n");
+			    outputMode(); sollyaPrintf("For construct: for i from const to const2 [by const3] do command.\n");
                           }                 					             							       
                       | BYTOKEN
                           {
-			    outputMode(); printf("For construct: for i from const to const2 by const3 do command.\n");
+			    outputMode(); sollyaPrintf("For construct: for i from const to const2 by const3 do command.\n");
                           }                 					             							       
                       | DOTOKEN
                           {
-			    outputMode(); printf("For construct: for i from const to const2 [by const3] do command.\n");
-			    outputMode(); printf("While construct: while condition do command.\n");
+			    outputMode(); sollyaPrintf("For construct: for i from const to const2 [by const3] do command.\n");
+			    outputMode(); sollyaPrintf("While construct: while condition do command.\n");
                           }                 					             							       
                       | BEGINTOKEN
                           {
-			    outputMode(); printf("Begin-end construct: begin command; command; ... end.\n");
+			    outputMode(); sollyaPrintf("Begin-end construct: begin command; command; ... end.\n");
                           }                 					             							       
                       | ENDTOKEN
                           {
-			    outputMode(); printf("Begin-end construct: begin command; command; ... end.\n");
+			    outputMode(); sollyaPrintf("Begin-end construct: begin command; command; ... end.\n");
                           }                 					             							       
                       | WHILETOKEN
                           {
-			    outputMode(); printf("While construct: while condition do command.\n");
+			    outputMode(); sollyaPrintf("While construct: while condition do command.\n");
                           }                 					       
                       | INFTOKEN
                           {
 #ifdef HELP_INF_TEXT
-			    outputMode(); printf(HELP_INF_TEXT);
+			    outputMode(); sollyaPrintf(HELP_INF_TEXT);
 #else
-			    outputMode(); printf("Dereferencing the infimum of a range: inf(range).\n");
+			    outputMode(); sollyaPrintf("Dereferencing the infimum of a range: inf(range).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for INF"
 #endif
@@ -3794,9 +3794,9 @@ help:                   CONSTANTTOKEN
                       | MIDTOKEN
                           {
 #ifdef HELP_MID_TEXT
-			    outputMode(); printf(HELP_MID_TEXT);
+			    outputMode(); sollyaPrintf(HELP_MID_TEXT);
 #else
-			    outputMode(); printf("Dereferencing the midpoint of a range: mid(range).\n");
+			    outputMode(); sollyaPrintf("Dereferencing the midpoint of a range: mid(range).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for MID"
 #endif
@@ -3805,9 +3805,9 @@ help:                   CONSTANTTOKEN
                       | SUPTOKEN
                           {
 #ifdef HELP_SUP_TEXT
-			    outputMode(); printf(HELP_SUP_TEXT);
+			    outputMode(); sollyaPrintf(HELP_SUP_TEXT);
 #else
-			    outputMode(); printf("Dereferencing the supremum of a range: sup(range).\n");
+			    outputMode(); sollyaPrintf("Dereferencing the supremum of a range: sup(range).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for SUP"
 #endif
@@ -3816,9 +3816,9 @@ help:                   CONSTANTTOKEN
                       | EXPONENTTOKEN
                           {
 #ifdef HELP_EXPONENT_TEXT
-			    outputMode(); printf(HELP_EXPONENT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_EXPONENT_TEXT);
 #else
-			    outputMode(); printf("exponent(constant): returns an integer such that constant scaled by the power of 2\nof this integer is an odd or zero integer.\n");
+			    outputMode(); sollyaPrintf("exponent(constant): returns an integer such that constant scaled by the power of 2\nof this integer is an odd or zero integer.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for EXPONENT"
 #endif
@@ -3827,9 +3827,9 @@ help:                   CONSTANTTOKEN
                       | MANTISSATOKEN
                           {
 #ifdef HELP_MANTISSA_TEXT
-			    outputMode(); printf(HELP_MANTISSA_TEXT);
+			    outputMode(); sollyaPrintf(HELP_MANTISSA_TEXT);
 #else
-			    outputMode(); printf("mantissa(constant): returns an odd or zero integer equal to constant scaled by an integer power of 2.\n");
+			    outputMode(); sollyaPrintf("mantissa(constant): returns an odd or zero integer equal to constant scaled by an integer power of 2.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for MANTISSA"
 #endif
@@ -3838,9 +3838,9 @@ help:                   CONSTANTTOKEN
                       | PRECISIONTOKEN
                           {
 #ifdef HELP_PRECISION_TEXT
-			    outputMode(); printf(HELP_PRECISION_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PRECISION_TEXT);
 #else
-			    outputMode(); printf("precision(constant): returns the least number of bits constant can be written on.\n");
+			    outputMode(); sollyaPrintf("precision(constant): returns the least number of bits constant can be written on.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PRECISION"
 #endif
@@ -3849,9 +3849,9 @@ help:                   CONSTANTTOKEN
                       | EXECUTETOKEN
                           {
 #ifdef HELP_EXECUTE_TEXT
-			    outputMode(); printf(HELP_EXECUTE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_EXECUTE_TEXT);
 #else
-			    outputMode(); printf("execute(string): executes an %s script contained in a file named string.\n",PACKAGE_NAME);
+			    outputMode(); sollyaPrintf("execute(string): executes an %s script contained in a file named string.\n",PACKAGE_NAME);
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for EXECUTE"
 #endif
@@ -3860,9 +3860,9 @@ help:                   CONSTANTTOKEN
                       | ISBOUNDTOKEN
                           {
 #ifdef HELP_ISBOUND_TEXT
-			    outputMode(); printf(HELP_ISBOUND_TEXT);
+			    outputMode(); sollyaPrintf(HELP_ISBOUND_TEXT);
 #else
-			    outputMode(); printf("isbound(identifier): returns a boolean indicating if identifier is bound.\n");
+			    outputMode(); sollyaPrintf("isbound(identifier): returns a boolean indicating if identifier is bound.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for ISBOUND"
 #endif
@@ -3870,13 +3870,13 @@ help:                   CONSTANTTOKEN
                           }                 					       
                       | VERSIONTOKEN 
                           {
-			    outputMode(); printf("Prints the version of the software.\n");
+			    outputMode(); sollyaPrintf("Prints the version of the software.\n");
                           }                 					       
                       | EXTERNALPROCTOKEN                          {
 #ifdef HELP_EXTERNALPROC_TEXT
-			    outputMode(); printf(HELP_EXTERNALPROC_TEXT);
+			    outputMode(); sollyaPrintf(HELP_EXTERNALPROC_TEXT);
 #else
-			    outputMode(); printf("externalplot(identifier, file, argumentypes -> resulttype): binds identifier to an external procedure with signature argumenttypes -> resulttype in file.\n");
+			    outputMode(); sollyaPrintf("externalplot(identifier, file, argumentypes -> resulttype): binds identifier to an external procedure with signature argumenttypes -> resulttype in file.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for EXTERNALPROC"
 #endif
@@ -3884,9 +3884,9 @@ help:                   CONSTANTTOKEN
                           }                 					           
                       | VOIDTOKEN                          {
 #ifdef HELP_VOID_TEXT
-			    outputMode(); printf(HELP_VOID_TEXT);
+			    outputMode(); sollyaPrintf(HELP_VOID_TEXT);
 #else
-			    outputMode(); printf("Represents the void type for externalproc.\n");
+			    outputMode(); sollyaPrintf("Represents the void type for externalproc.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for VOID"
 #endif
@@ -3894,9 +3894,9 @@ help:                   CONSTANTTOKEN
                           }                 					       
                       | CONSTANTTYPETOKEN                          {
 #ifdef HELP_CONSTANT_TEXT
-			    outputMode(); printf(HELP_CONSTANT_TEXT);
+			    outputMode(); sollyaPrintf(HELP_CONSTANT_TEXT);
 #else
-			    outputMode(); printf("Represents the constant type for externalproc.\n");
+			    outputMode(); sollyaPrintf("Represents the constant type for externalproc.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for CONSTANT"
 #endif
@@ -3904,9 +3904,9 @@ help:                   CONSTANTTOKEN
                           }                 					       
                       | FUNCTIONTOKEN                          {
 #ifdef HELP_FUNCTION_TEXT
-			    outputMode(); printf(HELP_FUNCTION_TEXT);
+			    outputMode(); sollyaPrintf(HELP_FUNCTION_TEXT);
 #else
-			    outputMode(); printf("Represents the function type for externalproc.\n");
+			    outputMode(); sollyaPrintf("Represents the function type for externalproc.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for FUNCTION"
 #endif
@@ -3914,9 +3914,9 @@ help:                   CONSTANTTOKEN
                           }                 					       
                       | RANGETOKEN                          {
 #ifdef HELP_RANGE_TEXT
-			    outputMode(); printf(HELP_RANGE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_RANGE_TEXT);
 #else
-			    outputMode(); printf("Represents the range type for externalproc.\n");
+			    outputMode(); sollyaPrintf("Represents the range type for externalproc.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for RANGE"
 #endif
@@ -3924,9 +3924,9 @@ help:                   CONSTANTTOKEN
                           }                 					       
                       | INTEGERTOKEN                          {
 #ifdef HELP_INTEGER_TEXT
-			    outputMode(); printf(HELP_INTEGER_TEXT);
+			    outputMode(); sollyaPrintf(HELP_INTEGER_TEXT);
 #else
-			    outputMode(); printf("Represents the integer type for externalproc.\n");
+			    outputMode(); sollyaPrintf("Represents the integer type for externalproc.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for INTEGER"
 #endif
@@ -3934,9 +3934,9 @@ help:                   CONSTANTTOKEN
                           }                 					       
                       | STRINGTYPETOKEN                          {
 #ifdef HELP_STRING_TEXT
-			    outputMode(); printf(HELP_STRING_TEXT);
+			    outputMode(); sollyaPrintf(HELP_STRING_TEXT);
 #else
-			    outputMode(); printf("Represents the string type for externalproc.\n");
+			    outputMode(); sollyaPrintf("Represents the string type for externalproc.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for STRING"
 #endif
@@ -3944,9 +3944,9 @@ help:                   CONSTANTTOKEN
                           }                 					       
                       | BOOLEANTOKEN                          {
 #ifdef HELP_BOOLEAN_TEXT
-			    outputMode(); printf(HELP_BOOLEAN_TEXT);
+			    outputMode(); sollyaPrintf(HELP_BOOLEAN_TEXT);
 #else
-			    outputMode(); printf("Represents the boolean type for externalproc.\n");
+			    outputMode(); sollyaPrintf("Represents the boolean type for externalproc.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for BOOLEAN"
 #endif
@@ -3954,9 +3954,9 @@ help:                   CONSTANTTOKEN
                           }                 					       
                       | LISTTOKEN                          {
 #ifdef HELP_LISTOF_TEXT
-			    outputMode(); printf(HELP_LISTOF_TEXT);
+			    outputMode(); sollyaPrintf(HELP_LISTOF_TEXT);
 #else
-			    outputMode(); printf("Represents the list type for externalproc.\n");
+			    outputMode(); sollyaPrintf("Represents the list type for externalproc.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for LISTOF"
 #endif
@@ -3964,9 +3964,9 @@ help:                   CONSTANTTOKEN
                           }                 					       
                       | OFTOKEN                          {
 #ifdef HELP_LISTOF_TEXT
-			    outputMode(); printf(HELP_LISTOF_TEXT);
+			    outputMode(); sollyaPrintf(HELP_LISTOF_TEXT);
 #else
-			    outputMode(); printf("Used in list of type for externalproc.\n");
+			    outputMode(); sollyaPrintf("Used in list of type for externalproc.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for LISTOF"
 #endif
@@ -3974,9 +3974,9 @@ help:                   CONSTANTTOKEN
                           }                 					       
                       | VARTOKEN                          {
 #ifdef HELP_VAR_TEXT
-			    outputMode(); printf(HELP_VAR_TEXT);
+			    outputMode(); sollyaPrintf(HELP_VAR_TEXT);
 #else
-			    outputMode(); printf("Declares a local variable.\n");
+			    outputMode(); sollyaPrintf("Declares a local variable.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for VAR"
 #endif
@@ -3984,9 +3984,9 @@ help:                   CONSTANTTOKEN
                           }                 					       
                       | NOPTOKEN                          {
 #ifdef HELP_NOP_TEXT
-			    outputMode(); printf(HELP_NOP_TEXT);
+			    outputMode(); sollyaPrintf(HELP_NOP_TEXT);
 #else
-			    outputMode(); printf("Does nothing.\n");
+			    outputMode(); sollyaPrintf("Does nothing.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for NOP"
 #endif
@@ -3994,9 +3994,9 @@ help:                   CONSTANTTOKEN
                           }                 		
                       | PROCTOKEN                          {
 #ifdef HELP_PROC_TEXT
-			    outputMode(); printf(HELP_PROC_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PROC_TEXT);
 #else
-			    outputMode(); printf("Defines a nameless procedure.\n");
+			    outputMode(); sollyaPrintf("Defines a nameless procedure.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PROC"
 #endif
@@ -4004,9 +4004,9 @@ help:                   CONSTANTTOKEN
                           }                 					       			       
                       | PROCEDURETOKEN                     {
 #ifdef HELP_PROCEDURE_TEXT
-			    outputMode(); printf(HELP_PROCEDURE_TEXT);
+			    outputMode(); sollyaPrintf(HELP_PROCEDURE_TEXT);
 #else
-			    outputMode(); printf("Defines a named procedure.\n");
+			    outputMode(); sollyaPrintf("Defines a named procedure.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PROCEDURE"
 #endif
@@ -4014,9 +4014,9 @@ help:                   CONSTANTTOKEN
                           }                 	
                       | RETURNTOKEN                     {
 #ifdef HELP_RETURN_TEXT
-			    outputMode(); printf(HELP_RETURN_TEXT);
+			    outputMode(); sollyaPrintf(HELP_RETURN_TEXT);
 #else
-			    outputMode(); printf("Returns an expression in a procedure.\n");
+			    outputMode(); sollyaPrintf("Returns an expression in a procedure.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for RETURN"
 #endif
@@ -4024,219 +4024,219 @@ help:                   CONSTANTTOKEN
                           }                 					       			       
                       | HELPTOKEN
                           {
-			    outputMode(); printf("Type \"help <keyword>;\" for help on the keyword <keyword>.\nFor example type \"help implementpoly;\" for help on the command \"implementpoly\".\n\n");
-			    printf("Possible keywords in %s are:\n",PACKAGE_NAME);
-			    printf("- !\n");
-			    printf("- !=\n");
-			    printf("- &&\n");
-			    printf("- (\n");
-			    printf("- )\n");
-			    printf("- *\n");
-			    printf("- *<\n");
-			    printf("- +\n");
-			    printf("- ,\n");
-			    printf("- -\n");
-			    printf("- ...\n");
-			    printf("- .:\n");
-			    printf("- /\n");
-			    printf("- :.\n");
-			    printf("- ::\n");
-			    printf("- :=\n");
-			    printf("- ;\n");
-			    printf("- <\n");
-			    printf("- =\n");
-			    printf("- ==\n");
-			    printf("- >\n");
-			    printf("- >*\n");
-			    printf("- >.\n");
-			    printf("- >_\n");
-			    printf("- ?\n");
-			    printf("- @\n");
-			    printf("- D\n");
-			    printf("- DD\n");
-			    printf("- DE\n");
-			    printf("- Pi\n");
-			    printf("- RD\n");
-			    printf("- RN\n");
-			    printf("- RU\n");
-			    printf("- RZ\n");
-			    printf("- SG\n");
-			    printf("- TD\n");
-			    printf("- [\n");
-			    printf("- ]\n");
-			    printf("- ^\n");
-			    printf("- abs\n");
-			    printf("- absolute\n");
-			    printf("- accurateinfnorm\n");
-			    printf("- acos\n");
-			    printf("- acosh\n");
-			    printf("- asciiplot\n");
-			    printf("- asin\n");
-			    printf("- asinh\n");
-			    printf("- atan\n");
-			    printf("- atanh\n");
-			    printf("- autodiff\n");
-			    printf("- autosimplify\n");
-			    printf("- bashexecute\n");
-			    printf("- begin\n");
-			    printf("- binary\n");
-			    printf("- boolean\n");
-			    printf("- by\n");
-			    printf("- canonical\n");
-			    printf("- ceil\n");
-			    printf("- checkinfnorm\n");
-			    printf("- coeff\n");
-			    printf("- constant\n");
-			    printf("- cos\n");
-			    printf("- cosh\n");
-			    printf("- decimal\n");
-			    printf("- default\n");
-			    printf("- degree\n");
-			    printf("- denominator\n");
-			    printf("- diam\n");
-			    printf("- dieonerrormode\n");
-			    printf("- diff\n");
-			    printf("- dirtyfindzeros\n");
-			    printf("- dirtyinfnorm\n");
-			    printf("- dirtyintegral\n");
-			    printf("- display\n");
-			    printf("- do\n");
-			    printf("- double\n");
-			    printf("- doubledouble\n");
-			    printf("- doubleextended\n");
-			    printf("- dyadic\n");
-			    printf("- else\n");
-			    printf("- end\n");
-			    printf("- erf\n");
-			    printf("- erfc\n");
-			    printf("- error\n");
-			    printf("- evaluate\n");
-			    printf("- execute\n");
-			    printf("- exp\n");
-			    printf("- expand\n");
-			    printf("- expm1\n");
-			    printf("- exponent\n");
-			    printf("- externalplot\n");
-			    printf("- externalproc\n");
-			    printf("- false\n");
-			    printf("- file\n");
-			    printf("- findzeros\n");
-			    printf("- fixed\n");
-			    printf("- floating\n");
-			    printf("- floor\n");
-			    printf("- for\n");
-			    printf("- fpfindzeros\n");
-			    printf("- fpminimax\n");
-			    printf("- from\n");
-			    printf("- fullparentheses\n");
-			    printf("- function\n");
-			    printf("- guessdegree\n");
-			    printf("- head\n");
-			    printf("- hexadecimal\n");
-			    printf("- honorcoeffprec\n");
-			    printf("- hopitalrecursions\n");
-			    printf("- horner\n");
-			    printf("- if\n");
-			    printf("- implementpoly\n");
-			    printf("- in\n");
-			    printf("- inf\n");
-			    printf("- infnorm\n");
-			    printf("- integer\n");
-			    printf("- integral\n");
-			    printf("- isbound\n");
-			    printf("- isevaluable\n");
-			    printf("- length\n");
-			    printf("- library\n");
-			    printf("- list\n");
-			    printf("- log\n");
-			    printf("- log10\n");
-			    printf("- log1p\n");
-			    printf("- log2\n");
-			    printf("- mantissa\n");
-			    printf("- mid\n");
-			    printf("- midpointmode\n");
-			    printf("- nearestint\n");
-			    printf("- numberroots\n");
-			    printf("- nop\n");
-			    printf("- numerator\n");
-			    printf("- of\n");
-			    printf("- off\n");
-			    printf("- on\n");
-			    printf("- parse\n");
-			    printf("- perturb\n");
-			    printf("- pi\n");
-			    printf("- plot\n");
-			    printf("- points\n");
-			    printf("- postscript\n");
-			    printf("- postscriptfile\n");
-			    printf("- powers\n");
-			    printf("- prec\n");
-			    printf("- precision\n");
-			    printf("- print\n");
-			    printf("- printbinary\n");
-			    printf("- printdouble\n");
-			    printf("- printexpansion\n");
-			    printf("- printfloat\n");
-			    printf("- printhexa\n");
-			    printf("- printsingle\n");
-			    printf("- printxml\n");
-			    printf("- proc\n");
-			    printf("- procedure\n");
-			    printf("- quit\n");
-			    printf("- range\n");
-			    printf("- rationalapprox\n");
-			    printf("- rationalmode\n");
-			    printf("- readfile\n");
-			    printf("- readxml\n");
-			    printf("- relative\n");
-			    printf("- remez\n");
-			    printf("- rename\n");
-			    printf("- restart\n");
-			    printf("- return\n");
-			    printf("- revert\n");
-			    printf("- round\n");
-			    printf("- roundcoefficients\n");
-			    printf("- roundcorrectly\n");
-			    printf("- roundingwarnings\n");
-			    printf("- safesimplify\n");
-			    printf("- searchgal\n");
-			    printf("- simplify\n");
-			    printf("- simplifysafe\n");
-			    printf("- sin\n");
-			    printf("- single\n");
-			    printf("- sinh\n");
-			    printf("- sort\n");
-			    printf("- sqrt\n");
-			    printf("- string\n");
-			    printf("- subpoly\n");
-			    printf("- substitute\n");
-			    printf("- sup\n");
-			    printf("- tail\n");
-			    printf("- tan\n");
-			    printf("- tanh\n");
-			    printf("- taylor\n");
-			    printf("- taylorform\n");
-			    printf("- taylorrecursions\n");
-			    printf("- then\n");
-			    printf("- time\n");
-			    printf("- timing\n");
-			    printf("- to\n");
-			    printf("- tripledouble\n");
-			    printf("- true\n");
-			    printf("- var\n");
-			    printf("- verbosity\n");
-			    printf("- version\n");
-			    printf("- void\n");
-			    printf("- while\n");
-			    printf("- worstcase\n");
-			    printf("- write\n");
-			    printf("- zerodenominators\n");
-			    printf("- {\n");
-			    printf("- |\n");
-			    printf("- ||\n");
-			    printf("- }\n");
-			    printf("- ~\n");
-			    printf("\n");
+			    outputMode(); sollyaPrintf("Type \"help <keyword>;\" for help on the keyword <keyword>.\nFor example type \"help implementpoly;\" for help on the command \"implementpoly\".\n\n");
+			    sollyaPrintf("Possible keywords in %s are:\n",PACKAGE_NAME);
+			    sollyaPrintf("- !\n");
+			    sollyaPrintf("- !=\n");
+			    sollyaPrintf("- &&\n");
+			    sollyaPrintf("- (\n");
+			    sollyaPrintf("- )\n");
+			    sollyaPrintf("- *\n");
+			    sollyaPrintf("- *<\n");
+			    sollyaPrintf("- +\n");
+			    sollyaPrintf("- ,\n");
+			    sollyaPrintf("- -\n");
+			    sollyaPrintf("- ...\n");
+			    sollyaPrintf("- .:\n");
+			    sollyaPrintf("- /\n");
+			    sollyaPrintf("- :.\n");
+			    sollyaPrintf("- ::\n");
+			    sollyaPrintf("- :=\n");
+			    sollyaPrintf("- ;\n");
+			    sollyaPrintf("- <\n");
+			    sollyaPrintf("- =\n");
+			    sollyaPrintf("- ==\n");
+			    sollyaPrintf("- >\n");
+			    sollyaPrintf("- >*\n");
+			    sollyaPrintf("- >.\n");
+			    sollyaPrintf("- >_\n");
+			    sollyaPrintf("- ?\n");
+			    sollyaPrintf("- @\n");
+			    sollyaPrintf("- D\n");
+			    sollyaPrintf("- DD\n");
+			    sollyaPrintf("- DE\n");
+			    sollyaPrintf("- Pi\n");
+			    sollyaPrintf("- RD\n");
+			    sollyaPrintf("- RN\n");
+			    sollyaPrintf("- RU\n");
+			    sollyaPrintf("- RZ\n");
+			    sollyaPrintf("- SG\n");
+			    sollyaPrintf("- TD\n");
+			    sollyaPrintf("- [\n");
+			    sollyaPrintf("- ]\n");
+			    sollyaPrintf("- ^\n");
+			    sollyaPrintf("- abs\n");
+			    sollyaPrintf("- absolute\n");
+			    sollyaPrintf("- accurateinfnorm\n");
+			    sollyaPrintf("- acos\n");
+			    sollyaPrintf("- acosh\n");
+			    sollyaPrintf("- asciiplot\n");
+			    sollyaPrintf("- asin\n");
+			    sollyaPrintf("- asinh\n");
+			    sollyaPrintf("- atan\n");
+			    sollyaPrintf("- atanh\n");
+			    sollyaPrintf("- autodiff\n");
+			    sollyaPrintf("- autosimplify\n");
+			    sollyaPrintf("- bashexecute\n");
+			    sollyaPrintf("- begin\n");
+			    sollyaPrintf("- binary\n");
+			    sollyaPrintf("- boolean\n");
+			    sollyaPrintf("- by\n");
+			    sollyaPrintf("- canonical\n");
+			    sollyaPrintf("- ceil\n");
+			    sollyaPrintf("- checkinfnorm\n");
+			    sollyaPrintf("- coeff\n");
+			    sollyaPrintf("- constant\n");
+			    sollyaPrintf("- cos\n");
+			    sollyaPrintf("- cosh\n");
+			    sollyaPrintf("- decimal\n");
+			    sollyaPrintf("- default\n");
+			    sollyaPrintf("- degree\n");
+			    sollyaPrintf("- denominator\n");
+			    sollyaPrintf("- diam\n");
+			    sollyaPrintf("- dieonerrormode\n");
+			    sollyaPrintf("- diff\n");
+			    sollyaPrintf("- dirtyfindzeros\n");
+			    sollyaPrintf("- dirtyinfnorm\n");
+			    sollyaPrintf("- dirtyintegral\n");
+			    sollyaPrintf("- display\n");
+			    sollyaPrintf("- do\n");
+			    sollyaPrintf("- double\n");
+			    sollyaPrintf("- doubledouble\n");
+			    sollyaPrintf("- doubleextended\n");
+			    sollyaPrintf("- dyadic\n");
+			    sollyaPrintf("- else\n");
+			    sollyaPrintf("- end\n");
+			    sollyaPrintf("- erf\n");
+			    sollyaPrintf("- erfc\n");
+			    sollyaPrintf("- error\n");
+			    sollyaPrintf("- evaluate\n");
+			    sollyaPrintf("- execute\n");
+			    sollyaPrintf("- exp\n");
+			    sollyaPrintf("- expand\n");
+			    sollyaPrintf("- expm1\n");
+			    sollyaPrintf("- exponent\n");
+			    sollyaPrintf("- externalplot\n");
+			    sollyaPrintf("- externalproc\n");
+			    sollyaPrintf("- false\n");
+			    sollyaPrintf("- file\n");
+			    sollyaPrintf("- findzeros\n");
+			    sollyaPrintf("- fixed\n");
+			    sollyaPrintf("- floating\n");
+			    sollyaPrintf("- floor\n");
+			    sollyaPrintf("- for\n");
+			    sollyaPrintf("- fpfindzeros\n");
+			    sollyaPrintf("- fpminimax\n");
+			    sollyaPrintf("- from\n");
+			    sollyaPrintf("- fullparentheses\n");
+			    sollyaPrintf("- function\n");
+			    sollyaPrintf("- guessdegree\n");
+			    sollyaPrintf("- head\n");
+			    sollyaPrintf("- hexadecimal\n");
+			    sollyaPrintf("- honorcoeffprec\n");
+			    sollyaPrintf("- hopitalrecursions\n");
+			    sollyaPrintf("- horner\n");
+			    sollyaPrintf("- if\n");
+			    sollyaPrintf("- implementpoly\n");
+			    sollyaPrintf("- in\n");
+			    sollyaPrintf("- inf\n");
+			    sollyaPrintf("- infnorm\n");
+			    sollyaPrintf("- integer\n");
+			    sollyaPrintf("- integral\n");
+			    sollyaPrintf("- isbound\n");
+			    sollyaPrintf("- isevaluable\n");
+			    sollyaPrintf("- length\n");
+			    sollyaPrintf("- library\n");
+			    sollyaPrintf("- list\n");
+			    sollyaPrintf("- log\n");
+			    sollyaPrintf("- log10\n");
+			    sollyaPrintf("- log1p\n");
+			    sollyaPrintf("- log2\n");
+			    sollyaPrintf("- mantissa\n");
+			    sollyaPrintf("- mid\n");
+			    sollyaPrintf("- midpointmode\n");
+			    sollyaPrintf("- nearestint\n");
+			    sollyaPrintf("- numberroots\n");
+			    sollyaPrintf("- nop\n");
+			    sollyaPrintf("- numerator\n");
+			    sollyaPrintf("- of\n");
+			    sollyaPrintf("- off\n");
+			    sollyaPrintf("- on\n");
+			    sollyaPrintf("- parse\n");
+			    sollyaPrintf("- perturb\n");
+			    sollyaPrintf("- pi\n");
+			    sollyaPrintf("- plot\n");
+			    sollyaPrintf("- points\n");
+			    sollyaPrintf("- postscript\n");
+			    sollyaPrintf("- postscriptfile\n");
+			    sollyaPrintf("- powers\n");
+			    sollyaPrintf("- prec\n");
+			    sollyaPrintf("- precision\n");
+			    sollyaPrintf("- print\n");
+			    sollyaPrintf("- printbinary\n");
+			    sollyaPrintf("- printdouble\n");
+			    sollyaPrintf("- printexpansion\n");
+			    sollyaPrintf("- printfloat\n");
+			    sollyaPrintf("- printhexa\n");
+			    sollyaPrintf("- printsingle\n");
+			    sollyaPrintf("- printxml\n");
+			    sollyaPrintf("- proc\n");
+			    sollyaPrintf("- procedure\n");
+			    sollyaPrintf("- quit\n");
+			    sollyaPrintf("- range\n");
+			    sollyaPrintf("- rationalapprox\n");
+			    sollyaPrintf("- rationalmode\n");
+			    sollyaPrintf("- readfile\n");
+			    sollyaPrintf("- readxml\n");
+			    sollyaPrintf("- relative\n");
+			    sollyaPrintf("- remez\n");
+			    sollyaPrintf("- rename\n");
+			    sollyaPrintf("- restart\n");
+			    sollyaPrintf("- return\n");
+			    sollyaPrintf("- revert\n");
+			    sollyaPrintf("- round\n");
+			    sollyaPrintf("- roundcoefficients\n");
+			    sollyaPrintf("- roundcorrectly\n");
+			    sollyaPrintf("- roundingwarnings\n");
+			    sollyaPrintf("- safesimplify\n");
+			    sollyaPrintf("- searchgal\n");
+			    sollyaPrintf("- simplify\n");
+			    sollyaPrintf("- simplifysafe\n");
+			    sollyaPrintf("- sin\n");
+			    sollyaPrintf("- single\n");
+			    sollyaPrintf("- sinh\n");
+			    sollyaPrintf("- sort\n");
+			    sollyaPrintf("- sqrt\n");
+			    sollyaPrintf("- string\n");
+			    sollyaPrintf("- subpoly\n");
+			    sollyaPrintf("- substitute\n");
+			    sollyaPrintf("- sup\n");
+			    sollyaPrintf("- tail\n");
+			    sollyaPrintf("- tan\n");
+			    sollyaPrintf("- tanh\n");
+			    sollyaPrintf("- taylor\n");
+			    sollyaPrintf("- taylorform\n");
+			    sollyaPrintf("- taylorrecursions\n");
+			    sollyaPrintf("- then\n");
+			    sollyaPrintf("- time\n");
+			    sollyaPrintf("- timing\n");
+			    sollyaPrintf("- to\n");
+			    sollyaPrintf("- tripledouble\n");
+			    sollyaPrintf("- true\n");
+			    sollyaPrintf("- var\n");
+			    sollyaPrintf("- verbosity\n");
+			    sollyaPrintf("- version\n");
+			    sollyaPrintf("- void\n");
+			    sollyaPrintf("- while\n");
+			    sollyaPrintf("- worstcase\n");
+			    sollyaPrintf("- write\n");
+			    sollyaPrintf("- zerodenominators\n");
+			    sollyaPrintf("- {\n");
+			    sollyaPrintf("- |\n");
+			    sollyaPrintf("- ||\n");
+			    sollyaPrintf("- }\n");
+			    sollyaPrintf("- ~\n");
+			    sollyaPrintf("\n");
                           }                                                           
 ;
 

@@ -76,6 +76,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 /* STATE OF THE TOOL */
 
 int oldAutoPrint = 0;
+int printMode = PRINT_MODE_LEGACY;
+FILE *warnFile = NULL;
 char *variablename = NULL;
 mp_prec_t defaultprecision = DEFAULTPRECISION;
 mp_prec_t tools_precision = DEFAULTPRECISION;
@@ -166,7 +168,7 @@ void freeTool();
 void makeToolDie() {
   freeTool();
 
-  if (!eliminatePromptBackup) printf("\n");
+  if (!eliminatePromptBackup) sollyaPrintf("\n");
 
   if (inputFileOpened) {
     fclose(inputFile);
@@ -186,30 +188,33 @@ void considerDyingOnError() {
 }
 
 void normalMode() {
+  if (displayColor == 0) return;
+  displayColor = 0;
   if (noColor) return;
   if (eliminatePromptBackup) return;
-  if (displayColor == 0) return;
+  fflush(NULL);
   printf("\e[0m");
   fflush(NULL);
-  displayColor = 0;
 }
 
 void redMode() {
+  if (displayColor == 1) return;
+  displayColor = 1;
   if (noColor) return;
   if (eliminatePromptBackup) return;
-  if (displayColor == 1) return;
+  fflush(NULL);
   printf("\e[0m\e[31m");
   fflush(NULL);
-  displayColor = 1;
 }
 
 void blueMode() {
+  if (displayColor == 2) return;
+  displayColor = 2;
   if (eliminatePromptBackup) return;
   if (noColor) return;
-  if (displayColor == 2) return;
+  fflush(NULL);
   printf("\e[0m\e[34m");
   fflush(NULL);
-  displayColor = 2;
 }
 
 void setDisplayColor(int i) {
@@ -246,12 +251,14 @@ void restoreMode() {
 
 void blinkMode() {
   if (eliminatePromptBackup) return;
+  fflush(NULL);
   printf("\e[5m");
   fflush(NULL);
 }
 
 void unblinkMode() {
   if (eliminatePromptBackup) return;
+  fflush(NULL);
   printf("\e[25m");
   fflush(NULL);
 }
@@ -274,7 +281,7 @@ void *safeCalloc (size_t nmemb, size_t size) {
   void *ptr;
   ptr = calloc(nmemb,size);
   if (ptr == NULL) {
-    fprintf(stderr,"Error: calloc could not succeed. No more memory left.\n");
+    sollyaFprintf(stderr,"Error: calloc could not succeed. No more memory left.\n");
     exit(1);
   }
   return ptr;
@@ -287,7 +294,7 @@ void *safeMalloc (size_t size) {
   else
     ptr = malloc(size);
   if (ptr == NULL) {
-    fprintf(stderr,"Error: malloc could not succeed. No more memory left.\n");
+    sollyaFprintf(stderr,"Error: malloc could not succeed. No more memory left.\n");
     exit(1);
   }
   return ptr;
@@ -297,7 +304,7 @@ void *safeRealloc (void *ptr, size_t size) {
   void *newPtr;
   newPtr = realloc(ptr,size);
   if ((size != 0) && (newPtr == NULL)) {
-    fprintf(stderr,"Error: realloc could not succeed. No more memory left.\n");
+    sollyaFprintf(stderr,"Error: realloc could not succeed. No more memory left.\n");
     exit(1);
   }
   return newPtr;
@@ -475,7 +482,7 @@ void newReadFileStarted() {
 }
 
 void carriageReturnLexed() {
-  if (helpNotFinished) { outputMode(); printf("This is %s. Having typed 'help', you have got to a special prompt.\nType now a semicolon (';') for an introduction on the %s help system.\nType now 'help;' for getting a list of available commands.\nType now a command name followed by a semicolon (';') for help on this command.\n>> ",PACKAGE_NAME,PACKAGE_NAME); }
+  if (helpNotFinished) { outputMode(); sollyaPrintf("This is %s. Having typed 'help', you have got to a special prompt.\nType now a semicolon (';') for an introduction on the %s help system.\nType now 'help;' for getting a list of available commands.\nType now a command name followed by a semicolon (';') for help on this command.\n>> ",PACKAGE_NAME,PACKAGE_NAME); }
   if (promptToBePrinted) printPrompt();
 }
 
@@ -484,6 +491,33 @@ void newTokenLexed() {
   promptToBePrinted = 0;
 }
 
+// Precondition: fd can only be one of stdout and stderr
+int sollyaVfprintfSpecial(FILE *fd, const char *format, va_list varlist) {
+  int res;
+
+  if (printMode == PRINT_MODE_LEGACY) return vfprintf(fd,format,varlist);
+
+  if ((printMode == PRINT_MODE_WARNING_TO_STDERR) && 
+      (displayColor == 1)) 
+    return vfprintf(stderr,format,varlist);
+
+  if ((printMode == PRINT_MODE_WARNING_TO_FILE) && 
+      (displayColor == 1) && 
+      (warnFile != NULL)) { 
+    res = vfprintf(warnFile,format,varlist);
+    return res;
+  }
+
+  return vfprintf(fd,format,varlist);
+}
+
+int sollyaVfprintf(FILE *fd, const char *format, va_list varlist) {
+
+  if ((fd == stdout) || (fd == stderr)) 
+    return sollyaVfprintfSpecial(fd,format,varlist);
+
+  return vfprintf(fd,format,varlist);
+}
 
 int printMessage(int verb, const char *format, ...) {
   va_list varlist;
@@ -498,13 +532,34 @@ int printMessage(int verb, const char *format, ...) {
 
   va_start(varlist,format);
 
-  res = vprintf(format,varlist);
+  res = sollyaVfprintf(stdout,format,varlist);
 
   setDisplayColor(oldColor);
 
   return res;
 }
 
+int sollyaPrintf(const char *format, ...) {
+  va_list varlist;
+  int res;
+
+  va_start(varlist,format);
+
+  res = sollyaVfprintf(stdout,format,varlist);
+
+  return res;
+}
+
+int sollyaFprintf(FILE *fd, const char *format, ...) {
+  va_list varlist;
+  int res;
+
+  va_start(varlist,format);
+
+  res = sollyaVfprintf(fd,format,varlist);
+
+  return res;
+}
 
 void freeCounter(void) {
   freeChain(timeStack, free);
@@ -517,7 +572,7 @@ void pushTimeCounter(void) {
   if(timecounting==1) {
     buf = safeMalloc(sizeof(struct timeval));
     if(gettimeofday(buf,NULL)!=0)
-      fprintf(stderr, "Error: unable to use the timer. Measures may be untrustable\n");
+      sollyaFprintf(stderr, "Error: unable to use the timer. Measures may be untrustable\n");
     timeStack = addElement(timeStack, buf);
   }
   return;
@@ -533,7 +588,7 @@ void popTimeCounter(char *s) {
   if((timecounting==1)&&(timeStack!=NULL)) {
     buf_final = safeMalloc(sizeof(struct timeval));
     if(gettimeofday(buf_final,NULL)!=0)
-      fprintf(stderr, "Error: unable to use the timer. Measures may be untrustable\n");
+      sollyaFprintf(stderr, "Error: unable to use the timer. Measures may be untrustable\n");
     buf_init = timeStack->value;
 
     seconds = (long int)(buf_final->tv_sec) - (long int)(buf_init->tv_sec);
@@ -548,7 +603,7 @@ void popTimeCounter(char *s) {
 
     if((milliseconds>0)||(seconds>0)) {
       changeToWarningMode();
-      printf("Information: %s spent ", s);
+      sollyaPrintf("Information: %s spent ", s);
       if(seconds!=0) {
 	minutes = seconds / 60;
 	seconds = seconds % 60;
@@ -557,12 +612,12 @@ void popTimeCounter(char *s) {
 	days = hours / 24;
 	hours = hours % 24;
 	
-	if(days!=0) printf("%ld days, ", days);
-	if(hours!=0) printf("%ld hours, ", hours);
-	if(minutes!=0) printf("%ld minutes, ", minutes);
-	if(seconds!=0) printf("%ld seconds, ", seconds);
+	if(days!=0) sollyaPrintf("%ld days, ", days);
+	if(hours!=0) sollyaPrintf("%ld hours, ", hours);
+	if(minutes!=0) sollyaPrintf("%ld minutes, ", minutes);
+	if(seconds!=0) sollyaPrintf("%ld seconds, ", seconds);
       }
-      printf("%ld ms\n", milliseconds);
+      sollyaPrintf("%ld ms\n", milliseconds);
       restoreMode();
     }
 
@@ -589,10 +644,10 @@ void printBacktrace() {
     size = backtrace (array, BACKTRACELENGTH);
     strings = backtrace_symbols (array, size);
 
-    fprintf(stderr,"The current stack is:\n\n");
+    sollyaFprintf(stderr,"The current stack is:\n\n");
 
     for (i=0; i<size; i++)
-      fprintf(stderr,"%s\n", strings[i]);
+      sollyaFprintf(stderr,"%s\n", strings[i]);
 
     free (strings);
     numberBacktrace--;
@@ -609,33 +664,33 @@ void signalHandler(int i) {
     break;
   case SIGSEGV:
     changeToWarningMode();
-    printf("Warning: handling signal SIGSEGV\n");
+    sollyaPrintf("Warning: handling signal SIGSEGV\n");
     printBacktrace(); 
-    printf("\n");
+    sollyaPrintf("\n");
     restoreMode();
     break;
   case SIGBUS:
     changeToWarningMode();
-    printf("Warning: handling signal SIGBREAK\n");
+    sollyaPrintf("Warning: handling signal SIGBREAK\n");
     restoreMode();
     break;
   case SIGFPE:
     changeToWarningMode();
-    printf("Warning: handling signal SIGFPE\n");
+    sollyaPrintf("Warning: handling signal SIGFPE\n");
     restoreMode();
     break;
   case SIGPIPE:
     changeToWarningMode();
-    printf("Warning: handling signal SIGPIPE\n");
+    sollyaPrintf("Warning: handling signal SIGPIPE\n");
     restoreMode();
     break;
   default:
-    fprintf(stderr,"Error: must handle an unknown signal.\n");
+    sollyaFprintf(stderr,"Error: must handle an unknown signal.\n");
     exit(1);
   }
   if (recoverEnvironmentReady) {
     if (exitInsteadOfRecover) {
-      fprintf(stderr,"Error: the recover environment has not been initialized. Exiting.\n");
+      sollyaFprintf(stderr,"Error: the recover environment has not been initialized. Exiting.\n");
       exit(1);
     }
     longjmp(recoverEnvironment,1);
@@ -645,7 +700,7 @@ void signalHandler(int i) {
 void recoverFromError(void) {
   displayColor = -1; normalMode();
   if (exitInsteadOfRecover) {
-    fprintf(stderr,"Error: the recover environment has not been initialized. Exiting.\n");
+    sollyaFprintf(stderr,"Error: the recover environment has not been initialized. Exiting.\n");
     exit(1);
   }
   longjmp(recoverEnvironmentError,1);
@@ -657,10 +712,10 @@ void printPrompt(void) {
   if (readStack != NULL) return;
   parseMode();
   if (oldrlwrapcompatible && (!noColor)) {
-    printf("\e[1A\n");
+    sollyaPrintf("\e[1A\n");
     fflush(NULL);
   }
-  printf("> ");
+  sollyaPrintf("> ");
 }
 
 void initSignalHandler() {
@@ -800,6 +855,10 @@ void finishTool() {
     fclose(inputFile);
     inputFileOpened = 0;
   }
+  if (warnFile != NULL) {
+    fclose(warnFile);
+    warnFile = NULL;
+  }
 }
 
 mp_prec_t getToolPrecision() {
@@ -860,7 +919,7 @@ int general(int argc, char *argv[]) {
   struct termios termAttr;
   int parseAbort, executeAbort;
   int i;
-  FILE *fd;
+  FILE *fd = NULL;
   struct rlimit rlim;
   char *error;
   int doNotModifyStackSize;
@@ -871,6 +930,8 @@ int general(int argc, char *argv[]) {
   inputFileOpened = 0;
   flushOutput = 0;
   oldAutoPrint = 0;
+  printMode = PRINT_MODE_LEGACY;
+  warnFile = NULL;
 
   if (tcgetattr(0,&termAttr) == -1) {
     eliminatePromptBackup = 1;
@@ -878,22 +939,24 @@ int general(int argc, char *argv[]) {
 
   for (i=1;i<argc;i++) {
     if (strcmp(argv[i],"--help") == 0) {
-      printf("This is %s connected to ",PACKAGE_STRING);
+      sollyaPrintf("This is %s connected to ",PACKAGE_STRING);
       if (eliminatePromptBackup) 
-	printf("a regular file");
+	sollyaPrintf("a regular file");
       else
-	printf("a terminal");
-      printf(".\n\nUsage: %s [options]\n\nPossible options are:\n",PACKAGE_NAME);
-      printf("--nocolor : do not color the output using ANSI escape sequences\n");
-      printf("--noprompt : do not print a prompt symbol\n");
-      printf("--flush : flush standard output and standard error after each command\n");
-      printf("--oldrlwrapcompatible : acheive some compatibilty with old rlwrap versions by emitting wrong ANSI sequences (deprecated)\n");
-      printf("--donotmodifystacksize : do not attempt to set the maximal stack size to the maximum size allowed on the system\n");
-      printf("--oldautoprint : print commas between autoprinted elements separated by commas\n");
-      printf("--help : print this help text\n");
-      printf("\nFor help on %s commands type \"help;\" on the %s prompt\n",PACKAGE_NAME,PACKAGE_NAME);
-      printf("More documentation on %s is available on the %s website http://sollya.gforge.inria.fr/.\nFor bug reports send an email to %s.\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
-      printf("\n%s is Copyright 2006-2010 by\n    Laboratoire de l'Informatique du Parallelisme,\n    UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668, Lyon, France,\nand by\n    LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France.\nAll rights reserved.\n\nContributors are S. Chevillard, N. Jourdan, M. Joldes and Chr. Lauter.\n\nThis software is governed by the CeCILL-C license under French law and\nabiding by the rules of distribution of free software.  You can  use,\nmodify and/ or redistribute the software under the terms of the CeCILL-C\nlicense as circulated by CEA, CNRS and INRIA at the following URL\n\"http://www.cecill.info\".\n\n",PACKAGE_STRING);
+	sollyaPrintf("a terminal");
+      sollyaPrintf(".\n\nUsage: %s [options]\n\nPossible options are:\n",PACKAGE_NAME);
+      sollyaPrintf("--nocolor : do not color the output using ANSI escape sequences\n");
+      sollyaPrintf("--noprompt : do not print a prompt symbol\n");
+      sollyaPrintf("--flush : flush standard output and standard error after each command\n");
+      sollyaPrintf("--oldrlwrapcompatible : acheive some compatibilty with old rlwrap versions by emitting wrong ANSI sequences (deprecated)\n");
+      sollyaPrintf("--donotmodifystacksize : do not attempt to set the maximal stack size to the maximum size allowed on the system\n");
+      sollyaPrintf("--oldautoprint : print commas between autoprinted elements separated by commas\n");
+      sollyaPrintf("--warnonstderr : print warning messages on error output instead on the standard output\n");
+      sollyaPrintf("--warninfile[append] <file> : print warning messages into a file instead on the standard output\n");
+      sollyaPrintf("--help : print this help text\n");
+      sollyaPrintf("\nFor help on %s commands type \"help;\" on the %s prompt\n",PACKAGE_NAME,PACKAGE_NAME);
+      sollyaPrintf("More documentation on %s is available on the %s website http://sollya.gforge.inria.fr/.\nFor bug reports send an email to %s.\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
+      sollyaPrintf("\n%s is Copyright 2006-2010 by\n    Laboratoire de l'Informatique du Parallelisme,\n    UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668, Lyon, France,\nand by\n    LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France.\nAll rights reserved.\n\nContributors are S. Chevillard, N. Jourdan, M. Joldes and Chr. Lauter.\n\nThis software is governed by the CeCILL-C license under French law and\nabiding by the rules of distribution of free software.  You can  use,\nmodify and/ or redistribute the software under the terms of the CeCILL-C\nlicense as circulated by CEA, CNRS and INRIA at the following URL\n\"http://www.cecill.info\".\n\n",PACKAGE_STRING);
       return 1;
     } else 
       if (strcmp(argv[i],"--nocolor") == 0) noColor = 1; else
@@ -901,22 +964,58 @@ int general(int argc, char *argv[]) {
 	  if (strcmp(argv[i],"--oldrlwrapcompatible") == 0) oldrlwrapcompatible = 1; else
               if (strcmp(argv[i],"--flush") == 0) flushOutput = 1; else 
 		if (strcmp(argv[i],"--oldautoprint") == 0) oldAutoPrint = 1; else
-		if (strcmp(argv[i],"--donotmodifystacksize") == 0) doNotModifyStackSize = 1; else {
-	    if (!inputFileOpened) {
-	      fd = fopen(argv[i],"r");
-	      if (fd != NULL) {
-		inputFile = fd;
-		inputFileOpened = 1;
-		eliminatePromptBackup = 1;
-	      } else {
-		printf("Error: the file \"%s\" could not be opened: %s\n",argv[i],strerror(errno));
-		return 1;
-	      }
-	    } else {
-	      printf("Error: another input file besides \"%s\" has been indicated and opened.\n",argv[i]);
-	      return 1;
-	    }
-	  } 
+                  if (strcmp(argv[i],"--warnonstderr") == 0) {
+                    if (printMode != PRINT_MODE_WARNING_TO_FILE) {
+                      printMode = PRINT_MODE_WARNING_TO_STDERR; 
+                    } else {
+                      sollyaPrintf("Error: only one of the --warnonstderr or --warninfile options can be given.\n");
+                      return 1;
+                    }
+                  } else
+                    if ((strcmp(argv[i],"--warninfile") == 0) || 
+                        (strcmp(argv[i],"--warninfileappend") == 0)){
+                      if (printMode != PRINT_MODE_WARNING_TO_STDERR) {
+                        if (i+1<argc) {
+                          i++;
+                          if (strcmp(argv[i-1],"--warninfileappend") == 0) {
+                            fd = fopen(argv[i],"a");
+                          } else {
+                            fd = fopen(argv[i],"w");
+                          }
+                          if (fd != NULL) {
+                            warnFile = fd;
+                            fd = NULL;
+                            printMode = PRINT_MODE_WARNING_TO_FILE;
+                          } else {
+                            sollyaPrintf("Error: the file \"%s\" could not be opened for warning display: %s\n",argv[i],strerror(errno));
+                            return 1;
+                          }
+                        } else {
+                          sollyaPrintf("Error: no file argument is given for the --warninfile option.\n");
+                          return 1;
+                        }
+                      } else {
+                        sollyaPrintf("Error: only one of the --warnonstderr or --warninfile options can be given.\n");
+                        return 1;
+                      }
+                    } else { 
+                      if (strcmp(argv[i],"--donotmodifystacksize") == 0) doNotModifyStackSize = 1; else {
+                        if (!inputFileOpened) {
+                          fd = fopen(argv[i],"r");
+                          if (fd != NULL) {
+                            inputFile = fd;
+                            inputFileOpened = 1;
+                            eliminatePromptBackup = 1;
+                          } else {
+                            sollyaPrintf("Error: the file \"%s\" could not be opened: %s\n",argv[i],strerror(errno));
+                            return 1;
+                          }
+                        } else {
+                          sollyaPrintf("Error: another input file besides \"%s\" has been indicated and opened.\n",argv[i]);
+                          return 1;
+                        }
+                      } 
+                    }
   }
 
   yylex_init(&scanner);
@@ -1037,11 +1136,16 @@ int general(int argc, char *argv[]) {
   
   freeTool();
 
-  if (!eliminatePromptBackup) printf("\n");
+  if (!eliminatePromptBackup) sollyaPrintf("\n");
 
   if (inputFileOpened) {
     fclose(inputFile);
     inputFileOpened = 0;
+  }
+
+  if (warnFile != NULL) {
+    fclose(warnFile);
+    warnFile = NULL;
   }
 
   if (lastWasError) return 1; else return 0;

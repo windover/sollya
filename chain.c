@@ -329,12 +329,12 @@ int cmpMpfrPtr(void *a, void *b) {
 
 void printIntChain(chain *c) {
   chain *curr=c;
-  printf("[");
+  sollyaPrintf("[");
   while(curr!=NULL) {
-    printf(" %d ", *(int *)(curr->value));
+    sollyaPrintf(" %d ", *(int *)(curr->value));
     curr=curr->next;
   }
-  printf("]\n");
+  sollyaPrintf("]\n");
   return;
 }
 

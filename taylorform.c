@@ -98,20 +98,20 @@ void cleartModel(tModel *t){
 /* This function pretty prints a taylor model */
 void printtModel(tModel *t){
   int i;
-  printf("\nTaylor model of order, %d expanded in ", t->n);
+  sollyaPrintf("\nTaylor model of order, %d expanded in ", t->n);
   printInterval(t->x0);
-  printf("over ");
+  sollyaPrintf("over ");
   printInterval(t->x);
-  printf("\nCoeffs:");
+  sollyaPrintf("\nCoeffs:");
   for(i=0;i<t->n;i++) {
     printInterval(t->poly_array[i]);
-    if (i<(t->n)-1) printf(", ");
+    if (i<(t->n)-1) sollyaPrintf(", ");
   } 
-  printf("\nremainder = ");
+  sollyaPrintf("\nremainder = ");
   printInterval(t->rem_bound);
-  printf(",\nbound = ");
+  sollyaPrintf(",\nbound = ");
   printInterval(t->poly_bound);  
-  printf("\n");  
+  sollyaPrintf("\n");  
 }
 
 
@@ -148,8 +148,8 @@ void copytModel(tModel *t, tModel *tt){
   int i;
 
   if (!tModelsAreCompatible(t, tt)) {
-    fprintf(stderr, "Error in taylorform: trying to copy incompatible models.\n");
-    fprintf(stderr, "No modification is made.\n");
+    sollyaFprintf(stderr, "Error in taylorform: trying to copy incompatible models.\n");
+    sollyaFprintf(stderr, "No modification is made.\n");
     return;
   }
 
@@ -236,8 +236,8 @@ void multiplication_TM(tModel *t, tModel *t1, tModel *t2, int mode){
   prec = getToolPrecision();
 
   if ( (!tModelsAreCompatible(t1, t2)) || (!tModelsAreCompatible(t, t1)) ) {
-    fprintf(stderr, "Error in taylorform: trying to multiply incompatible models.\n");
-    fprintf(stderr, "No modification is made.\n");
+    sollyaFprintf(stderr, "Error in taylorform: trying to multiply incompatible models.\n");
+    sollyaFprintf(stderr, "No modification is made.\n");
     return;
   }
 
@@ -348,8 +348,8 @@ void addition_TM(tModel *t,tModel *t1, tModel *t2, int mode){
   tModel *tt;
 
   if ( (!tModelsAreCompatible(t1, t2)) || (!tModelsAreCompatible(t, t1)) ) {
-    fprintf(stderr, "Error in taylorform: trying to multiply incompatible models.\n");
-    fprintf(stderr, "No modification is made.\n");
+    sollyaFprintf(stderr, "Error in taylorform: trying to multiply incompatible models.\n");
+    sollyaFprintf(stderr, "No modification is made.\n");
     return;
   }
 
@@ -466,7 +466,7 @@ void computeMonotoneRemainder(mpfi_t *bound, int typeOfFunction, int nodeType, n
     if (((n-1)%2)!=0)  mpfi_pow(boundfx0, p_interv, x0);
     break;
   default:
-    fprintf(stderr, "Error in taylorform: unkown type of function used with Zumkeller's technique\n");
+    sollyaFprintf(stderr, "Error in taylorform: unkown type of function used with Zumkeller's technique\n");
     return;
   }
   
@@ -540,7 +540,7 @@ void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, 
     powerFunction_diff(nDeriv, p, x, n+1, silent);
     break;
   default: 
-    fprintf(stderr, "Error in taylorform: unkown type of function used with Zumkeller's technique\n");
+    sollyaFprintf(stderr, "Error in taylorform: unkown type of function used with Zumkeller's technique\n");
     return;
   }
   
@@ -654,7 +654,7 @@ void reduceOrder_TM(tModel*d, tModel*s, int n){
   prec = getToolPrecision();
 
   if (n>oldn) {
-    fprintf(stderr, "Error: taylorform: trying to increase the order of a TM\n");
+    sollyaFprintf(stderr, "Error: taylorform: trying to increase the order of a TM\n");
     return;
   }
   
@@ -1235,7 +1235,7 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
     break;
     
   default:
-   fprintf(stderr,"Error: TM: unknown identifier (%d) in the tree\n",f->nodeType);
+   sollyaFprintf(stderr,"Error: TM: unknown identifier (%d) in the tree\n",f->nodeType);
    exit(1);
 //  }
 }
@@ -1257,12 +1257,12 @@ chain *constructChain(mpfi_t *err, int n){
 }
 void printMpfiChain(chain *c) {
   chain *curr=c;
-  printf("[");
+  sollyaPrintf("[");
   while(curr!=NULL) {
     printInterval( *(mpfi_t *)(curr->value));
     curr=curr->next;
   }
-  printf("]\n");
+  sollyaPrintf("]\n");
   return;
 }
 

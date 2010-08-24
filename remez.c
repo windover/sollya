@@ -72,14 +72,14 @@ void myPrintValue(mpfr_t *x, mp_prec_t prec) {
 
 void printMatrix(mpfr_t *M, int n) {
   int i,j;
-  printf("[");
+ sollyaPrintf("[");
   for(i=1;i<=n;i++) {
     for(j=1;j<=n;j++) {
-      myPrintValue(&M[coeff(i,j,n)],53); if(j!=n)printf(", ");
+      myPrintValue(&M[coeff(i,j,n)],53); if(j!=n) sollyaPrintf(", ");
     }
-    if(i!=n) printf(";\n");
+    if(i!=n) sollyaPrintf(";\n");
   }
-  printf("]\n");
+  sollyaPrintf("]\n");
   return;
 }
 
@@ -377,11 +377,11 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 
   if(verbosity>=8) {
     changeToWarningMode();
-    printf("Information (Newton's algorithm): entering in Newton's algorithm. Parameters are:\n");
-    printf("Information (Newton's algorithm): f = "); printTree(f); printf("\n");
-    printf("Information (Newton's algorithm): a = "); printMpfr(a);
-    printf("Information (Newton's algorithm): b = "); printMpfr(b);
-    if (x0!=NULL) { printf("Information (Newton's algorithm): x0 = "); printMpfr(*x0);}
+    sollyaPrintf("Information (Newton's algorithm): entering in Newton's algorithm. Parameters are:\n");
+    sollyaPrintf("Information (Newton's algorithm): f = "); printTree(f); sollyaPrintf("\n");
+    sollyaPrintf("Information (Newton's algorithm): a = "); printMpfr(a);
+    sollyaPrintf("Information (Newton's algorithm): b = "); printMpfr(b);
+    if (x0!=NULL) { sollyaPrintf("Information (Newton's algorithm): x0 = "); printMpfr(*x0);}
     restoreMode();
   }
   
@@ -560,7 +560,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 	stop_algo = 1;
       }
       else {
-	fprintf(stderr, "Error (Newton's algorithm): numerical problems have been encountered. Failed.\n");
+	sollyaFprintf(stderr, "Error (Newton's algorithm): numerical problems have been encountered. Failed.\n");
 	mpfr_set_nan(res);
 	stop_algo = 1;
       }
@@ -572,7 +572,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 	stop_algo = 1;
       }
       else {
-	fprintf(stderr, "Error (Newton's algorithm): numerical problems have been encountered. Failed.\n");
+	sollyaFprintf(stderr, "Error (Newton's algorithm): numerical problems have been encountered. Failed.\n");
 	mpfr_set_nan(res);
 	stop_algo = 1;
       }
@@ -584,20 +584,20 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 	stop_algo = 1;
       }
       else {
-	fprintf(stderr, "Error (Newton's algorithm): numerical problems have been encountered. Failed.\n");
+	sollyaFprintf(stderr, "Error (Newton's algorithm): numerical problems have been encountered. Failed.\n");
 	mpfr_set_nan(res);
 	stop_algo = 1;
       }
     }
     if ( ((sgnfepsa==codefa) && (sgnf0==codefa) && (sgnfepsb==3)) ||
 	 ((sgnfepsa==3) && (sgnf0==codefa) && (sgnfepsb==3)) ) { 
-      fprintf(stderr, "Error (Newton's algorithm): failed to locate the zero\n");
+      sollyaFprintf(stderr, "Error (Newton's algorithm): failed to locate the zero\n");
       mpfr_set_nan(res);
       stop_algo = 1;
     }
     if ( ((sgnfepsa==3) && (sgnf0==codeNegfa) && (sgnfepsb==codeNegfa)) ||
 	 ((sgnfepsa==3) && (sgnf0==codeNegfa) && (sgnfepsb==3)) ) { 
-      fprintf(stderr, "Error (Newton's algorithm): failed to locate the zero\n");
+      sollyaFprintf(stderr, "Error (Newton's algorithm): failed to locate the zero\n");
       mpfr_set_nan(res);
       stop_algo = 1;
     }
@@ -703,7 +703,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
   printMessage(7, "Information (Newton's algorithm): finished after %d steps.\n", nbr_iter);
   if(verbosity>=8) {
     changeToWarningMode();
-    printf("Information (Newton's algorithm): x = "); printMpfr(res);
+    sollyaPrintf("Information (Newton's algorithm): x = "); printMpfr(res);
     restoreMode();
   }
   
@@ -969,9 +969,9 @@ void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
   if(mpfr_sgn(err_newx)*mpfr_sgn(epsilon)==1) {
     if(verbosity>=3) {
       changeToWarningMode();
-      printf("Remez: exchange algorithm takes the minimum (");
+      sollyaPrintf("Remez: exchange algorithm takes the minimum (");
       myPrintValue(&mini, 53);
-      printf(") at place %d\n",argmini);
+      sollyaPrintf(") at place %d\n",argmini);
       restoreMode();
     }
     mpfr_set(x[argmini], newx, GMP_RNDN);
@@ -979,9 +979,9 @@ void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
   else {
     if(verbosity>=3) {
       changeToWarningMode();
-      printf("Remez: exchange algorithm takes the maximum (");
+      sollyaPrintf("Remez: exchange algorithm takes the maximum (");
       myPrintValue(&maxi, 53);
-      printf(") at place %d\n",argmaxi);
+      sollyaPrintf(") at place %d\n",argmaxi);
       restoreMode();
     }
     mpfr_set(x[argmaxi], newx, GMP_RNDN);
@@ -1152,8 +1152,8 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
     printMessage(2, "Performing an exchange step...\n");
     if (verbosity>=4) {
       changeToWarningMode();
-      printf("Computed infinity norm : "); printMpfr(maxi);
-      printf("Reached at point "); printMpfr(argmaxi);
+      sollyaPrintf("Computed infinity norm : "); printMpfr(maxi);
+      sollyaPrintf("Reached at point "); printMpfr(argmaxi);
       restoreMode();
     }
     for(i=0;i<deg+2;i++) mpfr_set(res[i], curr_points[i], GMP_RNDN);
@@ -1201,8 +1201,8 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
       printMessage(2, "Failed to find pseudo-alternating points. Performing an exchange step...\n");
       if (verbosity>=4) {
 	changeToWarningMode();
-	printf("Computed infinity norm : "); printMpfr(maxi);
-	printf("Reached at point "); printMpfr(argmaxi);
+	sollyaPrintf("Computed infinity norm : "); printMpfr(maxi);
+	sollyaPrintf("Reached at point "); printMpfr(argmaxi);
 	restoreMode();
       }
       for(i=0;i<deg+2;i++) mpfr_set(res[i], curr_points[i], GMP_RNDN);
@@ -1260,7 +1260,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
 
   
   // Construction of the trees corresponding to (poly*w-f)' and (poly*w-f)''
-  if(verbosity>=8) { 	changeToWarningMode(); printf("Constructing the error tree... \n"); restoreMode(); }
+  if(verbosity>=8) { 	changeToWarningMode(); sollyaPrintf("Constructing the error tree... \n"); restoreMode(); }
   error = safeMalloc(sizeof(node));
   error->nodeType = SUB;
   temp1 = safeMalloc(sizeof(node));
@@ -1274,19 +1274,19 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
   free_memory(error);
   error = temp1;
 
-  if(verbosity>=8) { 	changeToWarningMode(); printf("Constructing the error' tree... \n"); restoreMode(); }
+  if(verbosity>=8) { 	changeToWarningMode(); sollyaPrintf("Constructing the error' tree... \n"); restoreMode(); }
   error_diff = differentiate(error);
   temp1 = simplifyTreeErrorfree(error_diff);
   free_memory(error_diff);
   error_diff = temp1;
 
-  if(verbosity>=8) { 	changeToWarningMode(); printf("Constructing the error'' trees... \n"); restoreMode(); }
+  if(verbosity>=8) { 	changeToWarningMode(); sollyaPrintf("Constructing the error'' trees... \n"); restoreMode(); }
   error_diff2 = differentiate(error_diff);
   temp1 = simplifyTreeErrorfree(error_diff2);
   free_memory(error_diff2);
   error_diff2 = temp1;
   
-  if(verbosity>=6) { 	changeToWarningMode(); printf("Computing the yi... \n"); restoreMode(); }
+  if(verbosity>=6) { 	changeToWarningMode(); sollyaPrintf("Computing the yi... \n"); restoreMode(); }
   // If x = [x1 ... xn], we construct [y0 y1 ... yn] by
   // y0 = (a+x1)/2, yn = (xn+b)/2 and yi = (xi + x(i+1))/2
   y = (mpfr_t *)safeMalloc((n+1)*sizeof(mpfr_t));
@@ -1306,9 +1306,9 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
 
   if(verbosity>=6) {
     changeToWarningMode();
-    printf("The computed yi are : ");
-    for(i=0;i<=n;i++) {printMpfr(y[i]); printf(" ");}
-    printf("\n");
+    sollyaPrintf("The computed yi are : ");
+    for(i=0;i<=n;i++) {printMpfr(y[i]); sollyaPrintf(" ");}
+    sollyaPrintf("\n");
     restoreMode();
   }
   
@@ -1338,11 +1338,11 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
 
   if(verbosity>=6) {
     changeToWarningMode();
-    printf("We are in case : ");
-    if(case1) printf("1\n");
-    if(case2) printf("2\n");
-    if(case2b) printf("2bis\n");
-    if(case3) printf("3\n");
+    sollyaPrintf("We are in case : ");
+    if(case1) sollyaPrintf("1\n");
+    if(case2) sollyaPrintf("2\n");
+    if(case2b) sollyaPrintf("2bis\n");
+    if(case3) sollyaPrintf("3\n");
     restoreMode();
   }
 
@@ -1386,11 +1386,11 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
   if(verbosity>=6) {
     changeToWarningMode();
     if(test) {
-      printf("The computed signs are : ");
-      for(i=0;i<=n;i++) printf("%d  ",s[i]);
-      printf("\n");
+      sollyaPrintf("The computed signs are : ");
+      for(i=0;i<=n;i++) sollyaPrintf("%d  ",s[i]);
+      sollyaPrintf("\n");
     }
-    else printf("Test is false because signs could not be evaluated\n");
+    else sollyaPrintf("Test is false because signs could not be evaluated\n");
     restoreMode();
   }
   
@@ -1495,9 +1495,9 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
   else {
     if(verbosity>=1) {
       changeToWarningMode();
-      printf("Warning in Remez: a slower algorithm is used for this step");
-      if(!HaarCompliant) printf(" (pseudo-alternation condition changed)");
-      printf("\n");
+      sollyaPrintf("Warning in Remez: a slower algorithm is used for this step");
+      if(!HaarCompliant) sollyaPrintf(" (pseudo-alternation condition changed)");
+      sollyaPrintf("\n");
       restoreMode();
     }
 
@@ -1529,7 +1529,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
 
   if(verbosity>=3) {
     changeToWarningMode();
-    printf("The new points are : ");
+    sollyaPrintf("The new points are : ");
     for(i=1; i<=n; i++) printMpfr(z[i-1]);
     restoreMode();
   }
@@ -1559,10 +1559,10 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
   if(verbosity>=3) {
     changeToWarningMode();
     mpfr_set(dummy_mpfr2,max_val,GMP_RNDN);
-    printf("Current norm: "); printValue(&max_val); //myPrintValue(&dummy_mpfr2, 5) ;
+    sollyaPrintf("Current norm: "); printValue(&max_val); //myPrintValue(&dummy_mpfr2, 5) ;
     mpfr_set(dummy_mpfr2,var_mpfr,GMP_RNDN);
-    printf(" (1 +/- "); myPrintValue(&dummy_mpfr2, 5);
-    printf(")\n");
+    sollyaPrintf(" (1 +/- "); myPrintValue(&dummy_mpfr2, 5);
+    sollyaPrintf(")\n");
     restoreMode();
   }
 
@@ -1623,8 +1623,8 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
   if(verbosity>=3) {
     changeToWarningMode();
-    printf("Entering in Remez function...\n");
-    printf("Required quality :"); printMpfr(quality);
+    sollyaPrintf("Entering in Remez function...\n");
+    sollyaPrintf("Required quality :"); printMpfr(quality);
     restoreMode();
   }
 
@@ -1674,7 +1674,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   mpfr_set_si(previous_lambdai_vect[freeDegrees],-1,GMP_RNDN);
 
 
-  if(verbosity>=8)  { changeToWarningMode(); printf("Differentiating functions...\n"); restoreMode(); }
+  if(verbosity>=8)  { changeToWarningMode(); sollyaPrintf("Differentiating functions...\n"); restoreMode(); }
   pushTimeCounter();
   poly = NULL;
   f_diff = differentiate(f);
@@ -1684,7 +1684,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   popTimeCounter("Remez: differentiating the functions");
 
 
-  if(verbosity>=8)  { changeToWarningMode(); printf("Computing monomials...\n"); restoreMode(); }
+  if(verbosity>=8)  { changeToWarningMode(); sollyaPrintf("Computing monomials...\n"); restoreMode(); }
   pushTimeCounter();
   monomials_tree = safeMalloc(freeDegrees*sizeof(node *));
   curr = monomials;
@@ -1715,7 +1715,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
   if(verbosity>=8) {
     changeToWarningMode();
-    printf("Computing an initial points set...\n");
+    sollyaPrintf("Computing an initial points set...\n");
     restoreMode();
   }
   pushTimeCounter();
@@ -1801,7 +1801,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   popTimeCounter("Remez: computing initial points set");
   if(verbosity>=4) {
     changeToWarningMode();
-    printf("Computed points set:\n");
+    sollyaPrintf("Computed points set:\n");
     for(i=1;i<=freeDegrees+1;i++) printMpfr(x[i-1]);
     restoreMode();
   }
@@ -1815,8 +1815,8 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       // M lets us solve the interpolation problem
       if(verbosity>=3) {
 	changeToWarningMode();
-	printf("Step %d\n",count);
-	printf("Computing the matrix...\n");
+	sollyaPrintf("Step %d\n",count);
+	sollyaPrintf("Computing the matrix...\n");
 	restoreMode();
       }
       pushTimeCounter();
@@ -1884,12 +1884,12 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
       if(verbosity>=4) {
 	changeToWarningMode();
-	printf("Signs for pseudo-alternating condition : [");
+	sollyaPrintf("Signs for pseudo-alternating condition : [");
 	for (i=1 ; i <= freeDegrees ; i++) {
 	  myPrintValue(&M[coeff(i, freeDegrees+1, freeDegrees+1)],10);
-	  printf(", ");
+	  sollyaPrintf(", ");
 	}
-	printf("-1]\n");
+	sollyaPrintf("-1]\n");
 	restoreMode();
       }
 
@@ -1897,7 +1897,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
       if(verbosity>=7) {
 	changeToWarningMode();
-	printf("The computed matrix is "); printMatrix(M, freeDegrees+1);
+	sollyaPrintf("The computed matrix is "); printMatrix(M, freeDegrees+1);
 	restoreMode();
       }
         
@@ -1910,7 +1910,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 	mpfr_set(b[i-1],var1,GMP_RNDN);
       }
 
-      if(verbosity>=8) { changeToWarningMode(); printf("Resolving the system...\n"); restoreMode(); }
+      if(verbosity>=8) { changeToWarningMode(); sollyaPrintf("Resolving the system...\n"); restoreMode(); }
 
       pushTimeCounter();
       system_solve(ai_vect, M, b, freeDegrees+1, prec);
@@ -1920,12 +1920,12 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
       if(verbosity>=4) {
 	changeToWarningMode();
-	printf("The computed polynomial is "); printTree(poly); printf("\n");
+	sollyaPrintf("The computed polynomial is "); printTree(poly); sollyaPrintf("\n");
 	restoreMode();
       }
       if(verbosity>=3) {
 	changeToWarningMode();
-	printf("Current value of epsilon : "); myPrintValue(&ai_vect[freeDegrees],53); printf("\n");
+	sollyaPrintf("Current value of epsilon : "); myPrintValue(&ai_vect[freeDegrees],53); sollyaPrintf("\n");
 	restoreMode();
       }
 
@@ -1941,7 +1941,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       // Computing the useful derivatives of functions
       if(verbosity>=8) {
 	changeToWarningMode();
-	printf("Differentiating the computed polynomial...\n");
+	sollyaPrintf("Differentiating the computed polynomial...\n");
 	restoreMode();
       }
     
@@ -1958,7 +1958,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
       if(verbosity>=8) {
 	changeToWarningMode();
-	printf("Searching extrema of the error function...\n");
+	sollyaPrintf("Searching extrema of the error function...\n");
 	restoreMode();
       }
     
@@ -1983,9 +1983,9 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
 	if(verbosity>=1) {
 	  changeToWarningMode();
-	  printf("The best polynomial obtained gives an error of ");
+	  sollyaPrintf("The best polynomial obtained gives an error of ");
 	  printMpfr(ninf);
-	  printf("\n");
+	  sollyaPrintf("\n");
 	  restoreMode();
 	}
 
@@ -2048,7 +2048,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       
       if(verbosity>=3) {
 	changeToWarningMode();
-	printf("Current quality: "); printMpfr(computedQuality);
+	sollyaPrintf("Current quality: "); printMpfr(computedQuality);
 	restoreMode();
       }
 
@@ -2093,10 +2093,10 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   
   if(verbosity>=2) {
     changeToWarningMode();
-    printf("Remez finished after %d steps\n",count);
-    printf("The computed infnorm is "); myPrintValue(&infinityNorm, 53) ; printf("\n");
-    printf("The polynomial is optimal within a factor 1 +/- "); myPrintValue(&computedQuality, 5); printf("\n");
-    if(verbosity>=5) { printf("Computed poly: "); printTree(poly); printf("\n");}
+    sollyaPrintf("Remez finished after %d steps\n",count);
+    sollyaPrintf("The computed infnorm is "); myPrintValue(&infinityNorm, 53) ; sollyaPrintf("\n");
+    sollyaPrintf("The polynomial is optimal within a factor 1 +/- "); myPrintValue(&computedQuality, 5); sollyaPrintf("\n");
+    if(verbosity>=5) { sollyaPrintf("Computed poly: "); printTree(poly); sollyaPrintf("\n");}
     restoreMode();
   }
 
@@ -2150,7 +2150,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   gmp_randclear(random_state);
 
   if (mpfr_cmp(computedQuality, quality)>0) {
-    fprintf(stderr, "Error in Remez: the algorithm does not converge.\n");
+    sollyaFprintf(stderr, "Error in Remez: the algorithm does not converge.\n");
     mpfr_clear(computedQuality);
     mpfr_clear(infinityNorm);
     recoverFromError();
@@ -2199,7 +2199,7 @@ node *remez(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mpfr
   sortChain(monomials2,cmpIntPtr);
 
   if (!testMonomials(monomials2)) {
-    fprintf(stderr,"Error: monomial degree is given twice in argument to Remez algorithm.\n");
+    sollyaFprintf(stderr,"Error: monomial degree is given twice in argument to Remez algorithm.\n");
     recoverFromError();
   }
 
@@ -2486,7 +2486,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
   if(verbosity>=4) {
     changeToWarningMode();
-    printf("Information: guessdegree: trying degree %d. Found radius: ",n-1);
+    sollyaPrintf("Information: guessdegree: trying degree %d. Found radius: ",n-1);
     printMpfr(h);
     restoreMode();
   }
@@ -2501,7 +2501,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
     radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
     if(verbosity>=4) {
       changeToWarningMode();
-      printf("Information: guessdegree: trying degree %d. Found radius: ",n-1);
+      sollyaPrintf("Information: guessdegree: trying degree %d. Found radius: ",n-1);
       printMpfr(h);
       restoreMode();
     }
@@ -2515,7 +2515,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
     radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
     if(verbosity>=4) {
       changeToWarningMode();
-      printf("Information: guessdegree: trying degree %d. Found radius: ",n-1);
+      sollyaPrintf("Information: guessdegree: trying degree %d. Found radius: ",n-1);
       printMpfr(h);
       restoreMode();
     }
@@ -2535,7 +2535,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
       radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
       if(verbosity>=4) {
 	changeToWarningMode();
-	printf("Information: guessdegree: trying degree %d (current bounds: [%d, %d]). Found radius: ",n-1,n_min-1,n_max-1);
+	sollyaPrintf("Information: guessdegree: trying degree %d (current bounds: [%d, %d]). Found radius: ",n-1,n_min-1,n_max-1);
 	printMpfr(h);
 	restoreMode();
       }
@@ -2560,7 +2560,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   firstStepContinuousMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
   if(verbosity>=4) {
     changeToWarningMode();
-    printf("Information: guessdegree: trying degree %d. Found infnorm: ",n-1);
+    sollyaPrintf("Information: guessdegree: trying degree %d. Found infnorm: ",n-1);
     printMpfr(h);
     restoreMode();
   }
@@ -2570,7 +2570,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
     firstStepContinuousMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
     if(verbosity>=4) {
       changeToWarningMode();
-      printf("Information: guessdegree: trying degree %d. Found infnorm: ",n-1);
+      sollyaPrintf("Information: guessdegree: trying degree %d. Found infnorm: ",n-1);
       printMpfr(h);
       restoreMode();
     }

@@ -97,7 +97,7 @@ void printWorstCases(node *func,
   double eps;
   long long int i;
 
-  printf("prec = %d\n",(int) prec);
+  sollyaPrintf("prec = %d\n",(int) prec);
 
   if (!(mpfrToInt(&inputprecision, inputprec) &&
 	mpfrToInt(&outputprecision, outputprec) &&
@@ -180,27 +180,27 @@ void printWorstCases(node *func,
     }
     
     if (mpfr_cmp(temp2,epsilon) <= 0) {
-      printf("%s = ",variablename);
+      sollyaPrintf("%s = ",variablename);
       printValue(&x);
-      printf("\t\tf(%s) = ",variablename);
+      sollyaPrintf("\t\tf(%s) = ",variablename);
       printValue(&yR);
-      printf("\t\teps = ");
+      sollyaPrintf("\t\teps = ");
       printValue(&temp2);
       mpfr_log2(temp,temp2,GMP_RNDN);
       eps = mpfr_get_d(temp,GMP_RNDN);
-      printf(" = 2^(%f) \n",eps);
+      sollyaPrintf(" = 2^(%f) \n",eps);
       if (fd != NULL) {
-	fprintf(fd,"%s = ",variablename);
+	sollyaFprintf(fd,"%s = ",variablename);
 	fprintValue(fd,x);
-	fprintf(fd,"\tf(%s) = ",variablename);
+	sollyaFprintf(fd,"\tf(%s) = ",variablename);
 	fprintValue(fd,yR);
-	fprintf(fd,"\teps = ");
+	sollyaFprintf(fd,"\teps = ");
 	fprintValue(fd,temp2);
-	fprintf(fd," = 2^(%f) ",eps);
+	sollyaFprintf(fd," = 2^(%f) ",eps);
 	if (mpfr_zero_p(y)) {
-	  fprintf(fd,"ABSOLUTE");
+	  sollyaFprintf(fd,"ABSOLUTE");
 	} 
-	fprintf(fd,"\n");
+	sollyaFprintf(fd,"\n");
       }
     }
 

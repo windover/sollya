@@ -100,7 +100,7 @@ void printMpq(mpq_t x) {
   mpfr_init2(denomMpfr,prec);
   mpfr_set_z(denomMpfr,denom,GMP_RNDN);
 
-  printValue(&numMpfr); printf(" / "); printValue(&denomMpfr);
+  printValue(&numMpfr); sollyaPrintf(" / "); printValue(&denomMpfr);
 
   mpfr_clear(numMpfr);
   mpfr_clear(denomMpfr);
@@ -690,16 +690,16 @@ int getNrRoots(mpfr_t res, node *f, mpfi_t range) {
       tempTree = simplifyTreeErrorfree(coefficients[i]);
       free_memory(coefficients[i]);
       if (!isConstant(tempTree)) {
-	fprintf(stderr,"Error: getNrRoots: an error occurred. A polynomial coefficient is not constant.\n");
+	sollyaFprintf(stderr,"Error: getNrRoots: an error occurred. A polynomial coefficient is not constant.\n");
 	exit(1);
       }
       if (tempTree->nodeType != CONSTANT) {
 	if (tryEvaluateConstantTermToMpq(qCoefficients[i], tempTree)) {
 	  if (verbosity >= 3) {
 	    changeToWarningMode();
-	    printf("Information: in getNrRoots: evaluated the %dth coefficient to ",i);
+	    sollyaPrintf("Information: in getNrRoots: evaluated the %dth coefficient to ",i);
 	    printMpq(qCoefficients[i]);
-	    printf("\n");
+	    sollyaPrintf("\n");
 	    restoreMode();
 	  }
 	} else {
@@ -718,9 +718,9 @@ int getNrRoots(mpfr_t res, node *f, mpfi_t range) {
 	  mpfr_to_mpq(qCoefficients[i], tempValue2);
 	  if (verbosity >= 3) {
 	    changeToWarningMode();
-	    printf("Information: evaluated the %dth coefficient to ",i);
+	    sollyaPrintf("Information: evaluated the %dth coefficient to ",i);
 	    printMpq(qCoefficients[i]);
-	    printf("\n");
+	    sollyaPrintf("\n");
 	    restoreMode();
 	  }
 	}

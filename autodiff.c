@@ -192,7 +192,7 @@ void binary_function_diff(mpfi_t *res, int nodeType, mpfi_t x0, node *f, node *g
     break;
 
   default:
-    fprintf(stderr, "Error in autodiff: unknown binary operator (%d)\n", nodeType);
+    sollyaFprintf(stderr, "Error in autodiff: unknown binary operator (%d)\n", nodeType);
     return;
   }
   
@@ -1436,7 +1436,7 @@ void baseFunction_diff(mpfi_t *res, int nodeType, mpfi_t x, int n, int *silent) 
     nearestint_diff(res, x, n, silent);
     break;
   default:
-    fprintf(stderr,"Error: AD: unknown unary function (%d) in the tree\n", nodeType);
+    sollyaFprintf(stderr,"Error in autodiff: unknown unary function (%d) in the tree\n", nodeType);
   }
 
   return;
@@ -1613,7 +1613,7 @@ void auto_diff_scaled(mpfi_t* res, node *f, mpfi_t x0, int n) {
     break;
     
   default:
-   fprintf(stderr,"Error in autodiff: unknown identifier (%d) in the tree\n",f->nodeType);
+   sollyaFprintf(stderr,"Error in autodiff: unknown identifier (%d) in the tree\n",f->nodeType);
    exit(1);
   }
 

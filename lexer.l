@@ -461,9 +461,9 @@ NOP             "nop"
 		      if (temp_fd == NULL) {
                         if (verbosity >= 1) {
                            changeToWarningMode();
-                           printf("Warning: the file \"%s\" could not be opened for reading: ",newReadFilenameTemp);
-                           printf("\"%s\".\n",strerror(errno));
-			   printf("The last command will have no effect. No memory will be lost.\n");
+                           sollyaPrintf("Warning: the file \"%s\" could not be opened for reading: ",newReadFilenameTemp);
+                           sollyaPrintf("\"%s\".\n",strerror(errno));
+			   sollyaPrintf("The last command will have no effect. No memory will be lost.\n");
                            considerDyingOnError();
                            restoreMode();
                         }
@@ -493,7 +493,7 @@ NOP             "nop"
 
 <<EOF>>         {
                       if (readStack == NULL) {
-			if (!eliminatePromptBackup) printf("\n");
+			if (!eliminatePromptBackup) sollyaPrintf("\n");
 			yyterminate();
 		      } else {
 			fclose(yyin);

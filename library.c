@@ -110,7 +110,7 @@ libraryFunction *bindFunction(char* libraryName, char *functionName) {
   libHandle = getLibraryHandle(libraryName);
   if (libHandle == NULL) {
     changeToWarningMode();
-    fprintf(stderr,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,functionName,dlerror());
+    sollyaFprintf(stderr,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,functionName,dlerror());
     restoreMode();
     return NULL;
   }
@@ -119,7 +119,7 @@ libraryFunction *bindFunction(char* libraryName, char *functionName) {
   myFunction = (int (*)(mpfi_t, mpfi_t, int)) dlsym(libHandle->libraryDescriptor, functionName);
   if ((error = dlerror()) != NULL) {
     changeToWarningMode();
-    fprintf(stderr, "Error: could not find function \"%s\" in library \"%s\" for binding: %s\n",functionName,libraryName,error);
+    sollyaFprintf(stderr, "Error: could not find function \"%s\" in library \"%s\" for binding: %s\n",functionName,libraryName,error);
     restoreMode();
     return NULL;
   }
@@ -243,7 +243,7 @@ libraryProcedure *bindProcedure(char* libraryName, char *procedureName, chain *s
   libHandle = getProcLibraryHandle(libraryName);
   if (libHandle == NULL) {
     changeToWarningMode();
-    fprintf(stderr,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,procedureName,dlerror());
+    sollyaFprintf(stderr,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,procedureName,dlerror());
     restoreMode();
     return NULL;
   }
@@ -252,7 +252,7 @@ libraryProcedure *bindProcedure(char* libraryName, char *procedureName, chain *s
   myFunction = dlsym(libHandle->procLibraryDescriptor, procedureName);
   if ((error = dlerror()) != NULL) {
     changeToWarningMode();
-    fprintf(stderr, "Error: could not find procedure \"%s\" in library \"%s\" for binding: %s\n",procedureName,libraryName,error);
+    sollyaFprintf(stderr, "Error: could not find procedure \"%s\" in library \"%s\" for binding: %s\n",procedureName,libraryName,error);
     restoreMode();
     return NULL;
   }

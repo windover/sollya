@@ -73,7 +73,13 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 #define UNUSED_PARAM(_unused_param_x) ((void)(_unused_param_x))
 
+#define PRINT_MODE_LEGACY            0
+#define PRINT_MODE_WARNING_TO_STDERR 1
+#define PRINT_MODE_WARNING_TO_FILE   2
+
 extern int oldAutoPrint;
+extern int printMode;
+extern FILE *warnFile;
 extern char *variablename;
 extern mp_prec_t defaultprecision;
 extern mp_prec_t tools_precision;
@@ -134,6 +140,8 @@ void demaskString(char*, char*);
 void *safeCalloc (size_t nmemb, size_t size);
 void *safeMalloc (size_t size);
 int printMessage(int verb, const char *format, ...);
+int sollyaPrintf(const char *format, ...);
+int sollyaFprintf(FILE *fd, const char *format, ...);
 int removeSpaces(char *outbuf, char *inbuf);
 int removeMidpointMode(char *outbuf, char *inbuf);
 void cutMidpointStringIntoTwo(char *str1, char *str2, char *str);

@@ -650,13 +650,13 @@ int printDoubleInHexa(mpfr_t x) {
   xdb.d = d;
   endianessdb.d = 1.0;
   if ((endianessdb.i[1] == 0x3ff00000) && (endianessdb.i[0] == 0)) {
-    printf("0x%08x%08x\n",xdb.i[1],xdb.i[0]);
+    sollyaPrintf("0x%08x%08x\n",xdb.i[1],xdb.i[0]);
   } else {
     if ((endianessdb.i[0] == 0x3ff00000) && (endianessdb.i[1] == 0)) {
-      printf("0x%08x%08x\n",xdb.i[0],xdb.i[1]);
+      sollyaPrintf("0x%08x%08x\n",xdb.i[0],xdb.i[1]);
     } else {
       printMessage(1,"Warning: could not figure out the endianess of the system. Will print 1.0 instead of the value.\n");
-      printf("0x3ff0000000000000\n");
+      sollyaPrintf("0x3ff0000000000000\n");
     }
   }
 
@@ -736,7 +736,7 @@ int printSimpleInHexa(mpfr_t x) {
   }
 
   xfl.f = xfloat;
-  printf("0x%08x\n",xfl.i);
+  sollyaPrintf("0x%08x\n",xfl.i);
 
   mpfr_clear(temp);
   mpfr_clear(temp2);
@@ -1090,7 +1090,7 @@ int printDoubleExpansion(mpfr_t x) {
     noBrackets = 1;
 
   if (!noBrackets) 
-    printf("(");
+    sollyaPrintf("(");
 
   do {
     d = mpfr_get_d(rest,GMP_RNDN);
@@ -1104,13 +1104,13 @@ int printDoubleExpansion(mpfr_t x) {
     xdb.d = d;
     endianessdb.d = 1.0;
     if ((endianessdb.i[1] == 0x3ff00000) && (endianessdb.i[0] == 0)) {
-      printf("0x%08x%08x",xdb.i[1],xdb.i[0]);
+      sollyaPrintf("0x%08x%08x",xdb.i[1],xdb.i[0]);
     } else {
       if ((endianessdb.i[0] == 0x3ff00000) && (endianessdb.i[1] == 0)) {
-	printf("0x%08x%08x",xdb.i[0],xdb.i[1]);
+	sollyaPrintf("0x%08x%08x",xdb.i[0],xdb.i[1]);
       } else {
 	printMessage(1,"Warning: could not figure out the endianess of the system. Will print 1.0 instead of the value.\n");
-	printf("0x3ff0000000000000\n");
+	sollyaPrintf("0x3ff0000000000000\n");
 	roundingOccured = 1;
       }
     }
@@ -1123,13 +1123,13 @@ int printDoubleExpansion(mpfr_t x) {
     }
     
     if ((d != 0.0) && (!mpfr_zero_p(rest))) {
-      printf(" + ");
+      sollyaPrintf(" + ");
     }
 
   } while ((d != 0.0) && (!mpfr_zero_p(rest)));
 
   if (!noBrackets) 
-    printf(")");
+    sollyaPrintf(")");
 
 
   if (!mpfr_zero_p(rest)) {
@@ -1187,14 +1187,14 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
     if (coefficients[i] != NULL) {
       if (k > 0) {
 	if (k == 1) {
-	  printf("%s * ",variablename);
+	  sollyaPrintf("%s * ",variablename);
 	} else {
-	  printf("%s^%d * ",variablename,k);
+	  sollyaPrintf("%s^%d * ",variablename,k);
 	}
       }
 
       if ((i != degree) && (i != 0)) {
-	printf("(");
+	sollyaPrintf("(");
 	l++;
       }
 
@@ -1220,14 +1220,14 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
       k = 1;
 
       if (i != degree) {
-	printf(" + ");
+	sollyaPrintf(" + ");
       }
     } else {
       k++;
     }
   }
   for (i=0;i<l;i++) 
-    printf(")");
+    sollyaPrintf(")");
 
   free(coefficients);
   mpfr_clear(tempValue);
@@ -1256,7 +1256,7 @@ void mpfr_round_to_format(mpfr_t rop, mpfr_t op, int format) {
     mpfr_round_to_double(rop, op);
     break;
   default:
-    fprintf(stderr,"Error: mpfr_round_to_format: unknown format type.\n");
+    sollyaFprintf(stderr,"Error: mpfr_round_to_format: unknown format type.\n");
     exit(1);
   }
 }
@@ -1280,7 +1280,7 @@ int round_to_expansion_format(mpfr_t rop, mpfr_t op, int format, mp_rnd_t mode) 
     mpfr_round_to_double_mode(rop, op, mode);
     break;
   default:
-    fprintf(stderr,"Error: round_to_expansion_format: unknown format type.\n");
+    sollyaFprintf(stderr,"Error: round_to_expansion_format: unknown format type.\n");
     exit(1);
   }
 

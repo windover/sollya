@@ -1020,19 +1020,19 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	printMessage(8,"Information: decorrelating an interval addition.\n");
 	if (verbosity >= 12) {
 	  changeToWarningMode();
-	  printf("Decorrelating on function\n");
+	  sollyaPrintf("Decorrelating on function\n");
 	  printTree(tree);
-	  printf("\nconstant term:\n");
+	  sollyaPrintf("\nconstant term:\n");
 	  printInterval(tempA);
-	  printf("\nlinear term:\n");
+	  sollyaPrintf("\nlinear term:\n");
 	  printInterval(tempB);
-	  printf("\ntranslated interval:\n");
+	  sollyaPrintf("\ntranslated interval:\n");
 	  printInterval(xMXZ);
-	  printf("\nTaylor evaluation:\n");
+	  sollyaPrintf("\nTaylor evaluation:\n");
 	  printInterval(temp1);
-	  printf("\ndirect evaluation:\n");
+	  sollyaPrintf("\ndirect evaluation:\n");
 	  printInterval(stack3);
-	  printf("\n");
+	  sollyaPrintf("\n");
 	  restoreMode();
 	}
 
@@ -1177,19 +1177,19 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	printMessage(8,"Information: decorrelating an interval substraction.\n");
 	if (verbosity >= 12) {
 	  changeToWarningMode();
-	  printf("Decorrelating on function\n");
+	  sollyaPrintf("Decorrelating on function\n");
 	  printTree(tree);
-	  printf("\nconstant term:\n");
+	  sollyaPrintf("\nconstant term:\n");
 	  printInterval(tempA);
-	  printf("\nlinear term:\n");
+	  sollyaPrintf("\nlinear term:\n");
 	  printInterval(tempB);
-	  printf("\ntranslated interval:\n");
+	  sollyaPrintf("\ntranslated interval:\n");
 	  printInterval(xMXZ);
-	  printf("\nTaylor evaluation:\n");
+	  sollyaPrintf("\nTaylor evaluation:\n");
 	  printInterval(temp1);
-	  printf("\ndirect evaluation:\n");
+	  sollyaPrintf("\ndirect evaluation:\n");
 	  printInterval(stack3);
-	  printf("\n");
+	  sollyaPrintf("\n");
 	  restoreMode();
 	}
 
@@ -1300,28 +1300,28 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	printMessage(8,"Information: using Hopital's rule on point division.\n");
 	if (verbosity >= 9) {
 	  changeToWarningMode();
-	  printf("Information: entering interval was \n");
+	  sollyaPrintf("Information: entering interval was \n");
 	  printInterval(x);
-	  printf("\n");
+	  sollyaPrintf("\n");
 	  restoreMode();
 	}
 
 	if (verbosity >= 12) {
 	  changeToWarningMode();
-	  printf("Hopital's rule is used on function\n");
+	  sollyaPrintf("Hopital's rule is used on function\n");
 	  printTree(tree);
-	  printf("\n");
+	  sollyaPrintf("\n");
 	  restoreMode();
 	}
 
 	if (verbosity >= 15) {
 	  changeToWarningMode();
-	  printf("The derivative of the numerator is\n");
+	  sollyaPrintf("The derivative of the numerator is\n");
 	  printTree(derivNumerator);
-	  printf("\n");
-	  printf("The derivative of the denominator is\n");
+	  sollyaPrintf("\n");
+	  sollyaPrintf("The derivative of the denominator is\n");
 	  printTree(derivDenominator);
-	  printf("\n");
+	  sollyaPrintf("\n");
 	  restoreMode();
 	}
 
@@ -1352,9 +1352,9 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 	printMessage(8,"Information: simplifying an interval division with 0 point numerator.\n");
 	if (verbosity >= 12) {
 	  changeToWarningMode();
-	  printf("Simplification on function\n");
+	  sollyaPrintf("Simplification on function\n");
 	  printTree(tree);
-	  printf("\n");
+	  sollyaPrintf("\n");
 	  restoreMode();
 	}
 
@@ -1460,9 +1460,9 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		printMessage(8,"Information: using Hopital's rule (general case) on denominator zero.\n");
 		if (verbosity >= 10) {
 		  changeToWarningMode();
-		  printf("Hopital's rule is used on function\n");
+		  sollyaPrintf("Hopital's rule is used on function\n");
 		  printTree(tree);
-		  printf(" in point ");
+		  sollyaPrintf(" in point ");
 		  printMpfr(z);
 		  restoreMode();
 		}
@@ -1472,7 +1472,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		printMessage(8,"Information: recursion on use of Hopital's rule\n");
 		if (verbosity >= 10) {
 		  changeToWarningMode();
-		  printf("Reused Hopital's rule point is ");
+		  sollyaPrintf("Reused Hopital's rule point is ");
 		  printMpfr(*hopitalPoint);
 		  restoreMode();
 		}
@@ -1480,9 +1480,9 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 
 	      if (verbosity >= 15) {
 		changeToWarningMode();
-		printf("Information in Hopital: The simplified function is\n");
+		sollyaPrintf("Information in Hopital: The simplified function is\n");
 		printTree(tempNode);
-		printf("\n");
+		sollyaPrintf("\n");
 		restoreMode();
 	      }
 	      
@@ -1570,9 +1570,9 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		    printMessage(8,"Information: using Hopital's rule (general case) on numerator zero.\n");
 		    if (verbosity >= 10) {
 		      changeToWarningMode();
-		      printf("Hopital's rule is used on function\n");
+		      sollyaPrintf("Hopital's rule is used on function\n");
 		      printTree(tree);
-		      printf(" in point ");
+		      sollyaPrintf(" in point ");
 		      printMpfr(z);
 		      restoreMode();
 		    }
@@ -1582,7 +1582,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		    printMessage(8,"Information: recursion on use of Hopital's rule\n");
 		    if (verbosity >= 10) {
 		      changeToWarningMode();
-		      printf("Reused Hopital's rule point is ");
+		      sollyaPrintf("Reused Hopital's rule point is ");
 		      printMpfr(*hopitalPoint);
 		      restoreMode();
 		    }
@@ -1590,9 +1590,9 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
 		  
 		  if (verbosity >= 15) {
 		    changeToWarningMode();
-		    printf("Information in Hopital: The simplified function is\n");
+		    sollyaPrintf("Information in Hopital: The simplified function is\n");
 		    printTree(tempNode);
-		    printf("\n");
+		    sollyaPrintf("\n");
 		    restoreMode();
 		  }
 
@@ -1712,11 +1712,11 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     }
 
 #if DEBUGMPFI 
-    printf("mpfi_sin(");
+    sollyaPrintf("mpfi_sin(");
     printInterval(stack1);
-    printf(") = ");
+    sollyaPrintf(") = ");
     printInterval(stack3);
-    printf("\n");
+    sollyaPrintf("\n");
 #endif    
 
     break;
@@ -1734,11 +1734,11 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     }
 
 #if DEBUGMPFI 
-    printf("mpfi_cos(");
+    sollyaPrintf("mpfi_cos(");
     printInterval(stack1);
-    printf(") = ");
+    sollyaPrintf(") = ");
     printInterval(stack3);
-    printf("\n");
+    sollyaPrintf("\n");
 #endif    
 
     break;
@@ -1939,7 +1939,7 @@ chain* evaluateI(mpfi_t result, node *tree, mpfi_t x, mp_prec_t prec, int simpli
     excludes = NULL;
     break;
   default:
-    fprintf(stderr,"Error: evaluateI: unknown identifier in the tree\n");
+    sollyaFprintf(stderr,"Error: evaluateI: unknown identifier in the tree\n");
     exit(1);
   }
 
@@ -2084,11 +2084,11 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
   printMessage(13,"Information: evaluating a function in interval arithmetic using Taylor's formula.\n");
   if (verbosity >= 15) {
     changeToWarningMode();
-    printf("Information: the function is\n");
+    sollyaPrintf("Information: the function is\n");
     printTree(func);
-    printf("\nIts derivative is\n");
+    sollyaPrintf("\nIts derivative is\n");
     printTree(deriv);
-    printf("\n");
+    sollyaPrintf("\n");
     restoreMode();
   }
 
@@ -2213,19 +2213,19 @@ chain* evaluateITaylor(mpfi_t result, node *func, node *deriv, mpfi_t x, mp_prec
 
     if (verbosity >= 15) {
       changeToWarningMode();
-      printf("Information: Taylor evaluation: domain:\n");
+      sollyaPrintf("Information: Taylor evaluation: domain:\n");
       printInterval(x);
-      printf("\nconstant term:\n");
+      sollyaPrintf("\nconstant term:\n");
       printInterval(constantTerm);
-      printf("\nlinear term:\n");
+      sollyaPrintf("\nlinear term:\n");
       printInterval(linearTerm);
-      printf("\ntranslated interval:\n");
+      sollyaPrintf("\ntranslated interval:\n");
       printInterval(temp);
-      printf("\nmultiplied linear term:\n");
+      sollyaPrintf("\nmultiplied linear term:\n");
       printInterval(temp2);
-      printf("\ndirect evaluation:\n");
+      sollyaPrintf("\ndirect evaluation:\n");
       printInterval(resultDirect);
-      printf("\n");
+      sollyaPrintf("\n");
       restoreMode();
     }
 
@@ -2443,21 +2443,21 @@ void printInterval(mpfi_t interval) {
   if ((dyadic == 0) && (midpointMode == 1)) {
     temp_string = sprintMidpointMode(l, r);
     if (temp_string != NULL) {
-      printf("%s ",temp_string);
+      sollyaPrintf("%s ",temp_string);
       free(temp_string);
     } else {
-      printf("[");
+      sollyaPrintf("[");
       printValue(&l);
-      printf(";");
+      sollyaPrintf(";");
       printValue(&r);
-      printf("]");
+      sollyaPrintf("]");
     }
   } else {
-    printf("[");
+    sollyaPrintf("[");
     printValue(&l);
-    printf(";");
+    sollyaPrintf(";");
     printValue(&r);
-    printf("]");
+    sollyaPrintf("]");
   }
 
   mpfr_clear(l);
@@ -2475,11 +2475,11 @@ void fprintInterval(FILE *fd, mpfi_t interval) {
   mpfr_init2(r,prec);
   mpfi_get_left(l,interval);
   mpfi_get_right(r,interval);
-  fprintf(fd,"[");
+  sollyaFprintf(fd,"[");
   fprintValue(fd,l);
-  fprintf(fd,";");
+  sollyaFprintf(fd,";");
   fprintValue(fd,r);
-  fprintf(fd,"]");
+  sollyaFprintf(fd,"]");
 
   mpfr_clear(l);
   mpfr_clear(r);
@@ -2826,15 +2826,15 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
 
     if (verbosity >= 7) {
       changeToWarningMode();
-      printf("Information:\nCurrent inner enclosure: [");
+      sollyaPrintf("Information:\nCurrent inner enclosure: [");
       printValue(&innerLeft);
-      printf(";");
+      sollyaPrintf(";");
       printValue(&innerRight);
-      printf("]\nCurrent outer enclosure: [");
+      sollyaPrintf("]\nCurrent outer enclosure: [");
       printValue(&outerLeft);
-      printf(";");
+      sollyaPrintf(";");
       printValue(&outerRight);
-      printf("]\n");
+      sollyaPrintf("]\n");
       restoreMode();
     }
 
@@ -2849,11 +2849,11 @@ void infnormI(mpfi_t infnormval, node *func, node *deriv,
 
     if (verbosity >= 7) {
       changeToWarningMode();
-      printf("Information: The function evaluates on\n");
+      sollyaPrintf("Information: The function evaluates on\n");
       printInterval(*currInterval);
-      printf(" to\n");
+      sollyaPrintf(" to\n");
       printInterval(evalFuncOnInterval);
-      printf("\n");
+      sollyaPrintf("\n");
       restoreMode();
     }
 
@@ -3059,9 +3059,9 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
     if (!mpfr_number_p(y1)) {
       if(verbosity >= 1) {
         changeToWarningMode();
-	printf("Warning: the evaluation of the given function in ");
-	printValue(&x1); printf(" gives NaN.\n");
-	printf("This (possibly maximum) point will be excluded from the infnorm result.\n");
+	sollyaPrintf("Warning: the evaluation of the given function in ");
+	printValue(&x1); sollyaPrintf(" gives NaN.\n");
+	sollyaPrintf("This (possibly maximum) point will be excluded from the infnorm result.\n");
         restoreMode();
       }
       mpfr_add(current_x, current_x, step, GMP_RNDU); /* rounding up ensures that x1(new) > x1(old) */
@@ -3075,8 +3075,8 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
   mpfr_abs(max, y1, GMP_RNDU);
   if (verbosity >= 3) { 
     changeToWarningMode();
-    printf("Information: current max is "); printValue(&max);
-    printf(" and is reached at "); printMpfr(x1);
+    sollyaPrintf("Information: current max is "); printValue(&max);
+    sollyaPrintf(" and is reached at "); printMpfr(x1);
     restoreMode();
   }
 
@@ -3103,9 +3103,9 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
     if (!mpfr_number_p(y2)) {
       if(verbosity >= 1) {
 	changeToWarningMode();
-	printf("Warning: the evaluation of the given function in ");
-	printValue(&x2); printf(" gives NaN.\n");
-	printf("This (possibly maximum) point will be excluded from the infnorm result.\n");
+	sollyaPrintf("Warning: the evaluation of the given function in ");
+	printValue(&x2); sollyaPrintf(" gives NaN.\n");
+	sollyaPrintf("This (possibly maximum) point will be excluded from the infnorm result.\n");
         restoreMode();
       }
     }
@@ -3118,8 +3118,8 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
     mpfr_abs(max, y2, GMP_RNDU); 
     if (verbosity >= 3) { 
       changeToWarningMode();
-      printf("Information: current max is "); printValue(&max);
-      printf(" and is reached at "); printMpfr(x2);
+      sollyaPrintf("Information: current max is "); printValue(&max);
+      sollyaPrintf(" and is reached at "); printMpfr(x2);
       restoreMode();
     }
     mpfr_div_2ui(cutoff, max, 1, GMP_RNDU);
@@ -3154,9 +3154,9 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
       if (!mpfr_number_p(y3)) {
 	if(verbosity >= 1) {
 	  changeToWarningMode();
-	  printf("Warning: the evaluation of the given function in ");
-	  printValue(&x3); printf(" gives NaN.\n");
-	  printf("This (possibly maximum) point will be excluded from the infnorm result.\n");
+	  sollyaPrintf("Warning: the evaluation of the given function in ");
+	  printValue(&x3); sollyaPrintf(" gives NaN.\n");
+	  sollyaPrintf("This (possibly maximum) point will be excluded from the infnorm result.\n");
           restoreMode();
 	}
       }
@@ -3169,8 +3169,8 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
       mpfr_abs(max, y3, GMP_RNDU); 
       if (verbosity >= 3) { 
 	changeToWarningMode();
-	printf("Information: current max is "); printValue(&max);
-	printf(" and is reached at "); printMpfr(x3);
+	sollyaPrintf("Information: current max is "); printValue(&max);
+	sollyaPrintf(" and is reached at "); printMpfr(x3);
 	restoreMode();
       }
       mpfr_div_2ui(cutoff, max, 1, GMP_RNDU);
@@ -3189,9 +3189,9 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
       if ( (!mpfr_number_p(y1diff)) || (!mpfr_number_p(y3diff)) ) {
 	if(verbosity >= 1) {
           changeToWarningMode();
-	  printf("Warning: the evaluation of the derivative of the given function in ");
-	  printValue(&x1); printf(" or "); printValue(&x3); printf(" gives NaN.\n");
-	  printf("Newton's algorithm will not be used on this interval\n");
+	  sollyaPrintf("Warning: the evaluation of the derivative of the given function in ");
+	  printValue(&x1); sollyaPrintf(" or "); printValue(&x3); sollyaPrintf(" gives NaN.\n");
+	  sollyaPrintf("Newton's algorithm will not be used on this interval\n");
           restoreMode();
 	}
       }
@@ -3210,9 +3210,9 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 	  if (!mpfr_number_p(ystar)) {
 	    if(verbosity >= 1) {
 	      changeToWarningMode();
-	      printf("Warning: the evaluation of the given function in ");
-	      printValue(&xstar); printf(" gives NaN.\n");
-	      printf("This (possibly maximum) point will be excluded from the infnorm result.\n");
+	      sollyaPrintf("Warning: the evaluation of the given function in ");
+	      printValue(&xstar); sollyaPrintf(" gives NaN.\n");
+	      sollyaPrintf("This (possibly maximum) point will be excluded from the infnorm result.\n");
               restoreMode();
 	    }
 	  }
@@ -3220,8 +3220,8 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 	    mpfr_abs(max, ystar, GMP_RNDU); 
 	    if (verbosity >= 3) { 
 	      changeToWarningMode();
-	      printf("Information: current max is "); printValue(&max);
-	      printf(" and is reached at "); printMpfr(xstar);
+	      sollyaPrintf("Information: current max is "); printValue(&max);
+	      sollyaPrintf(" and is reached at "); printMpfr(xstar);
 	      restoreMode();
 	    }
 	    mpfr_div_2ui(cutoff, max, 1, GMP_RNDU);
@@ -3362,20 +3362,20 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
       if (mpfr_cmp(ya,yb) <= 0) {
 	if (verbosity >= 1) {
 	  changeToWarningMode();
-	  printf("Warning: the derivative of the function seems to have a extensible singularity in ");
+	  sollyaPrintf("Warning: the derivative of the function seems to have a extensible singularity in ");
 	  printValue(&z); 
-	  printf(".\n");
-	  printf("The infnorm result might not be trustful if the derivative cannot actually\n");
-	  printf("be extended in this point.\n");
+	  sollyaPrintf(".\n");
+	  sollyaPrintf("The infnorm result might not be trustful if the derivative cannot actually\n");
+	  sollyaPrintf("be extended in this point.\n");
 	  restoreMode(); 
 	}
       } else {
 	if (verbosity >= 1) {
 	  changeToWarningMode(); 
-	  printf("Warning: the derivative of the function seems to have a singularity in ");
+	  sollyaPrintf("Warning: the derivative of the function seems to have a singularity in ");
 	  printValue(&z); 
-	  printf(".\n");
-	  printf("The infnorm result is likely to be wrong.\n");
+	  sollyaPrintf(".\n");
+	  sollyaPrintf("The infnorm result is likely to be wrong.\n");
 	  restoreMode(); 
 	}
       }
@@ -3422,10 +3422,10 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
       curr = mightExcludes;
       while(curr != NULL) {
 	printInterval(*((mpfi_t *) (curr->value)));
-	printf("\n");
+	sollyaPrintf("\n");
 	curr = curr->next;
       }
-      printf("\n");
+      sollyaPrintf("\n");
       restoreMode();
     }
     mightExcludes = concatChains(mightExcludes,initialExcludes);
@@ -3452,10 +3452,10 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
 	curr = secondMightExcludes;
 	while(curr != NULL) {
 	  printInterval(*((mpfi_t *) (curr->value)));
-	  printf("\n");
+	  sollyaPrintf("\n");
 	  curr = curr->next;
 	}
-	printf("\n");
+	sollyaPrintf("\n");
 	restoreMode();
       }
     }
@@ -3724,11 +3724,11 @@ int checkInfnormI(node *func, node *deriv, mpfi_t infnormval, mpfi_t range, mpfr
     /* Simple end case: the range to test is already smaller than diam but we could not check */
     if (verbosity >= 2) {
       changeToWarningMode();
-      printf("Information: could not check the infinity norm on the domain\n");
+      sollyaPrintf("Information: could not check the infinity norm on the domain\n");
       printInterval(range);
-      printf("\nThe function evaluates here to\n");
+      sollyaPrintf("\nThe function evaluates here to\n");
       printInterval(evaluateOnRange);
-      printf("\n");
+      sollyaPrintf("\n");
       restoreMode();
     }
     mpfi_clear(evaluateOnRange);
@@ -4246,7 +4246,7 @@ chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t pre
     return uncertifiedZeroDenominators(tree->child1,a,b,prec);
     break;
   default:
-   fprintf(stderr,"Error: uncertifiedZeroDenominators: unknown identifier (%d) in the tree\n",tree->nodeType);
+   sollyaFprintf(stderr,"Error: uncertifiedZeroDenominators: unknown identifier (%d) in the tree\n",tree->nodeType);
    exit(1);
   }
   return NULL;
@@ -5009,7 +5009,7 @@ node *convertConstantToFunctionInPiInner(node *tree) {
     res->child2 = convertConstantToFunctionInPiInner(tree->child2);
     break;
   default:
-    fprintf(stderr,"Error: convertConstantToFunctionInPiInner: unknown arity (%d).\n",a);
+    sollyaFprintf(stderr,"Error: convertConstantToFunctionInPiInner: unknown arity (%d).\n",a);
     exit(1);
   }
 
@@ -5038,7 +5038,7 @@ int containsPi(node *tree) {
   case 2:
     return (containsPi(tree->child1) || containsPi(tree->child2));
   default:
-    fprintf(stderr,"Error: containsPi: unknown arity (%d).\n",a);
+    sollyaFprintf(stderr,"Error: containsPi: unknown arity (%d).\n",a);
     exit(1);
   }
   return 0;
@@ -5219,7 +5219,7 @@ int evaluateSignTrigoUnsafe(int *s, node *child, int nodeType) {
 	  }
 	  break;
 	default:
-	  fprintf(stderr,"Error: evaluateSignTrigoUnsafe: unknown identifier (%d) in the tree\n",nodeType);
+	  sollyaFprintf(stderr,"Error: evaluateSignTrigoUnsafe: unknown identifier (%d) in the tree\n",nodeType);
 	  exit(1);
 	}
 	mpfr_clear(value2);
@@ -5523,7 +5523,7 @@ int evaluateSign(int *s, node *rawFunc) {
 	sign = 1;
 	break;
       default:
-	fprintf(stderr,"Error: evaluateSign: unknown identifier (%d) in the tree\n",func->nodeType);
+	sollyaFprintf(stderr,"Error: evaluateSign: unknown identifier (%d) in the tree\n",func->nodeType);
 	exit(1);
       }
     }
