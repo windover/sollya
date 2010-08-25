@@ -1006,6 +1006,7 @@ int general(int argc, char *argv[]) {
                             inputFile = fd;
                             inputFileOpened = 1;
                             eliminatePromptBackup = 1;
+                            noColor = 1;
                           } else {
                             sollyaPrintf("Error: the file \"%s\" could not be opened: %s\n",argv[i],strerror(errno));
                             return 1;
