@@ -1,7 +1,7 @@
 verbosity=0!;
 yardstick = time(nop(5000));
 i = 0;
-variance = [1/10;10];
+variance = [1/100;100];
 
 /* Test #0 */
 i;
@@ -42,7 +42,7 @@ i := i + 1;
 /* Test #6 */
 i;
 t = time(w = evaluate(sin(pi * x),5))/yardstick;
-if (t in 6.595703125 * variance) then "Okay" else round(t,12,RN);
+if (t in 5.00 * variance) then "Okay" else round(t,12,RN);
 i := i + 1;
 
 /* Test #7 */
@@ -90,3 +90,6 @@ if (t1 in 5.7e-4 * variance) then "Okay" else print("t1 = ", round(t1,12,RN));
 if (t2 in 4.6e-4 * variance) then "Okay" else print("t2 = ", round(t2,12,RN));
 rationalmode=default!
 i := i+1;
+
+"End of test";
+
