@@ -1,7 +1,8 @@
 verbosity=0!;
 yardstick = time(nop(5000));
 i = 0;
-variance = [1/100;100];
+variance = [1/10;10];
+bigVariance = [1/100;100];
 
 /* Test #0 */
 i;
@@ -42,7 +43,7 @@ i := i + 1;
 /* Test #6 */
 i;
 t = time(w = evaluate(sin(pi * x),5))/yardstick;
-if (t in 5.00 * variance) then "Okay" else round(t,12,RN);
+if (t in 5.00 * bigVariance) then "Okay" else round(t,12,RN);
 i := i + 1;
 
 /* Test #7 */
@@ -62,8 +63,6 @@ g=2459622443407096130603922553910791619344453683235b-161 + x *
 t = time(w = dirtyinfnorm(g,[0;1]))/yardstick;
 if (t in 1.4331817626953125e-2 * variance) then "Okay" else round(t,12,RN);
 i := i + 1;
-
-
 
 /* Check related to bug #10069 */
 /* Test #8 */
