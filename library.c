@@ -51,7 +51,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include <string.h>
 #include <dlfcn.h>
 #include <mpfr.h>
-#include <mpfi.h>
+#include "mpfi-compat.h"
 #include "expression.h"
 #include "general.h"
 #include "library.h"
@@ -97,9 +97,9 @@ libraryHandle *getLibraryHandle(char *libraryName) {
 libraryFunction *bindFunction(char* libraryName, char *functionName) {
   libraryHandle *libHandle;
   libraryFunction *currFunct;
-  int (*myFunction)(mpfi_t, mpfi_t, int);
+  int (*myFunction)(sollya_mpfi_t, sollya_mpfi_t, int);
   char *error;
-  mpfi_t op, rop;
+  sollya_mpfi_t op, rop;
 
   currFunct = getFunction(functionName);
   if (currFunct != NULL) {
@@ -116,7 +116,7 @@ libraryFunction *bindFunction(char* libraryName, char *functionName) {
   }
     
   dlerror();
-  myFunction = (int (*)(mpfi_t, mpfi_t, int)) dlsym(libHandle->libraryDescriptor, functionName);
+  myFunction = (int (*)(sollya_mpfi_t, sollya_mpfi_t, int)) dlsym(libHandle->libraryDescriptor, functionName);
   if ((error = dlerror()) != NULL) {
     changeToWarningMode();
     sollyaFprintf(stderr, "Error: could not find function \"%s\" in library \"%s\" for binding: %s\n",functionName,libraryName,error);
@@ -124,14 +124,14 @@ libraryFunction *bindFunction(char* libraryName, char *functionName) {
     return NULL;
   }
   
-  mpfi_init2(rop,12);
-  mpfi_init2(op,12);
-  mpfi_set_d(op,1.0);
+  sollya_mpfi_init2(rop,12);
+  sollya_mpfi_init2(op,12);
+  sollya_mpfi_set_d(op,1.0);
 
   myFunction(rop,op,0);
 
-  mpfi_clear(rop);
-  mpfi_clear(op);
+  sollya_mpfi_clear(rop);
+  sollya_mpfi_clear(op);
 
   currFunct = (libraryFunction *) safeMalloc(sizeof(libraryFunction));
   currFunct->functionName = (char *) safeCalloc(strlen(functionName)+1,sizeof(char));

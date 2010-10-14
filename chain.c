@@ -151,11 +151,11 @@ void *copyRangetypePtr(void *ptr) {
 }
 
 void *copyMpfiPtr(void *ptr) {
-  mpfi_t *newMpfi;
+  sollya_mpfi_t *newMpfi;
 
-  newMpfi = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
-  mpfi_init2(*newMpfi,mpfi_get_prec(*((mpfi_t *) ptr)));
-  mpfi_set(*newMpfi,*((mpfi_t *) ptr));
+  newMpfi = (sollya_mpfi_t *) safeMalloc(sizeof(sollya_mpfi_t));
+  sollya_mpfi_init2(*newMpfi,sollya_mpfi_get_prec(*((sollya_mpfi_t *) ptr)));
+  sollya_mpfi_set(*newMpfi,*((sollya_mpfi_t *) ptr));
   return (void *) newMpfi;
 }
 
@@ -230,7 +230,7 @@ void freeMpfrPtr(void *ptr) {
 
 void freeMpfiPtr(void *i) {
   if (i == NULL) return;
-  mpfi_clear(*((mpfi_t *) i));
+  sollya_mpfi_clear(*((sollya_mpfi_t *) i));
   free(i);
 }
 

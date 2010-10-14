@@ -60,7 +60,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
   
 /* This function creates an empty taylor model */
-tModel* createEmptytModel(int n,  mpfi_t x0, mpfi_t x){
+tModel* createEmptytModel(int n,  sollya_mpfi_t x0, sollya_mpfi_t x){
   tModel* t;
   mp_prec_t prec;
   int i;
@@ -68,16 +68,16 @@ tModel* createEmptytModel(int n,  mpfi_t x0, mpfi_t x){
   prec = getToolPrecision();
  
   t= (tModel *)safeMalloc(sizeof(tModel));
-  mpfi_init2(t->rem_bound, prec);
-  mpfi_init2(t->poly_bound, prec);
-  mpfi_init2(t->x, prec);
-  mpfi_set(t->x, x);
-  mpfi_init2(t->x0, prec);
-  mpfi_set(t->x0, x0);
+  sollya_mpfi_init2(t->rem_bound, prec);
+  sollya_mpfi_init2(t->poly_bound, prec);
+  sollya_mpfi_init2(t->x, prec);
+  sollya_mpfi_set(t->x, x);
+  sollya_mpfi_init2(t->x0, prec);
+  sollya_mpfi_set(t->x0, x0);
   t->n = n;
-  t->poly_array = (mpfi_t *)safeCalloc(n,sizeof(mpfi_t));
+  t->poly_array = (sollya_mpfi_t *)safeCalloc(n,sizeof(sollya_mpfi_t));
   for(i=0;i<n;i++){
-    mpfi_init2(t->poly_array[i], prec);
+    sollya_mpfi_init2(t->poly_array[i], prec);
   }
 
   return t;
@@ -86,12 +86,12 @@ tModel* createEmptytModel(int n,  mpfi_t x0, mpfi_t x){
 /* This function dealocates a taylor model */
 void cleartModel(tModel *t){
   int i;
-  for(i=0;i<t->n;i++) mpfi_clear(t->poly_array[i]);
+  for(i=0;i<t->n;i++) sollya_mpfi_clear(t->poly_array[i]);
   free(t->poly_array);
-  mpfi_clear(t->rem_bound);
-  mpfi_clear(t->poly_bound);  
-  mpfi_clear(t->x);
-  mpfi_clear(t->x0);
+  sollya_mpfi_clear(t->rem_bound);
+  sollya_mpfi_clear(t->poly_bound);  
+  sollya_mpfi_clear(t->x);
+  sollya_mpfi_clear(t->x0);
   free(t);
 }
 
@@ -120,17 +120,17 @@ the tmodel given as parameter has to be created previously
 */
 
 /* This function sets the taylor model t with constant ct */
-void consttModel(tModel*t, mpfi_t ct){ 
+void consttModel(tModel*t, sollya_mpfi_t ct){ 
   int i,n;
   n=t->n;
   
   for(i=1;i<n;i++){
-     mpfi_set_ui(t->poly_array[i], 0);
+     sollya_mpfi_set_ui(t->poly_array[i], 0);
   }
   
-  mpfi_set(t->poly_array[0], ct);
-  mpfi_set(t->poly_bound, ct);
-  mpfi_set_ui(t->rem_bound, 0); 
+  sollya_mpfi_set(t->poly_array[0], ct);
+  sollya_mpfi_set(t->poly_bound, ct);
+  sollya_mpfi_set_ui(t->rem_bound, 0); 
 }
 
 
@@ -138,8 +138,8 @@ void consttModel(tModel*t, mpfi_t ct){
 /* Check that models are compatible one with another: i.e. they can be added, mulitplied, copied, etc. */
 int tModelsAreCompatible(tModel *t1, tModel *t2) {
     return ((t1 != NULL) && (t2 != NULL) && 
-            (mpfi_equal_p(t1->x, t2->x) || (mpfi_nan_p(t1->x) && mpfi_nan_p(t2->x))) &&
-            (mpfi_equal_p(t1->x0, t2->x0) || (mpfi_nan_p(t1->x0) && mpfi_nan_p(t2->x0))) &&
+            (sollya_mpfi_equal_p(t1->x, t2->x) || (sollya_mpfi_nan_p(t1->x) && sollya_mpfi_nan_p(t2->x))) &&
+            (sollya_mpfi_equal_p(t1->x0, t2->x0) || (sollya_mpfi_nan_p(t1->x0) && sollya_mpfi_nan_p(t2->x0))) &&
             (t1->n == t2->n));
 }
 
@@ -154,24 +154,24 @@ void copytModel(tModel *t, tModel *tt){
   }
 
   for(i=0;i<tt->n;i++) {
-    mpfi_set(t->poly_array[i], tt->poly_array[i]);
+    sollya_mpfi_set(t->poly_array[i], tt->poly_array[i]);
   }  
-  mpfi_set(t->rem_bound, tt->rem_bound);
-  mpfi_set(t->poly_bound, tt->poly_bound);  
+  sollya_mpfi_set(t->rem_bound, tt->rem_bound);
+  sollya_mpfi_set(t->poly_bound, tt->poly_bound);  
   
   return;
 }
 
 
 /* Bound p(x-x0) over I, where p is a polynomial of degree n, given by the list of its coefficients */
-void boundTranslatedPolynomialByHorner(mpfi_t bound, int n, mpfi_t *coeffs, mpfi_t x0, mpfi_t I){
-  mpfi_t temp;
+void boundTranslatedPolynomialByHorner(sollya_mpfi_t bound, int n, sollya_mpfi_t *coeffs, sollya_mpfi_t x0, sollya_mpfi_t I){
+  sollya_mpfi_t temp;
   mp_prec_t prec;
   prec = getToolPrecision();
-  mpfi_init2(temp, prec);
-  mpfi_sub(temp, I, x0);
+  sollya_mpfi_init2(temp, prec);
+  sollya_mpfi_sub(temp, I, x0);
   symbolic_poly_evaluation_horner(bound, coeffs, temp, n);
-  mpfi_clear(temp);
+  sollya_mpfi_clear(temp);
 }
 
 
@@ -179,7 +179,7 @@ void boundTranslatedPolynomialByHorner(mpfi_t bound, int n, mpfi_t *coeffs, mpfi
 /* Maybe, it will be smarter than just Horner, one day        */
 /* For testing purpose, is is possible to plug an uncertified */
 /* polynomialBound function instead of Horner here            */
-void polynomialBoundSharp(mpfi_t *bound, int n, mpfi_t *coeffs, mpfi_t x0, mpfi_t I){
+void polynomialBoundSharp(sollya_mpfi_t *bound, int n, sollya_mpfi_t *coeffs, sollya_mpfi_t x0, sollya_mpfi_t I){
  boundTranslatedPolynomialByHorner(*bound,n,coeffs,x0,I);
 }
 
@@ -195,30 +195,30 @@ Parameters:
            errors - errors around the coeffs rc
            rest - remainder  
 */
-void mpfr_get_poly(mpfr_t *rc, mpfi_t *errors_array, mpfi_t rest, int n, mpfi_t *p, mpfi_t x0, mpfi_t x){
+void mpfr_get_poly(mpfr_t *rc, sollya_mpfi_t *errors_array, sollya_mpfi_t rest, int n, sollya_mpfi_t *p, sollya_mpfi_t x0, sollya_mpfi_t x){
   int i;
-  mpfi_t *errors;
-  mpfi_t temp;
+  sollya_mpfi_t *errors;
+  sollya_mpfi_t temp;
   mp_prec_t prec;
 
   prec = getToolPrecision();
 
-  errors = (mpfi_t *)safeCalloc((n+1),sizeof(mpfi_t));
-  for (i=0; i<=n; i++) mpfi_init2(errors[i], prec);
+  errors = (sollya_mpfi_t *)safeCalloc((n+1),sizeof(sollya_mpfi_t));
+  for (i=0; i<=n; i++) sollya_mpfi_init2(errors[i], prec);
 
-  mpfi_init2(temp, prec);
+  sollya_mpfi_init2(temp, prec);
 
   for (i=0; i<=n; i++){
-    mpfi_mid(rc[i], p[i]);
-    mpfi_sub_fr(errors[i], p[i], rc[i]);
-    if (errors_array != NULL) mpfi_set(errors_array[i], errors[i]);
+    sollya_mpfi_mid(rc[i], p[i]);
+    sollya_mpfi_sub_fr(errors[i], p[i], rc[i]);
+    if (errors_array != NULL) sollya_mpfi_set(errors_array[i], errors[i]);
   }
-  mpfi_sub(temp, x, x0);
+  sollya_mpfi_sub(temp, x, x0);
   symbolic_poly_evaluation_horner(rest, p, temp, n);
   
-  for (i=0; i<=n; i++)  mpfi_clear(errors[i]);  
+  for (i=0; i<=n; i++)  sollya_mpfi_clear(errors[i]);  
   free(errors);
-  mpfi_clear(temp);
+  sollya_mpfi_clear(temp);
 
   return;
 }
@@ -227,10 +227,10 @@ void mpfr_get_poly(mpfr_t *rc, mpfi_t *errors_array, mpfi_t rest, int n, mpfi_t 
 void multiplication_TM(tModel *t, tModel *t1, tModel *t2, int mode){
   /* We will multiply two taylor models of order n; and obtain a new taylor model of order n */
   int n,i,j;
-  mpfi_t *r; /* used to store the least significant coeffs of the product */
+  sollya_mpfi_t *r; /* used to store the least significant coeffs of the product */
   tModel *tt;
-  mpfi_t temp1, temp2;
-  mpfi_t bound1, bound2, bound3;
+  sollya_mpfi_t temp1, temp2;
+  sollya_mpfi_t bound1, bound2, bound3;
   mp_prec_t prec;
 
   prec = getToolPrecision();
@@ -246,19 +246,19 @@ void multiplication_TM(tModel *t, tModel *t1, tModel *t2, int mode){
   /* aux tm for doing the multiplications */
   tt = createEmptytModel(n, t->x0, t->x);
   for(i=0; i<=n-1; i++){
-    mpfi_set_ui(tt->poly_array[i], 0);
+    sollya_mpfi_set_ui(tt->poly_array[i], 0);
   }
   
-  mpfi_init2(temp1, prec);
-  mpfi_init2(temp2, prec);
-  mpfi_init2(bound1, prec);
-  mpfi_init2(bound2, prec);
-  mpfi_init2(bound3, prec);
+  sollya_mpfi_init2(temp1, prec);
+  sollya_mpfi_init2(temp2, prec);
+  sollya_mpfi_init2(bound1, prec);
+  sollya_mpfi_init2(bound2, prec);
+  sollya_mpfi_init2(bound3, prec);
 
   /* bound1 <- delta2*B(T1) + delta1*B(T2) */
-  mpfi_mul(temp1, t1->poly_bound, t2->rem_bound);
-  mpfi_mul(temp2, t1->rem_bound, t2->poly_bound);
-  mpfi_add(bound1, temp1, temp2);
+  sollya_mpfi_mul(temp1, t1->poly_bound, t2->rem_bound);
+  sollya_mpfi_mul(temp2, t1->rem_bound, t2->poly_bound);
+  sollya_mpfi_add(bound1, temp1, temp2);
 
 
   /**************************************************************************************/
@@ -271,20 +271,20 @@ void multiplication_TM(tModel *t, tModel *t1, tModel *t2, int mode){
   /* When mode = RELATIVE, r = [r0, ..., r(n-2), 0, 0, ....]                            */
   /*              it represents the polynomial T1*T2|[n....2n-2] / (x-x0)^n             */
   /**************************************************************************************/
-  r = (mpfi_t *)safeCalloc((2*n-1),sizeof(mpfi_t));
+  r = (sollya_mpfi_t *)safeCalloc((2*n-1),sizeof(sollya_mpfi_t));
   for(i=0; i < 2*n-1; i++){
-    mpfi_init2(r[i], prec);
-    mpfi_set_ui(r[i],0);
+    sollya_mpfi_init2(r[i], prec);
+    sollya_mpfi_set_ui(r[i],0);
   }
    
   for(i=0; i<n; i++) {
     for (j=0; j<n; j++){
-      mpfi_mul(temp1, t1->poly_array[i], t2->poly_array[j]);
+      sollya_mpfi_mul(temp1, t1->poly_array[i], t2->poly_array[j]);
       if ( (i+j) < n )
-	mpfi_add(tt->poly_array[i+j], tt->poly_array[i+j], temp1);
+	sollya_mpfi_add(tt->poly_array[i+j], tt->poly_array[i+j], temp1);
       else
-	if (mode==RELATIVE) mpfi_add(r[i+j-n], r[i+j-n], temp1);
-	else mpfi_add(r[i+j], r[i+j], temp1);
+	if (mode==RELATIVE) sollya_mpfi_add(r[i+j-n], r[i+j-n], temp1);
+	else sollya_mpfi_add(r[i+j], r[i+j], temp1);
     }
   }
 
@@ -293,12 +293,12 @@ void multiplication_TM(tModel *t, tModel *t1, tModel *t2, int mode){
   else polynomialBoundSharp(&bound2, 2*n-2, r, t->x0, t->x);
 
   /* bound3 <- delta1*delta2*B((x-x0)^n) or delta1*delta2 depending on the mode */
-  mpfi_mul(bound3, t1->rem_bound, t2->rem_bound);
+  sollya_mpfi_mul(bound3, t1->rem_bound, t2->rem_bound);
   if (mode == RELATIVE) {
-    mpfi_sub(temp1,t->x,t->x0);
-    mpfi_set_ui(temp2, n);
-    mpfi_pow(temp1, temp1, temp2);
-    mpfi_mul(bound3, bound3, temp1);
+    sollya_mpfi_sub(temp1,t->x,t->x0);
+    sollya_mpfi_set_ui(temp2, n);
+    sollya_mpfi_pow(temp1, temp1, temp2);
+    sollya_mpfi_mul(bound3, bound3, temp1);
   }
 
   /* We are multiplying taylor models:
@@ -315,21 +315,21 @@ void multiplication_TM(tModel *t, tModel *t1, tModel *t2, int mode){
                
          The product is: (T1*T2|[0...n-1], {delta1*B(T2)+delta2*B(T1)+delta1*delta2+B(T1*T2|[n...2*n-2])} */
  
-  mpfi_add(tt->rem_bound, bound1, bound2); 
-  mpfi_add(tt->rem_bound, tt->rem_bound, bound3); /* now the remainder bound is completely computed */
+  sollya_mpfi_add(tt->rem_bound, bound1, bound2); 
+  sollya_mpfi_add(tt->rem_bound, tt->rem_bound, bound3); /* now the remainder bound is completely computed */
    
   /* we compute the new polynomial bound for the new model */
   polynomialBoundSharp(&temp1, n-1,tt->poly_array,t->x0,t->x);   
-  mpfi_set(tt->poly_bound,temp1);
+  sollya_mpfi_set(tt->poly_bound,temp1);
      
-  for(i=0;i<2*n-1;i++)  mpfi_clear(r[i]);
+  for(i=0;i<2*n-1;i++)  sollya_mpfi_clear(r[i]);
   free(r); 
   
-  mpfi_clear(temp1);
-  mpfi_clear(temp2);
-  mpfi_clear(bound1);
-  mpfi_clear(bound2);
-  mpfi_clear(bound3);
+  sollya_mpfi_clear(temp1);
+  sollya_mpfi_clear(temp2);
+  sollya_mpfi_clear(bound1);
+  sollya_mpfi_clear(bound2);
+  sollya_mpfi_clear(bound3);
 
   copytModel(t,tt);
   cleartModel(tt);
@@ -356,9 +356,9 @@ void addition_TM(tModel *t,tModel *t1, tModel *t2, int mode){
   n=t->n;
   tt=createEmptytModel(n,t->x0,t->x);
   for(i=0;i<n;i++)  
-    mpfi_add(tt->poly_array[i], t1->poly_array[i], t2->poly_array[i]);
+    sollya_mpfi_add(tt->poly_array[i], t1->poly_array[i], t2->poly_array[i]);
   
-  mpfi_add(tt->rem_bound, t1->rem_bound, t2->rem_bound);
+  sollya_mpfi_add(tt->rem_bound, t1->rem_bound, t2->rem_bound);
   polynomialBoundSharp(&tt->poly_bound, n-1, tt->poly_array, t->x0, t->x);   
   copytModel(t,tt);
   cleartModel(tt);
@@ -368,7 +368,7 @@ void addition_TM(tModel *t,tModel *t1, tModel *t2, int mode){
 
 
 /* This function computes the tm for multiplication by a constant */
-void ctMultiplication_TM(tModel*d, tModel*s, mpfi_t c,int mode){
+void ctMultiplication_TM(tModel*d, tModel*s, sollya_mpfi_t c,int mode){
   int i;
   int n;
   tModel *tt;
@@ -376,9 +376,9 @@ void ctMultiplication_TM(tModel*d, tModel*s, mpfi_t c,int mode){
   n=s->n;
   tt=createEmptytModel(n, s->x0, s->x);
   
-  for(i=0; i<n; i++)  mpfi_mul(tt->poly_array[i], s->poly_array[i], c);
-  mpfi_mul(tt->rem_bound, s->rem_bound, c);
-  mpfi_mul(tt->poly_bound, s->poly_bound, c);
+  for(i=0; i<n; i++)  sollya_mpfi_mul(tt->poly_array[i], s->poly_array[i], c);
+  sollya_mpfi_mul(tt->rem_bound, s->rem_bound, c);
+  sollya_mpfi_mul(tt->poly_bound, s->poly_bound, c);
 
   copytModel(d,tt);
   cleartModel(tt);
@@ -407,24 +407,24 @@ void ctMultiplication_TM(tModel*d, tModel*s, mpfi_t c,int mode){
 */
 
 /* FIXME: maybe boundx0 can be safely replaced by [0] */
-void computeMonotoneRemainder(mpfi_t *bound, int typeOfFunction, int nodeType, node *f, mpfr_t p,
-                              int n, mpfi_t *poly_array, mpfi_t x0, mpfi_t x, int *silent){
-  mpfi_t xinf, xsup;
+void computeMonotoneRemainder(sollya_mpfi_t *bound, int typeOfFunction, int nodeType, node *f, mpfr_t p,
+                              int n, sollya_mpfi_t *poly_array, sollya_mpfi_t x0, sollya_mpfi_t x, int *silent){
+  sollya_mpfi_t xinf, xsup;
   mpfr_t xinfFr, xsupFr;
-  mpfi_t bound1, bound2, boundx0, boundf1, boundf2, boundfx0;
-  mpfi_t p_interv;
+  sollya_mpfi_t bound1, bound2, boundx0, boundf1, boundf2, boundfx0;
+  sollya_mpfi_t p_interv;
   mp_prec_t prec;
 
   prec = getToolPrecision();
   
-  mpfi_init2(xinf, prec);  mpfi_init2(xsup, prec);
+  sollya_mpfi_init2(xinf, prec);  sollya_mpfi_init2(xsup, prec);
   mpfr_init2(xinfFr, prec);   mpfr_init2(xsupFr, prec);
-  mpfi_init2(bound1, prec);  mpfi_init2(bound2, prec);  mpfi_init2(boundx0, prec);  
-  mpfi_init2(boundf1, prec);  mpfi_init2(boundf2, prec); mpfi_init2(boundfx0, prec); 
-  mpfi_init2(p_interv, prec);
+  sollya_mpfi_init2(bound1, prec);  sollya_mpfi_init2(bound2, prec);  sollya_mpfi_init2(boundx0, prec);  
+  sollya_mpfi_init2(boundf1, prec);  sollya_mpfi_init2(boundf2, prec); sollya_mpfi_init2(boundfx0, prec); 
+  sollya_mpfi_init2(p_interv, prec);
 
-  mpfi_get_left(xinfFr,x);  mpfi_get_right(xsupFr,x); 
-  mpfi_set_fr(xinf, xinfFr);  mpfi_set_fr(xsup, xsupFr);  
+  sollya_mpfi_get_left(xinfFr,x);  sollya_mpfi_get_right(xsupFr,x); 
+  sollya_mpfi_set_fr(xinf, xinfFr);  sollya_mpfi_set_fr(xsup, xsupFr);  
   
   polynomialBoundSharp(&bound1, n-1, poly_array, x0, xinf); /* enclosure of p(xinf-x0) */
   polynomialBoundSharp(&bound2, n-1, poly_array, x0, xsup); /* enclosure of p(xsup-x0) */
@@ -449,21 +449,21 @@ void computeMonotoneRemainder(mpfi_t *bound, int typeOfFunction, int nodeType, n
     if (((n-1)%2)!=0) procedureFunction_diff(&boundfx0, f, x0, 0, silent);
     break;
   case MONOTONE_REMAINDER_INV:
-    mpfi_inv(boundf1, xinf);
-    mpfi_inv(boundf2, xsup);
-    if (((n-1)%2)!=0)   mpfi_inv(boundfx0, x0);
+    sollya_mpfi_inv(boundf1, xinf);
+    sollya_mpfi_inv(boundf2, xsup);
+    if (((n-1)%2)!=0)   sollya_mpfi_inv(boundfx0, x0);
     break;
   case MONOTONE_REMAINDER_CONSTPOWERVAR:
-    mpfi_set_fr(p_interv, p);
-    mpfi_pow(boundf1, xinf, p_interv);
-    mpfi_pow(boundf2, xsup, p_interv);
-    if (((n-1)%2)!=0)  mpfi_pow(boundfx0, x0, p_interv);
+    sollya_mpfi_set_fr(p_interv, p);
+    sollya_mpfi_pow(boundf1, xinf, p_interv);
+    sollya_mpfi_pow(boundf2, xsup, p_interv);
+    if (((n-1)%2)!=0)  sollya_mpfi_pow(boundfx0, x0, p_interv);
     break;
   case MONOTONE_REMAINDER_VARCONSTPOWER:
-    mpfi_set_fr(p_interv,p);
-    mpfi_pow(boundf1, p_interv, xinf);
-    mpfi_pow(boundf2, p_interv, xsup);
-    if (((n-1)%2)!=0)  mpfi_pow(boundfx0, p_interv, x0);
+    sollya_mpfi_set_fr(p_interv,p);
+    sollya_mpfi_pow(boundf1, p_interv, xinf);
+    sollya_mpfi_pow(boundf2, p_interv, xsup);
+    if (((n-1)%2)!=0)  sollya_mpfi_pow(boundfx0, p_interv, x0);
     break;
   default:
     sollyaFprintf(stderr, "Error in taylorform: unkown type of function used with Zumkeller's technique\n");
@@ -471,36 +471,36 @@ void computeMonotoneRemainder(mpfi_t *bound, int typeOfFunction, int nodeType, n
   }
   
   
-  mpfi_sub(bound1,boundf1,bound1);                          /* enclosure of f(xinf)-p(xinf-x0) */
-  mpfi_sub(bound2,boundf2,bound2);                          /* enclosure of f(xsup)-p(xsup-x0) */
+  sollya_mpfi_sub(bound1,boundf1,bound1);                          /* enclosure of f(xinf)-p(xinf-x0) */
+  sollya_mpfi_sub(bound2,boundf2,bound2);                          /* enclosure of f(xsup)-p(xsup-x0) */
 
   /* in the case when n-1 is even, the remainder is 
      bounded by the values it takes on the two extremas of the interval */
-  mpfi_union(*bound, bound1, bound2);
+  sollya_mpfi_union(*bound, bound1, bound2);
   
   /* in the case when n-1 is odd, the remainder is 
      in the convex hull determined by the two extremas and the value in x0 (which is 0, theoretically,
      but since x0 is a small interval... */
   if (((n-1)%2)!=0){
-    mpfi_union(*bound,*bound,boundx0);
+    sollya_mpfi_union(*bound,*bound,boundx0);
   }
   
   mpfr_clear(xinfFr); mpfr_clear(xsupFr);
-  mpfi_clear(xinf); mpfi_clear(xsup);
-  mpfi_clear(bound1); mpfi_clear(bound2); mpfi_clear(boundx0);  
-  mpfi_clear(boundf1);  mpfi_clear(boundf2); mpfi_clear(boundfx0);
-  mpfi_clear(p_interv);
+  sollya_mpfi_clear(xinf); sollya_mpfi_clear(xsup);
+  sollya_mpfi_clear(bound1); sollya_mpfi_clear(bound2); sollya_mpfi_clear(boundx0);  
+  sollya_mpfi_clear(boundf1);  sollya_mpfi_clear(boundf2); sollya_mpfi_clear(boundfx0);
+  sollya_mpfi_clear(p_interv);
   return;
 }
 
 
 /* This function computes a taylor model for a function, with the same convention
    as with computeMonotoneRemainder */
-void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, int n, mpfi_t x0, mpfi_t x, int mode, int *silent){
+void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, int n, sollya_mpfi_t x0, sollya_mpfi_t x, int mode, int *silent){
   int i;
   tModel *tt;
-  mpfi_t *nDeriv, *nDeriv2;
-  mpfi_t temp, pow;
+  sollya_mpfi_t *nDeriv, *nDeriv2;
+  sollya_mpfi_t temp, pow;
   mpfr_t minusOne;
   mp_prec_t prec;
 
@@ -508,8 +508,8 @@ void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, 
   tt = createEmptytModel(n,x0,x);
 
   /* We use AD for computing bound on the derivatives up to (n+1)th derivative */
-  nDeriv= (mpfi_t *)safeCalloc((n+2),sizeof(mpfi_t));
-  for(i=0;i<=n+1;i++) mpfi_init2(nDeriv[i], prec);
+  nDeriv= (sollya_mpfi_t *)safeCalloc((n+2),sizeof(sollya_mpfi_t));
+  for(i=0;i<=n+1;i++) sollya_mpfi_init2(nDeriv[i], prec);
 
   switch(typeOfFunction) {
   case MONOTONE_REMAINDER_BASE_FUNCTION:
@@ -546,27 +546,27 @@ void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, 
   
   /* Use Zumkeller technique to improve the bound in the absolute case,
      when the (n+1)th derivative has constant sign */
-  if((mode==ABSOLUTE)&&((mpfi_is_nonpos(nDeriv[n+1]) > 0)||(mpfi_is_nonneg(nDeriv[n+1]) > 0))){ 
+  if((mode==ABSOLUTE)&&((sollya_mpfi_is_nonpos(nDeriv[n+1]) > 0)||(sollya_mpfi_is_nonneg(nDeriv[n+1]) > 0))){ 
     computeMonotoneRemainder(&tt->rem_bound, typeOfFunction, nodeType, f, p, n, tt->poly_array, x0,x, silent);
   }
   else{
     /* just keep the bound obtained using AD */
-    mpfi_set(tt->rem_bound, nDeriv[n]);
+    sollya_mpfi_set(tt->rem_bound, nDeriv[n]);
   
     /* if we are in the case of the absolute error,
       we have to multiply by (x-x0)^n */
     
     if (mode==ABSOLUTE) {
-      mpfi_init2(pow, prec);
-      mpfi_set_ui(pow, n);
-      mpfi_init2(temp, prec);
-      mpfi_sub(temp,x,x0);
-      mpfi_pow(temp, temp, pow);
+      sollya_mpfi_init2(pow, prec);
+      sollya_mpfi_set_ui(pow, n);
+      sollya_mpfi_init2(temp, prec);
+      sollya_mpfi_sub(temp,x,x0);
+      sollya_mpfi_pow(temp, temp, pow);
       
-      mpfi_mul(tt->rem_bound,tt->rem_bound,temp);
+      sollya_mpfi_mul(tt->rem_bound,tt->rem_bound,temp);
       
-      mpfi_clear(pow);
-      mpfi_clear(temp);
+      sollya_mpfi_clear(pow);
+      sollya_mpfi_clear(temp);
     }
   }
   
@@ -576,7 +576,7 @@ void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, 
   copytModel(t,tt);
   cleartModel(tt);
   
-  for(i=0;i<=n+1;i++)  mpfi_clear(nDeriv[i]);
+  for(i=0;i<=n+1;i++)  sollya_mpfi_clear(nDeriv[i]);
   free(nDeriv);  
 }
 
@@ -594,7 +594,7 @@ void composition_TM(tModel *t,tModel *g, tModel *f, int mode){
   int n;
   tModel *tt, *partial_tmul,*tinterm,*tmul ;
   mp_prec_t prec;
-  mpfi_t temp;
+  sollya_mpfi_t temp;
 
   prec = getToolPrecision();
   n=f->n;
@@ -602,7 +602,7 @@ void composition_TM(tModel *t,tModel *g, tModel *f, int mode){
   /* create a taylor model equal to the model of f, but the constant coeff, which is zero */
   tmul = createEmptytModel(n, f->x0, f->x);
   copytModel(tmul,f);
-  mpfi_set_ui(tmul->poly_array[0],0);
+  sollya_mpfi_set_ui(tmul->poly_array[0],0);
   
   /* partial_tmul is used to represent the successive powers of tmul */
   partial_tmul=createEmptytModel(n,f->x0,f->x);
@@ -623,12 +623,12 @@ void composition_TM(tModel *t,tModel *g, tModel *f, int mode){
   
   /* Now, partial_tmul represents tmul^n */ 
   if (mode==RELATIVE) {
-    mpfi_init2(temp, prec);
-    mpfi_mul(temp, partial_tmul->rem_bound, g->rem_bound);
-    mpfi_add(tt->rem_bound, tt->rem_bound, temp);
-    mpfi_clear(temp);
+    sollya_mpfi_init2(temp, prec);
+    sollya_mpfi_mul(temp, partial_tmul->rem_bound, g->rem_bound);
+    sollya_mpfi_add(tt->rem_bound, tt->rem_bound, temp);
+    sollya_mpfi_clear(temp);
   }
-  else  mpfi_add(tt->rem_bound,tt->rem_bound,g->rem_bound);
+  else  sollya_mpfi_add(tt->rem_bound,tt->rem_bound,g->rem_bound);
   
   polynomialBoundSharp(&tt->poly_bound, n-1, tt->poly_array, tt->x0, tt->x);   
   copytModel(t,tt);
@@ -644,10 +644,10 @@ void composition_TM(tModel *t,tModel *g, tModel *f, int mode){
 void reduceOrder_TM(tModel*d, tModel*s, int n){
   int i;
   int oldn;
-  mpfi_t *remTerms;
+  sollya_mpfi_t *remTerms;
   tModel *tt;
-  mpfi_t pow;
-  mpfi_t temp, temp2;
+  sollya_mpfi_t pow;
+  sollya_mpfi_t temp, temp2;
   mp_prec_t prec;
 
   oldn=s->n;
@@ -659,36 +659,36 @@ void reduceOrder_TM(tModel*d, tModel*s, int n){
   }
   
   tt=createEmptytModel(n,s->x0,s->x);
-  for(i=0;i<n;i++) mpfi_set(tt->poly_array[i], s->poly_array[i]);
+  for(i=0;i<n;i++) sollya_mpfi_set(tt->poly_array[i], s->poly_array[i]);
 
   /* we are left with terms from n up to oldn-1 */
-  remTerms= (mpfi_t *)safeCalloc((oldn-n),sizeof(mpfi_t));
+  remTerms= (sollya_mpfi_t *)safeCalloc((oldn-n),sizeof(sollya_mpfi_t));
   for(i=n;i<oldn;i++){
-    mpfi_init2(remTerms[i-n], prec);
-    mpfi_set(remTerms[i-n], s->poly_array[i]);
+    sollya_mpfi_init2(remTerms[i-n], prec);
+    sollya_mpfi_set(remTerms[i-n], s->poly_array[i]);
   }
     
-  mpfi_init2(temp, prec);  
+  sollya_mpfi_init2(temp, prec);  
   polynomialBoundSharp(&temp, oldn-n-1, remTerms, tt->x0, tt->x);     
       
   polynomialBoundSharp(&tt->poly_bound, n-1,tt->poly_array,tt->x0,tt->x);     
   
-  mpfi_init2(pow, prec);  
-  mpfi_init2(temp2, prec);  
-  mpfi_set_ui(pow,oldn-n);
-  mpfi_sub(temp2,tt->x,tt->x0);
-  mpfi_pow(temp2,temp2,pow);
+  sollya_mpfi_init2(pow, prec);  
+  sollya_mpfi_init2(temp2, prec);  
+  sollya_mpfi_set_ui(pow,oldn-n);
+  sollya_mpfi_sub(temp2,tt->x,tt->x0);
+  sollya_mpfi_pow(temp2,temp2,pow);
   
-  mpfi_mul(temp2,temp2,s->rem_bound);
-  mpfi_add(tt->rem_bound,temp2,temp);
+  sollya_mpfi_mul(temp2,temp2,s->rem_bound);
+  sollya_mpfi_add(tt->rem_bound,temp2,temp);
   
   copytModel(d,tt);
   cleartModel(tt);
-  mpfi_clear(temp);
-  mpfi_clear(temp2);
-  mpfi_clear(pow);
+  sollya_mpfi_clear(temp);
+  sollya_mpfi_clear(temp2);
+  sollya_mpfi_clear(pow);
   for(i=0;i<oldn-n;i++){
-     mpfi_clear(remTerms[i]);
+     sollya_mpfi_clear(remTerms[i]);
   }
   free(remTerms);
   
@@ -709,14 +709,14 @@ void removeCoeffs_TM(tModel*d,tModel*s, int l){
   tt=createEmptytModel(newn,s->x0,s->x);
   
   for (i=l+1;i<oldn;i++){
-    mpfi_set(tt->poly_array[i-l-1],s->poly_array[i]);
+    sollya_mpfi_set(tt->poly_array[i-l-1],s->poly_array[i]);
   }
   
   //remainder: it is the same, since this remove coeffs is equivalent to a formal simplification
   //by (x-x0)^(oldn-newn)
   //Delta * (x-x0)^oldn --> Delta*(x-x0)^newn 
   
-  mpfi_set(tt->rem_bound,s->rem_bound);
+  sollya_mpfi_set(tt->rem_bound,s->rem_bound);
     
   polynomialBoundSharp(&tt->poly_bound, newn-1,tt->poly_array,tt->x0,tt->x);     
   
@@ -727,50 +727,50 @@ void removeCoeffs_TM(tModel*d,tModel*s, int l){
 
 
 
-void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
+void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, int mode) {
   int i;
   
   node *simplifiedChild1, *simplifiedChild2;
-  mpfi_t temp1,temp2;
+  sollya_mpfi_t temp1,temp2;
   node **coefficients;
-  mpfi_t *rpoly, *boundRpoly;
+  sollya_mpfi_t *rpoly, *boundRpoly;
   tModel *tt,*tPoly, *child1_tm, *child2_tm, *ctPowVar_tm, *varCtPower_tm, *logx_tm, *expx_tm, *logf_tm;
   
   /*used by division*/
-  mpfi_t gx0,rangeg;
+  sollya_mpfi_t gx0,rangeg;
   tModel *ttt, *inv_tm, *child1Extended_tm, *child2Extended_tm, *child1RemoveCoeffs_tm,*child2RemoveCoeffs_tm; 
   int orderUpperBound;  
   int d;
   int silent = 0;
-  mpfi_t powx,powy;
-  mpfi_t ct, minusOne;
+  sollya_mpfi_t powx,powy;
+  sollya_mpfi_t ct, minusOne;
   mpfr_t zero;
   /*used by base functions*/
-  mpfi_t fx0,rangef,pow;
+  sollya_mpfi_t fx0,rangef,pow;
   
   switch (f->nodeType) {
   
   case VARIABLE:
   
   tt=createEmptytModel(n,x0,x); 
-  mpfi_set(tt->poly_array[0],x0);
+  sollya_mpfi_set(tt->poly_array[0],x0);
   if (n==1){
     if (mode==RELATIVE){
-      mpfi_set_ui(tt->rem_bound,1);
-      mpfi_set(tt->poly_bound,x0);
+      sollya_mpfi_set_ui(tt->rem_bound,1);
+      sollya_mpfi_set(tt->poly_bound,x0);
     }
     else{ /*absolute*/
-      mpfi_sub(tt->rem_bound,x,x0);
-      mpfi_set(tt->poly_bound,x0);
+      sollya_mpfi_sub(tt->rem_bound,x,x0);
+      sollya_mpfi_set(tt->poly_bound,x0);
     }
   }
   else{
-    mpfi_set_ui(tt->rem_bound,0);
-    mpfi_set_ui(tt->poly_array[1],1);
+    sollya_mpfi_set_ui(tt->rem_bound,0);
+    sollya_mpfi_set_ui(tt->poly_array[1],1);
     for (i=2;i<n;i++){
-      mpfi_set_ui(tt->poly_array[i],0);
+      sollya_mpfi_set_ui(tt->poly_array[i],0);
     }
-    mpfi_set(tt->poly_bound,x);
+    sollya_mpfi_set(tt->poly_bound,x);
   }
   copytModel(t,tt);
   cleartModel(tt);
@@ -779,17 +779,17 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
   case PI_CONST:
   case CONSTANT:
   
-  mpfi_init2(ct, getToolPrecision());
+  sollya_mpfi_init2(ct, getToolPrecision());
   tt=createEmptytModel(n,x0,x); 
-  if (f->nodeType == PI_CONST) mpfi_const_pi(ct);
-  else mpfi_set_fr(ct, *(f->value));
+  if (f->nodeType == PI_CONST) sollya_mpfi_const_pi(ct);
+  else sollya_mpfi_set_fr(ct, *(f->value));
 
   consttModel(tt,ct);
-  mpfi_set_ui(tt->rem_bound,0);
-  mpfi_set(tt->poly_bound,ct);
+  sollya_mpfi_set_ui(tt->rem_bound,0);
+  sollya_mpfi_set(tt->poly_bound,ct);
   copytModel(t,tt);
   cleartModel(tt);
-  mpfi_clear(ct);
+  sollya_mpfi_clear(ct);
   break;
   
   case NEG:
@@ -801,10 +801,10 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
     taylor_model(child1_tm, f->child1,n,x0,x,mode);
     //do the necessary chages from child to parent
     for(i=0;i<n;i++) 
-    mpfi_neg(tt->poly_array[i], child1_tm->poly_array[i]);
+    sollya_mpfi_neg(tt->poly_array[i], child1_tm->poly_array[i]);
     
-    mpfi_neg(tt->rem_bound,child1_tm->rem_bound);
-    mpfi_neg(tt->poly_bound,child1_tm->poly_bound);
+    sollya_mpfi_neg(tt->rem_bound,child1_tm->rem_bound);
+    sollya_mpfi_neg(tt->poly_bound,child1_tm->poly_bound);
     copytModel(t,tt);
     //clear old taylor models
     cleartModel(child1_tm);
@@ -840,8 +840,8 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
     taylor_model(child2_tm, f->child2,n,x0,x,mode);
     
     //do the necessary chages from children to parent
-    mpfi_init2(minusOne,getToolPrecision());
-    mpfi_set_si(minusOne,-1);
+    sollya_mpfi_init2(minusOne,getToolPrecision());
+    sollya_mpfi_set_si(minusOne,-1);
     ctMultiplication_TM(child2_tm,child2_tm, minusOne,mode);
     addition_TM(tt,child1_tm, child2_tm,mode);
       
@@ -851,7 +851,7 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
     cleartModel(child1_tm);
     cleartModel(child2_tm);
     cleartModel(tt);
-    mpfi_clear(minusOne);
+    sollya_mpfi_clear(minusOne);
     break;
 
   case MUL:
@@ -878,13 +878,13 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
   tt=createEmptytModel(n,x0,x); 
     
   //check whether g(x0)is zero
-  mpfi_init2(gx0, getToolPrecision());
+  sollya_mpfi_init2(gx0, getToolPrecision());
   evaluateInterval(gx0,f->child2, NULL, x0)  ;
   
   ttt=createEmptytModel(n,x0,x); 
    
 
-    if ((mpfi_is_zero(gx0))&& (mode==RELATIVE)){
+    if ((sollya_mpfi_is_zero(gx0))&& (mode==RELATIVE)){
   
       orderUpperBound=10;
       //create a new empty taylor model the child
@@ -898,7 +898,7 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
       //reduce order taylor model
       int l;
       l=0;
-      while((mpfi_is_zero(child1Extended_tm->poly_array[l])) && (mpfi_is_zero(child2Extended_tm->poly_array[l]))){
+      while((sollya_mpfi_is_zero(child1Extended_tm->poly_array[l])) && (sollya_mpfi_is_zero(child2Extended_tm->poly_array[l]))){
       l++;}
     
       //printf("The order of the zero is: %d",l);
@@ -933,21 +933,21 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
       taylor_model(child1_tm, f->child1,n,x0,x,mode);
       taylor_model(child2_tm, f->child2,n,x0,x,mode);
     }
-    mpfi_set(gx0,child2_tm->poly_array[0]);
-    mpfi_init2(rangeg, getToolPrecision());
+    sollya_mpfi_set(gx0,child2_tm->poly_array[0]);
+    sollya_mpfi_init2(rangeg, getToolPrecision());
     
     
-    mpfi_init2(powx, getToolPrecision());
-    mpfi_set_ui(powx,n);
+    sollya_mpfi_init2(powx, getToolPrecision());
+    sollya_mpfi_set_ui(powx,n);
     
     if (mode==RELATIVE){
-      mpfi_sub(rangeg, child2_tm->x,child2_tm->x0);
-      mpfi_pow(rangeg,rangeg,powx);
-      mpfi_mul(rangeg,rangeg,child2_tm->rem_bound);
-      mpfi_add(rangeg,rangeg, child2_tm->poly_bound);
+      sollya_mpfi_sub(rangeg, child2_tm->x,child2_tm->x0);
+      sollya_mpfi_pow(rangeg,rangeg,powx);
+      sollya_mpfi_mul(rangeg,rangeg,child2_tm->rem_bound);
+      sollya_mpfi_add(rangeg,rangeg, child2_tm->poly_bound);
     }
     else {
-    mpfi_add(rangeg,child2_tm->rem_bound,child2_tm->poly_bound);
+    sollya_mpfi_add(rangeg,child2_tm->rem_bound,child2_tm->poly_bound);
     }  
       inv_tm=createEmptytModel(n,gx0,rangeg);
     
@@ -962,10 +962,10 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
     cleartModel(ttt);
     copytModel(t,tt);
     cleartModel(tt);
-    mpfi_clear(rangeg);
-    mpfi_clear(powx);
+    sollya_mpfi_clear(rangeg);
+    sollya_mpfi_clear(powx);
     
-    mpfi_clear(gx0);
+    sollya_mpfi_clear(gx0);
     break;
 
   case SQRT:
@@ -1009,21 +1009,21 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
     //compute tm for the basic case
     
         
-    mpfi_init2(fx0,getToolPrecision());
-    mpfi_init2(rangef, getToolPrecision());
+    sollya_mpfi_init2(fx0,getToolPrecision());
+    sollya_mpfi_init2(rangef, getToolPrecision());
     
-    mpfi_init2(pow, getToolPrecision());
-    mpfi_set_ui(pow,n);
+    sollya_mpfi_init2(pow, getToolPrecision());
+    sollya_mpfi_set_ui(pow,n);
     
     evaluateInterval(fx0, f->child1, NULL, x0);
     if (mode==RELATIVE){
-      mpfi_sub(rangef, x,x0);
-      mpfi_pow(rangef,rangef,pow);
-      mpfi_mul(rangef,rangef,child1_tm->rem_bound);
-      mpfi_add(rangef,rangef, child1_tm->poly_bound);
+      sollya_mpfi_sub(rangef, x,x0);
+      sollya_mpfi_pow(rangef,rangef,pow);
+      sollya_mpfi_mul(rangef,rangef,child1_tm->rem_bound);
+      sollya_mpfi_add(rangef,rangef, child1_tm->poly_bound);
     }
     else{
-      mpfi_add(rangef,child1_tm->rem_bound, child1_tm->poly_bound);
+      sollya_mpfi_add(rangef,child1_tm->rem_bound, child1_tm->poly_bound);
     }
 
     child2_tm=createEmptytModel(n,fx0,rangef);
@@ -1039,9 +1039,9 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
     cleartModel(child2_tm);
     copytModel(t,tt);
     cleartModel(tt);
-    mpfi_clear(fx0);    
-    mpfi_clear(rangef);    
-    mpfi_clear(pow);
+    sollya_mpfi_clear(fx0);    
+    sollya_mpfi_clear(rangef);    
+    sollya_mpfi_clear(pow);
         
   break;
   case POW:
@@ -1054,20 +1054,20 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
       
       if ((simplifiedChild2->nodeType==CONSTANT) &&(simplifiedChild1->nodeType==CONSTANT)) { //we have the ct1^ct2 case
          // printf("We are in the  ct1^ct2 case");       
-         mpfi_init2(temp1, getToolPrecision());
-         mpfi_set_fr(temp1, *(simplifiedChild1->value));
-         mpfi_init2(temp2, getToolPrecision());
-         mpfi_set_fr(temp2, *(simplifiedChild2->value));
-         mpfi_pow(temp1,temp1,temp2);
+         sollya_mpfi_init2(temp1, getToolPrecision());
+         sollya_mpfi_set_fr(temp1, *(simplifiedChild1->value));
+         sollya_mpfi_init2(temp2, getToolPrecision());
+         sollya_mpfi_set_fr(temp2, *(simplifiedChild2->value));
+         sollya_mpfi_pow(temp1,temp1,temp2);
          consttModel(tt,temp1);
          copytModel(t,tt);
          cleartModel(tt);
-         mpfi_clear(temp1);
-         mpfi_clear(temp2);
+         sollya_mpfi_clear(temp1);
+         sollya_mpfi_clear(temp2);
       }
       else if (simplifiedChild2->nodeType==CONSTANT) { //we have the f^p case
         //printf("We are in the  f^p case");        
-        //mpfi_t powx,fx0,rangef;        
+        //sollya_mpfi_t powx,fx0,rangef;        
         //create a new empty taylor model the child
         child1_tm=createEmptytModel(n,x0,x);
         //call taylor_model for the child
@@ -1075,20 +1075,20 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
         //printf("\n\n-----------taylormodel child1: \n");
         //printtModel(child1_tm);
         //printf("-----------------------------\n");
-        mpfi_init2(fx0,getToolPrecision());
+        sollya_mpfi_init2(fx0,getToolPrecision());
         evaluateInterval(fx0, f->child1, NULL, x0);
         
-        mpfi_init2(rangef, getToolPrecision());
-        mpfi_init2(powx, getToolPrecision());
-        mpfi_set_ui(powx,n);
+        sollya_mpfi_init2(rangef, getToolPrecision());
+        sollya_mpfi_init2(powx, getToolPrecision());
+        sollya_mpfi_set_ui(powx,n);
         if (mode==RELATIVE){
-          mpfi_sub(rangef, child1_tm->x,child1_tm->x0);
-          mpfi_pow(rangef,rangef,powx);
-          mpfi_mul(rangef,rangef,child1_tm->rem_bound);
-          mpfi_add(rangef,rangef, child1_tm->poly_bound);
+          sollya_mpfi_sub(rangef, child1_tm->x,child1_tm->x0);
+          sollya_mpfi_pow(rangef,rangef,powx);
+          sollya_mpfi_mul(rangef,rangef,child1_tm->rem_bound);
+          sollya_mpfi_add(rangef,rangef, child1_tm->poly_bound);
         }
         else{
-          mpfi_add(rangef,child1_tm->rem_bound, child1_tm->poly_bound);
+          sollya_mpfi_add(rangef,child1_tm->rem_bound, child1_tm->poly_bound);
         }
         //create tm for x^p over ragef in fx0
         ctPowVar_tm=createEmptytModel(n,fx0,rangef);
@@ -1107,33 +1107,33 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
         cleartModel(ctPowVar_tm);
         copytModel(t,tt);
         cleartModel(tt);
-        mpfi_clear(rangef);
-        mpfi_clear(powx);
-        mpfi_clear(fx0);
+        sollya_mpfi_clear(rangef);
+        sollya_mpfi_clear(powx);
+        sollya_mpfi_clear(fx0);
       } 
        else if (simplifiedChild1->nodeType==CONSTANT) { //we have the p^f case
         
-        //mpfi_t powx,fx0,rangef;        
+        //sollya_mpfi_t powx,fx0,rangef;        
         //create a new empty taylor model the child
         child2_tm=createEmptytModel(n,x0,x);
         //call taylor_model for the child
         taylor_model(child2_tm, f->child2,n,x0,x,mode);
         
-        mpfi_init2(fx0,getToolPrecision());
+        sollya_mpfi_init2(fx0,getToolPrecision());
         evaluateInterval(fx0, f->child2, NULL, x0);
         
-        mpfi_init2(rangef, getToolPrecision());
-        mpfi_init2(powx, getToolPrecision());
-        mpfi_set_ui(powx,n);
+        sollya_mpfi_init2(rangef, getToolPrecision());
+        sollya_mpfi_init2(powx, getToolPrecision());
+        sollya_mpfi_set_ui(powx,n);
         
         if (mode==RELATIVE){
-          mpfi_sub(rangef, child2_tm->x,child2_tm->x0);
-          mpfi_pow(rangef,rangef,powx);
-          mpfi_mul(rangef,rangef,child2_tm->rem_bound);
-          mpfi_add(rangef,rangef, child2_tm->poly_bound);
+          sollya_mpfi_sub(rangef, child2_tm->x,child2_tm->x0);
+          sollya_mpfi_pow(rangef,rangef,powx);
+          sollya_mpfi_mul(rangef,rangef,child2_tm->rem_bound);
+          sollya_mpfi_add(rangef,rangef, child2_tm->poly_bound);
         }
         else{
-          mpfi_add(rangef,child2_tm->rem_bound, child2_tm->poly_bound);
+          sollya_mpfi_add(rangef,child2_tm->rem_bound, child2_tm->poly_bound);
         }
         //create tm for p^x over ragef in fx0
         varCtPower_tm=createEmptytModel(n,fx0,rangef);
@@ -1146,14 +1146,14 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
         cleartModel(varCtPower_tm);
         copytModel(t,tt);
         cleartModel(tt);
-        mpfi_clear(rangef);
-        mpfi_clear(powx);
-        mpfi_clear(fx0);
+        sollya_mpfi_clear(rangef);
+        sollya_mpfi_clear(powx);
+        sollya_mpfi_clear(fx0);
         }
       else {
       //printf("We are in the  f^g case");  
       //exp(g log(f))
-      //  mpfi_t powx,fx0,rangef;        
+      //  sollya_mpfi_t powx,fx0,rangef;        
         //create a new empty taylor model the children
         child1_tm=createEmptytModel(n,x0,x);
         child2_tm=createEmptytModel(n,x0,x);
@@ -1165,21 +1165,21 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
         
         //create  taylor_model for log (child 1) = log(f)
                 
-        mpfi_init2(fx0,getToolPrecision());
+        sollya_mpfi_init2(fx0,getToolPrecision());
         evaluateInterval(fx0, f->child1, NULL, x0);
         
-        mpfi_init2(rangef, getToolPrecision());
-        mpfi_init2(powx, getToolPrecision());
-        mpfi_set_ui(powx,n);
+        sollya_mpfi_init2(rangef, getToolPrecision());
+        sollya_mpfi_init2(powx, getToolPrecision());
+        sollya_mpfi_set_ui(powx,n);
         
         if (mode==RELATIVE){
-          mpfi_sub(rangef, child1_tm->x,child1_tm->x0);
-          mpfi_pow(rangef,rangef,powx);
-          mpfi_mul(rangef,rangef,child1_tm->rem_bound);
-          mpfi_add(rangef,rangef, child1_tm->poly_bound);
+          sollya_mpfi_sub(rangef, child1_tm->x,child1_tm->x0);
+          sollya_mpfi_pow(rangef,rangef,powx);
+          sollya_mpfi_mul(rangef,rangef,child1_tm->rem_bound);
+          sollya_mpfi_add(rangef,rangef, child1_tm->poly_bound);
         }
         else{
-          mpfi_add(rangef,child1_tm->rem_bound, child1_tm->poly_bound);
+          sollya_mpfi_add(rangef,child1_tm->rem_bound, child1_tm->poly_bound);
         }
         
         logx_tm=createEmptytModel(n,fx0,rangef);
@@ -1194,20 +1194,20 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
         multiplication_TM(ttt,logf_tm,child2_tm,mode);
         
         //------------------------------------------
-        mpfi_init2(gx0,getToolPrecision());
+        sollya_mpfi_init2(gx0,getToolPrecision());
         evaluateInterval(gx0, f->child2, NULL, x0);
-        mpfi_log(fx0,fx0);
-        mpfi_mul(gx0,gx0,fx0);
+        sollya_mpfi_log(fx0,fx0);
+        sollya_mpfi_mul(gx0,gx0,fx0);
         
-        mpfi_set_ui(powx,n);
+        sollya_mpfi_set_ui(powx,n);
         if (mode==RELATIVE){
-          mpfi_sub(rangef, ttt->x,ttt->x0);
-          mpfi_pow(rangef,rangef,powx);
-          mpfi_mul(rangef,rangef,ttt->rem_bound);
-          mpfi_add(rangef,rangef, ttt->poly_bound);
+          sollya_mpfi_sub(rangef, ttt->x,ttt->x0);
+          sollya_mpfi_pow(rangef,rangef,powx);
+          sollya_mpfi_mul(rangef,rangef,ttt->rem_bound);
+          sollya_mpfi_add(rangef,rangef, ttt->poly_bound);
         }
         else{
-          mpfi_add(rangef,ttt->rem_bound, ttt->poly_bound);
+          sollya_mpfi_add(rangef,ttt->rem_bound, ttt->poly_bound);
         }    
         expx_tm=createEmptytModel(n,gx0,rangef);
         base_TMAux(expx_tm, MONOTONE_REMAINDER_BASE_FUNCTION, EXP, NULL, NULL, n, gx0, rangef, mode, &silent);
@@ -1224,10 +1224,10 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
         
         copytModel(t,tt);
         cleartModel(tt);
-        mpfi_clear(rangef);
-        mpfi_clear(powx);
-        mpfi_clear(fx0);   
-        mpfi_clear(gx0); 
+        sollya_mpfi_clear(rangef);
+        sollya_mpfi_clear(powx);
+        sollya_mpfi_clear(fx0);   
+        sollya_mpfi_clear(gx0); 
         
     }
     free_memory(simplifiedChild2);
@@ -1241,16 +1241,16 @@ void taylor_model(tModel *t, node *f, int n, mpfi_t x0, mpfi_t x, int mode) {
 }
   return;
 }
-chain *constructChain(mpfi_t *err, int n){
+chain *constructChain(sollya_mpfi_t *err, int n){
   chain *l;
-  mpfi_t *elem;
+  sollya_mpfi_t *elem;
   int i;
   
   l = NULL;
   for(i=n;i>=0;i--){
-    elem= (mpfi_t*)safeMalloc(sizeof(mpfi_t));
-    mpfi_init2(*elem,getToolPrecision());
-    mpfi_set(*elem,err[i]);
+    elem= (sollya_mpfi_t*)safeMalloc(sizeof(sollya_mpfi_t));
+    sollya_mpfi_init2(*elem,getToolPrecision());
+    sollya_mpfi_set(*elem,err[i]);
     l=addElement(l, elem);
   }
   return l;
@@ -1259,7 +1259,7 @@ void printMpfiChain(chain *c) {
   chain *curr=c;
   sollyaPrintf("[");
   while(curr!=NULL) {
-    printInterval( *(mpfi_t *)(curr->value));
+    printInterval( *(sollya_mpfi_t *)(curr->value));
     curr=curr->next;
   }
   sollyaPrintf("]\n");
@@ -1267,19 +1267,19 @@ void printMpfiChain(chain *c) {
 }
 
 
-void taylorform(node **T, chain **errors, mpfi_t **delta,
-		node *f, int n,	mpfi_t *x0, mpfi_t *d, int mode) {
+void taylorform(node **T, chain **errors, sollya_mpfi_t **delta,
+		node *f, int n,	sollya_mpfi_t *x0, sollya_mpfi_t *d, int mode) {
   tModel *t;
-  mpfi_t x0Int;
+  sollya_mpfi_t x0Int;
   mpfr_t *coeffsMpfr;
-  mpfi_t *coeffsErrors;
+  sollya_mpfi_t *coeffsErrors;
   int i;
   node *z;
   chain *err;
-  mpfi_t *rest;
-  mpfi_t temp;
-  mpfi_t pow;
-  mpfi_t myD;
+  sollya_mpfi_t *rest;
+  sollya_mpfi_t temp;
+  sollya_mpfi_t pow;
+  sollya_mpfi_t myD;
 
   /* Adjust n to the notion of degree in the taylor command */
   n++;
@@ -1292,15 +1292,15 @@ void taylorform(node **T, chain **errors, mpfi_t **delta,
   } 
 
   if (d != NULL) {
-    mpfi_init2(myD,mpfi_get_prec(*d));
-    mpfi_set(myD,*d);
+    sollya_mpfi_init2(myD,sollya_mpfi_get_prec(*d));
+    sollya_mpfi_set(myD,*d);
   } else {
-    mpfi_init2(myD,mpfi_get_prec(*x0));
-    mpfi_set(myD,*x0);
+    sollya_mpfi_init2(myD,sollya_mpfi_get_prec(*x0));
+    sollya_mpfi_set(myD,*x0);
   }
 
-  mpfi_init2(x0Int,getToolPrecision());
-  mpfi_set(x0Int,*x0);
+  sollya_mpfi_init2(x0Int,getToolPrecision());
+  sollya_mpfi_set(x0Int,*x0);
   t=createEmptytModel(n,x0Int,myD);
   //printf("we have created an emptytm");  
 
@@ -1310,13 +1310,13 @@ void taylorform(node **T, chain **errors, mpfi_t **delta,
   //printtModel(t);
 
   coeffsMpfr= (mpfr_t *)safeCalloc((n),sizeof(mpfr_t));
-  coeffsErrors = (mpfi_t *)safeCalloc((n),sizeof(mpfi_t));
+  coeffsErrors = (sollya_mpfi_t *)safeCalloc((n),sizeof(sollya_mpfi_t));
 
-  rest= (mpfi_t*)safeMalloc(sizeof(mpfi_t));
-  mpfi_init2(*rest,getToolPrecision());
+  rest= (sollya_mpfi_t*)safeMalloc(sizeof(sollya_mpfi_t));
+  sollya_mpfi_init2(*rest,getToolPrecision());
 
   for(i=0;i<n;i++){
-    mpfi_init2(coeffsErrors[i],getToolPrecision());
+    sollya_mpfi_init2(coeffsErrors[i],getToolPrecision());
     mpfr_init2(coeffsMpfr[i],getToolPrecision());
   }
 
@@ -1332,37 +1332,37 @@ void taylorform(node **T, chain **errors, mpfi_t **delta,
   *errors = err;
   /*
     if (mode == ABSOLUTE) {
-    mpfi_init2(pow, getToolPrecision());
-    mpfi_set_si(pow, t->n);
-    mpfi_init2(temp,getToolPrecision());
-    mpfi_sub(temp, t->x, t->x0);
-    mpfi_pow(temp, temp,pow);
-    mpfi_mul(*rest,temp, t->rem_bound);
-    mpfi_clear(pow);
-    mpfi_clear(temp);
+    sollya_mpfi_init2(pow, getToolPrecision());
+    sollya_mpfi_set_si(pow, t->n);
+    sollya_mpfi_init2(temp,getToolPrecision());
+    sollya_mpfi_sub(temp, t->x, t->x0);
+    sollya_mpfi_pow(temp, temp,pow);
+    sollya_mpfi_mul(*rest,temp, t->rem_bound);
+    sollya_mpfi_clear(pow);
+    sollya_mpfi_clear(temp);
     } else {
   
-    mpfi_set(*rest,t->rem_bound);
+    sollya_mpfi_set(*rest,t->rem_bound);
     
     }
   */
 
   if (d != NULL) {
-    mpfi_set(*rest,t->rem_bound);  
+    sollya_mpfi_set(*rest,t->rem_bound);  
     *delta=rest;
   } else {
-    mpfi_clear(*rest);
+    sollya_mpfi_clear(*rest);
     free(rest);
   }
     
   for(i=0;i<n;i++){
     mpfr_clear(coeffsMpfr[i]);
-    mpfi_clear(coeffsErrors[i]);
+    sollya_mpfi_clear(coeffsErrors[i]);
   }
   free(coeffsMpfr);
   free(coeffsErrors);
-  mpfi_clear(x0Int);
+  sollya_mpfi_clear(x0Int);
   cleartModel(t);
 
-  mpfi_clear(myD);
+  sollya_mpfi_clear(myD);
 }

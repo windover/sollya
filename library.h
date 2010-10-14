@@ -48,7 +48,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #define LIBRARY_H
 
 #include <mpfr.h>
-#include <mpfi.h>
+#include "mpfi-compat.h"
 #include <dlfcn.h>
 #include "expression.h"
 #include "chain.h"
@@ -65,7 +65,7 @@ typedef struct libraryFunctionStruct libraryFunction;
 struct libraryFunctionStruct 
 {
   char *functionName;
-  int (*code)(mpfi_t, mpfi_t, int);
+  int (*code)(sollya_mpfi_t, sollya_mpfi_t, int);
 };
 
 typedef struct procLibraryHandleStruct procLibraryHandle;

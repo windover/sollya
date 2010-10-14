@@ -47,7 +47,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 #include <gmp.h>
 #include <mpfr.h>
-#include <mpfi.h>
+#include "mpfi-compat.h"
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <errno.h>
 #include <inttypes.h>
@@ -1389,16 +1389,16 @@ int roundRangeCorrectly(mpfr_t rop, mpfr_t a, mpfr_t b) {
 
 
 
-void continuedFrac(mpq_t q, mpfi_t x) {
-  mpfi_t xprime;
+void continuedFrac(mpq_t q, sollya_mpfi_t x) {
+  sollya_mpfi_t xprime;
   mpfr_t a,b;
   mpfr_t m1,m2;
   mp_prec_t t;
   mpq_t res;
   mpz_t u;
 
-  t = mpfi_get_prec(x);
-  mpfi_init2(xprime,t);
+  t = sollya_mpfi_get_prec(x);
+  sollya_mpfi_init2(xprime,t);
   mpfr_init2(a,t);
   mpfr_init2(b,t);
   mpfr_init2(m1,t);
@@ -1406,8 +1406,8 @@ void continuedFrac(mpq_t q, mpfi_t x) {
   mpq_init(res);
   mpz_init(u);
 
-  mpfi_get_left(a,x);
-  mpfi_get_right(b,x);
+  sollya_mpfi_get_left(a,x);
+  sollya_mpfi_get_right(b,x);
   mpfr_floor(m1,a);
   mpfr_floor(m2,b);
 
@@ -1415,8 +1415,8 @@ void continuedFrac(mpq_t q, mpfi_t x) {
     mpfr_get_z(u,m1,GMP_RNDN); //exact
     mpfr_sub(a,a,m1,GMP_RNDD);
     mpfr_sub(b,b,m1,GMP_RNDU);
-    mpfi_interv_fr(xprime,a,b);
-    mpfi_inv(xprime,xprime);
+    sollya_mpfi_interv_fr(xprime,a,b);
+    sollya_mpfi_inv(xprime,xprime);
     continuedFrac(res,xprime);
     mpq_inv(res,res);
     mpq_set_num(q,u);
@@ -1433,7 +1433,7 @@ void continuedFrac(mpq_t q, mpfi_t x) {
     mpq_set_den(q,u);
   }
   
-  mpfi_clear(xprime);
+  sollya_mpfi_clear(xprime);
   mpfr_clear(a);
   mpfr_clear(b);
   mpfr_clear(m1);
@@ -1446,7 +1446,7 @@ void continuedFrac(mpq_t q, mpfi_t x) {
 node *rationalApprox(mpfr_t x, unsigned int n) {
   mpq_t q;
   mpz_t u;
-  mpfi_t xprime;
+  sollya_mpfi_t xprime;
   node *tree;
   node *num;
   node *denom;
@@ -1455,9 +1455,9 @@ node *rationalApprox(mpfr_t x, unsigned int n) {
 
   mpq_init(q);
   mpz_init(u);
-  mpfi_init2(xprime,(mp_prec_t)n);
+  sollya_mpfi_init2(xprime,(mp_prec_t)n);
 
-  mpfi_set_fr(xprime,x);
+  sollya_mpfi_set_fr(xprime,x);
   continuedFrac(q,xprime);
  
   mpq_get_num(u,q);
@@ -1481,7 +1481,7 @@ node *rationalApprox(mpfr_t x, unsigned int n) {
   tree->child1 = num;
   tree->child2 = denom;
 
-  mpfi_clear(xprime);
+  sollya_mpfi_clear(xprime);
   mpq_clear(q);
   mpz_clear(u);
   return tree;

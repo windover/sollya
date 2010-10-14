@@ -55,12 +55,12 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "expression.h"
 #include "chain.h"
 
-void boundTranslatedPolynomialByHorner(mpfi_t bound, int n, mpfi_t *coeffs, mpfi_t x0, mpfi_t I);
-void polynomialBoundSharp(mpfi_t *bound, int n, mpfi_t *coeffs, mpfi_t x0, mpfi_t I);
+void boundTranslatedPolynomialByHorner(sollya_mpfi_t bound, int n, sollya_mpfi_t *coeffs, sollya_mpfi_t x0, sollya_mpfi_t I);
+void polynomialBoundSharp(sollya_mpfi_t *bound, int n, sollya_mpfi_t *coeffs, sollya_mpfi_t x0, sollya_mpfi_t I);
 
 /* This function transforms a polynomial with interval coeffs
    into a poly with mpfr coeffs and a small remainder */
-void mpfr_get_poly(mpfr_t *rc, mpfi_t *errors_array, mpfi_t rest, int n, mpfi_t *p, mpfi_t x0, mpfi_t x);
+void mpfr_get_poly(mpfr_t *rc, sollya_mpfi_t *errors_array, sollya_mpfi_t rest, int n, sollya_mpfi_t *p, sollya_mpfi_t x0, sollya_mpfi_t x);
 
 /* Taylor model structure:
      n - order: polynomial of degree n-1, remainder of order O(x^n)
@@ -72,27 +72,27 @@ void mpfr_get_poly(mpfr_t *rc, mpfi_t *errors_array, mpfi_t rest, int n, mpfi_t 
 */
 typedef struct tmdl {
 int n; 
-mpfi_t rem_bound;
-mpfi_t *poly_array;
-mpfi_t poly_bound;
-mpfi_t x;
-mpfi_t x0;
+sollya_mpfi_t rem_bound;
+sollya_mpfi_t *poly_array;
+sollya_mpfi_t poly_bound;
+sollya_mpfi_t x;
+sollya_mpfi_t x0;
 
 } tModel;
 
-tModel* createEmptytModel(int n,  mpfi_t x0, mpfi_t x);
+tModel* createEmptytModel(int n,  sollya_mpfi_t x0, sollya_mpfi_t x);
 void cleartModel(tModel *t);
 void copytModel(tModel *t, tModel *tt);
 void printtModel(tModel *t);
 
-void consttModel(tModel*t, mpfi_t ct); 
+void consttModel(tModel*t, sollya_mpfi_t ct); 
 void addition_TM(tModel *t,tModel *t1, tModel *t2, int mode);
-void ctMultiplication_TM(tModel*d, tModel*s, mpfi_t c, int mode);
+void ctMultiplication_TM(tModel*d, tModel*s, sollya_mpfi_t c, int mode);
 void multiplication_TM(tModel *t, tModel *t1, tModel *t2, int mode);
 
 void composition_TM(tModel *t,tModel *g, tModel *f, int mode);
 
-void taylorform(node **T, chain **errors, mpfi_t **delta,
-		node *f, int n, mpfi_t *x0, mpfi_t *d, int mode);
+void taylorform(node **T, chain **errors, sollya_mpfi_t **delta,
+		node *f, int n, sollya_mpfi_t *x0, sollya_mpfi_t *d, int mode);
 
 #endif /* TAYLORFORM_H */

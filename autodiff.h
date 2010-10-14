@@ -53,52 +53,52 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #ifndef AUTODIFF_H
 #define AUTODIFF_H
 
-#include <mpfi.h>
+#include "mpfi-compat.h"
 #include "expression.h"
 
-void symbolic_poly_diff(mpfi_t *res, mpfi_t *coeff_array, int degree);
-void symbolic_poly_evaluation_horner(mpfi_t res, mpfi_t *coeffs_array, mpfi_t x, int degree);
-void symbolic_poly_evaluation_powers(mpfi_t res, mpfi_t *coeffs_array, mpfi_t *powers_array, mpfi_t x, int degree);
+void symbolic_poly_diff(sollya_mpfi_t *res, sollya_mpfi_t *coeff_array, int degree);
+void symbolic_poly_evaluation_horner(sollya_mpfi_t res, sollya_mpfi_t *coeffs_array, sollya_mpfi_t x, int degree);
+void symbolic_poly_evaluation_powers(sollya_mpfi_t res, sollya_mpfi_t *coeffs_array, sollya_mpfi_t *powers_array, sollya_mpfi_t x, int degree);
 
-void exp_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void expm1_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void log1p_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void log_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void log2_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void log10_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void sin_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void cos_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void sinh_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void cosh_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void tan_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void tanh_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void atan_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void atanh_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void asin_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void acos_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void asinh_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void acosh_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void erf_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void erfc_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void abs_diff(mpfi_t *res, mpfi_t x0, int n, int *silent);
-void ceil_diff(mpfi_t *res, mpfi_t x, int n, int *silent);
-void double_diff(mpfi_t *res, mpfi_t x, int n, int *silent);
-void double_double_diff(mpfi_t *res, mpfi_t x, int n, int *silent);
-void double_extended_diff(mpfi_t *res, mpfi_t x, int n, int *silent);
-void floor_diff(mpfi_t *res, mpfi_t x, int n, int *silent);
-void nearestint_diff(mpfi_t *res, mpfi_t x, int n, int *silent);
-void single_diff(mpfi_t *res, mpfi_t x, int n, int *silent);
-void triple_double_diff(mpfi_t *res, mpfi_t x, int n, int *silent);
-void libraryFunction_diff(mpfi_t *res, node *f, mpfi_t x, int n, int *silent);
-void procedureFunction_diff(mpfi_t *res, node *f, mpfi_t x, int n, int *silent);
+void exp_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void expm1_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void log1p_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void log_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void log2_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void log10_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void sin_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void cos_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void sinh_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void cosh_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void tan_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void tanh_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void atan_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void atanh_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void asin_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void acos_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void asinh_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void acosh_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void erf_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void erfc_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void abs_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
+void ceil_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
+void double_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
+void double_double_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
+void double_extended_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
+void floor_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
+void nearestint_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
+void single_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
+void triple_double_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
+void libraryFunction_diff(sollya_mpfi_t *res, node *f, sollya_mpfi_t x, int n, int *silent);
+void procedureFunction_diff(sollya_mpfi_t *res, node *f, sollya_mpfi_t x, int n, int *silent);
 
-void powerFunction_diff(mpfi_t *res, mpfr_t p, mpfi_t x0, int n, int *silent);
-void constantPower_diff(mpfi_t *res, mpfi_t x0, mpfr_t p, int n, int *silent);
-void baseFunction_diff(mpfi_t *res, int nodeType, mpfi_t x0, int n, int *silent);
+void powerFunction_diff(sollya_mpfi_t *res, mpfr_t p, sollya_mpfi_t x0, int n, int *silent);
+void constantPower_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, mpfr_t p, int n, int *silent);
+void baseFunction_diff(sollya_mpfi_t *res, int nodeType, sollya_mpfi_t x0, int n, int *silent);
 
-void multiplication_AD(mpfi_t *res, mpfi_t *f, mpfi_t *g, int n);
-void composition_AD(mpfi_t *res, mpfi_t *g, mpfi_t *f, int n);
-void auto_diff_scaled(mpfi_t* res, node *f, mpfi_t x0, int n);
-void auto_diff(mpfi_t* res, node *f, mpfi_t x0, int n);
+void multiplication_AD(sollya_mpfi_t *res, sollya_mpfi_t *f, sollya_mpfi_t *g, int n);
+void composition_AD(sollya_mpfi_t *res, sollya_mpfi_t *g, sollya_mpfi_t *f, int n);
+void auto_diff_scaled(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n);
+void auto_diff(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n);
 
 #endif /* AUTODIFF_H */

@@ -61,14 +61,14 @@ knowledge of the CeCILL-C license and that you accept its terms.
 //these are the functions that work on mpq_t
 
 
-int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x);
+int sturm_mpq(int *n, mpq_t *p, int p_degree, sollya_mpfi_t x);
 int polynomialDivide_mpq(mpq_t *quotient, int *quotient_degree, mpq_t *rest, int *rest_degree, mpq_t *p, int p_degree, mpq_t *q, int q_degree) ;
 int polynomialDeriv_mpq(mpq_t **derivCoeff, int *deriv_degree, mpq_t *p, int p_degree);
 int polynomialEval_mpq( mpq_t *res, mpq_t x, mpq_t *p, int p_degree);
-int sturm_mpfi(int *n, mpq_t *p, int p_degree, mpfi_t x);
-int polynomialDivide_mpfi(mpfi_t *quotient, int *quotient_degree, mpfi_t *rest, int *rest_degree, mpfi_t *p, int p_degree, mpfi_t *q, int q_degree, mp_prec_t prec) ;
-int polynomialDeriv_mpfi(mpfi_t **derivCoeff, int *deriv_degree, mpfi_t *p, int p_degree, mp_prec_t prec);
-int polynomialEval_mpfi( mpfi_t *res, mpfi_t x, mpfi_t *p, int p_degree);
+int sturm_mpfi(int *n, mpq_t *p, int p_degree, sollya_mpfi_t x);
+int polynomialDivide_mpfi(sollya_mpfi_t *quotient, int *quotient_degree, sollya_mpfi_t *rest, int *rest_degree, sollya_mpfi_t *p, int p_degree, sollya_mpfi_t *q, int q_degree, mp_prec_t prec) ;
+int polynomialDeriv_mpfi(sollya_mpfi_t **derivCoeff, int *deriv_degree, sollya_mpfi_t *p, int p_degree, mp_prec_t prec);
+int polynomialEval_mpfi( sollya_mpfi_t *res, sollya_mpfi_t x, sollya_mpfi_t *p, int p_degree);
 
 
 void printMpq(mpq_t x) {
@@ -200,7 +200,7 @@ int polynomialDivide_mpq(mpq_t *quotient, int *quotient_degree, mpq_t *rest, int
 }  
 
 
-int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
+int sturm_mpq(int *n, mpq_t *p, int p_degree, sollya_mpfi_t x){
   mpq_t *quotient, *rest, *dp;
   int quotient_degree, rest_degree, dp_degree;
   mpq_t *evalResA;
@@ -214,13 +214,13 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
   int varSignB,varSignA;
 
 
-  prec=mpfi_get_prec(x);
+  prec=sollya_mpfi_get_prec(x);
   na=0; nb=0;  
   nrRoots=0;
   mpfr_init2(a,prec);
   mpfr_init2(b,prec);
-  mpfi_get_left(a,x);
-  mpfi_get_right(b,x);
+  sollya_mpfi_get_left(a,x);
+  sollya_mpfi_get_right(b,x);
  
   mpq_init(aq);
   mpq_init(bq);
@@ -355,74 +355,74 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, mpfi_t x){
   return 1;
 }
 
-int polynomialDeriv_mpfi(mpfi_t **derivCoeff, int *deriv_degree, mpfi_t *p, int p_degree, mp_prec_t prec){
+int polynomialDeriv_mpfi(sollya_mpfi_t **derivCoeff, int *deriv_degree, sollya_mpfi_t *p, int p_degree, mp_prec_t prec){
   int i;
-  mpfi_t aux;
+  sollya_mpfi_t aux;
 
-  if (mpfi_is_zero(p[p_degree])) 
+  if (sollya_mpfi_is_zero(p[p_degree])) 
     return 0;
   if (p_degree>=1)
     *deriv_degree=p_degree-1;
   else if (p_degree==0) *deriv_degree=0;
   else return 0; 
  
-  *derivCoeff= (mpfi_t *)safeMalloc((*deriv_degree+1)*sizeof(mpfi_t));  
-  mpfi_init2((*derivCoeff)[0],prec);
-  mpfi_set_ui((*derivCoeff)[0],0);
-  mpfi_init2(aux,prec);
+  *derivCoeff= (sollya_mpfi_t *)safeMalloc((*deriv_degree+1)*sizeof(sollya_mpfi_t));  
+  sollya_mpfi_init2((*derivCoeff)[0],prec);
+  sollya_mpfi_set_ui((*derivCoeff)[0],0);
+  sollya_mpfi_init2(aux,prec);
   
   for (i=1; i<=p_degree;i++){
-    if (i-1!=0) mpfi_init2((*derivCoeff)[i-1],prec);
-    mpfi_set_ui(aux,i);
-    mpfi_mul((*derivCoeff)[i-1],p[i],aux);
+    if (i-1!=0) sollya_mpfi_init2((*derivCoeff)[i-1],prec);
+    sollya_mpfi_set_ui(aux,i);
+    sollya_mpfi_mul((*derivCoeff)[i-1],p[i],aux);
   }
-  mpfi_clear(aux);
+  sollya_mpfi_clear(aux);
   return 1;
 }  
 
 
-int polynomialEval_mpfi( mpfi_t *res, mpfi_t x, mpfi_t *p, int p_degree){
+int polynomialEval_mpfi( sollya_mpfi_t *res, sollya_mpfi_t x, sollya_mpfi_t *p, int p_degree){
   int i;
 
-  mpfi_set_ui(*res,0);
-  mpfi_set(*res,p[p_degree]);
+  sollya_mpfi_set_ui(*res,0);
+  sollya_mpfi_set(*res,p[p_degree]);
   for (i=p_degree-1;i>=0;i--) {
-    mpfi_mul(*res,*res,x);
-    mpfi_add(*res,*res,p[i]);
+    sollya_mpfi_mul(*res,*res,x);
+    sollya_mpfi_add(*res,*res,p[i]);
   }
 
   return 1;
 }
 
-int polynomialDivide_mpfi(mpfi_t *quotient, int *quotient_degree, mpfi_t *rest, int *rest_degree, mpfi_t *p, int p_degree, mpfi_t *q, int q_degree, mp_prec_t prec) {
+int polynomialDivide_mpfi(sollya_mpfi_t *quotient, int *quotient_degree, sollya_mpfi_t *rest, int *rest_degree, sollya_mpfi_t *p, int p_degree, sollya_mpfi_t *q, int q_degree, mp_prec_t prec) {
   
   int i,step,k;
-  mpfi_t aux;
+  sollya_mpfi_t aux;
   int okay;
 
   okay = 1;
  
   *quotient_degree=p_degree-q_degree;
   
-  if (mpfi_is_zero(q[q_degree]) || mpfi_is_zero(p[p_degree]))
+  if (sollya_mpfi_is_zero(q[q_degree]) || sollya_mpfi_is_zero(p[p_degree]))
     return 0;
  
-  mpfi_init2(aux,prec);
+  sollya_mpfi_init2(aux,prec);
   
   step=0;
   for (k=*quotient_degree; (k>=0) && okay;k--)
     {
 
-      mpfi_set(quotient[k],p[p_degree-step]);
-      if (!mpfi_has_zero(q[q_degree])) 
-	mpfi_div(quotient[k],quotient[k],q[q_degree]);
+      sollya_mpfi_set(quotient[k],p[p_degree-step]);
+      if (!sollya_mpfi_has_zero(q[q_degree])) 
+	sollya_mpfi_div(quotient[k],quotient[k],q[q_degree]);
       else {
 	okay = 0;
       }
       if (okay) {
 	for (i=q_degree; i>=0;i--){    
-	  mpfi_mul(aux,quotient[k],q[i]);
-	  mpfi_sub(p[p_degree-step-(q_degree-i)],p[p_degree-step-(q_degree-i)],aux);  
+	  sollya_mpfi_mul(aux,quotient[k],q[i]);
+	  sollya_mpfi_sub(p[p_degree-step-(q_degree-i)],p[p_degree-step-(q_degree-i)],aux);  
 	}
 	step++; 
       }
@@ -430,31 +430,31 @@ int polynomialDivide_mpfi(mpfi_t *quotient, int *quotient_degree, mpfi_t *rest, 
   *rest_degree=0;
   for (i=q_degree-1; i>=0; i--)  
     {
-      if (!mpfi_is_zero(p[i])){
+      if (!sollya_mpfi_is_zero(p[i])){
 	*rest_degree=i;
 	break;
       }
     }
   for (i=*rest_degree; i>=0; i--){ 
-    mpfi_set(rest[i],p[i]);
+    sollya_mpfi_set(rest[i],p[i]);
   }
-  mpfi_clear(aux);
+  sollya_mpfi_clear(aux);
   return okay;
 }  
 
-int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
-  mpfi_t *quotient, *rest, *dp;
+int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, sollya_mpfi_t x){
+  sollya_mpfi_t *quotient, *rest, *dp;
   int quotient_degree, rest_degree, dp_degree;
-  mpfi_t *evalResA;
-  mpfi_t *evalResB;
-  mpfi_t *s0, *s1;
-  mpfi_t evalRes;
+  sollya_mpfi_t *evalResA;
+  sollya_mpfi_t *evalResB;
+  sollya_mpfi_t *s0, *s1;
+  sollya_mpfi_t evalRes;
   int s0_degree, s1_degree;
   mpfr_t a,b;
-  mpfi_t aq,bq;
+  sollya_mpfi_t aq,bq;
   int i,na,nb,nrRoots;
   int varSignB,varSignA;
-  mpfi_t *p;
+  sollya_mpfi_t *p;
   int resultat;
   int resDiv;
   mp_prec_t prec, tempprec, prec2;
@@ -473,57 +473,57 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
 
   printMessage(2,"Information: in sturm_mpfi: chosen working precision is %d\n",(int) prec);
 
-  p = (mpfi_t *) safeCalloc(p_degree+1,sizeof(mpfi_t));
+  p = (sollya_mpfi_t *) safeCalloc(p_degree+1,sizeof(sollya_mpfi_t));
   for (i=0;i<=p_degree;i++) {
-    mpfi_init2(p[i],prec);
-    mpfi_set_q(p[i],pMpq[i]);
+    sollya_mpfi_init2(p[i],prec);
+    sollya_mpfi_set_q(p[i],pMpq[i]);
   }
 
-  prec2=mpfi_get_prec(x);
+  prec2=sollya_mpfi_get_prec(x);
   if (prec > prec2) prec2 = prec;
   na=0; nb=0;  
   nrRoots=0;
   mpfr_init2(a,prec2);
   mpfr_init2(b,prec2);
-  mpfi_get_left(a,x);
-  mpfi_get_right(b,x);
+  sollya_mpfi_get_left(a,x);
+  sollya_mpfi_get_right(b,x);
  
-  mpfi_init2(aq,prec2);
-  mpfi_init2(bq,prec2);
+  sollya_mpfi_init2(aq,prec2);
+  sollya_mpfi_init2(bq,prec2);
     
-  mpfi_set_fr(aq,a);
-  mpfi_set_fr(bq,b);
+  sollya_mpfi_set_fr(aq,a);
+  sollya_mpfi_set_fr(bq,b);
   
-  mpfi_init2(evalRes,prec);
+  sollya_mpfi_init2(evalRes,prec);
 
-  evalResA = (mpfi_t *)safeMalloc((p_degree+1)*sizeof(mpfi_t));  
-  evalResB = (mpfi_t *)safeMalloc((p_degree+1)*sizeof(mpfi_t));    
-  s0=(mpfi_t *)safeMalloc((p_degree+1)*sizeof(mpfi_t));
-  quotient=(mpfi_t *)safeMalloc((p_degree+1)*sizeof(mpfi_t));
-  rest=(mpfi_t *)safeMalloc((p_degree+1)*sizeof(mpfi_t));
+  evalResA = (sollya_mpfi_t *)safeMalloc((p_degree+1)*sizeof(sollya_mpfi_t));  
+  evalResB = (sollya_mpfi_t *)safeMalloc((p_degree+1)*sizeof(sollya_mpfi_t));    
+  s0=(sollya_mpfi_t *)safeMalloc((p_degree+1)*sizeof(sollya_mpfi_t));
+  quotient=(sollya_mpfi_t *)safeMalloc((p_degree+1)*sizeof(sollya_mpfi_t));
+  rest=(sollya_mpfi_t *)safeMalloc((p_degree+1)*sizeof(sollya_mpfi_t));
   for (i=0; i<=p_degree; i++){ 
-    mpfi_init2(evalResA[i],prec);
-    mpfi_init2(evalResB[i],prec);
-    mpfi_init2(quotient[i],prec);
-    mpfi_init2(rest[i],prec);
+    sollya_mpfi_init2(evalResA[i],prec);
+    sollya_mpfi_init2(evalResB[i],prec);
+    sollya_mpfi_init2(quotient[i],prec);
+    sollya_mpfi_init2(rest[i],prec);
   }
 
   s0_degree=p_degree;
 
   for (i=0; i<=p_degree; i++){ 
-    mpfi_init2(s0[i],prec); 
-    mpfi_set(s0[i],p[i]);
+    sollya_mpfi_init2(s0[i],prec); 
+    sollya_mpfi_set(s0[i],p[i]);
   }
         
   polynomialDeriv_mpfi(&dp, &dp_degree, p, p_degree, prec);
     
   polynomialEval_mpfi( &evalRes, aq, s0, s0_degree);
-  if (!mpfi_has_zero(evalRes)){
-    mpfi_set(evalResA[na],evalRes);
+  if (!sollya_mpfi_has_zero(evalRes)){
+    sollya_mpfi_set(evalResA[na],evalRes);
     na++;
   }
   else {
-    if (mpfi_is_zero(evalRes)) 
+    if (sollya_mpfi_is_zero(evalRes)) 
     nrRoots++; /*if the left extremity is a root we count it here
                     since the number of sign changes gives the nr of distinct 
                     roots between a and b, a<b*/  
@@ -531,11 +531,11 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
   }
 
   polynomialEval_mpfi( &evalRes, bq, s0, s0_degree);
-  if (!mpfi_has_zero(evalRes)){
-    mpfi_set(evalResB[nb],evalRes);
+  if (!sollya_mpfi_has_zero(evalRes)){
+    sollya_mpfi_set(evalResB[nb],evalRes);
     nb++;
   } else {
-    if (!mpfi_is_zero(evalRes)) resultat = 0;
+    if (!sollya_mpfi_is_zero(evalRes)) resultat = 0;
   }
 
   s1=dp;
@@ -543,19 +543,19 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
   if (s0_degree>0){
 
     polynomialEval_mpfi( &evalRes, aq, dp, dp_degree);
-    if (!mpfi_has_zero(evalRes)){
-      mpfi_set(evalResA[na],evalRes);
+    if (!sollya_mpfi_has_zero(evalRes)){
+      sollya_mpfi_set(evalResA[na],evalRes);
       na++;
     } else {
-      if (!mpfi_is_zero(evalRes)) resultat = 0;
+      if (!sollya_mpfi_is_zero(evalRes)) resultat = 0;
     }
   
     polynomialEval_mpfi( &evalRes, bq, dp, dp_degree);
-    if (!mpfi_has_zero(evalRes)){
-      mpfi_set(evalResB[nb],evalRes);
+    if (!sollya_mpfi_has_zero(evalRes)){
+      sollya_mpfi_set(evalResB[nb],evalRes);
       nb++;
     } else {
-      if (!mpfi_is_zero(evalRes)) resultat = 0;
+      if (!sollya_mpfi_is_zero(evalRes)) resultat = 0;
     }
 
   }
@@ -570,56 +570,56 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
 
       s0_degree=s1_degree; 
       for(i=0;i<=s0_degree;i++) {
-	mpfi_set(s0[i],s1[i]);
+	sollya_mpfi_set(s0[i],s1[i]);
       }
 
       s1_degree=rest_degree; 
       
       for(i=0;i<=s1_degree;i++){
-	mpfi_set(s1[i],rest[i]);
+	sollya_mpfi_set(s1[i],rest[i]);
       }
       
       for (i=0; i<=s1_degree; i++)
-	mpfi_neg(s1[i],s1[i]);
+	sollya_mpfi_neg(s1[i],s1[i]);
       
       polynomialEval_mpfi( &evalRes, aq, s1, s1_degree);
-      if (!mpfi_has_zero(evalRes)){
-	mpfi_set(evalResA[na],evalRes);
+      if (!sollya_mpfi_has_zero(evalRes)){
+	sollya_mpfi_set(evalResA[na],evalRes);
 	na++;
       } else {
-	if (!mpfi_is_zero(evalRes)) resultat = 0;
+	if (!sollya_mpfi_is_zero(evalRes)) resultat = 0;
       }
       
       polynomialEval_mpfi( &evalRes, bq, s1, s1_degree);
-      if (!mpfi_has_zero(evalRes)){
-	mpfi_set(evalResB[nb],evalRes);
+      if (!sollya_mpfi_has_zero(evalRes)){
+	sollya_mpfi_set(evalResB[nb],evalRes);
 	nb++;
       } else {
-	if (!mpfi_is_zero(evalRes)) resultat = 0;
+	if (!sollya_mpfi_is_zero(evalRes)) resultat = 0;
       }
     }
   }
   
   varSignA=0;
   for (i=1; i<na; i++){
-    if (mpfi_is_pos(evalResA[i-1]) ^ mpfi_is_pos(evalResA[i])) varSignA++;    
+    if (sollya_mpfi_is_pos(evalResA[i-1]) ^ sollya_mpfi_is_pos(evalResA[i])) varSignA++;    
   } 
   varSignB=0;
   for (i=1; i<nb; i++){
-    if (mpfi_is_pos(evalResB[i-1]) ^ mpfi_is_pos(evalResB[i])) varSignB++;    
+    if (sollya_mpfi_is_pos(evalResB[i-1]) ^ sollya_mpfi_is_pos(evalResB[i])) varSignB++;    
   }
 
   *n=(((varSignA-varSignB)>0)?(varSignA-varSignB+nrRoots):(varSignB-varSignA+nrRoots) );
 
   for (i=0; i<=p_degree; i++){ 
-    mpfi_clear(evalResA[i]);
-    mpfi_clear(evalResB[i]);
-    mpfi_clear(s0[i]);
-    mpfi_clear(quotient[i]);
-    mpfi_clear(rest[i]);
+    sollya_mpfi_clear(evalResA[i]);
+    sollya_mpfi_clear(evalResB[i]);
+    sollya_mpfi_clear(s0[i]);
+    sollya_mpfi_clear(quotient[i]);
+    sollya_mpfi_clear(rest[i]);
   }
   for (i=0; i<=dp_degree; i++){ 
-    mpfi_clear(dp[i]);
+    sollya_mpfi_clear(dp[i]);
   }
   free(dp);
   free(evalResA);
@@ -627,14 +627,14 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
   free(s0); 
   free(quotient); 
   free(rest); 
-  mpfi_clear(evalRes);
+  sollya_mpfi_clear(evalRes);
   mpfr_clear(a);
   mpfr_clear(b);
-  mpfi_clear(aq);
-  mpfi_clear(bq);
+  sollya_mpfi_clear(aq);
+  sollya_mpfi_clear(bq);
 
   for (i=0;i<=p_degree;i++) {
-    mpfi_clear(p[i]);
+    sollya_mpfi_clear(p[i]);
   }
   free(p);
   
@@ -642,8 +642,8 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, mpfi_t x){
 }
 
 
-int getNrRoots(mpfr_t res, node *f, mpfi_t range) {
-  mpfi_t x;
+int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range) {
+  sollya_mpfi_t x;
   int degree,i,nr;
   node **coefficients;
   mpq_t  *qCoefficients;
@@ -659,21 +659,21 @@ int getNrRoots(mpfr_t res, node *f, mpfi_t range) {
       return 0;
   }
 
-  if (!mpfi_bounded_p(range)) {
+  if (!sollya_mpfi_bounded_p(range)) {
       printMessage(1,"Warning: the given interval must have finite bounds.\n");
       return 0;
   }
 
   prec=getToolPrecision();
   
-  mpfi_init2(x, mpfi_get_prec(range));
-  mpfi_set(x, range);
+  sollya_mpfi_init2(x, sollya_mpfi_get_prec(range));
+  sollya_mpfi_set(x, range);
 
   getCoefficients(&degree,&coefficients,f);
 
   if (degree < 0) {
     printMessage(1,"Warning: the given function is not a polynomial.\n");
-    mpfi_clear(x);
+    sollya_mpfi_clear(x);
     return 0;
   }
   
@@ -751,7 +751,7 @@ int getNrRoots(mpfr_t res, node *f, mpfi_t range) {
     mpfr_set_inf(res,1);
   }
 
-  mpfi_clear(x);
+  sollya_mpfi_clear(x);
   for (i=0;i<=degree;i++) {
     mpq_clear(qCoefficients[i]);
   }

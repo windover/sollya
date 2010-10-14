@@ -46,7 +46,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 */
 
 #include <mpfr.h>
-#include <mpfi.h>
+#include "mpfi-compat.h"
 #include <gmp.h>
 #include "execute.h"
 #include <stdio.h> 

@@ -50,7 +50,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 */
 
 #include <mpfr.h>
-#include <mpfi.h>
+#include "mpfi-compat.h"
 #include <gmp.h>
 #include "execute.h"
 #include <stdio.h> 
@@ -109,14 +109,14 @@ void *copyThingOnVoid(void *);
 // 
 //
 int checkInequalityFast(int *res, node *a, node *b) {
-  mpfi_t aI, bI;
+  sollya_mpfi_t aI, bI;
   mpfr_t ahi, alo, bhi, blo;
   int okay;
 
   if (!(isConstant(a) && isConstant(b))) return 0;
 
-  mpfi_init2(aI, 12);
-  mpfi_init2(bI, 12);
+  sollya_mpfi_init2(aI, 12);
+  sollya_mpfi_init2(bI, 12);
   mpfr_init2(ahi, 12);
   mpfr_init2(alo, 12);
   mpfr_init2(bhi, 12);
@@ -127,13 +127,13 @@ int checkInequalityFast(int *res, node *a, node *b) {
   evaluateConstantExpressionToInterval(aI, a);
   evaluateConstantExpressionToInterval(bI, b);
 
-  mpfi_revert_if_needed(aI);
-  mpfi_revert_if_needed(bI);
+  sollya_mpfi_revert_if_needed(aI);
+  sollya_mpfi_revert_if_needed(bI);
 
-  mpfi_get_left(alo, aI);
-  mpfi_get_right(ahi, aI);
-  mpfi_get_left(blo, bI);
-  mpfi_get_right(bhi, bI);
+  sollya_mpfi_get_left(alo, aI);
+  sollya_mpfi_get_right(ahi, aI);
+  sollya_mpfi_get_left(blo, bI);
+  sollya_mpfi_get_right(bhi, bI);
 
   if (mpfr_number_p(alo) && 
       mpfr_number_p(ahi) && 
@@ -154,8 +154,8 @@ int checkInequalityFast(int *res, node *a, node *b) {
   mpfr_clear(bhi);
   mpfr_clear(alo);
   mpfr_clear(ahi);
-  mpfi_clear(bI);
-  mpfi_clear(aI);
+  sollya_mpfi_clear(bI);
+  sollya_mpfi_clear(aI);
 
   return okay;
 }
@@ -5459,7 +5459,7 @@ int evaluateThingToRangeList(chain **ch, node *tree) {
   chain *newChain;
   int i, number, k;
   node *evaluated;
-  mpfi_t **arrayMpfi;
+  sollya_mpfi_t **arrayMpfi;
   mpfr_t a,b;
 
   evaluated = evaluateThing(tree);
@@ -5468,16 +5468,16 @@ int evaluateThingToRangeList(chain **ch, node *tree) {
     mpfr_init2(a, tools_precision);
     mpfr_init2(b, tools_precision);
     evaluateThingListToThingArray(&number, &arrayTrees, evaluated->arguments); 
-    arrayMpfi = (mpfi_t **) safeCalloc(number,sizeof(mpfi_t *));
+    arrayMpfi = (sollya_mpfi_t **) safeCalloc(number,sizeof(sollya_mpfi_t *));
     for (i=0;i<number;i++) {
-      arrayMpfi[i] = (mpfi_t *) safeMalloc(sizeof(mpfi_t));
-      mpfi_init2(*(arrayMpfi[i]),tools_precision);
+      arrayMpfi[i] = (sollya_mpfi_t *) safeMalloc(sizeof(sollya_mpfi_t));
+      sollya_mpfi_init2(*(arrayMpfi[i]),tools_precision);
     }
     for (i=0;i<number;i++) {
       if (!evaluateThingToRange(a,b,arrayTrees[i])) {
 	for (k=0;k<number;k++) {
 	  freeThing(arrayTrees[k]);
-	  mpfi_clear(*(arrayMpfi[k]));
+	  sollya_mpfi_clear(*(arrayMpfi[k]));
 	  free(arrayMpfi[k]);
 	}
 	free(arrayTrees);
@@ -5487,7 +5487,7 @@ int evaluateThingToRangeList(chain **ch, node *tree) {
 	mpfr_clear(b);
 	return 0;
       } else {
-	mpfi_interv_fr(*(arrayMpfi[i]),a,b);
+	sollya_mpfi_interv_fr(*(arrayMpfi[i]),a,b);
       }
     }
     newChain = NULL;
@@ -11761,9 +11761,9 @@ int evaluateArgumentForExternalProc(void **res, node *argument, int type) {
     mpfr_init2(b,tools_precision);
     retVal = evaluateThingToRange(a, b, argument);
     if (retVal) {
-      *res = safeMalloc(sizeof(mpfi_t));
-      mpfi_init2(*((mpfi_t *) (*res)), tools_precision);
-      mpfi_interv_fr(*((mpfi_t *) (*res)), a, b);
+      *res = safeMalloc(sizeof(sollya_mpfi_t));
+      sollya_mpfi_init2(*((sollya_mpfi_t *) (*res)), tools_precision);
+      sollya_mpfi_interv_fr(*((sollya_mpfi_t *) (*res)), a, b);
     }
     mpfr_clear(a);
     mpfr_clear(b);
@@ -11848,7 +11848,7 @@ void freeArgumentForExternalProc(void* arg, int type) {
     freeThing((node *) arg);
     break;
   case RANGE_TYPE:
-    mpfi_clear(*((mpfi_t *) arg));
+    sollya_mpfi_clear(*((sollya_mpfi_t *) arg));
     free(arg);
     break;
   case INTEGER_TYPE:
@@ -12045,7 +12045,7 @@ int executeProcedure(node **resultThing, node *proc, chain *args, int elliptic) 
   return res;
 }
 
-void computeFunctionWithProcedure(mpfi_t y, node *proc, mpfi_t x, unsigned int derivN) {
+void computeFunctionWithProcedure(sollya_mpfi_t y, node *proc, sollya_mpfi_t x, unsigned int derivN) {
   mpfr_t derivNAsMpfr, xleft, xright, precAsMpfr;
   chain *args;
   int res;
@@ -12054,15 +12054,15 @@ void computeFunctionWithProcedure(mpfi_t y, node *proc, mpfi_t x, unsigned int d
   if (isProcedure(proc)) {
 
     mpfr_init2(precAsMpfr,8 * sizeof(mp_prec_t) + 10);
-    mpfr_set_ui(precAsMpfr,(unsigned int) mpfi_get_prec(y),GMP_RNDU);
+    mpfr_set_ui(precAsMpfr,(unsigned int) sollya_mpfi_get_prec(y),GMP_RNDU);
 
     mpfr_init2(derivNAsMpfr,8 * sizeof(derivN) + 10);
     mpfr_set_ui(derivNAsMpfr,derivN,GMP_RNDN);
 
-    mpfr_init2(xleft,mpfi_get_prec(x));
-    mpfr_init2(xright,mpfi_get_prec(x));
-    mpfi_get_left(xleft,x);
-    mpfi_get_right(xright,x);
+    mpfr_init2(xleft,sollya_mpfi_get_prec(x));
+    mpfr_init2(xright,sollya_mpfi_get_prec(x));
+    sollya_mpfi_get_left(xleft,x);
+    sollya_mpfi_get_right(xright,x);
 
     args = addElement(addElement(addElement(NULL,makeConstant(precAsMpfr)),
 				 makeConstant(derivNAsMpfr)),
@@ -12073,19 +12073,19 @@ void computeFunctionWithProcedure(mpfi_t y, node *proc, mpfi_t x, unsigned int d
     if (res) {
       if (resThing != NULL) {
 	if (isRange(resThing)) {
-	  mpfi_interv_fr(y,*(resThing->child1->value),*(resThing->child2->value));
+	  sollya_mpfi_interv_fr(y,*(resThing->child1->value),*(resThing->child2->value));
 	} else {
 	  mpfr_set_nan(xleft);
-	  mpfi_interv_fr(y,xleft,xleft);
+	  sollya_mpfi_interv_fr(y,xleft,xleft);
 	}
 	freeThing(resThing);
       } else {
 	mpfr_set_nan(xleft);
-	mpfi_interv_fr(y,xleft,xleft);
+	sollya_mpfi_interv_fr(y,xleft,xleft);
       }
     } else {
       mpfr_set_nan(xleft);
-      mpfi_interv_fr(y,xleft,xleft);
+      sollya_mpfi_interv_fr(y,xleft,xleft);
     }
 
     freeChain(args, freeThingOnVoid);
@@ -12095,26 +12095,26 @@ void computeFunctionWithProcedure(mpfi_t y, node *proc, mpfi_t x, unsigned int d
     mpfr_clear(derivNAsMpfr);
     mpfr_clear(precAsMpfr);
   } else {
-    mpfr_init2(xleft,mpfi_get_prec(y));
+    mpfr_init2(xleft,sollya_mpfi_get_prec(y));
     mpfr_set_nan(xleft);
-    mpfi_interv_fr(y,xleft,xleft);
+    sollya_mpfi_interv_fr(y,xleft,xleft);
     mpfr_clear(xleft);
   }
 }
 
 void computeFunctionWithProcedureMpfr(mpfr_t rop, node *proc, mpfr_t op, unsigned int derivN) {
-  mpfi_t opI, ropI;
+  sollya_mpfi_t opI, ropI;
 
-  mpfi_init2(opI,mpfr_get_prec(op));
-  mpfi_init2(ropI,mpfr_get_prec(rop)+2);
-  mpfi_set_fr(opI,op);
+  sollya_mpfi_init2(opI,mpfr_get_prec(op));
+  sollya_mpfi_init2(ropI,mpfr_get_prec(rop)+2);
+  sollya_mpfi_set_fr(opI,op);
 
   computeFunctionWithProcedure(ropI,proc,opI,derivN);
   
-  mpfi_mid(rop,ropI);
+  sollya_mpfi_mid(rop,ropI);
 
-  mpfi_clear(opI);
-  mpfi_clear(ropI);
+  sollya_mpfi_clear(opI);
+  sollya_mpfi_clear(ropI);
 }
 
 int executeExternalProcedureInner(node **resultThing, libraryProcedure *proc, chain *args) {
@@ -12196,19 +12196,19 @@ int executeExternalProcedureInner(node **resultThing, libraryProcedure *proc, ch
       }
       break;
     case RANGE_TYPE:
-      resultSpace = safeMalloc(sizeof(mpfi_t));
-      mpfi_init2(*((mpfi_t *) resultSpace),tools_precision);
-      externalResult = ((int (*)(mpfi_t *, void **))(proc->code))((mpfi_t *) resultSpace,arguments);
+      resultSpace = safeMalloc(sizeof(sollya_mpfi_t));
+      sollya_mpfi_init2(*((sollya_mpfi_t *) resultSpace),tools_precision);
+      externalResult = ((int (*)(sollya_mpfi_t *, void **))(proc->code))((sollya_mpfi_t *) resultSpace,arguments);
       if (externalResult) {
 	mpfr_init2(a,tools_precision);
 	mpfr_init2(b,tools_precision);
-	mpfi_get_left(a, *((mpfi_t *) resultSpace));
-	mpfi_get_right(b, *((mpfi_t *) resultSpace));
+	sollya_mpfi_get_left(a, *((sollya_mpfi_t *) resultSpace));
+	sollya_mpfi_get_right(b, *((sollya_mpfi_t *) resultSpace));
 	*resultThing = makeRange(makeConstant(a), makeConstant(b));
 	mpfr_clear(b);
 	mpfr_clear(a);
       }
-      mpfi_clear(*((mpfi_t *) resultSpace));
+      sollya_mpfi_clear(*((sollya_mpfi_t *) resultSpace));
       free(resultSpace);
       break;
     case INTEGER_TYPE:
@@ -12278,11 +12278,11 @@ int executeExternalProcedureInner(node **resultThing, libraryProcedure *proc, ch
 	} else {
 	  curr2 = NULL;
 	  while (curr != NULL) {
-	    pr = mpfi_get_prec(*((mpfi_t *) (curr->value)));
+	    pr = sollya_mpfi_get_prec(*((sollya_mpfi_t *) (curr->value)));
 	    mpfr_init2(a, pr);
 	    mpfr_init2(b, pr);
-	    mpfi_get_left(a, *((mpfi_t *) (curr->value)));
-	    mpfi_get_right(b, *((mpfi_t *) (curr->value)));
+	    sollya_mpfi_get_left(a, *((sollya_mpfi_t *) (curr->value)));
+	    sollya_mpfi_get_right(b, *((sollya_mpfi_t *) (curr->value)));
 	    curr2 = addElement(curr2, makeRange(makeConstant(a), makeConstant(b)));
 	    mpfr_clear(a);
 	    mpfr_clear(b);
@@ -12389,19 +12389,19 @@ int executeExternalProcedureInner(node **resultThing, libraryProcedure *proc, ch
       }
       break;
     case RANGE_TYPE:
-      resultSpace = safeMalloc(sizeof(mpfi_t));
-      mpfi_init2(*((mpfi_t *) resultSpace),tools_precision);
-      externalResult = ((int (*)(mpfi_t *))(proc->code))((mpfi_t *) resultSpace);
+      resultSpace = safeMalloc(sizeof(sollya_mpfi_t));
+      sollya_mpfi_init2(*((sollya_mpfi_t *) resultSpace),tools_precision);
+      externalResult = ((int (*)(sollya_mpfi_t *))(proc->code))((sollya_mpfi_t *) resultSpace);
       if (externalResult) {
 	mpfr_init2(a,tools_precision);
 	mpfr_init2(b,tools_precision);
-	mpfi_get_left(a, *((mpfi_t *) resultSpace));
-	mpfi_get_right(b, *((mpfi_t *) resultSpace));
+	sollya_mpfi_get_left(a, *((sollya_mpfi_t *) resultSpace));
+	sollya_mpfi_get_right(b, *((sollya_mpfi_t *) resultSpace));
 	*resultThing = makeRange(makeConstant(a), makeConstant(b));
 	mpfr_clear(b);
 	mpfr_clear(a);
       }
-      mpfi_clear(*((mpfi_t *) resultSpace));
+      sollya_mpfi_clear(*((sollya_mpfi_t *) resultSpace));
       free(resultSpace);
       break;
     case INTEGER_TYPE:
@@ -12467,11 +12467,11 @@ int executeExternalProcedureInner(node **resultThing, libraryProcedure *proc, ch
 	} else {
 	  curr2 = NULL;
 	  while (curr != NULL) {
-	    pr = mpfi_get_prec(*((mpfi_t *) (curr->value)));
+	    pr = sollya_mpfi_get_prec(*((sollya_mpfi_t *) (curr->value)));
 	    mpfr_init2(a, pr);
 	    mpfr_init2(b, pr);
-	    mpfi_get_left(a, *((mpfi_t *) (curr->value)));
-	    mpfi_get_right(b, *((mpfi_t *) (curr->value)));
+	    sollya_mpfi_get_left(a, *((sollya_mpfi_t *) (curr->value)));
+	    sollya_mpfi_get_right(b, *((sollya_mpfi_t *) (curr->value)));
 	    curr2 = addElement(curr2, makeRange(makeConstant(a), makeConstant(b)));
 	    mpfr_clear(a);
 	    mpfr_clear(b);
@@ -12613,12 +12613,12 @@ node *evaluateThingInner(node *tree) {
   mp_exp_t expo;
   mp_prec_t pTemp, pTemp2;
   int undoVariableTrick;
-  mpfi_t tempIA, tempIB, tempIC;
+  sollya_mpfi_t tempIA, tempIB, tempIC;
   int alreadyDisplayed;
-  mpfi_t *tmpInterv1, *tmpInterv2;
-  mpfi_t *tmpInterv11;
+  sollya_mpfi_t *tmpInterv1, *tmpInterv2;
+  sollya_mpfi_t *tmpInterv11;
   mpfr_t bb,cc;
-  mpfi_t tempIA2;
+  sollya_mpfi_t tempIA2;
   if (tree == NULL) return NULL;
 
   timingString = NULL;
@@ -12644,26 +12644,26 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
       pTemp = mpfr_get_prec(*(copy->child2->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child2->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIB,pTemp);
-      mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_add(tempIC,tempIA,tempIB);
+      sollya_mpfi_init2(tempIB,pTemp);
+      sollya_mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_add(tempIC,tempIA,tempIB);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIB);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIB);
+      sollya_mpfi_clear(tempIC);
     } else {
       if (isRange(copy->child1) && 
 	  isPureTree(copy->child2) && 
@@ -12729,26 +12729,26 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
       pTemp = mpfr_get_prec(*(copy->child2->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child2->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIB,pTemp);
-      mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_sub(tempIC,tempIA,tempIB);
+      sollya_mpfi_init2(tempIB,pTemp);
+      sollya_mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_sub(tempIC,tempIA,tempIB);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIB);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIB);
+      sollya_mpfi_clear(tempIC);
     } else {
       if (isRange(copy->child1) && 
 	  isPureTree(copy->child2) && 
@@ -12814,26 +12814,26 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
       pTemp = mpfr_get_prec(*(copy->child2->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child2->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIB,pTemp);
-      mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      special_mpfi_mul(tempIC,tempIA,tempIB);
+      sollya_mpfi_init2(tempIB,pTemp);
+      sollya_mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      special_sollya_mpfi_mul(tempIC,tempIA,tempIB);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIB);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIB);
+      sollya_mpfi_clear(tempIC);
     } else {
       if (isRange(copy->child1) && 
 	  isPureTree(copy->child2) && 
@@ -12899,26 +12899,26 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
       pTemp = mpfr_get_prec(*(copy->child2->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child2->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIB,pTemp);
-      mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      special_mpfi_div(tempIC,tempIA,tempIB);
+      sollya_mpfi_init2(tempIB,pTemp);
+      sollya_mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      special_sollya_mpfi_div(tempIC,tempIA,tempIB);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIB);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIB);
+      sollya_mpfi_clear(tempIC);
     } else {
       if (isRange(copy->child1) && 
 	  isPureTree(copy->child2) && 
@@ -12983,20 +12983,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_sqrt(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_sqrt(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case EXP:
@@ -13005,20 +13005,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_exp(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_exp(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case LOG:
@@ -13027,20 +13027,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_log(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_log(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case LOG_2:
@@ -13049,20 +13049,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_log2(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_log2(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case LOG_10:
@@ -13071,20 +13071,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_log10(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_log10(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case SIN:
@@ -13093,20 +13093,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_sin(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_sin(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case COS:
@@ -13115,20 +13115,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_cos(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_cos(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case TAN:
@@ -13137,20 +13137,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_tan(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_tan(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case ASIN:
@@ -13159,20 +13159,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_asin(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_asin(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case ACOS:
@@ -13181,20 +13181,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_acos(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_acos(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case ATAN:
@@ -13203,20 +13203,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_atan(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_atan(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case SINH:
@@ -13225,20 +13225,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_sinh(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_sinh(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case COSH:
@@ -13247,20 +13247,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_cosh(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_cosh(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case TANH:
@@ -13269,20 +13269,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_tanh(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_tanh(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case ASINH:
@@ -13291,20 +13291,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_asinh(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_asinh(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case ACOSH:
@@ -13313,20 +13313,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_acosh(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_acosh(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case ATANH:
@@ -13335,20 +13335,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_atanh(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_atanh(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case POW:
@@ -13358,26 +13358,26 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
       pTemp = mpfr_get_prec(*(copy->child2->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child2->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIB,pTemp);
-      mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_pow(tempIC,tempIA,tempIB);
+      sollya_mpfi_init2(tempIB,pTemp);
+      sollya_mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_pow(tempIC,tempIA,tempIB);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIB);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIB);
+      sollya_mpfi_clear(tempIC);
     } else {
       if (isRange(copy->child1) && 
 	  isPureTree(copy->child2) && 
@@ -13442,20 +13442,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_neg(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_neg(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case ABS:
@@ -13464,20 +13464,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_abs(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_abs(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case DOUBLE:
@@ -13486,20 +13486,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_round_to_double(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_round_to_double(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case SINGLE:
@@ -13508,20 +13508,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_round_to_single(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_round_to_single(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case DOUBLEDOUBLE:
@@ -13530,20 +13530,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_round_to_doubledouble(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_round_to_doubledouble(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case TRIPLEDOUBLE:
@@ -13552,20 +13552,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_round_to_tripledouble(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_round_to_tripledouble(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case ERF: 
@@ -13574,20 +13574,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_erf(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_erf(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case ERFC:
@@ -13596,20 +13596,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_erfc(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_erfc(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case LOG_1P:
@@ -13618,20 +13618,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_log1p(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_log1p(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case EXP_M1:
@@ -13640,20 +13640,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_expm1(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_expm1(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case DOUBLEEXTENDED:
@@ -13662,20 +13662,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_round_to_doubleextended(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_round_to_doubleextended(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case LIBRARYFUNCTION:
@@ -13686,20 +13686,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
       copy->libFun->code(tempIC, tempIA, copy->libFunDeriv);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case PROCEDUREFUNCTION:
@@ -13710,20 +13710,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
       computeFunctionWithProcedure(tempIC, copy->child2, tempIA, (unsigned int) copy->libFunDeriv);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case CEIL:
@@ -13732,20 +13732,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_ceil(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_ceil(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case FLOOR:
@@ -13754,20 +13754,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_floor(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_floor(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case NEARESTINT:
@@ -13776,20 +13776,20 @@ node *evaluateThingInner(node *tree) {
       pTemp = mpfr_get_prec(*(copy->child1->child1->value));
       pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
       if (pTemp2 > pTemp) pTemp = pTemp2;
-      mpfi_init2(tempIA,pTemp);
-      mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
-      mpfi_init2(tempIC,tools_precision);
-      mpfi_nearestint(tempIC,tempIA);
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_nearestint(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
-      mpfi_get_left(a,tempIC);
-      mpfi_get_right(b,tempIC);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
       copy = makeRange(makeConstant(a),makeConstant(b));
       mpfr_clear(a);
       mpfr_clear(b);
-      mpfi_clear(tempIA);
-      mpfi_clear(tempIC);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
     }
     break;
   case PI_CONST:
@@ -16324,8 +16324,8 @@ node *evaluateThingInner(node *tree) {
                 pTemp = mpfr_get_prec(bb);
                 pTemp2 = mpfr_get_prec(cc);
                 if (pTemp2 > pTemp) pTemp = pTemp2;
-                mpfi_init2(tempIA2,pTemp);
-                mpfi_interv_fr(tempIA2,bb,cc);
+                sollya_mpfi_init2(tempIA2,pTemp);
+                sollya_mpfi_interv_fr(tempIA2,bb,cc);
                 tmpInterv11 = &tempIA2;
               } else { 
                 resB = 0;
@@ -16336,8 +16336,8 @@ node *evaluateThingInner(node *tree) {
               if (isPureTree((node *) (curr->value))) {
                 mpfr_init2(bb,tools_precision);
                 if (evaluateThingToConstant(bb,(node *) (curr->value),NULL,0)) {
-                  mpfi_init2(tempIA2,tools_precision);
-                  mpfi_interv_fr(tempIA2,bb,bb);
+                  sollya_mpfi_init2(tempIA2,tools_precision);
+                  sollya_mpfi_interv_fr(tempIA2,bb,bb);
                   tmpInterv11 = &tempIA2;
                 } else {
                   resB = 0;
@@ -16359,8 +16359,8 @@ node *evaluateThingInner(node *tree) {
                   pTemp = mpfr_get_prec(b);
                   pTemp2 = mpfr_get_prec(c);
                   if (pTemp2 > pTemp) pTemp = pTemp2;
-                  mpfi_init2(tempIA,pTemp);
-                  mpfi_interv_fr(tempIA,b,c);
+                  sollya_mpfi_init2(tempIA,pTemp);
+                  sollya_mpfi_interv_fr(tempIA,b,c);
                   tmpInterv1 = &tempIA;
                 } else {
                   resB = 0;
@@ -16418,11 +16418,11 @@ node *evaluateThingInner(node *tree) {
                 tempChain3 = NULL;
                 curr2 = tempChain2;
                 while (curr2 != NULL) {
-                  pTemp = mpfi_get_prec(*((mpfi_t *) (curr2->value)));
+                  pTemp = sollya_mpfi_get_prec(*((sollya_mpfi_t *) (curr2->value)));
                   mpfr_init2(b,pTemp);
                   mpfr_init2(c,pTemp);
-                  mpfi_get_left(b,*((mpfi_t *) (curr2->value)));
-                  mpfi_get_right(c,*((mpfi_t *) (curr2->value)));
+                  sollya_mpfi_get_left(b,*((sollya_mpfi_t *) (curr2->value)));
+                  sollya_mpfi_get_right(c,*((sollya_mpfi_t *) (curr2->value)));
                   tempChain3 = addElement(tempChain3,makeRange(makeConstant(b),
                                                                makeConstant(c)));
                   mpfr_clear(b);
@@ -16433,11 +16433,11 @@ node *evaluateThingInner(node *tree) {
                 freeChain(tempChain3,freeThingOnVoid);
                 tempChain3 = addElement(addElement(NULL,tempNode2),makeList(tempChain4));
                 if (tmpInterv2 != NULL) {
-                  pTemp = mpfi_get_prec(*tmpInterv2);
+                  pTemp = sollya_mpfi_get_prec(*tmpInterv2);
                   mpfr_init2(b,pTemp);
                   mpfr_init2(c,pTemp);
-                  mpfi_get_left(b,*tmpInterv2);
-                  mpfi_get_right(c,*tmpInterv2);
+                  sollya_mpfi_get_left(b,*tmpInterv2);
+                  sollya_mpfi_get_right(c,*tmpInterv2);
                   tempChain3 = addElement(tempChain3,makeRange(makeConstant(b),
                                                                makeConstant(c)));
                   mpfr_clear(b);
@@ -16453,14 +16453,14 @@ node *evaluateThingInner(node *tree) {
                 freeChain(tempChain2, freeMpfiPtr);
               }
               if (tmpInterv2 != NULL) {
-                mpfi_clear(*tmpInterv2);
+                sollya_mpfi_clear(*tmpInterv2);
                 free(tmpInterv2);
               }
             }
-            if (tmpInterv1 != NULL) mpfi_clear(*tmpInterv1);
+            if (tmpInterv1 != NULL) sollya_mpfi_clear(*tmpInterv1);
           }
         }
-	if (tmpInterv11 != NULL) mpfi_clear(*tmpInterv11);
+	if (tmpInterv11 != NULL) sollya_mpfi_clear(*tmpInterv11);
       }
     }
     break; 			 	
@@ -16487,20 +16487,20 @@ node *evaluateThingInner(node *tree) {
             if (timingString != NULL) pushTimeCounter();
             pTemp = mpfr_get_prec(a);
             if (mpfr_get_prec(b) > pTemp) pTemp = mpfr_get_prec(b);
-            mpfi_init2(tempIA,pTemp);
-            mpfi_interv_fr(tempIA,a,b);
-            tmpInterv1 = (mpfi_t *) safeCalloc(resA + 1, sizeof(mpfi_t));
+            sollya_mpfi_init2(tempIA,pTemp);
+            sollya_mpfi_interv_fr(tempIA,a,b);
+            tmpInterv1 = (sollya_mpfi_t *) safeCalloc(resA + 1, sizeof(sollya_mpfi_t));
             for (resB=0;resB<resA+1;resB++) {
-              mpfi_init2(tmpInterv1[resB],tools_precision);
+              sollya_mpfi_init2(tmpInterv1[resB],tools_precision);
             }
             auto_diff(tmpInterv1, (node *) (copy->arguments->value), tempIA, resA);
             curr = NULL;
             for (resB=resA;resB>=0;resB--) {
-              pTemp = mpfi_get_prec(tmpInterv1[resB]);
+              pTemp = sollya_mpfi_get_prec(tmpInterv1[resB]);
               mpfr_init2(c,pTemp);
               mpfr_init2(d,pTemp);
-              mpfi_get_left(c,tmpInterv1[resB]);
-              mpfi_get_right(d,tmpInterv1[resB]);
+              sollya_mpfi_get_left(c,tmpInterv1[resB]);
+              sollya_mpfi_get_right(d,tmpInterv1[resB]);
               curr = addElement(curr,makeRange(makeConstant(c), makeConstant(d)));
               mpfr_clear(c);
               mpfr_clear(d);
@@ -16509,10 +16509,10 @@ node *evaluateThingInner(node *tree) {
             freeThing(copy);
             copy = tempNode;
             for (resB=0;resB<resA+1;resB++) {
-              mpfi_clear(tmpInterv1[resB]);
+              sollya_mpfi_clear(tmpInterv1[resB]);
             }
             free(tmpInterv1);
-            mpfi_clear(tempIA);
+            sollya_mpfi_clear(tempIA);
             if (timingString != NULL) popTimeCounter(timingString);
           } 
           mpfr_clear(a);
@@ -17142,12 +17142,12 @@ node *evaluateThingInner(node *tree) {
       mpfr_init2(b,tools_precision);
       if (evaluateThingToRange(a,b,copy->child2)) {
 	mpfr_init2(c,tools_precision);
-        mpfi_init2(tempIA,tools_precision);
-        mpfi_interv_fr(tempIA,a,b);
+        sollya_mpfi_init2(tempIA,tools_precision);
+        sollya_mpfi_interv_fr(tempIA,a,b);
 	if (timingString != NULL) pushTimeCounter(); 
 	resA = getNrRoots(c, copy->child1, tempIA);
 	if (timingString != NULL) popTimeCounter(timingString);
-        mpfi_clear(tempIA);
+        sollya_mpfi_clear(tempIA);
         if (resA) {
             tempNode = makeConstant(c);
             freeThing(copy);

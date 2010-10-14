@@ -55,7 +55,7 @@ extern "C" {
 
 #include <stdlib.h>
 #include <mpfr.h>
-#include <mpfi.h>
+#include <mpfi-compat.h>
 #include <setjmp.h>
 
 typedef struct chainStruct chain;
@@ -78,7 +78,7 @@ typedef struct libraryFunctionStruct libraryFunction;
 struct libraryFunctionStruct 
 {
   char *functionName;
-  int (*code)(mpfi_t, mpfi_t, int);
+  int (*code)(sollya_mpfi_t, sollya_mpfi_t, int);
 };
 
 typedef struct procLibraryHandleStruct procLibraryHandle;
@@ -290,7 +290,7 @@ extern chain *removeInt(chain *c, int n);
 extern void *safeCalloc (size_t nmemb, size_t size);
 extern void *safeMalloc (size_t size);
 
-extern void printInterval(mpfi_t);
+extern void printInterval(sollya_mpfi_t);
 extern void printValue(mpfr_t *);
 extern node* simplifyTreeErrorfree(node *tree);
 

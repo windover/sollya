@@ -72,19 +72,19 @@ void freeExprBoundTheo(exprBoundTheo *theo) {
     free_memory(theo->function);
   }
   if (theo->x != NULL) {
-    mpfi_clear(*(theo->x));
+    sollya_mpfi_clear(*(theo->x));
     free(theo->x);
   }
   if (theo->boundLeft != NULL) {
-    mpfi_clear(*(theo->boundLeft));
+    sollya_mpfi_clear(*(theo->boundLeft));
     free(theo->boundLeft);
   }
   if (theo->boundRight != NULL) {
-    mpfi_clear(*(theo->boundRight));
+    sollya_mpfi_clear(*(theo->boundRight));
     free(theo->boundRight);
   }
   if (theo->y != NULL) {
-    mpfi_clear(*(theo->y));
+    sollya_mpfi_clear(*(theo->y));
     free(theo->y);
   }
   if (theo->theoLeft != NULL) {
@@ -94,11 +94,11 @@ void freeExprBoundTheo(exprBoundTheo *theo) {
     freeExprBoundTheo(theo->theoRight);
   }
   if (theo->xZ != NULL) {
-    mpfi_clear(*(theo->xZ));
+    sollya_mpfi_clear(*(theo->xZ));
     free(theo->xZ);
   }
   if (theo->xMXZ != NULL) {
-    mpfi_clear(*(theo->xMXZ));
+    sollya_mpfi_clear(*(theo->xMXZ));
     free(theo->xMXZ);
   }
   if (theo->leftDerivative != NULL) {
@@ -120,19 +120,19 @@ void freeExprBoundTheo(exprBoundTheo *theo) {
     freeExprBoundTheo(theo->theoRightConstant);
   }
   if (theo->boundLeftLinear != NULL) {
-    mpfi_clear(*(theo->boundLeftLinear));
+    sollya_mpfi_clear(*(theo->boundLeftLinear));
     free(theo->boundLeftLinear);
   }
   if (theo->boundRightLinear != NULL) {
-    mpfi_clear(*(theo->boundRightLinear));
+    sollya_mpfi_clear(*(theo->boundRightLinear));
     free(theo->boundRightLinear);
   }
   if (theo->boundLeftConstant != NULL) {
-    mpfi_clear(*(theo->boundLeftConstant));
+    sollya_mpfi_clear(*(theo->boundLeftConstant));
     free(theo->boundLeftConstant);
   }
   if (theo->boundRightConstant != NULL) {
-    mpfi_clear(*(theo->boundRightConstant));
+    sollya_mpfi_clear(*(theo->boundRightConstant));
     free(theo->boundRightConstant);
   }
   free(theo);
@@ -717,7 +717,7 @@ int fprintNoZeroTheo(FILE *fd, noZeroTheo *theo, int start) {
   freeChain(zeroFree,freeMpfiPtr);
   curr = joinedZeroFree;
   while (curr != NULL) {
-    fprintInterval(fd,*((mpfi_t *) (curr->value)));
+    fprintInterval(fd,*((sollya_mpfi_t *) (curr->value)));
     sollyaFprintf(fd,"\n");
     curr = curr->next;
   }
@@ -786,7 +786,7 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
   chain *curr, *zeroFree, *joinedZeroFree, *temp;
   mpfr_t a, b, l, u, fr, fl, tl, tr;
   mp_prec_t p, prec;
-  mpfi_t *currMpfi;
+  sollya_mpfi_t *currMpfi;
   char *var = "x";
 
   if (theo == NULL) return start;
@@ -824,7 +824,7 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
     sollyaFprintf(fd,"without the (union of the) following interval(s)\n");
     curr = theo->excludedIntervals;
     while (curr != NULL) {
-      fprintInterval(fd,*((mpfi_t *) (curr->value)));
+      fprintInterval(fd,*((sollya_mpfi_t *) (curr->value)));
       sollyaFprintf(fd,"\n");
       curr = curr->next;
     }
@@ -859,7 +859,7 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
   freeChain(zeroFree,freeMpfiPtr);
   curr = joinedZeroFree;
   while (curr != NULL) {
-    fprintInterval(fd,*((mpfi_t *) (curr->value)));
+    fprintInterval(fd,*((sollya_mpfi_t *) (curr->value)));
     sollyaFprintf(fd,"\n");
     curr = curr->next;
   }
@@ -877,25 +877,25 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
     sollyaFprintf(fd," without the (union of the) following interval(s)\n");
     curr = theo->excludedIntervals;
     while (curr != NULL) {
-      fprintInterval(fd,*((mpfi_t *) (curr->value)));
+      fprintInterval(fd,*((sollya_mpfi_t *) (curr->value)));
       sollyaFprintf(fd,"\n");
       curr = curr->next;
     }
   }
   sollyaFprintf(fd,".\nTheorems %d and %d show that the absolute value of f(%s) on the bounds of the given domain a = ",
 	  theo->evalLeftBound->number, theo->evalRightBound->number, variablename);
-  mpfr_init2(a,mpfi_get_prec(*(theo->domain)));
-  mpfr_init2(b,mpfi_get_prec(*(theo->domain)));  
-  mpfi_get_left(a,*(theo->domain));
-  mpfi_get_right(b,*(theo->domain));
+  mpfr_init2(a,sollya_mpfi_get_prec(*(theo->domain)));
+  mpfr_init2(b,sollya_mpfi_get_prec(*(theo->domain)));  
+  sollya_mpfi_get_left(a,*(theo->domain));
+  sollya_mpfi_get_right(b,*(theo->domain));
   fprintValue(fd,a);
   sollyaFprintf(fd," and b = ");
   fprintValue(fd,b);
   sollyaFprintf(fd,"\nis less than or equal to the upper bound u = ");
-  mpfr_init2(u,mpfi_get_prec(*(theo->infnorm)));
-  mpfr_init2(l,mpfi_get_prec(*(theo->infnorm)));  
-  mpfi_get_left(l,*(theo->infnorm));
-  mpfi_get_right(u,*(theo->infnorm));
+  mpfr_init2(u,sollya_mpfi_get_prec(*(theo->infnorm)));
+  mpfr_init2(l,sollya_mpfi_get_prec(*(theo->infnorm)));  
+  sollya_mpfi_get_left(l,*(theo->infnorm));
+  sollya_mpfi_get_right(u,*(theo->infnorm));
   fprintValue(fd,u);
   sollyaFprintf(fd," given for the infinity norm.\nTheorem(s) ");
   curr = theo->evalOnZeros;
@@ -912,12 +912,12 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
   sollyaFprintf(fd,"Theorem %d shows that there are no other domains with zeros of f'(%s) and we have shown that\n",
 	  theo->noZeros->number,variablename);
   sollyaFprintf(fd,"the partitioning is complete.\n");
-  prec = mpfi_get_prec(*(theo->evalLeftBound->y));
-  p = mpfi_get_prec(*(theo->evalRightBound->y));
+  prec = sollya_mpfi_get_prec(*(theo->evalLeftBound->y));
+  p = sollya_mpfi_get_prec(*(theo->evalRightBound->y));
   if (p > prec) prec = p;
   curr = theo->evalOnZeros;
   while (curr != NULL) {
-    p = mpfi_get_prec(*(((exprBoundTheo *) (curr->value))->y));
+    p = sollya_mpfi_get_prec(*(((exprBoundTheo *) (curr->value))->y));
     if (p > prec) prec = p;
     curr = curr->next;
   }
@@ -925,12 +925,12 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
   mpfr_init2(fr,prec);
   mpfr_init2(tl,prec);
   mpfr_init2(tr,prec);
-  mpfi_get_left(fr,*(theo->evalLeftBound->y));
-  mpfi_get_right(fl,*(theo->evalLeftBound->y));
+  sollya_mpfi_get_left(fr,*(theo->evalLeftBound->y));
+  sollya_mpfi_get_right(fl,*(theo->evalLeftBound->y));
   innerLeftNumber = theo->evalLeftBound->number;
   innerRightNumber = theo->evalLeftBound->number;
-  mpfi_get_left(tl,*(theo->evalRightBound->y));
-  mpfi_get_right(tr,*(theo->evalRightBound->y));
+  sollya_mpfi_get_left(tl,*(theo->evalRightBound->y));
+  sollya_mpfi_get_right(tr,*(theo->evalRightBound->y));
   if (mpfr_less_p(tr,fl)) {
     mpfr_set(fl,tr,GMP_RNDN);
     innerLeftNumber = theo->evalRightBound->number;
@@ -942,8 +942,8 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
   curr = theo->evalOnZeros;
   while (curr != NULL) {
     currMpfi = ((exprBoundTheo *) curr->value)->y;
-    mpfi_get_left(tl,*currMpfi);
-    mpfi_get_right(tr,*currMpfi);
+    sollya_mpfi_get_left(tl,*currMpfi);
+    sollya_mpfi_get_right(tr,*currMpfi);
     if (mpfr_less_p(tr,fl)) {
       mpfr_set(fl,tr,GMP_RNDN);
       innerLeftNumber = ((exprBoundTheo *) curr->value)->number;

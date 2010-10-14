@@ -50,10 +50,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #define STURM_H
 
 #include <mpfr.h>
-#include <mpfi.h>
+#include "mpfi-compat.h"
 #include "expression.h"
 
-int getNrRoots(mpfr_t res, node *f, mpfi_t range);
+int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range);
 
 
 #endif /* ifdef STURM_H*/

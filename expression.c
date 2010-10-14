@@ -46,7 +46,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 */
 
 #include <mpfr.h>
-#include <mpfi.h>
+#include "mpfi-compat.h"
 #include <gmp.h>
 #include "expression.h"
 #include <stdio.h> /* fprinft, fopen, fclose, */
@@ -108,19 +108,19 @@ void simplifyMpfrPrec(mpfr_t rop, mpfr_t op) {
 
 
 
-void mpfr_from_mpfi(mpfr_t rop, mpfr_t op, int n, int (*mpfifun)(mpfi_t, mpfi_t, int)) {
-  mpfi_t opI, ropI;
+void mpfr_from_mpfi(mpfr_t rop, mpfr_t op, int n, int (*mpfifun)(sollya_mpfi_t, sollya_mpfi_t, int)) {
+  sollya_mpfi_t opI, ropI;
 
-  mpfi_init2(opI,mpfr_get_prec(op));
-  mpfi_init2(ropI,mpfr_get_prec(rop)+2);
-  mpfi_set_fr(opI,op);
+  sollya_mpfi_init2(opI,mpfr_get_prec(op));
+  sollya_mpfi_init2(ropI,mpfr_get_prec(rop)+2);
+  sollya_mpfi_set_fr(opI,op);
 
   mpfifun(ropI,opI,n);
   
-  mpfi_mid(rop,ropI);
+  sollya_mpfi_mid(rop,ropI);
 
-  mpfi_clear(opI);
-  mpfi_clear(ropI);
+  sollya_mpfi_clear(opI);
+  sollya_mpfi_clear(ropI);
 }
 
 void free_memory(node *tree) {

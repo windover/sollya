@@ -49,7 +49,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 
 #include <mpfr.h>
-#include <mpfi.h>
+#include "mpfi-compat.h"
 #include <stdio.h>
 #include "expression.h"
 #include "chain.h"
@@ -69,25 +69,25 @@ struct exprBoundTheoStruct
 {
   node *function;
   int functionType;
-  mpfi_t *x;
-  mpfi_t *boundLeft;
-  mpfi_t *boundRight;
-  mpfi_t *y;
+  sollya_mpfi_t *x;
+  sollya_mpfi_t *boundLeft;
+  sollya_mpfi_t *boundRight;
+  sollya_mpfi_t *y;
   exprBoundTheo *theoLeft;
   exprBoundTheo *theoRight;
   int simplificationUsed;
   node *leftDerivative;
   node *rightDerivative;
-  mpfi_t *xZ;
-  mpfi_t *xMXZ;
+  sollya_mpfi_t *xZ;
+  sollya_mpfi_t *xMXZ;
   exprBoundTheo *theoLeftConstant;
   exprBoundTheo *theoRightConstant;
-  mpfi_t *boundLeftConstant;
-  mpfi_t *boundRightConstant;
+  sollya_mpfi_t *boundLeftConstant;
+  sollya_mpfi_t *boundRightConstant;
   exprBoundTheo *theoLeftLinear;
   exprBoundTheo *theoRightLinear;
-  mpfi_t *boundLeftLinear;
-  mpfi_t *boundRightLinear;
+  sollya_mpfi_t *boundLeftLinear;
+  sollya_mpfi_t *boundRightLinear;
   int number;
 };
 
@@ -117,8 +117,8 @@ typedef struct infnormTheoStruct infnormTheo;
 struct infnormTheoStruct
 {
   node *function;
-  mpfi_t *domain;
-  mpfi_t *infnorm;
+  sollya_mpfi_t *domain;
+  sollya_mpfi_t *infnorm;
   node *derivative;
   node *numeratorOfDerivative;
   node *derivativeOfNumeratorOfDerivative;

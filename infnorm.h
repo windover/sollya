@@ -50,7 +50,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 
 #include <mpfr.h>
-#include <mpfi.h>
+#include "mpfi-compat.h"
 #include <stdio.h>
 #include "expression.h"
 #include "chain.h"
@@ -65,9 +65,9 @@ chain* findZerosFunction(node *func, rangetype range, mp_prec_t prec, mpfr_t dia
 void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec);
 void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_prec_t prec);
 void evaluateRangeFunctionFast(rangetype yrange, node *func, node *deriv, rangetype xrange, mp_prec_t prec);
-void evaluateInterval(mpfi_t y, node *func, node *deriv, mpfi_t x);
-void fprintInterval(FILE *fd, mpfi_t interval);
-void printInterval(mpfi_t interval);
+void evaluateInterval(sollya_mpfi_t y, node *func, node *deriv, sollya_mpfi_t x);
+void fprintInterval(FILE *fd, sollya_mpfi_t interval);
+void printInterval(sollya_mpfi_t interval);
 
 chain *joinAdjacentIntervalsMaximally(chain *intervals);
 int checkInfnorm(node *func, rangetype range, mpfr_t infnormval, mpfr_t diam, mp_prec_t prec);
@@ -82,23 +82,23 @@ int evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec);
 int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes, mp_prec_t startPrec);
 int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec);
 int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec);
-void evaluateConstantExpressionToInterval(mpfi_t y, node *func);
+void evaluateConstantExpressionToInterval(sollya_mpfi_t y, node *func);
 
 int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec);
 int evaluateSign(int *s, node *rawFunc);
 int compareConstant(int *cmp, node *func1, node *func2);
 
-void mpfi_pow(mpfi_t z, mpfi_t x, mpfi_t y);
-void special_mpfi_div(mpfi_t rop, mpfi_t a, mpfi_t b);
-void special_mpfi_div(mpfi_t rop, mpfi_t a, mpfi_t b);
-void mpfi_round_to_double(mpfi_t rop, mpfi_t op);
-void mpfi_round_to_doubledouble(mpfi_t rop, mpfi_t op);
-void mpfi_round_to_tripledouble(mpfi_t rop, mpfi_t op);
-void mpfi_round_to_doubleextended(mpfi_t rop, mpfi_t op);
-void mpfi_erf(mpfi_t rop, mpfi_t op);
-void mpfi_erfc(mpfi_t rop, mpfi_t op);
-void mpfi_ceil(mpfi_t rop, mpfi_t op);
-void mpfi_floor(mpfi_t rop, mpfi_t op);
-void mpfi_nearestint(mpfi_t rop, mpfi_t op);
+void sollya_mpfi_pow(sollya_mpfi_t z, sollya_mpfi_t x, sollya_mpfi_t y);
+void special_sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t a, sollya_mpfi_t b);
+void special_sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t a, sollya_mpfi_t b);
+void sollya_mpfi_round_to_double(sollya_mpfi_t rop, sollya_mpfi_t op);
+void sollya_mpfi_round_to_doubledouble(sollya_mpfi_t rop, sollya_mpfi_t op);
+void sollya_mpfi_round_to_tripledouble(sollya_mpfi_t rop, sollya_mpfi_t op);
+void sollya_mpfi_round_to_doubleextended(sollya_mpfi_t rop, sollya_mpfi_t op);
+void sollya_mpfi_erf(sollya_mpfi_t rop, sollya_mpfi_t op);
+void sollya_mpfi_erfc(sollya_mpfi_t rop, sollya_mpfi_t op);
+void sollya_mpfi_ceil(sollya_mpfi_t rop, sollya_mpfi_t op);
+void sollya_mpfi_floor(sollya_mpfi_t rop, sollya_mpfi_t op);
+void sollya_mpfi_nearestint(sollya_mpfi_t rop, sollya_mpfi_t op);
 
 #endif /* ifdef INFNORM_H*/
