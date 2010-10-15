@@ -47,6 +47,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 #include "mpfi-compat.h"
 
+/* TODO: normalize [NaN, 1] to [Nan, NaN] */
+
 int sollya_mpfi_abs(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
@@ -164,7 +166,8 @@ int sollya_mpfi_cos(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
   res = mpfi_cos(rop,op);
-
+  /* If op contains Nan -> returns Nan */
+  /* If op contains Infty -> returns [-1,1] */
   return res;
 }
 
@@ -200,7 +203,17 @@ int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
 
   res = mpfi_div(rop,op1,op2);
-
+  /* 0/0 -> NaN 
+     0/anything else -> 0
+     anything else / something containing 0 (inside) -> [-Inf, Inf]
+     anything / [0,b] -> limit of anything/[eps, b] when eps->0
+     idem with [a,0]
+     1/[-Inf, -Inf] -> 0
+     [-Inf,+Inf]/[-Inf, -Inf] -> 0
+     idem of [Inf, Inf]
+     [Inf, Inf]/[-Inf, -Inf] -> NaN
+     [-Inf, -Inf]/[-Inf, -Inf] -> NaN
+  */
   return res;
 }
 
