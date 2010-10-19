@@ -49,10 +49,20 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 /* TODO: normalize [NaN, 1] to [Nan, NaN] */
 
+void sollya_mpfi_nan_normalize(sollya_mpfi_t rop) {
+  /* HACK ALERT: For performance reasons, we will access the internals
+     of an mpfi_t !!!
+  */
+  if (mpfr_nan_p(&(rop->left))) mpfr_set(&(rop->right),&(rop->left),GMP_RNDN);
+  else if (mpfr_nan_p(&(rop->right))) mpfr_set(&(rop->left),&(rop->right),GMP_RNDN);
+}
+
 int sollya_mpfi_abs(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
   res = mpfi_abs(rop,op);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -63,6 +73,8 @@ int sollya_mpfi_acos(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   res = mpfi_acos(rop,op);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -71,6 +83,8 @@ int sollya_mpfi_acosh(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
   res = mpfi_acosh(rop,op);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -81,6 +95,8 @@ int sollya_mpfi_add(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
 
   res = mpfi_add(rop,op1,op2);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -89,6 +105,8 @@ int sollya_mpfi_add_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) 
   int res;
 
   res = mpfi_add_ui(rop,op1,op2);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -99,6 +117,8 @@ int sollya_mpfi_asin(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   res = mpfi_asin(rop,op);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -107,6 +127,8 @@ int sollya_mpfi_asinh(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
   res = mpfi_asinh(rop,op);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -117,6 +139,8 @@ int sollya_mpfi_atan(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   res = mpfi_atan(rop,op);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -126,6 +150,8 @@ int sollya_mpfi_atanh(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   res = mpfi_atanh(rop,op);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -134,6 +160,8 @@ int sollya_mpfi_blow(sollya_mpfi_t rop, sollya_mpfi_t op1, double op2) {
   int res;
 
   res = mpfi_blow(rop,op1,op2);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -168,6 +196,9 @@ int sollya_mpfi_cos(sollya_mpfi_t rop, sollya_mpfi_t op) {
   res = mpfi_cos(rop,op);
   /* If op contains Nan -> returns Nan */
   /* If op contains Infty -> returns [-1,1] */
+
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -176,6 +207,8 @@ int sollya_mpfi_cosh(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
   res = mpfi_cosh(rop,op);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -214,6 +247,9 @@ int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
      [Inf, Inf]/[-Inf, -Inf] -> NaN
      [-Inf, -Inf]/[-Inf, -Inf] -> NaN
   */
+
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -222,6 +258,8 @@ int sollya_mpfi_div_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) 
   int res;
 
   res = mpfi_div_ui(rop,op1,op2);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -232,6 +270,8 @@ int sollya_mpfi_exp(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   res = mpfi_exp(rop,op);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -240,6 +280,8 @@ int sollya_mpfi_expm1(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
   res = mpfi_expm1(rop,op);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -309,6 +351,8 @@ int sollya_mpfi_intersect(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op
 
   res = mpfi_intersect(rop,op1,op2);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -318,6 +362,8 @@ int sollya_mpfi_interv_d(sollya_mpfi_t rop, double op1, double op2) {
 
   res = mpfi_interv_d(rop,op1,op2);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -326,6 +372,8 @@ int sollya_mpfi_interv_fr(sollya_mpfi_t rop, mpfr_t op1, mpfr_t op2) {
   int res;
 
   res = mpfi_interv_fr(rop,op1,op2);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -344,6 +392,8 @@ int sollya_mpfi_inv(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
   res = mpfi_inv(rop,op);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -399,6 +449,8 @@ int sollya_mpfi_log(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   res = mpfi_log(rop,op);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -407,6 +459,8 @@ int sollya_mpfi_log10(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
   res = mpfi_log10(rop,op);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -417,6 +471,8 @@ int sollya_mpfi_log1p(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   res = mpfi_log1p(rop,op);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -425,6 +481,8 @@ int sollya_mpfi_log2(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
   res = mpfi_log2(rop,op);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -443,6 +501,8 @@ int sollya_mpfi_mul(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
 
   res = mpfi_mul(rop,op1,op2);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -471,6 +531,8 @@ int sollya_mpfi_neg(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   res = mpfi_neg(rop,op);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -497,6 +559,8 @@ int sollya_mpfi_set_d(sollya_mpfi_t rop, double op) {
   int res;
 
   res = mpfi_set_d(rop,op);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -548,6 +612,8 @@ int sollya_mpfi_sin(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   res = mpfi_sin(rop,op);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -556,6 +622,8 @@ int sollya_mpfi_sinh(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
   res = mpfi_sinh(rop,op);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -566,6 +634,8 @@ int sollya_mpfi_sqr(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   res = mpfi_sqr(rop,op);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -574,6 +644,8 @@ int sollya_mpfi_sqrt(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
   res = mpfi_sqrt(rop,op);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -584,6 +656,8 @@ int sollya_mpfi_sub(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
 
   res = mpfi_sub(rop,op1,op2);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -592,6 +666,8 @@ int sollya_mpfi_sub_fr(sollya_mpfi_t rop, sollya_mpfi_t op1, mpfr_t op2) {
   int res;
 
   res = mpfi_sub_fr(rop,op1,op2);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -602,6 +678,8 @@ int sollya_mpfi_sub_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) 
 
   res = mpfi_sub_ui(rop,op1,op2);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -610,6 +688,8 @@ int sollya_mpfi_tan(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
   res = mpfi_tan(rop,op);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
@@ -620,6 +700,8 @@ int sollya_mpfi_tanh(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   res = mpfi_tanh(rop,op);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -629,6 +711,8 @@ int sollya_mpfi_ui_div(sollya_mpfi_t rop, unsigned long op1, sollya_mpfi_t op2) 
 
   res = mpfi_ui_div(rop,op1,op2);
 
+  sollya_mpfi_nan_normalize(rop);
+
   return res;
 }
 
@@ -637,6 +721,8 @@ int sollya_mpfi_union(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
 
   res = mpfi_union(rop,op1,op2);
+
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }

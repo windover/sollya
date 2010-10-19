@@ -15847,6 +15847,11 @@ node *evaluateThingInner(node *tree) {
 	    }
 	    copy->child1 = makeConstant(b);
 	    copy->child2 = makeConstant(a);
+	    if (!(!((!(!(mpfr_nan_p(*(copy->child1->value))))) ^ (!(!(mpfr_nan_p(*(copy->child2->value)))))))) {
+	      printMessage(1,"Warning: one bound of a range is NaN while the other is not. Will normalize the range to have two NaN endpoints.\n");
+	      mpfr_set_nan(*(copy->child1->value));
+	      mpfr_set_nan(*(copy->child2->value));
+	    }
 	  } else {
 	    if (resA != 2) {
 	      mpfr_nextbelow(a);
@@ -15856,6 +15861,11 @@ node *evaluateThingInner(node *tree) {
 	    }
 	    copy->child1 = makeConstant(a);
 	    copy->child2 = makeConstant(b);
+	    if (!(!((!(!(mpfr_nan_p(*(copy->child1->value))))) ^ (!(!(mpfr_nan_p(*(copy->child2->value)))))))) {
+	      printMessage(1,"Warning: one bound of a range is NaN while the other is not. Will normalize the range to have two NaN endpoints.\n");
+	      mpfr_set_nan(*(copy->child1->value));
+	      mpfr_set_nan(*(copy->child2->value));
+	    }
 	  }
 	}      
 	mpfr_clear(b);
