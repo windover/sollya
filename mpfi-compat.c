@@ -52,6 +52,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 #include "mpfi-compat.h"
 
+// TODO test on nanity and return 0 for tests
+
 void sollya_mpfi_nan_normalize(sollya_mpfi_t rop) {
   /* HACK ALERT: For performance reasons, we will access the internals
      of an mpfi_t !!!
@@ -330,13 +332,10 @@ int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
      anything else / something containing 0 (inside) -> [-Inf, Inf]
      [u,v] / [0,b] -> if u>=0, return [u/b, +Inf]
                       if v<=0, return [-Inf, v/b]
-                      if u<=0<=b, return [-Inf, Inf]
+                      if u<=0<=v, return [-Inf, Inf]
      [u,v] / [a,0] -> return -[u,v]/[0, -a]
-     1/[-Inf, -Inf] -> 0
-     [-Inf,+Inf]/[-Inf, -Inf] -> 0
-     idem of [Inf, Inf]
-     [Inf, Inf]/[-Inf, -Inf] -> NaN
-     [-Inf, -Inf]/[-Inf, -Inf] -> NaN
+     anything/[-/+Inf = -/+Inf] -> 0
+     [+/-Inf = +/-Inf]/[-/+Inf = -/+Inf] -> NaN
   */
 
   sollya_mpfi_nan_normalize(rop);
@@ -446,6 +445,8 @@ void sollya_mpfi_init2(sollya_mpfi_t rop, mp_prec_t op) {
 int sollya_mpfi_intersect(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
 
+  // TODO: correct nan in argument
+
   res = mpfi_intersect(rop,op1,op2);
 
   sollya_mpfi_nan_normalize(rop);
@@ -488,6 +489,8 @@ int sollya_mpfi_interv_si(sollya_mpfi_t rop, long op1, long op2) {
 int sollya_mpfi_inv(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
+  // TODO call div
+
   res = mpfi_inv(rop,op);
 
   sollya_mpfi_nan_normalize(rop);
@@ -499,6 +502,8 @@ int sollya_mpfi_inv(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_is_inside(sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
 
+  // TODO test on nanity and return 0 in this case
+
   res = mpfi_is_inside(op1,op2);
 
   return res;
@@ -507,6 +512,8 @@ int sollya_mpfi_is_inside(sollya_mpfi_t op1, sollya_mpfi_t op2) {
 
 int sollya_mpfi_is_nonneg(sollya_mpfi_t op) {
   int res;
+
+  // TODO test on nanity and return 0 in this case 
 
   res = mpfi_is_nonneg(op);
 
@@ -517,6 +524,8 @@ int sollya_mpfi_is_nonneg(sollya_mpfi_t op) {
 int sollya_mpfi_is_nonpos(sollya_mpfi_t op) {
   int res;
 
+  // TODO test on nanity and return 0 in this case 
+
   res = mpfi_is_nonpos(op);
 
   return res;
@@ -525,6 +534,8 @@ int sollya_mpfi_is_nonpos(sollya_mpfi_t op) {
 
 int sollya_mpfi_is_pos(sollya_mpfi_t op) {
   int res;
+
+  // TODO test on nanity and return 0 in this case 
 
   res = mpfi_is_pos(op);
 
@@ -544,6 +555,8 @@ int sollya_mpfi_is_zero(sollya_mpfi_t op) {
 int sollya_mpfi_log(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
+  // if 0 is inside => NaN, if 0 is lower bound or [0;0] => return -inf
+
   res = mpfi_log(rop,op);
 
   sollya_mpfi_nan_normalize(rop);
@@ -554,6 +567,8 @@ int sollya_mpfi_log(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
 int sollya_mpfi_log10(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
+
+  // if 0 is inside => NaN, if 0 is lower bound or [0;0] => return -inf
 
   res = mpfi_log10(rop,op);
 
@@ -566,6 +581,8 @@ int sollya_mpfi_log10(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_log1p(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
+  // if -1 is inside => NaN, if -1 is lower bound or [-1;-1] => return -inf
+
   res = mpfi_log1p(rop,op);
 
   sollya_mpfi_nan_normalize(rop);
@@ -576,6 +593,8 @@ int sollya_mpfi_log1p(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
 int sollya_mpfi_log2(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
+
+  // if 0 is inside => NaN, if 0 is lower bound or [0;0] => return -inf
 
   res = mpfi_log2(rop,op);
 
@@ -834,6 +853,8 @@ int sollya_mpfi_ui_div(sollya_mpfi_t rop, unsigned long op1, sollya_mpfi_t op2) 
 
 int sollya_mpfi_union(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
+
+  // test nanity in input
 
   res = mpfi_union(rop,op1,op2);
 
