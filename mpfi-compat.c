@@ -324,11 +324,14 @@ int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
     }
   }
 
-  /* 0/0 -> NaN 
+  /* first of all: if a or b contains a Nan, a/b -> NaN
+    0/0 -> NaN 
      0/anything else -> 0
      anything else / something containing 0 (inside) -> [-Inf, Inf]
-     anything / [0,b] -> limit of anything/[eps, b] when eps->0
-     idem with [a,0]
+     [u,v] / [0,b] -> if u>=0, return [u/b, +Inf]
+                      if v<=0, return [-Inf, v/b]
+                      if u<=0<=b, return [-Inf, Inf]
+     [u,v] / [a,0] -> return -[u,v]/[0, -a]
      1/[-Inf, -Inf] -> 0
      [-Inf,+Inf]/[-Inf, -Inf] -> 0
      idem of [Inf, Inf]
