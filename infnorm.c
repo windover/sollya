@@ -139,6 +139,20 @@ int sollya_mpfi_equal_p(sollya_mpfi_t r1, sollya_mpfi_t r2) {
   return test;
 }
 
+int sollya_mpfr_max(mpfr_t z, mpfr_t x, mpfr_t y, mp_rnd_t rnd) {
+  int res = 2;
+  if (mpfr_nan_p(x) || mpfr_nan_p(y)) mpfr_set_nan(z);
+  else res = mpfr_max(z, x, y, rnd);
+  return res;
+}
+
+int sollya_mpfr_min(mpfr_t z, mpfr_t x, mpfr_t y, mp_rnd_t rnd) {
+  int res = 2;
+  if (mpfr_nan_p(x) || mpfr_nan_p(y)) mpfr_set_nan(z);
+  else res = mpfr_min(z, x, y, rnd);
+  return res;
+}
+
 void sollya_mpfi_pow(sollya_mpfi_t z, sollya_mpfi_t x, sollya_mpfi_t y) {
   mpfr_t l,r,lx,rx;
   mp_prec_t prec, precx;
@@ -208,7 +222,7 @@ void sollya_mpfi_pow(sollya_mpfi_t z, sollya_mpfi_t x, sollya_mpfi_t y) {
 	if (mpfr_integer_p(r)) {   /* l is even */
 	  mpfr_pow(lx,lx,l,GMP_RNDU);
 	  mpfr_pow(rx,rx,l,GMP_RNDU);
-	  mpfr_max(rx,lx,rx,GMP_RNDU);
+	  sollya_mpfr_max(rx,lx,rx,GMP_RNDU);
 	  mpfr_set_d(lx,0.0,GMP_RNDD);
 	  sollya_mpfi_interv_fr(res,lx,rx);
 	  sollya_mpfi_revert_if_needed(res);
@@ -2797,10 +2811,10 @@ void infnormI(sollya_mpfi_t infnormval, node *func, node *deriv,
   excludes = concatChains(excludes,excludesTemp);
   sollya_mpfi_get_left(tl,evalFuncOnInterval);
   sollya_mpfi_get_right(tr,evalFuncOnInterval);
-  mpfr_min(outerLeft,outerLeft,tl,GMP_RNDD);
-  mpfr_max(outerRight,outerRight,tr,GMP_RNDU);
-  mpfr_min(innerLeft,innerLeft,tr,GMP_RNDU);
-  mpfr_max(innerRight,innerRight,tl,GMP_RNDD); 
+  sollya_mpfr_min(outerLeft,outerLeft,tl,GMP_RNDD);
+  sollya_mpfr_max(outerRight,outerRight,tr,GMP_RNDU);
+  sollya_mpfr_min(innerLeft,innerLeft,tr,GMP_RNDU);
+  sollya_mpfr_max(innerRight,innerRight,tl,GMP_RNDD); 
  
   printMessage(3,"Information: invoking interval zero search.\n");
   tempChain = findZeros(numeratorDeriv,derivNumeratorDeriv,range,prec,diam,noZeros); 
@@ -2869,10 +2883,10 @@ void infnormI(sollya_mpfi_t infnormval, node *func, node *deriv,
       printMessage(1,"Warning: NaNs occurred during the interval evaluation of the zeros of the derivative.\n");
     }
 
-    mpfr_min(outerLeft,outerLeft,tl,GMP_RNDD);
-    mpfr_max(outerRight,outerRight,tr,GMP_RNDU);
-    mpfr_min(innerLeft,innerLeft,tr,GMP_RNDU); 
-    mpfr_max(innerRight,innerRight,tl,GMP_RNDD); 
+    sollya_mpfr_min(outerLeft,outerLeft,tl,GMP_RNDD);
+    sollya_mpfr_max(outerRight,outerRight,tr,GMP_RNDU);
+    sollya_mpfr_min(innerLeft,innerLeft,tr,GMP_RNDU); 
+    sollya_mpfr_max(innerRight,innerRight,tl,GMP_RNDD); 
     curr = curr->next;
   }
 
@@ -2883,15 +2897,15 @@ void infnormI(sollya_mpfi_t infnormval, node *func, node *deriv,
 
   if (mpfr_cmp(innerLeft,innerRight) >= 0) {
     mpfr_neg(outerLeft,outerLeft,GMP_RNDN);
-    mpfr_max(tr,outerLeft,outerRight,GMP_RNDU);
+    sollya_mpfr_max(tr,outerLeft,outerRight,GMP_RNDU);
     mpfr_set_d(tl,0.0,GMP_RNDD);
     sollya_mpfi_interv_fr(infnormval,tl,tr);
     sollya_mpfi_revert_if_needed(infnormval);
   } else {
     mpfr_neg(innerLeft,innerLeft,GMP_RNDN);
     mpfr_neg(outerLeft,outerLeft,GMP_RNDN);
-    mpfr_max(tl,innerLeft,innerRight,GMP_RNDD);
-    mpfr_max(tr,outerLeft,outerRight,GMP_RNDU);
+    sollya_mpfr_max(tl,innerLeft,innerRight,GMP_RNDD);
+    sollya_mpfr_max(tr,outerLeft,outerRight,GMP_RNDU);
     sollya_mpfi_interv_fr(infnormval,tl,tr);
     sollya_mpfi_revert_if_needed(infnormval);
   }
@@ -3885,7 +3899,7 @@ chain* findZerosByNewton(node *func, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     mpfr_set(ap,a,GMP_RNDD);
     while (mpfr_cmp(ap,b) < 0) {
       mpfr_add(bp,ap,step,GMP_RNDN);
-      mpfr_min(bp,bp,b,GMP_RNDU);
+      sollya_mpfr_min(bp,bp,b,GMP_RNDU);
       
       newtonOkay = newtonMPFR(resNewtonStep, func, deriv, ap, bp, prec);
       
@@ -4383,8 +4397,8 @@ int evaluateWithAccuracyEstimate(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, m
 
   mpfr_abs(*(yrange.a),*(yrange.a),GMP_RNDD);
   mpfr_abs(*(yrange.b),*(yrange.b),GMP_RNDD);
-  mpfr_min(*(xrange.a),*(yrange.a),*(yrange.b),GMP_RNDD);
-  mpfr_max(*(xrange.b),*(yrange.a),*(yrange.b),GMP_RNDU);
+  sollya_mpfr_min(*(xrange.a),*(yrange.a),*(yrange.b),GMP_RNDD);
+  sollya_mpfr_max(*(xrange.b),*(yrange.a),*(yrange.b),GMP_RNDU);
 
   mpfr_sub(*(xrange.b),*(xrange.b),*(xrange.a),GMP_RNDU);
 

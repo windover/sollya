@@ -15820,8 +15820,8 @@ node *evaluateThingInner(node *tree) {
 	    if (!noRoundingWarnings) {
 	      printMessage(1,"Warning: inclusion property is satisfied but the diameter may be greater than the least possible.\n");
 	    }
-	    mpfr_min(a,*(yrange.a),*(yrange2.a),GMP_RNDD);
-	    mpfr_max(b,*(yrange.b),*(yrange2.b),GMP_RNDU);
+	    sollya_mpfr_min(a,*(yrange.a),*(yrange2.a),GMP_RNDD);
+	    sollya_mpfr_max(b,*(yrange.b),*(yrange2.b),GMP_RNDU);
 	    mpfr_clear(*(xrange.a));
 	    mpfr_clear(*(xrange.b));
 	    free(xrange.a);
