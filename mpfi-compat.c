@@ -379,6 +379,46 @@ int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   if (sollya_mpfi_test_emptyset(&res, rop, op1)) return res;
   if (sollya_mpfi_test_emptyset(&res, rop, op2)) return res;
 
+  /* Cases for the division:
+     # op1 = NaN or op2 = NaN -> NaN
+     # op1 empty or op2 empty -> empty
+     # If op1 = [0] :
+         # If op2 = [0] -> NaN
+         # Else -> [0]    the argument here is: even if op2 contains 0,
+                                                the function op1/y is 0 everywhere
+                                                so we define it at y=0 by
+                                                continuity.
+     # If op1 = [+Inf] or op1 = [-Inf] :
+         # If op2 = [+Inf] or op2 = [-Inf] -> NaN
+         # If op2 does not contain 0 -> sgn(op2)*Inf  the argument is: even
+                                                      if op2 contains an Inf,
+                                                      the function op1/y is constant
+                                                      to Inf everywhere, so we
+                                                      define it at Inf as this constant.
+         # Else -> [-Inf, Inf]     this holds even when op2=[0]. The argument here is:
+                                   Inf/[0] is an Inf but we do not know its sign. So
+                                   we return [-Inf, Inf] and we are sure.
+
+     Now, we know that op1 is neither [0], nor [-Inf] or [+Inf]
+     #  If op2 = [0] -> [-Inf, Inf]    the argument here is: even if op1 contains 0,
+                                      x/[0] is always -Inf or +Inf, hence we
+                                      define it at 0 by continuity as -Inf or +Inf.
+                                      Sadly, we do not know the sign of 0, so we have
+                                      to return [-Inf, +Inf] as a result
+     # If op2 = [-Inf] or [+Inf] -> [0]     (even if op1 contains 0: by continuity)
+
+     Now, we know that neither op1 nor op2 are singular point intervals
+     # If op2 does not contain 0 -> mpfi_div(op1, op2)
+     # If op2 has 0 inside -> [-Inf, +Inf]
+     # If op2 = [0, b] :
+         # If op1 = [u, v] with 0<=u ->  [u/b, +Inf]
+         # If op1 = [u, v] with v<=0 ->  [-Inf, v/b]
+         # Else -> [-Inf, +Inf]
+     # Else (op2 = [a, 0]) :
+         # If op1 = [u, v] with 0<=u ->  [-Inf, u/a]
+         # If op1 = [u, v] with v<=0 ->  [v/a, +Inf]
+         # Else -> [-Inf, +Inf]
+  */     
   if (sollyaMpfiHasNaN(op1) || sollyaMpfiHasNaN(op2)) {
     /* HACK ALERT: For performance reasons, we will access the internals
        of an mpfi_t !!!
@@ -972,6 +1012,42 @@ int sollya_mpfi_mid(mpfr_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_mul(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
 
+  /* Theoretical cases for the multiplication (for the practical implementation, see below)
+     # op1 = NaN or op2 = NaN -> NaN
+     # op1 empty or op2 empty -> empty
+     # If op1 = [0] :
+         # If op2 = [-Inf] or [+Inf] -> NaN
+         # Else -> [0]    the argument here is: even if op2 contains an Inf,
+                                                the function op1*y is 0 everywhere
+                                                so we define it at y=Inf by
+                                                continuity.
+     # If op1 = [+Inf] or op1 = [-Inf] :
+         # If op2 = [0] -> NaN
+         # If op2 does not contain 0 -> sgn(op1)*sgn(op2)*Inf
+         # Else -> [-Inf, Inf]    The argument here is: Inf*y is an +/-Inf for
+                                  every y. By continuity at y=0, we define it
+                                  as an Inf (we do not know its sign however,
+                                  but who cares: we return [-Inf, +Inf] anyway)
+
+     Now, we know that op1 is neither [0], nor [-Inf] or [+Inf]
+     # If op2 = [0] -> [0]  (because op1*op2 = op2*op1)
+     # If op2 = [-Inf] or [+Inf] :
+         # If op1 does not contain 0 -> sgn(op1)*sgn(op2)*Inf
+         # Else -> [-Inf, +Inf]
+
+     Now, we know that neither op1 nor op2 are singular point intervals
+     # Else -> mpfi_mul(op1, op2)
+
+     Practical implementation: we can expect that MPFI behaves well in most of the cases
+     and use the following simple implementation which should be correct:
+     
+     # op1 = NaN or op2 = NaN -> NaN
+     # op1 empty or op2 empty -> empty
+     # If (op1 = [0]) and (op2 = [-Inf] or op2 = [+Inf]) -> NaN
+     # If (op2 = [0]) and (op1 = [-Inf] or op1 = [+Inf]) -> NaN
+     # Else -> mpfi_mul(op1, op2)
+  */     
+
   if (sollya_mpfi_test_emptyset(&res, rop, op1)) return res;
   if (sollya_mpfi_test_emptyset(&res, rop, op2)) return res;
 
@@ -986,6 +1062,7 @@ int sollya_mpfi_mul(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
 int sollya_mpfi_mul_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) {
   int res;
 
+  /* WARNING: case (op1=[-Inf] or op1=[+Inf]) and (op2=0) to be checked */
   if (sollya_mpfi_test_emptyset(&res, rop, op1)) return res;
 
   res = mpfi_mul_ui(rop,op1,op2);
