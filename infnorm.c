@@ -71,61 +71,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 void printInterval(sollya_mpfi_t interval);
 
-
-void special_sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t a, sollya_mpfi_t b) {
-  mpfr_t bh, bl;
-  mp_prec_t prec;
-
-  prec = sollya_mpfi_get_prec(b);
-  mpfr_init2(bh,prec);
-  mpfr_init2(bl,prec);
-  sollya_mpfi_get_left(bl,b);
-  sollya_mpfi_get_left(bh,b);
-  if (mpfr_zero_p(bl) && mpfr_zero_p(bh)) {
-    mpfr_set_inf(bh,1);
-    mpfr_set_inf(bl,-1);
-    sollya_mpfi_interv_fr(rop,bl,bh);
-  } else {
-    sollya_mpfi_div(rop,a,b);
-  }
-  mpfr_clear(bl);
-  mpfr_clear(bh);
-}
-
-void special_sollya_mpfi_mul(sollya_mpfi_t rop, sollya_mpfi_t a, sollya_mpfi_t b) {
-  mpfr_t ah, al;
-  mpfr_t bh, bl;
-  mp_prec_t prec;
-
-  prec = sollya_mpfi_get_prec(a);
-  mpfr_init2(ah,prec);
-  mpfr_init2(al,prec);
-  sollya_mpfi_get_left(al,a);
-  sollya_mpfi_get_left(ah,a);
-  prec = sollya_mpfi_get_prec(b);
-  mpfr_init2(bh,prec);
-  mpfr_init2(bl,prec);
-  sollya_mpfi_get_left(bl,b);
-  sollya_mpfi_get_left(bh,b);
-  if ((mpfr_zero_p(al) && mpfr_zero_p(ah) &&
-       (mpfr_cmp(bh,bl) == 0) && 
-       mpfr_inf_p(bh) && mpfr_inf_p(bl)) || 
-      (mpfr_zero_p(bl) && mpfr_zero_p(bh) &&
-       (mpfr_cmp(ah,al) == 0) && 
-       mpfr_inf_p(ah) && mpfr_inf_p(al))) {
-    mpfr_set_nan(bh);
-    mpfr_set_nan(bl);
-    sollya_mpfi_interv_fr(rop,bl,bh);
-  } else {
-    sollya_mpfi_mul(rop,a,b);
-  }
-  mpfr_clear(al);
-  mpfr_clear(ah);
-  mpfr_clear(bl);
-  mpfr_clear(bh);
-}
-
-
 int sollya_mpfi_equal_p(sollya_mpfi_t r1, sollya_mpfi_t r2) {
   mpfr_t x1, x2;
   int test = 0;
@@ -1277,7 +1222,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
   case MUL:
     leftExcludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
     rightExcludes = evaluateI(stack2, tree->child2, x, prec, simplifiesA, simplifiesB, NULL, rightTheo,noExcludes);
-    special_sollya_mpfi_mul(stack3, stack1, stack2);
+    sollya_mpfi_mul(stack3, stack1, stack2);
     if (internalTheo != NULL) {
       sollya_mpfi_set(*(internalTheo->boundLeft),stack1);
       sollya_mpfi_set(*(internalTheo->boundRight),stack2);
@@ -1357,7 +1302,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 	
 	free_memory(derivNumerator);
 	free_memory(derivDenominator);
-	special_sollya_mpfi_div(stack3, stack1, stack2);
+	sollya_mpfi_div(stack3, stack1, stack2);
 	excludes = concatChains(leftExcludes,rightExcludes);
       } else {
 	/* [0;0] / [bl;br], bl,br != 0 */
@@ -1638,7 +1583,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 
 		  free_memory(derivNumerator);
 		  mpfr_clear(z2);
-		  special_sollya_mpfi_div(stack3, stack1, stack2);
+		  sollya_mpfi_div(stack3, stack1, stack2);
 		}
 	      } else {
 
@@ -1652,7 +1597,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 		  excludes = addElement(excludes,newExclude);
 		}
 
-		special_sollya_mpfi_div(stack3, stack1, stack2);
+		sollya_mpfi_div(stack3, stack1, stack2);
 	      }
 	    }
 
@@ -1660,19 +1605,19 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 	    sollya_mpfi_clear(denominatorInZI);
 	    sollya_mpfi_clear(zI);
 	  } else {
-	    special_sollya_mpfi_div(stack3, stack1, stack2);
+	    sollya_mpfi_div(stack3, stack1, stack2);
 	    excludes = concatChains(leftExcludes,rightExcludes);
 	  }
 	  free_memory(derivDenominator);
 	  mpfr_clear(z);
 	} else {
-	  special_sollya_mpfi_div(stack3, stack1, stack2);
+	  sollya_mpfi_div(stack3, stack1, stack2);
 	  excludes = concatChains(leftExcludes,rightExcludes);
 	}
 	mpfr_clear(xl);
 	mpfr_clear(xr);
       } else {
-	special_sollya_mpfi_div(stack3, stack1, stack2);
+	sollya_mpfi_div(stack3, stack1, stack2);
 	excludes = concatChains(leftExcludes,rightExcludes);
       }
     }
@@ -2006,7 +1951,7 @@ chain* evaluateITaylorOnDiv(sollya_mpfi_t result, node *func, sollya_mpfi_t x, m
     numeratorExcludes = evaluateITaylor(resultNumerator, numerator, derivNumerator, x, prec, recurse, numeratorTheo,noExcludes);
     denominatorExcludes = evaluateITaylor(resultDenominator, denominator, derivDenominator, x, prec, recurse, denominatorTheo,noExcludes);
     excludes = concatChains(numeratorExcludes,denominatorExcludes);    
-    special_sollya_mpfi_div(resultIndirect, resultNumerator, resultDenominator);
+    sollya_mpfi_div(resultIndirect, resultNumerator, resultDenominator);
     if (sollya_mpfi_bounded_p(resultIndirect)) {
       sollya_mpfi_set(result, resultIndirect);
       if (sollya_mpfi_nan_p(result)) {

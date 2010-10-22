@@ -52,8 +52,6 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
 #include "mpfi-compat.h"
 
-// TODO test on nanity and return 0 for tests
-
 void sollya_mpfi_nan_normalize(sollya_mpfi_t rop) {
   /* HACK ALERT: For performance reasons, we will access the internals
      of an mpfi_t !!!
@@ -62,12 +60,45 @@ void sollya_mpfi_nan_normalize(sollya_mpfi_t rop) {
   else if (mpfr_nan_p(&(rop->right))) mpfr_set(&(rop->left),&(rop->right),GMP_RNDN);
 }
 
+int sollya_mpfi_test_emptyset(int *res, sollya_mpfi_t rop, sollya_mpfi_t op) {
+  /* HACK ALERT: For performance reasons, we will access the internals
+     of an mpfi_t !!!
+  */
+  if ((!mpfi_nan_p(op)) && 
+      (mpfr_cmp(&(op->left),&(op->right)) > 0)) {
+    mpfr_set_inf(&(rop->left),1);
+    mpfr_set_inf(&(rop->right),-1);
+    *res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+    return 1;
+  } 
+
+  return 0;
+}
+
 int mpfrIsPositiveInfinity(mpfr_t op) {
   return (mpfr_inf_p(op) && (mpfr_sgn(op) > 0));
 }
 
 int mpfrIsNegativeInfinity(mpfr_t op) {
   return (mpfr_inf_p(op) && (mpfr_sgn(op) < 0));
+}
+
+int sollyaMpfiHasPositiveNumbers(sollya_mpfi_t op) {
+  /* HACK ALERT: For performance reasons, we will access the internals
+     of an mpfi_t !!!
+  */
+  return ((!mpfi_nan_p(op)) && 
+	  (mpfr_cmp(&(op->left),&(op->right)) <= 0) &&
+	  (mpfr_sgn(&(op->right)) > 0));
+}
+
+int sollyaMpfiHasNegativeNumbers(sollya_mpfi_t op) {
+  /* HACK ALERT: For performance reasons, we will access the internals
+     of an mpfi_t !!!
+  */
+  return ((!mpfi_nan_p(op)) && 
+	  (mpfr_cmp(&(op->left),&(op->right)) <= 0) &&
+	  (mpfr_sgn(&(op->left)) < 0));
 }
 
 int sollyaMpfiHasPositiveInfinity(sollya_mpfi_t op) {
@@ -99,11 +130,11 @@ int sollyaMpfiIsNegativeInfinity(sollya_mpfi_t op) {
 }
 
 int sollyaMpfiHasZero(sollya_mpfi_t op) {
-  return mpfi_has_zero(op);
+  return ((!mpfi_nan_p(op)) && mpfi_has_zero(op));
 }
 
 int sollyaMpfiIsZero(sollya_mpfi_t op) {
-  return mpfi_is_zero(op);
+  return ((!mpfi_nan_p(op)) && mpfi_is_zero(op));
 }
 
 int sollyaMpfiHasNaN(sollya_mpfi_t op) {
@@ -114,15 +145,17 @@ int sollyaMpfiHasZeroInside(sollya_mpfi_t op) {
   /* HACK ALERT: For performance reasons, we will access the internals
      of an mpfi_t !!!
   */
-  return ((mpfr_sgn(&(op->left)) * mpfr_sgn(&(op->right))) < 0);
+  return ((!(mpfr_nan_p(&(op->left)) || mpfr_nan_p(&(op->right)))) && ((mpfr_sgn(&(op->left)) * mpfr_sgn(&(op->right))) < 0));
 }
 
 int sollyaMpfiHasInfinity(sollya_mpfi_t op) {
-  return mpfi_inf_p(op);
+  return ((!mpfi_nan_p(op)) && mpfi_inf_p(op));
 }
 
 int sollya_mpfi_abs(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
+
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
 
   res = mpfi_abs(rop,op);
 
@@ -135,6 +168,8 @@ int sollya_mpfi_abs(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_acos(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
+
   res = mpfi_acos(rop,op);
 
   sollya_mpfi_nan_normalize(rop);
@@ -145,6 +180,8 @@ int sollya_mpfi_acos(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
 int sollya_mpfi_acosh(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
+
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
 
   res = mpfi_acosh(rop,op);
 
@@ -157,6 +194,9 @@ int sollya_mpfi_acosh(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_add(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
 
+  if (sollya_mpfi_test_emptyset(&res, rop, op1)) return res;
+  if (sollya_mpfi_test_emptyset(&res, rop, op2)) return res;
+
   res = mpfi_add(rop,op1,op2);
 
   sollya_mpfi_nan_normalize(rop);
@@ -167,6 +207,8 @@ int sollya_mpfi_add(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
 
 int sollya_mpfi_add_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) {
   int res;
+
+  if (sollya_mpfi_test_emptyset(&res, rop, op1)) return res;
 
   res = mpfi_add_ui(rop,op1,op2);
 
@@ -179,6 +221,8 @@ int sollya_mpfi_add_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) 
 int sollya_mpfi_asin(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
+
   res = mpfi_asin(rop,op);
 
   sollya_mpfi_nan_normalize(rop);
@@ -189,6 +233,8 @@ int sollya_mpfi_asin(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
 int sollya_mpfi_asinh(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
+
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
 
   res = mpfi_asinh(rop,op);
 
@@ -201,6 +247,8 @@ int sollya_mpfi_asinh(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_atan(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
+
   res = mpfi_atan(rop,op);
 
   sollya_mpfi_nan_normalize(rop);
@@ -212,6 +260,8 @@ int sollya_mpfi_atan(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_atanh(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
+
   res = mpfi_atanh(rop,op);
 
   sollya_mpfi_nan_normalize(rop);
@@ -222,6 +272,8 @@ int sollya_mpfi_atanh(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
 int sollya_mpfi_blow(sollya_mpfi_t rop, sollya_mpfi_t op1, double op2) {
   int res;
+
+  if (sollya_mpfi_test_emptyset(&res, rop, op1)) return res;
 
   res = mpfi_blow(rop,op1,op2);
 
@@ -257,6 +309,8 @@ int sollya_mpfi_const_pi(sollya_mpfi_t rop) {
 int sollya_mpfi_cos(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
+
   if (sollyaMpfiHasInfinity(op) && (!sollyaMpfiHasNaN(op))) {
     mpfi_interv_si(rop,-1,1);
     res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
@@ -273,6 +327,8 @@ int sollya_mpfi_cos(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_cosh(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
+
   res = mpfi_cosh(rop,op);
 
   sollya_mpfi_nan_normalize(rop);
@@ -284,6 +340,15 @@ int sollya_mpfi_cosh(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_diam(mpfr_t rop, sollya_mpfi_t op) {
   int res;
 
+  /* HACK ALERT: For performance reasons, we will access the internals
+     of an mpfi_t !!!
+  */
+  if ((!mpfi_nan_p(op)) && 
+      (mpfr_cmp(&(op->left),&(op->right)) > 0)) {
+    mpfr_set_nan(rop);
+    return 0;
+  }
+
   res = mpfi_diam(rop,op);
 
   return res;
@@ -292,6 +357,15 @@ int sollya_mpfi_diam(mpfr_t rop, sollya_mpfi_t op) {
 
 int sollya_mpfi_diam_abs(mpfr_t rop, sollya_mpfi_t op) {
   int res;
+
+  /* HACK ALERT: For performance reasons, we will access the internals
+     of an mpfi_t !!!
+  */
+  if ((!mpfi_nan_p(op)) && 
+      (mpfr_cmp(&(op->left),&(op->right)) > 0)) {
+    mpfr_set_nan(rop);
+    return 0;
+  }
 
   res = mpfi_diam_abs(rop,op);
 
@@ -302,41 +376,118 @@ int sollya_mpfi_diam_abs(mpfr_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
 
-  if (sollyaMpfiIsZero(op1)) {
-    if (sollyaMpfiIsZero(op2)) {
-      /* HACK ALERT: For performance reasons, we will access the internals
-	 of an mpfi_t !!!
-      */
-      mpfr_set_nan(&(rop->left));
-      mpfr_set_nan(&(rop->right));
-      res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
-    } else {
-      res = mpfi_set_si(rop,0);
-    }
+  if (sollya_mpfi_test_emptyset(&res, rop, op1)) return res;
+  if (sollya_mpfi_test_emptyset(&res, rop, op2)) return res;
+
+  if (sollyaMpfiHasNaN(op1) || sollyaMpfiHasNaN(op2)) {
+    /* HACK ALERT: For performance reasons, we will access the internals
+       of an mpfi_t !!!
+    */
+    mpfr_set_nan(&(rop->left));
+    mpfr_set_nan(&(rop->right));
+    res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
   } else {
-    if (sollyaMpfiHasZeroInside(op2)) {
-      /* HACK ALERT: For performance reasons, we will access the internals
-	 of an mpfi_t !!!
-      */
-      mpfr_set_inf(&(rop->left),-1);
-      mpfr_set_inf(&(rop->right),1);
-      res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+    if (sollyaMpfiIsZero(op1)) {
+      if (sollyaMpfiIsZero(op2)) {
+	/* HACK ALERT: For performance reasons, we will access the internals
+	   of an mpfi_t !!!
+	*/
+	mpfr_set_nan(&(rop->left));
+	mpfr_set_nan(&(rop->right));
+	res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+      } else {
+	res = mpfi_set_si(rop,0);
+      }
     } else {
-      res = mpfi_div(rop,op1,op2);
+      if (sollyaMpfiHasZeroInside(op2)) {
+	/* HACK ALERT: For performance reasons, we will access the internals
+	   of an mpfi_t !!!
+	*/
+	mpfr_set_inf(&(rop->left),-1);
+	mpfr_set_inf(&(rop->right),1);
+	res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+      } else {
+	/* Here, we cannot have 0 in the interior of op2 */
+	if (sollyaMpfiHasZero(op2)) {
+	  /*
+	    [u,v] / [0,b] -> if u>=0, return [u/b, +Inf]
+	                     if v<=0, return [-Inf, v/b]
+                             if u<=0<=v, return [-Inf, Inf]
+	    [u,v] / [a,0] -> if u>=0, return [-Inf, u/a]
+	                     if v<=0, return [v/a, Inf]
+                             if u<=0<=v, return [-Inf, Inf]
+	  */
+	  if (sollyaMpfiHasPositiveNumbers(op2)) {
+	    /* HACK ALERT: For performance reasons, we will access the internals
+	       of an mpfi_t !!!
+	    */
+	    if (mpfr_sgn(&(op1->left)) >= 0) {
+	      mpfr_set_inf(&(rop->right),1);
+	      if (mpfr_div(&(rop->left),&(op1->left),&(op2->right),GMP_RNDD) == 0) {
+		res = MPFI_FLAGS_RIGHT_ENDPOINT_INEXACT;
+	      } else {
+		res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+	      }
+	    } else {
+	      if (mpfr_sgn(&(op1->right)) <= 0) {
+		mpfr_set_inf(&(rop->left),-1);
+		if (mpfr_div(&(rop->right),&(op1->right),&(op2->right),GMP_RNDU) == 0) {
+		  res = MPFI_FLAGS_LEFT_ENDPOINT_INEXACT;
+		} else {
+		  res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+		}
+	      } else {
+		mpfr_set_inf(&(rop->left),-1);
+		mpfr_set_inf(&(rop->right),1);
+		res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+	      }
+	    }
+	  } else {
+	    /* HACK ALERT: For performance reasons, we will access the internals
+	       of an mpfi_t !!!
+	    */
+	    if (mpfr_sgn(&(op1->left)) >= 0) {
+	      mpfr_set_inf(&(rop->left),-1);
+	      if (mpfr_div(&(rop->right),&(op1->left),&(op2->left),GMP_RNDU) == 0) {
+		res = MPFI_FLAGS_LEFT_ENDPOINT_INEXACT;
+	      } else {
+		res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+	      }
+	    } else {
+	      if (mpfr_sgn(&(op1->right)) <= 0) {
+		mpfr_set_inf(&(rop->right),1);
+		if (mpfr_div(&(rop->left),&(op1->right),&(op2->left),GMP_RNDD) == 0) {
+		  res = MPFI_FLAGS_RIGHT_ENDPOINT_INEXACT;
+		} else {
+		  res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+		}
+	      } else {
+		mpfr_set_inf(&(rop->left),-1);
+		mpfr_set_inf(&(rop->right),1);
+		res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+	      }
+	    }
+	  }
+	} else {
+	  if (sollyaMpfiIsPositiveInfinity(op2) || sollyaMpfiIsNegativeInfinity(op2)) {
+	    if (sollyaMpfiIsPositiveInfinity(op1) || sollyaMpfiIsNegativeInfinity(op1)) {
+	      /* HACK ALERT: For performance reasons, we will access the internals
+		 of an mpfi_t !!!
+	      */
+	      mpfr_set_nan(&(rop->left));
+	      mpfr_set_nan(&(rop->right));
+	      res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+	    } else {
+	      mpfi_set_si(rop,0);
+	      res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+	    }
+	  } else {
+	    res = mpfi_div(rop,op1,op2);
+	  }
+	}
+      }
     }
   }
-
-  /* first of all: if a or b contains a Nan, a/b -> NaN
-    0/0 -> NaN 
-     0/anything else -> 0
-     anything else / something containing 0 (inside) -> [-Inf, Inf]
-     [u,v] / [0,b] -> if u>=0, return [u/b, +Inf]
-                      if v<=0, return [-Inf, v/b]
-                      if u<=0<=v, return [-Inf, Inf]
-     [u,v] / [a,0] -> return -[u,v]/[0, -a]
-     anything/[-/+Inf = -/+Inf] -> 0
-     [+/-Inf = +/-Inf]/[-/+Inf = -/+Inf] -> NaN
-  */
 
   sollya_mpfi_nan_normalize(rop);
 
@@ -355,14 +506,14 @@ int sollya_mpfi_div_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) 
 
   mpfi_clear(temp);
 
-  sollya_mpfi_nan_normalize(rop);
-
   return res;
 }
 
 
 int sollya_mpfi_exp(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
+
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
 
   res = mpfi_exp(rop,op);
 
@@ -374,6 +525,8 @@ int sollya_mpfi_exp(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
 int sollya_mpfi_expm1(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
+
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
 
   res = mpfi_expm1(rop,op);
 
@@ -422,7 +575,7 @@ char * sollya_mpfi_get_version() {
 int sollya_mpfi_has_zero(sollya_mpfi_t op) {
   int res;
 
-  res = mpfi_has_zero(op);
+  res = ((!mpfi_nan_p(op)) && mpfi_has_zero(op));
 
   return res;
 }
@@ -431,7 +584,7 @@ int sollya_mpfi_has_zero(sollya_mpfi_t op) {
 int sollya_mpfi_inf_p(sollya_mpfi_t op) {
   int res;
 
-  res = mpfi_inf_p(op);
+  res = ((!mpfi_nan_p(op)) && mpfi_inf_p(op));
 
   return res;
 }
@@ -445,9 +598,29 @@ void sollya_mpfi_init2(sollya_mpfi_t rop, mp_prec_t op) {
 int sollya_mpfi_intersect(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
 
-  // TODO: correct nan in argument
+  if (sollya_mpfi_test_emptyset(&res, rop, op1)) return res;
+  if (sollya_mpfi_test_emptyset(&res, rop, op2)) return res;
 
-  res = mpfi_intersect(rop,op1,op2);
+  if (sollyaMpfiHasNaN(op1) || sollyaMpfiHasNaN(op2)) {
+      /* HACK ALERT: For performance reasons, we will access the internals
+	 of an mpfi_t !!!
+      */
+      mpfr_set_nan(&(rop->left));
+      mpfr_set_nan(&(rop->right));
+      res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+  } else {
+    res = mpfi_intersect(rop,op1,op2);
+
+    /* HACK ALERT: For performance reasons, we will access the internals
+       of an mpfi_t !!!
+    */
+    if ((!mpfi_nan_p(rop)) && 
+	(mpfr_cmp(&(rop->left),&(rop->right)) > 0)) {
+      mpfr_set_inf(&(rop->left),1);
+      mpfr_set_inf(&(rop->right),-1);
+      res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+    }
+  }
 
   sollya_mpfi_nan_normalize(rop);
 
@@ -488,12 +661,16 @@ int sollya_mpfi_interv_si(sollya_mpfi_t rop, long op1, long op2) {
 
 int sollya_mpfi_inv(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
+  mpfi_t temp;
 
-  // TODO call div
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
 
-  res = mpfi_inv(rop,op);
+  mpfi_init2(temp,12);
+  mpfi_set_si(temp,1);
 
-  sollya_mpfi_nan_normalize(rop);
+  res = sollya_mpfi_div(rop,temp,op);
+
+  mpfi_clear(temp);
 
   return res;
 }
@@ -502,9 +679,20 @@ int sollya_mpfi_inv(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_is_inside(sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
 
-  // TODO test on nanity and return 0 in this case
+  /* HACK ALERT: For performance reasons, we will access the internals
+     of an mpfi_t !!!
+  */
+  if ((!mpfi_nan_p(op1)) && 
+      (mpfr_cmp(&(op1->left),&(op1->right)) > 0)) {
+    return 0;
+  }
 
-  res = mpfi_is_inside(op1,op2);
+  if ((!mpfi_nan_p(op2)) && 
+      (mpfr_cmp(&(op2->left),&(op2->right)) > 0)) {
+    return 1;
+  }
+
+  res = ((!(mpfi_nan_p(op1) || mpfi_nan_p(op2))) && mpfi_is_inside(op1,op2));
 
   return res;
 }
@@ -513,9 +701,7 @@ int sollya_mpfi_is_inside(sollya_mpfi_t op1, sollya_mpfi_t op2) {
 int sollya_mpfi_is_nonneg(sollya_mpfi_t op) {
   int res;
 
-  // TODO test on nanity and return 0 in this case 
-
-  res = mpfi_is_nonneg(op);
+  res = ((!mpfi_nan_p(op)) && mpfi_is_nonneg(op));
 
   return res;
 }
@@ -524,9 +710,7 @@ int sollya_mpfi_is_nonneg(sollya_mpfi_t op) {
 int sollya_mpfi_is_nonpos(sollya_mpfi_t op) {
   int res;
 
-  // TODO test on nanity and return 0 in this case 
-
-  res = mpfi_is_nonpos(op);
+  res = ((!mpfi_nan_p(op)) && mpfi_is_nonpos(op));
 
   return res;
 }
@@ -535,9 +719,7 @@ int sollya_mpfi_is_nonpos(sollya_mpfi_t op) {
 int sollya_mpfi_is_pos(sollya_mpfi_t op) {
   int res;
 
-  // TODO test on nanity and return 0 in this case 
-
-  res = mpfi_is_pos(op);
+  res = ((!mpfi_nan_p(op)) && mpfi_is_pos(op));
 
   return res;
 }
@@ -555,9 +737,48 @@ int sollya_mpfi_is_zero(sollya_mpfi_t op) {
 int sollya_mpfi_log(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
-  // if 0 is inside => NaN, if 0 is lower bound or [0;0] => return -inf
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
 
-  res = mpfi_log(rop,op);
+  if (sollyaMpfiHasNaN(op)) {
+    /* HACK ALERT: For performance reasons, we will access the internals
+       of an mpfi_t !!!
+    */
+    mpfr_set_nan(&(rop->left));
+    mpfr_set_nan(&(rop->right));
+    res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+  } else {
+    if (sollyaMpfiHasZero(op)) {
+      if (sollyaMpfiHasNegativeNumbers(op)) {
+	/* HACK ALERT: For performance reasons, we will access the internals
+	   of an mpfi_t !!!
+	*/
+	mpfr_set_nan(&(rop->left));
+	mpfr_set_nan(&(rop->right));
+	res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+      } else {
+	if (sollyaMpfiIsZero(op)) {
+	  /* HACK ALERT: For performance reasons, we will access the internals
+	     of an mpfi_t !!!
+	  */
+	  mpfr_set_inf(&(rop->left),-1);
+	  mpfr_set_inf(&(rop->right),-1);
+	  res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+	} else {
+	  /* HACK ALERT: For performance reasons, we will access the internals
+	     of an mpfi_t !!!
+	  */
+	  mpfr_set_inf(&(rop->left),-1);
+	  if (mpfr_log(&(rop->right),&(op->right),GMP_RNDU) == 0) {
+	    res = MPFI_FLAGS_LEFT_ENDPOINT_INEXACT;
+	  } else {
+	    res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+	  }
+	}
+      }
+    } else {
+      res = mpfi_log(rop,op);
+    }
+  }
 
   sollya_mpfi_nan_normalize(rop);
 
@@ -568,22 +789,48 @@ int sollya_mpfi_log(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_log10(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
-  // if 0 is inside => NaN, if 0 is lower bound or [0;0] => return -inf
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
 
-  res = mpfi_log10(rop,op);
-
-  sollya_mpfi_nan_normalize(rop);
-
-  return res;
-}
-
-
-int sollya_mpfi_log1p(sollya_mpfi_t rop, sollya_mpfi_t op) {
-  int res;
-
-  // if -1 is inside => NaN, if -1 is lower bound or [-1;-1] => return -inf
-
-  res = mpfi_log1p(rop,op);
+  if (sollyaMpfiHasNaN(op)) {
+    /* HACK ALERT: For performance reasons, we will access the internals
+       of an mpfi_t !!!
+    */
+    mpfr_set_nan(&(rop->left));
+    mpfr_set_nan(&(rop->right));
+    res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+  } else {
+    if (sollyaMpfiHasZero(op)) {
+      if (sollyaMpfiHasNegativeNumbers(op)) {
+	/* HACK ALERT: For performance reasons, we will access the internals
+	   of an mpfi_t !!!
+	*/
+	mpfr_set_nan(&(rop->left));
+	mpfr_set_nan(&(rop->right));
+	res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+      } else {
+	if (sollyaMpfiIsZero(op)) {
+	  /* HACK ALERT: For performance reasons, we will access the internals
+	     of an mpfi_t !!!
+	  */
+	  mpfr_set_inf(&(rop->left),-1);
+	  mpfr_set_inf(&(rop->right),-1);
+	  res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+	} else {
+	  /* HACK ALERT: For performance reasons, we will access the internals
+	     of an mpfi_t !!!
+	  */
+	  mpfr_set_inf(&(rop->left),-1);
+	  if (mpfr_log10(&(rop->right),&(op->right),GMP_RNDU) == 0) {
+	    res = MPFI_FLAGS_LEFT_ENDPOINT_INEXACT;
+	  } else {
+	    res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+	  }
+	}
+      }
+    } else {
+      res = mpfi_log10(rop,op);
+    }
+  }
 
   sollya_mpfi_nan_normalize(rop);
 
@@ -594,9 +841,109 @@ int sollya_mpfi_log1p(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_log2(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
-  // if 0 is inside => NaN, if 0 is lower bound or [0;0] => return -inf
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
 
-  res = mpfi_log2(rop,op);
+  if (sollyaMpfiHasNaN(op)) {
+    /* HACK ALERT: For performance reasons, we will access the internals
+       of an mpfi_t !!!
+    */
+    mpfr_set_nan(&(rop->left));
+    mpfr_set_nan(&(rop->right));
+    res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+  } else {
+    if (sollyaMpfiHasZero(op)) {
+      if (sollyaMpfiHasNegativeNumbers(op)) {
+	/* HACK ALERT: For performance reasons, we will access the internals
+	   of an mpfi_t !!!
+	*/
+	mpfr_set_nan(&(rop->left));
+	mpfr_set_nan(&(rop->right));
+	res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+      } else {
+	if (sollyaMpfiIsZero(op)) {
+	  /* HACK ALERT: For performance reasons, we will access the internals
+	     of an mpfi_t !!!
+	  */
+	  mpfr_set_inf(&(rop->left),-1);
+	  mpfr_set_inf(&(rop->right),-1);
+	  res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+	} else {
+	  /* HACK ALERT: For performance reasons, we will access the internals
+	     of an mpfi_t !!!
+	  */
+	  mpfr_set_inf(&(rop->left),-1);
+	  if (mpfr_log2(&(rop->right),&(op->right),GMP_RNDU) == 0) {
+	    res = MPFI_FLAGS_LEFT_ENDPOINT_INEXACT;
+	  } else {
+	    res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+	  }
+	}
+      }
+    } else {
+      res = mpfi_log2(rop,op);
+    }
+  }
+
+  sollya_mpfi_nan_normalize(rop);
+
+  return res;
+}
+
+
+int sollya_mpfi_log1p(sollya_mpfi_t rop, sollya_mpfi_t op) {
+  int res, gtMOne, eqMOne;
+  mpfr_t tempMpfr;
+
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
+
+  if (sollyaMpfiHasNaN(op)) {
+    /* HACK ALERT: For performance reasons, we will access the internals
+       of an mpfi_t !!!
+    */
+    mpfr_set_nan(&(rop->left));
+    mpfr_set_nan(&(rop->right));
+    res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+  } else {
+    /* HACK ALERT: For performance reasons, we will access the internals
+       of an mpfi_t !!!
+    */
+    mpfr_init2(tempMpfr,12);
+    mpfr_set_si(tempMpfr,-1,GMP_RNDN);
+    gtMOne = (mpfr_cmp(&(op->left),tempMpfr) > 0);
+    eqMOne = (mpfr_cmp(&(op->left),tempMpfr) == 0);
+    if (!(gtMOne || eqMOne)) {
+      /* HACK ALERT: For performance reasons, we will access the internals
+	 of an mpfi_t !!!
+      */
+      mpfr_set_nan(&(rop->left));
+      mpfr_set_nan(&(rop->right));
+      res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+    } else {
+      if (eqMOne) {
+	/* HACK ALERT: For performance reasons, we will access the internals
+	   of an mpfi_t !!!
+	*/	
+	if (mpfr_cmp(&(op->left),&(op->right)) == 0) {
+	  /* HACK ALERT: For performance reasons, we will access the internals
+	     of an mpfi_t !!!
+	  */
+	  mpfr_set_inf(&(rop->left),-1);
+	  mpfr_set_inf(&(rop->right),-1);
+	  res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+	} else {
+	  /* HACK ALERT: For performance reasons, we will access the internals
+	     of an mpfi_t !!!
+	  */
+	  mpfr_set_inf(&(rop->left),-1);
+	  mpfr_log1p(&(rop->right),&(op->right),GMP_RNDU);
+	  res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+	}
+      } else {
+	res = mpfi_log1p(rop,op);
+      }
+    }
+    mpfr_clear(tempMpfr);
+  }
 
   sollya_mpfi_nan_normalize(rop);
 
@@ -607,6 +954,15 @@ int sollya_mpfi_log2(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_mid(mpfr_t rop, sollya_mpfi_t op) {
   int res;
 
+  /* HACK ALERT: For performance reasons, we will access the internals
+     of an mpfi_t !!!
+  */
+  if ((!mpfi_nan_p(op)) && 
+      (mpfr_cmp(&(op->left),&(op->right)) > 0)) {
+    mpfr_set_nan(rop);
+    return 0;
+  }
+
   res = mpfi_mid(rop,op);
 
   return res;
@@ -615,6 +971,9 @@ int sollya_mpfi_mid(mpfr_t rop, sollya_mpfi_t op) {
 
 int sollya_mpfi_mul(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
+
+  if (sollya_mpfi_test_emptyset(&res, rop, op1)) return res;
+  if (sollya_mpfi_test_emptyset(&res, rop, op2)) return res;
 
   res = mpfi_mul(rop,op1,op2);
 
@@ -626,6 +985,8 @@ int sollya_mpfi_mul(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
 
 int sollya_mpfi_mul_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) {
   int res;
+
+  if (sollya_mpfi_test_emptyset(&res, rop, op1)) return res;
 
   res = mpfi_mul_ui(rop,op1,op2);
 
@@ -644,6 +1005,8 @@ int sollya_mpfi_nan_p(sollya_mpfi_t op) {
 
 int sollya_mpfi_neg(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
+
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
 
   res = mpfi_neg(rop,op);
 
@@ -726,6 +1089,8 @@ int sollya_mpfi_set_ui(sollya_mpfi_t rop, unsigned long op) {
 int sollya_mpfi_sin(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
+
   if (sollyaMpfiHasInfinity(op) && (!sollyaMpfiHasNaN(op))) {
     mpfi_interv_si(rop,-1,1);
     res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
@@ -742,6 +1107,8 @@ int sollya_mpfi_sin(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_sinh(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
+
   res = mpfi_sinh(rop,op);
 
   sollya_mpfi_nan_normalize(rop);
@@ -752,6 +1119,8 @@ int sollya_mpfi_sinh(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
 int sollya_mpfi_sqr(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
+
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
 
   res = mpfi_sqr(rop,op);
 
@@ -764,6 +1133,8 @@ int sollya_mpfi_sqr(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_sqrt(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
+
   res = mpfi_sqrt(rop,op);
 
   sollya_mpfi_nan_normalize(rop);
@@ -774,6 +1145,9 @@ int sollya_mpfi_sqrt(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
 int sollya_mpfi_sub(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
+
+  if (sollya_mpfi_test_emptyset(&res, rop, op1)) return res;
+  if (sollya_mpfi_test_emptyset(&res, rop, op2)) return res;
 
   res = mpfi_sub(rop,op1,op2);
 
@@ -786,6 +1160,8 @@ int sollya_mpfi_sub(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
 int sollya_mpfi_sub_fr(sollya_mpfi_t rop, sollya_mpfi_t op1, mpfr_t op2) {
   int res;
 
+  if (sollya_mpfi_test_emptyset(&res, rop, op1)) return res;
+
   res = mpfi_sub_fr(rop,op1,op2);
 
   sollya_mpfi_nan_normalize(rop);
@@ -797,6 +1173,8 @@ int sollya_mpfi_sub_fr(sollya_mpfi_t rop, sollya_mpfi_t op1, mpfr_t op2) {
 int sollya_mpfi_sub_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) {
   int res;
 
+  if (sollya_mpfi_test_emptyset(&res, rop, op1)) return res;
+
   res = mpfi_sub_ui(rop,op1,op2);
 
   sollya_mpfi_nan_normalize(rop);
@@ -807,6 +1185,8 @@ int sollya_mpfi_sub_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) 
 
 int sollya_mpfi_tan(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
+
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
 
   if (sollyaMpfiHasInfinity(op) && (!sollyaMpfiHasNaN(op))) {
     /* HACK ALERT: For performance reasons, we will access the internals
@@ -828,6 +1208,8 @@ int sollya_mpfi_tan(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_tanh(sollya_mpfi_t rop, sollya_mpfi_t op) {
   int res;
 
+  if (sollya_mpfi_test_emptyset(&res, rop, op)) return res;
+
   res = mpfi_tanh(rop,op);
 
   sollya_mpfi_nan_normalize(rop);
@@ -846,17 +1228,42 @@ int sollya_mpfi_ui_div(sollya_mpfi_t rop, unsigned long op1, sollya_mpfi_t op2) 
 
   mpfi_clear(temp);
 
-  sollya_mpfi_nan_normalize(rop);
-
   return res;
 }
 
 int sollya_mpfi_union(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
 
-  // test nanity in input
-
-  res = mpfi_union(rop,op1,op2);
+  if (sollyaMpfiHasNaN(op1) || sollyaMpfiHasNaN(op2)) {
+      /* HACK ALERT: For performance reasons, we will access the internals
+	 of an mpfi_t !!!
+      */
+      mpfr_set_nan(&(rop->left));
+      mpfr_set_nan(&(rop->right));
+      res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+  } else {
+    /* HACK ALERT: For performance reasons, we will access the internals
+       of an mpfi_t !!!
+    */
+    if ((!mpfi_nan_p(op1)) && 
+	(mpfr_cmp(&(op1->left),&(op1->right)) > 0)) {
+      if ((!mpfi_nan_p(op2)) && 
+	  (mpfr_cmp(&(op2->left),&(op2->right)) > 0)) {
+	mpfr_set_inf(&(rop->left),1);
+	mpfr_set_inf(&(rop->right),-1);
+	res = MPFI_FLAGS_BOTH_ENDPOINTS_INEXACT;
+      } else {
+	res = mpfi_set(rop,op2);
+      }
+    } else {
+      if ((!mpfi_nan_p(op2)) && 
+	  (mpfr_cmp(&(op2->left),&(op2->right)) > 0)) {
+	res = mpfi_set(rop,op1);
+      } else {
+	res = mpfi_union(rop,op1,op2);
+      }
+    }
+  }
 
   sollya_mpfi_nan_normalize(rop);
 

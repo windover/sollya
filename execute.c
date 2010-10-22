@@ -12822,7 +12822,7 @@ node *evaluateThingInner(node *tree) {
       sollya_mpfi_init2(tempIB,pTemp);
       sollya_mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
       sollya_mpfi_init2(tempIC,tools_precision);
-      special_sollya_mpfi_mul(tempIC,tempIA,tempIB);
+      sollya_mpfi_mul(tempIC,tempIA,tempIB);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
@@ -12907,7 +12907,7 @@ node *evaluateThingInner(node *tree) {
       sollya_mpfi_init2(tempIB,pTemp);
       sollya_mpfi_interv_fr(tempIB,*(copy->child2->child1->value),*(copy->child2->child2->value));
       sollya_mpfi_init2(tempIC,tools_precision);
-      special_sollya_mpfi_div(tempIC,tempIA,tempIB);
+      sollya_mpfi_div(tempIC,tempIA,tempIB);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
