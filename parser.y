@@ -1,8 +1,8 @@
 /*
 
-Copyright 2006-2010 by 
+Copyright 2006-2010 by
 
-Laboratoire de l'Informatique du Parallélisme, 
+Laboratoire de l'Informatique du Parallélisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
 and
@@ -23,16 +23,16 @@ it offers a certified infinity norm, an automatic polynomial
 implementer and a fast Remez algorithm.
 
 This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
+abiding by the rules of distribution of free software.  You can  use,
 modify and/ or redistribute the software under the terms of the CeCILL-C
 license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
+"http://www.cecill.info".
 
 As a counterpart to the access to the source code and  rights to copy,
 modify and redistribute granted by the license, users are provided only
 with a limited warranty  and the software's author,  the holder of the
 economic rights,  and the successive licensors  have only  limited
-liability. 
+liability.
 
 In this respect, the user's attention is drawn to the risks associated
 with loading,  using,  modifying and/or developing or reproducing the
@@ -41,9 +41,9 @@ that may mean  that it is complicated to manipulate,  and  that  also
 therefore means  that it is reserved for developers  and  experienced
 professionals having in-depth computer knowledge. Users are therefore
 encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
+requirements in conditions enabling the security of their systems and/or
+data to be ensured and,  more generally, to use and operate it in the
+same conditions as regards security.
 
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
@@ -83,7 +83,7 @@ void yyerror(char *message) {
     free(str);
     promptToBePrinted = 1;
     considerDyingOnError();
-  } 
+  }
 }
 
 // #define WARN_IF_NO_HELP_TEXT 1
@@ -108,39 +108,39 @@ void yyerror(char *message) {
 
 
 
-%token  <value> CONSTANTTOKEN;          					       
-%token  <value> MIDPOINTCONSTANTTOKEN;          					       
-%token  <value> DYADICCONSTANTTOKEN;   					       
-%token  <value> HEXCONSTANTTOKEN;       					       
-%token  <value> HEXADECIMALCONSTANTTOKEN;       					       
-%token  <value> BINARYCONSTANTTOKEN;    					       
-											       
-%token  PITOKEN;                					       
-											       
-%token  <value> IDENTIFIERTOKEN;          					       
-											       
-%token  <value> STRINGTOKEN;            					       
-											       
-%token  LPARTOKEN;              					       
-%token  RPARTOKEN;              					       
-%token  LBRACKETTOKEN;          					       
-%token  RBRACKETTOKEN;          					       
-%token  EQUALTOKEN;             					       
+%token  <value> CONSTANTTOKEN;
+%token  <value> MIDPOINTCONSTANTTOKEN;
+%token  <value> DYADICCONSTANTTOKEN;
+%token  <value> HEXCONSTANTTOKEN;
+%token  <value> HEXADECIMALCONSTANTTOKEN;
+%token  <value> BINARYCONSTANTTOKEN;
+
+%token  PITOKEN;
+
+%token  <value> IDENTIFIERTOKEN;
+
+%token  <value> STRINGTOKEN;
+
+%token  LPARTOKEN;
+%token  RPARTOKEN;
+%token  LBRACKETTOKEN;
+%token  RBRACKETTOKEN;
+%token  EQUALTOKEN;
 %token  ASSIGNEQUALTOKEN;
-%token  COMPAREEQUALTOKEN;             					       
-%token  COMMATOKEN;             					       
-%token  EXCLAMATIONTOKEN;  						       
-%token  SEMICOLONTOKEN;         					       
-%token  STARLEFTANGLETOKEN;         					       
-%token  LEFTANGLETOKEN;         					       
-%token  RIGHTANGLEUNDERSCORETOKEN;  					       
-%token  RIGHTANGLEDOTTOKEN;   					       
-%token  RIGHTANGLESTARTOKEN;         					       
-%token  RIGHTANGLETOKEN;        					       
-%token  DOTSTOKEN;              					       
-%token  QUESTIONMARKTOKEN;  						       
-%token  VERTBARTOKEN;  						       
-%token  ATTOKEN;  							       
+%token  COMPAREEQUALTOKEN;
+%token  COMMATOKEN;
+%token  EXCLAMATIONTOKEN;
+%token  SEMICOLONTOKEN;
+%token  STARLEFTANGLETOKEN;
+%token  LEFTANGLETOKEN;
+%token  RIGHTANGLEUNDERSCORETOKEN;
+%token  RIGHTANGLEDOTTOKEN;
+%token  RIGHTANGLESTARTOKEN;
+%token  RIGHTANGLETOKEN;
+%token  DOTSTOKEN;
+%token  QUESTIONMARKTOKEN;
+%token  VERTBARTOKEN;
+%token  ATTOKEN;
 %token  DOUBLECOLONTOKEN;
 %token  DOTCOLONTOKEN;
 %token  COLONDOTTOKEN;
@@ -148,123 +148,123 @@ void yyerror(char *message) {
 %token  APPROXTOKEN;
 %token  ANDTOKEN;
 %token  ORTOKEN;
-	       										       
-%token  PLUSTOKEN;              					       
-%token  MINUSTOKEN;             					       
-%token  MULTOKEN;            						       
-%token  DIVTOKEN;              					       
-%token  POWTOKEN;              					       
-											       
-%token  SQRTTOKEN;              					       
-%token  EXPTOKEN;               					       
-%token  LOGTOKEN;               					       
-%token  LOG2TOKEN;              					       
-%token  LOG10TOKEN;             					       
-%token  SINTOKEN;               					       
-%token  COSTOKEN;               					       
-%token  TANTOKEN;               					       
-%token  ASINTOKEN;              					       
-%token  ACOSTOKEN;              					       
-%token  ATANTOKEN;              					       
-%token  SINHTOKEN;              					       
-%token  COSHTOKEN;              					       
-%token  TANHTOKEN;              					       
-%token  ASINHTOKEN;             					       
-%token  ACOSHTOKEN;             					       
-%token  ATANHTOKEN;             					       
-%token  ABSTOKEN;               					       
-%token  ERFTOKEN;               					       
-%token  ERFCTOKEN;              					       
-%token  LOG1PTOKEN;             					       
-%token  EXPM1TOKEN;             					       
+
+%token  PLUSTOKEN;
+%token  MINUSTOKEN;
+%token  MULTOKEN;
+%token  DIVTOKEN;
+%token  POWTOKEN;
+
+%token  SQRTTOKEN;
+%token  EXPTOKEN;
+%token  LOGTOKEN;
+%token  LOG2TOKEN;
+%token  LOG10TOKEN;
+%token  SINTOKEN;
+%token  COSTOKEN;
+%token  TANTOKEN;
+%token  ASINTOKEN;
+%token  ACOSTOKEN;
+%token  ATANTOKEN;
+%token  SINHTOKEN;
+%token  COSHTOKEN;
+%token  TANHTOKEN;
+%token  ASINHTOKEN;
+%token  ACOSHTOKEN;
+%token  ATANHTOKEN;
+%token  ABSTOKEN;
+%token  ERFTOKEN;
+%token  ERFCTOKEN;
+%token  LOG1PTOKEN;
+%token  EXPM1TOKEN;
 %token  DOUBLETOKEN;
-%token  SINGLETOKEN;            					       
-%token  DOUBLEDOUBLETOKEN;  						       
-%token  TRIPLEDOUBLETOKEN;      					       
-%token  DOUBLEEXTENDEDTOKEN;    					       
-%token  CEILTOKEN;              					       
+%token  SINGLETOKEN;
+%token  DOUBLEDOUBLETOKEN;
+%token  TRIPLEDOUBLETOKEN;
+%token  DOUBLEEXTENDEDTOKEN;
+%token  CEILTOKEN;
 %token  FLOORTOKEN;
-%token  NEARESTINTTOKEN;             			
+%token  NEARESTINTTOKEN;
 
 %token  HEADTOKEN;
 %token  REVERTTOKEN;
 %token  SORTTOKEN;
-%token  TAILTOKEN;		       
+%token  TAILTOKEN;
 %token  MANTISSATOKEN;
 %token  EXPONENTTOKEN;
 %token  PRECISIONTOKEN;
 %token  ROUNDCORRECTLYTOKEN;
-											       
-%token  PRECTOKEN;              					       
-%token  POINTSTOKEN;            					       
-%token  DIAMTOKEN;              					       
-%token  DISPLAYTOKEN;            					       
-%token  VERBOSITYTOKEN;         					       
-%token  CANONICALTOKEN;         					       
-%token  AUTOSIMPLIFYTOKEN;      					       
-%token  TAYLORRECURSIONSTOKEN;  					       
-%token  TIMINGTOKEN;            					       
+
+%token  PRECTOKEN;
+%token  POINTSTOKEN;
+%token  DIAMTOKEN;
+%token  DISPLAYTOKEN;
+%token  VERBOSITYTOKEN;
+%token  CANONICALTOKEN;
+%token  AUTOSIMPLIFYTOKEN;
+%token  TAYLORRECURSIONSTOKEN;
+%token  TIMINGTOKEN;
 %token  TIMETOKEN;
-%token  FULLPARENTHESESTOKEN;   					       
-%token  MIDPOINTMODETOKEN;      					       
-%token  DIEONERRORMODETOKEN;      					       
+%token  FULLPARENTHESESTOKEN;
+%token  MIDPOINTMODETOKEN;
+%token  DIEONERRORMODETOKEN;
 %token  SUPPRESSWARNINGSTOKEN;
-%token  RATIONALMODETOKEN;    					       
-%token  HOPITALRECURSIONSTOKEN;  					       
-											       
-%token  ONTOKEN;                					       
-%token  OFFTOKEN;               					       
-%token  DYADICTOKEN;  						       
-%token  POWERSTOKEN;            					       
-%token  BINARYTOKEN;            					       
-%token  HEXADECIMALTOKEN;            					       
-%token  FILETOKEN;              					       
-%token  POSTSCRIPTTOKEN;        					       
-%token  POSTSCRIPTFILETOKEN;    					       
-%token  PERTURBTOKEN;           					       
-%token  MINUSWORDTOKEN;         					       
-%token  PLUSWORDTOKEN;          					       
-%token  ZEROWORDTOKEN;          					       
-%token  NEARESTTOKEN;           					       
-%token  HONORCOEFFPRECTOKEN;   					       
-%token  TRUETOKEN;  							       
-%token  FALSETOKEN;  							       
-%token  DEFAULTTOKEN;											       
+%token  RATIONALMODETOKEN;
+%token  HOPITALRECURSIONSTOKEN;
+
+%token  ONTOKEN;
+%token  OFFTOKEN;
+%token  DYADICTOKEN;
+%token  POWERSTOKEN;
+%token  BINARYTOKEN;
+%token  HEXADECIMALTOKEN;
+%token  FILETOKEN;
+%token  POSTSCRIPTTOKEN;
+%token  POSTSCRIPTFILETOKEN;
+%token  PERTURBTOKEN;
+%token  MINUSWORDTOKEN;
+%token  PLUSWORDTOKEN;
+%token  ZEROWORDTOKEN;
+%token  NEARESTTOKEN;
+%token  HONORCOEFFPRECTOKEN;
+%token  TRUETOKEN;
+%token  FALSETOKEN;
+%token  DEFAULTTOKEN;
 %token  ABSOLUTETOKEN;
 %token  DECIMALTOKEN;
 %token  RELATIVETOKEN;
 %token  FIXEDTOKEN;
 %token  FLOATINGTOKEN;
 
-%token  ERRORTOKEN;			
-								       
-%token  QUITTOKEN;              					       
-%token  FALSEQUITTOKEN;  						       
-%token  RESTARTTOKEN;           					       
-											       
-%token  LIBRARYTOKEN;           					       
-											       
-%token  DIFFTOKEN;              					       
-%token  SIMPLIFYTOKEN;  						       
-%token  REMEZTOKEN;             					       
-%token  FPMINIMAXTOKEN;             					       
-%token  HORNERTOKEN;            					       
-%token  EXPANDTOKEN;            					       
-%token  SIMPLIFYSAFETOKEN;  						       
+%token  ERRORTOKEN;
+
+%token  QUITTOKEN;
+%token  FALSEQUITTOKEN;
+%token  RESTARTTOKEN;
+
+%token  LIBRARYTOKEN;
+
+%token  DIFFTOKEN;
+%token  SIMPLIFYTOKEN;
+%token  REMEZTOKEN;
+%token  FPMINIMAXTOKEN;
+%token  HORNERTOKEN;
+%token  EXPANDTOKEN;
+%token  SIMPLIFYSAFETOKEN;
 %token  TAYLORTOKEN;
-%token  TAYLORFORMTOKEN;           					       
-%token  AUTODIFFTOKEN;           					       
-%token  DEGREETOKEN;            					       
-%token  NUMERATORTOKEN;         					       
-%token  DENOMINATORTOKEN;       					       
-%token  SUBSTITUTETOKEN;        					       
-%token  COEFFTOKEN;             					       
-%token  SUBPOLYTOKEN;           					       
-%token  ROUNDCOEFFICIENTSTOKEN;   					       
-%token  RATIONALAPPROXTOKEN;    					       
-%token  ACCURATEINFNORMTOKEN;    					       
-%token  ROUNDTOFORMATTOKEN;     					       
-%token  EVALUATETOKEN;          					       
+%token  TAYLORFORMTOKEN;
+%token  AUTODIFFTOKEN;
+%token  DEGREETOKEN;
+%token  NUMERATORTOKEN;
+%token  DENOMINATORTOKEN;
+%token  SUBSTITUTETOKEN;
+%token  COEFFTOKEN;
+%token  SUBPOLYTOKEN;
+%token  ROUNDCOEFFICIENTSTOKEN;
+%token  RATIONALAPPROXTOKEN;
+%token  ACCURATEINFNORMTOKEN;
+%token  ROUNDTOFORMATTOKEN;
+%token  EVALUATETOKEN;
 %token  LENGTHTOKEN;
 %token  INFTOKEN;
 %token  MIDTOKEN;
@@ -272,51 +272,52 @@ void yyerror(char *message) {
 %token  MINTOKEN;
 %token  MAXTOKEN;
 
-%token  READXMLTOKEN;											       
-%token  PARSETOKEN;             					       
-											       
-%token  PRINTTOKEN;             					       
-%token  PRINTXMLTOKEN;             					       
-%token  PLOTTOKEN;              					       
-%token  PRINTHEXATOKEN;         					       
+%token  READXMLTOKEN;
+%token  PARSETOKEN;
+
+%token  PRINTTOKEN;
+%token  PRINTXMLTOKEN;
+%token  PLOTTOKEN;
+%token  PRINTHEXATOKEN;
 %token  PRINTFLOATTOKEN;
-%token  PRINTBINARYTOKEN;       					       
-%token  PRINTEXPANSIONTOKEN;    					       
-%token  BASHEXECUTETOKEN;       					       
-%token  EXTERNALPLOTTOKEN;      					       
-%token  WRITETOKEN;             					       
-%token  ASCIIPLOTTOKEN;    
-%token  RENAMETOKEN;    	       
-											       
-											       
-%token  INFNORMTOKEN;           					       
-%token  FINDZEROSTOKEN;         					       
-%token  FPFINDZEROSTOKEN;       					       
-%token  DIRTYINFNORMTOKEN;      					       
-%token  NUMBERROOTSTOKEN;      					       
-%token  INTEGRALTOKEN;          					       
-%token  DIRTYINTEGRALTOKEN;  						       
-%token  WORSTCASETOKEN;         					       
-%token  IMPLEMENTPOLYTOKEN;  						       
-%token  CHECKINFNORMTOKEN;      					       
-%token  ZERODENOMINATORSTOKEN;  					       
-%token  ISEVALUABLETOKEN;       					       
-%token  SEARCHGALTOKEN;         					       
-%token  GUESSDEGREETOKEN;       					       
-%token  DIRTYFINDZEROSTOKEN;    					       
-											       
-%token  IFTOKEN;  							       
-%token  THENTOKEN;  							       
-%token  ELSETOKEN;  							       
-%token  FORTOKEN;  							       
-%token  INTOKEN;  							       
-%token  FROMTOKEN;  							       
-%token  TOTOKEN;  							       
-%token  BYTOKEN;  							       
-%token  DOTOKEN;  							       
-%token  BEGINTOKEN;  							       
-%token  ENDTOKEN;  							       
-%token  WHILETOKEN;  							       
+%token  PRINTBINARYTOKEN;
+%token  PRINTEXPANSIONTOKEN;
+%token  BASHEXECUTETOKEN;
+%token  EXTERNALPLOTTOKEN;
+%token  WRITETOKEN;
+%token  ASCIIPLOTTOKEN;
+%token  RENAMETOKEN;
+
+
+%token  INFNORMTOKEN;
+%token  SUPNORMTOKEN;
+%token  FINDZEROSTOKEN;
+%token  FPFINDZEROSTOKEN;
+%token  DIRTYINFNORMTOKEN;
+%token  NUMBERROOTSTOKEN;
+%token  INTEGRALTOKEN;
+%token  DIRTYINTEGRALTOKEN;
+%token  WORSTCASETOKEN;
+%token  IMPLEMENTPOLYTOKEN;
+%token  CHECKINFNORMTOKEN;
+%token  ZERODENOMINATORSTOKEN;
+%token  ISEVALUABLETOKEN;
+%token  SEARCHGALTOKEN;
+%token  GUESSDEGREETOKEN;
+%token  DIRTYFINDZEROSTOKEN;
+
+%token  IFTOKEN;
+%token  THENTOKEN;
+%token  ELSETOKEN;
+%token  FORTOKEN;
+%token  INTOKEN;
+%token  FROMTOKEN;
+%token  TOTOKEN;
+%token  BYTOKEN;
+%token  DOTOKEN;
+%token  BEGINTOKEN;
+%token  ENDTOKEN;
+%token  WHILETOKEN;
 
 %token  READFILETOKEN;
 
@@ -324,26 +325,26 @@ void yyerror(char *message) {
 
 %token  EXECUTETOKEN;
 
-%token  EXTERNALPROCTOKEN; 
-%token  VOIDTOKEN;    
-%token  CONSTANTTYPETOKEN; 
-%token  FUNCTIONTOKEN;  
-%token  RANGETOKEN;  
-%token  INTEGERTOKEN;   
-%token  STRINGTYPETOKEN;    
-%token  BOOLEANTOKEN;    
-%token  LISTTOKEN;    
-%token  OFTOKEN;    
+%token  EXTERNALPROCTOKEN;
+%token  VOIDTOKEN;
+%token  CONSTANTTYPETOKEN;
+%token  FUNCTIONTOKEN;
+%token  RANGETOKEN;
+%token  INTEGERTOKEN;
+%token  STRINGTYPETOKEN;
+%token  BOOLEANTOKEN;
+%token  LISTTOKEN;
+%token  OFTOKEN;
 
-%token  VARTOKEN;    
+%token  VARTOKEN;
 %token  PROCTOKEN;
 %token  PROCEDURETOKEN;
 %token  RETURNTOKEN;
 %token  NOPTOKEN;
-									       
-%token  HELPTOKEN;      
+
+%token  HELPTOKEN;
 %token  VERSIONTOKEN;
-                                                     
+
 
 %type <other> startsymbol;
 %type <other> help;
@@ -385,13 +386,13 @@ void yyerror(char *message) {
 
 %%
 
-startsymbol:            command SEMICOLONTOKEN 
+startsymbol:            command SEMICOLONTOKEN
                           {
 			    parsedThing = $1;
 			    $$ = NULL;
 			    YYACCEPT;
 			  }
-                      | helpmeta SEMICOLONTOKEN		      
+                      | helpmeta SEMICOLONTOKEN
                           {
 			    outputMode();
                             sollyaPrintf("This is %s.\nType 'help help;' for the list of available commands. Type 'help <command>;' for help on the specific command <command>.\nType 'quit;' for quitting the %s interpreter.\n\nYou can get moral support and help with bugs by writing to %s.\n\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
@@ -445,7 +446,7 @@ command:                simplecommand
 			    $$ = makeCommandList($2);
                           }
                       | BEGINTOKEN variabledeclarationlist commandlist ENDTOKEN
-                          {			    
+                          {
 			    $$ = makeCommandList(concatChains($2, $3));
                           }
                       | BEGINTOKEN variabledeclarationlist ENDTOKEN
@@ -470,11 +471,11 @@ command:                simplecommand
 			  }
 ;
 
-ifcommand:              thing THENTOKEN command 
+ifcommand:              thing THENTOKEN command
                           {
 			    $$ = makeIf($1, $3);
                           }
-                      | thing THENTOKEN command ELSETOKEN command 
+                      | thing THENTOKEN command ELSETOKEN command
                           {
 			    $$ = makeIfElse($1,$3,$5);
                           }
@@ -542,7 +543,7 @@ procbody:               LPARTOKEN RPARTOKEN BEGINTOKEN commandlist ENDTOKEN
 			    $$ = makeProc(NULL, makeCommandList($4), makeUnit());
                           }
                       | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist ENDTOKEN
-                          {			    
+                          {
 			    $$ = makeProc(NULL, makeCommandList(concatChains($4, $5)), makeUnit());
                           }
                       | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist ENDTOKEN
@@ -558,7 +559,7 @@ procbody:               LPARTOKEN RPARTOKEN BEGINTOKEN commandlist ENDTOKEN
 			    $$ = makeProc(NULL, makeCommandList($4), $6);
                           }
                       | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
-                          {			    
+                          {
 			    $$ = makeProc(NULL, makeCommandList(concatChains($4, $5)), $7);
                           }
                       | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
@@ -574,7 +575,7 @@ procbody:               LPARTOKEN RPARTOKEN BEGINTOKEN commandlist ENDTOKEN
 			    $$ = makeProc($2, makeCommandList($5), makeUnit());
                           }
                       | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist ENDTOKEN
-                          {			    
+                          {
 			    $$ = makeProc($2, makeCommandList(concatChains($5, $6)), makeUnit());
                           }
                       | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist ENDTOKEN
@@ -590,7 +591,7 @@ procbody:               LPARTOKEN RPARTOKEN BEGINTOKEN commandlist ENDTOKEN
 			    $$ = makeProc($2, makeCommandList($5), $7);
                           }
                       | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
-                          {			    
+                          {
 			    $$ = makeProc($2, makeCommandList(concatChains($5, $6)), $8);
                           }
                       | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
@@ -606,7 +607,7 @@ procbody:               LPARTOKEN RPARTOKEN BEGINTOKEN commandlist ENDTOKEN
 			    $$ = makeProcIllim($2, makeCommandList($7), makeUnit());
                           }
                       | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist ENDTOKEN
-                          {			    
+                          {
 			    $$ = makeProcIllim($2, makeCommandList(concatChains($7, $8)), makeUnit());
                           }
                       | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist ENDTOKEN
@@ -622,7 +623,7 @@ procbody:               LPARTOKEN RPARTOKEN BEGINTOKEN commandlist ENDTOKEN
 			    $$ = makeProcIllim($2, makeCommandList($7), $9);
                           }
                       | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
-                          {			    
+                          {
 			    $$ = makeProcIllim($2, makeCommandList(concatChains($7, $8)), $10);
                           }
                       | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
@@ -648,11 +649,11 @@ simplecommand:          QUITTOKEN
                           {
 			    $$ = makeNop();
 			  }
-                      | NOPTOKEN LPARTOKEN thing RPARTOKEN 
+                      | NOPTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeNopArg($3);
 			  }
-                      | NOPTOKEN LPARTOKEN RPARTOKEN 
+                      | NOPTOKEN LPARTOKEN RPARTOKEN
                           {
 			    $$ = makeNopArg(makeDefault());
 			  }
@@ -660,93 +661,93 @@ simplecommand:          QUITTOKEN
                           {
 			    $$ = makeRestart();
 			  }
-                      | PRINTTOKEN LPARTOKEN thinglist RPARTOKEN 
+                      | PRINTTOKEN LPARTOKEN thinglist RPARTOKEN
                           {
 			    $$ = makePrint($3);
 			  }
-                      | PRINTTOKEN LPARTOKEN thinglist RPARTOKEN RIGHTANGLETOKEN thing           	
+                      | PRINTTOKEN LPARTOKEN thinglist RPARTOKEN RIGHTANGLETOKEN thing
                           {
 			    $$ = makeNewFilePrint($6, $3);
-			  }				       
-                      | PRINTTOKEN LPARTOKEN thinglist RPARTOKEN RIGHTANGLETOKEN RIGHTANGLETOKEN thing           	
+			  }
+                      | PRINTTOKEN LPARTOKEN thinglist RPARTOKEN RIGHTANGLETOKEN RIGHTANGLETOKEN thing
                           {
 			    $$ = makeAppendFilePrint($7, $3);
-			  }				       
-                      | PLOTTOKEN LPARTOKEN thing COMMATOKEN thinglist RPARTOKEN               	
+			  }
+                      | PLOTTOKEN LPARTOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {
 			    $$ = makePlot(addElement($5, $3));
-			  }				       
-                      | PRINTHEXATOKEN LPARTOKEN thing RPARTOKEN         	
+			  }
+                      | PRINTHEXATOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makePrintHexa($3);
-			  }				       
-                      | PRINTFLOATTOKEN LPARTOKEN thing RPARTOKEN         	
+			  }
+                      | PRINTFLOATTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makePrintFloat($3);
-			  }				       
-                      | PRINTBINARYTOKEN LPARTOKEN thing RPARTOKEN      	
+			  }
+                      | PRINTBINARYTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makePrintBinary($3);
-			  }				       
-                      | PRINTEXPANSIONTOKEN LPARTOKEN thing RPARTOKEN   	
+			  }
+                      | PRINTEXPANSIONTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makePrintExpansion($3);
-			  }				       
-                      | BASHEXECUTETOKEN LPARTOKEN thing RPARTOKEN      	
+			  }
+                      | BASHEXECUTETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeBashExecute($3);
-			  }				       
-                      | EXTERNALPLOTTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN     	
+			  }
+                      | EXTERNALPLOTTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeExternalPlot(addElement(addElement(addElement(addElement($11,$9),$7),$5),$3));
-			  }				       
-                      | WRITETOKEN LPARTOKEN thinglist RPARTOKEN            	
+			  }
+                      | WRITETOKEN LPARTOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeWrite($3);
-			  }				       
-                      | WRITETOKEN LPARTOKEN thinglist RPARTOKEN RIGHTANGLETOKEN thing           	
+			  }
+                      | WRITETOKEN LPARTOKEN thinglist RPARTOKEN RIGHTANGLETOKEN thing
                           {
 			    $$ = makeNewFileWrite($6, $3);
-			  }				       
-                      | WRITETOKEN LPARTOKEN thinglist RPARTOKEN RIGHTANGLETOKEN RIGHTANGLETOKEN thing           	
+			  }
+                      | WRITETOKEN LPARTOKEN thinglist RPARTOKEN RIGHTANGLETOKEN RIGHTANGLETOKEN thing
                           {
 			    $$ = makeAppendFileWrite($7, $3);
-			  }				       
+			  }
                       | ASCIIPLOTTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeAsciiPlot($3, $5);
-			  }				       
+			  }
                       | PRINTXMLTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makePrintXml($3);
-			  }	
+			  }
                       | EXECUTETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeExecute($3);
-			  }				       
+			  }
                       | PRINTXMLTOKEN LPARTOKEN thing RPARTOKEN RIGHTANGLETOKEN thing
                           {
 			    $$ = makePrintXmlNewFile($3,$6);
-			  }				       
+			  }
                       | PRINTXMLTOKEN LPARTOKEN thing RPARTOKEN RIGHTANGLETOKEN RIGHTANGLETOKEN thing
                           {
 			    $$ = makePrintXmlAppendFile($3,$7);
-			  }				       
+			  }
                       | WORSTCASETOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeWorstCase(addElement(addElement(addElement(addElement($11, $9), $7), $5), $3));
-			  }         					       
-                      | RENAMETOKEN LPARTOKEN IDENTIFIERTOKEN COMMATOKEN IDENTIFIERTOKEN RPARTOKEN        	
+			  }
+                      | RENAMETOKEN LPARTOKEN IDENTIFIERTOKEN COMMATOKEN IDENTIFIERTOKEN RPARTOKEN
                           {
 			    $$ = makeRename($3, $5);
 			    free($3);
 			    free($5);
-			  }	
-                      | EXTERNALPROCTOKEN LPARTOKEN IDENTIFIERTOKEN COMMATOKEN thing COMMATOKEN externalproctypelist MINUSTOKEN RIGHTANGLETOKEN extendedexternalproctype RPARTOKEN        	
+			  }
+                      | EXTERNALPROCTOKEN LPARTOKEN IDENTIFIERTOKEN COMMATOKEN thing COMMATOKEN externalproctypelist MINUSTOKEN RIGHTANGLETOKEN extendedexternalproctype RPARTOKEN
                           {
 			    $$ = makeExternalProc($3, $5, addElement($7, $10));
 			    free($3);
-			  }				       
+			  }
                       | assignment
                           {
 			    $$ = $1;
@@ -759,10 +760,10 @@ simplecommand:          QUITTOKEN
                           {
 			    $$ = makeAssignment($2, $3);
 			    free($2);
-			  }  
+			  }
 ;
 
-assignment:             stateassignment 
+assignment:             stateassignment
                           {
 			    $$ = $1;
 			  }
@@ -780,152 +781,152 @@ assignment:             stateassignment
 			  }
 ;
 
-simpleassignment:       IDENTIFIERTOKEN EQUALTOKEN thing 
+simpleassignment:       IDENTIFIERTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeAssignment($1, $3);
 			    free($1);
 			  }
-                      | IDENTIFIERTOKEN ASSIGNEQUALTOKEN thing 
+                      | IDENTIFIERTOKEN ASSIGNEQUALTOKEN thing
                           {
 			    $$ = makeFloatAssignment($1, $3);
 			    free($1);
 			  }
-                      | IDENTIFIERTOKEN EQUALTOKEN LIBRARYTOKEN LPARTOKEN thing RPARTOKEN 
+                      | IDENTIFIERTOKEN EQUALTOKEN LIBRARYTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeLibraryBinding($1, $5);
 			    free($1);
 			  }
-                      | indexing EQUALTOKEN thing 
+                      | indexing EQUALTOKEN thing
                           {
 			    $$ = makeAssignmentInIndexing($1->a,$1->b,$3);
 			    free($1);
 			  }
-                      | indexing ASSIGNEQUALTOKEN thing 
+                      | indexing ASSIGNEQUALTOKEN thing
                           {
 			    $$ = makeFloatAssignmentInIndexing($1->a,$1->b,$3);
 			    free($1);
 			  }
 ;
 
-stateassignment:        PRECTOKEN EQUALTOKEN thing              					       
+stateassignment:        PRECTOKEN EQUALTOKEN thing
                           {
 			    $$ = makePrecAssign($3);
 			  }
-                      | POINTSTOKEN EQUALTOKEN thing            					       
+                      | POINTSTOKEN EQUALTOKEN thing
                           {
 			    $$ = makePointsAssign($3);
 			  }
-                      | DIAMTOKEN EQUALTOKEN thing              					       
+                      | DIAMTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeDiamAssign($3);
 			  }
-                      | DISPLAYTOKEN EQUALTOKEN thing            					       
+                      | DISPLAYTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeDisplayAssign($3);
 			  }
-                      | VERBOSITYTOKEN EQUALTOKEN thing         					       
+                      | VERBOSITYTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeVerbosityAssign($3);
 			  }
-                      | CANONICALTOKEN EQUALTOKEN thing         					       
+                      | CANONICALTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeCanonicalAssign($3);
 			  }
-                      | AUTOSIMPLIFYTOKEN EQUALTOKEN thing      					       
+                      | AUTOSIMPLIFYTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeAutoSimplifyAssign($3);
 			  }
-                      | TAYLORRECURSIONSTOKEN EQUALTOKEN thing  					       
+                      | TAYLORRECURSIONSTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeTaylorRecursAssign($3);
 			  }
-                      | TIMINGTOKEN EQUALTOKEN thing            					       
+                      | TIMINGTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeTimingAssign($3);
 			  }
-                      | FULLPARENTHESESTOKEN EQUALTOKEN thing   					       
+                      | FULLPARENTHESESTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeFullParenAssign($3);
 			  }
-                      | MIDPOINTMODETOKEN EQUALTOKEN thing      					       
+                      | MIDPOINTMODETOKEN EQUALTOKEN thing
                           {
 			    $$ = makeMidpointAssign($3);
 			  }
-                      | DIEONERRORMODETOKEN EQUALTOKEN thing      					       
+                      | DIEONERRORMODETOKEN EQUALTOKEN thing
                           {
 			    $$ = makeDieOnErrorAssign($3);
 			  }
-                      | RATIONALMODETOKEN EQUALTOKEN thing      					       
+                      | RATIONALMODETOKEN EQUALTOKEN thing
                           {
 			    $$ = makeRationalModeAssign($3);
 			  }
-                      | SUPPRESSWARNINGSTOKEN EQUALTOKEN thing      					       
+                      | SUPPRESSWARNINGSTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeSuppressWarningsAssign($3);
 			  }
-                      | HOPITALRECURSIONSTOKEN EQUALTOKEN thing  					       
+                      | HOPITALRECURSIONSTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeHopitalRecursAssign($3);
 			  }
 ;
 
-stillstateassignment:   PRECTOKEN EQUALTOKEN thing              					       
+stillstateassignment:   PRECTOKEN EQUALTOKEN thing
                           {
 			    $$ = makePrecStillAssign($3);
 			  }
-                      | POINTSTOKEN EQUALTOKEN thing            					       
+                      | POINTSTOKEN EQUALTOKEN thing
                           {
 			    $$ = makePointsStillAssign($3);
 			  }
-                      | DIAMTOKEN EQUALTOKEN thing              					       
+                      | DIAMTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeDiamStillAssign($3);
 			  }
-                      | DISPLAYTOKEN EQUALTOKEN thing            					       
+                      | DISPLAYTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeDisplayStillAssign($3);
 			  }
-                      | VERBOSITYTOKEN EQUALTOKEN thing         					       
+                      | VERBOSITYTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeVerbosityStillAssign($3);
 			  }
-                      | CANONICALTOKEN EQUALTOKEN thing         					       
+                      | CANONICALTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeCanonicalStillAssign($3);
 			  }
-                      | AUTOSIMPLIFYTOKEN EQUALTOKEN thing      					       
+                      | AUTOSIMPLIFYTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeAutoSimplifyStillAssign($3);
 			  }
-                      | TAYLORRECURSIONSTOKEN EQUALTOKEN thing  					       
+                      | TAYLORRECURSIONSTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeTaylorRecursStillAssign($3);
 			  }
-                      | TIMINGTOKEN EQUALTOKEN thing            					       
+                      | TIMINGTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeTimingStillAssign($3);
 			  }
-                      | FULLPARENTHESESTOKEN EQUALTOKEN thing   					       
+                      | FULLPARENTHESESTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeFullParenStillAssign($3);
 			  }
-                      | MIDPOINTMODETOKEN EQUALTOKEN thing      					       
+                      | MIDPOINTMODETOKEN EQUALTOKEN thing
                           {
 			    $$ = makeMidpointStillAssign($3);
 			  }
-                      | DIEONERRORMODETOKEN EQUALTOKEN thing      					       
+                      | DIEONERRORMODETOKEN EQUALTOKEN thing
                           {
 			    $$ = makeDieOnErrorStillAssign($3);
 			  }
-                      | RATIONALMODETOKEN EQUALTOKEN thing      					       
+                      | RATIONALMODETOKEN EQUALTOKEN thing
                           {
 			    $$ = makeRationalModeStillAssign($3);
 			  }
-                      | SUPPRESSWARNINGSTOKEN EQUALTOKEN thing      					       
+                      | SUPPRESSWARNINGSTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeSuppressWarningsStillAssign($3);
 			  }
-                      | HOPITALRECURSIONSTOKEN EQUALTOKEN thing  					       
+                      | HOPITALRECURSIONSTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeHopitalRecursStillAssign($3);
 			  }
@@ -959,7 +960,7 @@ thing:                  megaterm
 			  }
 ;
 
-indexing:               basicthing LBRACKETTOKEN thing RBRACKETTOKEN 
+indexing:               basicthing LBRACKETTOKEN thing RBRACKETTOKEN
                           {
 			    $$ = (doubleNode *) safeMalloc(sizeof(doubleNode));
 			    $$->a = $1;
@@ -1032,70 +1033,70 @@ hyperterm:                term
 			  }
 ;
 
-unaryplusminus:         PLUSTOKEN 
+unaryplusminus:         PLUSTOKEN
 			  {
 			    $$ = 0;
-                          }			
-		      |	MINUSTOKEN 		
+                          }
+		      |	MINUSTOKEN
                           {
 			    $$ = 1;
-                          }				
+                          }
                       | PLUSTOKEN unaryplusminus
 			  {
 			    $$ = $2;
-                          }			
-		      |	MINUSTOKEN unaryplusminus 		
+                          }
+		      |	MINUSTOKEN unaryplusminus
                           {
 			    $$ = $2+1;
                           }
 ;
 
-                           
-term:                   subterm						
+
+term:                   subterm
 			  {
 			    $$ = $1;
-                          }			
-		      |	unaryplusminus subterm			
+                          }
+		      |	unaryplusminus subterm
                           {
 			    tempNode = $2;
 			    for (tempInteger=0;tempInteger<$1;tempInteger++)
 			      tempNode = makeNeg(tempNode);
 			    $$ = tempNode;
-                          }				
-		      |	APPROXTOKEN subterm			
+                          }
+		      |	APPROXTOKEN subterm
                           {
 			    $$ = makeEvalConst($2);
-                          }				
-		      |	term MULTOKEN subterm				
+                          }
+		      |	term MULTOKEN subterm
 			  {
 			    $$ = makeMul($1, $3);
-                          }														
-		      |	term DIVTOKEN subterm				
+                          }
+		      |	term DIVTOKEN subterm
                           {
 			    $$ = makeDiv($1, $3);
-                          }					
-		      |	term MULTOKEN unaryplusminus subterm				
+                          }
+		      |	term MULTOKEN unaryplusminus subterm
 			  {
 			    tempNode = $4;
 			    for (tempInteger=0;tempInteger<$3;tempInteger++)
 			      tempNode = makeNeg(tempNode);
 			    $$ = makeMul($1, tempNode);
-                          }														
-		      |	term DIVTOKEN unaryplusminus subterm				
+                          }
+		      |	term DIVTOKEN unaryplusminus subterm
                           {
 			    tempNode = $4;
 			    for (tempInteger=0;tempInteger<$3;tempInteger++)
 			      tempNode = makeNeg(tempNode);
 			    $$ = makeDiv($1, tempNode);
-                          }					
-		      |	term MULTOKEN APPROXTOKEN subterm				
+                          }
+		      |	term MULTOKEN APPROXTOKEN subterm
 			  {
 			    $$ = makeMul($1, makeEvalConst($4));
-                          }														
-		      |	term DIVTOKEN APPROXTOKEN subterm				
+                          }
+		      |	term DIVTOKEN APPROXTOKEN subterm
                           {
 			    $$ = makeDiv($1, makeEvalConst($4));
-                          }					
+                          }
 ;
 
 subterm:                basicthing
@@ -1120,123 +1121,123 @@ subterm:                basicthing
 ;
 
 
-basicthing:             ONTOKEN                 					       
+basicthing:             ONTOKEN
                           {
 			    $$ = makeOn();
 			  }
-                      | OFFTOKEN                					       
+                      | OFFTOKEN
                           {
 			    $$ = makeOff();
 			  }
-                      | DYADICTOKEN   						       
+                      | DYADICTOKEN
                           {
 			    $$ = makeDyadic();
 			  }
-                      | POWERSTOKEN             					                                
+                      | POWERSTOKEN
                           {
 			    $$ = makePowers();
 			  }
-                      | BINARYTOKEN             					       
+                      | BINARYTOKEN
                           {
 			    $$ = makeBinaryThing();
 			  }
-                      | HEXADECIMALTOKEN             					       
+                      | HEXADECIMALTOKEN
                           {
 			    $$ = makeHexadecimalThing();
 			  }
-                      | FILETOKEN               					       
+                      | FILETOKEN
                           {
 			    $$ = makeFile();
 			  }
-                      | POSTSCRIPTTOKEN         					       
+                      | POSTSCRIPTTOKEN
                           {
 			    $$ = makePostscript();
 			  }
-                      | POSTSCRIPTFILETOKEN     					       
+                      | POSTSCRIPTFILETOKEN
                           {
 			    $$ = makePostscriptFile();
 			  }
-                      | PERTURBTOKEN            					       
+                      | PERTURBTOKEN
                           {
 			    $$ = makePerturb();
 			  }
-                      | MINUSWORDTOKEN          					       
+                      | MINUSWORDTOKEN
                           {
 			    $$ = makeRoundDown();
 			  }
-                      | PLUSWORDTOKEN           					       
+                      | PLUSWORDTOKEN
                           {
 			    $$ = makeRoundUp();
 			  }
-                      | ZEROWORDTOKEN           					       
+                      | ZEROWORDTOKEN
                           {
 			    $$ = makeRoundToZero();
 			  }
-                      | NEARESTTOKEN            					       
+                      | NEARESTTOKEN
                           {
 			    $$ = makeRoundToNearest();
 			  }
-                      | HONORCOEFFPRECTOKEN    					       
+                      | HONORCOEFFPRECTOKEN
                           {
 			    $$ = makeHonorCoeff();
 			  }
-                      | TRUETOKEN   							       
+                      | TRUETOKEN
                           {
 			    $$ = makeTrue();
 			  }
-                      | VOIDTOKEN   							       
+                      | VOIDTOKEN
                           {
 			    $$ = makeUnit();
 			  }
-                      | FALSETOKEN   							       
+                      | FALSETOKEN
                           {
 			    $$ = makeFalse();
 			  }
-                      | DEFAULTTOKEN   							       
+                      | DEFAULTTOKEN
                           {
 			    $$ = makeDefault();
 			  }
-                      | DECIMALTOKEN   							       
+                      | DECIMALTOKEN
                           {
 			    $$ = makeDecimal();
 			  }
-                      | ABSOLUTETOKEN   							       
+                      | ABSOLUTETOKEN
                           {
 			    $$ = makeAbsolute();
 			  }
-                      | RELATIVETOKEN   							       
+                      | RELATIVETOKEN
                           {
 			    $$ = makeRelative();
 			  }
-                      | FIXEDTOKEN   							       
+                      | FIXEDTOKEN
                           {
 			    $$ = makeFixed();
 			  }
-                      | FLOATINGTOKEN   							       
+                      | FLOATINGTOKEN
                           {
 			    $$ = makeFloating();
 			  }
-                      | ERRORTOKEN   							       
+                      | ERRORTOKEN
                           {
 			    $$ = makeError();
 			  }
-                      | DOUBLETOKEN             					       
+                      | DOUBLETOKEN
                           {
 			    $$ = makeDoubleSymbol();
 			  }
-                      | SINGLETOKEN             					       
+                      | SINGLETOKEN
                           {
 			    $$ = makeSingleSymbol();
 			  }
-                      | DOUBLEEXTENDEDTOKEN             					       
+                      | DOUBLEEXTENDEDTOKEN
                           {
 			    $$ = makeDoubleextendedSymbol();
 			  }
-                      | DOUBLEDOUBLETOKEN   						       
+                      | DOUBLEDOUBLETOKEN
                           {
 			    $$ = makeDoubleDoubleSymbol();
 			  }
-                      | TRIPLEDOUBLETOKEN       					       
+                      | TRIPLEDOUBLETOKEN
                           {
 			    $$ = makeTripleDoubleSymbol();
 			  }
@@ -1275,19 +1276,19 @@ basicthing:             ONTOKEN
 			    $$ = makeTableAccessWithSubstitute($1, NULL);
 			    free($1);
 			  }
-                      | list 
+                      | list
                           {
 			    $$ = $1;
 			  }
-                      | range 
+                      | range
                           {
 			    $$ = $1;
 			  }
-                      | debound 
+                      | debound
                           {
 			    $$ = $1;
 			  }
-                      | headfunction 
+                      | headfunction
                           {
 			    $$ = $1;
 			  }
@@ -1319,32 +1320,32 @@ basicthing:             ONTOKEN
 ;
 
 
-constant:               CONSTANTTOKEN          					       
+constant:               CONSTANTTOKEN
                           {
 			    $$ = makeDecimalConstant($1);
 			    free($1);
 			  }
-                      | MIDPOINTCONSTANTTOKEN   					       
+                      | MIDPOINTCONSTANTTOKEN
                           {
 			    $$ = makeMidpointConstant($1);
 			    free($1);
 			  }
-                      | DYADICCONSTANTTOKEN   					       
+                      | DYADICCONSTANTTOKEN
                           {
 			    $$ = makeDyadicConstant($1);
 			    free($1);
 			  }
-                      | HEXCONSTANTTOKEN       					       
+                      | HEXCONSTANTTOKEN
                           {
 			    $$ = makeHexConstant($1);
 			    free($1);
 			  }
-                      | HEXADECIMALCONSTANTTOKEN       					       
+                      | HEXADECIMALCONSTANTTOKEN
                           {
 			    $$ = makeHexadecimalConstant($1);
 			    free($1);
 			  }
-                      | BINARYCONSTANTTOKEN    					       
+                      | BINARYCONSTANTTOKEN
                           {
 			    $$ = makeBinaryConstant($1);
 			    free($1);
@@ -1357,11 +1358,11 @@ constant:               CONSTANTTOKEN
 
 
 
-list:                   LBRACKETTOKEN VERTBARTOKEN VERTBARTOKEN RBRACKETTOKEN  
+list:                   LBRACKETTOKEN VERTBARTOKEN VERTBARTOKEN RBRACKETTOKEN
                           {
 			    $$ = makeEmptyList();
 			  }
-                      | LBRACKETTOKEN ORTOKEN RBRACKETTOKEN  
+                      | LBRACKETTOKEN ORTOKEN RBRACKETTOKEN
                           {
 			    $$ = makeEmptyList();
 			  }
@@ -1379,7 +1380,7 @@ simplelist:             thing
                           {
 			    $$ = addElement(NULL, $1);
 			  }
-                      | simplelist COMMATOKEN thing 
+                      | simplelist COMMATOKEN thing
                           {
 			    $$ = addElement($1, $3);
 			  }
@@ -1433,23 +1434,23 @@ debound:                STARLEFTANGLETOKEN thing RIGHTANGLESTARTOKEN
 headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeDiff($3);
-			  }              					       
+			  }
                       | SIMPLIFYTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeSimplify($3);
-			  }  						       
+			  }
                       | REMEZTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeRemez(addElement(addElement($7, $5), $3));
-			  }             					       
+			  }
                       | MINTOKEN LPARTOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeMin($3);
-			  }             					       
+			  }
                       | MAXTOKEN LPARTOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeMax($3);
-			  }             					       
+			  }
                       | FPMINIMAXTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeFPminimax(addElement(addElement(addElement($9, $7), $5), $3));
@@ -1457,271 +1458,275 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                       | HORNERTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeHorner($3);
-			  }   
+			  }
                       | CANONICALTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeCanonicalThing($3);
-			  }            					       
+			  }
                       | EXPANDTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeExpand($3);
-			  }            					       
+			  }
                       | SIMPLIFYSAFETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeSimplifySafe($3);
-			  }  						       
+			  }
                       | TAYLORTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeTaylor($3, $5, $7);
-			  }           					       
+			  }
                       | TAYLORFORMTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {
                             $$ = makeTaylorform(addElement(addElement($7, $5), $3));
-			  }           					       
+			  }
                       | AUTODIFFTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing RPARTOKEN
                           {
                             $$ = makeAutodiff(addElement(addElement(addElement(NULL, $7), $5), $3));
-			  }           					       
+			  }
                       | DEGREETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeDegree($3);
-			  }            					       
+			  }
                       | NUMERATORTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeNumerator($3);
-			  }         					       
+			  }
                       | DENOMINATORTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeDenominator($3);
-			  }       					       
+			  }
                       | SUBSTITUTETOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeSubstitute($3, $5);
-			  }        					       
+			  }
                       | COEFFTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeCoeff($3, $5);
-			  }             					       
+			  }
                       | SUBPOLYTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeSubpoly($3, $5);
-			  }           					       
+			  }
                       | ROUNDCOEFFICIENTSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeRoundcoefficients($3, $5);
-			  }   					       
+			  }
                       | RATIONALAPPROXTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeRationalapprox($3, $5);
-			  }    					       
+			  }
                       | ACCURATEINFNORMTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeAccurateInfnorm(addElement(addElement($7, $5), $3));
-			  }    					       
+			  }
                       | ROUNDTOFORMATTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeRoundToFormat($3, $5, $7);
-			  }     					       
+			  }
                       | EVALUATETOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeEvaluate($3, $5);
-			  }          					       
+			  }
                       | PARSETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeParse($3);
-			  }             					       
+			  }
                       | READXMLTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeReadXml($3);
-			  }             					       
+			  }
                       | INFNORMTOKEN LPARTOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeInfnorm(addElement($5, $3));
-			  }           					       
+			  }
+                      | SUPNORMTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeSupnorm(addElement(addElement(addElement(addElement(NULL,$9),$7),$5),$3));
+			  }
                       | FINDZEROSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeFindZeros($3, $5);
-			  }         					       
+			  }
                       | FPFINDZEROSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeFPFindZeros($3, $5);
-			  }       					       
+			  }
                       | DIRTYINFNORMTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeDirtyInfnorm($3, $5);
-			  }      					       
+			  }
                       | NUMBERROOTSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeNumberRoots($3, $5);
-			  }      					       
+			  }
                       | INTEGRALTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeIntegral($3, $5);
-			  }          					       
+			  }
                       | DIRTYINTEGRALTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeDirtyIntegral($3, $5);
-			  }  						       
+			  }
                       | IMPLEMENTPOLYTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeImplementPoly(addElement(addElement(addElement(addElement(addElement($13, $11), $9), $7), $5), $3));
-			  }  						       
+			  }
                       | CHECKINFNORMTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeCheckInfnorm($3, $5, $7);
-			  }      					       
+			  }
                       | ZERODENOMINATORSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeZeroDenominators($3, $5);
-			  }  					       
+			  }
                       | ISEVALUABLETOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeIsEvaluable($3, $5);
-			  }       					       
+			  }
                       | SEARCHGALTOKEN LPARTOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeSearchGal($3);
-			  }         					       
+			  }
                       | GUESSDEGREETOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeGuessDegree(addElement(addElement($7, $5), $3));
-			  }       					       
+			  }
                       | DIRTYFINDZEROSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeDirtyFindZeros($3, $5);
-			  }    					       
+			  }
                       | HEADTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeHead($3);
-			  }              					       
+			  }
                       | ROUNDCORRECTLYTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeRoundCorrectly($3);
-			  }              					       
+			  }
                       | READFILETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeReadFile($3);
-			  }              					       
+			  }
                       | REVERTTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeRevert($3);
-			  }              					       
+			  }
                       | SORTTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeSort($3);
-			  }              					       
+			  }
                       | MANTISSATOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeMantissa($3);
-			  }              					       
+			  }
                       | EXPONENTTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeExponent($3);
-			  }              					       
+			  }
                       | PRECISIONTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makePrecision($3);
-			  }              					       
+			  }
                       | TAILTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeTail($3);
-			  }              					       
+			  }
                       | SQRTTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeSqrt($3);
-			  }              					       
+			  }
                       | EXPTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeExp($3);
-			  }               					       
+			  }
                       | FUNCTIONTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeProcedureFunction($3);
-			  }               					       
+			  }
                       | FUNCTIONTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeSubstitute(makeProcedureFunction($3),$5);
-			  }               					       
+			  }
                       | LOGTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeLog($3);
-			  }               					       
+			  }
                       | LOG2TOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeLog2($3);
-			  }              					       
+			  }
                       | LOG10TOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeLog10($3);
-			  }             					       
+			  }
                       | SINTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeSin($3);
-			  }               					       
+			  }
                       | COSTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeCos($3);
-			  }               					       
+			  }
                       | TANTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeTan($3);
-			  }               					       
+			  }
                       | ASINTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeAsin($3);
-			  }              					       
+			  }
                       | ACOSTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeAcos($3);
-			  }              					       
+			  }
                       | ATANTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeAtan($3);
-			  }              					       
+			  }
                       | SINHTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeSinh($3);
-			  }              					       
+			  }
                       | COSHTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeCosh($3);
-			  }              					       
+			  }
                       | TANHTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeTanh($3);
-			  }              					       
+			  }
                       | ASINHTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeAsinh($3);
-			  }             					       
+			  }
                       | ACOSHTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeAcosh($3);
-			  }             					       
+			  }
                       | ATANHTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeAtanh($3);
-			  }             					       
+			  }
                       | ABSTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeAbs($3);
-			  }               					       
+			  }
                       | ERFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeErf($3);
-			  }               					       
+			  }
                       | ERFCTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeErfc($3);
-			  }              					       
+			  }
                       | LOG1PTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeLog1p($3);
-			  }             					       
+			  }
                       | EXPM1TOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeExpm1($3);
-			  }             					       
+			  }
                       | DOUBLETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeDouble($3);
@@ -1729,31 +1734,31 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                       | SINGLETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeSingle($3);
-			  }                    					       
+			  }
                       | DOUBLEDOUBLETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeDoubledouble($3);
-			  }  						       
+			  }
                       | TRIPLEDOUBLETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeTripledouble($3);
-			  }      					       
+			  }
                       | DOUBLEEXTENDEDTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeDoubleextended($3);
-			  }    					       
+			  }
                       | CEILTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeCeil($3);
-			  }              					       
+			  }
                       | FLOORTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeFloor($3);
-			  }             					       
+			  }
                       | NEARESTINTTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeNearestInt($3);
-			  }             					       
+			  }
                       | LENGTHTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeLength($3);
@@ -1764,7 +1769,7 @@ egalquestionmark:       EQUALTOKEN QUESTIONMARKTOKEN
                           {
 			    $$ = NULL;
 			  }
-                      | 
+                      |
                           {
 			    $$ = NULL;
 			  }
@@ -1774,59 +1779,59 @@ statedereference:       PRECTOKEN egalquestionmark
                           {
 			    $$ = makePrecDeref();
 			  }
-                      | POINTSTOKEN egalquestionmark            					       
+                      | POINTSTOKEN egalquestionmark
                           {
 			    $$ = makePointsDeref();
 			  }
-                      | DIAMTOKEN egalquestionmark              					       
+                      | DIAMTOKEN egalquestionmark
                           {
 			    $$ = makeDiamDeref();
 			  }
-                      | DISPLAYTOKEN egalquestionmark            					       
+                      | DISPLAYTOKEN egalquestionmark
                           {
 			    $$ = makeDisplayDeref();
 			  }
-                      | VERBOSITYTOKEN egalquestionmark         					       
+                      | VERBOSITYTOKEN egalquestionmark
                           {
 			    $$ = makeVerbosityDeref();
 			  }
-                      | CANONICALTOKEN egalquestionmark         					       
+                      | CANONICALTOKEN egalquestionmark
                           {
 			    $$ = makeCanonicalDeref();
 			  }
-                      | AUTOSIMPLIFYTOKEN egalquestionmark				       
+                      | AUTOSIMPLIFYTOKEN egalquestionmark
                           {
 			    $$ = makeAutoSimplifyDeref();
 			  }
-                      | TAYLORRECURSIONSTOKEN egalquestionmark				       
+                      | TAYLORRECURSIONSTOKEN egalquestionmark
                           {
 			    $$ = makeTaylorRecursDeref();
 			  }
-                      | TIMINGTOKEN egalquestionmark			       
+                      | TIMINGTOKEN egalquestionmark
                           {
 			    $$ = makeTimingDeref();
 			  }
-                      | FULLPARENTHESESTOKEN egalquestionmark					       
+                      | FULLPARENTHESESTOKEN egalquestionmark
                           {
 			    $$ = makeFullParenDeref();
 			  }
-                      | MIDPOINTMODETOKEN egalquestionmark			       
+                      | MIDPOINTMODETOKEN egalquestionmark
                           {
 			    $$ = makeMidpointDeref();
 			  }
-                      | DIEONERRORMODETOKEN egalquestionmark			       
+                      | DIEONERRORMODETOKEN egalquestionmark
                           {
 			    $$ = makeDieOnErrorDeref();
 			  }
-                      | RATIONALMODETOKEN egalquestionmark			       
+                      | RATIONALMODETOKEN egalquestionmark
                           {
 			    $$ = makeRationalModeDeref();
 			  }
-                      | SUPPRESSWARNINGSTOKEN egalquestionmark			       
+                      | SUPPRESSWARNINGSTOKEN egalquestionmark
                           {
 			    $$ = makeSuppressWarningsDeref();
 			  }
-                      | HOPITALRECURSIONSTOKEN egalquestionmark				       
+                      | HOPITALRECURSIONSTOKEN egalquestionmark
                           {
 			    $$ = makeHopitalRecursDeref();
 			  }
@@ -1933,7 +1938,7 @@ externalproctypelist:       extendedexternalproctype
                           {
 			    $$ = addElement(NULL, $1);
 			  }
-                      | LPARTOKEN externalproctypesimplelist RPARTOKEN 
+                      | LPARTOKEN externalproctypesimplelist RPARTOKEN
                           {
 			    $$ = $2;
 			  }
@@ -1944,27 +1949,27 @@ help:                   CONSTANTTOKEN
                           {
 			    outputMode(); sollyaPrintf("\"%s\" is recognized as a base 10 constant.\n",$1);
 			    free($1);
-			  }          					       
+			  }
                       | DYADICCONSTANTTOKEN
                           {
 			    outputMode(); sollyaPrintf("\"%s\" is recognized as a dyadic number constant.\n",$1);
 			    free($1);
-                          }   					       
+                          }
                       | HEXCONSTANTTOKEN
                           {
 			    outputMode(); sollyaPrintf("\"%s\" is recognized as a double or single precision constant.\n",$1);
 			    free($1);
-                          }       					       
+                          }
                       | HEXADECIMALCONSTANTTOKEN
                           {
 			    outputMode(); sollyaPrintf("\"%s\" is recognized as a hexadecimal constant.\n",$1);
 			    free($1);
-                          }       					       
+                          }
                       | BINARYCONSTANTTOKEN
                           {
 			    outputMode(); sollyaPrintf("\"%s_2\" is recognized as a base 2 constant.\n",$1);
 			    free($1);
-                          }    					       
+                          }
                       | PITOKEN
                           {
 #ifdef HELP_PI_TEXT
@@ -1975,29 +1980,29 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PI"
 #endif
 #endif
-                          }                					       
+                          }
                       | IDENTIFIERTOKEN
                           {
 			    outputMode(); sollyaPrintf("\"%s\" is an identifier.\n",$1);
 			    free($1);
-                          }          					       
+                          }
                       | STRINGTOKEN
                           {
 			    outputMode(); sollyaPrintf("\"%s\" is a string constant.\n",$1);
 			    free($1);
-                          }            					       
+                          }
                       | LPARTOKEN
                           {
 			    outputMode(); sollyaPrintf("Left parenthesis.\n");
-                          }                  					       
+                          }
                       | RPARTOKEN
                           {
 			    outputMode(); sollyaPrintf("Right parenthesis.\n");
-                          }                  					       
+                          }
                       | LBRACKETTOKEN
                           {
 			    outputMode(); sollyaPrintf("Left bracket - indicates a range.\n");
-                          }              					       
+                          }
                       | RBRACKETTOKEN
                           {
 			    outputMode(); sollyaPrintf("Right bracket - indicates a range.\n");
@@ -2005,11 +2010,11 @@ help:                   CONSTANTTOKEN
                       | LBRACKETTOKEN VERTBARTOKEN
                           {
 			    outputMode(); sollyaPrintf("Left bracket-bar - indicates a list.\n");
-                          }              					       
-                      | VERTBARTOKEN RBRACKETTOKEN 
+                          }
+                      | VERTBARTOKEN RBRACKETTOKEN
                           {
 			    outputMode(); sollyaPrintf("Bar-right bracket - indicates a list.\n");
-                          }              					       
+                          }
                       | EQUALTOKEN
                           {
 #ifdef HELP_ASSIGNMENT_TEXT
@@ -2020,7 +2025,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ASSIGNMENT"
 #endif
 #endif
-                          }       
+                          }
                       | ASSIGNEQUALTOKEN
                           {
 #ifdef HELP_FLOATASSIGNMENT_TEXT
@@ -2031,7 +2036,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for FLOATASSIGNMENT"
 #endif
 #endif
-                          }                 					       
+                          }
                       | COMPAREEQUALTOKEN
                           {
 #ifdef HELP_EQUAL_TEXT
@@ -2042,11 +2047,11 @@ help:                   CONSTANTTOKEN
 #warning "No help text for EQUAL"
 #endif
 #endif
-                          }                 					       
+                          }
                       | COMMATOKEN
                           {
 			    outputMode(); sollyaPrintf("Separator in lists or ranges.\n");
-                          }                 					       
+                          }
                       | EXCLAMATIONTOKEN
                           {
 #ifdef HELP_NOT_TEXT
@@ -2057,11 +2062,11 @@ help:                   CONSTANTTOKEN
 #warning "No help text for NOT"
 #endif
 #endif
-                          }      						       
+                          }
                       | STARLEFTANGLETOKEN
                           {
 			    outputMode(); sollyaPrintf("Dereferences range bounds.\n");
-                          }             					       
+                          }
                       | LEFTANGLETOKEN
                           {
 #ifdef HELP_LT_TEXT
@@ -2072,7 +2077,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for LT"
 #endif
 #endif
-                          }            
+                          }
                       | LEFTANGLETOKEN EQUALTOKEN
                           {
 #ifdef HELP_LE_TEXT
@@ -2083,15 +2088,15 @@ help:                   CONSTANTTOKEN
 #warning "No help text for LE"
 #endif
 #endif
-                          }             					       
+                          }
                       | RIGHTANGLEUNDERSCORETOKEN
                           {
 			    outputMode(); sollyaPrintf("Dereferences the lower range bound.\n");
-                          }      					       
+                          }
                       | RIGHTANGLEDOTTOKEN
                           {
 			    outputMode(); sollyaPrintf("Dereferences the mid-point of a range.\n");
-                          }       					       
+                          }
                       | RIGHTANGLETOKEN EQUALTOKEN
                           {
 #ifdef HELP_GE_TEXT
@@ -2106,7 +2111,7 @@ help:                   CONSTANTTOKEN
                       | RIGHTANGLESTARTOKEN
                           {
 			    outputMode(); sollyaPrintf("Dereferences the upper range bound.\n");
-                          }             					       
+                          }
                       | RIGHTANGLETOKEN
                           {
 #ifdef HELP_GT_TEXT
@@ -2117,19 +2122,19 @@ help:                   CONSTANTTOKEN
 #warning "No help text for GT"
 #endif
 #endif
-                          }            					       
+                          }
                       | DOTSTOKEN
                           {
 			    outputMode(); sollyaPrintf("Ellipsis.\n");
-                          }                  					       
+                          }
                       | QUESTIONMARKTOKEN
                           {
 			    outputMode(); sollyaPrintf("Dereferences global environment variables.\n");
-                          }      						       
+                          }
                       | VERTBARTOKEN
                           {
 			    outputMode(); sollyaPrintf("Starts or ends a list.\n");
-                          }      						       
+                          }
                       | ATTOKEN
                           {
 #ifdef HELP_CONCAT_TEXT
@@ -2140,11 +2145,11 @@ help:                   CONSTANTTOKEN
 #warning "No help text for CONCAT"
 #endif
 #endif
-                          }      							       
+                          }
                       | DOUBLECOLONTOKEN
                           {
 			    outputMode(); sollyaPrintf("a::b prepends a to list b or appends b to list a, preprending list a to list b if both are lists.\n");
-                          }    
+                          }
                       | DOTCOLONTOKEN
                           {
 #ifdef HELP_PREPEND_TEXT
@@ -2155,7 +2160,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PREPEND"
 #endif
 #endif
-                          }    
+                          }
                       | COLONDOTTOKEN
                           {
 #ifdef HELP_APPEND_TEXT
@@ -2166,7 +2171,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for APPEND"
 #endif
 #endif
-                          }    
+                          }
                       | EXCLAMATIONEQUALTOKEN
                           {
 #ifdef HELP_NEQ_TEXT
@@ -2177,7 +2182,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for NEQ"
 #endif
 #endif
-                          }    
+                          }
                       | ANDTOKEN
                           {
 #ifdef HELP_AND_TEXT
@@ -2188,7 +2193,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for AND"
 #endif
 #endif
-                          }    
+                          }
                       | ORTOKEN
                           {
 #ifdef HELP_OR_TEXT
@@ -2199,7 +2204,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for OR"
 #endif
 #endif
-                          }    
+                          }
                       | PLUSTOKEN
                           {
 #ifdef HELP_PLUS_TEXT
@@ -2210,7 +2215,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PLUS"
 #endif
 #endif
-                          }                  					       
+                          }
                       | MINUSTOKEN
                           {
 #ifdef HELP_MINUS_TEXT
@@ -2221,7 +2226,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for MINUS"
 #endif
 #endif
-                          }                 					       
+                          }
                       | APPROXTOKEN
                           {
 #ifdef HELP_APPROX_TEXT
@@ -2232,7 +2237,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for APPROX"
 #endif
 #endif
-                          }                 					       
+                          }
                       | MULTOKEN
                           {
 #ifdef HELP_MULT_TEXT
@@ -2243,7 +2248,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for MULT"
 #endif
 #endif
-                          }                						       
+                          }
                       | DIVTOKEN
                           {
 #ifdef HELP_DIVIDE_TEXT
@@ -2254,7 +2259,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for DIVIDE"
 #endif
 #endif
-                          }                  					       
+                          }
                       | POWTOKEN
                           {
 #ifdef HELP_POWER_TEXT
@@ -2265,7 +2270,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for POWER"
 #endif
 #endif
-                          }                  					       
+                          }
                       | SQRTTOKEN
                           {
 #ifdef HELP_SQRT_TEXT
@@ -2276,7 +2281,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for SQRT"
 #endif
 #endif
-                          }                  					       
+                          }
                       | EXPTOKEN
                           {
 #ifdef HELP_EXP_TEXT
@@ -2287,7 +2292,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for EXP"
 #endif
 #endif
-                          }                   					       
+                          }
                       | LOGTOKEN
                           {
 #ifdef HELP_LOG_TEXT
@@ -2298,7 +2303,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for LOG"
 #endif
 #endif
-                          }                   					       
+                          }
                       | LOG2TOKEN
                           {
 #ifdef HELP_LOG2_TEXT
@@ -2309,7 +2314,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for LOG2"
 #endif
 #endif
-                          }                  					       
+                          }
                       | LOG10TOKEN
                           {
 #ifdef HELP_LOG10_TEXT
@@ -2320,7 +2325,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for LOG10"
 #endif
 #endif
-                          }                 					       
+                          }
                       | SINTOKEN
                           {
 #ifdef HELP_SIN_TEXT
@@ -2331,7 +2336,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for SIN"
 #endif
 #endif
-                          }                   					       
+                          }
                       | COSTOKEN
                           {
 #ifdef HELP_COS_TEXT
@@ -2342,7 +2347,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for COS"
 #endif
 #endif
-                          }                   					       
+                          }
                       | TANTOKEN
                           {
 #ifdef HELP_TAN_TEXT
@@ -2353,7 +2358,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for TAN"
 #endif
 #endif
-                          }                   					       
+                          }
                       | ASINTOKEN
                           {
 #ifdef HELP_ASIN_TEXT
@@ -2364,7 +2369,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ASIN"
 #endif
 #endif
-                          }                  					       
+                          }
                       | ACOSTOKEN
                           {
 #ifdef HELP_ACOS_TEXT
@@ -2375,7 +2380,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ACOS"
 #endif
 #endif
-                          }                  					       
+                          }
                       | ATANTOKEN
                           {
 #ifdef HELP_ATAN_TEXT
@@ -2386,7 +2391,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ATAN"
 #endif
 #endif
-                          }                  					       
+                          }
                       | SINHTOKEN
                           {
 #ifdef HELP_SINH_TEXT
@@ -2397,7 +2402,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for SINH"
 #endif
 #endif
-                          }                  					       
+                          }
                       | COSHTOKEN
                           {
 #ifdef HELP_COSH_TEXT
@@ -2408,7 +2413,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for COSH"
 #endif
 #endif
-                          }                  					       
+                          }
                       | TANHTOKEN
                           {
 #ifdef HELP_TANH_TEXT
@@ -2419,7 +2424,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for TANH"
 #endif
 #endif
-                          }                  					       
+                          }
                       | ASINHTOKEN
                           {
 #ifdef HELP_ASINH_TEXT
@@ -2430,7 +2435,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ASINH"
 #endif
 #endif
-                          }                 					       
+                          }
                       | ACOSHTOKEN
                           {
 #ifdef HELP_ACOSH_TEXT
@@ -2441,7 +2446,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ACOSH"
 #endif
 #endif
-                          }                 					       
+                          }
                       | ATANHTOKEN
                           {
 #ifdef HELP_ATANH_TEXT
@@ -2453,7 +2458,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ATANH"
 #endif
 #endif
-                          }                 					                        					       
+                          }
                       | ABSTOKEN
                           {
 #ifdef HELP_ABS_TEXT
@@ -2464,7 +2469,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ABS"
 #endif
 #endif
-                          }                 					                          					       
+                          }
                       | ERFTOKEN
                           {
 #ifdef HELP_ERF_TEXT
@@ -2475,7 +2480,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ERF"
 #endif
 #endif
-                          }                 					                          					       
+                          }
                       | ERFCTOKEN
                           {
 #ifdef HELP_ERFC_TEXT
@@ -2486,7 +2491,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ERFC"
 #endif
 #endif
-                          }                 					                         					       
+                          }
                       | LOG1PTOKEN
                           {
 #ifdef HELP_LOG1P_TEXT
@@ -2497,7 +2502,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for LOG1P"
 #endif
 #endif
-                          }                 					                        					       
+                          }
                       | EXPM1TOKEN
                           {
 #ifdef HELP_EXPM1_TEXT
@@ -2508,7 +2513,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for EXPM1"
 #endif
 #endif
-                          }                 					                        					       
+                          }
                       | DOUBLETOKEN
                           {
 #ifdef HELP_DOUBLE_TEXT
@@ -2519,7 +2524,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for DOUBLE"
 #endif
 #endif
-                          }                 					                       					       
+                          }
                       | SINGLETOKEN
                           {
 #ifdef HELP_SINGLE_TEXT
@@ -2530,7 +2535,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for SINGLE"
 #endif
 #endif
-                          }                 					                       					       
+                          }
                       | DOUBLEDOUBLETOKEN
                           {
 #ifdef HELP_DOUBLEDOUBLE_TEXT
@@ -2541,7 +2546,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for DOUBLEDOUBLE"
 #endif
 #endif
-                          }                 					             						       
+                          }
                       | TRIPLEDOUBLETOKEN
                           {
 #ifdef HELP_TRIPLEDOUBLE_TEXT
@@ -2552,7 +2557,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for TRIPLEDOUBLE"
 #endif
 #endif
-                          }                 					                 					       
+                          }
                       | DOUBLEEXTENDEDTOKEN
                           {
 #ifdef HELP_DOUBLEEXTENDED_TEXT
@@ -2563,7 +2568,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for DOUBLEEXTENDED"
 #endif
 #endif
-                          }                 					               					       
+                          }
                       | CEILTOKEN
                           {
 #ifdef HELP_CEIL_TEXT
@@ -2574,7 +2579,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for CEIL"
 #endif
 #endif
-                          }                 					                         					       
+                          }
                       | FLOORTOKEN
                           {
 #ifdef HELP_FLOOR_TEXT
@@ -2585,7 +2590,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for FLOOR"
 #endif
 #endif
-                          }                 					                        			
+                          }
                       | NEARESTINTTOKEN
                           {
 #ifdef HELP_NEARESTINT_TEXT
@@ -2596,7 +2601,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for NEARESTINT"
 #endif
 #endif
-                          }                 					                        			
+                          }
                       | HEADTOKEN
                           {
 #ifdef HELP_HEAD_TEXT
@@ -2607,7 +2612,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for HEAD"
 #endif
 #endif
-                          }                 					       
+                          }
                       | ROUNDCORRECTLYTOKEN
                           {
 #ifdef HELP_ROUNDCORRECTLY_TEXT
@@ -2618,7 +2623,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ROUNDCORRECTLY"
 #endif
 #endif
-                          }                 					       
+                          }
                       | READFILETOKEN
                           {
 #ifdef HELP_READFILE_TEXT
@@ -2629,7 +2634,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for READFILE"
 #endif
 #endif
-                          }                 					           
+                          }
                       | REVERTTOKEN
                           {
 #ifdef HELP_REVERT_TEXT
@@ -2640,7 +2645,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for REVERT"
 #endif
 #endif
-                          }                 					       
+                          }
                       | SORTTOKEN
                           {
 #ifdef HELP_SORT_TEXT
@@ -2651,7 +2656,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for SORT"
 #endif
 #endif
-                          }                 					       
+                          }
                       | TAILTOKEN
                           {
 #ifdef HELP_TAIL_TEXT
@@ -2662,7 +2667,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for TAIL"
 #endif
 #endif
-                          }                 					       
+                          }
                       | PRECTOKEN
                           {
 #ifdef HELP_PREC_TEXT
@@ -2673,7 +2678,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PREC"
 #endif
 #endif
-                          }                 					       
+                          }
                       | POINTSTOKEN
                           {
 #ifdef HELP_POINTS_TEXT
@@ -2684,7 +2689,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for POINTS"
 #endif
 #endif
-                          }                 					                       					       
+                          }
                       | DIAMTOKEN
                           {
 #ifdef HELP_DIAM_TEXT
@@ -2695,7 +2700,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for DIAM"
 #endif
 #endif
-                          }                 					                         					       
+                          }
                       | DISPLAYTOKEN
                           {
 #ifdef HELP_DISPLAY_TEXT
@@ -2706,7 +2711,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for DISPLAY"
 #endif
 #endif
-                          }                 					                       					       
+                          }
                       | VERBOSITYTOKEN
                           {
 #ifdef HELP_VERBOSITY_TEXT
@@ -2717,7 +2722,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for VERBOSITY"
 #endif
 #endif
-                          }                 					                    					       
+                          }
                       | CANONICALTOKEN
                           {
 #ifdef HELP_CANONICAL_TEXT
@@ -2728,7 +2733,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for CANONICAL"
 #endif
 #endif
-                          }                 					                    					       
+                          }
                       | AUTOSIMPLIFYTOKEN
                           {
 #ifdef HELP_AUTOSIMPLIFY_TEXT
@@ -2739,7 +2744,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for AUTOSIMPLIFY"
 #endif
 #endif
-                          }                 					                 					       
+                          }
                       | TAYLORRECURSIONSTOKEN
                           {
 #ifdef HELP_TAYLORRECURSIONS_TEXT
@@ -2750,7 +2755,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for TAYLORRECURSIONS"
 #endif
 #endif
-                          }                 					             					       
+                          }
                       | TIMINGTOKEN
                           {
 #ifdef HELP_TIMING_TEXT
@@ -2761,7 +2766,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for TIMING"
 #endif
 #endif
-                          }                 					                       		
+                          }
                       | TIMETOKEN
                           {
 #ifdef HELP_TIME_TEXT
@@ -2772,7 +2777,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for TIME"
 #endif
 #endif
-                          }                 					                       					       			       
+                          }
                       | FULLPARENTHESESTOKEN
                           {
 #ifdef HELP_FULLPARENTHESES_TEXT
@@ -2783,7 +2788,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for FULLPARENTHESES"
 #endif
 #endif
-                          }                 					              					       
+                          }
                       | MIDPOINTMODETOKEN
                           {
 #ifdef HELP_MIDPOINTMODE_TEXT
@@ -2816,7 +2821,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for RATIONALMODE"
 #endif
 #endif
-                          }                 	                 	
+                          }
                       | SUPPRESSWARNINGSTOKEN
                           {
 #ifdef HELP_ROUNDINGWARNINGS_TEXT
@@ -2827,7 +2832,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ROUNDINGWARNINGS"
 #endif
 #endif
-                          }                 						                 					       
+                          }
                       | HOPITALRECURSIONSTOKEN
                           {
 #ifdef HELP_HOPITALRECURSIONS_TEXT
@@ -2838,7 +2843,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for HOPITALRECURSIONS"
 #endif
 #endif
-                          }                 					             					       
+                          }
                       | ONTOKEN
                           {
 #ifdef HELP_ON_TEXT
@@ -2849,7 +2854,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ON"
 #endif
 #endif
-                          }                 					                           					       
+                          }
                       | OFFTOKEN
                           {
 #ifdef HELP_OFF_TEXT
@@ -2860,7 +2865,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for OFF"
 #endif
 #endif
-                          }                 					                          					       
+                          }
                       | DYADICTOKEN
                           {
 #ifdef HELP_DYADIC_TEXT
@@ -2871,7 +2876,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for DYADIC"
 #endif
 #endif
-                          }                 					             						       
+                          }
                       | POWERSTOKEN
                           {
 #ifdef HELP_POWERS_TEXT
@@ -2882,7 +2887,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for POWERS"
 #endif
 #endif
-                          }                 					                       					       
+                          }
                       | BINARYTOKEN
                           {
 #ifdef HELP_BINARY_TEXT
@@ -2893,7 +2898,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for BINARY"
 #endif
 #endif
-                          }                 					                       					       
+                          }
                       | HEXADECIMALTOKEN
                           {
 #ifdef HELP_HEXADECIMAL_TEXT
@@ -2904,7 +2909,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for HEXADECIMAL"
 #endif
 #endif
-                          }                 					                       					       
+                          }
                       | FILETOKEN
                           {
 #ifdef HELP_FILE_TEXT
@@ -2915,7 +2920,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for FILE"
 #endif
 #endif
-                          }                 					                         					       
+                          }
                       | POSTSCRIPTTOKEN
                           {
 #ifdef HELP_POSTSCRIPT_TEXT
@@ -2926,7 +2931,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for POSTSCRIPT"
 #endif
 #endif
-                          }                 					                   					       
+                          }
                       | POSTSCRIPTFILETOKEN
                           {
 #ifdef HELP_POSTSCRIPTFILE_TEXT
@@ -2937,7 +2942,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for POSTSCRIPTFILE"
 #endif
 #endif
-                          }                 					               					       
+                          }
                       | PERTURBTOKEN
                           {
 #ifdef HELP_PERTURB_TEXT
@@ -2948,7 +2953,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PERTURB"
 #endif
 #endif
-                          }                 					                      					       
+                          }
                       | MINUSWORDTOKEN
                           {
 #ifdef HELP_RD_TEXT
@@ -2959,7 +2964,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for RD"
 #endif
 #endif
-                          }                 					                    					       
+                          }
                       | PLUSWORDTOKEN
                           {
 #ifdef HELP_RU_TEXT
@@ -2970,7 +2975,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for RU"
 #endif
 #endif
-                          }                 					                     					       
+                          }
                       | ZEROWORDTOKEN
                           {
 #ifdef HELP_RZ_TEXT
@@ -2981,7 +2986,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for RZ"
 #endif
 #endif
-                          }                 					                     					       
+                          }
                       | NEARESTTOKEN
                           {
 #ifdef HELP_RN_TEXT
@@ -2992,7 +2997,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for RN"
 #endif
 #endif
-                          }                 					                      					       
+                          }
                       | HONORCOEFFPRECTOKEN
                           {
 #ifdef HELP_HONORCOEFFPREC_TEXT
@@ -3003,7 +3008,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for HONORCOEFFPREC"
 #endif
 #endif
-                          }                 					              					       
+                          }
                       | TRUETOKEN
                           {
 #ifdef HELP_TRUE_TEXT
@@ -3014,7 +3019,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for TRUE"
 #endif
 #endif
-                          }                 					             							       
+                          }
                       | FALSETOKEN
                           {
 #ifdef HELP_FALSE_TEXT
@@ -3025,7 +3030,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for FALSE"
 #endif
 #endif
-                          }                 					             							       
+                          }
                       | DEFAULTTOKEN
                           {
 #ifdef HELP_DEFAULT_TEXT
@@ -3036,7 +3041,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for DEFAULT"
 #endif
 #endif
-                          }                        											       
+                          }
                       | ABSOLUTETOKEN
                           {
 #ifdef HELP_ABSOLUTE_TEXT
@@ -3047,7 +3052,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ABSOLUTE"
 #endif
 #endif
-                          }                 					       
+                          }
                       | DECIMALTOKEN
                           {
 #ifdef HELP_DECIMAL_TEXT
@@ -3058,7 +3063,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for DECIMAL"
 #endif
 #endif
-                          }                 					       
+                          }
                       | RELATIVETOKEN
                           {
 #ifdef HELP_RELATIVE_TEXT
@@ -3091,7 +3096,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for FLOATING"
 #endif
 #endif
-                          }                 					       
+                          }
                       | ERRORTOKEN
                           {
 #ifdef HELP_ERROR_TEXT
@@ -3102,7 +3107,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ERROR"
 #endif
 #endif
-                          }                 					       
+                          }
                       | QUITTOKEN
                           {
 #ifdef HELP_QUIT_TEXT
@@ -3113,7 +3118,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for QUIT"
 #endif
 #endif
-                          }                 					                         					       
+                          }
                       | FALSEQUITTOKEN
                           {
 #ifdef HELP_QUIT_TEXT
@@ -3124,7 +3129,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for QUIT"
 #endif
 #endif
-                          }                 					             						       
+                          }
                       | RESTARTTOKEN
                           {
 #ifdef HELP_RESTART_TEXT
@@ -3135,7 +3140,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for RESTART"
 #endif
 #endif
-                          }                 					                      					       
+                          }
                       | LIBRARYTOKEN
                           {
 #ifdef HELP_LIBRARY_TEXT
@@ -3146,7 +3151,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for LIBRARY"
 #endif
 #endif
-                          }                 					                      					       
+                          }
                       | DIFFTOKEN
                           {
 #ifdef HELP_DIFF_TEXT
@@ -3157,7 +3162,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for DIFF"
 #endif
 #endif
-                          }                 					                         					       
+                          }
                       | SIMPLIFYTOKEN
                           {
 #ifdef HELP_SIMPLIFY_TEXT
@@ -3168,7 +3173,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for SIMPLIFY"
 #endif
 #endif
-                          }                 					             						       
+                          }
                       | REMEZTOKEN
                           {
 #ifdef HELP_REMEZ_TEXT
@@ -3179,7 +3184,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for REMEZ"
 #endif
 #endif
-                          }                 					                        					       
+                          }
                       | MINTOKEN
                           {
 #ifdef HELP_MIN_TEXT
@@ -3190,7 +3195,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for MIN"
 #endif
 #endif
-                          }                 					                        					       
+                          }
                       | MAXTOKEN
                           {
 #ifdef HELP_MAX_TEXT
@@ -3201,7 +3206,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for MAX"
 #endif
 #endif
-                          }                 					                        					       
+                          }
                       | FPMINIMAXTOKEN
                           {
 #ifdef HELP_FPMINIMAX_TEXT
@@ -3212,7 +3217,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for FPMINIMAX"
 #endif
 #endif
-                          }                 					                        					       
+                          }
                       | HORNERTOKEN
                           {
 #ifdef HELP_HORNER_TEXT
@@ -3223,7 +3228,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for HORNER"
 #endif
 #endif
-                          }                 					                       					       
+                          }
                       | EXPANDTOKEN
                           {
 #ifdef HELP_EXPAND_TEXT
@@ -3234,7 +3239,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for EXPAND"
 #endif
 #endif
-                          }                 					                       					       
+                          }
                       | SIMPLIFYSAFETOKEN
                           {
 #ifdef HELP_SIMPLIFYSAFE_TEXT
@@ -3245,7 +3250,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for SIMPLIFYSAFE"
 #endif
 #endif
-                          }                 					             						       
+                          }
                       | TAYLORTOKEN
                           {
 #ifdef HELP_TAYLOR_TEXT
@@ -3256,7 +3261,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for TAYLOR"
 #endif
 #endif
-                          }                 					                      					       
+                          }
                       | TAYLORFORMTOKEN
                           {
 #ifdef HELP_TAYLORFORM_TEXT
@@ -3267,7 +3272,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for TAYLORFORM"
 #endif
 #endif
-                          }                 					                      					       
+                          }
                       | AUTODIFFTOKEN
                           {
 #ifdef HELP_AUTODIFF_TEXT
@@ -3278,7 +3283,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for AUTODIFF"
 #endif
 #endif
-                          }                 					                      					       
+                          }
                       | DEGREETOKEN
                           {
 #ifdef HELP_DEGREE_TEXT
@@ -3289,7 +3294,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for DEGREE"
 #endif
 #endif
-                          }                 					                       					       
+                          }
                       | NUMERATORTOKEN
                           {
 #ifdef HELP_NUMERATOR_TEXT
@@ -3300,7 +3305,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for NUMERATOR"
 #endif
 #endif
-                          }                 					                    					       
+                          }
                       | DENOMINATORTOKEN
                           {
 #ifdef HELP_DENOMINATOR_TEXT
@@ -3311,7 +3316,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for DENOMINATOR"
 #endif
 #endif
-                          }                 					                  					       
+                          }
                       | SUBSTITUTETOKEN
                           {
 #ifdef HELP_SUBSTITUTE_TEXT
@@ -3322,7 +3327,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for SUBSTITUTE"
 #endif
 #endif
-                          }                 					                   					       
+                          }
                       | COEFFTOKEN
                           {
 #ifdef HELP_COEFF_TEXT
@@ -3333,7 +3338,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for COEFF"
 #endif
 #endif
-                          }                 					                        					       
+                          }
                       | SUBPOLYTOKEN
                           {
 #ifdef HELP_SUBPOLY_TEXT
@@ -3344,7 +3349,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for SUBPOLY"
 #endif
 #endif
-                          }                 					                      					       
+                          }
                       | ROUNDCOEFFICIENTSTOKEN
                           {
 #ifdef HELP_ROUNDCOEFFICIENTS_TEXT
@@ -3355,7 +3360,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ROUNDCOEFFICIENTS"
 #endif
 #endif
-                          }                 					              					       
+                          }
                       | RATIONALAPPROXTOKEN
                           {
 #ifdef HELP_RATIONALAPPROX_TEXT
@@ -3366,7 +3371,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for RATIONALAPPROX"
 #endif
 #endif
-                          }                 					               					       
+                          }
                       | ACCURATEINFNORMTOKEN
                           {
 #ifdef HELP_ACCURATEINFNORM_TEXT
@@ -3377,7 +3382,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ACCURATEINFNORM"
 #endif
 #endif
-                          }                 					               					       
+                          }
                       | ROUNDTOFORMATTOKEN
                           {
 #ifdef HELP_ROUND_TEXT
@@ -3388,7 +3393,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ROUND"
 #endif
 #endif
-                          }                 					                					       
+                          }
                       | EVALUATETOKEN
                           {
 #ifdef HELP_EVALUATE_TEXT
@@ -3399,7 +3404,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for EVALUATE"
 #endif
 #endif
-                          }                 					                     					       
+                          }
                       | LENGTHTOKEN
                           {
 #ifdef HELP_LENGTH_TEXT
@@ -3410,7 +3415,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for LENGTH"
 #endif
 #endif
-                          }                 					           
+                          }
                       | PARSETOKEN
                           {
 #ifdef HELP_PARSE_TEXT
@@ -3421,7 +3426,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PARSE"
 #endif
 #endif
-                          }                 					                        					       
+                          }
                       | PRINTTOKEN
                           {
 #ifdef HELP_PRINT_TEXT
@@ -3432,7 +3437,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PRINT"
 #endif
 #endif
-                          }                 					                        					       
+                          }
                       | PRINTXMLTOKEN
                           {
 #ifdef HELP_PRINTXML_TEXT
@@ -3443,7 +3448,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PRINTXML"
 #endif
 #endif
-                          }                 					                        					       
+                          }
                       | READXMLTOKEN
                           {
 #ifdef HELP_READXML_TEXT
@@ -3454,7 +3459,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for READXML"
 #endif
 #endif
-                          }                 					                        					       
+                          }
                       | PLOTTOKEN
                           {
 #ifdef HELP_PLOT_TEXT
@@ -3466,7 +3471,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PLOT"
 #endif
 #endif
-                          }                 					                         					       
+                          }
                       | PRINTHEXATOKEN
                           {
 #ifdef HELP_PRINTHEXA_TEXT
@@ -3477,7 +3482,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PRINTHEXA"
 #endif
 #endif
-                          }                 					       
+                          }
                       | PRINTFLOATTOKEN
                           {
 #ifdef HELP_PRINTFLOAT_TEXT
@@ -3488,7 +3493,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PRINTFLOAT"
 #endif
 #endif
-                          }                 					                    					       
+                          }
                       | PRINTBINARYTOKEN
                           {
 #ifdef HELP_PRINTBINARY_TEXT
@@ -3499,7 +3504,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PRINTBINARY"
 #endif
 #endif
-                          }                 					                  					       
+                          }
                       | PRINTEXPANSIONTOKEN
                           {
 #ifdef HELP_PRINTEXPANSION_TEXT
@@ -3510,7 +3515,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PRINTEXPANSION"
 #endif
 #endif
-                          }                 					               					       
+                          }
                       | BASHEXECUTETOKEN
                           {
 #ifdef HELP_BASHEXECUTE_TEXT
@@ -3521,7 +3526,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for BASHEXECUTE"
 #endif
 #endif
-                          }                 					                  					       
+                          }
                       | EXTERNALPLOTTOKEN
                           {
 #ifdef HELP_EXTERNALPLOT_TEXT
@@ -3532,7 +3537,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for EXTERNALPLOT"
 #endif
 #endif
-                          }                 					                 					       
+                          }
                       | WRITETOKEN
                           {
 #ifdef HELP_WRITE_TEXT
@@ -3543,7 +3548,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for WRITE"
 #endif
 #endif
-                          }                 					                        					       
+                          }
                       | ASCIIPLOTTOKEN
                           {
 #ifdef HELP_ASCIIPLOT_TEXT
@@ -3554,7 +3559,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ASCIIPLOT"
 #endif
 #endif
-                          }                 					               
+                          }
                       | RENAMETOKEN
                           {
 #ifdef HELP_RENAME_TEXT
@@ -3565,7 +3570,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for RENAME"
 #endif
 #endif
-                          }                 					       
+                          }
                       | INFNORMTOKEN
                           {
 #ifdef HELP_INFNORM_TEXT
@@ -3576,7 +3581,18 @@ help:                   CONSTANTTOKEN
 #warning "No help text for INFNORM"
 #endif
 #endif
-                          }                 					                      					       
+                          }
+                      | SUPNORMTOKEN
+                          {
+#ifdef HELP_SUPNORM_TEXT
+			    outputMode(); sollyaPrintf(HELP_SUPNORM_TEXT);
+#else
+			    outputMode(); sollyaPrintf("Validated supremum norm: supnorm(poly,func,range,mode).\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for SUPNORM"
+#endif
+#endif
+                          }
                       | FINDZEROSTOKEN
                           {
 #ifdef HELP_FINDZEROS_TEXT
@@ -3587,7 +3603,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for FINDZEROS"
 #endif
 #endif
-                          }                 					                    					       
+                          }
                       | FPFINDZEROSTOKEN
                           {
 #ifdef HELP_FPFINDZEROS_TEXT
@@ -3598,7 +3614,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for FPFINDZEROS"
 #endif
 #endif
-                          }                 					                  					       
+                          }
                       | DIRTYINFNORMTOKEN
                           {
 #ifdef HELP_DIRTYINFNORM_TEXT
@@ -3609,7 +3625,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for DIRTYINFNORM"
 #endif
 #endif
-                          }                 					                 					       
+                          }
                       | NUMBERROOTSTOKEN
                           {
 #ifdef HELP_NUMBERROOTS_TEXT
@@ -3617,7 +3633,7 @@ help:                   CONSTANTTOKEN
 #else
 			    outputMode(); sollyaPrintf("Computes the number of real roots of a polynomial on a domain.\n");
 #endif
-                          }                 					                 					       
+                          }
                       | INTEGRALTOKEN
                           {
 #ifdef HELP_INTEGRAL_TEXT
@@ -3628,7 +3644,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for INTEGRAL"
 #endif
 #endif
-                          }                 					                     					       
+                          }
                       | DIRTYINTEGRALTOKEN
                           {
 #ifdef HELP_DIRTYINTEGRAL_TEXT
@@ -3639,7 +3655,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for DIRTYINTEGRAL"
 #endif
 #endif
-                          }                 					             						       
+                          }
                       | WORSTCASETOKEN
                           {
 #ifdef HELP_WORSTCASE_TEXT
@@ -3650,7 +3666,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for WORSTCASE"
 #endif
 #endif
-                          }                 					                    					       
+                          }
                       | IMPLEMENTPOLYTOKEN
                           {
 #ifdef HELP_IMPLEMENTPOLY_TEXT
@@ -3662,7 +3678,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for IMPLEMENTPOLY"
 #endif
 #endif
-                          }                 					             						       
+                          }
                       | CHECKINFNORMTOKEN
                           {
 #ifdef HELP_CHECKINFNORM_TEXT
@@ -3673,7 +3689,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for CHECKINFNORM"
 #endif
 #endif
-                          }                 					                 					       
+                          }
                       | ZERODENOMINATORSTOKEN
                           {
 #ifdef HELP_ZERODENOMINATORS_TEXT
@@ -3684,7 +3700,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ZERODENOMINATORS"
 #endif
 #endif
-                          }                 					             					       
+                          }
                       | ISEVALUABLETOKEN
                           {
 #ifdef HELP_ISEVALUABLE_TEXT
@@ -3695,7 +3711,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ISEVALUABLE"
 #endif
 #endif
-                          }                 					                  					       
+                          }
                       | SEARCHGALTOKEN
                           {
 #ifdef HELP_SEARCHGAL_TEXT
@@ -3706,7 +3722,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for SEARCHGAL"
 #endif
 #endif
-                          }                 					                    					       
+                          }
                       | GUESSDEGREETOKEN
                           {
 #ifdef HELP_GUESSDEGREE_TEXT
@@ -3717,7 +3733,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for GUESSDEGREE"
 #endif
 #endif
-                          }                 					                  					       
+                          }
                       | DIRTYFINDZEROSTOKEN
                           {
 #ifdef HELP_DIRTYFINDZEROS_TEXT
@@ -3728,23 +3744,23 @@ help:                   CONSTANTTOKEN
 #warning "No help text for DIRTYFINDZEROS"
 #endif
 #endif
-                          }                 					               					       
+                          }
                       | IFTOKEN
                           {
 			    outputMode(); sollyaPrintf("If construct: if condition then command or if condition then command else command.\n");
-                          }                 					             							       
+                          }
                       | THENTOKEN
                           {
 			    outputMode(); sollyaPrintf("If construct: if condition then command or if condition then command else command.\n");
-                          }                 					             							       
+                          }
                       | ELSETOKEN
                           {
 			    outputMode(); sollyaPrintf("If construct: if condition then command else command\n");
-                          }                 					             							       
+                          }
                       | FORTOKEN
                           {
 			    outputMode(); sollyaPrintf("For construct: for i from const to const2 [by const3] do command\nor for i in list do command.\n");
-                          }                 					             							       
+                          }
                       | INTOKEN
                           {
 #ifdef HELP_IN_TEXT
@@ -3755,36 +3771,36 @@ help:                   CONSTANTTOKEN
 #warning "No help text for IN"
 #endif
 #endif
-                          }                 					               					       			       
+                          }
                       | FROMTOKEN
                           {
 			    outputMode(); sollyaPrintf("For construct: for i from const to const2 [by const3] do command.\n");
-                          }                 					             							       
+                          }
                       | TOTOKEN
                           {
 			    outputMode(); sollyaPrintf("For construct: for i from const to const2 [by const3] do command.\n");
-                          }                 					             							       
+                          }
                       | BYTOKEN
                           {
 			    outputMode(); sollyaPrintf("For construct: for i from const to const2 by const3 do command.\n");
-                          }                 					             							       
+                          }
                       | DOTOKEN
                           {
 			    outputMode(); sollyaPrintf("For construct: for i from const to const2 [by const3] do command.\n");
 			    outputMode(); sollyaPrintf("While construct: while condition do command.\n");
-                          }                 					             							       
+                          }
                       | BEGINTOKEN
                           {
 			    outputMode(); sollyaPrintf("Begin-end construct: begin command; command; ... end.\n");
-                          }                 					             							       
+                          }
                       | ENDTOKEN
                           {
 			    outputMode(); sollyaPrintf("Begin-end construct: begin command; command; ... end.\n");
-                          }                 					             							       
+                          }
                       | WHILETOKEN
                           {
 			    outputMode(); sollyaPrintf("While construct: while condition do command.\n");
-                          }                 					       
+                          }
                       | INFTOKEN
                           {
 #ifdef HELP_INF_TEXT
@@ -3795,7 +3811,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for INF"
 #endif
 #endif
-                          }                 					       
+                          }
                       | MIDTOKEN
                           {
 #ifdef HELP_MID_TEXT
@@ -3806,7 +3822,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for MID"
 #endif
 #endif
-                          }                 					       
+                          }
                       | SUPTOKEN
                           {
 #ifdef HELP_SUP_TEXT
@@ -3817,7 +3833,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for SUP"
 #endif
 #endif
-                          }                 					       
+                          }
                       | EXPONENTTOKEN
                           {
 #ifdef HELP_EXPONENT_TEXT
@@ -3828,7 +3844,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for EXPONENT"
 #endif
 #endif
-                          }                 					       
+                          }
                       | MANTISSATOKEN
                           {
 #ifdef HELP_MANTISSA_TEXT
@@ -3839,7 +3855,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for MANTISSA"
 #endif
 #endif
-                          }                 					       
+                          }
                       | PRECISIONTOKEN
                           {
 #ifdef HELP_PRECISION_TEXT
@@ -3850,7 +3866,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PRECISION"
 #endif
 #endif
-                          }                 					       
+                          }
                       | EXECUTETOKEN
                           {
 #ifdef HELP_EXECUTE_TEXT
@@ -3861,7 +3877,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for EXECUTE"
 #endif
 #endif
-                          }                 					       
+                          }
                       | ISBOUNDTOKEN
                           {
 #ifdef HELP_ISBOUND_TEXT
@@ -3872,11 +3888,11 @@ help:                   CONSTANTTOKEN
 #warning "No help text for ISBOUND"
 #endif
 #endif
-                          }                 					       
-                      | VERSIONTOKEN 
+                          }
+                      | VERSIONTOKEN
                           {
 			    outputMode(); sollyaPrintf("Prints the version of the software.\n");
-                          }                 					       
+                          }
                       | EXTERNALPROCTOKEN                          {
 #ifdef HELP_EXTERNALPROC_TEXT
 			    outputMode(); sollyaPrintf(HELP_EXTERNALPROC_TEXT);
@@ -3886,7 +3902,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for EXTERNALPROC"
 #endif
 #endif
-                          }                 					           
+                          }
                       | VOIDTOKEN                          {
 #ifdef HELP_VOID_TEXT
 			    outputMode(); sollyaPrintf(HELP_VOID_TEXT);
@@ -3896,7 +3912,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for VOID"
 #endif
 #endif
-                          }                 					       
+                          }
                       | CONSTANTTYPETOKEN                          {
 #ifdef HELP_CONSTANT_TEXT
 			    outputMode(); sollyaPrintf(HELP_CONSTANT_TEXT);
@@ -3906,7 +3922,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for CONSTANT"
 #endif
 #endif
-                          }                 					       
+                          }
                       | FUNCTIONTOKEN                          {
 #ifdef HELP_FUNCTION_TEXT
 			    outputMode(); sollyaPrintf(HELP_FUNCTION_TEXT);
@@ -3916,7 +3932,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for FUNCTION"
 #endif
 #endif
-                          }                 					       
+                          }
                       | RANGETOKEN                          {
 #ifdef HELP_RANGE_TEXT
 			    outputMode(); sollyaPrintf(HELP_RANGE_TEXT);
@@ -3926,7 +3942,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for RANGE"
 #endif
 #endif
-                          }                 					       
+                          }
                       | INTEGERTOKEN                          {
 #ifdef HELP_INTEGER_TEXT
 			    outputMode(); sollyaPrintf(HELP_INTEGER_TEXT);
@@ -3936,7 +3952,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for INTEGER"
 #endif
 #endif
-                          }                 					       
+                          }
                       | STRINGTYPETOKEN                          {
 #ifdef HELP_STRING_TEXT
 			    outputMode(); sollyaPrintf(HELP_STRING_TEXT);
@@ -3946,7 +3962,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for STRING"
 #endif
 #endif
-                          }                 					       
+                          }
                       | BOOLEANTOKEN                          {
 #ifdef HELP_BOOLEAN_TEXT
 			    outputMode(); sollyaPrintf(HELP_BOOLEAN_TEXT);
@@ -3956,7 +3972,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for BOOLEAN"
 #endif
 #endif
-                          }                 					       
+                          }
                       | LISTTOKEN                          {
 #ifdef HELP_LISTOF_TEXT
 			    outputMode(); sollyaPrintf(HELP_LISTOF_TEXT);
@@ -3966,7 +3982,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for LISTOF"
 #endif
 #endif
-                          }                 					       
+                          }
                       | OFTOKEN                          {
 #ifdef HELP_LISTOF_TEXT
 			    outputMode(); sollyaPrintf(HELP_LISTOF_TEXT);
@@ -3976,7 +3992,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for LISTOF"
 #endif
 #endif
-                          }                 					       
+                          }
                       | VARTOKEN                          {
 #ifdef HELP_VAR_TEXT
 			    outputMode(); sollyaPrintf(HELP_VAR_TEXT);
@@ -3986,7 +4002,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for VAR"
 #endif
 #endif
-                          }                 					       
+                          }
                       | NOPTOKEN                          {
 #ifdef HELP_NOP_TEXT
 			    outputMode(); sollyaPrintf(HELP_NOP_TEXT);
@@ -3996,7 +4012,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for NOP"
 #endif
 #endif
-                          }                 		
+                          }
                       | PROCTOKEN                          {
 #ifdef HELP_PROC_TEXT
 			    outputMode(); sollyaPrintf(HELP_PROC_TEXT);
@@ -4006,7 +4022,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PROC"
 #endif
 #endif
-                          }                 					       			       
+                          }
                       | PROCEDURETOKEN                     {
 #ifdef HELP_PROCEDURE_TEXT
 			    outputMode(); sollyaPrintf(HELP_PROCEDURE_TEXT);
@@ -4016,7 +4032,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for PROCEDURE"
 #endif
 #endif
-                          }                 	
+                          }
                       | RETURNTOKEN                     {
 #ifdef HELP_RETURN_TEXT
 			    outputMode(); sollyaPrintf(HELP_RETURN_TEXT);
@@ -4026,7 +4042,7 @@ help:                   CONSTANTTOKEN
 #warning "No help text for RETURN"
 #endif
 #endif
-                          }                 					       			       
+                          }
                       | HELPTOKEN
                           {
 			    outputMode(); sollyaPrintf("Type \"help <keyword>;\" for help on the keyword <keyword>.\nFor example type \"help implementpoly;\" for help on the command \"implementpoly\".\n\n");
@@ -4242,7 +4258,7 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- }\n");
 			    sollyaPrintf("- ~\n");
 			    sollyaPrintf("\n");
-                          }                                                           
+                          }
 ;
 
 

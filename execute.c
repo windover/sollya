@@ -3,11 +3,14 @@
 Copyright 2007-2010 by 
 
 Laboratoire de l'Informatique du Parallélisme, 
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
-
-and by
+UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
 LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
+
+and
+
+Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
 
 Contributors Ch. Lauter, S. Chevillard
 
@@ -76,6 +79,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "implement.h"
 #include "taylor.h"
 #include "taylorform.h"
+#include "supnorm.h"
 #include "xml.h"
 #include "miniparser.h"
 #include <setjmp.h>
@@ -950,6 +954,9 @@ node *copyThing(node *tree) {
   case INFNORM:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     break; 			
+  case SUPNORM:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+    break; 			
   case FINDZEROS:
     copy->child1 = copyThing(tree->child1);
     copy->child2 = copyThing(tree->child2);
@@ -1702,6 +1709,9 @@ char *getTimingStringForThing(node *tree) {
     break; 			 	
   case INFNORM:
     constString = "computing an infinity norm";
+    break; 			
+  case SUPNORM:
+    constString = "computing a supremum norm";
     break; 			
   case FINDZEROS:
     constString = "bounding zeros";
@@ -4431,6 +4441,16 @@ char *sRawPrintThing(node *tree) {
     break; 			 	
   case INFNORM:
     res = newString("infnorm(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
+    break; 			
+  case SUPNORM:
+    res = newString("supnorm(");
     curr = tree->arguments;
     while (curr != NULL) {
       res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
@@ -9313,6 +9333,17 @@ node *makeInfnorm(chain *thinglist) {
 
 }
 
+node *makeSupnorm(chain *thinglist) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = SUPNORM;
+  res->arguments = thinglist;
+
+  return res;
+
+}
+
 node *makeFindZeros(node *thing1, node *thing2) {
   node *res;
 
@@ -10620,6 +10651,10 @@ void freeThing(node *tree) {
     freeChain(tree->arguments, freeThingOnVoid);
     free(tree);
     break; 			
+  case SUPNORM:
+    freeChain(tree->arguments, freeThingOnVoid);
+    free(tree);
+    break; 			
   case FINDZEROS:
     freeThing(tree->child1);
     freeThing(tree->child2);
@@ -11426,6 +11461,9 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 			 	
   case INFNORM:
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
+    break; 			
+  case SUPNORM:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
     break; 			
   case FINDZEROS:
@@ -17057,6 +17095,9 @@ node *evaluateThingInner(node *tree) {
       mpfr_clear(b);
     } 
     break; 			
+  case SUPNORM:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+    break;
   case FINDZEROS:
     copy->child1 = evaluateThingInner(tree->child1);
     copy->child2 = evaluateThingInner(tree->child2);

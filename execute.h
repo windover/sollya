@@ -5,6 +5,11 @@ Copyright 2007-2010 by
 Laboratoire de l'Informatique du Parallélisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
+and
+
+Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
+
 Contributors Ch. Lauter, S. Chevillard
 
 christoph.lauter@ens-lyon.org
@@ -262,6 +267,7 @@ extern void endBuffer(void);
 #define AUTODIFF 252
 #define MIN 253
 #define MAX 254
+#define SUPNORM 255
 
 
 int executeCommand(node *);
@@ -426,6 +432,7 @@ node *makeRoundToFormat(node *thing1, node *thing2, node *thing3);
 node *makeEvaluate(node *thing1, node *thing2);
 node *makeParse(node *thing);
 node *makeInfnorm(chain *thinglist);
+node *makeSupnorm(chain *thinglist);
 node *makeFindZeros(node *thing1, node *thing2);
 node *makeFPFindZeros(node *thing1, node *thing2);
 node *makeDirtyInfnorm(node *thing1, node *thing2);

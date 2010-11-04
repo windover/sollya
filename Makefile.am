@@ -63,6 +63,8 @@ taylor.c \
 taylor.h \
 taylorform.c \
 taylorform.h \
+supnorm.c \
+supnorm.h \
 sturm.c \
 sturm.h \
 worstcase.c \
@@ -120,6 +122,8 @@ remez.c \
 remez.h \
 taylorform.c \
 taylorform.h \
+supnorm.c \
+supnorm.h \
 sturm.c \
 sturm.h \
 taylor.c \
