@@ -64,16 +64,30 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "general.h"
 #include "infnorm.h"
 
-#define SUPNORM_NO_ERROR                       0
-#define SUPNORM_SOME_ERROR                    -1
-#define SUPNORM_NO_TAYLOR                      1
-#define SUPNORM_NOT_ENOUGH_WORKING_PRECISION   2
 /* Add error codes here as needed. 
 
    When adding error codes, add warning messages below (in
    supremumNormBisect()).
 
 */
+#define SUPNORM_NO_ERROR                       0
+#define SUPNORM_SOME_ERROR                    -1
+#define SUPNORM_NO_TAYLOR                      1
+#define SUPNORM_NOT_ENOUGH_WORKING_PRECISION   2
+#define SUPNORM_SINGULARITY_NOT_REMOVED        3
+
+/* General remark:
+
+   We will not handle removable singularities inside the expression
+   tree for func right now. However, as we might in the future, it
+   might be good idea not to use the Taylor form functions from
+   taylorform.h directly but to wrap them into a function, which, in
+   the future, may take an additional mpfr_t * argument. This argument
+   would indicate: if NULL, no singularity is expected, otherwise it
+   is expected in that point.
+
+ */
+
 
 /* Compute the supremum norm on eps = p - f over dom
 
@@ -107,6 +121,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
    global bisection will be performed at the midpoint of dom. This
    means: if you just want default behavior for the bisection (in the
    midpoint), then do not touch bisectPoint.
+
+   To begin with, we do not care about removable singularities in the
+   expression of func. In such a case, the absolute supnorm may simply
+   fail for now.
 
 */
 int supnormAbsolute(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom, mpfr_t accuracy, mp_prec_t prec, mpfr_t bisectPoint) {
@@ -156,6 +174,17 @@ int supnormAbsolute(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t 
    use of void evaluateInterval(sollya_mpfi_t y, node *func, node
    *deriv, sollya_mpfi_t x); comes handy here (remark that deriv may
    be set to NULL).
+
+   To begin with, we do not care about removable singularities in the
+   expression of func. In such a case, the relative supnorm may simply
+   fail for now.
+
+   However, removable singularities in poly/func must be detected
+   (after a fast check if there aren't any) and overcome. This must
+   work for cases when there is one singularity in dom, though. If
+   there are several singularities, bisection will eventually split
+   the interval. If appropriate set bisectPoint to something
+   reasonable. 
 
 */
 int supnormRelative(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom, mpfr_t accuracy, mp_prec_t prec, mpfr_t bisectPoint) {
@@ -403,6 +432,9 @@ int supremumNormBisect(sollya_mpfi_t result, node *poly, node *func, mpfr_t a, m
     break;
   case SUPNORM_NOT_ENOUGH_WORKING_PRECISION:
     printMessage(1,"Warning: during supnorm computation, no result could be found as the working precision seems to be too low.\n");
+    break;
+  case SUPNORM_SINGULARITY_NOT_REMOVED:
+    printMessage(1,"Warning: during supnorm computation, a singularity in the expression tree could not be removed.\n");
     break;
   default:
     printMessage(1,"Warning: during supnorm computation, some generic error occured. No further description is available.\n");
