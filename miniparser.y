@@ -1481,9 +1481,9 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeInfnorm(addElement($5, $3));
 			  }
-                      | SUPNORMTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing RPARTOKEN
+                      | SUPNORMTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing RPARTOKEN
                           {
-			    $$ = makeSupnorm(addElement(addElement(addElement(addElement(NULL,$9),$7),$5),$3));
+			    $$ = makeSupnorm(addElement(addElement(addElement(addElement(addElement(NULL,$11),$9),$7),$5),$3));
 			  }
                       | FINDZEROSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {

@@ -12641,7 +12641,7 @@ node *evaluateThingInner(node *tree) {
   int resA, resB, i, resC, resD, resE, resF;
   char *tempString, *tempString2, *timingString, *tempString3, *tempString4, *tempString5;
   char *str1, *str2, *str3;
-  mpfr_t a, b, c, d;
+  mpfr_t a, b, c, d, e;
   chain *tempChain, *curr, *newChain, *tempChain2, *tempChain3, *curr2, *tempChain4;
   rangetype yrange, xrange, yrange2;
   node *firstArg, *secondArg, *thirdArg, *fourthArg, *fifthArg, *sixthArg, *seventhArg, *eighthArg;
@@ -12657,6 +12657,8 @@ node *evaluateThingInner(node *tree) {
   sollya_mpfi_t *tmpInterv11;
   mpfr_t bb,cc;
   sollya_mpfi_t tempIA2;
+  unsigned int tempUI;
+
   if (tree == NULL) return NULL;
 
   timingString = NULL;
@@ -17097,6 +17099,74 @@ node *evaluateThingInner(node *tree) {
     break; 			
   case SUPNORM:
     copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+    /* supnorm(poly,func,range,mode,accuracy) 
+       The parser ensures that we have exactly five arguments
+    */
+    curr = copy->arguments;
+    firstArg = (node *) (curr->value);
+    curr = curr->next;
+    secondArg = (node *) (curr->value);
+    curr = curr->next;
+    thirdArg = (node *) (curr->value);
+    curr = curr->next;
+    fourthArg = (node *) (curr->value);
+    curr = curr->next;
+    fifthArg = (node *) (curr->value);
+    if (isPureTree(firstArg) &&
+	isPureTree(secondArg) &&
+	isPureTree(fifthArg) &&
+	isRange(thirdArg) &&
+	isExternalPlotMode(fourthArg)) {
+      if (isConstant(fifthArg)) {
+	mpfr_init2(a,tools_precision);
+	mpfr_init2(b,tools_precision);
+	if (evaluateThingToRange(a,b,thirdArg)) {
+	  mpfr_init2(c,tools_precision);
+	  if (evaluateThingToConstant(c,fifthArg,NULL,0)) {
+	    if (evaluateThingToExternalPlotMode(&resA, fourthArg, NULL)) {
+	      pTemp = mpfr_get_prec(a);
+	      pTemp2 = mpfr_get_prec(b);
+	      if (pTemp2 > pTemp) pTemp = pTemp2;
+	      sollya_mpfi_init2(tempIA,pTemp2);
+	      sollya_mpfi_interv_fr(tempIA,a,b);
+	      mpfr_init2(bb,8 * sizeof(mp_prec_t) + 10);
+	      mpfr_abs(bb,c,GMP_RNDN);
+	      mpfr_log2(bb,bb,GMP_RNDN);
+	      mpfr_floor(bb,bb);
+	      mpfr_neg(bb,bb,GMP_RNDN);
+	      tempUI = mpfr_get_ui(bb,GMP_RNDN);
+	      tempUI += 10;
+	      if ((tempUI < tools_precision) || (tempUI > 2048 * tools_precision)) pTemp = tools_precision + 10; else pTemp = tempUI;
+	      sollya_mpfi_init2(tempIB,pTemp);
+	      resB = supremumnorm(tempIB, firstArg, secondArg, tempIA, (resA == ABSOLUTE) ? 0 : 1, c);
+	      if (resB) {
+		pTemp = sollya_mpfi_get_prec(tempIB);
+		mpfr_init2(d,pTemp);
+		mpfr_init2(e,pTemp);
+		sollya_mpfi_get_left(d,tempIB);
+		sollya_mpfi_get_right(e,tempIB);
+		tempNode = makeRange(makeConstant(d),makeConstant(e));
+		freeThing(copy);
+		copy = tempNode;
+		mpfr_clear(d);
+		mpfr_clear(e);
+	      } else {
+		printMessage(1,"Warning: the supremum norm on the error function between the given polynomial and the given function could not be computed.\n");
+		considerDyingOnError();
+		tempNode = makeError();
+		freeThing(copy);
+		copy = tempNode;
+	      }
+	      sollya_mpfi_clear(tempIA);
+	      sollya_mpfi_clear(tempIB);
+	    }
+	  }
+	  mpfr_clear(c);
+	}
+	mpfr_clear(a);
+	mpfr_clear(b);
+      }
+    }
     break;
   case FINDZEROS:
     copy->child1 = evaluateThingInner(tree->child1);

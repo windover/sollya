@@ -1539,9 +1539,9 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeInfnorm(addElement($5, $3));
 			  }
-                      | SUPNORMTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing RPARTOKEN
+                      | SUPNORMTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing COMMATOKEN thing RPARTOKEN
                           {
-			    $$ = makeSupnorm(addElement(addElement(addElement(addElement(NULL,$9),$7),$5),$3));
+			    $$ = makeSupnorm(addElement(addElement(addElement(addElement(addElement(NULL,$11),$9),$7),$5),$3));
 			  }
                       | FINDZEROSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
@@ -3587,7 +3587,7 @@ help:                   CONSTANTTOKEN
 #ifdef HELP_SUPNORM_TEXT
 			    outputMode(); sollyaPrintf(HELP_SUPNORM_TEXT);
 #else
-			    outputMode(); sollyaPrintf("Validated supremum norm: supnorm(poly,func,range,mode).\n");
+			    outputMode(); sollyaPrintf("Validated supremum norm: supnorm(poly,func,range,mode,accuracy).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for SUPNORM"
 #endif

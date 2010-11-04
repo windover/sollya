@@ -64,7 +64,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "chain.h"
 #include "sturm.h"
 
-int supremumnorm(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom, int mode);
+int supremumnorm(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom, int mode, mpfr_t accuracy);
 
 
 #endif /* SUPNORM_H */
