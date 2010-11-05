@@ -17266,7 +17266,7 @@ node *evaluateThingInner(node *tree) {
         sollya_mpfi_init2(tempIA,tools_precision);
         sollya_mpfi_interv_fr(tempIA,a,b);
 	if (timingString != NULL) pushTimeCounter(); 
-	resA = getNrRoots(c, copy->child1, tempIA);
+	resA = getNrRoots(c, copy->child1, tempIA, tools_precision);
 	if (timingString != NULL) popTimeCounter(timingString);
         sollya_mpfi_clear(tempIA);
         if (resA) {

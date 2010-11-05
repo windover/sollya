@@ -53,7 +53,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "mpfi-compat.h"
 #include "expression.h"
 
-int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range);
+int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t prec);
 
 
 #endif /* ifdef STURM_H*/

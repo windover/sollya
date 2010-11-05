@@ -65,7 +65,7 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, sollya_mpfi_t x);
 int polynomialDivide_mpq(mpq_t *quotient, int *quotient_degree, mpq_t *rest, int *rest_degree, mpq_t *p, int p_degree, mpq_t *q, int q_degree) ;
 int polynomialDeriv_mpq(mpq_t **derivCoeff, int *deriv_degree, mpq_t *p, int p_degree);
 int polynomialEval_mpq( mpq_t *res, mpq_t x, mpq_t *p, int p_degree);
-int sturm_mpfi(int *n, mpq_t *p, int p_degree, sollya_mpfi_t x);
+int sturm_mpfi(int *n, mpq_t *p, int p_degree, sollya_mpfi_t x, mp_prec_t precision);
 int polynomialDivide_mpfi(sollya_mpfi_t *quotient, int *quotient_degree, sollya_mpfi_t *rest, int *rest_degree, sollya_mpfi_t *p, int p_degree, sollya_mpfi_t *q, int q_degree, mp_prec_t prec) ;
 int polynomialDeriv_mpfi(sollya_mpfi_t **derivCoeff, int *deriv_degree, sollya_mpfi_t *p, int p_degree, mp_prec_t prec);
 int polynomialEval_mpfi( sollya_mpfi_t *res, sollya_mpfi_t x, sollya_mpfi_t *p, int p_degree);
@@ -442,7 +442,7 @@ int polynomialDivide_mpfi(sollya_mpfi_t *quotient, int *quotient_degree, sollya_
   return okay;
 }  
 
-int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, sollya_mpfi_t x){
+int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, sollya_mpfi_t x, mp_prec_t precision){
   sollya_mpfi_t *quotient, *rest, *dp;
   int quotient_degree, rest_degree, dp_degree;
   sollya_mpfi_t *evalResA;
@@ -462,7 +462,7 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, sollya_mpfi_t x){
 
   resultat = 1;
 
-  prec = getToolPrecision();
+  prec = precision;
   for (i=0;i<=p_degree;i++) {
     tempprec = getMpzPrecision(mpq_numref(pMpq[i])) + 10;
     if (tempprec > prec) prec = tempprec;
@@ -642,7 +642,7 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, sollya_mpfi_t x){
 }
 
 
-int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range) {
+int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t precision) {
   sollya_mpfi_t x;
   int degree,i,nr;
   node **coefficients;
@@ -664,7 +664,7 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range) {
       return 0;
   }
 
-  prec=getToolPrecision();
+  prec=precision;
   
   sollya_mpfi_init2(x, sollya_mpfi_get_prec(range));
   sollya_mpfi_set(x, range);
@@ -740,7 +740,7 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range) {
   for(deg = degree; deg >= 0 && (mpq_sgn(qCoefficients[deg]) == 0); deg--); 
 
   if (deg >= 0) {
-    resMpfi = sturm_mpfi(&nr, qCoefficients, deg,x);
+    resMpfi = sturm_mpfi(&nr, qCoefficients, deg,x,precision);
     if (!resMpfi) {
       printMessage(1,"Warning: using slower GMP MPQ version\n");
       sturm_mpq(&nr, qCoefficients, deg,x);

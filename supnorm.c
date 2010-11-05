@@ -55,6 +55,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "mpfi-compat.h"
 #include "execute.h"
 #include <stdio.h> 
+#include <stdlib.h>
 #include "expression.h"
 #include "infnorm.h"
 #include "autodiff.h"
@@ -75,18 +76,212 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #define SUPNORM_NO_TAYLOR                      1
 #define SUPNORM_NOT_ENOUGH_WORKING_PRECISION   2
 #define SUPNORM_SINGULARITY_NOT_REMOVED        3
+#define SUPNORM_COULD_NOT_SHOW_POSITIVITY      4
 
-/* General remark:
+/* General remarks:
 
-   We will not handle removable singularities inside the expression
-   tree for func right now. However, as we might in the future, it
-   might be good idea not to use the Taylor form functions from
-   taylorform.h directly but to wrap them into a function, which, in
-   the future, may take an additional mpfr_t * argument. This argument
-   would indicate: if NULL, no singularity is expected, otherwise it
-   is expected in that point.
+   (i) We will not handle removable singularities inside the
+   expression tree for func right now. However, as we might in the
+   future, it might be good idea not to use the Taylor form functions
+   from taylorform.h directly but to wrap them into a function, which,
+   in the future, may take these singularities into account.
+
+   (ii) Do not use getToolPrecision(). Use the precision given in
+   argument to the functions and propagate it as needed. Or: perform
+   exact operations that determine their precision on their own.
+
+   (iii) List of functions that might come handy:
+
+   - node* addPolynomialsExactly(node *p1, node *p2)
+   - node* subPolynomialsExactly(node *p1, node *p2)
+   - node* scalePolynomialExactly(node *poly, mpfr_t scale)
+   - int showPositivity(node * poly, sollya_mpfi_t dom, mp_prec_t prec)
+   - void evaluateInterval(sollya_mpfi_t y, node *func, node *deriv, sollya_mpfi_t x)
+     (remark that deriv may be set to NULL if it is not known)
+   - void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec)
+     (that's dirtyinfnorm)
+   - void taylorform(node **T, chain **errors, sollya_mpfi_t **delta,
+		node *f, int n, sollya_mpfi_t *x0, sollya_mpfi_t *d, int mode)
+   - ...
 
  */
+
+
+/* Exactly add two polynomials
+
+   For each monomial degree do:
+
+   In the case when both monomials are floating-point numbers,
+   return a monomial that is a floating-point number.
+
+   In the case when one of the monomials is a ratio of two
+   floating-point numbers and the other is a floating-point number or
+   a ratio of floating-point numbers, return a ratio of floating-point
+   numbers.
+
+   Otherwise, return a monomial representing the sum of the two
+   expressions.
+
+   This version is a first, crude version. We can do better if need
+   be.
+*/
+node *addPolynomialsExactly(node *p1, node *p2) {
+  node *temp, *res, *temp2;
+
+  if (!(isPolynomial(p1) && isPolynomial(p2))) {
+    temp = makeAdd(copyTree(p1),copyTree(p2));
+    res = simplifyTreeErrorfree(temp);
+    free_memory(temp);
+    return res;
+  }
+
+  /* Here, we know that we have polynomials */
+  temp = makeAdd(copyTree(p1),copyTree(p2));
+  temp2 = horner(temp);
+  res = simplifyRationalErrorfree(temp2);
+  free_memory(temp);
+  free_memory(temp2);
+
+  return res;
+}
+
+/* Exactly subtract two polynomials
+
+   For each monomial degree do:
+
+   In the case when both monomials are floating-point numbers,
+   return a monomial that is a floating-point number.
+
+   In the case when one of the monomials is a ratio of two
+   floating-point numbers and the other is a floating-point number or
+   a ratio of floating-point numbers, return a ratio of floating-point
+   numbers.
+
+   Otherwise, return a monomial representing the sum of the two
+   expressions.
+
+   This version is a first, crude version. We can do better if need
+   be.
+*/
+node *subPolynomialsExactly(node *p1, node *p2) {
+  node *temp, *res, *temp2;
+
+  if (!(isPolynomial(p1) && isPolynomial(p2))) {
+    temp = makeSub(copyTree(p1),copyTree(p2));
+    res = simplifyTreeErrorfree(temp);
+    free_memory(temp);
+    return res;
+  }
+
+  /* Here, we know that we have polynomials */
+  temp = makeSub(copyTree(p1),copyTree(p2));
+  temp2 = horner(temp);
+  res = simplifyRationalErrorfree(temp2);
+  free_memory(temp);
+  free_memory(temp2);
+
+  return res;
+}
+
+/* Exactly scale a polynomials
+
+   Return sum (s * c_i) * x^i for s and p(x) = sum c_i * x^i 
+
+   Wherever possible (even when more precision is needed), simplify
+   the expressions s * c_i in the monomials.
+
+   This version is a first, crude version. We can do better if need
+   be.
+*/
+node *scalePolynomialExactly(node *poly, mpfr_t scale) {
+  node *temp, *res, *temp2;
+
+  if (!(isPolynomial(poly))) {
+    temp = makeMul(copyTree(poly),makeConstant(scale));
+    res = simplifyTreeErrorfree(temp);
+    free_memory(temp);
+    return res;
+  }
+
+  /* Here, we know that we have a polynomial */
+  temp = makeMul(copyTree(poly),makeConstant(scale));
+  temp2 = horner(temp);
+  res = simplifyRationalErrorfree(temp2);
+  free_memory(temp);
+  free_memory(temp2);
+
+  return res;
+}
+
+
+/* Show positivity of a polynomial using the Sturm algorithm 
+
+   For a polynomial poly and a domain dom,
+
+   return zero if there is a point in dom at which poly is non-positive,
+   return a non-zero value otherwise.
+
+   Return zero for expressions that are no polynomial.
+   Return zero for domains that are not bounded by finite numbers.
+
+   Return zero if something goes wrong in the Sturm routine.
+
+   Generally, return zero in case of a doubt (not enough precision
+   etc.)
+
+*/
+int showPositivity(node * poly, sollya_mpfi_t dom, mp_prec_t prec) {
+  int res, positive, nbRoots;
+  mpfr_t a, b, c, y, nbRootsMpfr;
+  mp_prec_t pp;
+
+  if (!isPolynomial(poly)) return 0;
+  if (!sollya_mpfi_bounded_p(dom)) return 0;
+
+  mpfr_init2(nbRootsMpfr,8 * sizeof(int));
+  res = getNrRoots(nbRootsMpfr, poly, dom, prec);
+  if (!mpfr_number_p(nbRootsMpfr)) {
+    nbRoots = 1;
+  } else {
+    nbRoots = mpfr_get_si(nbRootsMpfr,GMP_RNDU);
+  }
+  mpfr_clear(nbRootsMpfr);
+  if (!res) return 0;
+
+  if (nbRoots != 0) return 0;
+
+  /* Here, we know that we do not cross the abscissa
+
+     We still have to establish that at some point (in the middle of
+     the interval), we have a positive value.
+
+  */
+  pp = sollya_mpfi_get_prec(dom);
+  mpfr_init2(a,pp);
+  mpfr_init2(b,pp);
+  mpfr_init2(c,pp+1);
+
+  sollya_mpfi_get_left(a,dom);
+  sollya_mpfi_get_right(b,dom);
+
+  mpfr_add(c,a,b,GMP_RNDN);
+  mpfr_div_2ui(c,c,1,GMP_RNDN);
+
+  mpfr_init2(y,16);
+  res = evaluateFaithful(y, poly, c, prec);
+
+  positive = 1;
+  if (!res) positive = 0;
+  if (!mpfr_number_p(y)) positive = 0;
+  if (mpfr_sgn(y) <= 0) positive = 0;
+
+  mpfr_clear(a);
+  mpfr_clear(b);
+  mpfr_clear(c);
+  mpfr_clear(y);
+
+  return positive;
+}
 
 
 /* Compute the supremum norm on eps = p - f over dom
@@ -436,6 +631,9 @@ int supremumNormBisect(sollya_mpfi_t result, node *poly, node *func, mpfr_t a, m
   case SUPNORM_SINGULARITY_NOT_REMOVED:
     printMessage(1,"Warning: during supnorm computation, a singularity in the expression tree could not be removed.\n");
     break;
+  case SUPNORM_COULD_NOT_SHOW_POSITIVITY:
+    printMessage(1,"Warning: during supnorm computation, the positivity of a polynomial could not be established.\n");
+    break;
   default:
     printMessage(1,"Warning: during supnorm computation, some generic error occured. No further description is available.\n");
   }
@@ -552,6 +750,58 @@ int supremumNormDegenerate(sollya_mpfi_t result, node *poly, node *func, mpfr_t 
   return res;
 }
 
+
+/* Checks if all coefficients of poly can be written as ratios of
+   floating-point numbers 
+
+   Returns 0 if poly is not a polynomial or is a polynomial that does
+   contain irrational coefficients.
+
+   Returns a non-zero value otherwise.
+
+*/
+int hasOnlyMpqCoefficients(node *poly) {
+  node **coefficients;
+  int degree, i, res, okay;
+  node *simplified;
+
+  if (!isPolynomial(poly)) return 0;
+
+  getCoefficients(&degree,&coefficients,poly);
+  if (degree < 0) return 0;
+
+  res = 1;
+  for (i=0;i<=degree;i++) {
+    if (coefficients[i] != NULL) {
+      simplified = simplifyRationalErrorfree(coefficients[i]);
+      okay = 0;
+      if ((simplified->nodeType == CONSTANT) &&
+	  (mpfr_number_p(*(simplified->value)))) okay = 1;
+      else {
+	if ((simplified->nodeType == DIV) &&
+	    (((simplified->child1->nodeType == CONSTANT) && 
+	      (mpfr_number_p(*(simplified->child1->value)))) && 
+	     ((simplified->child2->nodeType == CONSTANT) && 
+	      (mpfr_number_p(*(simplified->child2->value)))))) okay = 1;
+      }
+      free_memory(simplified);
+      if (!okay) {
+	res = 0;
+	break;
+      }
+    }
+  }
+
+  for (i=0;i<=degree;i++) {
+    if (coefficients[i] != NULL) free_memory(coefficients[i]);
+  }
+  free(coefficients);
+
+  return res;
+}
+
+
+
 /* Compute the supremum norm on eps = p - f resp. eps = p/f - 1 over dom
 
    eps is defined according to the mode parameter:
@@ -629,9 +879,19 @@ int supremumnorm(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom
     return 0;
   }
 
+  if (!hasOnlyMpqCoefficients(poly)) {
+    printMessage(1,"Warning: the coefficients of the given polynomial cannot all be written as ratios of floating-point numbers.\nSupremum norm computation is only possible on such polynomials. Try to use roundcoefficients().\n");
+    assignNaNInterval(result);
+    mpfr_clear(a);
+    mpfr_clear(b);
+    return 0;
+  }
+
   /* Here, we know that the interval is proper (no NaNs, no Infs) and
      that it is not reduced to a point. We know that accuracy is a
-     non-zero number and that poly is a polynomial.
+     non-zero number and that poly is a polynomial whose coefficients 
+     can be written in floating-point numbers or ratios of floating-point
+     numbers.
 
      We will call supremumNormBisect with diam * width(dom) and abs(accuracy).
 
