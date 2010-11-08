@@ -96,6 +96,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
    - node* subPolynomialsExactly(node *p1, node *p2)
    - node* scalePolynomialExactly(node *poly, mpfr_t scale)
    - int showPositivity(node * poly, sollya_mpfi_t dom, mp_prec_t prec)
+   - int computeAbsoluteLowerBound(mpfr_t result, node *func, sollya_mpfi_t dom, mp_prec_t prec)
    - void evaluateInterval(sollya_mpfi_t y, node *func, node *deriv, sollya_mpfi_t x)
      (remark that deriv may be set to NULL if it is not known)
    - void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec)
@@ -281,6 +282,60 @@ int showPositivity(node * poly, sollya_mpfi_t dom, mp_prec_t prec) {
   mpfr_clear(y);
 
   return positive;
+}
+
+/* Compute a value result such that forall x in dom abs(func(x)) > result
+
+   If such a minimum cannot easily be computed, set result to 0 and return 0.
+   Otherwise return a non-zero value.
+
+ */
+int computeAbsoluteLowerBound(mpfr_t result, node *func, sollya_mpfi_t dom, mp_prec_t prec) {
+  sollya_mpfi_t y;
+  mpfr_t reslt;
+  mpfr_t yl, yr;
+  int res;
+  node *deriv;
+
+  mpfr_init2(reslt,mpfr_get_prec(result));
+  res = 0;
+  mpfr_set_si(result,0,GMP_RNDN);
+  sollya_mpfi_init2(y,prec);
+  mpfr_init2(yl,prec);
+  mpfr_init2(yr,prec);
+  evaluateInterval(y, func, NULL, dom);
+  sollya_mpfi_get_left(yl,y);
+  sollya_mpfi_get_right(yr,y);
+
+  if (mpfr_number_p(yl) && mpfr_number_p(yr)) {
+    if (mpfr_sgn(yl) * mpfr_sgn(yr) > 0) {
+      /* The interval does not cross the y-axis, we can take the absolute minimum */
+      sollya_mpfi_abs(y,y);
+      sollya_mpfi_get_left(reslt,y);
+      res = 1;
+    } else {
+      /* The interval does cross the y-axis, we give it another try with a derivative */
+      deriv = differentiate(func);
+      evaluateInterval(y, func, NULL, dom);
+      sollya_mpfi_get_left(yl,y);
+      sollya_mpfi_get_right(yr,y);
+      if ((mpfr_number_p(yl) && mpfr_number_p(yr)) &&  
+	  (mpfr_sgn(yl) * mpfr_sgn(yr) > 0)) {
+	/* Here, we have a result that does not cross the y-axis */
+	sollya_mpfi_abs(y,y);
+	sollya_mpfi_get_left(reslt,y);
+	res = 1;
+      }
+      free_memory(deriv);
+    }
+  } 
+
+  sollya_mpfi_clear(y);
+  mpfr_clear(yr);
+  mpfr_clear(yl);
+  mpfr_set(result,reslt,GMP_RNDN); /* exact */
+  mpfr_clear(reslt);
+  return res;
 }
 
 
