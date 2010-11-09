@@ -64,6 +64,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include "sturm.h"
 #include "general.h"
 #include "infnorm.h"
+#include "remez.h"
 
 /* Add error codes here as needed. 
 
@@ -96,11 +97,10 @@ knowledge of the CeCILL-C license and that you accept its terms.
    - node* subPolynomialsExactly(node *p1, node *p2)
    - node* scalePolynomialExactly(node *poly, mpfr_t scale)
    - int showPositivity(node * poly, sollya_mpfi_t dom, mp_prec_t prec)
-   - int computeAbsoluteLowerBound(mpfr_t result, node *func, sollya_mpfi_t dom, mp_prec_t prec)
+   - int computeAbsoluteMinimum(mpfr_t result, node *func, sollya_mpfi_t dom, mp_prec_t prec)
+   - int computeSupnormLowerBound(mpfr_t ell, node *poly, node *func, sollya_mpfi_t dom, mpfr_t gamma, int mode, mp_prec_t prec)
    - void evaluateInterval(sollya_mpfi_t y, node *func, node *deriv, sollya_mpfi_t x)
      (remark that deriv may be set to NULL if it is not known)
-   - void uncertifiedInfnorm(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned long int points, mp_prec_t prec)
-     (that's dirtyinfnorm)
    - void taylorform(node **T, chain **errors, sollya_mpfi_t **delta,
 		node *f, int n, sollya_mpfi_t *x0, sollya_mpfi_t *d, int mode)
    - ...
@@ -290,7 +290,7 @@ int showPositivity(node * poly, sollya_mpfi_t dom, mp_prec_t prec) {
    Otherwise return a non-zero value.
 
  */
-int computeAbsoluteLowerBound(mpfr_t result, node *func, sollya_mpfi_t dom, mp_prec_t prec) {
+int computeAbsoluteMinimum(mpfr_t result, node *func, sollya_mpfi_t dom, mp_prec_t prec) {
   sollya_mpfi_t y;
   mpfr_t reslt;
   mpfr_t yl, yr;
@@ -335,6 +335,151 @@ int computeAbsoluteLowerBound(mpfr_t result, node *func, sollya_mpfi_t dom, mp_p
   mpfr_clear(yl);
   mpfr_set(result,reslt,GMP_RNDN); /* exact */
   mpfr_clear(reslt);
+  return res;
+}
+
+/* Compute a certified lower bound ell to the supremum norm of 
+   eps = poly - func resp. eps = poly / func - 1
+
+   If mode is zero, let eps = poly - func else let eps = poly / func - 1.
+
+   Compute a value ell such that for all x in dom, abs(eps(x)) >= ell.
+
+   Additionally, if things are pretty, make sure that 
+
+   || eps || <= ell * (1 + abs(gamma)).
+
+   If everything works fine, set ell to the computed value, ADAPTING
+   THE PRECISION OF THE mpfr_t VARIABLE ell IF NECESSARY and return a
+   non-zero value.
+
+   Otherwise, set ell to zero and return zero. This case happens
+   when gamma is not a non-zero number.
+
+   The function assumes that poly is a polynomial but will work even
+   if poly is not a polynomial. However, it will not try to ensure
+   that ell approximates ell up to a relative error of abs(gamma).
+
+   The procedure determines its working precision itself where
+   possible. It hence disregards the prec parameter unless the
+   determination of the working precision fails.
+ */
+int computeSupnormLowerBound(mpfr_t ell, node *poly, node *func, sollya_mpfi_t dom, mpfr_t gamma, int mode, mp_prec_t prec) {
+  node *eps;
+  node *epsPrime;
+  int res;
+  mpfr_t l, y;
+  mpfr_t temp, absGamma;
+  mp_prec_t pp, pr;
+  int deg;
+  chain *possibleExtrema;
+  mpfr_t a, b, lMinusUlp;
+  unsigned long int samplePoints;
+  mpfr_t *aBound, *bBound;
+  chain *curr;
+  int resEval;
+
+  if (mpfr_zero_p(gamma) || (!mpfr_number_p(gamma))) {
+    mpfr_set_si(ell,0,GMP_RNDN);
+    return 0;
+  }
+
+  pr = sollya_mpfi_get_prec(dom);
+  mpfr_init2(a,pr);
+  mpfr_init2(b,pr);
+  sollya_mpfi_get_left(a,dom);
+  sollya_mpfi_get_right(b,dom);  
+
+  if (!(mpfr_number_p(a) && mpfr_number_p(b))) {
+    mpfr_clear(a);
+    mpfr_clear(b);
+    mpfr_set_si(ell,0,GMP_RNDN);
+    return 0;
+  }
+
+  if (mode == 0) {
+    eps = makeSub(copyTree(poly),copyTree(func));
+    epsPrime = makeSub(differentiate(poly),differentiate(func));
+  } else {
+    eps = makeSub(makeDiv(copyTree(poly),copyTree(func)),makeConstantDouble(1.0));
+    epsPrime = makeSub(makeMul(differentiate(poly),copyTree(func)),makeMul(copyTree(poly),differentiate(func)));
+  }
+
+  mpfr_init2(temp,10 + 8 * ((sizeof(unsigned int) > sizeof(mp_prec_t)) ? sizeof(unsigned int) : sizeof(mp_prec_t)));
+  mpfr_init2(absGamma,mpfr_get_prec(gamma));
+  mpfr_abs(absGamma,gamma,GMP_RNDN);
+  mpfr_log2(temp,absGamma,GMP_RNDD);
+  mpfr_neg(temp,temp,GMP_RNDU);
+  mpfr_ceil(temp,temp);
+  if (mpfr_sgn(temp) > 0) {
+    pp = 10 + mpfr_get_ui(temp,GMP_RNDU);
+    if (pp < 12) pp = 12;
+  } else {
+    pp = prec;
+    if (pp < 12) pp = 12;
+  }
+  
+  deg = getDegree(poly);
+  if (deg >= 0) {
+    samplePoints = 4 * deg + 1;
+  } else {
+    samplePoints = getToolPoints();
+  }
+
+  possibleExtrema = uncertifiedFindZeros(epsPrime, a, b, samplePoints, 6 + (pp / 2));
+
+  aBound = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  bBound = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*aBound,pr);
+  mpfr_set(*aBound,a,GMP_RNDD); /* exact */
+  mpfr_init2(*bBound,pr);
+  mpfr_set(*bBound,b,GMP_RNDU); /* exact */
+
+  possibleExtrema = addElement(addElement(possibleExtrema,aBound),bBound);
+
+  mpfr_init2(l,pp + 5);
+  mpfr_init2(lMinusUlp,pp);
+  mpfr_init2(y,pp + 10);
+  mpfr_set_si(l,0,GMP_RNDN);
+  res = 1;
+  for (curr=possibleExtrema;curr!=NULL;curr=curr->next) {
+    mpfr_set(lMinusUlp,l,GMP_RNDD); /* Take latest maximum minus a couple ulps as a cut off for evaluation */
+    if (!mpfr_zero_p(lMinusUlp)) mpfr_nextbelow(lMinusUlp);
+    resEval = evaluateFaithfulWithCutOffFast(y, eps, epsPrime, *((mpfr_t *) (curr->value)), lMinusUlp, pp + 10);
+    if ((resEval != 0) && (resEval != 3) && (mpfr_number_p(y))) { /* Evaluation okay ? */
+      mpfr_abs(y,y,GMP_RNDN); /* exact */
+      if (mpfr_sgn(y) > 0) {
+	mpfr_nextbelow(y);  /* Compensate for faithful rounding */
+	mpfr_nextbelow(y);
+      }
+      if (mpfr_cmp(y,l) > 0) { /* New absolute maximum */
+	mpfr_set(l,y,GMP_RNDD); /* Round down because we produce a lower bound */
+      }
+    } else { /* Here, something went wrong with the evaluation */
+      res = 0;
+      break;
+    }
+  }
+
+  if (res) {
+    if (mpfr_get_prec(ell) < mpfr_get_prec(l)) {
+      mpfr_set_prec(ell,mpfr_get_prec(l));
+    }
+    mpfr_set(ell,l,GMP_RNDN); /* exact */
+  } else {
+    mpfr_set_si(ell,0,GMP_RNDN);
+  }
+
+  freeChain(possibleExtrema, freeMpfrPtr);
+  mpfr_clear(l);
+  mpfr_clear(lMinusUlp);
+  mpfr_clear(y);
+  mpfr_clear(a);
+  mpfr_clear(b);
+  mpfr_clear(absGamma);
+  mpfr_clear(temp);
+  free_memory(eps);
+  free_memory(epsPrime);
   return res;
 }
 
