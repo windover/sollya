@@ -72,13 +72,18 @@ knowledge of the CeCILL-C license and that you accept its terms.
    When adding error codes, add warning messages below (in
    supremumNormBisect()).
 
+   In case of an error, return SUPNORM_SOME_ERROR unless
+   a precise understanding which phase failed is available.
+
 */
-#define SUPNORM_NO_ERROR                       0
-#define SUPNORM_SOME_ERROR                    -1
-#define SUPNORM_NO_TAYLOR                      1
-#define SUPNORM_NOT_ENOUGH_WORKING_PRECISION   2
-#define SUPNORM_SINGULARITY_NOT_REMOVED        3
-#define SUPNORM_COULD_NOT_SHOW_POSITIVITY      4
+#define SUPNORM_NO_ERROR                       0  /* No error */
+#define SUPNORM_SOME_ERROR                    -1  /* Some default error, don't know what caused it */
+#define SUPNORM_NO_TAYLOR                      1  /* Couldn't compute a Taylor */
+#define SUPNORM_NOT_ENOUGH_WORKING_PRECISION   2  /* Got the impression the precision was not enough */
+#define SUPNORM_SINGULARITY_NOT_REMOVED        3  /* Could not correctly determine the order of the pole (error intervals not [0]) */
+#define SUPNORM_COULD_NOT_SHOW_POSITIVITY      4  /* Could not validate everything by showing positivity */ 
+#define SUPNORM_SINGULARITY_NOT_DETECTED       5  /* Failed to compute an approximate value to a singularity */
+#define SUPNORM_ANOTHER_SINGULARITY_IN_DOM     6  /* There's at least two singularities, more bisection needed */
 
 /* General remarks:
 
@@ -903,6 +908,179 @@ int computeTaylorModelOfLeastDegree(node **poly, node *func, sollya_mpfi_t dom, 
   return res;
 }
 
+/* Determines if func has a zero in dom.
+
+   If, using a safe, validated algorithm, it can be shown that func
+   does not vanish on dom, the function returns 0 and does not
+   touch zero and bisect.
+
+   Otherwise, the function tries to determine the least zero of func
+   in dom and assigns that value to zero. If func appears to have no
+   other zeros in dom, the function returns 1 and does not touch
+   bisect. Otherwise, the function assigns the midpoint of the least
+   and one-but-least zero of func in dom to bisect and returns 2.
+
+   In the case when the function is not able to establish the 
+   fact that func does not vanish on dom but is not able to
+   find an approximation to a zero of func in dom, it does not
+   touch zero and bisect and returns -1.
+
+   This means: if the return value is 
+
+   - 0: the calling function can safely assume that func does not have
+     a zero in dom,
+
+   - 1: the calling function can assume that zero is a good
+     approximation to the least zero of func in dom and that it is
+     probably the only zero of func in dom. Hence by overcoming the 
+     problems due to this zero of func, the supnorm is likely to 
+     be computable in one step,
+
+   - 2: the calling function can assume that, for supnorm computation,
+     it is a good idea to bisect in the indicated bisection point if
+     the computation tackling only the first zero fails,
+
+   - -1: the calling function is not provided with a zero that 
+     might need to be overcome in supnorm computation but is likely
+     to see the supnorm computation on the whole domain dom fail.
+   
+   The argument expectedZeros is an indication how many zeros of func
+   are maximally expected in the given range.
+
+ */
+int determinePossibleZeroAndBisectPoint(mpfr_t zero, mpfr_t bisect,
+					node *func, sollya_mpfi_t dom,
+					int expectedZeros,
+					mp_prec_t prec) {
+  int res;
+  sollya_mpfi_t y;
+  mpfr_t yl, yr;
+  unsigned long int points;
+  mpfr_t a, b;
+  mp_prec_t pp, ppp;
+  chain *possibleZeros;
+  chain *curr;
+  mpfr_t *least, *second;
+  mpfr_t myBisect;
+
+  sollya_mpfi_init2(y,prec);
+  mpfr_init2(yl,prec);
+  mpfr_init2(yr,prec);
+  evaluateInterval(y, func, NULL, dom);
+  sollya_mpfi_get_left(yl,y);
+  sollya_mpfi_get_right(yr,y);
+  
+  if (mpfr_number_p(yl) &&
+      mpfr_number_p(yr) &&
+      (mpfr_sgn(yl) * mpfr_sgn(yr) > 0)) {
+    /* Here, we know by interval evaluation of func over dom 
+       that there is no zero of func in the interval.
+
+       We can return zero.
+
+    */
+    res = 0;
+  } else {
+    /* Here, we have to compute a list of approximations to 
+       the zeros of func in dom.
+    */
+    points = 4 * expectedZeros + 1;
+
+    pp = sollya_mpfi_get_prec(dom);
+    mpfr_init2(a,pp);
+    mpfr_init2(b,pp);
+    sollya_mpfi_get_left(a,dom);
+    sollya_mpfi_get_left(b,dom);
+    if (mpfr_number_p(a) && mpfr_number_p(b)) {
+      /* Try to compute a list of zeros */
+      pp = mpfr_get_prec(zero);
+      if (prec > pp) pp = prec;
+      possibleZeros = uncertifiedFindZeros(func, a, b, points, pp + 5);
+
+      if (possibleZeros != NULL) {
+	/* We found at least one zero */
+
+	/* If there is just one zero, this is our only zero and least zero to return */
+	if (possibleZeros->next == NULL) {
+	  /* Here, we have exactly one zero.
+
+	     Return 1 and set zero to that zero.
+	  */
+	  res = 1;
+	  mpfr_set(zero,*((mpfr_t *) (possibleZeros->value)),GMP_RNDN); /* It's an approx. anyway */
+	} else {
+	  /* Here, we have at least two zeros 
+
+	     Start by exhibiting the least zero.
+
+	   */
+	  least = (mpfr_t *) (possibleZeros->value);
+	  for (curr=possibleZeros;curr!=NULL;curr=curr->next) {
+	    if (mpfr_cmp(*((mpfr_t *) (curr->value)),*least) < 0) {
+	      least = (mpfr_t *) (curr->value);
+	    }
+	  }
+
+	  /* Now find the second least zero */
+	  second = least;
+	  for (curr=possibleZeros;curr!=NULL;curr=curr->next) {
+	    if (mpfr_cmp(*((mpfr_t *) (curr->value)),*second) > 0) {
+	      second = (mpfr_t *) (curr->value);
+	    }
+	  }
+	  if (mpfr_cmp(*least,*second) == 0) {
+	    /* Here, we couldn't find any zero larger than the least 
+	       This case should not happen but anyway, we found one zero.
+	    */
+	    res = 1;
+	    mpfr_set(zero,*least,GMP_RNDN); /* It's an approx. anyway */
+	  } else {
+	    /* Here, we really found at least two different zeros */
+	    for (curr=possibleZeros;curr!=NULL;curr=curr->next) {
+	      if ((mpfr_cmp(*((mpfr_t *) (curr->value)),*least) > 0) &&
+		  (mpfr_cmp(*((mpfr_t *) (curr->value)),*second) < 0)) {
+		second = (mpfr_t *) (curr->value);
+	      }
+	    }
+	    res = 2;
+	    mpfr_set(zero,*least,GMP_RNDN); /* It's an approx. anyway */
+
+	    /* Compute midpoint between least and second least zero */
+	    pp = mpfr_get_prec(*least);
+	    ppp = mpfr_get_prec(*second);
+	    if (ppp > pp) pp = ppp;
+	    mpfr_init2(myBisect,pp + 1);
+	    mpfr_add(myBisect, *least, *second, GMP_RNDN); 
+	    mpfr_div_2ui(myBisect,myBisect,1,GMP_RNDN);
+	    
+	    /* Set bisection point to midpoint of the two least zeros */
+	    mpfr_set(bisect,myBisect,GMP_RNDN); /* It's all an approx. anyway */
+	    
+	    mpfr_clear(myBisect);
+	  }
+	}
+	
+	freeChain(possibleZeros,freeMpfrPtr);
+      } else {
+	/* We did not find any zero, return -1. */
+	res = -1;
+      }
+    } else {
+      /* We cannot compute the zeros in an unbounded range, return -1. */
+      res = -1;
+    }
+    mpfr_clear(a);
+    mpfr_clear(b);
+  }
+  
+  mpfr_clear(yr);
+  mpfr_clear(yl);
+  sollya_mpfi_clear(y);
+
+  return res;
+}
+
+
 /* Compute the supremum norm on eps = p - f over dom
 
    The supremum norm is computed with an enclosure error less than accuracy,
@@ -981,6 +1159,107 @@ int supnormAbsolute(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t 
    means: if you just want default behavior for the bisection (in the
    midpoint), then do not touch bisectPoint.
 
+   This function may assume that the expression poly / func - 1 is
+   likely not have any removable singularities in dom, i.e. it can
+   assume that func is likely not to vanish in dom.
+
+   We do not care about removable singularities in the
+   expression of func. In such a case, the relative supnorm may simply
+   fail for now.
+
+*/
+int supnormRelativeNoSingularity(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom, mpfr_t accuracy, mp_prec_t prec, mpfr_t bisectPoint) {
+
+  /* TODO */
+
+  return SUPNORM_SOME_ERROR;
+}
+
+/* Compute the supremum norm on eps = p/f - 1 over dom
+
+   The supremum norm is computed with an enclosure error less than accuracy,
+   i.e. the obtained interval [l,u] satisfies in the end:
+
+   abs(u-l/l) <= accuracy
+
+   If everything works fine, result is affected with an interval
+   safely enclosing the supremum norm. The return value is then ZERO
+   (i.e. SUPNORM_NO_ERROR).
+
+   Otherwise, if an error occurs, the return value is non-zero. The
+   number of the return value then corresponds to a special error
+   message meaning (see #defines above).
+
+   No warning message is ever displayed by this function.
+
+   The computing precision is prec.
+
+   We are ensured that this function is called only if 
+
+   * poly is a polynomial
+   * dom is a closed non-empty interval containing only numbers that is not reduced to a point,
+   * accuracy is a positive number.
+
+   In the case when the computation fails but there is hope in
+   obtaining a result by bisection, the algorithm may assign a point
+   in the interior of dom to bisectPoint. The global bisection code
+   will then try to bisect at that point. If no value is assigned, the
+   global bisection will be performed at the midpoint of dom. This
+   means: if you just want default behavior for the bisection (in the
+   midpoint), then do not touch bisectPoint.
+
+   This function is supposed to overcome a removable singularity at
+   singularity. There might be other singularities of poly/func-1 in
+   the domain dom. In this case, the function may fail. It is not
+   supposed to fail, though, if singularity is the only removable
+   singularity of poly/func - 1 in the domain dom.
+
+   However, we do not care about removable singularities in the
+   expression of func. In such a case, the relative supnorm may simply
+   fail for now. It may assign a new value to bisectPoint if desired.
+
+*/
+int supnormRelativeSingularity(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom, mpfr_t accuracy, mpfr_t singularity, mp_prec_t prec, mpfr_t bisectPoint) {
+
+  /* TODO */
+
+  return SUPNORM_SOME_ERROR;
+}
+
+
+/* Compute the supremum norm on eps = p/f - 1 over dom
+
+   The supremum norm is computed with an enclosure error less than accuracy,
+   i.e. the obtained interval [l,u] satisfies in the end:
+
+   abs(u-l/l) <= accuracy
+
+   If everything works fine, result is affected with an interval
+   safely enclosing the supremum norm. The return value is then ZERO
+   (i.e. SUPNORM_NO_ERROR).
+
+   Otherwise, if an error occurs, the return value is non-zero. The
+   number of the return value then corresponds to a special error
+   message meaning (see #defines above).
+
+   No warning message is ever displayed by this function.
+
+   The computing precision is prec.
+
+   We are ensured that this function is called only if 
+
+   * poly is a polynomial
+   * dom is a closed non-empty interval containing only numbers that is not reduced to a point,
+   * accuracy is a positive number.
+
+   In the case when the computation fails but there is hope in
+   obtaining a result by bisection, the algorithm may assign a point
+   in the interior of dom to bisectPoint. The global bisection code
+   will then try to bisect at that point. If no value is assigned, the
+   global bisection will be performed at the midpoint of dom. This
+   means: if you just want default behavior for the bisection (in the
+   midpoint), then do not touch bisectPoint.
+
    This function is supposed to detect and overcome false
    singularities. However, it is also supposed to perform a fast check
    first, i.e. it is not supposed to do a length detection of zeros of
@@ -1002,10 +1281,67 @@ int supnormAbsolute(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t 
 
 */
 int supnormRelative(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom, mpfr_t accuracy, mp_prec_t prec, mpfr_t bisectPoint) {
+  int numberOfSingularities;
+  mpfr_t singularity, myBisect, oldBisect;
+  int degree, res;
 
-  /* TODO */
+  /* Initialize the result to "Error" */
+  res = SUPNORM_SOME_ERROR;
 
-  return SUPNORM_SOME_ERROR;
+  /* We use the degree of the polynomial as an indication of how many 
+     removable singularities poly/func might maximally have.
+  */
+  degree = getDegree(poly);
+  if (degree < 5) degree = 5;
+
+  mpfr_init2(myBisect,mpfr_get_prec(bisectPoint));
+  mpfr_set(myBisect,bisectPoint,GMP_RNDN); /* exact */
+
+  mpfr_init2(singularity, prec);
+  
+  /* Quickly determine if there is a possible singularity and if yes, where it is and if it is the only one */
+  numberOfSingularities = determinePossibleZeroAndBisectPoint(singularity, myBisect, func, dom, degree, prec);
+
+  /* Do the right thing depending on how many singularities have been determined */
+  if ((numberOfSingularities == 0) || (numberOfSingularities == -1)) {
+    mpfr_clear(singularity);
+    mpfr_clear(myBisect);
+
+    /* Launch computation with the conviction that there is no singularity */
+    res = supnormRelativeNoSingularity(result, poly, func, dom, accuracy, prec, bisectPoint);
+
+    if ((res == SUPNORM_SOME_ERROR) && (numberOfSingularities == -1)) res = SUPNORM_SINGULARITY_NOT_DETECTED;
+  } else {
+    mpfr_init2(oldBisect,mpfr_get_prec(bisectPoint));
+    mpfr_set(oldBisect,bisectPoint,GMP_RNDN);
+
+    /* Launch computation with the conviction that there is a singularity at singularity */
+    res = supnormRelativeSingularity(result, poly, func, dom, accuracy, singularity, prec, oldBisect);
+
+    if (res != SUPNORM_NO_ERROR) {
+      if (numberOfSingularities == 2) {
+	/* The supnorm failed and we know of another possible
+	   singularity and hence of a good bisection point */
+	mpfr_set(bisectPoint, myBisect, GMP_RNDN); /* That's all approximations */
+	if (res == SUPNORM_SOME_ERROR) res = SUPNORM_ANOTHER_SINGULARITY_IN_DOM;
+      } else {
+	/* The supnorm failed but we do not know of another possible bisection point 
+	   
+	   We hence set bisectPoint to the value that value suggested to us by the 
+	   supnormRelativeSingularity function.
+
+	 */
+	mpfr_set(bisectPoint, oldBisect, GMP_RNDN); /* bisectPoint does not change 
+						       if supnormRelativeSingularity didn't 
+						       touch oldBisect */
+      }
+    }
+    mpfr_clear(singularity);
+    mpfr_clear(myBisect);
+    mpfr_clear(oldBisect);
+  }
+
+  return res;
 }
 
 /* Compute the supremum norm on eps = p - f resp. eps = p/f - 1 over dom
@@ -1252,6 +1588,12 @@ int supremumNormBisect(sollya_mpfi_t result, node *poly, node *func, mpfr_t a, m
     break;
   case SUPNORM_COULD_NOT_SHOW_POSITIVITY:
     printMessage(1,"Warning: during supnorm computation, the positivity of a polynomial could not be established.\n");
+    break;
+  case SUPNORM_SINGULARITY_NOT_DETECTED:
+    printMessage(1,"Warning: during supnorm computation, a false singularity could not be detected.\n");
+    break;
+  case SUPNORM_ANOTHER_SINGULARITY_IN_DOM:
+    printMessage(1,"Warning: during supnorm computation, there appeared to be at least two singularities in the domain. More bisection is needed.\n");
     break;
   default:
     printMessage(1,"Warning: during supnorm computation, some generic error occured. No further description is available.\n");
