@@ -885,7 +885,7 @@ int sollya_mpfi_is_pos(sollya_mpfi_t op) {
 int sollya_mpfi_is_zero(sollya_mpfi_t op) {
   int res;
 
-  res = mpfi_is_zero(op);
+  res = ((!mpfi_nan_p(op)) && mpfi_is_zero(op));
 
   return res;
 }

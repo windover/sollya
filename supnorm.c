@@ -106,10 +106,9 @@ knowledge of the CeCILL-C license and that you accept its terms.
    - int computeAbsoluteMinimum(mpfr_t result, node *func, sollya_mpfi_t dom, mp_prec_t prec)
    - int computeSupnormLowerBound(mpfr_t ell, node *poly, node *func, sollya_mpfi_t dom, mpfr_t gamma, int mode, mp_prec_t prec)
    - int computeTaylorModelOfLeastDegree(node **poly, node *func, sollya_mpfi_t dom, mpfr_t delta, int maximumAllowedN, mpfr_t *singu, mp_prec_t prec)
+   - int determineOrderOfZero(int *k, node *func, mpfr_t x0, int n, mp_prec_t prec)
    - void evaluateInterval(sollya_mpfi_t y, node *func, node *deriv, sollya_mpfi_t x)
      (remark that deriv may be set to NULL if it is not known)
-   - void taylorform(node **T, chain **errors, sollya_mpfi_t **delta,
-		node *f, int n, sollya_mpfi_t *x0, sollya_mpfi_t *d, int mode)
    - ...
 
  */
@@ -1081,6 +1080,95 @@ int determinePossibleZeroAndBisectPoint(mpfr_t zero, mpfr_t bisect,
 }
 
 
+/* Determines the order of a zero of func at x0.
+
+   The function computes an upper bound k for the order of a zero of
+   func at x0, provided that the zero is of order less than n.
+
+   In the case when an upper bound has been correctly determined, the
+   function assigns the order to k and returns a non-zero value.
+
+   Otherwise, if n is too low to correctly determine an upper bound,
+   the function does not touch k and returns zero.
+
+   In the context of supremum norm computation, initialize n 
+   to the degree of the polynomial p in p/f - 1, as f might not 
+   reasonably have a zero of a higher degree than that of p.
+
+   HACK ALERT: currently, taylorform does not take any prec argument.
+   This means we have to modify the global precision of the tool.  We
+   reset it correctly in the usual case but if a Ctrl-C pops in in the
+   middle, it will not be reset. This should be changed in the future.
+
+ */
+int determineOrderOfZero(int *k, node *func, mpfr_t x0, int n, mp_prec_t prec) {
+  int myK, res;
+  mp_prec_t oldToolPrec;
+  node *poly;
+  chain *errors;
+  sollya_mpfi_t x0AsInterval;
+  node **coefficients;
+  int degree, i, len;
+  chain *curr;
+  sollya_mpfi_t **errorsAsArray;
+
+  sollya_mpfi_init2(x0AsInterval,mpfr_get_prec(x0));
+  sollya_mpfi_set_fr(x0AsInterval,x0);
+
+  oldToolPrec = getToolPrecision();
+  setToolPrecision(prec);
+  poly = NULL;
+  errors = NULL;
+  taylorform(&poly, &errors, NULL, func, n, &x0AsInterval, NULL, RELATIVE);
+  setToolPrecision(oldToolPrec);
+
+  if ((poly != NULL) && (errors != NULL)) {
+    len = 0; 
+    for (curr=errors;curr!=NULL;curr=curr->next) 
+      len++;
+    errorsAsArray = (sollya_mpfi_t **) safeCalloc(len,sizeof(sollya_mpfi_t *));
+    i = 0; 
+    for (curr=errors;curr!=NULL;curr=curr->next) {
+      errorsAsArray[i] = (sollya_mpfi_t *) (curr->value);
+      i++;
+    }
+    coefficients = NULL;
+    getCoefficients(&degree,&coefficients,poly);
+    if (degree >= 0) {
+      if (len == degree + 1) {
+	res = 0;
+	myK = 0; 
+	while ((myK <= degree) && (myK <= n-1) && (!res)) {
+	  if (((coefficients[myK] == NULL) || 
+	       ((coefficients[myK]->nodeType == CONSTANT) && 
+		(mpfr_zero_p(*(coefficients[myK]->value))))) && 
+	      (sollya_mpfi_is_zero(*(errorsAsArray[myK])))) {
+	    myK++;
+	  } else {
+	    res = 1;
+	  }
+	}
+      } else { 
+	res = 0;
+      }
+      for (i=0;i<=degree;i++) {
+	if (coefficients[i] != NULL) free_memory(coefficients[i]);
+      }
+    }
+    if (coefficients != NULL) free(coefficients);
+    free(errorsAsArray);
+    freeChain(errors,freeMpfiPtr);
+  } else {
+    res = 0;
+  }
+
+  sollya_mpfi_clear(x0AsInterval);
+
+  if (res) *k = myK;
+  return res;
+}
+
+
 /* Compute the supremum norm on eps = p - f over dom
 
    The supremum norm is computed with an enclosure error less than accuracy,
@@ -1575,7 +1663,7 @@ int supremumNormBisect(sollya_mpfi_t result, node *poly, node *func, mpfr_t a, m
 
   if (res == 0) return 1; /* everything's fine */
  
-  /* In the following, perform error handling (messaging and return 1) */
+  /* In the following, perform error handling (messaging and return 0) */
   switch (res) {
   case SUPNORM_NO_TAYLOR:
     printMessage(1,"Warning: during supnorm computation, no suitable Taylor form could be found.\n");
