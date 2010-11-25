@@ -27,7 +27,7 @@ Parameters:
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > t = time(p=remez(sin(x),10,[-1;1]));
 > write(t,"s were spent computing p = ",p,"\n");
-0.237514000000000000025878604814622008234437089413404s were spent computing p = 
+0.111883000000000000002551778233161883235879940912127s were spent computing p = 
 -3.3426550293345171908513995127407122194691200059639e-17 + x * (0.99999999973628
 359955372011464713121003442988167693 + x * (7.8802751877302786684499343799047732
 495568873819693e-16 + x * (-0.16666666138601303703291298219674138568049869810728
@@ -44,14 +44,14 @@ Parameters:
 > write(time({ p=remez(sin(x),10,[-1;1]); write("The error is 2^(", log2(dirtyin
 fnorm(p-sin(x),[-1;1])), ")\n"); }), " s were spent\n");
 The error is 2^(log2(2.39602467695631727848641768186659313738474584992648e-11))
-0.379498000000000000045061177011973541084444150328636 s were spent
+0.20193900000000000001174060848541103041497990489006 s were spent
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > t = time(bashexecute("sleep 10"));
 > write(~(t-10),"s of execution overhead.\n");
-8.3419999999999987216892094465947593562304973602294e-3s of execution overhead.
+1.06699999999999850519571964468923397362232208251953e-3s of execution overhead.
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
@@ -59,8 +59,8 @@ The error is 2^(log2(2.39602467695631727848641768186659313738474584992648e-11))
 > ratio := time(p=remez(sin(x),10,[-1;1]))/time(nop(10));
 > write("This ratio = ", ratio, " should somehow be independent of the type of m
 achine.\n");
-This ratio = 6.9906499636891793757800258513922718896962350393502 should somehow 
-be independent of the type of machine.
+This ratio = 3.49002243829468960332866710459005987940988495830356 should somehow
+ be independent of the type of machine.
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{timing} (\ref{labtiming}), \textbf{nop} (\ref{labnop})
