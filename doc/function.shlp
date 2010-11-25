@@ -1,16 +1,87 @@
 #NAME $FUNCTION
-#QUICK_DESCRIPTION keyword representing a $FUNCTION_TYPE type 
+#QUICK_DESCRIPTION keyword for declaring a procedure-based function or a keyword representing a $FUNCTION_TYPE type 
+
+#CALLING $COMMAND(<procedure>) 
+#TYPE $PROCEDURE_TYPE -> $FUNCTION_TYPE
+
 #CALLING $COMMAND
 #TYPE $TYPE_TYPE
 
+#PARAMETERS <procedure> is a procedure of type ($RANGE_TYPE, $INTEGER_TYPE, $INTEGER_TYPE) §§->§$\rightarrow$§§ $RANGE_TYPE
+
 #DESCRIPTION 
-$COMMAND represents the $FUNCTION_TYPE type for declarations
+For the sake of safety and mathematical consistency, $SOLLYA
+distinguishes clearly between functions, seen in the mathematical
+sense of the term, i.e. mappings, and procedures, seen in the sense
+Computer Science gives to functions, i.e. pieces of code that compute
+results for arguments following an algorithm. In some cases however,
+it is interesting to use such Computer Science procedures as
+realisations of mathematical functions, e.g. in order to plot them or
+even to perform polynomial approximation on them. The $COMMAND keyword
+allows for such a transformation of a $SOLLYA procedure into a $SOLLYA
+function. 
+
+#DESCRIPTION
+The procedure to be used as a function through $COMMAND(<procedure>)
+must be of type ($RANGE_TYPE, $INTEGER_TYPE, $INTEGER_TYPE)
+§§->§$\rightarrow$§§ $RANGE_TYPE. This means it must take in argument
+an interval §§X§$X$§§, a degree of differentiation §§n§$n$§§ and a
+working precision §§p§$p$§§. It must return in result an interval
+§§Y§$Y$§§ encompassing the image §§f(n)(X)§$f^{(n)}(X)$§§ of the
+§§n-th§$n$-th§§ derivative of the implemented function §§f§$f$§§,
+i.e. §§f^(n)(X) c Y§$f^{(n)}(X) \subseteq Y$§§. In order allow
+$SOLLYA's algorithms to work properly, the procedure must ensure that
+for §§p§$p$§§ tending to infinity, the computed over-estimated
+bounding §§Y§$Y$§§ tends to the actual image
+§§f^(n)(X)§$f^{(n)}(X)$§§.
+
+#DESCRIPTION 
+For cases when the procedure does not have the correct signature or
+does not return a finite interval as a result $COMMAND(<procedure>)
+evaluates to Not-A-Number (resp. to an interval of Not-A-Numbers for
+interval evaluation).
+
+#DESCRIPTION 
+$COMMAND also represents the $FUNCTION_TYPE type for declarations
 of external procedures by means of $EXTERNALPROC.
 §§ § §§
 Remark that in contrast to other indicators, type indicators like
 $COMMAND cannot be handled outside the $EXTERNALPROC context.  In
 particular, they cannot be assigned to variables.
 
+#EXAMPLE
+procedure EXP(X,n,p) {
+	  var res, oldPrec;
+
+	  oldPrec = prec;
+	  prec = p!;
+	  
+	  res = exp(X);
+	  
+	  prec = oldPrec!;
+
+	  return res;
+};
+
+f = function(EXP);
+
+f(1);
+exp(1);
+f(x + 3);
+diff(f);
+(diff(f))(0);
+
+g = f(sin(x));
+g(17);
+diff(g);
+(diff(g))(1);
+
+p = remez(f,3,[-1/2;1/2]);
+p;
+
+#SEEALSO $PROC
+#SEEALSO $LIBRARY
+#SEEALSO $PROCEDURE
 #SEEALSO $EXTERNALPROC
 #SEEALSO $BOOLEAN
 #SEEALSO $CONSTANT

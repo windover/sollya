@@ -63,6 +63,7 @@ myownlog = library("./libraryexample");
 evaluate(log(x), 2);
 evaluate(myownlog(x), 2);
 
+#SEEALSO $FUNCTION
 #SEEALSO $BASHEXECUTE
 #SEEALSO $EXTERNALPROC
 #SEEALSO $EXTERNALPLOT
