@@ -1,0 +1,56 @@
+#NAME $MAX
+#QUICK_DESCRIPTION determines which of given constant expressions has maximum value
+
+#CALLING $COMMAND(<expr1>,<expr2>,...,<exprn>)
+#TYPE ($CONSTANT_TYPE, $CONSTANT_TYPE, ..., $CONSTANT_TYPE) -> $CONSTANT_TYPE
+
+#CALLING $COMMAND(<l>)
+#TYPE $LIST_TYPE -> $CONSTANT_TYPE
+
+#PARAMETERS <expr> are constant expressions.
+#PARAMETERS <l> is a list of constant expressions.
+
+#DESCRIPTION 
+$COMMAND determines which of a given set of constant expressions
+<expr> has maximum value. To do so, $COMMAND tries to increase the
+precision used for evaluation until it can decide the ordering or some
+maximum precision is reached. In the latter case, a warning is printed
+indicating that there might actually be another expression that has a
+greater value.
+
+#DESCRIPTION
+Even though $COMMAND determines the maximum expression by evaluation, it 
+returns the expression that is maximum as is, i.e. as an expression
+tree that might be evaluated to any accuracy afterwards.
+
+#DESCRIPTION 
+$COMMAND can be given either an arbitrary number of constant
+expressions in argument or a list of constant expressions. The list
+however must not be end-elliptic.
+
+#EXAMPLE
+max(1,2,3,exp(5),log(0.25));
+max(17);
+
+#EXAMPLE
+l = [|1,2,3,exp(5),log(0.25)|];
+max(l);
+
+#EXAMPLE
+print(max(exp(17),sin(62)));
+
+#EXAMPLE
+verbosity = 1!;
+print(max(17 + log2(13)/log2(9),17 + log(13)/log(9)));
+
+#SEEALSO $MIN
+#SEEALSO $EQUAL
+#SEEALSO $NEQ
+#SEEALSO $GE
+#SEEALSO $GT
+#SEEALSO $LT
+#SEEALSO $LE
+#SEEALSO $IN
+#SEEALSO $INF
+#SEEALSO $SUP
+
