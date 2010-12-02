@@ -41,7 +41,7 @@ parts of other libraries as a support for but not integral part of
 <span class="sollya">Sollya</span>. These libraries are reigned by the GNU Lesser General Public
 License that is available at <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a> and
 reproduced in the <code>COPYING</code> file of the distribution.
-<h1><a href="#commandsAndFunctions">Go directly to the list of available commands</a></h1>
+<h1><a href="#commandsAndFunctions">Direct access to the list of available commands</a></h1>
 
 <h1>1 - Compilation and installation of the <span class="sollya">Sollya</span> tool</h1>
 <p>
