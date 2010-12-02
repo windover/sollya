@@ -950,15 +950,15 @@ int general(int argc, char *argv[]) {
       else
 	sollyaPrintf("a terminal");
       sollyaPrintf(".\n\nUsage: %s [options]\n\nPossible options are:\n",PACKAGE_NAME);
+      sollyaPrintf("--donotmodifystacksize : do not attempt to set the maximal stack size to the maximum size allowed on the system\n");
+      sollyaPrintf("--flush : flush standard output and standard error after each command\n");
+      sollyaPrintf("--help : print this help text\n");
       sollyaPrintf("--nocolor : do not color the output using ANSI escape sequences\n");
       sollyaPrintf("--noprompt : do not print a prompt symbol\n");
-      sollyaPrintf("--flush : flush standard output and standard error after each command\n");
-      sollyaPrintf("--oldrlwrapcompatible : acheive some compatibilty with old rlwrap versions by emitting wrong ANSI sequences (deprecated)\n");
-      sollyaPrintf("--donotmodifystacksize : do not attempt to set the maximal stack size to the maximum size allowed on the system\n");
       sollyaPrintf("--oldautoprint : print commas between autoprinted elements separated by commas\n");
-      sollyaPrintf("--warnonstderr : print warning messages on error output instead on the standard output\n");
+      sollyaPrintf("--oldrlwrapcompatible : acheive some compatibilty with old rlwrap versions by emitting wrong ANSI sequences (deprecated)\n");
       sollyaPrintf("--warninfile[append] <file> : print warning messages into a file instead on the standard output\n");
-      sollyaPrintf("--help : print this help text\n");
+      sollyaPrintf("--warnonstderr : print warning messages on error output instead on the standard output\n");
       sollyaPrintf("\nFor help on %s commands type \"help;\" on the %s prompt\n",PACKAGE_NAME,PACKAGE_NAME);
       sollyaPrintf("More documentation on %s is available on the %s website http://sollya.gforge.inria.fr/.\nFor bug reports send an email to %s.\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
       sollyaPrintf("\n%s is Copyright 2006-2010 by\n\n    Laboratoire de l'Informatique du Parallelisme,\n    UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668, Lyon, France,\n\n    LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France\n\nand by\n\n    Laboratoire d'Informatique de Paris 6, equipe PEQUAN,\n    UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.\n\nAll rights reserved.\n\nContributors are S. Chevillard, N. Jourdan, M. Joldes and Chr. Lauter.\n\nThis software is governed by the CeCILL-C license under French law and\nabiding by the rules of distribution of free software.  You can  use,\nmodify and/ or redistribute the software under the terms of the CeCILL-C\nlicense as circulated by CEA, CNRS and INRIA at the following URL\n\"http://www.cecill.info\".\n\nThis build of %s is based on GMP %s, MPFR %s and MPFI %s.\n\n",PACKAGE_STRING,PACKAGE_STRING,gmp_version,mpfr_get_version(),sollya_mpfi_get_version());

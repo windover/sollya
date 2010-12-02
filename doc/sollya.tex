@@ -27,7 +27,7 @@
 
 \newcommand{\ligne}[1]{\texttt{#1}\\}
 
-\title{Users' manual for the \sollya tool \\ {\large Release 2.0}}
+\title{Users' manual for the \sollya tool \\ {\large Release 2.1-alpha}}
 
 \author{Sylvain Chevillard \\ \small{\url{sylvain.chevillard@ens-lyon.org}} \and Christoph Lauter \\ \small{\url{christoph.lauter@ens-lyon.org}} \and Mioara Jolde\c{s} \\ \small{\url{mioara.joldes@ens-lyon.fr}} }
 
@@ -40,11 +40,13 @@
 
 \section*{License}
 
-The \sollya tool is Copyright \copyright~2006-2010 by \\
+The \sollya tool is Copyright \copyright~2006-2010 by \vspace{2mm} \\
 \indent Laboratoire de
 l'Informatique du Parall\'elisme - UMR CNRS - ENS Lyon - UCB Lyon 1 -
-INRIA 5668, Lyon, France, and by \\
-\indent LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2) Nancy, France.\\
+INRIA 5668, Lyon, France, \vspace{2mm} \\
+\indent LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2) Nancy, France, and by \vspace{2mm} \\
+\indent Laboratoire d'Informatique de Paris 6, \'Equipe PEQUAN,
+UPMC Universit\'e Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France. \vspace{2mm} \\
 All rights reserved.\\[0.2cm]
 
 \noindent The \sollya tool is open software. It is distributed and can be used,
@@ -137,6 +139,28 @@ nevertheless, use this deprecated option.
   that do not support the \texttt{-A} option. The option is considered
   a hack since it is known to garble the output of the tool under
   some particular circumstances.
+\item \texttt{--warninfile[append] <file>}: Normally, \sollya emits
+  warning and information messages together with all other displayed
+  information on either standard output or standard error. This option
+  allows all warning and information messages to get redirected to a
+  file. The filename to be used must be given after the option.  When
+  \texttt{--warninfile} is used, the existing content (if any) of the
+  file is first removed before writing to the file. With
+  \texttt{--warninfileappend}, the messages are appended to an
+  existing file. Even if coloring is used for the displaying all other
+  \sollya output, no coloring sequences are ever written to the
+  file. Let us emphasize on the fact that any file of a unixoid system
+  can be used for output, for instance also a named pipe. This allows
+  for error messaging to be performed on a separate terminal. The use
+  of this option is mutually exclusive with the
+  \texttt{--warnonstderr} option.
+\item \texttt{--warnonstderr}: Normally, \sollya prints warning and
+  information messages on standard output, using a warning color 
+  when coloring is activated. When this option is given, \sollya will 
+  output all warning and information messages on standard error. Coloring
+  will be used even on standard error, when activated. The use of 
+  this option is mutually exclusive with the \texttt{--warninfile[append]} 
+  option.
 \end{itemize}
 
 
