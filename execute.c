@@ -4145,7 +4145,7 @@ char *sRawPrintThing(node *tree) {
     res = newString("tripledouble");
     break; 		
   case STRING:
-    res = concatAndFree(newString("\""),concatAndFree(newString(tree->string),newString("\"")));
+    res = concatAndFree(newString("\""),concatAndFree(maskString(tree->string),newString("\"")));
     break; 			 	
   case TABLEACCESS:
     res = newString(tree->string);

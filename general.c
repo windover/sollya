@@ -321,6 +321,80 @@ void *wrapSafeRealloc(void *ptr, size_t old_size, size_t new_size) {
   return (void *) safeRealloc(ptr,new_size);
 }
 
+char *maskString(char *src) {
+  char *buf;
+  char *res;
+  char *curr1, *curr2;
+
+  if (src == NULL) return NULL;
+
+  buf = (char *) safeCalloc(strlen(src)*2+1,sizeof(char));
+
+  curr2 = buf;
+  for (curr1=src;*curr1!='\0';curr1++) {
+    switch (*curr1) {
+    case '"':
+      *curr2 = '\\';
+      curr2++;
+      *curr2 = '"';
+      curr2++;
+      break;
+    case '\n':
+      *curr2 = '\\';
+      curr2++;
+      *curr2 = 'n';
+      curr2++;
+      break;
+    case '\t':
+      *curr2 = '\\';
+      curr2++;
+      *curr2 = 't';
+      curr2++;
+      break;
+    case '\a':
+      *curr2 = '\\';
+      curr2++;
+      *curr2 = 'a';
+      curr2++;
+      break;
+    case '\b':
+      *curr2 = '\\';
+      curr2++;
+      *curr2 = 'b';
+      curr2++;
+      break;
+    case '\f':
+      *curr2 = '\\';
+      curr2++;
+      *curr2 = 'f';
+      curr2++;
+      break;
+    case '\r':
+      *curr2 = '\\';
+      curr2++;
+      *curr2 = 'r';
+      curr2++;
+      break;
+    case '\v':
+      *curr2 = '\\';
+      curr2++;
+      *curr2 = 'v';
+      curr2++;
+      break;
+    default:
+      *curr2 = *curr1;
+      curr2++;
+      break;
+    }
+  }
+  
+  res = (char *) safeCalloc(strlen(buf)+1,sizeof(char));
+  strcpy(res,buf);
+  free(buf);
+
+  return res;
+}
+
 void demaskString(char *dest, char *src) {
   char *curr, *curr2;
   char internalBuf[4];

@@ -137,6 +137,7 @@ int general(int argc, char *argv[]);
 void printPrompt(void);
 void recoverFromError(void);
 void demaskString(char*, char*);
+char *maskString(char *);
 void *safeCalloc (size_t nmemb, size_t size);
 void *safeMalloc (size_t size);
 int printMessage(int verb, const char *format, ...);

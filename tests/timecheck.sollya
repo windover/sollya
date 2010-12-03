@@ -2,7 +2,7 @@ verbosity=0!;
 yardstick = time(nop(5000));
 i = 0;
 variance = [1/10;10];
-bigVariance = [1/100;100];
+bigVariance = [1/1000;100];
 
 /* Test #0 */
 i;

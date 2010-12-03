@@ -822,7 +822,7 @@ The tool has been restarted.
 Hello
 [|"Hello"|]
 Hello [|"Hello"|]
-Hello	you [|"Hello	you"|]
+Hello	you [|"Hello\tyou"|]
 The tool has been restarted.
 =============== Test number 159 ================
 Display mode is decimal numbers.
@@ -1254,7 +1254,7 @@ The tool has been restarted.
 Hello
 [|"Hello"|]
 Hello[|"Hello"|]
-Hello	you[|"Hello	you"|]
+Hello	you[|"Hello\tyou"|]
 The tool has been restarted.
 =============== Test number 231 ================
 x + 2 + exp(sin(x))
