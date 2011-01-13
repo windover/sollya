@@ -56,6 +56,7 @@ knowledge of the CeCILL-C license and that you accept its terms.
 #include <string.h>
 #include <errno.h>
 #include "expression.h"
+#include "assignment.h"
 #include "chain.h"
 #include "general.h"
 #include "execute.h"
@@ -98,6 +99,7 @@ void yyerror(char *message) {
 
 %union {
   doubleNode *dblnode;
+  struct entryStruct *association;
   char *value;
   node *tree;
   chain *list;
@@ -138,6 +140,7 @@ void yyerror(char *message) {
 %token  RIGHTANGLESTARTOKEN;
 %token  RIGHTANGLETOKEN;
 %token  DOTSTOKEN;
+%token  DOTTOKEN;
 %token  QUESTIONMARKTOKEN;
 %token  VERTBARTOKEN;
 %token  ATTOKEN;
@@ -317,6 +320,8 @@ void yyerror(char *message) {
 %token  DOTOKEN;
 %token  BEGINTOKEN;
 %token  ENDTOKEN;
+%token  LEFTCURLYBRACETOKEN;
+%token  RIGHTCURLYBRACETOKEN;
 %token  WHILETOKEN;
 
 %token  READFILETOKEN;
@@ -360,6 +365,10 @@ void yyerror(char *message) {
 %type <list>  identifierlist;
 %type <tree>  thing;
 %type <list>  thinglist;
+%type <list>  structelementlist;
+%type <association>  structelement;
+%type <other>  structelementseparator;
+%type <tree>  structuring;
 %type <tree>  ifcommand;
 %type <tree>  forcommand;
 %type <tree>  assignment;
@@ -383,6 +392,8 @@ void yyerror(char *message) {
 %type <integerval> extendedexternalproctype;
 %type <list>  externalproctypesimplelist;
 %type <list>  externalproctypelist;
+%type <other> beginsymbol;
+%type <other> endsymbol;
 
 %%
 
@@ -437,23 +448,43 @@ helpmeta:               HELPTOKEN
 			  }
 ;
 
+beginsymbol:            BEGINTOKEN
+                          {
+			    $$ = NULL;
+			  }
+                      | LEFTCURLYBRACETOKEN
+		          {
+			    $$ = NULL;
+			  }
+;
+
+endsymbol:              ENDTOKEN
+                          {
+			    $$ = NULL;
+			  }
+                      | RIGHTCURLYBRACETOKEN
+		          {
+			    $$ = NULL;
+			  }
+;
+
 command:                simplecommand
                           {
 			    $$ = $1;
 			  }
-                      | BEGINTOKEN commandlist ENDTOKEN
+                      | beginsymbol commandlist endsymbol
                           {
 			    $$ = makeCommandList($2);
                           }
-                      | BEGINTOKEN variabledeclarationlist commandlist ENDTOKEN
+                      | beginsymbol variabledeclarationlist commandlist endsymbol
                           {
 			    $$ = makeCommandList(concatChains($2, $3));
                           }
-                      | BEGINTOKEN variabledeclarationlist ENDTOKEN
+                      | beginsymbol variabledeclarationlist endsymbol
                           {
 			    $$ = makeCommandList($2);
                           }
-                      | BEGINTOKEN ENDTOKEN
+                      | beginsymbol endsymbol
                           {
 			    $$ = makeNop();
                           }
@@ -538,99 +569,99 @@ identifierlist:         IDENTIFIERTOKEN
 			  }
 ;
 
-procbody:               LPARTOKEN RPARTOKEN BEGINTOKEN commandlist ENDTOKEN
+procbody:               LPARTOKEN RPARTOKEN beginsymbol commandlist endsymbol
                           {
 			    $$ = makeProc(NULL, makeCommandList($4), makeUnit());
                           }
-                      | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist ENDTOKEN
+                      | LPARTOKEN RPARTOKEN beginsymbol variabledeclarationlist commandlist endsymbol
                           {
 			    $$ = makeProc(NULL, makeCommandList(concatChains($4, $5)), makeUnit());
                           }
-                      | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist ENDTOKEN
+                      | LPARTOKEN RPARTOKEN beginsymbol variabledeclarationlist endsymbol
                           {
 			    $$ = makeProc(NULL, makeCommandList($4), makeUnit());
                           }
-                      | LPARTOKEN RPARTOKEN BEGINTOKEN ENDTOKEN
+                      | LPARTOKEN RPARTOKEN beginsymbol endsymbol
                           {
 			    $$ = makeProc(NULL, makeCommandList(addElement(NULL,makeNop())), makeUnit());
                           }
-                      | LPARTOKEN RPARTOKEN BEGINTOKEN commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                      | LPARTOKEN RPARTOKEN beginsymbol commandlist RETURNTOKEN thing SEMICOLONTOKEN endsymbol
                           {
 			    $$ = makeProc(NULL, makeCommandList($4), $6);
                           }
-                      | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                      | LPARTOKEN RPARTOKEN beginsymbol variabledeclarationlist commandlist RETURNTOKEN thing SEMICOLONTOKEN endsymbol
                           {
 			    $$ = makeProc(NULL, makeCommandList(concatChains($4, $5)), $7);
                           }
-                      | LPARTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                      | LPARTOKEN RPARTOKEN beginsymbol variabledeclarationlist RETURNTOKEN thing SEMICOLONTOKEN endsymbol
                           {
 			    $$ = makeProc(NULL, makeCommandList($4), $6);
                           }
-                      | LPARTOKEN RPARTOKEN BEGINTOKEN RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                      | LPARTOKEN RPARTOKEN beginsymbol RETURNTOKEN thing SEMICOLONTOKEN endsymbol
                           {
 			    $$ = makeProc(NULL, makeCommandList(addElement(NULL,makeNop())), $5);
                           }
-                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN commandlist ENDTOKEN
+                      | LPARTOKEN identifierlist RPARTOKEN beginsymbol commandlist endsymbol
                           {
 			    $$ = makeProc($2, makeCommandList($5), makeUnit());
                           }
-                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist ENDTOKEN
+                      | LPARTOKEN identifierlist RPARTOKEN beginsymbol variabledeclarationlist commandlist endsymbol
                           {
 			    $$ = makeProc($2, makeCommandList(concatChains($5, $6)), makeUnit());
                           }
-                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist ENDTOKEN
+                      | LPARTOKEN identifierlist RPARTOKEN beginsymbol variabledeclarationlist endsymbol
                           {
 			    $$ = makeProc($2, makeCommandList($5), makeUnit());
                           }
-                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN ENDTOKEN
+                      | LPARTOKEN identifierlist RPARTOKEN beginsymbol endsymbol
                           {
 			    $$ = makeProc($2, makeCommandList(addElement(NULL,makeNop())), makeUnit());
                           }
-                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                      | LPARTOKEN identifierlist RPARTOKEN beginsymbol commandlist RETURNTOKEN thing SEMICOLONTOKEN endsymbol
                           {
 			    $$ = makeProc($2, makeCommandList($5), $7);
                           }
-                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                      | LPARTOKEN identifierlist RPARTOKEN beginsymbol variabledeclarationlist commandlist RETURNTOKEN thing SEMICOLONTOKEN endsymbol
                           {
 			    $$ = makeProc($2, makeCommandList(concatChains($5, $6)), $8);
                           }
-                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN variabledeclarationlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                      | LPARTOKEN identifierlist RPARTOKEN beginsymbol variabledeclarationlist RETURNTOKEN thing SEMICOLONTOKEN endsymbol
                           {
 			    $$ = makeProc($2, makeCommandList($5), $7);
                           }
-                      | LPARTOKEN identifierlist RPARTOKEN BEGINTOKEN RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                      | LPARTOKEN identifierlist RPARTOKEN beginsymbol RETURNTOKEN thing SEMICOLONTOKEN endsymbol
                           {
 			    $$ = makeProc($2, makeCommandList(addElement(NULL, makeNop())), $6);
                           }
-                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN BEGINTOKEN commandlist ENDTOKEN
+                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN beginsymbol commandlist endsymbol
                           {
 			    $$ = makeProcIllim($2, makeCommandList($7), makeUnit());
                           }
-                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist ENDTOKEN
+                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN beginsymbol variabledeclarationlist commandlist endsymbol
                           {
 			    $$ = makeProcIllim($2, makeCommandList(concatChains($7, $8)), makeUnit());
                           }
-                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist ENDTOKEN
+                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN beginsymbol variabledeclarationlist endsymbol
                           {
 			    $$ = makeProcIllim($2, makeCommandList($7), makeUnit());
                           }
-                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN BEGINTOKEN ENDTOKEN
+                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN beginsymbol endsymbol
                           {
 			    $$ = makeProcIllim($2, makeCommandList(addElement(NULL,makeNop())), makeUnit());
                           }
-                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN BEGINTOKEN commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN beginsymbol commandlist RETURNTOKEN thing SEMICOLONTOKEN endsymbol
                           {
 			    $$ = makeProcIllim($2, makeCommandList($7), $9);
                           }
-                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist commandlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN beginsymbol variabledeclarationlist commandlist RETURNTOKEN thing SEMICOLONTOKEN endsymbol
                           {
 			    $$ = makeProcIllim($2, makeCommandList(concatChains($7, $8)), $10);
                           }
-                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN BEGINTOKEN variabledeclarationlist RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN beginsymbol variabledeclarationlist RETURNTOKEN thing SEMICOLONTOKEN endsymbol
                           {
 			    $$ = makeProcIllim($2, makeCommandList($7), $9);
                           }
-                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN BEGINTOKEN RETURNTOKEN thing SEMICOLONTOKEN ENDTOKEN
+                      | LPARTOKEN IDENTIFIERTOKEN EQUALTOKEN DOTSTOKEN RPARTOKEN beginsymbol RETURNTOKEN thing SEMICOLONTOKEN endsymbol
                           {
 			    $$ = makeProcIllim($2, makeCommandList(addElement(NULL, makeNop())), $8);
                           }
@@ -806,6 +837,21 @@ simpleassignment:       IDENTIFIERTOKEN EQUALTOKEN thing
 			    $$ = makeFloatAssignmentInIndexing($1->a,$1->b,$3);
 			    free($1);
 			  }
+                      | structuring EQUALTOKEN thing
+                          {
+			    $$ = makeProtoAssignmentInStructure($1,$3);
+			  }
+                      | structuring ASSIGNEQUALTOKEN thing
+                          {
+			    $$ = makeProtoFloatAssignmentInStructure($1,$3);
+			  }
+;
+
+structuring:            basicthing DOTTOKEN IDENTIFIERTOKEN 
+		          {
+			    $$ = makeStructAccess($1,$3);
+			    free($3);
+			  }
 ;
 
 stateassignment:        PRECTOKEN EQUALTOKEN thing
@@ -939,6 +985,36 @@ thinglist:              thing
                       | thing COMMATOKEN thinglist
                           {
 			    $$ = addElement($3, $1);
+			  }
+;
+
+structelementlist:      structelement
+                          {
+			    $$ = addElement(NULL, $1);
+			  }
+                      | structelement structelementseparator structelementlist
+                          {
+			    $$ = addElement($3, $1);
+			  }
+;
+
+structelementseparator: COMMATOKEN
+                          {
+			    $$ = NULL;
+			  }
+                      | SEMICOLONTOKEN
+		          {
+			    $$ = NULL;
+			  }
+;
+
+structelement:          DOTTOKEN IDENTIFIERTOKEN EQUALTOKEN thing
+                          {
+			    $$ = (entry *) safeMalloc(sizeof(entry));
+			    $$->name = (char *) safeCalloc(strlen($2) + 1, sizeof(char));
+			    strcpy($$->name,$2);
+			    free($2);
+			    $$->value = (void *) ($4);
 			  }
 ;
 
@@ -1296,6 +1372,10 @@ basicthing:             ONTOKEN
                           {
 			    $$ = $2;
 			  }
+                      | LEFTCURLYBRACETOKEN structelementlist RIGHTCURLYBRACETOKEN
+		          {
+			    $$ = makeStructure($2);
+			  }
                       | statedereference
                           {
 			    $$ = $1;
@@ -1304,6 +1384,16 @@ basicthing:             ONTOKEN
                           {
 			    $$ = makeIndex($1->a, $1->b);
 			    free($1);
+			  }
+                      | basicthing DOTTOKEN IDENTIFIERTOKEN 
+		          {
+			    $$ = makeStructAccess($1,$3);
+			    free($3);
+			  }
+                      | basicthing DOTTOKEN IDENTIFIERTOKEN LPARTOKEN thinglist RPARTOKEN
+		          {
+			    $$ = makeApply(makeStructAccess($1,$3),$5);
+			    free($3);
 			  }
                       | LPARTOKEN thing RPARTOKEN LPARTOKEN thinglist RPARTOKEN
                           {
@@ -2107,6 +2197,10 @@ help:                   CONSTANTTOKEN
 #warning "No help text for GE"
 #endif
 #endif
+			  }
+                      | DOTTOKEN
+                          {
+			    outputMode(); sollyaPrintf("Accessing an element in a structured type.\n");
 			  }
                       | RIGHTANGLESTARTOKEN
                           {
@@ -3789,11 +3883,11 @@ help:                   CONSTANTTOKEN
 			    outputMode(); sollyaPrintf("For construct: for i from const to const2 [by const3] do command.\n");
 			    outputMode(); sollyaPrintf("While construct: while condition do command.\n");
                           }
-                      | BEGINTOKEN
+                      | beginsymbol
                           {
 			    outputMode(); sollyaPrintf("Begin-end construct: begin command; command; ... end.\n");
                           }
-                      | ENDTOKEN
+                      | endsymbol
                           {
 			    outputMode(); sollyaPrintf("Begin-end construct: begin command; command; ... end.\n");
                           }

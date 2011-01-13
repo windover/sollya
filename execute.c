@@ -103,7 +103,14 @@ node *copyThing(node *);
 node *evaluateThingInner(node *);
 node *evaluateThing(node *);
 void *copyThingOnVoid(void *);
+void *copyEntryOnVoid(void *ptr);
+void *evaluateEntryOnVoid(void *ptr);
+void freeEntryOnVoid(void *ptr);
 
+void freeDoNothing(void *ptr) {
+  UNUSED_PARAM(ptr); 
+  return;
+}
 
 // Performs a fast check if a < b or a > b 
 //
@@ -807,6 +814,11 @@ node *copyThing(node *tree) {
     copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
     strcpy(copy->string,tree->string);
     break;  	
+  case STRUCTACCESS:
+    copy->child1 = copyThing(tree->child1);
+    copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+    strcpy(copy->string,tree->string);
+    break;  	
   case APPLY:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     copy->child1 = copyThing(tree->child1);
@@ -839,6 +851,9 @@ node *copyThing(node *tree) {
     break; 			
   case LIST:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+    break; 	
+  case STRUCTURE:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyEntryOnVoid);
     break; 			 	
   case FINALELLIPTICLIST:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
@@ -1006,7 +1021,23 @@ node *copyThing(node *tree) {
     break; 			
   case FLOATASSIGNMENTININDEXING:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+    break; 	
+  case ASSIGNMENTINSTRUCTURE:
+    copy->child1 = copyThing(tree->child1);
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyString);
     break; 			
+  case FLOATASSIGNMENTINSTRUCTURE:
+    copy->child1 = copyThing(tree->child1);
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyString);
+    break; 				
+  case PROTOASSIGNMENTINSTRUCTURE:
+    copy->child1 = copyThing(tree->child1);
+    copy->child2 = copyThing(tree->child2);
+    break; 			
+  case PROTOFLOATASSIGNMENTINSTRUCTURE:
+    copy->child1 = copyThing(tree->child1);
+    copy->child2 = copyThing(tree->child2);
+    break; 				
   case DIRTYFINDZEROS:
     copy->child1 = copyThing(tree->child1);
     copy->child2 = copyThing(tree->child2);
@@ -1097,6 +1128,31 @@ node *copyThing(node *tree) {
 void *copyThingOnVoid(void *tree) {
   return (void *) copyThing((node *) tree);
 }
+
+void *copyEntryOnVoid(void *ptr) {
+  entry *copy;
+  copy = (entry *) safeMalloc(sizeof(entry));
+  copy->name = (char *) safeCalloc(strlen(((entry *) ptr)->name)+1,sizeof(char));
+  strcpy(copy->name,((entry *) ptr)->name);
+  copy->value = copyThing((node *) (((entry *) ptr)->value));
+  return copy;
+}
+
+void *evaluateEntryOnVoid(void *ptr) {
+  entry *copy;
+  copy = (entry *) safeMalloc(sizeof(entry));
+  copy->name = (char *) safeCalloc(strlen(((entry *) ptr)->name)+1,sizeof(char));
+  strcpy(copy->name,((entry *) ptr)->name);
+  copy->value = evaluateThing((node *) (((entry *) ptr)->value));
+  return copy;
+}
+
+void freeEntryOnVoid(void *ptr) {
+  free(((entry *) ptr)->name);
+  freeThing((node *) (((entry *) ptr)->value));
+  free(ptr);
+}
+
 
 char *getTimingStringForThing(node *tree) {
   char *constString, *newString;
@@ -1575,6 +1631,9 @@ char *getTimingStringForThing(node *tree) {
   case TABLEACCESSWITHSUBSTITUTE:
     constString = "dereferencing an identifier and substituting";
     break;  	
+  case STRUCTACCESS:
+    constString = "accessing a member of a structure";
+    break;  	
   case APPLY:
     constString = "applying something to something";
     break;  	
@@ -1601,6 +1660,9 @@ char *getTimingStringForThing(node *tree) {
     break; 			
   case LIST:
     constString = "handling a list";
+    break; 
+  case STRUCTURE:
+    constString = "handling a structure";
     break; 			 	
   case FINALELLIPTICLIST:
     constString = "handling a finally elliptic list";
@@ -1754,7 +1816,19 @@ char *getTimingStringForThing(node *tree) {
     break; 			
   case FLOATASSIGNMENTININDEXING:
     constString = "assigning a floating-point value to an indexed element of a list";
-    break; 			
+    break; 	
+  case ASSIGNMENTINSTRUCTURE:
+    constString = "assigning an element to a structure";
+    break; 					
+  case FLOATASSIGNMENTINSTRUCTURE:
+    constString = "assigning a floating-point valued element to a structure";
+    break; 	
+  case PROTOASSIGNMENTINSTRUCTURE:
+    constString = NULL;
+    break; 					
+  case PROTOFLOATASSIGNMENTINSTRUCTURE:
+    constString = NULL;
+    break; 					
   case DIRTYFINDZEROS:
     constString = "searching zeros dirtily";
     break; 			
@@ -1997,6 +2071,10 @@ int isString(node *tree) {
 
 int isList(node *tree) {
   return (tree->nodeType == LIST);
+}
+
+int isStructure(node *tree) {
+  return (tree->nodeType == STRUCTURE);
 }
 
 int isEmptyList(node *tree) {
@@ -4163,6 +4241,10 @@ char *sRawPrintThing(node *tree) {
     }
     res = concatAndFree(res, newString(")"));
     break;  	
+  case STRUCTACCESS:
+    res = concatAndFree(sRawPrintThing(tree->child1),newString("."));
+    res = concatAndFree(res, newString(tree->string));
+    break;  	
   case APPLY:
     res = concatAndFree(concatAndFree(concatAndFree(newString("("),sRawPrintThing(tree->child1)), newString(")")),newString("("));
     curr = tree->arguments;
@@ -4203,6 +4285,18 @@ char *sRawPrintThing(node *tree) {
       curr = curr->next;
     }
     res = concatAndFree(res, newString("|]"));
+    break; 			 	
+  case STRUCTURE:
+    res = newString("{ ");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res,concatAndFree(newString("."),newString(((entry *) (curr->value))->name)));
+      res = concatAndFree(res,newString(" = "));
+      res = concatAndFree(res,sRawPrintThing((node *) (((entry *) (curr->value))->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", "));
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(" }"));
     break; 			 	
   case FINALELLIPTICLIST:
     res = newString("[|");
@@ -4572,7 +4666,41 @@ char *sRawPrintThing(node *tree) {
     res = concatAndFree(res, newString("] := "));
     curr = curr->next;
     res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
-    break; 			
+    break; 	
+  case ASSIGNMENTINSTRUCTURE:
+    curr = tree->arguments;
+    res = newString((char *) (curr->value));
+    curr = curr->next;
+    while (curr != NULL) {
+      res = concatAndFree(res, newString("."));
+      res = concatAndFree(res, newString((char *) (curr->value)));
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(" = "));
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 					
+  case FLOATASSIGNMENTINSTRUCTURE:
+    curr = tree->arguments;
+    res = newString((char *) (curr->value));
+    curr = curr->next;
+    while (curr != NULL) {
+      res = concatAndFree(res, newString("."));
+      res = concatAndFree(res, newString((char *) (curr->value)));
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(" := "));
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    break; 					
+  case PROTOASSIGNMENTINSTRUCTURE:
+    res = sRawPrintThing(tree->child1);
+    res = concatAndFree(res, newString(" = "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    break; 					
+  case PROTOFLOATASSIGNMENTINSTRUCTURE:
+    res = sRawPrintThing(tree->child1);
+    res = concatAndFree(res, newString(" := "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    break; 					
   case DIRTYFINDZEROS:
     res = newString("dirtyfindzeros(");
     res = concatAndFree(res, sRawPrintThing(tree->child1));
@@ -5378,10 +5506,22 @@ void autoprint(node *thing, int inList) {
 	}
 	sollyaPrintf("...|]");
       } else {
-	if (inList) 
-	  printThingWithFullStrings(thing);
-	else 
-	  printThing(thing);
+	if (isStructure(thing)) {
+	  sollyaPrintf("{ ");
+	  curr = thing->arguments;
+	  while (curr != NULL) {
+	    sollyaPrintf(".%s = ", ((entry *) (curr->value))->name);
+	    autoprint((node *) (((entry *) (curr->value))->value),1);
+	    if (curr->next != NULL) sollyaPrintf(", ");
+	    curr = curr->next;
+	  }
+	  sollyaPrintf(" }");
+	} else {
+	  if (inList) 
+	    printThingWithFullStrings(thing);
+	  else 
+	    printThing(thing);
+	}
       }
     }
   }
@@ -5659,9 +5799,177 @@ void doNothing(int n) {
   }
 }
 
+int tryToRewriteLeftHandStructAccessInner(chain **idents, node *thing) {
+  int okay;
+  char *buf;
+  chain *tempChain;
+
+  okay = 0;
+
+  switch (thing->nodeType) {
+  case TABLEACCESS:
+    buf = (char *) safeCalloc(strlen(thing->string)+1,sizeof(char));
+    strcpy(buf,thing->string);
+    *idents = addElement(NULL,buf);
+    okay = 1;
+    break;
+  case STRUCTACCESS:
+    if (tryToRewriteLeftHandStructAccessInner(&tempChain,thing->child1)) {
+      buf = (char *) safeCalloc(strlen(thing->string)+1,sizeof(char));
+      strcpy(buf,thing->string);
+      *idents = addElement(tempChain,buf);
+      okay = 1;
+    } else {
+      okay = 0;
+    }
+    break;
+  default:
+    okay = 0;
+  }
+    
+  return okay;
+}
+
+int tryToRewriteLeftHandStructAccess(chain **idents, node *thing) {
+  chain *tempChain, *curr;
+
+  if (tryToRewriteLeftHandStructAccessInner(&tempChain, thing)) {
+    *idents = NULL;
+    for (curr=tempChain;curr!=NULL;curr=curr->next) {
+      *idents = addElement(*idents,curr->value);
+    }
+    freeChain(tempChain, freeDoNothing);
+    return 1;
+  }
+  
+  return 0;
+}
+
+node *createNestedStructure(node *value, chain *idents) {
+  node *structure;
+  chain *curr;
+  chain *assoclist;
+  entry *structEntry;
+  chain *revertedIdents;
+
+  revertedIdents = NULL;
+  for (curr=idents;curr!=NULL;curr=curr->next) {
+    revertedIdents = addElement(revertedIdents,curr->value);
+  }
+
+  curr = revertedIdents;
+  structEntry = (entry *) safeMalloc(sizeof(entry));
+  structEntry->name = (char *) safeCalloc(strlen((char *) (curr->value))+1,sizeof(char));
+  strcpy(structEntry->name,(char *) (curr->value));
+  structEntry->value = copyThing(value);
+  assoclist = addElement(NULL,(void *) structEntry);
+  structure = makeStructure(assoclist);
+  curr = curr->next;
+  while (curr != NULL) {
+    structEntry = (entry *) safeMalloc(sizeof(entry));
+    structEntry->name = (char *) safeCalloc(strlen((char *) (curr->value))+1,sizeof(char));
+    strcpy(structEntry->name,(char *) (curr->value));
+    structEntry->value = structure;
+    assoclist = addElement(NULL,(void *) structEntry);
+    structure = makeStructure(assoclist);
+    curr = curr->next;
+  }
+
+  freeChain(revertedIdents, freeDoNothing);
+
+  return structure;
+}
+
+node *recomputeLeftHandSideForAssignmentInStructure(node *oldValue, node *newValue, chain *idents) {
+  chain *currentIdent;
+  node *currentStruct;
+  int okay, found;
+  node *res;
+  char *myIdent;
+  chain *currentAssoc;
+  char *otherIdent;
+  node *nextStruct;
+  entry *newEntry;
+
+  if ((oldValue == NULL) || (isError(oldValue))) 
+    return createNestedStructure(newValue, idents); 
+
+  if (!isStructure(oldValue)) {
+    printMessage(1,"Warning: cannot modify an element of something that is not a structure.\n");
+    return NULL;
+  }
+
+  okay = 1;
+  res = copyThing(oldValue);
+  currentStruct = res;
+  currentIdent = idents;
+  while (okay && (currentIdent != NULL)) {
+    myIdent = (char *) (currentIdent->value);
+    currentAssoc = currentStruct->arguments;
+    found = 0;
+    while (!found && (currentAssoc != NULL)) {
+      otherIdent = (char *) (((entry *) (currentAssoc->value))->name);
+      if (!strcmp(otherIdent,myIdent)) {
+	found = 1;
+      } else {
+	currentAssoc = currentAssoc->next;
+      }
+    }
+    if (found) {
+      nextStruct = (node *) (((entry *) (currentAssoc->value))->value);
+      if (isError(nextStruct)) {
+	freeThing(nextStruct);
+	if (currentIdent->next == NULL) {
+	  ((entry *) (currentAssoc->value))->value = copyThing(newValue);
+	} else {
+	  ((entry *) (currentAssoc->value))->value = createNestedStructure(newValue, currentIdent->next); 
+	}
+	break;
+      } else {
+	if (isStructure(nextStruct)) {
+	  if (currentIdent->next == NULL) {
+	    freeThing(nextStruct);
+	    ((entry *) (currentAssoc->value))->value = copyThing(newValue);
+	  } else {
+	    currentStruct = nextStruct;
+	  }
+	} else {
+	  if (currentIdent->next == NULL) {
+	    freeThing(nextStruct);
+	    ((entry *) (currentAssoc->value))->value = copyThing(newValue);
+	  } else {
+	    okay = 0;
+	    printMessage(1,"Warning: cannot modify an element of something that is not a structure.\n");
+	    break;
+	  }
+	}
+      }
+    } else {
+      newEntry = (entry *) safeMalloc(sizeof(entry));
+      newEntry->name = (char *) safeCalloc(strlen(myIdent)+1,sizeof(char));
+      strcpy(newEntry->name,myIdent);
+      if (currentIdent->next == NULL) {
+	newEntry->value = copyThing(newValue);
+      } else {
+	newEntry->value = createNestedStructure(newValue, currentIdent->next); 
+      }
+      currentStruct->arguments = addElement(currentStruct->arguments,newEntry);
+      break;
+    }
+    currentIdent = currentIdent->next;
+  }
+
+  if (!okay) {
+    freeThing(res);
+    res = NULL;
+  }
+
+  return res;
+}
+
 int executeCommandInner(node *tree) {
   int result, res, intTemp, resA, resB, resC, resD, resE, resF, defaultVal, i;  
-  chain *curr, *tempList, *tempList2; 
+  chain *curr, *tempList, *tempList2, *tempChain; 
   mpfr_t a, b, c, d, e;
   node *tempNode, *tempNode2, *tempNode3, *tempNode4;
   libraryFunction *tempLibraryFunction;
@@ -6756,7 +7064,7 @@ int executeCommandInner(node *tree) {
         considerDyingOnError();
       }
     } else {
-      printMessage(1,"Warning: the first element is not an identifier.\n");
+      printMessage(1,"Warning: the first element of the left-hand side is not an identifier.\n");
       printMessage(1,"This command will have no effect.\n");
       considerDyingOnError();
     }
@@ -6993,7 +7301,85 @@ int executeCommandInner(node *tree) {
         considerDyingOnError();
       }
     } else {
-      printMessage(1,"Warning: the first element is not an identifier.\n");
+      printMessage(1,"Warning: the first element of the left-hand side is not an identifier.\n");
+      printMessage(1,"This command will have no effect.\n");
+      considerDyingOnError();
+    }
+    break;
+  case ASSIGNMENTINSTRUCTURE:
+    tempNode = evaluateThing(tree->child1);
+    tempNode2 = getThingFromTable((char *) (tree->arguments->value));
+    tempNode3 = recomputeLeftHandSideForAssignmentInStructure(tempNode2, tempNode, tree->arguments->next);
+    if (tempNode3 != NULL) {
+      if (!assignThingToTable((char *) (tree->arguments->value), tempNode3)) {
+	freeThing(tempNode);
+	if (tempNode2 != NULL) freeThing(tempNode2);
+	freeThing(tempNode3);
+	printMessage(1,"Warning: the last assignment will have no effect.\n");
+	considerDyingOnError();
+      } else {
+	freeThing(tempNode);
+	if (tempNode2 != NULL) freeThing(tempNode2);
+	freeThing(tempNode3);
+      }
+    } else {
+      freeThing(tempNode);
+      if (tempNode2 != NULL) freeThing(tempNode2);
+      printMessage(1,"Warning: the last assignment will have no effect.\n");
+      considerDyingOnError();
+    }
+    break; 	
+  case FLOATASSIGNMENTINSTRUCTURE:
+    tempNode = evaluateThing(tree->child1);
+    if (isPureTree(tempNode) && isConstant(tempNode)) {
+      mpfr_init2(a, tools_precision);
+      if (evaluateThingToConstant(a, tempNode, NULL,1))  {
+	freeThing(tempNode);
+	tempNode = makeConstant(a);
+      }
+      mpfr_clear(a);
+    }
+    tempNode2 = getThingFromTable((char *) (tree->arguments->value));
+    tempNode3 = recomputeLeftHandSideForAssignmentInStructure(tempNode2, tempNode, tree->arguments->next);
+    if (tempNode3 != NULL) {
+      if (!assignThingToTable((char *) (tree->arguments->value), tempNode3)) {
+	freeThing(tempNode);
+	if (tempNode2 != NULL) freeThing(tempNode2);
+	freeThing(tempNode3);
+	printMessage(1,"Warning: the last assignment will have no effect.\n");
+	considerDyingOnError();
+      } else {
+	freeThing(tempNode);
+	if (tempNode2 != NULL) freeThing(tempNode2);
+	freeThing(tempNode3);
+      }
+    } else {
+      freeThing(tempNode);
+      if (tempNode2 != NULL) freeThing(tempNode2);
+      printMessage(1,"Warning: the last assignment will have no effect.\n");
+      considerDyingOnError();
+    }
+    break;
+  case PROTOASSIGNMENTINSTRUCTURE:
+    if (tryToRewriteLeftHandStructAccess(&tempChain,tree->child1)) {
+      tempNode = makeAssignmentInStructure(tempChain,copyThing(tree->child2));
+      res = executeCommand(tempNode);
+      if (res) result = 1;
+      freeThing(tempNode);
+    } else {
+      printMessage(1,"Warning: the left-hand side is not an access to an element of a structured type.\n");
+      printMessage(1,"This command will have no effect.\n");
+      considerDyingOnError();
+    }
+    break;
+  case PROTOFLOATASSIGNMENTINSTRUCTURE:
+    if (tryToRewriteLeftHandStructAccess(&tempChain,tree->child1)) {
+      tempNode = makeFloatAssignmentInStructure(tempChain,copyThing(tree->child2));
+      res = executeCommand(tempNode);
+      if (res) result = 1;
+      freeThing(tempNode);
+    } else {
+      printMessage(1,"Warning: the left-hand side is not an access to an element of a structured type.\n");
       printMessage(1,"This command will have no effect.\n");
       considerDyingOnError();
     }
@@ -8802,6 +9188,19 @@ node *makeTableAccessWithSubstitute(char *string, chain *thinglist) {
 
 }
 
+node *makeStructAccess(node *thing, char *string) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = STRUCTACCESS;
+  res->string = (char *) safeCalloc(strlen(string) + 1, sizeof(char));
+  strcpy(res->string, string);
+  res->child1 = thing;
+
+  return res;
+
+}
+
 node *makeApply(node *thing, chain *thinglist) {
   node *res;
 
@@ -8905,6 +9304,28 @@ node *makeList(chain *thinglist) {
   res = (node *) safeMalloc(sizeof(node));
   res->nodeType = LIST;
   res->arguments = thinglist;
+
+  return res;
+
+}
+
+node *makeStructure(chain *assoclist) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = STRUCTURE;
+  res->arguments = assoclist;
+
+  return res;
+}
+
+node *makeRevertedStructure(chain *assoclist) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = STRUCTURE;
+  res->arguments = copyChain(assoclist,copyEntryOnVoid);
+  freeChain(assoclist,freeEntryOnVoid);
 
   return res;
 
@@ -9826,6 +10247,49 @@ node *makeFloatAssignmentInIndexing(node *thing1, node *thing2, node *thing3) {
   return res;
 }
 
+node *makeAssignmentInStructure(chain *idents, node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = ASSIGNMENTINSTRUCTURE;
+  res->arguments = idents;
+  res->child1 = thing;
+
+  return res;
+}
+
+node *makeFloatAssignmentInStructure(chain *idents, node *thing) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = FLOATASSIGNMENTINSTRUCTURE;
+  res->arguments = idents;
+  res->child1 = thing;
+
+  return res;
+}
+
+node *makeProtoAssignmentInStructure(node *thing1, node *thing2) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = PROTOASSIGNMENTINSTRUCTURE;
+  res->child1 = thing1;
+  res->child2 = thing2;
+
+  return res;
+}
+
+node *makeProtoFloatAssignmentInStructure(node *thing1, node *thing2) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = PROTOFLOATASSIGNMENTINSTRUCTURE;
+  res->child1 = thing1;
+  res->child2 = thing2;
+
+  return res;
+}
 
 void freeThingOnVoid(void *tree) {
   freeThing((node *) tree);
@@ -10465,6 +10929,11 @@ void freeThing(node *tree) {
     freeChain(tree->arguments, freeThingOnVoid);
     free(tree);
     break;  	
+  case STRUCTACCESS:
+    free(tree->string);
+    freeThing(tree->child1);
+    free(tree);
+    break;  	
   case APPLY:
     freeThing(tree->child1);
     freeChain(tree->arguments, freeThingOnVoid);
@@ -10499,6 +10968,10 @@ void freeThing(node *tree) {
     break; 			
   case LIST:
     freeChain(tree->arguments, freeThingOnVoid);
+    free(tree);
+    break; 			 	
+  case STRUCTURE:
+    freeChain(tree->arguments, freeEntryOnVoid);
     free(tree);
     break; 			 	
   case FINALELLIPTICLIST:
@@ -10718,7 +11191,27 @@ void freeThing(node *tree) {
   case FLOATASSIGNMENTININDEXING:
     freeChain(tree->arguments, freeThingOnVoid);
     free(tree);
-    break; 			
+    break; 	
+  case ASSIGNMENTINSTRUCTURE:
+    freeChain(tree->arguments, freeStringPtr);
+    freeThing(tree->child1);
+    free(tree);
+    break; 				
+  case FLOATASSIGNMENTINSTRUCTURE:
+    freeChain(tree->arguments, freeStringPtr);
+    freeThing(tree->child1);
+    free(tree);
+    break; 					
+  case PROTOASSIGNMENTINSTRUCTURE:
+    freeThing(tree->child1);
+    freeThing(tree->child2);
+    free(tree);
+    break; 				
+  case PROTOFLOATASSIGNMENTINSTRUCTURE:
+    freeThing(tree->child1);
+    freeThing(tree->child2);
+    free(tree);
+    break; 					
   case DIRTYFINDZEROS:
     freeThing(tree->child1);
     freeThing(tree->child2);
@@ -10856,6 +11349,8 @@ int isEqualThingOnVoid(void *tree, void *tree2) {
 }
 
 int isEqualThing(node *tree, node *tree2) {
+  chain *curri, *currj;
+  int found;
   
   if (tree == NULL) return 0;
   if (tree2 == NULL) return 0;
@@ -11329,6 +11824,9 @@ int isEqualThing(node *tree, node *tree2) {
   case TABLEACCESSWITHSUBSTITUTE:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break;  	
+  case STRUCTACCESS:
+    if (!isEqualThing(tree->child1,tree2->child2)) return 0;
+    if (strcmp(tree->string,tree2->string) != 0) return 0;    break;  	
   case APPLY:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
@@ -11348,6 +11846,24 @@ int isEqualThing(node *tree, node *tree2) {
     break; 			
   case LIST:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
+    break; 			 	
+  case STRUCTURE:
+    if (lengthChain(tree->arguments) != lengthChain(tree2->arguments)) return 0;
+    for (curri=tree->arguments;curri!=NULL;curri=curri->next) {
+      found = 0;
+      currj = tree2->arguments;
+      while ((!found) && 
+	     (currj != NULL)) {
+	if ((!strcmp(((entry *) (curri->value))->name,
+		     ((entry *) (currj->value))->name)) &&
+	    (isEqualThing(((node *) ((entry *) (curri->value))->value),
+			  ((node *) ((entry *) (currj->value))->value)))) {
+	  found = 1;
+	}
+	currj = currj->next;
+      }
+      if (!found) return 0;
+    }
     break; 			 	
   case FINALELLIPTICLIST:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
@@ -11515,6 +12031,22 @@ int isEqualThing(node *tree, node *tree2) {
     break; 			
   case FLOATASSIGNMENTININDEXING:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
+    break; 	
+  case ASSIGNMENTINSTRUCTURE:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualStringOnVoid)) return 0;
+    break; 					
+  case FLOATASSIGNMENTINSTRUCTURE:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualStringOnVoid)) return 0;
+    break; 					
+  case PROTOASSIGNMENTINSTRUCTURE:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualThing(tree->child2,tree2->child2)) return 0;
+    break; 			
+  case PROTOFLOATASSIGNMENTINSTRUCTURE:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     break; 			
   case DIRTYFINDZEROS:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
@@ -11649,6 +12181,19 @@ int isCorrectlyTypedBaseSymbol(node *tree) {
   return 0;
 }
 
+int associationContainsDoubleEntries(chain *assoc) {
+  chain *curri, *currj;
+
+  for (curri=assoc;curri!=NULL;curri=curri->next) {
+    for (currj=assoc;currj!=NULL;currj=currj->next) {
+      if ((curri != currj) &&
+	  (!strcmp(((entry *) (curri->value))->name,
+		   ((entry *) (currj->value))->name))) return 1;
+    }
+  }
+
+  return 0;
+}
 
 int isCorrectlyTyped(node *tree) {
   chain *curr;
@@ -11660,7 +12205,16 @@ int isCorrectlyTyped(node *tree) {
   if (isPureList(tree)) {
     curr = tree->arguments;
     while (curr != NULL) {
-      if (!isCorrectlyTyped((node *) (curr->value))) return 0;
+      if ((!isCorrectlyTyped((node *) (curr->value))) && (!isError((node *) (curr->value)))) return 0;
+      curr = curr->next;
+    }
+    return 1;
+  }
+  if (isStructure(tree)) {
+    if (associationContainsDoubleEntries(tree->arguments)) return 0;
+    curr = tree->arguments;
+    while (curr != NULL) {
+      if ((!isCorrectlyTyped((node *) (((entry *) (curr->value))->value))) && (!isError((node *) (((entry *) (curr->value))->value)))) return 0;
       curr = curr->next;
     }
     return 1;
@@ -11668,7 +12222,7 @@ int isCorrectlyTyped(node *tree) {
   if (isPureFinalEllipticList(tree)) {
     curr = tree->arguments;
     while (curr != NULL) {
-      if (!isCorrectlyTyped((node *) (curr->value))) return 0;
+      if ((!isCorrectlyTyped((node *) (curr->value))) && (!isError((node *) (curr->value)))) return 0;
       curr = curr->next;
     }
     return 1;
@@ -15256,6 +15810,49 @@ node *evaluateThingInner(node *tree) {
     freeThing(tempNode);
     if (timingString != NULL) popTimeCounter(timingString);
     break;
+  case STRUCTACCESS:
+    if (isStructure(tree->child1) && 
+	(!associationContainsDoubleEntries(tree->child1->arguments))) {
+      tempChain = tree->child1->arguments;
+      resA = 0; tempNode = NULL;
+      while ((!resA) && (tempChain != NULL)) {
+	if (!strcmp(tree->string,((entry *) (tempChain->value))->name)) {
+	  resA = 1;
+	  tempNode = (node *) (((entry *) (tempChain->value))->value);
+	}
+	tempChain = tempChain->next;
+      }
+      if ((resA) && (tempNode != NULL)) {
+	free(copy);
+	copy = evaluateThing(tempNode);
+      } else {
+	  copy->child1 = evaluateThingInner(tree->child1);
+	  copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+	  strcpy(copy->string,tree->string);
+      }
+    } else {
+      copy->child1 = evaluateThingInner(tree->child1);
+      copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+      strcpy(copy->string,tree->string);
+      if (isStructure(copy->child1) && 
+	  (!associationContainsDoubleEntries(copy->child1->arguments))) {
+	tempChain = copy->child1->arguments;
+	resA = 0; tempNode = NULL;
+	while ((!resA) && (tempChain != NULL)) {
+	  if (!strcmp(copy->string,((entry *) (tempChain->value))->name)) {
+	    resA = 1;
+	    tempNode = (node *) (((entry *) (tempChain->value))->value);
+	  }
+	  tempChain = tempChain->next;
+	}
+	if ((resA) && (tempNode != NULL)) {
+	  tempNode2 = evaluateThing(tempNode);
+	  freeThing(copy);
+	  copy = tempNode2;
+	} 
+      } 
+    }
+    break;
   case EXTERNALPROCEDUREUSAGE:
     copy->libProc = tree->libProc;
     break;
@@ -15639,7 +16236,17 @@ node *evaluateThingInner(node *tree) {
       copy = tempNode;
     }
     if (timingString != NULL) popTimeCounter(timingString);
-    break; 			 	
+    break; 	
+  case STRUCTURE:
+    if (!associationContainsDoubleEntries(tree->arguments)) {
+      if (timingString != NULL) pushTimeCounter();
+      copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateEntryOnVoid);
+      if (timingString != NULL) popTimeCounter(timingString);
+    } else {
+      printMessage(1,"Warning: a literal structure contains at least one entry twice. This is not allowed.\n");
+      copy->arguments = copyChainWithoutReversal(tree->arguments, copyEntryOnVoid);
+    }
+    break;
   case FINALELLIPTICLIST:
     tempChain = copyChain(tree->arguments, evaluateThingInnerOnVoid);
     if (timingString != NULL) pushTimeCounter();

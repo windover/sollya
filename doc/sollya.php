@@ -613,6 +613,45 @@ following examples:
 <p>
 <?php include("introExample24.php"); ?>
 <p>
+
+<h2>5.9 - Structures</h2>
+<p>
+In a similar way as in lists, <span class="sollya">Sollya</span>
+allows data to be grouped in - untyped - structures. A structure forms
+an object to which other objects can be added as elements and
+identified by their names. The elements of a structure can be
+retrieved under their name and used as usual. The following sequence
+shows that point:
+<p>
+<?php include("introExample46.php"); ?>
+
+<p>
+Structures can also be defined literally using the syntax illustrated
+in the next example. They will also be printed in that syntax.
+<p>
+<?php include("introExample47.php"); ?>
+
+<p>
+It is possible to assign to new, undefined (sub-)elements identified by names that have not yet 
+created in a structure or to change (sub-)elements in (nested) structures. However it is not 
+possible to replace a variable or (sub-)element of a structure previously assigned to 
+an object that is not a structure by a structure with just one element:
+<p>
+<?php include("introExample48.php"); ?>
+
+<p>
+When printed, the elements of a structure are not sorted in any
+manner. They get printed in an arbitrary order that just maintains the
+order given in the definition of literate structures. That said, when
+compared, two structures compare equal iff they contain the same
+number of identifiers, with the same names and iff the elements of
+corresponding names all compare equal. This means the order does
+not matter in comparisons and otherwise does only for printing.
+
+<p>The following example illustrates this matter:
+<p>
+<?php include("introExample49.php"); ?>
+
 <h1>6 - Iterative language elements: assignments, conditional statements and loops</h1>
 <p>
 <h2>6.1 - Blocks</h2>

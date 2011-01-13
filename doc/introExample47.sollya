@@ -1,0 +1,8 @@
+a = { .f = exp(x), .dom = [-1;1] };
+a;
+a.f;
+a.dom;
+b.f = sin(x);
+b.dom = [-1b-5;1b-5];
+b;
+{ .f = asin(x), .dom = [-1;1] }.f(1);

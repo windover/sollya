@@ -2767,3 +2767,34 @@ Will return [@NaN@, @NaN@].
 @NaN@
 @NaN@
 @NaN@
+The tool has been restarted.
+=============== Test number 255 ================
+{ .a = 5, .b = exp(x) }
+5
+exp(x)
+1.48413159102576603421115580040552279623487667593878e2
+5
+5 + exp(x)
+sin(x * 3.14159265358979323846264338327950288419716939937508)
+-0.70710678118654752440084436210484903928483593768847
+{ .e = { .f = { .g = "Salut" } }, .d = sin(x * 3.14159265358979323846264338327950288419716939937508), .a = 5, .b = exp(x) }
+{ .f = { .g = "Salut" } }
+{ .f = { .g = "Salut" } }
+Salut and hello
+true
+{ .h = { .a = 17, .n = true }, .e = { .f = { .g = "Salut" } }, .d = sin(x * 3.14159265358979323846264338327950288419716939937508), .a = 5, .b = exp(x) }
+{ .a = { .b = { .c = "Hallo" } } }
+{ .a = { .b = { .c = 17 } } }
+{ .a = { .b = "Blub" } }
+{ .a = { .b = { .a = "Blub" } } }
+{ .a = { .b = { .d = { .e = { .f = "Blib" } }, .a = "Blub" } } }
+{ .a = { .b = { .f = { .h = 17 }, .d = { .e = { .f = "Blib" } }, .a = "Blub" } } }
+Warning: cannot modify an element of something that is not a structure.
+Warning: the last assignment will have no effect.
+exp(x)
+{ .a = 17, .b = exp(x) }
+{ .toto = { .u = 1 } }
+{ .a = { .toto = 0.25 } }
+Warning: a literal structure contains at least one entry twice. This is not allowed.
+Warning: at least one of the given expressions or a subexpression is not correctly typed
+or its evaluation has failed because of some error on a side-effect.

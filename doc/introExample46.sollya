@@ -1,0 +1,9 @@
+s.a = 17;
+s.b = exp(x);
+s.a;
+s.b;
+s.b(1);
+s.d.a = [-1;1];
+s.d.b = sin(x);
+inf(s.d.a);
+diff(s.d.b);

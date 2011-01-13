@@ -268,6 +268,12 @@ extern void endBuffer(void);
 #define MIN 253
 #define MAX 254
 #define SUPNORM 255
+#define STRUCTACCESS 256
+#define STRUCTURE 257
+#define ASSIGNMENTINSTRUCTURE 258
+#define FLOATASSIGNMENTINSTRUCTURE 259
+#define PROTOASSIGNMENTINSTRUCTURE 260
+#define PROTOFLOATASSIGNMENTINSTRUCTURE 261
 
 
 int executeCommand(node *);
@@ -389,6 +395,7 @@ node *makeString(char *string);
 node *makeTableAccess(char *string);
 node *makeIsBound(char *string);
 node *makeTableAccessWithSubstitute(char *string, chain *thinglist);
+node *makeStructAccess(node *thing, char *string);
 node *makeDecimalConstant(char *string);
 node *makeMidpointConstant(char *string);
 node *makeDyadicConstant(char *string);
@@ -397,6 +404,8 @@ node *makeHexadecimalConstant(char *string);
 node *makeBinaryConstant(char *string);
 node *makeEmptyList();
 node *makeList(chain *thinglist);
+node *makeStructure(chain *assoclist);
+node *makeRevertedStructure(chain *assoclist);
 node *makeFinalEllipticList(chain *thinglist);
 node *makeRevertedList(chain *thinglist);
 node *makeRevertedFinalEllipticList(chain *thinglist);
@@ -473,6 +482,10 @@ node *makeSuppressWarningsDeref();
 node *makeHopitalRecursDeref();
 node *makeAssignmentInIndexing(node *, node *, node *);
 node *makeFloatAssignmentInIndexing(node *, node *, node *);
+node *makeAssignmentInStructure(chain *, node *);
+node *makeFloatAssignmentInStructure(chain *, node *);
+node *makeProtoAssignmentInStructure(node *, node *);
+node *makeProtoFloatAssignmentInStructure(node *, node *);
 node *makeDoubleextendedSymbol();
 node *makePrintXml(node *);
 node *makePrintXmlNewFile(node *, node *);

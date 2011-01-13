@@ -1,0 +1,15 @@
+restart;
+a.f = exp(x);
+a.dom = [-1;1];
+a.info.text = "My akrnoximation problem";
+a;
+
+a.info.text = "My approximation problem";
+a;
+
+b = exp(x);
+b.a = 5;
+b;
+
+a.dom.a = -1;
+a;

@@ -1,0 +1,17 @@
+a = { .f = exp(x), .a = -1, .b = 1 };
+a;
+a.info = "My function";
+a;
+
+b = { .a = -1, .f = exp(x), .info = "My function", .b = 1 };
+b;
+
+a == b;
+
+b.info = "My other function";
+a == b;
+
+b.info = "My function";
+a == b;
+b.something = true;
+a == b;
