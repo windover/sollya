@@ -88,18 +88,18 @@ void printFPLLLMat(ZZ_mat<mpz_t> *M) { M->print(); }
 
 void printMpqMatrix(mpq_t *M, int p, int n) {
   int i,j;
-  printf("[");
+  sollyaPrintf("[");
   for(i=1;i<=p;i++) {
     for(j=1;j<=n;j++) {
-      mpq_out_str(stdout, 10, M[coeff(i,j,n)]); if(j!=n)printf(", ");
+      mpq_out_str(stdout, 10, M[coeff(i,j,n)]); if(j!=n) sollyaPrintf(", ");
     }
-    if(i!=n) printf(";\n");
+    if(i!=n) sollyaPrintf(";\n");
   }
-  printf("]\n");
+  sollyaPrintf("]\n");
   return;
 }
 
-void printMpq(mpq_t a) { mpq_out_str(stdout, 10, a); printf("\n");}
+void printMpq(mpq_t a) { mpq_out_str(stdout, 10, a); sollyaPrintf("\n");}
 
 int mpq_cmpabs(mpq_t a, mpq_t b) {
   mpq_t temp1, temp2;
@@ -241,7 +241,7 @@ int exact_system_solve(mpq_t *res, mpq_t *M, mpq_t *b, int p, int n) {
 	mpq_set_ui(res[j0-1],0,1);
       }
       else {
-	fprintf(stderr,"Error: fpminimax: system non invertible. Aborting.");
+	sollyaFprintf(stderr,"Error: fpminimax: system non invertible. Aborting.");
 	recoverFromError();
       }
     }
@@ -473,13 +473,13 @@ node *FPminimax(node *f,
   if(verbosity>=4) {
     changeToWarningMode();
     curr = pointslist;
-    printf("points list: [");
+    sollyaPrintf("points list: [");
     while(curr != NULL) {
       mpfr_out_str(stdout, 10, 0, *(mpfr_t *)(curr->value), GMP_RNDN);
-      if(curr->next != NULL) printf(", ");
+      if(curr->next != NULL) sollyaPrintf(", ");
       curr = curr->next;
     }
-    printf("]\n");
+    sollyaPrintf("]\n");
     restoreMode();
   }
 
@@ -493,14 +493,14 @@ node *FPminimax(node *f,
     while(test) {
       if(verbosity>=3) {
 	changeToWarningMode();
-	printf("Information: fpminimax: computed exponents: [|");
+	sollyaPrintf("Information: fpminimax: computed exponents: [|");
 	curr = correctedFormats;
 	while(curr != NULL) {
-	  printf("%d", *(int *)(curr->value));
-	  if (curr->next != NULL) printf(", ");
+	  sollyaPrintf("%d", *(int *)(curr->value));
+	  if (curr->next != NULL) sollyaPrintf(", ");
 	  curr = curr->next;
 	}
-	printf("|]\n");
+	sollyaPrintf("|]\n");
 	restoreMode();
       }
     
