@@ -701,6 +701,13 @@ int sollya_mpfi_get_left(mpfr_t rop, sollya_mpfi_t op) {
   return res;
 }
 
+int sollya_mpfi_get_fr(mpfr_t rop, sollya_mpfi_t op) {
+  int res;
+
+  res = mpfi_get_fr(rop,op);
+
+  return res;
+}
 
 mp_prec_t sollya_mpfi_get_prec(sollya_mpfi_t op) {
   mp_prec_t res;
