@@ -81,7 +81,7 @@ int sollya_mpfi_div_ui(sollya_mpfi_t, sollya_mpfi_t, unsigned long);
 int sollya_mpfi_exp(sollya_mpfi_t, sollya_mpfi_t);
 int sollya_mpfi_expm1(sollya_mpfi_t, sollya_mpfi_t);
 int sollya_mpfi_get_left(mpfr_t, sollya_mpfi_t);
-int sollya_mpfi_get_fr(mpfr_t, sollya_mpfi_t);
+void sollya_mpfi_get_fr(mpfr_t, sollya_mpfi_t);
 mp_prec_t sollya_mpfi_get_prec(sollya_mpfi_t);
 int sollya_mpfi_get_right(mpfr_t, sollya_mpfi_t);
 char * sollya_mpfi_get_version();
