@@ -29,8 +29,9 @@ h2 { font-size: large;}
 <p style="font-size:small;">
 The <span class="sollya">Sollya</span> tool is Copyright &copy;&nbsp;2006-2010 by<br>
 <span style="text-indent:3em; display:block;">Laboratoire de l'Informatique du Parallélisme - UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668, Lyon, France, </span>
-<span style="text-indent:3em;display:block;">LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2) Nancy, France, and by</span>
-<span style="text-indent:3em;display:block;">Laboratoire d'Informatique de Paris 6, Équipe PEQUAN, UPMC Université Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.</span>
+<span style="text-indent:3em;display:block;">LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France, </span>
+<span style="text-indent:3em;display:block;">Laboratoire d'Informatique de Paris 6, Équipe PEQUAN, UPMC Université Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France, and by</span>
+<span style="text-indent:3em;display:block;">INRIA Sophia-Antipolis Méditerranée, APICS Team, Sophia-Antipolis, France.</span>
 All rights reserved.
 <p style="font-size:small;">
 The <span class="sollya">Sollya</span> tool is open software. It is distributed and can be used,
