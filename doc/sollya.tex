@@ -210,7 +210,7 @@ Let us finish this Section with a small complete example that shows a bit of wha
 
 In this example, we define a function $f$, an interval $d$ and we compute the best degree-4 polynomial approximation of $f$ on $d$ with respect to the infinity norm. In other words, $\max_{x \in d} \{|p(x)-f(x)|\}$ is minimal amongst polynomials with degree not greater than $4$. Then, we compute the list of the zeros of the derivative of $p-f$ and add the bounds of $d$ to this list. Finally, we evaluate $|p-f|$ for each point in the list and store the maximum and the point where it is reached. We conclude by printing the result in a formatted way.
 
-Note that you do not really need to use such a script for computing an infinity norm; as we will see, the command \com{dirtyinfnorm} does this for you.
+Let us mention as a sidenote that you do not really need to use such a script for computing an infinity norm; as we will see, the command \com{dirtyinfnorm} does this for you.
 
 \section{General principles}\label{sec:general_principles}
 The first purpose of \sollya is to help people using numerical functions and numerical algorithms in a safe way. It is first designed to be used interactively but it can also be used in scripts\footnote{Remark: some of the behaviors of \sollya slightly change when it is used in scripts. For example, no prompt is printed.}.
@@ -223,7 +223,7 @@ The precision of the tool is set by the global variable \key{prec}. In general, 
 
 For decidability and efficiency reasons, this general principle cannot be applied every time, so be careful. Moreover certain commands are known to be unsafe: they give in general excellent results and give almost \key{prec} correct bits in output for everyday examples. However they are merely based on heuristics and should not be used when the result must be safe. See the documentation of each command to know precisely how confident you can be with their result.
 
-A second principle (that comes together with the first one) is the following one: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When the variable is set to $0$, \sollya becomes completely silent on standard output and prints only very important messages on standard error. Increase \key{verbosity} if you want more information about what \sollya is doing. Note that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use~\texttt{!}:
+A second principle (that comes together with the first one) is the following one: \emph{When a computation leads to inexact results, inform the user with a warning}. This can be quite irritating in some circumstances: in particular if you are using \sollya within other scripts. The global variable \key{verbosity} lets you change the level of verbosity of \sollya. When the variable is set to $0$, \sollya becomes completely silent on standard output and prints only very important messages on standard error. Increase \key{verbosity} if you want more information about what \sollya is doing. Please keep in mind that when you affect a value to a global variable, a message is always printed even if \com{verbosity} is set to $0$. In order to silently affect a global variable, use~\texttt{!}:
 
 \input{introExample9}
 
@@ -231,7 +231,7 @@ For conviviality reasons, values are displayed in decimal by default. This lets 
 
 \input{introExample10}
 
-Please note that it is possible to maintain the general verbosity level at
+Please keep in mind that it is possible to maintain the general verbosity level at
 some higher setting while deactivating all warnings on roundings. This
 feature is controlled using the \key{roundingwarnings} global
 variable. It may be set to \key{on} or \key{off}. By default, the
@@ -304,7 +304,7 @@ There are two special values \key{true} and \key{false}. Boolean expressions can
 
 The comparison operators \key{<}, \key{<=}, \key{>} and \key{>=} can only be used between two numbers or constant expressions.
 
-The comparison operators \key{==} and \key{!=} are polymorphic. You can use them to compare any two objects, like two strings, two intervals, etc. As a matter of fact, polymorphism is allowed on both sides: it is possible to compare objects of different type. Such objects of different type, as they can never be syntactically equal, will always compare unequal (see exception for \key{error}, section \ref{laberror}) and never equal. Note that testing the equality between two functions will return \key{true} if and only if the expression trees representing the two functions are exactly the same. See \ref{laberror} for an exception concerning the special object \key{error}. Example:
+The comparison operators \key{==} and \key{!=} are polymorphic. You can use them to compare any two objects, like two strings, two intervals, etc. As a matter of fact, polymorphism is allowed on both sides: it is possible to compare objects of different type. Such objects of different type, as they can never be syntactically equal, will always compare unequal (see exception for \key{error}, section \ref{laberror}) and never equal. It is important to remember that testing the equality between two functions will return \key{true} if and only if the expression trees representing the two functions are exactly the same. See \ref{laberror} for an exception concerning the special object \key{error}. Example:
 
 \input{introExample13}
 
@@ -316,7 +316,7 @@ small that they are less than $10^{999}$. Otherwise the values are represented w
 
 \input{introExample14}
 
-Note that each variable has its own precision that corresponds to its intrinsic precision or, if it cannot be represented, to the value of \com{prec} when the variable was set. Thus you can work with variables having a precision higher than the current precision.
+As a matter of fact, each variable has its own precision that corresponds to its intrinsic precision or, if it cannot be represented, to the value of \com{prec} when the variable was set. Thus you can work with variables having a precision higher than the current precision.
 
 The same way, if you define a function that refers to some constant, this constant is stored in the function with the current precision and will keep this value in the future, even if \com{prec} becomes smaller.
 
@@ -439,7 +439,7 @@ their bounds have a number of decimal digits in common when
 printed. That mode is called \com{midpointmode}; see below for an
 introduction and section \ref{labmidpointmode} for details. As \sollya
 must be able to parse back its own output, a syntax is provided to
-input intervals in midpoint~mode. However, please note that the
+input intervals in midpoint~mode. However, please pay attention to the fact that the
 notation used in midpoint~mode generally increases the width of
 intervals: hence when an interval is displayed in midpoint~mode and
 read again, the resulting interval may be wider than the original
@@ -480,7 +480,7 @@ this mode).
 
 \input{introExample17}
 
-You can get the upper-bound (respectively the lower-bound) of an interval with the command \com{sup} (respectively \com{inf}). The middle of the interval can be computed with the command \com{mid}. Note that these commands can also be used on numbers (in that case, the number is interpreted as an interval containing only one single point. In that case the commands \com{inf}, \com{mid} and \com{sup} are just the identity):
+You can get the upper-bound (respectively the lower-bound) of an interval with the command \com{sup} (respectively \com{inf}). The middle of the interval can be computed with the command \com{mid}. Let us also mention that these commands can also be used on numbers (in that case, the number is interpreted as an interval containing only one single point. In that case the commands \com{inf}, \com{mid} and \com{sup} are just the identity):
 
 \input{introExample18}
 

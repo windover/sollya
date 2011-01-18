@@ -193,7 +193,7 @@ Let us finish this Section with a small complete example that shows a bit of wha
 <p>
 In this example, we define a function f, an interval d and we compute the best degree-4 polynomial approximation of f on d with respect to the infinity norm. In other words, max {|p(x)-f(x)|, x in d} is minimal amongst polynomials with degree not greater than 4. Then, we compute the list of the zeros of the derivative of p-f and add the bounds of d to this list. Finally, we evaluate |p-f| for each point in the list and store the maximum and the point where it is reached. We conclude by printing the result in a formatted way.
 <p>
-Note that you do not really need to use such a script for computing an infinity norm; as we will see, the command <code class="com">dirtyinfnorm</code> does this for you.
+Let us mention as a sidenote that you do not really need to use such a script for computing an infinity norm; as we will see, the command <code class="com">dirtyinfnorm</code> does this for you.
 
 <a name="sec:general_principles"></a>
 <h1>3 - General principles</h1>
@@ -208,7 +208,7 @@ The precision of the tool is set by the global variable <code class="key">prec</
 <p>
 For decidability and efficiency reasons, this general principle cannot be applied every time, so be careful. Moreover certain commands are known to be unsafe: they give in general excellent results and give almost <code class="key">prec</code> correct bits in output for everyday examples. However they are merely based on heuristics and should not be used when the result must be safe. See the documentation of each command to know precisely how confident you can be with their result.
 <p>
-A second principle (that comes together with the first one) is the following one: <em>When a computation leads to inexact results, inform the user with a warning</em>. This can be quite irritating in some circumstances: in particular if you are using <span class="sollya">Sollya</span> within other scripts. The global variable <code class="key">verbosity</code> lets you change the level of verbosity of <span class="sollya">Sollya</span>. When the variable is set to 0, <span class="sollya">Sollya</span> becomes completely silent on standard output and prints only very important messages on standard error. Increase <code class="key">verbosity</code> if you want more information about what <span class="sollya">Sollya</span> is doing. Note that when you affect a value to a global variable, a message is always printed even if <code class="com">verbosity</code> is set to 0. In order to silently affect a global variable, use&nbsp;<code>!</code>:
+A second principle (that comes together with the first one) is the following one: <em>When a computation leads to inexact results, inform the user with a warning</em>. This can be quite irritating in some circumstances: in particular if you are using <span class="sollya">Sollya</span> within other scripts. The global variable <code class="key">verbosity</code> lets you change the level of verbosity of <span class="sollya">Sollya</span>. When the variable is set to 0, <span class="sollya">Sollya</span> becomes completely silent on standard output and prints only very important messages on standard error. Increase <code class="key">verbosity</code> if you want more information about what <span class="sollya">Sollya</span> is doing. Please keep in mind that when you affect a value to a global variable, a message is always printed even if <code class="com">verbosity</code> is set to 0. In order to silently affect a global variable, use&nbsp;<code>!</code>:
 <p>
 <?php include("introExample9.php"); ?>
 <p>
@@ -216,7 +216,7 @@ For conviviality reasons, values are displayed in decimal by default. This lets 
 <p>
 <?php include("introExample10.php"); ?>
 <p>
-Please note that it is possible to maintain the general verbosity level at
+Please keep in mind that it is possible to maintain the general verbosity level at
 some higher setting while deactivating all warnings on roundings. This
 feature is controlled using the <code class="key">roundingwarnings</code> global
 variable. It may be set to <code class="key">on</code> or <code class="key">off</code>. By default, the
@@ -290,7 +290,7 @@ There are two special values <code class="key">true</code> and <code class="key"
 <p>
 The comparison operators <code class="key"><</code>, <code class="key"><=</code>, <code class="key">></code> and <code class="key">>=</code> can only be used between two numbers or constant expressions.
 <p>
-The comparison operators <code class="key">==</code> and <code class="key">!=</code> are polymorphic. You can use them to compare any two objects, like two strings, two intervals, etc. As a matter of fact, polymorphism is allowed on both sides: it is possible to compare objects of different type. Such objects of different type, as they can never be syntactically equal, will always compare unequal (see exception for <code class="key">error</code>, section <a href="help.php?name=error&goBack=none">error</a>) and never equal. Note that testing the equality between two functions will return <code class="key">true</code> if and only if the expression trees representing the two functions are exactly the same. See <a href="help.php?name=error&goBack=none">error</a> for an exception concerning the special object <code class="key">error</code>. Example:
+The comparison operators <code class="key">==</code> and <code class="key">!=</code> are polymorphic. You can use them to compare any two objects, like two strings, two intervals, etc. As a matter of fact, polymorphism is allowed on both sides: it is possible to compare objects of different type. Such objects of different type, as they can never be syntactically equal, will always compare unequal (see exception for <code class="key">error</code>, section <a href="help.php?name=error&goBack=none">error</a>) and never equal. It is important to remember that testing the equality between two functions will return <code class="key">true</code> if and only if the expression trees representing the two functions are exactly the same. See <a href="help.php?name=error&goBack=none">error</a> for an exception concerning the special object <code class="key">error</code>. Example:
 <p>
 <?php include("introExample13.php"); ?>
 
@@ -304,7 +304,7 @@ small that they are less than 10^999. Otherwise the values are represented with 
 <p>
 <?php include("introExample14.php"); ?>
 <p>
-Note that each variable has its own precision that corresponds to its intrinsic precision or, if it cannot be represented, to the value of <code class="com">prec</code> when the variable was set. Thus you can work with variables having a precision higher than the current precision.
+As a matter of fact, each variable has its own precision that corresponds to its intrinsic precision or, if it cannot be represented, to the value of <code class="com">prec</code> when the variable was set. Thus you can work with variables having a precision higher than the current precision.
 <p>
 The same way, if you define a function that refers to some constant, this constant is stored in the function with the current precision and will keep this value in the future, even if <code class="com">prec</code> becomes smaller.
 <p>
@@ -425,7 +425,7 @@ their bounds have a number of decimal digits in common when
 printed. That mode is called <code class="com">midpointmode</code>; see below for an
 introduction and section <a href="help.php?name=midpointmode&goBack=none">midpointmode</a> for details. As <span class="sollya">Sollya</span>
 must be able to parse back its own output, a syntax is provided to
-input intervals in midpoint&nbsp;mode. However, please note that the
+input intervals in midpoint&nbsp;mode. However, please pay attention to the fact that the
 notation used in midpoint&nbsp;mode generally increases the width of
 intervals: hence when an interval is displayed in midpoint&nbsp;mode and
 read again, the resulting interval may be wider than the original
@@ -466,7 +466,7 @@ this mode).
 <p>
 <?php include("introExample17.php"); ?>
 <p>
-You can get the upper-bound (respectively the lower-bound) of an interval with the command <code class="com">sup</code> (respectively <code class="com">inf</code>). The middle of the interval can be computed with the command <code class="com">mid</code>. Note that these commands can also be used on numbers (in that case, the number is interpreted as an interval containing only one single point. In that case the commands <code class="com">inf</code>, <code class="com">mid</code> and <code class="com">sup</code> are just the identity):
+You can get the upper-bound (respectively the lower-bound) of an interval with the command <code class="com">sup</code> (respectively <code class="com">inf</code>). The middle of the interval can be computed with the command <code class="com">mid</code>. Let us also mention that these commands can also be used on numbers (in that case, the number is interpreted as an interval containing only one single point. In that case the commands <code class="com">inf</code>, <code class="com">mid</code> and <code class="com">sup</code> are just the identity):
 <p>
 <?php include("introExample18.php"); ?>
 <p>
