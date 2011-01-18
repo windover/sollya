@@ -49,7 +49,7 @@ reproduced in the <code>COPYING</code> file of the distribution.
 <p>
 The <span class="sollya">Sollya</span> distribution can be compiled and installed using the usual
 <code>./configure</code>, <code>make</code>, <code>make install</code>
-procedure. Besides a <code>C</code> compiler, <span class="sollya">Sollya</span> needs the following
+procedure. Besides a <code>C</code> and a <code>C++</code> compiler, <span class="sollya">Sollya</span> needs the following
 software libraries and tools to be installed. The <code>./configure</code>
 script checks for the installation of the libraries. However <span class="sollya">Sollya</span>
 will build without error if some of its external tools are not
@@ -191,7 +191,7 @@ Let us finish this Section with a small complete example that shows a bit of wha
 <!--  Warning: this file must be manually corrected: delete the extra ">" -->
 <?php include("introExample8.php"); ?>
 <p>
-In this example, we define a function f, an interval d and we compute the best degree-4 polynomial approximation of f on d with respect to the infinity norm. In other words, max {|p(x)-f(x)|, x in d} is minimal amongst polynomials with degree not greater than 4. Then, we compute the list of the zeros of the derivative of p-f and add the bounds of d to this list. Finally, we evaluate |p-f| for each point in the list and store the maximum and the point where it is reached. We conclude by printing the result in a formatted way.
+In this example, we define a function f, an interval d and we compute the best degree-2 polynomial approximation of f on d with respect to the infinity norm. In other words, max {|p(x)-f(x)|, x in d} is minimal amongst polynomials with degree not greater than 2. Then, we compute the list of the zeros of the derivative of p-f and add the bounds of d to this list. Finally, we evaluate |p-f| for each point in the list and store the maximum and the point where it is reached. We conclude by printing the result in a formatted way.
 <p>
 Let us mention as a sidenote that you do not really need to use such a script for computing an infinity norm; as we will see, the command <code class="com">dirtyinfnorm</code> does this for you.
 
@@ -202,7 +202,7 @@ The first purpose of <span class="sollya">Sollya</span> is to help people using 
 <p>
 One of the particularities of <span class="sollya">Sollya</span> is to work with multi-precision arithmetic (it uses the <code>MPFR</code> library). For safety purposes, <span class="sollya">Sollya</span> knows how to use interval arithmetic. It uses interval arithmetic to produce tight and safe results with the precision required by the user.
 <p>
-The general philosophy of <span class="sollya">Sollya</span> is: <em>When you can make a computation exactly and sufficiently quickly, do it; when you cannot, do not, unless you have been explicitly asked for.</em>
+The general philosophy of <span class="sollya">Sollya</span> is: <em>When you can perform a computation exactly and sufficiently quickly, do it; when you cannot, do not, unless you have been explicitly asked for.</em>
 <p>
 The precision of the tool is set by the global variable <code class="key">prec</code>. In general, the variable <code class="key">prec</code> determines the precision of the outputs of commands: more precisely, the command will internally determine how much precision should be used during the computations in order to ensure that the output is a faithfully rounded result with <code class="key">prec</code> bits.
 <p>
@@ -268,17 +268,17 @@ structure builds scopes for declared variables. Declared variables in
 inner scopes shadow (global and declared) variables of outer
 scopes. The global free variable, i.e. the mathematical variable for
 variate functional expressions in one variable, cannot be shadowed. Variables are
-declared using <code class="key">var</code> keyword. See section <a href="help.php?name=var&goBack=none">var</a> for details
+declared using the <code class="key">var</code> keyword. See section <a href="help.php?name=var&goBack=none">var</a> for details
 on its usage and semantic.
 <p>
-The following code examples illustrate the usage of variables.
+The following code examples illustrate the use of variables.
 <p>
 <p>
 <?php include("introExample12.php"); ?>
 <p>
 Let us state that a variable identifier, just as every identifier in
 <span class="sollya">Sollya</span>, contains at least one character, starts with a ASCII letter
-and continuing with ASCII letters or numerical digits.
+and continues with ASCII letters or numerical digits.
 <p>
 <p>
 <p>
@@ -460,7 +460,7 @@ variables containing numbers keep their precision for the interval
 bounds.
 <p>
 Constant expressions get evaluated to floating-point values
-immediately; this includes pi and rational numbers, even in when
+immediately; this includes pi and rational numbers, even when
 <code class="com">rationalmode</code> is <code class="com">on</code> (see section <a href="#sec:rationalmode">Rational numbers and rational arithmetic</a> for
 this mode).
 <p>
@@ -538,6 +538,7 @@ The constant pi is available through the keyword <code class="key">pi</code> as 
 <p>
 <?php include("introExample19.php"); ?>
 <p>
+The reader may wish to see Sections <a href="help.php?name=library&goBack=none">library</a> and <a href="help.php?name=function&goBack=none">function</a> for ways of dynamically adding other base functions to Sollya.
 <h2>5.6 - Strings</h2>
 Anything written between quotes is interpreted as a string. The infix operator <code class="com">@</code> concatenates two strings. To get the length of a string, use the <code class="com">length</code> function. You can access the i-th character of a string using brackets (see the example below). There is no character type in <span class="sollya">Sollya</span>: the i-th character of a string is returned as a string itself.
 <p>

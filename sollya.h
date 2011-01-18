@@ -1,9 +1,14 @@
 /*
 
-Copyright 2007-2010 by 
+Copyright 2007-2011 by 
 
 Laboratoire de l'Informatique du Parallélisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+
+and
+
+Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
 
 Contributors Ch. Lauter, S. Chevillard, M. Joldes
 
@@ -55,7 +60,7 @@ extern "C" {
 
 #include <stdlib.h>
 #include <mpfr.h>
-#include "mpfi-compat.h"
+#include <mpfi-compat.h>
 #include <setjmp.h>
 
 typedef struct chainStruct chain;
@@ -293,54 +298,6 @@ extern void *safeMalloc (size_t size);
 extern void printInterval(sollya_mpfi_t);
 extern void printValue(mpfr_t *);
 extern node* simplifyTreeErrorfree(node *tree);
-
-extern void symbolic_poly_diff(sollya_mpfi_t *res, sollya_mpfi_t *coeff_array, int degree);
-extern void symbolic_poly_evaluation_horner(sollya_mpfi_t res, sollya_mpfi_t *coeffs_array, sollya_mpfi_t x, int degree);
-extern void symbolic_poly_evaluation_powers(sollya_mpfi_t res, sollya_mpfi_t *coeffs_array, sollya_mpfi_t *powers_array, sollya_mpfi_t x, int degree);
-
-extern void exp_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void expm1_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void log1p_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void log_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void log2_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void log10_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void sin_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void cos_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void sinh_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void cosh_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void tan_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void tanh_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void atan_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void atanh_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void asin_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void acos_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void asinh_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void acosh_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void erf_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void erfc_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void abs_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, int n, int *silent);
-extern void ceil_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
-extern void double_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
-extern void double_double_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
-extern void double_extended_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
-extern void floor_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
-extern void nearestint_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
-extern void single_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
-extern void triple_double_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent);
-extern void libraryFunction_diff(sollya_mpfi_t *res, node *f, sollya_mpfi_t x, int n, int *silent);
-extern void procedureFunction_diff(sollya_mpfi_t *res, node *f, sollya_mpfi_t x, int n, int *silent);
-
-extern void powerFunction_diff(sollya_mpfi_t *res, mpfr_t p, sollya_mpfi_t x0, int n, int *silent);
-extern void constantPower_diff(sollya_mpfi_t *res, sollya_mpfi_t x0, mpfr_t p, int n, int *silent);
-extern void baseFunction_diff(sollya_mpfi_t *res, int nodeType, sollya_mpfi_t x0, int n, int *silent);
-
-extern void multiplication_AD(sollya_mpfi_t *res, sollya_mpfi_t *f, sollya_mpfi_t *g, int n);
-extern void composition_AD(sollya_mpfi_t *res, sollya_mpfi_t *g, sollya_mpfi_t *f, int n);
-extern void auto_diff_scaled(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n);
-extern void auto_diff(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n);
-extern int sollya_mpfi_equal_p(sollya_mpfi_t r1, sollya_mpfi_t r2);
-extern int sollya_mpfi_pow(sollya_mpfi_t res, sollya_mpfi_t x, sollya_mpfi_t y);
-
 
 #ifdef __cplusplus
 }
