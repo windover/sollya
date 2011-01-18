@@ -634,10 +634,14 @@ in the next example. They will also be printed in that syntax.
 <?php include("introExample47.php"); ?>
 
 <p>
-It is possible to assign to new, undefined (sub-)elements identified by names that have not yet 
-created in a structure or to change (sub-)elements in (nested) structures. However it is not 
-possible to replace a variable or (sub-)element of a structure previously assigned to 
-an object that is not a structure by a structure with just one element:
+If the variable <code class="com">a</code> is bound to an existing structure, it is possible to use the ``dot notation'' <code class="com">a.b</code> to assign the value of the field <code class="com">b</code> of the structure <code class="com">a</code>. This works even if <code class="com">b</code> is not yet a field of <code class="com">a</code>: in this case a new field is created inside the structure <code class="com">a</code>. 
+
+<p>
+Besides, the dot notation can be used even when <code class="com">a</code> is unassigned. In this case a new structure is created with a field <code class="com">b</code>, and this structure is bound to <code class="com">a</code>. However, the dot notation cannot be used if <code class="com">a</code> is already bound to something that is not a structure.
+
+<p>
+These principles apply recursively: for instance, if <code class="com">a</code> is a structure that contains only one field <code class="com">d</code>, the command <code class="com">a.b.c = 3</code> creates a new field named <code class="com">b</code> inside the structure <code class="com">a</code>; this field itself is a structure containing the field <code class="com">c</code>. The command <code class="com">a.d.c = 3</code> is allowed if <code class="com">a.d</code> is already a structure, but forbidden otherwise (e.g. if <code class="com">a.d</code> was equal to <code class="com">sin(x)</code>). This is summed up in the following example.
+
 <p>
 <?php include("introExample48.php"); ?>
 
