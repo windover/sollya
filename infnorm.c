@@ -3677,7 +3677,7 @@ int checkInfnormI(node *func, node *deriv, sollya_mpfi_t infnormval, sollya_mpfi
   }
 
   mpfr_init2(diamRange,prec);
-  sollya_mpfi_diam(diamRange,range);
+  sollya_mpfi_diam_abs(diamRange,range);
 
   if (mpfr_cmp(diamRange,diam) <= 0) {
     /* Simple end case: the range to test is already smaller than diam but we could not check */
