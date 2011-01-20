@@ -138,9 +138,17 @@ int checkInequalityFast(int *res, node *a, node *b) {
   evaluateConstantExpressionToInterval(aI, a);
   evaluateConstantExpressionToInterval(bI, b);
 
-  sollya_mpfi_revert_if_needed(aI);
-  sollya_mpfi_revert_if_needed(bI);
-
+  if (sollya_mpfi_is_empty(aI) ||
+      sollya_mpfi_is_empty(bI)) {
+    mpfr_clear(blo);
+    mpfr_clear(bhi);
+    mpfr_clear(alo);
+    mpfr_clear(ahi);
+    sollya_mpfi_clear(bI);
+    sollya_mpfi_clear(aI);
+    return 0;
+  }
+      
   sollya_mpfi_get_left(alo, aI);
   sollya_mpfi_get_right(ahi, aI);
   sollya_mpfi_get_left(blo, bI);
