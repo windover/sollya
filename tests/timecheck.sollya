@@ -19,7 +19,7 @@ i := i + 1;
 /* Test #2 */
 i;
 t = time(c = coeff(p,7))/yardstick;
-if (t in 2.4579465389251708984375e-5 * variance) then "Okay" else round(t,12,RN);
+if (t in 5e-6 * variance) then "Okay" else round(t,12,RN);
 i := i + 1;
 
 /* Test #3 */
