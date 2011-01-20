@@ -2837,15 +2837,17 @@ void infnormI(sollya_mpfi_t infnormval, node *func, node *deriv,
     mpfr_neg(outerLeft,outerLeft,GMP_RNDN);
     sollya_mpfr_max(tr,outerLeft,outerRight,GMP_RNDU);
     mpfr_set_d(tl,0.0,GMP_RNDD);
-    sollya_mpfi_interv_fr(infnormval,tl,tr);
-    sollya_mpfi_revert_if_needed(infnormval);
+
+    if (mpfr_cmp(tl, tr)<=0) sollya_mpfi_interv_fr(infnormval,tl,tr);
+    else sollya_mpfi_interv_fr(infnormval,tr,tl);
+
   } else {
     mpfr_neg(innerLeft,innerLeft,GMP_RNDN);
     mpfr_neg(outerLeft,outerLeft,GMP_RNDN);
     sollya_mpfr_max(tl,innerLeft,innerRight,GMP_RNDD);
     sollya_mpfr_max(tr,outerLeft,outerRight,GMP_RNDU);
-    sollya_mpfi_interv_fr(infnormval,tl,tr);
-    sollya_mpfi_revert_if_needed(infnormval);
+    if (mpfr_cmp(tl, tr)<=0) sollya_mpfi_interv_fr(infnormval,tl,tr);
+    else sollya_mpfi_interv_fr(infnormval,tr,tl);
   }
 
   if (mightExcludes == NULL) {
