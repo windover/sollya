@@ -1,9 +1,14 @@
 /*
 
-Copyright 2007-2009 by 
+Copyright 2007-2011 by 
 
 Laboratoire de l'Informatique du Parallélisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+
+and
+
+Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
 
 Contributors Ch. Lauter, S. Chevillard
 
@@ -53,8 +58,8 @@ knowledge of the CeCILL-C license and that you accept its terms.
 
    Compile with something similar to
 
-       gcc -Wall -c libsollyaexample.c
-       gcc -L./.libs -Wall -o libsollyaexample libsollyaexample.o -lsollya
+       gcc -Wall -I. -c libsollyaexample.c
+       gcc -L./.libs -I. -Wall -o libsollyaexample libsollyaexample.o -lsollya -lmpfi -lmpfr -lxml2 -lfplll
 
 
    The example...

@@ -926,6 +926,7 @@ void initTool() {
   blockSignals();
   mp_set_memory_functions(safeMalloc,wrapSafeRealloc,NULL);
   initToolDefaults();
+  noColor = 1;
 }
 
 void finishTool() {
@@ -982,6 +983,102 @@ void setToolDiameter(mpfr_t op) {
   mpfr_set_prec(statediam,mpfr_get_prec(op));
   mpfr_set(statediam,op,GMP_RNDN);
 }
+
+/* NEW */
+
+int getDisplayMode() {
+  return dyadic;
+}
+
+int setDisplayMode(int newMode) {
+  if ((0 <= newMode) && (newMode <= 4)) {
+    dyadic = newMode;
+    return 1;
+  } else {
+    dyadic = 0;
+    return 0;
+  }
+}
+
+int getVerbosity() {
+  return verbosity;
+}
+
+int setVerbosity(int newVerbosity) {
+  if (newVerbosity >= 0) {
+    verbosity = newVerbosity;
+    return 1;
+  } else {
+    verbosity = 0;
+    return 0;
+  }
+}
+
+int getCanonical() {
+  return canonical;
+}
+
+void setCanonical(int newCanonical) {
+  canonical = (!(!newCanonical));
+}
+
+int getAutosimplify() {
+  return autosimplify;
+}
+
+void setAutosimplify(int newAutosimplify) {
+  autosimplify = (!(!newAutosimplify));
+}
+
+int getFullParentheses() {
+  return fullParentheses;
+}
+
+void setFullParentheses(int newFullParentheses) {
+  fullParentheses = (!(!newFullParentheses));
+}
+
+int getMidpointMode() {
+  return midpointMode;
+}
+
+void setMidpointMode(int newMidpointMode) {
+  midpointMode = (!(!newMidpointMode));
+}
+
+int getDieOnErrorMode() {
+  return dieOnErrorMode;
+}
+
+void setDieOnErrorMode(int newDieOnErrorMode) {
+  dieOnErrorMode = (!(!newDieOnErrorMode));
+}
+
+int getTimecounting() {
+  return timecounting;
+}
+
+void setTimecounting(int newTimecounting) {
+  timecounting = (!(!newTimecounting));
+}
+
+int getRoundingWarnings() {
+  return (!noRoundingWarnings);
+}
+
+void setRoundingWarnings(int newRoundingWarnings) {
+  noRoundingWarnings = (!newRoundingWarnings);
+}
+
+int getRationalMode() {
+  return rationalMode;
+}
+
+void setRationalMode(int newRationalMode) {
+  rationalMode = (!(!newRationalMode));
+}
+
+/* END NEW */
 
 void setRecoverEnvironment(jmp_buf *env) {
   memmove(&recoverEnvironment,env,sizeof(recoverEnvironment));

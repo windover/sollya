@@ -1,9 +1,14 @@
 /*
 
-Copyright 2007-2010 by 
+Copyright 2007-2011 by 
 
 Laboratoire de l'Informatique du Parallélisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+
+and
+
+Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
 
 Contributors Ch. Lauter, S. Chevillard
 
@@ -177,5 +182,26 @@ int getToolHopitalRecursions();
 void setToolHopitalRecursions(int i);
 int getToolDiameter(mpfr_t rop);
 void setToolDiameter(mpfr_t op);
+int getDisplayMode();
+int setDisplayMode(int);
+int getVerbosity();
+int setVerbosity(int);
+int getCanonical();
+void setCanonical(int);
+int getAutosimplify();
+void setAutosimplify(int);
+int getFullParentheses();
+void setFullParentheses(int);
+int getMidpointMode();
+void setMidpointMode(int);
+int getDieOnErrorMode();
+void setDieOnErrorMode(int);
+int getTimecounting();
+void setTimecounting(int);
+int getRoundingWarnings();
+void setRoundingWarnings(int);
+int getRationalMode();
+void setRationalMode(int);
+
 
 #endif /* ifdef GENERAL_H*/

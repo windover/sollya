@@ -170,6 +170,13 @@ struct rangetypeStruct
   mpfr_t *b;
 };
 
+#define DISPLAY_MODE_DECIMAL     0
+#define DISPLAY_MODE_DYADIC      1
+#define DISPLAY_MODE_POWERS      2
+#define DISPLAY_MODE_BINARY      3
+#define DISPLAY_MODE_HEXADECIMAL 4
+
+
 extern char *getNameOfVariable();
 extern int setNameOfVariable(char *);
 extern mp_prec_t getToolPrecision();
@@ -182,6 +189,26 @@ extern int getToolHopitalRecursions();
 extern void setToolHopitalRecursions(int);
 extern int getToolDiameter(mpfr_t);
 extern void setToolDiameter(mpfr_t);
+extern int getDisplayMode();
+extern int setDisplayMode(int);
+extern int getVerbosity();
+extern int setVerbosity(int);
+extern int getCanonical();
+extern void setCanonical(int);
+extern int getAutosimplify();
+extern void setAutosimplify(int);
+extern int getFullParentheses();
+extern void setFullParentheses(int);
+extern int getMidpointMode();
+extern void setMidpointMode(int);
+extern int getDieOnErrorMode();
+extern void setDieOnErrorMode(int);
+extern int getTimecounting();
+extern void setTimecounting(int);
+extern int getRoundingWarnings();
+extern void setRoundingWarnings(int);
+extern int getRationalMode();
+extern void setRationalMode(int);
 
 extern void initTool();
 extern void finishTool();
