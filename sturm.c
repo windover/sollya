@@ -602,11 +602,11 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, sollya_mpfi_t x, mp_prec_t pre
   
   varSignA=0;
   for (i=1; i<na; i++){
-    if (sollya_mpfi_is_pos(evalResA[i-1]) ^ sollya_mpfi_is_pos(evalResA[i])) varSignA++;    
+    if ((!(!sollya_mpfi_is_pos(evalResA[i-1]))) ^ (!(!sollya_mpfi_is_pos(evalResA[i])))) varSignA++;    
   } 
   varSignB=0;
   for (i=1; i<nb; i++){
-    if (sollya_mpfi_is_pos(evalResB[i-1]) ^ sollya_mpfi_is_pos(evalResB[i])) varSignB++;    
+    if ((!(!sollya_mpfi_is_pos(evalResB[i-1]))) ^ (!(!sollya_mpfi_is_pos(evalResB[i])))) varSignB++;    
   }
 
   *n=(((varSignA-varSignB)>0)?(varSignA-varSignB+nrRoots):(varSignB-varSignA+nrRoots) );
