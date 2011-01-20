@@ -3724,7 +3724,7 @@ int checkInfnormI(node *func, node *deriv, sollya_mpfi_t infnormval, sollya_mpfi
   sollya_mpfi_clear(evaluateOnRange);
   mpfr_clear(diamRange);
 
-  return (resultLeft & resultRight);
+  return (resultLeft && resultRight);
 }
 
 

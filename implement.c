@@ -212,8 +212,9 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
 
   mulPrec[0] = precOfAccur;
   
-  res = res & determinePrecisionsHelper(coefficients+1, degree-1, addPrec+1, mulPrec+1, 
-					temp2, range, prec);
+  /* We really do want to have a non-lazy evaluation here, so we use & and not && */
+  res = (!(!res)) & (!(!(determinePrecisionsHelper(coefficients+1, degree-1, addPrec+1, mulPrec+1, 
+						   temp2, range, prec))));
   
   mpfr_clear(temp);
   mpfr_clear(temp2);

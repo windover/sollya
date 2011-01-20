@@ -8249,7 +8249,7 @@ node* makeBinomial(node *a, node *b, int n, int s) {
 	printMessage(1,"Try to increase the working precision.\n");
       }
     }
-    if ((s < 0) && (((((unsigned int) n) - i) & 1) != 0)) {
+    if ((s < 0) && (((((unsigned int) n) - i) & 1) != 0)) { /* This is a modulo 2 to determine eveness */
       mpfr_neg(*coeffVal,*coeffVal,GMP_RNDN);
     }
     coeff = (node*) safeMalloc(sizeof(node));
@@ -8446,7 +8446,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	  tempTree->child2 = tempTree2;
 	  break;
 	case NEG:
-	  if (r & 1) {
+	  if (r & 1) { /* This is a modulo 2 to determine eveness, not a logical test */
 	    /* r is odd */
 	    tempTree = (node *) safeMalloc(sizeof(node));
 	    tempTree->nodeType = NEG;
@@ -9370,16 +9370,16 @@ int isConstant(node *tree) {
     return 1;
     break;
   case ADD:
-    return (isConstant(tree->child1) & isConstant(tree->child2));
+    return (isConstant(tree->child1) && isConstant(tree->child2));
     break;
   case SUB:
-    return (isConstant(tree->child1) & isConstant(tree->child2));
+    return (isConstant(tree->child1) && isConstant(tree->child2));
     break;
   case MUL:
-    return (isConstant(tree->child1) & isConstant(tree->child2));
+    return (isConstant(tree->child1) && isConstant(tree->child2));
     break;
   case DIV:
-    return (isConstant(tree->child1) & isConstant(tree->child2));
+    return (isConstant(tree->child1) && isConstant(tree->child2));
     break;
   case SQRT:
     return isConstant(tree->child1);
@@ -9433,7 +9433,7 @@ int isConstant(node *tree) {
     return isConstant(tree->child1);
     break;
   case POW:
-    return (isConstant(tree->child1) & isConstant(tree->child2));
+    return (isConstant(tree->child1) && isConstant(tree->child2));
     break;
   case NEG:
     return isConstant(tree->child1);
@@ -9495,7 +9495,7 @@ int isMonomial(node *tree) {
 
   switch (tree->nodeType) {
   case MUL:
-    return (isMonomial(tree->child1) & isMonomial(tree->child2));
+    return (isMonomial(tree->child1) && isMonomial(tree->child2));
     break;
   case NEG:
     return isMonomial(tree->child1);
@@ -9504,7 +9504,7 @@ int isMonomial(node *tree) {
     return 1;
     break;
   case DIV:
-    return (isConstant(tree->child2)) & isMonomial(tree->child1);
+    return (isConstant(tree->child2)) && isMonomial(tree->child1);
   default: 
     return isConstant(tree);
   }
