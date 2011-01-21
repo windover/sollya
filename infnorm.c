@@ -104,47 +104,25 @@ void sollya_mpfi_pow(sollya_mpfi_t z, sollya_mpfi_t x, sollya_mpfi_t y) {
   int must_divide;
   sollya_mpfi_t res;
 
+  if (sollya_mpfi_has_nan(x) ||sollya_mpfi_has_nan(y)) { sollya_mpfi_set_nan(z); return; }
+    if (sollya_mpfi_is_empty(x) || sollya_mpfi_is_empty(y)) { sollya_mpfi_set_empty(z); return; }
+
   prec = sollya_mpfi_get_prec(y);
+  mpfr_init2(l,prec); sollya_mpfi_get_left(l,y);
+  mpfr_init2(r,prec); sollya_mpfi_get_right(r,y);
 
   sollya_mpfi_init2(res,sollya_mpfi_get_prec(z) + 10);
 
-  mpfr_init2(l,prec);
-  mpfr_init2(r,prec);
-
-  sollya_mpfi_get_right(r,y);
-  sollya_mpfi_get_left(l,y);
-
+  /* Case x^k, k an integer */
   if ((mpfr_cmp(l,r) == 0) && (mpfr_integer_p(l))) {
-    if (mpfr_zero_p(l)) {
-      if (!sollya_mpfi_bounded_p(x)) {
-        precx = sollya_mpfi_get_prec(x);
-
-        mpfr_init2(lx,precx);
-        mpfr_init2(rx,precx);
-
-        sollya_mpfi_get_right(rx,x);
-        sollya_mpfi_get_left(lx,x);
-
-        if (mpfr_number_p(lx)) { 
-          mpfr_set_d(lx,1.0,GMP_RNDN);
-        } else {
-          mpfr_set_nan(lx);
-        }
-
-        if (mpfr_number_p(rx)) {
-          mpfr_set_d(rx,1.0,GMP_RNDN);
-        } else {
-          mpfr_set_nan(rx);
-        }
-
-        if (mpfr_cmp(lx, rx) <= 0) sollya_mpfi_interv_fr(res,lx,rx);
-        else sollya_mpfi_interv_fr(res,rx,lx);
-
-        mpfr_clear(lx);
-        mpfr_clear(rx);
-      } else {
-        sollya_mpfi_set_d(res,1.0);
-      }
+    if (mpfr_zero_p(l)) { /* Case k=0 -> 1 except if x=+/-Inf */
+                          /* Note, if x contains an infinity, but is not equal to infinity,
+                             we return 1 also, by continuity */
+      if (sollya_mpfi_is_infinity(x)) sollya_mpfi_set_nan(z);
+      else sollya_mpfi_set_d(z,1.0);
+    
+      mpfr_clear(l); mpfr_clear(r); sollya_mpfi_clear(res);
+      return;
     } else {
       precx = sollya_mpfi_get_prec(x);
       if (sollya_mpfi_get_prec(res) > precx) 
@@ -162,45 +140,28 @@ void sollya_mpfi_pow(sollya_mpfi_t z, sollya_mpfi_t x, sollya_mpfi_t y) {
       } else {
 	must_divide = 0;
       }
-      if (sollya_mpfi_has_zero(x)) {
-        mpfr_div_2ui(r,l,1,GMP_RNDN);
-	if (mpfr_integer_p(r)) {   /* l is even */
-	  mpfr_pow(lx,lx,l,GMP_RNDU);
-	  mpfr_pow(rx,rx,l,GMP_RNDU);
-	  sollya_mpfr_max(rx,lx,rx,GMP_RNDU);
-	  mpfr_set_d(lx,0.0,GMP_RNDD);
-          if (mpfr_cmp(lx,rx)<=0) sollya_mpfi_interv_fr(res,lx,rx);
-	  else sollya_mpfi_interv_fr(res,rx,lx);
-	} else { /* l is odd */
-	  mpfr_pow(lx,lx,l,GMP_RNDD);
-	  mpfr_pow(rx,rx,l,GMP_RNDU);
-          if (mpfr_cmp(lx,rx)<=0) sollya_mpfi_interv_fr(res,lx,rx);
-	  else sollya_mpfi_interv_fr(res,rx,lx);
-        }
-      } else {
-	mpfr_div_2ui(r,l,1,GMP_RNDN);
-	if (mpfr_integer_p(r)) {   /* l is even */
-	  if (mpfr_sgn(lx) > 0) {
-	    mpfr_pow(lx,lx,l,GMP_RNDD);
-	    mpfr_pow(rx,rx,l,GMP_RNDU);
-            if (mpfr_cmp(lx,rx)<=0) sollya_mpfi_interv_fr(res,lx,rx);
-            else sollya_mpfi_interv_fr(res,rx,lx);
-	  } else {
-	    mpfr_pow(lx,lx,l,GMP_RNDU);
-	    mpfr_pow(rx,rx,l,GMP_RNDD);
-            if (mpfr_cmp(lx,rx)<=0) sollya_mpfi_interv_fr(res,lx,rx);
-            else sollya_mpfi_interv_fr(res,rx,lx);
-	  }
-	} else { /* l is odd */
-	  mpfr_pow(lx,lx,l,GMP_RNDD);
-	  mpfr_pow(rx,rx,l,GMP_RNDU);
-          if (mpfr_cmp(lx,rx)<=0) sollya_mpfi_interv_fr(res,lx,rx);
-          else sollya_mpfi_interv_fr(res,rx,lx);
-	}
+      
+      mpfr_div_2ui(r,l,1,GMP_RNDN);
+      if (sollya_mpfi_is_nonneg(x) || (!mpfr_integer_p(r))) { /* x-> x^k is increasing monotonic when x>=0
+                                                               or when k is odd */
+        mpfr_pow(lx,lx,l,GMP_RNDD);
+        mpfr_pow(rx,rx,l,GMP_RNDU);
+        sollya_mpfi_interv_fr(res,lx,rx);
       }
-      if (must_divide) {
-	sollya_mpfi_inv(res,res);
+      else if (sollya_mpfi_is_nonpos(x)) { /* x^k is decreasing when x<=0 and k is even */
+        mpfr_pow(rx,rx,l,GMP_RNDD);
+        mpfr_pow(lx,lx,l,GMP_RNDU);
+        sollya_mpfi_interv_fr(res,rx,lx);
       }
+      else { /* when x contains 0 and k is even, return [0, max(lx^k, rx^k)] */
+        mpfr_pow(lx,lx,l,GMP_RNDU);
+        mpfr_pow(rx,rx,l,GMP_RNDU);
+        sollya_mpfr_max(rx,lx,rx,GMP_RNDU);
+        mpfr_set_d(lx,0.0,GMP_RNDD);
+        sollya_mpfi_interv_fr(res,lx,rx);
+      }
+
+      if (must_divide) sollya_mpfi_inv(res,res);
 
       mpfr_clear(lx);
       mpfr_clear(rx);
@@ -208,17 +169,7 @@ void sollya_mpfi_pow(sollya_mpfi_t z, sollya_mpfi_t x, sollya_mpfi_t y) {
   } else {
     sollya_mpfi_log(res,x);
     sollya_mpfi_mul(res,res,y);
-    sollya_mpfi_get_right(r,res);
-    sollya_mpfi_get_left(l,res);
-    if (!(mpfr_inf_p(l) &&
-          mpfr_inf_p(r) &&
-          (mpfr_sgn(l) < 0) &&
-          (mpfr_sgn(r) < 0))) {
-      sollya_mpfi_exp(res,res);
-    } else {
-      mpfr_set_nan(l);
-      sollya_mpfi_interv_fr(res,l,l);
-    }
+    sollya_mpfi_exp(res,res);
   }
   mpfr_clear(l);
   mpfr_clear(r);
