@@ -147,7 +147,6 @@ int sollya_mpfi_intersect(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op
 int sollya_mpfi_is_inside(sollya_mpfi_t op1, sollya_mpfi_t op2); 
 int sollya_mpfi_mid(mpfr_t rop, sollya_mpfi_t op); 
 int sollya_mpfi_neg(sollya_mpfi_t rop, sollya_mpfi_t op); 
-int sollya_mpfi_revert_if_needed(sollya_mpfi_t rop); 
 void sollya_mpfi_set_prec(sollya_mpfi_t rop, mp_prec_t op); 
 int sollya_mpfi_union(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2);
 

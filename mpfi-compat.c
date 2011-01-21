@@ -835,10 +835,6 @@ int sollya_mpfi_neg(sollya_mpfi_t rop, sollya_mpfi_t op) {
   return res;
 }
 
-int sollya_mpfi_revert_if_needed(sollya_mpfi_t rop) {
-  return mpfi_revert_if_needed(rop);
-}
-
 void sollya_mpfi_set_prec(sollya_mpfi_t rop, mp_prec_t op) {
   mpfi_set_prec(rop,op);
 }

@@ -2257,7 +2257,6 @@ chain *findZerosUnsimplified(node *func, node *deriv, sollya_mpfi_t range, mp_pr
     theo = NULL;
   }
 
-  sollya_mpfi_revert_if_needed(range);
   mpfr_init2(rangeDiam,prec);
   sollya_mpfi_diam_abs(rangeDiam,range);
 
@@ -2273,7 +2272,6 @@ chain *findZerosUnsimplified(node *func, node *deriv, sollya_mpfi_t range, mp_pr
     temp = (sollya_mpfi_t *) safeMalloc(sizeof(sollya_mpfi_t));
     sollya_mpfi_init2(*temp,prec);
     sollya_mpfi_set(*temp,range);
-    sollya_mpfi_revert_if_needed(*temp);
     res->value = temp;
     if (theo != NULL) freeExprBoundTheo(theo);
   } else {
@@ -2578,17 +2576,15 @@ chain *excludeIntervals(chain *mainIntervals, chain *excludeIntervals) {
   curr2 = excludeIntervals;
   while (curr2 != NULL) {
     exclude = (sollya_mpfi_t *) (curr2->value);
-    sollya_mpfi_revert_if_needed(*exclude);
     sollya_mpfi_get_left(el,*exclude);
     sollya_mpfi_get_right(er,*exclude);
     curr = mainIntervals;
     previous = NULL;
     while (curr != NULL) {
       interval = (sollya_mpfi_t *) (curr->value);
-      sollya_mpfi_revert_if_needed(*interval);
       sollya_mpfi_get_left(il,*interval);
       sollya_mpfi_get_right(ir,*interval);
-      if ((mpfr_cmp(el,ir) < 0) && (mpfr_cmp(il,er) < 0)) {
+      if ((mpfr_cmp(el,ir) < 0) && (mpfr_cmp(il,er) < 0)) { /* [il;ir] inter [el;er] != empty */
 	if ((mpfr_cmp(il,el) < 0) && (mpfr_cmp(er,ir) < 0)) {
 	  /* We must produce two intervals [il;el] and [er;ir] */
 	  sollya_mpfi_interv_fr(*interval,il,el);
@@ -3404,7 +3400,6 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
   freeChain(mightExcludes,freeMpfiPtr);
   freeChain(secondMightExcludes,freeMpfiPtr);
   if (freeInitialExcludes) freeChain(initialExcludes,freeMpfiPtr);
-  sollya_mpfi_revert_if_needed(resI);
   sollya_mpfi_get_left(*(res.a),resI);
   sollya_mpfi_get_right(*(res.b),resI);
   free_memory(deriv);
@@ -4613,7 +4608,6 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
       infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,
 	       prec,currDiameter,initialExcludes,NULL,NULL);
     
-      sollya_mpfi_revert_if_needed(resI);
       sollya_mpfi_get_left(resultDown,resI);
       sollya_mpfi_get_right(resultUp,resI);
 
