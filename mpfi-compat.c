@@ -755,7 +755,10 @@ int sollya_mpfi_diam_abs(mpfr_t rop, sollya_mpfi_t op) {
     mpfr_set_nan(rop);
     return 0;
   }
-  else return mpfi_diam_abs(rop, op);
+  if (sollya_mpfi_is_infinity(op)) return mpfr_set_ui(rop, 0, GMP_RNDN);
+
+  /* else... */
+  return mpfi_diam_abs(rop, op);
 }
 
 int sollya_mpfi_get_left(mpfr_t rop, sollya_mpfi_t op) {
