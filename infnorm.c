@@ -1978,7 +1978,7 @@ chain* evaluateITaylorOnDiv(sollya_mpfi_t result, node *func, sollya_mpfi_t x, m
   }
   else {
     excludes = evaluateI(result, func, x, prec, 0, hopitalrecursions+1, NULL, theo,noExcludes);
-    mpfi_sollya_nan_normalize(result);
+    sollya_mpfi_nan_normalize(result);
     mpfr_clear(tempNaN);
     return excludes;
   }
@@ -2005,7 +2005,7 @@ chain* evaluateITaylor(sollya_mpfi_t result, node *func, node *deriv, sollya_mpf
       printMessage(25,"Warning: no Taylor evaluation is possible because no derivative has been given.\n");
     
     excludes = evaluateI(result, func, x, prec, 1, hopitalrecursions+1, NULL, theo,noExcludes);
-    mpfi_sollya_nan_normalize(result);
+    sollya_mpfi_nan_normalize(result);
 
     mpfr_clear(leftX);
     mpfr_clear(rightX);
