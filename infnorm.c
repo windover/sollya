@@ -1654,10 +1654,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
     excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
     sollya_mpfi_sin(stack3, stack1);
     if (sollya_mpfi_inf_p(stack1)) {
-      mpfr_init2(temph,12);
-      mpfr_set_nan(temph);
-      sollya_mpfi_interv_fr(stack3,temph,temph);
-      mpfr_clear(temph);      
+      sollya_mpfi_set_nan(stack3);
     }
     if (internalTheo != NULL) {
       sollya_mpfi_set(*(internalTheo->boundLeft),stack1);
@@ -1676,10 +1673,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
     excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
     sollya_mpfi_cos(stack3, stack1);
     if (sollya_mpfi_inf_p(stack1)) {
-      mpfr_init2(temph,12);
-      mpfr_set_nan(temph);
-      sollya_mpfi_interv_fr(stack3,temph,temph);
-      mpfr_clear(temph);      
+      sollya_mpfi_set_nan(stack3);
     }
     if (internalTheo != NULL) {
       sollya_mpfi_set(*(internalTheo->boundLeft),stack1);
@@ -1946,10 +1940,7 @@ chain* evaluateITaylorOnDiv(sollya_mpfi_t result, node *func, sollya_mpfi_t x, m
     sollya_mpfi_div(resultIndirect, resultNumerator, resultDenominator);
     if (sollya_mpfi_bounded_p(resultIndirect)) {
       sollya_mpfi_set(result, resultIndirect);
-      if (sollya_mpfi_nan_p(result)) {
-	mpfr_set_nan(tempNaN);
-	sollya_mpfi_interv_fr(result, tempNaN, tempNaN);
-      }
+      sollya_mpfi_nan_normalize(result);
 
       if (theo != NULL) {
 	theo->functionType = func->nodeType;
@@ -1974,10 +1965,7 @@ chain* evaluateITaylorOnDiv(sollya_mpfi_t result, node *func, sollya_mpfi_t x, m
 	freeExprBoundTheo(denominatorTheo);
       }
       excludes = evaluateI(result, func, x, prec, 0, hopitalrecursions+1, NULL, theo,noExcludes);
-      if (sollya_mpfi_nan_p(result)) {
-	mpfr_set_nan(tempNaN);
-	sollya_mpfi_interv_fr(result, tempNaN, tempNaN);
-      }
+      sollya_mpfi_nan_normalize(result);
     }
     
     sollya_mpfi_clear(resultNumerator);
@@ -1990,10 +1978,7 @@ chain* evaluateITaylorOnDiv(sollya_mpfi_t result, node *func, sollya_mpfi_t x, m
   }
   else {
     excludes = evaluateI(result, func, x, prec, 0, hopitalrecursions+1, NULL, theo,noExcludes);
-    if (sollya_mpfi_nan_p(result)) {
-      mpfr_set_nan(tempNaN);
-      sollya_mpfi_interv_fr(result, tempNaN, tempNaN);
-    }
+    mpfi_sollya_nan_normalize(result);
     mpfr_clear(tempNaN);
     return excludes;
   }
@@ -2020,10 +2005,7 @@ chain* evaluateITaylor(sollya_mpfi_t result, node *func, node *deriv, sollya_mpf
       printMessage(25,"Warning: no Taylor evaluation is possible because no derivative has been given.\n");
     
     excludes = evaluateI(result, func, x, prec, 1, hopitalrecursions+1, NULL, theo,noExcludes);
-    if(sollya_mpfi_nan_p(result)) {
-      mpfr_set_nan(leftX);
-      sollya_mpfi_interv_fr(result, leftX, leftX);
-    }
+    mpfi_sollya_nan_normalize(result);
 
     mpfr_clear(leftX);
     mpfr_clear(rightX);
@@ -2231,10 +2213,7 @@ chain* evaluateITaylor(sollya_mpfi_t result, node *func, node *deriv, sollya_mpf
     }
   }
 
-  if(sollya_mpfi_nan_p(result)) {
-    mpfr_set_nan(leftX);
-    sollya_mpfi_interv_fr(result, leftX, leftX);
-  }
+  sollya_mpfi_nan_normalize(result);
 
   if (theo != NULL) sollya_mpfi_set(*(theo->y),result);
 
