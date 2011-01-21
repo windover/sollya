@@ -5655,7 +5655,7 @@ int evaluateThingToRangeList(chain **ch, node *tree) {
 	mpfr_clear(b);
 	return 0;
       } else {
-	sollya_mpfi_interv_fr(*(arrayMpfi[i]),a,b);
+	sollya_mpfi_interv_fr_safe(*(arrayMpfi[i]),a,b);
       }
     }
     newChain = NULL;
@@ -12363,7 +12363,7 @@ int evaluateArgumentForExternalProc(void **res, node *argument, int type) {
     if (retVal) {
       *res = safeMalloc(sizeof(sollya_mpfi_t));
       sollya_mpfi_init2(*((sollya_mpfi_t *) (*res)), tools_precision);
-      sollya_mpfi_interv_fr(*((sollya_mpfi_t *) (*res)), a, b);
+      sollya_mpfi_interv_fr_safe(*((sollya_mpfi_t *) (*res)), a, b);
     }
     mpfr_clear(a);
     mpfr_clear(b);
@@ -12673,19 +12673,16 @@ void computeFunctionWithProcedure(sollya_mpfi_t y, node *proc, sollya_mpfi_t x, 
     if (res) {
       if (resThing != NULL) {
 	if (isRange(resThing)) {
-	  sollya_mpfi_interv_fr(y,*(resThing->child1->value),*(resThing->child2->value));
+	  sollya_mpfi_interv_fr_safe(y,*(resThing->child1->value),*(resThing->child2->value));
 	} else {
-	  mpfr_set_nan(xleft);
-	  sollya_mpfi_interv_fr(y,xleft,xleft);
+	  sollya_mpfi_set_nan(y);
 	}
 	freeThing(resThing);
       } else {
-	mpfr_set_nan(xleft);
-	sollya_mpfi_interv_fr(y,xleft,xleft);
+        sollya_mpfi_set_nan(y);
       }
     } else {
-      mpfr_set_nan(xleft);
-      sollya_mpfi_interv_fr(y,xleft,xleft);
+      sollya_mpfi_set_nan(y);
     }
 
     freeChain(args, freeThingOnVoid);
@@ -12695,10 +12692,7 @@ void computeFunctionWithProcedure(sollya_mpfi_t y, node *proc, sollya_mpfi_t x, 
     mpfr_clear(derivNAsMpfr);
     mpfr_clear(precAsMpfr);
   } else {
-    mpfr_init2(xleft,sollya_mpfi_get_prec(y));
-    mpfr_set_nan(xleft);
-    sollya_mpfi_interv_fr(y,xleft,xleft);
-    mpfr_clear(xleft);
+    sollya_mpfi_set_nan(y);
   }
 }
 

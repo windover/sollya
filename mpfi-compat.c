@@ -310,27 +310,53 @@ int sollya_mpfi_set_ui(sollya_mpfi_t rop, unsigned long op) {
 int sollya_mpfi_interv_d(sollya_mpfi_t rop, double op1, double op2) {
   int res;
   res = mpfi_interv_d(rop,op1,op2);
-  //  sollya_mpfi_nan_normalize(rop);
-  // sollya_mpfi_empty_normalize(rop);
+  sollya_mpfi_nan_normalize(rop);
+  sollya_mpfi_empty_normalize(rop);
   return res;
 }
 
 int sollya_mpfi_interv_fr(sollya_mpfi_t rop, mpfr_t op1, mpfr_t op2) {
   int res;
   res = mpfi_interv_fr(rop,op1,op2);
-  // sollya_mpfi_nan_normalize(rop);
-  // sollya_mpfi_empty_normalize(rop);
+  sollya_mpfi_nan_normalize(rop);
+  sollya_mpfi_empty_normalize(rop);
   return res;
 }
 
 int sollya_mpfi_interv_si(sollya_mpfi_t rop, long op1, long op2) {
   int res;
   res = mpfi_interv_si(rop,op1,op2);
-  // sollya_mpfi_nan_normalize(rop);
-  // sollya_mpfi_empty_normalize(rop);
+  sollya_mpfi_nan_normalize(rop);
+  sollya_mpfi_empty_normalize(rop);
   return res;
 }
 
+int sollya_mpfi_interv_d_safe(sollya_mpfi_t rop, double op1, double op2) {
+  int res = sollya_mpfi_interv_d(rop, op1, op2);
+  if (sollya_mpfi_is_empty(rop)) {
+    sollyaFprintf(stderr,"Error: trying to define an interval with reversed bounds.\nThis should never happen. Please report the bug to the developers.\n");
+    exit(1);
+  }
+  return res;
+}
+
+int sollya_mpfi_interv_fr_safe(sollya_mpfi_t rop, mpfr_t op1, mpfr_t op2) {
+  int res = sollya_mpfi_interv_fr(rop, op1, op2);
+  if (sollya_mpfi_is_empty(rop)) {
+    sollyaFprintf(stderr,"Error: trying to define an interval with reversed bounds.\nThis should never happen. Please report the bug to the developers.\n");
+    exit(1);
+  }
+  return res;
+}
+
+int sollya_mpfi_interv_si_safe(sollya_mpfi_t rop, long op1, long op2) {
+  int res = sollya_mpfi_interv_si(rop, op1, op2);
+  if (sollya_mpfi_is_empty(rop)) {
+    sollyaFprintf(stderr,"Error: trying to define an interval with reversed bounds.\nThis should never happen. Please report the bug to the developers.\n");
+    exit(1);
+  }
+  return res;
+}
 
 /* Elementary univariate functions */
 
