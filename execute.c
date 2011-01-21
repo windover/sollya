@@ -5444,7 +5444,7 @@ void autoprint(node *thing, int inList) {
 	  mpfr_clear(b);
 	}
       }
-    } else {
+    } else { 
       if (rationalMode)
 	tempNode3 = simplifyAllButDivision(tempNode2); 
       else 
