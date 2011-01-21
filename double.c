@@ -1453,6 +1453,7 @@ node *rationalApprox(mpfr_t x, unsigned int n) {
   mpfr_t *numerator;
   mpfr_t *denominator;
 
+  if ( (!mpfr_number_p(x)) || mpfr_zero_p(x) )  return makeConstant(x);
   mpq_init(q);
   mpz_init(u);
   sollya_mpfi_init2(xprime,(mp_prec_t)n);

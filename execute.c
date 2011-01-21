@@ -17156,7 +17156,7 @@ node *evaluateThingInner(node *tree) {
             pTemp = mpfr_get_prec(a);
             if (mpfr_get_prec(b) > pTemp) pTemp = mpfr_get_prec(b);
             sollya_mpfi_init2(tempIA,pTemp);
-            sollya_mpfi_interv_fr(tempIA,a,b); // TODO: I think a _safe should be okay
+            sollya_mpfi_interv_fr_safe(tempIA,a,b);
             tmpInterv1 = (sollya_mpfi_t *) safeCalloc(resA + 1, sizeof(sollya_mpfi_t));
             for (resB=0;resB<resA+1;resB++) {
               sollya_mpfi_init2(tmpInterv1[resB],tools_precision);
