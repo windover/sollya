@@ -501,7 +501,7 @@ While computations on intervals with bounds being NaN will always
 fail, \sollya will try to interpret infinities in the common way as
 limits. However, this is not guaranteed to work, even if it is
 guaranteed that no unsafe results will be produced. See also section
-\ref{sec:numbers} for more detail on infinities in \sollya.
+\ref{sec:numbers} for more detail on infinities in \sollya. The behavior of interval arithmetic on intervals containing infinities or NaNs is subject to debate; moreover, there is no complete consensus on what should be the result of the evaluation of a function $f$ over an interval $I$ containing points where $f$ is not defined. \sollya has its own philosophy regarding these questions. This philosophy is explained in Appendix~\ref{IntervalArithmeticPhilopshy} at the end of this document.
 
 \input{introExample39}
 
@@ -818,5 +818,28 @@ identifiers. See \ref{labexternalproc} for details.
 
 \input{CommandsAndFunctions}
 
+\newpage
+\section{Appendix: interval arithmetic philosophy in \sollya}
+\label{IntervalArithmeticPhilopshy}
+
+Although it is currently based on the MPFI library, \sollya has its own way of interpreting interval arithmetic when infinities or NaN occur, or when a function is evaluated on an interval containing points out of its domain, etc. This philosophy may differ from the one applied in MPFI. It is also possible that the behavior of \sollya does not correspond to the behavior that one would expect, e.g. as as natural consequence of the IEEE-754 standard.
+
+The topology that we consider is always the usual topology of $\overline{\mathbb{R}} = \mathbb{R} \cup \{-\infty,\,+\infty\}$.
+
+\subsection{Univariate functions}
+Let $f$ be a univariate basic function and $I$ an interval. We denote by $J$ the result of the interval evaluation of $f$ over $I$ in \sollya. If $I$ is completely included in the domain of $f$, $J$ will usually be the smallest interval (at the current precision) containing the exact image $f(I)$. However, in some cases, it may happen that $J$ is not as small as possible. It is guaranteed however, that $J$ tends to $f(I)$ when the precision of the tool tends to infinity.
+
+When $f$ is not defined at some point $x$ but is defined on a neighborhood of $x$, we consider that the ``value'' of $f$ at $x$ is the convex hull of the limit points of $f$ around $x$. For instance, consider the evaluation of $f= \tan$ on $[0,\, \pi]$. It is not defined at $\pi/2$ (and only at this point). The limit points of $f$ around $\pi/2$ are $-\infty$ and $+\infty$, so, we return $[-\infty,\,\infty]$. Another example: $f=\sin$ on $[+\infty]$. The function has no limit at this point, but all points of $[-1, 1]$ are limit points. So, we return $[-1,\,1]$.
+
+Finally, if $I$ contains a subinterval on which $f$ is not defined, we return $[\textrm{NaN},\,\textrm{NaN}]$ (example: $\sqrt{[-1,\,2]}$).
+
+\subsection{Bivariate functions}
+Let $f$ be a bivariate function and $I_1$ and $I_2$ be intervals. If $I_1=[x]$ and $I_2=[y]$ are both point-intervals, we return the convex hull of the limit points of $f$ around $(x,\,y)$ if it exists. In particular, if $f$ is defined at $(x,\,y)$ we return its value (or a small interval around it, if it is not exactly representable). As an example $[1]/[+\infty]$ returns $[0]$. Also, $[1]/[0]$ returns $[-\infty,\,+\infty]$ (note that \sollya does not consider signed zeros). If it is not possible to give a meaning to the expression $f(I_1,\,I_2)$, we return NaN: for instance $[0]/[0]$ or $[0]*[+\infty]$.
+
+If one and only one of the intervals is a point-interval (say $I_1 = [x]$), we consider the partial function $g: y \mapsto f(x,y)$ and return the value that would be obtained when evaluating $g$ on $I_2$. For instance, in order to evaluate $[0]/I_2$, we consider the function $g$ defined for every $y \neq 0$ by $g(y)=0/y=0$. Hence, $g(I_2) = [0]$ (even if $I_2$ contains $0$, by the argument of limit-points). In particular, please note that $[0]/[-1,\,1]$ returns $[0]$ even though $[0]/[0]$ returns NaN. This rule holds even when $g$ can only be defined as limit points: for instance, in the case $I_1/[0]$ we consider $g: x \mapsto x/0$. This function cannot be defined \emph{stricto sensu}, but we can give it a meaning by considering $0$ as a limit. Hence $g$ is multivalued and its value is $\{-\infty,\,+\infty\}$ for every $x$. Hence, $I_1/[0]$ returns $[-\infty,\,+\infty]$ when $I_1$ is not a point-interval.
+
+Finally, if neither $I_1$ nor $I_2$ are point-intervals, we try to give a meaning to $f(I_1,\,I_2)$ by an argument of limit-points when possible. For instance $[1,\,2] / [0,\,1]$ returns $[1,\,+\infty]$.
+
+As a special exception to these rules, $[0]^{[0]}$ returns $[1]$.
 
 \end{document}
