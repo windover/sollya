@@ -158,7 +158,7 @@ int sollya_mpfi_is_zero(sollya_mpfi_t op) {
   */
   if ( sollya_mpfi_has_nan(op) || sollya_mpfi_is_empty(op) )
     return 0;
-  else return ( mpfr_sgn(&(op->left)) * mpfr_sgn(&(op->right)) == 0 );
+  else return ( (mpfr_sgn(&(op->left))==0) && (mpfr_sgn(&(op->right)) == 0) );
 }
 
 int mpfr_is_positive_infinity(mpfr_t op) {
@@ -573,55 +573,51 @@ int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
 
 
 int sollya_mpfi_mul(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
-  int res;
-
-  /* Theoretical cases for the multiplication (for the practical implementation, see below)
+  /*
      # op1 = NaN or op2 = NaN -> NaN
      # op1 empty or op2 empty -> empty
-     # If op1 = [0] :
-         # If op2 = [-Inf] or [+Inf] -> NaN
-         # Else -> [0]    the argument here is: even if op2 contains an Inf,
-                                                the function op1*y is 0 everywhere
-                                                so we define it at y=Inf by
-                                                continuity.
      # If op1 = [+Inf] or op1 = [-Inf] :
          # If op2 = [0] -> NaN
-         # If op2 does not contain 0 -> sgn(op1)*sgn(op2)*Inf
-         # Else -> [-Inf, Inf]    The argument here is: Inf*y is an +/-Inf for
-                                  every y. By continuity at y=0, we define it
-                                  as an Inf (we do not know its sign however,
-                                  but who cares: we return [-Inf, +Inf] anyway)
-
-     Now, we know that op1 is neither [0], nor [-Inf] or [+Inf]
-     # If op2 = [0] -> [0]  (because op1*op2 = op2*op1)
+         # If op2 has 0 inside -> [-Inf, Inf]    The argument here is: Inf*y is an +/-Inf for
+                                                 every y. Since y can have both signs, we
+                                                 can have bot +Inf and -Inf.
+         # Else -> sgn(op2)*op1
      # If op2 = [-Inf] or [+Inf] :
-         # If op1 does not contain 0 -> sgn(op1)*sgn(op2)*Inf
-         # Else -> [-Inf, +Inf]
+         # If op1 = [0] -> NaN
+         # If op1 has 0 inside -> [-Inf, +Inf]
+         # Else -> sgn(op1)*op2
+
+     Now, we know that neither op1 or op2 is [-Inf] or [Inf].
+     # If op1 = [0] or op2 = [0] -> [0] the argument here is: even if the other contains an Inf,
+                                        the function 0*y is 0 everywhere
+                                        so we define it at y=Inf by
+                                        continuity.
 
      Now, we know that neither op1 nor op2 are singular point intervals
-     # Else -> mpfi_mul(op1, op2)
-
-     Practical implementation: we can expect that MPFI behaves well in most of the cases
-     and use the following simple implementation which should be correct:
-     
-     # op1 = NaN or op2 = NaN -> NaN
-     # op1 empty or op2 empty -> empty
-     # If (op1 = [0]) and (op2 = [-Inf] or op2 = [+Inf]) -> NaN
-     # If (op2 = [0]) and (op1 = [-Inf] or op1 = [+Inf]) -> NaN
      # Else -> mpfi_mul(op1, op2)
   */     
 
   if (sollya_mpfi_is_empty(op1) || sollya_mpfi_is_empty(op2)) return sollya_mpfi_set_empty(rop);
+  if (sollya_mpfi_has_nan(op1) || sollya_mpfi_has_nan(op2))  return sollya_mpfi_set_nan(rop);
 
-  if ( sollya_mpfi_has_nan(op1)
-       || sollya_mpfi_has_nan(op2)
-       || ( sollya_mpfi_is_zero(op1) && sollya_mpfi_is_infinity(op2) )
-       || ( sollya_mpfi_is_zero(op2) && sollya_mpfi_is_infinity(op1) )
-       )
-    return sollya_mpfi_set_nan(rop);
+  if (sollya_mpfi_is_infinity(op1)) {
+    if (sollya_mpfi_is_zero(op2)) return sollya_mpfi_set_nan(rop);
+    if (sollya_mpfi_has_zero_inside(op2)) return sollya_mpfi_set_full_range(rop);
+    if (sollya_mpfi_is_nonneg(op2)) return sollya_mpfi_set(rop, op1);
+    /* else: op2<=0 */
+    return sollya_mpfi_neg(rop, op1);
+  }
+  if (sollya_mpfi_is_infinity(op2)) {
+    if (sollya_mpfi_is_zero(op1)) return sollya_mpfi_set_nan(rop);
+    if (sollya_mpfi_has_zero_inside(op1)) return sollya_mpfi_set_full_range(rop);
+    if (sollya_mpfi_is_nonneg(op1)) return sollya_mpfi_set(rop, op2);
+    /* else: op1<=0 */
+    return sollya_mpfi_neg(rop, op2);
+  }
+  if (sollya_mpfi_is_zero(op1) || sollya_mpfi_is_zero(op2)) return sollya_mpfi_set_ui(rop, 0);
 
-  res = mpfi_mul(rop,op1,op2);
-  return res;
+  /* else: default case: */
+  return mpfi_mul(rop,op1,op2);
 }
 
 
