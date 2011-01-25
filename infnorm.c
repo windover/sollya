@@ -768,7 +768,6 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
   sollya_mpfi_t leftConstantTerm, rightConstantTerm;
   sollya_mpfi_t leftLinearTerm, rightLinearTerm;
   mpfr_t al, ar, bl, br, xl, xr, z, z2;
-  mpfr_t temph;
   mpfr_t *newHopitalPoint;
   node *derivNumerator, *derivDenominator, *tempNode;
   node *derivLeft, *derivRight;

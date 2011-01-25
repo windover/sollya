@@ -168,6 +168,8 @@ extern int yyparse();
 extern void yylex_destroy(void *);
 extern int yylex_init(void **);
 extern int yylex(void *);
+extern void yyset_in(FILE *, void *);
+
 
 #define BACKTRACELENGTH 100
 

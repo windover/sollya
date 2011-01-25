@@ -1,13 +1,16 @@
 /*
 
-Copyright 2008-2010 by 
+Copyright 2008-2011 by 
 
 Laboratoire de l'Informatique du Parallélisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
+LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
+
 and by
 
-LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
+Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
 
 Contributors S. Chevillard, M. Joldes, Ch. Lauter
 
@@ -55,6 +58,8 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include "autodiff.h"
 #include "general.h"
+#include "infnorm.h"
+#include "execute.h"
 #include <stdlib.h>
 
 /* The functions in AD manipulate arrays of size (n+1): [u0...un] */
@@ -1121,7 +1126,7 @@ void erfc_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
 }
 
 void abs_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
-  int s, i;
+  int i;
   sollya_mpfi_t temp;
   mpfr_t temp2;
   mp_prec_t prec;
@@ -1452,7 +1457,6 @@ void baseFunction_diff(sollya_mpfi_t *res, int nodeType, sollya_mpfi_t x, int n,
 void auto_diff_scaled(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n) {
   int i;
   sollya_mpfi_t *res1, *res2;
-  mpfr_t minusOne;
   node *simplifiedChild1, *simplifiedChild2, *tempTree;
   sollya_mpfi_t temp1, temp2;
   mp_prec_t prec;

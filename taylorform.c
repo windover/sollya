@@ -1,18 +1,22 @@
 /*
 
-Copyright 2009-2010 by 
+Copyright 2009-2011 by 
 
 Laboratoire de l'Informatique du Parallélisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
-and by
-
 LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
 
-Contributors S. Chevillard, M. Joldes
+and by
+
+Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
+
+Contributors S. Chevillard, M. Joldes, Ch. Lauter
 
 sylvain.chevillard@ens-lyon.fr
 mioara.joldes@ens-lyon.fr
+christoph.lauter@ens-lyon.org
 
 This software is a computer program whose purpose is to provide an
 environment for safe floating-point code development. It is
@@ -502,7 +506,7 @@ void computeMonotoneRemainder(sollya_mpfi_t *bound, int typeOfFunction, int node
 void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, int n, sollya_mpfi_t x0, sollya_mpfi_t x, int mode, int *silent){
   int i;
   tModel *tt;
-  sollya_mpfi_t *nDeriv, *nDeriv2;
+  sollya_mpfi_t *nDeriv;
   sollya_mpfi_t temp, pow;
   mpfr_t minusOne;
   mp_prec_t prec;
@@ -735,19 +739,15 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
   
   node *simplifiedChild1, *simplifiedChild2;
   sollya_mpfi_t temp1,temp2;
-  node **coefficients;
-  sollya_mpfi_t *rpoly, *boundRpoly;
-  tModel *tt,*tPoly, *child1_tm, *child2_tm, *ctPowVar_tm, *varCtPower_tm, *logx_tm, *expx_tm, *logf_tm;
+  tModel *tt, *child1_tm, *child2_tm, *ctPowVar_tm, *varCtPower_tm, *logx_tm, *expx_tm, *logf_tm;
   
   /*used by division*/
   sollya_mpfi_t gx0,rangeg;
   tModel *ttt, *inv_tm, *child1Extended_tm, *child2Extended_tm, *child1RemoveCoeffs_tm,*child2RemoveCoeffs_tm; 
   int orderUpperBound;  
-  int d;
   int silent = 0;
-  sollya_mpfi_t powx,powy;
+  sollya_mpfi_t powx;
   sollya_mpfi_t ct, minusOne;
-  mpfr_t zero;
   /*used by base functions*/
   sollya_mpfi_t fx0,rangef,pow;
   
@@ -1277,11 +1277,8 @@ void taylorform(node **T, chain **errors, sollya_mpfi_t **delta,
   mpfr_t *coeffsMpfr;
   sollya_mpfi_t *coeffsErrors;
   int i;
-  node *z;
   chain *err;
   sollya_mpfi_t *rest;
-  sollya_mpfi_t temp;
-  sollya_mpfi_t pow;
   sollya_mpfi_t myD;
 
   /* Adjust n to the notion of degree in the taylor command */

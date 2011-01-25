@@ -54,6 +54,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
 #include "mpfi-compat.h"
+#include "general.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -786,9 +787,9 @@ mp_prec_t sollya_mpfi_get_prec(sollya_mpfi_t op) {
   return mpfi_get_prec(op);
 }
 
-char *sollya_mpfi_get_version() {
-  char *res;
-  res = mpfi_get_version();
+const char *sollya_mpfi_get_version() {
+  const char *res;
+  res = (const char *) mpfi_get_version();
   return res;
 }
 

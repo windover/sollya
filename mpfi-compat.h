@@ -144,7 +144,7 @@ int sollya_mpfi_get_left(mpfr_t rop, sollya_mpfi_t op);
 int sollya_mpfi_get_right(mpfr_t rop, sollya_mpfi_t op); 
 void sollya_mpfi_get_fr(mpfr_t rop, sollya_mpfi_t op); 
 mp_prec_t sollya_mpfi_get_prec(sollya_mpfi_t op); 
-char *sollya_mpfi_get_version(); 
+const char *sollya_mpfi_get_version(); 
 void sollya_mpfi_init2(sollya_mpfi_t rop, mp_prec_t op); 
 int sollya_mpfi_intersect(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2); 
 int sollya_mpfi_is_inside(sollya_mpfi_t op1, sollya_mpfi_t op2); 

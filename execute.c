@@ -1,6 +1,6 @@
 /*
 
-Copyright 2007-2010 by 
+Copyright 2007-2011 by 
 
 Laboratoire de l'Informatique du Parallélisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
@@ -94,6 +94,10 @@ extern int internyyparse(void *);
 extern void internyylex_destroy(void *);
 extern int internyylex_init(void **);
 extern void internyyset_in(FILE *, void *);
+
+extern int miniyylex_init(void **);
+extern void miniyyset_in(FILE *, void *);
+extern void miniyylex_destroy(void *);
 
 extern void *startMiniparser(void *scanner, char *str);
 extern void endMiniparser(void *buf, void *scanner);
