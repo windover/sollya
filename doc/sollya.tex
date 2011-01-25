@@ -827,7 +827,7 @@ identifiers. See \ref{labexternalproc} for details.
 
 Although it is currently based on the MPFI library, \sollya has its own way of interpreting interval arithmetic when infinities or NaN occur, or when a function is evaluated on an interval containing points out of its domain, etc. This philosophy may differ from the one applied in MPFI. It is also possible that the behavior of \sollya does not correspond to the behavior that one would expect, e.g. as a natural consequence of the IEEE-754 standard.
 
-The topology that we consider is always the usual topology of $\overline{\mathbb{R}} = \mathbb{R} \cup \{-\infty,\,+\infty\}$.
+The topology that we consider is always the usual topology of $\overline{\mathbb{R}} = \mathbb{R} \cup \{-\infty,\,+\infty\}$. For any function, if one of its arguments is empty (respectively NaN), we return empty (respectively NaN).
 
 \subsection{Univariate functions}
 Let $f$ be a univariate basic function and $I$ an interval. We denote by $J$ the result of the interval evaluation of $f$ over $I$ in \sollya. If $I$ is completely included in the domain of $f$, $J$ will usually be the smallest interval (at the current precision) containing the exact image $f(I)$. However, in some cases, it may happen that $J$ is not as small as possible. It is guaranteed however, that $J$ tends to $f(I)$ when the precision of the tool tends to infinity.

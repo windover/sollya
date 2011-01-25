@@ -45,6 +45,7 @@ reproduced in the <code>COPYING</code> file of the distribution.
 <p style="font-size:small;">
 This software (<span class="sollya">Sollya</span>) is distributed WITHOUT ANY WARRANTY; without even the 
 implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
 <h1><a href="#commandsAndFunctions">Direct access to the list of available commands</a></h1>
 
 <h1>1 - Compilation and installation of the <span class="sollya">Sollya</span> tool</h1>
@@ -491,6 +492,8 @@ fail, <span class="sollya">Sollya</span> will try to interpret infinities in the
 limits. However, this is not guaranteed to work, even if it is
 guaranteed that no unsafe results will be produced. See also section
 <a href="#sec:numbers">Numbers</a> for more detail on infinities in <span class="sollya">Sollya</span>.
+   The behavior of interval arithmetic on intervals containing infinities or NaNs is subject to debate; moreover, there is no complete consensus on what should be the result of the evaluation of a function f over an interval I containing points where f is not defined. <span class="sollya">Sollya</span> has its own philosophy regarding these questions. This philosophy is explained in <a href="#IntervalArithmeticPhilopshy">Appendix&nbsp;9</a> at the end of this document.
+
 <p>
 <?php include("introExample39.php"); ?>
 <p>
@@ -812,9 +815,42 @@ identifiers. See <a href="help.php?name=externalproc&goBack=none">externalproc</
 <p>
 <h1>8 - Commands and functions</h1>
 <a name="commandsAndFunctions"></a>
-   The list of commands of Sollya is available in two flavours:
+<p>
+The list of commands of Sollya is available in two flavours:
 <ul>
   <li>As a <a href="help.php">single page containing the description of all the commands.</a></li>
   <li>Or with <a href="help.php?name=listOfCommands&goBack=none">each command on a different page</a> (faster to load).</li>
 </ul>
+
+<h1>9 - Appendix: interval arithmetic philosophy in <span class="sollya">Sollya</span></h1>
+<a name="IntervalArithmeticPhilopshy"></a>
+<p>
+Although it is currently based on the MPFI library, <span class="sollya">Sollya</span> has its own way of interpreting interval arithmetic when infinities or NaN occur, or when a function is evaluated on an interval containing points out of its domain, etc. This philosophy may differ from the one applied in MPFI. It is also possible that the behavior of <span class="sollya">Sollya</span> does not correspond to the behavior that one would expect, e.g. as a natural consequence of the IEEE-754 standard.
+
+<p>
+The topology that we consider is always the usual topology of R bar: R U {-infinity, +infinity}. For any function, if one of its arguments is empty (respectively NaN), we return empty (respectively NaN).
+
+<h2>9.1 - Univariate functions</h2>
+<p>
+Let f be a univariate basic function and I an interval. We denote by J the result of the interval evaluation of f over I in <span class="sollya">Sollya</span>. If I is completely included in the domain of f, J will usually be the smallest interval (at the current precision) containing the exact image f(I) However, in some cases, it may happen that J is not as small as possible. It is guaranteed however, that J tends to f(I) when the precision of the tool tends to infinity.
+
+<p>
+When f is not defined at some point x but is defined on a neighborhood of x, we consider that the ``value'' of f at x is the convex hull of the limit points of f around x. For instance, consider the evaluation of f= tan on [0, Pi]. It is not defined at Pi/2 (and only at this point). The limit points of f around Pi/2 are -infinity and +infinity, so, we return [-infinity, +infinity]. Another example: f=sin on [+infinity]. The function has no limit at this point, but all points of [-1, 1] are limit points. So, we return [-1,\,1].
+
+<p>
+Finally, if I contains a subinterval on which f is not defined, we return [NaN, NaN] (example: sqrt([-1, 2])).
+
+<h2>9.2 - Bivariate functions</h2>
+<p>
+Let f be a bivariate function and I1 and I2 be intervals. If I1=[x] and I2=[y] are both point-intervals, we return the convex hull of the limit points of f around (x, y) if it exists. In particular, if f is defined at (x, y) we return its value (or a small interval around it, if it is not exactly representable). As an example [1]/[+infinity] returns [0]. Also, [1]/[0] returns [-infinity, +infinity] (note that <span class="sollya">Sollya</span> does not consider signed zeros). If it is not possible to give a meaning to the expression f(I1, I2), we return NaN: for instance [0]/[0] or [0]*[+infinity].
+
+<p>
+If one and only one of the intervals is a point-interval (say I1 = [x]), we consider the partial function g: y -> f(x,y) and return the value that would be obtained when evaluating g on I2. For instance, in order to evaluate [0]/I2, we consider the function g defined for every y != 0 by g(y)=0/y=0. Hence, g(I2) = [0] (even if I2 contains 0, by the argument of limit-points). In particular, please note that [0]/[-1, 1] returns [0] even though [0]/[0] returns NaN. This rule even holds when g can only be defined as limit points: for instance, in the case I1/[0] we consider g: x -> x/0. This function cannot be defined <em>stricto sensu</em>, but we can give it a meaning by considering 0 as a limit. Hence g is multivalued and its value is {-infinity, +infinity} for every x. Hence, I1/[0] returns [-infinity, +infinity] when I1 is not a point-interval.
+
+<p>
+Finally, if neither I1 nor I2 are point-intervals, we try to give a meaning to f(I1, I2) by an argument of limit-points when possible. For instance [1, 2] / [0, 1] returns [1, +infinity].
+
+<p>
+As a special exception to these rules, [0]^[0] returns [1].
+
 </body>
