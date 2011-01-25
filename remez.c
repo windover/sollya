@@ -1,13 +1,16 @@
 /*
 
-Copyright 2006-2010 by 
+Copyright 2006-2011 by 
 
 Laboratoire de l'Informatique du Parallélisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
+LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
+
 and by
 
-LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
+Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
 
 Contributors Ch. Lauter, S. Chevillard
 
@@ -377,6 +380,11 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
   mpfr_t x, xNew, yNew, tmp_mpfr;
   int estim_prec, estim_prec2;
   int nbr_iter;
+
+  /* Make compiler happy: */
+  estim_prec = 12;
+  nbr_iter = 2;
+  /* End of compiler happiness */
 
   if(verbosity>=8) {
     changeToWarningMode();
