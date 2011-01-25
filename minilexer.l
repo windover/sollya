@@ -732,6 +732,8 @@ void *startMiniparser(void *scanner, char *str) {
 
   buf = miniyy_scan_string(str, scanner);
   miniyy_switch_to_buffer(buf, scanner);
+
+  return NULL;
 }
 
 void endMiniparser(void *buf, void *scanner) {
