@@ -13231,6 +13231,11 @@ node *evaluateThingInner(node *tree) {
   sollya_mpfi_t tempIA2;
   unsigned int tempUI;
 
+  /* Make compiler happy: */
+  pTemp = 12;
+  pTemp2 = 12;
+  /* End of compiler happiness */
+
   if (tree == NULL) return NULL;
 
   timingString = NULL;
