@@ -1,6 +1,6 @@
 /*
 
-Copyright 2007-2010 by 
+Copyright 2007-2011 by 
 
 Laboratoire de l'Informatique du Parallélisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
@@ -214,7 +214,9 @@ int sollya_mpfi_is_nonpos(sollya_mpfi_t op) {
 /* (and not, if op contains *only* positive numbers as    */
 /* one could expect).                                     */
 int sollya_mpfi_is_pos(sollya_mpfi_t op) { 
-  return mpfi_is_pos(op);
+  if ( sollya_mpfi_has_nan(op) || sollya_mpfi_is_empty(op) )
+    return 0;
+  else return mpfi_is_pos(op);
 }
 
 int sollya_mpfi_has_positive_infinity(sollya_mpfi_t op) {
@@ -367,12 +369,12 @@ int sollya_mpfi_interv_si_safe(sollya_mpfi_t rop, long op1, long op2) {
 /* Elementary univariate functions */
 
 #define define_simple_func(f)                                           \
-  int sollya_mpfi_ ## f (sollya_mpfi_t rop, sollya_mpfi_t op) {         \
+  int sollya_mpfi_##f (sollya_mpfi_t rop, sollya_mpfi_t op) {           \
     int res;                                                            \
                                                                         \
     if (sollya_mpfi_is_empty(op)) return sollya_mpfi_set_empty(rop);    \
                                                                         \
-    res = mpfi_ ## f (rop,op); sollya_mpfi_nan_normalize(rop);          \
+    res = mpfi_##f (rop,op); sollya_mpfi_nan_normalize(rop);            \
     return res;                                                         \
   }
 
@@ -393,7 +395,7 @@ define_simple_func(sqrt)
 
 
 #define define_trig_func(f, compute_range)                              \
-  int sollya_mpfi_ ## f (sollya_mpfi_t rop, sollya_mpfi_t op) {         \
+  int sollya_mpfi_##f (sollya_mpfi_t rop, sollya_mpfi_t op) {           \
     int res;                                                            \
                                                                         \
     if (sollya_mpfi_is_empty(op)) return sollya_mpfi_set_empty(rop);    \
@@ -401,7 +403,7 @@ define_simple_func(sqrt)
       compute_range;                                                    \
       res = MPFI_FLAGS_BOTH_ENDPOINTS_EXACT;                            \
     }                                                                   \
-    else res = mpfi_ ## f (rop,op);                                     \
+    else res = mpfi_##f (rop,op);                                       \
                                                                         \
     sollya_mpfi_nan_normalize(rop);                                     \
     return res;                                                         \
@@ -416,7 +418,7 @@ define_trig_func(tan, sollya_mpfi_set_full_range(rop))
    of an mpfi_t !!!
 */
 #define define_log_func(f, left_bound_of_the_domain)                    \
-  int sollya_mpfi_ ## f (sollya_mpfi_t rop, sollya_mpfi_t op) {         \
+  int sollya_mpfi_##f (sollya_mpfi_t rop, sollya_mpfi_t op) {           \
     int res;                                                            \
                                                                         \
     if (sollya_mpfi_is_empty(op)) return sollya_mpfi_set_empty(rop);    \
@@ -430,13 +432,13 @@ define_trig_func(tan, sollya_mpfi_set_full_range(rop))
       }                                                                 \
       else {                                                            \
         mpfr_set_inf(&(rop->left),-1);                                  \
-        if (mpfr_ ## f (&(rop->right),&(op->right),GMP_RNDU) == 0)      \
+        if (mpfr_##f (&(rop->right),&(op->right),GMP_RNDU) == 0)        \
           res = MPFI_FLAGS_BOTH_ENDPOINTS_EXACT;                        \
         else                                                            \
           res = MPFI_FLAGS_RIGHT_ENDPOINT_INEXACT;                      \
       }                                                                 \
     }                                                                   \
-    else res = mpfi_ ## f (rop,op);                                     \
+    else res = mpfi_##f (rop,op);                                       \
                                                                         \
     sollya_mpfi_nan_normalize(rop);                                     \
                                                                         \
