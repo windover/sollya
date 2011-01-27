@@ -6077,6 +6077,10 @@ int executeCommandInner(node *tree) {
   node **array;
   rangetype tempRange;
 
+  /* Make compiler happy */
+  fd = NULL;
+  /* End of compiler happiness */
+
   result = 0;
 
   timingString = NULL;

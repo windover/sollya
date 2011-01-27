@@ -83,6 +83,8 @@ libraryHandle *getLibraryHandle(char *libraryName, int type) {
   chain *openedLibraries;
   libraryHandle *currHandle;
   void *dlfcnHandle;
+
+  openedLibraries = NULL;
   
   switch(type) {
   case LIBRARYFUNCTION_CASE: openedLibraries = openedFunctionLibraries; break;
