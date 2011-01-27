@@ -7718,6 +7718,8 @@ int isSyntacticallyEqual(node *tree1, node *tree2) {
   if ((tree1->nodeType == LIBRARYFUNCTION) && 
       ((tree1->libFun != tree2->libFun) ||
        (tree1->libFunDeriv != tree2->libFunDeriv))) return 0;
+  if (tree1->nodeType == LIBRARYCONSTANT) 
+      return (tree1->libFun == tree2->libFun);
   if ((tree1->nodeType == PROCEDUREFUNCTION) && 
       ((!isEqualThing(tree1->child2, tree2->child2)) ||
        (tree1->libFunDeriv != tree2->libFunDeriv))) return 0;
