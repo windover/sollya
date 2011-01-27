@@ -179,7 +179,6 @@ struct implementCsteInstruction {
 
 void free_implementCsteInstruction(void *instr) {
   struct implementCsteInstruction *ptr;
-  chain *curr;
 
   ptr = (struct implementCsteInstruction *)instr;
   if (ptr->strval != NULL )  free(ptr->strval);
@@ -1011,7 +1010,7 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
     prog1.precisions = prog2.precisions;
     
     str = safeCalloc(32 , sizeof(char));
-    sprintf(str, "prec <= %d", *Ea-gamma0);
+    sprintf(str, "prec <= %d", (int)(*Ea-gamma0));
     appendIfThenElseProg(str, prog1, prog2, program);
     free(str);
 
@@ -1051,7 +1050,7 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
     prog1.precisions = prog2.precisions;
 
     str = safeCalloc(32 , sizeof(char));
-    sprintf(str, "prec <= %d", *Eb-gamma0);
+    sprintf(str, "prec <= %d", (int)(*Eb-gamma0));
     appendIfThenElseProg(str, prog1, prog2, program);
     free(str);
     
@@ -1090,7 +1089,7 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
 }
 
 int implementPow(node *c, int gamma0, struct implementCsteProgram *program) {
-  int log2p, p, tmpNumber, counter;
+  int log2p, p, counter;
   node *tmpNode;
   mpfr_t tmp;
   int res;
@@ -1105,7 +1104,7 @@ int implementPow(node *c, int gamma0, struct implementCsteProgram *program) {
     appendSetprecProg(counter, gamma0, program);
     appendUipowui(counter, mpfr_get_ui(*(c->child1->value), GMP_RNDN), mpfr_get_ui(*(c->child2->value), GMP_RNDN), program);
     program->counter = counter;
-    return;
+    return 0;
   }
 
   if ( (c->child2->nodeType==CONSTANT) 
@@ -1180,7 +1179,6 @@ int implementCsteCase(node *c, int gamma0, struct implementCsteProgram *program)
 }
 
 int constantImplementer(node *c, int gamma0, struct implementCsteProgram *program) {
-  char tmpName[10] = "tmp";
   int res;
 
   switch (c->nodeType) {
