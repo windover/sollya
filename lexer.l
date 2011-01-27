@@ -1,6 +1,6 @@
 /*
 
-Copyright 2006-2010 by
+Copyright 2006-2011 by
 
 Laboratoire de l'Informatique du Parallélisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
@@ -244,6 +244,7 @@ SUBSTITUTE      "substitute"
 DOTS            "..."
 
 IMPLEMENTPOLY   "implementpoly"
+IMPLEMENTCONST  "implementconstant"
 
 CHECKINFNORM    "checkinfnorm"
 
@@ -320,6 +321,7 @@ RATIONALMODE    "rationalmode"
 DIEONERRORMODE  "dieonerrormode"
 
 LIBRARY         "library"
+LIBRARYCONSTANT "libraryconstant"
 
 HOPITALRECURSIONS "hopitalrecursions"
 
@@ -705,6 +707,7 @@ NOP             "nop"
 {VERSION}         			    { newTokenLexed(); return VERSIONTOKEN; }
 
 {LIBRARY}         			    { newTokenLexed(); return LIBRARYTOKEN; }
+{LIBRARYCONSTANT}         		    { newTokenLexed(); return LIBRARYCONSTANTTOKEN; }
 
 {DIFF}            			    { newTokenLexed(); return DIFFTOKEN; }
 {SIMPLIFY}				    { newTokenLexed(); return SIMPLIFYTOKEN; }
@@ -744,7 +747,6 @@ NOP             "nop"
 {ASCIIPLOT}       			    { newTokenLexed(); return ASCIIPLOTTOKEN; }
 {RENAME}         			    { newTokenLexed(); return RENAMETOKEN; }
 
-
 {INFNORM}         			    { newTokenLexed(); return INFNORMTOKEN; }
 {SUPNORM}         			    { newTokenLexed(); return SUPNORMTOKEN; }
 {FINDZEROS}       			    { newTokenLexed(); return FINDZEROSTOKEN; }
@@ -755,6 +757,7 @@ NOP             "nop"
 {DIRTYINTEGRAL}				    { newTokenLexed(); return DIRTYINTEGRALTOKEN; }
 {WORSTCASE}       			    { newTokenLexed(); return WORSTCASETOKEN; }
 {IMPLEMENTPOLY}				    { newTokenLexed(); return IMPLEMENTPOLYTOKEN; }
+{IMPLEMENTCONST}                            { newTokenLexed(); return IMPLEMENTCONSTTOKEN; }
 {CHECKINFNORM}    			    { newTokenLexed(); return CHECKINFNORMTOKEN; }
 {ZERODENOMINATORS}			    { newTokenLexed(); return ZERODENOMINATORSTOKEN; }
 {ISEVALUABLE}     			    { newTokenLexed(); return ISEVALUABLETOKEN; }
@@ -776,7 +779,6 @@ NOP             "nop"
 {LBRACE}				    { newTokenLexed(); return LEFTCURLYBRACETOKEN; }
 {RBRACE}				    { newTokenLexed(); return RIGHTCURLYBRACETOKEN; }
 {WHILEDEF}				    { newTokenLexed(); return WHILETOKEN; }
-
 
 {EXTERNALPROC}                              { newTokenLexed(); return EXTERNALPROCTOKEN; }
 {VOID}                                      { newTokenLexed(); return VOIDTOKEN; }

@@ -1,0 +1,66 @@
+#NAME $LIBRARYCONSTANT
+#QUICK_DESCRIPTION binds an external mathematical constant to a variable in $SOLLYA
+
+#CALLING $COMMAND(<path>)
+#TYPE $STRING_TYPE -> $FUNCTION_TYPE
+
+#DESCRIPTION 
+The command $COMMAND lets you extend the set of mathematical
+constants known to $SOLLYA.
+By default, the only mathematical constant known by $SOLLYA is $PI.
+For particular applications, one may want to
+manipulate other constants, such as Euler's gamma constant, for instance.
+
+#DESCRIPTION 
+$COMMAND makes it possible to let $SOLLYA know about new constants.
+In order to let it know, you have to provide an implementation of the
+constant you are interested in. This implementation is a C file containing
+a function of the form:
+§§             §\begin{verbatim}§§ void my_ident(mpfr_t result, mp_prec_t prec)§§ §\end{verbatim}§§
+
+The semantic of this function is the following: it is an implementation of
+the constant in arbitrary precision.
+§§my_ident(result, prec)§\verb|my_ident(result, prec)|§§ shall set the
+precision of the variable result to a suitable precision (the variable is
+assumed to be already initialized) and store in result an approximate value
+of the constant with a relative error not greater than §§2^(1-prec)§$2^{1-\mathrm{prec}}$§§.
+More precisely, if §§c§$c$§§ is the exact value of the constant, the value stored
+in result should satisfy §§|result-c| <= 2^(1-prec)*|c|.§$$|\mathrm{result}-c| \le |c|\,2^{1-\mathrm{prec}}.$$§§
+
+#DESCRIPTION
+You can include sollya.h in your implementation and use library 
+functionnalities of $SOLLYA for your implementation. However, this requires to
+have compiled $SOLLYA with §§-fPIC§\texttt{-fPIC}§§ in order to make the $SOLLYA executable
+code position independent and to use a system on with programs, using §§dlopen§\texttt{dlopen}§§
+to open dynamic routines can dynamically open themselves.
+
+#DESCRIPTION
+To bind your constant into $SOLLYA, you must use the same identifier as the
+function name used in your implementation file (§§my_ident§\verb|my_ident|§§ in the previous
+example). Once the function code has been bound to an identifier, you can use
+a simple assignment to assign the bound identifier to yet another identifier.
+This way, you may use convenient names inside $SOLLYA even if your
+implementation environment requires you to use a less convenient name.
+
+#DESCRIPTION
+Once your constant is bound, it is considered by $SOLLYA as an infinitely
+accurate constant (i.e. a 0-ary function, exactly like $PI).
+
+#EXAMPLE
+bashexecute("gcc -fPIC -Wall -c libraryconstantexample.c -I$HOME/.local/include");
+bashexecute("gcc -shared -o libraryconstantexample libraryconstantexample.o -lgmp -lmpfr");
+euler_gamma = libraryconstant("./libraryconstantexample");
+prec = 20!;
+euler_gamma;
+prec = 100!;
+euler_gamma;
+midpointmode = on;
+[euler_gamma];
+
+#SEEALSO $BASHEXECUTE
+#SEEALSO $EXTERNALPROC
+#SEEALSO $EXTERNALPLOT
+#SEEALSO $PI
+#SEEALSO $LIBRARY
+#SEEALSO $EVALUATE
+#SEEALSO $IMPLEMENTCONSTANT

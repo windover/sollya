@@ -1,9 +1,14 @@
 /*
 
-Copyright 2007-2009 by 
+Copyright 2007-2011 by 
 
 Laboratoire de l'Informatique du Parallélisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+
+and
+
+Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
 
 Contributors Ch. Lauter, S. Chevillard
 
@@ -65,13 +70,25 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #define RTLD_LOCAL 0
 #endif
 
-chain *openedLibraries = NULL;
+#define LIBRARYFUNCTION_CASE 0
+#define LIBRARYCONSTANT_CASE 1
+#define LIBRARYPROC_CASE 2
+
+chain *openedFunctionLibraries = NULL;
+chain *openedConstantLibraries = NULL;
 chain *openedProcLibraries = NULL;
 
-libraryHandle *getLibraryHandle(char *libraryName) {
+libraryHandle *getLibraryHandle(char *libraryName, int type) {
   chain *curr;
+  chain *openedLibraries;
   libraryHandle *currHandle;
   void *dlfcnHandle;
+  
+  switch(type) {
+  case LIBRARYFUNCTION_CASE: openedLibraries = openedFunctionLibraries; break;
+  case LIBRARYCONSTANT_CASE: openedLibraries = openedConstantLibraries; break;
+  case LIBRARYPROC_CASE: openedLibraries = openedProcLibraries; break;
+  }
 
   curr = openedLibraries;
   while (curr != NULL) {
@@ -91,12 +108,32 @@ libraryHandle *getLibraryHandle(char *libraryName) {
   strcpy(currHandle->libraryName,libraryName);
   currHandle->libraryDescriptor = dlfcnHandle;
   currHandle->functionList = NULL;
+
   openedLibraries = addElement(openedLibraries,currHandle);
+
+  switch(type) {
+  case LIBRARYFUNCTION_CASE: openedFunctionLibraries = openedLibraries; break;
+  case LIBRARYCONSTANT_CASE: openedConstantLibraries = openedLibraries; break;
+  case LIBRARYPROC_CASE: openedProcLibraries = openedLibraries; break;
+  }
 
   return currHandle;
 }
 
+libraryHandle *getLibraryFunctionHandle(char *libraryName) {
+  return getLibraryHandle(libraryName, LIBRARYFUNCTION_CASE);
+}
 
+libraryHandle *getConstantLibraryHandle(char *libraryName) {
+  return getLibraryHandle(libraryName, LIBRARYCONSTANT_CASE);
+}
+
+libraryHandle *getProcLibraryHandle(char *libraryName) {
+  return getLibraryHandle(libraryName, LIBRARYPROC_CASE);
+}
+
+
+/* Functions related to library functions */
 libraryFunction *bindFunction(char* libraryName, char *functionName) {
   libraryHandle *libHandle;
   libraryFunction *currFunct;
@@ -110,7 +147,7 @@ libraryFunction *bindFunction(char* libraryName, char *functionName) {
     return currFunct;
   }
 
-  libHandle = getLibraryHandle(libraryName);
+  libHandle = getLibraryFunctionHandle(libraryName);
   if (libHandle == NULL) {
     changeToWarningMode();
     sollyaFprintf(stderr,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,functionName,dlerror());
@@ -146,20 +183,19 @@ libraryFunction *bindFunction(char* libraryName, char *functionName) {
   return currFunct;
 } 
 
-
 libraryFunction *getFunction(char *functionName) {
   chain *currLibList, *currFunList;
   libraryFunction *currFunct;
   libraryHandle *currLibHandle;
 
-  currLibList = openedLibraries;
+  currLibList = openedFunctionLibraries;
   while (currLibList != NULL) {
     currLibHandle = (libraryHandle *) currLibList->value;
     currFunList = currLibHandle->functionList;
     while (currFunList != NULL) {
       currFunct = (libraryFunction *) currFunList->value;
       if (strcmp(currFunct->functionName,functionName) == 0)
-	return currFunct;
+        return currFunct;
       currFunList = currFunList->next;
     }
     currLibList = currLibList->next;
@@ -168,13 +204,12 @@ libraryFunction *getFunction(char *functionName) {
   return NULL;
 }
 
-
-void freeLibraries() {
+void freeFunctionLibraries() {
   chain *currLibList, *currFunList, *prevFunList, *prevLibList;
   libraryFunction *currFunct;
   libraryHandle *currLibHandle;
 
-  currLibList = openedLibraries;
+  currLibList = openedFunctionLibraries;
   while (currLibList != NULL) {
     currLibHandle = (libraryHandle *) currLibList->value;
     currFunList = currLibHandle->functionList;
@@ -195,51 +230,117 @@ void freeLibraries() {
     currLibList = currLibList->next;
     free(prevLibList);
   }
-  openedLibraries = NULL;
+  openedFunctionLibraries = NULL;
 }
 
 
 
+/* Functions related to library constants */
+libraryFunction *bindConstantFunction(char* libraryName, char *functionName) {
+  libraryHandle *libHandle;
+  libraryFunction *currFunct;
+  void (*myFunction)(mpfr_t, mp_prec_t);
+  char *error;
+  mpfr_t op;
 
-procLibraryHandle *getProcLibraryHandle(char *libraryName) {
-  chain *curr;
-  procLibraryHandle *currHandle;
-  void *dlfcnHandle;
-
-  curr = openedProcLibraries;
-  while (curr != NULL) {
-    currHandle = (procLibraryHandle *) curr->value;
-    if (strcmp(currHandle->procLibraryName,libraryName) == 0) 
-      return currHandle;
-    curr = curr->next;
+  currFunct = getConstantFunction(functionName);
+  if (currFunct != NULL) {
+    printMessage(1,"Warning: a function named \"%s\" has already been bound.\n",functionName);
+    return currFunct;
   }
 
-  dlerror(); 
-  dlfcnHandle = dlopen(libraryName, RTLD_LOCAL | RTLD_NOW);
-  if (dlfcnHandle == NULL) 
+  libHandle = getConstantLibraryHandle(libraryName);
+  if (libHandle == NULL) {
+    changeToWarningMode();
+    sollyaFprintf(stderr,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,functionName,dlerror());
+    restoreMode();
     return NULL;
+  }
+    
+  dlerror();
+  myFunction = (void (*)(mpfr_t, mp_prec_t)) dlsym(libHandle->libraryDescriptor, functionName);
+  if ((error = dlerror()) != NULL) {
+    changeToWarningMode();
+    sollyaFprintf(stderr, "Error: could not find function \"%s\" in library \"%s\" for binding: %s\n",functionName,libraryName,error);
+    restoreMode();
+    return NULL;
+  }
+  
+  mpfr_init2(op,20);
+  myFunction(op,5);
 
-  currHandle = (procLibraryHandle *) safeMalloc(sizeof(procLibraryHandle));
-  currHandle->procLibraryName = (char *) safeCalloc(strlen(libraryName)+1,sizeof(char));
-  strcpy(currHandle->procLibraryName,libraryName);
-  currHandle->procLibraryDescriptor = dlfcnHandle;
-  currHandle->procedureList = NULL;
-  openedProcLibraries = addElement(openedProcLibraries,currHandle);
+  mpfr_clear(op);
 
-  return currHandle;
+  currFunct = (libraryFunction *) safeMalloc(sizeof(libraryFunction));
+  currFunct->functionName = (char *) safeCalloc(strlen(functionName)+1,sizeof(char));
+  strcpy(currFunct->functionName,functionName);
+  currFunct->constant_code = myFunction;
+  
+  libHandle->functionList = addElement(libHandle->functionList,currFunct);
+
+  return currFunct;
+} 
+
+libraryFunction *getConstantFunction(char *functionName) { 
+  chain *currLibList, *currFunList;
+  libraryFunction *currFunct;
+  libraryHandle *currLibHandle;
+
+  currLibList = openedConstantLibraries;
+  while (currLibList != NULL) {
+    currLibHandle = (libraryHandle *) currLibList->value;
+    currFunList = currLibHandle->functionList;
+    while (currFunList != NULL) {
+      currFunct = (libraryFunction *) currFunList->value;
+      if (strcmp(currFunct->functionName,functionName) == 0)
+        return currFunct;
+      currFunList = currFunList->next;
+    }
+    currLibList = currLibList->next;
+  }
+
+  return NULL;
 }
 
+void freeConstantLibraries() {
+  chain *currLibList, *currFunList, *prevFunList, *prevLibList;
+  libraryFunction *currFunct;
+  libraryHandle *currLibHandle;
 
+  currLibList = openedConstantLibraries;
+  while (currLibList != NULL) {
+    currLibHandle = (libraryHandle *) currLibList->value;
+    currFunList = currLibHandle->functionList;
+    while (currFunList != NULL) {
+      currFunct = (libraryFunction *) currFunList->value;
+      free(currFunct->functionName);
+      free(currFunList->value);
+      prevFunList = currFunList;
+      currFunList = currFunList->next;
+      free(prevFunList);
+    }
+    dlerror();
+    if (dlclose(currLibHandle->libraryDescriptor) != 0) 
+      printMessage(1,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
+    free(currLibHandle->libraryName);
+    free(currLibHandle);
+    prevLibList = currLibList;
+    currLibList = currLibList->next;
+    free(prevLibList);
+  }
+  openedConstantLibraries = NULL;
+}
 
+/* Functions related to external procedures */
 libraryProcedure *bindProcedure(char* libraryName, char *procedureName, chain *signature) {
-  procLibraryHandle *libHandle;
+  libraryHandle *libHandle;
   libraryProcedure *currProc;
   char *error;
   void *myFunction;
 
   currProc = getProcedure(procedureName);
   if (currProc != NULL) {
-    printMessage(1,"Warning: a procedure named \"%s\" has already been bound.\n",procedureName);
+    printMessage(1,"Warning: a function named \"%s\" has already been bound.\n",procedureName);
     return currProc;
   }
 
@@ -252,10 +353,10 @@ libraryProcedure *bindProcedure(char* libraryName, char *procedureName, chain *s
   }
     
   dlerror();
-  myFunction = dlsym(libHandle->procLibraryDescriptor, procedureName);
+  myFunction = dlsym(libHandle->libraryDescriptor, procedureName);
   if ((error = dlerror()) != NULL) {
     changeToWarningMode();
-    sollyaFprintf(stderr, "Error: could not find procedure \"%s\" in library \"%s\" for binding: %s\n",procedureName,libraryName,error);
+    sollyaFprintf(stderr, "Error: could not find function \"%s\" in library \"%s\" for binding: %s\n",procedureName,libraryName,error);
     restoreMode();
     return NULL;
   }
@@ -267,7 +368,7 @@ libraryProcedure *bindProcedure(char* libraryName, char *procedureName, chain *s
   currProc->signature = copyChainWithoutReversal(signature, copyIntPtrOnVoid);
   
   
-  libHandle->procedureList = addElement(libHandle->procedureList,currProc);
+  libHandle->functionList = addElement(libHandle->functionList,currProc);
 
   return currProc;
 } 
@@ -276,12 +377,12 @@ libraryProcedure *bindProcedure(char* libraryName, char *procedureName, chain *s
 libraryProcedure *getProcedure(char *procedureName) {
   chain *currLibList, *currProcList;
   libraryProcedure *currProc;
-  procLibraryHandle *currLibHandle;
+  libraryHandle *currLibHandle;
 
   currLibList = openedProcLibraries;
   while (currLibList != NULL) {
-    currLibHandle = (procLibraryHandle *) currLibList->value;
-    currProcList = currLibHandle->procedureList;
+    currLibHandle = (libraryHandle *) currLibList->value;
+    currProcList = currLibHandle->functionList;
     while (currProcList != NULL) {
       currProc = (libraryProcedure *) currProcList->value;
       if (strcmp(currProc->procedureName,procedureName) == 0)
@@ -298,12 +399,12 @@ libraryProcedure *getProcedure(char *procedureName) {
 void freeProcLibraries() {
   chain *currLibList, *currProcList, *prevProcList, *prevLibList;
   libraryProcedure *currProc;
-  procLibraryHandle *currLibHandle;
+  libraryHandle *currLibHandle;
 
   currLibList = openedProcLibraries;
   while (currLibList != NULL) {
-    currLibHandle = (procLibraryHandle *) currLibList->value;
-    currProcList = currLibHandle->procedureList;
+    currLibHandle = (libraryHandle *) currLibList->value;
+    currProcList = currLibHandle->functionList;
     while (currProcList != NULL) {
       currProc = (libraryProcedure *) currProcList->value;
       free(currProc->procedureName);
@@ -314,9 +415,9 @@ void freeProcLibraries() {
       free(prevProcList);
     }
     dlerror();
-    if (dlclose(currLibHandle->procLibraryDescriptor) != 0) 
-      printMessage(1,"Warning: could not close libary \"%s\": %s\n",currLibHandle->procLibraryName,dlerror());
-    free(currLibHandle->procLibraryName);
+    if (dlclose(currLibHandle->libraryDescriptor) != 0) 
+      printMessage(1,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
+    free(currLibHandle->libraryName);
     free(currLibHandle);
     prevLibList = currLibList;
     currLibList = currLibList->next;
@@ -324,3 +425,4 @@ void freeProcLibraries() {
   }
   openedProcLibraries = NULL;
 }
+

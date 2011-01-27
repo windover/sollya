@@ -1,18 +1,17 @@
 /*
 
-Copyright 2007-2011 by 
+Copyright 2010-2011 by 
 
-Laboratoire de l'Informatique du Parallélisme, 
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
 
 and
 
-Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
-UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
+Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS
+Sophia Antipolis, France.
 
-Contributor Ch. Lauter
+Contributors S. Chevillard
 
-christoph.lauter@ens-lyon.org
+sylvain.chevillard@ens-lyon.org
 
 This software is a computer program whose purpose is to provide an
 environment for safe floating-point code development. It is
@@ -52,63 +51,11 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
-#ifndef LIBRARY_H
-#define LIBRARY_H
+#ifndef IMPLEMENTCONST_H
+#define IMPLEMENTCONST_H
 
-#include <mpfr.h>
-#include "mpfi-compat.h"
-#include <dlfcn.h>
 #include "expression.h"
-#include "chain.h"
 
-typedef struct libraryHandleStruct libraryHandle;
-struct libraryHandleStruct 
-{
-  char *libraryName;
-  void *libraryDescriptor;
-  chain *functionList;
-};
+int implementconst(node *, FILE *, char*);
 
-typedef struct libraryFunctionStruct libraryFunction;
-struct libraryFunctionStruct 
-{
-  char *functionName;
-  int (*code)(sollya_mpfi_t, sollya_mpfi_t, int); /* used for LIBRARYFUNCTION */
-  void (*constant_code)(mpfr_t, mp_prec_t); /* used for LIBRARYCONSTANT */
-};
-
-typedef struct libraryProcedureStruct libraryProcedure;
-struct libraryProcedureStruct 
-{
-  char *procedureName;
-  void *code;
-  chain *signature;
-};
-
-
-#define VOID_TYPE 0
-#define CONSTANT_TYPE 1
-#define FUNCTION_TYPE 2
-#define RANGE_TYPE 3
-#define INTEGER_TYPE 4
-#define STRING_TYPE 5
-#define BOOLEAN_TYPE 6
-#define CONSTANT_LIST_TYPE 7
-#define FUNCTION_LIST_TYPE 8
-#define RANGE_LIST_TYPE 9
-#define INTEGER_LIST_TYPE 10
-#define STRING_LIST_TYPE 11
-#define BOOLEAN_LIST_TYPE 12
-
-
-libraryFunction *bindFunction(char* libraryName, char *functionName);
-libraryFunction *bindConstantFunction(char* libraryName, char *functionName);
-libraryProcedure *bindProcedure(char* libraryName, char *procedureName, chain *signature);
-libraryFunction *getFunction(char *functionName);
-libraryFunction *getConstantFunction(char *functionName);
-libraryProcedure *getProcedure(char *procedureName);
-void freeFunctionLibraries();
-void freeConstantLibraries();
-void freeProcLibraries();
-
-#endif /* ifdef LIBRARY_H*/
+#endif /* ifdef IMPLEMENTCONST_H*/

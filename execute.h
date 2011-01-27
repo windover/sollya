@@ -1,8 +1,8 @@
 /*
 
-Copyright 2007-2010 by 
+Copyright 2007-2011 by
 
-Laboratoire de l'Informatique du Parallélisme, 
+Laboratoire de l'Informatique du Parallélisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
 and
@@ -23,16 +23,16 @@ it offers a certified infinity norm, an automatic polynomial
 implementer and a fast Remez algorithm.
 
 This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
+abiding by the rules of distribution of free software.  You can  use,
 modify and/ or redistribute the software under the terms of the CeCILL-C
 license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
+"http://www.cecill.info".
 
 As a counterpart to the access to the source code and  rights to copy,
 modify and redistribute granted by the license, users are provided only
 with a limited warranty  and the software's author,  the holder of the
 economic rights,  and the successive licensors  have only  limited
-liability. 
+liability.
 
 In this respect, the user's attention is drawn to the risks associated
 with loading,  using,  modifying and/or developing or reproducing the
@@ -41,9 +41,9 @@ that may mean  that it is complicated to manipulate,  and  that  also
 therefore means  that it is reserved for developers  and  experienced
 professionals having in-depth computer knowledge. Users are therefore
 encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
+requirements in conditions enabling the security of their systems and/or
+data to be ensured and,  more generally, to use and operate it in the
+same conditions as regards security.
 
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
@@ -66,152 +66,152 @@ extern int miniyyparse();
 extern void startBuffer(char *str);
 extern void endBuffer(void);
 
-#define COMMANDLIST 50			
-#define WHILE 51				
-#define IFELSE 52				
-#define IF 53				
-#define FOR 54						
-#define FORIN 56 				
-#define QUIT 57 				
-#define FALSEQUIT 58 			
-#define RESTART 59 			
-#define PRINT 60				
-#define NEWFILEPRINT 61 			
-#define APPENDFILEPRINT 62 			
-#define PLOT 63				
-#define PRINTHEXA 64 			
-#define PRINTBINARY 65 			
-#define PRINTEXPANSION 66 			
-#define BASHEXECUTE 67			
-#define EXTERNALPLOT 68			
-#define WRITE 69				
-#define NEWFILEWRITE 70			
-#define APPENDFILEWRITE 71		
-#define ASCIIPLOT 72			
-#define WORSTCASE 73			
-#define RENAME 74				
-#define AUTOPRINT 75 			
-#define ASSIGNMENT 76			
-#define LIBRARYBINDING 77 			
-#define PRECASSIGN 78			
-#define POINTSASSIGN 79			
-#define DIAMASSIGN 80			
-#define DISPLAYASSIGN 81			
-#define VERBOSITYASSIGN 82 		
-#define CANONICALASSIGN 83		
-#define AUTOSIMPLIFYASSIGN 84 		
-#define TAYLORRECURSASSIGN 85		
-#define TIMINGASSIGN 86			
-#define FULLPARENASSIGN 87 		
-#define MIDPOINTASSIGN 88			
-#define HOPITALRECURSASSIGN 89 		
-#define PRECSTILLASSIGN 90		
-#define POINTSSTILLASSIGN 91		
-#define DIAMSTILLASSIGN 92		
-#define DISPLAYSTILLASSIGN 93 		
-#define VERBOSITYSTILLASSIGN 94		
-#define CANONICALSTILLASSIGN 95		
-#define AUTOSIMPLIFYSTILLASSIGN 96 	
-#define TAYLORRECURSSTILLASSIGN 97	
-#define TIMINGSTILLASSIGN 98		
-#define FULLPARENSTILLASSIGN 99 		
-#define MIDPOINTSTILLASSIGN 100		
-#define HOPITALRECURSSTILLASSIGN 101 	
-#define AND 102				
-#define OR 103				
-#define NEGATION 104			
-#define INDEX 105				
-#define COMPAREEQUAL 106			
-#define COMPARELESS 107			
-#define COMPAREGREATER 108			
-#define COMPARELESSEQUAL 109		
-#define COMPAREGREATEREQUAL 110		
-#define COMPARENOTEQUAL 111		
-#define CONCAT 112			
-#define ADDTOLIST 113			
-#define ON 114				
-#define OFF 115				
-#define DYADIC 116 				
-#define POWERS 117				
-#define BINARY 118			 	
-#define FILESYM 119			 	
-#define POSTSCRIPT 120 			
-#define POSTSCRIPTFILE 121 			
-#define PERTURB 122			
-#define ROUNDDOWN 123			
-#define ROUNDUP 124			
-#define ROUNDTOZERO 125 			
-#define ROUNDTONEAREST 126			
-#define HONORCOEFF 127			
-#define TRUE 128			 	
-#define FALSE 129			 	
-#define DEFAULT 130			
-#define DOUBLESYMBOL 131 			
-#define DOUBLEDOUBLESYMBOL 132 		
-#define TRIPLEDOUBLESYMBOL 133		
-#define STRING 134			 	
-#define TABLEACCESS 135 			
-#define TABLEACCESSWITHSUBSTITUTE 136 	
-#define DECIMALCONSTANT 137		
-#define DYADICCONSTANT 138			
-#define HEXCONSTANT 139			
-#define BINARYCONSTANT 140			
-#define EMPTYLIST 141			
-#define LIST 142			 	
-#define FINALELLIPTICLIST 143		
-#define ELLIPTIC 144 			
-#define RANGE 145			 	
-#define DEBOUNDMAX 146 			
-#define DEBOUNDMIN 147			
-#define DEBOUNDMID 148			
-#define DIFF 149			 	
-#define SIMPLIFY 150 			
-#define SIMPLIFYSAFE 151 			
-#define REMEZ 152			 	
-#define HORNER 153			 	
-#define CANONICAL 154			
-#define EXPAND 155			 	
-#define TAYLOR 156			 	
-#define DEGREE 157			 	
-#define NUMERATOR 158			
-#define DENOMINATOR 159			
-#define SUBSTITUTE 160			
-#define COEFF 161			 	
-#define SUBPOLY 162			
-#define ROUNDCOEFFICIENTS 163		
-#define RATIONALAPPROX 164			
-#define ACCURATEINFNORM 165		
-#define ROUNDTOFORMAT 166			
-#define EVALUATE 167			
-#define PARSE 168			 	
-#define INFNORM 169			
-#define FINDZEROS 170			
-#define FPFINDZEROS 171			
-#define DIRTYINFNORM 172			
-#define INTEGRAL 173			
-#define DIRTYINTEGRAL 174 			
-#define IMPLEMENTPOLY 175			
-#define CHECKINFNORM 176			
-#define ZERODENOMINATORS 177 		
-#define ISEVALUABLE 178			
-#define SEARCHGAL 179			
-#define GUESSDEGREE 180			
-#define DIRTYFINDZEROS 181			
-#define HEAD 182			 	
-#define TAIL 183			 	
-#define LENGTH 184			 	
-#define PRECDEREF 185			
-#define POINTSDEREF 186			
-#define DIAMDEREF 187			
-#define DISPLAYDEREF 188			
-#define VERBOSITYDEREF 189			
-#define CANONICALDEREF 190			
-#define AUTOSIMPLIFYDEREF 191		
-#define TAYLORRECURSDEREF 192		
-#define TIMINGDEREF 193			
-#define FULLPARENDEREF 194			
-#define MIDPOINTDEREF 195			
-#define HOPITALRECURSDEREF 196 		
+#define COMMANDLIST 50
+#define WHILE 51
+#define IFELSE 52
+#define IF 53
+#define FOR 54
+#define FORIN 56
+#define QUIT 57
+#define FALSEQUIT 58
+#define RESTART 59
+#define PRINT 60
+#define NEWFILEPRINT 61
+#define APPENDFILEPRINT 62
+#define PLOT 63
+#define PRINTHEXA 64
+#define PRINTBINARY 65
+#define PRINTEXPANSION 66
+#define BASHEXECUTE 67
+#define EXTERNALPLOT 68
+#define WRITE 69
+#define NEWFILEWRITE 70
+#define APPENDFILEWRITE 71
+#define ASCIIPLOT 72
+#define WORSTCASE 73
+#define RENAME 74
+#define AUTOPRINT 75
+#define ASSIGNMENT 76
+#define LIBRARYBINDING 77
+#define PRECASSIGN 78
+#define POINTSASSIGN 79
+#define DIAMASSIGN 80
+#define DISPLAYASSIGN 81
+#define VERBOSITYASSIGN 82
+#define CANONICALASSIGN 83
+#define AUTOSIMPLIFYASSIGN 84
+#define TAYLORRECURSASSIGN 85
+#define TIMINGASSIGN 86
+#define FULLPARENASSIGN 87
+#define MIDPOINTASSIGN 88
+#define HOPITALRECURSASSIGN 89
+#define PRECSTILLASSIGN 90
+#define POINTSSTILLASSIGN 91
+#define DIAMSTILLASSIGN 92
+#define DISPLAYSTILLASSIGN 93
+#define VERBOSITYSTILLASSIGN 94
+#define CANONICALSTILLASSIGN 95
+#define AUTOSIMPLIFYSTILLASSIGN 96
+#define TAYLORRECURSSTILLASSIGN 97
+#define TIMINGSTILLASSIGN 98
+#define FULLPARENSTILLASSIGN 99
+#define MIDPOINTSTILLASSIGN 100
+#define HOPITALRECURSSTILLASSIGN 101
+#define AND 102
+#define OR 103
+#define NEGATION 104
+#define INDEX 105
+#define COMPAREEQUAL 106
+#define COMPARELESS 107
+#define COMPAREGREATER 108
+#define COMPARELESSEQUAL 109
+#define COMPAREGREATEREQUAL 110
+#define COMPARENOTEQUAL 111
+#define CONCAT 112
+#define ADDTOLIST 113
+#define ON 114
+#define OFF 115
+#define DYADIC 116
+#define POWERS 117
+#define BINARY 118
+#define FILESYM 119
+#define POSTSCRIPT 120
+#define POSTSCRIPTFILE 121
+#define PERTURB 122
+#define ROUNDDOWN 123
+#define ROUNDUP 124
+#define ROUNDTOZERO 125
+#define ROUNDTONEAREST 126
+#define HONORCOEFF 127
+#define TRUE 128
+#define FALSE 129
+#define DEFAULT 130
+#define DOUBLESYMBOL 131
+#define DOUBLEDOUBLESYMBOL 132
+#define TRIPLEDOUBLESYMBOL 133
+#define STRING 134
+#define TABLEACCESS 135
+#define TABLEACCESSWITHSUBSTITUTE 136
+#define DECIMALCONSTANT 137
+#define DYADICCONSTANT 138
+#define HEXCONSTANT 139
+#define BINARYCONSTANT 140
+#define EMPTYLIST 141
+#define LIST 142
+#define FINALELLIPTICLIST 143
+#define ELLIPTIC 144
+#define RANGE 145
+#define DEBOUNDMAX 146
+#define DEBOUNDMIN 147
+#define DEBOUNDMID 148
+#define DIFF 149
+#define SIMPLIFY 150
+#define SIMPLIFYSAFE 151
+#define REMEZ 152
+#define HORNER 153
+#define CANONICAL 154
+#define EXPAND 155
+#define TAYLOR 156
+#define DEGREE 157
+#define NUMERATOR 158
+#define DENOMINATOR 159
+#define SUBSTITUTE 160
+#define COEFF 161
+#define SUBPOLY 162
+#define ROUNDCOEFFICIENTS 163
+#define RATIONALAPPROX 164
+#define ACCURATEINFNORM 165
+#define ROUNDTOFORMAT 166
+#define EVALUATE 167
+#define PARSE 168
+#define INFNORM 169
+#define FINDZEROS 170
+#define FPFINDZEROS 171
+#define DIRTYINFNORM 172
+#define INTEGRAL 173
+#define DIRTYINTEGRAL 174
+#define IMPLEMENTPOLY 175
+#define CHECKINFNORM 176
+#define ZERODENOMINATORS 177
+#define ISEVALUABLE 178
+#define SEARCHGAL 179
+#define GUESSDEGREE 180
+#define DIRTYFINDZEROS 181
+#define HEAD 182
+#define TAIL 183
+#define LENGTH 184
+#define PRECDEREF 185
+#define POINTSDEREF 186
+#define DIAMDEREF 187
+#define DISPLAYDEREF 188
+#define VERBOSITYDEREF 189
+#define CANONICALDEREF 190
+#define AUTOSIMPLIFYDEREF 191
+#define TAYLORRECURSDEREF 192
+#define TIMINGDEREF 193
+#define FULLPARENDEREF 194
+#define MIDPOINTDEREF 195
+#define HOPITALRECURSDEREF 196
 #define ABSOLUTESYM 197
 #define RELATIVESYM 198
 #define DECIMAL 199
@@ -277,6 +277,8 @@ extern void endBuffer(void);
 #define FLOATASSIGNMENTINSTRUCTURE 259
 #define PROTOASSIGNMENTINSTRUCTURE 260
 #define PROTOFLOATASSIGNMENTINSTRUCTURE 261
+#define IMPLEMENTCONST 262
+#define LIBRARYCONSTANTBINDING 263
 
 
 int executeCommand(node *);
@@ -317,6 +319,7 @@ node *makeAutoprint(chain *thinglist);
 node *makeAssignment(char *string, node *thing);
 node *makeFloatAssignment(char *string, node *thing);
 node *makeLibraryBinding(char *string, node *thing);
+node *makeLibraryConstantBinding(char *string, node *thing);
 node *makePrecAssign(node *thing);
 node *makeProcedureFunction(node *thing);
 node *makePointsAssign(node *thing);
@@ -361,9 +364,9 @@ node *makeCompareLessEqual(node *thing1, node *thing2);
 node *makeCompareGreaterEqual(node *thing1, node *thing2);
 node *makeCompareNotEqual(node *thing1, node *thing2);
 node *makeConcat(node *thing1, node *thing2);
-node *makeAddToList(node *thing1, node *thing2); 
-node *makePrepend(node *thing1, node *thing2); 
-node *makeAppend(node *thing1, node *thing2); 
+node *makeAddToList(node *thing1, node *thing2);
+node *makePrepend(node *thing1, node *thing2);
+node *makeAppend(node *thing1, node *thing2);
 node *makeOn();
 node *makeNop();
 node *makeNopArg(node *thing1);
@@ -452,6 +455,8 @@ node *makeNumberRoots(node *thing1, node *thing2);
 node *makeIntegral(node *thing1, node *thing2);
 node *makeDirtyIntegral(node *thing1, node *thing2);
 node *makeImplementPoly(chain *thinglist);
+node *makeImplementConst(chain *thinglist);
+node *makeNewCommand(node *thing1);
 node *makeCheckInfnorm(node *thing1, node *thing2, node *thing3);
 node *makeZeroDenominators(node *thing1, node *thing2);
 node *makeIsEvaluable(node *thing1, node *thing2);
@@ -502,7 +507,7 @@ node *makeProc(chain *stringlist, node *body, node *returnVal);
 node *makeProcIllim(char *arg, node *body, node *returnVal);
 node *makeApply(node *thing, chain *thinglist);
 
-node *parseString(char *str); 
+node *parseString(char *str);
 
 void computeFunctionWithProcedure(sollya_mpfi_t y, node *proc, sollya_mpfi_t x, unsigned int derivN);
 void computeFunctionWithProcedureMpfr(mpfr_t rop, node *proc, mpfr_t op, unsigned int derivN);

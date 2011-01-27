@@ -419,6 +419,23 @@ void sollya_mpfi_nearestint(sollya_mpfi_t rop, sollya_mpfi_t op) {
   mpfr_clear(ropr);
 }
 
+/* Evaluate a library constant function into an interval */
+void libraryConstantToInterval(sollya_mpfi_t res, node *tree) {
+  mpfr_t approx, lbound, rbound;
+  mp_prec_t prec = sollya_mpfi_get_prec(res);
+
+  mpfr_init2(approx, prec + 20); /* some guard bits may avoid reinit in tree->libFun */
+  tree->libFun->constant_code(approx, prec);
+  mpfr_init2(lbound, prec-2);
+  mpfr_init2(rbound, prec-2);
+  mpfr_set(lbound, approx, GMP_RNDD);
+  mpfr_set(rbound, approx, GMP_RNDU);
+  mpfr_nextbelow(lbound);
+  mpfr_nextabove(rbound);
+  
+  sollya_mpfi_interv_fr(res, lbound, rbound);
+  return;
+}
 
 int newtonMPFRWithStartPoint(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mpfr_t start, mp_prec_t prec) {
   mpfr_t x, x2, temp1, temp2, am, bm;
@@ -1835,6 +1852,10 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
     break;
   case PI_CONST:
     sollya_mpfi_const_pi(stack3);
+    excludes = NULL;
+    break;
+  case LIBRARYCONSTANT:
+    libraryConstantToInterval(stack3, tree);
     excludes = NULL;
     break;
   default:
@@ -3988,6 +4009,7 @@ chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t pre
     break;
   case CONSTANT:
   case PI_CONST:
+  case LIBRARYCONSTANT:
     return NULL;
     break;
   case ADD:
@@ -5120,6 +5142,7 @@ int evaluateSignTrigoUnsafe(int *s, node *child, int nodeType) {
 int evaluateSign(int *s, node *rawFunc) {
   int sign, okay, okayA, okayB, okayC;
   mpfr_t value, dummyX;
+  sollya_mpfi_t valueI;
   int signA, signB, signC;
   node *tempNode, *tempNode2;
   node *func, *rawFunc2;
@@ -5402,6 +5425,27 @@ int evaluateSign(int *s, node *rawFunc) {
 	okay = 1;
 	sign = 1;
 	break;
+      case LIBRARYCONSTANT:
+        /* By definition, a library constant is known with a relative error
+           smaller that ~ 2^(-prec). So we can decide the sign, based on low
+           approximation of the constant. */
+        sollya_mpfi_init2(valueI, 12); 
+        libraryConstantToInterval(valueI, func);
+        if (sollya_mpfi_is_zero(valueI)) {
+          okay = 1;
+          sign = 0;
+        }
+        else {
+          if (sollya_mpfi_has_zero(valueI)) {
+            okay = 0;
+            sign = 0;
+          }
+          else {
+            okay = 1;
+            sign = (sollya_mpfi_is_pos(valueI))?1:(-1);
+          }
+        }
+        break;
       default:
 	sollyaFprintf(stderr,"Error: evaluateSign: unknown identifier (%d) in the tree\n",func->nodeType);
 	exit(1);

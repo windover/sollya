@@ -781,10 +781,12 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
   
   case PI_CONST:
   case CONSTANT:
-  
+  case LIBRARYCONSTANT:
+
   sollya_mpfi_init2(ct, getToolPrecision());
   tt=createEmptytModel(n,x0,x); 
   if (f->nodeType == PI_CONST) sollya_mpfi_const_pi(ct);
+  else if (f->nodeType == LIBRARYCONSTANT) libraryConstantToInterval(ct, f);
   else sollya_mpfi_set_fr(ct, *(f->value));
 
   consttModel(tt,ct);

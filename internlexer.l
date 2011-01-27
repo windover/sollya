@@ -242,6 +242,7 @@ SUBSTITUTE      "substitute"
 DOTS            "..."
 
 IMPLEMENTPOLY   "implementpoly"
+IMPLEMENTCONST  "implementconstant"
 
 CHECKINFNORM    "checkinfnorm"
 
@@ -318,6 +319,7 @@ SUPPRESSWARNINGS "roundingwarnings"
 RATIONALMODE    "rationalmode"
 
 LIBRARY         "library"
+LIBRARYCONSTANT "libraryconstant"
 
 HOPITALRECURSIONS "hopitalrecursions"
 
@@ -620,9 +622,8 @@ NOP             "nop"
 			                        return FALSEQUITTOKEN;
                                             }
 {RESTART}         			    { return FALSERESTARTTOKEN; }
-
 {LIBRARY}         			    {  return LIBRARYTOKEN; }
-
+{LIBRARYCONSTANT}         		    {  return LIBRARYCONSTANTTOKEN; }
 {DIFF}            			    {  return DIFFTOKEN; }
 {SIMPLIFY}				    {  return SIMPLIFYTOKEN; }
 {REMEZ}           			    {  return REMEZTOKEN; }
@@ -645,9 +646,7 @@ NOP             "nop"
 {ACCURATEINFNORM}  			    {  return ACCURATEINFNORMTOKEN; }
 {ROUNDTOFORMAT}   			    {  return ROUNDTOFORMATTOKEN; }
 {EVALUATE}        			    {  return EVALUATETOKEN; }
-
 {PARSE}           			    {  return PARSETOKEN; }
-
 {PRINT}           			    {  return PRINTTOKEN; }
 {PRINTXML}           			    {  return PRINTXMLTOKEN; }
 {EXECUTE}           			    {  return EXECUTETOKEN; }
@@ -673,6 +672,7 @@ NOP             "nop"
 {DIRTYINTEGRAL}				    {  return DIRTYINTEGRALTOKEN; }
 {WORSTCASE}       			    {  return WORSTCASETOKEN; }
 {IMPLEMENTPOLY}				    {  return IMPLEMENTPOLYTOKEN; }
+{IMPLEMENTCONST}                            {  return IMPLEMENTCONSTTOKEN; }
 {CHECKINFNORM}    			    {  return CHECKINFNORMTOKEN; }
 {ZERODENOMINATORS}			    {  return ZERODENOMINATORSTOKEN; }
 {ISEVALUABLE}     			    {  return ISEVALUABLETOKEN; }

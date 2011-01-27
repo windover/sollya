@@ -304,6 +304,9 @@ void free_memory(node *tree) {
   case PI_CONST:
     free(tree);
     break;
+  case LIBRARYCONSTANT:
+    free(tree);
+    break;
   default:
    sollyaFprintf(stderr,"Error: free_memory: unknown identifier (%d) in the tree\n",tree->nodeType);
    exit(1);
@@ -463,6 +466,9 @@ void fprintHeadFunction(FILE *fd,node *tree, char *x, char *y) {
     break;
   case PI_CONST:
     sollyaFprintf(fd,"pi");
+    break;
+  case LIBRARYCONSTANT:
+    sollyaFprintf(fd,"%s",tree->libFun->functionName);
     break;
   default:
    sollyaFprintf(stderr,"fprintHeadFunction: unknown identifier (%d) in the tree\n",tree->nodeType);
@@ -1402,6 +1408,9 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
   case PI_CONST:
     sollyaFprintf(fd,"pi");
     break;
+  case LIBRARYCONSTANT:
+    sollyaFprintf(fd,"%s",tree->libFun->functionName);
+    break;
   default:
    sollyaFprintf(stderr,"Error: fprintTreeWithPrintMode: unknown identifier in the tree\n");
    exit(1);
@@ -1859,6 +1868,9 @@ void printTree(node *tree) {
   case PI_CONST:
     sollyaPrintf("pi");
     break;
+  case LIBRARYCONSTANT:
+    sollyaPrintf("%s",tree->libFun->functionName);
+    break;
   default:
    sollyaFprintf(stderr,"Error: printTree: unknown identifier in the tree\n");
    exit(1);
@@ -2218,6 +2230,10 @@ char *sprintTree(node *tree) {
     buffer = (char *) safeCalloc(3, sizeof(char));
     sprintf(buffer,"pi");
     break;
+  case LIBRARYCONSTANT:
+    buffer = (char *) safeCalloc(strlen(tree->libFun->functionName) + 1,sizeof(char));
+    sprintf(buffer,"%s", tree->libFun->functionName);
+    break;
   default:
    sollyaFprintf(stderr,"Error: sprintTree: unknown identifier in the tree\n");
    exit(1);
@@ -2540,6 +2556,9 @@ void fprintTree(FILE *fd, node *tree) {
   case PI_CONST:
     sollyaFprintf(fd,"pi");
     break;
+  case LIBRARYCONSTANT:
+    sollyaFprintf(fd,"%s",tree->libFun->functionName);
+    break;
   default:
    sollyaFprintf(stderr,"Error: fprintTree: unknown identifier in the tree\n");
    exit(1);
@@ -2777,6 +2796,11 @@ node* copyTree(node *tree) {
   case PI_CONST:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = PI_CONST;
+    break;
+  case LIBRARYCONSTANT:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LIBRARYCONSTANT;
+    copy->libFun = tree->libFun;
     break;
   default:
    sollyaFprintf(stderr,"Error: copyTree: unknown identifier in the tree\n");
@@ -4776,6 +4800,11 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     simplified = (node*) safeMalloc(sizeof(node));
     simplified->nodeType = PI_CONST;
     break;
+  case LIBRARYCONSTANT:
+    simplified = (node*) safeMalloc(sizeof(node));
+    simplified->nodeType = LIBRARYCONSTANT;
+    simplified->libFun = tree->libFun;
+    break;
   default:
     sollyaFprintf(stderr,"Error: simplifyTreeErrorfreeInner: unknown identifier in the tree\n");
     exit(1);
@@ -5704,6 +5733,7 @@ node* differentiateUnsimplified(node *tree) {
 	derivative = temp_node;
 	break;
       case PI_CONST:
+      case LIBRARYCONSTANT:
 	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*mpfr_temp,tools_precision);
 	mpfr_set_d(*mpfr_temp,0.0,GMP_RNDN);
@@ -5755,6 +5785,7 @@ node* differentiate(node *tree) {
 
 int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
   mpfr_t stack1, stack2;
+  sollya_mpfi_t stackI;
   int isConstant;
 
   mpfr_init2(stack1, prec);
@@ -5971,6 +6002,13 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
     mpfr_const_pi(result, GMP_RNDN);
     isConstant = 1;
     break;
+  case LIBRARYCONSTANT:
+    sollya_mpfi_init2(stackI, mpfr_get_prec(result));
+    libraryConstantToInterval(stackI, tree);
+    sollya_mpfi_get_fr(result, stackI);
+    sollya_mpfi_clear(stackI);
+    isConstant = 1;
+    break;
   default:
     sollyaFprintf(stderr,"Error: evaluateConstantExpression: unknown identifier in the tree\n");
     exit(1);
@@ -5985,6 +6023,7 @@ node* simplifyTreeInner(node *tree) {
   node *simplChild1, *simplChild2, *simplified;
   mpfr_t *value;
   mpfr_t temp;
+  sollya_mpfi_t tempI;
   int numberChilds;
 
   if ((tree->nodeType == CONSTANT) && (mpfr_nan_p(*(tree->value)))) return copyTree(tree);
@@ -6700,6 +6739,17 @@ node* simplifyTreeInner(node *tree) {
     mpfr_const_pi(*value,GMP_RNDN);
     simplified->value = value;
     break;
+  case LIBRARYCONSTANT:
+    simplified = (node*) safeMalloc(sizeof(node));
+    simplified->nodeType = CONSTANT;
+    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*value,tools_precision);
+    sollya_mpfi_init2(tempI, tools_precision);
+    libraryConstantToInterval(tempI, tree);
+    sollya_mpfi_get_fr(*value, tempI);
+    sollya_mpfi_clear(tempI);
+    simplified->value = value;
+    break;
   default:
     sollyaFprintf(stderr,"Error: simplifyTreeInner: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);
@@ -6712,6 +6762,7 @@ node* simplifyAllButDivisionInner(node *tree) {
   node *simplChild1, *simplChild2, *simplified;
   mpfr_t *value;
   mpfr_t temp;
+  sollya_mpfi_t tempI;
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -7369,6 +7420,17 @@ node* simplifyAllButDivisionInner(node *tree) {
     mpfr_const_pi(*value,GMP_RNDN);
     simplified->value = value;
     break;
+  case LIBRARYCONSTANT:
+    simplified = (node*) safeMalloc(sizeof(node));
+    simplified->nodeType = CONSTANT;
+    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*value,tools_precision);
+    sollya_mpfi_init2(tempI, tools_precision);
+    libraryConstantToInterval(tempI, tree);
+    sollya_mpfi_get_fr(*value, tempI);
+    sollya_mpfi_clear(tempI);
+    simplified->value = value;
+    break;
   default:
     sollyaFprintf(stderr,"Error: simplifyAllButDivisionInner: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);
@@ -7400,6 +7462,7 @@ node *simplifyAllButDivision(node *tree) {
 
 void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
   mpfr_t stack1, stack2;
+  sollya_mpfi_t stackI;
 
   mpfr_init2(stack1, prec);
   mpfr_init2(stack2, prec);
@@ -7571,6 +7634,11 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
   case PI_CONST:
     mpfr_const_pi(result, GMP_RNDN);
     break;
+  case LIBRARYCONSTANT:
+    sollya_mpfi_init2(stackI, mpfr_get_prec(result));
+    libraryConstantToInterval(stackI, tree);
+    sollya_mpfi_get_fr(result, stackI);
+    sollya_mpfi_clear(stackI);
   default:
     sollyaFprintf(stderr,"Error: evaluate: unknown identifier in the tree\n");
     exit(1);
@@ -7583,128 +7651,60 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
 
 int arity(node *tree) {
   switch (tree->nodeType) {
-  case VARIABLE:
-    return 1;
-    break;
   case CONSTANT:
   case PI_CONST:
+  case LIBRARYCONSTANT:
     return 0;
     break;
+
   case ADD:
-    return 2;
-    break;
   case SUB:
-    return 2;
-    break;
   case MUL:
-    return 2;
-    break;
   case DIV:
-    return 2;
-    break;
-  case SQRT:
-    return 1;
-    break;
-  case EXP:
-    return 1;
-    break;
-  case LOG:
-    return 1;
-    break;
-  case LOG_2:
-    return 1;
-    break;
-  case LOG_10:
-    return 1;
-    break;
-  case SIN:
-    return 1;
-    break;
-  case COS:
-    return 1;
-    break;
-  case TAN:
-    return 1;
-    break;
-  case ASIN:
-    return 1;
-    break;
-  case ACOS:
-    return 1;
-    break;
-  case ATAN:
-    return 1;
-    break;
-  case SINH:
-    return 1;
-    break;
-  case COSH:
-    return 1;
-    break;
-  case TANH:
-    return 1;
-    break;
-  case ASINH:
-    return 1;
-    break;
-  case ACOSH:
-    return 1;
-    break;
-  case ATANH:
-    return 1;
-    break;
   case POW:
     return 2;
     break;
+
+  case VARIABLE:
+  case SQRT:
+  case EXP:
+  case LOG:
+  case LOG_2:
+  case LOG_10:
+  case SIN:
+  case COS:
+  case TAN:
+  case ASIN:
+  case ACOS:
+  case ATAN:
+  case SINH:
+  case COSH:
+  case TANH:
+  case ASINH:
+  case ACOSH:
+  case ATANH:
   case NEG:
-    return 1;
-    break;
   case ABS:
-    return 1;
-    break;
   case DOUBLE:
-    return 1;
-    break;
   case SINGLE:
-    return 1;
-    break;
   case DOUBLEDOUBLE:
-    return 1;
-    break;
   case TRIPLEDOUBLE:
-    return 1;
-    break;
   case ERF:
-    return 1;
-    break;
   case ERFC:
-    return 1;
-    break;
   case LOG_1P:
-    return 1;
-    break;
   case EXP_M1:
-    return 1;
-    break;
   case DOUBLEEXTENDED:
-    return 1;
-    break;
   case LIBRARYFUNCTION:
-    return 1;
-    break;
   case PROCEDUREFUNCTION:
     return 1;
     break;
   case CEIL:
-    return 1;
-    break;
   case FLOOR:
-    return 1;
-    break;
   case NEARESTINT:
     return 1;
     break;
-  default:
+
+ default:
     sollyaFprintf(stderr,"Error: arity: unknown identifier in the tree\n");
     exit(1);
   }
@@ -7768,57 +7768,41 @@ int isPolynomial(node *tree) {
   case DIV:
     res = isPolynomial(tree->child1) && isConstant(tree->child2);
     break;
+
   case SQRT:
-    res = 0;
-    break;
   case EXP:
-    res = 0;
-    break;
   case LOG:
-    res = 0;
-    break;
   case LOG_2:
-    res = 0;
-    break;
   case LOG_10:
-    res = 0;
-    break;
   case SIN:
-    res = 0;
-    break;
   case COS:
-    res = 0;
-    break;
   case TAN:
-    res = 0;
-    break;
   case ASIN:
-    res = 0;
-    break;
   case ACOS:
-    res = 0;
-    break;
   case ATAN:
-    res = 0;
-    break;
   case SINH:
-    res = 0;
-    break;
   case COSH:
-    res = 0;
-    break;
   case TANH:
-    res = 0;
-    break;
   case ASINH:
-    res = 0;
-    break;
   case ACOSH:
-    res = 0;
-    break;
   case ATANH:
+  case ABS:
+  case DOUBLE:
+  case SINGLE:
+  case DOUBLEDOUBLE:
+  case TRIPLEDOUBLE:
+  case ERF:
+  case ERFC:
+  case LOG_1P:
+  case EXP_M1:
+  case DOUBLEEXTENDED:
+  case LIBRARYFUNCTION:
+  case CEIL:
+  case FLOOR:
+  case NEARESTINT:
     res = 0;
     break;
+ 
   case POW:
     {
       res = 0;
@@ -7845,52 +7829,12 @@ int isPolynomial(node *tree) {
   case NEG:
     res = isPolynomial(tree->child1);
     break;
-  case ABS:
-    res = 0;
-    break;
-  case DOUBLE:
-    res = 0;
-    break;
-  case SINGLE:
-    res = 0;
-    break;
-  case DOUBLEDOUBLE:
-    res = 0;
-    break;
-  case TRIPLEDOUBLE:
-    res = 0;
-    break;
-  case ERF:
-    res = 0;
-    break;
-  case ERFC:
-    res = 0;
-    break;
-  case LOG_1P:
-    res = 0;
-    break;
-  case EXP_M1:
-    res = 0;
-    break;
-  case DOUBLEEXTENDED:
-    res = 0;
-    break;
-  case LIBRARYFUNCTION:
-    res = 0;
-    break;
+
   case PROCEDUREFUNCTION:
     res = 0;
     break;
-  case CEIL:
-    res = 0;
-    break;
-  case FLOOR:
-    res = 0;
-    break;
-  case NEARESTINT:
-    res = 0;
-    break;
   case PI_CONST:
+  case LIBRARYCONSTANT:
     res = 1;
     break;
   default:
@@ -7920,60 +7864,42 @@ int isAffine(node *tree) {
   case MUL:
     res = isAffine(tree->child1) && isAffine(tree->child2);
     break;
+
   case DIV:
-    res = 0;
-    break;
   case SQRT:
-    res = 0;
-    break;
   case EXP:
-    res = 0;
-    break;
   case LOG:
-    res = 0;
-    break;
   case LOG_2:
-    res = 0;
-    break;
   case LOG_10:
-    res = 0;
-    break;
   case SIN:
-    res = 0;
-    break;
   case COS:
-    res = 0;
-    break;
   case TAN:
-    res = 0;
-    break;
   case ASIN:
-    res = 0;
-    break;
   case ACOS:
-    res = 0;
-    break;
   case ATAN:
-    res = 0;
-    break;
   case SINH:
-    res = 0;
-    break;
   case COSH:
-    res = 0;
-    break;
   case TANH:
-    res = 0;
-    break;
   case ASINH:
-    res = 0;
-    break;
   case ACOSH:
-    res = 0;
-    break;
   case ATANH:
+  case ABS:
+  case DOUBLE:
+  case SINGLE:
+  case DOUBLEDOUBLE:
+  case TRIPLEDOUBLE:
+  case ERF:
+  case ERFC:
+  case LOG_1P:
+  case EXP_M1:
+  case DOUBLEEXTENDED:
+  case LIBRARYFUNCTION:
+  case CEIL:
+  case FLOOR:
+  case NEARESTINT:
     res = 0;
     break;
+
   case POW:
     {
       res = 0;
@@ -7996,52 +7922,12 @@ int isAffine(node *tree) {
   case NEG:
     res = isAffine(tree->child1);
     break;
-  case ABS:
-    res = 0;
-    break;
-  case DOUBLE:
-    res = 0;
-    break;
-  case SINGLE:
-    res = 0;
-    break;
-  case DOUBLEDOUBLE:
-    res = 0;
-    break;
-  case TRIPLEDOUBLE:
-    res = 0;
-    break;
-  case ERF:
-    res = 0;
-    break;
-  case ERFC:
-    res = 0;
-    break;
-  case LOG_1P:
-    res = 0;
-    break;
-  case EXP_M1:
-    res = 0;
-    break;
-  case DOUBLEEXTENDED:
-    res = 0;
-    break;
-  case LIBRARYFUNCTION:
-    res = 0;
-    break;
+
   case PROCEDUREFUNCTION:
     res = 0;
     break;
-  case CEIL:
-    res = 0;
-    break;
-  case FLOOR:
-    res = 0;
-    break;
-  case NEARESTINT:
-    res = 0;
-    break;
   case PI_CONST:
+  case LIBRARYCONSTANT:
     res = 1;
     break;
   default:
@@ -8765,6 +8651,12 @@ node* expandDivision(node *tree) {
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = PI_CONST;
     break;
+  case LIBRARYCONSTANT:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LIBRARYCONSTANT;
+    copy->libFun = tree->libFun;
+    break;
+
   default:
    sollyaFprintf(stderr,"Error: expandDivision: unknown identifier in the tree\n");
    exit(1);
@@ -9350,6 +9242,11 @@ node* expandUnsimplified(node *tree) {
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = PI_CONST;
     break;
+  case LIBRARYCONSTANT:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LIBRARYCONSTANT;
+    copy->libFun = tree->libFun;
+    break;
   default:
    sollyaFprintf(stderr,"Error: expand: unknown identifier in the tree\n");
    exit(1);
@@ -9368,7 +9265,6 @@ node* expand(node *tree) {
 }
 
 
-
 int isConstant(node *tree) {
   switch (tree->nodeType) {
   case VARIABLE:
@@ -9376,119 +9272,50 @@ int isConstant(node *tree) {
     break;
   case CONSTANT:
   case PI_CONST:
+  case LIBRARYCONSTANT:
     return 1;
     break;
+
   case ADD:
-    return (isConstant(tree->child1) && isConstant(tree->child2));
-    break;
   case SUB:
-    return (isConstant(tree->child1) && isConstant(tree->child2));
-    break;
   case MUL:
-    return (isConstant(tree->child1) && isConstant(tree->child2));
-    break;
   case DIV:
-    return (isConstant(tree->child1) && isConstant(tree->child2));
-    break;
-  case SQRT:
-    return isConstant(tree->child1);
-    break;
-  case EXP:
-    return isConstant(tree->child1);
-    break;
-  case LOG:
-    return isConstant(tree->child1);
-    break;
-  case LOG_2:
-    return isConstant(tree->child1);
-    break;
-  case LOG_10:
-    return isConstant(tree->child1);
-    break;
-  case SIN:
-    return isConstant(tree->child1);
-    break;
-  case COS:
-    return isConstant(tree->child1);
-    break;
-  case TAN:
-    return isConstant(tree->child1);
-    break;
-  case ASIN:
-    return isConstant(tree->child1);
-    break;
-  case ACOS:
-    return isConstant(tree->child1);
-    break;
-  case ATAN:
-    return isConstant(tree->child1);
-    break;
-  case SINH:
-    return isConstant(tree->child1);
-    break;
-  case COSH:
-    return isConstant(tree->child1);
-    break;
-  case TANH:
-    return isConstant(tree->child1);
-    break;
-  case ASINH:
-    return isConstant(tree->child1);
-    break;
-  case ACOSH:
-    return isConstant(tree->child1);
-    break;
-  case ATANH:
-    return isConstant(tree->child1);
-    break;
   case POW:
-    return (isConstant(tree->child1) && isConstant(tree->child2));
+    return (isConstant(tree->child1) & isConstant(tree->child2));
     break;
+
+  case SQRT:
+  case EXP:
+  case LOG:
+  case LOG_2:
+  case LOG_10:
+  case SIN:
+  case COS:
+  case TAN:
+  case ASIN:
+  case ACOS:
+  case ATAN:
+  case SINH:
+  case COSH:
+  case TANH:
+  case ASINH:
+  case ACOSH:
+  case ATANH:
   case NEG:
-    return isConstant(tree->child1);
-    break;
   case ABS:
-    return isConstant(tree->child1);
-    break;
   case DOUBLE:
-    return isConstant(tree->child1);
-    break;
   case SINGLE:
-    return isConstant(tree->child1);
-    break;
   case DOUBLEDOUBLE:
-    return isConstant(tree->child1);
-    break;
   case TRIPLEDOUBLE:
-    return isConstant(tree->child1);
-    break;
   case ERF:
-    return isConstant(tree->child1);
-    break;
   case ERFC:
-    return isConstant(tree->child1);
-    break;
   case LOG_1P:
-    return isConstant(tree->child1);
-    break;
   case EXP_M1:
-    return isConstant(tree->child1);
-    break;
   case DOUBLEEXTENDED:
-    return isConstant(tree->child1);
-    break;
   case LIBRARYFUNCTION:
-    return isConstant(tree->child1);
-    break;
   case PROCEDUREFUNCTION:
-    return isConstant(tree->child1);
-    break;
   case CEIL:
-    return isConstant(tree->child1);
-    break;
   case FLOOR:
-    return isConstant(tree->child1);
-    break;
   case NEARESTINT:
     return isConstant(tree->child1);
     break;
@@ -9497,7 +9324,6 @@ int isConstant(node *tree) {
    exit(1);
   }
 }
-
 
 
 int isMonomial(node *tree) {
@@ -10556,6 +10382,11 @@ node* hornerUnsimplified(node *tree) {
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = PI_CONST;
     break;
+  case LIBRARYCONSTANT:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LIBRARYCONSTANT;
+    copy->libFun = tree->libFun;
+    break;
   default:
    sollyaFprintf(stderr,"Error: horner: unknown identifier in the tree\n");
    exit(1);
@@ -11372,6 +11203,12 @@ node *substitute(node* tree, node *t) {
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = PI_CONST;
     break;
+  case LIBRARYCONSTANT:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LIBRARYCONSTANT;
+    copy->libFun = tree->libFun;
+    break;
+
   default:
    sollyaFprintf(stderr,"Error: substitute: unknown identifier in the tree\n");
    exit(1);
@@ -11621,133 +11458,62 @@ int treeSize(node *tree) {
   if (tree == NULL) return 0;
   switch (tree->nodeType) {
   case VARIABLE:
-    return 1;
-    break;
   case CONSTANT:
   case PI_CONST:
+  case LIBRARYCONSTANT:
     return 1;
     break;
+
   case ADD:
-    return treeSize(tree->child1) + treeSize(tree->child2) + 1;
-    break;
   case SUB:
-    return treeSize(tree->child1) + treeSize(tree->child2) + 1;
-    break;
   case MUL:
-    return treeSize(tree->child1) + treeSize(tree->child2) + 1;
-    break;
   case DIV:
-    return treeSize(tree->child1) + treeSize(tree->child2) + 1;
-    break;
-  case SQRT:
-    return treeSize(tree->child1) + 1;
-    break;
-  case EXP:
-    return treeSize(tree->child1) + 1;
-    break;
-  case LOG:
-    return treeSize(tree->child1) + 1;
-    break;
-  case LOG_2:
-    return treeSize(tree->child1) + 1;
-    break;
-  case LOG_10:
-    return treeSize(tree->child1) + 1;
-    break;
-  case SIN:
-    return treeSize(tree->child1) + 1;
-    break;
-  case COS:
-    return treeSize(tree->child1) + 1;
-    break;
-  case TAN:
-    return treeSize(tree->child1) + 1;
-    break;
-  case ASIN:
-    return treeSize(tree->child1) + 1;
-    break;
-  case ACOS:
-    return treeSize(tree->child1) + 1;
-    break;
-  case ATAN:
-    return treeSize(tree->child1) + 1;
-    break;
-  case SINH:
-    return treeSize(tree->child1) + 1;
-    break;
-  case COSH:
-    return treeSize(tree->child1) + 1;
-    break;
-  case TANH:
-    return treeSize(tree->child1) + 1;
-    break;
-  case ASINH:
-    return treeSize(tree->child1) + 1;
-    break;
-  case ACOSH:
-    return treeSize(tree->child1) + 1;
-    break;
-  case ATANH:
-    return treeSize(tree->child1) + 1;
-    break;
   case POW:
     return treeSize(tree->child1) + treeSize(tree->child2) + 1;
     break;
+
+  case SQRT:
+  case EXP:
+  case LOG:
+  case LOG_2:
+  case LOG_10:
+  case SIN:
+  case COS:
+  case TAN:
+  case ASIN:
+  case ACOS:
+  case ATAN:
+  case SINH:
+  case COSH:
+  case TANH:
+  case ASINH:
+  case ACOSH:
+  case ATANH:
   case NEG:
-    return treeSize(tree->child1) + 1;
-    break;
   case ABS:
-    return treeSize(tree->child1) + 1;
-    break;
   case DOUBLE:
-    return treeSize(tree->child1) + 1;
-    break;
   case SINGLE:
-    return treeSize(tree->child1) + 1;
-    break;
   case DOUBLEDOUBLE:
-    return treeSize(tree->child1) + 1;
-    break;
   case TRIPLEDOUBLE:
-    return treeSize(tree->child1) + 1;
-    break;
   case ERF:
-    return treeSize(tree->child1) + 1;
-    break;
   case ERFC:
-    return treeSize(tree->child1) + 1;
-    break;
   case LOG_1P:
-    return treeSize(tree->child1) + 1;
-    break;
   case EXP_M1:
-    return treeSize(tree->child1) + 1;
-    break;
   case DOUBLEEXTENDED:
-    return treeSize(tree->child1) + 1;
-    break;
   case LIBRARYFUNCTION:    
-    return treeSize(tree->child1) + 1;
-    break;
   case PROCEDUREFUNCTION:    
-    return treeSize(tree->child1) + 1;
-    break;
   case CEIL:
-    return treeSize(tree->child1) + 1;
-    break;
   case FLOOR:
-    return treeSize(tree->child1) + 1;
-    break;
   case NEARESTINT:
     return treeSize(tree->child1) + 1;
     break;
+
   default:
    sollyaFprintf(stderr,"Error: treeSize: unknown identifier (%d) in the tree\n",tree->nodeType);
    exit(1);
   }
   return -1;
 }
-
 
 
 int highestDegreeOfPolynomialSubexpression(node *tree) {
@@ -12248,6 +12014,12 @@ node *makeCanonical(node *tree, mp_prec_t prec) {
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = PI_CONST;
     break;
+  case LIBRARYCONSTANT:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = LIBRARYCONSTANT;
+    copy->libFun = tree->libFun;
+    break;
+
   default:
    sollyaFprintf(stderr,"Error: makeCanonical: unknown identifier in the tree\n");
    exit(1);

@@ -99,7 +99,9 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #define PI_CONST 38
 #define SINGLE 39
 #define NEARESTINT 40
-#define PROCEDUREFUNCTION 41
+#define LIBRARYCONSTANT 41
+#define PROCEDUREFUNCTION 42
+
 
 typedef struct nodeStruct node;
 
@@ -227,6 +229,7 @@ node *makeTanh(node *op1);
 node *makeAsinh(node *op1);
 node *makeAcosh(node *op1);
 node *makeAtanh(node *op1);
+node *makeUnary(node *op1, int nodeType);
 int mpfr_nearestint(mpfr_t rop, mpfr_t op);
 
 

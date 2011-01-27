@@ -86,15 +86,8 @@ typedef struct libraryFunctionStruct libraryFunction;
 struct libraryFunctionStruct 
 {
   char *functionName;
-  int (*code)(sollya_mpfi_t, sollya_mpfi_t, int);
-};
-
-typedef struct procLibraryHandleStruct procLibraryHandle;
-struct procLibraryHandleStruct 
-{
-  char *procLibraryName;
-  void *procLibraryDescriptor;
-  chain *procedureList;
+  int (*code)(sollya_mpfi_t, sollya_mpfi_t, int); /* used for LIBRARYFUNCTION */
+  void (*constant_code)(mpfr_t, mp_prec_t); /* used for LIBRARYCONSTANT */
 };
 
 typedef struct libraryProcedureStruct libraryProcedure;
@@ -145,12 +138,14 @@ struct libraryProcedureStruct
 #define CEIL 36
 #define FLOOR 37
 #define PI_CONST 38
+#define SINGLE 39
+#define NEARESTINT 40
+#define LIBRARYCONSTANT 41
+
 #define FIXED 236
 #define FLOATING 237
 #define ABSOLUTESYM 197
 #define RELATIVESYM 198
-#define SINGLE 39
-#define NEARESTINT 40
 
 typedef struct nodeStruct node;
 struct nodeStruct 
@@ -309,6 +304,7 @@ extern rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_
 
 extern node *FPminimax(node *f,	chain *monomials, chain *formats, chain *points, mpfr_t a, mpfr_t b, int fp, int absrel, node *consPart, node *minimax);
 
+extern int implementconst(node *, FILE *, char *);
 extern void freeChain(chain *c, void (*f) (void *));
 extern chain *addElement(chain *c, void *elem);
 extern void *first(chain *c);

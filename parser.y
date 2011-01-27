@@ -1,6 +1,6 @@
 /*
 
-Copyright 2006-2010 by
+Copyright 2006-2011 by
 
 Laboratoire de l'Informatique du Parallélisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
@@ -249,6 +249,7 @@ void yyerror(char *message) {
 %token  RESTARTTOKEN;
 
 %token  LIBRARYTOKEN;
+%token  LIBRARYCONSTANTTOKEN;
 
 %token  DIFFTOKEN;
 %token  SIMPLIFYTOKEN;
@@ -257,6 +258,7 @@ void yyerror(char *message) {
 %token  HORNERTOKEN;
 %token  EXPANDTOKEN;
 %token  SIMPLIFYSAFETOKEN;
+
 %token  TAYLORTOKEN;
 %token  TAYLORFORMTOKEN;
 %token  AUTODIFFTOKEN;
@@ -305,6 +307,7 @@ void yyerror(char *message) {
 %token  DIRTYINTEGRALTOKEN;
 %token  WORSTCASETOKEN;
 %token  IMPLEMENTPOLYTOKEN;
+%token  IMPLEMENTCONSTTOKEN;
 %token  CHECKINFNORMTOKEN;
 %token  ZERODENOMINATORSTOKEN;
 %token  ISEVALUABLETOKEN;
@@ -727,6 +730,10 @@ simplecommand:          QUITTOKEN
                           {
 			    $$ = makePrintExpansion($3);
 			  }
+                      | IMPLEMENTCONSTTOKEN LPARTOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeImplementConst($3);
+			  }
                       | BASHEXECUTETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeBashExecute($3);
@@ -828,6 +835,11 @@ simpleassignment:       IDENTIFIERTOKEN EQUALTOKEN thing
                       | IDENTIFIERTOKEN EQUALTOKEN LIBRARYTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeLibraryBinding($1, $5);
+			    free($1);
+			  }
+                      | IDENTIFIERTOKEN EQUALTOKEN LIBRARYCONSTANTTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeLibraryConstantBinding($1, $5);
 			    free($1);
 			  }
                       | indexing EQUALTOKEN thing
@@ -3249,6 +3261,17 @@ help:                   CONSTANTTOKEN
 #endif
 #endif
                           }
+                      | LIBRARYCONSTANTTOKEN
+                          {
+#ifdef HELP_LIBRARYCONSTANT_TEXT
+			    outputMode(); sollyaPrintf(HELP_LIBRARYCONSTANT_TEXT);
+#else
+			    outputMode(); sollyaPrintf("Library constant binding dereferencer.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for LIBRARYCONSTANT"
+#endif
+#endif
+                          }
                       | DIFFTOKEN
                           {
 #ifdef HELP_DIFF_TEXT
@@ -3775,6 +3798,18 @@ help:                   CONSTANTTOKEN
 #warning "No help text for IMPLEMENTPOLY"
 #endif
 #endif
+			  }
+                      | IMPLEMENTCONSTTOKEN
+                          {
+#ifdef HELP_IMPLEMENTCONSTANT_TEXT
+			    outputMode(); sollyaPrintf(HELP_IMPLEMENTCONSTANT_TEXT);
+#else
+			    outputMode(); sollyaPrintf("Implement a constant expression in arbitrary precision with MPFR: implementconstant(constant)\n");
+			    outputMode(); sollyaPrintf("Generates code able to evaluate the given constant at any precision, with a guaranteed error.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for IMPLEMENTCONST"
+#endif
+#endif
                           }
                       | CHECKINFNORMTOKEN
                           {
@@ -4256,6 +4291,7 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- horner\n");
 			    sollyaPrintf("- if\n");
 			    sollyaPrintf("- implementpoly\n");
+			    sollyaPrintf("- implementconstant\n");
 			    sollyaPrintf("- in\n");
 			    sollyaPrintf("- inf\n");
 			    sollyaPrintf("- infnorm\n");
@@ -4265,14 +4301,17 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- isevaluable\n");
 			    sollyaPrintf("- length\n");
 			    sollyaPrintf("- library\n");
+			    sollyaPrintf("- libraryconstant\n");
 			    sollyaPrintf("- list\n");
 			    sollyaPrintf("- log\n");
 			    sollyaPrintf("- log10\n");
 			    sollyaPrintf("- log1p\n");
 			    sollyaPrintf("- log2\n");
 			    sollyaPrintf("- mantissa\n");
+			    sollyaPrintf("- max\n");
 			    sollyaPrintf("- mid\n");
 			    sollyaPrintf("- midpointmode\n");
+			    sollyaPrintf("- min\n");
 			    sollyaPrintf("- nearestint\n");
 			    sollyaPrintf("- numberroots\n");
 			    sollyaPrintf("- nop\n");
@@ -4329,6 +4368,7 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- subpoly\n");
 			    sollyaPrintf("- substitute\n");
 			    sollyaPrintf("- sup\n");
+			    sollyaPrintf("- supnorm\n");
 			    sollyaPrintf("- tail\n");
 			    sollyaPrintf("- tan\n");
 			    sollyaPrintf("- tanh\n");
