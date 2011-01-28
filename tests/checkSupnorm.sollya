@@ -1,0 +1,104 @@
+print("=============== Check Supnorm #1 ================");//passes
+p = remez(exp(x), 5, [-1;1]);
+midpointmode=on!;
+supnorm(p, exp(x), [-1;1], absolute, 2^(-40));
+
+print("=============== Check Supnorm #2 ================");//passes
+p = remez(exp(x), 10, [0;1]);
+midpointmode=on!;
+supnorm(p, exp(x), [0;1], absolute, 2^(-40));
+
+print("=============== Check Supnorm #3 ================");//passes
+mode=relative;
+theta=1b-135;
+d = [-1b-2;1b-2];
+f = expm1(x);
+p = x * (1 +  x * ( 2097145 * 2^(-22) + x * ( 349527 * 2^(-21) + x * (87609 * 2^(-21) + x * 4369 * 2^(-19))))); 
+theta=1b-40;
+supnorm(p,f,d,mode,theta);
+
+print("=============== Check Supnorm #4 ================");//passes
+mode=relative;
+d = [-1b-9;1b-9];
+f = log2(1 + x);
+p = x * (117045327009867803036301574157545b-106 + x * ((-58522663504933901606981166592605b-106) + x * (8663094464742397b-54 + x * ((-6497320848515433b-54) + x * (2598928339549937b-53 + x * ((-541446114948727b-51) + x * 3712726891772213b-54))))));
+theta=1b-205;
+supnorm(p,f,d,mode,theta);
+
+print("=============== Check Supnorm #5 ================");//passes
+mode=relative;
+d = [-205674681606191b-53;205674681606835b-53];
+f = asin(x + 0x3fe5e58f08291918);
+p = 15651770362713997207607972106972745b-114 + (x *(3476698806776688943652103662933b-101 + (x *(17894972500311187082269807705171b-104 + (x *(126976607296441025269345153102591b-106 + (x *(249107378895562413495151944042799b-106 + (x *(139053951649796304768149995225589b-104 + (x *(165428664168251249501887921888847b-103 + (x *(206167601873884163281098618631159b-102 + (x *(66386611260133347295510390653099b-99 + (x * (2433556521489987b-43 + (x* (409716955440671b-39 + (x * (2242518346998655b-40 + (x *(3108616106416871b-39 + (x * (4356285307071455b-38 + (x *(6161286268548935b-37 + (x * (8783550111623067b-36 + (x *(788026560267325b-31 + (x * (1138037795125313b-30 + (x *(3304615966282565b-30 + (x * (602367826671283b-26 + (x *(1765006192104851b-26 + (x * (1337636086941861b-24 + (x *986777691264547b-22)))))))))))))))))))))))))))))))))))))))))));
+theta=1b-60;
+prec=400!;
+supnorm(p,f,d,mode,theta);
+
+print("=============== Check Supnorm #6 ================"); //passes
+mode=relative;
+prec=300!;
+d = [-1/2;1/4];
+f = cos(x);
+p = remez(1,15,d,1/f,1e-40); 
+prec=default!;
+theta=1b-100;
+supnorm(p,f,d,mode,theta);
+
+print("=============== Check Supnorm #7 ================");//passes
+mode=relative;
+prec=400!;
+d = [-1/8;1/8];
+f = exp(x);
+p = remez(1,25,d,1/f,1e-40);
+prec=300!;
+theta=1b-250;
+supnorm(p,f,d,mode,theta);
+
+print("=============== Check Supnorm #8 ================");//passes
+prec=200!;
+d = [-1/2;1/2];
+f = sin(x);
+p = remez(f,9,d,1,1e-40); 
+prec=default!;
+mode=absolute;
+theta=1b-60;
+supnorm(p,f,d,mode,theta);
+
+print("=============== Check Supnorm #9 ================");//passes
+prec=200!;
+d = [1;2];
+f = exp(cos(x)^2 + 1);
+p = remez(1,15,d,1/f,1e-40);
+theta=1b-60;
+prec=default!;
+mode=relative;
+supnorm(p,f,d,mode,theta);
+
+print("=============== Check Supnorm #10 ================");//passes
+prec=200!;
+d=[1/4;1/2];
+f=tan(x);
+p = remez(1,10,d,1/f,1e-40);
+prec=default!;
+mode=relative;
+theta=1b-60;
+supnorm(p,f,d,mode,theta);
+
+print("=============== Check Supnorm #11 ================");//passes
+d=[1;2];
+f=x^2.5;
+p=remez(1,7,d,1/f,1e-40);
+mode=relative;
+theta=1b-35;
+supnorm(p,f,d,mode,theta);
+
+print("=============== Check Supnorm #12 ================");//passes
+restart;
+mode=relative;
+d=[-1/8;1/8];
+f=sin(x);
+print("Computing remez polynomial...");
+p =fpminimax(sin(x), [|3,5|],[|D,D|], [-1/8; 1/8],x);
+print("... done.");
+theta = 2^(-16);
+supnorm(p,f,d,mode,theta);

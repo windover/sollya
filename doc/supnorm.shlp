@@ -1,0 +1,59 @@
+#NAME $SUPNORM
+#QUICK_DESCRIPTION computes an interval bounding the supremum norm of an approximation error (absolute or relative) between a given polynomial and a function.
+
+#CALLING $COMMAND(<p>, <f>, <I>, <errorType>, <accuracy>)
+#TYPE ($FUNCTION_TYPE, $FUNCTION_TYPE, $RANGE_TYPE, $APPROXERROR_TYPE, $CONSTANT_TYPE) -> $RANGE_TYPE
+
+#PARAMETERS <p> is a polynomial.
+#PARAMETERS <f> is a function.
+#PARAMETERS <I> is an interval.
+#PARAMETERS <errorType> is the type of error to be considered: $ABSOLUTE or $RELATIVE (see details below).
+#PARAMETERS <accuracy> is a constant that controls the relative tightness of the interval returned. 
+
+
+#DESCRIPTION
+$COMMAND(<p>, <f>, <I>, <errorType>) computes an interval bound §§r=[l,u]§$r = [\ell,\,u]$§§ for the supremum norm of the error function §§epsilon_absolute=p-f§$\varepsilon_{absolute}=p-f$§§ or §§epsilon_relative=p/f-1 §$\varepsilon_{relative}=p/f-1$§§ (depending on errorType), over the interval §§I§$I$§§, s.t.  §§max {|epsilon(x)|, x in I} C r§$\max_{x \in I} \{|\varepsilon(x)|\} \subseteq r$§§ and  §§0<(u-l)/l<accuracy§$0 \le \frac{u-\ell}{\ell} \le$ accuracy§§. If the interval $r$ is returned, it is guaranteed to contain the supremum norm value and to satisfy the required quality. In some rare cases, roughly speaking if the function is too complicated, our algorithm will simply fail, but it never lies; a corresponing error message is given. 
+
+#DESCRIPTION
+The algorithm used for this command is quite complex to be explained here. 
+Please find a complete description in the following article:§§§\\§§
+   Sylvain Chevillard, John Harrison, Mioara Joldes, Christoph Lauter§§§\\§§
+   Efficient and accurate computation of upper bounds of approximation errors§§§\\§§
+   Journal of Theoretical Computer Science (TCS)(2010)§§§\\§§
+   LIP Research Report number RRLIP2010-2§§§\\§§
+   http://prunel.ccsd.cnrs.fr/ensl-00445343/fr/§§§\\§§
+
+#DESCRIPTION
+Roughly speaking, $COMMAND is based on using $TAYLORFORM to obtain a higher degree polynomial approximation for <f>. Since $TAYLORFORM does not guarantee that by increasing the degree of the aproximation, the remainder bound will become smaller, we can not guarantee that the supremum norm can get as accurate as desired by the user. However, by splitting the initial interval <I> a potential better eclosure of the remainder is obtained. We do the splitting until the remainder is sufficiently small or the width of the resulting interval is too small, depending on the global variable $DIAM. An approximation of at most §§16§$16$§§ times the degree of <p> is considered for each interval.
+
+#DESCRIPTION
+In practical cases, the algorithm should be able to automatically handle removable discontinuities that relative errors might have. This means that usually, if <f> vanishes at a point $x_0$ in the interval considered, the approximation polynomial <p> is designed such that it vanishes also at the same point with a multiplicity large enough. Hence, although <f> vanishes, §§epsilon_relative=p/f-1 §$\varepsilon_{relative}=p/f-1$§§ may be defined by continuous extension at such points $x_0$, called removable discontinuities (see Example §§3§$3$§§).
+
+#EXAMPLE
+p = remez(exp(x), 5, [-1;1]);
+midpointmode=on!;
+supnorm(p, exp(x), [-1;1], absolute, 2^(-40));
+#EXAMPLE
+prec=200!;
+d = [1;2];
+f = exp(cos(x)^2 + 1);
+p = remez(1,15,d,1/f,1e-40);
+theta=1b-60;
+prec=default!;
+mode=relative;
+supnorm(p,f,d,mode,theta);
+#EXAMPLE
+mode=relative;
+theta=1b-135;
+d = [-1b-2;1b-2];
+f = expm1(x);
+p = x * (1 +  x * ( 2097145 * 2^(-22) + x * ( 349527 * 2^(-21) + x * (87609 * 2^(-21) + x * 4369 * 2^(-19))))); 
+theta=1b-40;
+supnorm(p,f,d,mode,theta);
+#SEEALSO $DIRTYINFNORM
+#SEEALSO $TAYLORFORM
+#SEEALSO $INFNORM
+#SEEALSO $CHECKINFNORM
+#SEEALSO $AUTODIFF
+#SEEALSO $NUMBERROOTS
+

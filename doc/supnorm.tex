@@ -1,0 +1,69 @@
+\subsection{supnorm}
+\label{labsupnorm}
+\noindent Name: \textbf{supnorm}\\
+computes an interval bounding the supremum norm of an approximation error (absolute or relative) between a given polynomial and a function.\\
+\noindent Usage: 
+\begin{center}
+\textbf{supnorm}(\emph{p}, \emph{f}, \emph{I}, \emph{errorType}, \emph{accuracy}) : (\textsf{function}, \textsf{function}, \textsf{range}, \textsf{absolute$|$relative}, \textsf{constant}) $\rightarrow$ \textsf{range}\\
+\end{center}
+Parameters: 
+\begin{itemize}
+\item \emph{p} is a polynomial.
+\item \emph{f} is a function.
+\item \emph{I} is an interval.
+\item \emph{errorType} is the type of error to be considered: \textbf{absolute} or \textbf{relative} (see details below).
+\item \emph{accuracy} is a constant that controls the relative tightness of the interval returned. 
+\end{itemize}
+\noindent Description: \begin{itemize}
+
+\item \textbf{supnorm}(\emph{p}, \emph{f}, \emph{I}, \emph{errorType}) computes an interval bound $r = [\ell,\,u]$ for the supremum norm of the error function $\varepsilon_{absolute}=p-f$ or $\varepsilon_{relative}=p/f-1$ (depending on errorType), over the interval $I$, s.t.  $\max_{x \in I} \{|\varepsilon(x)|\} \subseteq r$ and  $0 \le \frac{u-\ell}{\ell} \le$ accuracy. If the interval $r$ is returned, it is guaranteed to contain the supremum norm value and to satisfy the required quality. In some rare cases, roughly speaking if the function is too complicated, our algorithm will simply fail, but it never lies; a corresponing error message is given. 
+
+\item The algorithm used for this command is quite complex to be explained here. 
+   Please find a complete description in the following article:\\
+      Sylvain Chevillard, John Harrison, Mioara Joldes, Christoph Lauter\\
+      Efficient and accurate computation of upper bounds of approximation errors\\
+      Journal of Theoretical Computer Science (TCS)(2010)\\
+      LIP Research Report number RRLIP2010-2\\
+      http://prunel.ccsd.cnrs.fr/ensl-00445343/fr/\\
+
+\item Roughly speaking, \textbf{supnorm} is based on using \textbf{taylorform} to obtain a higher degree polynomial approximation for \emph{f}. Since \textbf{taylorform} does not guarantee that by increasing the degree of the aproximation, the remainder bound will become smaller, we can not guarantee that the supremum norm can get as accurate as desired by the user. However, by splitting the initial interval \emph{I} a potential better eclosure of the remainder is obtained. We do the splitting until the remainder is sufficiently small or the width of the resulting interval is too small, depending on the global variable \textbf{diam}. An approximation of at most $16$ times the degree of \emph{p} is considered for each interval.
+
+\item In practical cases, the algorithm should be able to automatically handle removable discontinuities that relative errors might have. This means that usually, if \emph{f} vanishes at a point $x_0$ in the interval considered, the approximation polynomial \emph{p} is designed such that it vanishes also at the same point with a multiplicity large enough. Hence, although \emph{f} vanishes, $\varepsilon_{relative}=p/f-1$ may be defined by continuous extension at such points $x_0$, called removable discontinuities (see Example $3$).
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> p = remez(exp(x), 5, [-1;1]);
+> midpointmode=on!;
+> supnorm(p, exp(x), [-1;1], absolute, 2^(-40));
+0.452055210438~2/7~e-4
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> prec=200!;
+> d = [1;2];
+> f = exp(cos(x)^2 + 1);
+> p = remez(1,15,d,1/f,1e-40);
+> theta=1b-60;
+> prec=default!;
+> mode=relative;
+> supnorm(p,f,d,mode,theta);
+[3.0893006200251428571621794052259682827831072375319e-14;3.089300620025142859757
+9848990873269730291252477793e-14]
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 3: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> mode=relative;
+> theta=1b-135;
+> d = [-1b-2;1b-2];
+> f = expm1(x);
+> p = x * (1 +  x * ( 2097145 * 2^(-22) + x * ( 349527 * 2^(-21) + x * (87609 * 
+2^(-21) + x * 4369 * 2^(-19))))); 
+> theta=1b-40;
+> supnorm(p,f,d,mode,theta);
+[9.8349131972210814932434890154829866537600224773996e-8;9.8349131972297467696435
+93575914432178700294360461e-8]
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{dirtyinfnorm} (\ref{labdirtyinfnorm}), \textbf{taylorform} (\ref{labtaylorform}), \textbf{infnorm} (\ref{labinfnorm}), \textbf{checkinfnorm} (\ref{labcheckinfnorm}), \textbf{autodiff} (\ref{labautodiff}), \textbf{numberroots} (\ref{labnumberroots})
