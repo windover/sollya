@@ -209,16 +209,6 @@ int sollya_mpfi_is_nonpos(sollya_mpfi_t op) {
   else return (mpfr_sgn(&(op->right)) <= 0);
 }
 
-/* IMPORTANT WARNING: we follow here the behavior of MPFI */
-/* -> returns true if op=[a,b] with b>0 and a>=0          */
-/* (and not, if op contains *only* positive numbers as    */
-/* one could expect).                                     */
-int sollya_mpfi_is_pos(sollya_mpfi_t op) { 
-  if ( sollya_mpfi_has_nan(op) || sollya_mpfi_is_empty(op) )
-    return 0;
-  else return mpfi_is_pos(op);
-}
-
 int sollya_mpfi_has_positive_infinity(sollya_mpfi_t op) {
   /* HACK ALERT: For performance reasons, we will access the internals
      of an mpfi_t !!!

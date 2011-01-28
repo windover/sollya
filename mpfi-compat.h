@@ -81,7 +81,6 @@ int sollya_mpfi_has_positive_numbers(sollya_mpfi_t op);
 int sollya_mpfi_has_negative_numbers(sollya_mpfi_t op); 
 int sollya_mpfi_is_nonneg(sollya_mpfi_t op); 
 int sollya_mpfi_is_nonpos(sollya_mpfi_t op); 
-int sollya_mpfi_is_pos(sollya_mpfi_t op);  
 int sollya_mpfi_has_positive_infinity(sollya_mpfi_t op); 
 int sollya_mpfi_is_positive_infinity(sollya_mpfi_t op); 
 int sollya_mpfi_has_negative_infinity(sollya_mpfi_t op); 

@@ -1137,7 +1137,7 @@ void abs_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   sollya_mpfi_abs(res[0], x);
   if(n >= 1) {
     if (sollya_mpfi_has_zero(x))  sollya_mpfi_interv_si(res[1], -1, 1);
-    else sollya_mpfi_set_si(res[1], sollya_mpfi_is_pos(x) ? 1 : (-1));
+    else sollya_mpfi_set_si(res[1], sollya_mpfi_is_nonneg(x) ? 1 : (-1));
   }
 
   if(n >= 2) {

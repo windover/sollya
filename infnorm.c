@@ -5442,7 +5442,7 @@ int evaluateSign(int *s, node *rawFunc) {
           }
           else {
             okay = 1;
-            sign = (sollya_mpfi_is_pos(valueI))?1:(-1);
+            sign = (sollya_mpfi_is_nonneg(valueI))?1:(-1);
           }
         }
         break;
