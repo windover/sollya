@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export LC_ALL=C
+
 sollyaBin="../sollya"
 
 keywords_defs="./keywords.def"

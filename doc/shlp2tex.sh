@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export LC_ALL=C
+
 sollyaBin="../sollya"
 
 keywords_defs="./keywords.def"
@@ -357,7 +359,7 @@ main() {
     fi
   done
 
-  sort $listOfCommands > $tempfile
+  sort -d $listOfCommands > $tempfile
   mv $tempfile $listOfCommands
 }
 

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export LC_ALL=C
+
 sollyaBin="../sollya"
 
 keywords_defs="./keywords.def"
@@ -437,7 +439,7 @@ main() {
   printf "<?php\n" > $listOfCommandsPHP
   printf "\$listOfCommands=array(\n" >> $listOfCommandsPHP
 
-  sort $listOfCommandsTmp >> $listOfCommandsPHP
+  sort -d $listOfCommandsTmp >> $listOfCommandsPHP
   (head -n -1 $listOfCommandsPHP; tail -n 1 $listOfCommandsPHP | sed -n 's/,$//;p') > $listOfCommandsTmp
   mv $listOfCommandsTmp $listOfCommandsPHP
   printf ");\n" >> $listOfCommandsPHP
