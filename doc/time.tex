@@ -27,7 +27,7 @@ Parameters:
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > t = time(p=remez(sin(x),10,[-1;1]));
 > write(t,"s were spent computing p = ",p,"\n");
-0.123594000000000000003908331991375746383710065856576s were spent computing p = 
+0.138534999999999999993356009087008828828402329236269s were spent computing p = 
 -3.3426550293345171908513995127407122194691200059639e-17 + x * (0.99999999973628
 359955372011464713121003442988167693 + x * (7.8802751877302786684499343799047732
 495568873819693e-16 + x * (-0.16666666138601303703291298219674138568049869810728
@@ -44,14 +44,14 @@ Parameters:
 > write(time({ p=remez(sin(x),10,[-1;1]); write("The error is 2^(", log2(dirtyin
 fnorm(p-sin(x),[-1;1])), ")\n"); }), " s were spent\n");
 The error is 2^(log2(2.39602467695631727848641768186659313738474584992648e-11))
-0.22283999999999999999406724571215931973711121827364 s were spent
+0.21879300000000000001520658599041269098961493000388 s were spent
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > t = time(bashexecute("sleep 10"));
 > write(~(t-10),"s of execution overhead.\n");
-1.82500000000000023314683517128287348896265029907227e-3s of execution overhead.
+1.91099999999999950461848641225515166297554969787598e-3s of execution overhead.
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
@@ -59,7 +59,7 @@ The error is 2^(log2(2.39602467695631727848641768186659313738474584992648e-11))
 > ratio := time(p=remez(sin(x),10,[-1;1]))/time(nop(10));
 > write("This ratio = ", ratio, " should somehow be independent of the type of m
 achine.\n");
-This ratio = 5.8760517940445568295510996507960199756149992153755 should somehow 
+This ratio = 5.3593279307565021859420523508598357752034755767449 should somehow 
 be independent of the type of machine.
 \end{Verbatim}
 \end{minipage}\end{center}
