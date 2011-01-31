@@ -4189,6 +4189,7 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- +\n");
 			    sollyaPrintf("- ,\n");
 			    sollyaPrintf("- -\n");
+			    sollyaPrintf("- .\n");
 			    sollyaPrintf("- ...\n");
 			    sollyaPrintf("- .:\n");
 			    sollyaPrintf("- /\n");
