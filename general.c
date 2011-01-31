@@ -645,6 +645,54 @@ int sollyaFprintf(FILE *fd, const char *format, ...) {
   return res;
 }
 
+/* Returns a string representing x written in binary, such
+   that it can be read back by mpfr_set_str.
+   x must be a valid number. If x is an Inf or NaN, NULL is
+   returned.
+   Note: the string must be freed afterwards, of course. */
+char *mpfr_to_binary_str(mpfr_t x) {
+  char *s;
+  char *ptr;
+  mp_exp_t e;
+  mp_prec_t prec = mpfr_get_prec(x);
+
+  if (!mpfr_number_p(x)) return NULL;
+
+  if (mpfr_zero_p(x)) {
+    s = calloc(5, sizeof(char));
+    s[0] = '0';
+    s[1] = 'p';
+    s[2] = '+';
+    s[3] = '0';
+    return s;
+  }
+    
+  /* The documentation of mpfr_get_str explains that it needs
+     max ( mpfr_get_prec(x)+2, 7 ). This is achieved by
+     mpfr_get_prec(x)+7. We must add 4 chars for "0." and "p+".
+     Finally, 20 extra bits are sufficient to write a 64-bit 
+     exponent in base 10 */
+  s = (char *)calloc(prec+7+4+20, sizeof(char)); 
+  mpfr_get_str(s+2, &e, 2, 0, x, GMP_RNDN);
+  if ( s[2] == '-' ) {
+    s[0] = '-';
+    ptr = s+1;
+  }
+  else ptr = s;
+
+  ptr[0] = '0';
+  ptr[1] = '.';
+  ptr[prec+2] = 'p';
+  if (e>=0) {
+    ptr[prec+3] = '+';
+    ptr = ptr + prec + 4;
+  }
+  else ptr = ptr + prec + 3;
+  sprintf(ptr, "%ld", (long)e);
+
+  return s;
+}
+
 void freeCounter(void) {
   freeChain(timeStack, free);
   timeStack=NULL;

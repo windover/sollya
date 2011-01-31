@@ -457,8 +457,7 @@ void appendSetstrProg(int var1, mpfr_t val, struct implementCsteProgram *program
   instr->prog1.precisions = NULL;
   instr->prog2.instructions = NULL;
   instr->prog2.precisions = NULL;
-  instr->strval = safeCalloc(mpfr_get_prec(val)+32, sizeof(char)); /* should be sufficient to store the string representing val in binary */
-  mpfr_sprintf(instr->strval, "%RNb", val);
+  instr->strval = mpfr_to_binary_str(val);
   program->instructions = addElement(program->instructions, instr);
   return;
 }

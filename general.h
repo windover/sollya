@@ -151,6 +151,7 @@ void *safeMalloc (size_t size);
 int printMessage(int verb, const char *format, ...);
 int sollyaPrintf(const char *format, ...);
 int sollyaFprintf(FILE *fd, const char *format, ...);
+char *mpfr_to_binary_str(mpfr_t x);
 int removeSpaces(char *outbuf, char *inbuf);
 int removeMidpointMode(char *outbuf, char *inbuf);
 void cutMidpointStringIntoTwo(char *str1, char *str2, char *str);
