@@ -1127,12 +1127,10 @@ void erfc_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
 
 void abs_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   int i;
-  sollya_mpfi_t temp;
   mpfr_t temp2;
   mp_prec_t prec;
 
   prec = getToolPrecision();
-  sollya_mpfi_init2(temp, prec);
 
   sollya_mpfi_abs(res[0], x);
   if(n >= 1) {
