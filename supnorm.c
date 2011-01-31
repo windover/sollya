@@ -446,6 +446,8 @@ int determineSignAtPoint(int *sign, node *func, mpfr_t x, mp_prec_t prec) {
 
   sollya_mpfi_clear(xAsInterv);
   sollya_mpfi_clear(yAsInterv);
+  mpfr_clear(yLeft);
+  mpfr_clear(yRight);
 
   /* Return the result */
   if (mySign == 0) okay = 0;
@@ -747,7 +749,9 @@ int computeTaylorModel(node **poly, sollya_mpfi_t delta,
   	    sollya_mpfi_set(delta,lagrangeDelta);
     	  }
 	  sollya_mpfi_clear(temp);
-	}  
+	  sollya_mpfi_clear(shiftedDom);
+	}
+	sollya_mpfi_clear(lagrangeDelta);
       }
     }
     sollya_mpfi_clear(*myDelta);
@@ -1287,6 +1291,7 @@ int determineOrderOfZero(int *k, node *func, mpfr_t x0, int n, mp_prec_t prec) {
     if (coefficients != NULL) free(coefficients);
     free(errorsAsArray);
     freeChain(errors,freeMpfiPtr);
+    free_memory(poly);
   } else {
     res = 0;
   }

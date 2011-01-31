@@ -18090,6 +18090,7 @@ node *evaluateThingInner(node *tree) {
 	      mpfr_neg(bb,bb,GMP_RNDN);
 	      tempUI = mpfr_get_ui(bb,GMP_RNDN);
 	      tempUI += 10;
+	      mpfr_clear(bb);
 	      if ((tempUI < tools_precision) || (tempUI > 2048 * tools_precision)) pTemp = tools_precision + 10; else pTemp = tempUI;
 	      sollya_mpfi_init2(tempIB,pTemp);
 	      resB = supremumnorm(tempIB, firstArg, secondArg, tempIA, (resA == ABSOLUTE) ? 0 : 1, c);
