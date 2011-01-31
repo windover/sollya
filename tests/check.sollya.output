@@ -2904,3 +2904,65 @@ Warning: the bounds of the given range are in wrong order. Will reverse them.
 [0;0]  [0;0]
 [0;0]  [0;0]
 [0;0]  [0;0]
+The tool has been restarted.
+=============== Test number 258 ================
+=============== Check Supnorm #1 ================
+0.452055210438~2/7~e-4
+=============== Check Supnorm #2 ================
+0.19806747803~2/4~e-13
+=============== Check Supnorm #3 ================
+0.98349131972~2/3~e-7
+=============== Check Supnorm #4 ================
+0.21506063323225200140627704573738261516804472792804345397057465~4/9~e-21
+=============== Check Supnorm #5 ================
+0.25592360697351127~2/3~e-34
+=============== Check Supnorm #6 ================
+0.230837749722228471996224448457~2/5~e-24
+=============== Check Supnorm #7 ================
+0.244473007268597435777759018427526238220949802075798306167234638089310309558~5/7~e-57
+=============== Check Supnorm #8 ================
+Warning in Remez: a slower algorithm is used for this step
+0.118837098347994659~3/5~e-13
+=============== Check Supnorm #9 ================
+0.30893006200251428~5/6~e-13
+=============== Check Supnorm #10 ================
+0.354286999761833306~0/4~e-13
+=============== Check Supnorm #11 ================
+0.2182585220~3/4~e-8
+=============== Check Supnorm #12 ================
+Warning: a restart command has been used in a file read into another.
+This restart command will be neglected.
+Computing remez polynomial...
+The second argument of fpminimax must be either an integer or a finite list of integers.
+Warning: degenerated system in a non Haar context. The algorithm may be incorrect.
+Warning in Remez: main heuristic failed. A slower algorithm is used for this step.
+Warning: the function oscillates too much. Nevertheless, we try to continue.
+Warning: degenerated system in a non Haar context. The algorithm may be incorrect.
+Warning in Remez: a slower algorithm is used for this step (pseudo-alternation condition changed)
+Warning: the function oscillates too much. Nevertheless, we try to continue.
+Warning in Remez: a slower algorithm is used for this step (pseudo-alternation condition changed)
+Warning: the function oscillates too much. Nevertheless, we try to continue.
+Warning in Remez: a slower algorithm is used for this step
+Warning: the function oscillates too much. Nevertheless, we try to continue.
+Warning in Remez: a slower algorithm is used for this step
+Warning: the function oscillates too much. Nevertheless, we try to continue.
+Warning in Remez: a slower algorithm is used for this step
+Warning: the function oscillates too much. Nevertheless, we try to continue.
+Warning in Remez: a slower algorithm is used for this step
+Warning: the function oscillates too much. Nevertheless, we try to continue.
+... done.
+0.29150~1/7~e-10
+The tool has been restarted.
+=============== Test number 259 ================
+-1.3862943611198906188344642429163531361510002687205
+17
+-1.3862943611198906188344642429163531361510002687205
+sin(62)
+Warning: minimum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.
+17 + log(13) / log(9)
+1.48413159102576603421115580040552279623487667593878e2
+17
+1.48413159102576603421115580040552279623487667593878e2
+exp(17)
+Warning: minimum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.
+17 + log2(13) / log2(9)
