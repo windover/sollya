@@ -763,6 +763,10 @@ int computeTaylorModel(node **poly, sollya_mpfi_t delta,
       pShifted = substitute(myPoly,shifterBack);
       *poly = horner(pShifted);
       // TODO: Remark by Christoph: is it normal that I don't see any free_memory's here?
+      // Nobody answers, so I will add the frees.
+      free_memory(shifterBack);
+      free_memory(pShifted);
+      free_memory(myPoly);
     }
     else *poly=myPoly;
   }
