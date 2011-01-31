@@ -1628,8 +1628,9 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   mpfr_t perturb;
   gmp_randstate_t random_state;
 
-  gmp_randinit_default(random_state);
+  gmp_randinit_mt(random_state);
   gmp_randseed_ui(random_state, 65845285);
+
   HaarCompliant=1;
 
   if(verbosity>=3) {
@@ -2282,7 +2283,7 @@ void perturbPoints(mpfr_t *x, int p, mp_prec_t *currentPrec) {
   int i;
   gmp_randstate_t random_state;
 
-  gmp_randinit_default(random_state);
+  gmp_randinit_mt(random_state);
   gmp_randseed_ui(random_state, 65845285);
 
   mpfr_init2(perturb, *currentPrec);
