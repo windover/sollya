@@ -49,9 +49,8 @@ external code can get resolved when the newly generated code is to
 be loaded.
 
 #DESCRIPTION
-Currently, $COMMAND makes the assumption that none of the
-non-trivial subexpressions of <expr> evaluates to §§0§$0$§§. If <expr> contains
-such a subexpression, the behavior of $COMMAND is undefined.
+If a subexpression of <expr> evaluates to §§0§$0$§§, $COMMAND will most
+likely fail with an error message.
 
 #DESCRIPTION
 $COMMAND is unable to implement constant expressions <expr> that
@@ -67,10 +66,19 @@ procedure-based function.
 Similarily, $COMMAND is currently unable to implement constant
 expressions <expr> that contain library-based functions, i.e.
 functions dynamically bound to $SOLLYA using the $LIBRARY construct.
-If <expr> contains such a procedure-based function, $COMMAND prints a
-warning and fails silently. Support for this feature is in principle
+If <expr> contains such a library-based function, $COMMAND prints
+a warning and fails silently. Support for this feature is in principle
 feasible from a technical standpoint and might be added in a future
 release of $SOLLYA.
+
+#DESCRIPTION
+Currently, non-differentiable functions such as $DOUBLE, $DOUBLEDOUBLE,
+$TRIPLEDOUBLE, $SINGLE, $DOUBLEEXTENDED, $FLOOR, $CEIL, $NEARESTINT are not
+supported by $COMMAND. If $COMMAND encounters one of them,
+a warning message is displayed and no code is produced.
+However, if $AUTOSIMPLIFY equals on, it is possible that $SOLLYA silently
+simplifies subexpressions of <expr> containing such functions and that
+$COMMAND successfully produces code for evaluating <expr>.
 
 #DESCRIPTION
 While it produces an MPFR-based C source code for <expr>, $COMMAND
@@ -88,6 +96,7 @@ implementconstant(exp(1)+log(2)/sqrt(1/10));
 
 #EXAMPLE
 implementconstant(sin(13/17),"sine_of_thirteen_seventeenth.c");
+readfile("sine_of_thirteen_seventeenth.c");
 
 #EXAMPLE
 implementconstant(asin(1/3 * pi),default,"arcsin_of_one_third_pi");

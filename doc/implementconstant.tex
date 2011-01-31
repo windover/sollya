@@ -47,9 +47,8 @@ implements a constant in arbitrary precision\\
    external code can get resolved when the newly generated code is to 
    be loaded.
 
-\item Currently, \textbf{implementconstant} makes the assumption that none of the
-   non-trivial subexpressions of \emph{expr} evaluates to $0$. If \emph{expr} contains
-   such a subexpression, the behavior of \textbf{implementconstant} is undefined.
+\item If a subexpression of \emph{expr} evaluates to $0$, \textbf{implementconstant} will most
+   likely fail with an error message.
 
 \item \textbf{implementconstant} is unable to implement constant expressions \emph{expr} that
    contain procedure-based functions, i.e. functions created from \sollya
@@ -63,10 +62,18 @@ implements a constant in arbitrary precision\\
 \item Similarily, \textbf{implementconstant} is currently unable to implement constant
    expressions \emph{expr} that contain library-based functions, i.e.
    functions dynamically bound to \sollya using the \textbf{library} construct.
-   If \emph{expr} contains such a procedure-based function, \textbf{implementconstant} prints a
-   warning and fails silently. Support for this feature is in principle
+   If \emph{expr} contains such a library-based function, \textbf{implementconstant} prints
+   a warning and fails silently. Support for this feature is in principle
    feasible from a technical standpoint and might be added in a future
    release of \sollya.
+
+\item Currently, non-differentiable functions such as \textbf{double}, \textbf{doubledouble},
+   \textbf{tripledouble}, \textbf{single}, \textbf{doubleextended}, \textbf{floor}, \textbf{ceil}, \textbf{nearestint} are not
+   supported by \textbf{implementconstant}. If \textbf{implementconstant} encounters one of them,
+   a warning message is displayed and no code is produced.
+   However, if \textbf{autosimplify} equals on, it is possible that \sollya silently
+   simplifies subexpressions of \emph{expr} containing such functions and that
+   \textbf{implementconstant} successfully produces code for evaluating \emph{expr}.
 
 \item While it produces an MPFR-based C source code for \emph{expr}, \textbf{implementconstant}
    takes architectural and system-dependent parameters into account.  For
@@ -140,6 +147,38 @@ const_something (mpfr_ptr y, mp_prec_t prec)
 \noindent Example 2: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > implementconstant(sin(13/17),"sine_of_thirteen_seventeenth.c");
+> readfile("sine_of_thirteen_seventeenth.c");
+#include <mpfr.h>
+
+void
+const_something (mpfr_ptr y, mp_prec_t prec)
+{
+  /* Declarations */
+  mpfr_t tmp1;
+  mpfr_t tmp2;
+  mpfr_t tmp3;
+
+  /* Initializations */
+  mpfr_init2 (tmp2, prec+6);
+  mpfr_init2 (tmp3, prec+6);
+  mpfr_init2 (tmp1, prec+6);
+
+  /* Core */
+  mpfr_set_prec (tmp2, prec+6);
+  mpfr_set_ui (tmp2, 13, MPFR_RNDN);
+  mpfr_set_prec (tmp3, prec+6);
+  mpfr_set_ui (tmp3, 17, MPFR_RNDN);
+  mpfr_set_prec (tmp1, prec+6);
+  mpfr_div (tmp1, tmp2, tmp3, MPFR_RNDN);
+  mpfr_set_prec (y, prec+2);
+  mpfr_sin (y, tmp1, MPFR_RNDN);
+
+  /* Cleaning stuff */
+  mpfr_clear(tmp1);
+  mpfr_clear(tmp2);
+  mpfr_clear(tmp3);
+}
+
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
