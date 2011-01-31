@@ -20,7 +20,7 @@ i := i + 1;
 i;
  p = ( (x-pi)^25-exp(1) )^3;
 t = time(c = coeff(p,65))/yardstick;
-if (t in 7e-2 * variance) then "Okay" else round(t,12,RN);
+if (t in 0.22 * variance) then "Okay" else round(t,12,RN);
 i := i + 1;
 
 /* Test #3 */
