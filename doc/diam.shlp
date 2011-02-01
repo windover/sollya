@@ -27,5 +27,5 @@ is called on interval §§[0;1e-3]§$[0,\,1\mathrm{e}{-3}]$§§, the maximal wid
 #SEEALSO $ACCURATEINFNORM
 #SEEALSO $INTEGRAL
 #SEEALSO $FINDZEROS
-#SEEALSO $DIAM
+#SEEALSO $SUPNORM
 
