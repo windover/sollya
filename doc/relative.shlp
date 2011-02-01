@@ -16,7 +16,7 @@ the relative error.
 See $FPMINIMAX for details.
 
 #DESCRIPTION
-When given in argument to $SUPNORM, $COMMAND indicates that an absolute error
+When given in argument to $SUPNORM, $COMMAND indicates that a relative error
 is to be considered for supremum norm computation.
 §§ § §§
 See $SUPNORM for details.
