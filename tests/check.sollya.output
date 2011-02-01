@@ -1198,6 +1198,7 @@ The tool has been restarted.
 x * (1 / sqrt((pi) / 4) + x^2 * ((sqrt((pi) / 4) * 4 / (pi) * (-2)) / 6 + x^2 * (sqrt((pi) / 4) * 4 / (pi) * 12) / 120))
 The tool has been restarted.
 =============== Test number 222 ================
+-3.3426550293345171908513995127407122194691200059639e-17 + x * (0.99999999973628359955372011464713121003442988167693 + x * (7.8802751877302786684499343799047732495568873819693e-16 + x * (-0.166666661386013037032912982196741385680498698107285 + x * (-5.3734444911159112186289355138557504839692987221233e-15 + x * (8.3333037186548537651002133031675072810009327877148e-3 + x * (1.33797221389218815884112341005509831429347230871284e-14 + x * (-1.98344863018277416493268155154158924422004290239026e-4 + x * (-1.3789116451286674170531616441916183417598709732816e-14 + x * (2.6876259495430304684251822024896210963401672262005e-6 + x * 5.0282378350010211058128384123578805586173782863605e-15)))))))))
 The tool has been restarted.
 =============== Test number 223 ================
 1.00000000000000002775557561562891353466491600711096
@@ -2919,7 +2920,7 @@ The tool has been restarted.
 =============== Check Supnorm #6 ================
 0.230837749722228471996224448457~2/5~e-24
 =============== Check Supnorm #7 ================
-0.244473007268597435777759018427526238220949802075798306167234638089310309558~5/7~e-57
+0.244473007268597435777759018427526238220949802075798422683204541993260792417~3/5~e-57
 =============== Check Supnorm #8 ================
 Warning in Remez: a slower algorithm is used for this step
 0.118837098347994659~3/5~e-13
@@ -2966,3 +2967,6 @@ Warning: minimum computation relies on floating-point result that is faithfully 
 exp(17)
 Warning: minimum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.
 17 + log2(13) / log2(9)
+The tool has been restarted.
+=============== Test number 260 ================
+Check that mpfr_urandom has the expected behavior (either one of the old 32-bit or 64-bit behavior), or the new one. OK
