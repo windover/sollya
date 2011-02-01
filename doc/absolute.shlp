@@ -1,5 +1,5 @@
 #NAME $ABSOLUTE
-#QUICK_DESCRIPTION indicates an absolute error for $EXTERNALPLOT or $FPMINIMAX
+#QUICK_DESCRIPTION indicates an absolute error for $EXTERNALPLOT, $FPMINIMAX or $SUPNORM
 #CALLING $COMMAND
 #TYPE $APPROXERROR_TYPE
 
@@ -15,6 +15,13 @@ the absolute error.
 §§ § §§
 See $FPMINIMAX for details.
 
+#DESCRIPTION
+When given in argument to $SUPNORM, $COMMAND indicates that an absolute error
+is to be considered for supremum norm computation.
+§§ § §§
+See $SUPNORM for details.
+
+
 #EXAMPLE
 bashexecute("gcc -fPIC -c externalplotexample.c");
 bashexecute("gcc -shared -o externalplotexample externalplotexample.o -lgmp -lmpfr");
@@ -24,3 +31,5 @@ externalplot("./externalplotexample",absolute,exp(x),[-1/2;1/2],12,perturb);
 #SEEALSO $FPMINIMAX
 #SEEALSO $RELATIVE
 #SEEALSO $BASHEXECUTE
+#SEEALSO $SUPNORM
+
