@@ -22,8 +22,8 @@ the formal parameters <formal parameter1> through <formal parameter n>
 (resp. builds up the list of arguments and applies it to the list
 <formal list parameter>) and executes the <procedure body>. The
 procedure applied to actual parameters evaluates then to the
-expression <expression> in the $RETURN statement after the <procedure
-body> or to $VOID, if no return statement is given (i.e. a $RETURN
+expression <expression> in the $RETURN statement after the <procedure body> 
+or to $VOID, if no return statement is given (i.e. a $RETURN
 $VOID statement is implicitly given).
 
 #DESCRIPTION
