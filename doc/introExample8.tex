@@ -9,13 +9,33 @@ The precision has been set to 50 bits.
 > derivativeZeros = dirtyfindzeros(diff(p-f),d);
 > derivativeZeros = inf(d).:derivativeZeros:.sup(d);
 > max=0;
+Warning: syntax error, unexpected EQUALTOKEN, expecting LPARTOKEN.
+The last symbol read has been "=".
+Will skip input until next semicolon after the unexpected token. May leak memory
+.
 > for t in derivativeZeros do {
-     r = evaluate(abs(p-f), t);
-     if r > max then { max=r; argmax=t; };
-  };
+>    r = evaluate(abs(p-f), t);
+>    if r > max then { max=r; argmax=t; };
+Warning: syntax error, unexpected THENTOKEN, expecting LPARTOKEN.
+The last symbol read has been "then".
+Will skip input until next semicolon after the unexpected token. May leak memory
+.
+Warning: the identifier "t" is neither assigned to, nor bound to a library funct
+ion nor external procedure, nor equal to the current free variable.
+Will interpret "t" as "x".
+Warning: syntax error, unexpected RIGHTCURLYBRACETOKEN.
+The last symbol read has been "}".
+Will skip input until next semicolon after the unexpected token. May leak memory
+.
+> };
+Warning: syntax error, unexpected RIGHTCURLYBRACETOKEN.
+The last symbol read has been "}".
+Will skip input until next semicolon after the unexpected token. May leak memory
+.
 > print("The infinity norm of", p-f, "is", max, "and is reached at", argmax);
-The infinity norm of -0.416265572875373 + x * (-1.798067209218835 + x * (-3.8971
-0727747639e-2)) - cos(2 * exp(x)) is 8.630659443624325e-4 and is reached at -5.8
-01672331417684e-2
+Warning: syntax error, unexpected COMMATOKEN, expecting LPARTOKEN.
+The last symbol read has been ",".
+Will skip input until next semicolon after the unexpected token. May leak memory
+.
 \end{Verbatim}
 \end{minipage}\end{center}
