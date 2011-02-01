@@ -13,7 +13,7 @@
 $COMMAND is a global variable. When its value is $OFF, which is the default,
 $SOLLYA will not exit on any syntax, typing, side-effect errors. These
 errors will be caught by the tool, even if a memory might be leaked at 
-that point. On evaluation, the $ERROR special will be produced.
+that point. On evaluation, the $ERROR special value will be produced.
 
 #DESCRIPTION
 When the value of the $COMMAND variable is $ON, $SOLLYA will exit

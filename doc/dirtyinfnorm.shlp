@@ -57,3 +57,6 @@ dirtyinfnorm(x^2, [log(0);log(1)]);
 #SEEALSO $POINTS
 #SEEALSO $INFNORM
 #SEEALSO $CHECKINFNORM
+#SEEALSO $SUPNORM
+
+

@@ -552,7 +552,7 @@ Anything written between quotes is interpreted as a string. The infix operator <
 <?php include("introExample20.php"); ?>
 <p>
 Strings may contain the following escape sequences:
-<code>\\</code>, <code>\"</code>,
+<code>\\</code>, <code>\&ldquo;</code>,
 <code>\?</code>, <code>\'</code>,
 <code>\n</code>, <code>\t</code>,
 <code>\a</code>, <code>\b</code>,
