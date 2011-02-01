@@ -3,7 +3,7 @@
 <head>
 <title>Users' manual for the Sollya tool - Release 2.1-alpha</title>
 <meta name="author" content="Sylvain Chevillard, Christoph Lauter">
-<meta name="copyright" content="2009 Laboratoire de l'Informatique du Parallélisme - UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668">
+<meta name="copyright" content="2009-2011 Laboratoire de l'Informatique du Parallélisme - UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668, LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France, Laboratoire d'Informatique de Paris 6, Équipe PEQUAN, UPMC Université Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France, INRIA Sophia-Antipolis Méditerranée, APICS Team, Sophia-Antipolis, France">
 <meta name="keywords" content="help, sollya, User's Manual">
 <meta name="description" content="This is part of Sollya User's Manual">
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -20,14 +20,14 @@ h2 { font-size: large;}
 <body>
 
 <p>
-<h1 style="text-align:center">Users' manual for the <span class="sollya">Sollya</span> tool - Release 2.1-alpha</h1>
+<h1 style="text-align:center">Users' manual for the <span class="sollya">Sollya</span> tool - Release 2.9</h1>
 <div style="text-align:center; line-height: 1.5em;">Sylvain Chevillard (<a href="sylvain.chevillard@ens-lyon.org">sylvain.chevillard@ens-lyon.org</a>),</div>
 <div style="text-align:center; line-height: 1.5em;">Christoph Lauter (<a href="christoph.lauter@ens-lyon.org; line-height: 1.5em;">christoph.lauter@ens-lyon.org</a>)</div>
-<div style="text-align:center">and Mioara Joldes (<a href="mioara.joldes@ens-lyon.fr">mioara.joldes@ens-lyon.fr</a>).</div>
+<div style="text-align:center">and Mioara Joldeș (<a href="mioara.joldes@ens-lyon.fr">mioara.joldes@ens-lyon.fr</a>).</div>
 
 <h2 style="margin-top: 3em;">License</h2>
 <p style="font-size:small;">
-The <span class="sollya">Sollya</span> tool is Copyright &copy;&nbsp;2006-2010 by<br>
+The <span class="sollya">Sollya</span> tool is Copyright &copy;&nbsp;2006-2011 by<br>
 <span style="text-indent:3em; display:block;">Laboratoire de l'Informatique du Parallélisme - UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668, Lyon, France, </span>
 <span style="text-indent:3em;display:block;">LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France, </span>
 <span style="text-indent:3em;display:block;">Laboratoire d'Informatique de Paris 6, Équipe PEQUAN, UPMC Université Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France, and by</span>
@@ -835,7 +835,7 @@ The topology that we consider is always the usual topology of R bar: R U {-infin
 Let f be a univariate basic function and I an interval. We denote by J the result of the interval evaluation of f over I in <span class="sollya">Sollya</span>. If I is completely included in the domain of f, J will usually be the smallest interval (at the current precision) containing the exact image f(I) However, in some cases, it may happen that J is not as small as possible. It is guaranteed however, that J tends to f(I) when the precision of the tool tends to infinity.
 
 <p>
-When f is not defined at some point x but is defined on a neighborhood of x, we consider that the ``value'' of f at x is the convex hull of the limit points of f around x. For instance, consider the evaluation of f= tan on [0, Pi]. It is not defined at Pi/2 (and only at this point). The limit points of f around Pi/2 are -infinity and +infinity, so, we return [-infinity, +infinity]. Another example: f=sin on [+infinity]. The function has no limit at this point, but all points of [-1, 1] are limit points. So, we return [-1,\,1].
+When f is not defined at some point x but is defined on a neighborhood of x, we consider that the ``value'' of f at x is the convex hull of the limit points of f around x. For instance, consider the evaluation of f= tan on [0, Pi]. It is not defined at Pi/2 (and only at this point). The limit points of f around Pi/2 are -infinity and +infinity, so, we return [-infinity, +infinity]. Another example: f=sin on [+infinity]. The function has no limit at this point, but all points of [-1, 1] are limit points. So, we return [-1,1].
 
 <p>
 Finally, if I contains a subinterval on which f is not defined, we return [NaN, NaN] (example: sqrt([-1, 2])).
