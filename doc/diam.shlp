@@ -14,7 +14,7 @@
 #DESCRIPTION 
 $COMMAND is a global variable. Its value represents the maximal width allowed
 for intervals involved in safe algorithms of $SOLLYA (namely $INFNORM,
-$CHECKINFNORM, $ACCURATEINFNORM, $INTEGRAL, $FINDZEROS).
+$CHECKINFNORM, $ACCURATEINFNORM, $INTEGRAL, $FINDZEROS, $SUPNORM).
 
 #DESCRIPTION
 More precisely, $COMMAND is relative to the width of the input interval of
@@ -27,3 +27,5 @@ is called on interval §§[0;1e-3]§$[0,\,1\mathrm{e}{-3}]$§§, the maximal wid
 #SEEALSO $ACCURATEINFNORM
 #SEEALSO $INTEGRAL
 #SEEALSO $FINDZEROS
+#SEEALSO $DIAM
+
