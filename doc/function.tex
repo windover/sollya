@@ -31,11 +31,16 @@ Parameters:
    working precision $p$. It must return in result an interval
    $Y$ encompassing the image $f^{(n)}(X)$ of the
    $n$-th derivative of the implemented function $f$,
-   i.e. $f^{(n)}(X) \subseteq Y$. In order allow
-   \sollya's algorithms to work properly, the procedure must ensure that
-   for $p$ tending to infinity, the computed over-estimated
-   bounding $Y$ tends to the actual image
-   $f^{(n)}(X)$.
+   i.e. $f^{(n)}(X) \subseteq Y$. In order to allow
+   \sollya's algorithms to work properly, the procedure must ensure that,
+   whenever $(p, \textrm{diam}(X))$ tends to $(+\infty,\,0)$,
+   the computed over-estimated bounding $Y$ tends to the actual image $f^{(n)}(X)$.
+
+\item The user must be aware that they are responsible of the correctness
+   of the procedure. If, for some $n$ and $X$, \emph{procedure} returns an interval $Y$
+   such that $f^{(n)}(X) \not\subseteq Y$, \textbf{function} will successfully
+   return a function without any complain, but this function might behave
+   inconsistently in further computations.
 
 \item For cases when the procedure does not have the correct signature or
    does not return a finite interval as a result \textbf{function}(\emph{procedure})

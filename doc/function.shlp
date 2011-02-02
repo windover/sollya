@@ -27,13 +27,19 @@ must be of type ($RANGE_TYPE, $INTEGER_TYPE, $INTEGER_TYPE)
 §§->§$\rightarrow$§§ $RANGE_TYPE. This means it must take in argument
 an interval §§X§$X$§§, a degree of differentiation §§n§$n$§§ and a
 working precision §§p§$p$§§. It must return in result an interval
-§§Y§$Y$§§ encompassing the image §§f(n)(X)§$f^{(n)}(X)$§§ of the
+§§Y§$Y$§§ encompassing the image §§f^(n)(X)§$f^{(n)}(X)$§§ of the
 §§n-th§$n$-th§§ derivative of the implemented function §§f§$f$§§,
-i.e. §§f^(n)(X) c Y§$f^{(n)}(X) \subseteq Y$§§. In order allow
-$SOLLYA's algorithms to work properly, the procedure must ensure that
-for §§p§$p$§§ tending to infinity, the computed over-estimated
-bounding §§Y§$Y$§§ tends to the actual image
-§§f^(n)(X)§$f^{(n)}(X)$§§.
+i.e. §§f^(n)(X) c Y§$f^{(n)}(X) \subseteq Y$§§. In order to allow
+$SOLLYA's algorithms to work properly, the procedure must ensure that,
+whenever §§(p, diam(X))§$(p, \textrm{diam}(X))$§§ tends to §§(infinity, 0)§$(+\infty,\,0)$§§,
+the computed over-estimated bounding §§Y§$Y$§§ tends to the actual image §§f^(n)(X)§$f^{(n)}(X)$§§.
+
+#DESCRIPTION
+The user must be aware that they are responsible of the correctness
+of the procedure. If, for some §§n§$n$§§ and §§X§$X$§§, <procedure> returns an interval §§Y§$Y$§§
+such that §§f^n(X) is not included in Y§$f^{(n)}(X) \not\subseteq Y$§§, $COMMAND will successfully
+return a function without any complain, but this function might behave
+inconsistently in further computations.
 
 #DESCRIPTION 
 For cases when the procedure does not have the correct signature or
