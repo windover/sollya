@@ -28,6 +28,12 @@ Parameters:
 \item \textbf{max} can be given either an arbitrary number of constant
    expressions in argument or a list of constant expressions. The list
    however must not be end-elliptic.
+
+\item Users should be aware that the behavior of \textbf{max} follows the IEEE
+   754-2008 standard with respect to NaNs. In particular, a NaN given as
+   the first argument with not be promoted as a result if the other
+   argument is not a NaN. This means that NaNs may seem to disappear
+   during computations.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
@@ -54,7 +60,7 @@ exp(17)
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > verbosity = 1!;
 > print(max(17 + log2(13)/log2(9),17 + log(13)/log(9)));
-Warning: minimum computation relies on floating-point result that is faithfully 
+Warning: maximum computation relies on floating-point result that is faithfully 
 evaluated and different faithful roundings toggle the result.
 17 + log2(13) / log2(9)
 \end{Verbatim}

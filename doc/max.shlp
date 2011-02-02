@@ -28,6 +28,13 @@ $COMMAND can be given either an arbitrary number of constant
 expressions in argument or a list of constant expressions. The list
 however must not be end-elliptic.
 
+#DESCRIPTION
+Users should be aware that the behavior of $COMMAND follows the IEEE
+754-2008 standard with respect to NaNs. In particular, a NaN given as
+the first argument with not be promoted as a result if the other
+argument is not a NaN. This means that NaNs may seem to disappear
+during computations.
+
 #EXAMPLE
 max(1,2,3,exp(5),log(0.25));
 max(17);
