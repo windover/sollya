@@ -1,9 +1,14 @@
 /*
 
-Copyright 2006-2009 by 
+Copyright 2006-2011 by 
 
-Laboratoire de l'Informatique du Parallélisme, 
+Laboratoire de l'Informatique du Parallelisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+
+and by
+
+Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+Sophia Antipolis, France.
 
 Contributors Ch. Lauter, S. Chevillard
 

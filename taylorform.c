@@ -2,7 +2,7 @@
 
 Copyright 2009-2011 by 
 
-Laboratoire de l'Informatique du Parallélisme, 
+Laboratoire de l'Informatique du Parallelisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
 LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)

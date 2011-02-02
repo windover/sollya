@@ -2,7 +2,7 @@
 
 Copyright 2006-2010 by 
 
-Laboratoire de l'Informatique du Parallélisme, 
+Laboratoire de l'Informatique du Parallelisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
 Contributors Ch. Lauter, S. Chevillard

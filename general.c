@@ -2,13 +2,16 @@
 
 Copyright 2007-2011 by 
 
-Laboratoire de l'Informatique du Parallélisme, 
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
-
-and
+Laboratoire de l'Informatique du Parallelisme, 
+UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
 Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
-UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
+UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
+
+and by
+
+Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+Sophia Antipolis, France.
 
 Contributors Ch. Lauter, S. Chevillard
 

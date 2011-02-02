@@ -6,7 +6,7 @@ LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
 
 and
 
-Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS
+Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
 Sophia Antipolis, France.
 
 Contributors S. Chevillard

@@ -7,7 +7,7 @@ UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
 
 and
 
-Laboratoire de l'Informatique du Parallélisme, 
+Laboratoire de l'Informatique du Parallelisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
 Contributors Ch. Lauter, M. Joldes
