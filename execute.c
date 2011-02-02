@@ -15301,7 +15301,7 @@ node *evaluateThingInner(node *tree) {
               if ((resA = evaluateThingToConstant(a,tempNode,NULL,1)) && 
                   (resB = evaluateThingToConstant(b,tempNode2,NULL,1))) {
                 if ((resA == 3) || (resB == 3)) 
-                  printMessage(1,"Warning: minimum computation relies on floating-point result that is not faithfully evaluated.\n");
+                  printMessage(1,"Warning: maximum computation relies on floating-point result that is not faithfully evaluated.\n");
                 resC = ((mpfr_cmp(a,b) < 0) && (!mpfr_unordered_p(a,b)));
                 if ((resA == 1) || (resB == 1)) {
                   if (resC) {
@@ -15317,9 +15317,9 @@ node *evaluateThingInner(node *tree) {
                     if (compareConstant(&resD, tempNode, tempNode2)) {
                       resC = (resD < 0);
                     } else 
-                      printMessage(1,"Warning: minimum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+                      printMessage(1,"Warning: maximum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
                   } else 
-                    printMessage(2,"Information: minimum computation relies on floating-point result.\n");
+                    printMessage(2,"Information: maximum computation relies on floating-point result.\n");
                 }
                 if (resC) {
                   tempNode = tempNode2;
@@ -15372,7 +15372,7 @@ node *evaluateThingInner(node *tree) {
               if ((resA = evaluateThingToConstant(a,tempNode,NULL,1)) && 
                   (resB = evaluateThingToConstant(b,tempNode2,NULL,1))) {
                 if ((resA == 3) || (resB == 3)) 
-                  printMessage(1,"Warning: minimum computation relies on floating-point result that is not faithfully evaluated.\n");
+                  printMessage(1,"Warning: maximum computation relies on floating-point result that is not faithfully evaluated.\n");
                 resC = ((mpfr_cmp(a,b) < 0) && (!mpfr_unordered_p(a,b)));
                 if ((resA == 1) || (resB == 1)) {
                   if (resC) {
@@ -15388,9 +15388,9 @@ node *evaluateThingInner(node *tree) {
                     if (compareConstant(&resD, tempNode, tempNode2)) {
                       resC = (resD < 0);
                     } else 
-                      printMessage(1,"Warning: minimum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
+                      printMessage(1,"Warning: maximum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.\n");
                   } else 
-                    printMessage(2,"Information: minimum computation relies on floating-point result.\n");
+                    printMessage(2,"Information: maximum computation relies on floating-point result.\n");
                 }
                 if (resC) {
                   tempNode = tempNode2;
