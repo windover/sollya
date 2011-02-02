@@ -28,10 +28,12 @@ preprocessKeywords() {
   while [ $i -le $nLines ]
   do
     pattern=\$`cat $keywords_defs | grep "=" | head -n $i | tail -n 1 | sed -n 's/\(=.*\)//;p'`
-    replacement=`cat $keywords_defs | grep "=" | head -n $i | tail -n 1 | sed -n 's/\(.*="\)\(.*\)\("\)/\2/;p'`
+    replacement=`cat $keywords_defs | grep "=" | head -n $i | tail -n 1 | sed -n 's/\(.*="\)\(.*\)\("\)/\2/;p' | sed -n 's/</_SMALLER_/g;p' | sed -n 's/>/_BIGGER_/g;p'`
     nameOfCommand=`cat $keywords_defs | grep "=" | head -n $i | tail -n 1 | sed -n 's/\(=.*\)//;p' | tr 'A-Z' 'a-z'`
 #    sed -n -i 's/\('"$pattern"'\)\([^[:upper:][:digit:]_]\)/<a class="command" href="help.php?name='$nameOfCommand'#'$nameOfCommand'">'"$replacement"'<\/a>\2/g;p' $tempfile
     sed -n -i 's/\('"$pattern"'\)\([^[:upper:][:digit:]_]\)/<?php linkTo("command","'$nameOfCommand'","'"$replacement"'");?>\2/g;p' $tempfile
+    sed -n -i 's/_SMALLER_/\&lt;/g;p' $tempfile
+    sed -n -i 's/_BIGGER_/\&gt;/g;p' $tempfile
     i=`expr $i + 1`
   done
   sed -n -i 's/\(a$\)//;p' $tempfile
@@ -71,7 +73,12 @@ preprocessMeta() {
     then test="false"
     fi
     if [ $test = "true" ]
-      then head -n $i $tempfile | tail -n 1 | sed -n 's/<\([^<>]*\)>/<span class="arg">\1<\/span>/g;p' >> $tempfile2
+      then 
+	head -n $i $tempfile | tail -n 1 | \
+	    sed -n 's/<\([^<>]*\)>/_SPAN_CLASS_ARG_BEGIN\1_SPAN_CLASS_ARG_END/g;p' | \
+	    sed -n 's/</\&lt;/g;p' | sed -n 's/>/\&gt;/g;p' | \
+	    sed -n 's/_SPAN_CLASS_ARG_BEGIN/<span class="arg">/g;p' | \
+	    sed -n 's/_SPAN_CLASS_ARG_END/<\/span>/g;p' >> $tempfile2
       else head -n $i $tempfile | tail -n 1 >> $tempfile2
     fi
     i=`expr $i + 1`
@@ -246,7 +253,7 @@ processExampleFile() {
  while [ $ilocal -le $nLineslocal ]
  do
    printf "&nbsp;&nbsp;&nbsp;&gt; " >> $target
-   cat $exampleFile | head -n $ilocal | tail -n 1 | sed -n 's/$/<br>/;p' | sed -n 's/  /\&nbsp;\&nbsp;/g;p' | sed -n 's/\&nbsp; /\&nbsp;\&nbsp;/g;p'  >> $target
+   cat $exampleFile | head -n $ilocal | tail -n 1 | sed -n 's/</\&lt;/g;p' | sed -n 's/>/\&gt;/g;p' | sed -n 's/$/<br>/;p' | sed -n 's/  /\&nbsp;\&nbsp;/g;p' | sed -n 's/\&nbsp; /\&nbsp;\&nbsp;/g;p'  >> $target
    printf "verbosity=0!; roundingwarnings=on!;""`head -n $ilocal $exampleFile`\n" | $sollyaBin > $tempfile2
    sed -i -n 's/^/   /;p' $tempfile2
    total=`cat $tempfile2 | wc -l`
@@ -361,7 +368,8 @@ processFile() {
   cat $source > $tempfile
   getCommand   # defines the variable $command which is for instance "$GT"
   sed -n -i 's/\(\$COMMAND\)/'$command'/g;p' $tempfile
-  preprocessMeta  
+  preprocessMeta # transforms the arguments <toto> into a well formated string "toto"
+                 # Then transforms the < into &lt; etc.
   preprocessKeywords   # transforms the name of keywords (e.g. $GT) by their value (e.g. >)
   preprocessTypes
   preprocessTeX

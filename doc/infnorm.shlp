@@ -43,21 +43,21 @@ The result of this command depends on the global variables $PREC, $DIAM,
 $TAYLORRECURSIONS and $HOPITALRECURSIONS. The contribution of each variable is 
 not easy even to analyse.
 §§ §\begin{itemize}§§
-§§   -§\item §§ The algorithm uses interval arithmetic with precision $PREC. The
+§§   -§\item§§ The algorithm uses interval arithmetic with precision $PREC. The
 §§    § §§ precision should thus be set high enough to ensure that no critical
 §§    § §§ cancellation will occur.
-§§   -§\item §§ When an evaluation is performed on an interval §§[a,b]§$[a,\,b]$§§, if the result
+§§   -§\item§§ When an evaluation is performed on an interval §§[a,b]§$[a,\,b]$§§, if the result
 §§    § §§ is considered being too large, the interval is split into §§[a,(a+b)/2]§$[a,\,\frac{a+b}{2}]$§§
 §§    § §§ and §§[(a+b)/2,b]§$[\frac{a+b}{2},\,b]$§§ and so on recursively. This recursion step
 §§    § §§ is  not performed if the §§(b-a) < d*|I|§$(b-a) < \delta \cdot |I|$§§ where §§d§$\delta$§§ is the value
 §§    § §§ of variable $DIAM. In other words, $DIAM controls the minimum length of an
 §§    § §§ interval during the algorithm.
-§§   -§\item §§ To perform the evaluation of a function on an interval, Taylor's rule is
+§§   -§\item§§ To perform the evaluation of a function on an interval, Taylor's rule is
 §§    § §§ applied, e.g. §§f([a,b]) C f(m) + [a-m, b-m]*f'([a,b])§$f([a,b]) \subseteq f(m) + [a-m,\,b-m] \cdot f'([a,\,b])$§§
 §§    § §§ where §§m=(a+b)/2§$m=\frac{a+b}{2}$§§. This rule is recursively applied §§n§$n$§§ times
 §§    § §§ where §§n§$n$§§ is the value of variable $TAYLORRECURSIONS. Roughly speaking,
 §§    § §§ the evaluations will avoid decorrelation up to order §§n§$n$§§.
-§§   -§\item §§ When a function of the form §§g/h§$\frac{g}{h}$§§ has to be evaluated on an
+§§   -§\item§§ When a function of the form §§g/h§$\frac{g}{h}$§§ has to be evaluated on an
 §§    § §§ interval §§[a,b]§$[a,\,b]$§§ and when §§g§$g$§§ and §§h§$h$§§ vanish at a same point
 §§    § §§ §§z§$z$§§ of the interval, the ratio may be defined even if the expression
 §§    § §§ §§g(z)/h(z)=0/0§$\frac{g(z)}{h(z)}=\frac{0}{0}$§§ does not make any sense. In this case, L'Hopital's rule

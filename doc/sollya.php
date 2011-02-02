@@ -49,7 +49,6 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 <h1><a href="#commandsAndFunctions">Direct access to the list of available commands</a></h1>
 
 <h1>1 - Compilation and installation of the <span class="sollya">Sollya</span> tool</h1>
-<p>
 <h2>1.1 - Compilation dependencies</h2>
 <p>
 The <span class="sollya">Sollya</span> distribution can be compiled and installed using the usual
@@ -60,18 +59,18 @@ script checks for the installation of the libraries. However <span class="sollya
 will build without error if some of its external tools are not
 installed. In this case an error will be displayed at runtime.
 <ul>
-</li><li> <code>GMP</code>
+<li> <code>GMP</code>
 </li><li> <code>MPFR</code>
 </li><li> <code>MPFI</code>
 </li><li> <code>fplll</code>
 </li><li> <code>libxml2</code>
 </li><li> <code>gnuplot</code> (external tool)
 </li></ul>
-The use of the external tool <code>rlwrap</code> is highly recommended but
+<p>The use of the external tool <code>rlwrap</code> is highly recommended but
 not required. Use the <code>-A</code> option of <code>rlwrap</code> for
 correctly displayed ANSI X3.64/ ISO/IEC 6429 colored prompts (see
 below).
-<p>
+
 <h2>1.2 - <span class="sollya">Sollya</span> command line options</h2>
 <p>
 <span class="sollya">Sollya</span> can read input on standard input or in a file whose name is given 
@@ -88,7 +87,8 @@ The following lines are valid invocations of <span class="sollya">Sollya</span>,
 &nbsp;/% sollya < myfile.sollya<br>
 </div>
 
-If a file given as an input does not exist, an error message is displayed.
+<p>If a file given as an input does not exist, an error message is displayed.
+
 <p>
 All configurations of the internal state of the tool are done by
 commands given on the <span class="sollya">Sollya</span> prompt or in <span class="sollya">Sollya</span>
@@ -98,7 +98,7 @@ commands.
 <p>
 The following options are supported when calling <span class="sollya">Sollya</span>:
 <ul>
-</li><li> <code>--donotmodifystacksize</code>: When invoked, <span class="sollya">Sollya</span> trys to increase
+<li> <code>--donotmodifystacksize</code>: When invoked, <span class="sollya">Sollya</span> trys to increase
 the stack size that is available to a user process to the maximum size
 supported by the kernel. On some systems, the correspondent <code>ioctl</code> 
 does not work properly. Use the option to prevent <span class="sollya">Sollya</span> from changing the 
@@ -151,9 +151,8 @@ nevertheless, use this deprecated option.
   option.
 </li>
 </ul>
-<p>
-<p>
 <h1>2 - Introduction</h1>
+<p>
 <span class="sollya">Sollya</span> is an interactive tool for handling numerical functions and working with arbitrary precision. It can evaluate functions accurately, compute polynomial approximations of functions, automatically implement polynomials for use in math libraries, plot functions, compute infinity norms, etc. <span class="sollya">Sollya</span> is also a full-featured script programming language with support for procedures&nbsp;etc.
 <p>
 Let us begin this manual with an example. <span class="sollya">Sollya</span> does not allow command line edition; since this may quickly become uncomfortable, we highly suggest to use the <code>rlwrap</code> tool with <span class="sollya">Sollya</span>:
@@ -228,7 +227,7 @@ variable. It may be set to <code class="key">on</code> or <code class="key">off<
 warnings are activated (<code class="key">roundingwarnings = on</code>) when <span class="sollya">Sollya</span> is
 connected on standard input to a pseudo-file that represents a
 terminal. They are deactivated when <span class="sollya">Sollya</span> is connected on standard
-input to a real file. See <a href="help.php?name=roundingwarnings&goBack=none">roundingwarnings</a> for further details; the behavior is
+input to a real file. See <a href="help.php?name=roundingwarnings&amp;goBack=none">roundingwarnings</a> for further details; the behavior is
 illustrated with examples there.
 <p>
                                                                      As always, the symbol <code>e</code> means (* 10^x). The same way the symbol <code>b</code> means  (* 2^x). The symbol <code>p</code> means (* 16^x) and is used only with the <code>0x</code> prefix. The prefix <code>0x</code> indicates that the digits of the following number until 
@@ -273,33 +272,31 @@ structure builds scopes for declared variables. Declared variables in
 inner scopes shadow (global and declared) variables of outer
 scopes. The global free variable, i.e. the mathematical variable for
 variate functional expressions in one variable, cannot be shadowed. Variables are
-declared using the <code class="key">var</code> keyword. See section <a href="help.php?name=var&goBack=none">var</a> for details
+declared using the <code class="key">var</code> keyword. See section <a href="help.php?name=var&amp;goBack=none">var</a> for details
 on its usage and semantic.
 <p>
 The following code examples illustrate the use of variables.
-<p>
 <p>
 <?php include("introExample12.php"); ?>
 <p>
 Let us state that a variable identifier, just as every identifier in
 <span class="sollya">Sollya</span>, contains at least one character, starts with a ASCII letter
 and continues with ASCII letters or numerical digits.
-<p>
-<p>
-<p>
 <h1>5 - Data types</h1>
+<p>
 <span class="sollya">Sollya</span> has a (very) basic system of types. If you try to perform an illicit operation (such as adding a number and a string, for instance), you will get a typing error. Let us see the available data types.
 <p>
 <h2>5.1 - Booleans</h2>
-There are two special values <code class="key">true</code> and <code class="key">false</code>. Boolean expressions can be constructed using the boolean connectors <code class="key">&&</code> (and), <code class="key">||</code> (or), <code class="key">!</code> (not), and comparisons.
+<p>
+There are two special values <code class="key">true</code> and <code class="key">false</code>. Boolean expressions can be constructed using the boolean connectors <code class="key">&&</code> (and), <code class="key">||</code> (or), <code class="key">!</code> (not), and cosmparisons.
 <p>
 The comparison operators <code class="key"><</code>, <code class="key"><=</code>, <code class="key">></code> and <code class="key">>=</code> can only be used between two numbers or constant expressions.
 <p>
-The comparison operators <code class="key">==</code> and <code class="key">!=</code> are polymorphic. You can use them to compare any two objects, like two strings, two intervals, etc. As a matter of fact, polymorphism is allowed on both sides: it is possible to compare objects of different type. Such objects of different type, as they can never be syntactically equal, will always compare unequal (see exception for <code class="key">error</code>, section <a href="help.php?name=error&goBack=none">error</a>) and never equal. It is important to remember that testing the equality between two functions will return <code class="key">true</code> if and only if the expression trees representing the two functions are exactly the same. See <a href="help.php?name=error&goBack=none">error</a> for an exception concerning the special object <code class="key">error</code>. Example:
+The comparison operators <code class="key">==</code> and <code class="key">!=</code> are polymorphic. You can use them to compare any two objects, like two strings, two intervals, etc. As a matter of fact, polymorphism is allowed on both sides: it is possible to compare objects of different type. Such objects of different type, as they can never be syntactically equal, will always compare unequal (see exception for <code class="key">error</code>, section <a href="help.php?name=error&amp;goBack=none">error</a>) and never equal. It is important to remember that testing the equality between two functions will return <code class="key">true</code> if and only if the expression trees representing the two functions are exactly the same. See <a href="help.php?name=error&amp;goBack=none">error</a> for an exception concerning the special object <code class="key">error</code>. Example:
 <p>
 <?php include("introExample13.php"); ?>
 
-<a name="sec:numbers"></a>
+<p><a name="sec:numbers"></a>
 <h2>5.2 - Numbers</h2> 
 <p>
 <span class="sollya">Sollya</span> represents numbers as binary multi-precision floating-point values. For integer values and values in dyadic, binary, hexadecimal or memory dump notation, it 
@@ -340,7 +337,7 @@ floating-point data representing infinities and Not-a-Numbers (NaNs).
 754-2008 standard without taking the standard's choices literally. 
 <p>
 <ul>
-</li><li> Signed infinities are available through the <span class="sollya">Sollya</span> objects
+<li> Signed infinities are available through the <span class="sollya">Sollya</span> objects
 <code>infty, -infty, @Inf@</code> and <code>-@Inf@</code>.
 </li><li> Not-a-Numbers are supported through the <span class="sollya">Sollya</span> objects
 <code>NaN</code> and <code>@NaN@</code>. <span class="sollya">Sollya</span> does not have support for NaN
@@ -365,10 +362,11 @@ the (finite) value of the integral of e^x between -infinity and 0.
 The following examples give an idea of what can be done with <span class="sollya">Sollya</span>
 infinities and NaNs. Here is what can be done with infinities:
 <?php include("introExample32.php"); ?>
+<p>
 And the following example illustrates NaN behavior.
 <?php include("introExample33.php"); ?>
 
-<a name="sec:rationalmode"></a>
+<p><a name="sec:rationalmode"></a>
 <h2>5.3 - Rational numbers and rational arithmetic</h2>
 <p>
 The <span class="sollya">Sollya</span> tool is mainly based on floating-point arithmetic:
@@ -387,7 +385,7 @@ assigning <code class="com">off</code>; the default is <code class="com">off</co
 When the mode for rational arithmetic is enabled, <span class="sollya">Sollya</span>'s behavior
 will change as follows:
 <ul>
-</li><li> When a constant expression is given at the <span class="sollya">Sollya</span> prompt,
+<li> When a constant expression is given at the <span class="sollya">Sollya</span> prompt,
   <span class="sollya">Sollya</span> will first try to simplify the expression to a rational
   number. If such an evaluation to a rational number is possible,
   <span class="sollya">Sollya</span> will display that number as an integer or a fraction of two
@@ -395,14 +393,14 @@ will change as follows:
   expression to a rational number, it will launch the default behavior
   of evaluating constant expressions to floating-point numbers that
   are generally faithful roundings of the expressions.
-</li><li> When the global mode <code class="com">autosimplify</code> is <code class="com">on</code>, which is
+<li> When the global mode <code class="com">autosimplify</code> is <code class="com">on</code>, which is
   the default, <span class="sollya">Sollya</span> will additionally use rational arithmetic while
   trying to simplify expressions given in argument of commands. 
 </li></ul>
 <p>
 Even when <code class="com">rationalmode</code> is <code class="com">on</code>, <span class="sollya">Sollya</span> will not be able to
 exhibit integer ratios between transcendental quantities. For example,
-                                         <span class="sollya">Sollya</span> will not display 1/6 for arcsin(1/2)/pi but 0.16666... <span class="sollya">Sollya</span>'s evaluator
+<span class="sollya">Sollya</span> will not display 1/6 for arcsin(1/2)/pi but 0.16666... <span class="sollya">Sollya</span>'s evaluator
 for rational arithmetic is only able to simplify rational expressions
 based on addition, subtraction, multiplication, division, negation,
 perfect squares (for square root) and integer powers.
@@ -411,7 +409,7 @@ The following example illustrates what can and what cannot be done
 with <span class="sollya">Sollya</span>'s mode for rational arithmetic: 
 <p>
 <?php include("introExample34.php"); ?>
-<p>
+
 <h2>5.4 - Intervals and interval arithmetic</h2>
 <p>
 <span class="sollya">Sollya</span> can manipulate intervals that are closed subsets of the real
@@ -428,7 +426,7 @@ the interval with its bounds evaluated to floating-point numbers.
 <span class="sollya">Sollya</span> has a mode for printing intervals that are that thin that
 their bounds have a number of decimal digits in common when
 printed. That mode is called <code class="com">midpointmode</code>; see below for an
-introduction and section <a href="help.php?name=midpointmode&goBack=none">midpointmode</a> for details. As <span class="sollya">Sollya</span>
+introduction and section <a href="help.php?name=midpointmode&amp;goBack=none">midpointmode</a> for details. As <span class="sollya">Sollya</span>
 must be able to parse back its own output, a syntax is provided to
 input intervals in midpoint&nbsp;mode. However, please pay attention to the fact that the
 notation used in midpoint&nbsp;mode generally increases the width of
@@ -449,10 +447,10 @@ the inclusion property is satisfied:
 <?php include("introExample38.php"); ?>
 <p>
 When the mode <code class="com">midpointmode</code> is set to <code class="com">on</code> (see
-<a href="help.php?name=midpointmode&goBack=none">midpointmode</a>), <span class="sollya">Sollya</span> will display intervals that are
+<a href="help.php?name=midpointmode&amp;goBack=none">midpointmode</a>), <span class="sollya">Sollya</span> will display intervals that are
 provably reduced to one point in this extended interval syntax. It
 will use <code class="com">midpointmode</code> syntax for intervals that are sufficiently
-thin but not reduced to one point (see section <a href="help.php?name=midpointmode&goBack=none">midpointmode</a>
+thin but not reduced to one point (see section <a href="help.php?name=midpointmode&amp;goBack=none">midpointmode</a>
 for details):
 <p>
 <?php include("introExample40.php"); ?>
@@ -516,7 +514,7 @@ some optimisations in some cases in order to make the image interval
 as thin as possible. For example, <span class="sollya">Sollya</span> will use a Taylor expansion
 based evaluation if a composed function, call it f, is applied to an
 interval. In other words, in this case <span class="sollya">Sollya</span> will behave as if the
-<code class="com">evaluate</code> command (see section <a href="help.php?name=evaluate&goBack=none">evaluate</a>) were implicitly
+<code class="com">evaluate</code> command (see section <a href="help.php?name=evaluate&amp;goBack=none">evaluate</a>) were implicitly
 used. In most cases, the result will be different from the one obtained
 by replacing all occurences of the free variable of a function by the 
 interval the function is to be evaluated on:
@@ -524,11 +522,12 @@ interval the function is to be evaluated on:
 <?php include("introExample43.php"); ?>
 <p>
 <h2>5.5 - Functions</h2>
+<p>
 <span class="sollya">Sollya</span> knows only about functions with one single variable. The first time in a session that an unbound name is used (without being assigned) it determines the name used to refer to the free variable.
 <p>
 The basic functions available in <span class="sollya">Sollya</span> are the following:
 <ul>
-</li><li> <code class="com">+</code>, <code class="com">-</code>, <code class="com">*</code>, <code class="com">/</code>, <code class="com">^</code>
+<li> <code class="com">+</code>, <code class="com">-</code>, <code class="com">*</code>, <code class="com">/</code>, <code class="com">^</code>
 </li><li> <code class="com">sqrt</code>
 </li><li> <code class="com">abs</code>
 </li><li> <code class="com">sin</code>, <code class="com">cos</code>, <code class="com">tan</code>, <code class="com">sinh</code>, <code class="com">cosh</code>, <code class="com">tanh</code>
@@ -536,8 +535,8 @@ The basic functions available in <span class="sollya">Sollya</span> are the foll
 </li><li> <code class="com">exp</code>, <code class="com">expm1</code> (defined as <code>expm1(x)</code> = exp(x)-1)
 </li><li> <code class="com">log</code> (natural logarithm), <code class="com">log2</code> (binary logarithm), <code class="com">log10</code> (decimal logarithm), <code class="com">log1p</code> (defined as <code>log1p(x)</code> = log(1+x))
 </li><li> <code class="com">erf</code>, <code class="com">erfc</code>
-</li><li> <code class="com">single</code>, <code class="com">double</code>, <code class="com">doubleextended</code>, <code class="com">doubledouble</code>, <code class="com">tripledouble</code> (see sections <a href="help.php?name=single&goBack=none">single</a>, <a href="help.php?name=double&goBack=none">double</a>, <a href="help.php?name=doubleextended&goBack=none">doubleextended</a>, <a href="help.php?name=doubledouble&goBack=none">doubledouble</a> and <a href="help.php?name=tripledouble&goBack=none">tripledouble</a>)
-</li><li> <code class="com">SG</code>, <code class="com">D</code>, <code class="com">DE</code>, <code class="com">DD</code>, <code class="com">TD</code> (see sections <a href="help.php?name=single&goBack=none">single</a>, <a href="help.php?name=double&goBack=none">double</a>, <a href="help.php?name=doubleextended&goBack=none">doubleextended</a>, <a href="help.php?name=doubledouble&goBack=none">doubledouble</a> and <a href="help.php?name=tripledouble&goBack=none">tripledouble</a>)
+</li><li> <code class="com">single</code>, <code class="com">double</code>, <code class="com">doubleextended</code>, <code class="com">doubledouble</code>, <code class="com">tripledouble</code> (see sections <a href="help.php?name=single&amp;goBack=none">single</a>, <a href="help.php?name=double&amp;goBack=none">double</a>, <a href="help.php?name=doubleextended&amp;goBack=none">doubleextended</a>, <a href="help.php?name=doubledouble&amp;goBack=none">doubledouble</a> and <a href="help.php?name=tripledouble&amp;goBack=none">tripledouble</a>)
+</li><li> <code class="com">SG</code>, <code class="com">D</code>, <code class="com">DE</code>, <code class="com">DD</code>, <code class="com">TD</code> (see sections <a href="help.php?name=single&amp;goBack=none">single</a>, <a href="help.php?name=double&amp;goBack=none">double</a>, <a href="help.php?name=doubleextended&amp;goBack=none">doubleextended</a>, <a href="help.php?name=doubledouble&amp;goBack=none">doubledouble</a> and <a href="help.php?name=tripledouble&amp;goBack=none">tripledouble</a>)
 </li><li> <code class="com">floor</code>, <code class="com">ceil</code>, <code class="com">nearestint</code>.
 </li></ul>
 <p>
@@ -545,8 +544,9 @@ The constant pi is available through the keyword <code class="key">pi</code> as 
 <p>
 <?php include("introExample19.php"); ?>
 <p>
-The reader may wish to see Sections <a href="help.php?name=library&goBack=none">library</a> and <a href="help.php?name=function&goBack=none">function</a> for ways of dynamically adding other base functions to Sollya.
+The reader may wish to see Sections <a href="help.php?name=library&amp;goBack=none">library</a> and <a href="help.php?name=function&amp;goBack=none">function</a> for ways of dynamically adding other base functions to Sollya.
 <h2>5.6 - Strings</h2>
+<p>
 Anything written between quotes is interpreted as a string. The infix operator <code class="com">@</code> concatenates two strings. To get the length of a string, use the <code class="com">length</code> function. You can access the i-th character of a string using brackets (see the example below). There is no character type in <span class="sollya">Sollya</span>: the i-th character of a string is returned as a string itself.
 <p>
 <?php include("introExample20.php"); ?>
@@ -562,25 +562,27 @@ Strings may contain the following escape sequences:
 meaning.
 <p>
 <h2>5.7 - Particular values</h2>
+<p>
 <span class="sollya">Sollya</span> knows about some particular values. These values do not really have a type. They can be stored in variables and in lists. A (possibly not exhaustive) list of such values is the following one:
 <p>
 <ul>
-</li><li> <code class="com">on</code>, <code class="com">off</code> (see sections <a href="help.php?name=on&goBack=none">on</a> and <a href="help.php?name=off&goBack=none">off</a>)
-</li><li> <code class="com">dyadic</code>, <code class="com">powers</code>, <code class="com">binary</code>, <code class="com">decimal</code>, <code class="com">hexadecimal</code> (see sections <a href="help.php?name=dyadic&goBack=none">dyadic</a>, <a href="help.php?name=powers&goBack=none">powers</a>, <a href="help.php?name=binary&goBack=none">binary</a>, <a href="help.php?name=decimal&goBack=none">decimal</a> and <a href="help.php?name=hexadecimal&goBack=none">hexadecimal</a>)
-</li><li> <code class="com">file</code>, <code class="com">postscript</code>, <code class="com">postscriptfile</code> (see sections <a href="help.php?name=file&goBack=none">file</a>, <a href="help.php?name=postscript&goBack=none">postscript</a> and <a href="help.php?name=postscriptfile&goBack=none">postscriptfile</a>)
-</li><li> <code class="com">RU</code>, <code class="com">RD</code>, <code class="com">RN</code>, <code class="com">RZ</code> (see sections <a href="help.php?name=ru&goBack=none">ru</a>, <a href="help.php?name=rd&goBack=none">rd</a>, <a href="help.php?name=rn&goBack=none">rn</a> and <a href="help.php?name=rz&goBack=none">rz</a>)
-</li><li> <code class="com">absolute</code>, <code class="com">relative</code> (see sections <a href="help.php?name=absolute&goBack=none">absolute</a> and <a href="help.php?name=relative&goBack=none">relative</a>)
-</li><li> <code class="com">floating</code>, <code class="com">fixed</code> (see sections <a href="help.php?name=floating&goBack=none">floating</a> and <a href="help.php?name=fixed&goBack=none">fixed</a>)
-</li><li> <code class="com">single</code>, <code class="com">double</code>, <code class="com">doubleextended</code>, <code class="com">doubledouble</code>, <code class="com">tripledouble</code> (see sections <a href="help.php?name=single&goBack=none">single</a>, <a href="help.php?name=double&goBack=none">double</a>, <a href="help.php?name=doubleextended&goBack=none">doubleextended</a>, <a href="help.php?name=doubledouble&goBack=none">doubledouble</a> and <a href="help.php?name=tripledouble&goBack=none">tripledouble</a>)
-</li><li> <code class="com">SG</code>, <code class="com">D</code>, <code class="com">DE</code>, <code class="com">DD</code>, <code class="com">TD</code> (see sections <a href="help.php?name=single&goBack=none">single</a>, <a href="help.php?name=double&goBack=none">double</a>, <a href="help.php?name=doubleextended&goBack=none">doubleextended</a>, <a href="help.php?name=doubledouble&goBack=none">doubledouble</a> and <a href="help.php?name=tripledouble&goBack=none">tripledouble</a>)
-</li><li> <code class="com">perturb</code> (see section <a href="help.php?name=perturb&goBack=none">perturb</a>)
-</li><li> <code class="com">honorcoeffprec</code> (see section <a href="help.php?name=honorcoeffprec&goBack=none">honorcoeffprec</a>)
-</li><li> <code class="com">default</code> (see section <a href="help.php?name=default&goBack=none">default</a>)
-</li><li> <code class="com">error</code> (see section <a href="help.php?name=error&goBack=none">error</a>)
-</li><li> <code class="com">void</code> (see section <a href="help.php?name=void&goBack=none">void</a>)
+<li> <code class="com">on</code>, <code class="com">off</code> (see sections <a href="help.php?name=on&amp;goBack=none">on</a> and <a href="help.php?name=off&amp;goBack=none">off</a>)
+</li><li> <code class="com">dyadic</code>, <code class="com">powers</code>, <code class="com">binary</code>, <code class="com">decimal</code>, <code class="com">hexadecimal</code> (see sections <a href="help.php?name=dyadic&amp;goBack=none">dyadic</a>, <a href="help.php?name=powers&amp;goBack=none">powers</a>, <a href="help.php?name=binary&amp;goBack=none">binary</a>, <a href="help.php?name=decimal&amp;goBack=none">decimal</a> and <a href="help.php?name=hexadecimal&amp;goBack=none">hexadecimal</a>)
+</li><li> <code class="com">file</code>, <code class="com">postscript</code>, <code class="com">postscriptfile</code> (see sections <a href="help.php?name=file&amp;goBack=none">file</a>, <a href="help.php?name=postscript&amp;goBack=none">postscript</a> and <a href="help.php?name=postscriptfile&amp;goBack=none">postscriptfile</a>)
+</li><li> <code class="com">RU</code>, <code class="com">RD</code>, <code class="com">RN</code>, <code class="com">RZ</code> (see sections <a href="help.php?name=ru&amp;goBack=none">ru</a>, <a href="help.php?name=rd&amp;goBack=none">rd</a>, <a href="help.php?name=rn&amp;goBack=none">rn</a> and <a href="help.php?name=rz&amp;goBack=none">rz</a>)
+</li><li> <code class="com">absolute</code>, <code class="com">relative</code> (see sections <a href="help.php?name=absolute&amp;goBack=none">absolute</a> and <a href="help.php?name=relative&amp;goBack=none">relative</a>)
+</li><li> <code class="com">floating</code>, <code class="com">fixed</code> (see sections <a href="help.php?name=floating&amp;goBack=none">floating</a> and <a href="help.php?name=fixed&amp;goBack=none">fixed</a>)
+</li><li> <code class="com">single</code>, <code class="com">double</code>, <code class="com">doubleextended</code>, <code class="com">doubledouble</code>, <code class="com">tripledouble</code> (see sections <a href="help.php?name=single&amp;goBack=none">single</a>, <a href="help.php?name=double&amp;goBack=none">double</a>, <a href="help.php?name=doubleextended&amp;goBack=none">doubleextended</a>, <a href="help.php?name=doubledouble&amp;goBack=none">doubledouble</a> and <a href="help.php?name=tripledouble&amp;goBack=none">tripledouble</a>)
+</li><li> <code class="com">SG</code>, <code class="com">D</code>, <code class="com">DE</code>, <code class="com">DD</code>, <code class="com">TD</code> (see sections <a href="help.php?name=single&amp;goBack=none">single</a>, <a href="help.php?name=double&amp;goBack=none">double</a>, <a href="help.php?name=doubleextended&amp;goBack=none">doubleextended</a>, <a href="help.php?name=doubledouble&amp;goBack=none">doubledouble</a> and <a href="help.php?name=tripledouble&amp;goBack=none">tripledouble</a>)
+</li><li> <code class="com">perturb</code> (see section <a href="help.php?name=perturb&amp;goBack=none">perturb</a>)
+</li><li> <code class="com">honorcoeffprec</code> (see section <a href="help.php?name=honorcoeffprec&amp;goBack=none">honorcoeffprec</a>)
+</li><li> <code class="com">default</code> (see section <a href="help.php?name=default&amp;goBack=none">default</a>)
+</li><li> <code class="com">error</code> (see section <a href="help.php?name=error&amp;goBack=none">error</a>)
+</li><li> <code class="com">void</code> (see section <a href="help.php?name=void&amp;goBack=none">void</a>)
 </li></ul>
 <p>
 <h2>5.8 - Lists</h2>
+<p>
 Objects can be grouped into lists. A list can contain elements with different types. As for strings, you can concatenate two lists with <code class="com">@</code>. The function <code class="com">length</code> also gives the length of a list.
 <p>
 You can prepend an element to a list using <code class="com">.:</code> and you can append an element to a list using <code class="com">:.</code>\\ The following example illustrates some features:
@@ -705,7 +707,6 @@ statements:
 <p>
 <?php include("introExample25.php"); ?>
 <p>
-<p>
 The indexing of lists on left-hand sides of assignments is reduced to
 the first order. Multiple indexing of lists of lists on assignment is
 not supported for complexity reasons. Multiple indexing is possible in
@@ -767,15 +768,15 @@ programming objects are called <em>procedures</em> in <span class="sollya">Solly
 <p>
 <span class="sollya">Sollya</span> procedures are common objects that can be, for example,
 assigned to variables or stored in lists. Procedures are declared by
-the <code class="key">proc</code> keyword; see section <a href="help.php?name=proc&goBack=none">proc</a> for details. The
+the <code class="key">proc</code> keyword; see section <a href="help.php?name=proc&amp;goBack=none">proc</a> for details. The
 returned procedure object must then be assigned to a variable. It can
 hence be applied to arguments with common application syntax. The
 <code class="key">procedure</code> keyword provides an abbreviation for declaring and
-assigning a procedure; see section <a href="help.php?name=procedure&goBack=none">procedure</a> for details.
+assigning a procedure; see section <a href="help.php?name=procedure&amp;goBack=none">procedure</a> for details.
 <p>
 <span class="sollya">Sollya</span> procedures can return objects using the <code class="key">return</code> keyword
 at the end of the begin-end-block of the procedure. Section
-<a href="help.php?name=return&goBack=none">return</a> gives details on the usage of <code class="key">return</code>. Procedures
+<a href="help.php?name=return&amp;goBack=none">return</a> gives details on the usage of <code class="key">return</code>. Procedures
 further can take any type of object in argument, in particular also
 other procedures that are then applied to arguments. Procedures can
 be declared inside other procedures. 
@@ -789,7 +790,7 @@ parameters of a procedure be variable. <span class="sollya">Sollya</span> provid
 the case with procedures with an arbitrary number of actual arguments.
 When the procedure is called, those actual arguments are gathered in a
 list which is applied to the only formal list parameter of a procedure
-with an arbitrary number of arguments. See section <a href="help.php?name=procedure&goBack=none">procedure</a>
+with an arbitrary number of arguments. See section <a href="help.php?name=procedure&amp;goBack=none">procedure</a>
 for the exact syntax and details; an example is given just below.
 <p>
 Let us remark that declaring a procedure does not involve any evaluation or
@@ -808,22 +809,21 @@ precision valid at this moment.
 <p>
 <?php include("introExample37.php"); ?>
 <p>
-<p>
 <span class="sollya">Sollya</span> also supports external procedures, i.e. procedures written in
 <code>C</code> (or some other language) and dynamically bound to <span class="sollya">Sollya</span>
-identifiers. See <a href="help.php?name=externalproc&goBack=none">externalproc</a> for details.
-<p>
+identifiers. See <a href="help.php?name=externalproc&amp;goBack=none">externalproc</a> for details.
+
+<p><a name="commandsAndFunctions"></a>
 <h1>8 - Commands and functions</h1>
-<a name="commandsAndFunctions"></a>
 <p>
 The list of commands of Sollya is available in two flavours:
 <ul>
   <li>As a <a href="help.php">single page containing the description of all the commands.</a></li>
-  <li>Or with <a href="help.php?name=listOfCommands&goBack=none">each command on a different page</a> (faster to load).</li>
+  <li>Or with <a href="help.php?name=listOfCommands&amp;goBack=none">each command on a different page</a> (faster to load).</li>
 </ul>
 
+<p><a name="IntervalArithmeticPhilopshy"></a>
 <h1>9 - Appendix: interval arithmetic philosophy in <span class="sollya">Sollya</span></h1>
-<a name="IntervalArithmeticPhilopshy"></a>
 <p>
 Although it is currently based on the MPFI library, <span class="sollya">Sollya</span> has its own way of interpreting interval arithmetic when infinities or NaN occur, or when a function is evaluated on an interval containing points out of its domain, etc. This philosophy may differ from the one applied in MPFI. It is also possible that the behavior of <span class="sollya">Sollya</span> does not correspond to the behavior that one would expect, e.g. as a natural consequence of the IEEE-754 standard.
 
