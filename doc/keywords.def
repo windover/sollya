@@ -21,15 +21,10 @@ POWER="§§^§$\\mathbf{\\hat{~}}$§§"
 
 APPROX="§§~§$\\sim$§§"
 
-WHILE="while"
-FOR="for"
-
 VAR="var"
 PROC="proc"
 PROCEDURE="procedure"
 NOP="nop"
-BEGIN="begin"
-END="end"
 RETURN="return"
 
 ABS="abs"

@@ -1,12 +1,12 @@
 #NAME $PROC
 #QUICK_DESCRIPTION defines a $SOLLYA procedure
-#CALLING $COMMAND(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) $BEGIN <procedure body> $END
+#CALLING $COMMAND(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) §§{§\key{$\lbrace$}§§ <procedure body> §§}§\key{$\rbrace$}§§
 #TYPE $VOID_TYPE -> $PROCEDURE_TYPE
-#CALLING $COMMAND(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) $BEGIN <procedure body> $RETURN <expression>; $END
+#CALLING $COMMAND(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) §§{§\key{$\lbrace$}§§ <procedure body> $RETURN <expression>; §§}§\key{$\rbrace$}§§
 #TYPE $VOID_TYPE -> $PROCEDURE_TYPE
-#CALLING $COMMAND(<formal list parameter> = ...) $BEGIN <procedure body> $END
+#CALLING $COMMAND(<formal list parameter> = ...) §§{§\key{$\lbrace$}§§ <procedure body> §§}§\key{$\rbrace$}§§
 #TYPE $VOID_TYPE -> $PROCEDURE_TYPE
-#CALLING $COMMAND(<formal list parameter> = ...) $BEGIN <procedure body> $RETURN <expression>; $END
+#CALLING $COMMAND(<formal list parameter> = ...) §§{§\key{$\lbrace$}§§ <procedure body> $RETURN <expression>; §§}§\key{$\rbrace$}§§
 #TYPE $VOID_TYPE -> $PROCEDURE_TYPE
 #PARAMETERS <formal parameter1>, <formal parameter2> through <formal parameter n> represent identifiers used as formal parameters
 #PARAMETERS <formal list parameter> represents an identifier used as a formal parameter for the list of an arbitrary number of parameters

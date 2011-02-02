@@ -1,12 +1,12 @@
 #NAME $PROCEDURE
 #QUICK_DESCRIPTION defines and assigns a $SOLLYA procedure
-#CALLING $COMMAND <identifier>(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) $BEGIN <procedure body> $END
+#CALLING $COMMAND <identifier>(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) §§{§\key{$\lbrace$}§§ <procedure body> §§}§\key{$\rbrace$}§§
 #TYPE $VOID_TYPE -> $VOID_TYPE
-#CALLING $COMMAND <identifier>(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) $BEGIN <procedure body> $RETURN <expression>; $END
+#CALLING $COMMAND <identifier>(<formal parameter1>, <formal parameter2>,..., <formal parameter n>) §§{§\key{$\lbrace$}§§ <procedure body> $RETURN <expression>; §§}§\key{$\rbrace$}§§
 #TYPE $VOID_TYPE -> $VOID_TYPE
-#CALLING $COMMAND <identifier>(<formal list parameter> = ...) $BEGIN <procedure body> $END
+#CALLING $COMMAND <identifier>(<formal list parameter> = ...) §§{§\key{$\lbrace$}§§ <procedure body> §§}§\key{$\rbrace$}§§
 #TYPE $VOID_TYPE -> $VOID_TYPE
-#CALLING $COMMAND <identifier>(<formal list parameter> = ...) $BEGIN <procedure body> $RETURN <expression>; $END
+#CALLING $COMMAND <identifier>(<formal list parameter> = ...) §§{§\key{$\lbrace$}§§ <procedure body> $RETURN <expression>; §§}§\key{$\rbrace$}§§
 #TYPE $VOID_TYPE -> $VOID_TYPE
 #PARAMETERS <identifier> represents the name of the procedure to be defined and assigned
 #PARAMETERS <formal parameter1>, <formal parameter2> through <formal parameter n> represent identifiers used as formal parameters
