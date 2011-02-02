@@ -168,7 +168,7 @@ node *subPolynomialsExactly(node *p1, node *p2) {
   return res;
 }
 
-/* Exactly scale a polynomials
+/* Exactly scale a polynomial
 
    Return sum (s * c_i) * x^i for s and p(x) = sum c_i * x^i 
 
@@ -198,7 +198,17 @@ node *scalePolynomialExactly(node *poly, mpfr_t scale) {
   return res;
 }
 
-/* TODO: Doc */
+/* Divide a polynomial by (x - x0)^k and check if rest is zero
+
+   The function tries to divide the polynomial poly by (x - x0)^k
+   through long division. If the division rest is zero, i.e.
+   if poly/(x - x0)^k is a polynomial, the function returns a 
+   non-zero value and sets pTilde to poly/(x - x0)^k. 
+   Otherwise, if poly is not a polynomial or if poly/(x - x0)^k
+   is not a polynomial because the division leaves a rest,
+   the function returns zero and does not touch pTilde.
+
+*/
 int dividePolyByXMinusX0ToTheK(node **pTilde, node *poly, mpfr_t x0, int k, mp_prec_t prec) {
   int okay, degPoly, degQuotient;
   node *myPTilde;
