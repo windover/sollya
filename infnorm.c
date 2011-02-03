@@ -7,6 +7,9 @@ UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
 LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2),
 
+Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
+
 and by
 
 Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,

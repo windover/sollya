@@ -3,7 +3,14 @@
 Copyright 2006-2010 by 
 
 Laboratoire de l'Informatique du Parallelisme, 
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
+
+Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
+
+and by
+
+LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2).
 
 Contributors Ch. Lauter, S. Chevillard
 
