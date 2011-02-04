@@ -3,17 +3,21 @@
   Copyright 2010-2011 by 
 
   Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
-  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
-
-  and by
+  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
 
   Laboratoire de l'Informatique du Parallelisme, 
   UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
-  Contributors Ch. Lauter, M. Joldes
+  and by
+
+  Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+  Sophia Antipolis, France.
+
+  Contributors Ch. Lauter, M. Joldes, S. Chevillard
 
   christoph.lauter@ens-lyon.org
   mioara.joldes@ens-lyon.fr
+  sylvain.chevillard@ens-lyon.org
 
   This software is a computer program whose purpose is to provide an
   environment for safe floating-point code development. It is

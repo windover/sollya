@@ -5,6 +5,10 @@ Copyright 2008-2010 by
 Laboratoire de l'Informatique du Parallelisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
+and by
+
+LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2).
+
 Contributors Ch. Lauter, S. Chevillard, N. Jourdan
 
 christoph.lauter@ens-lyon.org

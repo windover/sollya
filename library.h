@@ -3,9 +3,11 @@
 Copyright 2007-2011 by 
 
 Laboratoire de l'Informatique du Parallelisme, 
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
-and
+LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
+
+and by
 
 Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
 UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
