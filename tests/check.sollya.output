@@ -2965,7 +2965,7 @@ Warning: minimum computation relies on floating-point result that is faithfully 
 17
 1.48413159102576603421115580040552279623487667593878e2
 exp(17)
-Warning: minimum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.
+Warning: maximum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.
 17 + log2(13) / log2(9)
 The tool has been restarted.
 =============== Test number 260 ================
