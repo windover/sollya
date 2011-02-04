@@ -1,9 +1,14 @@
 /*
 
-Copyright 2006-2009 by 
+Copyright 2006-2011 by 
 
 Laboratoire de l'Informatique du Parallelisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+
+and by
+
+Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+Sophia Antipolis, France.
 
 Contributors Ch. Lauter, S. Chevillard
 
@@ -82,6 +87,7 @@ void freeMpfiPtr(void *i);
 void freeIntPtr(void *ptr);
 void freeStringPtr(void *aString);
 void freeMemoryOnVoid(void *tree);
+void freeNoPointer(void *thing); /* Does nothing */
 
 chain *makeIntPtrChain(int n);
 chain *makeIntPtrChainFromTo(int m, int n);

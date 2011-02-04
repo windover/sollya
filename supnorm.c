@@ -450,12 +450,10 @@ int determineSignAtPoint(int *sign, node *func, mpfr_t x, mp_prec_t prec) {
 
   if ((!mpfr_number_p(yLeft)) || (!mpfr_number_p(yRight)) || (mpfr_zero_p(yLeft)) || (mpfr_zero_p(yRight))) {
     okay = 0;
-  } else {
-    if ((mpfr_sgn(yLeft) < 0) != (mpfr_sgn(yRight) < 0)) {
-      okay = 0;
-    } else {
-      if (mpfr_sgn(yLeft) < 0) mySign = -1; else mySign = 1;
-    }
+  }
+  else {
+    if (mpfr_sgn(yLeft) * mpfr_sgn(yRight) < 0) okay = 0;
+    else mySign = (mpfr_sgn(yLeft) < 0) ? (-1) : 1;
   }
 
   sollya_mpfi_clear(xAsInterv);
@@ -490,7 +488,7 @@ int determineSignAtPoint(int *sign, node *func, mpfr_t x, mp_prec_t prec) {
 
    The function assumes that poly is a polynomial but will work even
    if poly is not a polynomial. However, it will not try to ensure
-   that ell approximates ell up to a relative error of abs(gamma).
+   that ell approximates ||eps|| up to a relative error of abs(gamma).
 
    The procedure determines its working precision itself where
    possible. It hence disregards the prec parameter unless the
@@ -560,6 +558,9 @@ int computeSupnormLowerBound(mpfr_t ell, node *poly, node *func, sollya_mpfi_t d
 
   possibleExtrema = uncertifiedFindZeros(epsPrime, a, b, samplePoints, 6 + (pp / 2));
 
+  /* We now really define epsPrime as the derivative of eps (for further use with evaluateFaithful) */
+  epsPrime = makeDiv(epsPrime, makePow(copyTree(func), makeConstantDouble(2.0)));
+
   aBound = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
   bBound = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*aBound,pr);
@@ -616,14 +617,6 @@ int computeSupnormLowerBound(mpfr_t ell, node *poly, node *func, sollya_mpfi_t d
 }
 
 
-/* A function that does nothing but that has the 
-   right signature for freeChain
-*/
-void freeNoPointer(void *thing) {
-  UNUSED_PARAM(thing); return;
-}
-
-
 /* A small wrapper around taylorform
 
    Compute a polynomial poly and a bounding interval delta
@@ -656,14 +649,12 @@ void freeNoPointer(void *thing) {
    reset it correctly in the usual case but if a Ctrl-C pops in in the
    middle, it will not be reset. This should be changed in the future.
    
-   The parameter doTranslate =1 means that the returned polynomial is 
-   translated inside this procedure from the original basis returned 
-   by taylorform : (x-x0)^i, into the pure monomial basis x^i;
-   Otherwise, we do not touch the polynomial returned by taylorform.
-
+   IMPORTANT REMARK: as does the taylorform command, the computed 
+   polynomial here must be translated in order to get the right
+   polynomial (i.e. T = poly(x-x0) is the true Taylor polynomial).
 */
 int computeTaylorModel(node **poly, sollya_mpfi_t delta,
-		       node *func, sollya_mpfi_t dom, int n, mpfr_t *singu, mp_prec_t prec, int doTranslate) {
+		       node *func, sollya_mpfi_t dom, int n, mpfr_t *singu, mp_prec_t prec) {
   mp_prec_t oldToolPrec, ppp;
   int res;
   mpfr_t x0;
@@ -673,7 +664,7 @@ int computeTaylorModel(node **poly, sollya_mpfi_t delta,
   chain *errors;
   chain *revertedErrors;
   chain *curr;
-  node *myPoly, *shifterBack, *pShifted;
+  node *myPoly;
 
   if (!sollya_mpfi_bounded_p(dom)) return 0;
 
@@ -700,94 +691,70 @@ int computeTaylorModel(node **poly, sollya_mpfi_t delta,
   taylorform(&myPoly, &errors, &myDelta, func, n, &x0AsInterval, &myDom, mode);
   
   res = 1;
-  if (myDelta == NULL) res = 0;
+  if ( (myDelta == NULL) || (errors == NULL) || (!sollya_mpfi_bounded_p(*myDelta)) ) res = 0;
   else {
-    if (errors == NULL) res = 0;
-    else {
-      if (!sollya_mpfi_bounded_p(*myDelta)) res = 0;
-      else {
-	if (mode == ABSOLUTE) {
-	  /* Set lagrangeDelta = myDelta */
-	  sollya_mpfi_init2(lagrangeDelta,sollya_mpfi_get_prec(*myDelta));
-	  sollya_mpfi_set(lagrangeDelta,*myDelta);
-	} else {
-	  /* Compute lagrangeDelta = myDelta * (dom - x0)^n */
-	  ppp = sollya_mpfi_get_prec(dom);
-	  sollya_mpfi_init2(temp,ppp);
-	  sollya_mpfi_init2(lagrangeDelta,ppp);
-	  sollya_mpfi_sub(temp,dom,x0AsInterval);
-	  sollya_mpfi_init2(nAsInterval,5 + 8 * sizeof(int));
-	  sollya_mpfi_set_si(nAsInterval,n); /* exact */
-	  sollya_mpfi_pow(temp, temp, nAsInterval);
-	  sollya_mpfi_mul(temp,temp,*myDelta);
-	  if (!sollya_mpfi_bounded_p(temp)) res = 0;
-	  else {
-	    sollya_mpfi_set(lagrangeDelta,temp);
-	  }
-	  sollya_mpfi_clear(temp);
-	  sollya_mpfi_clear(nAsInterval);
-	}
-	if (res) {
-	  /* Here, we have lagrangeDelta such that 
-  	     (func - (poly(x-x0) + sum errors[i] * (x-x0)^i)) in lagrangeDelta
-  	     We now add (sum errors[i] * x^i)(dom-x0) to lagrangeDelta.
-  	     We use a simple Horner to perform that evalutation/ bounding.
-  	     The error list starts with c0, so we have to revert it 
-	     before the Horner. 
-
-  	     HACK ALERT: We will allocate only the containers to the
-  	     reverted list but we just copy over the pointers to the
-  	     MPFIs. So when free'ing the reverted list, we must not 
-  	     free the MPFIs, as they will be free'd when free'ing the 
-  	     orginal list.
-     	  */
-	  sollya_mpfi_init2(temp,sollya_mpfi_get_prec(delta));
-	  sollya_mpfi_init2(shiftedDom,sollya_mpfi_get_prec(dom));
-	  sollya_mpfi_sub(shiftedDom,dom,x0AsInterval);
-	  revertedErrors = NULL;
-	  for (curr=errors;curr!=NULL;curr=curr->next) 
-	    revertedErrors = addElement(revertedErrors,curr->value);
-	  /* Horner */
-	  curr = revertedErrors;
-	  sollya_mpfi_set(temp,*((sollya_mpfi_t *) (curr->value)));
-	  curr=curr->next;
-	  while (curr != NULL) {
-	    sollya_mpfi_mul(temp,temp,shiftedDom);
-	    sollya_mpfi_add(temp,temp,*((sollya_mpfi_t *) (curr->value)));
-	    curr = curr->next;
-	  }
-	  freeChain(revertedErrors,freeNoPointer);
-    	  sollya_mpfi_add(lagrangeDelta,lagrangeDelta,temp);
-    	  if (!sollya_mpfi_bounded_p(lagrangeDelta)) res = 0;
-    	  else {
-  	    sollya_mpfi_set(delta,lagrangeDelta);
-    	  }
-	  sollya_mpfi_clear(temp);
-	  sollya_mpfi_clear(shiftedDom);
-	}
-	sollya_mpfi_clear(lagrangeDelta);
-      }
+    if (mode == ABSOLUTE) {
+      /* Set lagrangeDelta = myDelta */
+      sollya_mpfi_init2(lagrangeDelta,sollya_mpfi_get_prec(*myDelta));
+      sollya_mpfi_set(lagrangeDelta,*myDelta);
     }
+    else {
+      /* Compute lagrangeDelta = myDelta * (dom - x0)^n */
+      ppp = sollya_mpfi_get_prec(dom);
+      sollya_mpfi_init2(temp,ppp);
+      sollya_mpfi_init2(lagrangeDelta,ppp);
+      sollya_mpfi_sub(temp,dom,x0AsInterval);
+      sollya_mpfi_init2(nAsInterval,5 + 8 * sizeof(int));
+      sollya_mpfi_set_si(nAsInterval,n); /* exact */
+      sollya_mpfi_pow(temp, temp, nAsInterval);
+      sollya_mpfi_mul(temp,temp,*myDelta);
+      if (!sollya_mpfi_bounded_p(temp)) res = 0;
+      else sollya_mpfi_set(lagrangeDelta,temp);
+      sollya_mpfi_clear(temp);
+      sollya_mpfi_clear(nAsInterval);
+    }
+    if (res) {
+      /* Here, we have lagrangeDelta such that 
+         (func - (poly(x-x0) + sum errors[i] * (x-x0)^i)) in lagrangeDelta
+         We now add (sum errors[i] * x^i)(dom-x0) to lagrangeDelta.
+         We use a simple Horner to perform that evalutation/ bounding.
+         The error list starts with c0, so we have to revert it 
+         before the Horner. 
+         
+         HACK ALERT: We will allocate only the containers to the
+         reverted list but we just copy over the pointers to the
+         MPFIs. So when free'ing the reverted list, we must not 
+         free the MPFIs, as they will be free'd when free'ing the 
+         orginal list.
+      */
+      sollya_mpfi_init2(temp,sollya_mpfi_get_prec(delta));
+      sollya_mpfi_init2(shiftedDom,sollya_mpfi_get_prec(dom));
+      sollya_mpfi_sub(shiftedDom,dom,x0AsInterval);
+      revertedErrors = NULL;
+      for (curr=errors;curr!=NULL;curr=curr->next) 
+        revertedErrors = addElement(revertedErrors,curr->value);
+      /* Horner */
+      curr = revertedErrors;
+      sollya_mpfi_set(temp,*((sollya_mpfi_t *) (curr->value)));
+      for (curr=curr->next; curr != NULL; curr = curr->next) {
+        sollya_mpfi_mul(temp,temp,shiftedDom);
+        sollya_mpfi_add(temp,temp,*((sollya_mpfi_t *) (curr->value)));
+      }
+      freeChain(revertedErrors,freeNoPointer);
+      sollya_mpfi_add(lagrangeDelta,lagrangeDelta,temp);
+      if (!sollya_mpfi_bounded_p(lagrangeDelta)) res = 0;
+      else sollya_mpfi_set(delta,lagrangeDelta);
+      sollya_mpfi_clear(temp);
+      sollya_mpfi_clear(shiftedDom);
+    }
+    sollya_mpfi_clear(lagrangeDelta);
     sollya_mpfi_clear(*myDelta);
     free(myDelta);
   }
 
-  if (!res) {
-    free_memory(myPoly);
-  }else{
-    if (doTranslate){
-      /* We shift poly: pShifted(x) = myPoly(x - x0) */
-      shifterBack = makeSub(makeVariable(),makeConstant(x0));
-      pShifted = substitute(myPoly,shifterBack);
-      *poly = horner(pShifted);
-      // TODO: Remark by Christoph: is it normal that I don't see any free_memory's here?
-      // Nobody answers, so I will add the frees.
-      free_memory(shifterBack);
-      free_memory(pShifted);
-      free_memory(myPoly);
-    }
-    else *poly=myPoly;
-  }
+  if (!res) free_memory(myPoly);
+  else *poly=myPoly;
+
   freeChain(errors,freeMpfiPtr);
   sollya_mpfi_clear(myDom);
   sollya_mpfi_clear(x0AsInterval);
@@ -799,7 +766,7 @@ int computeTaylorModel(node **poly, sollya_mpfi_t delta,
 
 /* Tries to compute a Taylor expansion poly of func with degree n such that 
 
-   || poly - func || <= delta.
+   || poly(x-x0) - func || <= delta.
 
    If such an expansion can be computed using computeTaylorForm,
    assign that expansion to *poly and return a non-zero value.
@@ -814,11 +781,12 @@ int computeTaylorModel(node **poly, sollya_mpfi_t delta,
    approximation error of the Taylor form is finite and contained in
    [-delta, delta].
    
-   The parameters singu and prec and doTranslate are passed directly to
+   The parameters singu and prec are passed directly to
    computeTaylorForm.
+   IMPORTANT REMARK: this is an untranslated polynomial (see computeTaylorModel).
 
 */
-int checkDegreeTaylorModel(node **poly, node *func, sollya_mpfi_t dom, mpfr_t delta, int n, mpfr_t *singu, mp_prec_t prec, int doTranslate) {
+int checkDegreeTaylorModel(node **poly, node *func, sollya_mpfi_t dom, mpfr_t delta, int n, mpfr_t *singu, mp_prec_t prec) {
   node *myPoly;
   int res, resCompute;
   sollya_mpfi_t computedDelta;
@@ -827,7 +795,7 @@ int checkDegreeTaylorModel(node **poly, node *func, sollya_mpfi_t dom, mpfr_t de
   res = 0;
 
   sollya_mpfi_init2(computedDelta,prec);
-  resCompute = computeTaylorModel(&myPoly, computedDelta, func, dom, n, singu, prec,doTranslate);
+  resCompute = computeTaylorModel(&myPoly, computedDelta, func, dom, n, singu, prec);
  
   if (resCompute) {
     
@@ -926,123 +894,72 @@ int isPolynomialWithConstantDyadicFiniteRealCoefficients(node *poly) {
 */
 int computeTaylorModelOfLeastDegree(node **poly, node *func, sollya_mpfi_t dom, mpfr_t delta, int maximumAllowedN, mpfr_t *singu, mp_prec_t prec) {
   node *myPoly;
+  node *bestPoly;
+  node *shifterBack;
+  node *pShifted;
+  mpfr_t x0;
   int n, okay, resCompute, res, nMin, nMax;
-  n = 1; okay = 0;
-  while (n <= maximumAllowedN) {
-    resCompute = checkDegreeTaylorModel(&myPoly, func, dom, delta, n, singu, prec,0);/*last param means that we do not need translation here*/
+  nMax = 1; nMin = 0; okay = 0;
+
+  bestPoly = NULL;
+  while (nMax < 2*maximumAllowedN) {
+    if (nMax > maximumAllowedN) nMax = maximumAllowedN;
+    resCompute = checkDegreeTaylorModel(&myPoly, func, dom, delta, nMax, singu, prec);
     if (resCompute) {
-      free_memory(myPoly);
+      free_memory(bestPoly); /* does nothing if bestPoly == NULL */
+      bestPoly = myPoly;
       okay = 1;
       break;
     }
-    n <<= 1;
+    nMin = nMax;
+    nMax <<= 1;
   }
 
-  if (okay) {
-    /* Here, we know that with n, we can find a polynomial that fits the error bound 
+  if (!okay) return 0; /* We cannot find a suitable polynomial of degree <= maximumAllowedN */
 
-       We determine now a degree for which we are sure we can't.
-
-    */
-    nMax = n;
-    nMin = n / 2; if (nMin < 1) nMin = 1;
-  } else {
-    /* We could not determine any degree in 1, 2, 2^2, 2^3... less
-       than or equal maximumAllowedN such that a Taylor Polynomial of
-       that degree satisfies the bound.
-
-       We check now if the degree has ever reached maximumAllowedN. If
-       not, we check if we can do it with degree maximumAllowedN.
-
-    */
-    if (n != 2 * maximumAllowedN) {
-      /* Here, we know that we did not reach maximumAllowedN. So we
-	 try it out.
-      */
-      resCompute = checkDegreeTaylorModel(&myPoly, func, dom, delta, maximumAllowedN, singu, prec,0);
-      if (resCompute) {
-	free_memory(myPoly);
-	okay = 1;
-	nMin = n / 2; if (nMin < 1) nMin = 1;
-	nMax = maximumAllowedN;
-      } 
-    } 
+  /* Here we know that with nMin, we cannot reach the bound but with
+     nMax we can. So we refine by bisecting the interval [nMin,nMax]
+     Also, we know that bestPoly contains the poly associated with nMax.
+  */
+  while (nMax - nMin > 1) {
+    n = (nMin + nMax) / 2;
+    resCompute = checkDegreeTaylorModel(&myPoly, func, dom, delta, n, singu, prec);
+    if (resCompute) {  /* OK with n, so the new interval is [nMin,n] */
+      nMax = n;
+      free_memory(bestPoly);
+      bestPoly = myPoly;
+    }
+    else nMin = n; /* Not OK with n, so the new interval is [n,nMax] */
   }
 
-  if (okay) {
-    /* Here we know that with nMin, we cannot reach the bound but with
-       nMax we can. So we refine by bisecting the interval [nMin,nMax]
-    */
-    myPoly = NULL; 
-    while (nMax - nMin > 1) {
-      if (myPoly != NULL) {
-	free_memory(myPoly);
-	myPoly = NULL;
-      }
-      n = (nMin + nMax) / 2;
-      resCompute = checkDegreeTaylorModel(&myPoly, func, dom, delta, n, singu, prec,0);
-      if (resCompute) {
-	/* We satisfy the bound for n, so the new interval is [nMin,n] */
-	nMax = n;
-      } else {
-	/* We do not satisfy the bound for n, so the new interval is [n,nMax] */
-	nMin = n;
-	/* We have to invalidate the polynomial, too. */
-	if (myPoly != NULL) {
-	  free_memory(myPoly);
-	  myPoly = NULL;
-	}
-      }
-    }
+  /* Now we know that bestPoly is the polynomial that we want, but we need to translate it */
+  if (singu == NULL) {
+    mpfr_init2(x0,sollya_mpfi_get_prec(dom) + 1);
+    sollya_mpfi_mid(x0,dom);
+  }
+  else {
+    mpfr_init2(x0,mpfr_get_prec(*singu));
+    mpfr_set(x0,*singu,GMP_RNDN); /* exact */
+  }
 
-    /* Here, we know that nMin == nMax or nMin = nMax-1 and we know that for 
-       degree nMax, we get a polynomial that satisfies the bound. */
+  shifterBack = makeSub(makeVariable(),makeConstant(x0));
+  pShifted = substitute(bestPoly,shifterBack);
+  free_memory(shifterBack);
+  free_memory(bestPoly);
+  bestPoly = horner(pShifted);
+  free_memory(pShifted);
+  mpfr_clear(x0);
 
-       /*byMioara: Here, we know that the bound is ok, 
-       ***BUT WE HAVE TO TRANSLATE the polynomial****, 
-       so we set the translation parameter to 1*/
-    /*by Christoph: this means we have to free the polynomial first */
-
-    if (myPoly != NULL) {
-      free_memory(myPoly);
-      myPoly = NULL;
-    }
-
-    resCompute = checkDegreeTaylorModel(&myPoly, func, dom, delta, nMax, singu, prec,1);
-    if ((myPoly != NULL) && resCompute) {
-      /* Here we know that myPoly satisfies the bound.
-
-	 We check now that myPoly is a polynomial with finite, real
-	 coefficients. The other case should (almost) never happen as
-	 it should be impossible to have a finite, real Lagrange bound
-	 and finite, real bounds for the coefficient errors but no
-	 finite real coefficients. Anyway, for the sake of safety, we
-	 check. 
-
-      */
-      if (isPolynomialWithConstantDyadicFiniteRealCoefficients(myPoly)) {
-	/* Here, myPoly is the sought polynomial of least degree
-	   satisfying the error bound delta. It has finite, real
-	   coefficients.
-
-	   We assign it to *poly and indicate success.
-	*/
-	*poly = myPoly;
+  /* Though unlikely, it could be possible that some coefficient of the polynomial be a NaN or Inf */
+  /*   (despite a successful return of checkDegreeTaylorModel...). So we check it. */
+  if (isPolynomialWithConstantDyadicFiniteRealCoefficients(bestPoly)) {
+	*poly = bestPoly;
 	res = 1;
-      } else {
-	/* Here, we are in the strange case that should almost never
-	   happen.  We indicate failure and hope the problem will go
-	   away by bisecting dom.
-	*/
-	res = 0;
-      }
-    } else {
-      /* Here, strange things happened and we have no result */
-      res = 0;
-    }
-  } else {
-    /* Here, we know that there is no degree in 1..maximumAllowedN with which 
-       we can satisfy the bound. We indicated failure. 
+  }
+  else {
+    /* Here, we are in the strange case that should almost never
+       happen.  We indicate failure and hope the problem will go
+       away by bisecting dom.
     */
     res = 0;
   }
@@ -1133,27 +1050,24 @@ int determinePossibleZeroAndBisectPoint(mpfr_t zero, mpfr_t bisect,
     mpfr_init2(b,pp);
     sollya_mpfi_get_left(a,dom);
     sollya_mpfi_get_right(b,dom);
-    if (mpfr_number_p(a) && mpfr_number_p(b)) {
+
+    if ( (!mpfr_number_p(a)) || (!mpfr_number_p(b)) )
+      res=-1; /* an unbounded range, return -1. */
+    else {
       /* Try to compute a list of zeros */
       pp = mpfr_get_prec(zero);
       if (prec > pp) pp = prec;
       possibleZeros = uncertifiedFindZeros(func, a, b, points, pp + 5);
 
-      if (possibleZeros != NULL) {
-	/* We found at least one zero */
-	/* If there is just one zero, this is our only zero and least zero to return */
+      if (possibleZeros != NULL) { /* We found at least one zero */
 	if (possibleZeros->next == NULL) {
-	  /* Here, we have exactly one zero.
-
-	     Return 1 and set zero to that zero.
-	  */
+	  /* Here, we have exactly one zero. */
 	  res = 1;
 	  mpfr_set(zero,*((mpfr_t *) (possibleZeros->value)),GMP_RNDN); /* It's an approx. anyway */
-	} else {
+	}
+        else {
 	  /* Here, we have at least two zeros 
-
 	     Start by exhibiting the least zero.
-
 	  */
 	  least = (mpfr_t *) (possibleZeros->value);
 	  for (curr=possibleZeros;curr!=NULL;curr=curr->next) {
@@ -1206,10 +1120,7 @@ int determinePossibleZeroAndBisectPoint(mpfr_t zero, mpfr_t bisect,
 	/* We did not find any zero, return -1. */
 	res = -1;
       }
-    } else {
-      /* We cannot compute the zeros in an unbounded range, return -1. */
-      res = -1;
-    }
+    } 
     mpfr_clear(a);
     mpfr_clear(b);
   }
