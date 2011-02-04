@@ -962,6 +962,9 @@ int computeTaylorModelOfLeastDegree(node **poly, node *func, sollya_mpfi_t dom, 
        away by bisecting dom.
     */
     res = 0;
+
+    /* TODO by Christoph: we miss a free_memory(bestPoly) here, I guess */
+
   }
 
   return res;
