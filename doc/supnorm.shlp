@@ -12,22 +12,51 @@
 
 
 #DESCRIPTION
-$COMMAND(<p>, <f>, <I>, <errorType>) computes an interval bound §§r=[l,u]§$r = [\ell,\,u]$§§ for the supremum norm of the error function §§epsilon_absolute=p-f§$\varepsilon_{absolute}=p-f$§§ or §§epsilon_relative=p/f-1 §$\varepsilon_{relative}=p/f-1$§§ (depending on errorType), over the interval §§I§$I$§§, s.t.  §§max {|epsilon(x)|, x in I} C r§$\max_{x \in I} \{|\varepsilon(x)|\} \subseteq r$§§ and  §§0<(u-l)/l<accuracy§$0 \le \frac{u-\ell}{\ell} \le$ accuracy§§. If the interval $r$ is returned, it is guaranteed to contain the supremum norm value and to satisfy the required quality. In some rare cases, roughly speaking if the function is too complicated, our algorithm will simply fail, but it never lies; a corresponing error message is given. 
+$COMMAND(<p>, <f>, <I>, <errorType>) tries to compute an interval
+bound §§r=[l,u]§$r = [\ell,\,u]$§§ for the supremum norm of the error function §§epsilon_absolute=p-f§$\varepsilon_{\textrm{absolute}}=p-f$§§
+(when <errorType> evaluates to $ABSOLUTE) or §§epsilon_relative=p/f-1§$\varepsilon_{\textrm{relative}}=p/f-1$§§ 
+(when <errorType> evaluates to $RELATIVE), over the interval §§I§$I$§§, 
+such that §§sup{|epsilon(x)|, x in I} C r§$\sup_{x \in I} \{|\varepsilon(x)|\}\subseteq r$§§ and §§0<|u/l-1|<accuracy§$0 \le \left \vert\frac{u}{\ell} - 1 \right \vert \le {\textrm{accuracy}}$§§. 
+If $COMMAND succeeds in computing a suitable interval §§r§$r$§§, which it returns, 
+that interval is guaranteed to contain the supremum norm value and to satisfy the
+required quality. Otherwise, $COMMAND evaluates to $ERROR, displaying
+a corresponding error message. These failure cases are rare and
+basically happen only for functions which are too complicated.
 
 #DESCRIPTION
-The algorithm used for this command is quite complex to be explained here. 
+Roughly speaking, $COMMAND is based on $TAYLORFORM to obtain a higher
+degree polynomial approximation for <f>. This process is coupled with
+an a posteriori validation of a potential supremum norm upper bound by
+a validated way of showing that a certain polynomial the problem gets
+reduced to does not vanish. In cases when this process alone does not
+succeed, for instance because $TAYLORFORM is unable to compute a
+sufficiently good approximation to <f>, $COMMAND falls back to
+bisecting the working interval until safe supremum norm bounds can be
+computed with the required accuracy or until the width of the
+subintervals becomes less than $DIAM times the original interval <I>, 
+in which case $COMMAND fails.
+
+#DESCRIPTION
+The algorithm used for $COMMAND is quite complex, which makes it impossible 
+to explain it here in further detail. 
 Please find a complete description in the following article:§§§\\§§
+§§ §~\\§§
    Sylvain Chevillard, John Harrison, Mioara Joldes, Christoph Lauter§§§\\§§
    Efficient and accurate computation of upper bounds of approximation errors§§§\\§§
-   Journal of Theoretical Computer Science (TCS)(2010)§§§\\§§
-   LIP Research Report number RRLIP2010-2§§§\\§§
+   Journal of Theoretical Computer Science (TCS), 2010§§§\\§§
+   LIP Research Report number RR LIP2010-2§§§\\§§
    http://prunel.ccsd.cnrs.fr/ensl-00445343/fr/§§§\\§§
 
 #DESCRIPTION
-Roughly speaking, $COMMAND is based on using $TAYLORFORM to obtain a higher degree polynomial approximation for <f>. Since $TAYLORFORM does not guarantee that by increasing the degree of the aproximation, the remainder bound will become smaller, we can not guarantee that the supremum norm can get as accurate as desired by the user. However, by splitting the initial interval <I> a potential better eclosure of the remainder is obtained. We do the splitting until the remainder is sufficiently small or the width of the resulting interval is too small, depending on the global variable $DIAM. An approximation of at most §§16§$16$§§ times the degree of <p> is considered for each interval.
-
-#DESCRIPTION
-In practical cases, the algorithm should be able to automatically handle removable discontinuities that relative errors might have. This means that usually, if <f> vanishes at a point $x_0$ in the interval considered, the approximation polynomial <p> is designed such that it vanishes also at the same point with a multiplicity large enough. Hence, although <f> vanishes, §§epsilon_relative=p/f-1 §$\varepsilon_{relative}=p/f-1$§§ may be defined by continuous extension at such points $x_0$, called removable discontinuities (see Example §§3§$3$§§).
+In practical cases, $COMMAND should be able to automatically handle
+removable discontinuities that relative errors might have. This means
+that usually, if <f> vanishes at a point §§x0§$x_0$§§ in the interval
+considered, the approximation polynomial <p> is designed such that it
+also vanishes at the same point with a multiplicity large
+enough. Hence, although <f> vanishes, 
+§§epsilon_relative=p/f-1§$\varepsilon_{\textrm{relative}}=p/f-1$§§ may be 
+defined by continuous extension at such points §§x0§$x_0$§§, called 
+removable discontinuities (see Example §§3§$3$§§).
 
 #EXAMPLE
 p = remez(exp(x), 5, [-1;1]);
@@ -35,6 +64,7 @@ midpointmode=on!;
 supnorm(p, exp(x), [-1;1], absolute, 2^(-40));
 #EXAMPLE
 prec=200!;
+midpointmode=on!;
 d = [1;2];
 f = exp(cos(x)^2 + 1);
 p = remez(1,15,d,1/f,1e-40);
@@ -43,6 +73,7 @@ prec=default!;
 mode=relative;
 supnorm(p,f,d,mode,theta);
 #EXAMPLE
+midpointmode=on!;
 mode=relative;
 theta=1b-135;
 d = [-1b-2;1b-2];

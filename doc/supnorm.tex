@@ -16,19 +16,48 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{supnorm}(\emph{p}, \emph{f}, \emph{I}, \emph{errorType}) computes an interval bound $r = [\ell,\,u]$ for the supremum norm of the error function $\varepsilon_{absolute}=p-f$ or $\varepsilon_{relative}=p/f-1$ (depending on errorType), over the interval $I$, s.t.  $\max_{x \in I} \{|\varepsilon(x)|\} \subseteq r$ and  $0 \le \frac{u-\ell}{\ell} \le$ accuracy. If the interval $r$ is returned, it is guaranteed to contain the supremum norm value and to satisfy the required quality. In some rare cases, roughly speaking if the function is too complicated, our algorithm will simply fail, but it never lies; a corresponing error message is given. 
+\item \textbf{supnorm}(\emph{p}, \emph{f}, \emph{I}, \emph{errorType}) tries to compute an interval
+   bound $r = [\ell,\,u]$ for the supremum norm of the error function $\varepsilon_{\textrm{absolute}}=p-f$
+   (when \emph{errorType} evaluates to \textbf{absolute}) or $\varepsilon_{\textrm{relative}}=p/f-1$ 
+   (when \emph{errorType} evaluates to \textbf{relative}), over the interval $I$, 
+   such that $\sup_{x \in I} \{|\varepsilon(x)|\}\subseteq r$ and $0 \le \left \vert\frac{u}{\ell} - 1 \right \vert \le {\textrm{accuracy}}$. 
+   If \textbf{supnorm} succeeds in computing a suitable interval $r$, which it returns, 
+   that interval is guaranteed to contain the supremum norm value and to satisfy the
+   required quality. Otherwise, \textbf{supnorm} evaluates to \textbf{error}, displaying
+   a corresponding error message. These failure cases are rare and
+   basically happen only for functions which are too complicated.
 
-\item The algorithm used for this command is quite complex to be explained here. 
+\item Roughly speaking, \textbf{supnorm} is based on \textbf{taylorform} to obtain a higher
+   degree polynomial approximation for \emph{f}. This process is coupled with
+   an a posteriori validation of a potential supremum norm upper bound by
+   a validated way of showing that a certain polynomial the problem gets
+   reduced to does not vanish. In cases when this process alone does not
+   succeed, for instance because \textbf{taylorform} is unable to compute a
+   sufficiently good approximation to \emph{f}, \textbf{supnorm} falls back to
+   bisecting the working interval until safe supremum norm bounds can be
+   computed with the required accuracy or until the width of the
+   subintervals becomes less than \textbf{diam} times the original interval \emph{I}, 
+   in which case \textbf{supnorm} fails.
+
+\item The algorithm used for \textbf{supnorm} is quite complex, which makes it impossible 
+   to explain it here in further detail. 
    Please find a complete description in the following article:\\
+   ~\\
       Sylvain Chevillard, John Harrison, Mioara Joldes, Christoph Lauter\\
       Efficient and accurate computation of upper bounds of approximation errors\\
-      Journal of Theoretical Computer Science (TCS)(2010)\\
-      LIP Research Report number RRLIP2010-2\\
+      Journal of Theoretical Computer Science (TCS), 2010\\
+      LIP Research Report number RR LIP2010-2\\
       http://prunel.ccsd.cnrs.fr/ensl-00445343/fr/\\
 
-\item Roughly speaking, \textbf{supnorm} is based on using \textbf{taylorform} to obtain a higher degree polynomial approximation for \emph{f}. Since \textbf{taylorform} does not guarantee that by increasing the degree of the aproximation, the remainder bound will become smaller, we can not guarantee that the supremum norm can get as accurate as desired by the user. However, by splitting the initial interval \emph{I} a potential better eclosure of the remainder is obtained. We do the splitting until the remainder is sufficiently small or the width of the resulting interval is too small, depending on the global variable \textbf{diam}. An approximation of at most $16$ times the degree of \emph{p} is considered for each interval.
-
-\item In practical cases, the algorithm should be able to automatically handle removable discontinuities that relative errors might have. This means that usually, if \emph{f} vanishes at a point $x_0$ in the interval considered, the approximation polynomial \emph{p} is designed such that it vanishes also at the same point with a multiplicity large enough. Hence, although \emph{f} vanishes, $\varepsilon_{relative}=p/f-1$ may be defined by continuous extension at such points $x_0$, called removable discontinuities (see Example $3$).
+\item In practical cases, \textbf{supnorm} should be able to automatically handle
+   removable discontinuities that relative errors might have. This means
+   that usually, if \emph{f} vanishes at a point $x_0$ in the interval
+   considered, the approximation polynomial \emph{p} is designed such that it
+   also vanishes at the same point with a multiplicity large
+   enough. Hence, although \emph{f} vanishes, 
+   $\varepsilon_{\textrm{relative}}=p/f-1$ may be 
+   defined by continuous extension at such points $x_0$, called 
+   removable discontinuities (see Example $3$).
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
@@ -41,6 +70,7 @@ Parameters:
 \noindent Example 2: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > prec=200!;
+> midpointmode=on!;
 > d = [1;2];
 > f = exp(cos(x)^2 + 1);
 > p = remez(1,15,d,1/f,1e-40);
@@ -48,12 +78,12 @@ Parameters:
 > prec=default!;
 > mode=relative;
 > supnorm(p,f,d,mode,theta);
-[3.0893006200251428571621794052259682827831072375319e-14;3.089300620025142859757
-9848990873269730291252477793e-14]
+0.30893006200251428~5/6~e-13
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> midpointmode=on!;
 > mode=relative;
 > theta=1b-135;
 > d = [-1b-2;1b-2];
@@ -62,8 +92,7 @@ Parameters:
 2^(-21) + x * 4369 * 2^(-19))))); 
 > theta=1b-40;
 > supnorm(p,f,d,mode,theta);
-[9.8349131972210814932434890154829866537600224773996e-8;9.8349131972297467696435
-93575914432178700294360461e-8]
+0.98349131972~2/3~e-7
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{dirtyinfnorm} (\ref{labdirtyinfnorm}), \textbf{infnorm} (\ref{labinfnorm}), \textbf{checkinfnorm} (\ref{labcheckinfnorm}), \textbf{absolute} (\ref{lababsolute}), \textbf{relative} (\ref{labrelative}), \textbf{taylorform} (\ref{labtaylorform}), \textbf{autodiff} (\ref{labautodiff}), \textbf{numberroots} (\ref{labnumberroots}), \textbf{diam} (\ref{labdiam})
