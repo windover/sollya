@@ -1086,6 +1086,14 @@ int determinePossibleZeroAndBisectPoint(mpfr_t zero, mpfr_t bisect,
 	      second = (mpfr_t *) (curr->value);
 	    }
 	  }
+	  /* Now second is the greatest zero.
+	     In the next stanza we will go down on second
+	     with all zeros in the list greater than the least zero.
+	     Anyway, we first check if the greatest zero is greater
+	     then the least zero. If it is not, we cannot find a 
+	     second least zero.
+	  */
+
 	  if (mpfr_cmp(*least,*second) == 0) {
 	    /* Here, we couldn't find any zero larger than the least 
 	       This case should not happen but anyway, we found one zero.
@@ -1093,13 +1101,17 @@ int determinePossibleZeroAndBisectPoint(mpfr_t zero, mpfr_t bisect,
 	    res = 1;
 	    mpfr_set(zero,*least,GMP_RNDN); /* It's an approx. anyway */
 	  } else {
-	    /* Here, we really found at least two different zeros */
+	    /* Here, we really found that there at least two different zeros 
+	       We now go down on second with all zeros in the list greater 
+	       than the least zero.
+	     */
 	    for (curr=possibleZeros;curr!=NULL;curr=curr->next) {
 	      if ((mpfr_cmp(*((mpfr_t *) (curr->value)),*least) > 0) &&
 		  (mpfr_cmp(*((mpfr_t *) (curr->value)),*second) < 0)) {
 		second = (mpfr_t *) (curr->value);
 	      }
 	    }
+	    /* Now, second is really the second least zero in the list */
 	    res = 2;
 	    mpfr_set(zero,*least,GMP_RNDN); /* It's an approx. anyway */
 
