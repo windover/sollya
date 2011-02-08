@@ -12,16 +12,17 @@
 
 
 #DESCRIPTION
-$COMMAND(<p>, <f>, <I>, <errorType>, <accuracy>) tries to compute an interval
-bound §§r=[l,u]§$r = [\ell,\,u]$§§ for the supremum norm of the error function §§epsilon_absolute=p-f§$\varepsilon_{\textrm{absolute}}=p-f$§§
-(when <errorType> evaluates to $ABSOLUTE) or §§epsilon_relative=p/f-1§$\varepsilon_{\textrm{relative}}=p/f-1$§§ 
-(when <errorType> evaluates to $RELATIVE), over the interval §§I§$I$§§, 
-such that §§sup{|epsilon(x)|, x in I} C r§$\sup_{x \in I} \{|\varepsilon(x)|\}\subseteq r$§§ and §§0<|u/l-1|<§$0 \le \left \vert\frac{u}{\ell} - 1 \right \vert \le$§§ <accuracy>. 
-If $COMMAND succeeds in computing a suitable interval §§r§$r$§§, which it returns, 
-that interval is guaranteed to contain the supremum norm value and to satisfy the
-required quality. Otherwise, $COMMAND evaluates to $ERROR, displaying
-a corresponding error message. These failure cases are rare and
-basically happen only for functions which are too complicated.
+$COMMAND(<p>, <f>, <I>, <errorType>, <accuracy>) tries to compute an
+interval bound §§r=[l,u]§$r = [\ell,\,u]$§§ for the supremum norm of the error function
+§§epsilon_absolute=p-f§$\varepsilon_{\textrm{absolute}}=p-f$§§ (when <errorType> evaluates to $ABSOLUTE)
+or §§epsilon_relative=p/f-1§$\varepsilon_{\textrm{relative}}=p/f-1$§§ (when <errorType> evaluates to $RELATIVE),
+over the interval §§I§$I$§§, such that §§sup{|epsilon(x)|, x in I} C r§$\sup_{x \in I} \{|\varepsilon(x)|\}\subseteq r$§§
+and §§0<|u/l-1|<§$0 \le \left \vert\frac{u}{\ell} - 1 \right \vert \le$§§ <accuracy>. If $COMMAND succeeds in computing a suitable
+interval §§r§$r$§§, which it returns, that interval is guaranteed to contain the
+supremum norm value and to satisfy the required quality. Otherwise, $COMMAND
+evaluates to $ERROR, displaying a corresponding error message. These failure
+cases are rare and basically happen only for functions which are too
+complicated.
 
 #DESCRIPTION
 Roughly speaking, $COMMAND is based on $TAYLORFORM to obtain a higher
@@ -53,8 +54,7 @@ removable discontinuities that relative errors might have. This means
 that usually, if <f> vanishes at a point §§x0§$x_0$§§ in the interval
 considered, the approximation polynomial <p> is designed such that it
 also vanishes at the same point with a multiplicity large
-enough. Hence, although <f> vanishes, 
-§§epsilon_relative=p/f-1§$\varepsilon_{\textrm{relative}}=p/f-1$§§ may be 
+enough. Hence, although <f> vanishes, §§epsilon_relative=p/f-1§$\varepsilon_{\textrm{relative}}=p/f-1$§§ may be 
 defined by continuous extension at such points §§x0§$x_0$§§, called 
 removable discontinuities (see Example§§ 3§~$3$§§).
 
