@@ -527,7 +527,7 @@ int computeSupnormLowerBound(mpfr_t ell, node *poly, node *func, sollya_mpfi_t d
     return 0;
   }
 
-  if (mode == 0) {
+  if (mode == ABSOLUTE) {
     eps = makeSub(copyTree(poly),copyTree(func));
     epsPrime = makeSub(differentiate(poly),differentiate(func));
   } else {
@@ -962,9 +962,7 @@ int computeTaylorModelOfLeastDegree(node **poly, node *func, sollya_mpfi_t dom, 
        away by bisecting dom.
     */
     res = 0;
-
-    /* TODO by Christoph: we miss a free_memory(bestPoly) here, I guess */
-
+    if (bestPoly != NULL) free_memory(bestPoly);
   }
 
   return res;
@@ -1061,6 +1059,9 @@ int determinePossibleZeroAndBisectPoint(mpfr_t zero, mpfr_t bisect,
       pp = mpfr_get_prec(zero);
       if (prec > pp) pp = prec;
       possibleZeros = uncertifiedFindZeros(func, a, b, points, pp + 5);
+
+      /* Remark: uncertifiedFindZeros always returns ordered values.
+         Hence, the following code is uselessly complicated. */
 
       if (possibleZeros != NULL) { /* We found at least one zero */
 	if (possibleZeros->next == NULL) {
@@ -1180,8 +1181,9 @@ int determineOrderOfZero(int *k, node *func, mpfr_t x0, int n, mp_prec_t prec) {
   chain *curr;
   sollya_mpfi_t **errorsAsArray;
 
-  /* Make compiler happy: */
   res = 0;
+
+  /* Make compiler happy: */
   myK = -1;
   /* End of compiler happiness */
 
@@ -1196,9 +1198,14 @@ int determineOrderOfZero(int *k, node *func, mpfr_t x0, int n, mp_prec_t prec) {
   setToolPrecision(oldToolPrec);
 
   if ((poly != NULL) && (errors != NULL)) {
-    len = 0; 
-    for (curr=errors;curr!=NULL;curr=curr->next) 
-      len++;
+    len = lengthChain(errors); /* Normally, len == n+1 */
+
+    /*   HACK ALERT: We will allocate only the containers to the
+         array of errors but we just copy over the pointers to the
+         MPFIs. So when free'ing the array, we must not 
+         free the MPFIs, as they will be free'd when free'ing the 
+         orginal list.
+    */
     errorsAsArray = (sollya_mpfi_t **) safeCalloc(len,sizeof(sollya_mpfi_t *));
     i = 0; 
     for (curr=errors;curr!=NULL;curr=curr->next) {
@@ -1207,23 +1214,24 @@ int determineOrderOfZero(int *k, node *func, mpfr_t x0, int n, mp_prec_t prec) {
     }
     coefficients = NULL;
     getCoefficients(&degree,&coefficients,poly);
-    if (degree >= 0) {
-      if (len == degree + 1) {
-	res = 0;
-	myK = 0; 
-	while ((myK <= degree) && (myK <= n-1) && (!res)) {
-	  if (((coefficients[myK] == NULL) || 
-	       ((coefficients[myK]->nodeType == CONSTANT) && 
-		(mpfr_zero_p(*(coefficients[myK]->value))))) && 
-	      (sollya_mpfi_is_zero(*(errorsAsArray[myK])))) {
+    if ( (degree >= 0) && (coefficients != NULL) ) { 
+      if (len == degree + 1) { /* Should always be true */
+        myK = 0; 
+	while ((myK <= degree) && (myK <= n-1) && (!res)) { /* Normally n==degree */
+	  if (   (    (coefficients[myK] == NULL)
+                      || 
+                      ( (coefficients[myK]->nodeType == CONSTANT) && 
+                        (mpfr_zero_p(*(coefficients[myK]->value)))
+                      )
+                 ) && 
+                 (sollya_mpfi_is_zero(*(errorsAsArray[myK])))
+                 ) {
 	    myK++;
 	  } else {
 	    res = 1;
 	  }
 	}
-      } else { 
-	res = 0;
-      }
+      } 
       for (i=0;i<=degree;i++) {
 	if (coefficients[i] != NULL) free_memory(coefficients[i]);
       }
@@ -1232,8 +1240,6 @@ int determineOrderOfZero(int *k, node *func, mpfr_t x0, int n, mp_prec_t prec) {
     free(errorsAsArray);
     freeChain(errors,freeMpfiPtr);
     free_memory(poly);
-  } else {
-    res = 0;
   }
 
   sollya_mpfi_clear(x0AsInterval);
@@ -1251,7 +1257,7 @@ int determineOrderOfZero(int *k, node *func, mpfr_t x0, int n, mp_prec_t prec) {
    abs(u-l/l) <= accuracy
 
    If everything works fine, result is affected with an interval
-   safely enclosing the supremum norm. The return value is then ZERO
+   safely enclosing the supremum norm. The return value is then *zero*
    (i.e. SUPNORM_NO_ERROR).
 
    Otherwise, if an error occurs, the return value is non-zero. The
@@ -1291,8 +1297,7 @@ int supnormAbsolute(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t 
   mpfr_init2(ell,prec);
   mpfr_init2(gamma,mpfr_get_prec(accuracy));
   mpfr_div_ui(gamma,accuracy,32,GMP_RNDN); /* exact, but it doesn't matter anyway */
-  if (!computeSupnormLowerBound(ell, poly, func, dom, gamma, 0, prec)) { /*we compute a lower bound with expected accuracy gamma=accuracy/32*/
-    /* 0 = absolute error */
+  if (!computeSupnormLowerBound(ell, poly, func, dom, gamma, ABSOLUTE, prec)) { /*we compute a lower bound with expected accuracy gamma=accuracy/32*/
     /* Before returning, we do a quick heuristical check if we had a chance 
        with this level of working precision 
     */
@@ -1310,8 +1315,8 @@ int supnormAbsolute(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t 
   }
   /* Compute errMax such that errMax approximates ell * accuracy * 15/32 but is surely no greater */
   mpfr_init2(fifthteenThirtySecond,12); /* 15/32 can be written on 12 bits */
-  mpfr_set_ui(fifthteenThirtySecond,15,GMP_RNDN); /* exact as 15 holds on 12 bits */
-  mpfr_div_ui(fifthteenThirtySecond,fifthteenThirtySecond,32,GMP_RNDN); /* exact, 32 is a power of 2 */
+  mpfr_set_ui(fifthteenThirtySecond,15,GMP_RNDD); /* exact as 15 holds on 12 bits */
+  mpfr_div_ui(fifthteenThirtySecond,fifthteenThirtySecond,32,GMP_RNDD); /* exact, 32 is a power of 2 */
   mpfr_init2(errMax,prec);
   mpfr_mul(errMax,ell,accuracy,GMP_RNDD); /* round down to get lesser value */
   mpfr_mul(errMax,errMax,fifthteenThirtySecond,GMP_RNDD); /* round down to get lesser value */
@@ -1327,7 +1332,8 @@ int supnormAbsolute(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t 
     mpfr_clear(errMax);
     return SUPNORM_NO_TAYLOR;
   }
-  /* Compute bound that approximates bound = ell * (1 + accuracy/2) but surely no greater */
+  /* Compute bound that approximates bound = ell * (1 + accuracy/2) but surely no greater  */
+  /* Hence, proving that ||p-T|| <= bound surely proves that ||p-T|| <= ell*(1+accuracy/2) */
   mpfr_init2(bound,prec);
   mpfr_div_ui(bound,accuracy,2,GMP_RNDD); /* exact, but round-down anyway */
   mpfr_add_ui(bound,bound,1,GMP_RNDD); /* round-down to get lesser value */
@@ -1379,8 +1385,8 @@ int supnormAbsolute(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t 
   */
   mpfr_init2(u,prec);
   mpfr_init2(thirtyoneThirtySecond,12); /* 31/32 holds on 12 bits */
-  mpfr_set_ui(thirtyoneThirtySecond,31,GMP_RNDN); /* exact, 31 holds on 12 bits */
-  mpfr_div_ui(thirtyoneThirtySecond,thirtyoneThirtySecond,32,GMP_RNDN); /* exact, 32 is a power of 2 */
+  mpfr_set_ui(thirtyoneThirtySecond,31,GMP_RNDU); /* exact, 31 holds on 12 bits */
+  mpfr_div_ui(thirtyoneThirtySecond,thirtyoneThirtySecond,32,GMP_RNDU); /* exact, 32 is a power of 2 */
   mpfr_mul(u,thirtyoneThirtySecond,accuracy,GMP_RNDU); /* round-up as all quantities are positive and we want an upper bound */
   mpfr_add_ui(u,u,1,GMP_RNDU); /* round-up as all quantities are positive and we want an upper bound */
   mpfr_mul(u,ell,u,GMP_RNDU); /* round-up as all quantities are positive and we want an upper bound */
@@ -1413,7 +1419,7 @@ int supnormAbsolute(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t 
    abs(u-l/l) <= accuracy
 
    If everything works fine, result is affected with an interval
-   safely enclosing the supremum norm. The return value is then ZERO
+   safely enclosing the supremum norm. The return value is then *zero*
    (i.e. SUPNORM_NO_ERROR).
 
    Otherwise, if an error occurs, the return value is non-zero. The
@@ -1457,6 +1463,10 @@ int supnormRelativeNoSingularity(sollya_mpfi_t result, node *poly, node *func, s
   node *T;
   int maximumAllowedN, signAsInt;
   node *s1, *s2, *boundTimesT, *pMinusT, *TMinusp;
+  
+  /* Makes compiler happy */
+  signAsInt = -2;
+  /* End of compiler happiness */
 
   /* Compute F such that forall x in dom |func(x)| >= F */
   mpfr_init2(F,prec);
@@ -1478,7 +1488,7 @@ int supnormRelativeNoSingularity(sollya_mpfi_t result, node *poly, node *func, s
   mpfr_init2(ell,prec);
   mpfr_init2(gamma,mpfr_get_prec(accuracy));
   mpfr_div_ui(gamma,accuracy,32,GMP_RNDN); /* exact, but it doesn't matter anyway */
-  if (!computeSupnormLowerBound(ell, poly, func, dom, gamma, 1, prec)) { /* 1 = relative error */
+  if (!computeSupnormLowerBound(ell, poly, func, dom, gamma, RELATIVE, prec)) {
     /* Before returning, we do a quick heuristical check if we had a chance 
        with this level of working precision 
     */
@@ -1504,8 +1514,8 @@ int supnormRelativeNoSingularity(sollya_mpfi_t result, node *poly, node *func, s
   */
   mpfr_init2(u,prec);
   mpfr_init2(thirtyoneThirtySecond,12); /* 31/32 holds on 12 bits */
-  mpfr_set_ui(thirtyoneThirtySecond,31,GMP_RNDN); /* exact, 31 holds on 12 bits */
-  mpfr_div_ui(thirtyoneThirtySecond,thirtyoneThirtySecond,32,GMP_RNDN); /* exact, 32 is a power of 2 */
+  mpfr_set_ui(thirtyoneThirtySecond,31,GMP_RNDU); /* exact, 31 holds on 12 bits */
+  mpfr_div_ui(thirtyoneThirtySecond,thirtyoneThirtySecond,32,GMP_RNDU); /* exact, 32 is a power of 2 */
   mpfr_mul(u,thirtyoneThirtySecond,accuracy,GMP_RNDU); /* round-up as all quantities are positive and we want an upper bound */
   mpfr_add_ui(u,u,1,GMP_RNDU); /* round-up as all quantities are positive and we want an upper bound */
   mpfr_mul(u,ell,u,GMP_RNDU); /* round-up as all quantities are positive and we want an upper bound */
@@ -1513,7 +1523,8 @@ int supnormRelativeNoSingularity(sollya_mpfi_t result, node *poly, node *func, s
   /* Compute a maxium absolute error for the Taylor polynomial 
 
      Take a value errMax approximating ell * accuracy * (15/32) * 1/(1+u) * F/(1+15*accuracy/32) but being 
-     surely no greater than it.
+     surely no greater than it (with u approximating ell*(1+31*accuracy/32) but surely no
+     lesser than it).
 
      We just use interval arithmetic to be sure to have a bound no greater than the approximated
      quantity.
@@ -1526,9 +1537,9 @@ int supnormRelativeNoSingularity(sollya_mpfi_t result, node *poly, node *func, s
   sollya_mpfi_init2(accuracyInterval,mpfr_get_prec(accuracy));
   sollya_mpfi_init2(fifthteenThirtySecondInterval,12);
   sollya_mpfi_init2(FInterval,mpfr_get_prec(F));
-  sollya_mpfi_init2(errMaxInterval,2*prec);
+  sollya_mpfi_init2(errMaxInterval, prec);
   sollya_mpfi_init2(uInterval,mpfr_get_prec(u));
-  sollya_mpfi_init2(onePlusUInterval,2*prec);
+  sollya_mpfi_init2(onePlusUInterval, prec);
   
   /* Initialize */
   sollya_mpfi_set_fr(accuracyInterval,accuracy); 
@@ -1611,9 +1622,9 @@ int supnormRelativeNoSingularity(sollya_mpfi_t result, node *poly, node *func, s
   mpfr_mul(bound,bound,signT,GMP_RNDN); /* exact as signT one of -1 or 1 */
   
   /* Scale T by bound */
-  boundTimesT = scalePolynomialExactly(T, bound);
+  boundTimesT = scalePolynomialExactly(T, bound); /* boundTimesT = |T|*ell*(1+accuracy/2) */
   
-  /* Compute (build) s1 = bound - (p - T) and s2 = bound - (T - p) */
+  /* Compute (build) s1 = boundTimesT - (p - T) and s2 = boundTimesT - (T - p) */
   pMinusT = subPolynomialsExactly(poly, T);
   TMinusp = subPolynomialsExactly(T, poly);
   s1 = subPolynomialsExactly(boundTimesT, pMinusT);
@@ -1685,7 +1696,7 @@ int supnormRelativeNoSingularity(sollya_mpfi_t result, node *poly, node *func, s
    abs(u-l/l) <= accuracy
 
    If everything works fine, result is affected with an interval
-   safely enclosing the supremum norm. The return value is then ZERO
+   safely enclosing the supremum norm. The return value is then *zero*
    (i.e. SUPNORM_NO_ERROR).
 
    Otherwise, if an error occurs, the return value is non-zero. The
@@ -1725,7 +1736,11 @@ int supnormRelativeSingularity(sollya_mpfi_t result, node *poly, node *func, sol
   int deg, k, n, res;
   node *pTilde, *fTilde, *fTildeUnsimplified;
   mpfr_t kAsMpfr, mySingularity;
-  
+
+  /* Makes compiler happy */
+  k = -1;
+  /* End of compiler happiness */
+
   /* Determine the degree of poly */
   deg = getDegree(poly);
   if (deg < 0) {
@@ -1798,7 +1813,7 @@ int supnormRelativeSingularity(sollya_mpfi_t result, node *poly, node *func, sol
    abs(u-l/l) <= accuracy
 
    If everything works fine, result is affected with an interval
-   safely enclosing the supremum norm. The return value is then ZERO
+   safely enclosing the supremum norm. The return value is then *zero*
    (i.e. SUPNORM_NO_ERROR).
 
    Otherwise, if an error occurs, the return value is non-zero. The
@@ -1910,7 +1925,7 @@ int supnormRelative(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t 
 /* Compute the supremum norm on eps = p - f resp. eps = p/f - 1 over dom
 
    eps is defined according to the mode parameter:
-   if mode = 0 then eps = p - f else eps = p/f -1
+   if mode = ABSOLUTE then eps = p - f else eps = p/f -1
 
    The supremum norm is computed with an enclosure error less than accuracy,
    i.e. the obtained interval [l,u] satisfies in the end:
@@ -1918,7 +1933,7 @@ int supnormRelative(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t 
    abs(u-l/l) <= accuracy
 
    If everything works fine, result is affected with an interval
-   safely enclosing the supremum norm. The return value is then ZERO
+   safely enclosing the supremum norm. The return value is then *zero*
    (i.e. SUPNORM_NO_ERROR).
 
    Otherwise, if an error occurs, the return value is non-zero. The
@@ -1947,7 +1962,7 @@ int supnormRelative(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t 
 int supremumNormInner(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom, int mode, mpfr_t accuracy, mp_prec_t prec, mpfr_t bisectPoint) {
   int res;
 
-  if (mode == 0) {
+  if (mode == ABSOLUTE) {
     res = supnormAbsolute(result,poly,func,dom,accuracy,prec,bisectPoint);
   } else {
     res = supnormRelative(result,poly,func,dom,accuracy,prec,bisectPoint);
@@ -1959,7 +1974,7 @@ int supremumNormInner(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_
 /* Compute the supremum norm on eps = p - f resp. eps = p/f - 1 over [a,b]
 
    eps is defined according to the mode parameter:
-   if mode = 0 then eps = p - f else eps = p/f -1
+   if mode = ABSOLUTE then eps = p - f else eps = p/f -1
 
    The supremum norm is computed with an enclosure error less than accuracy,
    i.e. the obtained interval [l,u] satisfies in the end:
@@ -1967,7 +1982,7 @@ int supremumNormInner(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_
    abs(u-l/l) <= accuracy
 
    If everything works fine, result is affected with an interval
-   safely enclosing the supremum norm. The return value is then ZERO
+   safely enclosing the supremum norm. The return value is then *zero*
    (i.e. SUPNORM_NO_ERROR).
 
    Otherwise, if an error occurs, the return value reflects the last
@@ -2103,7 +2118,7 @@ int supremumNormBisectInner(sollya_mpfi_t result, node *poly, node *func, mpfr_t
 /* Compute the supremum norm on eps = p - f resp. eps = p/f - 1 over [a,b]
 
    eps is defined according to the mode parameter:
-   if mode = 0 then eps = p - f else eps = p/f -1
+   if mode = ABSOLUTE then eps = p - f else eps = p/f -1
 
    The supremum norm is computed with an enclosure error less than accuracy,
    i.e. the obtained interval [l,u] satisfies in the end:
@@ -2195,7 +2210,7 @@ int supremumNormBisect(sollya_mpfi_t result, node *poly, node *func, mpfr_t a, m
    i.e. evaluate abs(eps) at a.
 
    eps is defined according to the mode parameter:
-   if mode = 0 then eps = p - f else eps = p/f -1
+   if mode = ABSOLUTE then eps = p - f else eps = p/f -1
 
    The supremum norm is computed with an enclosure error less than accuracy,
    i.e. the obtained interval [l,u] satisfies in the end:
@@ -2224,7 +2239,7 @@ int supremumNormDegenerate(sollya_mpfi_t result, node *poly, node *func, mpfr_t 
   int tempRes;
   mpfr_t absAccuracy;
 
-  if (mode == 0) {
+  if (mode == ABSOLUTE) {
     /* Construct absEps = abs(poly - func) */
     absEps = makeAbs(makeSub(copyTree(poly),copyTree(func)));
   } else {
@@ -2348,7 +2363,7 @@ int hasOnlyMpqCoefficients(node *poly) {
 /* Compute the supremum norm on eps = p - f resp. eps = p/f - 1 over dom
 
    eps is defined according to the mode parameter:
-   if mode = 0 then eps = p - f else eps = p/f -1
+   if mode = ABSOLUTE then eps = p - f else eps = p/f -1
 
    The supremum norm is computed with an enclosure error less than accuracy,
    i.e. the interval [l,u] obtained satisfies in the end:
