@@ -1,3 +1,39 @@
+r1064
+Enabled parsing of long lists by reversing the recursion in the parser
+
+r1080
+Tried to address the bug "[#10657] Shifting a polynomial in Horner
+form consumes all the memory"
+
+Changes from version 2.0 to 2.9:
+================================
+Changes of syntax and output:
+  *
+
+Major new functionnalities:
+  * Added supnorm command
+  * Added libraryconstant command
+  * Added implementconstant command
+  * Added function command for turning procedures into functions
+  * Added support for user-defined structures into the Sollya language
+  * Added min and max commands
+
+Minor new functionnalities:
+  * Added --warnonstderr, --warninfile and --warninfileappend options to Sollya
+  * Added MPFR, GMP and MPFI version printing to version and --help
+
+Improvements in internal handling:
+  * Equality and inequality tests optimized when simple interval evaluation allows the result to be immediately decided upon.
+  * Added a wrapper around MPFI for interval arithmetic computations within Sollya. As a consequence, the behaviors of Sollya and MPFI on some operations may now be different. See the new Appendix in the user's manual.
+  * For the users of libsollya: new sollya_mpfi_t type must now be used instead of mpfi_t. Currently, they are exactly the same type, but they might differ in future versions.
+
+Others:
+  * Multiplications, divisions or powers involving infinities, zeros, or NaNs now produce different results, compared to older versions of Sollya. This is documented in the new Appendix of the user's manual.
+
+And some bugs fixed.
+
+----------------------------------------------------------------------------------------------------------------------------
+
 Changes from version 1.1 to version 2.0:
 ========================================
 Changes of syntax and output:
