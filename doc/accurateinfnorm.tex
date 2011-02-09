@@ -27,6 +27,14 @@ Parameters:
    If given, the fourth and further arguments of the command \textbf{accurateinfnorm},
    \emph{exclusion range 1} through \emph{exclusion range n} the infinity norm of
    the function \emph{function} is not to be considered on.
+
+\item Users should be aware about the fact that the algorithm behind
+   \textbf{accurateinfnorm} is highly inefficient and that other, better suited
+   algorithms, such as \textbf{supnorm}, are available inside \sollya. As a
+   matter of fact, while \textbf{accurateinfnorm} is maintained for compatibility reasons
+   with legacy \sollya codes, users are advised to avoid using \textbf{accurateinfnorm}
+   in new \sollya scripts and to replace it, where possible, by the
+   \textbf{supnorm} command.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]

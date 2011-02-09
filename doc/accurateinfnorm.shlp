@@ -23,6 +23,14 @@ If given, the fourth and further arguments of the command $COMMAND,
 <exclusion range 1> through <exclusion range n> the infinity norm of
 the function <function> is not to be considered on.
 
+#DESCRIPTION
+Users should be aware about the fact that the algorithm behind
+$COMMAND is highly inefficient and that other, better suited
+algorithms, such as $SUPNORM, are available inside $SOLLYA. As a
+matter of fact, while $COMMAND is maintained for compatibility reasons
+with legacy $SOLLYA codes, users are advised to avoid using $COMMAND
+in new $SOLLYA scripts and to replace it, where possible, by the
+$SUPNORM command.
 
 #EXAMPLE 
 p = remez(exp(x), 5, [-1;1]);

@@ -40,21 +40,21 @@ Parameters:
    \textbf{taylorrecursions} and \textbf{hopitalrecursions}. The contribution of each variable is 
    not easy even to analyse.
    \begin{itemize}
-   \item  The algorithm uses interval arithmetic with precision \textbf{prec}. The
+   \item The algorithm uses interval arithmetic with precision \textbf{prec}. The
      precision should thus be set high enough to ensure that no critical
      cancellation will occur.
-   \item  When an evaluation is performed on an interval $[a,\,b]$, if the result
+   \item When an evaluation is performed on an interval $[a,\,b]$, if the result
      is considered being too large, the interval is split into $[a,\,\frac{a+b}{2}]$
      and $[\frac{a+b}{2},\,b]$ and so on recursively. This recursion step
      is  not performed if the $(b-a) < \delta \cdot |I|$ where $\delta$ is the value
      of variable \textbf{diam}. In other words, \textbf{diam} controls the minimum length of an
      interval during the algorithm.
-   \item  To perform the evaluation of a function on an interval, Taylor's rule is
+   \item To perform the evaluation of a function on an interval, Taylor's rule is
      applied, e.g. $f([a,b]) \subseteq f(m) + [a-m,\,b-m] \cdot f'([a,\,b])$
      where $m=\frac{a+b}{2}$. This rule is recursively applied $n$ times
      where $n$ is the value of variable \textbf{taylorrecursions}. Roughly speaking,
      the evaluations will avoid decorrelation up to order $n$.
-   \item  When a function of the form $\frac{g}{h}$ has to be evaluated on an
+   \item When a function of the form $\frac{g}{h}$ has to be evaluated on an
      interval $[a,\,b]$ and when $g$ and $h$ vanish at a same point
      $z$ of the interval, the ratio may be defined even if the expression
      $\frac{g(z)}{h(z)}=\frac{0}{0}$ does not make any sense. In this case, L'Hopital's rule
@@ -70,6 +70,14 @@ Parameters:
         A certified infinity norm for the implementation of elementary functions\\
         LIP Research Report number RR2007-26\\
         http://prunel.ccsd.cnrs.fr/ensl-00119810\\
+
+\item Users should be aware about the fact that the algorithm behind
+   \textbf{infnorm} is inefficient in most cases and that other, better suited
+   algorithms, such as \textbf{supnorm}, are available inside \sollya. As a
+   matter of fact, while \textbf{infnorm} is maintained for compatibility reasons
+   with legacy \sollya codes, users are advised to avoid using \textbf{infnorm}
+   in new \sollya scripts and to replace it, where possible, by the
+   \textbf{supnorm} command.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]

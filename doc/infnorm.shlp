@@ -75,6 +75,14 @@ Please find a complete description in the following article:§§§\\§§
      LIP Research Report number RR2007-26§§§\\§§
      http://prunel.ccsd.cnrs.fr/ensl-00119810§§§\\§§
 
+#DESCRIPTION
+Users should be aware about the fact that the algorithm behind
+$COMMAND is inefficient in most cases and that other, better suited
+algorithms, such as $SUPNORM, are available inside $SOLLYA. As a
+matter of fact, while $COMMAND is maintained for compatibility reasons
+with legacy $SOLLYA codes, users are advised to avoid using $COMMAND
+in new $SOLLYA scripts and to replace it, where possible, by the
+$SUPNORM command.
 
 #EXAMPLE
 infnorm(exp(x),[-2;3]);
