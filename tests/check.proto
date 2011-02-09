@@ -1,7 +1,7 @@
 TEST=0
 for i in $TESTFILES
 do
- if ! $SOLLYA < $i | diff - $i.output > /dev/null
+ if ! $SOLLYA < $i | diff - $i.reference > /dev/null
  then
      echo $i failed
      TEST=1

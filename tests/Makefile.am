@@ -1,4 +1,4 @@
-EXTRA_DIST= check.sollya checkTMandAD.sollya check.sollya.output timecheck.sollya timecheck.sollya.output check.proto
+EXTRA_DIST= check.sollya checkTMandAD.sollya check.sollya.reference timecheck.sollya timecheck.sollya.reference check.proto
 
 TESTS_ENVIRONMENT=$(SHELL) 
 TESTS= check.sh 
