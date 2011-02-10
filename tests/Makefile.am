@@ -1,9 +1,9 @@
-EXTRA_DIST= check.sollya checkTMandAD.sollya check.sollya.reference timecheck.sollya timecheck.sollya.reference check.proto
+EXTRA_DIST= check.proto timecheck.sollya timecheck.sollya.reference check001.sollya check002.sollya check003.sollya check004.sollya check005.sollya check006.sollya check007.sollya check008.sollya check009.sollya check010.sollya check011.sollya check012.sollya check013.sollya check014.sollya check015.sollya check001.sollya.reference check002.sollya.reference check003.sollya.reference check004.sollya.reference check005.sollya.reference check006.sollya.reference check007.sollya.reference check008.sollya.reference check009.sollya.reference check010.sollya.reference check011.sollya.reference check012.sollya.reference check013.sollya.reference check014.sollya.reference check015.sollya.reference
 
 TESTS_ENVIRONMENT=$(SHELL) 
 TESTS= check.sh 
 
-TESTFILES= check.sollya timecheck.sollya
+TESTFILES= timecheck.sollya check001.sollya check002.sollya check003.sollya check004.sollya check005.sollya check006.sollya check007.sollya check008.sollya check009.sollya check010.sollya check011.sollya check012.sollya check013.sollya check014.sollya check015.sollya 
 
 .PHONY: $(top_builddir)/sollya
 
