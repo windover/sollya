@@ -1,3 +1,5 @@
+/* Set of tests for TMandAD */
+
 check = proc(L) {
   var i;
   for i in L do sup(i)-inf(i);

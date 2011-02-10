@@ -1,3 +1,5 @@
+/* Set of tests for supnorm */
+
 print("=============== Check Supnorm #1 ================");//passes
 p = remez(exp(x), 5, [-1;1]);
 midpointmode=on!;
