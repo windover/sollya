@@ -953,6 +953,7 @@ void restartTool() {
   freeFunctionLibraries();
   freeConstantLibraries();
   freeProcLibraries();
+  mpfr_free_cache();
   initToolDefaults();
   parseMode();
 }
