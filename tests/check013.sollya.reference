@@ -192,6 +192,7 @@ false
 true
 true
 Warning: equality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.
+Warning: equality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.
 true
 Warning: inequality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.
 true
