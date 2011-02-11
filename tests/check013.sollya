@@ -226,7 +226,10 @@ print("=============== Test number 250 ================");
 1b-150<=1b-150;
 (1b-150 - 1b-1000)<=1b-150;
 
+/* The computation is run once for filling MPFR chache */
+test=(log2(10)==1/log10(2));
 
+/* Now we can safely compare the timings of several tests */
 t1 = time(test=(log2(10)==1/log10(2)));
 test;
 t2 = time(test=(log2(10)<=1/log10(2)));
