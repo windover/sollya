@@ -12,6 +12,17 @@ AC_PROG_YACC
 AC_PROG_CC
 AC_PROG_CXX 
 AM_PROG_CC_C_O
+AC_LANG_PUSH([C++])
+AC_MSG_CHECKING([whether C++ compiler works])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
+[[]] 
+[[]]
+, [[exit(0);]])],
+[AC_MSG_RESULT(yes) 
+],[
+AC_MSG_ERROR(no)		
+])
+AC_LANG_POP([C++])	
 AC_PROG_LEX
 if test "$LEX" != flex; then
   LEX="$SHELL $missing_dir/missing flex"
@@ -52,6 +63,7 @@ fi
 fi
 
 # withs...
+FPLLLVERSIONSTRING=""
 
 WITH_LIB_GIVEN="no"
 AC_ARG_WITH(gmp-include,
@@ -86,16 +98,20 @@ AC_ARG_WITH(mpfr,
 
 AC_ARG_WITH(fplll-include,
    [  --with-fplll-include=DIR  fplll include directory ],
-   AM_CPPFLAGS="$AM_CPPFLAGS -I$withval")
+   [AM_CPPFLAGS="$AM_CPPFLAGS -I$withval"
+    FPLLLVERSIONSTRING=", --with-fplll-include given as '$withval'"
+   ])
 AC_ARG_WITH(fplll-lib,
    [  --with-fplll-lib=DIR      fplll lib directory ], [
    AM_LDFLAGS="$AM_LDFLAGS -L$withval"
+   FPLLLVERSIONSTRING=", --with-fplll-lib given as '$withval'"
    WITH_LIB_GIVEN="yes"
   ])
 AC_ARG_WITH(fplll,
    [  --with-fplll=DIR          fplll install directory ], [
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
+   FPLLLVERSIONSTRING=", --with-fplll given as '$withval'"
    WITH_LIB_GIVEN="yes"
   ])
 
@@ -220,31 +236,57 @@ AC_CHECK_LIB([xml2], [xmlTextReaderIsEmptyElement], [], AC_MSG_ERROR([libxml2 un
 #Special check for fplll
 FPLLLUSABLE="yes"
 FPLLLSPECIALINCLUDE="no"
+FPLLLISREALLIB="yes"
 AC_LANG_PUSH([C++])
-AC_MSG_CHECKING([for fplll support])
-AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
+AC_MSG_CHECKING([if fplll is a real library to be linked in])
+FPLLLOLDCFLAGS="$CFLAGS"
+FPLLLOLDCPPFLAGS="$CPPFLAGS"
+FPLLLOLDLDFLAGS="$LDFLAGS"
+LDFLAGS="-lfplll $LDFLAGS"	
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
+[[#include <fplll.h>]] 
+[[#include <gmp.h>]]
+, [[ZZ_mat<mpz_t> M(3, 3); M.gen_uniform(3); lllReduction(M, 0.99, 0.51, LM_WRAPPER); return 0;]])],
+[AC_MSG_RESULT(yes) 
+],[FPLLLISREALLIB="no"
+AC_MSG_RESULT(no) ])
+CFLAGS="$FPLLLOLDCFLAGS"
+CPPFLAGS="$FPLLLOLDCPPFLAGS"
+LDFLAGS="$FPLLLOLDLDFLAGS"
+if [[ $FPLLLISREALLIB == "no" ]] ; then
+AC_MSG_CHECKING([for fplll support, fplll being just a header file])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
 [[#include <fplll.h>]] 
 [[#include <gmp.h>]]
 , [[ZZ_mat<mpz_t> * M; M = new ZZ_mat<mpz_t>(3,3); if(M!=NULL) exit(0); else exit(1);]])],
 [AC_MSG_RESULT(yes) 
-],[FPLLLUSABLE="no"])
-
+FPLLLVERSIONSTRING="FPLLL: just a header file, directly in include directory$FPLLLVERSIONSTRING"
+],[FPLLLUSABLE="no"
+AC_MSG_RESULT(no) 
+])
+else
+# Add -lfplll to LFLAGS
+AM_LDFLAGS="-lfplll $AM_LDFLAGS"	
+FPLLLVERSIONSTRING="FPLLL: a real library, linked with -lfplll$FPLLLVERSIONSTRING"
+fi
 if [[ $FPLLLUSABLE == "no" ]] ; then
 FPLLLSPECIALINCLUDE="yes"
-AC_LANG_PUSH([C++])
-AC_MSG_CHECKING([for Debian-like fplll support])
-AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
+AC_MSG_CHECKING([for Debian-like fplll support, fplll being just a header file])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
 [[#include <fplll/fplll.h>]] 
 [[#include <gmp.h>]]
 , [[ZZ_mat<mpz_t> * M; M = new ZZ_mat<mpz_t>(3,3); if(M!=NULL) exit(0); else exit(1);]])],
 [AC_MSG_RESULT(yes) 
 FPLLLSPECIALINCLUDE="yes"
+FPLLLVERSIONSTRING="FPLLL: just a header file, in a subdirectory of the include directory (Debian-like)$FPLLLVERSIONSTRING"
 ],[
 if [[ $WITH_LIB_GIVEN == "yes" ]] ; then 
 AC_MSG_WARN([fplll found unusable during configure. However, as dynamically linked libraries are given, libtool used for compilation might fix up the problem during compilation. (see README)])
 FPLLLSPECIALINCLUDE="no"
+FPLLLVERSIONSTRING="$FPLLLVERSIONSTRING, libtool fixing a problem with dynamically linked libraries"
 else
 AC_MSG_ERROR([fplll unusable (or g++ too new -- see README)])
+FPLLLVERSIONSTRING="FPLLL: unusable or g++ too new, $FPLLLVERSIONSTRING"
 fi
 ])
 fi
@@ -253,6 +295,7 @@ AC_DEFINE([HAVE_SPECIAL_FPLLL_INCLUDE],[1],[Define for determining a special ver
 else
 AC_DEFINE([HAVE_SPECIAL_FPLLL_INCLUDE],[0],[Define for determining a special version of FPLLL])
 fi
+AC_DEFINE_UNQUOTED([HAVE_FPLLL_VERSION_STRING],["$FPLLLVERSIONSTRING"],[Define a kind of a version string for FPLLL])
 AC_LANG_POP([C++])	
 
 
