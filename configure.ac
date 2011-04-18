@@ -280,14 +280,8 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
 FPLLLSPECIALINCLUDE="yes"
 FPLLLVERSIONSTRING="FPLLL: just a header file, in a subdirectory of the include directory (Debian-like)$FPLLLVERSIONSTRING"
 ],[
-if [[ $WITH_LIB_GIVEN == "yes" ]] ; then 
-AC_MSG_WARN([fplll found unusable during configure. However, as dynamically linked libraries are given, libtool used for compilation might fix up the problem during compilation. (see README)])
-FPLLLSPECIALINCLUDE="no"
-FPLLLVERSIONSTRING="$FPLLLVERSIONSTRING, libtool fixing a problem with dynamically linked libraries"
-else
 AC_MSG_ERROR([fplll unusable (or g++ too new -- see README)])
 FPLLLVERSIONSTRING="FPLLL: unusable or g++ too new, $FPLLLVERSIONSTRING"
-fi
 ])
 fi
 if [[ $FPLLLSPECIALINCLUDE == "yes" ]] ; then 
