@@ -55,6 +55,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
+#include <stdio.h>
 #include <sys/wait.h>
 #include <dlfcn.h>
 #include <gmp.h>
@@ -73,8 +74,9 @@ extern int fileNumber;
 
 int bashExecute(char *command) {
   int i;
+  fflush(NULL);
   i = system(command);
-
+  fflush(NULL);
   return WEXITSTATUS(i);
 }
 
