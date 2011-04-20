@@ -126,6 +126,8 @@ extern char *constBuffer;
 extern char *constBuffer2;
 extern node* parsedThing;
 extern int promptToBePrinted;
+extern int lastWasSyntaxError;
+extern int lastCorrectlyExecuted;
 extern int helpNotFinished;
 extern char *tempString;
 extern char *tempString2;

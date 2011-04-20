@@ -115,6 +115,8 @@ chain *readStackTemp = NULL;
 chain *readStack2 = NULL;
 void *scanner = NULL;
 int promptToBePrinted = 0;
+int lastWasSyntaxError = 0;
+int lastCorrectlyExecuted = 0;
 int helpNotFinished = 0;
 int noColor = 0;
 
@@ -172,7 +174,7 @@ extern void yylex_destroy(void *);
 extern int yylex_init(void **);
 extern int yylex(void *);
 extern void yyset_in(FILE *, void *);
-
+extern int parserCheckEof();
 
 #define BACKTRACELENGTH 100
 
@@ -188,7 +190,7 @@ void makeToolDie() {
     inputFileOpened = 0;
   }
 
-  exit(1);
+  exit(2);
 }
 
 void considerDyingOnError() {
@@ -576,6 +578,7 @@ void carriageReturnLexed() {
 void newTokenLexed() {
   helpNotFinished = 0;
   promptToBePrinted = 0;
+  lastCorrectlyExecuted = 0;
 }
 
 // Precondition: fd can only be one of stdout and stderr
@@ -1160,6 +1163,7 @@ int general(int argc, char *argv[]) {
   int doNotModifyStackSize;
   int repeatSetRLimit;
   int lastWasError;
+  int finishedBeforeParsing;
 
   doNotModifyStackSize = 0;
   inputFileOpened = 0;
@@ -1303,9 +1307,12 @@ int general(int argc, char *argv[]) {
   helpNotFinished = 0;
   printPrompt();
   lastWasError = 0;
+  lastCorrectlyExecuted = 0;
   while (1) {
     executeAbort = 0;
     parsedThing = NULL;
+    lastWasSyntaxError = 0;
+    finishedBeforeParsing = parserCheckEof();
     parseAbort = yyparse(scanner);
     lastWasError = 0;
     if (parsedThing != NULL) {
@@ -1331,6 +1338,7 @@ int general(int argc, char *argv[]) {
         }
 	pushTimeCounter();
 	executeAbort = executeCommand(parsedThing);
+	lastCorrectlyExecuted = 1;
 	popTimeCounter("full execution of the last parse chunk");
 	if((!timecounting) && (timeStack!=NULL)) {
 	  freeCounter();
@@ -1388,7 +1396,15 @@ int general(int argc, char *argv[]) {
     warnFile = NULL;
   }
 
-  if (lastWasError) return 1; else return 0;
+  if (lastWasError) {
+    if (lastCorrectlyExecuted) {
+      return 3;
+    } else {
+      return 4;
+    }
+  } else {
+    return 0;
+  }
 }
 
 #undef malloc

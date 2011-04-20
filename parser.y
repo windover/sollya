@@ -86,8 +86,18 @@ void yyerror(char *message) {
     printMessage(1,"Warning: %s.\nThe last symbol read has been \"%s\".\nWill skip input until next semicolon after the unexpected token. May leak memory.\n",message,str);
     free(str);
     promptToBePrinted = 1;
+    lastWasSyntaxError = 1;
     considerDyingOnError();
-  }
+  } 
+}
+
+int parserCheckEof() {
+  FILE *myFd;
+
+  myFd = yyget_in(scanner);
+  if (myFd == NULL) return 0;
+  
+  return feof(myFd);
 }
 
 // #define WARN_IF_NO_HELP_TEXT 1
