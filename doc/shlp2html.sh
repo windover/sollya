@@ -239,10 +239,18 @@ processDescriptions() {
 # This function supposes that $exampleFile is filled with the source code of an example
 # It process $exampleFile line by line. For each line, it outputs:
 #    > currentLine <br>
+# Note that the prompt " >" is displayed only when printPrompt=1. This accounts for the
+# cases when a command continues along several lines.
 # Then, it produces a script containing all the lines of the example until
 # the current one (included) and runs Sollya on it, producing $tempfile2.
 # Finally, it keeps only the trailing lines of this output (that correspond to the output
 # of the current line) and formats them.
+# The exit code of Sollya indicates if the command currently processed was complete or not.
+# If the exit code is 4, it means that Sollya died with a syntactically inexact command
+#  => hence the command is not complete and no prompt should be displayed for the
+#     next line.
+# Another exit code means that the command was successfully read and hence a prompt should
+# be displayed for the next line.
 # Once the example is completely processed, it closes the <div> (that has been opened by
 # function processExamples.
 processExampleFile() {
@@ -250,11 +258,19 @@ processExampleFile() {
  ilocal=1;
  countlocal=0;
  total=0;
+ printPrompt=1;
  while [ $ilocal -le $nLineslocal ]
  do
-   printf "&nbsp;&nbsp;&nbsp;&gt; " >> $target
+   if [ $printPrompt -eq 1 ]
+     then printf "&nbsp;&nbsp;&nbsp;&gt; " >> $target
+     else printf "&nbsp;&nbsp;&nbsp;&nbsp; " >> $target
+   fi
    cat $exampleFile | head -n $ilocal | tail -n 1 | sed -n 's/</\&lt;/g;p' | sed -n 's/>/\&gt;/g;p' | sed -n 's/$/<br>/;p' | sed -n 's/  /\&nbsp;\&nbsp;/g;p' | sed -n 's/\&nbsp; /\&nbsp;\&nbsp;/g;p'  >> $target
    printf "verbosity=0!; roundingwarnings=on!;""`head -n $ilocal $exampleFile`\n" | $sollyaBin > $tempfile2
+   if [ $? -eq 4 ]
+     then printPrompt=0
+     else printPrompt=1
+   fi
    sed -i -n 's/^/   /;p' $tempfile2
    total=`cat $tempfile2 | wc -l`
    countlocal=`expr $total - $countlocal`

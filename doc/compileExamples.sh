@@ -29,18 +29,26 @@ main() {
     i=1;
     count=0;
     total=0;
-    
+    printPrompt=1;
     while [ $i -le $nLines ]
     do
       if ! cat $exampleFile | head -n $i | tail -n 1 | grep "/\*" > /dev/null
       then
-        printf "> " >> $targetTeX
-	printf "&nbsp;&nbsp;&nbsp;&gt; " >> $targetHTML
+        if [ $printPrompt -eq 1 ]
+          then printf "> " >> $targetTeX
+               printf "&nbsp;&nbsp;&nbsp;&gt; " >> $targetHTML
+          else printf "  " >> $targetTeX
+               printf "&nbsp;&nbsp;&nbsp;&nbsp; " >> $targetHTML
+        fi
 
 	cat $exampleFile | head -n $i | tail -n 1 | sed -n 's/\t/    /g;p' | sed -n 's/\(..............................................................................\)/\1\n/g;p' >> $targetTeX
 	cat $exampleFile | head -n $i | tail -n 1 | sed -n 's/$/<br>/;p' | sed -n 's/  /\&nbsp;\&nbsp;/g;p' | sed -n 's/\&nbsp; /\&nbsp;\&nbsp;/g;p'  >> $targetHTML
 
 	printf "%b" "roundingwarnings=on!;""`head -n $i $exampleFile`\n" | $sollyaBin > $tempfile
+        if [ $? -eq 4 ]
+          then printPrompt=0
+          else printPrompt=1
+        fi
 	sed -i -n 's/^//;p' $tempfile
 	total=`cat $tempfile | wc -l`
 	count=`expr $total - $count`

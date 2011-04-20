@@ -225,11 +225,19 @@ processExampleFile() {
  ilocal=1;
  countlocal=0;
  total=0;
+ printPrompt=1;
  while [ $ilocal -le $nLineslocal ]
  do
-   printf "> " >> $target
+   if [ $printPrompt -eq 1 ]
+     then printf "> " >> $target
+     else printf "  " >> $target
+   fi
    cat $exampleFile | head -n $ilocal | tail -n 1 | sed -n 's/\t/    /g;p' | sed -n 's/\(..............................................................................\)/\1\n/g;p' >> $target
    printf "verbosity=0!; roundingwarnings=on!;""`head -n $ilocal $exampleFile`\n"| $sollyaBin > $tempfile2
+   if [ $? -eq 4 ]
+     then printPrompt=0
+     else printPrompt=1
+   fi
    sed -i -n 's/^//;p' $tempfile2
    total=`cat $tempfile2 | wc -l`
    countlocal=`expr $total - $countlocal`

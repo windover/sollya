@@ -10,9 +10,9 @@ The precision has been set to 50 bits.
 > derivativeZeros = inf(d).:derivativeZeros:.sup(d);
 > maximum=0;
 > for t in derivativeZeros do {
->    r = evaluate(abs(p-f), t);
->    if r > maximum then { maximum=r; argmaximum=t; };
-> };
+     r = evaluate(abs(p-f), t);
+     if r > maximum then { maximum=r; argmaximum=t; };
+  };
 > print("The infinity norm of", p-f, "is", maximum, "and is reached at", argmaxi
 mum);
 The infinity norm of -0.416265572875373 + x * (-1.798067209218835 + x * (-3.8971
