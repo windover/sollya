@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title>Users' manual for the Sollya tool - Release 2.1-alpha</title>
+<title>Users' manual for the Sollya tool - Release 3.0-alpha</title>
 <meta name="author" content="Sylvain Chevillard, Christoph Lauter">
 <meta name="copyright" content="2009-2011 Laboratoire de l'Informatique du Parallélisme - UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668; LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France; Laboratoire d'Informatique de Paris 6, Équipe PEQUAN, UPMC Université Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France; INRIA Sophia-Antipolis Méditerranée, APICS Team, Sophia-Antipolis, France">
 <meta name="keywords" content="help, sollya, User's Manual">
@@ -20,7 +20,7 @@ h2 { font-size: large;}
 <body>
 
 <p>
-<h1 style="text-align:center">Users' manual for the <span class="sollya">Sollya</span> tool - Release 2.9</h1>
+<h1 style="text-align:center">Users' manual for the <span class="sollya">Sollya</span> tool - Release 3.0-alpha</h1>
 <div style="text-align:center; line-height: 1.5em;">Sylvain Chevillard (<a href="sylvain.chevillard@ens-lyon.org">sylvain.chevillard@ens-lyon.org</a>),</div>
 <div style="text-align:center; line-height: 1.5em;">Christoph Lauter (<a href="christoph.lauter@ens-lyon.org; line-height: 1.5em;">christoph.lauter@ens-lyon.org</a>)</div>
 <div style="text-align:center">and Mioara Joldeș (<a href="mioara.joldes@ens-lyon.fr">mioara.joldes@ens-lyon.fr</a>).</div>
@@ -760,7 +760,8 @@ following examples:
 <p>
 <?php include("introExample30.php"); ?>
 <p>
-<h1>7 - Functional language elements: procedures</h1>
+<h1>7 - Functional language elements: procedures and pattern matching</h1>
+<h2>7.1 - Procedures</h2>
 <p>
 <span class="sollya">Sollya</span> has some elements of functional languages. In order to 
 avoid confusion with mathematical functions, the associated 
@@ -812,6 +813,196 @@ precision valid at this moment.
 <span class="sollya">Sollya</span> also supports external procedures, i.e. procedures written in
 <code>C</code> (or some other language) and dynamically bound to <span class="sollya">Sollya</span>
 identifiers. See <a href="help.php?name=externalproc&amp;goBack=none">externalproc</a> for details.
+
+<h2>7.2 - Pattern matching</h2>
+<p>
+Starting with version 3.0, <span class="sollya">Sollya</span> supports matching expressions with
+expression patterns. This feature is important for an extended
+functional programming style. Further, and most importantly, it allows
+expression trees to be recursively decomposed using native constructs
+of the <span class="sollya">Sollya</span> language. This means no help from external procedures
+or other compiled-language mechanisms is needed here anymore.
+<p>
+Basically, pattern matching supports relies on one <span class="sollya">Sollya</span> construct:
+<div style="margin-left: 50px;">
+  <code class="key">match <em>expr</em> with<br>
+  <em>pattern1</em> : (<em>return-expr1</em>)<br>
+  <em>pattern2</em> : (<em>return-expr2</em>)<br>
+  ... <br>
+  <em>patternN</em> : (<em>return-exprN</em>)</code>
+</div>
+
+<p>That construct has the following semantic: try to match the
+expression <em>expr</em> with the patterns <em>pattern1</em> through <em>patternN</em>,
+ proceeding in natural order. If a pattern
+<em>patternI</em> is found that matches, evaluate the whole
+<code class="key">match&nbsp;...&nbsp;with</code> construct to the return expression <em>return-exprI</em>
+associated with the matching pattern <em>patternI</em>. If no matching
+pattern is found, display an error warning and return <code class="key">error</code>.
+<p>
+Matching a pattern means the following: 
+<ul>
+  <li> If a pattern does not contain any programming-language-level
+    variables (different from the free mathematical variable), it
+    matches expressions that are syntactically equal to itself. For
+    instance, the pattern <code class="key">exp(sin(3&nbsp;*&nbsp;x))</code> will match the
+    expression <code class="key">exp(sin(3&nbsp;*&nbsp;x))</code>.
+  </li><li> If a pattern does contain variables, it matches an expression
+    <em>expr</em> if these variables can be bound to subexpressions of
+    <em>expr</em> such that once the pattern is evaluated with that
+    variable binding, it becomes syntactically equal to the expression
+    <em>expr</em>. For instance, the pattern <code class="key">exp(sin(a&nbsp;*&nbsp;x))</code> will
+    match the expression <code class="key">exp(sin(3&nbsp;*&nbsp;x))</code> as it is possible to
+    bind <code class="key">a</code> to <code class="key">3</code> such that <code class="key">exp(sin(a&nbsp;*&nbsp;x))</code> evaluates
+    to <code class="key">exp(sin(3&nbsp;*&nbsp;x))</code>.
+</li></ul>
+<p>
+If a pattern <em>patternI</em> with variables is matched in a
+<code class="key">match&nbsp;...&nbsp;with</code> construct, the variables in the pattern stay bound
+during the evaluation of the corresponding return expression <em>return-exprI</em>.
+ This allows subexpressions to be extracted from
+expressions and/or recursively handled as needed.
+<p>
+The following examples illustrate the basic principles of pattern
+matching in <span class="sollya">Sollya</span>:
+<p>
+<?php include("introExample50.php"); ?>
+<p>
+As <span class="sollya">Sollya</span> is not a purely functional language, the
+<code class="key">match ...&nbsp;with</code> construct can also be used in a more imperative style,
+which makes it become closer to constructs like <code class="key">switch</code> in
+<code>C</code> or <code>Perl</code>. In lieu of a simple return expression, a whole
+block of imperative statements can be given. The expression to be
+returned by that block is indicated in the end of a the block, using
+the <code class="key">return</code> keyword. That syntax is illustrated in the next
+example:
+<p>
+<?php include("introExample51.php"); ?>
+<p>
+In the case when no return statement is indicated for a
+statement-block in a <code class="key">match&nbsp;...&nbsp;with</code> construct, the construct
+evaluates to the special value <code class="key">void</code> if that pattern matches. 
+<p>
+In order to well understand pattern matching in <span class="sollya">Sollya</span>, it is
+important to realize the meaning of variables in patterns. This
+meaning is different from the one usually found for variables. In a
+pattern, variables are never evaluated to whatever they might have set
+before the pattern is executed. In contrast, all variables in patterns
+are new, free variables that will freshly be bound to subexpressions
+of the matching expression. If a variable of the same name already
+exists, it will be shadowed during the evaluation of the statement
+block and the return expression corresponding to the matching
+expression. This type of semantic implies that patterns can never be
+computed at run-time, they must always be hard-coded
+beforehand. However this is necessary to make pattern matching
+context-free.
+<p>
+As a matter of course, all variables figuring in the expression <em>expr</em>
+ to be matched are evaluated before pattern matching is
+attempted. In fact, <em>expr</em> is a usual <span class="sollya">Sollya</span> expression, not a
+pattern.
+<p>
+In <span class="sollya">Sollya</span>, the use of variables in patterns does not need to be
+linear. This means the same variable might appear twice or more in a
+pattern. Such a pattern will only match an expression if it contains
+the same subexpression, associated with the variable, in all places
+indicated by the variable in the pattern.
+<p>
+The following examples illustrate the use of variables in patterns in
+detail:
+<p>
+<?php include("introExample52.php"); ?>
+<p>
+<?php include("introExample53.php"); ?>
+<p>
+Pattern matching is meant to be a means to decompose expressions
+structurally. For this reason and in an analogous way to variables, no
+evaluation is performed at all on (sub-)expressions that form constant
+functions. As a consequence, patterns only match constant expressions
+only if they are structurally identical. For example <code class="key">5+1</code> only
+matches <code class="key">5+1</code> and not <code class="key">1+5</code>, <code class="key">3+3</code> nor <code class="key">6</code>.
+<p>
+This general rule on constant expressions admits one exception.
+Intervals in <span class="sollya">Sollya</span> can be defined using constant expressions as
+bounds. These bounds are immediately evaluated to floating-point
+constants, though. In order to permit pattern matching on intervals,
+constant expressions given as bounds of intervals that form patterns
+are evaluated before pattern matching. However, in order not conflict
+with the rules of no evaluation of variables, these constant
+expressions as bounds of intervals in patterns must not contain free
+variables.
+<p>
+<?php include("introExample54.php"); ?>
+<p>
+The <span class="sollya">Sollya</span> keyword <code class="key">default</code> has a special meaning in patterns.
+It acts like a wild-card, matching any (sub-)expression, as long as
+the whole expression stays correctly typed. Upon matching with
+<code class="key">default</code>, no variable gets bound. This feature is illustrated in
+the next example:
+<p>
+<?php include("introExample55.php"); ?>
+<p>
+In <span class="sollya">Sollya</span>, pattern matching is possible on the following <span class="sollya">Sollya</span>
+types and operations defined on them:
+<ul>
+<li> Expressions that define univariate functions, as explained above,
+</li><li> Intervals with one, two or no bound defined in the pattern by a variable,
+</li><li> Character sequences, literate or defined using the <code class="key">@</code> operator, possibly with a variable on one of the sides of the <code class="key">@</code> operator,
+</li><li> Lists, literate, literate with variables or defined using the <code class="key">.:</code>, <code class="key">:.</code> and <code class="key">@</code> operators, possibly with a variable on one of the sides of the <code class="key">@</code> operator or one or two variables for <code class="key">.:</code> and <code class="key">:.</code>,
+</li><li> Structures, literate or literate with variables, and
+</li><li> All other <span class="sollya">Sollya</span> objects, matchable with themselves (<code class="key">DE</code> matches <code class="key">DE</code>, <code class="key">on</code> matches <code class="key">on</code>, <code class="key">perturb</code> matches <code class="key">perturb</code> etc.)
+</li></ul>
+<p>
+<?php include("introExample56.php"); ?>
+<p>
+Concerning intervals, please pay attention to the fact that expressions involving 
+intervals are immediately evaluated and that structural pattern matching on functions
+on intervals is not possible. This point is illustrated in the next example:
+<p>
+<?php include("introExample57.php"); ?>
+<p>
+With respect to pattern matching on lists or character sequences
+defined using the <code class="key">@</code> operator, the following is to be mentionned:
+<ul>
+<li> Patterns like <code class="key">a @ b</code> are not allowed as they would need to
+  perform an ambiguous cut of the list or character sequence to be
+  matched. This restriction is maintained even if the variables (here
+  <code class="key">a</code> and <code class="key">b</code>) are constrained by other occurrences in the
+  pattern (for example in a list) which would make the cut
+  unambiguous.
+</li><li> Recursive use of the <code class="key">@</code> operator (even mixed with the
+  operators <code class="key">.:</code> and <code class="key">:.</code>) is possible under the condition
+  that there must not exist any other parenthezation of the term in
+  concatenations (<code class="key">@</code>) such that the rule of one single variable
+  for <code class="key">@</code> above gets violated. For instance,
+  <code class="key">( [| 1 |] @ a) @ (b @ [| 4 |])</code> is not possible as it can be re-parenthesized
+  <code class="key">[| 1 |] @ (a @ b) @ [| 4 |]</code>, which exhibits the ambiguous case.
+</li><li> For lists that are end-elliptic, i.e. prolongated to infinity,
+  the <code class="key">@</code> operator does not work for cases that would imply the
+  cut of a finite list at the end of an infinite list. It does however
+  work for all cases of cuts of infinite lists at the end of infinite
+  lists when the necessary suffix condition is fulfilled.
+</li></ul>
+
+<p>These points are illustrated in this example:
+
+<?php include("introExample58.php"); ?>
+<p>
+As mentionned above, pattern matching on <span class="sollya">Sollya</span> structures is
+possible. Patterns for such a match are given in a literately,
+i.e. using the syntax <code class="key">{ .a&nbsp;=&nbsp;<em>exprA</em>, .b&nbsp;=&nbsp;<em>exprB</em>,&nbsp;...&nbsp;}</code>. A structure pattern <em>sp</em> will be matched by a
+structure <em>s</em> iff that structure <em>s</em> contains at least all the
+elements (like <code class="key">.a</code>, <code class="key">.b</code> etc.) of the structure pattern
+<em>sp</em> and iff each of the elements of the structure <em>s</em> matches
+the pattern in the corresponding element of the structure pattern <em>sp</em>. The user should be aware that fact that the structure to be
+matched is only supposed to have at least the elements of the pattern
+but that it may contain more elements is a particular <span class="sollya">Sollya</span>
+feature. For instance with pattern matching, it is hence possible to
+ensure that access to particular elements will be possible in a
+particular code segment. The following example is meant to clarify
+this point:
+<p>
+<?php include("introExample59.php"); ?>
 
 <p><a name="commandsAndFunctions"></a>
 <h1>8 - Commands and functions</h1>

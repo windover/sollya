@@ -1,0 +1,25 @@
+match 5 + 1 with 
+    1 + 5 : ("One plus five")
+    6     : ("Six")
+    5 + 1 : ("Five plus one");
+
+match 6 with 
+    1 + 5 : ("One plus five")
+    6     : ("Six")
+    5 + 1 : ("Five plus one");
+  
+match 1 + 5 with 
+    1 + 5 : ("One plus five")
+    6     : ("Six")
+    5 + 1 : ("Five plus one");
+
+match [1; 5 + 1] with
+    [1; 1 + 5] : ("Interval from one to one plus five")
+    [1; 6]     : ("Interval from one to six")
+    [1; 5 + 1] : ("Interval from one to five plus one");
+
+match [1; 6] with
+    [1; 1 + 5] : ("Interval from one to one plus five")
+    [1; 6]     : ("Interval from one to six")
+    [1; 5 + 1] : ("Interval from one to five plus one");
+

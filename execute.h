@@ -281,6 +281,8 @@ extern void endBuffer(void);
 #define PROTOFLOATASSIGNMENTINSTRUCTURE 261
 #define IMPLEMENTCONST 262
 #define LIBRARYCONSTANTBINDING 263
+#define MATCH 264
+#define MATCHELEMENT 265
 
 
 int executeCommand(node *);
@@ -312,6 +314,7 @@ node *makePrintExpansion(node *thing);
 node *makeBashExecute(node *thing);
 node *makeExternalPlot(chain *thinglist);
 node *makeWrite(chain *thinglist);
+node *makeMatch(node *thing, chain *matchlist);
 node *makeNewFileWrite(node *thing, chain *thinglist);
 node *makeAppendFileWrite(node *thing, chain *thinglist);
 node *makeAsciiPlot(node *thing1, node *thing2);
@@ -506,6 +509,7 @@ node *makeExternalProc(char *, node *, chain *);
 node *makeUnit();
 node *makeVariableDeclaration(chain *stringlist);
 node *makeProc(chain *stringlist, node *body, node *returnVal);
+node *makeMatchElement(node *, node *, node *); 
 node *makeProcIllim(char *arg, node *body, node *returnVal);
 node *makeApply(node *thing, chain *thinglist);
 
@@ -517,5 +521,25 @@ int isEqualThing(node *tree, node *tree2);
 void fPrintThing(FILE *fd, node *thing);
 void printThing(node *thing);
 char *sPrintThing(node *thing);
+
+void freeEntryOnVoid(void *ptr);
+void *copyEntryOnVoid(void *ptr);
+int isCorrectlyTypedBaseSymbol(node *tree);
+int isExtendedPureTree(node *tree);
+int isPureTree(node *tree);
+int isRange(node *tree);
+int isMatchableList(node *tree);
+int isPureFinalEllipticList(node *);
+int isPureList(node *);
+int isEmptyList(node *);
+int isStructure(node *tree);
+int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal, int silent);
+int isMatchablePrepend(node *tree);
+int isMatchableAppend(node *tree);
+int isMatchableConcat(node *tree);
+int isMatchableStructure(node *tree);
+int associationContainsDoubleEntries(chain *assoc);
+node *evaluateThing(node *tree);
+
 
 #endif /* ifdef EXECUTE_H*/

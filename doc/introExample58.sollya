@@ -1,0 +1,22 @@
+match [| exp(sin(x)), sin(x), 4, DE(x), 9... |] with
+      exp(a) .: (a .: (([||] :. 4) @ (b @ [| 13... |]))) : 
+                         { "a = ", a, ", b = ", b; };
+
+match [| 1, 2, 3, 4, D... |] with 
+      a @ [| 4, D...|] : (a);
+
+match [| 1, 2, 3, 4, D... |] with 
+      a @ [| D...|] : (a);
+
+match [| 1, 2, 3, 4... |] with 
+      a @ [| 3...|] : (a);
+
+match [| 1, 2, 3, 4... |] with 
+      a @ [| 4...|] : (a);
+
+match [| 1, 2, 3, 4... |] with 
+      a @ [| 17...|] : (a);
+
+match [| 1, 2, 3, 4... |] with 
+      a @ [| 17, 18, 19 |] : (a)
+      default              : ("Something else");

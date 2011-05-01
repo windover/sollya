@@ -142,6 +142,7 @@ PREC            "prec"
 POINTS          "points"
 EXCLAMATION     "!"
 DOUBLECOLON     "::"
+COLON           ":"
 DOTCOLON        ".:"
 COLONDOT        ":."
 ASSIGNEQUAL     ":="
@@ -359,6 +360,9 @@ TRUE            "true"
 FALSE           "false"
 DEFAULT         "default"
 
+MATCH           "match"
+WITH            "with"
+
 RENAME          "rename"
 
 LENGTH          "length"
@@ -519,6 +523,7 @@ NOP             "nop"
 {NOP}	         			    {  return NOPTOKEN; }
 {AT}					    {  return ATTOKEN; }
 {DOUBLECOLON}				    {  return DOUBLECOLONTOKEN; }
+{COLON}  				    {  return COLONTOKEN; }
 {DOTCOLON}				    {  return DOTCOLONTOKEN; }
 {COLONDOT}				    {  return COLONDOTTOKEN; }
 
@@ -595,6 +600,8 @@ NOP             "nop"
 {TRUE}					    {  return TRUETOKEN; }
 {FALSE}					    {  return FALSETOKEN; }
 {DEFAULT}				    {  return DEFAULTTOKEN; }
+{MATCH} 				    {  return MATCHTOKEN; }
+{WITH}  				    {  return WITHTOKEN; }
 {HEAD}   				    {  return HEADTOKEN; }
 {ROUNDCORRECTLY}   		       	    {  return ROUNDCORRECTLYTOKEN; }
 {REVERT}   				    {  return REVERTTOKEN; }

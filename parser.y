@@ -106,7 +106,7 @@ int parserCheckEof() {
 
 %defines
 
-%expect 1
+%expect 2
 
 %pure_parser
 
@@ -158,6 +158,7 @@ int parserCheckEof() {
 %token  VERTBARTOKEN;
 %token  ATTOKEN;
 %token  DOUBLECOLONTOKEN;
+%token  COLONTOKEN;
 %token  DOTCOLONTOKEN;
 %token  COLONDOTTOKEN;
 %token  EXCLAMATIONEQUALTOKEN;
@@ -246,6 +247,8 @@ int parserCheckEof() {
 %token  TRUETOKEN;
 %token  FALSETOKEN;
 %token  DEFAULTTOKEN;
+%token  MATCHTOKEN;
+%token  WITHTOKEN;
 %token  ABSOLUTETOKEN;
 %token  DECIMALTOKEN;
 %token  RELATIVETOKEN;
@@ -380,7 +383,10 @@ int parserCheckEof() {
 %type <list>  variabledeclarationlist;
 %type <list>  identifierlist;
 %type <tree>  thing;
+%type <tree>  supermegaterm;
 %type <list>  thinglist;
+%type <list>  matchlist;
+%type <tree>  matchelement; 
 %type <list>  structelementlist;
 %type <association>  structelement;
 %type <other>  structelementseparator;
@@ -1047,7 +1053,17 @@ structelement:          DOTTOKEN IDENTIFIERTOKEN EQUALTOKEN thing
 			  }
 ;
 
-thing:                  megaterm
+thing:                  supermegaterm
+                         {
+			   $$ = $1;
+			 }
+                      | MATCHTOKEN supermegaterm WITHTOKEN matchlist
+		          {
+			    $$ = makeMatch($2,$4);
+			  }
+;
+
+supermegaterm:          megaterm
                           {
 			    $$ = $1;
 			  }
@@ -1438,6 +1454,53 @@ basicthing:             ONTOKEN
                           }
 ;
 
+matchlist:              matchelement
+                          {
+			    $$ = addElement(NULL,$1);
+			  }
+                      | matchelement matchlist
+		          {
+			    $$ = addElement($2,$1);
+			  }
+;
+
+matchelement:          thing COLONTOKEN beginsymbol variabledeclarationlist commandlist RETURNTOKEN thing SEMICOLONTOKEN endsymbol
+                          {
+			    $$ = makeMatchElement($1,makeCommandList(concatChains($4, $5)),$7);
+			  }
+                      | thing COLONTOKEN beginsymbol variabledeclarationlist commandlist endsymbol
+                          {
+			    $$ = makeMatchElement($1,makeCommandList(concatChains($4, $5)),makeUnit());
+			  }
+                      | thing COLONTOKEN beginsymbol variabledeclarationlist RETURNTOKEN thing SEMICOLONTOKEN endsymbol
+                          {
+			    $$ = makeMatchElement($1,makeCommandList($4),$6);
+			  }
+                      | thing COLONTOKEN beginsymbol variabledeclarationlist endsymbol
+                          {
+			    $$ = makeMatchElement($1,makeCommandList($4),makeUnit());
+			  }
+                      | thing COLONTOKEN beginsymbol commandlist RETURNTOKEN thing SEMICOLONTOKEN endsymbol
+                          {
+			    $$ = makeMatchElement($1,makeCommandList($4),$6);
+			  }
+                      | thing COLONTOKEN beginsymbol commandlist endsymbol
+                          {
+			    $$ = makeMatchElement($1,makeCommandList($4),makeUnit());
+			  }
+                      | thing COLONTOKEN beginsymbol RETURNTOKEN thing SEMICOLONTOKEN endsymbol
+                          {
+			    $$ = makeMatchElement($1, makeCommandList(addElement(NULL,makeNop())), $5);
+			  }
+                      | thing COLONTOKEN beginsymbol endsymbol
+                          {
+			    $$ = makeMatchElement($1, makeCommandList(addElement(NULL,makeNop())), makeUnit());
+			  }
+                      | thing COLONTOKEN LPARTOKEN thing RPARTOKEN
+		          {
+			    $$ = makeMatchElement($1, makeCommandList(addElement(NULL,makeNop())), $4);
+			  } 
+;
 
 constant:               CONSTANTTOKEN
                           {
@@ -3162,6 +3225,28 @@ help:                   CONSTANTTOKEN
 			    outputMode(); sollyaPrintf("Default value.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DEFAULT"
+#endif
+#endif
+                          }
+                      | MATCHTOKEN
+                          {
+#ifdef HELP_MATCH_TEXT
+			    outputMode(); sollyaPrintf(HELP_MATCH_TEXT);
+#else
+			    outputMode(); sollyaPrintf("match ... with ... construct.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for MATCH"
+#endif
+#endif
+                          }
+                      | WITHTOKEN
+                          {
+#ifdef HELP_WITH_TEXT
+			    outputMode(); sollyaPrintf(HELP_WITH_TEXT);
+#else
+			    outputMode(); sollyaPrintf("match ... with ... construct.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for WITH"
 #endif
 #endif
                           }

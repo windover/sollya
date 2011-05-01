@@ -42,9 +42,9 @@ x
 > print(exp(x));
 exp(x)
 > for i from 1 to 10 do {
->     print(i);
->     if (i == 5) then restart;
-> };
+      print(i);
+      if (i == 5) then restart;
+  };
 1
 2
 3
@@ -61,12 +61,12 @@ The for loop will no longer be executed.
 exp(x)
 > a = 3;
 > for i from 1 to 10 do {
->     print(i);
->     if (i == 5) then {
->         restart;
->         i = 7;
->     };
-> };
+      print(i);
+      if (i == 5) then {
+          restart;
+          i = 7;
+      };
+  };
 1
 2
 3

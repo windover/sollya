@@ -28,6 +28,7 @@ printf "</body>\n" >> $target
 
 ########################## Postprocessing ##########################
 sed -n -i 's/\\texttt{\([^}]*\)}/<code>\1<\/code>/g;p' $target
+sed -n -i 's/{\\tt \([^}]*\)}/<code>\1<\/code>/g;p' $target
 sed -n -i 's/\\com{\([^}]*\)}/<code class="com">\1<\/code>/g;p' $target
 sed -n -i 's/\\key{\([^}]*\)}/<code class="key">\1<\/code>/g;p' $target
 sed -n -i 's/\\rlwrap/<code>rlwrap<\/code>/g;p' $target
@@ -44,8 +45,8 @@ sed -n -i 's/^%\(.*\)/<!-- \1 -->/g;p' $target
 sed -n -i 's/\\copyright/\&copy;/g;p' $target
 sed -n -i 's/~/\&nbsp;/g;p' $target
 sed -n -i 's/\\emph{\([^}]*\)}/<em>\1<\/em>/g;p' $target
+sed -n -i 's/{\\it \([^}]*\)}/<em>\1<\/em>/g;p' $target
 sed -n -i 's/\\label{\([^}]*\)}//g;p' $target
-
 sed -n -i "s/\\\'E/É/g;p" $target
 sed -n -i "s/\\\'e/é/g;p" $target
 

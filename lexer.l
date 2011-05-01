@@ -144,6 +144,7 @@ PREC            "prec"
 POINTS          "points"
 EXCLAMATION     "!"
 DOUBLECOLON     "::"
+COLON           ":"
 DOTCOLON        ".:"
 COLONDOT        ":."
 ASSIGNEQUAL     ":="
@@ -360,6 +361,9 @@ WHILEDEF        "while"
 TRUE            "true"
 FALSE           "false"
 DEFAULT         "default"
+
+MATCH           "match"
+WITH            "with"
 
 RENAME          "rename"
 
@@ -597,6 +601,7 @@ NOP             "nop"
 {NOP}	         			    { newTokenLexed(); return NOPTOKEN; }
 {AT}					    { newTokenLexed(); return ATTOKEN; }
 {DOUBLECOLON}				    { newTokenLexed(); return DOUBLECOLONTOKEN; }
+{COLON}  				    { newTokenLexed(); return COLONTOKEN; }
 {DOTCOLON}				    { newTokenLexed(); return DOTCOLONTOKEN; }
 {COLONDOT}				    { newTokenLexed(); return COLONDOTTOKEN; }
 
@@ -673,6 +678,8 @@ NOP             "nop"
 {TRUE}					    { newTokenLexed(); return TRUETOKEN; }
 {FALSE}					    { newTokenLexed(); return FALSETOKEN; }
 {DEFAULT}				    { newTokenLexed(); return DEFAULTTOKEN; }
+{MATCH} 				    { newTokenLexed(); return MATCHTOKEN; }
+{WITH}  				    { newTokenLexed(); return WITHTOKEN; }
 {HEAD}   				    { newTokenLexed(); return HEADTOKEN; }
 {ROUNDCORRECTLY}   		       	    { newTokenLexed(); return ROUNDCORRECTLYTOKEN; }
 {REVERT}   				    { newTokenLexed(); return REVERTTOKEN; }

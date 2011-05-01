@@ -57,15 +57,15 @@ Parameters:
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > procedure EXP(X,n,p) {
->       var res, oldPrec;
->       oldPrec = prec;
->       prec = p!;
->       
->       res = exp(X);
->       
->       prec = oldPrec!;
->       return res;
-> };
+        var res, oldPrec;
+        oldPrec = prec;
+        prec = p!;
+        
+        res = exp(X);
+        
+        prec = oldPrec!;
+        return res;
+  };
 > f = function(EXP);
 > f(1);
 2.71828182845904523536028747135266249775724709369998

@@ -1,0 +1,19 @@
+match exp(x) with 
+    sin(x)    : ("Sine of x")
+    atan(x^2) : ("Arctangent of square of x")
+    default   : ("Something else")
+    exp(x)    : ("Exponential of x");
+
+match atan(x^2) with 
+    sin(x)          : ("Sine of x")
+    atan(default^2) : ("Arctangent of the square of something")
+    default         : ("Something else");
+
+match atan(exp(x)^2) with 
+    sin(x)          : ("Sine of x")
+    atan(default^2) : ("Arctangent of the square of something")
+    default         : ("Something else");
+
+match exp("Hello world") with 
+    exp(default)    : ("A miracle has happened")
+    default         : ("Something else");

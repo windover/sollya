@@ -1,0 +1,44 @@
+structure.f = exp(x);
+structure.dom = [1;2];
+structure.formats = [| DD, D, D, D |];
+match structure with 
+     { .f = sin(x);
+       .dom = [a;b]
+     }                    : { "Sine, ",a,", ",b; }
+     { .f = exp(c);
+       .dom = [a;b];
+       .point = default 
+     }                    : { "Exponential, ",a, ", ", b, ", ", c; }
+     { .f = exp(x);
+       .dom = [a;b]
+     }                    : { "Exponential, ",a, ", ", b; }
+     default              : { "Something else"; };
+
+structure.f = sin(x);
+match structure with 
+     { .f = sin(x);
+       .dom = [a;b]
+     }                    : { "Sine, ",a,", ",b; }
+     { .f = exp(c);
+       .dom = [a;b];
+       .point = default 
+     }                    : { "Exponential, ",a, ", ", b, ", ", c; }
+     { .f = exp(x);
+       .dom = [a;b]
+     }                    : { "Exponential, ",a, ", ", b; }
+     default              : { "Something else"; };
+
+structure.f = exp(x + 2);
+structure.point = 23;
+match structure with 
+     { .f = sin(x);
+       .dom = [a;b]
+     }                    : { "Sine, ",a,", ",b; }
+     { .f = exp(c);
+       .dom = [a;b];
+       .point = default 
+     }                    : { "Exponential, ",a, ", ", b, ", ", c; }
+     { .f = exp(x);
+       .dom = [a;b]
+     }                    : { "Exponential, ",a, ", ", b; }
+     default              : { "Something else"; };

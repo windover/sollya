@@ -42,8 +42,8 @@ Hello World!
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > procedure cool(a,b,c) { 
-> write(a,", ", b," and ",c," are cool guys.\n");
-> };
+  write(a,", ", b," and ",c," are cool guys.\n");
+  };
 > cool @ [| "Christoph", "Mioara", "Sylvain" |];
 Christoph, Mioara and Sylvain are cool guys.
 \end{Verbatim}
@@ -51,8 +51,8 @@ Christoph, Mioara and Sylvain are cool guys.
 \noindent Example 4: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > procedure sayhello() { 
-> "Hello! how are you?";
-> };
+  "Hello! how are you?";
+  };
 > sayhello();
 Hello! how are you?
 > sayhello @ [||];
@@ -62,11 +62,11 @@ Hello! how are you?
 \noindent Example 5: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > procedure add(L = ...) {
-> var acc, i;
-> acc = 0;
-> for i in L do acc = i + acc;
-> return acc;
-> };
+  var acc, i;
+  acc = 0;
+  for i in L do acc = i + acc;
+  return acc;
+  };
 > add(1,2);
 3
 > add(1,2,3);

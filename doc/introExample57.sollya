@@ -1,0 +1,23 @@
+match exp([1;2]) with 
+      [a;b]              : {
+                              a,", ",b;
+                           }
+      default            : {
+                              "Something else";
+                           };
+
+match exp([1;2]) with 
+      exp([a;b])         : {
+                              a,", ", b;
+                           }
+      default            : {
+                              "Something else";
+                           };
+
+match exp([1;2]) with 
+  exp(a)  : {
+              "Exponential of ", a;
+            }
+  default : {
+              "Something else";
+            };

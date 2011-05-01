@@ -61,6 +61,8 @@ fpminimax.cpp \
 fpminimax.h \
 remez.c \
 remez.h \
+match.c \
+match.h \
 taylor.c \
 taylor.h \
 taylorform.c \
@@ -124,6 +126,8 @@ fpminimax.cpp \
 fpminimax.h \
 remez.c \
 remez.h \
+match.c \
+match.h \
 taylorform.c \
 taylorform.h \
 supnorm.c \

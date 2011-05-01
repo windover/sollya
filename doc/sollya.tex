@@ -27,7 +27,7 @@
 
 \newcommand{\ligne}[1]{\texttt{#1}\\}
 
-\title{Users' manual for the \sollya tool \\ {\large Release 2.9}}
+\title{Users' manual for the \sollya tool \\ {\large Release 3.0-alpha}}
 
 \author{Sylvain Chevillard \\ \small{\url{sylvain.chevillard@ens-lyon.org}} \and Christoph Lauter \\ \small{\url{christoph.lauter@ens-lyon.org}} \and Mioara Jolde\c{s} \\ \small{\url{mioara.joldes@ens-lyon.fr}} }
 
@@ -763,8 +763,9 @@ following examples:
 
 \input{introExample30}
 
-\section{Functional language elements: procedures}
+\section{Functional language elements: procedures and pattern matching}
 
+\subsection{Procedures}
 \sollya has some elements of functional languages. In order to 
 avoid confusion with mathematical functions, the associated 
 programming objects are called \emph{procedures} in \sollya. 
@@ -816,6 +817,198 @@ precision valid at this moment.
 \sollya also supports external procedures, i.e. procedures written in
 \texttt{C} (or some other language) and dynamically bound to \sollya
 identifiers. See \ref{labexternalproc} for details.
+
+\subsection{Pattern matching}
+
+Starting with version 3.0, \sollya supports matching expressions with
+expression patterns. This feature is important for an extended
+functional programming style. Further, and most importantly, it allows
+expression trees to be recursively decomposed using native constructs
+of the \sollya language. This means no help from external procedures
+or other compiled-language mechanisms is needed here anymore.
+
+Basically, pattern matching supports relies on one \sollya construct: 
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\key{match {\it expr} with \\
+{\it pattern1} : ({\it return-expr1}) \\
+{\it pattern2} : ({\it return-expr2}) \\
+\dots \\
+{\it patternN} : ({\it return-exprN}) }
+\end{minipage}
+\end{center} 
+That construct has the following semantic: try to match the
+expression {\it expr} with the patterns {\it pattern1} through {\it
+  patternN}, proceeding in natural order. If a pattern
+{\it patternI} is found that matches, evaluate the whole \key{match
+  \dots~with} construct to the return expression {\it return-exprI}
+associated with the matching pattern {\it patternI}. If no matching
+pattern is found, display an error warning and return \key{error}.
+
+Matching a pattern means the following: 
+\begin{itemize}
+  \item If a pattern does not contain any programming-language-level
+    variables (different from the free mathematical variable), it
+    matches expressions that are syntactically equal to itself. For
+    instance, the pattern \key{exp(sin(3 * x))} will match the
+    expression \key{exp(sin(3 * x))}.
+  \item If a pattern does contain variables, it matches an expression
+    {\it expr} if these variables can be bound to subexpressions of
+    {\it expr} such that once the pattern is evaluated with that
+    variable binding, it becomes syntactically equal to the expression
+    {\it expr}. For instance, the pattern \key{exp(sin(a * x))} will
+    match the expression \key{exp(sin(3 * x))} as it is possible to
+    bind \key{a} to \key{3} such that \key{exp(sin(a~*~x))} evaluates
+    to \key{exp(sin(3~*~x))}.
+\end{itemize}
+
+If a pattern {\it patternI} with variables is matched in a \key{match
+  \dots~with} construct, the variables in the pattern stay bound
+during the evaluation of the corresponding return expression {\it
+  return-exprI}. This allows subexpressions to be extracted from
+expressions and/or recursively handled as needed.
+
+The following examples illustrate the basic principles of pattern
+matching in \sollya:
+
+\input{introExample50}
+
+As \sollya is not a purely functional language, the \key{match
+  \dots~with} construct can also be used in a more imperative style,
+which makes it become closer to constructs like \key{switch} in {\tt
+  C} or {\tt Perl}. In lieu of a simple return expression, a whole
+block of imperative statements can be given. The expression to be
+returned by that block is indicated in the end of a the block, using
+the \key{return} keyword. That syntax is illustrated in the next
+example:
+
+\input{introExample51}
+
+In the case when no return statement is indicated for a
+statement-block in a \key{match \dots~with} construct, the construct
+evaluates to the special value \key{void} if that pattern matches. 
+
+In order to well understand pattern matching in \sollya, it is
+important to realize the meaning of variables in patterns. This
+meaning is different from the one usually found for variables. In a
+pattern, variables are never evaluated to whatever they might have set
+before the pattern is executed. In contrast, all variables in patterns
+are new, free variables that will freshly be bound to subexpressions
+of the matching expression. If a variable of the same name already
+exists, it will be shadowed during the evaluation of the statement
+block and the return expression corresponding to the matching
+expression. This type of semantic implies that patterns can never be
+computed at run-time, they must always be hard-coded
+beforehand. However this is necessary to make pattern matching
+context-free.
+
+As a matter of course, all variables figuring in the expression {\it
+  expr} to be matched are evaluated before pattern matching is
+attempted. In fact, {\it expr} is a usual \sollya expression, not a
+pattern.
+
+In \sollya, the use of variables in patterns does not need to be
+linear. This means the same variable might appear twice or more in a
+pattern. Such a pattern will only match an expression if it contains
+the same subexpression, associated with the variable, in all places
+indicated by the variable in the pattern.
+
+The following examples illustrate the use of variables in patterns in
+detail:
+
+\input{introExample52}
+
+\input{introExample53}
+
+Pattern matching is meant to be a means to decompose expressions
+structurally. For this reason and in an analogous way to variables, no
+evaluation is performed at all on (sub-)expressions that form constant
+functions. As a consequence, patterns only match constant expressions
+only if they are structurally identical. For example $5 + 1$ only
+matches $5 + 1$ and not $1 + 5$, $3 + 3$ nor $6$.
+
+This general rule on constant expressions admits one exception.
+Intervals in \sollya can be defined using constant expressions as
+bounds. These bounds are immediately evaluated to floating-point
+constants, though. In order to permit pattern matching on intervals,
+constant expressions given as bounds of intervals that form patterns
+are evaluated before pattern matching. However, in order not conflict
+with the rules of no evaluation of variables, these constant
+expressions as bounds of intervals in patterns must not contain free
+variables.
+
+\input{introExample54}
+
+The \sollya keyword \key{default} has a special meaning in patterns.
+It acts like a wild-card, matching any (sub-)expression, as long as
+the whole expression stays correctly typed. Upon matching with
+\key{default}, no variable gets bound. This feature is illustrated in
+the next example:
+
+\input{introExample55}
+
+In \sollya, pattern matching is possible on the following \sollya
+types and operations defined on them:
+\begin{itemize}
+\item Expressions that define univariate functions, as explained above,
+\item Intervals with one, two or no bound defined in the pattern by a variable,
+\item Character sequences, literate or defined using the \key{@} operator, possibly with a variable on one of the sides of the \key{@} operator,
+\item Lists, literate, literate with variables or defined using the \key{.:}, \key{:.} and \key{@} operators, possibly with a variable on one of the sides of the \key{@} operator or one or two variables for \key{.:} and \key{:.},
+\item Structures, literate or literate with variables, and
+\item All other \sollya objects, matchable with themselves (\key{DE} matches \key{DE}, \key{on} matches \key{on}, \key{perturb} matches \key{perturb} etc.)
+\end{itemize}
+
+\input{introExample56}
+
+Concerning intervals, please pay attention to the fact that expressions involving 
+intervals are immediately evaluated and that structural pattern matching on functions
+on intervals is not possible. This point is illustrated in the next example:
+
+\input{introExample57}
+
+With respect to pattern matching on lists or character sequences
+defined using the \key{@} operator, the following is to be mentionned:
+\begin{itemize}
+\item Patterns like \key{a @ b} are not allowed as they would need to
+  perform an ambiguous cut of the list or character sequence to be
+  matched. This restriction is maintained even if the variables (here
+  \key{a} and \key{b}) are constrained by other occurrences in the
+  pattern (for example in a list) which would make the cut
+  unambiguous.
+\item Recursive use of the \key{@} operator (even mixed with the
+  operators \key{.:} and \key{:.}) is possible under the condition
+  that there must not exist any other parenthezation of the term in
+  concatenations (\key{@}) such that the rule of one single variable
+  for \key{@} above gets violated. For instance, \key{( [| 1 |] @ a) @
+    (b @ [| 4 |])} is not possible as it can be re-parenthesized \key{
+    [| 1 |] @ (a @ b) @ [| 4 |]}, which exhibits the ambiguous case.
+\item For lists that are end-elliptic, i.e. prolongated to infinity,
+  the \key{@} operator does not work for cases that would imply the
+  cut of a finite list at the end of an infinite list. It does however
+  work for all cases of cuts of infinite lists at the end of infinite
+  lists when the necessary suffix condition is fulfilled.
+\end{itemize}
+These points are illustrated in this example:
+
+\input{introExample58}
+
+As mentionned above, pattern matching on \sollya structures is
+possible. Patterns for such a match are given in a literately,
+i.e. using the syntax \key{ \{ .a = {\it exprA}, .b = {\it exprB},
+  {\it \dots}~\}}. A structure pattern {\it sp} will be matched by a
+structure {\it s} iff that structure {\it s} contains at least all the
+elements (like \key{.a}, \key{.b} etc.) of the structure pattern {\it
+  sp} and iff each of the elements of the structure {\it s} matches
+the pattern in the corresponding element of the structure pattern {\it
+  sp}. The user should be aware that fact that the structure to be
+matched is only supposed to have at least the elements of the pattern
+but that it may contain more elements is a particular \sollya
+feature. For instance with pattern matching, it is hence possible to
+ensure that access to particular elements will be possible in a
+particular code segment. The following example is meant to clarify
+this point:
+
+\input{introExample59}
 
 \section{Commands and functions}
 
