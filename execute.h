@@ -283,6 +283,7 @@ extern void endBuffer(void);
 #define LIBRARYCONSTANTBINDING 263
 #define MATCH 264
 #define MATCHELEMENT 265
+#define BASHEVALUATE 266
 
 
 int executeCommand(node *);
@@ -427,6 +428,7 @@ node *makeDeboundMin(node *thing);
 node *makeDeboundMid(node *thing);
 node *makeEvalConst(node *thing);
 node *makeDiff(node *thing);
+node *makeBashevaluate(chain *thinglist);
 node *makeSimplify(node *thing);
 node *makeSimplifySafe(node *thing);
 node *makeRemez(chain *thinglist);

@@ -273,6 +273,7 @@ POSTSCRIPTFILE  "postscriptfile"
 PRINTEXPANSION  "printexpansion"
 
 BASHEXECUTE     "bashexecute"
+BASHEVALUATE    "bashevaluate"
 EXTERNALPLOT    "externalplot"
 PERTURB         "perturb"
 
@@ -664,6 +665,7 @@ NOP             "nop"
 {PRINTBINARY}     			    {  return PRINTBINARYTOKEN; }
 {PRINTEXPANSION}  			    {  return PRINTEXPANSIONTOKEN; }
 {BASHEXECUTE}     			    {  return BASHEXECUTETOKEN; }
+{BASHEVALUATE}     			    {  return BASHEVALUATETOKEN; }
 {EXTERNALPLOT}    			    {  return EXTERNALPLOTTOKEN; }
 {WRITE}           			    {  return WRITETOKEN; }
 {ASCIIPLOT}       			    {  return ASCIIPLOTTOKEN; }

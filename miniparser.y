@@ -233,6 +233,7 @@ void miniyyerror(void *myScanner, char *message) {
 %token  LIBRARYTOKEN;
 
 %token  DIFFTOKEN;
+%token  BASHEVALUATETOKEN;
 %token  SIMPLIFYTOKEN;
 %token  REMEZTOKEN;
 %token  FPMINIMAXTOKEN;
@@ -1531,6 +1532,14 @@ debound:                STARLEFTANGLETOKEN thing RIGHTANGLESTARTOKEN
 headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeDiff($3);
+			  }
+                      | BASHEVALUATETOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeBashevaluate(addElement(NULL,$3));
+			  }
+                      | BASHEVALUATETOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeBashevaluate(addElement(addElement(NULL,$5),$3));
 			  }
                       | SIMPLIFYTOKEN LPARTOKEN thing RPARTOKEN
                           {

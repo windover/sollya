@@ -267,6 +267,7 @@ int parserCheckEof() {
 %token  DIFFTOKEN;
 %token  SIMPLIFYTOKEN;
 %token  REMEZTOKEN;
+%token  BASHEVALUATETOKEN;
 %token  FPMINIMAXTOKEN;
 %token  HORNERTOKEN;
 %token  EXPANDTOKEN;
@@ -1620,6 +1621,14 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                       | SIMPLIFYTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeSimplify($3);
+			  }
+                      | BASHEVALUATETOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeBashevaluate(addElement(NULL,$3));
+			  }
+                      | BASHEVALUATETOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeBashevaluate(addElement(addElement(NULL,$5),$3));
 			  }
                       | REMEZTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {
@@ -3379,6 +3388,17 @@ help:                   CONSTANTTOKEN
 			    outputMode(); sollyaPrintf("Differentiation: diff(func).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for DIFF"
+#endif
+#endif
+                          }
+                      | BASHEVALUATETOKEN
+                          {
+#ifdef HELP_BASHEVALUATE_TEXT
+			    outputMode(); sollyaPrintf(HELP_BASHEVALUATE_TEXT);
+#else
+			    outputMode(); sollyaPrintf("Executes a string as a bash command and returns the output as a string.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for BASHEVALUATE"
 #endif
 #endif
                           }

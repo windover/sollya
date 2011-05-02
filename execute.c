@@ -905,6 +905,9 @@ node *copyThing(node *tree) {
     break; 			
   case DIFF:
     copy->child1 = copyThing(tree->child1);
+    break; 
+  case BASHEVALUATE:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     break; 			 	
   case SIMPLIFY:
     copy->child1 = copyThing(tree->child1);
@@ -1732,6 +1735,9 @@ char *getTimingStringForThing(node *tree) {
     break; 			
   case DIFF:
     constString = "differentiation";
+    break; 
+  case BASHEVALUATE:
+    constString = "evaluating a string as a bash command";
     break; 			 	
   case SIMPLIFY:
     constString = "simplifying";
@@ -4666,6 +4672,16 @@ char *sRawPrintThing(node *tree) {
     res = concatAndFree(newString("diff("),
 			concatAndFree(sRawPrintThing(tree->child1),
 				      newString(")")));
+    break; 			 	
+  case BASHEVALUATE:
+    res = newString("bashevaluate(");
+    curr = tree->arguments;
+    while (curr != NULL) {
+      res = concatAndFree(res, sRawPrintThing((node *) (curr->value)));
+      if (curr->next != NULL) res = concatAndFree(res, newString(", ")); 
+      curr = curr->next;
+    }
+    res = concatAndFree(res, newString(")"));
     break; 			 	
   case SIMPLIFY:
     res = concatAndFree(newString("simplify("),
@@ -10547,6 +10563,16 @@ node *makeReadFile(node *thing) {
 
 }
 
+node *makeBashevaluate(chain *thinglist) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = BASHEVALUATE;
+  res->arguments = thinglist;
+
+  return res;
+
+}
 
 node *makeRevert(node *thing) {
   node *res;
@@ -11622,6 +11648,10 @@ void freeThing(node *tree) {
     freeThing(tree->child1);
     free(tree);
     break; 			 	
+  case BASHEVALUATE:
+    freeChain(tree->arguments, freeThingOnVoid);
+    free(tree);
+    break; 			 	
   case SIMPLIFY:
     freeThing(tree->child1);
     free(tree);
@@ -12522,6 +12552,9 @@ int isEqualThing(node *tree, node *tree2) {
     break; 			
   case DIFF:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break; 			 	
+  case BASHEVALUATE:
+    if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
     break; 			 	
   case SIMPLIFY:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
@@ -14259,6 +14292,7 @@ int variableUsePreventsPreevaluation(node *tree) {
   case LIST:
   case FINALELLIPTICLIST:
   case REMEZ:
+  case BASHEVALUATE:
   case MIN:
   case MAX:
   case FPMINIMAX:
@@ -15019,6 +15053,9 @@ node *preevaluateMatcher(node *tree) {
   case REMEZ:
     copy->arguments = copyChainWithoutReversal(tree->arguments, preevaluateMatcherOnVoid);
     break; 			 	
+  case BASHEVALUATE:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, preevaluateMatcherOnVoid);
+    break; 			 	
   case MATCH:
     copy->child1 = preevaluateMatcher(tree->child1);
     copy->arguments = copyChainWithoutReversal(tree->arguments, preevaluateMatcherOnVoid);
@@ -15190,7 +15227,7 @@ node *preevaluateMatcher(node *tree) {
     break; 			 	
   case READFILE:
     copy->child1 = preevaluateMatcher(tree->child1);
-    break; 			 	
+    break; 
   case REVERT:
     copy->child1 = preevaluateMatcher(tree->child1);
     break; 	
@@ -20520,6 +20557,33 @@ node *evaluateThingInner(node *tree) {
       } else {
 	printMessage(1,"Warning: the file \"%s\" could not be opened for reading.\n",copy->child1->string);
         considerDyingOnError();
+      }
+    }
+    break;
+  case BASHEVALUATE:
+    copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+    curr = copy->arguments;
+    if (isString((node *) (curr->value))) {
+      tempString2 = NULL;
+      resA = 1;
+      if (curr->next != NULL) {
+	if (isString((node *) (curr->next->value))) {
+	  tempString2 = ((node *) (curr->next->value))->string;
+	} else {
+	  resA = 0;
+	}
+      }
+      if (resA) {
+	if (timingString != NULL) pushTimeCounter();      
+	tempString = NULL;
+	tempString = evaluateStringAsBashCommand(((node *) (curr->value))->string, tempString2);
+	if (timingString != NULL) popTimeCounter(timingString);
+	if (tempString != NULL) {
+	  tempNode = makeString(tempString);
+	  free(tempString);
+	  freeThing(copy);
+	  copy = tempNode;
+	} 
       }
     }
     break;

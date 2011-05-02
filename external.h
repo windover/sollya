@@ -59,6 +59,6 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 int bashExecute(char *command);
 void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision, int random, node *func, int mode, mp_prec_t prec, char *name, int type);
-
+char *evaluateStringAsBashCommand(char *, char *);
 
 #endif /* ifdef EXTERNAL_H*/
