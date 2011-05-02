@@ -9,7 +9,7 @@ types_defs="./types.def"
 sollya_name="Sollya"
 helpFile="../help.h"
 listOfCommandsTmp="./ListOfCommandsTmp"
-listOfCommandsPHP="./ListOfCommands.php"
+listOfCommandsPHP="./www/ListOfCommands.php"
 
 tempfile="/tmp/hlp2html_tempfile"
 tempfile2="/tmp/hlp2html_tempfile2"
@@ -444,7 +444,7 @@ main() {
     then
       source=$file
       sectionName=`printf $source | sed -n 's/\.shlp//;p'`
-      target=`printf $source | sed -n 's/\.shlp/\.php/;p'`
+      target=./www/`printf $source | sed -n 's/\.shlp/\.php/;p'`
       printf "Processing file "$source"\n"
       processFile
       

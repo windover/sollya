@@ -15,7 +15,7 @@ main() {
   do
     printf "Processing file "$exampleFile"\n"
     targetTeX=`basename $exampleFile .sollya`".tex"
-    targetHTML=`basename $exampleFile .sollya`".php"
+    targetHTML=./www/`basename $exampleFile .sollya`".php"
 
     touch $targetTeX
     rm $targetTeX

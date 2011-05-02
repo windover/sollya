@@ -1,0 +1,91 @@
+.block {
+border-bottom: 3px solid #888888;
+padding-top: 50px;
+margin-bottom: 30px;
+padding-bottom: 30px;
+}
+
+h1 {
+font-size: x-large;
+padding-top: 30px;
+}
+
+.back  {
+display:block;
+text-align: right;
+margin-right:5%;
+}
+
+#listOfCommands li{
+list-style-type: none;
+}
+
+.divName,
+.divUsage,
+.divParameters,
+.divDescription,
+.divExample,
+.divSeeAlso {
+  width: 95%;
+  border: 1px solid black;
+  margin: 10px 10px 30px 10px;
+  padding: 10px;
+}
+
+.name {
+  display: inline;
+  font-weight: bold;
+  font-size: inherit;
+  margin: 0 0 5px 0;
+}
+
+.category {
+  font-weight: bold;
+  font-size: inherit;
+  display: block;
+  margin: 0 0 5px 0;
+}
+
+.command {
+  font-family: monospace;
+  font-size: larger;
+  color: blue;
+}
+
+.smallDescription {
+  display: block;
+}
+
+.commandline {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.arg {
+  font-style: italic;
+}
+
+.type {
+  font-family: monospace;
+}
+
+.divParameters li {
+  margin-bottom: 5px;
+}
+
+.divDescription li {
+  margin-bottom: 15px;
+}
+
+.divExample {
+  font-family: monospace;
+}
+
+.divExample .category {
+  font-family:  sans-serif;
+}
+
+a {
+  font-weight: bold;
+  text-decoration: none;
+}
