@@ -1,0 +1,43 @@
+#NAME $BASHEVALUATE
+#QUICK_DESCRIPTION executes a shell command and returns it output as a string
+
+#CALLING $COMMAND(<command>)
+#TYPE $STRING_TYPE -> $STRING_TYPE
+#CALLING $COMMAND(<command>,<input>)
+#TYPE ($STRING_TYPE, $STRING_TYPE) -> $STRING_TYPE
+
+#PARAMETERS <command> is a command to be interpreted by the shell.
+#PARAMETERS <input> is an optional character sequence to be fed to the command.
+
+#DESCRIPTION 
+$COMMAND(<command>) will execute the shell command <command> in a shell.
+All output on the command's standard output is collected and returned 
+as a character sequence.
+
+#DESCRIPTION 
+If an additional argument <input> is given in a call to
+$COMMAND(<command>,<input>), this character sequence is written to the
+standard input of the command <command> that gets executed.
+
+#DESCRIPTION
+All characters output by <command> are included in the character
+sequence to which $COMMAND evaluates but two exceptions. Every NULL
+character (§§'\0'§$`\backslash 0$'§§) in the output is replaced with
+§§'?'§`?'§§ as $SOLLYA is unable to handle character sequences containing that
+character. Additionally, if the output ends in a newline character
+(§§'\n'§$`\backslash$n'§§), this character is stripped off. Other
+newline characters which are not at the end of the output are left as
+such.
+
+#EXAMPLE
+bashevaluate("LANG=C date");
+
+#EXAMPLE
+[| bashevaluate("echo Hello") |];
+
+#EXAMPLE
+a = bashevaluate("sed -e 's/a/e/g;'", "Hallo");
+a;
+
+#SEEALSO $BASHEXECUTE
+

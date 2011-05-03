@@ -15,6 +15,7 @@ $listOfCommands=array(
 "atanh","atanh",
 "autodiff","autodiff",
 "autosimplify","autosimplify",
+"bashevaluate","bashevaluate",
 "bashexecute","bashexecute",
 "binary","binary",
 "boolean","boolean",
