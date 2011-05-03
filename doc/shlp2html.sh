@@ -209,7 +209,8 @@ processDescriptions() {
  printf "<ul>\n" >> $target
  while [ $i -le $nLines ]
  do
-   line=`cat $tempfile | head -n $i | tail -n 1`
+   # little trick to escape the backslashes
+   line=`cat $tempfile | head -n $i | tail -n 1 | sed -n 's/\\\\/\\\\\\\\/g;p'`
    if printf "%b" "$line" | grep "#DESCRIPTION" > /dev/null
    then
      mode="on"

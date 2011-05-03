@@ -184,7 +184,8 @@ processDescriptions() {
  printf "Description: " >> $target
  while [ $i -le $nLines ]
  do
-   line=`cat $tempfile | head -n $i | tail -n 1`
+   # little trick to escape the backslashes
+   line=`cat $tempfile | head -n $i | tail -n 1 | sed -n 's/\\\\/\\\\\\\\/g;p'`
    if printf "%b" "$line" | grep "#DESCRIPTION" > /dev/null
    then
      firstLine="on"
@@ -335,25 +336,25 @@ main() {
 	target=`printf $source | sed -n 's/\.shlp/\.txt/;p'`
 	printf "Processing file "$source"\n"
 	processFile
-	
+
 	if [ $verbosity -eq 1 ]
 	    then cat $target
 	fi
-	
+
 	sed -i -n 's/\\/\\\\/g;p' $target
 	sed -i -n 's/"/\\"/g;p' $target
 	sed -i -n 's/\t/\\t/g;p' $target
 	sed -i -n 's/$/\\n/g;p' $target
 	index=`printf $source | sed -n 's/\.shlp//;p' | tr 'a-z' 'A-Z'`
 	cat $target | tr -d '\n' > $tempfile
-	
+
 	sed -i -n 's/\(^#define HELP_'"$index"'_TEXT\)\(.*\)//;p' $helpFile
 	sed -i -n 's/\(#endif\)\(.*\)//;p' $helpFile
 	printf "#define HELP_"$index"_TEXT \"" >> $helpFile
 	cat $tempfile  >> $helpFile
 	printf "\"\n" >> $helpFile
 	printf "#endif /* ifdef HELP_H*/\n" >> $helpFile
-	
+
 	rm $target
     else printf "File "$file" does not exist!\n"
     fi
