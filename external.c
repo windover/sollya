@@ -101,7 +101,7 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
   fflush(NULL);
   
   // Create two unnamed pipe
-  if (pipe(pipesToBash) == -1) {
+  if ((input != NULL) && (pipe(pipesToBash) == -1)) {
     // Error creating the pipe
     printMessage(1,"Warning in bashevaluate: error while creating a pipe");
   } else {
@@ -124,13 +124,15 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
 	  //
 	  // Close the unneeded ends of the pipes.
 	  //
-	  close(pipesToBash[1]);
+	  if (input != NULL) close(pipesToBash[1]);
 	  close(pipesFromBash[0]);
 	  
 	  // Connect my input and output to the pipe
 	  //
-	  if (dup2(pipesToBash[0],0) == -1) {
-	    _exit(1);
+	  if (input != NULL) {
+	    if (dup2(pipesToBash[0],0) == -1) {
+	      _exit(1);
+	    }
 	  }
 	  if (dup2(pipesFromBash[1],1) == -1) {
 	    _exit(1);
@@ -149,7 +151,7 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
 	  //
 	  // Close the unneeded ends of the pipes.
 	  //
-	  close(pipesToBash[0]);
+	  if (input != NULL) close(pipesToBash[0]);
 	  close(pipesFromBash[1]);
 	  
 	  // Do my job
@@ -197,7 +199,6 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
 	    }
 
 	    close(pipesFromBash[0]);
-	    if (input == NULL) close(pipesToBash[1]);
 
 	    okay = 1;
 	    if (res == NULL) {
