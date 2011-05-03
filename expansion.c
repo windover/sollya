@@ -176,27 +176,27 @@ void f(mpfr_t y, mpfr_t xMpfr) {
 
 #if defined(D_TO_D)
   mpfr_to_double(&x, xMpfr);     
-  p(&resh, x);
+  POLYNOMIALNAME(&resh, x);
   double_to_mpfr(y, resh);
 #elif defined(D_TO_DD)
   mpfr_to_double(&x, xMpfr);
-  p(&resh, &resm, x);
+  POLYNOMIALNAME(&resh, &resm, x);
   doubledouble_to_mpfr(y, resh, resm);
 #elif defined(D_TO_TD)
   mpfr_to_double(&x, xMpfr);
-  p(&resh, &resm, &resl, x);
+  POLYNOMIALNAME(&resh, &resm, &resl, x);
   tripledouble_to_mpfr(y, resh, resm, resl);
 #elif defined(DD_TO_DD)
   mpfr_to_doubledouble(&xh, &xm, xMpfr);
-  p(&resh, &resm, xh, xm);
+  POLYNOMIALNAME(&resh, &resm, xh, xm);
   doubledouble_to_mpfr(y, resh, resm);
 #elif defined(DD_TO_TD)
   mpfr_to_doubledouble(&xh, &xm, xMpfr);
-  p(&resh, &resm, &resl, xh, xm);
+  POLYNOMIALNAME(&resh, &resm, &resl, xh, xm);
   tripledouble_to_mpfr(y, resh, resm, resl);
 #elif defined(TD_TO_TD)
   mpfr_to_tripledouble(&xh, &xm, &xl, xMpfr);
-  p(&resh, &resm, &resl, xh, xm, xl);
+  POLYNOMIALNAME(&resh, &resm, &resl, xh, xm, xl);
   tripledouble_to_mpfr(y, resh, resm, resl);
 #else
 #warning You must define one of the macros for the argument and result formats
@@ -264,32 +264,32 @@ int timefunc(int *timing, void **args) {
 #if defined(D_TO_D)
     mpfr_to_double(&x, xMpfr);     
     gettimeofday(&start,NULL);
-    for (i=0;i<iterations;i++) p(&resh, x);
+    for (i=0;i<iterations;i++) POLYNOMIALNAME(&resh, x);
     gettimeofday(&end,NULL);
 #elif defined(D_TO_DD)
     mpfr_to_double(&x, xMpfr);
     gettimeofday(&start,NULL);
-    for (i=0;i<iterations;i++) p(&resh, &resm, x);
+    for (i=0;i<iterations;i++) POLYNOMIALNAME(&resh, &resm, x);
     gettimeofday(&end,NULL);
 #elif defined(D_TO_TD)
     mpfr_to_double(&x, xMpfr);
     gettimeofday(&start,NULL);
-    for (i=0;i<iterations;i++) p(&resh, &resm, &resl, x);
+    for (i=0;i<iterations;i++) POLYNOMIALNAME(&resh, &resm, &resl, x);
     gettimeofday(&end,NULL);
 #elif defined(DD_TO_DD)
     mpfr_to_doubledouble(&xh, &xm, xMpfr);
     gettimeofday(&start,NULL);
-    for (i=0;i<iterations;i++) p(&resh, &resm, xh, xm);
+    for (i=0;i<iterations;i++) POLYNOMIALNAME(&resh, &resm, xh, xm);
     gettimeofday(&end,NULL);
 #elif defined(DD_TO_TD)
     mpfr_to_doubledouble(&xh, &xm, xMpfr);
     gettimeofday(&start,NULL);
-    for (i=0;i<iterations;i++) p(&resh, &resm, &resl, xh, xm);
+    for (i=0;i<iterations;i++) POLYNOMIALNAME(&resh, &resm, &resl, xh, xm);
     gettimeofday(&end,NULL);
 #elif defined(TD_TO_TD)
     mpfr_to_tripledouble(&xh, &xm, &xl, xMpfr);
     gettimeofday(&start,NULL);
-    for (i=0;i<iterations;i++) p(&resh, &resm, &resl, xh, xm, xl);
+    for (i=0;i<iterations;i++) POLYNOMIALNAME(&resh, &resm, &resl, xh, xm, xl);
     gettimeofday(&end,NULL);
 #else
 #warning You must define one of the macros for the argument and result formats
