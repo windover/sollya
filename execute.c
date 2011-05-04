@@ -12957,7 +12957,7 @@ node *evaluateThing(node *tree) {
 }
 
 
-int evaluateFormatsListForFPminimax(chain **res, node *list, int n) {
+int evaluateFormatsListForFPminimax(chain **res, node *list, int n, int mode) {
   chain *result=NULL;
   chain *curr;
   int i, a;
@@ -12991,6 +12991,11 @@ int evaluateFormatsListForFPminimax(chain **res, node *list, int n) {
       }
     }
 
+    if ((a <= 0) && (mode == FLOATING)) {
+      printMessage(1, "Warning in fpminimax: a format indication is non-positive while floating-point coefficients are desired.\n");
+      printMessage(1, "The corresponding format is replaced by 1.\n");
+      a = 1;
+    }
     intptr = (int *)safeMalloc(sizeof(int));
     *intptr = a;
     result = addElement(result, intptr);
@@ -18957,13 +18962,10 @@ node *evaluateThingInner(node *tree) {
 	printMessage(1, "The second argument of fpminimax must be either an integer or a finite list of integers.\n");
       }
     }
-  
-    tempChain2 = NULL;
-    if( (thirdArg->nodeType == LIST) || (thirdArg->nodeType == FINALELLIPTICLIST) )
-      evaluateFormatsListForFPminimax(&tempChain2, thirdArg, lengthChain(tempChain));
-    else
-      printMessage(1, "The third argument of fpminimax must be a list of formats indications.\n");
 
+    /* We skip the third argument for now on, because we need to parse the 4th, 5th and 6th arguments before
+       in order to know if negative formats are allowed or not (they are allowed in FIXED mode but not in
+       FLOATING mode) */
 
     tempChain3 = NULL;
     mpfr_init2(a, tools_precision);
@@ -19043,6 +19045,13 @@ node *evaluateThingInner(node *tree) {
 	}
       }
     }
+
+    /* Now, we parse the third argument */
+    tempChain2 = NULL;
+    if( (thirdArg->nodeType == LIST) || (thirdArg->nodeType == FINALELLIPTICLIST) )
+      evaluateFormatsListForFPminimax(&tempChain2, thirdArg, lengthChain(tempChain), resB);
+    else
+      printMessage(1, "The third argument of fpminimax must be a list of formats indications.\n");
 
 
     tempNode2 = NULL;
