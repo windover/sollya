@@ -18947,7 +18947,7 @@ node *evaluateThingInner(node *tree) {
 
     tempChain = NULL;
     if(evaluateThingToInteger(&resA, secondArg, NULL)) {
-      if(resA<0) printMessage(1, "Degree must be a positive integer");
+      if(resA<0) printMessage(1, "Error in fpminimax: degree must be a positive integer");
       else {
 	for(i=resA;i>=0;i--) {
 	  intptr = (int *)safeMalloc(sizeof(int));
@@ -18958,8 +18958,10 @@ node *evaluateThingInner(node *tree) {
     }
     else{
       if( (!evaluateThingToIntegerList(&tempChain, &resA, secondArg)) ||
-	  (resA==0) ) {
-	printMessage(1, "The second argument of fpminimax must be either an integer or a finite list of integers.\n");
+	  (resA==1) ) {
+	printMessage(1, "Error in fpminimax: the second argument of fpminimax must be either an integer or a finite list of integers.\n");
+        if (tempChain) freeChain(tempChain, freeIntPtr);
+        tempChain = NULL;
       }
     }
 
@@ -18974,7 +18976,7 @@ node *evaluateThingInner(node *tree) {
     if (!evaluateThingToRange(a,b,fourthArg)) {
       if (!evaluateThingToConstantList(&tempChain3, fourthArg)) {
 	resD = 0;
-	printMessage(1, "The fourth argument of fpminimax must be either an interval or a list of points\n");
+	printMessage(1, "Error in fpminimax: the fourth argument of fpminimax must be either an interval or a list of points\n");
       }
     }
     if(tempChain3 != NULL) {
@@ -19004,12 +19006,12 @@ node *evaluateThingInner(node *tree) {
 	  tempNode = copyTree(fifthArg);
 	}
 	else {
-	  printMessage(1, "fpminimax: invalid fifth argument\n");
+	  printMessage(1, "Error in fpminimax: invalid fifth argument\n");
 	  resE = 0;
 	}
       }
     }
-    
+
     if ( (sixthArg != NULL) && (!isDefault(sixthArg)) ) {
       switch(sixthArg->nodeType) {
       case RELATIVESYM: resC = RELATIVESYM; break;
@@ -19022,12 +19024,12 @@ node *evaluateThingInner(node *tree) {
 	  tempNode = copyTree(sixthArg);
 	}
 	else {
-	  printMessage(1, "fpminimax: invalid sixth argument\n");
+	  printMessage(1, "Error in fpminimax: invalid sixth argument\n");
 	  resE = 0;
 	}
       }
     }
-  
+
     if ( (seventhArg != NULL) && (!isDefault(seventhArg)) ) {
       switch(seventhArg->nodeType) {
       case RELATIVESYM: resC = RELATIVESYM; break;
@@ -19040,7 +19042,7 @@ node *evaluateThingInner(node *tree) {
 	  tempNode = copyTree(seventhArg);
 	}
 	else {
-	  printMessage(1, "fpminimax: invalid seventh argument\n");
+	  printMessage(1, "Error in fpminimax: invalid seventh argument\n");
 	  resE = 0;
 	}
       }
@@ -19051,7 +19053,7 @@ node *evaluateThingInner(node *tree) {
     if( (thirdArg->nodeType == LIST) || (thirdArg->nodeType == FINALELLIPTICLIST) )
       evaluateFormatsListForFPminimax(&tempChain2, thirdArg, lengthChain(tempChain), resB);
     else
-      printMessage(1, "The third argument of fpminimax must be a list of formats indications.\n");
+      printMessage(1, "Error in fpminimax: the third argument of fpminimax must be a list of formats indications.\n");
 
 
     tempNode2 = NULL;
@@ -19066,7 +19068,7 @@ node *evaluateThingInner(node *tree) {
 	 (resE) &&                 /* resB=FIXED,FLOATING   resC=ABSOLUTESYM,RELATIVESYM    tempNode=consPart */
 	 ((eighthArg == NULL) || (tempNode2 != NULL))  /* tempNode2 is minimax or NULL */
 	 ) {
-      
+
       if (timingString != NULL) pushTimeCounter();
       tempNode3 = FPminimax(firstArg, tempChain, tempChain2, tempChain3, a, b, resB, resC, tempNode, tempNode2);
       if (timingString != NULL) popTimeCounter(timingString);
@@ -19075,9 +19077,9 @@ node *evaluateThingInner(node *tree) {
       if (tempNode3 == NULL) { tempNode3 = makeError(); }
       copy=tempNode3;
     }
-  
 
-	 
+
+
     freeChain(tempChain, freeIntPtr);
     freeChain(tempChain2, freeIntPtr);
     freeChain(tempChain3, freeMpfrPtr);
