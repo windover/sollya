@@ -542,6 +542,7 @@ int isMatchableConcat(node *tree);
 int isMatchableStructure(node *tree);
 int associationContainsDoubleEntries(chain *assoc);
 node *evaluateThing(node *tree);
+int isString(node *);
 
 
 #endif /* ifdef EXECUTE_H*/

@@ -54,6 +54,10 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <string.h>
 #include <stdlib.h>
 
+/* Declare tryMatch immediately as it is recursively used almost
+   everywhere */
+int tryMatch(chain **, node *, node *);
+
 /* Add association identifier -> thing to list 
    
    If identifier exists already:
@@ -690,6 +694,10 @@ int tryMatchList(chain **associations, node *thingToMatch, node *possibleMatcher
   mpfr_t c, d;
   int i, integerBase, integerSequence;
   node *implicitElement;
+
+  /* Make compiler happy */
+  lastThingToMatch = NULL;
+  /* End of compiler happiness */
 
   /* All possibilities for empty lists */
   if (isEmptyList(possibleMatcher)) {

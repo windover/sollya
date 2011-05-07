@@ -90,6 +90,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "supnorm.h"
 #include "xml.h"
 #include "miniparser.h"
+#include "match.h"
 #include <setjmp.h>
 
 #define READBUFFERSIZE 16000
@@ -2267,6 +2268,8 @@ int isExtendedPureTree(node *tree) {
   }
 }
 
+int isMatchable(node *);
+
 int isMatchableList(node *tree) {
   chain *curr;
   if (isEmptyList(tree)) return 1;
@@ -2276,6 +2279,8 @@ int isMatchableList(node *tree) {
   }
   return 1;
 }
+
+int isString(node *);
 
 int isMatchableConcat(node *tree) {
   if (tree->nodeType != CONCAT) return 0;
@@ -14349,9 +14354,9 @@ int variableUsePreventsPreevaluation(node *tree) {
   }
   return 1;
 }
-
+ 
 node *preevaluateMatcher(node *tree) {
-  node *copy, *tempNode1, *tempNode2, *tempNode;
+  node *copy, *tempNode2, *tempNode;
   int rangeEvaluateLeft, rangeEvaluateRight;
   chain *tempChain, *curr, *newChain;
   int resA, resB, resC, i;
