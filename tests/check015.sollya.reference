@@ -24,7 +24,6 @@ Warning in Remez: a slower algorithm is used for this step
 =============== Check Supnorm #12 ================
 The tool has been restarted.
 Computing remez polynomial...
-The second argument of fpminimax must be either an integer or a finite list of integers.
 Warning: degenerated system in a non Haar context. The algorithm may be incorrect.
 Warning in Remez: main heuristic failed. A slower algorithm is used for this step.
 Warning: the function oscillates too much. Nevertheless, we try to continue.
