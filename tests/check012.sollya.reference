@@ -71,7 +71,6 @@ The tool has been restarted.
 Warning in Remez: a slower algorithm is used for this step
 (0x3ff0000000000000 + 0xbc09fda20235c100) + x * ((0x3b29ecd485d34781 + 0xb7c1cbc97120359a) + x * (0xbfdfffffffffff98 + x * (0xbbfa6e0b3183cb0d + x * (0x3fa5555555145337 + x * (0x3ca3540480618939 + x * 0xbf56c138142d8c3b)))))
 x * (1 + x^2 * (-357913941 * 2^(-31) + x^2 * (35789873 * 2^(-32))))
-The second argument of fpminimax must be either an integer or a finite list of integers.
 Warning in Remez: a slower algorithm is used for this step
 Warning in Remez: main heuristic failed. A slower algorithm is used for this step.
 Warning in Remez: main heuristic failed. A slower algorithm is used for this step.
