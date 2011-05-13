@@ -1495,3 +1495,154 @@ node *rationalApprox(mpfr_t x, unsigned int n) {
   mpz_clear(u);
   return tree;
 }
+
+int mpfr_round_to_ieee_format(mpfr_t rop, mpfr_t op, mp_prec_t prec, unsigned int width, mp_rnd_t mode) {
+  int res;
+  mpfr_t result;
+  unsigned int exponent;
+  mpfr_t largest, smallest, temp;
+  mp_prec_t p;
+  
+  /* In the case when the function is called with a silly width (less than 3 or larger than 30),
+     we exit from the tool. This case should never happen.
+  */
+  if ((width < 3) || (width > 30)) {
+    sollyaFprintf(stderr,"Error: mpfr_round_to_ieee_format: an exponent width of less than 3 or larger than 30 is not supported\n");
+    exit(1);
+  }
+
+  /* We will first produce an internal result and then write back to rop */
+  mpfr_init2(result,prec);
+  
+  /* Handle the special cases: +/- 0, +/- Inf, NaN */
+  if (mpfr_zero_p(op) || (!mpfr_number_p(op))) {
+    /* The result is the input */
+    mpfr_set(result, op, GMP_RNDN); /* exact */
+  } else {
+    /* Here, the input is not zero, nor Inf nor NaN 
+       
+       We start with the first rounding step with unbounded exponent.
+       
+    */
+    mpfr_set(result, op, mode); /* performs a rounding to the desired precision 
+                                   but with unbounded exponent 
+				*/
+    
+    /* Now check if overflow occurs: compare in magnitude with the largest 
+       representable number of the format.
+
+       The largest number is 1 ulp (of precision prec) below 2^(2^(width - 1)).
+    */
+    exponent = 1 << (width - 1);
+    mpfr_init2(largest, prec);
+    mpfr_set_ui(largest, 1, GMP_RNDN); /* exact: power of 2 */
+    mpfr_mul_2ui(largest, largest, exponent, GMP_RNDN); /* exact: power of 2 */
+    mpfr_nextbelow(largest); /* exact by specification */
+    if (mpfr_cmpabs(result, largest) > 0) {
+      /* Here, we have an overflow 
+
+	 Depending on the rounding mode and the sign of the input
+	 we get the largest representable number or +/- Inf as a result
+
+      */
+      switch (mode) {
+      case GMP_RNDN:
+	/* -Inf, +Inf */
+	if (mpfr_sgn(op) < 0) {
+	  mpfr_set_inf(result, -1);
+	} else {
+	  mpfr_set_inf(result, +1);
+	}
+	break;
+      case GMP_RNDD:
+	/* -Inf, +largest */
+	if (mpfr_sgn(op) < 0) {
+	  mpfr_set_inf(result, -1);
+	} else {
+	  mpfr_set(result, largest, GMP_RNDN); /* exact: same precision */
+	}	
+	break;
+      case GMP_RNDU:
+	/* -largest, +Inf */
+	if (mpfr_sgn(op) < 0) {
+	  mpfr_neg(result, largest, GMP_RNDN); /* exact: same precision */
+	} else {
+	  mpfr_set_inf(result, +1);
+	}
+	break;
+      case GMP_RNDZ:
+	/* -largest, +largest */
+	if (mpfr_sgn(op) < 0) {
+	  mpfr_neg(result, largest, GMP_RNDN); /* exact: same precision */
+	} else {
+	  mpfr_set(result, largest, GMP_RNDN); /* exact: same precision */
+	}
+	break;
+      default:
+	sollyaFprintf(stderr,"Error: mpfr_round_to_ieee_format: unknown rounding mode %d\n", (int) mode);
+	exit(1);
+      }
+    } else {
+      /* Here, the result is either a signed 0, denormal or normal 
+
+	 We continue by checking if the first rounding is larger
+	 than the least normal.
+
+	 For a format of width bits of exponent, the smallest normal
+	 is 2^(-2^(width - 1) + 2).
+
+      */
+      mpfr_init2(smallest, prec);
+      exponent = 1 << (width - 1);
+      exponent -= 2;
+      mpfr_set_ui(smallest, 1, GMP_RNDN); /* exact: power of 2 */
+      mpfr_div_2ui(smallest, smallest, exponent, GMP_RNDN); /* exact: power of 2 */
+      
+      if (mpfr_cmpabs(result, smallest) < 0) {
+	/* Here, we have to emulate denormal rounding 
+	
+	   Denormal rounding for precision prec and exponent width
+	   width is:
+
+	   result = 2^(-prec - 2^(width - 1) + 3) * round_integer((1/(2^(-prec - 2^(width - 1) + 3))) * op, mode)
+   
+	 */
+	p = mpfr_get_prec(op);
+	if (prec > p) p = prec;
+	mpfr_init2(temp, p);
+	mpfr_set(temp, op, GMP_RNDN); /* exact: precision of temp not less than the one of op */
+	exponent = 1 << (width - 1);
+	exponent -= 3;
+	exponent += prec;
+	mpfr_mul_2ui(temp, temp, exponent, GMP_RNDN); /* exact: power of 2 and same precision */
+	mpfr_rint(result, temp, mode); /* Performs round_integer with mode
+					  no wrong rounding possible as precision of 
+					  result is at least the one of op
+				       */
+	mpfr_div_2ui(result, result, exponent, GMP_RNDN); /* exact: power of 2 and same precision */
+	mpfr_clear(temp);
+      } 
+      /* Otherwise the first rounding is already 
+	 the final result.
+      */
+
+      mpfr_clear(smallest);
+    }
+    mpfr_clear(largest);
+  }
+
+  /* Write back the result, while verifying if we don't get a double rounding there. */
+  if (mpfr_set(rop,result,GMP_RNDN) != 0) {
+    if (!noRoundingWarnings) {
+      printMessage(1,"Warning: double rounding occurred on invoking the IEEE 754-2008 general rounding operator.\n");
+      printMessage(1,"Try to increase the working precision.\n");
+    }
+  }
+  
+  mpfr_clear(result);
+
+  /* Compute the rounding direction that has finally been chosen */
+  res = mpfr_cmp(rop,op);
+
+  return res;
+}
