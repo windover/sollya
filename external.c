@@ -1,9 +1,14 @@
 /*
 
-Copyright 2006-2010 by 
+Copyright 2006-2011 by 
 
 Laboratoire de l'Informatique du Parallelisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+
+and by
+
+Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
 
 Contributors Ch. Lauter, S. Chevillard
 
@@ -96,6 +101,11 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
   int len;
   int i;
 
+  if ((command == NULL) || (strlen(command) == 0)) {
+    printMessage(1,"Warning in bashevaluate: no command provided\n");
+    return NULL;
+  }
+
   res = NULL;
   okay = 0;
   fflush(NULL);
@@ -141,11 +151,10 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
 	  // Execute bash
 	  //
 	  fflush(NULL);
-	  exitcode = system(command);
+	  execlp("sh","sh","-c",command,(char *) NULL);
 	  fflush(NULL);
-	  
-	  // Exit now with the exit code of the system command
-	  _exit(WEXITSTATUS(exitcode));
+
+	  _exit(1);
 	} else {
 	  // I am the father
 	  //
