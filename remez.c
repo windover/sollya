@@ -1,8 +1,8 @@
 /*
 
-Copyright 2006-2011 by 
+Copyright 2006-2011 by
 
-Laboratoire de l'Informatique du Parallelisme, 
+Laboratoire de l'Informatique du Parallelisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
 LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
@@ -25,16 +25,16 @@ it offers a certified infinity norm, an automatic polynomial
 implementer and a fast Remez algorithm.
 
 This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
+abiding by the rules of distribution of free software.  You can  use,
 modify and/ or redistribute the software under the terms of the CeCILL-C
 license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
+"http://www.cecill.info".
 
 As a counterpart to the access to the source code and  rights to copy,
 modify and redistribute granted by the license, users are provided only
 with a limited warranty  and the software's author,  the holder of the
 economic rights,  and the successive licensors  have only  limited
-liability. 
+liability.
 
 In this respect, the user's attention is drawn to the risks associated
 with loading,  using,  modifying and/or developing or reproducing the
@@ -43,9 +43,9 @@ that may mean  that it is complicated to manipulate,  and  that  also
 herefore means  that it is reserved for developers  and  experienced
 professionals having in-depth computer knowledge. Users are therefore
 encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
+requirements in conditions enabling the security of their systems and/or
+data to be ensured and,  more generally, to use and operate it in the
+same conditions as regards security.
 
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
@@ -136,7 +136,7 @@ void system_solve(mpfr_t *res, mpfr_t *M, mpfr_t *b, int n, mp_prec_t prec) {
       }
       curri = curri->next;
     }
-    
+
     i_list = removeInt(i_list, i0);
     j_list = removeInt(j_list, j0);
 
@@ -296,7 +296,7 @@ node *constructPolynomial(mpfr_t *coeff, chain *monomials, mp_prec_t prec) {
 // It is assumed that f(a)f(b)<=0 and x0 in [a;b]
 // If x0=NULL the algorithm is free to use any initial guess
 void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, mpfr_t *x0, int n, mp_prec_t prec) {
-  
+
   /* Sketch of the algorithm :
      During the algorithm, we will work with an interval [u,v]
      that surely contains a zero of f.
@@ -305,7 +305,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 
      1) It is necessary that [u,v] does not contain 0. This ensures that the range of
      possible exponents for x is bounded.
- 
+
      So, if 0<a or b<0,  let [u,v]=[a,b] and go directly to step 2.
 
      Otherwise:
@@ -325,11 +325,11 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 	                             The zero of f cannot be determined accurately.
 				     We can return epsb for instance with an error message.
 	 ( sgnfa  -sgnfa    *   ) -> idem with [epsa,0]
-	 
+
 	 ( sgnfa    NaN   -sgnfa) -> f changes its sign in [epsa, epsb].
 	                             It is likely that f(0)=0 but we cannot prove it.
 				     We can return 0 with an error message.
-	 
+
 	 ( sgnfa    NaN     NaN ) -> This case is likely to be b=0 (hence epsb=0)
 	                             We cannot prove much but it is reasonnable to return 0
 	 (  NaN     NaN   -sgnfa) -> idem with a=0
@@ -342,7 +342,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 
 
      2) Now we are sure that [u,v] does not contain 0.
-     
+
      During the algorithm, we will consider an approximation x of the zero z of f.
      From x, we compute a new approximation xNew.
      We assume that xNew is a very good approximation of z. Thus we can estimate the
@@ -356,8 +356,8 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
        If (xNew<u) or (xNew>v) or xNew=NaN, we perform a bisection step:
        replaced by either [u, m] of [m, u] where m=(u+v)/2 and xNew is defined as
        the middle of the new interval
-       
-       Otherwise: xNew gives a valid new value. We compute yNew=f(xNew).
+
+        Otherwise: xNew gives a valid new value. We compute yNew=f(xNew).
        We have 4 cases depending on sgn(yNew):
          sgnfa -> we can replace [u,v] by [xNew,v]
 	-sgnfa -> we can replace [u,v] by [u, xNew]
@@ -2463,7 +2463,7 @@ void firstStepContinuousMinimaxChebychevsPoints(mpfr_t *h, node *func, node *wei
   x = chebychevsPoints(a,b,n+1,currentPrec);
   perturbPoints(x, n+1, currentPrec);
   poly = elementaryStepRemezAlgorithm(NULL, func, weight, x, monomials_tree, n, currentPrec);
-      
+
   error = makeSub(makeMul(copyTree(poly), copyTree(weight)), copyTree(func));
   uncertifiedInfnorm(*h, error, a, b, 3*n, getToolPrecision());
 
@@ -2479,7 +2479,7 @@ void firstStepContinuousMinimaxChebychevsPoints(mpfr_t *h, node *func, node *wei
   return;
 }
 
-rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) {
+rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps, int bound) {
   int n=1;
   int n_min, n_max;
   mp_prec_t prec = getToolPrecision();
@@ -2491,8 +2491,10 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
 
 
   /* n reprensents the number of unknowns: n=1 corresponds to degree 0 */
-  
-  /* We try n=1, 2, 4, 8, etc. until we find one for which the basic 
+  /* bound represents the maximal value allowed for n. If we do not find a
+     suitable n<=bound, we return an interval [*, +inf]. We assume bound>=1 */
+
+  /* We try n=1, 2, 4, 8, etc. until we find one for which the basic
      minimax problem achieve the required bound eps */
   pushTimeCounter();
   radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
@@ -2504,7 +2506,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   }
 
 
-  /* If n<eps, we may be in a degenerated case (for instance, an even
+  /* If h<eps, we may be in a degenerated case (for instance, an even
      function on a symetrical interval, that leads to a huge difference
      between the radius of the basic minimax problem and of the continuous
      minimax problem. We try, n=2 for a confirmation. */
@@ -2518,13 +2520,24 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
       restoreMode();
     }
 
-    if (mpfr_cmp(h,eps)<0) n=1; /* OK. Sorry. The system seems to be normal */ 
+    if (mpfr_cmp(h,eps)<0) n=1; /* OK. Sorry. The system seems to be normal */
   }
 
+  /* Here, if n=1, it means that we are allowed to think that n=1 achieves the
+     continuous problem (at least, based on what we can say from the discrete
+     problem.)
+     If n=2, it means that we know for sure that n=2 does not achieve the
+     continuous problem.
+  */
 
   while(mpfr_cmp(h,eps) >= 0) {
     n *= 2;
-    radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
+    if (n<bound)
+      radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
+    else {
+      radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, bound, &prec);
+      break;
+    }
     if(verbosity>=4) {
       changeToWarningMode();
       sollyaPrintf("Information: guessdegree: trying degree %d. Found radius: ",n-1);
@@ -2532,14 +2545,33 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
       restoreMode();
     }
   }
-  
 
-  /* Now, the basic minimax problem achieves eps for n but not for n/2
+  if (mpfr_cmp(h,eps) >=0) { /* Even n=bound does not achieve the discrete
+                                problem, a fortiori it does not achieve the
+                                continuous problem. Return [bound+1, +Inf]
+                             */
+    printMessage(1, "Warning: guessdegree: none of the degrees smaller than %d satisfies the required error.\n", bound-1);
+    mpfr_clear(h);
+    tempMpfr = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*tempMpfr,128);
+    mpfr_set_ui(*tempMpfr, bound, GMP_RNDN); /* n=bound+1 converts to degree bound */
+    range.a = tempMpfr;
+
+    tempMpfr = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
+    mpfr_init2(*tempMpfr,128);
+    mpfr_set_inf(*tempMpfr, 1);
+    range.b = tempMpfr;
+
+    return range;
+  }
+
+  /* Now, the basic minimax problem achieves eps for min(n,bound) but not
+     for n/2.
      We use a bisection to obtain a thinner bound.
      Note that if n=1 achieves the bound eps, we have nothing to do */
   if(n!=1) {
     n_min = n/2;
-    n_max = n;
+    n_max = (n<=bound)?n:bound;
 
     n = (n_min + n_max)/2;
 
@@ -2567,7 +2599,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
      the continuous minimax problem.
      n_max is a possible candidate for the continuous minimax problem */
   n = n_max;
-  
+
   pushTimeCounter();
   firstStepContinuousMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
   if(verbosity>=4) {
@@ -2579,6 +2611,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
 
   while(mpfr_cmp(h,eps) > 0) {
     n++;
+    if (n>bound) break;
     firstStepContinuousMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
     if(verbosity>=4) {
       changeToWarningMode();
@@ -2589,10 +2622,15 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
   }
   popTimeCounter("finding an upper bound for guessdegree");
 
-  /* Now, we are sure that n is sufficient to achieve eps in the continuous problem
-     We return [n_max, n]; */
-  mpfr_clear(h);
+  /* if (n>bound), it is possible that n_max suffices, but we did not manage to
+     prove that n suffices for any n_max<=n<=bound. So we return [n_max, +Inf].
+     Otherwise, we are sure that n is sufficient to achieve eps in the
+     continuous problem. We return [n_max, n];
+  */
+  if (n>bound)
+    printMessage(2, "Warning: guessdegree: we did not find a degree less than %d for which we can prove that the errror is satisfied.\n", bound-1);
 
+  mpfr_clear(h);
   tempMpfr = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*tempMpfr,128);
   mpfr_set_ui(*tempMpfr, n_max-1, GMP_RNDN);
@@ -2600,7 +2638,8 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) 
 
   tempMpfr = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*tempMpfr,128);
-  mpfr_set_ui(*tempMpfr, n-1, GMP_RNDN);
+  if (n<=bound) mpfr_set_ui(*tempMpfr, n-1, GMP_RNDN);
+  else mpfr_set_inf(*tempMpfr, 1);
   range.b = tempMpfr;
 
   return range;

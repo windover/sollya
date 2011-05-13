@@ -224,7 +224,7 @@ node *parseString(char *str) {
   return result;
 }
 
-rangetype guessDegreeWrapper(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps) {
+rangetype guessDegreeWrapper(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps, int bound) {
   rangetype result;
   jmp_buf oldEnvironment;
   int oldVerbosity;
@@ -234,7 +234,7 @@ rangetype guessDegreeWrapper(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_
   oldPoints = defaultpoints;
   memmove(&oldEnvironment,&recoverEnvironmentError,sizeof(oldEnvironment));
   if (!setjmp(recoverEnvironmentError)) {
-    result = guessDegree(func, weight, a, b, eps);
+    result = guessDegree(func, weight, a, b, eps, bound);
   } else {
     verbosity = oldVerbosity;
     defaultpoints = oldPoints;
@@ -20443,20 +20443,30 @@ node *evaluateThingInner(node *tree) {
     curr = curr->next;
     if (curr != NULL) {
       fourthArg = copyThing((node *) (curr->value));
+      curr = curr->next;
     } else {
       fourthArg = makeConstantDouble(1.0);
     }
+    if (curr != NULL) {
+      fifthArg = copyThing((node *) (curr->value));
+    } else {
+      fifthArg = makeConstantDouble(1024.0);
+    }
+
     if (isPureTree(firstArg) &&
 	isRange(secondArg) &&
 	isPureTree(thirdArg) &&
-	isPureTree(fourthArg)) {
+	isPureTree(fourthArg) &&
+        isPureTree(fifthArg)) {
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
       mpfr_init2(c,tools_precision);
+
       if (evaluateThingToRange(a,b,secondArg) &&
-	  evaluateThingToConstant(c,thirdArg, NULL,0)) {
+	  evaluateThingToConstant(c,thirdArg, NULL,0) &&
+          evaluateThingToInteger(&resA,fifthArg,NULL)) {
 	if (timingString != NULL) pushTimeCounter(); 
-	yrange = guessDegreeWrapper(firstArg, fourthArg, a, b, c);
+	yrange = guessDegreeWrapper(firstArg, fourthArg, a, b, c, resA+1);
 	if (timingString != NULL) popTimeCounter(timingString);
 	if ((yrange.a != NULL) && (yrange.b != NULL)) {
 	  tempNode = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));

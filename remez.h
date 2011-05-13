@@ -69,7 +69,7 @@ chain *uncertifiedFindZeros(node *tree, mpfr_t a, mpfr_t b, unsigned long int po
 node* remez(node *func, node *weight, chain* monom, mpfr_t a, mpfr_t b, mpfr_t *requestedQuality, mp_prec_t prec);
 node* remezWithWeight(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mp_prec_t prec);
 
-rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps);
+rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps, int bound);
 node *constructPolynomial(mpfr_t *coeff, chain *monomials, mp_prec_t prec);
 
 int newtonFaithful(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, mp_prec_t prec);
