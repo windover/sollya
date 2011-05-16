@@ -7,7 +7,7 @@
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","round","round");?>(<span class="arg">x</span>,<span class="arg">n</span>,<span class="arg">mode</span>) : (<span class="type">constant</span>, <span class="type">integer</span>, <span class="type">RN|RZ|RU|RD</span>) -&gt; <span class="type">constant</span></span> 
-<span class="commandline"><?php linkTo("command","round","round");?>(<span class="arg">x</span>,<span class="arg">format</span>,<span class="arg">mode</span>) : (<span class="type">constant</span>, <span class="type">D|double|DD|doubledouble|DE|doubleextended|TD|tripledouble</span>, <span class="type">RN|RZ|RU|RD</span>) -&gt; <span class="type">constant</span></span> 
+<span class="commandline"><?php linkTo("command","round","round");?>(<span class="arg">x</span>,<span class="arg">format</span>,<span class="arg">mode</span>) : (<span class="type">constant</span>, <span class="type">HP|halfprecision|SG|single|D|double|DE|doubleextended|DD|doubledouble|QD|quad|TD|tripledouble</span>, <span class="type">RN|RZ|RU|RD</span>) -&gt; <span class="type">constant</span></span> 
  
 </div> 
 <div class="divParameters"> 
@@ -25,10 +25,12 @@
 precision <span class="arg">n</span>, according to rounding-mode <span class="arg">mode</span>.  
 </li><li>If used with a format parameter <span class="arg">format</span>, <?php linkTo("command","round","round");?>(<span class="arg">x</span>,<span class="arg">format</span>,<span class="arg">mode</span>) rounds <span class="arg">x</span> to a floating-point number in the  
 floating-point format <span class="arg">format</span>, according to rounding-mode <span class="arg">mode</span>.  
-</li><li>Subnormal numbers are not handled are handled only if a <span class="arg">format</span> parameter is given 
-that is different from <?php linkTo("command","doubleextended","doubleextended");?>. The range of possible exponents is the  
-range used for all numbers represented in Sollya (e.g. basically the range  
-used in the library MPFR).  
+</li><li>Subnormal numbers are handled for the case when <span class="arg">format</span> is one of 
+<?php linkTo("command","halfprecision","halfprecision");?>, <?php linkTo("command","single","single");?>, <?php linkTo("command","double","double");?>, <?php linkTo("command","doubleextended","doubleextended");?>, <?php linkTo("command","doubledouble","doubledouble");?>, 
+<?php linkTo("command","quad","quad");?> or <?php linkTo("command","tripledouble","tripledouble");?>. Otherwise, when <span class="arg">format</span> is an integer, 
+<?php linkTo("command","round","round");?> does not take any exponent range into consideration, 
+i.e. typically uses the full exponent range of the underlying MPFR 
+library. 
 </ul> 
 </div> 
 <div class="divExamples"> 

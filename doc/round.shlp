@@ -20,11 +20,13 @@ precision <n>, according to rounding-mode <mode>.
 If used with a format parameter <format>, $COMMAND(<x>,<format>,<mode>) rounds <x> to a floating-point number in the 
 floating-point format <format>, according to rounding-mode <mode>. 
 
-#DESCRIPTION
-Subnormal numbers are not handled are handled only if a <format> parameter is given
-that is different from $DOUBLEEXTENDED. The range of possible exponents is the 
-range used for all numbers represented in $SOLLYA (e.g. basically the range 
-used in the library MPFR). 
+#DESCRIPTION 
+Subnormal numbers are handled for the case when <format> is one of
+$HALFPRECISION, $SINGLE, $DOUBLE, $DOUBLEEXTENDED, $DOUBLEDOUBLE,
+$QUAD or $TRIPLEDOUBLE. Otherwise, when <format> is an integer,
+$COMMAND does not take any exponent range into consideration,
+i.e. typically uses the full exponent range of the underlying MPFR
+library.
 
 #EXAMPLE
 display=binary!;

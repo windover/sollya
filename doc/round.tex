@@ -5,7 +5,7 @@ rounds a number to a floating-point format.\\
 \noindent Usage: 
 \begin{center}
 \textbf{round}(\emph{x},\emph{n},\emph{mode}) : (\textsf{constant}, \textsf{integer}, \textsf{RN$|$RZ$|$RU$|$RD}) $\rightarrow$ \textsf{constant}\\
-\textbf{round}(\emph{x},\emph{format},\emph{mode}) : (\textsf{constant}, \textsf{D$|$double$|$DD$|$doubledouble$|$DE$|$doubleextended$|$TD$|$tripledouble}, \textsf{RN$|$RZ$|$RU$|$RD}) $\rightarrow$ \textsf{constant}\\
+\textbf{round}(\emph{x},\emph{format},\emph{mode}) : (\textsf{constant}, \textsf{HP$|$halfprecision$|$SG$|$single$|$D$|$double$|$DE$|$doubleextended$|$DD$|$doubledouble$|$QD$|$quad$|$TD$|$tripledouble}, \textsf{RN$|$RZ$|$RU$|$RD}) $\rightarrow$ \textsf{constant}\\
 \end{center}
 Parameters: 
 \begin{itemize}
@@ -22,10 +22,12 @@ Parameters:
 \item If used with a format parameter \emph{format}, \textbf{round}(\emph{x},\emph{format},\emph{mode}) rounds \emph{x} to a floating-point number in the 
    floating-point format \emph{format}, according to rounding-mode \emph{mode}. 
 
-\item Subnormal numbers are not handled are handled only if a \emph{format} parameter is given
-   that is different from \textbf{doubleextended}. The range of possible exponents is the 
-   range used for all numbers represented in \sollya (e.g. basically the range 
-   used in the library MPFR). 
+\item Subnormal numbers are handled for the case when \emph{format} is one of
+   \textbf{halfprecision}, \textbf{single}, \textbf{double}, \textbf{doubleextended}, \textbf{doubledouble},
+   \textbf{quad} or \textbf{tripledouble}. Otherwise, when \emph{format} is an integer,
+   \textbf{round} does not take any exponent range into consideration,
+   i.e. typically uses the full exponent range of the underlying MPFR
+   library.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
