@@ -23,7 +23,7 @@
 in <span class="arg">L</span>. 
 </li><li>If <span class="arg">p</span> is not a polynomial, <?php linkTo("command","roundcoefficients","roundcoefficients");?> does not do anything. 
 </li><li>If <span class="arg">L</span> contains other elements than <?php linkTo("command","hp","HP");?>, <?php linkTo("command","halfprecision","halfprecision");?>, <?php linkTo("command","sg","SG");?>, <?php linkTo("command","single","single");?>, <?php linkTo("command","d","D");?>, <?php linkTo("command","double","double");?>,  
-<?php linkTo("command","de","DE");?>, <?php linkTo("command","doubleextended","doubleextended");?>, <?php linkTo("command","dd","DD");?>, <?php linkTo("command","doubledouble","doubledouble");?>, <?php linkTo("command","qd","QD");?>, <?php linkTo("command","quad","quad");?> <?php linkTo("command","td","TD");?> and <?php linkTo("command","tripledouble","tripledouble");?>, 
+<?php linkTo("command","de","DE");?>, <?php linkTo("command","doubleextended","doubleextended");?>, <?php linkTo("command","dd","DD");?>, <?php linkTo("command","doubledouble","doubledouble");?>, <?php linkTo("command","qd","QD");?>, <?php linkTo("command","quad","quad");?>, <?php linkTo("command","td","TD");?> and <?php linkTo("command","tripledouble","tripledouble");?>, 
 an error occurs. 
 </li><li>The coefficients in <span class="arg">p</span> corresponding to X^i is rounded to the  
 format L[i]. If <span class="arg">L</span> does not contain enough elements 

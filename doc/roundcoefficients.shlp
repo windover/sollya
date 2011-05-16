@@ -17,7 +17,7 @@ If <p> is not a polynomial, $COMMAND does not do anything.
 
 #DESCRIPTION
 If <L> contains other elements than $HP, $HALFPRECISION, $SG, $SINGLE, $D, $DOUBLE, 
-$DE, $DOUBLEEXTENDED, $DD, $DOUBLEDOUBLE, $QD, $QUAD $TD and $TRIPLEDOUBLE,
+$DE, $DOUBLEEXTENDED, $DD, $DOUBLEDOUBLE, $QD, $QUAD, $TD and $TRIPLEDOUBLE,
 an error occurs.
 
 #DESCRIPTION
