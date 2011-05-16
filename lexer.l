@@ -164,6 +164,8 @@ DIAM            "diam"
 
 DOUBLELONG       "double"
 SINGLELONG       "single"
+QUADLONG         "quad"
+HALFPRECISIONLONG "halfprecision"
 DOUBLEDOUBLELONG "doubledouble"
 TRIPLEDOUBLELONG "tripledouble"
 DOUBLEEXTENDEDLONG "doubleextended"
@@ -171,6 +173,8 @@ DOUBLEEXTENDEDLONG "doubleextended"
 
 DOUBLESHORT      "D"
 SINGLESHORT      "SG"
+QUADSHORT        "QD"
+HALFPRECISIONSHORT "HP"
 DOUBLEDOUBLESHORT "DD"
 TRIPLEDOUBLESHORT "TD"
 DOUBLEEXTENDEDSHORT "DE"
@@ -178,6 +182,8 @@ DOUBLEEXTENDEDSHORT "DE"
 
 DOUBLE          ({DOUBLELONG}|{DOUBLESHORT})
 SINGLE          ({SINGLELONG}|{SINGLESHORT})
+QUAD            ({QUADLONG}|{QUADSHORT})
+HALFPRECISION   ({HALFPRECISIONLONG}|{HALFPRECISIONSHORT})
 DOUBLEDOUBLE    ({DOUBLEDOUBLELONG}|{DOUBLEDOUBLESHORT})
 TRIPLEDOUBLE    ({TRIPLEDOUBLELONG}|{TRIPLEDOUBLESHORT})
 DOUBLEEXTENDED  ({DOUBLEEXTENDEDLONG}|{DOUBLEEXTENDEDSHORT})
@@ -637,6 +643,8 @@ NOP             "nop"
 {EXPM1}           			    { newTokenLexed(); return EXPM1TOKEN; }
 {DOUBLE}          			    { newTokenLexed(); return DOUBLETOKEN; }
 {SINGLE}          			    { newTokenLexed(); return SINGLETOKEN; }
+{QUAD}          			    { newTokenLexed(); return QUADTOKEN; }
+{HALFPRECISION}          		    { newTokenLexed(); return HALFPRECISIONTOKEN; }
 {DOUBLEDOUBLE}				    { newTokenLexed(); return DOUBLEDOUBLETOKEN; }
 {TRIPLEDOUBLE}    			    { newTokenLexed(); return TRIPLEDOUBLETOKEN; }
 {DOUBLEEXTENDED}  			    { newTokenLexed(); return DOUBLEEXTENDEDTOKEN; }

@@ -1233,6 +1233,18 @@ int constantImplementer(node *c, int gamma0, struct implementCsteProgram *progra
     restoreMode();
     res = 1;
     break;
+  case HALFPRECISION:
+    changeToWarningMode();
+    sollyaPrintf("implementconstant: error: the half-precision function is not supported by this command.\nNo code will be produced.\n");
+    restoreMode();
+    res = 1;
+    break;
+  case QUAD:
+    changeToWarningMode();
+    sollyaPrintf("implementconstant: error: the quad function is not supported by this command.\nNo code will be produced.\n");
+    restoreMode();
+    res = 1;
+    break;
   case NEARESTINT:
     changeToWarningMode();
     sollyaPrintf("implementconstant: error: the nearestint function is not supported by this command.\nNo code will be produced.\n");

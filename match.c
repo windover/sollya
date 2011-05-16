@@ -173,6 +173,8 @@ node *headFunction(node *tree) {
   case ABS:
   case DOUBLE:
   case SINGLE:
+  case QUAD:
+  case HALFPRECISION:
   case DOUBLEDOUBLE:
   case TRIPLEDOUBLE:
   case ERF: 
@@ -465,6 +467,8 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
   case ABS:
   case DOUBLE:
   case SINGLE:
+  case QUAD:
+  case HALFPRECISION:
   case DOUBLEDOUBLE:
   case TRIPLEDOUBLE:
   case ERF: 

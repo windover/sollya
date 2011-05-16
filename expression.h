@@ -108,6 +108,8 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #define NEARESTINT 40
 #define LIBRARYCONSTANT 41
 #define PROCEDUREFUNCTION 42
+#define HALFPRECISION 43
+#define QUAD 44
 
 
 typedef struct nodeStruct node;
@@ -219,6 +221,8 @@ node *makeNeg(node *op1);
 node *makeAbs(node *op1);
 node *makeDouble(node *op1);
 node *makeSingle(node *op1);
+node *makeQuad(node *op1);
+node *makeHalfPrecision(node *op1);
 node *makeDoubledouble(node *op1);
 node *makeTripledouble(node *op1);
 node *makeErf(node *op1);

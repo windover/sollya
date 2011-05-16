@@ -16,8 +16,9 @@ in <L>.
 If <p> is not a polynomial, $COMMAND does not do anything.
 
 #DESCRIPTION
-If <L> contains other elements than $D, $DOUBLE, $DD, $DOUBLEDOUBLE, $TD and
-$TRIPLEDOUBLE, an error occurs.
+If <L> contains other elements than $HP, $HALFPRECISION, $SG, $SINGLE, $D, $DOUBLE, 
+$DE, $DOUBLEEXTENDED, $DD, $DOUBLEDOUBLE, $QD, $QUAD $TD and $TRIPLEDOUBLE,
+an error occurs.
 
 #DESCRIPTION
 The coefficients in <p> corresponding to §§X^i§$X^i$§§ is rounded to the 
@@ -49,9 +50,12 @@ verbosity=1!;
 display=binary!;
 roundcoefficients(p,[|DD,D|]);
 
+#SEEALSO $HALFPRECISION
 #SEEALSO $SINGLE
 #SEEALSO $DOUBLE
+#SEEALSO $DOUBLEEXTENDED
 #SEEALSO $DOUBLEDOUBLE
+#SEEALSO $QUAD
 #SEEALSO $TRIPLEDOUBLE
 #SEEALSO $FPMINIMAX
 #SEEALSO $REMEZ

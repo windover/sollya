@@ -972,6 +972,12 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
       mpfr_set_d(fpcoefficients[i],0.0,GMP_RNDN);
     }
     switch (formatsArray[i]) {
+    case 7:
+      if (mpfr_round_to_quad(tempMpfr, fpcoefficients[i]) != 0) res = 1;
+      break;
+    case 6:
+      if (mpfr_round_to_halfprecision(tempMpfr, fpcoefficients[i]) != 0) res = 1;
+      break;
     case 5:
       if (mpfr_round_to_single(tempMpfr, fpcoefficients[i]) != 0) res = 1;
       break;
@@ -1023,47 +1029,6 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
   mpfr_clear(tempMpfr);
   return roundedPoly;
 }
-
-int mpfr_round_to_doubleextended(mpfr_t rop, mpfr_t op) {
-  mpfr_t intermediate;
-  int res;
-
-  mpfr_init2(intermediate,64);
-  mpfr_set(intermediate,op,GMP_RNDN);
-  if (mpfr_set(rop,intermediate,GMP_RNDN) != 0) {
-    if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the doubleextended precision rounding operator.\n");
-      printMessage(1,"Try to increase the working precision.\n");
-    }
-  }
-  
-  mpfr_clear(intermediate);
-
-  res = mpfr_cmp(rop,op);
-
-  return res;
-}
-
-int mpfr_round_to_doubleextended_mode(mpfr_t rop, mpfr_t op, mp_rnd_t mode) {
-  mpfr_t intermediate;
-  int res;
-
-  mpfr_init2(intermediate,64);
-  mpfr_set(intermediate,op,mode);
-  if (mpfr_set(rop,intermediate,GMP_RNDN) != 0) {
-    if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the doubleextended precision rounding operator.\n");
-      printMessage(1,"Try to increase the working precision.\n");
-    }
-  }
-  
-  mpfr_clear(intermediate);
-
-  res = mpfr_cmp(rop,op);
-
-  return res;
-}
-
 
 int printDoubleExpansion(mpfr_t x) {
   double d;
@@ -1248,6 +1213,12 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
 
 void mpfr_round_to_format(mpfr_t rop, mpfr_t op, int format) {
   switch (format) {
+  case 7:
+    mpfr_round_to_quad(rop, op);
+    break;
+  case 6:
+    mpfr_round_to_halfprecision(rop, op);
+    break;
   case 5:
     mpfr_round_to_single(rop, op);
     break;
@@ -1272,6 +1243,12 @@ void mpfr_round_to_format(mpfr_t rop, mpfr_t op, int format) {
 int round_to_expansion_format(mpfr_t rop, mpfr_t op, int format, mp_rnd_t mode) {
   int res;
   switch (format) {
+  case 7:
+    mpfr_round_to_quad_mode(rop, op, mode);
+    break;
+  case 6:
+    mpfr_round_to_halfprecision_mode(rop, op, mode);
+    break;
   case 5:
     mpfr_round_to_single_mode(rop, op, mode);
     break;
@@ -1645,4 +1622,28 @@ int mpfr_round_to_ieee_format(mpfr_t rop, mpfr_t op, mp_prec_t prec, unsigned in
   res = mpfr_cmp(rop,op);
 
   return res;
+}
+
+int mpfr_round_to_quad(mpfr_t rop, mpfr_t x) {
+  return mpfr_round_to_ieee_format(rop, x, 113, 15, GMP_RNDN);
+}
+
+int mpfr_round_to_halfprecision(mpfr_t rop, mpfr_t x) {
+  return mpfr_round_to_ieee_format(rop, x, 11, 5, GMP_RNDN);
+}
+
+int mpfr_round_to_quad_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
+  return mpfr_round_to_ieee_format(rop, x, 113, 15, mode);
+}
+
+int mpfr_round_to_halfprecision_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
+  return mpfr_round_to_ieee_format(rop, x, 11, 5, mode);
+}
+
+int mpfr_round_to_doubleextended(mpfr_t rop, mpfr_t op) {
+  return mpfr_round_to_ieee_format(rop, op, 64, 15, GMP_RNDN);
+}
+
+int mpfr_round_to_doubleextended_mode(mpfr_t rop, mpfr_t op, mp_rnd_t mode) {
+  return mpfr_round_to_ieee_format(rop, op, 64, 15, mode);
 }

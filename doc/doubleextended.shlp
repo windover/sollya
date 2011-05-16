@@ -9,20 +9,21 @@ $COMMAND is a function that computes the nearest floating-point number with
 composed with other $SOLLYA functions such as $EXP, $SIN, etc.
 
 #DESCRIPTION
-It does not handle subnormal numbers. The range of possible exponents is the 
-range used for all numbers represented in $SOLLYA (e.g. basically the range 
-used in the library MPFR).
+$COMMAND now does handle subnormal numbers for a presumed exponent width
+of the double-extended format of 15 bits. This means, with respect to 
+rounding, $COMMAND behaves as a IEEE 754-2008 binary79 with a 64 bit 
+significand (with a hidden bit normal range), one sign bit and a 
+15 bit exponent field would behave. This behavior may be different
+from the one observed on Intel-based IA32/Intel64 processors (or compatible
+versions from other vendors). However it is the one seen on HP/Intel 
+Itanium when the precision specifier is double-extended and pseudo-denormals
+are activated.
 
 #DESCRIPTION
 Since it is a function and not a command, its behavior is a bit different from 
 the behavior of $ROUND(x,64,RN) even if the result is exactly the same.
 $ROUND(x,64,RN) is immediately evaluated whereas $COMMAND(x) can be composed 
 with other functions (and thus be plotted and so on).
-
-#DESCRIPTION
-Be aware that $COMMAND cannot be used as a constant to represent a format in the
-commands $ROUNDCOEFFICIENTS and $IMPLEMENTPOLY (contrary to $D, $DD,and $TD). However, it
-can be used in $ROUND.
 
 #EXAMPLE
 display=binary!;
@@ -31,7 +32,7 @@ round(0.1,64,RN);
 
 #EXAMPLE
 D(2^(-2000));
-DE(2^(-2000));
+DE(2^(-20000));
 
 #EXAMPLE
 verbosity=1!;
@@ -40,9 +41,11 @@ f(pi);
 g = sin(round(x,64,RN));
 
 #SEEALSO $ROUNDCOEFFICIENTS
+#SEEALSO $HALFPRECISION
 #SEEALSO $SINGLE
 #SEEALSO $DOUBLE
 #SEEALSO $DOUBLEDOUBLE
+#SEEALSO $QUAD
 #SEEALSO $TRIPLEDOUBLE
 #SEEALSO $ROUND
 

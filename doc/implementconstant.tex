@@ -68,12 +68,13 @@ implements a constant in arbitrary precision\\
    release of \sollya.
 
 \item Currently, non-differentiable functions such as \textbf{double}, \textbf{doubledouble},
-   \textbf{tripledouble}, \textbf{single}, \textbf{doubleextended}, \textbf{floor}, \textbf{ceil}, \textbf{nearestint} are not
-   supported by \textbf{implementconstant}. If \textbf{implementconstant} encounters one of them,
-   a warning message is displayed and no code is produced.
-   However, if \textbf{autosimplify} equals on, it is possible that \sollya silently
-   simplifies subexpressions of \emph{expr} containing such functions and that
-   \textbf{implementconstant} successfully produces code for evaluating \emph{expr}.
+   \textbf{tripledouble}, \textbf{single}, \textbf{halfprecision}, \textbf{quad}, \textbf{doubleextended}, 
+   \textbf{floor}, \textbf{ceil}, \textbf{nearestint} are not supported by \textbf{implementconstant}. 
+   If \textbf{implementconstant} encounters one of them, a warning message is displayed 
+   and no code is produced. However, if \textbf{autosimplify} equals on, it is 
+   possible that \sollya silently simplifies subexpressions of \emph{expr} 
+   containing such functions and that \textbf{implementconstant} successfully produces 
+   code for evaluating \emph{expr}.
 
 \item While it produces an MPFR-based C source code for \emph{expr}, \textbf{implementconstant}
    takes architectural and system-dependent parameters into account.  For

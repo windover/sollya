@@ -170,6 +170,8 @@ void miniyyerror(void *myScanner, char *message) {
 %token  EXPM1TOKEN;
 %token  DOUBLETOKEN;
 %token  SINGLETOKEN;
+%token  QUADTOKEN;
+%token  HALFPRECISIONTOKEN;
 %token  DOUBLEDOUBLETOKEN;
 %token  TRIPLEDOUBLETOKEN;
 %token  DOUBLEEXTENDEDTOKEN;
@@ -1271,6 +1273,14 @@ basicthing:             ONTOKEN
                           {
 			    $$ = makeSingleSymbol();
 			  }
+                      | QUADTOKEN
+                          {
+			    $$ = makeQuadSymbol();
+			  }
+                      | HALFPRECISIONTOKEN
+                          {
+			    $$ = makeHalfPrecisionSymbol();
+			  }
                       | DOUBLEEXTENDEDTOKEN
                           {
 			    $$ = makeDoubleextendedSymbol();
@@ -1844,6 +1854,14 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                       | SINGLETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeSingle($3);
+			  }
+                      | QUADTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeQuad($3);
+			  }
+                      | HALFPRECISIONTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeHalfPrecision($3);
 			  }
                       | DOUBLEDOUBLETOKEN LPARTOKEN thing RPARTOKEN
                           {

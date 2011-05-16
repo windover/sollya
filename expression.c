@@ -254,6 +254,14 @@ void free_memory(node *tree) {
     free_memory(tree->child1);
     free(tree);
     break;
+  case QUAD:
+    free_memory(tree->child1);
+    free(tree);
+    break;  
+  case HALFPRECISION:
+    free_memory(tree->child1);
+    free(tree);
+    break;
   case DOUBLEDOUBLE:
     free_memory(tree->child1);
     free(tree);
@@ -407,6 +415,12 @@ void fprintHeadFunction(FILE *fd,node *tree, char *x, char *y) {
     break;
   case SINGLE:
     sollyaFprintf(fd,"single(%s)",x);
+    break;
+  case QUAD:
+    sollyaFprintf(fd,"quad(%s)",x);
+    break;
+  case HALFPRECISION:
+    sollyaFprintf(fd,"halfprecision(%s)",x);
     break;
   case DOUBLEDOUBLE:
     sollyaFprintf(fd,"doubledouble(%s)",x);
@@ -1289,6 +1303,16 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
     fprintTreeWithPrintMode(fd,tree->child1);
     sollyaFprintf(fd,")");
     break;
+  case HALFPRECISION:
+    sollyaFprintf(fd,"halfprecision(");
+    fprintTreeWithPrintMode(fd,tree->child1);
+    sollyaFprintf(fd,")");
+    break;
+  case QUAD:
+    sollyaFprintf(fd,"quad(");
+    fprintTreeWithPrintMode(fd,tree->child1);
+    sollyaFprintf(fd,")");
+    break;
   case DOUBLEDOUBLE:
     sollyaFprintf(fd,"doubledouble(");
     fprintTreeWithPrintMode(fd,tree->child1);
@@ -1749,6 +1773,16 @@ void printTree(node *tree) {
     printTree(tree->child1);
     sollyaPrintf(")");
     break;
+  case HALFPRECISION:
+    sollyaPrintf("halfprecision(");
+    printTree(tree->child1);
+    sollyaPrintf(")");
+    break;
+  case QUAD:
+    sollyaPrintf("quad(");
+    printTree(tree->child1);
+    sollyaPrintf(")");
+    break;
   case DOUBLEDOUBLE:
     sollyaPrintf("doubledouble(");
     printTree(tree->child1);
@@ -2095,6 +2129,16 @@ char *sprintTree(node *tree) {
     buffer = (char *) safeCalloc(strlen(buffer1) + 10, sizeof(char));
     sprintf(buffer,"single(%s)",buffer1);
     break;
+  case HALFPRECISION:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 17, sizeof(char));
+    sprintf(buffer,"halfprecision(%s)",buffer1);
+    break;
+  case QUAD:
+    buffer1 = sprintTree(tree->child1);
+    buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
+    sprintf(buffer,"quad(%s)",buffer1);
+    break;
   case DOUBLEDOUBLE:
     buffer1 = sprintTree(tree->child1);
     buffer = (char *) safeCalloc(strlen(buffer1) + 16, sizeof(char));
@@ -2437,6 +2481,16 @@ void fprintTree(FILE *fd, node *tree) {
     fprintTree(fd,tree->child1);
     sollyaFprintf(fd,")");
     break;
+  case QUAD:
+    sollyaFprintf(fd,"quad(");
+    fprintTree(fd,tree->child1);
+    sollyaFprintf(fd,")");
+    break;
+  case HALFPRECISION:
+    sollyaFprintf(fd,"halfprecision(");
+    fprintTree(fd,tree->child1);
+    sollyaFprintf(fd,")");
+    break;
   case DOUBLEDOUBLE:
     sollyaFprintf(fd,"doubledouble(");
     fprintTree(fd,tree->child1);
@@ -2729,6 +2783,16 @@ node* copyTree(node *tree) {
   case SINGLE:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = SINGLE;
+    copy->child1 = copyTree(tree->child1);
+    break;
+  case QUAD:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = QUAD;
+    copy->child1 = copyTree(tree->child1);
+    break;
+  case HALFPRECISION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = HALFPRECISION;
     copy->child1 = copyTree(tree->child1);
     break;
   case DOUBLEDOUBLE:
@@ -4342,6 +4406,124 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
       }
     }
     break;
+  case QUAD:
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec, doRational);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      mpfr_round_to_quad(*value, *(simplChild1->value)); 
+      if (!mpfr_number_p(*value)) {
+	simplified->nodeType = QUAD;
+	simplified->child1 = simplChild1;
+	mpfr_clear(*value);
+	free(value);
+      } else {
+	free_memory(simplChild1);
+      }
+    } else {     
+      if (isConstant(simplChild1)) {
+        xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        mpfr_init2(*(yrange.a),4* tools_precision);
+        mpfr_init2(*(yrange.b),4 * tools_precision);
+        mpfr_init2(*(xrange.a),tools_precision);
+        mpfr_init2(*(xrange.b),tools_precision);
+        mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
+        mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
+        evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
+        mpfr_round_to_quad(*(xrange.a),*(yrange.a));
+        mpfr_round_to_quad(*(xrange.b),*(yrange.b));
+        if (mpfr_number_p(*(xrange.a)) && 
+            mpfr_number_p(*(xrange.b)) &&
+            (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
+          simplified->nodeType = CONSTANT;
+          value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+          mpfr_init2(*value,tools_precision);
+          simplified->value = value;
+          mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+	  free_memory(simplChild1);
+        } else {
+          simplified->nodeType = QUAD;
+          simplified->child1 = simplChild1;
+        }
+        mpfr_clear(*(xrange.a));
+        mpfr_clear(*(xrange.b));
+        mpfr_clear(*(yrange.a));
+        mpfr_clear(*(yrange.b));
+        free(xrange.a);
+        free(xrange.b);
+        free(yrange.a);
+        free(yrange.b);
+      } else {
+        simplified->nodeType = QUAD;
+        simplified->child1 = simplChild1;
+      }
+    }
+    break;
+  case HALFPRECISION:
+    simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec, doRational);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      mpfr_round_to_halfprecision(*value, *(simplChild1->value)); 
+      if (!mpfr_number_p(*value)) {
+	simplified->nodeType = HALFPRECISION;
+	simplified->child1 = simplChild1;
+	mpfr_clear(*value);
+	free(value);
+      } else {
+	free_memory(simplChild1);
+      }
+    } else {     
+      if (isConstant(simplChild1)) {
+        xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        mpfr_init2(*(yrange.a),4* tools_precision);
+        mpfr_init2(*(yrange.b),4 * tools_precision);
+        mpfr_init2(*(xrange.a),tools_precision);
+        mpfr_init2(*(xrange.b),tools_precision);
+        mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
+        mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
+        evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
+        mpfr_round_to_halfprecision(*(xrange.a),*(yrange.a));
+        mpfr_round_to_halfprecision(*(xrange.b),*(yrange.b));
+        if (mpfr_number_p(*(xrange.a)) && 
+            mpfr_number_p(*(xrange.b)) &&
+            (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
+          simplified->nodeType = CONSTANT;
+          value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+          mpfr_init2(*value,tools_precision);
+          simplified->value = value;
+          mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
+	  free_memory(simplChild1);
+        } else {
+          simplified->nodeType = HALFPRECISION;
+          simplified->child1 = simplChild1;
+        }
+        mpfr_clear(*(xrange.a));
+        mpfr_clear(*(xrange.b));
+        mpfr_clear(*(yrange.a));
+        mpfr_clear(*(yrange.b));
+        free(xrange.a);
+        free(xrange.b);
+        free(yrange.a);
+        free(yrange.b);
+      } else {
+        simplified->nodeType = HALFPRECISION;
+        simplified->child1 = simplChild1;
+      }
+    }
+    break;
   case DOUBLEDOUBLE:
     simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec, doRational);
     simplified = (node*) safeMalloc(sizeof(node));
@@ -5514,6 +5696,28 @@ node* differentiateUnsimplified(node *tree) {
 	temp_node->value = mpfr_temp;
 	derivative = temp_node;
 	break;
+      case QUAD:
+	printMessage(1,
+		     "Warning: the quad rounding operator is not differentiable.\nReplacing it by a constant function when differentiating.\n");
+	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*mpfr_temp,tools_precision);
+	mpfr_set_d(*mpfr_temp,0.0,GMP_RNDN);
+	temp_node = (node*) safeMalloc(sizeof(node));
+	temp_node->nodeType = CONSTANT;
+	temp_node->value = mpfr_temp;
+	derivative = temp_node;
+	break;
+      case HALFPRECISION:
+	printMessage(1,
+		     "Warning: the half-precision rounding operator is not differentiable.\nReplacing it by a constant function when differentiating.\n");
+	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*mpfr_temp,tools_precision);
+	mpfr_set_d(*mpfr_temp,0.0,GMP_RNDN);
+	temp_node = (node*) safeMalloc(sizeof(node));
+	temp_node->nodeType = CONSTANT;
+	temp_node->value = mpfr_temp;
+	derivative = temp_node;
+	break;
       case DOUBLEDOUBLE:
 	printMessage(1,
 		     "Warning: the double-double rounding operator is not differentiable.\nReplacing it by a constant function when differentiating.\n");
@@ -5940,6 +6144,16 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
     mpfr_round_to_single(result, stack1);
+    break;
+  case QUAD:
+    isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
+    if (!isConstant) break;
+    mpfr_round_to_quad(result, stack1);
+    break;
+  case HALFPRECISION:
+    isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
+    if (!isConstant) break;
+    mpfr_round_to_halfprecision(result, stack1);
     break;
   case DOUBLEDOUBLE:
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
@@ -6546,6 +6760,36 @@ node* simplifyTreeInner(node *tree) {
       free_memory(simplChild1);
     } else {
       simplified->nodeType = SINGLE;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case QUAD:
+    simplChild1 = simplifyTreeInner(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      mpfr_round_to_quad(*value, *(simplChild1->value));
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = QUAD;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case HALFPRECISION:
+    simplChild1 = simplifyTreeInner(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      mpfr_round_to_halfprecision(*value, *(simplChild1->value));
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = HALFPRECISION;
       simplified->child1 = simplChild1;
     }
     break;
@@ -7230,6 +7474,36 @@ node* simplifyAllButDivisionInner(node *tree) {
       simplified->child1 = simplChild1;
     }
     break;
+  case HALFPRECISION:
+    simplChild1 = simplifyAllButDivisionInner(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      mpfr_round_to_halfprecision(*value, *(simplChild1->value));
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = HALFPRECISION;
+      simplified->child1 = simplChild1;
+    }
+    break;
+  case QUAD:
+    simplChild1 = simplifyAllButDivisionInner(tree->child1);
+    simplified = (node*) safeMalloc(sizeof(node));
+    if (simplChild1->nodeType == CONSTANT) {
+      simplified->nodeType = CONSTANT;
+      value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+      mpfr_init2(*value,tools_precision);
+      simplified->value = value;
+      mpfr_round_to_quad(*value, *(simplChild1->value));
+      free_memory(simplChild1);
+    } else {
+      simplified->nodeType = QUAD;
+      simplified->child1 = simplChild1;
+    }
+    break;
   case DOUBLEDOUBLE:
     simplChild1 = simplifyAllButDivisionInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
@@ -7585,6 +7859,14 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
     evaluate(stack1, tree->child1, x, prec);
     mpfr_round_to_single(result, stack1);
     break;
+  case QUAD:
+    evaluate(stack1, tree->child1, x, prec);
+    mpfr_round_to_quad(result, stack1);
+    break;
+  case HALFPRECISION:
+    evaluate(stack1, tree->child1, x, prec);
+    mpfr_round_to_halfprecision(result, stack1);
+    break;
   case DOUBLEDOUBLE:
     evaluate(stack1, tree->child1, x, prec);
     mpfr_round_to_doubledouble(result, stack1);
@@ -7689,6 +7971,8 @@ int arity(node *tree) {
   case ABS:
   case DOUBLE:
   case SINGLE:
+  case QUAD:
+  case HALFPRECISION:
   case DOUBLEDOUBLE:
   case TRIPLEDOUBLE:
   case ERF:
@@ -7793,6 +8077,8 @@ int isPolynomial(node *tree) {
   case ABS:
   case DOUBLE:
   case SINGLE:
+  case QUAD:
+  case HALFPRECISION:
   case DOUBLEDOUBLE:
   case TRIPLEDOUBLE:
   case ERF:
@@ -7890,6 +8176,8 @@ int isAffine(node *tree) {
   case ABS:
   case DOUBLE:
   case SINGLE:
+  case QUAD:
+  case HALFPRECISION:
   case DOUBLEDOUBLE:
   case TRIPLEDOUBLE:
   case ERF:
@@ -8587,6 +8875,16 @@ node* expandDivision(node *tree) {
     copy->nodeType = SINGLE;
     copy->child1 = expandDivision(tree->child1);
     break;
+  case QUAD:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = QUAD;
+    copy->child1 = expandDivision(tree->child1);
+    break;
+  case HALFPRECISION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = HALFPRECISION;
+    copy->child1 = expandDivision(tree->child1);
+    break;
   case DOUBLEDOUBLE:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLEDOUBLE;
@@ -9178,6 +9476,16 @@ node* expandUnsimplified(node *tree) {
     copy->nodeType = SINGLE;
     copy->child1 = expand(tree->child1);
     break;
+  case HALFPRECISION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = HALFPRECISION;
+    copy->child1 = expand(tree->child1);
+    break;
+  case QUAD:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = QUAD;
+    copy->child1 = expand(tree->child1);
+    break;
   case DOUBLEDOUBLE:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLEDOUBLE;
@@ -9309,6 +9617,8 @@ int isConstant(node *tree) {
   case ABS:
   case DOUBLE:
   case SINGLE:
+  case QUAD:
+  case HALFPRECISION:
   case DOUBLEDOUBLE:
   case TRIPLEDOUBLE:
   case ERF:
@@ -10318,6 +10628,16 @@ node* hornerUnsimplified(node *tree) {
     copy->nodeType = SINGLE;
     copy->child1 = horner(tree->child1);
     break;
+  case QUAD:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = QUAD;
+    copy->child1 = horner(tree->child1);
+    break;
+  case HALFPRECISION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = HALFPRECISION;
+    copy->child1 = horner(tree->child1);
+    break;
   case DOUBLEDOUBLE:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLEDOUBLE;
@@ -11139,6 +11459,16 @@ node *substitute(node* tree, node *t) {
     copy->nodeType = SINGLE;
     copy->child1 = substitute(tree->child1,t);
     break;
+  case QUAD:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = QUAD;
+    copy->child1 = substitute(tree->child1,t);
+    break;
+  case HALFPRECISION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = HALFPRECISION;
+    copy->child1 = substitute(tree->child1,t);
+    break;
   case DOUBLEDOUBLE:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLEDOUBLE;
@@ -11497,6 +11827,8 @@ int treeSize(node *tree) {
   case ABS:
   case DOUBLE:
   case SINGLE:
+  case QUAD:
+  case HALFPRECISION:
   case DOUBLEDOUBLE:
   case TRIPLEDOUBLE:
   case ERF:
@@ -11950,6 +12282,16 @@ node *makeCanonical(node *tree, mp_prec_t prec) {
     copy->nodeType = SINGLE;
     copy->child1 = makeCanonical(tree->child1,prec);
     break;
+  case QUAD:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = QUAD;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
+  case HALFPRECISION:
+    copy = (node*) safeMalloc(sizeof(node));
+    copy->nodeType = HALFPRECISION;
+    copy->child1 = makeCanonical(tree->child1,prec);
+    break;
   case DOUBLEDOUBLE:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = DOUBLEDOUBLE;
@@ -12165,6 +12507,14 @@ node *makeDouble(node *op1) {
 
 node *makeSingle(node *op1) {
   return makeUnary(op1,SINGLE);
+}
+
+node *makeQuad(node *op1) {
+  return makeUnary(op1,QUAD);
+}
+
+node *makeHalfPrecision(node *op1) {
+  return makeUnary(op1,HALFPRECISION);
 }
 
 node *makeDoubledouble(node *op1) {

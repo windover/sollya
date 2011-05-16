@@ -284,7 +284,8 @@ extern void endBuffer(void);
 #define MATCH 264
 #define MATCHELEMENT 265
 #define BASHEVALUATE 266
-
+#define HALFPRECISIONSYMBOL 267
+#define QUADSYMBOL 268
 
 int executeCommand(node *);
 
@@ -401,6 +402,8 @@ node *makeFloating();
 node *makeError();
 node *makeDoubleSymbol();
 node *makeSingleSymbol();
+node *makeQuadSymbol();
+node *makeHalfPrecisionSymbol();
 node *makeDoubleDoubleSymbol();
 node *makeTripleDoubleSymbol();
 node *makeString(char *string);

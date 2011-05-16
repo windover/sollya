@@ -80,9 +80,10 @@ In this case, <?php linkTo("command","fpminimax","fpminimax");?> will search for
 constant coefficient of the form m/2^25 where m is an 
 integer. In other words, it is a fixed-point number with 25 bits after 
 the point. Note that even with argument <?php linkTo("command","fixed","fixed");?>, the formats list is  
-allowed to contain <?php linkTo("command","double","double");?>, <?php linkTo("command","doubledouble","doubledouble");?> or <?php linkTo("command","tripledouble","tripledouble");?>. In this this 
-case, it is just a synonym for 53, 107 or 161. This is deprecated and may 
-change in the future. 
+allowed to contain <?php linkTo("command","halfprecision","halfprecision");?>, <?php linkTo("command","single","single");?> <?php linkTo("command","double","double");?>, <?php linkTo("command","doubleextended","doubleextended");?>,  
+<?php linkTo("command","doubledouble","doubledouble");?>, <?php linkTo("command","quad","quad");?> or <?php linkTo("command","tripledouble","tripledouble");?>. In this this case, it is just  
+a synonym for 11, 24, 53, 64, 107, 113 or 161. This is deprecated and  
+may change in the future. 
 </li><li>The fourth argument may be a range or a list. Lists are for advanced users 
 that know what they are doing. The core of the  method is a kind of 
 approximated interpolation. The list given here is a list of points that 
@@ -173,5 +174,5 @@ currently <?php linkTo("command","fpminimax","fpminimax");?> has to be run with 
 </div> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","remez","remez");?>, <?php linkTo("command","dirtyfindzeros","dirtyfindzeros");?>, <?php linkTo("command","absolute","absolute");?>, <?php linkTo("command","relative","relative");?>, <?php linkTo("command","fixed","fixed");?>, <?php linkTo("command","floating","floating");?>, <?php linkTo("command","default","default");?>, <?php linkTo("command","single","single");?>, <?php linkTo("command","double","double");?>, <?php linkTo("command","doubledouble","doubledouble");?>, <?php linkTo("command","tripledouble","tripledouble");?>, <?php linkTo("command","doubleextended","doubleextended");?>, <?php linkTo("command","implementpoly","implementpoly");?>, <?php linkTo("command","coeff","coeff");?>, <?php linkTo("command","degree","degree");?>, <?php linkTo("command","roundcoefficients","roundcoefficients");?>, <?php linkTo("command","guessdegree","guessdegree");?> 
+<span class="category">See also: </span><?php linkTo("command","remez","remez");?>, <?php linkTo("command","dirtyfindzeros","dirtyfindzeros");?>, <?php linkTo("command","absolute","absolute");?>, <?php linkTo("command","relative","relative");?>, <?php linkTo("command","fixed","fixed");?>, <?php linkTo("command","floating","floating");?>, <?php linkTo("command","default","default");?>, <?php linkTo("command","halfprecision","halfprecision");?>, <?php linkTo("command","single","single");?>, <?php linkTo("command","double","double");?>, <?php linkTo("command","doubleextended","doubleextended");?>, <?php linkTo("command","doubledouble","doubledouble");?>, <?php linkTo("command","quad","quad");?>, <?php linkTo("command","tripledouble","tripledouble");?>, <?php linkTo("command","implementpoly","implementpoly");?>, <?php linkTo("command","coeff","coeff");?>, <?php linkTo("command","degree","degree");?>, <?php linkTo("command","roundcoefficients","roundcoefficients");?>, <?php linkTo("command","guessdegree","guessdegree");?> 
 </div> 

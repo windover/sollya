@@ -435,6 +435,12 @@ node *copyThing(node *tree) {
   case SINGLE:
     copy->child1 = copyThing(tree->child1);
     break;
+  case HALFPRECISION:
+    copy->child1 = copyThing(tree->child1);
+    break;
+  case QUAD:
+    copy->child1 = copyThing(tree->child1);
+    break;
   case DOUBLEDOUBLE:
     copy->child1 = copyThing(tree->child1);
     break;
@@ -818,6 +824,10 @@ node *copyThing(node *tree) {
   case DOUBLESYMBOL:
     break;  			
   case SINGLESYMBOL:
+    break;  			
+  case QUADSYMBOL:
+    break;  			
+  case HALFPRECISIONSYMBOL:
     break;  			
   case DOUBLEEXTENDEDSYMBOL:
     break;  			
@@ -1287,6 +1297,12 @@ char *getTimingStringForThing(node *tree) {
   case SINGLE:
     constString = NULL;
     break;
+  case QUAD:
+    constString = NULL;
+    break;
+  case HALFPRECISION:
+    constString = NULL;
+    break;
   case DOUBLEDOUBLE:
     constString = NULL;
     break;
@@ -1657,6 +1673,12 @@ char *getTimingStringForThing(node *tree) {
     constString = NULL;
     break;  			
   case SINGLESYMBOL:
+    constString = NULL;
+    break;  			
+  case QUADSYMBOL:
+    constString = NULL;
+    break;  			
+  case HALFPRECISIONSYMBOL:
     constString = NULL;
     break;  			
   case DOUBLEEXTENDEDSYMBOL:
@@ -2077,6 +2099,12 @@ int isPureTree(node *tree) {
   case SINGLE:
     return isPureTree(tree->child1);
     break;
+  case QUAD:
+    return isPureTree(tree->child1);
+    break;
+  case HALFPRECISION:
+    return isPureTree(tree->child1);
+    break;
   case DOUBLEDOUBLE:
     return isPureTree(tree->child1);
     break;
@@ -2219,6 +2247,12 @@ int isExtendedPureTree(node *tree) {
     return isExtendedPureTree(tree->child1);
     break;
   case SINGLE:
+    return isExtendedPureTree(tree->child1);
+    break;
+  case QUAD:
+    return isExtendedPureTree(tree->child1);
+    break;
+  case HALFPRECISION:
     return isExtendedPureTree(tree->child1);
     break;
   case DOUBLEDOUBLE:
@@ -2514,6 +2548,8 @@ int isRoundingSymbol(node *tree) {
 
 int isExpansionFormat(node *tree) {
   if (tree->nodeType == SINGLESYMBOL) return 1;
+  if (tree->nodeType == HALFPRECISIONSYMBOL) return 1;
+  if (tree->nodeType == QUADSYMBOL) return 1;
   if (tree->nodeType == DOUBLESYMBOL) return 1;
   if (tree->nodeType == DOUBLEDOUBLESYMBOL) return 1;
   if (tree->nodeType == TRIPLEDOUBLESYMBOL) return 1;
@@ -2523,6 +2559,8 @@ int isExpansionFormat(node *tree) {
 
 int isExtendedExpansionFormat(node *tree) {
   if (tree->nodeType == SINGLESYMBOL) return 1;
+  if (tree->nodeType == HALFPRECISIONSYMBOL) return 1;
+  if (tree->nodeType == QUADSYMBOL) return 1;
   if (tree->nodeType == DOUBLESYMBOL) return 1;
   if (tree->nodeType == DOUBLEDOUBLESYMBOL) return 1;
   if (tree->nodeType == TRIPLEDOUBLESYMBOL) return 1;
@@ -3057,6 +3095,12 @@ int evaluateThingToExpansionFormat(int *result, node *tree) {
     case SINGLESYMBOL:
       *result = 5;
       break;
+    case HALFPRECISIONSYMBOL:
+      *result = 6;
+      break;
+    case QUADSYMBOL:
+      *result = 7;
+      break;
     }
     freeThing(evaluatedResult);
     return 1;
@@ -3103,6 +3147,12 @@ int evaluateThingToExtendedExpansionFormat(int *result, node *tree) {
       break;
     case SINGLESYMBOL:
       *result = 5;
+      break;
+    case HALFPRECISIONSYMBOL:
+      *result = 6;
+      break;
+    case QUADSYMBOL:
+      *result = 7;
       break;
     }
     freeThing(evaluatedResult);
@@ -3727,6 +3777,16 @@ char *sRawPrintThing(node *tree) {
     break;
   case SINGLE:
     res = concatAndFree(newString("single("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case HALFPRECISION:
+    res = concatAndFree(newString("halfprecision("),
+			concatAndFree(sRawPrintThing(tree->child1),
+				      newString(")")));
+    break;
+  case QUAD:
+    res = concatAndFree(newString("quad("),
 			concatAndFree(sRawPrintThing(tree->child1),
 				      newString(")")));
     break;
@@ -4549,6 +4609,12 @@ char *sRawPrintThing(node *tree) {
     break;  			
   case SINGLESYMBOL:
     res = newString("single");
+    break;  			
+  case HALFPRECISIONSYMBOL:
+    res = newString("halfprecision");
+    break;  			
+  case QUADSYMBOL:
+    res = newString("quad");
     break;  			
   case DOUBLEEXTENDEDSYMBOL:
     res = newString("doubleextended");
@@ -9712,6 +9778,25 @@ node *makeSingleSymbol() {
 
 }
 
+node *makeHalfPrecisionSymbol() {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = HALFPRECISIONSYMBOL;
+
+  return res;
+
+}
+
+node *makeQuadSymbol() {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = QUADSYMBOL;
+
+  return res;
+
+}
 
 node *makeDoubleextendedSymbol() {
   node *res;
@@ -11054,6 +11139,14 @@ void freeThing(node *tree) {
     freeThing(tree->child1);
     free(tree);
     break;
+  case HALFPRECISION:
+    freeThing(tree->child1);
+    free(tree);
+    break;  
+  case QUAD:
+    freeThing(tree->child1);
+    free(tree);
+    break;
   case DOUBLEDOUBLE:
     freeThing(tree->child1);
     free(tree);
@@ -11548,6 +11641,12 @@ void freeThing(node *tree) {
     free(tree);
     break;  			
   case SINGLESYMBOL:
+    free(tree);
+    break;  			
+  case HALFPRECISIONSYMBOL:
+    free(tree);
+    break;  			
+  case QUADSYMBOL:
     free(tree);
     break;  			
   case DOUBLEEXTENDEDSYMBOL:
@@ -12109,6 +12208,12 @@ int isEqualThing(node *tree, node *tree2) {
   case SINGLE:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break;
+  case HALFPRECISION:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break;
+  case QUAD:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    break;
   case DOUBLEDOUBLE:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break;
@@ -12477,6 +12582,10 @@ int isEqualThing(node *tree, node *tree2) {
   case DOUBLESYMBOL:
     break;  			
   case SINGLESYMBOL:
+    break;  			
+  case HALFPRECISIONSYMBOL:
+    break;  			
+  case QUADSYMBOL:
     break;  			
   case DOUBLEEXTENDEDSYMBOL:
     break;  			
@@ -12849,6 +12958,8 @@ int isCorrectlyTypedBaseSymbol(node *tree) {
   case FLOATING:
   case DOUBLESYMBOL:
   case SINGLESYMBOL:
+  case HALFPRECISIONSYMBOL:
+  case QUADSYMBOL:
   case DOUBLEEXTENDEDSYMBOL:
   case DOUBLEDOUBLESYMBOL:
   case TRIPLEDOUBLESYMBOL:
@@ -12983,6 +13094,8 @@ int evaluateFormatsListForFPminimax(chain **res, node *list, int n, int mode) {
   while(i <= n) {
     switch(((node *)(curr->value))->nodeType) {
     case SINGLESYMBOL: a=24; break;
+    case QUADSYMBOL: a=113; break;
+    case HALFPRECISIONSYMBOL: a=11; break;
     case DOUBLESYMBOL: a=53; break;
     case DOUBLEDOUBLESYMBOL: a=107; break;
     case TRIPLEDOUBLESYMBOL: a=161; break;
@@ -14113,6 +14226,8 @@ int variableUsePreventsPreevaluation(node *tree) {
   case ERRORSPECIAL:
   case DOUBLESYMBOL:
   case SINGLESYMBOL:
+  case QUADSYMBOL:
+  case HALFPRECISIONSYMBOL:
   case DOUBLEEXTENDEDSYMBOL:
   case DOUBLEDOUBLESYMBOL:
   case TRIPLEDOUBLESYMBOL:
@@ -14208,6 +14323,8 @@ int variableUsePreventsPreevaluation(node *tree) {
   case ABS:
   case DOUBLE:
   case SINGLE:
+  case QUAD:
+  case HALFPRECISION:
   case DOUBLEDOUBLE:
   case TRIPLEDOUBLE:
   case ERF: 
@@ -14616,6 +14733,12 @@ node *preevaluateMatcher(node *tree) {
   case SINGLE:
     copy->child1 = preevaluateMatcher(tree->child1);
     break;
+  case QUAD:
+    copy->child1 = preevaluateMatcher(tree->child1);
+    break;
+  case HALFPRECISION:
+    copy->child1 = preevaluateMatcher(tree->child1);
+    break;
   case DOUBLEDOUBLE:
     copy->child1 = preevaluateMatcher(tree->child1);
     break;
@@ -14999,6 +15122,10 @@ node *preevaluateMatcher(node *tree) {
   case DOUBLESYMBOL:
     break;  			
   case SINGLESYMBOL:
+    break;  			
+  case QUADSYMBOL:
+    break;  			
+  case HALFPRECISIONSYMBOL:
     break;  			
   case DOUBLEEXTENDEDSYMBOL:
     break;  			
@@ -16241,6 +16368,50 @@ node *evaluateThingInner(node *tree) {
       sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
       sollya_mpfi_init2(tempIC,tools_precision);
       sollya_mpfi_round_to_single(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
+    }
+    break;
+  case QUAD:
+    copy->child1 = evaluateThingInner(tree->child1);
+    if (isRangeNonEmpty(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_round_to_quad(tempIC,tempIA);
+      freeThing(copy);
+      mpfr_init2(a,tools_precision);
+      mpfr_init2(b,tools_precision);
+      sollya_mpfi_get_left(a,tempIC);
+      sollya_mpfi_get_right(b,tempIC);
+      copy = makeRange(makeConstant(a),makeConstant(b));
+      mpfr_clear(a);
+      mpfr_clear(b);
+      sollya_mpfi_clear(tempIA);
+      sollya_mpfi_clear(tempIC);
+    }
+    break;
+  case HALFPRECISION:
+    copy->child1 = evaluateThingInner(tree->child1);
+    if (isRangeNonEmpty(copy->child1)) {
+      pTemp = mpfr_get_prec(*(copy->child1->child1->value));
+      pTemp2 = mpfr_get_prec(*(copy->child1->child2->value));
+      if (pTemp2 > pTemp) pTemp = pTemp2;
+      sollya_mpfi_init2(tempIA,pTemp);
+      sollya_mpfi_interv_fr(tempIA,*(copy->child1->child1->value),*(copy->child1->child2->value));
+      sollya_mpfi_init2(tempIC,tools_precision);
+      sollya_mpfi_round_to_halfprecision(tempIC,tempIA);
       freeThing(copy);
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
@@ -17763,6 +17934,10 @@ node *evaluateThingInner(node *tree) {
   case DOUBLESYMBOL:
     break;  			
   case SINGLESYMBOL:
+    break;  			
+  case QUADSYMBOL:
+    break;  			
+  case HALFPRECISIONSYMBOL:
     break;  			
   case DOUBLEEXTENDEDSYMBOL:
     break;  			

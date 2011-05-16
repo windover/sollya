@@ -236,6 +236,53 @@ void sollya_mpfi_round_to_single(sollya_mpfi_t rop, sollya_mpfi_t op) {
   mpfr_clear(rres);
 }
 
+void sollya_mpfi_round_to_quad(sollya_mpfi_t rop, sollya_mpfi_t op) {
+  mpfr_t l,r, lres, rres;
+  mp_prec_t prec;
+
+  prec = sollya_mpfi_get_prec(op) + 10;
+  mpfr_init2(l,prec);
+  mpfr_init2(r,prec);
+  mpfr_init2(lres,prec);
+  mpfr_init2(rres,prec);
+
+  sollya_mpfi_get_left(l,op);
+  sollya_mpfi_get_right(r,op);
+
+  mpfr_round_to_quad(lres,l);
+  mpfr_round_to_quad(rres,r);
+
+  sollya_mpfi_interv_fr(rop,lres,rres);
+
+  mpfr_clear(l);
+  mpfr_clear(r);
+  mpfr_clear(lres);
+  mpfr_clear(rres);
+}
+
+void sollya_mpfi_round_to_halfprecision(sollya_mpfi_t rop, sollya_mpfi_t op) {
+  mpfr_t l,r, lres, rres;
+  mp_prec_t prec;
+
+  prec = sollya_mpfi_get_prec(op) + 10;
+  mpfr_init2(l,prec);
+  mpfr_init2(r,prec);
+  mpfr_init2(lres,prec);
+  mpfr_init2(rres,prec);
+
+  sollya_mpfi_get_left(l,op);
+  sollya_mpfi_get_right(r,op);
+
+  mpfr_round_to_halfprecision(lres,l);
+  mpfr_round_to_halfprecision(rres,r);
+
+  sollya_mpfi_interv_fr(rop,lres,rres);
+
+  mpfr_clear(l);
+  mpfr_clear(r);
+  mpfr_clear(lres);
+  mpfr_clear(rres);
+}
 
 void sollya_mpfi_round_to_doubledouble(sollya_mpfi_t rop, sollya_mpfi_t op) {
   mpfr_t l,r, lres, rres;
@@ -1768,6 +1815,20 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
   case SINGLE:
     excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
     sollya_mpfi_round_to_single(stack3, stack1);
+    if (internalTheo != NULL) {
+      sollya_mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
+    break;
+  case HALFPRECISION:
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
+    sollya_mpfi_round_to_halfprecision(stack3, stack1);
+    if (internalTheo != NULL) {
+      sollya_mpfi_set(*(internalTheo->boundLeft),stack1);
+    }
+    break;
+  case QUAD:
+    excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
+    sollya_mpfi_round_to_quad(stack3, stack1);
     if (internalTheo != NULL) {
       sollya_mpfi_set(*(internalTheo->boundLeft),stack1);
     }
@@ -4118,6 +4179,12 @@ chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t pre
   case SINGLE:
     return uncertifiedZeroDenominators(tree->child1,a,b,prec);
     break;
+  case QUAD:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
+  case HALFPRECISION:
+    return uncertifiedZeroDenominators(tree->child1,a,b,prec);
+    break;
   case DOUBLEDOUBLE:
     return uncertifiedZeroDenominators(tree->child1,a,b,prec);
     break;
@@ -5333,6 +5400,10 @@ int evaluateSign(int *s, node *rawFunc) {
       case DOUBLE:
 	break;
       case SINGLE:
+	break;
+      case QUAD:
+	break;
+      case HALFPRECISION:
 	break;
       case DOUBLEDOUBLE:
 	break;

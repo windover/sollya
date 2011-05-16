@@ -245,6 +245,18 @@ void fPrintXmlInner(FILE *fd, node *tree) {
     fPrintXmlInner(fd, tree->child1);
     sollyaFprintf(fd,"</apply>\n");
     break;
+  case QUAD:
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">quad</csymbol>\n");
+    fPrintXmlInner(fd, tree->child1);
+    sollyaFprintf(fd,"</apply>\n");
+    break;
+  case HALFPRECISION:
+    sollyaFprintf(fd,"<apply>\n");
+    sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">halfprecision</csymbol>\n");
+    fPrintXmlInner(fd, tree->child1);
+    sollyaFprintf(fd,"</apply>\n");
+    break;
   case DOUBLEDOUBLE:
     sollyaFprintf(fd,"<apply>\n");
     sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">doubledouble</csymbol>\n");
@@ -495,6 +507,8 @@ node* xml_make_pow (node* n1,node* n2) {if (n1&&n2) return makePow(n1,n2); retur
 node* xml_make_abs (node* n1,node* n2) {UNUSED_PARAM(n2); if (n1)     return makeAbs  (n1);  return 0; }
 node* xml_make_db  (node* n1,node* n2) {UNUSED_PARAM(n2); if (n1)     return makeDouble(n1); return 0; }
 node* xml_make_sg  (node* n1,node* n2) {UNUSED_PARAM(n2); if (n1)     return makeSingle(n1); return 0; }
+node* xml_make_hp  (node* n1,node* n2) {UNUSED_PARAM(n2); if (n1)     return makeHalfPrecision(n1); return 0; }
+node* xml_make_qd  (node* n1,node* n2) {UNUSED_PARAM(n2); if (n1)     return makeQuad(n1); return 0; }
 node* xml_make_db2 (node* n1,node* n2) {UNUSED_PARAM(n2); if (n1)     return makeDoubledouble(n1); return 0; }
 node* xml_make_db3 (node* n1,node* n2) {UNUSED_PARAM(n2); if (n1)     return makeTripledouble(n1); return 0; }
 node* xml_make_dbex(node* n1,node* n2) {UNUSED_PARAM(n2); if (n1)     return makeDoubleextended(n1); return 0; }
@@ -596,6 +610,8 @@ int search_math_tree (xmlTextReaderPtr reader)
 	  else if (!strcmp((char*)xml_value,"log1p"))	mthis->operator=xml_make_log1p;
 	  else if (!strcmp((char*)xml_value,"expm1"))	mthis->operator=xml_make_expm1;
 	  else if (!strcmp((char*)xml_value,"single"))	mthis->operator=xml_make_sg;
+	  else if (!strcmp((char*)xml_value,"halfprecision"))	mthis->operator=xml_make_hp;
+	  else if (!strcmp((char*)xml_value,"quad"))	mthis->operator=xml_make_qd;
 	  else if (!strcmp((char*)xml_value,"double"))	mthis->operator=xml_make_db;
 	  else if (!strcmp((char*)xml_value,"doubledouble"))	mthis->operator=xml_make_db2;
 	  else if (!strcmp((char*)xml_value,"tripledouble"))	mthis->operator=xml_make_db3;

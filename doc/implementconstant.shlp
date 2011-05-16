@@ -73,12 +73,13 @@ release of $SOLLYA.
 
 #DESCRIPTION
 Currently, non-differentiable functions such as $DOUBLE, $DOUBLEDOUBLE,
-$TRIPLEDOUBLE, $SINGLE, $DOUBLEEXTENDED, $FLOOR, $CEIL, $NEARESTINT are not
-supported by $COMMAND. If $COMMAND encounters one of them,
-a warning message is displayed and no code is produced.
-However, if $AUTOSIMPLIFY equals on, it is possible that $SOLLYA silently
-simplifies subexpressions of <expr> containing such functions and that
-$COMMAND successfully produces code for evaluating <expr>.
+$TRIPLEDOUBLE, $SINGLE, $HALFPRECISION, $QUAD, $DOUBLEEXTENDED, 
+$FLOOR, $CEIL, $NEARESTINT are not supported by $COMMAND. 
+If $COMMAND encounters one of them, a warning message is displayed 
+and no code is produced. However, if $AUTOSIMPLIFY equals on, it is 
+possible that $SOLLYA silently simplifies subexpressions of <expr> 
+containing such functions and that $COMMAND successfully produces 
+code for evaluating <expr>.
 
 #DESCRIPTION
 While it produces an MPFR-based C source code for <expr>, $COMMAND

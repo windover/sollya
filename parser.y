@@ -196,6 +196,8 @@ int parserCheckEof() {
 %token  EXPM1TOKEN;
 %token  DOUBLETOKEN;
 %token  SINGLETOKEN;
+%token  HALFPRECISIONTOKEN;
+%token  QUADTOKEN;
 %token  DOUBLEDOUBLETOKEN;
 %token  TRIPLEDOUBLETOKEN;
 %token  DOUBLEEXTENDEDTOKEN;
@@ -1351,6 +1353,14 @@ basicthing:             ONTOKEN
                           {
 			    $$ = makeSingleSymbol();
 			  }
+                      | QUADTOKEN
+                          {
+			    $$ = makeQuadSymbol();
+			  }
+                      | HALFPRECISIONTOKEN
+                          {
+			    $$ = makeHalfPrecisionSymbol();
+			  }
                       | DOUBLEEXTENDEDTOKEN
                           {
 			    $$ = makeDoubleextendedSymbol();
@@ -1925,6 +1935,14 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                       | SINGLETOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeSingle($3);
+			  }
+                      | QUADTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeQuad($3);
+			  }
+                      | HALFPRECISIONTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeHalfPrecision($3);
 			  }
                       | DOUBLEDOUBLETOKEN LPARTOKEN thing RPARTOKEN
                           {
@@ -2728,6 +2746,28 @@ help:                   CONSTANTTOKEN
 			    outputMode(); sollyaPrintf("Single precision rounding operator.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for SINGLE"
+#endif
+#endif
+                          }
+                      | QUADTOKEN
+                          {
+#ifdef HELP_QUAD_TEXT
+			    outputMode(); sollyaPrintf(HELP_QUAD_TEXT);
+#else
+			    outputMode(); sollyaPrintf("Quad precision rounding operator.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for QUAD"
+#endif
+#endif
+                          }
+                      | HALFPRECISIONTOKEN
+                          {
+#ifdef HELP_HALFPRECISION_TEXT
+			    outputMode(); sollyaPrintf(HELP_HALFPRECISION_TEXT);
+#else
+			    outputMode(); sollyaPrintf("Half-precision rounding operator.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for HALFPRECISION"
 #endif
 #endif
                           }

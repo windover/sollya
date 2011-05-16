@@ -64,12 +64,13 @@ a warning and fails silently. Support for this feature is in principle
 feasible from a technical standpoint and might be added in a future 
 release of Sollya. 
 </li><li>Currently, non-differentiable functions such as <?php linkTo("command","double","double");?>, <?php linkTo("command","doubledouble","doubledouble");?>, 
-<?php linkTo("command","tripledouble","tripledouble");?>, <?php linkTo("command","single","single");?>, <?php linkTo("command","doubleextended","doubleextended");?>, <?php linkTo("command","floor","floor");?>, <?php linkTo("command","ceil","ceil");?>, <?php linkTo("command","nearestint","nearestint");?> are not 
-supported by <?php linkTo("command","implementconstant","implementconstant");?>. If <?php linkTo("command","implementconstant","implementconstant");?> encounters one of them, 
-a warning message is displayed and no code is produced. 
-However, if <?php linkTo("command","autosimplify","autosimplify");?> equals on, it is possible that Sollya silently 
-simplifies subexpressions of <span class="arg">expr</span> containing such functions and that 
-<?php linkTo("command","implementconstant","implementconstant");?> successfully produces code for evaluating <span class="arg">expr</span>. 
+<?php linkTo("command","tripledouble","tripledouble");?>, <?php linkTo("command","single","single");?>, <?php linkTo("command","halfprecision","halfprecision");?>, <?php linkTo("command","quad","quad");?>, <?php linkTo("command","doubleextended","doubleextended");?>,  
+<?php linkTo("command","floor","floor");?>, <?php linkTo("command","ceil","ceil");?>, <?php linkTo("command","nearestint","nearestint");?> are not supported by <?php linkTo("command","implementconstant","implementconstant");?>.  
+If <?php linkTo("command","implementconstant","implementconstant");?> encounters one of them, a warning message is displayed  
+and no code is produced. However, if <?php linkTo("command","autosimplify","autosimplify");?> equals on, it is  
+possible that Sollya silently simplifies subexpressions of <span class="arg">expr</span>  
+containing such functions and that <?php linkTo("command","implementconstant","implementconstant");?> successfully produces  
+code for evaluating <span class="arg">expr</span>. 
 </li><li>While it produces an MPFR-based C source code for <span class="arg">expr</span>, <?php linkTo("command","implementconstant","implementconstant");?> 
 takes architectural and system-dependent parameters into account.  For 
 example, it checks whether literal constants figuring in <span class="arg">expr</span> can be 

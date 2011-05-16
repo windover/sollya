@@ -88,9 +88,10 @@ In this case, $COMMAND will search for a polynomial of degree 2 with a
 constant coefficient of the form §§m/2^25§$m/2^{25}$§§ where §§m§$m$§§ is an
 integer. In other words, it is a fixed-point number with 25 bits after
 the point. Note that even with argument $FIXED, the formats list is 
-allowed to contain $DOUBLE, $DOUBLEDOUBLE or $TRIPLEDOUBLE. In this this
-case, it is just a synonym for 53, 107 or 161. This is deprecated and may
-change in the future.
+allowed to contain $HALFPRECISION, $SINGLE $DOUBLE, $DOUBLEEXTENDED, 
+$DOUBLEDOUBLE, $QUAD or $TRIPLEDOUBLE. In this this case, it is just 
+a synonym for 11, 24, 53, 64, 107, 113 or 161. This is deprecated and 
+may change in the future.
 
 #DESCRIPTION
 The fourth argument may be a range or a list. Lists are for advanced users
@@ -181,11 +182,13 @@ print("Error of P3:    ", dirtyinfnorm(f-P3, [-1b-7; 1b-7]));
 #SEEALSO $FIXED
 #SEEALSO $FLOATING
 #SEEALSO $DEFAULT
+#SEEALSO $HALFPRECISION
 #SEEALSO $SINGLE
 #SEEALSO $DOUBLE
-#SEEALSO $DOUBLEDOUBLE
-#SEEALSO $TRIPLEDOUBLE
 #SEEALSO $DOUBLEEXTENDED
+#SEEALSO $DOUBLEDOUBLE
+#SEEALSO $QUAD
+#SEEALSO $TRIPLEDOUBLE
 #SEEALSO $IMPLEMENTPOLY
 #SEEALSO $COEFF
 #SEEALSO $DEGREE

@@ -1175,6 +1175,42 @@ void single_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
   mpfr_clear(temp);
 }
 
+void quad_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
+  int i;
+  mpfr_t temp;
+  mp_prec_t prec;
+
+  prec = getToolPrecision();
+  mpfr_init2(temp, prec);
+  mpfr_set_nan(temp);
+
+  if (!(*silent)) {
+    *silent = 1;
+    printMessage(1, "Warning: the quad rounding operator is not differentiable.\n");
+    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  }
+  for(i=0;i<=n;i++) sollya_mpfi_set_fr(res[i], temp);
+  mpfr_clear(temp);
+}
+
+void halfprecision_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
+  int i;
+  mpfr_t temp;
+  mp_prec_t prec;
+
+  prec = getToolPrecision();
+  mpfr_init2(temp, prec);
+  mpfr_set_nan(temp);
+
+  if (!(*silent)) {
+    *silent = 1;
+    printMessage(1, "Warning: the half-precision rounding operator is not differentiable.\n");
+    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+  }
+  for(i=0;i<=n;i++) sollya_mpfi_set_fr(res[i], temp);
+  mpfr_clear(temp);
+}
+
 void double_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
   int i;
   mpfr_t temp;
@@ -1423,6 +1459,12 @@ void baseFunction_diff(sollya_mpfi_t *res, int nodeType, sollya_mpfi_t x, int n,
   case SINGLE:
     single_diff(res, x, n, silent);
     break;
+  case QUAD:
+    quad_diff(res, x, n, silent);
+    break;
+  case HALFPRECISION:
+    halfprecision_diff(res, x, n, silent);
+    break;
   case DOUBLE:
     double_diff(res, x, n, silent);
     break;
@@ -1519,6 +1561,8 @@ void auto_diff_scaled(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n) {
   case ATANH:
   case ABS:
   case SINGLE:
+  case QUAD:
+  case HALFPRECISION:
   case DOUBLE:
   case DOUBLEEXTENDED:
   case DOUBLEDOUBLE:

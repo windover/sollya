@@ -992,6 +992,8 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
   case ATANH:
   case ABS:
   case SINGLE:
+  case QUAD:
+  case HALFPRECISION:
   case DOUBLE:
   case DOUBLEDOUBLE:
   case TRIPLEDOUBLE:
