@@ -88,7 +88,7 @@ In this case, $COMMAND will search for a polynomial of degree 2 with a
 constant coefficient of the form §§m/2^25§$m/2^{25}$§§ where §§m§$m$§§ is an
 integer. In other words, it is a fixed-point number with 25 bits after
 the point. Note that even with argument $FIXED, the formats list is 
-allowed to contain $HALFPRECISION, $SINGLE $DOUBLE, $DOUBLEEXTENDED, 
+allowed to contain $HALFPRECISION, $SINGLE, $DOUBLE, $DOUBLEEXTENDED, 
 $DOUBLEDOUBLE, $QUAD or $TRIPLEDOUBLE. In this this case, it is just 
 a synonym for 11, 24, 53, 64, 107, 113 or 161. This is deprecated and 
 may change in the future.

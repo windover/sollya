@@ -80,7 +80,7 @@ In this case, <?php linkTo("command","fpminimax","fpminimax");?> will search for
 constant coefficient of the form m/2^25 where m is an 
 integer. In other words, it is a fixed-point number with 25 bits after 
 the point. Note that even with argument <?php linkTo("command","fixed","fixed");?>, the formats list is  
-allowed to contain <?php linkTo("command","halfprecision","halfprecision");?>, <?php linkTo("command","single","single");?> <?php linkTo("command","double","double");?>, <?php linkTo("command","doubleextended","doubleextended");?>,  
+allowed to contain <?php linkTo("command","halfprecision","halfprecision");?>, <?php linkTo("command","single","single");?>, <?php linkTo("command","double","double");?>, <?php linkTo("command","doubleextended","doubleextended");?>,  
 <?php linkTo("command","doubledouble","doubledouble");?>, <?php linkTo("command","quad","quad");?> or <?php linkTo("command","tripledouble","tripledouble");?>. In this this case, it is just  
 a synonym for 11, 24, 53, 64, 107, 113 or 161. This is deprecated and  
 may change in the future. 
