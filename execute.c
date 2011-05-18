@@ -20616,17 +20616,20 @@ node *evaluateThingInner(node *tree) {
     curr = curr->next;
     thirdArg = copyThing((node *) (curr->value));
     curr = curr->next;
+
+    fourthArg = NULL;
     if (curr != NULL) {
       fourthArg = copyThing((node *) (curr->value));
       curr = curr->next;
-    } else {
+    }
+    if ( (fourthArg==NULL)||(isDefault(fourthArg)) )
       fourthArg = makeConstantDouble(1.0);
-    }
-    if (curr != NULL) {
+
+    fifthArg = NULL;
+    if (curr != NULL)
       fifthArg = copyThing((node *) (curr->value));
-    } else {
-      fifthArg = makeConstantDouble(1024.0);
-    }
+    if ( (fifthArg==NULL)||(isDefault(fifthArg)) )
+      fifthArg = makeConstantDouble(128.0);
 
     if (isPureTree(firstArg) &&
 	isRange(secondArg) &&
@@ -20640,18 +20643,23 @@ node *evaluateThingInner(node *tree) {
       if (evaluateThingToRange(a,b,secondArg) &&
 	  evaluateThingToConstant(c,thirdArg, NULL,0) &&
           evaluateThingToInteger(&resA,fifthArg,NULL)) {
-	if (timingString != NULL) pushTimeCounter(); 
-	yrange = guessDegreeWrapper(firstArg, fourthArg, a, b, c, resA+1);
-	if (timingString != NULL) popTimeCounter(timingString);
-	if ((yrange.a != NULL) && (yrange.b != NULL)) {
-	  tempNode = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
-	  freeThing(copy);
-	  copy = tempNode;
-	  mpfr_clear(*(yrange.a));
-	  mpfr_clear(*(yrange.b));
-	  free(yrange.a);
-	  free(yrange.b);
-	}
+        if (resA < 0) {
+          printMessage(1, "Error: guessdegree: the optional fifth argument must be a positive number.\n");
+        }
+        else {
+          if (timingString != NULL) pushTimeCounter(); 
+          yrange = guessDegreeWrapper(firstArg, fourthArg, a, b, c, resA+1);
+          if (timingString != NULL) popTimeCounter(timingString);
+          if ((yrange.a != NULL) && (yrange.b != NULL)) {
+            tempNode = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+            freeThing(copy);
+            copy = tempNode;
+            mpfr_clear(*(yrange.a));
+            mpfr_clear(*(yrange.b));
+            free(yrange.a);
+            free(yrange.b);
+          }
+        }
       }
       mpfr_clear(a);
       mpfr_clear(b);

@@ -29,8 +29,8 @@
 </div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
-<li><?php linkTo("command","fpminimax","fpminimax");?> uses a heuristic (but practically efficient) method to find a good 
-polynomial approximation of a function <span class="arg">f</span> on an interval <span class="arg">range</span>. It  
+<li><?php linkTo("command","fpminimax","fpminimax");?> uses a heuristic (but practically efficient) method to find a 
+good polynomial approximation of a function <span class="arg">f</span> on an interval <span class="arg">range</span>. It 
 implements the method published in the article:<br> 
 Efficient polynomial L^\infty - approximations  
 Nicolas Brisebarre and Sylvain Chevillard<br> 
@@ -44,8 +44,8 @@ command has its coefficients that fit the formats indications. For
 instance, if formats[0] is 35, the coefficient of degree 0 of the  
 polynomial will fit a floating-point format of 35 bits. If formats[1]  
 is D, the coefficient of degree 1 will be representable by a floating-point 
-number with a precision of 53 bits (which is not necessarily an IEEE 754 double 
-precision number. See the remark below), etc. 
+number with a precision of 53 bits (which is not necessarily an IEEE 754 
+double precision number. See the remark below), etc. 
 </li><li>The second argument may be either an integer or a list of integers 
 interpreted as the list of desired monomials. For instance, the list 
 [|0,2,4,6|] indicates that the polynomial must be even and of 
@@ -56,16 +56,17 @@ instance, if the list of monomials is [|0,2,4,6|] and the list
 of formats is [|161,107,53,24|], the coefficients of degree 0 is  
 searched as a floating-point number with precision 161, the coefficient of  
 degree 2 is searched as a number of precision 107, and so on. 
-</li><li>The list of formats may contain either integers or format types (<?php linkTo("command","halfprecision","halfprecision");?>, 
-<?php linkTo("command","single","single");?>, <?php linkTo("command","double","double");?>, <?php linkTo("command","doubledouble","doubledouble");?>, <?php linkTo("command","tripledouble","tripledouble");?>, <?php linkTo("command","doubleextended","doubleextended");?> and <?php linkTo("command","quad","quad");?>). The 
-list may be too large or even infinite. Only the first indications will be 
-considered. For instance, for a degree n polynomial, formats[n+1] 
-and above will be discarded. This lets one use elliptical indications for the 
-last coefficients. 
+</li><li>The list of formats may contain either integers or format types 
+(<?php linkTo("command","halfprecision","halfprecision");?>, <?php linkTo("command","single","single");?>, <?php linkTo("command","double","double");?>, <?php linkTo("command","doubledouble","doubledouble");?>, <?php linkTo("command","tripledouble","tripledouble");?>, <?php linkTo("command","doubleextended","doubleextended");?> 
+and <?php linkTo("command","quad","quad");?>). The list may be too large or even infinite. Only the first 
+indications will be considered. For instance, for a degree n polynomial, 
+formats[n+1] and above will be discarded. This lets one use elliptical 
+indications for the last coefficients. 
 </li><li>The floating-point coefficients considered by <?php linkTo("command","fpminimax","fpminimax");?> do not have an 
 exponent range. In particular, in the format list, <?php linkTo("command","double","double");?> is an exact synonym 
-for 53. Currently, <?php linkTo("command","fpminimax","fpminimax");?> only ensures that the corresponding coefficient has 
-at most 53 bits of mantissa. It does not imply that it is an IEEE-754 double. 
+for 53. Currently, <?php linkTo("command","fpminimax","fpminimax");?> only ensures that the corresponding coefficient 
+has at most 53 bits of mantissa. It does not imply that it is an 
+IEEE-754 double. 
 </li><li>By default, the list of formats is interpreted as a list of floating-point 
 formats. This may be changed by passing <?php linkTo("command","fixed","fixed");?> as an optional argument (see 
 below). Let us take an example: <?php linkTo("command","fpminimax","fpminimax");?>(f, 2, [107, DD, 53], [0;1]). 
