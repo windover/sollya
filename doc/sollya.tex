@@ -843,7 +843,7 @@ expression {\it expr} with the patterns {\it pattern1} through {\it
 {\it patternI} is found that matches, evaluate the whole \key{match
   \dots~with} construct to the return expression {\it return-exprI}
 associated with the matching pattern {\it patternI}. If no matching
-pattern is found, display an error warning and return \key{error}.
+pattern is found, display an error warning and return \key{error}. Note that the parentheses around the expressions {\it return-exprI} are mandatory.
 
 Matching a pattern means the following: 
 \begin{itemize}
@@ -851,7 +851,7 @@ Matching a pattern means the following:
     variables (different from the free mathematical variable), it
     matches expressions that are syntactically equal to itself. For
     instance, the pattern \key{exp(sin(3 * x))} will match the
-    expression \key{exp(sin(3 * x))}.
+    expression \key{exp(sin(3 * x))}, but it does not match \key{exp(sin(x * 3))} because the expressions are not syntactically equal.
   \item If a pattern does contain variables, it matches an expression
     {\it expr} if these variables can be bound to subexpressions of
     {\it expr} such that once the pattern is evaluated with that
@@ -878,7 +878,7 @@ As \sollya is not a purely functional language, the \key{match
 which makes it become closer to constructs like \key{switch} in {\tt
   C} or {\tt Perl}. In lieu of a simple return expression, a whole
 block of imperative statements can be given. The expression to be
-returned by that block is indicated in the end of a the block, using
+returned by that block is indicated in the end of the block, using
 the \key{return} keyword. That syntax is illustrated in the next
 example:
 
@@ -923,7 +923,7 @@ detail:
 Pattern matching is meant to be a means to decompose expressions
 structurally. For this reason and in an analogous way to variables, no
 evaluation is performed at all on (sub-)expressions that form constant
-functions. As a consequence, patterns only match constant expressions
+functions. As a consequence, patterns match constant expressions
 only if they are structurally identical. For example $5 + 1$ only
 matches $5 + 1$ and not $1 + 5$, $3 + 3$ nor $6$.
 
@@ -982,11 +982,6 @@ defined using the \key{@} operator, the following is to be mentionned:
   for \key{@} above gets violated. For instance, \key{( [| 1 |] @ a) @
     (b @ [| 4 |])} is not possible as it can be re-parenthesized \key{
     [| 1 |] @ (a @ b) @ [| 4 |]}, which exhibits the ambiguous case.
-\item For lists that are end-elliptic, i.e. prolongated to infinity,
-  the \key{@} operator does not work for cases that would imply the
-  cut of a finite list at the end of an infinite list. It does however
-  work for all cases of cuts of infinite lists at the end of infinite
-  lists when the necessary suffix condition is fulfilled.
 \end{itemize}
 These points are illustrated in this example:
 
@@ -1000,7 +995,7 @@ structure {\it s} iff that structure {\it s} contains at least all the
 elements (like \key{.a}, \key{.b} etc.) of the structure pattern {\it
   sp} and iff each of the elements of the structure {\it s} matches
 the pattern in the corresponding element of the structure pattern {\it
-  sp}. The user should be aware that fact that the structure to be
+  sp}. The user should be aware of the fact that the structure to be
 matched is only supposed to have at least the elements of the pattern
 but that it may contain more elements is a particular \sollya
 feature. For instance with pattern matching, it is hence possible to

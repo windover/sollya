@@ -838,7 +838,7 @@ expression <em>expr</em> with the patterns <em>pattern1</em> through <em>pattern
 <em>patternI</em> is found that matches, evaluate the whole
 <code class="key">match&nbsp;...&nbsp;with</code> construct to the return expression <em>return-exprI</em>
 associated with the matching pattern <em>patternI</em>. If no matching
-pattern is found, display an error warning and return <code class="key">error</code>.
+pattern is found, display an error warning and return <code class="key">error</code>. Note that the parentheses around the expressions <em>return-exprI</em> are mandatory.
 <p>
 Matching a pattern means the following: 
 <ul>
@@ -846,7 +846,7 @@ Matching a pattern means the following:
     variables (different from the free mathematical variable), it
     matches expressions that are syntactically equal to itself. For
     instance, the pattern <code class="key">exp(sin(3&nbsp;*&nbsp;x))</code> will match the
-    expression <code class="key">exp(sin(3&nbsp;*&nbsp;x))</code>.
+    expression <code class="key">exp(sin(3&nbsp;*&nbsp;x))</code>, but it does not match <code class="key">exp(sin(x&nbsp;*&nbsp;3))</code> because the expressions are not syntactically equal.
   </li><li> If a pattern does contain variables, it matches an expression
     <em>expr</em> if these variables can be bound to subexpressions of
     <em>expr</em> such that once the pattern is evaluated with that
@@ -873,7 +873,7 @@ As <span class="sollya">Sollya</span> is not a purely functional language, the
 which makes it become closer to constructs like <code class="key">switch</code> in
 <code>C</code> or <code>Perl</code>. In lieu of a simple return expression, a whole
 block of imperative statements can be given. The expression to be
-returned by that block is indicated in the end of a the block, using
+returned by that block is indicated in the end of the block, using
 the <code class="key">return</code> keyword. That syntax is illustrated in the next
 example:
 <p>
@@ -918,7 +918,7 @@ detail:
 Pattern matching is meant to be a means to decompose expressions
 structurally. For this reason and in an analogous way to variables, no
 evaluation is performed at all on (sub-)expressions that form constant
-functions. As a consequence, patterns only match constant expressions
+functions. As a consequence, patterns match constant expressions
 only if they are structurally identical. For example <code class="key">5+1</code> only
 matches <code class="key">5+1</code> and not <code class="key">1+5</code>, <code class="key">3+3</code> nor <code class="key">6</code>.
 <p>
@@ -977,11 +977,6 @@ defined using the <code class="key">@</code> operator, the following is to be me
   for <code class="key">@</code> above gets violated. For instance,
   <code class="key">( [| 1 |] @ a) @ (b @ [| 4 |])</code> is not possible as it can be re-parenthesized
   <code class="key">[| 1 |] @ (a @ b) @ [| 4 |]</code>, which exhibits the ambiguous case.
-</li><li> For lists that are end-elliptic, i.e. prolongated to infinity,
-  the <code class="key">@</code> operator does not work for cases that would imply the
-  cut of a finite list at the end of an infinite list. It does however
-  work for all cases of cuts of infinite lists at the end of infinite
-  lists when the necessary suffix condition is fulfilled.
 </li></ul>
 
 <p>These points are illustrated in this example:
@@ -994,7 +989,7 @@ i.e. using the syntax <code class="key">{ .a&nbsp;=&nbsp;<em>exprA</em>, .b&nbsp
 structure <em>s</em> iff that structure <em>s</em> contains at least all the
 elements (like <code class="key">.a</code>, <code class="key">.b</code> etc.) of the structure pattern
 <em>sp</em> and iff each of the elements of the structure <em>s</em> matches
-the pattern in the corresponding element of the structure pattern <em>sp</em>. The user should be aware that fact that the structure to be
+the pattern in the corresponding element of the structure pattern <em>sp</em>. The user should be aware of the fact that the structure to be
 matched is only supposed to have at least the elements of the pattern
 but that it may contain more elements is a particular <span class="sollya">Sollya</span>
 feature. For instance with pattern matching, it is hence possible to

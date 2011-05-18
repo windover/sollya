@@ -1,5 +1,10 @@
 #! /bin/bash
 
-scp ./www/*.php scm.gforge.inria.fr:/home/groups/sollya/htdocs/
-scp ./www/sollyacss.css scm.gforge.inria.fr:/home/groups/sollya/htdocs/
+if [ -n "$1" ]
+then host=$1@scm.gforge.inria.fr
+else host=scm.gforge.inria.fr
+fi
+
+scp ./www/*.php $host:/home/groups/sollya/htdocs/
+scp ./www/sollyacss.css $host:/home/groups/sollya/htdocs/
 
