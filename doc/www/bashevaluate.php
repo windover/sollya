@@ -1,7 +1,7 @@
 <a name="bashevaluate"></a> 
 <div class="divName"> 
 <h2 class="name">Name:</h2> <?php linkTo("command","bashevaluate","bashevaluate");?> 
-<span class="smallDescription">executes a shell command and returns it output as a string 
+<span class="smallDescription">executes a shell command and returns its output as a string 
 </span> 
 </div> 
 <div class="divUsage"> 
@@ -39,7 +39,7 @@ such.
 <div class="divExample"> 
 <h2 class="category">Example 1: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; bashevaluate("LANG=C date");<br> 
-&nbsp;&nbsp;&nbsp;Mon May 16 14:40:26 CEST 2011<br> 
+&nbsp;&nbsp;&nbsp;Wed May 18 11:14:12 CEST 2011<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 2: </h2> 

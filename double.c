@@ -1479,7 +1479,7 @@ int mpfr_round_to_ieee_format(mpfr_t rop, mpfr_t op, mp_prec_t prec, unsigned in
   unsigned int exponent;
   mpfr_t largest, smallest, temp;
   mp_prec_t p;
-  
+
   /* In the case when the function is called with a silly width (less than 3 or larger than 30),
      we exit from the tool. This case should never happen.
   */
@@ -1490,22 +1490,22 @@ int mpfr_round_to_ieee_format(mpfr_t rop, mpfr_t op, mp_prec_t prec, unsigned in
 
   /* We will first produce an internal result and then write back to rop */
   mpfr_init2(result,prec);
-  
+
   /* Handle the special cases: +/- 0, +/- Inf, NaN */
   if (mpfr_zero_p(op) || (!mpfr_number_p(op))) {
     /* The result is the input */
     mpfr_set(result, op, GMP_RNDN); /* exact */
   } else {
-    /* Here, the input is not zero, nor Inf nor NaN 
-       
+    /* Here, the input is not zero, nor Inf nor NaN
+
        We start with the first rounding step with unbounded exponent.
-       
+
     */
-    mpfr_set(result, op, mode); /* performs a rounding to the desired precision 
-                                   but with unbounded exponent 
+    mpfr_set(result, op, mode); /* performs a rounding to the desired precision
+                                   but with unbounded exponent
 				*/
-    
-    /* Now check if overflow occurs: compare in magnitude with the largest 
+
+    /* Now check if overflow occurs: compare in magnitude with the largest
        representable number of the format.
 
        The largest number is 1 ulp (of precision prec) below 2^(2^(width - 1)).
@@ -1516,7 +1516,7 @@ int mpfr_round_to_ieee_format(mpfr_t rop, mpfr_t op, mp_prec_t prec, unsigned in
     mpfr_mul_2ui(largest, largest, exponent, GMP_RNDN); /* exact: power of 2 */
     mpfr_nextbelow(largest); /* exact by specification */
     if (mpfr_cmpabs(result, largest) > 0) {
-      /* Here, we have an overflow 
+      /* Here, we have an overflow
 
 	 Depending on the rounding mode and the sign of the input
 	 we get the largest representable number or +/- Inf as a result

@@ -13,7 +13,7 @@ rounding described in the standard.
 #DESCRIPTION
 As a constant, it symbolizes the half-precision format. It is used in 
 contexts when a precision format is necessary, e.g. in the commands 
-$ROUND and $ROUNDCOEFFICIENTS. In is not supported for $IMPLEMENTPOLY.
+$ROUND and $ROUNDCOEFFICIENTS. It is not supported for $IMPLEMENTPOLY.
 See the corresponding help pages for examples.
 
 #EXAMPLE
@@ -29,6 +29,7 @@ HP(1.011_2 * 2^(-23));
 #SEEALSO $QUAD
 #SEEALSO $TRIPLEDOUBLE
 #SEEALSO $ROUNDCOEFFICIENTS
+#SEEALSO $FPMINIMAX
 #SEEALSO $IMPLEMENTPOLY
 #SEEALSO $ROUND
 #SEEALSO $PRINTSINGLE

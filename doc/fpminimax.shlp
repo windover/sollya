@@ -60,17 +60,18 @@ searched as a floating-point number with precision 161, the coefficient of
 degree 2 is searched as a number of precision 107, and so on.
 
 #DESCRIPTION
-The list of formats may contain either integers or format types ($DOUBLE,
-$DOUBLEDOUBLE, $TRIPLEDOUBLE and $DOUBLEEXTENDED). The list may be too large
-or even infinite. Only the first indications will be considered. For 
-instance, for a degree §§n§$n$§§ polynomial, §§formats[n+1]§$\mathrm{formats}[n+1]$§§ and above will
-be discarded. This lets one use elliptical indications for the last
-coefficients.
+The list of formats may contain either integers or format types ($HALFPRECISION,
+$SINGLE, $DOUBLE, $DOUBLEDOUBLE, $TRIPLEDOUBLE, $DOUBLEEXTENDED and $QUAD). The
+list may be too large or even infinite. Only the first indications will be
+considered. For instance, for a degree §§n§$n$§§ polynomial, §§formats[n+1]§$\mathrm{formats}[n+1]$§§
+and above will be discarded. This lets one use elliptical indications for the
+last coefficients.
 
 #DESCRIPTION
 The floating-point coefficients considered by $COMMAND do not have an
-exponent range. In particular, in the format list, $DOUBLE or 53 does not
-imply that the corresponding coefficient is an IEEE-754 double.
+exponent range. In particular, in the format list, $DOUBLE is an exact synonym
+for 53. Currently, $COMMAND only ensures that the corresponding coefficient has
+at most 53 bits of mantissa. It does not imply that it is an IEEE-754 double.
 
 #DESCRIPTION
 By default, the list of formats is interpreted as a list of floating-point

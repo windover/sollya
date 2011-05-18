@@ -12,7 +12,7 @@ Subnormal numbers are supported as well as standard numbers: it is the real
 rounding described in the standard. 
 </li><li>As a constant, it symbolizes the quad precision format. It is used in  
 contexts when a precision format is necessary, e.g. in the commands  
-<?php linkTo("command","round","round");?> and <?php linkTo("command","roundcoefficients","roundcoefficients");?>. In is not supported for <?php linkTo("command","implementpoly","implementpoly");?>. 
+<?php linkTo("command","round","round");?> and <?php linkTo("command","roundcoefficients","roundcoefficients");?>. It is not supported for <?php linkTo("command","implementpoly","implementpoly");?>. 
 See the corresponding help pages for examples. 
 </ul> 
 </div> 
@@ -29,5 +29,5 @@ See the corresponding help pages for examples.
 </div> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","halfprecision","halfprecision");?>, <?php linkTo("command","single","single");?>, <?php linkTo("command","double","double");?>, <?php linkTo("command","doubleextended","doubleextended");?>, <?php linkTo("command","doubledouble","doubledouble");?>, <?php linkTo("command","tripledouble","tripledouble");?>, <?php linkTo("command","roundcoefficients","roundcoefficients");?>, <?php linkTo("command","implementpoly","implementpoly");?>, <?php linkTo("command","round","round");?>, <?php linkTo("command","printsingle","printsingle");?> 
+<span class="category">See also: </span><?php linkTo("command","halfprecision","halfprecision");?>, <?php linkTo("command","single","single");?>, <?php linkTo("command","double","double");?>, <?php linkTo("command","doubleextended","doubleextended");?>, <?php linkTo("command","doubledouble","doubledouble");?>, <?php linkTo("command","tripledouble","tripledouble");?>, <?php linkTo("command","roundcoefficients","roundcoefficients");?>, <?php linkTo("command","implementpoly","implementpoly");?>, <?php linkTo("command","fpminimax","fpminimax");?>, <?php linkTo("command","round","round");?>, <?php linkTo("command","printsingle","printsingle");?> 
 </div> 

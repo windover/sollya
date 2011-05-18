@@ -1,5 +1,5 @@
 #NAME $BASHEVALUATE
-#QUICK_DESCRIPTION executes a shell command and returns it output as a string
+#QUICK_DESCRIPTION executes a shell command and returns its output as a string
 
 #CALLING $COMMAND(<command>)
 #TYPE $STRING_TYPE -> $STRING_TYPE
