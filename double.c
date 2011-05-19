@@ -1537,7 +1537,7 @@ int mpfr_round_to_ieee_format(mpfr_t rop, mpfr_t op, mp_prec_t prec, unsigned in
 	  mpfr_set_inf(result, -1);
 	} else {
 	  mpfr_set(result, largest, GMP_RNDN); /* exact: same precision */
-	}	
+	}
 	break;
       case GMP_RNDU:
 	/* -largest, +Inf */
@@ -1560,7 +1560,7 @@ int mpfr_round_to_ieee_format(mpfr_t rop, mpfr_t op, mp_prec_t prec, unsigned in
 	exit(1);
       }
     } else {
-      /* Here, the result is either a signed 0, denormal or normal 
+      /* Here, the result is either a signed 0, denormal or normal
 
 	 We continue by checking if the first rounding is larger
 	 than the least normal.
@@ -1574,18 +1574,24 @@ int mpfr_round_to_ieee_format(mpfr_t rop, mpfr_t op, mp_prec_t prec, unsigned in
       exponent -= 2;
       mpfr_set_ui(smallest, 1, GMP_RNDN); /* exact: power of 2 */
       mpfr_div_2ui(smallest, smallest, exponent, GMP_RNDN); /* exact: power of 2 */
-      
+
       if (mpfr_cmpabs(result, smallest) < 0) {
-	/* Here, we have to emulate denormal rounding 
-	
+	/* Here, we have to emulate denormal rounding
+
 	   Denormal rounding for precision prec and exponent width
 	   width is:
 
 	   result = 2^(-prec - 2^(width - 1) + 3) * round_integer((1/(2^(-prec - 2^(width - 1) + 3))) * op, mode)
-   
+
+           In other words,
+
+           result = smallest * 2^(1-prec) * round_integer( 2^(prec-1)*op/smallest, mode)
+
+           ( the interval [0, smallest) is sent to [0, 2^(prec-1) ) where fixed-point computations at
+             precision prec are exactly integer computations, and then we send it back to [0, smallest)
+           )
 	 */
 	p = mpfr_get_prec(op);
-	if (prec > p) p = prec;
 	mpfr_init2(temp, p);
 	mpfr_set(temp, op, GMP_RNDN); /* exact: precision of temp not less than the one of op */
 	exponent = 1 << (width - 1);
@@ -1593,13 +1599,13 @@ int mpfr_round_to_ieee_format(mpfr_t rop, mpfr_t op, mp_prec_t prec, unsigned in
 	exponent += prec;
 	mpfr_mul_2ui(temp, temp, exponent, GMP_RNDN); /* exact: power of 2 and same precision */
 	mpfr_rint(result, temp, mode); /* Performs round_integer with mode
-					  no wrong rounding possible as precision of 
-					  result is at least the one of op
+					  no wrong rounding possible as precision of
+					  result is prec and |temp| <= 2^(prec-1)
 				       */
 	mpfr_div_2ui(result, result, exponent, GMP_RNDN); /* exact: power of 2 and same precision */
 	mpfr_clear(temp);
-      } 
-      /* Otherwise the first rounding is already 
+      }
+      /* Otherwise the first rounding is already
 	 the final result.
       */
 
@@ -1609,13 +1615,14 @@ int mpfr_round_to_ieee_format(mpfr_t rop, mpfr_t op, mp_prec_t prec, unsigned in
   }
 
   /* Write back the result, while verifying if we don't get a double rounding there. */
+  /* Double-rounding may occur if the precision of rop is smaller than the prec.     */
   if (mpfr_set(rop,result,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
       printMessage(1,"Warning: double rounding occurred on invoking the IEEE 754-2008 general rounding operator.\n");
       printMessage(1,"Try to increase the working precision.\n");
     }
   }
-  
+
   mpfr_clear(result);
 
   /* Compute the rounding direction that has finally been chosen */
