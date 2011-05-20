@@ -1,15 +1,18 @@
 /*
 
-Copyright 2008-2010 by
+Copyright 2008-2011 by
 
 Laboratoire de l'Informatique du Parallelisme,
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
+
+LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2),
 
 and by
 
-LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2).
+Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+Sophia Antipolis, France.
 
-Contributors Ch. Lauter, S. Chevillard, N. Jourdan
+Contributors Ch. Lauter, S. Chevillard
 
 christoph.lauter@ens-lyon.org
 sylvain.chevillard@ens-lyon.org
