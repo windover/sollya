@@ -20669,6 +20669,7 @@ node *evaluateThingInner(node *tree) {
     freeThing(secondArg);
     freeThing(thirdArg);
     freeThing(fourthArg);
+    freeThing(fifthArg);
     break; 			
   case DIRTYFINDZEROS:
     copy->child1 = evaluateThingInner(tree->child1);
