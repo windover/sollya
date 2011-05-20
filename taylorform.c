@@ -411,6 +411,7 @@ void ctMultiplication_TM(tModel*d, tModel*s, sollya_mpfi_t c,int mode){
    The coeffs of the series
    expansion are given as an array of mpfi's, developed over x, in x0.
    For more details, see Lemmas 5.11 and following from Roland Zumkeller's thesis.
+   It returns 1 in case of success, and 0 if the computed bound is useless (i.e. if inf(x) or sup(x) and x0 intersect)
 */
 
 /* FIXME: maybe boundx0 can be safely replaced by [0] */
@@ -438,7 +439,7 @@ int computeMonotoneRemainder(sollya_mpfi_t *bound, int mode, int typeOfFunction,
   
   polynomialBoundSharp(&bound1, n-1, poly_array, x0, xinf); /* enclosure of p(xinf-x0) */
   polynomialBoundSharp(&bound2, n-1, poly_array, x0, xsup); /* enclosure of p(xsup-x0) */
-  polynomialBoundSharp(&boundx0, n-1, poly_array, x0, x0); /* enclosure of p(x0-x0) */
+  if ((mode==ABSOLUTE)&&(n%2==0)) polynomialBoundSharp(&boundx0, n-1, poly_array, x0, x0); /* enclosure of p(x0-x0) */
 
 
   /* enclosure of f(xinf) and f(xsup) */
@@ -446,80 +447,86 @@ int computeMonotoneRemainder(sollya_mpfi_t *bound, int mode, int typeOfFunction,
   case MONOTONE_REMAINDER_BASE_FUNCTION:
     baseFunction_diff(&boundf1,nodeType,xinf,0, silent);
     baseFunction_diff(&boundf2,nodeType,xsup,0, silent);
-    baseFunction_diff(&boundfx0,nodeType,x0,0, silent);
+    if ((mode==ABSOLUTE)&&(n%2==0))  baseFunction_diff(&boundfx0,nodeType,x0,0, silent);
     break;
   case MONOTONE_REMAINDER_LIBRARY_FUNCTION:
     libraryFunction_diff(&boundf1, f, xinf, 0, silent);
     libraryFunction_diff(&boundf2, f, xsup, 0, silent);
-    libraryFunction_diff(&boundfx0, f, x0, 0, silent);
+    if ((mode==ABSOLUTE)&&(n%2==0))  libraryFunction_diff(&boundfx0, f, x0, 0, silent);
     break;
   case MONOTONE_REMAINDER_PROCEDURE_FUNCTION:
     procedureFunction_diff(&boundf1, f, xinf, 0, silent);
     procedureFunction_diff(&boundf2, f, xsup, 0, silent);
-    procedureFunction_diff(&boundfx0, f, x0, 0, silent);
+    if ((mode==ABSOLUTE)&&(n%2==0))  procedureFunction_diff(&boundfx0, f, x0, 0, silent);
     break;
   case MONOTONE_REMAINDER_INV:
     sollya_mpfi_inv(boundf1, xinf);
     sollya_mpfi_inv(boundf2, xsup);
-    sollya_mpfi_inv(boundfx0, x0);
+    if ((mode==ABSOLUTE)&&(n%2==0)) sollya_mpfi_inv(boundfx0, x0);
     break;
   case MONOTONE_REMAINDER_CONSTPOWERVAR:
     sollya_mpfi_set_fr(p_interv, p);
     sollya_mpfi_pow(boundf1, xinf, p_interv);
     sollya_mpfi_pow(boundf2, xsup, p_interv);
-    sollya_mpfi_pow(boundfx0, x0, p_interv);
+    if ((mode==ABSOLUTE)&&(n%2==0))  sollya_mpfi_pow(boundfx0, x0, p_interv);
     break;
   case MONOTONE_REMAINDER_VARCONSTPOWER:
     sollya_mpfi_set_fr(p_interv,p);
     sollya_mpfi_pow(boundf1, p_interv, xinf);
     sollya_mpfi_pow(boundf2, p_interv, xsup);
-    sollya_mpfi_pow(boundfx0, p_interv, x0);
+    if ((mode==ABSOLUTE)&&(n%2==0)) sollya_mpfi_pow(boundfx0, p_interv, x0);
     break;
   default:
     sollyaFprintf(stderr, "Error in taylorform: unkown type of function used with Zumkeller's technique\n");
     return 0;
   }
-  
-  
-  sollya_mpfi_sub(bound1,boundf1,bound1);                          /* enclosure of f(xinf)-p(xinf-x0) */
-  sollya_mpfi_sub(bound2,boundf2,bound2);                          /* enclosure of f(xsup)-p(xsup-x0) */
-  sollya_mpfi_sub(boundx0,boundfx0,boundx0);                       /* enclosure of f(x0)-p(x0-x0) */
-  
-  if (mode==ABSOLUTE){  
+
+
+  sollya_mpfi_sub(bound1,boundf1,bound1);     /* enclosure of f(xinf)-p(xinf-x0) */
+  sollya_mpfi_sub(bound2,boundf2,bound2);     /* enclosure of f(xsup)-p(xsup-x0) */
+  if ((mode==ABSOLUTE)&&(n%2==0)) sollya_mpfi_sub(boundx0,boundfx0,boundx0);  /* enclosure of f(x0)-p(x0-x0) */
+
+  if (mode==ABSOLUTE){
+    /* in the case when n-1 is even, the remainder is
+       bounded by the values it takes on the two extremas of the interval */
     sollya_mpfi_union(*bound, bound1, bound2);
-    sollya_mpfi_union(*bound,*bound,boundx0);
+
+    /* in the case when n-1 is odd, the remainder is
+       in the convex hull determined by the two extremas and the value in x0 (which is 0, theoretically,
+       but since x0 is a small interval... */
+    if (n%2==0) sollya_mpfi_union(*bound,*bound,boundx0);
     ok=1;
   }
-  else{
-  /*for RELATIVE, we have to bound:
-  -- (f(xinf)-p(xinf-x0))/(xinf-x0)^n
-  -- (f(xsup)-p(xsup-x0))/(xsup-x0)^n
-  
+  else {
+  /* for RELATIVE, we have to bound:
+       -- (f(xinf)-p(xinf-x0))/(xinf-x0)^n
+       -- (f(xsup)-p(xsup-x0))/(xsup-x0)^n
+
   If ever xsup\cap x0 is not empty, the computed bound is infinite,
-  so, there is no point in applying this remark, we return ok=0, such that 
+  so, there is no point in applying this remark, we return ok=0, such that
   we can fall back to the simple case.
   */
-  ok=1;
-  
-  sollya_mpfi_init2(pow, prec);
-  sollya_mpfi_set_ui(pow, n);
-      
-  sollya_mpfi_sub(xinf, xinf, x0);
-  sollya_mpfi_pow(xinf,xinf,pow);
-  sollya_mpfi_div(bound1, bound1, xinf);
-  
-  sollya_mpfi_sub(xsup, xsup, x0);
-  sollya_mpfi_pow(xsup,xsup,pow);
-  sollya_mpfi_div(bound2, bound2, xsup);
-  
-  sollya_mpfi_union(*bound, bound1, bound2);
-  if  ( (sollya_mpfi_has_zero(xinf))|| (sollya_mpfi_has_zero(xsup))  ) ok=0;
-  sollya_mpfi_clear(pow);
+    ok=1;
+
+    sollya_mpfi_init2(pow, prec);
+    sollya_mpfi_set_ui(pow, n);
+
+    sollya_mpfi_sub(xinf, xinf, x0);
+    sollya_mpfi_pow(xinf,xinf,pow);
+    sollya_mpfi_div(bound1, bound1, xinf);
+
+    sollya_mpfi_sub(xsup, xsup, x0);
+    sollya_mpfi_pow(xsup,xsup,pow);
+    sollya_mpfi_div(bound2, bound2, xsup);
+
+    sollya_mpfi_union(*bound, bound1, bound2);
+    if  ( (sollya_mpfi_has_zero(xinf))|| (sollya_mpfi_has_zero(xsup))  ) ok=0;
+    sollya_mpfi_clear(pow);
   }
-  
+
   mpfr_clear(xinfFr); mpfr_clear(xsupFr);
   sollya_mpfi_clear(xinf); sollya_mpfi_clear(xsup);
-  sollya_mpfi_clear(bound1); sollya_mpfi_clear(bound2); sollya_mpfi_clear(boundx0);  
+  sollya_mpfi_clear(bound1); sollya_mpfi_clear(bound2); sollya_mpfi_clear(boundx0);
   sollya_mpfi_clear(boundf1);  sollya_mpfi_clear(boundf2); sollya_mpfi_clear(boundfx0);
   sollya_mpfi_clear(p_interv);
   return ok;
@@ -539,52 +546,57 @@ void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, 
   prec = getToolPrecision();
   tt = createEmptytModel(n,x0,x);
 
-  /* We use AD for computing bound on the derivatives up to (n+1)th derivative:
-   -- we need the "nth" derivative for usual Absolute & Relative case
-   -- when we apply Zumkeller Remark, we need nth derivative for Absolute and n+1 for relative 
+  /* We use AD for computing bound on the derivatives:
+     -- we need the nth derivative for usual Absolute & Relative cases
+     -- In order to try to apply Zumkeller Remark in Absolute case, we also need the nth derivative
+     -- In order to try to apply Zumkeller Remark in Relative case, we need the (n+1)th derivative
    */
-  nDeriv= (sollya_mpfi_t *)safeCalloc((n+2),sizeof(sollya_mpfi_t));
-  for(i=0;i<=n+1;i++) sollya_mpfi_init2(nDeriv[i], prec);
+  if (mode==RELATIVE) {
+    nDeriv= (sollya_mpfi_t *)safeCalloc((n+2),sizeof(sollya_mpfi_t));
+    for(i=0;i<=n+1;i++) sollya_mpfi_init2(nDeriv[i], prec);
+  }
+  else {
+    nDeriv= (sollya_mpfi_t *)safeCalloc((n+1),sizeof(sollya_mpfi_t));
+    for(i=0;i<=n;i++) sollya_mpfi_init2(nDeriv[i], prec);
+  }
 
   switch(typeOfFunction) {
   case MONOTONE_REMAINDER_BASE_FUNCTION:
     baseFunction_diff(tt->poly_array,nodeType,x0, n-1, silent);
-    baseFunction_diff(nDeriv, nodeType, x, n+1, silent);
+    baseFunction_diff(nDeriv, nodeType, x, (mode==RELATIVE)?(n+1):n, silent);
     break;
   case MONOTONE_REMAINDER_LIBRARY_FUNCTION:
     libraryFunction_diff(tt->poly_array, f, x0, n-1, silent);
-    libraryFunction_diff(nDeriv, f, x, n+1, silent);
+    libraryFunction_diff(nDeriv, f, x, (mode==RELATIVE)?(n+1):n, silent);
     break;
   case MONOTONE_REMAINDER_PROCEDURE_FUNCTION:
     procedureFunction_diff(tt->poly_array, f, x0, n-1, silent);
-    procedureFunction_diff(nDeriv, f, x, n+1, silent);
+    procedureFunction_diff(nDeriv, f, x, (mode==RELATIVE)?(n+1):n, silent);
     break;
   case MONOTONE_REMAINDER_INV: 
     mpfr_init2(minusOne, prec);
     mpfr_set_si(minusOne, -1, GMP_RNDN);
     constantPower_diff(tt->poly_array, x0, minusOne, n-1, silent);
-    constantPower_diff(nDeriv, x, minusOne, n+1, silent);
+    constantPower_diff(nDeriv, x, minusOne, (mode==RELATIVE)?(n+1):n, silent);
     mpfr_clear(minusOne);
     break;
   case MONOTONE_REMAINDER_CONSTPOWERVAR:
     constantPower_diff(tt->poly_array, x0, p, n-1, silent);
-    constantPower_diff(nDeriv, x, p, n+1, silent);
+    constantPower_diff(nDeriv, x, p, (mode==RELATIVE)?(n+1):n, silent);
     break;
   case MONOTONE_REMAINDER_VARCONSTPOWER:
     powerFunction_diff(tt->poly_array, p, x0, n-1, silent);
-    powerFunction_diff(nDeriv, p, x, n+1, silent);
+    powerFunction_diff(nDeriv, p, x, (mode==RELATIVE)?(n+1):n, silent);
     break;
   default: 
     sollyaFprintf(stderr, "Error in taylorform: unkown type of function used with Zumkeller's technique\n");
     return;
   }
-  
+
   /* Use Zumkeller technique to improve the bound in the absolute case,
-     when the nth (this is patched, before we have (n+1)th which was not correct) derivative has constant sign */
-  
+     when the nth derivative has constant sign */
   /* Use an adaptation of Zumkeller technique to improve the bound in the relative case,
      when  the (n+1)th derivative has constant sign */
-  
   useZ=0;
   if ( ((mode==ABSOLUTE)&&((sollya_mpfi_is_nonpos(nDeriv[n]) > 0)||(sollya_mpfi_is_nonneg(nDeriv[n]) > 0))) ||
        ((mode==RELATIVE)&&((sollya_mpfi_is_nonpos(nDeriv[n+1]) > 0)||(sollya_mpfi_is_nonneg(nDeriv[n+1]) > 0))) ){ 
@@ -594,19 +606,18 @@ void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, 
   if (useZ==0){
     /* just keep the bound obtained using AD */
     sollya_mpfi_set(tt->rem_bound, nDeriv[n]);
-  
+
     /* if we are in the case of the absolute error,
       we have to multiply by (x-x0)^n */
-    
     if (mode==ABSOLUTE) {
       sollya_mpfi_init2(pow, prec);
       sollya_mpfi_set_ui(pow, n);
       sollya_mpfi_init2(temp, prec);
       sollya_mpfi_sub(temp,x,x0);
       sollya_mpfi_pow(temp, temp, pow);
-      
+
       sollya_mpfi_mul(tt->rem_bound,tt->rem_bound,temp);
-      
+
       sollya_mpfi_clear(pow);
       sollya_mpfi_clear(temp);
     }
@@ -618,7 +629,12 @@ void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, 
   copytModel(t,tt);
   cleartModel(tt);
   
-  for(i=0;i<=n+1;i++)  sollya_mpfi_clear(nDeriv[i]);
+  if (mode==RELATIVE) {
+    for(i=0;i<=n+1;i++)  sollya_mpfi_clear(nDeriv[i]);
+  }
+  else {
+    for(i=0;i<=n;i++)  sollya_mpfi_clear(nDeriv[i]);
+  }
   free(nDeriv);  
 }
 
@@ -1309,6 +1325,10 @@ void printMpfiChain(chain *c) {
 }
 
 
+/* The argument n given as an input of tayloform is the desired *degree* of T.
+   However, PLEASE NOTE THAT IN ALL OTHER FUNCTIONS, n-1 IS THE DEGREE OF T.
+   This is why we begin by adjusting n in the first place.
+*/
 void taylorform(node **T, chain **errors, sollya_mpfi_t **delta,
 		node *f, int n,	sollya_mpfi_t *x0, sollya_mpfi_t *d, int mode) {
   tModel *t;
