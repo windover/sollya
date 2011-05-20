@@ -1,4 +1,43 @@
 
+Changes from version 2.9 to 3.0:
+================================
+Major new functionnalities:
+  * Added expression matching support to the Sollya language. It is
+    now possible to perform pattern matching on the objects of the
+    Sollya language (expressions, lists, intervals, etc.). This is
+    documented in a new section called "Pattern matching" in the
+    User's Manual.
+  * Added bashevaluate command.
+  * Added operators halfprecision (or equivalently HP) and quad (or
+    equivalently QD).
+
+Minor new functionnalities:
+  * The Sollya executable now returns a meaningful error code:
+      0 - the tool has been quit with a "quit;"
+      1 - the tool has died because of an internal error that should
+          never happen
+      2 - the tool has died because it was in "dieonerrormode = on"
+          and an error has occurred
+      3 - the tool has been quit without a "quit;" but the last
+          command was syntactically correct and got correctly executed
+      4 - the tool has been quit on an incomplete input
+  * Added a fitfth optional argument to guessdegree that is used as a
+    maximal allowed degree.
+
+Improvements in internal handling:
+  * A new technique gives sharper remainder bounds when taylorform
+    is used in relative mode.
+
+Others:
+  * Sollya was not compatible with FPLLL 3.0 or later. This is now
+    fixed.
+  * Important bug fix in taylorform. Results obtained with an older
+    version of taylorform might be incorrect.
+
+And some bugs fixed.
+
+----------------------------------------------------------------------
+
 Changes from version 2.0 to 2.9:
 ================================
 Changes of syntax and output:
