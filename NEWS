@@ -23,6 +23,10 @@ Minor new functionnalities:
       4 - the tool has been quit on an incomplete input
   * Added a fitfth optional argument to guessdegree that is used as a
     maximal allowed degree.
+  * Changed behavior of doubleextended (resp. DE) with respect to 
+    subnormal rounding. Now, doubleextended correctly performs
+    subnormal rounding for an exponent width of 15 bits. 
+    (see documentation on doubleextended for details).
 
 Improvements in internal handling:
   * A new technique gives sharper remainder bounds when taylorform
