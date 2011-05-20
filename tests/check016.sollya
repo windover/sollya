@@ -974,3 +974,15 @@ match structure with
      default              : { "Something else"; };
 restart;
 
+/* Some additional checks */
+
+match [1;2] with [1;default] : (1) default : (2);
+match [1;2] with [default;2] : (1) default : (2);
+match "Hallo du da" with ("Hall" @ default) @ "da"  : (1) default : (2);
+match [|1,...,6,18...|] with default @ [| 6, 18, 19, 20... |] : (1) default : (2);
+match [|1,...,6,18...|] with default @ [| 20... |] : (1) default : (2);
+match [|1,...,6,18...|] with [|1 |] @ default : (1) default : (2);
+match [|1,...,6|] with [||] @ default : (1) default : (2);
+match [|1,...,6|] with default @ [| 5,6 |] : (1) default : (2);
+
+

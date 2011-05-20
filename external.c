@@ -201,6 +201,30 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
 
 	    // Wait for my child to exit
 	    wait(&childStatus);
+	    
+	    // Read the rest of the pipe if it filled up again after 
+	    // having been emptied already.
+	    do {
+	      readLen = read(pipesFromBash[0],readBuffer,READ_BUFFER_SIZE);
+	      if (readLen > 0) {
+		if (res == NULL) {
+		  res = safeCalloc(readLen + 1, sizeof(char));
+		  buf = res;
+		} else {
+		  len = strlen(res);
+		  buf = safeCalloc(len + readLen + 1, sizeof(char));
+		  strcpy(buf,res);
+		  free(res);
+		  res = buf;
+		  buf += len;
+		}
+		for (i=0;i<readLen;i++) {
+		  *buf = (readBuffer[i] == '\0') ? '?' : readBuffer[i];
+		  buf++;
+		}
+	      }
+	    } while (readLen == READ_BUFFER_SIZE);
+
 	    if (WEXITSTATUS(childStatus) != 0) {
 	      printMessage(1, "Warning in bashevaluate: the exit code of the child process is %d.\n", WEXITSTATUS(childStatus));
 	    } else {

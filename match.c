@@ -525,8 +525,8 @@ int tryMatchRange(chain **associations, mpfr_t a, mpfr_t b, node *possibleMatche
   int okay;
 
   if (possibleMatcher->nodeType != RANGE) return 0;
-  if (!((possibleMatcher->child1->nodeType == CONSTANT) || (possibleMatcher->child1->nodeType == TABLEACCESS))) return 0;
-  if (!((possibleMatcher->child2->nodeType == CONSTANT) || (possibleMatcher->child2->nodeType == TABLEACCESS))) return 0;
+  if (!((possibleMatcher->child1->nodeType == CONSTANT) || (possibleMatcher->child1->nodeType == TABLEACCESS) || (possibleMatcher->child1->nodeType == DEFAULT))) return 0;
+  if (!((possibleMatcher->child2->nodeType == CONSTANT) || (possibleMatcher->child2->nodeType == TABLEACCESS) || (possibleMatcher->child2->nodeType == DEFAULT))) return 0;
   if (variablename != NULL) {
     if (possibleMatcher->child1->nodeType == TABLEACCESS) {
       if (!strcmp(possibleMatcher->child1->string,variablename)) return 0;
@@ -548,7 +548,7 @@ int tryMatchRange(chain **associations, mpfr_t a, mpfr_t b, node *possibleMatche
   /* Here, we know that the possible Matcher is a range, that its
      childs are either constants equal to the bounds of the thing to
      match or that they are free variables different from the free
-     mathematical variable */
+     mathematical variable or default */
 
   myAssociations = NULL;
   okay = 1;
@@ -557,7 +557,7 @@ int tryMatchRange(chain **associations, mpfr_t a, mpfr_t b, node *possibleMatche
     tempNode = makeConstant(a);
     okay = associateThing(&myAssociations, possibleMatcher->child1->string, tempNode);
     free_memory(tempNode);
-  }
+  } 
 
   if (okay && (possibleMatcher->child2->nodeType == TABLEACCESS)) {
     tempNode = makeConstant(b);

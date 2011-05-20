@@ -2318,21 +2318,21 @@ int isString(node *);
 
 int isMatchableConcat(node *tree) {
   if (tree->nodeType != CONCAT) return 0;
-  if ((tree->child1->nodeType == TABLEACCESS) && 
-      (tree->child2->nodeType == TABLEACCESS)) return 0;
+  if (((tree->child1->nodeType == TABLEACCESS) || (tree->child1->nodeType == DEFAULT)) && 
+      ((tree->child2->nodeType == TABLEACCESS) || (tree->child2->nodeType == DEFAULT))) return 0;
 
   if (((isMatchableList(tree->child1) && (!isPureFinalEllipticList(tree->child1))) || 
-       (tree->child1->nodeType == TABLEACCESS) || isString(tree->child1) ||
+       (tree->child1->nodeType == TABLEACCESS) || (tree->child1->nodeType == DEFAULT) || isString(tree->child1) ||
        isMatchablePrepend(tree->child1) || isMatchableAppend(tree->child1) ||
        isMatchableConcat(tree->child1)) && 
       (isMatchableList(tree->child2) || 
-       (tree->child2->nodeType == TABLEACCESS) || isString(tree->child2) ||
+       (tree->child2->nodeType == TABLEACCESS) || (tree->child2->nodeType == DEFAULT) || isString(tree->child2) ||
        isMatchablePrepend(tree->child2) || isMatchableAppend(tree->child2) ||
        isMatchableConcat(tree->child2))) {
     if (isString(tree->child1) && 
-	(!((tree->child2->nodeType == TABLEACCESS) || isString(tree->child2) || isMatchableConcat(tree->child2)))) return 0;
+	(!((tree->child2->nodeType == TABLEACCESS) || (tree->child2->nodeType == DEFAULT) || isString(tree->child2) || isMatchableConcat(tree->child2)))) return 0;
     if (isString(tree->child2) && 
-	(!((tree->child1->nodeType == TABLEACCESS) || isString(tree->child1) || isMatchableConcat(tree->child1)))) return 0;
+	(!((tree->child1->nodeType == TABLEACCESS) || (tree->child1->nodeType == DEFAULT) || isString(tree->child1) || isMatchableConcat(tree->child1)))) return 0;
     return 1;
   }
   return 0;
@@ -2376,9 +2376,11 @@ int isMatchable(node *tree) {
   if (isCorrectlyTypedBaseSymbol(tree)) return 1;
   if ((tree->nodeType == RANGE) && 
       ((tree->child1->nodeType == CONSTANT) || 
-       (tree->child1->nodeType == TABLEACCESS)) &&
+       (tree->child1->nodeType == TABLEACCESS) || 
+       (tree->child1->nodeType == DEFAULT)) &&
       ((tree->child2->nodeType == CONSTANT) || 
-       (tree->child2->nodeType == TABLEACCESS))) return 1;
+       (tree->child2->nodeType == TABLEACCESS) ||
+       (tree->child2->nodeType == DEFAULT))) return 1;
   if (isMatchableList(tree)) return 1;
   if (isMatchableConcat(tree)) return 1;
   if (isMatchablePrepend(tree)) return 1;
