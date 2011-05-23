@@ -12,7 +12,7 @@ computes a rigorous polynomial approximation (polynomial, interval error bound) 
 Parameters: 
 \begin{itemize}
 \item \emph{f} is the function to be approximated.
-\item \emph{n} is the order of the Taylor form, meaning $\emph{n}-1$ is the degree of the polynomial that must approximate \emph{f}.
+\item \emph{n} is the degree of the polynomial that must approximate \emph{f}.
 \item \emph{$x_0$} is the point (it can be a real number or an interval) where the Taylor exansion of the function is to be considered.
 \item \emph{I} is the interval over which the function is to be approximated. If this parameter is omitted, the behavior is changed (see detailed description below).
 \item \emph{errorType} (optional) is the type of error to be considered. See the detailed description below. Default is \textbf{absolute}.
@@ -23,9 +23,9 @@ Parameters:
    for function $f$. More precisely, it returns a list $L = \left[p, \textrm{coeffErrors},\Delta \right]$
    where:
    \begin{itemize}
-   \item $p$ is an approximation polynomial of degree $n-1$ which is roughly speaking
+   \item $p$ is an approximation polynomial of degree $n$ which is roughly speaking
    a numerical Taylor expansion of $f$ at the point $x_0$.
-   \item coeffsErrors is a list of $n$ intervals. Each interval coeffsErrors[$i$]
+   \item coeffsErrors is a list of $n+1$ intervals. Each interval coeffsErrors[$i$]
    contains an enclosure of all the errors accumulated when computing the $i$-th
    coefficient of $p$.
    \item $\Delta$ is an interval that provides a bound for the approximation error
@@ -50,10 +50,10 @@ Parameters:
    $\varepsilon_i \in \textrm{coeffsErrors}[i]$ such that:
    \\
    If \emph{errorType} is \textbf{absolute}, $\forall x \in I, \exists \delta \in \Delta,\,$
-   $f(x)-p(x-\csi_0) = \sum\limits_{i=0}^{n-1} \varepsilon_i\, (x-\csi_0)^i + \delta$.
+   $f(x)-p(x-\csi_0) = \sum\limits_{i=0}^{n} \varepsilon_i\, (x-\csi_0)^i + \delta$.
    \\
    If \emph{errorType} is \textbf{relative}, $\forall x \in I, \exists \delta \in \Delta,\,$
-   $f(x)-p(x-\csi_0) = \sum\limits_{i=0}^{n-1} \varepsilon_i\, (x-\csi_0)^i + \delta\,(x-\csi_0)^n$.
+   $f(x)-p(x-\csi_0) = \sum\limits_{i=0}^{n} \varepsilon_i\, (x-\csi_0)^i + \delta\,(x-\csi_0)^{n+1}$.
 
 \item It is also possible to use a large interval for $x_0$, though it is not
    obvious to give an intuitive sense to the result of \textbf{taylorform} in that case.

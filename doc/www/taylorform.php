@@ -16,7 +16,7 @@
 <h2 class="category">Parameters: </h2> 
 <ul> 
 <li><span class="arg">f</span> is the function to be approximated.</li> 
-<li><span class="arg">n</span> is the order of the Taylor form, meaning <span class="arg">n</span>-1 is the degree of the polynomial that must approximate <span class="arg">f</span>.</li> 
+<li><span class="arg">n</span> is the degree of the polynomial that must approximate <span class="arg">f</span>.</li> 
 <li><span class="arg">x0</span> is the point (it can be a real number or an interval) where the Taylor exansion of the function is to be considered.</li> 
 <li><span class="arg">I</span> is the interval over which the function is to be approximated. If this parameter is omitted, the behavior is changed (see detailed description below).</li> 
 <li><span class="arg">errorType</span> (optional) is the type of error to be considered. See the detailed description below. Default is <?php linkTo("command","absolute","absolute");?>.</li> 
@@ -28,9 +28,9 @@
 for function f. More precisely, it returns a list L=[p, coeffErrors, Delta] 
 where: 
 <ul> 
-<li> p is an approximation polynomial of degree n-1 which is roughly speaking 
+<li> p is an approximation polynomial of degree n which is roughly speaking 
 a numerical Taylor expansion of f at the point x0. 
-</li><li> coeffsErrors is a list of n intervals. Each interval coeffsErrors[i] 
+</li><li> coeffsErrors is a list of n+1 intervals. Each interval coeffsErrors[i] 
 contains an enclosure of all the errors accumulated when computing the i-th 
 coefficient of p. 
 </li><li> Delta is an interval that provides a bound for the approximation error 
@@ -52,10 +52,10 @@ stated as follows. For all xi0 in x0, there exist (small) values
 eps[i] in coeffsErrors[i] such that: 
 <br> 
 If <span class="arg">errorType</span> is <?php linkTo("command","absolute","absolute");?>, for all x in I, there exists delta in Delta such 
-that f(x) - p(x-xi0) = sum{i=0...n-1} eps[i]*(x-xi0)^i + delta. 
+that f(x) - p(x-xi0) = sum{i=0...n} eps[i]*(x-xi0)^i + delta. 
 <br> 
 If <span class="arg">errorType</span> is <?php linkTo("command","relative","relative");?>, for all x in I, there exists delta in Delta such 
-that f(x) - p(x-xi0) = sum{i=0...n-1} eps[i]*(x-xi0)^i + delta*(x-xi0)^n. 
+that f(x) - p(x-xi0) = sum{i=0...n} eps[i]*(x-xi0)^i + delta*(x-xi0)^(n+1). 
 </li><li>It is also possible to use a large interval for x0, though it is not 
 obvious to give an intuitive sense to the result of <?php linkTo("command","taylorform","taylorform");?> in that case. 
 A particular case that might be interesting is when x0=I in relative mode. 
