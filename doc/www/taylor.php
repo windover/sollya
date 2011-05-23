@@ -24,8 +24,10 @@ of function <span class="arg">function</span> in point <span class="arg">point</
 <br><br> 
 Let f be the function <span class="arg">function</span>, t be the point <span class="arg">point</span> and 
 n be the degree <span class="arg">degree</span>. Then, <?php linkTo("command","taylor","taylor");?>(<span class="arg">function</span>,<span class="arg">degree</span>,<span class="arg">point</span>)  
-evaluates to an expression mathematically equal to  
-f(t) + f'(t) * (x - t) + 1/2 * f''(t) * (x - t)^2 + ... + 1/(i!) * f[i](t) * (x - t)^i + ... + 1/(n!) * f[n](t) * (x - t)^n 
+evaluates to an expression mathematically equal to 
+     f(t) + f'(t) * x + ... + 1/(n!) * f[n](t) * x^n. 
+In other words, if p(x) denotes the polynomial returned by <?php linkTo("command","taylor","taylor");?>, 
+p(x-t) is the Taylor polynomial of degree n of f developped at point t. 
 <br><br> 
 Remark that <?php linkTo("command","taylor","taylor");?> evaluates to 0 if the degree <span class="arg">degree</span> is negative. 
 </ul> 
@@ -33,8 +35,8 @@ Remark that <?php linkTo("command","taylor","taylor");?> evaluates to 0 if the d
 <div class="divExamples"> 
 <div class="divExample"> 
 <h2 class="category">Example 1: </h2> 
-&nbsp;&nbsp;&nbsp;&gt; print(taylor(exp(x),5,0));<br> 
-&nbsp;&nbsp;&nbsp;1 + x * (1 + x * (0.5 + x * (1 / 6 + x * (1 / 24 + x / 120))))<br> 
+&nbsp;&nbsp;&nbsp;&gt; print(taylor(exp(x),3,1));<br> 
+&nbsp;&nbsp;&nbsp;exp(1) + x * (exp(1) + x * (0.5 * exp(1) + x * exp(1) / 6))<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 2: </h2> 

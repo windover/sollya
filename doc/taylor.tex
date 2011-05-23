@@ -19,15 +19,17 @@ Parameters:
     
    Let $f$ be the function \emph{function}, $t$ be the point \emph{point} and
    $n$ be the degree \emph{degree}. Then, \textbf{taylor}(\emph{function},\emph{degree},\emph{point}) 
-   evaluates to an expression mathematically equal to 
-   $$\sum\limits_{i=0}^n \frac{f^{(i)}\left(t\right)}{i!} \left(x - t \right)^i$$
+   evaluates to an expression mathematically equal to
+   $$\sum\limits_{i=0}^n \frac{f^{(i)}\left(t\right)}{i!}\,x^i.$$
+   In other words, if $p(x)$ denotes the polynomial returned by \textbf{taylor},
+   $p(x-t)$ is the Taylor polynomial of degree $n$ of $f$ developped at point $t$.
     
    Remark that \textbf{taylor} evaluates to $0$ if the degree \emph{degree} is negative.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> print(taylor(exp(x),5,0));
-1 + x * (1 + x * (0.5 + x * (1 / 6 + x * (1 / 24 + x / 120))))
+> print(taylor(exp(x),3,1));
+exp(1) + x * (exp(1) + x * (0.5 * exp(1) + x * exp(1) / 6))
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
