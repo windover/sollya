@@ -238,7 +238,9 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
 	      res = safeCalloc(2, sizeof(char));
 	    }
 	    len = strlen(res);
-	    if (res[len-1] == '\n') res[len-1] = '\0';
+	    if (len >= 1) {
+	      if (res[len-1] == '\n') res[len-1] = '\0';
+	    }
 	  }
 	}
       }
