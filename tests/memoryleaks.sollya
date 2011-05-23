@@ -1973,25 +1973,109 @@ autodiff(exp(sin(x))^log2(1 + sin(x)^2) * erf(x),80,[1]);
 restart;
 print("=============== Test number 241 ================");
 
-taylorform(exp(x),5,0);
-taylorform(sin(x),17,0);
-taylorform(sin(exp(x)) + 2 - x,7,0);
-taylorform(sin(exp(x)) + 2 - x,7,[-1;1]);
-taylorform(sin(exp(x)) + 2 - x,7,0,[-1;1]);
-taylorform(sin(exp(x)) + 2 - x,7,[-1;1],[-1;1]);
-taylorform(sin(exp(x)) + 2 - x,7,[-1;1],[-1;1],absolute);
-taylorform(sin(exp(x)) + 2 - x,7,[-1;1],[-1;1],relative);
-taylorform(sin(exp(x)) + 2 - x,7,0,[-1b-8;1b-7]);
-taylorform(sin(exp(x)) + 2 - x,7,0,[-1b-8;1b-7],absolute);
-taylorform(sin(exp(x)) + 2 - x,7,0,[-1b-8;1b-7],relative);
-taylorform(sin(x)^4 + x^5 * exp(17 * x),7,0,[-1b-8;1b-7],relative);
-taylorform(2^x,7,0,[-1b-8;1b-7],relative);
-taylorform(x^17,7,0,[-1b-8;1b-7],relative);
-taylorform(x^5,7,0,[-1b-8;1b-7],relative);
-taylorform(1 + 2 * x + 3 * x^2 + 4 * x^3,7,0,[-1b-8;1b-7],relative);
-taylorform(2 * x + 3 * x^2 + 4 * x^3,7,0,[-1b-8;1b-7],relative);
-taylorform(exp(sin(x))^log2(1 + sin(x)^2) * erf(x),7,0,[-1b-8;1b-7],relative);
-taylorform(exp(sin(x))^log2(1 + sin(x)^2) * erf(x),7,0,[-1b-8;1b-7]);
+verbosity=0!;
+
+test1 = proc(f, n, x0, mode) {
+  var TStruct, p, errs, k, j, a, t, i, res;
+
+  res=1;
+  TStruct = taylorform(f,n,x0,mode);
+  p = TStruct[0];
+  errs = TStruct[1];
+  if (inf(x0)==sup(x0)) then k=1 else k=10;
+  for j from 1 to k+1 do {
+    roundingwarnings=off!;
+    a := inf(x0) + sup([(j-1)*(sup(x0)-inf(x0))/k]);
+    roundingwarnings=on!;
+    if (a>=sup(x0)) then a := sup(x0);
+    t = taylor(f,n,a);
+    for i from 0 to n do {
+      if (! coeff(t,i) in coeff(p, i)+errs[i]) then {
+        print("test1(",f,",",n,",",x0,",",mode,"): error with coefficient ",i," and point xi0 = ",a);
+        res = 0;
+      };
+    };
+  };
+  if (res==1)
+    then print("Testing taylorform(,",f,",",n,",",x0,",",mode,": OK");
+};
+
+test2 = proc(f, n, x0, I, mode) {
+  var TStruct, p, errs, Delta, k, j, a, t, i, xk, res;
+
+  res = 1;
+  TStruct = taylorform(f,n,x0,I,mode);
+  p = TStruct[0];
+  errs = TStruct[1];
+  Delta = TStruct[2];
+  if (inf(x0)==sup(x0)) then k=1 else k=10;
+  for j from 1 to k+1 do {
+   roundingwarnings=off!;
+   a := inf(x0) + sup([(j-1)*(sup(x0)-inf(x0))/k]);
+   roundingwarnings=on!;
+   if (a>=sup(x0)) then a := sup(x0);
+   for i from 0 to points do {
+     roundingwarnings=off!;
+     xk := inf(I) + sup([(i/points)*(sup(I)-inf(I))]);
+     roundingwarnings=on!;
+     if (xk >= sup(I)) then xk := sup(I);
+
+     if (mode==relative) then dd = Delta else dd = [0];
+     for s from n to 0 by -1 do {
+       dd = errs[s] + (xk-a)*dd;
+     };
+     if (mode==absolute) then dd = dd + Delta;
+     if (! (f(xk)-p(xk-a)) in dd) then {
+       print("test2(",f,",",n,",",x0,",",I,",",mode,"): error at point x=",xk," and point xi0 = ",a);
+       res = 0;
+     };
+   };
+ };
+ if (res==1)
+   then print("Testing taylorform(,",f,",",n,",",x0,",",I,",",mode,": OK");
+};
+
+test1(exp(x),5,0,absolute);
+test1(sin(x),17,1289b-10, absolute);
+test1(sin(exp(x)) + 2 - x,7,0, absolute);
+test1(sin(exp(x)) + 2 - x,7,[-1;1], absolute);
+test1(sin(exp(x)) + 2 - x,7,1289b-10, absolute);
+
+p1 = taylorform(sin(exp(x)) + 2 - x,7,1289b-10, absolute);
+p2 = taylorform(sin(exp(x)) + 2 - x,7,1289b-10, relative);
+p3 = taylorform(sin(exp(x)) + 2 - x,7,1289b-10);
+(p1==p2);
+(p2==p3);
+
+test2(sin(exp(x)) + 2 - x,7,0,[-1;1], absolute);
+test2(sin(exp(x)) + 2 - x,7,[-1;1],[-1;1], absolute);
+test2(sin(exp(x)) + 2 - x,7,[-1;1],[-1;1], relative);
+test2(sin(exp(x)) + 2 - x,7,1289b-19,[-1b-8;1b-7], absolute);
+test2(sin(exp(x)) + 2 - x,7,1289b-19,[-1b-8;1b-7], relative);
+
+p1 = taylorform(sin(exp(x)) + 2 - x,7,1289b-19,[-1b-8;1b-7], absolute);
+p2 = taylorform(sin(exp(x)) + 2 - x,7,1289b-19,[-1b-8;1b-7]);
+p1==p2;
+
+test2(sin(exp(x)) + 2 - x,7,0,[-1b-8;1b-7],relative);
+test2(sin(exp(x)) + 2 - x,7,0,[-1b-8;1b-7],absolute);
+test2(sin(x)^4 + x^5 * exp(17 * x),7,1289b-19,[-1b-8;1b-7],relative);
+test2(2^x,7,1289b-19,[-1b-8;1b-7],relative);
+test2(x^17,7,1289b-19,[-1b-8;1b-7],relative);
+test2(x^5,7,1289b-19,[-1b-8;1b-7],relative);
+test2(2^x,7,1289b-19,[-1b-8;1b-7],absolute);
+test2(2^x,7,0,[-1b-8;1b-7],relative);
+test2(2^x,7,0,[-1b-8;1b-7],absolute);
+test2(x^17,7,1289b-19,[-1b-8;1b-7],absolute);
+test2(x^5,7,0,[-1b-8;1b-7],absolute);
+
+test2(1 + 2 * x + 3 * x^2 + 4 * x^3,7,0,[-1b-8;1b-7],relative);
+test2(2 * x + 3 * x^2 + 4 * x^3,7,0,[-1b-8;1b-7],relative);
+test2(exp(sin(x))^log2(1 + sin(x)^2) * erf(x),7,1289b-19,[-1b-8;1b-7],relative);
+test2(exp(sin(x))^log2(1 + sin(x)^2) * erf(x),7,1289b-19,[-1b-8;1b-7],absolute);
+test2(exp(sin(x))^log2(1 + sin(x)^2) * erf(x),7,0,[-1b-8;1b-7],absolute);
+test2(exp(sin(x))^log2(1 + sin(x)^2) * erf(x),7,0,[-1b-8;1b-7],relative);
+
 
 restart;
 print("=============== Test number 242 ================");
