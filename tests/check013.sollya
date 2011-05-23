@@ -25,7 +25,7 @@ test1 = proc(f, n, x0, mode) {
     };
   };
   if (res==1)
-    then print("Testing taylorform(,",f,",",n,",",x0,",",mode,": OK");
+    then print("Testing taylorform(",f,",",n,",",x0,",",mode,": OK");
 };
 
 test2 = proc(f, n, x0, I, mode) {
@@ -60,7 +60,7 @@ test2 = proc(f, n, x0, I, mode) {
    };
  };
  if (res==1)
-   then print("Testing taylorform(,",f,",",n,",",x0,",",I,",",mode,": OK");
+   then print("Testing taylorform(",f,",",n,",",x0,",",I,",",mode,": OK");
 };
 
 test1(exp(x),5,0,absolute);

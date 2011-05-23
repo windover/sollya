@@ -1,35 +1,35 @@
 The tool has been restarted.
 =============== Test number 241 ================
-Testing taylorform(, exp(x) , 5 , 0 , absolute : OK
-Testing taylorform(, sin(x) , 17 , 1.2587890625 , absolute : OK
-Testing taylorform(, sin(exp(x)) + 2 - x , 7 , 0 , absolute : OK
-Testing taylorform(, sin(exp(x)) + 2 - x , 7 , [-1;1] , absolute : OK
-Testing taylorform(, sin(exp(x)) + 2 - x , 7 , 1.2587890625 , absolute : OK
+Testing taylorform( exp(x) , 5 , 0 , absolute : OK
+Testing taylorform( sin(x) , 17 , 1.2587890625 , absolute : OK
+Testing taylorform( sin(exp(x)) + 2 - x , 7 , 0 , absolute : OK
+Testing taylorform( sin(exp(x)) + 2 - x , 7 , [-1;1] , absolute : OK
+Testing taylorform( sin(exp(x)) + 2 - x , 7 , 1.2587890625 , absolute : OK
 true
 true
-Testing taylorform(, sin(exp(x)) + 2 - x , 7 , 0 , [-1;1] , absolute : OK
-Testing taylorform(, sin(exp(x)) + 2 - x , 7 , [-1;1] , [-1;1] , absolute : OK
-Testing taylorform(, sin(exp(x)) + 2 - x , 7 , [-1;1] , [-1;1] , relative : OK
-Testing taylorform(, sin(exp(x)) + 2 - x , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , absolute : OK
-Testing taylorform(, sin(exp(x)) + 2 - x , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , relative : OK
+Testing taylorform( sin(exp(x)) + 2 - x , 7 , 0 , [-1;1] , absolute : OK
+Testing taylorform( sin(exp(x)) + 2 - x , 7 , [-1;1] , [-1;1] , absolute : OK
+Testing taylorform( sin(exp(x)) + 2 - x , 7 , [-1;1] , [-1;1] , relative : OK
+Testing taylorform( sin(exp(x)) + 2 - x , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , absolute : OK
+Testing taylorform( sin(exp(x)) + 2 - x , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , relative : OK
 true
-Testing taylorform(, sin(exp(x)) + 2 - x , 7 , 0 , [-3.90625e-3;7.8125e-3] , relative : OK
-Testing taylorform(, sin(exp(x)) + 2 - x , 7 , 0 , [-3.90625e-3;7.8125e-3] , absolute : OK
-Testing taylorform(, sin(x)^4 + x^5 * exp(17 * x) , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , relative : OK
-Testing taylorform(, 2^x , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , relative : OK
-Testing taylorform(, x^17 , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , relative : OK
-Testing taylorform(, x^5 , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , relative : OK
-Testing taylorform(, 2^x , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , absolute : OK
-Testing taylorform(, 2^x , 7 , 0 , [-3.90625e-3;7.8125e-3] , relative : OK
-Testing taylorform(, 2^x , 7 , 0 , [-3.90625e-3;7.8125e-3] , absolute : OK
-Testing taylorform(, x^17 , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , absolute : OK
-Testing taylorform(, x^5 , 7 , 0 , [-3.90625e-3;7.8125e-3] , absolute : OK
-Testing taylorform(, 1 + 2 * x + 3 * x^2 + 4 * x^3 , 7 , 0 , [-3.90625e-3;7.8125e-3] , relative : OK
-Testing taylorform(, 2 * x + 3 * x^2 + 4 * x^3 , 7 , 0 , [-3.90625e-3;7.8125e-3] , relative : OK
-Testing taylorform(, exp(sin(x))^log2(1 + sin(x)^2) * erf(x) , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , relative : OK
-Testing taylorform(, exp(sin(x))^log2(1 + sin(x)^2) * erf(x) , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , absolute : OK
-Testing taylorform(, exp(sin(x))^log2(1 + sin(x)^2) * erf(x) , 7 , 0 , [-3.90625e-3;7.8125e-3] , absolute : OK
-Testing taylorform(, exp(sin(x))^log2(1 + sin(x)^2) * erf(x) , 7 , 0 , [-3.90625e-3;7.8125e-3] , relative : OK
+Testing taylorform( sin(exp(x)) + 2 - x , 7 , 0 , [-3.90625e-3;7.8125e-3] , relative : OK
+Testing taylorform( sin(exp(x)) + 2 - x , 7 , 0 , [-3.90625e-3;7.8125e-3] , absolute : OK
+Testing taylorform( sin(x)^4 + x^5 * exp(17 * x) , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , relative : OK
+Testing taylorform( 2^x , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , relative : OK
+Testing taylorform( x^17 , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , relative : OK
+Testing taylorform( x^5 , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , relative : OK
+Testing taylorform( 2^x , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , absolute : OK
+Testing taylorform( 2^x , 7 , 0 , [-3.90625e-3;7.8125e-3] , relative : OK
+Testing taylorform( 2^x , 7 , 0 , [-3.90625e-3;7.8125e-3] , absolute : OK
+Testing taylorform( x^17 , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , absolute : OK
+Testing taylorform( x^5 , 7 , 0 , [-3.90625e-3;7.8125e-3] , absolute : OK
+Testing taylorform( 1 + 2 * x + 3 * x^2 + 4 * x^3 , 7 , 0 , [-3.90625e-3;7.8125e-3] , relative : OK
+Testing taylorform( 2 * x + 3 * x^2 + 4 * x^3 , 7 , 0 , [-3.90625e-3;7.8125e-3] , relative : OK
+Testing taylorform( exp(sin(x))^log2(1 + sin(x)^2) * erf(x) , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , relative : OK
+Testing taylorform( exp(sin(x))^log2(1 + sin(x)^2) * erf(x) , 7 , 2.4585723876953125e-3 , [-3.90625e-3;7.8125e-3] , absolute : OK
+Testing taylorform( exp(sin(x))^log2(1 + sin(x)^2) * erf(x) , 7 , 0 , [-3.90625e-3;7.8125e-3] , absolute : OK
+Testing taylorform( exp(sin(x))^log2(1 + sin(x)^2) * erf(x) , 7 , 0 , [-3.90625e-3;7.8125e-3] , relative : OK
 The tool has been restarted.
 =============== Test number 242 ================
 true
