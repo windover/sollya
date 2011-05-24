@@ -23,9 +23,9 @@ Minor new functionnalities:
       4 - the tool has been quit on an incomplete input
   * Added a fitfth optional argument to guessdegree that is used as a
     maximal allowed degree.
-  * Changed behavior of doubleextended (resp. DE) with respect to 
+  * Changed behavior of doubleextended (resp. DE) with respect to
     subnormal rounding. Now, doubleextended correctly performs
-    subnormal rounding for an exponent width of 15 bits. 
+    subnormal rounding for an exponent width of 15 bits.
     (see documentation on doubleextended for details).
 
 Improvements in internal handling:
@@ -35,8 +35,8 @@ Improvements in internal handling:
 Others:
   * Sollya was not compatible with FPLLL 3.0 or later. This is now
     fixed.
-  * Important bug fix in taylorform. Results obtained with an older
-    version of taylorform might be incorrect.
+  * Two important bugs fixed in taylorform. Results obtained with an older
+    version of taylorform often were incorrect.
 
 And some bugs fixed.
 
