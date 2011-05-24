@@ -61,7 +61,7 @@ It is written by <a href="http://www.christoph-lauter.org/">Christoph Lauter</a>
 
 <h2>Download Sollya:</h2>
 <ul>
-  <li> <strong><a href="https://gforge.inria.fr/frs/?group_id=1015&release_id=5855">Sollya 2.9</a></strong> has been released and can be downloaded <a href="https://gforge.inria.fr/frs/download.php/28248/sollya-2.9.tar.gz">here</a>.
+  <li> <strong><a href="https://gforge.inria.fr/frs/?group_id=1015&release_id=6035">Sollya 3.0</a></strong> has been released and can be downloaded <a href="https://gforge.inria.fr/frs/download.php/28571/sollya-3.0.tar.gz">here</a>.
   <li> <?php echo "A weekly build (last compiled on $compile_time) of the SVN sources is available as a <a href=\"$targz_name\">tar.gz</a>, as a <a href=\"$tarbz2_name\">tar.bz2</a> and as a <a href=\"$zip_name\">zip</a> file." ?>
   <li> The latest development version is available through anonymous SVN 
     checkout as indicated <a href="http://gforge.inria.fr/scm/?group_id=1015">here</a>. </li>
@@ -72,7 +72,7 @@ It is written by <a href="http://www.christoph-lauter.org/">Christoph Lauter</a>
 <h2>Documentation:</h2>
 <ul>
   <li> Sollya comes with an integrated help environment. Just type <code>help;</code> on the Sollya prompt. </li>
-  <li> A <a href="https://gforge.inria.fr/frs/download.php/28251/sollya.pdf">complete documentation</a> in one document is available for download <a href="https://gforge.inria.fr/frs/download.php/28251/sollya.pdf">here</a>. </li>
+  <li> A <a href="https://gforge.inria.fr/frs/download.php/28573/sollya.pdf">complete documentation</a> in one document is available for download <a href="https://gforge.inria.fr/frs/download.php/28573/sollya.pdf">here</a>. </li>
    <li> An online documentation is available:
      <ul><li>A complete introduction to the basic ideas of Sollya, together with a small tutorial is available <a href="sollya.php">here</a>.</li>
          <li>The documentation of all commands available within Sollya can be found <a href="help.php">here as a single page</a> or <a href="help.php?name=listOfCommands">here with each command on a different page</a> (faster to load).</li>
@@ -88,7 +88,7 @@ It is written by <a href="http://www.christoph-lauter.org/">Christoph Lauter</a>
   <li> <a href="http://gmplib.org/">the GNU MP Bignum Library</a>, </li>
   <li> <a href="http://www.mpfr.org/">the MPFR library</a> version 2.2.0 or later, </li>
   <li> <a href="http://gforge.inria.fr/projects/mpfi/">the MPFI library</a>, </li>
-  <li> <a href="http://perso.ens-lyon.fr/damien.stehle/">the fplll software</a>, </li>
+  <li> <a href="http://perso.ens-lyon.fr/xavier.pujol/fplll/">the fplll software</a>, </li>
   <li> <a href="http://xmlsoft.org/">the XML C parser and toolkit of Gnome (libxml2)</a>, </li>  
   <li> <a href="http://www.gnu.org/software/bison/">the Bison GNU parser generator</a> version 2.3 or later, </li>  
   <li> <a href="http://www.gnu.org/software/flex/">Flex </a> version 2.5.33 or later, </li>  
