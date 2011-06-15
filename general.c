@@ -837,6 +837,7 @@ void signalHandler(int i) {
 
 void recoverFromError(void) {
   displayColor = -1; normalMode();
+  fflush(NULL);
   if (exitInsteadOfRecover) {
     sollyaFprintf(stderr,"Error: the recover environment has not been initialized. Exiting.\n");
     exit(1);

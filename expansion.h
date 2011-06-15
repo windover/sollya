@@ -28,6 +28,7 @@
 #define EXPANSION_H
 
 #include <mpfr.h>
+#include <inttypes.h>
 
 void mpfr_to_double(double *dh, mpfr_t op);
 void mpfr_to_doubledouble(double *dh, double *dm, mpfr_t op);
@@ -51,7 +52,10 @@ void p(double *p_resh, double *p_resm, double *p_resl, double xh, double xm);
 void p(double *p_resh, double *p_resm, double *p_resl, double xh, double xm, double xl);
 #endif
 
-
+typedef union {
+  int64_t l; 
+  double d;
+} db_number;
 
 #define Add12(s, r, a, b)          \
         {double _z, _a=a, _b=b;    \

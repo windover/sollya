@@ -2165,7 +2165,9 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   gmp_randclear(random_state);
 
   if (mpfr_cmp(computedQuality, quality)>0) {
+    changeToWarningMode();
     sollyaFprintf(stderr, "Error in Remez: the algorithm does not converge.\n");
+    restoreMode();
     mpfr_clear(computedQuality);
     mpfr_clear(infinityNorm);
     recoverFromError();
