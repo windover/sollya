@@ -1,6 +1,6 @@
 /*
 
-Copyright 2006-20011 by
+Copyright 2006-2011 by
 
 Laboratoire de l'Informatique du Parallelisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
@@ -59,6 +59,19 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <sys/time.h>
 #include <time.h>
 
+#if defined(D_TO_D)
+extern void POLYNOMIALNAME(double *, double);
+#elif defined(D_TO_DD)
+extern void POLYNOMIALNAME(double *, double *, double);
+#elif defined(D_TO_TD)
+extern void POLYNOMIALNAME(double *, double *, double *, double);
+#elif defined(DD_TO_DD)
+extern void POLYNOMIALNAME(double *, double *, double, double);
+#elif defined(DD_TO_TD)
+extern void POLYNOMIALNAME(double *, double *, double *, double, double);
+#elif defined (TD_TO_TD)
+extern void POLYNOMIALNAME(double *, double *, double *, double, double, double);
+#endif
 
 void mpfr_to_double(double *dh, mpfr_t op) {
   *dh = mpfr_get_d(op, GMP_RNDN);
