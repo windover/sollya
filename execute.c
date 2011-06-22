@@ -19044,6 +19044,11 @@ node *evaluateThingInner(node *tree) {
             }
             else resC = evaluateThingToRange(c, d, sixthArg);
             if (resC) {
+              if (mpfr_cmp_ui(c, 0) < 0) {
+                printMessage(1, "Warning: the sixth argument of remez must be a non-negative interval. Replaced by [0, +Inf]\n");
+                mpfr_set_ui(c, 0, GMP_RNDN);
+                mpfr_set_inf(d, 1);
+              }
               if (timingString != NULL) pushTimeCounter();
               tempNode = remez(firstArg, fourthArg, tempChain, a, b, tempMpfrPtr, c, d, tools_precision);
               if (timingString != NULL) popTimeCounter(timingString);
