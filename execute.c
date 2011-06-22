@@ -18973,7 +18973,7 @@ node *evaluateThingInner(node *tree) {
     if (resA) {
       printMessage(1,"Warning: a command executed in a timed environment required quitting the tool. This is not possible. The quit command has been discarded.\n");
     }
-    break;  			
+    break;
   case REMEZ:
     copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
     curr = copy->arguments;
@@ -18983,17 +18983,25 @@ node *evaluateThingInner(node *tree) {
     curr = curr->next;
     thirdArg = copyThing((node *) (curr->value));
     curr = curr->next;
+
+    fourthArg = NULL;
     fifthArg = NULL;
+    sixthArg = NULL;
     if (curr != NULL) {
       fourthArg = copyThing((node *) (curr->value));
       curr = curr->next;
       if (curr != NULL) {
 	fifthArg = copyThing((node *) (curr->value));
-      } 
-    } else {
-      fourthArg = makeConstantDouble(1.0);
-    }    
-    if (isPureTree(firstArg) && isRange(thirdArg) && (isPureTree(fourthArg) || isDefault(fourthArg)) && ((fifthArg == NULL) || isPureTree(fifthArg))) {
+        curr = curr->next;
+        if (curr != NULL) {
+          sixthArg = copyThing((node *) (curr->value));
+        }
+      }
+    }
+
+    if (fourthArg == NULL) fourthArg = makeConstantDouble(1.0);
+
+    if (isPureTree(firstArg) && isRange(thirdArg) && (isPureTree(fourthArg) || isDefault(fourthArg)) && ((fifthArg == NULL) || isDefault(fifthArg) || isPureTree(fifthArg)) && ((sixthArg == NULL) || isDefault(sixthArg) || isRange(sixthArg))) {
       if (isPureTree(secondArg) || isPureList(secondArg)) {
 	resB = 0;
 	if (isPureTree(secondArg)) {
@@ -19002,7 +19010,7 @@ node *evaluateThingInner(node *tree) {
 	    tempChain = makeIntPtrChainFromTo(0, resA);
 	  }
 	} else {
-	  if (evaluateThingToIntegerList(&tempChain, NULL, secondArg)) {	  
+	  if (evaluateThingToIntegerList(&tempChain, NULL, secondArg)) {
 	    resB = 1;
 	  }
 	}
@@ -19015,7 +19023,7 @@ node *evaluateThingInner(node *tree) {
 	  mpfr_init2(b,tools_precision);
 	  if (evaluateThingToRange(a,b,thirdArg)) {
 	    tempMpfrPtr = NULL;
-	    if (fifthArg != NULL) {
+	    if ((fifthArg != NULL) && (!isDefault(fifthArg))) {
 	      tempMpfrPtr = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	      mpfr_init2(*tempMpfrPtr,tools_precision);
 	      if (!evaluateThingToConstant(*tempMpfrPtr,fifthArg,NULL,0)) {
@@ -19026,20 +19034,33 @@ node *evaluateThingInner(node *tree) {
 		tempMpfrPtr = NULL;
 	      }
 	    }
-	    if (timingString != NULL) pushTimeCounter(); 
-	    tempNode = remez(firstArg, fourthArg, tempChain, a, b, tempMpfrPtr, tools_precision);
-	    if (timingString != NULL) popTimeCounter(timingString);
-	    freeThing(copy);
-	    copy = tempNode;
-	    if (tempMpfrPtr != NULL) {
-	      mpfr_clear(*tempMpfrPtr);
-	      free(tempMpfrPtr);
-	    }
-	  }
-	  mpfr_clear(a); 
-	  mpfr_clear(b); 
-	  freeChain(tempChain,freeIntPtr);
-	}
+            mpfr_init2(c, tools_precision);
+            mpfr_init2(d, tools_precision);
+            resC = 0;
+            if ((sixthArg==NULL) || isDefault(sixthArg)) {
+              resC = 1;
+              mpfr_set_ui(c, 0, GMP_RNDN);
+              mpfr_set_inf(d, 1);
+            }
+            else resC = evaluateThingToRange(c, d, sixthArg);
+            if (resC) {
+              if (timingString != NULL) pushTimeCounter();
+              tempNode = remez(firstArg, fourthArg, tempChain, a, b, tempMpfrPtr, c, d, tools_precision);
+              if (timingString != NULL) popTimeCounter(timingString);
+              freeThing(copy);
+              copy = tempNode;
+              if (tempMpfrPtr != NULL) {
+                mpfr_clear(*tempMpfrPtr);
+                free(tempMpfrPtr);
+              }
+            }
+            mpfr_clear(c);
+            mpfr_clear(d);
+          }
+          mpfr_clear(a);
+          mpfr_clear(b);
+          freeChain(tempChain,freeIntPtr);
+        }
       }
     }
     freeThing(firstArg);
@@ -19047,7 +19068,8 @@ node *evaluateThingInner(node *tree) {
     freeThing(thirdArg);
     freeThing(fourthArg);
     if (fifthArg != NULL) freeThing(fifthArg);
-    break; 
+    if (sixthArg != NULL) freeThing(sixthArg);
+    break;
   case MATCH:
     copy->child1 = evaluateThingInner(tree->child1);
     copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
@@ -19061,9 +19083,9 @@ node *evaluateThingInner(node *tree) {
       }
       if (resA) {
 	resB = lengthChain(copy->arguments);
-	thingArray1 = (node **) safeCalloc(resB, sizeof(node *)); 
-	thingArray2 = (node **) safeCalloc(resB, sizeof(node *)); 
-	thingArray3 = (node **) safeCalloc(resB, sizeof(node *)); 
+	thingArray1 = (node **) safeCalloc(resB, sizeof(node *));
+	thingArray2 = (node **) safeCalloc(resB, sizeof(node *));
+	thingArray3 = (node **) safeCalloc(resB, sizeof(node *));
 	resC = 0;
 	for (curr = copy->arguments; curr != NULL; curr=curr->next) {
 	  thingArray1[resC] = preevaluateMatcher(((node *) (curr->value))->child1);

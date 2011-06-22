@@ -418,6 +418,7 @@ node *FPminimax(node *f,
   chain *correctedFormats, *newFormats;
   chain *curr;
   int test, count;
+  mpfr_t zero, infinity;
 
   if (absrel== ABSOLUTESYM) {
     tempTree = makeSub(copyTree(f),copyTree(consPart));
@@ -436,11 +437,13 @@ node *FPminimax(node *f,
     free_memory(tempTree);
   }
 
+  mpfr_init2(zero, 53); mpfr_set_ui(zero, 0, GMP_RNDN);
+  mpfr_init2(infinity, 53); mpfr_set_inf(infinity, 1);
   pstar = NULL;
   if( (fp==FLOATING) || (points==NULL) ) {
     if (minimax == NULL) {
       pushTimeCounter();
-      pstar = remez(g,w, monomials, a, b, NULL, tools_precision);
+      pstar = remez(g,w, monomials, a, b, NULL, zero, infinity, tools_precision);
       popTimeCounter((char *)"FPminimax: computing minimax approximation");
     }
     else pstar = copyTree(minimax);
@@ -461,29 +464,29 @@ node *FPminimax(node *f,
     if(lengthChain(pointslist)<lengthChain(monomials)) {
       printMessage(2, "Information: FPminimax: the minimax does not provide enough points.\n");
       printMessage(2, "Switching to Chebyshev points.\n");
-      
+
       freeChain(pointslist, freeMpfrPtr);
       pointslist = ChebychevPoints(a,b,lengthChain(monomials));
       free_memory(g);
       free_memory(w);
-      
+
       if (absrel== ABSOLUTESYM) {
 	g = copyTree(pstar);
 	w = makeConstantDouble(1);
       }
       else {
 	tempTree = makeSub(makeConstantDouble(1),
-			   makeDiv(copyTree(consPart), 
+			   makeDiv(copyTree(consPart),
 				   makeAdd(copyTree(pstar),copyTree(consPart))
 				   )
 			   );
-	g = simplifyTreeErrorfree(tempTree); 
+	g = simplifyTreeErrorfree(tempTree);
 	free_memory(tempTree);
-	
+
 	tempTree = makeDiv(makeConstantDouble(1),
 			   makeAdd(copyTree(pstar),copyTree(consPart))
 			   );
-	w = simplifyTreeErrorfree(tempTree); 
+	w = simplifyTreeErrorfree(tempTree);
 	free_memory(tempTree);
       }
     }
@@ -553,7 +556,7 @@ node *FPminimax(node *f,
     if (res!=NULL) freeChain(newFormats, freeIntPtr);
   }
 
-    
+
   free_memory(g);
   free_memory(w);
   if(pstar!=NULL) free_memory(pstar);
@@ -565,7 +568,9 @@ node *FPminimax(node *f,
     res = simplifyTreeErrorfree(tempTree);
     free_memory(tempTree);
   }
-  
+
+  mpfr_clear(zero);
+  mpfr_clear(infinity);
   return res;
 }
 
@@ -580,7 +585,7 @@ node *FPminimaxMain(node *f,
   int nbpoints = lengthChain(points);
   node *res;
   mpfr_t zero_mpfr, var1, var2, var3, max;
-  node * temp_tree, *temp_tree2, *temp_tree3; 
+  node * temp_tree, *temp_tree2, *temp_tree3;
   mpfr_t *ptr;
   mpfr_t *M;
   chain *curr;
