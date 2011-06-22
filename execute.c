@@ -7374,7 +7374,7 @@ int executeCommandInner(node *tree) {
     curr = tree->arguments;
     if (curr->next == NULL) {
       tempNode = evaluateThing((node *) (curr->value));
-      if ((!isUnit(tempNode)) || (verbosity >= 2)) {
+      if ((!isUnit(tempNode)) || ((verbosity >= 2) && oldVoidPrint)) {
 	if (!isExternalProcedureUsage(tempNode)) {
 	  outputMode();
 	  autoprint(tempNode,0); 

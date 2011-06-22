@@ -87,6 +87,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 /* STATE OF THE TOOL */
 
 int oldAutoPrint = 0;
+int oldVoidPrint = 0;
 int printMode = PRINT_MODE_LEGACY;
 FILE *warnFile = NULL;
 char *variablename = NULL;

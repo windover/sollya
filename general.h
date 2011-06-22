@@ -89,6 +89,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #define PRINT_MODE_WARNING_TO_FILE   2
 
 extern int oldAutoPrint;
+extern int oldVoidPrint;
 extern int printMode;
 extern FILE *warnFile;
 extern char *variablename;
