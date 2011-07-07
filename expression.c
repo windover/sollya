@@ -9995,7 +9995,7 @@ void computePowerOfPolynomialCoefficients(int *degreeRes, node ***coeffRes,
   }
 
   if (k == 1) {
-    for (i=1;i<=*degreeRes;i++) {
+    for (i=0;i<=*degreeRes;i++) {
       if (coeffs[i] != NULL) {
         (*coeffRes)[i] = copyTree(coeffs[i]);
       } else {
