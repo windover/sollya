@@ -3508,6 +3508,49 @@ void evaluateConstantExpressionToInterval(sollya_mpfi_t y, node *func) {
   sollya_mpfi_clear(x);
 }
 
+void evaluateConstantExpressionToSharpInterval(sollya_mpfi_t y, node *func) {
+  sollya_mpfi_t x, myY, myY2;
+  mpfr_t X, Y, Y2;
+  mp_prec_t prec;
+
+  if (!isConstant(func)) {
+    printMessage(1,"Warning: the given expression is not constant. Evaluating it at 1.\n");
+  }
+
+  sollya_mpfi_init2(x,12);
+  sollya_mpfi_set_si(x,1);
+  mpfr_init2(X, 12);
+  mpfr_set_si(X, 1,GMP_RNDN);
+
+  prec = sollya_mpfi_get_prec(y);
+  mpfr_init2(Y, prec + 5);
+
+  if (evaluateFaithful(Y, func, X, prec + 10)) {
+    mpfr_init2(Y2, prec + 5);
+    sollya_mpfi_init2(myY, prec + 1);
+    sollya_mpfi_init2(myY2, prec + 1);
+    mpfr_set(Y2, Y, GMP_RNDN); /* exact */
+    mpfr_nextabove(Y);
+    mpfr_nextbelow(Y2);
+    sollya_mpfi_interv_fr(myY, Y2, Y);
+    evaluateInterval(myY2, func, NULL, x);
+    sollya_mpfi_intersect(myY, myY, myY2);
+    sollya_mpfi_set(y,myY);
+    sollya_mpfi_clear(myY);
+    sollya_mpfi_clear(myY2);
+    mpfr_clear(Y2);
+  } else {
+    sollya_mpfi_init2(myY, prec * 256);
+    evaluateInterval(myY, func, NULL, x);
+    sollya_mpfi_set(y,myY);
+    sollya_mpfi_clear(myY);
+  }
+
+  sollya_mpfi_clear(x);
+  mpfr_clear(X);
+  mpfr_clear(Y);
+}
+
 void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_prec_t prec) {
   node *deriv, *temp, *temp2, *numerator, *denominator, *f;
   rangetype myrange;

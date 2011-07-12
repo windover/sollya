@@ -980,6 +980,10 @@ node *copyThing(node *tree) {
   case SUBSTITUTE:
     copy->child1 = copyThing(tree->child1);
     copy->child2 = copyThing(tree->child2);
+    break;	
+  case COMPOSEPOLYNOMIALS:
+    copy->child1 = copyThing(tree->child1);
+    copy->child2 = copyThing(tree->child2);
     break;			
   case COEFF:
     copy->child1 = copyThing(tree->child1);
@@ -1817,6 +1821,9 @@ char *getTimingStringForThing(node *tree) {
     break; 			
   case SUBSTITUTE:
     constString = "substituting";
+    break;			
+  case COMPOSEPOLYNOMIALS:
+    constString = "composing two polynomials";
     break;			
   case COEFF:
     constString = "getting a coefficient";
@@ -4895,6 +4902,13 @@ char *sRawPrintThing(node *tree) {
     break; 			
   case SUBSTITUTE:
     res = newString("substitute(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
+    break;			
+  case COMPOSEPOLYNOMIALS:
+    res = newString("composepolynomials(");
     res = concatAndFree(res, sRawPrintThing(tree->child1));
     res = concatAndFree(res, newString(", "));
     res = concatAndFree(res, sRawPrintThing(tree->child2));
@@ -10320,6 +10334,18 @@ node *makeSubstitute(node *thing1, node *thing2) {
 
 }
 
+node *makeComposePolynomials(node *thing1, node *thing2) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = COMPOSEPOLYNOMIALS;
+  res->child1 = thing1;
+  res->child2 = thing2;
+
+  return res;
+
+}
+
 node *makeCoeff(node *thing1, node *thing2) {
   node *res;
 
@@ -11838,6 +11864,11 @@ void freeThing(node *tree) {
     freeThing(tree->child2);
     free(tree);
     break;			
+  case COMPOSEPOLYNOMIALS:
+    freeThing(tree->child1);
+    freeThing(tree->child2);
+    free(tree);
+    break;			
   case COEFF:
     freeThing(tree->child1);
     freeThing(tree->child2);
@@ -12730,6 +12761,10 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break; 			
   case SUBSTITUTE:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualThing(tree->child2,tree2->child2)) return 0;
+    break;			
+  case COMPOSEPOLYNOMIALS:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     break;			
@@ -14288,6 +14323,7 @@ int variableUsePreventsPreevaluation(node *tree) {
   case APPEND:
   case RANGE:
   case SUBSTITUTE:
+  case COMPOSEPOLYNOMIALS:
   case COEFF:
   case SUBPOLY:
   case ROUNDCOEFFICIENTS:
@@ -15244,6 +15280,10 @@ node *preevaluateMatcher(node *tree) {
     copy->child1 = preevaluateMatcher(tree->child1);
     copy->child2 = preevaluateMatcher(tree->child2);
     break;			
+  case COMPOSEPOLYNOMIALS:
+    copy->child1 = preevaluateMatcher(tree->child1);
+    copy->child2 = preevaluateMatcher(tree->child2);
+    break;			
   case COEFF:
     copy->child1 = preevaluateMatcher(tree->child1);
     copy->child2 = preevaluateMatcher(tree->child2);
@@ -15471,6 +15511,9 @@ node *evaluateThingInner(node *tree) {
   sollya_mpfi_t tempIA2;
   unsigned int tempUI;
   node **thingArray1, **thingArray2, **thingArray3;
+  entry *structEntry; 
+  chain *assoclist;
+
 
   /* Make compiler happy: */
   pTemp = 12;
@@ -19632,6 +19675,50 @@ node *evaluateThingInner(node *tree) {
       freeThing(copy);
       copy = tempNode;
       if (timingString != NULL) popTimeCounter(timingString);
+    }
+    break;			
+  case COMPOSEPOLYNOMIALS: // TODO
+    copy->child1 = evaluateThingInner(tree->child1);
+    copy->child2 = evaluateThingInner(tree->child2);
+    if (isPureTree(copy->child1) && isPureTree(copy->child2)) {
+      if (timingString != NULL) pushTimeCounter();      
+      tempChain = NULL;
+      tempNode2 = NULL;
+      composePolynomials(&tempNode2,&tempChain,copy->child1,copy->child2,tools_precision);
+      if (timingString != NULL) popTimeCounter(timingString);
+      if (tempNode2 != NULL) {
+	if (tempChain == NULL) {
+	  tempNode3 = makeEmptyList();
+	} else {
+	  tempChain2 = NULL;
+	  for (curr=tempChain;curr!=NULL;curr=curr->next) {
+	    mpfr_init2(a,sollya_mpfi_get_prec(*((sollya_mpfi_t *) (curr->value))));
+	    mpfr_init2(b,sollya_mpfi_get_prec(*((sollya_mpfi_t *) (curr->value))));
+	    sollya_mpfi_get_left(a,*((sollya_mpfi_t *) (curr->value)));
+	    sollya_mpfi_get_right(b,*((sollya_mpfi_t *) (curr->value)));
+	    tempChain2 = addElement(tempChain2,makeRange(makeConstant(a),makeConstant(b)));
+	    mpfr_clear(a);
+	    mpfr_clear(b);
+	  }
+	  tempNode3 = makeList(tempChain2);
+	}
+	structEntry = (entry *) safeMalloc(sizeof(entry));
+	tempString = "poly";
+	structEntry->name = (char *) safeCalloc(strlen(tempString)+1,sizeof(char));
+	strcpy(structEntry->name,tempString);
+	structEntry->value = tempNode2;
+	assoclist = addElement(NULL,(void *) structEntry);
+	structEntry = (entry *) safeMalloc(sizeof(entry));
+	tempString = "radii";
+	structEntry->name = (char *) safeCalloc(strlen(tempString)+1,sizeof(char));
+	strcpy(structEntry->name,tempString);
+	structEntry->value = tempNode3;
+	assoclist = addElement(assoclist,(void *) structEntry);
+	tempNode = makeStructure(assoclist);
+	freeThing(copy);
+	copy = tempNode;
+      } 
+      if (tempChain != NULL) freeChain(tempChain,freeMpfiPtr);
     }
     break;			
   case COEFF:

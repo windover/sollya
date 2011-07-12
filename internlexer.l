@@ -247,6 +247,7 @@ AND             "&&"
 OR              "||"
 
 SUBSTITUTE      "substitute"
+COMPOSEPOLYNOMIALS "composepolynomials"
 
 DOTS            "..."
 
@@ -656,6 +657,7 @@ NOP             "nop"
 {NUMERATOR}       			    {  return NUMERATORTOKEN; }
 {DENOMINATOR}     			    {  return DENOMINATORTOKEN; }
 {SUBSTITUTE}      			    {  return SUBSTITUTETOKEN; }
+{COMPOSEPOLYNOMIALS}      		    {  return COMPOSEPOLYNOMIALSTOKEN; }
 {COEFF}           			    {  return COEFFTOKEN; }
 {SUBPOLY}         			    {  return SUBPOLYTOKEN; }
 {ROUNDCOEFFICIENTS} 			    {  return ROUNDCOEFFICIENTSTOKEN; }

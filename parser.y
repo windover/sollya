@@ -282,6 +282,7 @@ int parserCheckEof() {
 %token  NUMERATORTOKEN;
 %token  DENOMINATORTOKEN;
 %token  SUBSTITUTETOKEN;
+%token  COMPOSEPOLYNOMIALSTOKEN;
 %token  COEFFTOKEN;
 %token  SUBPOLYTOKEN;
 %token  ROUNDCOEFFICIENTSTOKEN;
@@ -1699,6 +1700,10 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                       | SUBSTITUTETOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeSubstitute($3, $5);
+			  }
+                      | COMPOSEPOLYNOMIALSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeComposePolynomials($3, $5);
 			  }
                       | COEFFTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
@@ -3604,6 +3609,17 @@ help:                   CONSTANTTOKEN
 			    outputMode(); sollyaPrintf("Substitute func2 for free variable in func: substitute(func,func2).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for SUBSTITUTE"
+#endif
+#endif
+                          }
+                      | COMPOSEPOLYNOMIALSTOKEN
+                          {
+#ifdef HELP_COMPOSEPOLYNOMIALS_TEXT
+			    outputMode(); sollyaPrintf(HELP_COMPOSEPOLYNOMIALS_TEXT);
+#else
+			    outputMode(); sollyaPrintf("Compose two polynomials p and q and round coefficients of p(q).\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for COMPOSEPOLYNOMIALS"
 #endif
 #endif
                           }

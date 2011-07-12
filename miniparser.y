@@ -249,6 +249,7 @@ void miniyyerror(void *myScanner, char *message) {
 %token  NUMERATORTOKEN;
 %token  DENOMINATORTOKEN;
 %token  SUBSTITUTETOKEN;
+%token  COMPOSEPOLYNOMIALSTOKEN;
 %token  COEFFTOKEN;
 %token  SUBPOLYTOKEN;
 %token  ROUNDCOEFFICIENTSTOKEN;
@@ -1614,6 +1615,10 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                       | SUBSTITUTETOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeSubstitute($3, $5);
+			  }
+                      | COMPOSEPOLYNOMIALSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeComposePolynomials($3, $5);
 			  }
                       | COEFFTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {

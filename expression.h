@@ -161,6 +161,7 @@ node* expand(node *tree);
 node* simplifyTreeErrorfree(node *tree);
 int getNumeratorDenominator(node **numerator, node **denominator, node *tree);
 node *substitute(node* tree, node *t);
+void composePolynomials(node **, chain **, node *, node *, mp_prec_t);
 int readDyadic(mpfr_t res, char *c);
 int readHexadecimal(mpfr_t res, char *c);
 int isPolynomial(node *tree);

@@ -261,6 +261,7 @@ extern FILE *internyyget_in(void *scanner);
 %token  NUMERATORTOKEN;
 %token  DENOMINATORTOKEN;
 %token  SUBSTITUTETOKEN;
+%token  COMPOSEPOLYNOMIALSTOKEN;
 %token  COEFFTOKEN;
 %token  SUBPOLYTOKEN;
 %token  ROUNDCOEFFICIENTSTOKEN;
@@ -1628,6 +1629,10 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
 			    $$ = makeDenominator($3);
 			  }
                       | SUBSTITUTETOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeSubstitute($3, $5);
+			  }
+                      | COMPOSEPOLYNOMIALSTOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeSubstitute($3, $5);
 			  }

@@ -11550,6 +11550,209 @@ node *substitute(node* tree, node *t) {
   return copy;
 }
 
+void composePolynomialsInner(sollya_mpfi_t *res, int degR, sollya_mpfi_t *p, int degP, sollya_mpfi_t *q, int degQ, mp_prec_t prec) {
+  sollya_mpfi_t *r, *s, *t;
+  int i, j, k, l;
+  sollya_mpfi_t temp;
+
+  // Initialize a temporary
+  //
+  sollya_mpfi_init2(temp, prec);
+
+  // Allocate two scratch arrays of the length of 
+  // the result polynomial.
+  //
+  r = safeCalloc(degR+1,sizeof(sollya_mpfi_t));
+  s = safeCalloc(degR+1,sizeof(sollya_mpfi_t));
+  for (i=0;i<=degR;i++) {
+    sollya_mpfi_init2(r[i],prec);
+    sollya_mpfi_init2(s[i],prec);
+    sollya_mpfi_set_si(r[i],0);
+    sollya_mpfi_set_si(s[i],0);
+  }
+
+  // Perform a stupid Horner:
+  //
+  // p(q(x)) = a_0 + q(x) * (.... a_i * q(x) * pTilde(q(x)) ...)
+  //
+  sollya_mpfi_set(r[0],p[degP]);
+  for (i=degP-1;i>=0;i--) {
+    // Multiply pTilde(q) with q, result in s
+    // while clearing up r
+    for (j=0;j<=degQ*(degP-1-i);j++) {
+      for (k=0;k<=degQ;k++) {
+	l = j + k;
+	sollya_mpfi_mul(temp,r[j],q[k]);
+	sollya_mpfi_add(s[l],s[l],temp);
+      }
+      sollya_mpfi_set_si(r[j],0);
+    }
+    // Add in a_i
+    sollya_mpfi_add(s[0],s[0],p[i]);
+    
+    // Swap r and s for next step
+    t = s;
+    s = r;
+    r = t;
+  }
+
+  // Here, the result is in r
+  //
+  // Copy it into the result array res
+  //
+  for (i=0;i<=degR;i++) {
+    sollya_mpfi_set(res[i],r[i]);
+  }
+
+  // Clear and free the scratch arrays
+  //
+  for (i=0;i<=degR;i++) {
+    sollya_mpfi_init2(r[i],prec);
+    sollya_mpfi_init2(s[i],prec);
+  }
+  free(r);
+  free(s);
+
+  // Clear the temporary
+  //
+  sollya_mpfi_clear(temp);
+
+}
+
+void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t prec) {
+  int degP, degQ, i, degR;
+  node **coeffsP, **coeffsQ;
+  sollya_mpfi_t *polyP, *polyQ, *polyR;
+  mpfr_t *coeffsR;
+  sollya_mpfi_t **radiiArray;
+  node *tempPoly, *tempPoly2;
+
+  // Check if both p and q are polynomials 
+  // and implement a fallback solution
+  // for when this is not the case
+  //
+  if ((!isPolynomial(p)) || (!isPolynomial(q))) {
+    *radii = NULL;
+    *poly = substitute(p,q);
+    return;
+  }
+
+  // Here, we know that p and q are polynomials
+  //
+  // Continue by getting all coefficients of p and q
+  //
+  getCoefficients(&degP, &coeffsP, p);
+  getCoefficients(&degQ, &coeffsQ, q);
+
+  // Evaluate all coefficients of p and q to 
+  // small intervals in two arrays polyP and polyQ.
+  //
+  polyP = (sollya_mpfi_t *) safeCalloc(degP+1,sizeof(sollya_mpfi_t));
+  for (i=0;i<=degP;i++) {
+    sollya_mpfi_init2(polyP[i],prec);
+    if (coeffsP[i] != NULL) {
+      evaluateConstantExpressionToSharpInterval(polyP[i], coeffsP[i]);
+    } else {
+      sollya_mpfi_set_si(polyP[i],0);
+    }
+  }
+  polyQ = (sollya_mpfi_t *) safeCalloc(degQ+1,sizeof(sollya_mpfi_t));
+  for (i=0;i<=degQ;i++) {
+    sollya_mpfi_init2(polyQ[i],prec);
+    if (coeffsQ[i] != NULL) {
+      evaluateConstantExpressionToSharpInterval(polyQ[i], coeffsQ[i]);
+    } else {
+      sollya_mpfi_set_si(polyQ[i],0);
+    }
+  }
+
+  // Free the arrays with the unevaluated coefficients
+  //
+  for (i=0;i<=degP;i++) {
+    if (coeffsP[i] != NULL) {
+      free_memory(coeffsP[i]);
+    }
+  }
+  free(coeffsP);
+  for (i=0;i<=degQ;i++) {
+    if (coeffsQ[i] != NULL) {
+      free_memory(coeffsQ[i]);
+    }
+  }
+  free(coeffsQ);
+  
+  // Allocate and initialize an array of interval coefficients for the result 
+  // polynomial
+  //
+  degR = degP * degQ;
+  polyR = (sollya_mpfi_t *) safeCalloc(degR+1,sizeof(sollya_mpfi_t));
+  for (i=0;i<=degR;i++) {
+    sollya_mpfi_init2(polyR[i],prec);
+  }  
+
+  // Have an auxiliary function do the real work of composing p and q
+  //
+  composePolynomialsInner(polyR,degR,polyP,degP,polyQ,degQ,prec);
+
+  // Free the arrays with the evaluated coefficients
+  //
+  for (i=0;i<=degP;i++) {
+    sollya_mpfi_clear(polyP[i]);
+  }
+  free(polyP);
+  for (i=0;i<=degQ;i++) {
+    sollya_mpfi_clear(polyQ[i]);
+  }
+  free(polyQ);
+
+  // Allocate and compute an array of centerpoints
+  // 
+  // Allocate also pointers to intervals and 
+  // initialize intervals that will hold the radii.
+  //
+  // Clear the intervals for the output coefficients
+  // as well.
+  //
+  coeffsR = (mpfr_t *) safeCalloc(degR+1,sizeof(mpfr_t));
+  radiiArray = (sollya_mpfi_t **) safeCalloc(degR+1,sizeof(sollya_mpfi_t *));
+  for (i=0;i<=degR;i++) {
+    mpfr_init2(coeffsR[i],prec+1);
+    sollya_mpfi_mid(coeffsR[i],polyR[i]);
+    radiiArray[i] = (sollya_mpfi_t *) safeMalloc(sizeof(sollya_mpfi_t));
+    sollya_mpfi_init2(*(radiiArray[i]),prec);
+    sollya_mpfi_sub_fr(*(radiiArray[i]),polyR[i],coeffsR[i]);
+    sollya_mpfi_clear(polyR[i]);
+  }
+
+  // Free the array of intervals for the output coefficients
+  //
+  free(polyR);
+
+  // Convert the array of centerpoints to a tree.
+  //
+  *poly = makePolynomial(coeffsR, degR);
+
+  // Free the arrays with the centerpoints
+  //
+  for (i=0;i<=degR;i++) {
+    mpfr_clear(coeffsR[i]);
+  }
+  free(coeffsR);
+  
+  // Convert the array of radii to a list of radii
+  //
+  *radii = NULL;
+  for (i=0;i<=degR;i++) {
+    *radii = addElement(*radii,(void *) (radiiArray[i]));
+  }
+
+  // Free the array holding the pointers to the 
+  // intervals of radii.
+  //
+  free(radiiArray);
+  
+}
+
 int readHexadecimal(mpfr_t rop, char *c) {
   mpfr_t vrd, vru;
   mp_prec_t p;

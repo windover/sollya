@@ -286,6 +286,7 @@ extern void endBuffer(void);
 #define BASHEVALUATE 266
 #define HALFPRECISIONSYMBOL 267
 #define QUADSYMBOL 268
+#define COMPOSEPOLYNOMIALS 269
 
 int executeCommand(node *);
 
@@ -448,6 +449,7 @@ node *makeDegree(node *thing);
 node *makeNumerator(node *thing);
 node *makeDenominator(node *thing);
 node *makeSubstitute(node *thing1, node *thing2);
+node *makeComposePolynomials(node *thing1, node *thing2);
 node *makeCoeff(node *thing1, node *thing2);
 node *makeSubpoly(node *thing1, node *thing2);
 node *makeRoundcoefficients(node *thing1, node *thing2);
