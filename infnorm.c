@@ -3526,7 +3526,7 @@ void evaluateConstantExpressionToSharpInterval(sollya_mpfi_t y, node *func) {
   mpfr_init2(Y, prec + 5);
 
   if (evaluateFaithful(Y, func, X, prec + 10)) {
-    mpfr_init2(Y2, prec + 5);
+    mpfr_init2(Y2, mpfr_get_prec(Y));
     sollya_mpfi_init2(myY, prec + 1);
     sollya_mpfi_init2(myY2, prec + 1);
     mpfr_set(Y2, Y, GMP_RNDN); /* exact */
