@@ -11959,6 +11959,9 @@ node *makePolynomialConstantExpressions(node **coeffs, int deg) {
   return copy;
 }
 
+/* This is the old version that does not account 
+   for sparse polynomials
+
 node *makePolynomial(mpfr_t *coefficients, int degree) {
   node *tempTree, *tempTree2, *tempTree3;
   int i;
@@ -11988,6 +11991,41 @@ node *makePolynomial(mpfr_t *coefficients, int degree) {
   tempTree2 = horner(tempTree);
   free_memory(tempTree);
   return tempTree2;
+}
+*/
+
+node *makePolynomial(mpfr_t *coefficients, int degree) {
+  node **coeffs;
+  int i;
+  node *poly;
+  
+  /* Allocate and build an array of constant expressions
+     representing the coefficients. 
+     Do not represent zeros.
+  */
+  coeffs = (node **) safeCalloc(degree+1,sizeof(node *));
+  for (i=0;i<=degree;i++) {
+    if (!mpfr_zero_p(coefficients[i])) {
+      coeffs[i] = makeConstant(coefficients[i]);
+    } else {
+      /* The coefficient is zero. Do not represent it. */
+      coeffs[i] = NULL;
+    }
+  }
+
+  /* Build the polynomial */
+  poly = makePolynomialConstantExpressions(coeffs, degree);
+
+  /* Free the array of constant expressions representing the
+     coefficients
+  */
+  for (i=0;i<=degree;i++) {
+    if (coeffs[i] != NULL) free_memory(coeffs[i]);
+  }
+  free(coeffs);
+
+  /* Return the polynomial */
+  return poly;
 }
 
 
