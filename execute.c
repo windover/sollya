@@ -3537,7 +3537,19 @@ void printThingWithFullStrings(node *thing) {
 	  }
 	  sollyaPrintf("...|]");
 	} else {
-	  rawPrintThing(thing);
+	  if (isStructure(thing)) {
+	    sollyaPrintf("{ ");
+	    curr = thing->arguments;
+	    while (curr != NULL) {
+	      sollyaPrintf(".%s = ", ((entry *) (curr->value))->name);
+	      printThingWithFullStrings((node *) (((entry *) (curr->value))->value));
+	      if (curr->next != NULL) sollyaPrintf(", ");
+	      curr = curr->next;
+	    }
+	    sollyaPrintf(" }");
+	  } else {
+	    rawPrintThing(thing);
+	  }
 	}
       }
     }  
@@ -3596,7 +3608,19 @@ void printThing(node *thing) {
 	  if (isString(thing)) {
 	    sollyaPrintf("%s",thing->string);
 	  } else {
-	    rawPrintThing(thing);
+	    if (isStructure(thing)) {
+	      sollyaPrintf("{ ");
+	      curr = thing->arguments;
+	      while (curr != NULL) {
+		sollyaPrintf(".%s = ", ((entry *) (curr->value))->name);
+		printThingWithFullStrings((node *) (((entry *) (curr->value))->value));
+		if (curr->next != NULL) sollyaPrintf(", ");
+		curr = curr->next;
+	      }
+	      sollyaPrintf(" }");
+	    } else {
+	      rawPrintThing(thing);
+	    }
 	  }
 	}
       }
@@ -5548,7 +5572,19 @@ void fPrintThingWithFullStrings(FILE *fd, node *thing) {
 	  }
 	  sollyaFprintf(fd,"...|]");
 	} else {
-	  fRawPrintThing(fd,thing);
+	  if (isStructure(thing)) {
+	    sollyaFprintf(fd,"{ ");
+	    curr = thing->arguments;
+	    while (curr != NULL) {
+	      sollyaFprintf(fd,".%s = ", ((entry *) (curr->value))->name);
+	      fPrintThingWithFullStrings(fd,(node *) (((entry *) (curr->value))->value));
+	      if (curr->next != NULL) sollyaFprintf(fd,", ");
+	      curr = curr->next;
+	    }
+	    sollyaFprintf(fd," }");
+	  } else {
+	    fRawPrintThing(fd,thing);
+	  }
 	}
       }
     }  
@@ -5607,7 +5643,19 @@ void fPrintThing(FILE *fd, node *thing) {
 	  if (isString(thing)) {
 	    sollyaFprintf(fd,"%s",thing->string);
 	  } else {
-	    fRawPrintThing(fd,thing);
+	    if (isStructure(thing)) {
+	      sollyaFprintf(fd,"{ ");
+	      curr = thing->arguments;
+	      while (curr != NULL) {
+		sollyaFprintf(fd,".%s = ", ((entry *) (curr->value))->name);
+		fPrintThingWithFullStrings(fd,(node *) (((entry *) (curr->value))->value));
+		if (curr->next != NULL) sollyaFprintf(fd,", ");
+		curr = curr->next;
+	      }
+	      sollyaFprintf(fd," }");
+	    } else {
+	      fRawPrintThing(fd,thing);
+	    }
 	  }
 	}
       }
