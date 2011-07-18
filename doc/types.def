@@ -19,6 +19,7 @@ BOOLEAN_TYPE="boolean"
 FUNCTION_TYPE="function"
 INTEGER_TYPE="integer"
 RANGE_TYPE="range"
+STRUCTURE_TYPE="structure"
 
 ANY_TYPE="any type"
 IDENTIFIER_TYPE="identifier type"

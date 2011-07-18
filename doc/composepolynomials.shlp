@@ -1,0 +1,40 @@
+#NAME $COMPOSEPOLYNOMIALS
+#QUICK_DESCRIPTION computes an approximation to the composition of two polynomials and bounds the error
+
+#CALLING $COMMAND(<p>,<q>)
+#TYPE ($FUNCTION_TYPE, $FUNCTION_TYPE) -> $STRUCTURE_TYPE
+
+#PARAMETERS <p> and <q> are polynomials
+
+#DESCRIPTION 
+Given two polynomials §§p§$p$§§ and §§q§$q$§§, $COMMAND(<p>, <q>) computes an 
+approximation §§r§$r$§§ to the polynomial §§(p o q)§$(p \circ q)$§§ and bounds the
+error polynomial §§r - (p o q)§$r - (p \circ q)$§§ using interval arithmetic.
+
+#DESCRIPTION 
+$COMMAND always returns a structure containing two elements,
+§§poly§\texttt{poly}§§ and §§radii§\texttt{radii}§§.  The element
+§§poly§\texttt{poly}§§ is contains the approximate composed polynomial
+§§r§$r$§§. The element §§radii§\texttt{radii}§§ contains a list of §§n + 1§$n + 1$§§ 
+intervals §§ai§$a_i$§§ bounding the coefficients of the
+error polynomial, which is of the same degree §§n§$n$§§ as is the
+composed polynomial §§(p o q)§$(p \circ q)$§§.  This is, there exist
+§§alphai in ai§$\alpha_i \in a_i$§§ such that 
+§§sum_i alphai * x^i = r(x) - (p o q)(x).§$$\sum\limits_{i=0}^n \alpha_i \, x^i = r(x) - (p \circ q)(x).$$§§
+
+#DESCRIPTION
+In the case when either of §§p§$p$§§ or §§q§$q$§§ is not a polynomial, $COMMAND
+behaves like $SUBSTITUTE used in a literate structure. The list of intervals
+bounding the coefficients of the error polynomial is returned empty.
+
+#EXAMPLE
+composepolynomials(1 + 2 * x + 3 * x^2 + 4 * x^3, 5 + 6 * x + 7 * x^2);
+
+#EXAMPLE
+print(composepolynomials(1/5 * x + exp(17) + log(2) * x^2, x^4 + 1/3 * x^2));
+
+#EXAMPLE
+composepolynomials(sin(x),x + x^2);
+
+#SEEALSO $SUBSTITUTE
+

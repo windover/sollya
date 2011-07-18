@@ -1,0 +1,63 @@
+\subsection{composepolynomials}
+\label{labcomposepolynomials}
+\noindent Name: \textbf{composepolynomials}\\
+computes an approximation to the composition of two polynomials and bounds the error\\
+\noindent Usage: 
+\begin{center}
+\textbf{composepolynomials}(\emph{p},\emph{q}) : (\textsf{function}, \textsf{function}) $\rightarrow$ \textsf{structure}\\
+\end{center}
+Parameters: 
+\begin{itemize}
+\item \emph{p} and \emph{q} are polynomials
+\end{itemize}
+\noindent Description: \begin{itemize}
+
+\item Given two polynomials $p$ and $q$, \textbf{composepolynomials}(\emph{p}, \emph{q}) computes an 
+   approximation $r$ to the polynomial $(p \circ q)$ and bounds the
+   error polynomial $r - (p \circ q)$ using interval arithmetic.
+
+\item \textbf{composepolynomials} always returns a structure containing two elements,
+   \texttt{poly} and \texttt{radii}.  The element
+   \texttt{poly} is contains the approximate composed polynomial
+   $r$. The element \texttt{radii} contains a list of $n + 1$ 
+   intervals $a_i$ bounding the coefficients of the
+   error polynomial, which is of the same degree $n$ as is the
+   composed polynomial $(p \circ q)$.  This is, there exist
+   $\alpha_i \in a_i$ such that 
+   $$\sum\limits_{i=0}^n \alpha_i \, x^i = r(x) - (p \circ q)(x).$$
+
+\item In the case when either of $p$ or $q$ is not a polynomial, \textbf{composepolynomials}
+   behaves like \textbf{substitute} used in a literate structure. The list of intervals
+   bounding the coefficients of the error polynomial is returned empty.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> composepolynomials(1 + 2 * x + 3 * x^2 + 4 * x^3, 5 + 6 * x + 7 * x^2);
+{ .radii = [|[0;0], [0;0], [0;0], [0;0], [0;0], [0;0], [0;0]|], .poly = 586 + x 
+* (1992 + x * (4592 + x * (6156 + x * (6111 + x * (3528 + x * 1372))))) }
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> print(composepolynomials(1/5 * x + exp(17) + log(2) * x^2, x^4 + 1/3 * x^2));
+{ .radii = [|[-7.1746481373430634031294954664443705921549411424077e-43;7.1746481
+373430634031294954664443705921549411424077e-43], [0;0], [-2.67276471009219564614
+053646715148187881519688010505e-51;2.6727647100921956461405364671514818788151968
+8010505e-51], [0;0], [-1.06910588403687825845621458686059275152607875204202e-50;
+1.06910588403687825845621458686059275152607875204202e-50], [0;0], [-2.1382117680
+7375651691242917372118550305215750408404e-50;2.138211768073756516912429173721185
+50305215750408404e-50], [0;0], [-2.138211768073756516912429173721185503052157504
+08404e-50;2.13821176807375651691242917372118550305215750408404e-50]|], .poly = 2
+.41549527535752982147754351803858238798675673527228e7 + x^2 * (6.666666666666666
+6666666666666666666666666666666666e-2 + x^2 * (0.2770163533955494788241369023842
+41840897277792706698 + x^2 * (0.462098120373296872944821414305451045383666756240
+17 + x^2 * 0.693147180559945309417232121458176568075500134360259))) }
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 3: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> composepolynomials(sin(x),x + x^2);
+{ .radii = [| |], .poly = sin(x * (1 + x)) }
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{substitute} (\ref{labsubstitute})

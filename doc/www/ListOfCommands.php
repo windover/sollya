@@ -24,6 +24,7 @@ $listOfCommands=array(
 "ceil","ceil",
 "checkinfnorm","checkinfnorm",
 "coeff","coeff",
+"composepolynomials","composepolynomials",
 "concat","@",
 "constant","constant",
 "cos","cos",

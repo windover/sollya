@@ -37,4 +37,4 @@ substitute(f,a);
 f(a);
 
 #SEEALSO $EVALUATE
-
+#SEEALSO $COMPOSEPOLYNOMIALS

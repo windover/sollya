@@ -50,5 +50,5 @@ writing <span class="arg">F(g)</span> resp. <span class="arg">F(t)</span>.
 </div> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","evaluate","evaluate");?> 
+<span class="category">See also: </span><?php linkTo("command","evaluate","evaluate");?>, <?php linkTo("command","composepolynomials","composepolynomials");?> 
 </div> 
