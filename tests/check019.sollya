@@ -1,0 +1,66 @@
+restart;
+
+checkComposePolynomials = proc(p,q) {
+  var r,s,i,err, EXPECTED_NUMBER_OF_BITS;
+  var okay;
+
+  okay = true;
+
+  EXPECTED_NUMBER_OF_BITS = prec-10;
+
+  r = p(q);
+  s = composepolynomials(p,q);
+
+  for i from 0 to degree(r) do {
+    if ! ( coeff(r, i) in coeff(s.poly, i)+s.radii[i] )
+    then { print("Check fail in composepolynomials(",p,",",q,") : coefficient ",i," = ",coeff(r,i)," and does not lie in ",coeff(s.poly, i),"+",s.radii[i]); okay = false; };
+    
+    if (coeff(r,i) != 0) then {
+      if ( abs(coeff(s.poly,i)/coeff(r,i)-1) > 2^(-EXPECTED_NUMBER_OF_BITS) )
+      then {
+        err := -log2( abs(coeff(s.poly,i)/coeff(r,i)-1));
+        print("Check fail in composepolynomials(",p,",",q,") : exact coefficient ",i," = ",coeff(r,i), "and the computed approximate value is ",coeff(s.poly,i)," which corresponds to only ~ ", err, "correct bits");
+	okay = false;
+      };
+    };
+  };
+
+  if (okay) then "OKAY!";
+
+  return void;
+};
+
+checkComposePolynomials(1+x, x^4);
+checkComposePolynomials(1+x/3, x^4);
+p=remez(exp(x),5,[-1,1]);
+q=remez(sin(x),4,[exp(-1),exp(1)]);
+checkComposePolynomials(p,q);
+checkComposePolynomials(1+2*x^20,3*x^17);
+checkComposePolynomials(1+2*x^5,p);
+checkComposePolynomials(p, 1+2*x^20);
+checkComposePolynomials(exp(5) * x + sin(16) + log(19) * x^2 + asin(0.5) * x^7,erf(0.5) + 1/5 * x + atanh(1/2) * x^7);
+
+print(composepolynomials(1 + x, x^4));
+print(composepolynomials(1 + x/3, x^4));
+print(composepolynomials(p,q));
+print(composepolynomials(exp(5) * x + sin(16) + log(19) * x^2 + asin(0.5) * x^7,erf(0.5) + 1/5 * x + atanh(1/2) * x^7));
+print(composepolynomials(1 + 17 * x + 13 * x^44, 2 + 1001 * x^2 + x^77));
+
+prec = 1000;
+
+checkComposePolynomials(1+x, x^4);
+checkComposePolynomials(1+x/3, x^4);
+p=remez(exp(x),5,[-1,1]);
+q=remez(sin(x),4,[exp(-1),exp(1)]);
+checkComposePolynomials(p,q);
+checkComposePolynomials(1+2*x^20,3*x^17);
+checkComposePolynomials(1+2*x^5,p);
+checkComposePolynomials(p, 1+2*x^20);
+checkComposePolynomials(exp(5) * x + sin(16) + log(19) * x^2 + asin(0.5) * x^7,erf(0.5) + 1/5 * x + atanh(1/2) * x^7);
+
+print(composepolynomials(1 + x, x^4));
+print(composepolynomials(1 + x/3, x^4));
+print(composepolynomials(p,q));
+print(composepolynomials(exp(5) * x + sin(16) + log(19) * x^2 + asin(0.5) * x^7,erf(0.5) + 1/5 * x + atanh(1/2) * x^7));
+print(composepolynomials(1 + 17 * x + 13 * x^44, 2 + 1001 * x^2 + x^77));
+
