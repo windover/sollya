@@ -372,6 +372,7 @@ MATCH           "match"
 WITH            "with"
 
 RENAME          "rename"
+BIND            "bind"
 
 LENGTH          "length"
 
@@ -681,6 +682,7 @@ NOP             "nop"
 {WRITE}           			    {  return WRITETOKEN; }
 {ASCIIPLOT}       			    {  return ASCIIPLOTTOKEN; }
 {RENAME}         			    {  return RENAMETOKEN; }
+{BIND}         			            {  return BINDTOKEN; }
 
 
 {INFNORM}         			    {  return INFNORMTOKEN; }

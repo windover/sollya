@@ -291,6 +291,7 @@ extern FILE *internyyget_in(void *scanner);
 %token  WRITETOKEN;
 %token  ASCIIPLOTTOKEN;
 %token  RENAMETOKEN;
+%token  BINDTOKEN;
 
 %token  INFNORMTOKEN;
 %token  SUPNORMTOKEN;
@@ -1575,6 +1576,11 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                       | REMEZTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeRemez(addElement(addElement($7, $5), $3));
+			  }
+                      | BINDTOKEN LPARTOKEN thing COMMATOKEN IDENTIFIERTOKEN COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeBind($3, $5, $7);
+			    free($5);
 			  }
                       | MINTOKEN LPARTOKEN thinglist RPARTOKEN
                           {

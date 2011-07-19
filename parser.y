@@ -312,7 +312,7 @@ int parserCheckEof() {
 %token  WRITETOKEN;
 %token  ASCIIPLOTTOKEN;
 %token  RENAMETOKEN;
-
+%token  BINDTOKEN;
 
 %token  INFNORMTOKEN;
 %token  SUPNORMTOKEN;
@@ -1645,6 +1645,11 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeRemez(addElement(addElement($7, $5), $3));
 			  }
+                      | BINDTOKEN LPARTOKEN thing COMMATOKEN IDENTIFIERTOKEN COMMATOKEN thing RPARTOKEN
+                          {
+			    $$ = makeBind($3, $5, $7);
+			    free($5);
+			  } 
                       | MINTOKEN LPARTOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeMin($3);
@@ -3863,6 +3868,17 @@ help:                   CONSTANTTOKEN
 			    outputMode(); sollyaPrintf("Rename free variable string1 to string2: rename(string1, string2).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for RENAME"
+#endif
+#endif
+                          }
+                      | BINDTOKEN
+                          {
+#ifdef HELP_BIND_TEXT
+			    outputMode(); sollyaPrintf(HELP_BIND_TEXT);
+#else
+			    outputMode(); sollyaPrintf("bind(p,ident,term): bind argument ident of procedure p to term, returning a procedure with one argument less.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for BIND"
 #endif
 #endif
                           }

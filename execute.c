@@ -1137,6 +1137,12 @@ node *copyThing(node *tree) {
     copy->child2 = copyThing(tree->child2);
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyString);
     break;
+  case BIND:
+    copy->child1 = copyThing(tree->child1);
+    copy->child2 = copyThing(tree->child2);
+    copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+    strcpy(copy->string,tree->string);
+    break;
   case PROCILLIM:
     copy->child1 = copyThing(tree->child1);
     copy->child2 = copyThing(tree->child2);
@@ -1957,6 +1963,9 @@ char *getTimingStringForThing(node *tree) {
   case PROC:
     constString = "executing a procedure";
     break;
+  case BIND:
+    constString = "binding an argument of a procedure";
+    break;
   case PROCILLIM:
     constString = "executing a procedure";
     break;
@@ -2525,6 +2534,10 @@ int isProcedure(node *tree) {
   return 0;
 }
 
+int isProcedureNotIllim(node *tree) {
+  if (tree->nodeType == PROC) return 1;
+  return 0;
+}
 
 int isHonorcoeffprec(node *tree) {
   if (tree->nodeType == HONORCOEFF) return 1;
@@ -5264,6 +5277,15 @@ char *sRawPrintThing(node *tree) {
     res = concatAndFree(res, newString("return "));
     res = concatAndFree(res, sRawPrintThing(tree->child2));
     res = concatAndFree(res, newString(";\n}"));
+    break;
+  case BIND:
+    res = newString("bind(");
+    res = concatAndFree(res, sRawPrintThing(tree->child1));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, newString(tree->string));
+    res = concatAndFree(res, newString(", "));
+    res = concatAndFree(res, sRawPrintThing(tree->child2));
+    res = concatAndFree(res, newString(")"));
     break;
   case PROCILLIM:
     res = newString("proc(");
@@ -10227,6 +10249,20 @@ node *makeRemez(chain *thinglist) {
 
 }
 
+node *makeBind(node *thing1, char *string1, node *thing2) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = BIND;
+  res->child1 = thing1;
+  res->child2 = thing2;
+  res->string = (char *) safeCalloc(strlen(string1) + 1, sizeof(char));
+  strcpy(res->string, string1);
+
+  return res;
+
+}
+
 node *makeMax(chain *thinglist) {
   node *res;
 
@@ -12112,6 +12148,12 @@ void freeThing(node *tree) {
     freeChain(tree->arguments, free);
     free(tree);
     break;
+  case BIND:
+    freeThing(tree->child1);
+    freeThing(tree->child2);
+    free(tree->string);
+    free(tree);    
+    break;
   case PROCILLIM:
     freeThing(tree->child1);
     freeThing(tree->child2);
@@ -12967,6 +13009,11 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualStringOnVoid)) return 0;
+    break;
+  case BIND:
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualThing(tree->child2,tree2->child2)) return 0;
+    if (strcmp(tree->string,tree2->string) != 0) return 0;
     break;
   case PROCILLIM:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
@@ -14386,6 +14433,7 @@ int variableUsePreventsPreevaluation(node *tree) {
   case ZERODENOMINATORS:
   case ISEVALUABLE:
   case DIRTYFINDZEROS:
+  case BIND:
     return (variableUsePreventsPreevaluation(tree->child1) && variableUsePreventsPreevaluation(tree->child2));
     break;
   case SQRT:
@@ -15484,6 +15532,12 @@ node *preevaluateMatcher(node *tree) {
     copy->child2 = preevaluateMatcher(tree->child2);
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyString);
     break;
+  case BIND:
+    copy->child1 = preevaluateMatcher(tree->child1);
+    copy->child2 = preevaluateMatcher(tree->child2);
+    copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+    strcpy(copy->string,tree->string);  
+    break;
   case PROCILLIM:
     copy->child1 = preevaluateMatcher(tree->child1);
     copy->child2 = preevaluateMatcher(tree->child2);
@@ -15525,6 +15579,77 @@ node *preevaluateMatcher(node *tree) {
   }
 
   return copy;
+}
+
+node *performBind(node *proc, char *ident, node *thing) {
+  int hasArg;
+  chain *curr, *newArgs, *actualArgs;
+  char *newStr;
+  node *newActualArg;
+  
+  /* Start by checking if proc has an argument 
+     ident.
+  */
+  hasArg = 0;
+  curr = proc->arguments;
+  while ((!hasArg) && (curr != NULL)) {
+    if (!strcmp(((char *) (curr->value)),ident)) {
+      hasArg = 1;
+    }
+    curr = curr->next;
+  }
+  
+  /* If we do not find the argument, we return NULL */
+  if (!hasArg) return NULL;
+
+  /* Here, we are sure that we can find the argument 
+
+     We continue by generating the list of arguments 
+     different from ident.
+
+   */
+  newArgs = NULL;
+  curr = proc->arguments;
+  while (curr != NULL) {
+    if (strcmp(((char *) (curr->value)),ident)) {
+      /* The argument is different from ident */
+      newStr = safeCalloc(strlen(((char *) (curr->value))) + 1, sizeof(char));
+      strcpy(newStr, ((char *) (curr->value)));
+      newArgs = addElement(newArgs, newStr);
+    }
+    curr = curr->next;
+  }
+  
+  /* The list of new arguments is inverted, we have to revert it */
+  curr = copyChain(newArgs, copyString);
+  freeChain(newArgs, free);
+  newArgs = curr;
+
+  /* Now we have to build the list of things to apply to the 
+     original procedure 
+  */
+  actualArgs = NULL;
+  curr = proc->arguments;
+  while (curr != NULL) {
+    if (!strcmp(((char *) (curr->value)),ident)) {
+      /* Here, we have to replace the argument ident by the new thing */
+      newActualArg = copyThing(thing);
+    } else {
+      /* Here, we have to keep the argument */
+      newActualArg = makeTableAccess(((char *) (curr->value)));
+    }
+    actualArgs = addElement(actualArgs, newActualArg);
+    curr = curr->next;
+  }
+
+  /* This list actualArgs needs to be reverted, too */
+  curr = copyChain(actualArgs, copyThingOnVoid);
+  freeChain(actualArgs, freeThingOnVoid);
+  actualArgs = curr;
+
+  /* Now build up and return the new procedure */
+
+  return makeProc(newArgs, makeCommandList(addElement(NULL,makeNop())), makeApply(copyThing(proc), actualArgs));
 }
 
 void *evaluateThingInnerOnVoid(void *tree) {
@@ -19165,6 +19290,21 @@ node *evaluateThingInner(node *tree) {
     freeThing(fourthArg);
     if (fifthArg != NULL) freeThing(fifthArg);
     if (sixthArg != NULL) freeThing(sixthArg);
+    break;
+  case BIND:
+    copy->child1 = evaluateThingInner(tree->child1);
+    copy->child2 = evaluateThingInner(tree->child2);
+    copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+    strcpy(copy->string,tree->string);
+    if (isProcedureNotIllim(copy->child1)) {
+      tempNode = performBind(copy->child1,copy->string,copy->child2);
+      if (tempNode == NULL) {
+	printMessage(1,"Warning: the given procedure has no argument named \"%s\". The procedure is returned unchanged.\n",copy->string);
+	tempNode = copyThing(copy->child1);
+      }
+      freeThing(copy);
+      copy = tempNode;
+    }
     break;
   case MATCH:
     copy->child1 = evaluateThingInner(tree->child1);
