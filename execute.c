@@ -12730,7 +12730,7 @@ int isEqualThing(node *tree, node *tree2) {
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break;  	
   case APPLY:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
-    if (!isEqualThing(tree->child1,tree2->child1)) return 0;
+    if (!isEqualThing(tree->child1,tree2->child1)) return 0; break;
   case DECIMALCONSTANT:
     if (strcmp(tree->string,tree2->string) != 0) return 0;    break; 		
   case MIDPOINTCONSTANT:
