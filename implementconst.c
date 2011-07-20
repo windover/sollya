@@ -920,6 +920,8 @@ int implementDivMul(node *c, int gamma0, struct implementCsteProgram *program) {
 int summation_weight(node *c) {
   if ( (c->nodeType == ADD) || (c->nodeType == SUB) )
     return (summation_weight(c->child1) + summation_weight(c->child2) + 1);
+  else if (c->nodeType == NEG)
+    return summation_weight(c->child1);
   else return 1;
 }
 
@@ -941,7 +943,7 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
   sollya_mpfi_init2(tmp, prec);
   sollya_mpfi_init2(tmp2, prec);
 
-  
+
   evaluateInterval(y, c, NULL, y);
   if (sollya_mpfi_has_zero(y)) {
     sollya_mpfi_clear(y); sollya_mpfi_clear(a); sollya_mpfi_clear(b);
@@ -957,8 +959,8 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
   evaluateInterval(a, c->child1, NULL, a);
   evaluateInterval(b, c->child2, NULL, b);
 
-  na = summation_weight(c->child1);
-  nb = summation_weight(c->child2);
+  na = 2*summation_weight(c->child1)-1;
+  nb = 2*summation_weight(c->child2)-1;
   n = na+nb+1;
 
   sollya_mpfi_div(tmp, y, a); sollya_mpfi_mul_ui(tmp, tmp, na); sollya_mpfi_div_ui(tmp, tmp, n);
@@ -989,7 +991,7 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
   counter = program->counter;
   incrementProgramCounter(program);
 
-  if( gamma0+1-*Ea>=0 ) { /* No need to perform a test inside 
+  if( gamma0+1-*Ea>=0 ) { /* No need to perform a test inside
                              the generated code */
     tmpa = program->counter;
     res = constantImplementer(c->child1, gamma0+1-*Ea, program);
@@ -999,19 +1001,19 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
     prog1.counter = program->counter;
     prog1.maxcounter = program->maxcounter;
     prog1.precisions = program->precisions;
-    
+
     prog2.instructions = NULL;
     prog2.counter = program->counter;
     prog2.maxcounter = program->maxcounter;
-    
+
     tmpa = program->counter;
     appendSetuiProg(tmpa, 0, &prog1);
     incrementProgramCounter(&prog1);
-    
+
     prog2.precisions = prog1.precisions;
     res = constantImplementer(c->child1, gamma0+1-*Ea, &prog2);
     prog1.precisions = prog2.precisions;
-    
+
     str = safeCalloc(32 , sizeof(char));
     sprintf(str, "prec <= %d", (int)(*Ea-gamma0));
     appendIfThenElseProg(str, prog1, prog2, program);
