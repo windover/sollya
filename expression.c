@@ -3081,6 +3081,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
   mpq_t resMpq;
   mpfr_t num, denom, resDiv, resA, resB;
   int numberChilds;
+  int signOkay, sign;
 
   if ((tree->nodeType == CONSTANT) && (mpfr_nan_p(*(tree->value)))) return copyTree(tree);
   if (tree->nodeType != VARIABLE) {
@@ -3146,7 +3147,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
   if ((tree->nodeType == DIV) && 
       (!containsNotANumbers(tree)) &&
       (isPolynomial(tree->child1)) &&
-      (isPolynomial(tree->child1)) &&
+      (isPolynomial(tree->child2)) &&
       ((alpha = getMaxPowerDivider(tree->child1)) > 0) && 
       ((beta = getMaxPowerDivider(tree->child2)) > 0)) {
     if (alpha == beta) {
@@ -3613,13 +3614,30 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
       }
     } else {
       if ((simplChild1->nodeType == CONSTANT) && (mpfr_zero_p(*(simplChild1->value)))) {
-	free_memory(simplChild1);
-	free_memory(simplChild2);
-	simplified->nodeType = CONSTANT;
-	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-	mpfr_init2(*value,tools_precision);
-	simplified->value = value;
-	mpfr_set_d(*value,0.0,GMP_RNDN);
+	if (!isConstant(simplChild2)) {
+	  free_memory(simplChild1);
+	  free_memory(simplChild2);
+	  simplified->nodeType = CONSTANT;
+	  value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	  mpfr_init2(*value,tools_precision);
+	  simplified->value = value;
+	  mpfr_set_d(*value,0.0,GMP_RNDN);
+	} else {
+	  signOkay = evaluateSign(&sign, simplChild2);
+	  if (signOkay && (sign != 0)) {
+	    free_memory(simplChild1);
+	    free_memory(simplChild2);
+	    simplified->nodeType = CONSTANT;
+	    value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	    mpfr_init2(*value,tools_precision);
+	    simplified->value = value;
+	    mpfr_set_d(*value,0.0,GMP_RNDN);
+	  } else {
+	    simplified->nodeType = DIV;
+	    simplified->child1 = simplChild1;
+	    simplified->child2 = simplChild2;
+	  }
+	}
       } else {
 	if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild2->value)))) {
 	  free_memory(simplChild2);
@@ -3705,6 +3723,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	}
       }
     }
+    // sollyaPrintf("simplified "); printTree(tree); sollyaPrintf(" into "); printTree(simplified); sollyaPrintf("\n");
     break;
   case SQRT:
     simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec, doRational);
@@ -5005,6 +5024,7 @@ node *simplifyTreeErrorfree(node *tree) {
   node *temp;
 
   temp = simplifyTreeErrorfreeInner(tree,1,rationalMode);
+
   if (verbosity >= 7) {
     if (!isSyntacticallyEqual(temp,tree)) {
       if (verbosity < 9) {

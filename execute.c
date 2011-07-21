@@ -5873,6 +5873,7 @@ void autoprint(node *thing, int inList) {
       tempNode2 = thing;
       freeThingAfterwards = 0;
     }
+
     if (isConstant(tempNode2)) {
       if (tempNode2->nodeType == CONSTANT) {
 	printValue(tempNode2->value);
@@ -7458,6 +7459,13 @@ int executeCommandInner(node *tree) {
     curr = tree->arguments;
     if (curr->next == NULL) {
       tempNode = evaluateThing((node *) (curr->value));
+      if (isPureTree(tempNode) && 
+	  isConstant(tempNode) && 
+	  ((((node *) (curr->value))->nodeType == TABLEACCESSWITHSUBSTITUTE) || 
+	   (((node *) (curr->value))->nodeType == APPLY))) {
+	// sollyaPrintf("Salut\n");
+
+      }
       if ((!isUnit(tempNode)) || ((verbosity >= 2) && oldVoidPrint)) {
 	if (!isExternalProcedureUsage(tempNode)) {
 	  outputMode();
