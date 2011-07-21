@@ -5855,7 +5855,7 @@ void printExternalProcedureUsage(node *tree) {
   }
 }
 
-void autoprint(node *thing, int inList) {
+void autoprint(node *thing, int inList, node *func, node *cst) {
   mpfr_t a,b;
   node *temp_node, *tempNode2, *tempNode3, *tempNode4, *tempNode5;
   chain *curr;
@@ -5863,6 +5863,8 @@ void autoprint(node *thing, int inList) {
   int okay, shown, shown2, extraMessage;
   rangetype xrange, yrange;
   int okaySign, sign;
+  int faithfulAlreadyKnown;
+  node *simplCst;
 
   shown = 0; shown2 = 0;
   if (isPureTree(thing)) {
@@ -5890,10 +5892,25 @@ void autoprint(node *thing, int inList) {
 	  mpfr_init2(a,tools_precision);
 	  mpfr_init2(b,tools_precision);
 	  mpfr_set_d(b,1.0,GMP_RNDN);
-	  if (evaluateFaithful(a,tempNode2,b,tools_precision)) {
+	  faithfulAlreadyKnown = 0;
+	  if ((func != NULL) && (cst != NULL)) {
+	    simplCst = simplifyTreeErrorfree(cst);
+	    if ((simplCst->nodeType == CONSTANT) &&
+		mpfr_number_p(*(simplCst->value))) {
+	      if (evaluateFaithful(a,func,*(simplCst->value),tools_precision)) {
+		faithfulAlreadyKnown = 1;
+	      }
+	    }
+	    freeThing(simplCst);
+	  }
+	  if (faithfulAlreadyKnown || evaluateFaithful(a,tempNode2,b,tools_precision)) {
 	    if (mpfr_number_p(a)) {
 	      if (!noRoundingWarnings) {
-		if (!shown) printMessage(1,"Warning: rounding has happened. The value displayed is a faithful rounding of the true result.\n");
+		if (!shown) {
+		  if ((!faithfulAlreadyKnown) || (!mpfr_zero_p(a))) {
+		    printMessage(1,"Warning: rounding has happened. The value displayed is a faithful rounding of the true result.\n");
+		  }
+		}
 		shown = 1;
 	      }
 	    } else {
@@ -6030,7 +6047,7 @@ void autoprint(node *thing, int inList) {
       sollyaPrintf("[|");
       curr = thing->arguments;
       while (curr != NULL) {
-	autoprint((node *) (curr->value),1);
+	autoprint((node *) (curr->value),1,NULL,NULL);
 	if (curr->next != NULL) sollyaPrintf(", ");
 	curr = curr->next;
       }
@@ -6040,7 +6057,7 @@ void autoprint(node *thing, int inList) {
 	sollyaPrintf("[|");
 	curr = thing->arguments;
 	while (curr != NULL) {
-	  autoprint((node *) (curr->value),1);
+	  autoprint((node *) (curr->value),1,NULL,NULL);
 	  if (curr->next != NULL) sollyaPrintf(", ");
 	  curr = curr->next;
 	}
@@ -6051,7 +6068,7 @@ void autoprint(node *thing, int inList) {
 	  curr = thing->arguments;
 	  while (curr != NULL) {
 	    sollyaPrintf(".%s = ", ((entry *) (curr->value))->name);
-	    autoprint((node *) (((entry *) (curr->value))->value),1);
+	    autoprint((node *) (((entry *) (curr->value))->value),1,NULL,NULL);
 	    if (curr->next != NULL) sollyaPrintf(", ");
 	    curr = curr->next;
 	  }
@@ -6511,13 +6528,14 @@ int executeCommandInner(node *tree) {
   int result, res, intTemp, resA, resB, resC, resD, resE, resF, resG, defaultVal, i;  
   chain *curr, *tempList, *tempList2, *tempChain; 
   mpfr_t a, b, c, d, e;
-  node *tempNode, *tempNode2, *tempNode3, *tempNode4;
+  node *tempNode, *tempNode2, *tempNode3, *tempNode4, *tempNode5, *tempNode6, *tempNode7;
   libraryFunction *tempLibraryFunction;
   libraryProcedure *tempLibraryProcedure;
   char *tempString, *tempString2, *timingString;
   FILE *fd;
   node **array;
   rangetype tempRange;
+  int autoprintAlreadyDone, floatingPointEvaluationAlreadyDone;
 
   /* Make compiler happy */
   fd = NULL;
@@ -7459,33 +7477,87 @@ int executeCommandInner(node *tree) {
     curr = tree->arguments;
     if (curr->next == NULL) {
       tempNode = evaluateThing((node *) (curr->value));
+      autoprintAlreadyDone = 0;
       if (isPureTree(tempNode) && 
 	  isConstant(tempNode) && 
 	  ((((node *) (curr->value))->nodeType == TABLEACCESSWITHSUBSTITUTE) || 
-	   (((node *) (curr->value))->nodeType == APPLY))) {
-	// sollyaPrintf("Salut\n");
-
-      }
-      if ((!isUnit(tempNode)) || ((verbosity >= 2) && oldVoidPrint)) {
-	if (!isExternalProcedureUsage(tempNode)) {
-	  outputMode();
-	  autoprint(tempNode,0); 
+	   (((node *) (curr->value))->nodeType == APPLY)) &&
+	  (lengthChain(((node *) (curr->value))->arguments) == 1)) {
+	if (((node *) (curr->value))->nodeType == APPLY) {
+	  tempNode2 = copyThing(((node *) (curr->value))->child1);
+	  tempNode3 = copyThing((node *) ((((node *) (curr->value))->arguments)->value));
 	} else {
-	  outputMode();
-	  printExternalProcedureUsage(tempNode);
+	  tempNode2 = makeTableAccess(((node *) (curr->value))->string);
+	  tempNode3 = copyThing((node *) ((((node *) (curr->value))->arguments)->value));
 	}
-	sollyaPrintf("\n");
-      } 
+	tempNode4 = evaluateThing(tempNode2);
+	tempNode5 = evaluateThing(tempNode3);
+	if (isPureTree(tempNode4) && 
+	    isPureTree(tempNode5) &&
+	    (!isConstant(tempNode4)) && 
+	    isConstant(tempNode5)) {
+	    outputMode();
+	    autoprint(tempNode,0,tempNode4,tempNode5); 
+	    sollyaPrintf("\n");
+	    autoprintAlreadyDone = 1;
+	}
+	freeThing(tempNode2);
+	freeThing(tempNode3);
+	freeThing(tempNode4);
+	freeThing(tempNode5);
+      }
+      if (!autoprintAlreadyDone) {
+	if ((!isUnit(tempNode)) || ((verbosity >= 2) && oldVoidPrint)) {
+	  if (!isExternalProcedureUsage(tempNode)) {
+	    outputMode();
+	    autoprint(tempNode,0,NULL,NULL); 
+	  } else {
+	    outputMode();
+	    printExternalProcedureUsage(tempNode);
+	  }
+	  sollyaPrintf("\n");
+	} 
+      }
       freeThing(tempNode);
     } else {
       while (curr != NULL) {
 	tempNode = evaluateThing((node *) (curr->value));
-	outputMode();
-	if (!isExternalProcedureUsage(tempNode)) 
-	  autoprint(tempNode,0);
-	else 
-	  printExternalProcedureUsage(tempNode);
-	freeThing(tempNode);
+	autoprintAlreadyDone = 0;
+	if (isPureTree(tempNode) && 
+	    isConstant(tempNode) && 
+	    ((((node *) (curr->value))->nodeType == TABLEACCESSWITHSUBSTITUTE) || 
+	     (((node *) (curr->value))->nodeType == APPLY)) &&
+	    (lengthChain(((node *) (curr->value))->arguments) == 1)) {
+	  if (((node *) (curr->value))->nodeType == APPLY) {
+	    tempNode2 = copyThing(((node *) (curr->value))->child1);
+	    tempNode3 = copyThing((node *) ((((node *) (curr->value))->arguments)->value));
+	  } else {
+	    tempNode2 = makeTableAccess(((node *) (curr->value))->string);
+	    tempNode3 = copyThing((node *) ((((node *) (curr->value))->arguments)->value));
+	  }
+	  tempNode4 = evaluateThing(tempNode2);
+	  tempNode5 = evaluateThing(tempNode3);
+	  if (isPureTree(tempNode4) && 
+	      isPureTree(tempNode5) &&
+	      (!isConstant(tempNode4)) && 
+	      isConstant(tempNode5)) {
+	    outputMode();
+	    autoprint(tempNode,0,tempNode4,tempNode5); 
+	    autoprintAlreadyDone = 1;
+	  }
+	  freeThing(tempNode2);
+	  freeThing(tempNode3);
+	  freeThing(tempNode4);
+	  freeThing(tempNode5);
+	}
+	if (!autoprintAlreadyDone) {
+	  outputMode();
+	  if (!isExternalProcedureUsage(tempNode)) 
+	    autoprint(tempNode,0,NULL,NULL);
+	  else 
+	    printExternalProcedureUsage(tempNode);
+	  freeThing(tempNode);
+	}
 	if (oldAutoPrint) {
 	  if (curr->next != NULL) sollyaPrintf(", ");
 	}
@@ -7552,7 +7624,40 @@ int executeCommandInner(node *tree) {
     tempNode = evaluateThing(tree->child1);
     if (isPureTree(tempNode) && isConstant(tempNode)) {
       mpfr_init2(a, tools_precision);
-      if (evaluateThingToConstant(a, tempNode, NULL,1))  {
+      floatingPointEvaluationAlreadyDone = 0;
+      if (isPureTree(tempNode) && 
+	  isConstant(tempNode) && 
+	  ((tree->child1->nodeType == TABLEACCESSWITHSUBSTITUTE) || 
+	   (tree->child1->nodeType == APPLY)) &&
+	  (lengthChain(tree->child1->arguments) == 1)) {
+	if (tree->child1->nodeType == APPLY) {
+	  tempNode2 = copyThing(tree->child1->child1);
+	  tempNode3 = copyThing((node *) ((tree->child1->arguments)->value));
+	} else {
+	  tempNode2 = makeTableAccess(tree->child1->string);
+	  tempNode3 = copyThing((node *) ((tree->child1->arguments)->value));
+	}
+	tempNode4 = evaluateThing(tempNode2);
+	tempNode5 = evaluateThing(tempNode3);
+	if (isPureTree(tempNode4) && 
+	    isPureTree(tempNode5) &&
+	    (!isConstant(tempNode4)) && 
+	    isConstant(tempNode5)) {
+	  tempNode6 = simplifyTreeErrorfree(tempNode5);
+	  if ((tempNode6->nodeType == CONSTANT) &&
+	      mpfr_number_p(*(tempNode6->value))) {
+	    if (evaluateFaithful(a, tempNode4, *(tempNode6->value), tools_precision)) {
+	      floatingPointEvaluationAlreadyDone = 1;
+	    }
+	  }
+	  freeThing(tempNode6);
+	}
+	freeThing(tempNode2);
+	freeThing(tempNode3);
+	freeThing(tempNode4);
+	freeThing(tempNode5);
+      }
+      if (floatingPointEvaluationAlreadyDone || evaluateThingToConstant(a, tempNode, NULL,1))  {
 	freeThing(tempNode);
 	tempNode = makeConstant(a);
       }
@@ -7775,7 +7880,40 @@ int executeCommandInner(node *tree) {
 	      tempNode2 = evaluateThing((node *) (curr->value));
 	      if (isPureTree(tempNode2) && isConstant(tempNode2)) {
 		mpfr_init2(a, tools_precision);
-		if (evaluateThingToConstant(a, tempNode2, NULL,1))  {
+		floatingPointEvaluationAlreadyDone = 0;
+		if (isPureTree(tempNode2) && 
+		    isConstant(tempNode2) && 
+		    ((((node *) (curr->value))->nodeType == TABLEACCESSWITHSUBSTITUTE) || 
+		     (((node *) (curr->value))->nodeType == APPLY)) &&
+		    (lengthChain(((node *) (curr->value))->arguments) == 1)) {
+		  if (((node *) (curr->value))->nodeType == APPLY) {
+		    tempNode7 = copyThing(((node *) (curr->value))->child1);
+		    tempNode3 = copyThing((node *) ((((node *) (curr->value))->arguments)->value));
+		  } else {
+		    tempNode7 = makeTableAccess(((node *) (curr->value))->string);
+		    tempNode3 = copyThing((node *) ((((node *) (curr->value))->arguments)->value));
+		  }
+		  tempNode4 = evaluateThing(tempNode7);
+		  tempNode5 = evaluateThing(tempNode3);
+		  if (isPureTree(tempNode4) && 
+		      isPureTree(tempNode5) &&
+		      (!isConstant(tempNode4)) && 
+		      isConstant(tempNode5)) {
+		    tempNode6 = simplifyTreeErrorfree(tempNode5);
+		    if ((tempNode6->nodeType == CONSTANT) &&
+			mpfr_number_p(*(tempNode6->value))) {
+		      if (evaluateFaithful(a, tempNode4, *(tempNode6->value), tools_precision)) {
+			floatingPointEvaluationAlreadyDone = 1;
+		      }
+		    }
+		    freeThing(tempNode6);
+		  }
+		  freeThing(tempNode7);
+		  freeThing(tempNode3);
+		  freeThing(tempNode4);
+		  freeThing(tempNode5);
+		} 
+		if (floatingPointEvaluationAlreadyDone || evaluateThingToConstant(a, tempNode2, NULL,1))  {
 		  freeThing(tempNode2);
 		  tempNode2 = makeConstant(a);
 		}
@@ -7881,7 +8019,7 @@ int executeCommandInner(node *tree) {
 	    printMessage(1,"This command will have no effect.\n");
             considerDyingOnError();
 	  }
-	} else {
+	} else { 
 	  if (isEmptyList(tempNode)) {
 	    curr = tree->arguments;
 	    curr = curr->next;
@@ -7891,7 +8029,40 @@ int executeCommandInner(node *tree) {
 		tempNode2 = evaluateThing((node *) (curr->value));
 		if (isPureTree(tempNode2) && isConstant(tempNode2)) {
 		  mpfr_init2(a, tools_precision);
-		  if (evaluateThingToConstant(a, tempNode2, NULL, 1))  {
+		  floatingPointEvaluationAlreadyDone = 0;
+		  if (isPureTree(tempNode2) && 
+		      isConstant(tempNode2) && 
+		      ((((node *) (curr->value))->nodeType == TABLEACCESSWITHSUBSTITUTE) || 
+		       (((node *) (curr->value))->nodeType == APPLY)) &&
+		      (lengthChain(((node *) (curr->value))->arguments) == 1)) {
+		    if (((node *) (curr->value))->nodeType == APPLY) {
+		      tempNode7 = copyThing(((node *) (curr->value))->child1);
+		      tempNode3 = copyThing((node *) ((((node *) (curr->value))->arguments)->value));
+		    } else {
+		      tempNode7 = makeTableAccess(((node *) (curr->value))->string);
+		      tempNode3 = copyThing((node *) ((((node *) (curr->value))->arguments)->value));
+		    }
+		    tempNode4 = evaluateThing(tempNode7);
+		    tempNode5 = evaluateThing(tempNode3);
+		    if (isPureTree(tempNode4) && 
+			isPureTree(tempNode5) &&
+			(!isConstant(tempNode4)) && 
+			isConstant(tempNode5)) {
+		      tempNode6 = simplifyTreeErrorfree(tempNode5);
+		      if ((tempNode6->nodeType == CONSTANT) &&
+			  mpfr_number_p(*(tempNode6->value))) {
+			if (evaluateFaithful(a, tempNode4, *(tempNode6->value), tools_precision)) {
+			  floatingPointEvaluationAlreadyDone = 1;
+			}
+		      }
+		      freeThing(tempNode6);
+		    }
+		    freeThing(tempNode7);
+		    freeThing(tempNode3);
+		    freeThing(tempNode4);
+		    freeThing(tempNode5);
+		  } 
+		  if (floatingPointEvaluationAlreadyDone || evaluateThingToConstant(a, tempNode2, NULL, 1))  {
 		    freeThing(tempNode2);
 		    tempNode2 = makeConstant(a);
 		  }
@@ -8025,7 +8196,40 @@ int executeCommandInner(node *tree) {
     tempNode = evaluateThing(tree->child1);
     if (isPureTree(tempNode) && isConstant(tempNode)) {
       mpfr_init2(a, tools_precision);
-      if (evaluateThingToConstant(a, tempNode, NULL,1))  {
+      floatingPointEvaluationAlreadyDone = 0;
+      if (isPureTree(tempNode) && 
+	  isConstant(tempNode) && 
+	  ((tree->child1->nodeType == TABLEACCESSWITHSUBSTITUTE) || 
+	   (tree->child1->nodeType == APPLY)) &&
+	  (lengthChain(tree->child1->arguments) == 1)) {
+	if (tree->child1->nodeType == APPLY) {
+	  tempNode2 = copyThing(tree->child1->child1);
+	  tempNode3 = copyThing((node *) ((tree->child1->arguments)->value));
+	} else {
+	  tempNode2 = makeTableAccess(tree->child1->string);
+	  tempNode3 = copyThing((node *) ((tree->child1->arguments)->value));
+	}
+	tempNode4 = evaluateThing(tempNode2);
+	tempNode5 = evaluateThing(tempNode3);
+	if (isPureTree(tempNode4) && 
+	    isPureTree(tempNode5) &&
+	    (!isConstant(tempNode4)) && 
+	    isConstant(tempNode5)) {
+	  tempNode6 = simplifyTreeErrorfree(tempNode5);
+	  if ((tempNode6->nodeType == CONSTANT) &&
+	      mpfr_number_p(*(tempNode6->value))) {
+	    if (evaluateFaithful(a, tempNode4, *(tempNode6->value), tools_precision)) {
+	      floatingPointEvaluationAlreadyDone = 1;
+	    }
+	  }
+	  freeThing(tempNode6);
+	}
+	freeThing(tempNode2);
+	freeThing(tempNode3);
+	freeThing(tempNode4);
+	freeThing(tempNode5);
+      }
+      if (floatingPointEvaluationAlreadyDone || evaluateThingToConstant(a, tempNode, NULL,1))  {
 	freeThing(tempNode);
 	tempNode = makeConstant(a);
       }
@@ -15669,7 +15873,7 @@ void *evaluateThingOnVoid(void *tree) {
 }
 
 node *evaluateThingInner(node *tree) {
-  node *copy, *tempNode, *tempNode2, *tempNode3;
+  node *copy, *tempNode, *tempNode2, *tempNode3, *tempNode4, *tempNode5, *tempNode6;
   int *intptr;
   int resA, resB, i, resC, resD, resE, resF;
   char *tempString, *tempString2, *timingString, *tempString3, *tempString4, *tempString5;
@@ -15694,6 +15898,7 @@ node *evaluateThingInner(node *tree) {
   node **thingArray1, **thingArray2, **thingArray3;
   entry *structEntry; 
   chain *assoclist;
+  int floatingPointEvaluationAlreadyDone;
 
 
   /* Make compiler happy: */
@@ -19082,7 +19287,40 @@ node *evaluateThingInner(node *tree) {
       tempNode = simplifyTreeErrorfree(copy->child1);
       if (isConstant(tempNode)) {
 	mpfr_init2(a,tools_precision);
-	if (evaluateThingToConstant(a,tempNode,NULL,1)) {
+	floatingPointEvaluationAlreadyDone = 0;
+	if (isPureTree(copy->child1) && 
+	    isConstant(copy->child1) && 
+	    ((tree->child1->nodeType == TABLEACCESSWITHSUBSTITUTE) || 
+	     (tree->child1->nodeType == APPLY)) &&
+	    (lengthChain(tree->child1->arguments) == 1)) {
+	  if (tree->child1->nodeType == APPLY) {
+	    tempNode2 = copyThing(tree->child1->child1);
+	    tempNode3 = copyThing((node *) ((tree->child1->arguments)->value));
+	  } else {
+	    tempNode2 = makeTableAccess(tree->child1->string);
+	    tempNode3 = copyThing((node *) ((tree->child1->arguments)->value));
+	  }
+	  tempNode4 = evaluateThing(tempNode2);
+	  tempNode5 = evaluateThing(tempNode3);
+	  if (isPureTree(tempNode4) && 
+	      isPureTree(tempNode5) &&
+	      (!isConstant(tempNode4)) && 
+	      isConstant(tempNode5)) {
+	    tempNode6 = simplifyTreeErrorfree(tempNode5);
+	    if ((tempNode6->nodeType == CONSTANT) &&
+		mpfr_number_p(*(tempNode6->value))) {
+	      if (evaluateFaithful(a, tempNode4, *(tempNode6->value), tools_precision)) {
+		floatingPointEvaluationAlreadyDone = 1;
+	      }
+	    }
+	    freeThing(tempNode6);
+	  }
+	  freeThing(tempNode2);
+	  freeThing(tempNode3);
+	  freeThing(tempNode4);
+	  freeThing(tempNode5);
+	}
+	if (floatingPointEvaluationAlreadyDone || evaluateThingToConstant(a,tempNode,NULL,1)) {
 	  tempNode2 = makeConstant(a);
 	  freeThing(copy->child1);
 	  copy = tempNode2;
@@ -19873,7 +20111,7 @@ node *evaluateThingInner(node *tree) {
       if (timingString != NULL) popTimeCounter(timingString);
     }
     break;			
-  case COMPOSEPOLYNOMIALS: // TODO
+  case COMPOSEPOLYNOMIALS: 
     copy->child1 = evaluateThingInner(tree->child1);
     copy->child2 = evaluateThingInner(tree->child2);
     if (isPureTree(copy->child1) && isPureTree(copy->child2)) {
