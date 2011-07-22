@@ -11295,6 +11295,9 @@ node *substitute(node* tree, node *t) {
   node **coeffs;
   int degree;
   int i;
+  sollya_mpfi_t tEval, treeEval;
+  mp_prec_t treeEvalPrec;
+  mpfr_t tEl, tEr;
 
   if (isPolynomial(tree) && 
       isPolynomial(t)) {
@@ -11327,6 +11330,33 @@ node *substitute(node* tree, node *t) {
       copy = substitutePolynomialUnsafe(tree,t);
       return copy;
     }
+  }
+
+  if (isConstant(t) && (!isConstant(tree))) {
+    copy = NULL;
+    sollya_mpfi_init2(tEval, tools_precision * 2);
+    sollya_mpfi_init2(treeEval, tools_precision * 2);
+    
+    evaluateConstantExpressionToInterval(tEval, t);
+    evaluateInterval(treeEval, tree, NULL, tEval);
+
+    treeEvalPrec = sollya_mpfi_get_prec(treeEval);
+    mpfr_init2(tEl, treeEvalPrec);
+    mpfr_init2(tEr, treeEvalPrec);
+    sollya_mpfi_get_left(tEl, treeEval);
+    sollya_mpfi_get_right(tEr, treeEval);
+    
+    if (mpfr_number_p(tEr) && 
+	mpfr_number_p(tEl) &&
+	mpfr_equal_p(tEr, tEl)) {
+      copy = makeConstant(tEr);
+    }
+
+    mpfr_clear(tEl);
+    mpfr_clear(tEr);
+    sollya_mpfi_clear(tEval);
+    sollya_mpfi_clear(treeEval);
+    if (copy != NULL) return copy;
   }
 
   switch (tree->nodeType) {
