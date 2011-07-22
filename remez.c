@@ -360,7 +360,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
        replaced by either [u, m] of [m, u] where m=(u+v)/2 and xNew is defined as
        the middle of the new interval
 
-        Otherwise: xNew gives a valid new value. We compute yNew=f(xNew).
+       Otherwise: xNew gives a valid new value. We compute yNew=f(xNew).
        We have 4 cases depending on sgn(yNew):
          sgnfa -> we can replace [u,v] by [xNew,v]
 	-sgnfa -> we can replace [u,v] by [u, xNew]
@@ -1289,19 +1289,19 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
   free_memory(error);
   error = temp1;
 
-  if(verbosity>=8) { 	changeToWarningMode(); sollyaPrintf("Constructing the error' tree... \n"); restoreMode(); }
+  if(verbosity>=8) { 	changeToWarningMode(); sollyaPrintf("Constructing the error' tree...\n"); restoreMode(); }
   error_diff = differentiate(error);
   temp1 = simplifyTreeErrorfree(error_diff);
   free_memory(error_diff);
   error_diff = temp1;
 
-  if(verbosity>=8) { 	changeToWarningMode(); sollyaPrintf("Constructing the error'' trees... \n"); restoreMode(); }
+  if(verbosity>=8) { 	changeToWarningMode(); sollyaPrintf("Constructing the error'' trees...\n"); restoreMode(); }
   error_diff2 = differentiate(error_diff);
   temp1 = simplifyTreeErrorfree(error_diff2);
   free_memory(error_diff2);
   error_diff2 = temp1;
 
-  if(verbosity>=6) { 	changeToWarningMode(); sollyaPrintf("Computing the yi... \n"); restoreMode(); }
+  if(verbosity>=6) { 	changeToWarningMode(); sollyaPrintf("Computing the yi...\n"); restoreMode(); }
   // If x = [x1 ... xn], we construct [y0 y1 ... yn] by
   // y0 = (a+x1)/2, yn = (xn+b)/2 and yi = (xi + x(i+1))/2
   y = (mpfr_t *)safeMalloc((n+1)*sizeof(mpfr_t));
@@ -2268,7 +2268,7 @@ mpfr_t *chebychevsPoints(mpfr_t u, mpfr_t v, int p, mp_prec_t *currentPrec) {
   mpfr_div_2ui(var2, var2, 1, GMP_RNDN); // var2 = (u-v)/2
   mpfr_add(var3, u, v, GMP_RNDN);
   mpfr_div_2ui(var3, var3, 1, GMP_RNDN); // var3 = (u+v)/2
-  
+
   for (i=1 ; i <= p ; i++) {
     mpfr_init2(x[i-1], *currentPrec);
     mpfr_mul_si(x[i-1], var1, i-1, GMP_RNDN);
@@ -2279,7 +2279,7 @@ mpfr_t *chebychevsPoints(mpfr_t u, mpfr_t v, int p, mp_prec_t *currentPrec) {
   mpfr_clear(var1);
   mpfr_clear(var2);
   mpfr_clear(var3);
-  
+
   return x;
 }
 
@@ -2413,7 +2413,7 @@ node *elementaryStepRemezAlgorithm(mpfr_t *h,
 
   M = remezMatrix(weight, x, monomials_tree, n, currentPrec);
   system_solve(ai_vect, M, b, n+1, *currentPrec);
-  
+
   poly = constructPolynomialFromArray(ai_vect, monomials_tree, n);
   if (h!=NULL)   mpfr_set(*h, ai_vect[n], GMP_RNDU);
 
