@@ -559,7 +559,9 @@ int computeSupnormLowerBound(mpfr_t ell, node *poly, node *func, sollya_mpfi_t d
   possibleExtrema = uncertifiedFindZeros(epsPrime, a, b, samplePoints, 6 + (pp / 2));
 
   /* We now really define epsPrime as the derivative of eps (for further use with evaluateFaithful) */
-  epsPrime = makeDiv(epsPrime, makePow(copyTree(func), makeConstantDouble(2.0)));
+  if (mode != ABSOLUTE) {
+    epsPrime = makeDiv(epsPrime, makePow(copyTree(func), makeConstantDouble(2.0)));
+  }
 
   aBound = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
   bBound = (mpfr_t *) safeMalloc(sizeof(mpfr_t));

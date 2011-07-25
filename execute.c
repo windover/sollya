@@ -20654,7 +20654,7 @@ node *evaluateThingInner(node *tree) {
 	      pTemp = mpfr_get_prec(a);
 	      pTemp2 = mpfr_get_prec(b);
 	      if (pTemp2 > pTemp) pTemp = pTemp2;
-	      sollya_mpfi_init2(tempIA,pTemp2);
+	      sollya_mpfi_init2(tempIA,pTemp);
 	      sollya_mpfi_interv_fr_safe(tempIA,a,b);
 	      mpfr_init2(bb,8 * sizeof(mp_prec_t) + 10);
 	      mpfr_abs(bb,c,GMP_RNDN);
