@@ -40,13 +40,14 @@ checkComposePolynomials(1+2*x^5,p);
 checkComposePolynomials(p, 1+2*x^20);
 checkComposePolynomials(exp(5) * x + sin(16) + log(19) * x^2 + asin(0.5) * x^7,erf(0.5) + 1/5 * x + atanh(1/2) * x^7);
 
+prec = 3000;
+
+
 print(composepolynomials(1 + x, x^4));
-print(composepolynomials(1 + x/3, x^4));
-print(composepolynomials(p,q));
-print(composepolynomials(exp(5) * x + sin(16) + log(19) * x^2 + asin(0.5) * x^7,erf(0.5) + 1/5 * x + atanh(1/2) * x^7));
+print(composepolynomials(5 * x + 17 + 19 * x^2 + 0.5 * x^7,0.25 + 1/4 * x + 177 * x^7));
 print(composepolynomials(1 + 17 * x + 13 * x^44, 2 + 1001 * x^2 + x^77));
 
-prec = 1000;
+prec = 300;
 
 checkComposePolynomials(1+x, x^4);
 checkComposePolynomials(1+x/3, x^4);
@@ -58,9 +59,11 @@ checkComposePolynomials(1+2*x^5,p);
 checkComposePolynomials(p, 1+2*x^20);
 checkComposePolynomials(exp(5) * x + sin(16) + log(19) * x^2 + asin(0.5) * x^7,erf(0.5) + 1/5 * x + atanh(1/2) * x^7);
 
+
+prec = 5000;
+
+
 print(composepolynomials(1 + x, x^4));
-print(composepolynomials(1 + x/3, x^4));
-print(composepolynomials(p,q));
-print(composepolynomials(exp(5) * x + sin(16) + log(19) * x^2 + asin(0.5) * x^7,erf(0.5) + 1/5 * x + atanh(1/2) * x^7));
+print(composepolynomials(5 * x + 17 + 19 * x^2 + 0.5 * x^7,0.25 + 1/4 * x + 177 * x^7));
 print(composepolynomials(1 + 17 * x + 13 * x^44, 2 + 1001 * x^2 + x^77));
 
