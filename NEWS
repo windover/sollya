@@ -1,4 +1,3 @@
-
 Changes from version 2.9 to 3.0:
 ================================
 Major new functionnalities:
@@ -63,7 +62,6 @@ Minor new functionnalities:
   * Added MPFR, GMP and MPFI version printing to version and --help
 
 Improvements in internal handling:
-
   * Equality and inequality tests optimized when simple interval
     evaluation allows the result to be immediately decided upon.
   * Added a wrapper around MPFI for interval arithmetic computations
