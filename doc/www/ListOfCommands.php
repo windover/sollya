@@ -19,6 +19,7 @@ $listOfCommands=array(
 "bashevaluate","bashevaluate",
 "bashexecute","bashexecute",
 "binary","binary",
+"bind","bind",
 "boolean","boolean",
 "canonical","canonical",
 "ceil","ceil",

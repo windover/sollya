@@ -61,5 +61,5 @@ local variables declared using the <?php linkTo("command","var","var");?> keywor
 </div> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","proc","proc");?>, <?php linkTo("command","var","var");?> 
+<span class="category">See also: </span><?php linkTo("command","proc","proc");?>, <?php linkTo("command","var","var");?>, <?php linkTo("command","bind","bind");?> 
 </div> 

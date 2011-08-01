@@ -238,5 +238,5 @@ that may be composed.
 </div> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","return","return");?>, <?php linkTo("command","externalproc","externalproc");?>, <?php linkTo("command","void","void");?>, <?php linkTo("command","quit","quit");?>, <?php linkTo("command","restart","restart");?>, <?php linkTo("command","var","var");?>, <?php linkTo("command","concat","@");?>, <?php linkTo("command","error","error");?> 
+<span class="category">See also: </span><?php linkTo("command","return","return");?>, <?php linkTo("command","externalproc","externalproc");?>, <?php linkTo("command","void","void");?>, <?php linkTo("command","quit","quit");?>, <?php linkTo("command","restart","restart");?>, <?php linkTo("command","var","var");?>, <?php linkTo("command","concat","@");?>, <?php linkTo("command","bind","bind");?>, <?php linkTo("command","error","error");?> 
 </div> 

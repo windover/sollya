@@ -1,0 +1,58 @@
+#NAME $BIND
+#QUICK_DESCRIPTION partially applies a procedure to an argument, returning a procedure with one argument less
+#CALLING $COMMAND(<proc>, <ident>, <obj>)
+#TYPE ($PROCEDURE_TYPE, $IDENTIFIER_TYPE, $ANY_TYPE) -> $PROCEDURE_TYPE
+
+#PARAMETERS <proc> is a procedure to be partially applied to an argument
+#PARAMETERS <ident> is one of the formal arguments of <proc>
+#PARAMETERS <obj> is any $SOLLYA object <ident> is to be bound to
+
+#DESCRIPTION 
+$COMMAND allows a formal parameter <ident> of a procedure <proc> to 
+be bound to an object <obj>, hence <proc> to be partially applied.
+The result of this curryfied application, returned by $COMMAND, is 
+a procedure with one argument less. This way, $COMMAND permits 
+specialization of a generic procedure, parameterized e.g. by a function
+or range.
+
+#DESCRIPTION
+In the case when <proc> does not have a formal parameter named 
+<ident>, $COMMAND prints a warning and returns the procedure 
+<proc> unmodified. 
+
+#DESCRIPTION
+$COMMAND always returns a procedure, even if <proc> only has one 
+argument, which gets bound to <ident>. In this case, $COMMAND
+returns a procedure which does not take any argument. Hence 
+evaluation, which might provoke side effects, is only performed
+once the procedure gets used.
+
+#DESCRIPTION
+$COMMAND does not work on procedures with an arbitrary number
+of arguments.
+
+#EXAMPLE
+procedure add(X,Y) { return X + Y; };
+succ = bind(add,X,1);
+succ(5);
+succ;
+
+#EXAMPLE
+procedure add(X,Y) { return X + Y; };
+succ = bind(add,X,1);
+five = bind(succ,Y,4);
+five();
+five;
+
+#EXAMPLE
+verbosity = 1!;
+procedure add(X,Y) { return X + Y; };
+foo = bind(add,R,1);
+foo;
+
+#SEEALSO $PROCEDURE
+#SEEALSO $PROC
+#SEEALSO $FUNCTION
+#SEEALSO $CONCAT
+
+

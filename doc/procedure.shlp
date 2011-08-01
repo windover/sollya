@@ -34,3 +34,4 @@ myprint("Lyon","Nancy","Beaverton","Coye-la-Foret","Amberg","Nizhny Novgorod","C
 
 #SEEALSO $PROC
 #SEEALSO $VAR
+#SEEALSO $BIND

@@ -1,0 +1,93 @@
+\subsection{bind}
+\label{labbind}
+\noindent Name: \textbf{bind}\\
+partially applies a procedure to an argument, returning a procedure with one argument less\\
+\noindent Usage: 
+\begin{center}
+\textbf{bind}(\emph{proc}, \emph{ident}, \emph{obj}) : (\textsf{procedure}, \textsf{identifier type}, \textsf{any type}) $\rightarrow$ \textsf{procedure}\\
+\end{center}
+Parameters: 
+\begin{itemize}
+\item \emph{proc} is a procedure to be partially applied to an argument
+\item \emph{ident} is one of the formal arguments of \emph{proc}
+\item \emph{obj} is any \sollya object \emph{ident} is to be bound to
+\end{itemize}
+\noindent Description: \begin{itemize}
+
+\item \textbf{bind} allows a formal parameter \emph{ident} of a procedure \emph{proc} to 
+   be bound to an object \emph{obj}, hence \emph{proc} to be partially applied.
+   The result of this curryfied application, returned by \textbf{bind}, is 
+   a procedure with one argument less. This way, \textbf{bind} permits 
+   specialization of a generic procedure, parameterized e.g. by a function
+   or range.
+
+\item In the case when \emph{proc} does not have a formal parameter named 
+   \emph{ident}, \textbf{bind} prints a warning and returns the procedure 
+   \emph{proc} unmodified. 
+
+\item \textbf{bind} always returns a procedure, even if \emph{proc} only has one 
+   argument, which gets bound to \emph{ident}. In this case, \textbf{bind}
+   returns a procedure which does not take any argument. Hence 
+   evaluation, which might provoke side effects, is only performed
+   once the procedure gets used.
+
+\item \textbf{bind} does not work on procedures with an arbitrary number
+   of arguments.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> procedure add(X,Y) { return X + Y; };
+> succ = bind(add,X,1);
+> succ(5);
+6
+> succ;
+proc(Y)
+{
+nop;
+return (proc(X, Y)
+{
+nop;
+return (X) + (Y);
+})(1, Y);
+}
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> procedure add(X,Y) { return X + Y; };
+> succ = bind(add,X,1);
+> five = bind(succ,Y,4);
+> five();
+5
+> five;
+proc()
+{
+nop;
+return (proc(Y)
+{
+nop;
+return (proc(X, Y)
+{
+nop;
+return (X) + (Y);
+})(1, Y);
+})(4);
+}
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 3: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity = 1!;
+> procedure add(X,Y) { return X + Y; };
+> foo = bind(add,R,1);
+Warning: the given procedure has no argument named "R". The procedure is returne
+d unchanged.
+> foo;
+proc(X, Y)
+{
+nop;
+return (X) + (Y);
+}
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{procedure} (\ref{labprocedure}), \textbf{proc} (\ref{labproc}), \textbf{function} (\ref{labfunction}), \textbf{@} (\ref{labconcat})
