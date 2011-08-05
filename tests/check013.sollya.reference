@@ -144,7 +144,7 @@ The tool has been restarted.
 =============== Test number 245 ================
 The tool has been restarted.
 =============== Test number 246 ================
-1.00004475029055070643077052482053398765426158966754 + x * (1.00003834652983970735244541124504033817544233075356 + x * (0.49919698262882986492168824494240374771969012861297 + x * (0.166424656075155194415920597322727380932279602909199 + x * (4.37936963873280470271257566207183496659575464236489e-2 + x * 8.7381910388065551140158420278330960479960476713376e-3))))
+1 + x * (1 + x * (0.5 + x * (0.166666666666666666666666666666666666666666666666665 + x * (4.1666666666666666666666666666666666666666666666666e-2 + x / 120))))
 The tool has been restarted.
 =============== Test number 247 ================
 Display mode is binary numbers.
@@ -413,4 +413,3 @@ Warning: maximum computation relies on floating-point result that is faithfully 
 17 + log2(13) / log2(9)
 The tool has been restarted.
 =============== Test number 260 ================
-Check that mpfr_urandom has the expected behavior (either one of the old 32-bit or 64-bit behavior), or the new one. OK
