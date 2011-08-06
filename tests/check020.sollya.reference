@@ -105,3 +105,20 @@ Check that mpfr_urandom has the expected behavior (either one of the old 32-bit 
 Check that mpfr_urandom has the expected behavior (either one of the old 32-bit or 64-bit behavior), or the new one. OK
 =============== Check remez #40 ================
 Check that mpfr_urandom has the expected behavior (either one of the old 32-bit or 64-bit behavior), or the new one. OK
+=============== Check remez #41 ================
+The tool has been restarted.
+Check that mpfr_urandom has the expected behavior (either one of the old 32-bit or 64-bit behavior), or the new one. OK
+=============== Check remez #42 ================
+The tool has been restarted.
+Warning in Remez: a slower algorithm is used for this step
+Check that mpfr_urandom has the expected behavior (either one of the old 32-bit or 64-bit behavior), or the new one. OK
+=============== Check remez #43 ================
+The tool has been restarted.
+Check that mpfr_urandom has the expected behavior (either one of the old 32-bit or 64-bit behavior), or the new one. OK
+=============== Check remez #44 ================
+The tool has been restarted.
+Warning in Remez: a slower algorithm is used for this step
+Warning in Remez: main heuristic failed. A slower algorithm is used for this step.
+Warning in Remez: main heuristic failed. A slower algorithm is used for this step.
+Warning in Remez: main heuristic failed. A slower algorithm is used for this step.
+Check that mpfr_urandom has the expected behavior (either one of the old 32-bit or 64-bit behavior), or the new one. OK

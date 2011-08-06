@@ -99,9 +99,11 @@ restart;
 mode=relative;
 d=[-1/8;1/8];
 f=sin(x);
+verbosity=0!;
 print("Computing remez polynomial...");
 p =fpminimax(sin(x), [|3,5|],[|D,D|], [-1/8; 1/8],x);
 print("... done.");
+verbosity=1!;
 theta = 2^(-16);
 supnorm(p,f,d,mode,theta);
 
@@ -222,7 +224,9 @@ testSupnorm(p,f,d,mode,theta);
 mode=relative;
 d=[-1/8;1/8];
 f=sin(x);
+verbosity=0!;
 p =fpminimax(sin(x), [|3,5|],[|D,D|], [-1/8; 1/8],x);
+verbosity=1!;
 theta = 2^(-16);
 testSupnorm(p,f,d,mode,theta);
 
