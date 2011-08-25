@@ -11,41 +11,45 @@ Parameters:
 \begin{itemize}
 \item \emph{f} is the function to be approximated
 \item \emph{n} is the degree of the polynomial that must approximate \emph{f}
-\item \emph{L} is a list of monomials that can be used to represent the polynomial that must approximate \emph{f}
+\item \emph{L} is a list of integers or a list of functions and indicates the basis for the approximation of \emph{f}
 \item \emph{range} is the interval where the function must be approximated
 \item \emph{w} (optional) is a weight function. Default is 1.
 \item \emph{quality} (optional) is a parameter that controls the quality of the returned polynomial \emph{p}, with respect to the exact minimax $p^\star$. Default is 1e-5.
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{remez} computes an approximation of the function $f$ with respect to 
-   the weight function $w$ on the interval \emph{range}. More precisely, it 
-   searches a polynomial $p$ such that $\|pw-f\|_{\infty}$ is 
-   (almost) minimal among all polynomials $p$ of a certain form. The norm is
+\item \textbf{remez} computes an approximation of the function $f$ with respect to
+   the weight function $w$ on the interval \emph{range}. More precisely, it
+   searches $p$ such that $\|pw-f\|_{\infty}$ is
+   (almost) minimal among all $p$ of a certain form. The norm is
    the infinity norm, e.g. $\|g\|_{\infty} = \max \{|g(x)|, x \in \mathrm{range}\}.$
 
-\item If $w=1$ (the default case), it consists in searching the best 
+\item If $w=1$ (the default case), it consists in searching the best
    polynomial approximation of $f$ with respect to the absolute error.
-   If $f=1$ and $w$ is of the form $1/g$, it consists in 
-   searching the best polynomial approximation of $g$ with respect to the 
+   If $f=1$ and $w$ is of the form $1/g$, it consists in
+   searching the best polynomial approximation of $g$ with respect to the
    relative error.
 
-\item If $n$ is given, the polynomial $p$ is searched among the 
-   polynomials with degree not greater than $n$.
-   If \emph{L} is given, the polynomial $p$ is searched as a linear combination 
-   of monomials $X^k$ where $k$ belongs to \emph{L}.
-   \emph{L} may contain ellipses but cannot be end-elliptic.
+\item If $n$ is given, $p$ is searched among the polynomials with degree not
+   greater than $n$.
+   If \emph{L} is given and is a list of integers, $p$ is searched as a linear
+   combination of monomials $X^k$ where $k$ belongs to \emph{L}.
+   In the case when \emph{L} is a list of integers, it may contain ellipses but cannot be
+   end-elliptic.
+   If \emph{L} is given and is a list of functions $g_k$, $p$ is searched as a
+   linear combination of the $g_k$. In that case \emph{L} cannot contain ellipses.
+   It is the user responsability to check that the $g_k$ are linearly independent
+   over the interval \emph{range}. Moreover, the functions $w\cdot g_k$ must be at least
+   twice differentiable over \emph{range}. If these conditions are not fulfilled, the
+   algorithm might fail or even silently return a result as if it successfully
+   found the minimax, though the returned $p$ is not optimal.
 
-\item The polynomial is obtained by a convergent iteration called Remez' algorithm. 
-   The algorithm computes a sequence $p_1,\dots ,p_k,\dots$ 
-   such that $e_k = \|p_k w-f\|_{\infty}$ converges towards 
-   the optimal value $e$. The algorithm is stopped when the relative error 
+\item The polynomial is obtained by a convergent iteration called Remez' algorithm
+   (and an extension of this algorithm, due to Stiefel).
+   The algorithm computes a sequence $p_1,\dots ,p_k,\dots$
+   such that $e_k = \|p_k w-f\|_{\infty}$ converges towards
+   the optimal value $e$. The algorithm is stopped when the relative error
    between $e_k$ and $e$ is less than \emph{quality}.
-
-\item Note: the algorithm may not converge in certain cases. Moreover, it may 
-   converge towards a polynomial that is not optimal. These cases correspond to 
-   the cases when the Haar condition is not fulfilled.
-   See [Cheney - Approximation theory] for details.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
@@ -78,6 +82,18 @@ x^6 + 2.437267919111162694221738667927916761689966804242e-5 * x^8
 1.12956980227478687332174207517728389861926659249056e-6
 > dirtyinfnorm(p3-exp(x),[0;1]);
 1.12956980227478687332174207517728389861926659249056e-6
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 4: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> L = [|exp(x), sin(x), cos(x)-1, sin(x^3)|];
+> g = (2^x-1)/x;
+> p1 = remez(g, L, [-1/16;1/16]);
+> p2 = remez(g, 3, [-1/16;1/16]);
+> dirtyinfnorm(p1 - g, [-1/16;1/16]);
+9.8841323805554845968308959691395564355375312205068e-8
+> dirtyinfnorm(p2 - g, [-1/16;1/16]);
+2.5433780105975429703888838928671089431318650967714e-9
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{dirtyinfnorm} (\ref{labdirtyinfnorm}), \textbf{infnorm} (\ref{labinfnorm}), \textbf{fpminimax} (\ref{labfpminimax}), \textbf{guessdegree} (\ref{labguessdegree}), \textbf{taylorform} (\ref{labtaylorform}), \textbf{taylor} (\ref{labtaylor})

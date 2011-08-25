@@ -1,8 +1,8 @@
 /*
 
-Copyright 2006-2011 by 
+Copyright 2006-2011 by
 
-Laboratoire de l'Informatique du Parallelisme, 
+Laboratoire de l'Informatique du Parallelisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
 and by
@@ -23,16 +23,16 @@ it offers a certified infinity norm, an automatic polynomial
 implementer and a fast Remez algorithm.
 
 This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
+abiding by the rules of distribution of free software.  You can  use,
 modify and/ or redistribute the software under the terms of the CeCILL-C
 license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
+"http://www.cecill.info".
 
 As a counterpart to the access to the source code and  rights to copy,
 modify and redistribute granted by the license, users are provided only
 with a limited warranty  and the software's author,  the holder of the
 economic rights,  and the successive licensors  have only  limited
-liability. 
+liability.
 
 In this respect, the user's attention is drawn to the risks associated
 with loading,  using,  modifying and/or developing or reproducing the
@@ -41,9 +41,9 @@ that may mean  that it is complicated to manipulate,  and  that  also
 therefore means  that it is reserved for developers  and  experienced
 professionals having in-depth computer knowledge. Users are therefore
 encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
+requirements in conditions enabling the security of their systems and/or
+data to be ensured and,  more generally, to use and operate it in the
+same conditions as regards security.
 
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
@@ -108,7 +108,7 @@ chain *copyChain(chain *c, void *(*f) (void *)) {
 
 chain *copyChainWithoutReversal(chain *c, void * (*f) (void *)) {
   void **array;
-  int len, i; 
+  int len, i;
   chain *curr, *copy;
 
   if (c == NULL) return NULL;
@@ -172,7 +172,7 @@ void *copyIntPtrOnVoid(void *i) {
 
   copy = (int *) safeMalloc(sizeof(int));
   *copy = *((int *) i);
-  
+ 
   return (void *) copy;
 }
 
@@ -263,13 +263,12 @@ void freeMemoryOnVoid(void *tree) {
   free_memory((node *) tree);
 }
 
-/* A function that does nothing but that has the 
+/* A function that does nothing but that has the
    right signature for freeChain
 */
 void freeNoPointer(void *thing) {
   UNUSED_PARAM(thing); return;
 }
-
 
 
 chain *makeIntPtrChain(int n) {
@@ -280,7 +279,7 @@ chain *makeIntPtrChainFromTo(int m, int n) {
   int i;
   int *elem;
   chain *c;
-  
+
   c = NULL;
   for (i=n;i>=m;i--) {
     elem = (int *) safeMalloc(sizeof(int));
@@ -291,6 +290,23 @@ chain *makeIntPtrChainFromTo(int m, int n) {
   return c;
 }
 
+chain *makeConstantIntChain(int n) {
+  return makeConstantIntChainFromTo(0,n);
+}
+
+chain *makeConstantIntChainFromTo(int m, int n) {
+  int i;
+  node *elem;
+  chain *c;
+
+  c = NULL;
+  for (i=n;i>=m;i--) {
+    elem = makeConstantDouble((double)i);
+    c = addElement(c,elem);
+  }
+
+  return c;
+}
 
 
 int lengthChain(chain *c) {
@@ -316,7 +332,7 @@ void sortChain(chain *c,  int (*f) (void *, void *)) {
   if (c->next == NULL) return;
 
   /* else... */
-  
+ 
   curr1 = c;
   while (curr1 != NULL) {
     curr2 = curr1->next;
@@ -340,7 +356,7 @@ int cmpIntPtr(void *a, void *b) {
 int cmpMpfrPtr(void *a, void *b) {
   int res;
   res = -mpfr_cmp(*((mpfr_t *) a), *((mpfr_t *) b));
-  return res; 
+  return res;
 }
 
 void printIntChain(chain *c) {
@@ -372,7 +388,7 @@ void *accessInList(chain *c, int index) {
 
 chain *copyChainAndReplaceNth(chain *c, int k, void *obj, void * (*f) (void *)) {
   void **array;
-  int len, i; 
+  int len, i;
   chain *curr, *copy;
 
   if (c == NULL) return NULL;

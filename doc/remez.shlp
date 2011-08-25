@@ -9,48 +9,51 @@
 
 #PARAMETERS <f> is the function to be approximated
 #PARAMETERS <n> is the degree of the polynomial that must approximate <f>
-#PARAMETERS <L> is a list of monomials that can be used to represent the polynomial that must approximate <f>
+#PARAMETERS <L> is a list of integers or a list of functions and indicates the basis for the approximation of <f>
 #PARAMETERS <range> is the interval where the function must be approximated
 #PARAMETERS <w> (optional) is a weight function. Default is 1.
 #PARAMETERS <quality> (optional) is a parameter that controls the quality of the returned polynomial <p>, with respect to the exact minimax §§p*§$p^\star$§§. Default is 1e-5.
 
 
-#DESCRIPTION 
-$COMMAND computes an approximation of the function §§f§$f$§§ with respect to 
-the weight function §§w§$w$§§ on the interval <range>. More precisely, it 
-searches a polynomial §§p§$p$§§ such that §§||p*w-f||§$\|pw-f\|_{\infty}$§§ is 
-(almost) minimal among all polynomials §§p§$p$§§ of a certain form. The norm is
+#DESCRIPTION
+$COMMAND computes an approximation of the function §§f§$f$§§ with respect to
+the weight function §§w§$w$§§ on the interval <range>. More precisely, it
+searches §§p§$p$§§ such that §§||p*w-f||§$\|pw-f\|_{\infty}$§§ is
+(almost) minimal among all §§p§$p$§§ of a certain form. The norm is
 the infinity norm, e.g. §§||g|| = max {|g(x)|, x in <range>}.§$\|g\|_{\infty} = \max \{|g(x)|, x \in \mathrm{range}\}.$§§
 
 #DESCRIPTION
-If §§w=1§$w=1$§§ (the default case), it consists in searching the best 
+If §§w=1§$w=1$§§ (the default case), it consists in searching the best
 polynomial approximation of §§f§$f$§§ with respect to the absolute error.
 
-If §§f=1§$f=1$§§ and §§w§$w$§§ is of the form §§1/g§$1/g$§§, it consists in 
-searching the best polynomial approximation of §§g§$g$§§ with respect to the 
+If §§f=1§$f=1$§§ and §§w§$w$§§ is of the form §§1/g§$1/g$§§, it consists in
+searching the best polynomial approximation of §§g§$g$§§ with respect to the
 relative error.
 
-#DESCRIPTION 
-If §§n§$n$§§ is given, the polynomial §§p§$p$§§ is searched among the 
-polynomials with degree not greater than §§n§$n$§§.
+#DESCRIPTION
+If §§n§$n$§§ is given, §§p§$p$§§ is searched among the polynomials with degree not
+greater than §§n§$n$§§.
 
-If <L> is given, the polynomial §§p§$p$§§ is searched as a linear combination 
-of monomials §§X^k§$X^k$§§ where §§k§$k$§§ belongs to <L>.
+If <L> is given and is a list of integers, §§p§$p$§§ is searched as a linear
+combination of monomials §§X^k§$X^k$§§ where §§k§$k$§§ belongs to <L>.
+In the case when <L> is a list of integers, it may contain ellipses but cannot
+be end-elliptic.
 
-<L> may contain ellipses but cannot be end-elliptic.
+If <L> is given and is a list of functions §§g_k§$g_k$§§, §§p§$p$§§ is searched as a
+linear combination of the §§g_k§$g_k$§§. In that case <L> cannot contain ellipses.
+It is the user responsability to check that the §§g_k§$g_k$§§ are linearly independent
+over the interval <range>. Moreover, the functions §§w*g_k§$w\cdot g_k$§§ must be at least
+twice differentiable over <range>. If these conditions are not fulfilled, the
+algorithm might fail or even silently return a result as if it successfully
+found the minimax, though the returned §§p§$p$§§ is not optimal.
 
-#DESCRIPTION 
-The polynomial is obtained by a convergent iteration called Remez' algorithm. 
-The algorithm computes a sequence §§p1, ..., pk, ...§$p_1,\dots ,p_k,\dots$§§ 
-such that §§ek = ||<pk*w-f>||§$e_k = \|p_k w-f\|_{\infty}$§§ converges towards 
-the optimal value §§e§$e$§§. The algorithm is stopped when the relative error 
+#DESCRIPTION
+The polynomial is obtained by a convergent iteration called Remez'
+algorithm (and an extension of this algorithm, due to Stiefel).
+The algorithm computes a sequence §§p1, ..., pk, ...§$p_1,\dots ,p_k,\dots$§§
+such that §§ek = ||<pk*w-f>||§$e_k = \|p_k w-f\|_{\infty}$§§ converges towards
+the optimal value §§e§$e$§§. The algorithm is stopped when the relative error
 between §§ek§$e_k$§§ and §§e§$e$§§ is less than <quality>.
-
-#DESCRIPTION 
-Note: the algorithm may not converge in certain cases. Moreover, it may 
-converge towards a polynomial that is not optimal. These cases correspond to 
-the cases when the Haar condition is not fulfilled.
-See [Cheney - Approximation theory] for details.
 
 
 #EXAMPLE
@@ -71,6 +74,13 @@ dirtyinfnorm(p1-exp(x),[0;1]);
 dirtyinfnorm(p2-exp(x),[0;1]);
 dirtyinfnorm(p3-exp(x),[0;1]);
 
+#EXAMPLE
+L = [|exp(x), sin(x), cos(x)-1, sin(x^3)|];
+g = (2^x-1)/x;
+p1 = remez(g, L, [-1/16;1/16]);
+p2 = remez(g, 3, [-1/16;1/16]);
+dirtyinfnorm(p1 - g, [-1/16;1/16]);
+dirtyinfnorm(p2 - g, [-1/16;1/16]);
 
 #SEEALSO $DIRTYINFNORM
 #SEEALSO $INFNORM

@@ -315,83 +315,162 @@ chain *ChebychevPoints(mpfr_t a, mpfr_t b, int n) {
   return res;
 }
 
+/* Assuming that poly = sum a_i *gi(x), find a_i such that gi(x) = g(x) and store it as a constant expression in c */
+/* Returns 1 in case of success and 0 in case of failure. In this case, c is unchanged */
+/* Nothing is done for trying to recognize equivalent expressions: for instance, if g(x) = (x+1) and poly = 2*(1+x)
+   the algorithm fails. The algorithm fails also if g(x) = (x+1) and poly = 2*(x+1)*3, whatever the way you
+   put parentheses.
+*/
+int findCoeffInPseudoPolynomial(node **c, node *poly, node *g) {
+  node *a, *b;
+  node *temp;
+  int r1, r2;
 
-chain *computeExponents(chain *formats, chain *monomials, node *poly) {
-  chain *curr1, *curr2;
+  if (poly == NULL)  return 0;
+  switch (poly->nodeType) {
+  case ADD:
+    r1 = findCoeffInPseudoPolynomial(&a, poly->child1, g);
+    r2 = findCoeffInPseudoPolynomial(&b, poly->child2, g);
+    if (r1) {
+      if (r2) *c = makeAdd(a,b);
+      else *c = a;
+      return 1;
+    }
+    else {
+      if (r2) { *c = b; return 1; }
+    }
+    break;
+  case SUB:
+    r1 = findCoeffInPseudoPolynomial(&a, poly->child1, g);
+    r2 = findCoeffInPseudoPolynomial(&b, poly->child2, g);
+    if (r1) {
+      if (r2) *c = makeSub(a,b);
+      else *c = a;
+      return 1;
+    }
+    else {
+      if (r2) { *c = makeNeg(b); return 1; }
+    }
+    break;
+  case NEG:
+    r1 = findCoeffInPseudoPolynomial(&a, poly->child1, g);
+    if (r1) { *c = makeNeg(a); return 1; }
+    break;
+  case MUL:
+    if ( isSyntacticallyEqual(poly->child2, g) && isConstant(poly->child1) ) {
+      *c = copyTree(poly->child1); return 1;
+    }
+    if ( isSyntacticallyEqual(poly->child1, g) && isConstant(poly->child2) ) {
+      *c = copyTree(poly->child2); return 1;
+    }
+    break;
+  case DIV:
+    if ( isSyntacticallyEqual(poly->child1, g) && isConstant(poly->child2) ) {
+      *c = makeDiv(makeConstantDouble(1.0), copyTree(poly->child2)); return 1;
+    }
+    temp = makeDiv(makeConstantDouble(1.0), copyTree(poly->child2));
+    if ( isSyntacticallyEqual(temp, g) && isConstant(poly->child1) ) {
+      *c = copyTree(poly->child1);
+      free_memory(temp); return 1;
+    }
+    free_memory(temp);
+    break;
+  }
+
+  /* Nothing worked. Maybe, poly = g, in which case, the coefficient is implicitely 1,
+     or poly = constant and g = constant, in which case the coefficient is implicitely poly/g,
+     or poly = 0, in which case the coefficient is implicitely 0.  */
+  if (isSyntacticallyEqual(poly, g)) { *c = makeConstantDouble(1.0); return 1; }
+
+  if ( (isConstant(poly)) && (isConstant(g)) ) {
+    *c = makeDiv(copyTree(poly), copyTree(g)); return 1;
+  }
+
+  temp = makeConstantDouble(0.0);
+  if (isSyntacticallyEqual(poly, temp)) { *c = temp; return 1; }
+
+  /* Otherwise, we fail */
+  free_memory(temp);
+  return 0;
+}
+
+/* Assuming that poly = sum a_i * monomials[i](x), this function computes the array of the a_i
+   and store it in coefficients. Enough room must be available in coefficients to store them all,
+   and the mpfr_t must already be initialized.
+   Note that the same restrictions hold as with function findCoeffInPseudoPolynomial.
+   Returns 1 in case of success and 0 in case of failure (in this case nothing can be said about
+   the content of coefficients)
+*/
+int getCoefficientsInPseudoPolynomial(mpfr_t *coefficients, node *poly, chain *monomials) {
+  chain *curr;
+  node *coeff;
+  int i = 0;
+  for (curr = monomials; curr != NULL; curr = curr->next) {
+    if (findCoeffInPseudoPolynomial(&coeff, poly, (node *)(curr->value))) {
+      evaluateThingToConstant(coefficients[i], coeff, NULL, 1);
+      free_memory(coeff);
+      i++;
+    }
+    else { return 0;}
+  }
+  return 1;
+}
+
+
+chain *computeExponents(chain *formats, mpfr_t* coefficients, int dim) {
+  chain *curr;
   chain *res = NULL;
-  node *tempTree;
-  mpfr_t tempMpfr;
   int *intptr;
   chain *tempChain;
+  int i;
 
-  mpfr_init2(tempMpfr, tools_precision);
-
-  curr1 = monomials;
-  curr2 = formats;
-  while(curr1!=NULL) {
-    tempTree = getIthCoefficient(poly, *(int *)(curr1->value));
-    evaluate(tempMpfr, tempTree, NULL, tools_precision);
-
+  curr = formats;
+  for(i=0; i<dim; i++) {
     intptr = (int *)safeMalloc(sizeof(int));
 
-    if(mpfr_zero_p(tempMpfr)) {
-      printMessage(1, "Information: fpminimax: the %dth coefficient of the minimax is an exact zero\n",*(int *)(curr1->value) );
+    if(mpfr_zero_p(coefficients[i])) {
+      printMessage(1, "Information: fpminimax: the %dth coefficient of the minimax is an exact zero\n", i);
       printMessage(1, "You should probably take it into account\n");
-      *intptr=*(int *)(curr2->value);
+      *intptr=*(int *)(curr->value);
     }
-    else *intptr = *(int *)(curr2->value) - mpfr_get_exp(tempMpfr);
+    else *intptr = *(int *)(curr->value) - mpfr_get_exp(coefficients[i]);
     res = addElement(res, intptr);
-    freeThing(tempTree);
-
-    curr1 = curr1->next;
-    curr2 = curr2->next;
+    curr = curr->next;
   }
 
   tempChain = copyChain(res, copyIntPtrOnVoid);
   freeChain(res, freeIntPtr);
   res = tempChain;
 
-  mpfr_clear(tempMpfr);
   return res;
 }
 
-int fitInFormat(chain *formats, chain *monomials, node *poly) {
-  chain *curr1, *curr2;
-  node *tempTree;
-  mpfr_t tempMpfr;
+int fitInFormat(chain *formats, mpfr_t* coefficients, int dim) {
+  chain *curr;
   mpfr_t val;
-  int prec;
+  int prec, i;
   int test=1;
-  mpfr_init2(tempMpfr, tools_precision);
 
-  curr1 = monomials;
-  curr2 = formats;
-  while( (curr1!=NULL) && test) {
-    tempTree = getIthCoefficient(poly, *(int *)(curr1->value));
-    evaluate(tempMpfr, tempTree, NULL, tools_precision);
-
-    if(!mpfr_zero_p(tempMpfr)) {
-      prec = *(int *)(curr2->value);
+  curr = formats;
+  for(i=0; (i<dim) && test; i++) {
+    if(!mpfr_zero_p(coefficients[i])) {
+      prec = *(int *)(curr->value);
       if (prec==1) {
 	mpfr_init2(val, 12);
 	mpfr_set_ui(val, 1, GMP_RNDN);
-	mpfr_mul_2si(val, val, mpfr_get_exp(tempMpfr)-1, GMP_RNDN);
-	if ( !mpfr_equal_p(val, tempMpfr) ) test=0;
+	mpfr_mul_2si(val, val, mpfr_get_exp(coefficients[i])-1, GMP_RNDN);
+	if ( !mpfr_equal_p(val, coefficients[i]) ) test=0;
 	mpfr_clear(val);
       }
       else {
 	mpfr_init2(val, prec);
-	if (mpfr_set(val, tempMpfr, GMP_RNDN)!=0) test=0;
+	if (mpfr_set(val, coefficients[i], GMP_RNDN)!=0) test=0;
 	mpfr_clear(val);
       }
     }
-    freeThing(tempTree);
-
-    curr1 = curr1->next;
-    curr2 = curr2->next;
+    curr = curr->next;
   }
 
-  mpfr_clear(tempMpfr);
   return test;
 }
 
@@ -417,8 +496,10 @@ node *FPminimax(node *f,
   node *res;
   chain *correctedFormats, *newFormats;
   chain *curr;
-  int test, count;
-  mpfr_t zero, infinity;
+  int i, test, count;
+  mpfr_t zero, infinity, quality;
+  mpfr_t *coefficients;
+  int dim = lengthChain(monomials);
 
   if (absrel== ABSOLUTESYM) {
     tempTree = makeSub(copyTree(f),copyTree(consPart));
@@ -443,10 +524,18 @@ node *FPminimax(node *f,
   if( (fp==FLOATING) || (points==NULL) ) {
     if (minimax == NULL) {
       pushTimeCounter();
-      pstar = remez(g,w, monomials, a, b, NULL, zero, infinity, tools_precision);
+      mpfr_init2(quality, 53); mpfr_set_d(quality, 0.00001, GMP_RNDN);
+      pstar = remez(g, w, monomials, a, b, quality, zero, infinity, tools_precision);
+      mpfr_clear(quality);
       popTimeCounter((char *)"FPminimax: computing minimax approximation");
     }
     else pstar = copyTree(minimax);
+  }
+
+  if ((pstar != NULL) && (isHorner(pstar))) {
+    tempTree = makeCanonical(pstar, tools_precision);
+    free_memory(pstar);
+    pstar = tempTree;
   }
 
   err = NULL;
@@ -461,12 +550,12 @@ node *FPminimax(node *f,
 
     // Tests if there is enough points
     // if not, Chebychev points are used and we approximate pstar instead of f
-    if(lengthChain(pointslist)<lengthChain(monomials)) {
+    if(lengthChain(pointslist)< dim) {
       printMessage(2, "Information: FPminimax: the minimax does not provide enough points.\n");
       printMessage(2, "Switching to Chebyshev points.\n");
 
       freeChain(pointslist, freeMpfrPtr);
-      pointslist = ChebychevPoints(a,b,lengthChain(monomials));
+      pointslist = ChebychevPoints(a,b, dim);
       free_memory(g);
       free_memory(w);
 
@@ -508,12 +597,24 @@ node *FPminimax(node *f,
   }
 
 
-  if( fp == FIXED)   res = FPminimaxMain(g, monomials, formats, pointslist, w);
+  if (fp == FIXED)   res = FPminimaxMain(g, monomials, formats, pointslist, w);
 
   else {   // Floating-point coefficients: we must compute good exponents
-    correctedFormats = computeExponents(formats, monomials, pstar);
-
     test=1; count=0;
+
+    coefficients = (mpfr_t *)safeCalloc(dim, sizeof(mpfr_t));
+    for(i=0; i<dim; i++) mpfr_init2(coefficients[i], tools_precision);
+
+    if (!getCoefficientsInPseudoPolynomial(coefficients, pstar, monomials)) {
+      printMessage(1, "Warning: fpminimax failed to recover the coefficients from the minimax pseudo-polynomial\n");
+      res = NULL;
+      test = 0;
+      correctedFormats = NULL;
+    }
+    else {
+      correctedFormats = computeExponents(formats, coefficients, dim);
+    }
+
     while(test) {
       if(verbosity>=3) {
 	changeToWarningMode();
@@ -533,10 +634,18 @@ node *FPminimax(node *f,
 
       if(res==NULL) test=0;
       else {
-	newFormats =  computeExponents(formats, monomials, res);
+	if (!getCoefficientsInPseudoPolynomial(coefficients, res, monomials)) {
+	  printMessage(1, "Warning: fpminimax failed to recover the coefficients from the minimax pseudo-polynomial\n");
+	  res = NULL;
+	  test = 0;
+	  correctedFormats = NULL;
+	  newFormats = NULL;
+	}
+	else newFormats =  computeExponents(formats, coefficients, dim);
+
 	if( isEqualChain(newFormats,correctedFormats, isEqualIntPtrOnVoid) ) test=0;
 	else {
-	  if( (count > MAXLOOP) && (fitInFormat(formats, monomials, res)) ) test=0;
+	  if( (count > MAXLOOP) && (fitInFormat(formats, coefficients, dim)) ) test=0;
 	  else {
 	    if( (count > 2*MAXLOOP) ) {
 	      res=NULL;
@@ -554,8 +663,9 @@ node *FPminimax(node *f,
     }
     freeChain(correctedFormats, freeIntPtr);
     if (res!=NULL) freeChain(newFormats, freeIntPtr);
+    for(i=0; i<dim; i++) mpfr_clear(coefficients[i]);
+    free(coefficients);
   }
-
 
   free_memory(g);
   free_memory(w);
@@ -571,6 +681,7 @@ node *FPminimax(node *f,
 
   mpfr_clear(zero);
   mpfr_clear(infinity);
+
   return res;
 }
 
@@ -603,18 +714,18 @@ node *FPminimaxMain(node *f,
   mpz_t mpzval;
   wrapper *LLLwrapper;
 
-  mpz_init(mpzval); 
+  mpz_init(mpzval);
 
 
   if(nbpoints < dim) {
-    printMessage(1,"Error: FPminimax: not enough points!\n"); 
+    printMessage(1,"Error: FPminimax: not enough points!\n");
     return NULL;
   }
   if(lengthChain(formats) < dim) {
-    printMessage(1,"Error: FPminimax: not enough formats!\n"); 
+    printMessage(1,"Error: FPminimax: not enough formats!\n");
     return NULL;
-  }    
-    
+  }
+
  // Initialisations and precomputations
   mpfr_init2(var1, prec);
   mpfr_init2(var2, prec);
@@ -652,21 +763,7 @@ node *FPminimaxMain(node *f,
   monomials_tree = (node **)safeMalloc(dim*sizeof(node *));
   curr = monomials;
   for(j=0; j<dim; j++) {
-    temp_tree = (node *)safeMalloc(sizeof(node));
-    temp_tree->nodeType = VARIABLE;
-    temp_tree2 = (node *)safeMalloc(sizeof(node));
-    temp_tree2->nodeType = CONSTANT;
-    ptr = (mpfr_t *)safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*ptr, prec);
-    mpfr_set_si(*ptr, (long) (*((int *)(curr->value))), GMP_RNDN);
-    temp_tree2->value = ptr;
-    
-    temp_tree3 = (node *)safeMalloc(sizeof(node));
-    temp_tree3->nodeType = POW;
-    temp_tree3->child1 = temp_tree;
-    temp_tree3->child2 = temp_tree2;
-
-    monomials_tree[j] = temp_tree3;
+    monomials_tree[j] = copyTree((node *)curr->value);
     curr=curr->next;
   }
 
@@ -678,7 +775,7 @@ node *FPminimaxMain(node *f,
     mpfr_set(x[i-1], *(mpfr_t *)(curr->value), GMP_RNDN);
     curr=curr->next;
   }
-  
+
 
 
   // Filling the matrix
@@ -687,7 +784,7 @@ node *FPminimaxMain(node *f,
     r = evaluateFaithfulWithCutOffFast(var1, w, NULL, x[i-1], zero_mpfr, prec);
     if((r==1) && (mpfr_number_p(var1))) test=1;
     else test=0;
-		 
+
     for (j=1; j <= dim; j++) {
       if(test==1) {
 	r = evaluateFaithfulWithCutOffFast(var2, monomials_tree[j-1], NULL, x[i-1], zero_mpfr, prec);
@@ -702,7 +799,7 @@ node *FPminimaxMain(node *f,
 	temp_tree->nodeType = MUL;
 	temp_tree->child1 = copyTree(monomials_tree[j-1]);
 	temp_tree->child2 = copyTree(w);
-	  
+
 	temp_tree2 = simplifyTreeErrorfree(temp_tree);
 	free_memory(temp_tree);
 	temp_tree = temp_tree2; // temp_tree = x^(monomials[j])*w(x)
@@ -724,7 +821,7 @@ node *FPminimaxMain(node *f,
     if(r==0) mpfr_set_d(var1, 0., GMP_RNDN);
     mpfr_set(M[coeff(i,dim+1,dim+1)],var1,GMP_RNDN);
   }
-  
+
   mpfr_set_ui(max, 0, GMP_RNDN);
   expo_min = mpfr_get_emax();
 
@@ -757,7 +854,7 @@ node *FPminimaxMain(node *f,
   for(i=1; i<=nbpoints; i++) {
     for(j=1; j<=dim+1; j++) {
       mpfr_mul_2si(M[coeff(i, j, dim+1)], M[coeff(i, j,dim+1)], prec-expo_min, GMP_RNDN);
-      
+
       mpfr_get_z(mpzval, M[coeff(i,j,dim+1)], GMP_RNDN);
       zval.set(mpzval);
       FPlllMat->Set(j-1,i-1,zval);
@@ -789,7 +886,7 @@ node *FPminimaxMain(node *f,
   pushTimeCounter();
   testIfSingular = exact_system_solve(coefficients, exactMatrix, reducedVect, nbpoints+1, dim+1);
   popTimeCounter((char *)"FPminimax: computing the coefficients");
-  
+
   if(testIfSingular == 0) { /* The system has been correctly solved */
 
     // Construction of the resulting polynomial
@@ -803,18 +900,17 @@ node *FPminimaxMain(node *f,
 	mpfr_set_prec(mpfr_coefficients[j-1], mpfr_get_exp(mpfr_coefficients[j-1]));
 	mpfr_set_q(mpfr_coefficients[j-1], coefficients[j-1], GMP_RNDN);
       }
-      
+
       mpfr_neg(mpfr_coefficients[j-1], mpfr_coefficients[j-1], GMP_RNDN);
       mpfr_div_2si(mpfr_coefficients[j-1],
 		   mpfr_coefficients[j-1],
 		   *(int *)accessInList(formats,j-1), GMP_RNDN);
     }
-  
-    res = constructPolynomial(mpfr_coefficients, monomials, prec);
 
+    res = constructPolynomialFromArray(mpfr_coefficients, monomials_tree, dim);
   }
   else res = NULL;
-  
+
   // Cleaning
   delete FPlllMat;
   delete LLLwrapper;
@@ -834,13 +930,13 @@ node *FPminimaxMain(node *f,
   free(M);
   free(exactMatrix);
 
-  
+
   for(j=1; j<=dim; j++)   free_memory(monomials_tree[j-1]);
   free(monomials_tree);
-  
+
   for(i=1; i<=nbpoints; i++)  mpfr_clear(x[i-1]);
   free(x);
-  
+
   for(j=1;j<=dim+1; j++) mpq_clear(coefficients[j-1]);
   free(coefficients);
 

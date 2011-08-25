@@ -15872,6 +15872,386 @@ void *evaluateThingOnVoid(void *tree) {
   return (void *) evaluateThing((node *) tree);
 }
 
+void *makeMonomialFromIntOnVoid(void *n) {
+  int a;
+  a = *((int *)n);
+  if (a==0) return makeConstantDouble(1.0);
+  if (a==1) return makeVariable();
+  return (void *)makePow(makeVariable(), makeConstantDouble((double)a));
+}
+
+/* Check that tree is a finite non-empty list that does not contain the symbol "..."
+/* Return 1 if, moreover, one of the following conditions is satisfied:
+     * either the list contains only non-negative and distinct integers;
+     * or the list contains only pure trees (i.e. mathematical expressions).
+   In case of success, a list of pure trees is stored in monomials. If tree
+   is a list of integers [n1...nk], monomials contain the functions [x^n1...x^nk],
+   and otherwise monomials is just the content of tree.
+   In case of failure, returns 0, without doing anything with monomials
+*/
+int evaluateThingToPseudoMonomialsList(chain **monom, node *tree) {
+  int useless;
+  chain *curr;
+  chain *monomials;
+  int prev;
+  int failure = 0;
+  int n;
+
+  if (!isPureList(tree)) return 0;
+  if (evaluateThingToIntegerList(&monomials, &useless, tree)) {
+    sortChain(monomials, cmpIntPtr);
+    prev = -1;
+    for (curr = monomials; curr != NULL; curr = curr->next) {
+      if (*(int *)(curr->value) < 0) {
+        printMessage(1,"Error: monomial degrees must be non-negative.\n");
+        failure = 1;
+        break;
+      }
+      if (*(int *)(curr->value) == prev) {
+        printMessage(1,"Error: monomial degree is given twice in argument to Remez algorithm.\n");
+        failure = 1;
+        break;
+      }
+      prev = *(int *)(curr->value);
+    }
+    if (failure) { freeChain(monomials,freeMemoryOnVoid); return 0; }
+    else {
+      *monom = copyChainWithoutReversal(monomials, makeMonomialFromIntOnVoid);
+      freeChain(monomials,freeIntPtr);
+      return 1;
+    }
+  }
+  else {
+    if (!evaluateThingToPureListOfPureTrees(monom, tree)) return 0;
+  }
+
+  return 1;
+}
+
+
+node *evaluateThingInnerRemez(node *tree, char *timingString) {
+  chain *curr;
+  chain *arguments;
+  chain *monomials = NULL;
+  node *firstArg, *secondArg, *thirdArg, *fourthArg, *fifthArg, *sixthArg;
+  node *result;
+  int failure = 0;
+  int n = -1;
+  mpfr_t tmp, a, b, c, d, quality;
+
+  /* We process the arguments:
+       * the first one must be a function f
+       * the second one can be an integer n, a list of integers [|n1...nk|] or a list of functions [|g1...gk|]
+         n is equivalent to [|0...n|] and [|n1...nk|] is equivalent to [|x^n1...x^nk|]
+       * the third argument must be an interval
+       * the fourth argument is optional and must be a function w (default is 1)
+       * the fifth argument is optional and must be a postive number (default is 1e-5). This is the required quality.
+       * the sixth argument is optional and must be a positive number r or an interval [r1, r2] (default is [0, +Inf]).
+         r is equivalent to [r,r]. This argument is officially undocumented. The description of this argument is given
+         in the commit message of revision 1405.
+
+     Note: the parser has already ensured that the first three arguments exist.
+  */
+
+  arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+  curr = arguments;
+  firstArg = copyThing((node *) (curr->value)); curr = curr->next;
+  secondArg = copyThing((node *) (curr->value)); curr = curr->next;
+  thirdArg = copyThing((node *) (curr->value)); curr = curr->next;
+  fourthArg = NULL; fifthArg = NULL; sixthArg = NULL;
+
+  if (curr != NULL) {
+    fourthArg = copyThing((node *) (curr->value)); curr = curr->next;
+  }
+  if (curr != NULL) {
+    fifthArg = copyThing((node *) (curr->value)); curr = curr->next;
+  }
+  if (curr != NULL) {
+    sixthArg = copyThing((node *) (curr->value)); curr = curr->next;
+  }
+
+  if (curr != NULL) {
+    printMessage(1,"Warning: too many arguments given to remez command. The remaining arguments will be ignored.\n");
+    considerDyingOnError();
+  }
+
+  if ( (fourthArg == NULL) || isDefault(fourthArg) ) {
+    freeThing(fourthArg); fourthArg = makeConstantDouble(1.0);
+  }
+  if ( (fifthArg == NULL) || isDefault(fifthArg) ) {
+    freeThing(fifthArg); fifthArg = makeConstantDouble(0.00001);
+  }
+  if ( (sixthArg == NULL) || isDefault(sixthArg) ) {
+    freeThing(sixthArg);
+    mpfr_init2(tmp, 53);
+    mpfr_set_inf(tmp, 1);
+    sixthArg = makeRange(makeConstantDouble(0.0), makeConstant(tmp));
+    mpfr_clear(tmp);
+  }
+
+  /* Now we check the types of the arguments */
+  if (!isPureTree(firstArg)) failure = 1;
+
+  /* Second argument */
+  if (isPureTree(secondArg)) { /* secondArg can be an integer */
+    if (!evaluateThingToInteger(&n, secondArg, NULL)) failure = 1;
+    else {
+      if (n<0) {
+        printMessage(1,"Error: the second argument of remez must be a non-negative integer or a list.\n");
+        failure = 1;
+      }
+      else { /* The second argument is a valid integer n. Converting it to a list. */
+        freeThing(secondArg);
+        secondArg = makeList(makeConstantIntChain(n));
+      }
+    }
+  }
+  if (!evaluateThingToPseudoMonomialsList(&monomials, secondArg)) failure = 1;
+
+  /* Third argument */
+  mpfr_init2(a, tools_precision); mpfr_init2(b, tools_precision); /* Only for avoiding future reallocation.
+                                                                     The precision of a and b will be set to a suitable
+                                                                     value by evaluateThingToRange anyway */
+  if (!evaluateThingToRange(a, b, thirdArg))   failure = 1;
+
+  /* Fourth argument */
+  if (!isPureTree(fourthArg)) failure = 1;
+
+  /* Fifth argument */
+  mpfr_init2(quality, tools_precision);
+  if (!evaluateThingToConstant(quality, fifthArg, NULL, 1))   failure = 1;
+
+  /* Sixth argument */
+  mpfr_init2(c, tools_precision); mpfr_init2(d, tools_precision);
+  if (isPureTree(sixthArg)) { /* sixthArg can be a number */
+    if (!evaluateThingToConstant(c, sixthArg, NULL, 1))   failure = 1;
+    else {
+      mpfr_set_prec(d, mpfr_get_prec(c));
+      mpfr_set(d, c, GMP_RNDN); /* exact */
+    }
+  }
+  else {
+    if (!evaluateThingToRange(c, d, sixthArg))    failure = 1;
+  }
+
+  /* Now, if (failure), we cannot run the algorithm, otherwise we can */
+  if (failure) {
+    result = copyThing(tree);
+  }
+  else {
+    if (timingString != NULL) pushTimeCounter();
+    result = remez(firstArg, fourthArg, monomials, a, b, quality, c, d, tools_precision);
+    if (timingString != NULL) popTimeCounter(timingString);
+  }
+
+  mpfr_clear(a); mpfr_clear(b); mpfr_clear(c); mpfr_clear(d); mpfr_clear(quality);
+  freeChain(monomials,freeMemoryOnVoid);
+  freeChain(arguments,freeThingOnVoid);
+  freeThing(firstArg);
+  freeThing(secondArg);
+  freeThing(thirdArg);
+  freeThing(fourthArg);
+  freeThing(fifthArg);
+  freeThing(sixthArg);
+  return result;
+}
+
+node *evaluateThingInnerFpminimax(node *tree, char *timingString) {
+  chain *curr;
+  chain *arguments;
+  chain *monomials = NULL;
+  chain *formats = NULL;
+  chain *pointsList = NULL;
+  node *firstArg, *secondArg, *thirdArg, *fourthArg, *fifthArg, *sixthArg, *seventhArg, *eighthArg;
+  int relabsArg, fpfixedArg;
+  node *pstarArg, *constrainedPartArg;
+  node *result;
+  int failure = 0;
+  int n = -1;
+  mpfr_t a, b;
+
+  arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
+  curr = arguments;
+
+  /* We process the arguments:
+       * the first one must be a function f
+       * the second one can be an integer, a list of integers or a list of functions as for remez
+       * the third argument must be a list containing only integers and keywords D, DD, etc.
+       * the fourth argument must be an interval or a list of constants
+       * the fifth, sixth and seventh arguments are optional and can be
+             - RELATIVE | ABSOLUTE (default is  RELATIVE)
+             - FIXED | FLOATING (default is FLOATING)
+             - a function (default is 0)
+       * the eighth argument is optional and is a function q (constrained part)
+
+     Note: the parser has already ensured that the first four arguments exist.
+  */
+
+  firstArg = copyThing((node *) (curr->value)); curr = curr->next;
+  secondArg = copyThing((node *) (curr->value)); curr = curr->next;
+  thirdArg = copyThing((node *) (curr->value)); curr = curr->next;
+  fourthArg = copyThing((node *) (curr->value)); curr = curr->next;
+  fifthArg = sixthArg = seventhArg = eighthArg = NULL;
+
+  if (curr != NULL) {
+    fifthArg = copyThing((node *) (curr->value)); curr = curr->next;
+  }
+  if (curr != NULL) {
+    sixthArg = copyThing((node *) (curr->value)); curr = curr->next;
+  }
+  if (curr != NULL) {
+    seventhArg = copyThing((node *) (curr->value)); curr = curr->next;
+  }
+  if (curr != NULL) {
+    eighthArg = copyThing((node *) (curr->value)); curr = curr->next;
+  }
+
+ if (curr != NULL) {
+    printMessage(1,"Warning: too many arguments given to fpminimax command. The remaining arguments will be ignored.\n");
+    considerDyingOnError();
+  }
+
+
+ /* We now handle the three optional parameters that can be permuted */
+ relabsArg = RELATIVESYM;
+ fpfixedArg = FLOATING;
+ constrainedPartArg = makeConstantDouble(0.0);
+
+ if ( (fifthArg != NULL) && (!isDefault(fifthArg)) ) {
+   switch(fifthArg->nodeType) {
+   case RELATIVESYM: case ABSOLUTESYM: relabsArg = fifthArg->nodeType; break;
+   case FLOATING: case FIXED: fpfixedArg = fifthArg->nodeType; break;
+   default:
+     if (isPureTree(fifthArg)) {
+       freeThing(constrainedPartArg); constrainedPartArg = copyTree(fifthArg);
+     }
+     else {
+       printMessage(1, "Error in fpminimax: invalid fifth argument\n");
+       failure = 1;
+     }
+   }
+ }
+
+ if ( (sixthArg != NULL) && (!isDefault(sixthArg)) ) {
+   switch(sixthArg->nodeType) {
+   case RELATIVESYM: case ABSOLUTESYM: relabsArg = sixthArg->nodeType; break;
+   case FLOATING: case FIXED: fpfixedArg = sixthArg->nodeType; break;
+   default:
+     if (isPureTree(sixthArg)) {
+       freeThing(constrainedPartArg); constrainedPartArg = copyTree(sixthArg);
+     }
+     else {
+       printMessage(1, "Error in fpminimax: invalid fifth argument\n");
+       failure = 1;
+     }
+   }
+ }
+
+ if ( (seventhArg != NULL) && (!isDefault(seventhArg)) ) {
+   switch(seventhArg->nodeType) {
+   case RELATIVESYM: case ABSOLUTESYM: relabsArg = seventhArg->nodeType; break;
+   case FLOATING: case FIXED: fpfixedArg = seventhArg->nodeType; break;
+   default:
+     if (isPureTree(seventhArg)) {
+       freeThing(constrainedPartArg); constrainedPartArg = copyTree(seventhArg);
+     }
+     else {
+       printMessage(1, "Error in fpminimax: invalid fifth argument\n");
+       failure = 1;
+     }
+   }
+ }
+
+ /* Finally we handle the eighth optional argument */
+  if ( (eighthArg == NULL) || isDefault(eighthArg) )   pstarArg = NULL;
+  else pstarArg = copyThing(eighthArg);
+
+
+  /* Now, we check the type of the arguments. Arguments 5, 6 and 7 have already been done */
+  if (!isPureTree(firstArg)) failure = 1;
+
+  /* Second argument. This code is a copy-paste from evaluateThingInnerRemez */
+  if (isPureTree(secondArg)) { /* secondArg can be an integer */
+    if (!evaluateThingToInteger(&n, secondArg, NULL)) failure = 1;
+    else {
+      if (n<0) {
+        printMessage(1,"Error: the second argument of fpminimax must be a non-negative integer or a list.\n");
+        failure = 1;
+      }
+      else { /* The second argument is a valid integer n. Converting it to a list. */
+        freeThing(secondArg);
+        secondArg = makeList(makeConstantIntChain(n));
+      }
+    }
+  }
+  if (!evaluateThingToPseudoMonomialsList(&monomials, secondArg)) failure = 1;
+
+
+  /* Third argument: must be a list. Note that negative formats are allowed in FIXED mode
+     but not in FLOATING mode
+  */
+  if( (thirdArg->nodeType == LIST) || (thirdArg->nodeType == FINALELLIPTICLIST) )
+    evaluateFormatsListForFPminimax(&formats, thirdArg, lengthChain(monomials), fpfixedArg);
+  else {
+    printMessage(1, "Error in fpminimax: the third argument of fpminimax must be a list of formats indications.\n");
+    failure = 1;
+  }
+
+  /* Fourth argument: either a range or a list of points */
+  mpfr_init2(a, tools_precision); mpfr_init2(b, tools_precision); /* Only for avoiding future reallocation.
+                                                                     The precision of a and b will be set to a suitable
+                                                                     value by evaluateThingToRange anyway */
+  if (!evaluateThingToRange(a, b, fourthArg)) {
+    if (!evaluateThingToConstantList(&pointsList, fourthArg)) {
+      printMessage(1, "Error in fpminimax: the fourth argument of fpminimax must be either an interval or a list of points\n");
+      failure = 1;
+    }
+  }
+  if (pointsList != NULL) {
+    curr = pointsList;
+    mpfr_set_prec(a, mpfr_get_prec(*(mpfr_t *)(curr->value)));
+    mpfr_set(a, *(mpfr_t *)(curr->value), GMP_RNDD); /* exact */
+    while(curr->next != NULL) curr = curr->next;
+    mpfr_set_prec(b, mpfr_get_prec(*(mpfr_t *)(curr->value)));
+    mpfr_set(b, *(mpfr_t *)(curr->value), GMP_RNDU); /* exact */
+  }
+
+  /* Eighth argument */
+  if ( (pstarArg != NULL) && (!isPureTree(pstarArg)) )  failure = 1;
+
+  /* Now, if (failure), we cannot run the algorithm, otherwise we can */
+  if (failure) {
+    result = copyThing(tree);
+  }
+  else {
+    if (timingString != NULL) pushTimeCounter();
+    result = FPminimax(firstArg, monomials, formats, pointsList, a, b, fpfixedArg, relabsArg, constrainedPartArg, pstarArg);
+
+    /* FPminimax can return NULL if does not succeed, either because not enough points or format inidications were
+       prrovided, or because it did not manage to find correct exponents (for floating-point formats).
+       In this case, we return error */
+    if (result == NULL)  result = makeError();
+    if (timingString != NULL) popTimeCounter(timingString);
+  }
+
+  mpfr_clear(a); mpfr_clear(b);
+  freeChain(monomials,freeMemoryOnVoid);
+  freeChain(arguments,freeThingOnVoid);
+  freeChain(formats, freeIntPtr);
+  freeChain(pointsList, freeMpfrPtr);
+  freeThing(firstArg);
+  freeThing(secondArg);
+  freeThing(thirdArg);
+  freeThing(fourthArg);
+  freeThing(fifthArg);
+  freeThing(sixthArg);
+  freeThing(seventhArg);
+  freeThing(eighthArg);
+  freeThing(pstarArg);
+  free_memory(constrainedPartArg);
+  return result;
+}
+
 node *evaluateThingInner(node *tree) {
   node *copy, *tempNode, *tempNode2, *tempNode3, *tempNode4, *tempNode5, *tempNode6;
   int *intptr;
@@ -15896,7 +16276,7 @@ node *evaluateThingInner(node *tree) {
   sollya_mpfi_t tempIA2;
   unsigned int tempUI;
   node **thingArray1, **thingArray2, **thingArray3;
-  entry *structEntry; 
+  entry *structEntry;
   chain *assoclist;
   int floatingPointEvaluationAlreadyDone;
 
@@ -19437,105 +19817,8 @@ node *evaluateThingInner(node *tree) {
     }
     break;
   case REMEZ:
-    copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
-    curr = copy->arguments;
-    firstArg = copyThing((node *) (curr->value));
-    curr = curr->next;
-    secondArg = copyThing((node *) (curr->value));
-    curr = curr->next;
-    thirdArg = copyThing((node *) (curr->value));
-    curr = curr->next;
-
-    fourthArg = NULL;
-    fifthArg = NULL;
-    sixthArg = NULL;
-    if (curr != NULL) {
-      fourthArg = copyThing((node *) (curr->value));
-      curr = curr->next;
-      if (curr != NULL) {
-	fifthArg = copyThing((node *) (curr->value));
-        curr = curr->next;
-        if (curr != NULL) {
-          sixthArg = copyThing((node *) (curr->value));
-        }
-      }
-    }
-
-    if (fourthArg == NULL) fourthArg = makeConstantDouble(1.0);
-
-    if (isPureTree(firstArg) && isRange(thirdArg) && (isPureTree(fourthArg) || isDefault(fourthArg)) && ((fifthArg == NULL) || isDefault(fifthArg) || isPureTree(fifthArg)) && ((sixthArg == NULL) || isDefault(sixthArg) || isRange(sixthArg))) {
-      if (isPureTree(secondArg) || isPureList(secondArg)) {
-	resB = 0;
-	if (isPureTree(secondArg)) {
-	  if (evaluateThingToInteger(&resA,secondArg,NULL)) {
-	    resB = 1;
-	    tempChain = makeIntPtrChainFromTo(0, resA);
-	  }
-	} else {
-	  if (evaluateThingToIntegerList(&tempChain, NULL, secondArg)) {
-	    resB = 1;
-	  }
-	}
-	if (resB) {
-	  if (isDefault(fourthArg)) {
-	    freeThing(fourthArg);
-	    fourthArg = makeConstantDouble(1.0);
-	  }
-	  mpfr_init2(a,tools_precision);
-	  mpfr_init2(b,tools_precision);
-	  if (evaluateThingToRange(a,b,thirdArg)) {
-	    tempMpfrPtr = NULL;
-	    if ((fifthArg != NULL) && (!isDefault(fifthArg))) {
-	      tempMpfrPtr = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	      mpfr_init2(*tempMpfrPtr,tools_precision);
-	      if (!evaluateThingToConstant(*tempMpfrPtr,fifthArg,NULL,0)) {
-		printMessage(1,"Warning: the given argument cannot be evaluated to a constant. It will be ignored.\n");
-                considerDyingOnError();
-		mpfr_clear(*tempMpfrPtr);
-		free(tempMpfrPtr);
-		tempMpfrPtr = NULL;
-	      }
-	    }
-            mpfr_init2(c, tools_precision);
-            mpfr_init2(d, tools_precision);
-            resC = 0;
-            if ((sixthArg==NULL) || isDefault(sixthArg)) {
-              resC = 1;
-              mpfr_set_ui(c, 0, GMP_RNDN);
-              mpfr_set_inf(d, 1);
-            }
-            else resC = evaluateThingToRange(c, d, sixthArg);
-            if (resC) {
-              if (mpfr_cmp_ui(c, 0) < 0) {
-                printMessage(1, "Warning: the sixth argument of remez must be a non-negative interval. Replaced by [0, +Inf]\n");
-                mpfr_set_ui(c, 0, GMP_RNDN);
-                mpfr_set_inf(d, 1);
-              }
-              if (timingString != NULL) pushTimeCounter();
-              tempNode = remez(firstArg, fourthArg, tempChain, a, b, tempMpfrPtr, c, d, tools_precision);
-              if (timingString != NULL) popTimeCounter(timingString);
-              freeThing(copy);
-              copy = tempNode;
-              if (tempMpfrPtr != NULL) {
-                mpfr_clear(*tempMpfrPtr);
-                free(tempMpfrPtr);
-              }
-            }
-            mpfr_clear(c);
-            mpfr_clear(d);
-          }
-          mpfr_clear(a);
-          mpfr_clear(b);
-          freeChain(tempChain,freeIntPtr);
-        }
-      }
-    }
-    freeThing(firstArg);
-    freeThing(secondArg);
-    freeThing(thirdArg);
-    freeThing(fourthArg);
-    if (fifthArg != NULL) freeThing(fifthArg);
-    if (sixthArg != NULL) freeThing(sixthArg);
+    free(copy);
+    copy = evaluateThingInnerRemez(tree, timingString);
     break;
   case BIND:
     copy->child1 = evaluateThingInner(tree->child1);
@@ -19604,184 +19887,8 @@ node *evaluateThingInner(node *tree) {
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
     break;
   case FPMINIMAX:
-    copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
-    curr = copy->arguments;
-    firstArg = copyThing((node *) (curr->value)); /* f */
-    curr = curr->next;
-    secondArg = copyThing((node *) (curr->value)); /* degree or monomials */
-    curr = curr->next;
-    thirdArg = copyThing((node *) (curr->value)); /* list of formats */
-    curr = curr->next;
-    fourthArg = copyThing((node *) (curr->value)); /* interval or points list */
-    curr = curr->next;
-    fifthArg = sixthArg = seventhArg = eighthArg = NULL;
-    if (curr != NULL) { /* one of absolute, relative, floating, fixed, constPart */
-      fifthArg = copyThing((node *) (curr->value));
-      curr = curr->next;
-      if (curr != NULL) { 
-	sixthArg = copyThing((node *) (curr->value));
-	curr = curr->next;
-	if (curr != NULL) { 
-	  seventhArg = copyThing((node *) (curr->value));
-	  curr = curr->next;
-	  if (curr != NULL) { /* minimax polynomial */
-	    eighthArg = copyThing((node *) (curr->value));
-	  }
-	}
-      }
-    }
-
-    tempChain = NULL;
-    if(evaluateThingToInteger(&resA, secondArg, NULL)) {
-      if(resA<0) printMessage(1, "Error in fpminimax: degree must be a positive integer");
-      else {
-	for(i=resA;i>=0;i--) {
-	  intptr = (int *)safeMalloc(sizeof(int));
-	  *intptr = i;
-	  tempChain = addElement(tempChain, intptr);
-	}
-      }
-    }
-    else{
-      if( (!evaluateThingToIntegerList(&tempChain, &resA, secondArg)) ||
-	  (resA==1) ) {
-	printMessage(1, "Error in fpminimax: the second argument of fpminimax must be either an integer or a finite list of integers.\n");
-        if (tempChain) freeChain(tempChain, freeIntPtr);
-        tempChain = NULL;
-      }
-    }
-
-    /* We skip the third argument for now on, because we need to parse the 4th, 5th and 6th arguments before
-       in order to know if negative formats are allowed or not (they are allowed in FIXED mode but not in
-       FLOATING mode) */
-
-    tempChain3 = NULL;
-    mpfr_init2(a, tools_precision);
-    mpfr_init2(b, tools_precision);
-    resD = 1; /* tests if something goes wrong with 4th argument */
-    if (!evaluateThingToRange(a,b,fourthArg)) {
-      if (!evaluateThingToConstantList(&tempChain3, fourthArg)) {
-	resD = 0;
-	printMessage(1, "Error in fpminimax: the fourth argument of fpminimax must be either an interval or a list of points\n");
-      }
-    }
-    if(tempChain3 != NULL) {
-      curr=tempChain3;
-      mpfr_set_prec(a, mpfr_get_prec(*(mpfr_t *)(curr->value)));
-      mpfr_set(a, *(mpfr_t *)(curr->value), GMP_RNDD);
-      while(curr->next != NULL) curr = curr->next;
-      mpfr_set_prec(b, mpfr_get_prec(*(mpfr_t *)(curr->value)));
-      mpfr_set(b, *(mpfr_t *)(curr->value), GMP_RNDD);
-    }
-
-
-    resB = FLOATING;
-    resC = RELATIVESYM;
-    tempNode = makeConstantDouble(0.);
-    resE = 1; /* tests if something goes wrong with 5th, 6th and 7th argument */
-
-    if ( (fifthArg != NULL) && (!isDefault(fifthArg)) ) {
-      switch(fifthArg->nodeType) {
-      case RELATIVESYM: resC = RELATIVESYM; break;
-      case ABSOLUTESYM: resC = ABSOLUTESYM; break;
-      case FLOATING: resB = FLOATING; break;
-      case FIXED: resB = FIXED; break;
-      default:
-	if( (isPureTree(fifthArg)) && (isPolynomial(fifthArg)) ) {
-	  freeThing(tempNode);
-	  tempNode = copyTree(fifthArg);
-	}
-	else {
-	  printMessage(1, "Error in fpminimax: invalid fifth argument\n");
-	  resE = 0;
-	}
-      }
-    }
-
-    if ( (sixthArg != NULL) && (!isDefault(sixthArg)) ) {
-      switch(sixthArg->nodeType) {
-      case RELATIVESYM: resC = RELATIVESYM; break;
-      case ABSOLUTESYM: resC = ABSOLUTESYM; break;
-      case FLOATING: resB = FLOATING; break;
-      case FIXED: resB = FIXED; break;
-      default:
-	if( (isPureTree(sixthArg)) && (isPolynomial(sixthArg)) ) {
-	  freeThing(tempNode);
-	  tempNode = copyTree(sixthArg);
-	}
-	else {
-	  printMessage(1, "Error in fpminimax: invalid sixth argument\n");
-	  resE = 0;
-	}
-      }
-    }
-
-    if ( (seventhArg != NULL) && (!isDefault(seventhArg)) ) {
-      switch(seventhArg->nodeType) {
-      case RELATIVESYM: resC = RELATIVESYM; break;
-      case ABSOLUTESYM: resC = ABSOLUTESYM; break;
-      case FLOATING: resB = FLOATING; break;
-      case FIXED: resB = FIXED; break;
-      default:
-	if( (isPureTree(seventhArg)) && (isPolynomial(seventhArg)) ) {
-	  freeThing(tempNode);
-	  tempNode = copyTree(seventhArg);
-	}
-	else {
-	  printMessage(1, "Error in fpminimax: invalid seventh argument\n");
-	  resE = 0;
-	}
-      }
-    }
-
-    /* Now, we parse the third argument */
-    tempChain2 = NULL;
-    if( (thirdArg->nodeType == LIST) || (thirdArg->nodeType == FINALELLIPTICLIST) )
-      evaluateFormatsListForFPminimax(&tempChain2, thirdArg, lengthChain(tempChain), resB);
-    else
-      printMessage(1, "Error in fpminimax: the third argument of fpminimax must be a list of formats indications.\n");
-
-
-    tempNode2 = NULL;
-    if( (eighthArg != NULL) && (isPureTree(eighthArg)) && (isPolynomial(eighthArg)) )
-      tempNode2 = copyTree(eighthArg);
-
-
-    if ( (isPureTree(firstArg)) &&
-	 (tempChain != NULL) &&    /* list of monomials */
-	 (tempChain2 != NULL) &&   /* list of formats   */
-	 (resD) &&                 /* tempChain3 != NULL or [a,b] is the interval */
-	 (resE) &&                 /* resB=FIXED,FLOATING   resC=ABSOLUTESYM,RELATIVESYM    tempNode=consPart */
-	 ((eighthArg == NULL) || (tempNode2 != NULL))  /* tempNode2 is minimax or NULL */
-	 ) {
-
-      if (timingString != NULL) pushTimeCounter();
-      tempNode3 = FPminimax(firstArg, tempChain, tempChain2, tempChain3, a, b, resB, resC, tempNode, tempNode2);
-      if (timingString != NULL) popTimeCounter(timingString);
-
-      freeThing(copy);
-      if (tempNode3 == NULL) { tempNode3 = makeError(); }
-      copy=tempNode3;
-    }
-
-
-
-    freeChain(tempChain, freeIntPtr);
-    freeChain(tempChain2, freeIntPtr);
-    freeChain(tempChain3, freeMpfrPtr);
-    mpfr_clear(a);
-    mpfr_clear(b);
-    freeThing(tempNode);
-    freeThing(tempNode2);
-
-    freeThing(firstArg);
-    freeThing(secondArg);
-    freeThing(thirdArg);
-    freeThing(fourthArg);
-    if(fifthArg!=NULL) freeThing(fifthArg);
-    if(sixthArg!=NULL) freeThing(sixthArg);
-    if(seventhArg!=NULL) freeThing(seventhArg);
-    if(eighthArg!=NULL) freeThing(eighthArg);
+    free(copy);
+    copy = evaluateThingInnerFpminimax(tree, timingString);
     break;
   case HORNER:
     copy->child1 = evaluateThingInner(tree->child1);

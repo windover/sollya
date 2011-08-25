@@ -64,6 +64,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "general.h"
 #include "infnorm.h"
 #include "execute.h"
+#include "remez.h"
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
@@ -227,59 +228,20 @@ void mpfr_sort(mpfr_t *vect, int n, mp_prec_t prec) {
 // The array coeff is supposed to have at least as many elements as monomials
 node *constructPolynomial(mpfr_t *coeff, chain *monomials, mp_prec_t prec) {
   int i=1;
+  int n;
   chain *curr;
-  node *temp1;
-  node *temp2;
-  node *temp3;
-  node *temp4;
-  node *temp5;
-  node *temp6;
-
   node *poly;
-  mpfr_t *ptr;
 
-  poly =  safeMalloc(sizeof(node));
-  poly->nodeType = CONSTANT;
-  ptr = safeMalloc(sizeof(mpfr_t));
-  mpfr_init2(*ptr, prec);
-  mpfr_set_d(*ptr, 0., GMP_RNDN);
-  poly->value = ptr;
+  poly =  makeConstantDouble(0.0);
 
   curr = monomials;
   while(curr != NULL) {
-    temp1 = safeMalloc(sizeof(node));
-    temp1->nodeType = ADD;
-
-    temp2 = safeMalloc(sizeof(node));
-    temp2->nodeType = MUL;
-
-    temp3 = safeMalloc(sizeof(node));
-    temp3->nodeType = CONSTANT;
-    ptr = safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*ptr, prec);
-    mpfr_set(*ptr, coeff[i-1], GMP_RNDN);
-    temp3->value = ptr;
-
-    temp4 = safeMalloc(sizeof(node));
-    temp4->nodeType = POW;
-
-    temp5 = safeMalloc(sizeof(node));
-    temp5->nodeType = VARIABLE;
-
-    temp6 = safeMalloc(sizeof(node));
-    temp6->nodeType = CONSTANT;
-    ptr = safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*ptr, prec);
-    mpfr_set_si(*ptr, *((int *)(curr->value)), GMP_RNDN);
-    temp6->value = ptr;
-
-    temp4->child1 = temp5;
-    temp4->child2 = temp6;
-    temp2->child1 = temp3;
-    temp2->child2 = temp4;
-    temp1->child1 = temp2;
-    temp1->child2 = poly;
-    poly = temp1;
+    n = *((int *)(curr->value));
+    poly = makeAdd( makeMul( makeConstant(coeff[i-1]),
+                             makePow(makeVariable(), makeConstantDouble((double)(n)))
+                           ),
+                    poly
+                  );
     i++;
     curr = curr->next;
   }
@@ -1609,10 +1571,11 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
  -----------------------|----------------------------|-------------------------->
                     satisfying                     target
          :-)                                                       :-(
+
 */
 node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t prec, mpfr_t quality, mpfr_t satisfying_error, mpfr_t target_error) {
   int freeDegrees = lengthChain(monomials);
-  int i,j, r, count, test, crash, HaarCompliant;
+  int i, j, r, count, test, crash, HaarCompliant;
   mpfr_t zero_mpfr, var1, var2, var3, computedQuality, infinityNorm;
   mpfr_t *ptr;
   node *temp_tree;
@@ -1696,21 +1659,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   monomials_tree = safeMalloc(freeDegrees*sizeof(node *));
   curr = monomials;
   for(j=0;j<freeDegrees;j++) {
-    temp_tree = safeMalloc(sizeof(node));
-    temp_tree->nodeType = VARIABLE;
-    temp_tree2 = safeMalloc(sizeof(node));
-    temp_tree2->nodeType = CONSTANT;
-    ptr = safeMalloc(sizeof(mpfr_t));
-    mpfr_init2(*ptr, prec);
-    mpfr_set_si(*ptr, (long) (*((int *)(curr->value))), GMP_RNDN);
-    temp_tree2->value = ptr;
-
-    temp_tree3 = safeMalloc(sizeof(node));
-    temp_tree3->nodeType = POW;
-    temp_tree3->child1 = temp_tree;
-    temp_tree3->child2 = temp_tree2;
-
-    monomials_tree[j] = temp_tree3;
+    monomials_tree[j] =  copyTree((node *)(curr->value));
     curr=curr->next;
   }
   popTimeCounter("Remez: computing monomials");
@@ -1935,7 +1884,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       system_solve(ai_vect, M, b, freeDegrees+1, prec);
       popTimeCounter("Remez: solving the system");
 
-      poly = constructPolynomial(ai_vect, monomials, prec);
+      poly = constructPolynomialFromArray(ai_vect, monomials_tree, freeDegrees);
 
       if(verbosity>=4) {
 	changeToWarningMode();
@@ -1966,9 +1915,11 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
       pushTimeCounter();
 
-      temp_tree = horner(poly);
-      free_memory(poly);
-      poly = temp_tree;
+      /* Hornerization of the polynomial */
+      /* temp_tree = horner(poly);
+         free_memory(poly);
+         poly = temp_tree;
+      */
 
       if(verbosity>=8) {
 	changeToWarningMode();
@@ -2079,42 +2030,45 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       res = copyTree(poly); /* Alternatively, we could do res = makeError(); */
     }
 
+    if (!res) {
+      // temporary check until I patch the algorithm in order to handle
+      // correctly cases when the error oscillates too much
+      temp_tree = makeSub(makeMul(copyTree(poly), copyTree(w)), copyTree(f));
+      uncertifiedInfnorm(infinityNorm, temp_tree, u, v, getToolPoints(), prec);
+      free_memory(temp_tree);
+      // end of the temporary check
 
-    // temporary check until I patch the algorithm in order to handle
-    // correctly cases when the error oscillates too much
-    temp_tree = makeSub(makeMul(copyTree(poly), copyTree(w)), copyTree(f));
-    uncertifiedInfnorm(infinityNorm, temp_tree, u, v, getToolPoints(), prec);
-    free_memory(temp_tree);
-    // end of the temporary check
+      /* We check if we exited the loop because we managed to find a satisfying error */
+      /* If so we exit returning the current polynomial */
+      if (mpfr_cmp(infinityNorm,satisfying_error)<=0) {
+        if(verbosity>=2) {
+          changeToWarningMode();
+          sollyaPrintf("Remez finished after %d steps\n",count);
+          sollyaPrintf("The following satisfying error ("); myPrintValue((mpfr_t *)satisfying_error, 53) ; sollyaPrintf(") has been reached.\n");
+          sollyaPrintf("Current infinity norm:"); myPrintValue(&infinityNorm, 53) ; sollyaPrintf("\n");
+          restoreMode();
+        }
 
-    /* We check if we exited the loop because we managed to find a satisfying error */
-    /* If so we exit returning the current polynomial */
-    if (mpfr_cmp(infinityNorm,satisfying_error)<=0) {
-      if(verbosity>=2) {
-        changeToWarningMode();
-        sollyaPrintf("Remez finished after %d steps\n",count);
-        sollyaPrintf("The following satisfying error ("); myPrintValue((mpfr_t *)satisfying_error, 53) ; sollyaPrintf(") has been reached.\n");
-        sollyaPrintf("Current infinity norm:"); myPrintValue(&infinityNorm, 53) ; sollyaPrintf("\n");
-        restoreMode();
+        res = copyTree(poly);
       }
-
-      res = copyTree(poly);
     }
 
-    mpfr_div(computedQuality, infinityNorm, ai_vect[freeDegrees], (mpfr_cmp_ui(ai_vect[freeDegrees], 0)>0)?GMP_RNDU:GMP_RNDD);
-    mpfr_abs(computedQuality, computedQuality, GMP_RNDU);
-    mpfr_sub_ui(computedQuality, computedQuality, 1, GMP_RNDU);
+    if (!res) {
+      mpfr_div(computedQuality, infinityNorm, ai_vect[freeDegrees], (mpfr_cmp_ui(ai_vect[freeDegrees], 0)>0)?GMP_RNDU:GMP_RNDD);
+      mpfr_abs(computedQuality, computedQuality, GMP_RNDU);
+      mpfr_sub_ui(computedQuality, computedQuality, 1, GMP_RNDU);
 
-    if(mpfr_cmp(computedQuality, quality)<=0) {
-      if(verbosity>=2) {
-        changeToWarningMode();
-        sollyaPrintf("Remez finished after %d steps\n",count);
-        sollyaPrintf("The computed infnorm is "); myPrintValue(&infinityNorm, 53) ; sollyaPrintf("\n");
-        sollyaPrintf("The polynomial is optimal within a factor 1 +/- "); myPrintValue(&computedQuality, 5); sollyaPrintf("\n");
-        if(verbosity>=5) { sollyaPrintf("Computed poly: "); printTree(poly); sollyaPrintf("\n");}
-        restoreMode();
+      if(mpfr_cmp(computedQuality, quality)<=0) {
+        if(verbosity>=2) {
+          changeToWarningMode();
+          sollyaPrintf("Remez finished after %d steps\n",count);
+          sollyaPrintf("The computed infnorm is "); myPrintValue(&infinityNorm, 53) ; sollyaPrintf("\n");
+          sollyaPrintf("The polynomial is optimal within a factor 1 +/- "); myPrintValue(&computedQuality, 5); sollyaPrintf("\n");
+          if(verbosity>=5) { sollyaPrintf("Computed poly: "); printTree(poly); sollyaPrintf("\n");}
+          restoreMode();
+        }
+        res = copyTree(poly);
       }
-      res = copyTree(poly);
     }
 
     if(res==NULL) {
@@ -2184,54 +2138,11 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 }
 
 
-// Suppose that the list monom is sorted.
-// Tests whether monom contains two equal ints.
-int testMonomials(chain *monom) {
-  chain *curr;
-
-  if (monom == NULL) return 1;
-
-  curr = monom;
-  while (curr->next != NULL) {
-    if (*((int *) (curr->value)) == *((int *) (curr->next->value))) return 0;
-    curr = curr->next;
-  }
-
-  return 1;
-}
-
-
-node *remez(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mpfr_t *requestedQuality, mpfr_t satisfying_error, mpfr_t target_error, mp_prec_t prec) {
-  mpfr_t quality;
-  node *res;
-  chain *monomials2;
-
-  if (requestedQuality==NULL) {
-    mpfr_init2(quality, 53);
-    mpfr_set_d(quality, 0.00001, GMP_RNDN);
-  }
-  else {
-    mpfr_init2(quality, mpfr_get_prec(*requestedQuality));
-    mpfr_abs(quality, *requestedQuality, GMP_RNDN);
-  }
-
-  monomials2 = copyChain(monomials, copyIntPtrOnVoid);
-
-  sortChain(monomials2,cmpIntPtr);
-
-  if (!testMonomials(monomials2)) {
-    sollyaFprintf(stderr,"Error: monomial degree is given twice in argument to Remez algorithm.\n");
-    recoverFromError();
-  }
-
+node *remez(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mpfr_t quality, mpfr_t satisfying_error, mpfr_t target_error, mp_prec_t prec) {
   if (mpfr_equal_p(a,b))
     printMessage(1,"Warning: the input interval is reduced to a single point. The algorithm may not converge.\n");
 
-  res = remezAux(func, weight, monomials2, a, b, prec, quality, satisfying_error, target_error);
-
-  freeChain(monomials2, freeIntPtr);
-  mpfr_clear(quality);
-  return res;
+  return remezAux(func, weight, monomials, a, b, prec, quality, satisfying_error, target_error);
 }
 
 

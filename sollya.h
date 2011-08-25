@@ -1,8 +1,8 @@
 /*
 
-Copyright 2007-2011 by 
+Copyright 2007-2011 by
 
-Laboratoire de l'Informatique du Parallelisme, 
+Laboratoire de l'Informatique du Parallelisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
 LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
@@ -26,16 +26,16 @@ it offers a certified infinity norm, an automatic polynomial
 implementer and a fast Remez algorithm.
 
 This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
+abiding by the rules of distribution of free software.  You can  use,
 modify and/ or redistribute the software under the terms of the CeCILL-C
 license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
+"http://www.cecill.info".
 
 As a counterpart to the access to the source code and  rights to copy,
 modify and redistribute granted by the license, users are provided only
 with a limited warranty  and the software's author,  the holder of the
 economic rights,  and the successive licensors  have only  limited
-liability. 
+liability.
 
 In this respect, the user's attention is drawn to the risks associated
 with loading,  using,  modifying and/or developing or reproducing the
@@ -44,9 +44,9 @@ that may mean  that it is complicated to manipulate,  and  that  also
 therefore means  that it is reserved for developers  and  experienced
 professionals having in-depth computer knowledge. Users are therefore
 encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
+requirements in conditions enabling the security of their systems and/or
+data to be ensured and,  more generally, to use and operate it in the
+same conditions as regards security.
 
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL-C license and that you accept its terms.
@@ -69,7 +69,7 @@ extern "C" {
 #include <setjmp.h>
 
 typedef struct chainStruct chain;
-struct chainStruct 
+struct chainStruct
 {
   void *value;
   chain *next;
@@ -77,7 +77,7 @@ struct chainStruct
 
 
 typedef struct libraryHandleStruct libraryHandle;
-struct libraryHandleStruct 
+struct libraryHandleStruct
 {
   char *libraryName;
   void *libraryDescriptor;
@@ -85,7 +85,7 @@ struct libraryHandleStruct
 };
 
 typedef struct libraryFunctionStruct libraryFunction;
-struct libraryFunctionStruct 
+struct libraryFunctionStruct
 {
   char *functionName;
   int (*code)(sollya_mpfi_t, sollya_mpfi_t, int); /* used for LIBRARYFUNCTION */
@@ -93,7 +93,7 @@ struct libraryFunctionStruct
 };
 
 typedef struct libraryProcedureStruct libraryProcedure;
-struct libraryProcedureStruct 
+struct libraryProcedureStruct
 {
   char *procedureName;
   void *code;
@@ -150,7 +150,7 @@ struct libraryProcedureStruct
 #define RELATIVESYM 198
 
 typedef struct nodeStruct node;
-struct nodeStruct 
+struct nodeStruct
 {
   int nodeType;
   mpfr_t *value;
@@ -181,7 +181,7 @@ extern char *getNameOfVariable();
 extern int setNameOfVariable(char *);
 extern mp_prec_t getToolPrecision();
 extern void setToolPrecision(mp_prec_t);
-extern int getToolPoints(); 
+extern int getToolPoints();
 extern void setToolPoints(int);
 extern int getToolTaylorRecursions();
 extern void setToolTaylorRecursions(int);
@@ -258,7 +258,7 @@ extern node *makeAcosh(node *op1);
 extern node *makeAtanh(node *op1);
 
 
-extern node *parseString(char *str); 
+extern node *parseString(char *str);
 
 extern void free_memory(node *tree);
 
@@ -269,7 +269,7 @@ extern char *sprintTree(node *tree);
 
 extern node* copyTree(node *tree);
 extern node* differentiate(node *tree);
-extern node* simplifyTree(node *tree); 
+extern node* simplifyTree(node *tree);
 extern node* simplifyTreeErrorfree(node *tree);
 extern node* horner(node *tree);
 extern node* expand(node *tree);
@@ -301,7 +301,7 @@ extern int newtonMPFRWithStartPoint(mpfr_t res, node *tree, node *diff_tree, mpf
 extern chain* findZerosFunction(node *func, rangetype range, mp_prec_t prec, mpfr_t diam);
 extern chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec);
 
-extern node* remez(node *func, node *weight, chain* monom, mpfr_t a, mpfr_t b, mpfr_t *requestedQuality, mp_prec_t prec);
+extern node *remez(node *func, node *weight, chain *monomials, mpfr_t a, mpfr_t b, mpfr_t quality, mpfr_t satisfying_error, mpfr_t target_error, mp_prec_t prec);
 extern rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps);
 
 extern node *FPminimax(node *f,	chain *monomials, chain *formats, chain *points, mpfr_t a, mpfr_t b, int fp, int absrel, node *consPart, node *minimax);
@@ -316,6 +316,9 @@ extern chain *concatChains(chain *c1, chain *c2);
 extern int lengthChain(chain *c);
 extern void sortChain(chain *c,  int (*f) (void *, void *));
 extern chain *makeIntPtrChainFromTo(int m, int n);
+extern chain *makeConstantIntChain(int n);
+extern chain *makeConstantIntChainFromTo(int m, int n);
+
 extern void freeIntPtr(void *ptr);
 extern void *accessInList(chain *, int);
 extern chain *removeInt(chain *c, int n);

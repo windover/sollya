@@ -4181,3 +4181,53 @@ round(-(largest+infinity)/2*(1-1b-164), HP, RD) == -@Inf@;
 round(-(largest+infinity)/2*(1-1b-164), HP, RZ) == -largest;
 round(-(largest+infinity)/2*(1-1b-164), HP, RN) == -largest;
 round(-(largest+infinity)/2*(1-1b-164), HP, RU) == -largest;
+
+
+// Check for remez command
+remez(acos(x), 4, [0,0.1], cos(x), 1e-6, [1,2]);
+remez(acos(x), 0, [0,0.1], default, 1e-6, [1,2]);
+remez(acos(x), [|0,...,4|], [0,0.1]);
+remez(acos(x), [|sin(x), exp(x)|], [0,0.1], cos(x), default, [1,2]);
+remez(acos(x), [|sin(x)|], [0,0.1], cos(x));
+remez(acos(x), [|sin(x)|], [0,0.1], cos(x), 1e-6);
+remez(acos(x), [|sin(x)|], [0,0.1], cos(x), 1e-6, default);
+remez(acos(x), [|sin(x)|], [0,0.1], cos(x), 1e-6, 1e-10);
+
+
+remez(acos(x), -1, [0,0.1], cos(x), 1e-6, [1,2]);
+remez(acos(x), 5, [0,0.1], [1], 1e-6, [1,2]);
+remez(acos(x), 5, [0,0.1], 1, [1e-6], [1,2]);
+remez(acos(x), 5, [0,0.1], 1, default, "coucou");
+remez(acos(x), [||], [0,0.1], cos(x));
+remez(acos(x), 5, [0,0.1], 1, default, default, default);
+remez(acos(x), 5);
+
+
+// Check for fpminimax
+fpminimax(acos(x), 4, [|53...|], [0,0.1]);
+fpminimax(acos(x), 0, [|53...|], [0,0.1], default);
+fpminimax(acos(x), [|0,...,4|], [|D...|], [0,0.1], relative);
+fpminimax(acos(x), 4, [|53...|], [0,0.1], fixed);
+fpminimax(acos(x), 0, [|53...|], [0,0.1], default, default);
+fpminimax(acos(x), [|0,...,4|], [|D...|], [0,0.1], floating);
+fpminimax(acos(x), 4, [|53...|], [0,0.1], 0);
+fpminimax(acos(x), 0, [|53...|], [0,0.1], default, default, default);
+fpminimax(acos(x), [|0,...,4|], [|D...|], [0,0.1], floating, default, 0);
+fpminimax(acos(x), 5, [|D...|], [0,0.1], default, default, default, default);
+
+
+fpminimax(acos(x), [|sin(x), exp(x)|], [|53...|], [0,0.1]);
+fpminimax(acos(x), [|exp(x)|], [|53...|], [0,0.1]);
+fpminimax(acos(x), [|sin(x), exp(x)|], [|53...|], [0,0.1], default, default, default, exp(x)*4+sin(x)/pi);
+fpminimax(acos(x), [|sin(x), exp(x)|], [|53...|], [0,0.1], default, default, default, exp(x)*4+sin(x)/pi+2);
+fpminimax(acos(x), [|sin(x), exp(x)|], [|53...|], [0,0.1], default, default, default, exp(x)*4+2);
+fpminimax(acos(x), [|sin(x), exp(x)|], [|53...|], [0,0.1], default, default, default, log(exp(x)+sin(x)));
+fpminimax(acos(x), [|sin(x), exp(x)|], [|53...|], [0,0.1], default, default, default, sin(x) - exp(x)*4);
+fpminimax(acos(x), [|sin(x), 1/exp(x)|], [|53...|], [0,0.1], default, default, default, 2/exp(x)+sin(x)/pi);
+
+
+fpminimax(acos(x), -1, [|53...|], [0,0.1]);
+fpminimax(acos(x), 5, [|D...|], [0,0.1], [1]);
+fpminimax(acos(x), 5, [|D...|]);
+fpminimax(acos(x), 5, [|D...|], [0,0.1], default, default, default, default, 5);
+fpminimax(acos(x), 5, [|D...|], [0,0.1], default, "coucou", default, default);

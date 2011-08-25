@@ -16,7 +16,7 @@
 
 #PARAMETERS <f> is the function to be approximated
 #PARAMETERS <n> is the degree of the polynomial that must approximate <f>
-#PARAMETERS <monomials> is the list of monomials that must be used to represent the polynomial that approximates§§ §~§§<f>
+#PARAMETERS <monomials> is a list of integers or a list of function. It indicates the basis for the approximation of§§ §~§§<f>
 #PARAMETERS <formats> is a list indicating the formats that the coefficients of the polynomial must have
 #PARAMETERS <range> is the interval where the function must be approximated
 #PARAMETERS <L> is a list of interpolation points used by the method
@@ -26,11 +26,11 @@
 #PARAMETERS <P> (optional) is the minimax polynomial to be considered for solving the problem.
 
 
-#DESCRIPTION 
+#DESCRIPTION
 $COMMAND uses a heuristic (but practically efficient) method to find a
 good polynomial approximation of a function <f> on an interval <range>. It
 implements the method published in the article:§§ §\\§§
-Efficient polynomial §§L^\infty - approximations§$L^\infty$-approximations\\§§ 
+Efficient polynomial §§L^\infty - approximations§$L^\infty$-approximations\\§§
 Nicolas Brisebarre and Sylvain Chevillard§§ §\\§§
 Proceedings of the 18th IEEE Symposium on Computer Arithmetic (ARITH 18)§§ §\\§§
 pp. 169-176
@@ -38,25 +38,28 @@ pp. 169-176
 #DESCRIPTION
 The basic usage of this command is $COMMAND(<f>, <n>, <formats>, <range>).
 It computes a polynomial approximation of §§f§$f$§§ with degree at most §§n§$n$§§
-on the interval <range>. <formats> is a list of integers or format types 
+on the interval <range>. <formats> is a list of integers or format types
 (such as $DOUBLE, $DOUBLEDOUBLE, etc.). The polynomial returned by the
-command has its coefficients that fit the formats indications. For 
-instance, if formats[0] is 35, the coefficient of degree 0 of the 
-polynomial will fit a floating-point format of 35 bits. If formats[1] 
+command has its coefficients that fit the formats indications. For
+instance, if formats[0] is 35, the coefficient of degree 0 of the
+polynomial will fit a floating-point format of 35 bits. If formats[1]
 is D, the coefficient of degree 1 will be representable by a floating-point
 number with a precision of 53 bits (which is not necessarily an IEEE 754
 double precision number. See the remark below), etc.
 
 #DESCRIPTION
-The second argument may be either an integer or a list of integers
-interpreted as the list of desired monomials. For instance, the list
-§§[|0,2,4,6|]§$[|0,\,2,\,4,\,6|]$§§ indicates that the polynomial must be even and of
-degree at most 6. Giving an integer §§n§$n$§§ as second argument is equivalent
-as giving §§[|0,...,n|]§$[|0,\,\dots,\,n|]$§§.§§ §\\§§
+The second argument may be either an integer, a list of integers or a list
+of functions. An integer indicates the degree of the desired polynomial
+approximation. A list of integers indicates the list of desired monomials.
+For instance, the list §§[|0,2,4,6|]§$[|0,\,2,\,4,\,6|]$§§ indicates that the polynomial must be
+even and of degree at most 6. Giving an integer §§n§$n$§§ as second argument is
+equivalent as giving §§[|0,...,n|]§$[|0,\,\dots,\,n|]$§§.
+Finally, a list of function §§g_k§$g_k$§§ indicates that the desired approximation
+must be a linear combination of the §§g_k§$g_k$§§.§§ §\\§§
 The list of formats is interpreted with respect to the list of monomials. For
 instance, if the list of monomials is §§[|0,2,4,6|]§$[|0,\,2,\,4,\,6|]$§§ and the list
-of formats is §§[|161,107,53,24|]§$[|161,\,107,\,53,\,24|]$§§, the coefficients of degree 0 is 
-searched as a floating-point number with precision 161, the coefficient of 
+of formats is §§[|161,107,53,24|]§$[|161,\,107,\,53,\,24|]$§§, the coefficients of degree 0 is
+searched as a floating-point number with precision 161, the coefficient of
 degree 2 is searched as a number of precision 107, and so on.
 
 #DESCRIPTION
@@ -79,9 +82,9 @@ By default, the list of formats is interpreted as a list of floating-point
 formats. This may be changed by passing $FIXED as an optional argument (see
 below). Let us take an example: $COMMAND(f, 2, [107, DD, 53], [0;1]).
 Here the optional argument is missing (we could have set it to $FLOATING).
-Thus, $COMMAND will search for a polynomial of degree 2 with a constant 
+Thus, $COMMAND will search for a polynomial of degree 2 with a constant
 coefficient that is a 107 bits floating-point number, etc.§§ §\\§§
-Currently, $DOUBLEDOUBLE is just a synonym for 107 and $TRIPLEDOUBLE a 
+Currently, $DOUBLEDOUBLE is just a synonym for 107 and $TRIPLEDOUBLE a
 synonym for 161. This behavior may change in the future (taking into
 account the fact that some double-doubles are not representable with
 107 bits).§§ §\\§§
@@ -89,18 +92,18 @@ Second example: $COMMAND(f, 2, [25, 18, 30], [0;1], $FIXED).
 In this case, $COMMAND will search for a polynomial of degree 2 with a
 constant coefficient of the form §§m/2^25§$m/2^{25}$§§ where §§m§$m$§§ is an
 integer. In other words, it is a fixed-point number with 25 bits after
-the point. Note that even with argument $FIXED, the formats list is 
-allowed to contain $HALFPRECISION, $SINGLE, $DOUBLE, $DOUBLEEXTENDED, 
-$DOUBLEDOUBLE, $QUAD or $TRIPLEDOUBLE. In this this case, it is just 
-a synonym for 11, 24, 53, 64, 107, 113 or 161. This is deprecated and 
+the point. Note that even with argument $FIXED, the formats list is
+allowed to contain $HALFPRECISION, $SINGLE, $DOUBLE, $DOUBLEEXTENDED,
+$DOUBLEDOUBLE, $QUAD or $TRIPLEDOUBLE. In this this case, it is just
+a synonym for 11, 24, 53, 64, 107, 113 or 161. This is deprecated and
 may change in the future.
 
 #DESCRIPTION
 The fourth argument may be a range or a list. Lists are for advanced users
 that know what they are doing. The core of the  method is a kind of
 approximated interpolation. The list given here is a list of points that
-must be considered for the interpolation. It must contain at least as 
-many points as unknown coefficients. If you give a list, it is also 
+must be considered for the interpolation. It must contain at least as
+many points as unknown coefficients. If you give a list, it is also
 recommended that you provide the minimax polynomial as last argument.
 If you give a range, the list of points will be automatically computed.
 
@@ -127,27 +130,43 @@ part §§q§$q$§§, will return a polynomial with the right form.
 
 #DESCRIPTION
 The last argument is for advanced users. It is the minimax polynomial that
-approximates the function §§f§$f$§§ in the monomial basis. If it is not given
+approximates the function §§f§$f$§§ in the given basis. If it is not given
 this polynomial will be automatically computed by $COMMAND.
 §§ §\\§§
 This minimax polynomial is used to compute the list of interpolation
-points required by the method. In general, you do not have to provide this
+points required by the method. It is also used, when floating-point
+coefficients are desired, to give an initial assumption for the
+exponents of the coeffcients. In general, you do not have to provide this
 argument. But if you want to obtain several polynomials of the same degree
 that approximate the same function on the same range, just changing the
 formats, you should probably consider computing only once the minimax
 polynomial and the list of points instead of letting $COMMAND recompute
 them each time.
 §§ §\\§§
-Note that in the case when a constrained part is given, the minimax 
+Note that in the case when a constrained part is given, the minimax
 polynomial must take that into account. For instance, in the previous
 example, the minimax would be obtained by the following command:
        §§P = remez(1-(1+x+x^2/2)/exp(x), [|3,4|], range, 1/exp(x));§\begin{center}\verb~P = remez(1-(1+x+x^2/2)/exp(x), [|3,4|], range, 1/exp(x));~\end{center}§§
 Note that the constrained part is not to be added to §§P§$P$§§.
+§§ §\\§§
+In the case when the second argument is an integer or a list of integers,
+there is no restriction for §§P§$P$§§, as long as it is a polynomial.
+However, when the second argument is a list of functions, and even if these
+functions are all polynomials, §§P§$P$§§ must be expanded in the given basis.
+For instance, if the second argument is §§2§$2$§§ or §§[|0, 1, 2|]§$[|0,\,1,\,2|]$§§, §§P§$P$§§ can be given
+in Horner form. However, if the second argument is §§[|1, x, x^2|]§$[|1,\,x,\,x^2|]$§§, §§P§$P$§§ must
+be written as a linear combination of §§1§$1$§§, §§x§$x$§§ and §§x^2§$x^2$§§, otherwise, the algorithm
+will fail to recover the coefficients of §§P§$P$§§ and will fail with an error
+message.
+§§ §\\§§
+Please also note that recovering the coefficients of §§P§$P$§§ in an arbitrary
+basis is performed heuristically and no verification is performed to check
+that §§P§$P$§§ does not contain other functions than the functions of the basis.
 
 #DESCRIPTION
 Note that $COMMAND internally computes a minimax polynomial (using
 the same algorithm as $REMEZ command). Thus $COMMAND may encounter
-the same problems as $REMEZ. In particular, it may be very slow 
+the same problems as $REMEZ. In particular, it may be very slow
 when Haar condition is not fulfilled. Another consequence is that
 currently $COMMAND has to be run with a sufficiently high working precision.
 
@@ -176,6 +195,22 @@ print("Error of pstar: ", dirtyinfnorm(f-pstar, [-1b-7; 1b-7]));
 print("Error of P1:    ", dirtyinfnorm(f-P1, [-1b-7; 1b-7]));
 print("Error of P2:    ", dirtyinfnorm(f-P2, [-1b-7; 1b-7]));
 print("Error of P3:    ", dirtyinfnorm(f-P3, [-1b-7; 1b-7]));
+
+#EXAMPLE
+L = [|exp(x), sin(x), cos(x)-1, sin(x^3)|];
+g = (2^x-1)/x;
+p = fpminimax(g, L, [|D...|], [-1/16;1/16],absolute);
+display = powers!;
+p;
+
+#EXAMPLE
+n = 9;
+T = [|1, x|];
+for i from 2 to n do T[i] = canonical(2*x*T[i-1]-T[i-2]);
+g = (2^x-1)/x;
+PCheb = fpminimax(g, T, [|DD,DE...|], [-1/16;1/16],absolute);
+display = dyadic!;
+print(PCheb);
 
 #SEEALSO $REMEZ
 #SEEALSO $DIRTYFINDZEROS
