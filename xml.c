@@ -82,7 +82,7 @@ void fPrintXmlInner(FILE *fd, node *tree) {
   switch (tree->nodeType) {
   case VARIABLE:
     if (variablename == NULL) 
-      sollyaFprintf(fd,"<ci> x </ci>\n");
+      sollyaFprintf(fd,"<ci> _x_ </ci>\n");
     else 
       sollyaFprintf(fd,"<ci> %s </ci>\n",variablename);
     break;
@@ -320,7 +320,7 @@ void fPrintXmlInner(FILE *fd, node *tree) {
       sollyaFprintf(fd,"<diff/>\n");
       sollyaFprintf(fd,"<bvar>\n");
       if (variablename == NULL) 
-	sollyaFprintf(fd,"<ci> x </ci>\n");
+	sollyaFprintf(fd,"<ci> _x_ </ci>\n");
       else 
 	sollyaFprintf(fd,"<ci> %s </ci>\n",variablename);
       sollyaFprintf(fd,"<degree>\n");
@@ -349,7 +349,7 @@ void fPrintXmlInner(FILE *fd, node *tree) {
       sollyaFprintf(fd,"<diff/>\n");
       sollyaFprintf(fd,"<bvar>\n");
       if (variablename == NULL) 
-	sollyaFprintf(fd,"<ci> x </ci>\n");
+	sollyaFprintf(fd,"<ci> _x_ </ci>\n");
       else 
 	sollyaFprintf(fd,"<ci> %s </ci>\n",variablename);
       sollyaFprintf(fd,"<degree>\n");
@@ -410,7 +410,7 @@ void fPrintXml(FILE *fd, node *tree) {
   if (variablename != NULL) 
     sollyaFprintf(fd,"<bvar><ci> %s </ci></bvar>\n",variablename);
   else 
-    sollyaFprintf(fd,"<bvar><ci> x </ci></bvar>\n");
+    sollyaFprintf(fd,"<bvar><ci> _x_ </ci></bvar>\n");
   sollyaFprintf(fd,"<apply>\n");
   fPrintXmlInner(fd,tree);
   sollyaFprintf(fd,"</apply>\n");

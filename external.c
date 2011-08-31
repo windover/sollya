@@ -372,7 +372,7 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
     if (!mpfr_number_p(temp)) {
       if (verbosity >= 2) {
 	changeToWarningMode();
-	sollyaPrintf("Information: function undefined or not evaluable in point %s = ",variablename);
+	sollyaPrintf("Information: function undefined or not evaluable in point %s = ",((variablename == NULL) ? "_x_" : variablename));
 	printValue(&x);
 	sollyaPrintf("\nThis point will not be plotted.\n");
 	restoreMode();

@@ -148,6 +148,7 @@ void miniyyerror(void *myScanner, char *message) {
 
 %token  SQRTTOKEN;
 %token  EXPTOKEN;
+%token  FREEVARTOKEN;
 %token  LOGTOKEN;
 %token  LOG2TOKEN;
 %token  LOG10TOKEN;
@@ -733,6 +734,11 @@ simplecommand:          FALSEQUITTOKEN
 			    free($3);
 			    free($5);
 			  }
+                      | RENAMETOKEN LPARTOKEN FREEVARTOKEN COMMATOKEN IDENTIFIERTOKEN RPARTOKEN
+                          {
+			    $$ = makeRename("_x_", $5);
+			    free($5);
+			  }
                       | EXTERNALPROCTOKEN LPARTOKEN IDENTIFIERTOKEN COMMATOKEN thing COMMATOKEN externalproctypelist MINUSTOKEN RIGHTANGLETOKEN extendedexternalproctype RPARTOKEN
                           {
 			    $$ = makeExternalProc($3, $5, addElement($7, $10));
@@ -1286,6 +1292,10 @@ basicthing:             ONTOKEN
                           {
 			    $$ = makeDoubleextendedSymbol();
 			  }
+                      | FREEVARTOKEN
+                          {
+			    $$ = makeVariable();
+			  }
                       | DOUBLEDOUBLETOKEN
                           {
 			    $$ = makeDoubleDoubleSymbol();
@@ -1769,6 +1779,10 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeExp($3);
 			  }
+                      | FREEVARTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeApply(makeVariable(),addElement(NULL,$3));
+			  }                      
                       | FUNCTIONTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeProcedureFunction($3);

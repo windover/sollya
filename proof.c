@@ -174,43 +174,26 @@ int exprBoundTheoIsTrivial(exprBoundTheo *theo) {
 }
 
 void fprintDerivativeLemma(FILE *fd, node *func, node *deriv, int theoNumber, int subNumber) {
-  int restoreNullPtr;
-  char *var = "x";
-
   if (func == NULL) return;
   if (deriv == NULL) return;
-
-  restoreNullPtr = 0;
-  if (variablename == NULL) {
-    variablename = var;
-    restoreNullPtr = 1;
-  }
   
   sollyaFprintf(fd,"Lemma %d.%d:\n",theoNumber,subNumber);
-  sollyaFprintf(fd,"The first derivative of\nf(%s) = ",variablename);
+  sollyaFprintf(fd,"The first derivative of\nf(%s) = ",((variablename == NULL) ? "_x_" : variablename));
   fprintTree(fd,func);
-  sollyaFprintf(fd,"\nwith respect to %s is\nf\'(%s) = ",variablename,variablename);
+  sollyaFprintf(fd,"\nwith respect to %s is\nf\'(%s) = ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   fprintTree(fd,deriv);
   sollyaFprintf(fd,"\n\n");
 
-  if (restoreNullPtr) variablename = NULL;
 }
 
 
 int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
-  int nextnumber, restoreNullPtr;
-  char *var = "x";
+  int nextnumber;
   char *fx, *gx;
   
   if (theo == NULL) return start;
 
   if (exprBoundTheoIsTrivial(theo)) return start;
-
-  restoreNullPtr = 0;
-  if (variablename == NULL) {
-    variablename = var;
-    restoreNullPtr = 1;
-  }
 
   nextnumber = start;
   if (theo->theoLeft != NULL) nextnumber = fprintExprBoundTheo(fd,theo->theoLeft,nextnumber);
@@ -230,7 +213,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
     fprintDerivativeLemma(fd, theo->theoRight->function, theo->rightDerivative, theo->number, 2);
   }
   
-  sollyaFprintf(fd,"Theorem %d:\nFor all %s in ",theo->number,variablename);
+  sollyaFprintf(fd,"Theorem %d:\nFor all %s in ",theo->number,((variablename == NULL) ? "_x_" : variablename));
   if (theo->x != NULL) fprintInterval(fd,*(theo->x));
   sollyaFprintf(fd,". ");
   fprintTree(fd,theo->function);
@@ -243,7 +226,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
     switch (theo->simplificationUsed) {
     case TAYLORPROOF:
       sollyaFprintf(fd,"Theorem %d shows that for all %s in the given domain the given expression is bounded by ",
-	      theo->theoLeft->number, variablename);
+	      theo->theoLeft->number, ((variablename == NULL) ? "_x_" : variablename));
       fprintInterval(fd,*(theo->boundLeft));
       sollyaFprintf(fd,".\nFurther lemma %d.%d shows that the derivative of the given expression is ",
 	      theo->number,1);
@@ -259,7 +242,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       fprintInterval(fd,*(theo->xZ));
       sollyaFprintf(fd,
 	   " is contained in the given domain.\nFor values %s in this interval _xZ, the given expression is bounded by ",
-	      variablename);
+	      ((variablename == NULL) ? "_x_" : variablename));
       fprintInterval(fd,*(theo->boundLeftConstant));
       if (!exprBoundTheoIsTrivial(theo->theoLeftConstant)) {
 	sollyaFprintf(fd," as shown by theorem %d.\n",theo->theoLeftConstant->number);
@@ -275,58 +258,58 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       sollyaFprintf(fd,"Taylor\'s theorem.\n");
       break;
     case DECORRELATE:
-      fx = (char *) safeCalloc(strlen(variablename)+4,sizeof(char));
-      gx = (char *) safeCalloc(strlen(variablename)+4,sizeof(char));
-      sprintf(fx,"f(%s)",variablename);
-      sprintf(gx,"g(%s)",variablename);
+      fx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
+      gx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
+      sprintf(fx,"f(%s)",((variablename == NULL) ? "_x_" : variablename));
+      sprintf(gx,"g(%s)",((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"The given expression is of the form ");
       fprintHeadFunction(fd,theo->function,fx,gx);
       free(fx);
       free(gx);
-      sollyaFprintf(fd,"\nwhere f(%s) = ",variablename);
+      sollyaFprintf(fd,"\nwhere f(%s) = ",((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->theoLeft->function);
-      sollyaFprintf(fd,"\nand g(%s) = ",variablename);
+      sollyaFprintf(fd,"\nand g(%s) = ",((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->theoRight->function);
       if (!exprBoundTheoIsTrivial(theo->theoLeft)) {
 	sollyaFprintf(fd,"\nAs per theorem %d, for %s in the given domain, f(%s) is bounded by ",
-		theo->theoLeft->number,variablename,variablename);
+		theo->theoLeft->number,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       } else {
 	sollyaFprintf(fd,"\nTrivially for %s in the given domain, f(%s) is bounded by ",
-		variablename,variablename);
+		((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       }
       fprintInterval(fd,*(theo->boundLeft));
       if (!exprBoundTheoIsTrivial(theo->theoRight)) {
 	sollyaFprintf(fd,"\nAs per theorem %d, for %s in the given domain, g(%s) is bounded by ",
-		theo->theoRight->number,variablename,variablename);
+		theo->theoRight->number,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       } else {
 	sollyaFprintf(fd,"\nTrivially for %s in the given domain, g(%s) is bounded by ",
-		variablename,variablename);
+		((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       }
       fprintInterval(fd,*(theo->boundRight));
       sollyaFprintf(fd,"\nAs shown by lemma %d.%d, the derivative of f(%s) is ",
-	      theo->number,1,variablename);
+	      theo->number,1,((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->leftDerivative);
       sollyaFprintf(fd,"\nFurther by lemma %d.%d, we know that the derivative of g(%s) is ",
-	      theo->number,2,variablename);
+	      theo->number,2,((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->rightDerivative);
       sollyaFprintf(fd,"\nThe (quasi-) point interval _xZ = ");
       fprintInterval(fd,*(theo->xZ));
       sollyaFprintf(fd," is contained in the given domain.\n");
       if (!exprBoundTheoIsTrivial(theo->theoLeftConstant)) {
 	sollyaFprintf(fd,"As per theorem %d, for %s in this interval _xZ, f(%s) is bounded by\n_xC = ",
-		theo->theoLeftConstant->number, variablename, variablename);
+		theo->theoLeftConstant->number, ((variablename == NULL) ? "_x_" : variablename), ((variablename == NULL) ? "_x_" : variablename));
       } else {
 	sollyaFprintf(fd,"Trivially, for %s in this interval _xZ, f(%s) is bounded by\n_xC = ",
-		variablename,variablename);
+		((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       }
       fprintInterval(fd,*(theo->boundLeftConstant));
       sollyaFprintf(fd,"\n");
       if (!exprBoundTheoIsTrivial(theo->theoRightConstant)) {
 	sollyaFprintf(fd,"As per theorem %d, for %s in the interval _xZ, g(%s) is bounded by\n_yC = ",
-		theo->theoRightConstant->number, variablename,variablename);
+		theo->theoRightConstant->number, ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       } else {
 	sollyaFprintf(fd,"Trivially, for %s in this interval _xZ, g(%s) is bounded by\n_yC = ",
-		variablename,variablename);
+		((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       }
       fprintInterval(fd,*(theo->boundRightConstant));
       sollyaFprintf(fd,".\nLet _X be the given domain. The interval evaluation of (_X - _xZ) gives ");
@@ -334,29 +317,29 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       sollyaFprintf(fd,".\n");
       if (!exprBoundTheoIsTrivial(theo->theoLeftLinear)) {
 	sollyaFprintf(fd,"As per theorem %d, for %s in the given domain, the derivative of f(%s) is bounded by\n_xL = ",
-		theo->theoLeftLinear->number, variablename,variablename);
+		theo->theoLeftLinear->number, ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       } else {
 	sollyaFprintf(fd,"Trivially, for %s in the given domain, the derivative of f(%s) is bounded by\n_xL = ",
-		variablename,variablename);
+		((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       }
       fprintInterval(fd,*(theo->boundLeftLinear));
       sollyaFprintf(fd,".\n");
       if (!exprBoundTheoIsTrivial(theo->theoRightLinear)) {
 	sollyaFprintf(fd,"As per theorem %d, for %s in the given domain, the derivative of g(%s) is bounded by\n_yL = ",
-		theo->theoRightLinear->number, variablename, variablename);
+		theo->theoRightLinear->number, ((variablename == NULL) ? "_x_" : variablename), ((variablename == NULL) ? "_x_" : variablename));
       } else {
 	sollyaFprintf(fd,"Trivially, for %s in the given domain, the derivative of g(%s) is bounded by\n_yL = ",
-		variablename,variablename);
+		((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       }
       fprintInterval(fd,*(theo->boundRightLinear));
       sollyaFprintf(fd,".\nUsing Taylor\'s theorem, one verifies that the images of the given expression, function in %s,\n",
-	      variablename);
+	      ((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"for %s in the given domain, are contained in the intersection of the interval evaluation of\n",
-	      variablename);
-      fx = (char *) safeCalloc(strlen(variablename)+4,sizeof(char));
-      gx = (char *) safeCalloc(strlen(variablename)+4,sizeof(char));
-      sprintf(fx,"f(%s)",variablename);
-      sprintf(gx,"g(%s)",variablename);
+	      ((variablename == NULL) ? "_x_" : variablename));
+      fx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
+      gx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
+      sprintf(fx,"f(%s)",((variablename == NULL) ? "_x_" : variablename));
+      sprintf(gx,"g(%s)",((variablename == NULL) ? "_x_" : variablename));
       fprintHeadFunction(fd,theo->function,fx,gx);
       free(fx);
       free(gx);
@@ -369,24 +352,24 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       sollyaFprintf(fd,"\nthat has had to be shown.\n");
       break;
     case HOPITAL_ON_POINT:
-      fx = (char *) safeCalloc(strlen(variablename)+4,sizeof(char));
-      gx = (char *) safeCalloc(strlen(variablename)+4,sizeof(char));
-      sprintf(fx,"f(%s)",variablename);
-      sprintf(gx,"g(%s)",variablename);
+      fx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
+      gx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
+      sprintf(fx,"f(%s)",((variablename == NULL) ? "_x_" : variablename));
+      sprintf(gx,"g(%s)",((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"The given expression is of the form ");
       fprintHeadFunction(fd,theo->function,fx,gx);
       free(fx);
       free(gx);
-      sollyaFprintf(fd,"\nwhere f(%s) = ",variablename);
+      sollyaFprintf(fd,"\nwhere f(%s) = ",((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->theoLeft->function);
-      sollyaFprintf(fd,"\nand g(%s) = ",variablename);
+      sollyaFprintf(fd,"\nand g(%s) = ",((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->theoRight->function);
       if (!exprBoundTheoIsTrivial(theo->theoLeft)) {
 	sollyaFprintf(fd,"As per theorem %d, ",theo->theoLeft->number);
       } else {
 	sollyaFprintf(fd,"Trivially, ");
       }
-      sollyaFprintf(fd,"for all %s in the given domain, f(%s) is bounded by the point interval ",variablename,variablename);
+      sollyaFprintf(fd,"for all %s in the given domain, f(%s) is bounded by the point interval ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       fprintInterval(fd,*(theo->boundLeft));
       sollyaFprintf(fd," and therefore constant zero.\n");
       if (!exprBoundTheoIsTrivial(theo->theoRight)) {
@@ -394,22 +377,22 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       } else {
 	sollyaFprintf(fd,"Trivially, ");
       }
-      sollyaFprintf(fd,"for all %s in the given domain, g(%s) is bounded by the point interval ",variablename,variablename);
+      sollyaFprintf(fd,"for all %s in the given domain, g(%s) is bounded by the point interval ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       fprintInterval(fd,*(theo->boundLeft));
       sollyaFprintf(fd," and therefore constant zero, too.\nBy Hopital's rule, the given expression");
       sollyaFprintf(fd," is bounded by the interval division of boundings\n");
       sollyaFprintf(fd,"of the derivatives of the numerator f(%s) and denominator g(%s) of the given expression.\n",
-	      variablename,variablename);
-      sollyaFprintf(fd,"As per lemma %d.%d, the derivative of f(%s) is ",theo->number,1,variablename);
+	      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+      sollyaFprintf(fd,"As per lemma %d.%d, the derivative of f(%s) is ",theo->number,1,((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->leftDerivative);
-      sollyaFprintf(fd,"As per lemma %d.%d, the derivative of g(%s) is ",theo->number,2,variablename);
+      sollyaFprintf(fd,"As per lemma %d.%d, the derivative of g(%s) is ",theo->number,2,((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->rightDerivative);
       if (!exprBoundTheoIsTrivial(theo->theoLeftLinear)) {
 	sollyaFprintf(fd,"As shown by theorem %d, ",theo->theoLeftLinear->number);
       } else {
 	sollyaFprintf(fd,"Trivially, ");
       }
-      sollyaFprintf(fd,"this derivative of f(%s) for %s in the given domain is bounded by ",variablename,variablename);
+      sollyaFprintf(fd,"this derivative of f(%s) for %s in the given domain is bounded by ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       fprintInterval(fd,*(theo->theoLeftLinear->y));
       sollyaFprintf(fd,".\n");
       if (!exprBoundTheoIsTrivial(theo->theoRightLinear)) {
@@ -417,32 +400,32 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       } else {
 	sollyaFprintf(fd,"Trivially, ");
       }
-      sollyaFprintf(fd,"the given derivative of g(%s) for %s in the given domain is bounded by ",variablename,variablename);
+      sollyaFprintf(fd,"the given derivative of g(%s) for %s in the given domain is bounded by ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       fprintInterval(fd,*(theo->theoRightLinear->y));
       sollyaFprintf(fd,".\n");
       sollyaFprintf(fd,"This yields to the following bound for the given expression with %s in the given domain: ",
-	      variablename);
+	      ((variablename == NULL) ? "_x_" : variablename));
       fprintInterval(fd,*(theo->y));
       sollyaFprintf(fd,".\nThis is the bound that has had to be shown.\n");
       break;
     case NUMERATOR_IS_ZERO:
-      fx = (char *) safeCalloc(strlen(variablename)+4,sizeof(char));
-      gx = (char *) safeCalloc(strlen(variablename)+4,sizeof(char));
-      sprintf(fx,"f(%s)",variablename);
-      sprintf(gx,"g(%s)",variablename);
+      fx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
+      gx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
+      sprintf(fx,"f(%s)",((variablename == NULL) ? "_x_" : variablename));
+      sprintf(gx,"g(%s)",((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"The given expression is of the form ");
       fprintHeadFunction(fd,theo->function,fx,gx);
       free(fx);
       free(gx);
-      sollyaFprintf(fd,"\nwhere f(%s) = ",variablename);
+      sollyaFprintf(fd,"\nwhere f(%s) = ",((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->theoLeft->function);
-      sollyaFprintf(fd,"\nand g(%s) is some function in %s.\n",variablename,variablename);
+      sollyaFprintf(fd,"\nand g(%s) is some function in %s.\n",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       if (exprBoundTheoIsTrivial(theo->theoLeft)) {
 	sollyaFprintf(fd,"Trivially, ");
       } else {
 	sollyaFprintf(fd,"As per theorem %d, ",theo->theoLeft->number);
       }
-      sollyaFprintf(fd,"for %s in the given domain, f(%s) is in ",variablename,variablename);
+      sollyaFprintf(fd,"for %s in the given domain, f(%s) is in ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       fprintInterval(fd,*(theo->boundLeft));
       sollyaFprintf(fd,", i.e. constant zero.\n");
       sollyaFprintf(fd,"Therefore the given expression is constant zero, i.e. bounded by ");
@@ -451,14 +434,14 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       break;
     case HOPITAL:
       sollyaFprintf(fd,"The given expression is of the form ");
-      fx = (char *) safeCalloc(strlen(variablename)+4,sizeof(char));
-      gx = (char *) safeCalloc(strlen(variablename)+4,sizeof(char));
-      sprintf(fx,"f(%s)",variablename);
-      sprintf(gx,"g(%s)",variablename);
+      fx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
+      gx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
+      sprintf(fx,"f(%s)",((variablename == NULL) ? "_x_" : variablename));
+      sprintf(gx,"g(%s)",((variablename == NULL) ? "_x_" : variablename));
       fprintHeadFunction(fd,theo->function,fx,gx);
-      sollyaFprintf(fd,"\nwhere f(%s) = ",variablename);
+      sollyaFprintf(fd,"\nwhere f(%s) = ",((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->theoLeft->function);
-      sollyaFprintf(fd,"\nand g(%s) = ",variablename);
+      sollyaFprintf(fd,"\nand g(%s) = ",((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->theoRight->function);
       sollyaFprintf(fd,"\nLet _xZ be the point interval _xZ = ");
       fprintInterval(fd,*(theo->xZ));
@@ -469,23 +452,23 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
 	sollyaFprintf(fd,"Trivially, ");
       }
       sollyaFprintf(fd,"the images of f(%s) for %s in _xZ are in the point interval [0;0].\n",
-	      variablename,variablename);
-      sollyaFprintf(fd,"f(%s) is therefore constant zero in this interval _xZ.\n", variablename);
+	      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+      sollyaFprintf(fd,"f(%s) is therefore constant zero in this interval _xZ.\n", ((variablename == NULL) ? "_x_" : variablename));
       if (!exprBoundTheoIsTrivial(theo->theoRightConstant)) {
 	sollyaFprintf(fd,"As per theorem %d, ",theo->theoRightConstant->number);
       } else {
 	sollyaFprintf(fd,"Trivially, ");
       }
       sollyaFprintf(fd,"the images of g(%s) for %s in _xZ are in the point interval [0;0].\n",
-	      variablename,variablename);
-      sollyaFprintf(fd,"g(%s) is therefore constant zero in this interval _xZ.\n", variablename);
+	      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+      sollyaFprintf(fd,"g(%s) is therefore constant zero in this interval _xZ.\n", ((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"Hopital's rule, i.e. a first order Taylor expansion of f(%s) and g(%s), can therefore\n",
-	      variablename,variablename);
+	      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"be used for bounding the given expression, which will be replaced by f'(%s)/g'(%s).\n",
-	      variablename,variablename);
-      sollyaFprintf(fd,"Lemma %d.%d shows that f'(%s) is\nf'(%s) = ",theo->number,1,variablename,variablename);
+	      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+      sollyaFprintf(fd,"Lemma %d.%d shows that f'(%s) is\nf'(%s) = ",theo->number,1,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->leftDerivative);
-      sollyaFprintf(fd,"\nLemma %d.%d shows that g'(%s) is\ng'(%s) = ",theo->number,2,variablename,variablename);
+      sollyaFprintf(fd,"\nLemma %d.%d shows that g'(%s) is\ng'(%s) = ",theo->number,2,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->rightDerivative);
       sollyaFprintf(fd,"\n");
       if (!exprBoundTheoIsTrivial(theo->theoLeftLinear)) {
@@ -493,7 +476,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       } else {
 	sollyaFprintf(fd,"Trivially, ");
       }
-      sollyaFprintf(fd,"f'(%s)/g'(%s) is bounded by ",variablename,variablename);
+      sollyaFprintf(fd,"f'(%s)/g'(%s) is bounded by ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       fprintInterval(fd,*(theo->boundLeftLinear));
       sollyaFprintf(fd,".\nThis is bound that has had to be proven.\n");
       free(fx);
@@ -504,10 +487,10 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       break;
     default:
       sollyaFprintf(fd,"The given expression is of the form ");
-      fx = (char *) safeCalloc(strlen(variablename)+4,sizeof(char));
-      gx = (char *) safeCalloc(strlen(variablename)+4,sizeof(char));
-      sprintf(fx,"f(%s)",variablename);
-      sprintf(gx,"g(%s)",variablename);
+      fx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
+      gx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
+      sprintf(fx,"f(%s)",((variablename == NULL) ? "_x_" : variablename));
+      sprintf(gx,"g(%s)",((variablename == NULL) ? "_x_" : variablename));
       fprintHeadFunction(fd,theo->function,fx,gx);
       free(fx);
       free(gx);
@@ -516,25 +499,25 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       case 1:
 	if (!exprBoundTheoIsTrivial(theo->theoLeft)) {
 	  sollyaFprintf(fd,"As per theorem %d, for %s in the given domain, f(%s) = ",
-		  theo->theoLeft->number,variablename,variablename);
+		  theo->theoLeft->number,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 	  fprintTree(fd,theo->theoLeft->function);
 	  sollyaFprintf(fd," is bounded by ");
 	} else {
-	  sollyaFprintf(fd,"For %s in the given domain, the value of f(%s) = ",variablename,variablename);
+	  sollyaFprintf(fd,"For %s in the given domain, the value of f(%s) = ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 	  fprintTree(fd,theo->theoLeft->function);
 	  sollyaFprintf(fd," is trivially bounded by ");
 	}
 	fprintInterval(fd,*(theo->boundLeft));
-	sollyaFprintf(fd,"\nUsing this bound for the argument f(%s) of ",variablename);
+	sollyaFprintf(fd,"\nUsing this bound for the argument f(%s) of ",((variablename == NULL) ? "_x_" : variablename));
 	break;
       case 2:
 	if (!exprBoundTheoIsTrivial(theo->theoLeft)) {
 	  sollyaFprintf(fd,"As per theorem %d, for %s in the given domain, f(%s) = ",
-		  theo->theoLeft->number,variablename,variablename);
+		  theo->theoLeft->number,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 	  fprintTree(fd,theo->theoLeft->function);
 	  sollyaFprintf(fd," is bounded by ");
 	} else {
-	  sollyaFprintf(fd,"For %s in the given domain, the value of f(%s) = ",variablename,variablename);
+	  sollyaFprintf(fd,"For %s in the given domain, the value of f(%s) = ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 	  fprintTree(fd,theo->theoLeft->function);
 	  sollyaFprintf(fd," is trivially bounded by ");
 	}
@@ -542,16 +525,16 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
 	sollyaFprintf(fd,".\n");
 	if (!exprBoundTheoIsTrivial(theo->theoRight)) {
 	  sollyaFprintf(fd,"As per theorem %d, for %s in the given domain, g(%s) = ",
-		  theo->theoRight->number,variablename,variablename);
+		  theo->theoRight->number,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 	  fprintTree(fd,theo->theoRight->function);
 	  sollyaFprintf(fd," is bounded by ");
 	} else {
-	  sollyaFprintf(fd,"For %s in the given domain, the value of g(%s)  = ",variablename,variablename);
+	  sollyaFprintf(fd,"For %s in the given domain, the value of g(%s)  = ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 	  fprintTree(fd,theo->theoRight->function);
 	  sollyaFprintf(fd," is trivially bounded by ");
 	}
 	fprintInterval(fd,*(theo->boundRight));
-	sollyaFprintf(fd,"\nUsing these bounds for the arguments f(%s) and g(%s) of ",variablename,variablename);
+	sollyaFprintf(fd,"\nUsing these bounds for the arguments f(%s) and g(%s) of ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 	break;
       case MONOTONOCITY: 
 	sollyaFprintf(fd,"Lemma %d.%d shows that the derivative of the given expression is ",
@@ -585,10 +568,10 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       default:
 	sollyaFprintf(fd,"The expression is a constant. Its bounding is trivial. Using this constant value\n");
       }
-      fx = (char *) safeCalloc(strlen(variablename)+4,sizeof(char));
-      gx = (char *) safeCalloc(strlen(variablename)+4,sizeof(char));
-      sprintf(fx,"f(%s)",variablename);
-      sprintf(gx,"g(%s)",variablename);
+      fx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
+      gx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
+      sprintf(fx,"f(%s)",((variablename == NULL) ? "_x_" : variablename));
+      sprintf(gx,"g(%s)",((variablename == NULL) ? "_x_" : variablename));
       fprintHeadFunction(fd,theo->function,fx,gx);
       free(fx);
       free(gx);
@@ -596,10 +579,6 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
     }
   }
   sollyaFprintf(fd,"\n");
-
-  if (restoreNullPtr) {
-    variablename = NULL;
-  }
 
   return nextnumber;
 }
@@ -634,52 +613,35 @@ void freeEqualityTheo(equalityTheo *theo) {
 
   
 void fprintNumeratorSufficesLemma(FILE *fd, node *func, node *numerator, int theoNumber, int subNumber) {
-  int restoreNullPtr;
-  char *var = "x";
   
   if (func == NULL) return;
   if (numerator == NULL) return;
-
-  restoreNullPtr = 0;
-  if (variablename == NULL) {
-    variablename = var;
-    restoreNullPtr = 1;
-  }
-
   
   sollyaFprintf(fd,"Lemma %d.%d:\n",theoNumber,subNumber);
-  sollyaFprintf(fd,"The set of the zeros of the function\nf(%s) = ",variablename);
+  sollyaFprintf(fd,"The set of the zeros of the function\nf(%s) = ",((variablename == NULL) ? "_x_" : variablename));
   fprintTree(fd,func);
-  sollyaFprintf(fd,"\nis included in the set of the zeros of the function\ng(%s) = ",variablename);
+  sollyaFprintf(fd,"\nis included in the set of the zeros of the function\ng(%s) = ",((variablename == NULL) ? "_x_" : variablename));
   fprintTree(fd,numerator);
   sollyaFprintf(fd,"\n");
   sollyaFprintf(fd,"Proof:\n");
   if (func->nodeType == DIV) {
     sollyaFprintf(fd,"The function f(%s) is a fraction. The function g(%s) is the numerator of this fraction.\n",
-	    variablename,variablename);
+	    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   } else {
     if (isSyntacticallyEqual(func,numerator)) 
-      sollyaFprintf(fd,"The functions f(%s) and g(%s) are equal.\n",variablename,variablename);
+      sollyaFprintf(fd,"The functions f(%s) and g(%s) are equal.\n",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
     else 
-      sollyaFprintf(fd,"The functions f(%s) and g(%s) can be shown to be equal.\n",variablename,variablename);
+      sollyaFprintf(fd,"The functions f(%s) and g(%s) can be shown to be equal.\n",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   }
   sollyaFprintf(fd,"\n");
 
-  if (restoreNullPtr) variablename = NULL;
 }
 
 int fprintNoZeroTheo(FILE *fd, noZeroTheo *theo, int start) {
-  int nextNumber, restoreNullPtr;
+  int nextNumber;
   chain *curr, *zeroFree, *joinedZeroFree, *temp;
-  char *var = "x";
 
   if (theo == NULL) return start;
-
-  restoreNullPtr = 0;
-  if (variablename == NULL) {
-    variablename = var;
-    restoreNullPtr = 1;
-  }
 
   nextNumber = start;
 
@@ -697,7 +659,7 @@ int fprintNoZeroTheo(FILE *fd, noZeroTheo *theo, int start) {
   nextNumber++;
 
   sollyaFprintf(fd,"Theorem %d:\n",theo->number);
-  sollyaFprintf(fd,"The function f(%s) = ",variablename);
+  sollyaFprintf(fd,"The function f(%s) = ",((variablename == NULL) ? "_x_" : variablename));
   fprintTree(fd,theo->function);
   sollyaFprintf(fd," has no zeros in the following domain(s):\n");
   curr = theo->exprBoundTheos;
@@ -706,7 +668,7 @@ int fprintNoZeroTheo(FILE *fd, noZeroTheo *theo, int start) {
     sollyaFprintf(fd,"\n");
     curr = curr->next;
   }
-  sollyaFprintf(fd,"Further, more strictly speaking, the function f(%s) has no zero in the following domains:\n",variablename);
+  sollyaFprintf(fd,"Further, more strictly speaking, the function f(%s) has no zero in the following domains:\n",((variablename == NULL) ? "_x_" : variablename));
   zeroFree = NULL;
   curr = theo->exprBoundTheos;
   while (curr != NULL) {
@@ -727,16 +689,16 @@ int fprintNoZeroTheo(FILE *fd, noZeroTheo *theo, int start) {
   freeChain(joinedZeroFree,freeMpfiPtr);
   sollyaFprintf(fd,"\n");
   sollyaFprintf(fd,"Proof:\n");
-  sollyaFprintf(fd,"As per lemma %d.%d, the derivative of f(%s) is f\'(%s) = ",theo->number,1,variablename,variablename);
+  sollyaFprintf(fd,"As per lemma %d.%d, the derivative of f(%s) is f\'(%s) = ",theo->number,1,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   fprintTree(fd,theo->derivative);
   sollyaFprintf(fd,".\n");
   if (!equalityTheoIsTrivial(theo->derivEqual)) {
-    sollyaFprintf(fd,"As per theorem %d, f'(%s) can be written also ",theo->derivEqual->number,variablename);
+    sollyaFprintf(fd,"As per theorem %d, f'(%s) can be written also ",theo->derivEqual->number,((variablename == NULL) ? "_x_" : variablename));
     fprintTree(fd,theo->derivEqual->expr2);
     sollyaFprintf(fd,"\nIn the following assume this equality.\n");
   }
   if (!equalityTheoIsTrivial(theo->funcEqual)) {
-    sollyaFprintf(fd,"As per theorem %d, f(%s) can be written also ",theo->funcEqual->number,variablename);
+    sollyaFprintf(fd,"As per theorem %d, f(%s) can be written also ",theo->funcEqual->number,((variablename == NULL) ? "_x_" : variablename));
     fprintTree(fd,theo->funcEqual->expr2);
     sollyaFprintf(fd,"\nIn the following assume this equality.\n");
   }
@@ -749,7 +711,7 @@ int fprintNoZeroTheo(FILE *fd, noZeroTheo *theo, int start) {
     curr = curr->next;
   }
   sollyaFprintf(fd,"\nshow(s) (using f'(%s)) that all images f(%s) for %s in one of the domains\n",
-	  variablename,variablename,variablename);
+	  ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   sollyaFprintf(fd,"given in this theorem are contained in (the union of) the following interval(s)\n");
   curr = theo->exprBoundTheos;
   while (curr != NULL) {
@@ -758,12 +720,10 @@ int fprintNoZeroTheo(FILE *fd, noZeroTheo *theo, int start) {
     curr = curr->next;
   }
   sollyaFprintf(fd,"Clearly, none of these intervals (this interval) contains zero.\n");
-  sollyaFprintf(fd,"Thus f(%s) has no zero in the given intervals.\n",variablename);
+  sollyaFprintf(fd,"Thus f(%s) has no zero in the given intervals.\n",((variablename == NULL) ? "_x_" : variablename));
   sollyaFprintf(fd,"Concerning the second (shorter) list of intervals, on remarks that it is a union of the\n");
   sollyaFprintf(fd,"intervals in the first list.");
   sollyaFprintf(fd,"\n\n");
-
-  if (restoreNullPtr) variablename = NULL;
 
   return nextNumber;
 }
@@ -785,20 +745,13 @@ void freeNoZeroTheo(noZeroTheo *theo) {
 
 
 int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
-  int nextNumber, innerLeftNumber, innerRightNumber, num, restoreNullPtr;
+  int nextNumber, innerLeftNumber, innerRightNumber, num;
   chain *curr, *zeroFree, *joinedZeroFree, *temp;
   mpfr_t a, b, l, u, fr, fl, tl, tr;
   mp_prec_t p, prec;
   sollya_mpfi_t *currMpfi;
-  char *var = "x";
 
   if (theo == NULL) return start;
-
-  restoreNullPtr = 0;
-  if (variablename == NULL) {
-    variablename = var;
-    restoreNullPtr = 1;
-  }
 
   nextNumber = start;
   nextNumber = fprintNoZeroTheo(fd,theo->noZeros,nextNumber);
@@ -818,9 +771,9 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
   nextNumber++;
 
   sollyaFprintf(fd,"Theorem %d:\n",theo->number);
-  sollyaFprintf(fd,"Assuming that f is C^2, the infinity norm of\nf(%s) = ",variablename);
+  sollyaFprintf(fd,"Assuming that f is C^2, the infinity norm of\nf(%s) = ",((variablename == NULL) ? "_x_" : variablename));
   fprintTree(fd,theo->function);
-  sollyaFprintf(fd,"\nfor %s in ",variablename);
+  sollyaFprintf(fd,"\nfor %s in ",((variablename == NULL) ? "_x_" : variablename));
   if (theo->domain != NULL) fprintInterval(fd,*(theo->domain));
   sollyaFprintf(fd," ");
   if (theo->excludedIntervals != NULL) {
@@ -837,18 +790,18 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
   sollyaFprintf(fd,"\n");
   sollyaFprintf(fd,"Proof:\n");
   sollyaFprintf(fd,"As per lemma %d.%d, the derivative f'(%s) of the given function f(%s) is\nf'(%s) = ",
-	  theo->number,1,variablename,variablename,variablename);
+	  theo->number,1,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   fprintTree(fd,theo->derivative);
   sollyaFprintf(fd,
     ".\nLemma %d.%d shows that the set of the zeros of f'(%s), i.e. of the local extrema of f(%s) (since f is C^2), is a\n",
-	  theo->number,2,variablename,variablename);
-  sollyaFprintf(fd,"subset of the zeros of\ng(%s) = ",variablename);
+	  theo->number,2,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+  sollyaFprintf(fd,"subset of the zeros of\ng(%s) = ",((variablename == NULL) ? "_x_" : variablename));
   fprintTree(fd,theo->numeratorOfDerivative);
-  sollyaFprintf(fd,".\nThe derivative of g(%s) is g'(%s) = ",variablename,variablename);
+  sollyaFprintf(fd,".\nThe derivative of g(%s) is g'(%s) = ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   fprintTree(fd,theo->derivativeOfNumeratorOfDerivative);
   sollyaFprintf(fd," as shown by lemma %d.%d.\n",theo->number,3);
   sollyaFprintf(fd,"As per theorem %d, g(%s) has no zero in the following domains:\n",
-	  theo->noZeros->number,variablename);
+	  theo->noZeros->number,((variablename == NULL) ? "_x_" : variablename));
   zeroFree = NULL;
   curr = theo->noZeros->exprBoundTheos;
   while (curr != NULL) {
@@ -886,7 +839,7 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
     }
   }
   sollyaFprintf(fd,".\nTheorems %d and %d show that the absolute value of f(%s) on the bounds of the given domain a = ",
-	  theo->evalLeftBound->number, theo->evalRightBound->number, variablename);
+	  theo->evalLeftBound->number, theo->evalRightBound->number, ((variablename == NULL) ? "_x_" : variablename));
   mpfr_init2(a,sollya_mpfi_get_prec(*(theo->domain)));
   mpfr_init2(b,sollya_mpfi_get_prec(*(theo->domain)));  
   sollya_mpfi_get_left(a,*(theo->domain));
@@ -909,11 +862,11 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
     curr = curr->next;
   }
   sollyaFprintf(fd," show(s) using f'(%s) that the absolute value of f(%s) is less than or equal to this upper bound u\n",
-	  variablename,variablename);
+	  ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   sollyaFprintf(fd,"on all domains Z where g(%s) may have a zero, i.e. where f'(%s) may have a zero and f(%s) a local extremum.\n",
-	  variablename, variablename,variablename);
+	  ((variablename == NULL) ? "_x_" : variablename), ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   sollyaFprintf(fd,"Theorem %d shows that there are no other domains with zeros of f'(%s) and we have shown that\n",
-	  theo->noZeros->number,variablename);
+	  theo->noZeros->number,((variablename == NULL) ? "_x_" : variablename));
   sollyaFprintf(fd,"the partitioning is complete.\n");
   prec = sollya_mpfi_get_prec(*(theo->evalLeftBound->y));
   p = sollya_mpfi_get_prec(*(theo->evalRightBound->y));
@@ -959,14 +912,14 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
   }
   if (mpfr_greater_p(fl,fr)) {
     sollyaFprintf(fd,"Theorem %d shows that on a domain bound or a domain containing a zero of f'(%s)\n",
-	    innerLeftNumber,variablename);
-    sollyaFprintf(fd,"the value of f(%s) can principally be as great as ",variablename);
+	    innerLeftNumber,((variablename == NULL) ? "_x_" : variablename));
+    sollyaFprintf(fd,"the value of f(%s) can principally be as great as ",((variablename == NULL) ? "_x_" : variablename));
     fprintValue(fd,fl);
     sollyaFprintf(fd,".\nTheorem %d shows that on a domain bound or a domain containing a zero of f'(%s)\n",
-	    innerRightNumber,variablename);
-    sollyaFprintf(fd,"the value of f(%s) can principally as small as ",variablename);
+	    innerRightNumber,((variablename == NULL) ? "_x_" : variablename));
+    sollyaFprintf(fd,"the value of f(%s) can principally as small as ",((variablename == NULL) ? "_x_" : variablename));
     fprintValue(fd,fr);
-    sollyaFprintf(fd,".\nThe lower bound for the infinity norm on f(%s) in the given domain l = ",variablename);
+    sollyaFprintf(fd,".\nThe lower bound for the infinity norm on f(%s) in the given domain l = ",((variablename == NULL) ? "_x_" : variablename));
     fprintValue(fd,l);
     sollyaFprintf(fd," is therefore the best lower bound that can be shown in this proof.\n");
   } else {
@@ -978,8 +931,8 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
       num = innerRightNumber;
     }
     sollyaFprintf(fd,"Theorem %d shows that on a domain bound or a domain containing a zero of f'(%s)\n",
-	    num,variablename);
-    sollyaFprintf(fd,"the absolute value of f(%s) is not less than the lower bound l = ",variablename);
+	    num,((variablename == NULL) ? "_x_" : variablename));
+    sollyaFprintf(fd,"the absolute value of f(%s) is not less than the lower bound l = ",((variablename == NULL) ? "_x_" : variablename));
     fprintValue(fd,l);
     sollyaFprintf(fd," given for the infinity norm.");
   }
@@ -992,8 +945,6 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
   mpfr_clear(fl);
   mpfr_clear(tr);
   mpfr_clear(tl);
-
-  if (restoreNullPtr) variablename = NULL;
 
   return nextNumber;
 }

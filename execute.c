@@ -2184,6 +2184,16 @@ int isExtendedPureTree(node *tree) {
     if (tree->arguments->next != NULL) return 0;
     return 1;
     break;
+  case APPLY:
+    if (tree->child1->nodeType != VARIABLE) {
+      if (variablename == NULL) return 0;
+      if (tree->child1->nodeType != TABLEACCESS) return 0;
+      if (strcmp(variablename,tree->child1->string)) return 0;
+    }
+    if (tree->arguments == NULL) return 0;
+    if (tree->arguments->next != NULL) return 0;
+    return 1;
+    break;    
   case CONSTANT:
     return 1;
     break;
@@ -2728,7 +2738,7 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal, int s
     if (!isConstant(simplified)) {
       if (!noRoundingWarnings) {
 	printMessage(1,"Warning: the given expression should be constant in this context.\nIt proves constant under floating point evaluation.\n");
-	printMessage(1,"In this evaluation, %s will be set to 1 when evaluating the expression to a constant.\n",variablename);
+	printMessage(1,"In this evaluation, %s will be set to 1 when evaluating the expression to a constant.\n",((variablename == NULL) ? "_x_" : variablename));
 	noMessage = 1;
       }
     }
@@ -3676,12 +3686,10 @@ char *sRawPrintThing(node *tree) {
   switch (tree->nodeType) {
   case VARIABLE:
     if (variablename == NULL) {
-      printMessage(1,"Warning: the global free variable has not been bound before being printed.\n");
-      printMessage(1,"As such a binding is required, the variable will now be bound to \"x\"\n");
-      variablename = (char *) safeCalloc(2,sizeof(char));
-      variablename[0] = 'x';
+      res = newString("_x_");
+    } else {
+      res = newString(variablename);
     }
-    res = newString(variablename);
     break;
   case CONSTANT:
     res = sprintValue(tree->value);
@@ -5722,12 +5730,6 @@ node *getThingFromTable(char *identifier) {
   }
 
   if ((tempLibraryFunction = getFunction(identifier)) != NULL) {
-    if (variablename==NULL) {
-      printMessage(1,"Warning: the current free variable is not bound to an identifier. Dereferencing library function \"%s\" requires this binding.\n",tempLibraryFunction->functionName);
-      printMessage(1,"Will bind the current free variable to the identifier \"x\".\n");
-      variablename = (char *) safeCalloc(2,sizeof(char));
-      variablename[0] = 'x';
-    }
     temp_node = (node *) safeMalloc(sizeof(node));
     temp_node->nodeType = LIBRARYFUNCTION;
     temp_node->libFun = tempLibraryFunction;
@@ -7459,12 +7461,13 @@ int executeCommandInner(node *tree) {
       variablename = (char *) safeCalloc(strlen((char *) (tree->arguments->value)) + 1,sizeof(char));
       strcpy(variablename,(char *) (tree->arguments->value));
     } else {
-      if (strcmp(variablename,tree->string) == 0) {
-	free(variablename);
+      if ((strcmp(variablename,tree->string) == 0) || (strcmp("_x_",tree->string) == 0)) {
+	tempString = variablename;
 	variablename = (char *) safeCalloc(strlen((char *) (tree->arguments->value)) + 1,sizeof(char));
 	strcpy(variablename,(char *) (tree->arguments->value));
 	printMessage(1,"Information: the free variable has been renamed from \"%s\" to \"%s\".\n",
-		     tree->string,(char *) (tree->arguments->value));
+		     tempString,(char *) (tree->arguments->value));
+	free(tempString);
       } else {
 	printMessage(1,"Warning: the current free variable is named \"%s\" and not \"%s\". Can only rename the free variable.\n",
 		     variablename,tree->string);
@@ -18798,8 +18801,10 @@ node *evaluateThingInner(node *tree) {
     if (timingString != NULL) pushTimeCounter();
     undoVariableTrick = 0;
     if (variablename == NULL) {
-      variablename = (char *) safeCalloc(2, sizeof(char));
-      variablename[0] = 'x';
+      variablename = (char *) safeCalloc(4, sizeof(char));
+      variablename[0] = '_';
+      variablename[1] = 'x';
+      variablename[2] = '_';
       undoVariableTrick = 1;
     }
     if ((tempNode = getThingFromTable(tree->string)) == NULL) {
@@ -18825,22 +18830,14 @@ node *evaluateThingInner(node *tree) {
     if (isPureTree(tempNode)) {
       if (lengthChain(tree->arguments) == 1) {
 	if (evaluateThingToPureTree(&tempNode2,(node *) (tree->arguments->value))) {
-	  if ((tempNode->nodeType == LIBRARYFUNCTION) && (variablename == NULL)) {
-	    printMessage(1,"Warning: the current free variable is not bound to an identifier. Dereferencing library function \"%s\" requires this binding.\n",tempNode->libFun->functionName);
-	    printMessage(1,"Will bind the current free variable to the identifier \"x\"\n");
-	    variablename = (char *) safeCalloc(2, sizeof(char));
-	    variablename[0] = 'x';
-	  }
-	  if ((tempNode->nodeType == PROCEDUREFUNCTION) && (variablename == NULL)) {
-	    printMessage(1,"Warning: the current free variable is not bound to an identifier. Dereferencing a procedure-based function requires this binding.\n");
-	    printMessage(1,"Will bind the current free variable to the identifier \"x\"\n");
-	    variablename = (char *) safeCalloc(2, sizeof(char));
-	    variablename[0] = 'x';
-	  }
 	  free(copy);
 	  if (tempNode->nodeType == VARIABLE) {
-	    printMessage(1,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
-			 variablename);
+	    if (variablename != NULL) {
+	      printMessage(1,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
+			   variablename);
+	    } else {
+	      printMessage(1,"Warning: \"_x_\" is the free variable. In a functional context it will be considered as the identity function.\n");
+	    }
 	  }
 	  copy = substitute(tempNode, tempNode2);
 	  freeThing(tempNode2);
@@ -18986,22 +18983,14 @@ node *evaluateThingInner(node *tree) {
     if (isPureTree(tempNode)) {
       if (lengthChain(tree->arguments) == 1) {
 	if (evaluateThingToPureTree(&tempNode2,(node *) (tree->arguments->value))) {
-	  if ((tempNode->nodeType == LIBRARYFUNCTION) && (variablename == NULL)) {
-	    printMessage(1,"Warning: the current free variable is not bound to an identifier. Dereferencing library function \"%s\" requires this binding.\n",tempNode->libFun->functionName);
-	    printMessage(1,"Will bind the current free variable to the identifier \"x\"\n");
-	    variablename = (char *) safeCalloc(2, sizeof(char));
-	    variablename[0] = 'x';
-	  }
-	  if ((tempNode->nodeType == PROCEDUREFUNCTION) && (variablename == NULL)) {
-	    printMessage(1,"Warning: the current free variable is not bound to an identifier. Dereferencing a procedure-based function requires this binding.\n");
-	    printMessage(1,"Will bind the current free variable to the identifier \"x\"\n");
-	    variablename = (char *) safeCalloc(2, sizeof(char));
-	    variablename[0] = 'x';
-	  }
 	  free(copy);
 	  if (tempNode->nodeType == VARIABLE) {
-	    printMessage(1,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
-			 variablename);
+	    if (variablename != NULL) {
+	      printMessage(1,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
+			   variablename);
+	    } else {
+	      printMessage(1,"Warning: \"_x_\" is the free variable. In a functional context it will be considered as the identity function.\n");
+	    }
 	  }
 	  copy = substitute(tempNode, tempNode2);
 	  freeThing(tempNode2);
@@ -20626,12 +20615,6 @@ node *evaluateThingInner(node *tree) {
       if ((tempNode = readXml(copy->child1->string)) != NULL) {
 	freeThing(copy);
 	copy = tempNode; 
-	if (variablename == NULL) {
-	  printMessage(1,"Warning: the free variable is not bound to an identifier. Reading an XML file requires this binding.\n");
-	  printMessage(1,"Will bind the free variable to the identifier \"x\"\n");
-	  variablename = safeCalloc(2,sizeof(char));
-	  variablename[0] = 'x';
-	}
       } else {
 	printMessage(1,"Warning: the file \"%s\" could not be read as an XML file.\n",copy->child1->string);
         considerDyingOnError();

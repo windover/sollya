@@ -183,9 +183,9 @@ void printWorstCases(node *func,
     }
     
     if (mpfr_cmp(temp2,epsilon) <= 0) {
-      sollyaPrintf("%s = ",variablename);
+      sollyaPrintf("%s = ",((variablename == NULL) ? "_x_" : variablename));
       printValue(&x);
-      sollyaPrintf("\t\tf(%s) = ",variablename);
+      sollyaPrintf("\t\tf(%s) = ",((variablename == NULL) ? "_x_" : variablename));
       printValue(&yR);
       sollyaPrintf("\t\teps = ");
       printValue(&temp2);
@@ -193,9 +193,9 @@ void printWorstCases(node *func,
       eps = mpfr_get_d(temp,GMP_RNDN);
       sollyaPrintf(" = 2^(%f) \n",eps);
       if (fd != NULL) {
-	sollyaFprintf(fd,"%s = ",variablename);
+	sollyaFprintf(fd,"%s = ",((variablename == NULL) ? "_x_" : variablename));
 	fprintValue(fd,x);
-	sollyaFprintf(fd,"\tf(%s) = ",variablename);
+	sollyaFprintf(fd,"\tf(%s) = ",((variablename == NULL) ? "_x_" : variablename));
 	fprintValue(fd,yR);
 	sollyaFprintf(fd,"\teps = ");
 	fprintValue(fd,temp2);

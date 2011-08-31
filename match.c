@@ -224,6 +224,56 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
     return 1;
   }
 
+  /* The free variable matches the free variable */
+  if ((possibleMatcher->nodeType == VARIABLE) && 
+      (thingToMatch->nodeType == VARIABLE)) {
+    return 1;
+  }
+
+  /* Special case: possibleMatcher is an apply 
+     of the free variable on a function 
+  */
+  if (possibleMatcher->nodeType == APPLY) {
+    /* Check if the child of the apply is the free variable */
+    if (possibleMatcher->child1->nodeType != VARIABLE) {
+      if (variablename == NULL) return 0;
+      if (possibleMatcher->child1->nodeType != TABLEACCESS) return 0;
+      if (strcmp(variablename,possibleMatcher->child1->string)) return 0;
+    }
+
+    /* Check if recursion is possible on the thing to match */
+    switch (thingToMatch->nodeType) {
+    case VARIABLE:
+    case CONSTANT:
+    case PI_CONST:
+    case LIBRARYCONSTANT:
+    case ADD:
+    case SUB:
+    case MUL:
+    case DIV:
+    case POW:
+      return 0;
+      break;
+    default:
+      break;
+    }
+
+    /* If we are here, we are sure that recursion is possible
+       on the one, first and only child of the thing to match.
+
+    */
+    okay = tryMatchExtendedPureTree(associations, thingToMatch, ((node *) (possibleMatcher->arguments->value)));
+    if (okay) {
+      if (variablename != NULL) {
+	printMessage(1,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
+		     variablename);
+      } else {
+	printMessage(1,"Warning: \"_x_\" is the free variable. In a functional context it will be considered as the identity function.\n");
+      }
+    }
+    return okay;
+  }  
+
   /* Special case: possibleMatcher is a free variable to bind
      Check if it is possible equal to the mathematical free 
      variable. If not, create an association 
@@ -302,10 +352,14 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
 	 to the free mathematical variable. 
 
       */
-      okay = tryMatchExtendedPureTree(associations, thingToMatch->child1, ((node *) (possibleMatcher->arguments->value)));
+      okay = tryMatchExtendedPureTree(associations, thingToMatch, ((node *) (possibleMatcher->arguments->value)));
       if (okay) {
-	printMessage(1,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
-		     variablename);
+	if (variablename != NULL) {
+	  printMessage(1,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
+		       variablename);
+	} else {
+	  printMessage(1,"Warning: \"_x_\" is the free variable. In a functional context it will be considered as the identity function.\n");
+	}
       }
       return okay;
     }
@@ -394,18 +448,6 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
     } while (recursion);
     free_memory(headSymbol);
 
-    if (okay) {
-      /* If we have a match, we have to check if the free mathematical
-	 variable has already been named. Otherwise, we have created
-	 a free mathematical variable in the association that does not
-	 have a name */
-      if (variablename == NULL) {
-	printMessage(1,"Warning: the current free variable is not bound to an identifier. The matching of head function symbols requires this binding.\n");
-	printMessage(1,"Will bind the current free variable to the identifier \"x\"\n");
-	variablename = (char *) safeCalloc(2, sizeof(char));
-	variablename[0] = 'x';
-      }
-    }
     return okay;
   }
 

@@ -1114,11 +1114,7 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
     if (variablename != NULL) {
       sollyaFprintf(fd,"%s",variablename);
     } else {
-      printMessage(1,"Warning: the current free variable has not been bound. Nevertheless it must be printed.\n");
-      printMessage(1,"Will bind the current free variable to \"x\".\n");
-      variablename = (char *) safeCalloc(2,sizeof(char));
-      variablename[0] = 'x';
-      sollyaFprintf(fd,"%s",variablename);
+      sollyaFprintf(fd,"_x_");
     }
     break;
   case CONSTANT:
@@ -1584,11 +1580,7 @@ void printTree(node *tree) {
     if (variablename != NULL) {
       sollyaPrintf("%s",variablename);
     } else {
-      printMessage(1,"Warning: the current free variable has not been bound. Nevertheless it must be printed.\n");
-      printMessage(1,"Will bind the current free variable to \"x\".\n");
-      variablename = (char *) safeCalloc(2,sizeof(char));
-      variablename[0] = 'x';
-      sollyaPrintf("%s",variablename);
+      sollyaPrintf("_x_");
     }
     break;
   case CONSTANT:
@@ -1924,13 +1916,12 @@ char *sprintTree(node *tree) {
   switch (tree->nodeType) {
   case VARIABLE:
     if (variablename == NULL) {
-      printMessage(1,"Warning: the current free variable has not been bound. Nevertheless it must be printed.\n");
-      printMessage(1,"Will bind the current free variable to \"x\".\n");
-      variablename = (char *) safeCalloc(2,sizeof(char));
-      variablename[0] = 'x';
+      buffer = (char *) safeCalloc(4,sizeof(char));
+      sprintf(buffer,"_x_");
+    } else {
+      buffer = (char *) safeCalloc(strlen(variablename)+1,sizeof(char));
+      sprintf(buffer,"%s",variablename);
     }
-    buffer = (char *) safeCalloc(strlen(variablename)+1,sizeof(char));
-    sprintf(buffer,"%s",variablename);
     break;
   case CONSTANT:
     buffer = sprintValue(tree->value);
@@ -2301,12 +2292,10 @@ void fprintTree(FILE *fd, node *tree) {
   switch (tree->nodeType) {
   case VARIABLE:
     if (variablename == NULL) {
-      printMessage(1,"Warning: the current free variable has not been bound. Nevertheless it must be printed.\n");
-      printMessage(1,"Will bind the current free variable to \"x\".\n");
-      variablename = (char *) safeCalloc(2,sizeof(char));
-      variablename[0] = 'x';
+      sollyaFprintf(fd,"_x_");
+    } else {
+      sollyaFprintf(fd,"%s",variablename);
     }
-    sollyaFprintf(fd,"%s",variablename);
     break;
   case CONSTANT:
     fprintValue(fd,*(tree->value));

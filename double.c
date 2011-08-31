@@ -1163,9 +1163,9 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
     if (coefficients[i] != NULL) {
       if (k > 0) {
 	if (k == 1) {
-	  sollyaPrintf("%s * ",variablename);
+	  sollyaPrintf("%s * ",((variablename == NULL) ? "_x_" : variablename));
 	} else {
-	  sollyaPrintf("%s^%d * ",variablename,k);
+	  sollyaPrintf("%s^%d * ",((variablename == NULL) ? "_x_" : variablename),k);
 	}
       }
 

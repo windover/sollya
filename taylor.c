@@ -66,7 +66,7 @@ node *taylor(node* tree, int degree, node* point, mp_prec_t prec) {
 
   if (!isConstant(point)) {
     printMessage(1,"Warning: the expression given for the development point is not constant.\n");
-    printMessage(1,"Will evaluate the expression in %s = 0 before using it as development point.\n",variablename);
+    printMessage(1,"Will evaluate the expression in %s = 0 before using it as development point.\n",((variablename == NULL) ? "_x_" : variablename));
     temp = (node *) safeMalloc(sizeof(node));
     temp->nodeType = CONSTANT;
     value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));

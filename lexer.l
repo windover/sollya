@@ -117,6 +117,7 @@ DIV             "/"
 POW             "^"
 SQRT            "sqrt"
 EXP             "exp"
+FREEVAR         "_x_"
 LOG             "log"
 LOG2            "log2"
 LOG10           "log10"
@@ -623,6 +624,7 @@ NOP             "nop"
 
 {SQRT}            			    { newTokenLexed(); return SQRTTOKEN; }
 {EXP}             			    { newTokenLexed(); return EXPTOKEN; }
+{FREEVAR}             			    { newTokenLexed(); return FREEVARTOKEN; }
 {LOG}             			    { newTokenLexed(); return LOGTOKEN; }
 {LOG2}            			    { newTokenLexed(); return LOG2TOKEN; }
 {LOG10}           			    { newTokenLexed(); return LOG10TOKEN; }
