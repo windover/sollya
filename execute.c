@@ -7460,6 +7460,7 @@ int executeCommandInner(node *tree) {
     if (variablename == NULL) {
       variablename = (char *) safeCalloc(strlen((char *) (tree->arguments->value)) + 1,sizeof(char));
       strcpy(variablename,(char *) (tree->arguments->value));
+      printMessage(1,"Information: the free variable has been named \"%s\".\n", variablename);
     } else {
       if ((strcmp(variablename,tree->string) == 0) || (strcmp("_x_",tree->string) == 0)) {
 	tempString = variablename;

@@ -174,11 +174,15 @@ If you really want to unbind 'x', you can use the <code class="com">rename</code
 <p>
 <?php include("introExample3.php"); ?>
 <p>
+<span class="sollya">Sollya</span> has a reserved keyword that can always be used to refer to the free variable. This keyword is <code class="key">_x_</code>. This is particularly useful in contexts when the name of the variable is not known: typically when refering to the free variable in a pattern matching or inside a procedure.
+<p>
+<?php include("introExample3bis.php"); ?>
+<p>
 As you have seen, you can name functions and easily work with them. The basic thing to do with a function is to evaluate it at some point:
 <p>
 <?php include("introExample4.php"); ?>
 <p>
-The printed value is generally a faithful rounding of the exact value at the working precision (i.e. one of the two floating-point numbers enclosing the exact value). Internally <span class="sollya">Sollya</span> represents numbers as floating-point numbers in arbitrary precision with radix&nbsp;2: the fact that a faithful rounding is performed in binary does not imply much on the exactness of the digits displayed in decimal. The working precision is controlled by the global variable <code class="com">prec</code>:
+The printed value is generally a faithful rounding of the exact value at the working precision (i.e. one of the two floating-point numbers enclosing the exact value). Internally <span class="sollya">Sollya</span> represents numbers as floating-point numbers in arbitrary precision with radix&nbsp;2: the fact that a faithful rounding is performed in binary does not imply much on the exactness of the digits displayed in decimal. The working precision is controlled by the global variable <code class="key">prec</code>:
 <p>
 <?php include("introExample5.php"); ?>
 <p>
@@ -810,6 +814,10 @@ precision valid at this moment.
 <p>
 <?php include("introExample37.php"); ?>
 <p>
+Let us note that, when writing a procedure, one does not know what will be the name of the free variable at run-time. This is typically the context when one should use the special keyword <code class="key">_x_</code>:
+<p>
+<?php include("introExample37bis.php"); ?>
+<p>
 <span class="sollya">Sollya</span> also supports external procedures, i.e. procedures written in
 <code>C</code> (or some other language) and dynamically bound to <span class="sollya">Sollya</span>
 identifiers. See <a href="help.php?name=externalproc&amp;goBack=none">externalproc</a> for details.
@@ -864,7 +872,7 @@ during the evaluation of the corresponding return expression <em>return-exprI</e
 expressions and/or recursively handled as needed.
 <p>
 The following examples illustrate the basic principles of pattern
-matching in <span class="sollya">Sollya</span>:
+matching in <span class="sollya">Sollya</span>. One can remark that it is useful to use the keyword <code class="key">_x_</code> when one wants to be sure to refer to the free variable in a pattern matching:
 <p>
 <?php include("introExample50.php"); ?>
 <p>

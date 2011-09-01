@@ -8,24 +8,28 @@
 #PARAMETERS <ident2> is a fresh name.
 
 
-#DESCRIPTION 
-$COMMAND permits a change of the name of the free variable. $SOLLYA can handle only
-one free variable at a time. The first time in a session that an unbound name 
-is used in a context where it can be interpreted as a free variable, the name
-is used to represent the free variable of $SOLLYA. In the following, this name
-can be changed using $COMMAND.
+#DESCRIPTION
+$COMMAND permits a change of the name of the free variable. $SOLLYA can handle
+only one free variable at a time. The first time in a session that an
+unbound name is used in a context where it can be interpreted as a free
+variable, the name is used to represent the free variable of $SOLLYA. In the
+following, this name can be changed using $COMMAND.
 
 #DESCRIPTION
-Be careful: if <ident2> has been set before, its value will be lost. Use the 
-command $ISBOUND to know if <ident2> is already used or not.
+Be careful: if <ident2> has been set before, its value will be lost. Use
+the command $ISBOUND to know if <ident2> is already used or not.
 
 #DESCRIPTION
 If <ident1> is not the current name of the free variable, an error occurs.
 
 #DESCRIPTION
-If $COMMAND is used at a time when the name of the free variable has not been 
-defined, <ident1> is just ignored and the name of the free variable is 
-set to <ident2>.
+If $COMMAND is used at a time when the name of the free variable has not been
+defined, <ident1> is just ignored and the name of the free variable is set
+to <ident2>.
+
+#DESCRIPTION
+It is always possible to use the special keyword §§_x_§\verb|_x_|§§ to denote the free
+variable. Hence <ident1> can be §§_x_§\verb|_x_|§§.
 
 #EXAMPLE
 f=sin(x);
@@ -43,9 +47,11 @@ f;
 #EXAMPLE
 verbosity=1!;
 f=sin(x);
-rename(y,z);
+rename(y, z);
+rename(_x_, z);
 
 #EXAMPLE
+verbosity=1!;
 rename(x,y);
 isbound(x);
 isbound(y);

@@ -29,19 +29,21 @@ Exponential of sin(x)
           g + h   : (differentiate(g) + differentiate(h))
           g * h   : (differentiate(g) * h + differentiate(h) * g)
           g / h   : ((differentiate(g) * h - differentiate(h) * g) / (h^2))
-          exp(x)  : (exp(x))
-          sin(x)  : (cos(x))
-          cos(x)  : (-sin(x))
+          exp(_x_)  : (exp(_x_))
+          sin(_x_)  : (cos(_x_))
+          cos(_x_)  : (-sin(_x_))
           g(h)    : ((differentiate(g))(h) * differentiate(h))
-          x       : (1)
-          h(x)    : (NaN)
+          _x_       : (1)
+          h(_x_)    : (NaN)
           c       : (0);
   };
 > 
-> differentiate(exp(sin(x + x)));
-exp(sin(x * 2)) * cos(x * 2) * 2
-> diff(exp(sin(x + x)));
-exp(sin(x * 2)) * cos(x * 2) * 2
+> rename(x,y);
+Information: the free variable has been renamed from "x" to "y".
+> differentiate(exp(sin(y + y)));
+exp(sin(y * 2)) * cos(y * 2) * 2
+> diff(exp(sin(y + y)));
+exp(sin(y * 2)) * cos(y * 2) * 2
 > 
 \end{Verbatim}
 \end{minipage}\end{center}

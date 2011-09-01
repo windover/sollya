@@ -1,0 +1,15 @@
+ChebPolynomials = proc(n) {
+  var i, res;
+  if (n<0) then res = [||]
+  else if (n==0) then res = [|1|]
+  else {
+     res = [|1, _x_|];
+     for i from 2 to n do res[i] = horner(2*_x_*res[i-1]-res[i-2]);
+  };
+  return res;
+};
+
+f = sin(x);
+T = ChebPolynomials(4);
+canonical = on!;
+for i from 0 to 4 do T[i];

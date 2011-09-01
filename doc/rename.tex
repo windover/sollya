@@ -13,20 +13,23 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{rename} permits a change of the name of the free variable. \sollya can handle only
-   one free variable at a time. The first time in a session that an unbound name 
-   is used in a context where it can be interpreted as a free variable, the name
-   is used to represent the free variable of \sollya. In the following, this name
-   can be changed using \textbf{rename}.
+\item \textbf{rename} permits a change of the name of the free variable. \sollya can handle
+   only one free variable at a time. The first time in a session that an
+   unbound name is used in a context where it can be interpreted as a free
+   variable, the name is used to represent the free variable of \sollya. In the
+   following, this name can be changed using \textbf{rename}.
 
-\item Be careful: if \emph{ident2} has been set before, its value will be lost. Use the 
-   command \textbf{isbound} to know if \emph{ident2} is already used or not.
+\item Be careful: if \emph{ident2} has been set before, its value will be lost. Use
+   the command \textbf{isbound} to know if \emph{ident2} is already used or not.
 
 \item If \emph{ident1} is not the current name of the free variable, an error occurs.
 
-\item If \textbf{rename} is used at a time when the name of the free variable has not been 
-   defined, \emph{ident1} is just ignored and the name of the free variable is 
-   set to \emph{ident2}.
+\item If \textbf{rename} is used at a time when the name of the free variable has not been
+   defined, \emph{ident1} is just ignored and the name of the free variable is set
+   to \emph{ident2}.
+
+\item It is always possible to use the special keyword \verb|_x_| to denote the free
+   variable. Hence \emph{ident1} can be \verb|_x_|.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
@@ -53,15 +56,19 @@ sin(a)
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > verbosity=1!;
 > f=sin(x);
-> rename(y,z);
+> rename(y, z);
 Warning: the current free variable is named "x" and not "y". Can only rename the
  free variable.
 The last command will have no effect.
+> rename(_x_, z);
+Information: the free variable has been renamed from "x" to "z".
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity=1!;
 > rename(x,y);
+Information: the free variable has been named "y".
 > isbound(x);
 false
 > isbound(y);

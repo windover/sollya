@@ -17,7 +17,7 @@
 <ul> 
 <li><span class="arg">f</span> is the function to be approximated</li> 
 <li><span class="arg">n</span> is the degree of the polynomial that must approximate <span class="arg">f</span></li> 
-<li><span class="arg">monomials</span> is the list of monomials that must be used to represent the polynomial that approximates <span class="arg">f</span></li> 
+<li><span class="arg">monomials</span> is a list of integers or a list of function. It indicates the basis for the approximation of <span class="arg">f</span></li> 
 <li><span class="arg">formats</span> is a list indicating the formats that the coefficients of the polynomial must have</li> 
 <li><span class="arg">range</span> is the interval where the function must be approximated</li> 
 <li><span class="arg">L</span> is a list of interpolation points used by the method</li> 
@@ -32,29 +32,32 @@
 <li><?php linkTo("command","fpminimax","fpminimax");?> uses a heuristic (but practically efficient) method to find a 
 good polynomial approximation of a function <span class="arg">f</span> on an interval <span class="arg">range</span>. It 
 implements the method published in the article:<br> 
-Efficient polynomial L^\infty - approximations  
+Efficient polynomial L^\infty - approximations 
 Nicolas Brisebarre and Sylvain Chevillard<br> 
 Proceedings of the 18th IEEE Symposium on Computer Arithmetic (ARITH 18)<br> 
 pp. 169-176 
 </li><li>The basic usage of this command is <?php linkTo("command","fpminimax","fpminimax");?>(<span class="arg">f</span>, <span class="arg">n</span>, <span class="arg">formats</span>, <span class="arg">range</span>). 
 It computes a polynomial approximation of f with degree at most n 
-on the interval <span class="arg">range</span>. <span class="arg">formats</span> is a list of integers or format types  
+on the interval <span class="arg">range</span>. <span class="arg">formats</span> is a list of integers or format types 
 (such as <?php linkTo("command","double","double");?>, <?php linkTo("command","doubledouble","doubledouble");?>, etc.). The polynomial returned by the 
-command has its coefficients that fit the formats indications. For  
-instance, if formats[0] is 35, the coefficient of degree 0 of the  
-polynomial will fit a floating-point format of 35 bits. If formats[1]  
+command has its coefficients that fit the formats indications. For 
+instance, if formats[0] is 35, the coefficient of degree 0 of the 
+polynomial will fit a floating-point format of 35 bits. If formats[1] 
 is D, the coefficient of degree 1 will be representable by a floating-point 
 number with a precision of 53 bits (which is not necessarily an IEEE 754 
 double precision number. See the remark below), etc. 
-</li><li>The second argument may be either an integer or a list of integers 
-interpreted as the list of desired monomials. For instance, the list 
-[|0,2,4,6|] indicates that the polynomial must be even and of 
-degree at most 6. Giving an integer n as second argument is equivalent 
-as giving [|0,...,n|].<br> 
+</li><li>The second argument may be either an integer, a list of integers or a list 
+of functions. An integer indicates the degree of the desired polynomial 
+approximation. A list of integers indicates the list of desired monomials. 
+For instance, the list [|0,2,4,6|] indicates that the polynomial must be 
+even and of degree at most 6. Giving an integer n as second argument is 
+equivalent as giving [|0,...,n|]. 
+Finally, a list of function g_k indicates that the desired approximation 
+must be a linear combination of the g_k.<br> 
 The list of formats is interpreted with respect to the list of monomials. For 
 instance, if the list of monomials is [|0,2,4,6|] and the list 
-of formats is [|161,107,53,24|], the coefficients of degree 0 is  
-searched as a floating-point number with precision 161, the coefficient of  
+of formats is [|161,107,53,24|], the coefficients of degree 0 is 
+searched as a floating-point number with precision 161, the coefficient of 
 degree 2 is searched as a number of precision 107, and so on. 
 </li><li>The list of formats may contain either integers or format types 
 (<?php linkTo("command","halfprecision","halfprecision");?>, <?php linkTo("command","single","single");?>, <?php linkTo("command","double","double");?>, <?php linkTo("command","doubledouble","doubledouble");?>, <?php linkTo("command","tripledouble","tripledouble");?>, <?php linkTo("command","doubleextended","doubleextended");?> 
@@ -71,9 +74,9 @@ IEEE-754 double.
 formats. This may be changed by passing <?php linkTo("command","fixed","fixed");?> as an optional argument (see 
 below). Let us take an example: <?php linkTo("command","fpminimax","fpminimax");?>(f, 2, [107, DD, 53], [0;1]). 
 Here the optional argument is missing (we could have set it to <?php linkTo("command","floating","floating");?>). 
-Thus, <?php linkTo("command","fpminimax","fpminimax");?> will search for a polynomial of degree 2 with a constant  
+Thus, <?php linkTo("command","fpminimax","fpminimax");?> will search for a polynomial of degree 2 with a constant 
 coefficient that is a 107 bits floating-point number, etc.<br> 
-Currently, <?php linkTo("command","doubledouble","doubledouble");?> is just a synonym for 107 and <?php linkTo("command","tripledouble","tripledouble");?> a  
+Currently, <?php linkTo("command","doubledouble","doubledouble");?> is just a synonym for 107 and <?php linkTo("command","tripledouble","tripledouble");?> a 
 synonym for 161. This behavior may change in the future (taking into 
 account the fact that some double-doubles are not representable with 
 107 bits).<br> 
@@ -81,16 +84,16 @@ Second example: <?php linkTo("command","fpminimax","fpminimax");?>(f, 2, [25, 18
 In this case, <?php linkTo("command","fpminimax","fpminimax");?> will search for a polynomial of degree 2 with a 
 constant coefficient of the form m/2^25 where m is an 
 integer. In other words, it is a fixed-point number with 25 bits after 
-the point. Note that even with argument <?php linkTo("command","fixed","fixed");?>, the formats list is  
-allowed to contain <?php linkTo("command","halfprecision","halfprecision");?>, <?php linkTo("command","single","single");?>, <?php linkTo("command","double","double");?>, <?php linkTo("command","doubleextended","doubleextended");?>,  
-<?php linkTo("command","doubledouble","doubledouble");?>, <?php linkTo("command","quad","quad");?> or <?php linkTo("command","tripledouble","tripledouble");?>. In this this case, it is just  
-a synonym for 11, 24, 53, 64, 107, 113 or 161. This is deprecated and  
+the point. Note that even with argument <?php linkTo("command","fixed","fixed");?>, the formats list is 
+allowed to contain <?php linkTo("command","halfprecision","halfprecision");?>, <?php linkTo("command","single","single");?>, <?php linkTo("command","double","double");?>, <?php linkTo("command","doubleextended","doubleextended");?>, 
+<?php linkTo("command","doubledouble","doubledouble");?>, <?php linkTo("command","quad","quad");?> or <?php linkTo("command","tripledouble","tripledouble");?>. In this this case, it is just 
+a synonym for 11, 24, 53, 64, 107, 113 or 161. This is deprecated and 
 may change in the future. 
 </li><li>The fourth argument may be a range or a list. Lists are for advanced users 
 that know what they are doing. The core of the  method is a kind of 
 approximated interpolation. The list given here is a list of points that 
-must be considered for the interpolation. It must contain at least as  
-many points as unknown coefficients. If you give a list, it is also  
+must be considered for the interpolation. It must contain at least as 
+many points as unknown coefficients. If you give a list, it is also 
 recommended that you provide the minimax polynomial as last argument. 
 If you give a range, the list of points will be automatically computed. 
 </li><li>The fifth, sixth and seventh arguments are optional. By default, <?php linkTo("command","fpminimax","fpminimax");?> 
@@ -113,25 +116,41 @@ polynomial should be considered in the monomial basis [|3, 4|].
 Calling <?php linkTo("command","fpminimax","fpminimax");?> with monomial basis [|3,4|] and constrained 
 part q, will return a polynomial with the right form. 
 </li><li>The last argument is for advanced users. It is the minimax polynomial that 
-approximates the function f in the monomial basis. If it is not given 
+approximates the function f in the given basis. If it is not given 
 this polynomial will be automatically computed by <?php linkTo("command","fpminimax","fpminimax");?>. 
 <br> 
 This minimax polynomial is used to compute the list of interpolation 
-points required by the method. In general, you do not have to provide this 
+points required by the method. It is also used, when floating-point 
+coefficients are desired, to give an initial assumption for the 
+exponents of the coeffcients. In general, you do not have to provide this 
 argument. But if you want to obtain several polynomials of the same degree 
 that approximate the same function on the same range, just changing the 
 formats, you should probably consider computing only once the minimax 
 polynomial and the list of points instead of letting <?php linkTo("command","fpminimax","fpminimax");?> recompute 
 them each time. 
 <br> 
-Note that in the case when a constrained part is given, the minimax  
+Note that in the case when a constrained part is given, the minimax 
 polynomial must take that into account. For instance, in the previous 
 example, the minimax would be obtained by the following command: 
        P = remez(1-(1+x+x^2/2)/exp(x), [|3,4|], range, 1/exp(x)); 
 Note that the constrained part is not to be added to P. 
+<br> 
+In the case when the second argument is an integer or a list of integers, 
+there is no restriction for P, as long as it is a polynomial. 
+However, when the second argument is a list of functions, and even if these 
+functions are all polynomials, P must be expanded in the given basis. 
+For instance, if the second argument is 2 or [|0, 1, 2|], P can be given 
+in Horner form. However, if the second argument is [|1, x, x^2|], P must 
+be written as a linear combination of 1, x and x^2, otherwise, the algorithm 
+will fail to recover the coefficients of P and will fail with an error 
+message. 
+<br> 
+Please also note that recovering the coefficients of P in an arbitrary 
+basis is performed heuristically and no verification is performed to check 
+that P does not contain other functions than the functions of the basis. 
 </li><li>Note that <?php linkTo("command","fpminimax","fpminimax");?> internally computes a minimax polynomial (using 
 the same algorithm as <?php linkTo("command","remez","remez");?> command). Thus <?php linkTo("command","fpminimax","fpminimax");?> may encounter 
-the same problems as <?php linkTo("command","remez","remez");?>. In particular, it may be very slow  
+the same problems as <?php linkTo("command","remez","remez");?>. In particular, it may be very slow 
 when Haar condition is not fulfilled. Another consequence is that 
 currently <?php linkTo("command","fpminimax","fpminimax");?> has to be run with a sufficiently high working precision. 
 </ul> 
@@ -173,6 +192,26 @@ currently <?php linkTo("command","fpminimax","fpminimax");?> has to be run with 
 &nbsp;&nbsp;&nbsp;Error of P2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8.2477144579950871061147021597406077993657714575238e-16<br> 
 &nbsp;&nbsp;&nbsp;&gt; print("Error of P3:&nbsp;&nbsp;&nbsp;&nbsp;", dirtyinfnorm(f-P3, [-1b-7; 1b-7]));<br> 
 &nbsp;&nbsp;&nbsp;Error of P3:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.08454277156993282593701156841863009789063333951055e-15<br> 
+</div> 
+<div class="divExample"> 
+<h2 class="category">Example 5: </h2> 
+&nbsp;&nbsp;&nbsp;&gt; L = [|exp(x), sin(x), cos(x)-1, sin(x^3)|];<br> 
+&nbsp;&nbsp;&nbsp;&gt; g = (2^x-1)/x;<br> 
+&nbsp;&nbsp;&nbsp;&gt; p = fpminimax(g, L, [|D...|], [-1/16;1/16],absolute);<br> 
+&nbsp;&nbsp;&nbsp;&gt; display = powers!;<br> 
+&nbsp;&nbsp;&nbsp;&gt; p;<br> 
+&nbsp;&nbsp;&nbsp;-6535769594871261 * 2^(-55) * sin(x^3) + 5247089102535871 * 2^(-53) * (cos(x) - 1) + -8159095033730773 * 2^(-54) * sin(x) + 6243315658446641 * 2^(-53) * exp(x)<br> 
+</div> 
+<div class="divExample"> 
+<h2 class="category">Example 6: </h2> 
+&nbsp;&nbsp;&nbsp;&gt; n = 9;<br> 
+&nbsp;&nbsp;&nbsp;&gt; T = [|1, x|];<br> 
+&nbsp;&nbsp;&nbsp;&gt; for i from 2 to n do T[i] = canonical(2*x*T[i-1]-T[i-2]);<br> 
+&nbsp;&nbsp;&nbsp;&gt; g = (2^x-1)/x;<br> 
+&nbsp;&nbsp;&nbsp;&gt; PCheb = fpminimax(g, T, [|DD,DE...|], [-1/16;1/16],absolute);<br> 
+&nbsp;&nbsp;&nbsp;&gt; display = dyadic!;<br> 
+&nbsp;&nbsp;&nbsp;&gt; print(PCheb);<br> 
+&nbsp;&nbsp;&nbsp;17467860179204885735b-99 * (9 * x + -120 * x^3 + 432 * x^5 + -576 * x^7 + 256 * x^9) + 7875248523371081439b-93 * (1 + -32 * x^2 + 160 * x^4 + -256 * x^6 + 128 * x^8) + 12934760661809036231b-89 * (-7 * x + 56 * x^3 + -112 * x^5 + 64 * x^7) + 9342762606926463323b-84 * (-1 + 18 * x^2 + -48 * x^4 + 32 * x^6) + 5907260683727596799b-79 * (5 * x + -20 * x^3 + 16 * x^5) + 12810958948657144519b-76 * (1 + -8 * x^2 + 8 * x^4) + 5792228662390969179b-71 * (-3 * x + 4 * x^3) + 16779705312447201213b-69 * (-1 + 2 * x^2) + 18265014280997359049b-66 * x + 117054497448175143910939038333811b-107<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

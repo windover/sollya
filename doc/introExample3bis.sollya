@@ -1,0 +1,2 @@
+f = sin(y)/y; /* hidden */
+f == sin(_x_)/_x_;
