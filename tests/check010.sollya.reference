@@ -4,6 +4,7 @@ Warning: the current free variable is named "x" and not "y". Can only rename the
 The last command will have no effect.
 The tool has been restarted.
 =============== Test number 182 ================
+Information: the free variable has been named "y".
 false
 true
 The tool has been restarted.
