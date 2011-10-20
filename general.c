@@ -625,6 +625,8 @@ int printMessage(int verb, const char *format, ...) {
 
   res = sollyaVfprintf(stdout,format,varlist);
 
+  va_end(varlist);
+
   setDisplayColor(oldColor);
 
   return res;
