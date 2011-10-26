@@ -5019,13 +5019,7 @@ node *simplifyTreeErrorfree(node *tree) {
       if (verbosity < 9) {
 	printMessage(7,"Information: an expression has been simplified.\n");
       } else {
-	changeToWarningMode();
-	printMessage(9,"Information: expression '");
-	printTree(tree);
-	printMessage(9,"' has been simplified to expression '");
-	printTree(temp);
-	printMessage(9,"'.\n");
-	restoreMode();
+	printMessage(9,"Information: expression '%b' has been simplified to expression '%b'.\n",tree,temp);
       }
     }
   }
@@ -5974,13 +5968,7 @@ node* differentiate(node *tree) {
 
   printMessage(10,"Information: formally differentiating a function.\n");
   
-  if (verbosity >= 11) {
-    changeToWarningMode();
-    printMessage(11,"Information: differentiating the expression '");
-    printTree(tree);
-    sollyaPrintf("'\n");
-    restoreMode();
-  }
+  printMessage(11,"Information: differentiating the expression '%b'\n",tree);
 
   if (isPolynomial(tree) && (isHorner(tree) || isCanonical(tree))) {
     temp = differentiateUnsimplified(tree);
@@ -9794,14 +9782,7 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
   simplifiedTemp = expandPowerInPolynomialUnsafe(polynom);
   simplified = expandPolynomialUnsafe(simplifiedTemp);
 
-  if (verbosity >= 7) {
-    changeToWarningMode();
-    printMessage(7,"Warning: recursion on coefficients extraction:\n");
-    printTree(polynom);
-    printMessage(7,"\ntransformed to\n");
-    printTree(simplified); sollyaPrintf("\n");
-    restoreMode();
-  }
+  printMessage(7,"Warning: recursion on coefficients extraction: %b\ntransformed to\n%b\n",polynom,simplified);
 
   getCoefficientsUnsafe(monomials, simplified, sign);  
 

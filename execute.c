@@ -13391,13 +13391,7 @@ node *evaluateThing(node *tree) {
       } 
     } else {
       printMessage(1,"Warning: at least one of the given expressions or a subexpression is not correctly typed\nor its evaluation has failed because of some error on a side-effect.\n");
-      if (verbosity >= 2) {
-	changeToWarningMode();
-	printMessage(2,"Information: the expression or a partial evaluation of it has been the following:\n");
-	printThing(evaluated);
-	sollyaPrintf("\n");     
-	restoreMode();
-      }
+      printMessage(2,"Information: the expression or a partial evaluation of it has been the following:\n%b\n",evaluated);
       freeThing(evaluated);
       considerDyingOnError();
     }

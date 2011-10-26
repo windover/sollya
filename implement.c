@@ -192,16 +192,8 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
   if (mpfr_cmp(temp,temp2) >= 0) {
     printMessage(1,"Warning: a coefficient is not at least 2 times greater than a already evaluated sub-polynomial.\n");
     printMessage(1,"This procedure is not able to implement the polynomial correctly in this case.\n");
-    if (verbosity >= 3) {
-      changeToWarningMode();
-      sollyaPrintf("Information: the subpolynomial q(%s) that has already been handled is\n",((variablename == NULL) ? "_x_" : variablename));
-      printTree(qCopy);
-      sollyaPrintf("\nThe current coefficient is c = \n");
-      printMpfr(coefficients[0]);
-      sollyaPrintf("|| %s * q(%s) / c || is approximately ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
-      printMpfr(temp);
-      restoreMode();
-    }
+    printMessage(3,"Information: the subpolynomial q(%s) that has already been handled is\n%b\nThe current coefficient is c = \n%v\n|| %s * q(%s) / c || is approximately %v\n",
+		 ((variablename == NULL) ? "_x_" : variablename),qCopy,&(coefficients[0]),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),&temp);
     mpfr_set_d(temp,1.0,GMP_RNDN);
     res = 0;
   } else {
@@ -5993,13 +5985,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
 
 
   implementedPoly = makePolynomial(fpCoefficients,degree);
-  if (verbosity >= 2) {
-    changeToWarningMode();
-    sollyaPrintf("Information: the polynomial that will be implemented is:\n");
-    printTree(implementedPoly);
-    sollyaPrintf("\n");
-    restoreMode();
-  }
+  printMessage(2,"Information: the polynomial that will be implemented is:\n%b\n",implementedPoly);
 
   powPrec = (int *) safeCalloc(degree,sizeof(int));
   overlapsPowers = (int *) safeCalloc(degree+1,sizeof(int));

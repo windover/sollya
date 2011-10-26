@@ -351,15 +351,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
   nbr_iter = 2;
   /* End of compiler happiness */
 
-  if(verbosity>=8) {
-    changeToWarningMode();
-    sollyaPrintf("Information (Newton's algorithm): entering in Newton's algorithm. Parameters are:\n");
-    sollyaPrintf("Information (Newton's algorithm): f = "); printTree(f); sollyaPrintf("\n");
-    sollyaPrintf("Information (Newton's algorithm): a = "); printMpfr(a);
-    sollyaPrintf("Information (Newton's algorithm): b = "); printMpfr(b);
-    if (x0!=NULL) { sollyaPrintf("Information (Newton's algorithm): x0 = "); printMpfr(*x0);}
-    restoreMode();
-  }
+  printMessage(8,"Information (Newton's algorithm): entering in Newton's algorithm. Parameters are:\nInformation (Newton's algorithm): f = %b\nInformation (Newton's algorithm): a = %v\nInformation (Newton's algorithm): b = %v\nInformation (Newton's algorithm): x0 = %v\n",f,&a,&b,x0);
 
   prec_bounds = (mpfr_get_prec(a)>mpfr_get_prec(b)) ? mpfr_get_prec(a) : mpfr_get_prec(b);
   if (prec>prec_bounds) prec_bounds = prec;
@@ -677,11 +669,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 
 
   printMessage(7, "Information (Newton's algorithm): finished after %d steps.\n", nbr_iter);
-  if(verbosity>=8) {
-    changeToWarningMode();
-    sollyaPrintf("Information (Newton's algorithm): x = "); printMpfr(res);
-    restoreMode();
-  }
+  printMessage(8, "Information (Newton's algorithm): x = %v\n",&res);
 
   mpfr_clear(zero_mpfr);
   mpfr_clear(u);

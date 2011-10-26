@@ -235,22 +235,10 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
       tern = evaluateFaithfulWithCutOff(y, tree, x, cutoff, prec);
       if (tern == 2) {
 	flush = 1;
-	if (verbosity >= 2) { 	
-	  changeToWarningMode(); 
-	  sollyaPrintf("Information: function image proven to be less than 2^(-%d) on point %s = ",(int)p,((variablename == NULL) ? "_x_" : variablename));
-	  printValue(&x);
-	  sollyaPrintf("\nThis point will be plotted as the midpoint of the proof interval.\n");
-	  restoreMode();
-	}
+	printMessage(2,"Information: function image proven to be less than 2^(-%d) on point %s = %v\nThis point will be plotted as the midpoint of the proof interval.\n",(int)p,((variablename == NULL) ? "_x_" : variablename),&x);
       }
       if (!mpfr_number_p(y)) {
-	if (verbosity >= 2) {
-	  changeToWarningMode();
-	  sollyaPrintf("Information: function undefined or not evaluable in point %s = ",((variablename == NULL) ? "_x_" : variablename));
-	  printValue(&x);
-	  sollyaPrintf("\nThis point will not be plotted.\n");
-	  restoreMode();
-	}
+	printMessage(2,"Information: function undefined or not evaluable in point %s = %v\nThis point will not be plotted.\n",((variablename == NULL) ? "_x_" : variablename),&x);
       }
       yd = mpfr_get_d(y, GMP_RNDN);
       if (!(yd-yd == 0.0)) overflow = 1;

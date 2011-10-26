@@ -486,13 +486,10 @@ NOP             "nop"
 		      demaskString(newReadFilenameTemp,newReadFilename);
 		      temp_fd = fopen(newReadFilenameTemp,"r");
 		      if (temp_fd == NULL) {
+                        printMessage(1,"Warning: the file \"%s\" could not be opened for reading: \"%s\".\nThe last command will have no effect. No memory will be lost.\n",
+                                     newReadFilenameTemp,strerror(errno));
                         if (verbosity >= 1) {
-                           changeToWarningMode();
-                           sollyaPrintf("Warning: the file \"%s\" could not be opened for reading: ",newReadFilenameTemp);
-                           sollyaPrintf("\"%s\".\n",strerror(errno));
-			   sollyaPrintf("The last command will have no effect. No memory will be lost.\n");
                            considerDyingOnError();
-                           restoreMode();
                         }
                         promptToBePrinted = 1;
 		      } else {
