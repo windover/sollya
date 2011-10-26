@@ -78,6 +78,7 @@ void evaluateRangeFunctionFast(rangetype yrange, node *func, node *deriv, ranget
 void evaluateInterval(sollya_mpfi_t y, node *func, node *deriv, sollya_mpfi_t x);
 void fprintInterval(FILE *fd, sollya_mpfi_t interval);
 void printInterval(sollya_mpfi_t interval);
+char *sprintInterval(sollya_mpfi_t interval);
 
 chain *joinAdjacentIntervalsMaximally(chain *intervals);
 int checkInfnorm(node *func, rangetype range, mpfr_t infnormval, mpfr_t diam, mp_prec_t prec);

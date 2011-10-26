@@ -68,6 +68,8 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "proof.h"
 #include "remez.h"
 #include "execute.h"
+#include <string.h>
+
 
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <stdlib.h> /* exit, free, mktemp */
@@ -2433,6 +2435,49 @@ void printInterval(sollya_mpfi_t interval) {
   mpfr_clear(l);
   mpfr_clear(r);
 }
+
+char *sprintInterval(sollya_mpfi_t interval) {
+  mpfr_t l,r;
+  mp_prec_t prec;
+  char *temp_string, *temp_string2;
+  char *res;
+
+  prec = sollya_mpfi_get_prec(interval);
+  mpfr_init2(l,prec);
+  mpfr_init2(r,prec);
+  sollya_mpfi_get_left(l,interval);
+  sollya_mpfi_get_right(r,interval);
+
+  if ((dyadic == 0) && (midpointMode == 1)) {
+    temp_string = sprintMidpointMode(l, r);
+    if (temp_string != NULL) {
+      res = temp_string;
+    } else {
+      temp_string = sprintValue(&l);
+      temp_string2 = sprintValue(&r);
+      res = safeCalloc(strlen(temp_string) + strlen(temp_string2) + 3 + 1,
+		       sizeof(char));
+      sprintf(res,"[%s;%s]",temp_string,temp_string2);
+      free(temp_string);
+      free(temp_string2);
+    }
+  } else {
+    temp_string = sprintValue(&l);
+    temp_string2 = sprintValue(&r);
+    res = safeCalloc(strlen(temp_string) + strlen(temp_string2) + 3 + 1,
+		     sizeof(char));
+    sprintf(res,"[%s;%s]",temp_string,temp_string2);
+    free(temp_string);
+    free(temp_string2);
+  }
+
+  mpfr_clear(l);
+  mpfr_clear(r);
+
+  return res;
+}
+
+
 
 
 void fprintInterval(FILE *fd, sollya_mpfi_t interval) {

@@ -586,20 +586,20 @@ void newTokenLexed() {
 int sollyaVfprintfSpecial(FILE *fd, const char *format, va_list varlist) {
   int res;
 
-  if (printMode == PRINT_MODE_LEGACY) return vfprintf(fd,format,varlist);
+  if (printMode == PRINT_MODE_LEGACY) return sollyaInternalVfprintf(fd,format,varlist);
 
   if ((printMode == PRINT_MODE_WARNING_TO_STDERR) && 
       (displayColor == 1)) 
-    return vfprintf(stderr,format,varlist);
+    return sollyaInternalVfprintf(stderr,format,varlist);
 
   if ((printMode == PRINT_MODE_WARNING_TO_FILE) && 
       (displayColor == 1) && 
       (warnFile != NULL)) { 
-    res = vfprintf(warnFile,format,varlist);
+    res = sollyaInternalVfprintf(warnFile,format,varlist);
     return res;
   }
 
-  return vfprintf(fd,format,varlist);
+  return sollyaInternalVfprintf(fd,format,varlist);
 }
 
 int sollyaVfprintf(FILE *fd, const char *format, va_list varlist) {
@@ -607,7 +607,7 @@ int sollyaVfprintf(FILE *fd, const char *format, va_list varlist) {
   if ((fd == stdout) || (fd == stderr)) 
     return sollyaVfprintfSpecial(fd,format,varlist);
 
-  return vfprintf(fd,format,varlist);
+  return sollyaInternalVfprintf(fd,format,varlist);
 }
 
 int printMessage(int verb, const char *format, ...) {

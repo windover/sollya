@@ -18,6 +18,8 @@ bin_PROGRAMS = sollya
 sollya_SOURCES = \
 mpfi-compat.c \
 mpfi-compat.h \
+printf.c \
+printf.h \
 internparser.y \
 miniparser.y \
 parser.y \
@@ -85,6 +87,8 @@ libsollya_la_SOURCES = \
 sollya.h \
 mpfi-compat.h \
 mpfi-compat.c \
+printf.c \
+printf.h \
 internparser.y \
 miniparser.y \
 parser.y \
