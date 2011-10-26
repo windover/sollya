@@ -59,6 +59,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <gmp.h>
 #include <mpfr.h>
+#include <string.h>
 #include "chain.h"
 #include "general.h"
 #include "infnorm.h"
@@ -121,8 +122,51 @@ void printMpq(mpq_t x) {
 
 }
 
+char *sprintMpq(mpq_t x) {
+  mpz_t num;
+  mpz_t denom;
+  mpfr_t numMpfr;
+  mpfr_t denomMpfr;
+  mp_prec_t prec;
+  int p;
+  unsigned int dyadicValue;
+  char *numStr, *denomStr, *res;
 
+  mpz_init(num);
+  mpz_init(denom);
 
+  mpq_get_num(num,x);
+  mpq_get_den(denom,x);
+  
+  prec = mpz_sizeinbase(num, 2);
+  dyadicValue = mpz_scan1(num, 0);
+  p = prec - dyadicValue;
+  if (p < 12) prec = 12; else prec = p; 
+  mpfr_init2(numMpfr,prec);
+  mpfr_set_z(numMpfr,num,GMP_RNDN);
+
+  prec = mpz_sizeinbase(denom, 2);
+  dyadicValue = mpz_scan1(denom, 0);
+  p = prec - dyadicValue;
+  if (p < 12) prec = 12; else prec = p; 
+  mpfr_init2(denomMpfr,prec);
+  mpfr_set_z(denomMpfr,denom,GMP_RNDN);
+
+  numStr = sprintValue(&numMpfr);
+  denomStr = sprintValue(&denomMpfr);
+  res = (char *) safeCalloc(strlen(numStr) + strlen(denomStr) + 3 + 1, sizeof(char));
+  sprintf(res,"%s / %s",numStr,denomStr);
+  free(numStr);
+  free(denomStr);
+
+  mpfr_clear(numMpfr);
+  mpfr_clear(denomMpfr);
+
+  mpz_clear(num);
+  mpz_clear(denom);
+
+  return res;
+}
 
 int polynomialDeriv_mpq(mpq_t **derivCoeff, int *deriv_degree, mpq_t *p, int p_degree){
   int i;
@@ -706,13 +750,7 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t precision) {
       }
       if (tempTree->nodeType != CONSTANT) {
 	if (tryEvaluateConstantTermToMpq(qCoefficients[i], tempTree)) {
-	  if (verbosity >= 3) {
-	    changeToWarningMode();
-	    sollyaPrintf("Information: in getNrRoots: evaluated the %dth coefficient to ",i);
-	    printMpq(qCoefficients[i]);
-	    sollyaPrintf("\n");
-	    restoreMode();
-	  }
+	  printMessage(3,"Information: in getNrRoots: evaluated the %dth coefficient to %r\n",i,&(qCoefficients[i]));
 	} else {
 	  if (!noRoundingWarnings) {
 	    printMessage(1,"Warning: the %dth coefficient of the polynomial is neither a floating point\n",i);
@@ -727,13 +765,7 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t precision) {
 	    }
 	  }
 	  mpfr_to_mpq(qCoefficients[i], tempValue2);
-	  if (verbosity >= 3) {
-	    changeToWarningMode();
-	    sollyaPrintf("Information: evaluated the %dth coefficient to ",i);
-	    printMpq(qCoefficients[i]);
-	    sollyaPrintf("\n");
-	    restoreMode();
-	  }
+	  printMessage(3,"Information: evaluated the %dth coefficient to %r\n",i,&(qCoefficients[i]));
 	}
       } 
       else {

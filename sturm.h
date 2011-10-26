@@ -62,6 +62,6 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "expression.h"
 
 int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t prec);
-
+char *sprintMpq(mpq_t x);
 
 #endif /* ifdef STURM_H*/

@@ -55,6 +55,8 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <stdint.h>
 #include <stddef.h>
 #include <wchar.h>
+#include <gmp.h>
+#include <mpfr.h>
 #include "expression.h"
 #include "general.h"
 #include "mpfi-compat.h"
@@ -62,6 +64,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "printf.h"
 #include "infnorm.h"
 #include "execute.h"
+#include "sturm.h"
 
 int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
   int res = 0;
@@ -104,6 +107,7 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
   mpfr_t *tempMpfrPtr;
   sollya_mpfi_t *tempMpfiPtr;
   node *tempNode;
+  mpq_t *tempMpqPtr;
 
   buf = (char *) safeCalloc(strlen(format) + 1, sizeof(char));
 
@@ -1353,7 +1357,8 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	case 'v':
 	case 'w':
 	case 'b':
-	  /* Still free, too: k, r, y */
+	case 'r':
+	  /* Still free, too: k, y */
 	  while (currBuf > buf) {
 	    currBuf--;
 	    isPercent = (*currBuf == '%');
@@ -1379,6 +1384,15 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	    tempMpfiPtr = va_arg(varlist,sollya_mpfi_t *);
 	    if (tempMpfiPtr != NULL) {
 	      tempString = sprintInterval(*tempMpfiPtr);
+	    } else {
+	      tempString = safeCalloc(5,sizeof(char));
+	      sprintf(tempString,"NULL");
+	    }
+	    break;
+	  case 'r':
+	    tempMpqPtr = va_arg(varlist,mpq_t *);
+	    if (tempMpqPtr != NULL) {
+	      tempString = sprintMpq(*tempMpqPtr);
 	    } else {
 	      tempString = safeCalloc(5,sizeof(char));
 	      sprintf(tempString,"NULL");
