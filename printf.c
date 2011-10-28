@@ -131,6 +131,20 @@ int analyzePrecModifier(uint64_t *analyzedPrec, int *analyzedStar,
   return 1;
 }
 
+void initAndCopyMpfr(mpfr_t rop, mpfr_srcptr op) {
+  mpfr_init2(rop,mpfr_get_prec(op));
+  mpfr_set(rop,op,GMP_RNDN);
+}
+
+void initAndCopyMpfi(sollya_mpfi_t rop, sollya_mpfi_srcptr op) {
+  sollya_mpfi_init2(rop,sollya_mpfi_get_prec(op));
+  sollya_mpfi_set(rop,op);
+}
+
+void initAndCopyMpq(mpq_t rop, mpq_srcptr op) {
+  mpq_init(rop);
+  mpq_set(rop,op);
+}
 
 int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
   int res = 0;
@@ -171,10 +185,10 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
   long long int *tempLongLongIntPtr;
   char *tempString;
   int isPercent;
-  mpfr_t *tempMpfrPtr;
-  sollya_mpfi_t *tempMpfiPtr;
+  mpfr_t tempMpfrOrig;
+  sollya_mpfi_t tempMpfiOrig;
   node *tempNode;
-  mpq_t *tempMpqPtr;
+  mpq_t tempMpqOrig;
   int correctPrecModifier, analyzedStar;
   uint64_t analyzedPrec;
   int precisionSpecified;
@@ -1479,45 +1493,33 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	  }
 	  switch (c) {
 	  case 'v':
-	    tempMpfrPtr = va_arg(varlist,mpfr_t *);
-	    if (tempMpfrPtr != NULL) {
-	      if (precisionSpecified) {
-		mpfr_init2(tempMpfr,prec);
-		mpfr_set(tempMpfr,*tempMpfrPtr,GMP_RNDN);
-		tempString = sprintValue(&tempMpfr);
-		mpfr_clear(tempMpfr);
-	      } else {
-		tempString = sprintValue(tempMpfrPtr);
-	      }
+	    initAndCopyMpfr(tempMpfrOrig,va_arg(varlist,mpfr_srcptr));
+	    if (precisionSpecified) {
+	      mpfr_init2(tempMpfr,prec);
+	      mpfr_set(tempMpfr,tempMpfrOrig,GMP_RNDN);
+	      tempString = sprintValue(&tempMpfr);
+	      mpfr_clear(tempMpfr);
 	    } else {
-	      tempString = safeCalloc(5,sizeof(char));
-	      sprintf(tempString,"NULL");
+	      tempString = sprintValue(&tempMpfrOrig);
 	    }
+	    mpfr_clear(tempMpfrOrig);
 	    break;
 	  case 'w':
-	    tempMpfiPtr = va_arg(varlist,sollya_mpfi_t *);
-	    if (tempMpfiPtr != NULL) {
-	      if (precisionSpecified) {
-		sollya_mpfi_init2(tempMpfi,prec);
-		sollya_mpfi_set(tempMpfi,*tempMpfiPtr);
-		tempString = sprintInterval(tempMpfi);
-		sollya_mpfi_clear(tempMpfi);
-	      } else {
-		tempString = sprintInterval(*tempMpfiPtr);
-	      }
+	    initAndCopyMpfi(tempMpfiOrig,va_arg(varlist,sollya_mpfi_srcptr));
+	    if (precisionSpecified) {
+	      sollya_mpfi_init2(tempMpfi,prec);
+	      sollya_mpfi_set(tempMpfi,tempMpfiOrig);
+	      tempString = sprintInterval(tempMpfi);
+	      sollya_mpfi_clear(tempMpfi);
 	    } else {
-	      tempString = safeCalloc(5,sizeof(char));
-	      sprintf(tempString,"NULL");
+	      tempString = sprintInterval(tempMpfiOrig);
 	    }
+	    sollya_mpfi_clear(tempMpfiOrig);
 	    break;
 	  case 'r':
-	    tempMpqPtr = va_arg(varlist,mpq_t *);
-	    if (tempMpqPtr != NULL) {
-	      tempString = sprintMpq(*tempMpqPtr);
-	    } else {
-	      tempString = safeCalloc(5,sizeof(char));
-	      sprintf(tempString,"NULL");
-	    }
+	    initAndCopyMpq(tempMpqOrig,va_arg(varlist,mpq_srcptr));
+	    tempString = sprintMpq(tempMpqOrig);
+	    mpq_clear(tempMpqOrig);
 	    break;
 	  case 'b':
 	    tempNode = va_arg(varlist,node *);

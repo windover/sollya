@@ -370,7 +370,7 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
     if (xd <= -MAX_VALUE_GNUPLOT) xd = -MAX_VALUE_GNUPLOT;
     sollyaFprintf(file, "%1.50e",xd);
     if (!mpfr_number_p(temp)) {
-      printMessage(2,"Information: function undefined or not evaluable in point %s = %v\nThis point will not be plotted.\n",((variablename == NULL) ? "_x_" : variablename),&x);
+      printMessage(2,"Information: function undefined or not evaluable in point %s = %v\nThis point will not be plotted.\n",((variablename == NULL) ? "_x_" : variablename),x);
     }
     yd = mpfr_get_d(temp, GMP_RNDN);
     if (yd >= MAX_VALUE_GNUPLOT) yd = MAX_VALUE_GNUPLOT;

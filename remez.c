@@ -345,27 +345,17 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
   mpfr_t x, xNew, yNew, tmp_mpfr;
   int estim_prec, estim_prec2;
   int nbr_iter;
-  mpfr_t myA, myB, myX0, myRes;
 
   /* Make compiler happy: */
   estim_prec = 12;
   nbr_iter = 2;
   /* End of compiler happiness */
 
-  mpfr_init2(myA,mpfr_get_prec(a));
-  mpfr_set(myA,a,GMP_RNDN);
-  mpfr_init2(myB,mpfr_get_prec(b));
-  mpfr_set(myB,b,GMP_RNDN);
   if (x0 != NULL) {
-    mpfr_init2(myX0,mpfr_get_prec(*x0));
-    mpfr_set(myX0,*x0,GMP_RNDN);
-    printMessage(8,"Information (Newton's algorithm): entering in Newton's algorithm. Parameters are:\nInformation (Newton's algorithm): f = %b\nInformation (Newton's algorithm): a = %v\nInformation (Newton's algorithm): b = %v\nInformation (Newton's algorithm): x0 = %v\n",f,&myA,&myB,&myX0);
-    mpfr_clear(myX0);
+    printMessage(8,"Information (Newton's algorithm): entering in Newton's algorithm. Parameters are:\nInformation (Newton's algorithm): f = %b\nInformation (Newton's algorithm): a = %v\nInformation (Newton's algorithm): b = %v\nInformation (Newton's algorithm): x0 = %v\n",f,a,b,*x0);
   } else {
-    printMessage(8,"Information (Newton's algorithm): entering in Newton's algorithm. Parameters are:\nInformation (Newton's algorithm): f = %b\nInformation (Newton's algorithm): a = %v\nInformation (Newton's algorithm): b = %v\n",f,&myA,&myB);
+    printMessage(8,"Information (Newton's algorithm): entering in Newton's algorithm. Parameters are:\nInformation (Newton's algorithm): f = %b\nInformation (Newton's algorithm): a = %v\nInformation (Newton's algorithm): b = %v\n",f,a,b);
   }
-  mpfr_clear(myA);
-  mpfr_clear(myB);
 
   prec_bounds = (mpfr_get_prec(a)>mpfr_get_prec(b)) ? mpfr_get_prec(a) : mpfr_get_prec(b);
   if (prec>prec_bounds) prec_bounds = prec;
@@ -683,10 +673,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 
 
   printMessage(7, "Information (Newton's algorithm): finished after %d steps.\n", nbr_iter);
-  mpfr_init2(myRes,mpfr_get_prec(res));
-  mpfr_set(myRes,res,GMP_RNDN);
-  printMessage(8, "Information (Newton's algorithm): x = %v\n",&myRes);
-  mpfr_clear(myRes);
+  printMessage(8, "Information (Newton's algorithm): x = %v\n",res);
 
   mpfr_clear(zero_mpfr);
   mpfr_clear(u);
@@ -948,11 +935,11 @@ void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
 
   // Introduce newx
   if(mpfr_sgn(err_newx)*mpfr_sgn(epsilon)==1) {
-    printMessage(3,"Remez: exchange algorithm takes the minimum (%.16v) at place %d\n",&mini,argmini);
+    printMessage(3,"Remez: exchange algorithm takes the minimum (%.16v) at place %d\n",mini,argmini);
     mpfr_set(x[argmini], newx, GMP_RNDN);
   }
   else {
-    printMessage(3,"Remez: exchange algorithm takes the maximum (%.16v) at place %d\n",&maxi,argmaxi);
+    printMessage(3,"Remez: exchange algorithm takes the maximum (%.16v) at place %d\n",maxi,argmaxi);
     mpfr_set(x[argmaxi], newx, GMP_RNDN);
   }
 
@@ -1165,7 +1152,7 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
     }
     if(!test) {
       printMessage(2, "Failed to find pseudo-alternating points. Performing an exchange step...\n");
-      printMessage(4, "Computed infinity norm : %v\nReached at point %v\n", &maxi, &argmaxi);
+      printMessage(4, "Computed infinity norm : %v\nReached at point %v\n", maxi, argmaxi);
       for(i=0;i<deg+2;i++) mpfr_set(res[i], curr_points[i], GMP_RNDN);
       single_step_remez(argmaxi, maxi, res, monomials_tree, w, lambdai_vect, epsilon, deg+2, prec);
     }
@@ -1505,7 +1492,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
   if(computedQuality!=NULL) mpfr_set(computedQuality, var_mpfr, GMP_RNDU);
   if(infinityNorm!=NULL) mpfr_set(infinityNorm, max_val, GMP_RNDU);
 
-  printMessage(3, "Current norm: %v (1 +/- %.3v)\n",&max_val,&var_mpfr);
+  printMessage(3, "Current norm: %v (1 +/- %.3v)\n",max_val,var_mpfr);
 
   free_memory(error);
   free_memory(error_diff);
@@ -1561,17 +1548,13 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   mpfr_t *previous_lambdai_vect;
   mpfr_t perturb;
   gmp_randstate_t random_state;
-  mpfr_t qual;
 
   gmp_randinit_default(random_state);
   gmp_randseed_ui(random_state, 65845285);
 
   HaarCompliant=1;
 
-  mpfr_init2(qual,mpfr_get_prec(quality));
-  mpfr_set(qual,quality,GMP_RNDN);
-  printMessage(3, "Entering in Remez function...\nRequired quality : %v\n",&qual);
-  mpfr_clear(qual);
+  printMessage(3, "Entering in Remez function...\nRequired quality : %v\n",quality);
 
   // Initialisations and precomputations
   mpfr_init2(var1, prec);
@@ -1852,7 +1835,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       poly = constructPolynomialFromArray(ai_vect, monomials_tree, freeDegrees);
 
       printMessage(4, "The computed polynomial is %b\n",poly);
-      printMessage(3, "Current value of epsilon : %.16v\n",&ai_vect[freeDegrees]);
+      printMessage(3, "Current value of epsilon : %.16v\n",ai_vect[freeDegrees]);
 
       // Plotting the error curve
       /*     node *plotTemp; */
@@ -1958,7 +1941,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     /* We check if exited the loop because we proved the target_error to be unreachable */
     /* If so, we exit returning error */
     if(mpfr_cmpabs(ai_vect[freeDegrees],target_error)>0) {
-      printMessage(2, "Remez finished after %d steps\nThe target error (%.16v) has been proved unreachable.\n",count,(mpfr_t *)target_error);
+      printMessage(2, "Remez finished after %d steps\nThe target error (%.16v) has been proved unreachable.\n",count,target_error);
       printMessage(5, "Last computed poly: %b\n",poly);
 
       res = copyTree(poly); /* Alternatively, we could do res = makeError(); */
@@ -1975,7 +1958,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       /* We check if we exited the loop because we managed to find a satisfying error */
       /* If so we exit returning the current polynomial */
       if (mpfr_cmp(infinityNorm,satisfying_error)<=0) {
-	printMessage(2, "Remez finished after %d steps\nThe following satisfying error (%.16v) has been reached.\nCurrent infinity norm: %v\n",count,(mpfr_t *)satisfying_error,&infinityNorm);
+	printMessage(2, "Remez finished after %d steps\nThe following satisfying error (%.16v) has been reached.\nCurrent infinity norm: %v\n",count,satisfying_error,infinityNorm);
         res = copyTree(poly);
       }
     }
@@ -1986,7 +1969,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       mpfr_sub_ui(computedQuality, computedQuality, 1, GMP_RNDU);
 
       if(mpfr_cmp(computedQuality, quality)<=0) {
-	printMessage(2, "Remez finished after %d steps\nThe computed infnorm is %.16v\nThe polynomial is optimal within a factor 1 +/- %.3v",count,&infinityNorm,&computedQuality);
+	printMessage(2, "Remez finished after %d steps\nThe computed infnorm is %.16v\nThe polynomial is optimal within a factor 1 +/- %.3v\n",count,infinityNorm,computedQuality);
 	printMessage(5, "Computed poly: %b\n",poly);
         res = copyTree(poly);
       }
@@ -2336,7 +2319,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps, 
      minimax problem achieve the required bound eps */
   pushTimeCounter();
   radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
-  printMessage(4, "Information: guessdegree: trying degree %d. Found radius: %v\n",n-1,&h);
+  printMessage(4, "Information: guessdegree: trying degree %d. Found radius: %v\n",n-1,h);
 
 
   /* If h<eps, we may be in a degenerated case (for instance, an even
@@ -2346,7 +2329,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps, 
   if(mpfr_cmp(h,eps)<0) {
     n=2;
     radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
-    printMessage(4, "Information: guessdegree: trying degree %d. Found radius: %v\n",n-1,&h);
+    printMessage(4, "Information: guessdegree: trying degree %d. Found radius: %v\n",n-1,h);
 
     if (mpfr_cmp(h,eps)<0) n=1; /* OK. Sorry. The system seems to be normal */
   }
@@ -2366,7 +2349,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps, 
       radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, bound, &prec);
       break;
     }
-    printMessage(4, "Information: guessdegree: trying degree %d. Found radius: %v\n",n-1,&h);
+    printMessage(4, "Information: guessdegree: trying degree %d. Found radius: %v\n",n-1,h);
   }
 
   if (mpfr_cmp(h,eps) >=0) { /* Even n=bound does not achieve the discrete
@@ -2400,7 +2383,7 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps, 
 
     while(n != n_min) {
       radiusBasicMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
-      printMessage(4, "Information: guessdegree: trying degree %d (current bounds: [%d, %d]). Found radius: %v\n",n-1,n_min-1,n_max-1,&h);
+      printMessage(4, "Information: guessdegree: trying degree %d (current bounds: [%d, %d]). Found radius: %v\n",n-1,n_min-1,n_max-1,h);
       if(mpfr_cmp(h,eps) >= 0) n_min = n;
       else n_max = n;
 
@@ -2420,13 +2403,13 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps, 
 
   pushTimeCounter();
   firstStepContinuousMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
-  printMessage(4, "Information: guessdegree: trying degree %d. Found infnorm: %v\n",n-1,&h);
+  printMessage(4, "Information: guessdegree: trying degree %d. Found infnorm: %v\n",n-1,h);
 
   while(mpfr_cmp(h,eps) > 0) {
     n++;
     if (n>bound) break;
     firstStepContinuousMinimaxChebychevsPoints(&h, func, weight, a, b, n, &prec);
-    printMessage(4, "Information: guessdegree: trying degree %d. Found infnorm: %v\n",n-1,&h);
+    printMessage(4, "Information: guessdegree: trying degree %d. Found infnorm: %v\n",n-1,h);
   }
   popTimeCounter("finding an upper bound for guessdegree");
 

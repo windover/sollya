@@ -64,6 +64,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <mpfi.h>
 
 typedef mpfi_t sollya_mpfi_t;
+typedef mpfi_srcptr sollya_mpfi_srcptr;
 
 int sollya_mpfi_has_nan(sollya_mpfi_t op); 
 int sollya_mpfi_nan_p(sollya_mpfi_t op); 
@@ -91,7 +92,7 @@ int sollya_mpfi_is_negative_infinity(sollya_mpfi_t op);
 int sollya_mpfi_has_infinity(sollya_mpfi_t op); 
 int sollya_mpfi_is_infinity(sollya_mpfi_t op); 
 int sollya_mpfi_inf_p(sollya_mpfi_t op); 
-int sollya_mpfi_set(sollya_mpfi_t rop, sollya_mpfi_t op); 
+int sollya_mpfi_set(sollya_mpfi_t rop, sollya_mpfi_srcptr op); 
 int mpfi_to_sollya_mpfi(sollya_mpfi_t rop, mpfi_t op); 
 int sollya_mpfi_to_mpfi(mpfi_t rop, sollya_mpfi_t op); 
 int sollya_mpfi_set_d(sollya_mpfi_t rop, double op); 
@@ -145,7 +146,7 @@ int sollya_mpfi_diam_abs(mpfr_t rop, sollya_mpfi_t op);
 int sollya_mpfi_get_left(mpfr_t rop, sollya_mpfi_t op); 
 int sollya_mpfi_get_right(mpfr_t rop, sollya_mpfi_t op); 
 void sollya_mpfi_get_fr(mpfr_t rop, sollya_mpfi_t op); 
-mp_prec_t sollya_mpfi_get_prec(sollya_mpfi_t op); 
+mp_prec_t sollya_mpfi_get_prec(sollya_mpfi_srcptr op); 
 const char *sollya_mpfi_get_version(); 
 void sollya_mpfi_init2(sollya_mpfi_t rop, mp_prec_t op); 
 int sollya_mpfi_intersect(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2); 

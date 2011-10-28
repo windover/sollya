@@ -2183,7 +2183,7 @@ chain *findZerosUnsimplified(node *func, node *deriv, sollya_mpfi_t range, mp_pr
     excludes = evaluateITaylor(y, func, deriv, range, prec, taylorrecursions, theo,1);
     freeChain(excludes,freeMpfiPtr);
     if (!sollya_mpfi_bounded_p(y)) {
-      printMessage(1,"Warning: during zero-search the derivative of the function evaluated to NaN or Inf in the interval %w.\nThe function might not be continuously differentiable in this interval.\n",&range);
+      printMessage(1,"Warning: during zero-search the derivative of the function evaluated to NaN or Inf in the interval %w.\nThe function might not be continuously differentiable in this interval.\n",range);
     }
     if ((!sollya_mpfi_bounded_p(y)) || sollya_mpfi_has_zero(y)) {
       mpfr_init2(m,prec);
@@ -2907,7 +2907,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
     if (r==0) mpfr_set_d(y1, 0. , GMP_RNDN);
 
     if (!mpfr_number_p(y1)) {
-      printMessage(1,"Warning: the evaluation of the given function in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",&x1);
+      printMessage(1,"Warning: the evaluation of the given function in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",x1);
       mpfr_add(current_x, current_x, step, GMP_RNDU); /* rounding up ensures that x1(new) > x1(old) */
       mpfr_urandomb(perturb, random_state); mpfr_mul_2ui(perturb, perturb, 1, GMP_RNDN);
       mpfr_sub_ui(perturb, perturb, 1, GMP_RNDN); mpfr_div_2ui(perturb, perturb, 2, GMP_RNDN);
@@ -2917,7 +2917,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
   } while ( (!mpfr_number_p(y1)) && (!stop_algo) );
 
   mpfr_abs(max, y1, GMP_RNDU);
-  printMessage(3,"Information: current max is %v and is reached at %v\n",&max,&x1);
+  printMessage(3,"Information: current max is %v and is reached at %v\n",max,x1);
 
   mpfr_div_2ui(cutoff, max, 1, GMP_RNDU);
 
@@ -2940,7 +2940,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
     if (r==2) mpfr_set_d(y2, 0. , GMP_RNDN); /* under the cutoff */
     
     if (!mpfr_number_p(y2)) {
-      printMessage(1,"Warning: the evaluation of the given function in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",&x2);
+      printMessage(1,"Warning: the evaluation of the given function in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",x2);
     }
   } while ( ( (!mpfr_number_p(y2)) || mpfr_equal_p(y1,y2) )
 	    &&
@@ -2949,7 +2949,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 
   if (mpfr_cmpabs(y2, max) > 0) { /* evaluates to false when y2=NaN */
     mpfr_abs(max, y2, GMP_RNDU); 
-    printMessage(3,"Information: current max is %v and is reached at %v\n",&max,&x2);
+    printMessage(3,"Information: current max is %v and is reached at %v\n",max,x2);
     mpfr_div_2ui(cutoff, max, 1, GMP_RNDU);
   }
 
@@ -2980,7 +2980,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
       if (r==2) mpfr_set_d(y3, 0. , GMP_RNDN); /* under the cutoff */
       
       if (!mpfr_number_p(y3)) {
-	printMessage(1,"Warning: the evaluation of the given function in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",&x3);
+	printMessage(1,"Warning: the evaluation of the given function in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",x3);
       }
     } while ( ( (!mpfr_number_p(y3))|| mpfr_equal_p(y2,y3) )
 	      &&
@@ -2989,7 +2989,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
     
     if (mpfr_cmpabs(y3, max) > 0) { /* evaluates to false when y3=NaN */
       mpfr_abs(max, y3, GMP_RNDU); 
-      printMessage(3,"Information: current max is %v and is reached at %v\n",&max,&x3);
+      printMessage(3,"Information: current max is %v and is reached at %v\n",max,x3);
       mpfr_div_2ui(cutoff, max, 1, GMP_RNDU);
     }
     
@@ -3004,7 +3004,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
       if (r==0) mpfr_set_d(y3diff, 0. , GMP_RNDN);
       
       if ( (!mpfr_number_p(y1diff)) || (!mpfr_number_p(y3diff)) ) {
-	printMessage(1,"Warning: the evaluation of the derivative of the given function in %v or %v givesNaN.\nNewton's algorithm will not be used on this interval.\n",&x1,&x3);
+	printMessage(1,"Warning: the evaluation of the derivative of the given function in %v or %v givesNaN.\nNewton's algorithm will not be used on this interval.\n",x1,x3);
       }
       else if(mpfr_sgn(y1diff)*mpfr_sgn(y3diff)<0) { /* If y1diff=0 or y3diff=0, there is no need to */
                                                      /* use Newton's algorithm since we already have */
@@ -3019,11 +3019,11 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 	  if (r==2) mpfr_set_d(ystar, 0. , GMP_RNDN); /* under the cutoff */
 	  
 	  if (!mpfr_number_p(ystar)) {
-	    printMessage(1,"Warning: the evaluation of the given function in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",&xstar);
+	    printMessage(1,"Warning: the evaluation of the given function in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",xstar);
 	  }
 	  if (mpfr_cmpabs(ystar, max) > 0) { /* evaluates to false when ystar=NaN */
 	    mpfr_abs(max, ystar, GMP_RNDU); 
-	    printMessage(3,"Information: current max is %v and is reached at %v\n",&max,&xstar);
+	    printMessage(3,"Information: current max is %v and is reached at %v\n",max,xstar);
 	    mpfr_div_2ui(cutoff, max, 1, GMP_RNDU);
 	  }
 	}
@@ -3160,9 +3160,9 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
       mpfr_mul_ui(yb,yb,2,GMP_RNDN);
 
       if (mpfr_cmp(ya,yb) <= 0) {
-	printMessage(1,"Warning: the derivative of the function seems to have a extensible singularity in %v.\nThe infnorm result might not be trustful if the derivative cannot actually\nbe extended in this point.\n",&z);
+	printMessage(1,"Warning: the derivative of the function seems to have a extensible singularity in %v.\nThe infnorm result might not be trustful if the derivative cannot actually\nbe extended in this point.\n",z);
       } else {
-	printMessage(1,"Warning: the derivative of the function seems to have a singularity in %v.\nThe infnorm result is likely to be wrong.\n",&z);
+	printMessage(1,"Warning: the derivative of the function seems to have a singularity in %v.\nThe infnorm result is likely to be wrong.\n",z);
       }
     } else {
       evaluate(ya,denominatorDeriv,*(range.a),prec);
@@ -3523,7 +3523,7 @@ int checkInfnormI(node *func, node *deriv, sollya_mpfi_t infnormval, sollya_mpfi
 
   if (mpfr_cmp(diamRange,diam) <= 0) {
     /* Simple end case: the range to test is already smaller than diam but we could not check */
-    printMessage(2,"Information: could not check the infinity norm on the domain\n%w\nThe function evaluates here to\n%w.\n",&range,&evaluateOnRange);
+    printMessage(2,"Information: could not check the infinity norm on the domain\n%w\nThe function evaluates here to\n%w.\n",range,evaluateOnRange);
     sollya_mpfi_clear(evaluateOnRange);
     mpfr_clear(diamRange);
     return 0;
@@ -3821,11 +3821,11 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
 	      addToList = 1;
 	    } else {
 	      removedFromList = 1;
-	      printMessage(2,"Information: removing possible zero in %v.\nInformation: removing because all signs are equal.\n",((mpfr_t *) (fpZeros2->value)));
+	      printMessage(2,"Information: removing possible zero in %v.\nInformation: removing because all signs are equal.\n",*((mpfr_t *) (fpZeros2->value)));
 	    }
 	  } else {
 	    removedFromList = 1;
-	    printMessage(2,"Information: removing possible zero in %v.\nInformation: removing because predecessor and successor signs are equal.\n",((mpfr_t *) (fpZeros2->value)));
+	    printMessage(2,"Information: removing possible zero in %v.\nInformation: removing because predecessor and successor signs are equal.\n",*((mpfr_t *) (fpZeros2->value)));
 	  }
 	}
       }
@@ -4421,9 +4421,9 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
       mpfr_mul_ui(yb,yb,2,GMP_RNDN);
 
       if (mpfr_cmp(ya,yb) <= 0) {
-	printMessage(1,"Warning: the derivative of the function seems to have a extensible singularity in %v.\nThe infnorm result might not be trustful if the derivative cannot actually\nbe extended in this point.\n",&z);
+	printMessage(1,"Warning: the derivative of the function seems to have a extensible singularity in %v.\nThe infnorm result might not be trustful if the derivative cannot actually\nbe extended in this point.\n",z);
       } else {
-	printMessage(1,"Warning: the derivative of the function seems to have a singularity in %v.\nThe infnorm result is likely to be wrong.\n",&z);
+	printMessage(1,"Warning: the derivative of the function seems to have a singularity in %v.\nThe infnorm result is likely to be wrong.\n",z);
       }
     } else {
       evaluate(ya,denominatorDeriv,*(range.a),prec);
@@ -4478,7 +4478,7 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
     
       mpfr_div_2ui(currDiameter,currDiameter,2,GMP_RNDD);
 
-      printMessage(4,"Information: the absolute diameter is now %v.\nThe current intermediate precision is %d bits.\n",&currDiameter,(int) prec);
+      printMessage(4,"Information: the absolute diameter is now %v.\nThe current intermediate precision is %d bits.\n",currDiameter,(int) prec);
 
     }
 

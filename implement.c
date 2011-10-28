@@ -193,7 +193,7 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
     printMessage(1,"Warning: a coefficient is not at least 2 times greater than a already evaluated sub-polynomial.\n");
     printMessage(1,"This procedure is not able to implement the polynomial correctly in this case.\n");
     printMessage(3,"Information: the subpolynomial q(%s) that has already been handled is\n%b\nThe current coefficient is c = \n%v\n|| %s * q(%s) / c || is approximately %v\n",
-		 ((variablename == NULL) ? "_x_" : variablename),qCopy,&(coefficients[0]),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),&temp);
+		 ((variablename == NULL) ? "_x_" : variablename),qCopy,coefficients[0],((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),temp);
     mpfr_set_d(temp,1.0,GMP_RNDN);
     res = 0;
   } else {

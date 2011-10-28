@@ -266,7 +266,7 @@ int sollya_mpfi_inf_p(sollya_mpfi_t op) {
 
 /* Functions that create sollya_mpfi_t */
 
-int sollya_mpfi_set(sollya_mpfi_t rop, sollya_mpfi_t op) {
+int sollya_mpfi_set(sollya_mpfi_t rop, sollya_mpfi_srcptr op) {
   int res;
   res = mpfi_set(rop,op);
   sollya_mpfi_nan_normalize(rop);
@@ -780,7 +780,7 @@ void sollya_mpfi_get_fr(mpfr_t rop, sollya_mpfi_t op) {
   else mpfi_get_fr(rop,op);
 }
 
-mp_prec_t sollya_mpfi_get_prec(sollya_mpfi_t op) {
+mp_prec_t sollya_mpfi_get_prec(sollya_mpfi_srcptr op) {
   return mpfi_get_prec(op);
 }
 

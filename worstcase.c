@@ -175,7 +175,7 @@ void printWorstCases(node *func,
     mpfr_sub(temp2,y,yR,GMP_RNDN);
     mpfr_abs(temp2,temp2,GMP_RNDN);
     if (mpfr_zero_p(y)) {
-      printMessage(1,"Warning: the given function evaluates to 0 on %v\nThe rounding error will be considered as an absolute one.\n",&x);
+      printMessage(1,"Warning: the given function evaluates to 0 on %v\nThe rounding error will be considered as an absolute one.\n",x);
     } else {
       mpfr_div(temp2,temp2,y,GMP_RNDN);
     }
@@ -268,7 +268,7 @@ int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t
 
   if ((mpfr_set(currLeft,startValue,GMP_RNDN) != 0) ||
       (mpfr_set(currRight,startValue,GMP_RNDN) != 0)) {
-    printMessage(1,"Warning: the given start point is too precise for the given search precision.\nIt has been rounded to: %v",&currLeft);
+    printMessage(1,"Warning: the given start point is too precise for the given search precision.\nIt has been rounded to: %v",currLeft);
   }
 
   mpfr_init2(t,128);

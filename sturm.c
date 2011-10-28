@@ -750,7 +750,7 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t precision) {
       }
       if (tempTree->nodeType != CONSTANT) {
 	if (tryEvaluateConstantTermToMpq(qCoefficients[i], tempTree)) {
-	  printMessage(3,"Information: in getNrRoots: evaluated the %dth coefficient to %r\n",i,&(qCoefficients[i]));
+	  printMessage(3,"Information: in getNrRoots: evaluated the %dth coefficient to %r\n",i,qCoefficients[i]);
 	} else {
 	  if (!noRoundingWarnings) {
 	    printMessage(1,"Warning: the %dth coefficient of the polynomial is neither a floating point\n",i);
@@ -765,7 +765,7 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t precision) {
 	    }
 	  }
 	  mpfr_to_mpq(qCoefficients[i], tempValue2);
-	  printMessage(3,"Information: evaluated the %dth coefficient to %r\n",i,&(qCoefficients[i]));
+	  printMessage(3,"Information: evaluated the %dth coefficient to %r\n",i,qCoefficients[i]);
 	}
       } 
       else {
