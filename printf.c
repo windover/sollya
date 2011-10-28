@@ -66,14 +66,81 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "execute.h"
 #include "sturm.h"
 
+int analyzePrecModifier(uint64_t *analyzedPrec, int *analyzedStar,
+			char *startBuf, char *endBuf) {
+  char *curr;
+  char *myStart, *myEnd, *endBufBeforeNull;
+  uint64_t prec;
+
+  endBufBeforeNull = endBuf;
+  while ((endBufBeforeNull > startBuf) && (*endBufBeforeNull == '\0'))
+    endBufBeforeNull--;
+
+  /* Check if first character is a dot */
+  if (*startBuf != '.') return 0;
+  
+  /* Check if last character is a format specifier
+     that may come with a precision modifier 
+  */
+  switch (*endBufBeforeNull) {
+  case 'v':
+  case 'w':
+    break;
+  default:
+    return 0;
+  }
+
+  /* Check that between the first and the last
+     character there is at least one other 
+     character.
+  */
+  myStart = startBuf + 1;
+  myEnd = endBufBeforeNull - 1;
+  if (myStart > myEnd) return 0;
+
+  /* Check if there is exactly one character
+     between the first and the last character 
+     and if it is a star.
+  */
+  if ((myStart == myEnd) && (*myStart == '*')) {
+    /* Here, we have a correct dynamic precision 
+       modifier
+    */
+    *analyzedStar = 1;
+    return 1;
+  }
+
+  /* If we are here, all characters between the 
+     first and the last character must be decimal
+     digits. Check this condition first.
+  */
+  for (curr=myStart;curr<=myEnd;curr++) {
+    if ((*curr < '0') || (*curr > '9')) return 0;
+  }
+
+  /* Here, we know that all characters between 
+     the first and the last character are decimal digits.
+     We convert them to a 64 unsigned int.
+  */
+  prec = 0;
+  for (curr=myStart;curr<=myEnd;curr++) {
+    prec *= 10;
+    prec += ((uint64_t) (*curr)) - ((uint64_t) '0');
+  }
+  *analyzedPrec = prec;
+  return 1;
+}
+
+
 int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
   int res = 0;
   char *buf;
   const char *currFormat;
   char *currBuf;
+  char *dotBuf;
   int r, shiftedState, starModifiers, hModifiers;
   int lModifiers, LModifier, jModifier, zModifier;
-  int tModifier;
+  int tModifier, dotModifier;
   char c;
   int tempInt;
   ssize_t tempSsize_t;
@@ -108,6 +175,12 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
   sollya_mpfi_t *tempMpfiPtr;
   node *tempNode;
   mpq_t *tempMpqPtr;
+  int correctPrecModifier, analyzedStar;
+  uint64_t analyzedPrec;
+  int precisionSpecified;
+  mp_prec_t prec;
+  mpfr_t tempMpfr;
+  sollya_mpfi_t tempMpfi;
 
   buf = (char *) safeCalloc(strlen(format) + 1, sizeof(char));
 
@@ -130,6 +203,7 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
       jModifier = 0; 
       zModifier = 0;
       tModifier = 0;
+      dotModifier = 0;
       while ((*currFormat != '\0') && 
 	     (shiftedState != 0)) {
 	*currBuf = *currFormat;
@@ -140,6 +214,9 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	switch (c) {
 	case '*':
 	  starModifiers++;
+	  break;
+	case '.':
+	  dotModifier = 1;
 	  break;
 	case 'h':
 	  hModifiers++;
@@ -1359,6 +1436,18 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	case 'b':
 	case 'r':
 	  /* Still free, too: k, y */
+	  correctPrecModifier = 0;
+	  analyzedStar = 0;
+	  if (dotModifier) {
+	    dotBuf = currBuf;
+	    while (dotBuf > buf) {
+	      dotBuf--;
+	      if (*dotBuf == '.') break;
+	    }
+	    if (*dotBuf == '.') {
+	      correctPrecModifier = analyzePrecModifier(&analyzedPrec,&analyzedStar,dotBuf,currBuf);
+	    }
+	  }
 	  while (currBuf > buf) {
 	    currBuf--;
 	    isPercent = (*currBuf == '%');
@@ -1370,11 +1459,36 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	  *currBuf = 's';
 	  currBuf++;
 	  *currBuf = '\0';
+	  precisionSpecified = 0;
+	  if (correctPrecModifier) {
+	    if (analyzedStar) {
+	      firstStarInt = va_arg(varlist,int);
+	      if (firstStarInt >= 1) {
+		analyzedPrec = firstStarInt;
+	      } else {
+		analyzedPrec = 1;
+	      }
+	      precisionSpecified = 1;
+	      prec = (mp_prec_t) (((double) analyzedPrec) * 3.32192809488736234787031942948939017586483139302458); /* Digits to bits */
+	      if (prec < 4) prec = 4;
+	    } else {
+	      precisionSpecified = 1;
+	      prec = (mp_prec_t) (((double) analyzedPrec) * 3.32192809488736234787031942948939017586483139302458); /* Digits to bits */
+	      if (prec < 4) prec = 4;
+	    }
+	  }
 	  switch (c) {
 	  case 'v':
 	    tempMpfrPtr = va_arg(varlist,mpfr_t *);
 	    if (tempMpfrPtr != NULL) {
-	      tempString = sprintValue(tempMpfrPtr);
+	      if (precisionSpecified) {
+		mpfr_init2(tempMpfr,prec);
+		mpfr_set(tempMpfr,*tempMpfrPtr,GMP_RNDN);
+		tempString = sprintValue(&tempMpfr);
+		mpfr_clear(tempMpfr);
+	      } else {
+		tempString = sprintValue(tempMpfrPtr);
+	      }
 	    } else {
 	      tempString = safeCalloc(5,sizeof(char));
 	      sprintf(tempString,"NULL");
@@ -1383,7 +1497,14 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	  case 'w':
 	    tempMpfiPtr = va_arg(varlist,sollya_mpfi_t *);
 	    if (tempMpfiPtr != NULL) {
-	      tempString = sprintInterval(*tempMpfiPtr);
+	      if (precisionSpecified) {
+		sollya_mpfi_init2(tempMpfi,prec);
+		sollya_mpfi_set(tempMpfi,*tempMpfiPtr);
+		tempString = sprintInterval(tempMpfi);
+		sollya_mpfi_clear(tempMpfi);
+	      } else {
+		tempString = sprintInterval(*tempMpfiPtr);
+	      }
 	    } else {
 	      tempString = safeCalloc(5,sizeof(char));
 	      sprintf(tempString,"NULL");
