@@ -93,6 +93,19 @@ void printMatrix(mpfr_t *M, int n) {
   return;
 }
 
+void printMessageMatrix(int verb, mpfr_t *M, int n) {
+  int i,j;
+  printMessage(verb,"[");
+  for(i=1;i<=n;i++) {
+    for(j=1;j<=n;j++) {
+      printMessage(verb,"%.15v",M[coeff(i,j,n)]); if(j!=n) printMessage(verb,", ");
+    }
+    if(i!=n) printMessage(verb,";\n");
+  }
+  printMessage(verb,"]\n");
+  return;
+}
+
 void system_solve(mpfr_t *res, mpfr_t *M, mpfr_t *b, int n, mp_prec_t prec) {
   chain *i_list=NULL;
   chain *j_list=NULL;
@@ -1251,17 +1264,9 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
   mpfr_add(y[n], x[n-1], b, GMP_RNDN);
   mpfr_div_2ui(y[n], y[n], 1, GMP_RNDN);
 
-  /* Christoph while converting everything to printMessage:
-     I just don't know how to convert this crap...
-  */
-  if(verbosity>=6) {
-    changeToWarningMode();
-    sollyaPrintf("The computed yi are : ");
-    for(i=0;i<=n;i++) {printMpfr(y[i]); sollyaPrintf(" ");}
-    sollyaPrintf("\n");
-    restoreMode();
-  }
-
+  printMessage(6,"The computed yi are: "); 
+  for (i=0;i<=n;i++) printMessage(6,"%v ",y[i]);
+  printMessage(6,"\n"); 
 
   // We call *case 1* the case where x1=a and xn=b
   // We call *case 2* the case where x1<>a and xn=b
@@ -1323,21 +1328,14 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
     i++;
   }
 
-  /* Christoph while converting everything to printMessage:
-     I just don't know how to convert this crap...
-  */
-  if(verbosity>=6) {
-    changeToWarningMode();
-    if(test) {
-      sollyaPrintf("The computed signs are : ");
-      for(i=0;i<=n;i++) sollyaPrintf("%d  ",s[i]);
-      sollyaPrintf("\n");
-    }
-    else sollyaPrintf("Test is false because signs could not be evaluated\n");
-    restoreMode();
+  if (test) {
+    printMessage(6,"The computed signs are: ");
+    for(i=0;i<=n;i++) printMessage(6,"%d ",s[i]);
+    printMessage(6,"\n");
+  } else {
+    printMessage(6,"Test is false because signs could not be evaluated\n");
   }
-
-
+  
   if(test) {
     i = 1;
     while(test && (i<=n-2)) {
@@ -1461,15 +1459,9 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
     }
   }
 
-  /* Christoph while converting everything to printMessage:
-     I just don't know how to convert this crap...
-  */
-  if(verbosity>=3) {
-    changeToWarningMode();
-    sollyaPrintf("The new points are : ");
-    for(i=1; i<=n; i++) printMpfr(z[i-1]);
-    restoreMode();
-  }
+  printMessage(3,"The new points are: ");
+  for(i=1; i<=n; i++) printMessage(3,"%v ",z[i-1]);
+  printMessage(3,"\n");
 
   // Test the quality of the current error
 
@@ -1699,15 +1691,9 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   /*************************************************************/
 
   popTimeCounter("Remez: computing initial points set");
-  /* Christoph while converting everything to printMessage:
-     I just don't know how to convert this crap...
-  */
-  if(verbosity>=4) {
-    changeToWarningMode();
-    sollyaPrintf("Computed points set:\n");
-    for(i=1;i<=freeDegrees+1;i++) printMpfr(x[i-1]);
-    restoreMode();
-  }
+  printMessage(4,"Computed points set:\n");
+  for(i=1;i<=freeDegrees+1;i++) printMessage(4,"%v ",x[i-1]);
+  printMessage(4,"\n");
 
   mpfr_set_inf(infinityNorm, 1);
   mpfr_set_ui(ai_vect[freeDegrees], 0, GMP_RNDN);
@@ -1792,31 +1778,17 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 	}
       }
 
-      /* Christoph while converting everything to printMessage:
-	 I just don't know how to convert this crap...
-      */
-      if(verbosity>=4) {
-	changeToWarningMode();
-	sollyaPrintf("Signs for pseudo-alternating condition : [");
-	for (i=1 ; i <= freeDegrees ; i++) {
-	  myPrintValue(&M[coeff(i, freeDegrees+1, freeDegrees+1)],10);
-	  sollyaPrintf(", ");
-	}
-	sollyaPrintf("-1]\n");
-	restoreMode();
+      printMessage(4,"Signs for pseudo-alternating condition : [");
+      for (i=1 ; i <= freeDegrees ; i++) {
+	printMessage(4,"%.3v, ",M[coeff(i, freeDegrees+1, freeDegrees+1)]);
       }
+      printMessage(4,"-1]\n");
 
       popTimeCounter("Remez: computing the matrix");
 
-      /* Christoph while converting everything to printMessage:
-	 I just don't know how to convert this crap...
-      */
-      if(verbosity>=7) {
-	changeToWarningMode();
-	sollyaPrintf("The computed matrix is "); printMatrix(M, freeDegrees+1);
-	restoreMode();
-      }
-
+      printMessage(7,"The computed matrix is ");
+      printMessageMatrix(7,M,freeDegrees+1);
+      printMessage(7,"\n");
 
       // Determination of the polynomial corresponding to M and x
       for (i=1 ; i <= freeDegrees+1 ; i++) {
