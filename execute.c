@@ -191,7 +191,7 @@ int checkInequalityFast(int *res, node *a, node *b) {
   return okay;
 }
 
-node *parseString(char *str) {
+node *parseStringInternal(char *str) {
   node *result;
   node *oldMinitree;
   void *myScanner;
@@ -222,6 +222,16 @@ node *parseString(char *str) {
   initSignalHandler();
 
   return result;
+}
+
+node *parseString(char *str) {
+  node *res;
+
+  res = parseStringInternal(str);
+  if (res != NULL) return res;
+  
+  printMessage(1,"Warning: the string \"%s\" could not be parsed by the miniparser.\n",str);
+  return makeError();
 }
 
 rangetype guessDegreeWrapper(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps, int bound) {
@@ -20593,7 +20603,7 @@ node *evaluateThingInner(node *tree) {
     copy->child1 = evaluateThingInner(tree->child1);
     if (isString(copy->child1)) {
       if (timingString != NULL) pushTimeCounter();      
-      if ((tempNode = parseString(copy->child1->string)) != NULL) {
+      if ((tempNode = parseStringInternal(copy->child1->string)) != NULL) {
 	freeThing(copy);
 	copy = tempNode; 
       } else {
