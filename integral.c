@@ -84,12 +84,12 @@ rangetype integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) 
   
   
   if (mpfr_equal_p(*(interval.a),*(interval.b))) {
-    printMessage(1,"Warning: the given interval is reduced to one point.\n");
+    printMessage(1,SOLLYA_MSG_DOMAIN_IS_REDUCED_TO_A_POINT_TRIVIAL_RESULT,"Warning: the given interval is reduced to one point.\n");
     return sum;
   }
 
   if (mpfr_less_p(*(interval.b),*(interval.a))) {
-    printMessage(1,"Warning: the interval is empty.\n");
+    printMessage(1,SOLLYA_MSG_DOMAIN_IS_EMPTY,"Warning: the interval is empty.\n");
     return sum;
   }
 
@@ -165,14 +165,14 @@ void uncertifiedIntegral(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned
   mpfr_div_ui(step, step, points, GMP_RNDN);
  
   if (mpfr_sgn(step) == 0) {
-    printMessage(1,"Warning: the given interval is reduced to one point.\n");
+    printMessage(1,SOLLYA_MSG_DOMAIN_IS_REDUCED_TO_A_POINT_WILL_SIMPLY_EVAL,"Warning: the given interval is reduced to one point.\n");
     mpfr_set_d(result,0.,GMP_RNDN);
     mpfr_clear(step);
     return;
   }
 
   if (mpfr_sgn(step) < 0) {
-    printMessage(1,"Warning: the interval is empty.\n");
+    printMessage(1,SOLLYA_MSG_DOMAIN_IS_EMPTY,"Warning: the interval is empty.\n");
     mpfr_set_d(result,0.,GMP_RNDN);
     mpfr_clear(step);
     return;

@@ -147,24 +147,20 @@ libraryFunction *bindFunction(char* libraryName, char *functionName) {
 
   currFunct = getFunction(functionName);
   if (currFunct != NULL) {
-    printMessage(1,"Warning: a function named \"%s\" has already been bound.\n",functionName);
+    printMessage(1,SOLLYA_MSG_EXTERNAL_FUNC_OR_PROC_ALREADY_BOUND,"Warning: a function named \"%s\" has already been bound.\n",functionName);
     return currFunct;
   }
 
   libHandle = getLibraryFunctionHandle(libraryName);
   if (libHandle == NULL) {
-    changeToWarningMode();
-    sollyaFprintf(stderr,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,functionName,dlerror());
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_COULD_NOT_OPEN_LIBRARY_WITH_EXTERN_FUNC_OR_PROC,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,functionName,dlerror());
     return NULL;
   }
     
   dlerror();
   myFunction = (int (*)(sollya_mpfi_t, sollya_mpfi_t, int)) dlsym(libHandle->libraryDescriptor, functionName);
   if ((error = dlerror()) != NULL) {
-    changeToWarningMode();
-    sollyaFprintf(stderr, "Error: could not find function \"%s\" in library \"%s\" for binding: %s\n",functionName,libraryName,error);
-    restoreMode();
+    printMessage(1, SOLLYA_MSG_EXTERNAL_FUNC_OR_PROC_NOT_FOUND_IN_LIBRARY, "Error: could not find function \"%s\" in library \"%s\" for binding: %s\n",functionName,libraryName,error);
     return NULL;
   }
   
@@ -227,7 +223,7 @@ void freeFunctionLibraries() {
     }
     dlerror();
     if (dlclose(currLibHandle->libraryDescriptor) != 0) 
-      printMessage(1,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
+      printMessage(1,SOLLYA_MSG_COULD_NOT_CLOSE_LIBRARY,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
     free(currLibHandle->libraryName);
     free(currLibHandle);
     prevLibList = currLibList;
@@ -249,24 +245,20 @@ libraryFunction *bindConstantFunction(char* libraryName, char *functionName) {
 
   currFunct = getConstantFunction(functionName);
   if (currFunct != NULL) {
-    printMessage(1,"Warning: a function named \"%s\" has already been bound.\n",functionName);
+    printMessage(1,SOLLYA_MSG_EXTERNAL_FUNC_OR_PROC_ALREADY_BOUND,"Warning: a function named \"%s\" has already been bound.\n",functionName);
     return currFunct;
   }
 
   libHandle = getConstantLibraryHandle(libraryName);
   if (libHandle == NULL) {
-    changeToWarningMode();
-    sollyaFprintf(stderr,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,functionName,dlerror());
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_COULD_NOT_OPEN_LIBRARY_WITH_EXTERN_FUNC_OR_PROC,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,functionName,dlerror());
     return NULL;
   }
     
   dlerror();
   myFunction = (void (*)(mpfr_t, mp_prec_t)) dlsym(libHandle->libraryDescriptor, functionName);
   if ((error = dlerror()) != NULL) {
-    changeToWarningMode();
-    sollyaFprintf(stderr, "Error: could not find function \"%s\" in library \"%s\" for binding: %s\n",functionName,libraryName,error);
-    restoreMode();
+    printMessage(1, SOLLYA_MSG_EXTERNAL_FUNC_OR_PROC_NOT_FOUND_IN_LIBRARY, "Error: could not find function \"%s\" in library \"%s\" for binding: %s\n",functionName,libraryName,error);
     return NULL;
   }
   
@@ -325,7 +317,7 @@ void freeConstantLibraries() {
     }
     dlerror();
     if (dlclose(currLibHandle->libraryDescriptor) != 0) 
-      printMessage(1,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
+      printMessage(1,SOLLYA_MSG_COULD_NOT_CLOSE_LIBRARY,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
     free(currLibHandle->libraryName);
     free(currLibHandle);
     prevLibList = currLibList;
@@ -344,24 +336,20 @@ libraryProcedure *bindProcedure(char* libraryName, char *procedureName, chain *s
 
   currProc = getProcedure(procedureName);
   if (currProc != NULL) {
-    printMessage(1,"Warning: a function named \"%s\" has already been bound.\n",procedureName);
+    printMessage(1,SOLLYA_MSG_EXTERNAL_FUNC_OR_PROC_ALREADY_BOUND,"Warning: a function named \"%s\" has already been bound.\n",procedureName);
     return currProc;
   }
 
   libHandle = getProcLibraryHandle(libraryName);
   if (libHandle == NULL) {
-    changeToWarningMode();
-    sollyaFprintf(stderr,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,procedureName,dlerror());
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_COULD_NOT_OPEN_LIBRARY_WITH_EXTERN_FUNC_OR_PROC,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,procedureName,dlerror());
     return NULL;
   }
     
   dlerror();
   myFunction = dlsym(libHandle->libraryDescriptor, procedureName);
   if ((error = dlerror()) != NULL) {
-    changeToWarningMode();
-    sollyaFprintf(stderr, "Error: could not find function \"%s\" in library \"%s\" for binding: %s\n",procedureName,libraryName,error);
-    restoreMode();
+    printMessage(1, SOLLYA_MSG_EXTERNAL_FUNC_OR_PROC_NOT_FOUND_IN_LIBRARY, "Error: could not find function \"%s\" in library \"%s\" for binding: %s\n",procedureName,libraryName,error);
     return NULL;
   }
   
@@ -420,7 +408,7 @@ void freeProcLibraries() {
     }
     dlerror();
     if (dlclose(currLibHandle->libraryDescriptor) != 0) 
-      printMessage(1,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
+      printMessage(1,SOLLYA_MSG_COULD_NOT_CLOSE_LIBRARY,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
     free(currLibHandle->libraryName);
     free(currLibHandle);
     prevLibList = currLibList;

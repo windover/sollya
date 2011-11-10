@@ -265,10 +265,10 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
     okay = tryMatchExtendedPureTree(associations, thingToMatch, ((node *) (possibleMatcher->arguments->value)));
     if (okay) {
       if (variablename != NULL) {
-	printMessage(1,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
+	printMessage(1,SOLLYA_MSG_FREE_VAR_INTERPRETED_AS_IDENTITY_FUNCTION,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
 		     variablename);
       } else {
-	printMessage(1,"Warning: \"_x_\" is the free variable. In a functional context it will be considered as the identity function.\n");
+	printMessage(1,SOLLYA_MSG_FREE_VAR_INTERPRETED_AS_IDENTITY_FUNCTION,"Warning: \"_x_\" is the free variable. In a functional context it will be considered as the identity function.\n");
       }
     }
     return okay;
@@ -355,10 +355,10 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
       okay = tryMatchExtendedPureTree(associations, thingToMatch, ((node *) (possibleMatcher->arguments->value)));
       if (okay) {
 	if (variablename != NULL) {
-	  printMessage(1,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
+	  printMessage(1,SOLLYA_MSG_FREE_VAR_INTERPRETED_AS_IDENTITY_FUNCTION,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
 		       variablename);
 	} else {
-	  printMessage(1,"Warning: \"_x_\" is the free variable. In a functional context it will be considered as the identity function.\n");
+	  printMessage(1,SOLLYA_MSG_FREE_VAR_INTERPRETED_AS_IDENTITY_FUNCTION,"Warning: \"_x_\" is the free variable. In a functional context it will be considered as the identity function.\n");
 	}
       }
       return okay;

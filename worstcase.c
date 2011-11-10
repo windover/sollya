@@ -64,7 +64,7 @@ int mpfrToInt(int *res, mpfr_t val) {
 
 
   if (!mpfr_integer_p(val)) {
-    printMessage(1,"Warning: an expression given in this context does not evaluate to integer.\n");
+    printMessage(1,SOLLYA_MSG_EXPR_DOES_NOT_EVALUATE_TO_INTEGER,"Warning: an expression given in this context does not evaluate to integer.\n");
     *res = 0;
     return 0;
   }
@@ -74,14 +74,14 @@ int mpfrToInt(int *res, mpfr_t val) {
   mpfr_init2(verg,mpfr_get_prec(val));
 
   if (mpfr_set_si(verg,*res,GMP_RNDN) != 0) {
-    printMessage(1,"Warning: rounding occurred on reconverting back an integer variable.\n");
+    printMessage(1,SOLLYA_MSG_ROUNDING_ON_CONVERTING_A_MACHINE_INTEGER,"Warning: rounding occurred on reconverting back an integer variable.\n");
     *res = 0;
     mpfr_clear(verg);
     return 0;
   }
 
   if (mpfr_cmp(verg,val) != 0) {
-    printMessage(1,"Warning: an expression given in this context does not evaluate to a machine integer.\n");
+    printMessage(1,SOLLYA_MSG_EXPR_DOES_NOT_EVALUATE_TO_MACHINE_INTEGER,"Warning: an expression given in this context does not evaluate to a machine integer.\n");
     *res = 0;
     mpfr_clear(verg);
     return 0;
@@ -106,20 +106,20 @@ void printWorstCases(node *func,
 	mpfrToInt(&outputprecision, outputprec) &&
 	mpfrToInt(&firstexponent, *(inputExponRange.a)) &&
 	mpfrToInt(&lastexponent, *(inputExponRange.b)))) {
-    printMessage(1,"Warning: an error occurred. The last command will not succeed. This is harmless.\n");
+    printMessage(1,SOLLYA_MSG_HARMLESS_ERROR_OCCURRED_COMMAND_NOT_EXECUTED,"Warning: an error occurred. The last command will not succeed. This is harmless.\n");
     return;
   }
 
   if ((inputprecision < 10) || (outputprecision < 10)) {
-    printMessage(1,"Warning: input and outputprecision must be greater or equal to 10.\n");
-    printMessage(1,"Warning: an error occurred. The last command will not succeed. This is harmless.\n");
+    printMessage(1,SOLLYA_MSG_INPUT_AND_OUTPUT_PRECISION_MUST_BE_GREATER_TEN,"Warning: input and outputprecision must be greater or equal to 10.\n");
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"Warning: an error occurred. The last command will not succeed. This is harmless.\n");
     return;
   }
 
   if ((prec < (mp_prec_t) inputprecision) || (prec < (mp_prec_t) outputprecision)) {
-    printMessage(1,"Warning: the internal precision is less than the input or output precision.\n");
-    printMessage(1,"Try to increase the tool's precision.\n");
-    printMessage(1,"Warning: an error occurred. The last command will not succeed. This is harmless.\n");
+    printMessage(1,SOLLYA_MSG_INTERNAL_PREC_LESS_THAN_IN_AND_OUT_PREC,"Warning: the internal precision is less than the input or output precision.\n");
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the tool's precision.\n");
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"Warning: an error occurred. The last command will not succeed. This is harmless.\n");
     return;
   }
 
@@ -130,16 +130,16 @@ void printWorstCases(node *func,
   mpfr_set_d(temp2,1.0,GMP_RNDN);
 
   if (mpfr_cmp(temp,temp2) >= 0) {
-    printMessage(1,"Warning: the epsilon asked is greater than half an ulp of a %d bit format.\n",
+    printMessage(1,SOLLYA_MSG_EPS_SPECIFIED_GREATER_THAN_HALFULP_OF_OUT_PREC,"Warning: the epsilon asked is greater than half an ulp of a %d bit format.\n",
 		 outputprecision);
-    printMessage(1,"Warning: an error occurred. The last command will not succeed. This is harmless.\n");
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"Warning: an error occurred. The last command will not succeed. This is harmless.\n");
     mpfr_clear(temp);
     mpfr_clear(temp2);
     return;
   }
 
   if (mpfr_sgn(epsilon) < 0) {
-    printMessage(1,"Warning: the epsilon given is negative. Will take its abolute value.\n");
+    printMessage(1,SOLLYA_MSG_GIVEN_EPS_MUST_BE_POSITIVE_TAKING_ABS,"Warning: the epsilon given is negative. Will take its abolute value.\n");
     mpfr_abs(epsilon,epsilon,GMP_RNDN);
   }
 
@@ -163,7 +163,7 @@ void printWorstCases(node *func,
   i = 0;
   while (mpfr_cmp(x,xL) <= 0) {
     if (verbosity >= 2) {
-      if ((i % 1000) == 0) printMessage(2,"Information: %d cases handled.\n",i);
+      if ((i % 1000) == 0) printMessage(2,SOLLYA_MSG_CERTAIN_AMOUNT_OF_CASES_HANDLED,"Information: %d cases handled.\n",i);
       i++;
     }
 
@@ -175,7 +175,7 @@ void printWorstCases(node *func,
     mpfr_sub(temp2,y,yR,GMP_RNDN);
     mpfr_abs(temp2,temp2,GMP_RNDN);
     if (mpfr_zero_p(y)) {
-      printMessage(1,"Warning: the given function evaluates to 0 on %v\nThe rounding error will be considered as an absolute one.\n",x);
+      printMessage(1,SOLLYA_MSG_FUNC_EVALUATED_TO_ZERO_TAKING_ABSOLUTE_ERROR,"Warning: the given function evaluates to 0 on %v\nThe rounding error will be considered as an absolute one.\n",x);
     } else {
       mpfr_div(temp2,temp2,y,GMP_RNDN);
     }
@@ -231,7 +231,7 @@ int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t
   chain *currFunc, *currFormat, *currEpsilon;
 
   if (steps > 63) {
-    printMessage(1,"Warning: cannot perform more than 63 steps. Will decrease step number to 63.\n");
+    printMessage(1,SOLLYA_MSG_CANNOT_PERFORM_MORE_THAN_63_STEPS,"Warning: cannot perform more than 63 steps. Will decrease step number to 63.\n");
     steps = 63;
   }
 
@@ -240,7 +240,7 @@ int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t
   if (p < 165) p = 165;
 
   if (mpfr_get_prec(foundValue) < searchPrec) {
-    printMessage(1,"Warning: the search precision is higher than the current precision of the tool.\nNo search is possible.\n");
+    printMessage(1,SOLLYA_MSG_SEARCH_PREC_HIGHER_THAN_TOOL_PREC,"Warning: the search precision is higher than the current precision of the tool.\nNo search is possible.\n");
     return 0;
   }
 
@@ -250,7 +250,7 @@ int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t
 
   if ((numberFuncs != numberFormats) ||
       (numberFuncs != numberEpsilons)) {
-    printMessage(1,"Warning: the numbers of the given functions, formats and accuracies differ.\nNo search is possible.\n");
+    printMessage(1,SOLLYA_MSG_NUMBERS_OF_FUNCS_AND_FORMATS_DIFFER,"Warning: the numbers of the given functions, formats and accuracies differ.\nNo search is possible.\n");
     return 0;
   }
 
@@ -268,7 +268,7 @@ int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t
 
   if ((mpfr_set(currLeft,startValue,GMP_RNDN) != 0) ||
       (mpfr_set(currRight,startValue,GMP_RNDN) != 0)) {
-    printMessage(1,"Warning: the given start point is too precise for the given search precision.\nIt has been rounded to: %v",currLeft);
+    printMessage(1,SOLLYA_MSG_START_POINT_TOO_PRECISE_FOR_GIVEN_INPUT_PREC,"Warning: the given start point is too precise for the given search precision.\nIt has been rounded to: %v",currLeft);
   }
 
   mpfr_init2(t,128);

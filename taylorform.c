@@ -155,8 +155,8 @@ void copytModel(tModel *t, tModel *tt){
   int i;
 
   if (!tModelsAreCompatible(t, tt)) {
-    sollyaFprintf(stderr, "Error in taylorform: trying to copy incompatible models.\n");
-    sollyaFprintf(stderr, "No modification is made.\n");
+    printMessage(-1, SOLLYA_MSG_ERROR_IN_TAYLORFORM_COPYING_INCOMPAT_MODELS, "Error in taylorform: trying to copy incompatible models.\n");
+    printMessage(-1, SOLLYA_MSG_CONTINUATION, "No modification is made.\n");
     return;
   }
 
@@ -243,8 +243,8 @@ void multiplication_TM(tModel *t, tModel *t1, tModel *t2, int mode){
   prec = getToolPrecision();
 
   if ( (!tModelsAreCompatible(t1, t2)) || (!tModelsAreCompatible(t, t1)) ) {
-    sollyaFprintf(stderr, "Error in taylorform: trying to multiply incompatible models.\n");
-    sollyaFprintf(stderr, "No modification is made.\n");
+    printMessage(-1, SOLLYA_MSG_ERROR_IN_TAYLORFORM_MULTIPLYING_INCOMPAT_MODELS, "Error in taylorform: trying to multiply incompatible models.\n");
+    printMessage(-1, SOLLYA_MSG_CONTINUATION,"No modification is made.\n");
     return;
   }
 
@@ -355,8 +355,8 @@ void addition_TM(tModel *t,tModel *t1, tModel *t2, int mode){
   tModel *tt;
 
   if ( (!tModelsAreCompatible(t1, t2)) || (!tModelsAreCompatible(t, t1)) ) {
-    sollyaFprintf(stderr, "Error in taylorform: trying to multiply incompatible models.\n");
-    sollyaFprintf(stderr, "No modification is made.\n");
+    printMessage(-1, SOLLYA_MSG_ERROR_IN_TAYLORFORM_MULTIPLYING_INCOMPAT_MODELS, "Error in taylorform: trying to multiply incompatible models.\n");
+    printMessage(-1, SOLLYA_MSG_CONTINUATION, "No modification is made.\n");
     return;
   }
 
@@ -477,7 +477,7 @@ int computeMonotoneRemainder(sollya_mpfi_t *bound, int mode, int typeOfFunction,
     if ((mode==ABSOLUTE)&&(n%2==0)) sollya_mpfi_pow(boundfx0, p_interv, x0);
     break;
   default:
-    sollyaFprintf(stderr, "Error in taylorform: unkown type of function used with Zumkeller's technique\n");
+    printMessage(-1, SOLLYA_MSG_ERROR_IN_TAYLORFORM_UNKNOWN_FUNC_FOR_ZUMKELLER, "Error in taylorform: unkown type of function used with Zumkeller's technique\n");
     return 0;
   }
 
@@ -589,7 +589,7 @@ void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, 
     powerFunction_diff(nDeriv, p, x, (mode==RELATIVE)?(n+1):n, silent);
     break;
   default: 
-    sollyaFprintf(stderr, "Error in taylorform: unkown type of function used with Zumkeller's technique\n");
+    printMessage(-1, SOLLYA_MSG_ERROR_IN_TAYLORFORM_UNKNOWN_FUNC_FOR_ZUMKELLER, "Error in taylorform: unkown type of function used with Zumkeller's technique\n");
     return;
   }
 
@@ -713,7 +713,7 @@ void reduceOrder_TM(tModel*d, tModel*s, int n){
   prec = getToolPrecision();
 
   if (n>oldn) {
-    sollyaFprintf(stderr, "Error: taylorform: trying to increase the order of a TM\n");
+    printMessage(-1, SOLLYA_MSG_ERROR_IN_TAYLORFORM_TRYING_TO_INCREASE_DEGREE, "Error: taylorform: trying to increase the order of a TM\n");
     return;
   }
   
@@ -1346,7 +1346,7 @@ void taylorform(node **T, chain **errors, sollya_mpfi_t **delta,
 
   /* Check if degree is at least 1, once it has been adjusted */
   if (n < 1) {
-    printMessage(1,"Warning: the degree of a Taylor Model must be at least 0.\n");
+    printMessage(1,SOLLYA_MSG_DEGREE_OF_TAYLORFORM_MUST_BE_AT_LEAST_ZERO,"Warning: the degree of a Taylor Model must be at least 0.\n");
     *T = NULL;
     return;
   }

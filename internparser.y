@@ -77,7 +77,7 @@ extern FILE *internyyget_in(void *scanner);
 
  void internyyerror(void *myScanner, char *message) {
    if (!feof(internyyget_in(myScanner))) {
-     printMessage(1,"Warning: %s.\nWill skip input until next semicolon after the unexpected token. May leak memory.\n",message);
+     printMessage(1,SOLLYA_MSG_SYNTAX_ERROR_ENCOUNTERED_WHILE_PARSING,"Warning: %s.\nWill skip input until next semicolon after the unexpected token. May leak memory.\n",message);
      considerDyingOnError();
    }
  }

@@ -190,9 +190,9 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
 
   mpfr_set_d(temp2,0.5,GMP_RNDN);
   if (mpfr_cmp(temp,temp2) >= 0) {
-    printMessage(1,"Warning: a coefficient is not at least 2 times greater than a already evaluated sub-polynomial.\n");
-    printMessage(1,"This procedure is not able to implement the polynomial correctly in this case.\n");
-    printMessage(3,"Information: the subpolynomial q(%s) that has already been handled is\n%b\nThe current coefficient is c = \n%v\n|| %s * q(%s) / c || is approximately %v\n",
+    printMessage(1,SOLLYA_MSG_COEFF_NOT_TWICE_GREATER_THAN_SUBPOLY,"Warning: a coefficient is not at least 2 times greater than a already evaluated sub-polynomial.\n");
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"This procedure is not able to implement the polynomial correctly in this case.\n");
+    printMessage(3,SOLLYA_MSG_CONTINUATION,"Information: the subpolynomial q(%s) that has already been handled is\n%b\nThe current coefficient is c = \n%v\n|| %s * q(%s) / c || is approximately %v\n",
 		 ((variablename == NULL) ? "_x_" : variablename),qCopy,coefficients[0],((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),temp);
     mpfr_set_d(temp,1.0,GMP_RNDN);
     res = 0;
@@ -278,8 +278,8 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
     if (mulPrec[i] >= 0) {
       if (currentPrec > mulPrec[i]) {
 	mulPrec[i] = currentPrec; 
-	printMessage(2,"Information: the precision of a previous Horner step is greater than the one of the next.\n");
-	printMessage(2,"Must adapt the precision for the next step on a multiplication.\n");
+	printMessage(2,SOLLYA_MSG_PREC_OF_HORNER_STEP_GREATER_THAN_FOR_PREV_ONE,"Information: the precision of a previous Horner step is greater than the one of the next.\n");
+	printMessage(2,SOLLYA_MSG_CONTINUATION,"Must adapt the precision for the next step on a multiplication.\n");
       } else currentPrec = mulPrec[i];
     }
 
@@ -290,8 +290,8 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
       format = determineCoefficientFormat(coefficients[i]);
       if (format > 3) {
 	res = 0;
-	printMessage(1,"Warning: a coefficient's precision is higher than triple-double but no automatic rounding will be performed.\n");
-	printMessage(1,"This should not occur. The coefficient will now be rounded to a triple-double.\n");
+	printMessage(1,SOLLYA_MSG_NO_AUTO_ROUND_FOR_COEFF_W_PREC_HIGHER_THAN_TD,"Warning: a coefficient's precision is higher than triple-double but no automatic rounding will be performed.\n");
+	printMessage(1,SOLLYA_MSG_CONTINUATION,"This should not occur. The coefficient will now be rounded to a triple-double.\n");
 	format = 3;
 	mpfr_round_to_tripledouble(temp,coefficients[i]);
 	mpfr_set(coefficients[i],temp,GMP_RNDN);
@@ -312,17 +312,17 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
      
       if (coeffPrec > currentPrec) {
 	currentPrec = coeffPrec;
-	printMessage(1,"Warning: the infered precision of the %dth coefficient of the polynomial is greater than\n",i);
-	printMessage(1,"the necessary precision computed for this step. This may make the automatic determination\n");
-	printMessage(1,"of precisions useless.\n");
+	printMessage(1,SOLLYA_MSG_INFERED_COEFF_PREC_HIGHER_THAN_REQUIRED,"Warning: the infered precision of the %dth coefficient of the polynomial is greater than\n",i);
+	printMessage(1,SOLLYA_MSG_CONTINUATION,"the necessary precision computed for this step. This may make the automatic determination\n");
+	printMessage(1,SOLLYA_MSG_CONTINUATION,"of precisions useless.\n");
       }
     } 
     
     /* Check if the precision of the next step is at least as great as the one of the previous (addition) */
     if (addPrec[i] >= 0) {
       if (currentPrec > addPrec[i]) {	
-	printMessage(2,"Information: the precision of a previous Horner step is greater than the one of the next.\n");
-	printMessage(2,"Must adapt the precision for the next step on an addition.\n");
+	printMessage(2,SOLLYA_MSG_PREC_OF_HORNER_STEP_GREATER_THAN_FOR_PREV_ONE,"Information: the precision of a previous Horner step is greater than the one of the next.\n");
+	printMessage(2,SOLLYA_MSG_CONTINUATION,"Must adapt the precision for the next step on an addition.\n");
 	addPrec[i] = currentPrec; 
       } else currentPrec = addPrec[i];
     }
@@ -344,10 +344,10 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
 	/* Round to triple-double */
 	if (mpfr_round_to_tripledouble(temp, coefficients[i]) != 0) {
 	  rounded = 1;
-	  printMessage(2,"Information: the %dth coefficient of the polynomial has automatically been rounded to a triple-double.\n",i);
+	  printMessage(2,SOLLYA_MSG_COEFF_HAS_BEEN_ROUNDED_TO_TRIPLE_DOUBLE,"Information: the %dth coefficient of the polynomial has automatically been rounded to a triple-double.\n",i);
 	}
 	if (mpfr_set(coefficients[i],temp,GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: there was an error during the internal handling of a coefficient.\n");
+	  printMessage(1,SOLLYA_MSG_ERROR_ON_HANDLING_A_COEFFICIENT,"Warning: there was an error during the internal handling of a coefficient.\n");
 	  res = 0;
 	}
       } else {
@@ -355,20 +355,20 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
 	  /* Round to double-double */
 	  if (mpfr_round_to_doubledouble(temp, coefficients[i]) != 0) {
 	    rounded = 1;
-	    printMessage(2,"Information: the %dth coefficient of the polynomial has automatically been rounded to a double-double.\n",i);
+	    printMessage(2,SOLLYA_MSG_COEFF_HAS_BEEN_ROUNDED_TO_DOUBLE_DOUBLE,"Information: the %dth coefficient of the polynomial has automatically been rounded to a double-double.\n",i);
 	  }
 	  if (mpfr_set(coefficients[i],temp,GMP_RNDN) != 0) {
-	    printMessage(1,"Warning: there was an error during the internal handling of a coefficient.\n");
+	    printMessage(1,SOLLYA_MSG_ERROR_ON_HANDLING_A_COEFFICIENT,"Warning: there was an error during the internal handling of a coefficient.\n");
 	    res = 0;
 	  }
 	} else {
 	  /* Round to double */
 	  if (mpfr_round_to_double(temp, coefficients[i]) != 0) {
 	    rounded = 1;
-	    printMessage(2,"Information: the %dth coefficient of the polynomial has automatically been rounded to a double.\n",i);
+	    printMessage(2,SOLLYA_MSG_COEFF_HAS_BEEN_ROUNDED_TO_DOUBLE,"Information: the %dth coefficient of the polynomial has automatically been rounded to a double.\n",i);
 	  }
 	  if (mpfr_set(coefficients[i],temp,GMP_RNDN) != 0) {
-	    printMessage(1,"Warning: there was an error during the internal handling of a coefficient.\n");
+	    printMessage(1,SOLLYA_MSG_ERROR_ON_HANDLING_A_COEFFICIENT,"Warning: there was an error during the internal handling of a coefficient.\n");
 	    res = 0;
 	  }
 	}
@@ -378,9 +378,9 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
 
   if (rounded) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: at least one of the coefficients of the given polynomial has been rounded in a way\n");
-      printMessage(1,"that the target precision can be achieved at lower cost. Nevertheless, the implemented polynomial\n");
-      printMessage(1,"is different from the given one.\n");
+      printMessage(1,SOLLYA_MSG_IMPLEMENTED_POLY_DIFFERS_FROM_ORIGINAL_ONE,"Warning: at least one of the coefficients of the given polynomial has been rounded in a way\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"that the target precision can be achieved at lower cost. Nevertheless, the implemented polynomial\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"is different from the given one.\n");
     }
   }
 
@@ -2082,26 +2082,26 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
       constMi = 0.0;
       constLo = 0.0;
       if ((format = determineCoefficientFormat(coefficients[i])) > 3) {
-	printMessage(1,"Warning: tried to implement a coefficient that cannot even be written on a triple-double.\n");
-	printMessage(1,"This should not occur. The coefficient will be rounded to a triple-double.\n");
+	printMessage(1,SOLLYA_MSG_COEFF_DOES_NOT_EVEN_HOLD_ON_TRIPLE_DOUBLE,"Warning: tried to implement a coefficient that cannot even be written on a triple-double.\n");
+	printMessage(1,SOLLYA_MSG_CONTINUATION,"This should not occur. The coefficient will be rounded to a triple-double.\n");
 	format = 3;
       }
       if (mpfr_set(temp,coefficients[i],GMP_RNDN) != 0) {
 	if (!noRoundingWarnings) {
-	  printMessage(1,"Warning: a rounding occurred on internal handling (on copying) of the %dth coefficient.\n");
+	  printMessage(1,SOLLYA_MSG_ROUNDING_ON_INTERNAL_HANDLING_OF_A_COEFFICIENT,"Warning: a rounding occurred on internal handling (on copying) of the %dth coefficient.\n");
 	}
 	res = 0;
       }
       current = mpfr_get_d(temp,GMP_RNDN);
       if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
 	if (!noRoundingWarnings) {
-	  printMessage(1,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
+	  printMessage(1,SOLLYA_MSG_ROUNDING_ON_INTERNAL_HANDLING_OF_A_COEFFICIENT,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
 	}
 	res = 0;
       }
       if (mpfr_sub(temp,temp,temp2,GMP_RNDN) != 0) {
 	if (!noRoundingWarnings) {
-	  printMessage(1,"Warning: a rounding occurred on internal handling (on a substraction) of the %dth coefficient.\n");
+	  printMessage(1,SOLLYA_MSG_ROUNDING_ON_INTERNAL_HANDLING_OF_A_COEFFICIENT,"Warning: a rounding occurred on internal handling (on a substraction) of the %dth coefficient.\n");
 	}
 	res = 0;
       }
@@ -2111,13 +2111,13 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
       if (current != 0.0) {
 	if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
+	    printMessage(1,SOLLYA_MSG_ROUNDING_ON_INTERNAL_HANDLING_OF_A_COEFFICIENT,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
 	  }
 	  res = 0;
 	}
 	if (mpfr_sub(temp,temp,temp2,GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: a rounding occurred on internal handling (on a substraction) of the %dth coefficient.\n");
+	    printMessage(1,SOLLYA_MSG_ROUNDING_ON_INTERNAL_HANDLING_OF_A_COEFFICIENT,"Warning: a rounding occurred on internal handling (on a substraction) of the %dth coefficient.\n");
 	  }
 	  res = 0;
 	}
@@ -2127,13 +2127,13 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 	if (current != 0.0) {
 	  if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
 	    if (!noRoundingWarnings) {
-	      printMessage(1,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
+	      printMessage(1,SOLLYA_MSG_ROUNDING_ON_INTERNAL_HANDLING_OF_A_COEFFICIENT,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
 	    }
 	    res = 0;
 	  }
 	  if (mpfr_sub(temp,temp,temp2,GMP_RNDN) != 0) {
 	    if (!noRoundingWarnings) {
-	      printMessage(1,"Warning: a rounding occurred on internal handling (on a substraction) of the %dth coefficient.\n");
+	      printMessage(1,SOLLYA_MSG_ROUNDING_ON_INTERNAL_HANDLING_OF_A_COEFFICIENT,"Warning: a rounding occurred on internal handling (on a substraction) of the %dth coefficient.\n");
 	    }
 	    res = 0;
 	  }
@@ -2271,7 +2271,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
     } 
     break;
   default:
-    printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
+    printMessage(1,SOLLYA_MSG_A_COEFF_COULD_NOT_BE_STORED_IN_ANY_KNOWN_FORMAT,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
     producedFormat = 1;
     res = 0;
   }  
@@ -2827,8 +2827,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      }
 	      break;
 	    default:
-	      printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
-	      printMessage(1,"The implementation will be wrong.\n");
+	      printMessage(1,SOLLYA_MSG_IMPLEMENTPOLY_FREE_VAR_HAS_UNKNOWN_FORMAT,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
+	      printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 	      res = 0;
 	      producedFormat = 1;
 	    }
@@ -3425,8 +3425,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		/* Multiply comingFormat by x as a double-double (or better), produce a double-double */
 		switch (comingFormat) {
 		case 3:
-		  printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
-		  printMessage(1,"The implementation will be wrong.\n");
+		  printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
+		  printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		  res = 0;
 		  break;
 		case 2:
@@ -3476,8 +3476,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		/* Multiply comingFormat by x as a double, produce a double-double */
 		switch (comingFormat) {
 		case 3:
-		  printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
-		  printMessage(1,"The implementation will be wrong.\n");
+		  printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
+		  printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		  res = 0;
 		  break;
 		case 2:
@@ -3523,16 +3523,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 		break;
 	      default:
-		printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
-		printMessage(1,"The implementation will be wrong.\n");
+		printMessage(1,SOLLYA_MSG_IMPLEMENTPOLY_FREE_VAR_HAS_UNKNOWN_FORMAT,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
+		printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		res = 0;
 	      }
 	    } else {
 	      /* Multiply comingFormat by x^k which should be at least a double-double in any case */
 	      switch (comingFormat) {
 	      case 3:
-		printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
-		printMessage(1,"The implementation will be wrong.\n");
+		printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
+		printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		res = 0;
 		break;
 	      case 2:
@@ -3694,13 +3694,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  } 
 		  break;
 		default:
-		  printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
-		  printMessage(1,"The implementation will be wrong.\n");
+		  printMessage(1,SOLLYA_MSG_IMPLEMENTPOLY_FREE_VAR_HAS_UNKNOWN_FORMAT,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
+		  printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		  res = 0;
 		}
 	      } else {
-		printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
-		printMessage(1,"The implementation will be wrong.\n");
+		printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
+		printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		res = 0;
 	      }
 	    } else {
@@ -3750,8 +3750,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 	      } else {
-		printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
-		printMessage(1,"The implementation will be wrong.\n");
+		printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
+		printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		res = 0;
 	      }
 	    }
@@ -3958,7 +3958,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 	      break;
 	    default:
-	      printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
+	      printMessage(1,SOLLYA_MSG_A_COEFF_COULD_NOT_BE_STORED_IN_ANY_KNOWN_FORMAT,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
 	      res = 0;
 	    }
 	    break;
@@ -4046,7 +4046,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      } 	     
 	      break;
 	    default:
-	      printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
+	      printMessage(1,SOLLYA_MSG_A_COEFF_COULD_NOT_BE_STORED_IN_ANY_KNOWN_FORMAT,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
 	      res = 0;
 	    }
 	    break;
@@ -4133,7 +4133,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      } 
 	      break;
 	    default:
-	      printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
+	      printMessage(1,SOLLYA_MSG_A_COEFF_COULD_NOT_BE_STORED_IN_ANY_KNOWN_FORMAT,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
 	      res = 0;
 	    }
 	  }
@@ -4144,16 +4144,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    /* Produce a double-double */
 	    switch (comingFormat) {
 	    case 3:
-	      printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
-	      printMessage(1,"The implementation will be wrong.\n");
+	      printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
+	      printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 	      res = 0;
 	      break;
 	    case 2:
 	      /* Add the coefficient to the double-double temporary, produce a double-double */
 	      switch (coeffFormat) {
 	      case 3:
-		printMessage(1,"Warning: error in the management of precisions in coefficient rounding. This should not occur.\n");
-		printMessage(1,"The implementation will be wrong.\n");
+		printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions in coefficient rounding. This should not occur.\n");
+		printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		res = 0;
 		break;
 	      case 2:
@@ -4199,7 +4199,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		} 
 		break;
 	      default:
-		printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
+		printMessage(1,SOLLYA_MSG_A_COEFF_COULD_NOT_BE_STORED_IN_ANY_KNOWN_FORMAT,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
 		res = 0;
 	      }
 	      break;
@@ -4207,8 +4207,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      /* Add the coefficient to the double temporary, produce a double-double */
 	      switch (coeffFormat) {
 	      case 3:
-		printMessage(1,"Warning: error in the management of precisions in coefficient rounding. This should not occur.\n");
-		printMessage(1,"The implementation will be wrong.\n");
+		printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions in coefficient rounding. This should not occur.\n");
+		printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		res = 0;
 		break;
 	      case 2:
@@ -4254,7 +4254,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}     			    
 		break;
 	      default:
-		printMessage(1,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
+		printMessage(1,SOLLYA_MSG_A_COEFF_COULD_NOT_BE_STORED_IN_ANY_KNOWN_FORMAT,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
 		res = 0;
 	      }
 	    }
@@ -4283,13 +4283,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
 		} 
 	      } else {
-		printMessage(1,"Warning: error in the management of precisions in coefficient rounding. This should not occur.\n");
-		printMessage(1,"The implementation will be wrong.\n");
+		printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions in coefficient rounding. This should not occur.\n");
+		printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		res = 0;
 	      }
 	    } else {
-	      printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
-	      printMessage(1,"The implementation will be wrong.\n");
+	      printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
+	      printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 	      res = 0;
 	    }
 	  }
@@ -4673,8 +4673,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      }
 	      break;
 	    default:
-	      printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
-	      printMessage(1,"The implementation will be wrong.\n");
+	      printMessage(1,SOLLYA_MSG_IMPLEMENTPOLY_FREE_VAR_HAS_UNKNOWN_FORMAT,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
+	      printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 	      res = 0;
 	      producedFormat = 1;
 	    }
@@ -5273,8 +5273,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		/* Multiply comingFormat by x as a double-double (or better), produce a double-double */
 		switch (comingFormat) {
 		case 3:
-		  printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
-		  printMessage(1,"The implementation will be wrong.\n");
+		  printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
+		  printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		  res = 0;
 		  break;
 		case 2:
@@ -5324,8 +5324,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		/* Multiply comingFormat by x as a double, produce a double-double */
 		switch (comingFormat) {
 		case 3:
-		  printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
-		  printMessage(1,"The implementation will be wrong.\n");
+		  printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
+		  printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		  res = 0;
 		  break;
 		case 2:
@@ -5371,16 +5371,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 		break;
 	      default:
-		printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
-		printMessage(1,"The implementation will be wrong.\n");
+		printMessage(1,SOLLYA_MSG_IMPLEMENTPOLY_FREE_VAR_HAS_UNKNOWN_FORMAT,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
+		printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		res = 0;
 	      }
 	    } else {
 	      /* Multiply comingFormat by x^k which should be at least a double-double in any case */
 	      switch (comingFormat) {
 	      case 3:
-		printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
-		printMessage(1,"The implementation will be wrong.\n");
+		printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
+		printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		res = 0;
 		break;
 	      case 2:
@@ -5542,13 +5542,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  } 
 		  break;
 		default:
-		  printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
-		  printMessage(1,"The implementation will be wrong.\n");
+		  printMessage(1,SOLLYA_MSG_IMPLEMENTPOLY_FREE_VAR_HAS_UNKNOWN_FORMAT,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
+		  printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		  res = 0;
 		}
 	      } else {
-		printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
-		printMessage(1,"The implementation will be wrong.\n");
+		printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
+		printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		res = 0;
 	      }
 	    } else {
@@ -5598,8 +5598,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			     name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 	      } else {
-		printMessage(1,"Warning: error in the management of precisions. This should not occur.\n");
-		printMessage(1,"The implementation will be wrong.\n");
+		printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
+		printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
 		res = 0;
 	      }
 	    }
@@ -5853,13 +5853,13 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   proof = NULL;
 
   if (prec < 159) {
-    printMessage(1,"Warning: the current tool's precision (%d bits) is not sufficient for implementing triple-double code.\n",prec);
-    printMessage(1,"Will temporarily increase the precision to 159 bits.\n");
+    printMessage(1,SOLLYA_MSG_CURRENT_PREC_INSUFFICIENT_FOR_TD_CODE,"Warning: the current tool's precision (%d bits) is not sufficient for implementing triple-double code.\n",prec);
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"Will temporarily increase the precision to 159 bits.\n");
     prec = 159;
   }
 
   if (!isPolynomial(func)) {
-    printMessage(1,"Warning: the function given is not a polynomial.\n");
+    printMessage(1,SOLLYA_MSG_GIVEN_FUNCTION_IS_NO_POLYNOMIAL,"Warning: the function given is not a polynomial.\n");
     return NULL;
   }
 
@@ -5867,8 +5867,8 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   mpfr_set_d(temp,1.0,GMP_RNDN);
 
   if (mpfr_greaterequal_p(*accur,temp)) {
-    printMessage(1,"Warning: the target accuracy is greater or equal to 1 = 2^0.\n");
-    printMessage(1,"Implementation of a such a function makes no sense.\n");
+    printMessage(1,SOLLYA_MSG_TARGET_ACCURACY_GREATER_OR_EQUAL_THAN_ONE,"Warning: the target accuracy is greater or equal to 1 = 2^0.\n");
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"Implementation of a such a function makes no sense.\n");
     mpfr_clear(temp);
     return NULL;
   }
@@ -5876,8 +5876,8 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   mpfr_div_2ui(temp,temp,140,GMP_RNDN);
 
   if (mpfr_less_p(*accur,temp)) {
-    printMessage(1,"Warning: the target accuracy is less than 2^(-140).\n");
-    printMessage(1,"Implementation is currently restrained to maximally triple-double precision.\n");
+    printMessage(1,SOLLYA_MSG_TARGET_ACCURACY_LESS_THAN_140_BITS,"Warning: the target accuracy is less than 2^(-140).\n");
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"Implementation is currently restrained to maximally triple-double precision.\n");
     mpfr_clear(temp);
     return NULL;
   }
@@ -5885,8 +5885,8 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   mpfr_div_2ui(*accur,*accur,1,GMP_RNDN);
 
   if (accurToVarType(*accur) < variablePrecision) {
-    printMessage(1,"Warning: the infered output expansion type is less from the given variable type.\n");
-    printMessage(1,"Implementation cannot handle this case.\n");
+    printMessage(1,SOLLYA_MSG_INFERED_OUTPUT_PREC_LESS_THAN_VARIABLE_PREC,"Warning: the infered output expansion type is less from the given variable type.\n");
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"Implementation cannot handle this case.\n");
     mpfr_clear(temp);
     return NULL;
   }
@@ -5937,16 +5937,16 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
 	exit(1);
       }
       if (tempTree->nodeType != CONSTANT) {
-	printMessage(1,"Warning: the %dth coefficient of the polynomial to implement is neither a floating point\n",i);
-	printMessage(1,"constant nor is able to be evaluated without rounding to a floating point constant.\n");
-	printMessage(1,"Will evaluate it in round-to-nearest with the current precision (%d bits) before rounding to\n",prec);
-	printMessage(1,"the target precision. A double rounding issue may occur.\n");
+	printMessage(1,SOLLYA_MSG_COEFF_DOES_NOT_HOLD_ON_TD_USING_FAITHFUL_EVAL,"Warning: the %dth coefficient of the polynomial to implement is neither a floating point\n",i);
+	printMessage(1,SOLLYA_MSG_CONTINUATION,"constant nor is able to be evaluated without rounding to a floating point constant.\n");
+	printMessage(1,SOLLYA_MSG_CONTINUATION,"Will evaluate it in round-to-nearest with the current precision (%d bits) before rounding to\n",prec);
+	printMessage(1,SOLLYA_MSG_CONTINUATION,"the target precision. A double rounding issue may occur.\n");
 	evaluateFaithful(fpCoefficients[i], tempTree, tempValue, prec);
 	fpCoeffRoundAutomatically[i] = 1;
       } else {
 	if (mpfr_set(fpCoefficients[i],*(tempTree->value),GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: rounding occurred on internal handling of a coefficient of the given polynomial.\n");
+	    printMessage(1,SOLLYA_MSG_ROUNDING_ON_INTERNAL_HANDLING_OF_A_COEFFICIENT,"Warning: rounding occurred on internal handling of a coefficient of the given polynomial.\n");
 	  }
 	  fpCoeffRoundAutomatically[i] = 1;
 	}
@@ -5963,8 +5963,8 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
     for (i=0;i<=degree;i++) {
       if (mpfr_round_to_tripledouble(temp, fpCoefficients[i]) != 0) {
 	if (!noRoundingWarnings) {
-	  printMessage(2,"Information: the %dth coefficient of the polynomial given cannot even be stored without rounding on a\n",i);
-	  printMessage(2,"triple-double floating point variable. Automatic rounding will be used for maximally triple-double precision.\n");
+	  printMessage(2,SOLLYA_MSG_COEFF_DOES_NOT_HOLD_ON_TD_USING_FAITHFUL_EVAL,"Information: the %dth coefficient of the polynomial given cannot even be stored without rounding on a\n",i);
+	  printMessage(2,SOLLYA_MSG_CONTINUATION,"triple-double floating point variable. Automatic rounding will be used for maximally triple-double precision.\n");
 	}
 	fpCoeffRoundAutomatically[i] = 1;
       }
@@ -5979,26 +5979,26 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   mulPrec = (int *) safeCalloc(degree+1,sizeof(int));
 
   if (!determinePrecisions(fpCoefficients, fpCoeffRoundAutomatically, degree, addPrec, mulPrec, *accur, range, prec)) {
-    printMessage(1,"Warning: a problem has been encountered during the determination of the precisions needed.\n");
-    printMessage(1,"The produced implementation may be incorrect.\n");
+    printMessage(1,SOLLYA_MSG_ERROR_ON_DETERMINING_THE_REQUIRED_PRECISIONS,"Warning: a problem has been encountered during the determination of the precisions needed.\n");
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"The produced implementation may be incorrect.\n");
   }
 
 
   implementedPoly = makePolynomial(fpCoefficients,degree);
-  printMessage(2,"Information: the polynomial that will be implemented is:\n%b\n",implementedPoly);
+  printMessage(2,SOLLYA_MSG_THE_POLY_THAT_GETS_IMPLEMENTED_IS,"Information: the polynomial that will be implemented is:\n%b\n",implementedPoly);
 
   powPrec = (int *) safeCalloc(degree,sizeof(int));
   overlapsPowers = (int *) safeCalloc(degree+1,sizeof(int));
   powVarNum = (int *) safeCalloc(degree+1,sizeof(int));
 
   if (!determinePowers(fpCoefficients, degree, mulPrec, powPrec)) {
-    printMessage(1,"Warning: a problem has been encountered during the determination of the powers needed.\n");
-    printMessage(1,"The produced implementation may be incorrect.\n");
+    printMessage(1,SOLLYA_MSG_ERROR_ON_DETERMINING_THE_REQUIRED_POWERS,"Warning: a problem has been encountered during the determination of the powers needed.\n");
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"The produced implementation may be incorrect.\n");
   }
 
   if (!implementCoefficients(fpCoefficients, degree, fd, name, prec, assignmentsPtr)) {
-    printMessage(1,"Warning: a problem has been encountered during the generation of the code for the coefficients.\n");
-    printMessage(1,"The produced implementation may be incorrect.\n");
+    printMessage(1,SOLLYA_MSG_ERROR_ON_CODE_GENERATION_FOR_COEFFICIENTS,"Warning: a problem has been encountered during the generation of the code for the coefficients.\n");
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"The produced implementation may be incorrect.\n");
   }
 
   sollyaFprintf(fd,"void %s(",name);
@@ -6007,16 +6007,16 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   
   if (targetPrec >= 102) {
     if (sollyaFprintf(fd,"double *%s_resh, double *%s_resm, double *%s_resl, ",name,name,name) < 0) 
-      printMessage(1,"Warning: could not write to the file for the implementation.\n");
+      printMessage(1,SOLLYA_MSG_COULD_NOT_WRITE_TO_THE_IMPLEMENTATION_FILE,"Warning: could not write to the file for the implementation.\n");
     if (gappaFD != NULL) proof->resultType = 3;
   } else {
     if (targetPrec >= 54) {
       if (sollyaFprintf(fd,"double *%s_resh, double *%s_resm, ",name,name) < 0)
-	printMessage(1,"Warning: could not write to the file for the implementation.\n");
+	printMessage(1,SOLLYA_MSG_COULD_NOT_WRITE_TO_THE_IMPLEMENTATION_FILE,"Warning: could not write to the file for the implementation.\n");
       if (gappaFD != NULL) proof->resultType = 2;
     } else {
       if (sollyaFprintf(fd,"double *%s_resh, ",name) < 0) 
-	printMessage(1,"Warning: could not write to the file for the implementation.\n");
+	printMessage(1,SOLLYA_MSG_COULD_NOT_WRITE_TO_THE_IMPLEMENTATION_FILE,"Warning: could not write to the file for the implementation.\n");
       if (gappaFD != NULL) proof->resultType = 1;
     }
   }
@@ -6024,34 +6024,34 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   switch (variablePrecision) {
   case 3:
     if (sollyaFprintf(fd,"double %sh, double %sm, double %sl) {\n",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename)) < 0) 
-      printMessage(1,"Warning: could not write to the file for the implementation.\n");
+      printMessage(1,SOLLYA_MSG_COULD_NOT_WRITE_TO_THE_IMPLEMENTATION_FILE,"Warning: could not write to the file for the implementation.\n");
     break;
   case 2:
     if (sollyaFprintf(fd,"double %sh, double %sm) {\n",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename)) < 0) 
-      printMessage(1,"Warning: could not write to the file for the implementation.\n");
+      printMessage(1,SOLLYA_MSG_COULD_NOT_WRITE_TO_THE_IMPLEMENTATION_FILE,"Warning: could not write to the file for the implementation.\n");
     break;
   case 1:
     if (sollyaFprintf(fd,"double %s) {\n",((variablename == NULL) ? "_x_" : variablename)) < 0) 
-      printMessage(1,"Warning: could not write to the file for the implementation.\n");
+      printMessage(1,SOLLYA_MSG_COULD_NOT_WRITE_TO_THE_IMPLEMENTATION_FILE,"Warning: could not write to the file for the implementation.\n");
     break;
   default:
-    printMessage(1,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
-    printMessage(1,"The implementation will be wrong.\n");
+    printMessage(1,SOLLYA_MSG_IMPLEMENTPOLY_FREE_VAR_HAS_UNKNOWN_FORMAT,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
   }
 
   if (!implementPowers(powPrec, degree, variablePrecision, fd, name, overlapsPowers, powVarNum, assignmentsPtr)) {
-    printMessage(1,"Warning: a problem has been encountered during the generation of the code for the powers of %s.\n",
+    printMessage(1,SOLLYA_MSG_ERROR_ON_CODE_GENERATION_FOR_POWERS_OF_FREE_VAR,"Warning: a problem has been encountered during the generation of the code for the powers of %s.\n",
 		 ((variablename == NULL) ? "_x_" : variablename));
-    printMessage(1,"The produced implementation may be incorrect.\n");
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"The produced implementation may be incorrect.\n");
   }
 
   if (!implementHorner(fpCoefficients, addPrec, mulPrec, degree, variablePrecision, fd, name, overlapsPowers, powVarNum, assignmentsPtr)) {
-    printMessage(1,"Warning: a problem has been encountered during the generation of the code for the horner scheme.\n");
-    printMessage(1,"The produced implementation may be incorrect.\n");
+    printMessage(1,SOLLYA_MSG_ERROR_ON_CODE_GENERATION_FOR_HORNER_SCHEME,"Warning: a problem has been encountered during the generation of the code for the horner scheme.\n");
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"The produced implementation may be incorrect.\n");
   }
 
   if (sollyaFprintf(fd,"}\n") < 0) 
-    printMessage(1,"Warning: could not write to the file for the implementation.\n");
+    printMessage(1,SOLLYA_MSG_COULD_NOT_WRITE_TO_THE_IMPLEMENTATION_FILE,"Warning: could not write to the file for the implementation.\n");
 
   if (gappaFD != NULL) {
     proof->polynomImplemented = copyTree(implementedPoly);

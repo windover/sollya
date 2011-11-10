@@ -18,6 +18,7 @@ bin_PROGRAMS = sollya
 sollya_SOURCES = \
 mpfi-compat.c \
 mpfi-compat.h \
+message-numbers.h \
 printf.c \
 printf.h \
 internparser.y \
@@ -87,6 +88,7 @@ libsollya_la_SOURCES = \
 sollya.h \
 mpfi-compat.h \
 mpfi-compat.c \
+message-numbers.h \
 printf.c \
 printf.h \
 internparser.y \

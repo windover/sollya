@@ -69,7 +69,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 extern int miniyylex(YYSTYPE *lvalp, void *scanner);
 
 void miniyyerror(void *myScanner, char *message) {
-    printMessage(1,"Warning: %s. Will try to continue parsing (expecting \";\"). May leak memory.\n",message);
+  printMessage(1,SOLLYA_MSG_SYNTAX_ERROR_ENCOUNTERED_WHILE_PARSING,"Warning: %s. Will try to continue parsing (expecting \";\"). May leak memory.\n",message);
 }
 
 %}

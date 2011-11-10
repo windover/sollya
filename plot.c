@@ -76,8 +76,8 @@ extern int fileNumber;
 
 void checkFileDescriptor(FILE *fd, char *s) {
   if (fd == NULL) {
-    sollyaFprintf(stderr,"Error: the file %s requested by plot could not be opened for writing: ",s);
-    sollyaFprintf(stderr,"\"%s\".\n",strerror(errno));
+    printMessage(1,SOLLYA_MSG_PLOT_COULD_NOT_OPEN_FILE,"Error: the file %s requested by plot could not be opened for writing: ",s);
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"\"%s\".\n",strerror(errno));
     recoverFromError();
 
   }
@@ -116,7 +116,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
       tree = (node *)(list->value);
       evaluateFaithful(y,tree,a,prec);
       if (!mpfr_number_p(y)) {
-	printMessage(1,"Warning: this constant function is not evaluable by this tool.\n");
+	printMessage(1,SOLLYA_MSG_CONSTANT_EXPR_CANNOT_BE_EVALUATED_AT_ALL,"Warning: this constant function is not evaluable by this tool.\n");
       } 
       outputMode();
       printValue(&y);
@@ -128,7 +128,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   }
 
   if (mpfr_sgn(step) < 0) {
-    printMessage(1,"Warning: the interval is empty\n");
+    printMessage(1,SOLLYA_MSG_DOMAIN_IS_EMPTY,"Warning: the interval is empty\n");
     mpfr_clear(x); mpfr_clear(y); mpfr_clear(step);
     return;
   }
@@ -149,7 +149,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
       tree = (node *)(list->value);
       evaluateFaithful(y,tree,x,prec);
       if (!mpfr_number_p(y)) {
-	printMessage(1,"Warning: this constant function is not evaluable by this tool.\n");
+	printMessage(1,SOLLYA_MSG_CONSTANT_EXPR_CANNOT_BE_EVALUATED_AT_ALL,"Warning: this constant function is not evaluable by this tool.\n");
       } 
       outputMode();
       printValue(&y);
@@ -184,7 +184,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   ad = mpfr_get_d(a, GMP_RNDD);
   bd = mpfr_get_d(b, GMP_RNDU);
   if ((!(ad-ad == 0.0)) || (!(bd-bd == 0.0)))
-    printMessage(1, "Warning: an overflow occurred in a conversion mpfr to double while plotting.\n");
+    printMessage(1, SOLLYA_MSG_PLOT_OVERFLOW_OCCURRED_ON_CONVERSION_TO_DOUBLE, "Warning: an overflow occurred in a conversion mpfr to double while plotting.\n");
   if (!(ad-ad == 0.0))
     ad = -MAX_VALUE_GNUPLOT;
   if (!(bd-bd == 0.0))
@@ -235,10 +235,10 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
       tern = evaluateFaithfulWithCutOff(y, tree, x, cutoff, prec);
       if (tern == 2) {
 	flush = 1;
-	printMessage(2,"Information: function image proven to be less than 2^(-%d) on point %s = %v\nThis point will be plotted as the midpoint of the proof interval.\n",(int)p,((variablename == NULL) ? "_x_" : variablename),x);
+	printMessage(2,SOLLYA_MSG_PLOT_FUNC_PROVEN_LESS_THAN_2_TO_MINUS_PREC,"Information: function image proven to be less than 2^(-%d) on point %s = %v\nThis point will be plotted as the midpoint of the proof interval.\n",(int)p,((variablename == NULL) ? "_x_" : variablename),x);
       }
       if (!mpfr_number_p(y)) {
-	printMessage(2,"Information: function undefined or not evaluable in point %s = %v\nThis point will not be plotted.\n",((variablename == NULL) ? "_x_" : variablename),x);
+	printMessage(2,SOLLYA_MSG_PLOT_FUNC_UNDEFINED_OR_UNSTABLE_AT_POINT,"Information: function undefined or not evaluable in point %s = %v\nThis point will not be plotted.\n",((variablename == NULL) ? "_x_" : variablename),x);
       }
       yd = mpfr_get_d(y, GMP_RNDN);
       if (!(yd-yd == 0.0)) overflow = 1;
@@ -271,12 +271,12 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   fclose(file);
 
   if (overflow)
-    printMessage(1, "Warning: an overflow occurred in a conversion mpfr to double while plotting.\n");
+    printMessage(1, SOLLYA_MSG_PLOT_OVERFLOW_OCCURRED_ON_CONVERSION_TO_DOUBLE, "Warning: an overflow occurred in a conversion mpfr to double while plotting.\n");
 
   mpfr_clear(x); mpfr_clear(y); mpfr_clear(step);
 
   if (flush) {
-    printMessage(1,"Warning: the evaluation of the image on at least one point of at least one function has not been faithfully accurate.\n");
+    printMessage(1,SOLLYA_MSG_PLOT_NOT_FAITHFULLY_EVALUATED_AT_SOME_POINT,"Warning: the evaluation of the image on at least one point of at least one function has not been faithfully accurate.\n");
   }
 
   if ((name==NULL) || (type==PLOTFILE)) {
@@ -351,7 +351,7 @@ void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   if ((mpfr_cmp(a,b) == 0) || isConstant(tree)) {
     evaluateFaithful(y,tree,a,prec);
     if (!mpfr_number_p(y)) {
-      printMessage(1,"Warning: this constant function is not evaluable by this tool.\n");
+      printMessage(1,SOLLYA_MSG_CONSTANT_EXPR_CANNOT_BE_EVALUATED_AT_ALL,"Warning: this constant function is not evaluable by this tool.\n");
     } 
     printValue(&y);
     sollyaPrintf("\n");

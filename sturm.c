@@ -526,7 +526,7 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, sollya_mpfi_t x, mp_prec_t pre
   }
   prec = 2 * prec;
 
-  printMessage(2,"Information: in sturm_mpfi: chosen working precision is %d\n",(int) prec);
+  printMessage(2,SOLLYA_MSG_STURM_INTERVAL_A_CERTAIN_PREC_HAS_BEEN_CHOSEN,"Information: in sturm_mpfi: chosen working precision is %d\n",(int) prec);
 
   p = (sollya_mpfi_t *) safeCalloc(p_degree+1,sizeof(sollya_mpfi_t));
   for (i=0;i<=p_degree;i++) {
@@ -710,12 +710,12 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t precision) {
   mp_prec_t prec;
   
   if (!isPolynomial(f)) {
-      printMessage(1,"Warning: the given function must be a polynomial in this context.\n");
+    printMessage(1,SOLLYA_MSG_GIVEN_FUNCTION_IS_NO_POLYNOMIAL,"Warning: the given function must be a polynomial in this context.\n");
       return 0;
   }
 
   if (!sollya_mpfi_bounded_p(range)) {
-      printMessage(1,"Warning: the given interval must have finite bounds.\n");
+    printMessage(1,SOLLYA_MSG_DOMAIN_IS_NO_CLOSED_INTERVAL_ON_THE_REALS,"Warning: the given interval must have finite bounds.\n");
       return 0;
   }
 
@@ -727,7 +727,7 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t precision) {
   getCoefficients(&degree,&coefficients,f);
 
   if (degree < 0) {
-    printMessage(1,"Warning: the given function is not a polynomial.\n");
+    printMessage(1,SOLLYA_MSG_GIVEN_FUNCTION_IS_NO_POLYNOMIAL,"Warning: the given function is not a polynomial.\n");
     sollya_mpfi_clear(x);
     return 0;
   }
@@ -750,22 +750,22 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t precision) {
       }
       if (tempTree->nodeType != CONSTANT) {
 	if (tryEvaluateConstantTermToMpq(qCoefficients[i], tempTree)) {
-	  printMessage(3,"Information: in getNrRoots: evaluated the %dth coefficient to %r\n",i,qCoefficients[i]);
+	  printMessage(3,SOLLYA_MSG_STURM_COEFF_EVALUATED_TO_RATIONAL_NUMBER,"Information: in getNrRoots: evaluated the %dth coefficient to %r\n",i,qCoefficients[i]);
 	} else {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: the %dth coefficient of the polynomial is neither a floating point\n",i);
-	    printMessage(1,"constant nor can be evaluated without rounding to a floating point constant.\n");
-	    printMessage(1,"Will faithfully evaluate it with the current precision (%d bits) \n",prec);
+	    printMessage(1,SOLLYA_MSG_STURM_COEFF_NOT_CONSTANT_NOR_RATIONAL_ROUNDING,"Warning: the %dth coefficient of the polynomial is neither a floating point\n",i);
+	    printMessage(1,SOLLYA_MSG_CONTINUATION,"constant nor can be evaluated without rounding to a floating point constant.\n");
+	    printMessage(1,SOLLYA_MSG_CONTINUATION,"Will faithfully evaluate it with the current precision (%d bits) \n",prec);
 	  }
 	  r=evaluateFaithful(tempValue2, tempTree, tempValue, prec);
 	  if (!r){
 	    mpfr_set_ui(tempValue2,0,GMP_RNDN);
 	    if (!noRoundingWarnings) {
-	      printMessage(1,"Warning: Rounded the coefficient %d to 0.\n",i);
+	      printMessage(1,SOLLYA_MSG_STURM_COEFF_ROUNDED_TO_ZERO,"Warning: Rounded the coefficient %d to 0.\n",i);
 	    }
 	  }
 	  mpfr_to_mpq(qCoefficients[i], tempValue2);
-	  printMessage(3,"Information: evaluated the %dth coefficient to %r\n",i,qCoefficients[i]);
+	  printMessage(3,SOLLYA_MSG_STURM_COEFF_EVALUATED_TO_RATIONAL_NUMBER,"Information: evaluated the %dth coefficient to %r\n",i,qCoefficients[i]);
 	}
       } 
       else {
@@ -785,12 +785,12 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t precision) {
   if (deg >= 0) {
     resMpfi = sturm_mpfi(&nr, qCoefficients, deg,x,precision);
     if (!resMpfi) {
-      printMessage(1,"Warning: using slower GMP MPQ version\n");
+      printMessage(1,SOLLYA_MSG_STURM_USING_SLOWER_ALGORITHM_ON_RATIONALS,"Warning: using slower GMP MPQ version\n");
       sturm_mpq(&nr, qCoefficients, deg,x);
     }
     mpfr_set_si(res,nr,GMP_RNDN);
   } else {
-    printMessage(1,"Warning: the given polynomial is the zero polynomial. Its number of zeros is infinite.\n");
+    printMessage(1,SOLLYA_MSG_STURM_POLY_IS_ZERO_POLY,"Warning: the given polynomial is the zero polynomial. Its number of zeros is infinite.\n");
     mpfr_set_inf(res,1);
   }
 

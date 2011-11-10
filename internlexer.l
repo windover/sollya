@@ -463,14 +463,14 @@ NOP             "nop"
 {MIDPOINTCONSTANT}                          {
 					      constBuffer2 = (char *) safeCalloc(yyleng+1,sizeof(char));
 					      if (removeSpaces(constBuffer2,yytext)) {
-						printMessage(2,"Information: removed spaces in scientific notation constant \"%s\", it will be considered as \"%s\"\n",yytext,constBuffer2);
+						printMessage(2,SOLLYA_MSG_SPACES_REMOVED_FROM_CONSTANT_IN_SCIENTIF_NOTAT,"Information: removed spaces in scientific notation constant \"%s\", it will be considered as \"%s\"\n",yytext,constBuffer2);
 					      }
 					      yylval->value = constBuffer2;
                                               return MIDPOINTCONSTANTTOKEN; }
 {CONSTANT}                                  {
 					      constBuffer2 = (char *) safeCalloc(yyleng+1,sizeof(char));
 					      if (removeSpaces(constBuffer2,yytext)) {
-						printMessage(2,"Information: removed spaces in scientific notation constant \"%s\", it will be considered as \"%s\"\n",yytext,constBuffer2);
+						printMessage(2,SOLLYA_MSG_SPACES_REMOVED_FROM_CONSTANT_IN_SCIENTIF_NOTAT,"Information: removed spaces in scientific notation constant \"%s\", it will be considered as \"%s\"\n",yytext,constBuffer2);
 					      }
 					      yylval->value = constBuffer2;
                                                return CONSTANTTOKEN; }
@@ -747,7 +747,7 @@ NOP             "nop"
 
 
 .		{ /* otherwise */
-			printMessage(1,"The character \"%s\" cannot be recognized. Will ignore it.\n",
+			printMessage(1,SOLLYA_MSG_A_CHARACTER_COULD_NOT_BE_RECOGNIZED,"The character \"%s\" cannot be recognized. Will ignore it.\n",
 				yytext);
 }
 

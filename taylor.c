@@ -65,8 +65,8 @@ node *taylor(node* tree, int degree, node* point, mp_prec_t prec) {
   int i;
 
   if (!isConstant(point)) {
-    printMessage(1,"Warning: the expression given for the development point is not constant.\n");
-    printMessage(1,"Will evaluate the expression in %s = 0 before using it as development point.\n",((variablename == NULL) ? "_x_" : variablename));
+    printMessage(1,SOLLYA_MSG_DEVELOPMENT_POINT_NOT_CONSTANT,"Warning: the expression given for the development point is not constant.\n");
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"Will evaluate the expression in %s = 0 before using it as development point.\n",((variablename == NULL) ? "_x_" : variablename));
     temp = (node *) safeMalloc(sizeof(node));
     temp->nodeType = CONSTANT;
     value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
@@ -99,8 +99,8 @@ node *taylor(node* tree, int degree, node* point, mp_prec_t prec) {
     mpfr_init2(*value,prec);
     if(mpfr_set_z(*value,denominatorGMP,GMP_RNDN) != 0) {
       if (!noRoundingWarnings) {
-	printMessage(1,"Warning: rounding occurred on computing a taylor constant factor.\n");
-	printMessage(1,"Try to increase the working precision.\n");
+	printMessage(1,SOLLYA_MSG_ROUNDING_ON_COMPUTATION_OF_TAYLOR_COEFFICIENT,"Warning: rounding occurred on computing a taylor constant factor.\n");
+	printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
       }
     }
     denominator = (node *) safeMalloc(sizeof(node));
@@ -126,8 +126,8 @@ node *taylor(node* tree, int degree, node* point, mp_prec_t prec) {
     mpfr_init2(*value,prec);
     if(mpfr_set_si(*value,i,GMP_RNDN) != 0) {
       if (!noRoundingWarnings) {
-	printMessage(1,"Warning: rounding occurred on computing a taylor exponent.\n");
-	printMessage(1,"Try to increase the working precision.\n");
+	printMessage(1,SOLLYA_MSG_ROUNDING_ON_COMPUTATION_OF_TAYLOR_POWER,"Warning: rounding occurred on computing a taylor exponent.\n");
+	printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
       }
     }
     expon = (node *) safeMalloc(sizeof(node));

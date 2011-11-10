@@ -197,8 +197,7 @@ void makeToolDie() {
 void considerDyingOnError() {
   if (!dieOnErrorMode) return;
 
-  printMessage(1,"Warning: some syntax, typing or side-effect error has occurred.\n");
-  printMessage(1,"As the die-on-error mode is activated, the tool will be exited.\n");
+  printMessage(1,SOLLYA_MSG_TOOL_DIES_ON_ERROR_AS_PER_DIE_ON_ERROR_MODE,"Warning: some syntax, typing or side-effect error has occurred.\nAs the die-on-error mode is activated, the tool will be exited.\n");
 
   makeToolDie();
 }
@@ -610,20 +609,24 @@ int sollyaVfprintf(FILE *fd, const char *format, va_list varlist) {
   return sollyaInternalVfprintf(fd,format,varlist);
 }
 
-int printMessage(int verb, const char *format, ...) {
+int printMessage(int verb, int msgNum, const char *format, ...) {
   va_list varlist;
   int oldColor;
   int res;
 
-  if (verbosity < verb) return 0;
+  if ((verb >= 0) && (verbosity < verb)) return 0;
 
   oldColor = displayColor;
   
-  if (verb >= 1) warningMode(); else outputMode();
+  if ((verb >= 1) || (verb < 0)) warningMode(); else outputMode();
 
   va_start(varlist,format);
 
-  res = sollyaVfprintf(stdout,format,varlist);
+  if (verb >= 0) {
+    res = sollyaVfprintf(stdout,format,varlist);
+  } else {
+    res = sollyaVfprintf(stderr,format,varlist);
+  }
 
   va_end(varlist);
 
@@ -1286,18 +1289,18 @@ int general(int argc, char *argv[]) {
       if (repeatSetRLimit) {
         if (setrlimit(RLIMIT_STACK,&rlim) != 0) {
           if ((error = strerror(errno)) != NULL) {
-            printMessage(1,"Warning: during initial setup, the following error occurred: \"%s\"\nTry using --donotmodifystacksize when invoking the tool.\n",error);
+            printMessage(1,SOLLYA_MSG_ERROR_ON_INITIAL_SETUP,"Warning: during initial setup, the following error occurred: \"%s\"\nTry using --donotmodifystacksize when invoking the tool.\n",error);
           } else {
-            printMessage(1,"Warning: during initial setup, an unknown error occurred.\nTry using --donotmodifystacksize when invoking the tool.\n");
+            printMessage(1,SOLLYA_MSG_ERROR_ON_INITIAL_SETUP,"Warning: during initial setup, an unknown error occurred.\nTry using --donotmodifystacksize when invoking the tool.\n");
           }
         } 
       }
 #endif
     } else {
       if ((error = strerror(errno)) != NULL) {
-	printMessage(1,"Warning: during initial setup, the following error occurred: \"%s\"\nTry using --donotmodifystacksize when invoking the tool.\n",error);
+	printMessage(1,SOLLYA_MSG_ERROR_ON_INITIAL_SETUP,"Warning: during initial setup, the following error occurred: \"%s\"\nTry using --donotmodifystacksize when invoking the tool.\n",error);
       } else {
-	printMessage(1,"Warning: during initial setup, an unknown error occurred.\nTry using --donotmodifystacksize when invoking the tool.\n");
+	printMessage(1,SOLLYA_MSG_ERROR_ON_INITIAL_SETUP,"Warning: during initial setup, an unknown error occurred.\nTry using --donotmodifystacksize when invoking the tool.\n");
       }
     }
 #endif 
@@ -1326,14 +1329,14 @@ int general(int argc, char *argv[]) {
 	memmove(&recoverEnvironmentError,&recoverEnvironment,sizeof(recoverEnvironmentError));
 	recoverEnvironmentReady = 1;
 	if (declaredSymbolTable != NULL) {
-	  printMessage(1,"Warning: a preceeding command interruption corrupted the variable frame stack.\n");
+	  printMessage(1,SOLLYA_MSG_FRAME_STACK_HAS_BEEN_CORRUPTED,"Warning: a preceeding command interruption corrupted the variable frame stack.\n");
 	  freeDeclaredSymbolTable(declaredSymbolTable, freeThingOnVoid);
 	  declaredSymbolTable = NULL;
 	}
 	initSignalHandler();
 	numberBacktrace = 1;
 	if (timeStack != NULL) {
-	  printMessage(4,"Information: corrupted timing stack. Releasing the stack.\n");
+	  printMessage(4,SOLLYA_MSG_TIMING_STACK_HAS_BEEN_CORRUPTED,"Information: corrupted timing stack. Releasing the stack.\n");
 	  freeCounter();
 	}
         if (flushOutput) {
@@ -1358,21 +1361,21 @@ int general(int argc, char *argv[]) {
 	blockSignals();
 	lastWasError = 1;
 	if (handlingCtrlC) 
-	  printMessage(1,"Warning: the last command has been interrupted. May leak memory.\n");
+	  printMessage(1,SOLLYA_MSG_LAST_COMMAND_INTERRUPTED,"Warning: the last command has been interrupted. May leak memory.\n");
 	else { 
-	  printMessage(1,"Warning: the last command could not be executed. May leak memory.\n");
+	  printMessage(1,SOLLYA_MSG_COMMAND_NOT_EXECUTABLE,"Warning: the last command could not be executed. May leak memory.\n");
           considerDyingOnError();
         }
 	if (declaredSymbolTable != NULL) {
 	  if (!handlingCtrlC) 
-	    printMessage(1,"Warning: releasing the variable frame stack.\n");
+	    printMessage(1,SOLLYA_MSG_RELEASING_FRAME_STACK,"Warning: releasing the variable frame stack.\n");
 	  else 
-	    printMessage(2,"Information: releasing the variable frame stack.\n");
+	    printMessage(2,SOLLYA_MSG_RELEASING_FRAME_STACK,"Information: releasing the variable frame stack.\n");
 	  freeDeclaredSymbolTable(declaredSymbolTable, freeThingOnVoid);
 	}
 	declaredSymbolTable = NULL;
 	if (timeStack != NULL) {
-	  printMessage(2,"Information: corrupted timing stack. Releasing the stack.\n");
+	  printMessage(2,SOLLYA_MSG_TIMING_STACK_HAS_BEEN_CORRUPTED,"Information: corrupted timing stack. Releasing the stack.\n");
 	  freeCounter();
 	}
       }

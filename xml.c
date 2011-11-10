@@ -446,9 +446,9 @@ void fPrintXml(FILE *fd, node *tree) {
 #ifdef LIBXML_READER_ENABLED
 
 #define change_xmlparser(new_parser) do { \
-	printMessage(3,"%p => ",next_xmlparser); \
+        printMessage(3,SOLLYA_MSG_XML_PARSER_CHANGE,"%p => ",next_xmlparser); \
 	next_xmlparser=new_parser; \
-	printMessage(3,"%p\n",next_xmlparser); } while(0)
+	printMessage(3,SOLLYA_MSG_CONTINUATION,"%p\n",next_xmlparser); } while(0)
 
 
 
@@ -551,10 +551,10 @@ struct {
 
 void switch_parser_index (int new_index)
 {
-  printMessage(3,"%s => %s\n",current_parser->element,mml_parser[new_index].element);
+  printMessage(3,SOLLYA_MSG_XML_PARSER_INDEX_CHANGE,"%s => %s\n",current_parser->element,mml_parser[new_index].element);
   current_parser=&mml_parser[new_index];
   change_xmlparser(current_parser->parser);
-  printMessage(3,"depth: %i\n",current_parser->depth);
+  printMessage(3,SOLLYA_MSG_CONTINUATION,"depth: %i\n",current_parser->depth);
 }
 
 int search_math_tree (xmlTextReaderPtr reader)
@@ -573,7 +573,7 @@ int search_math_tree (xmlTextReaderPtr reader)
 	  mthis->op_type=0;
 	  mthis->op1=0;
 	  mthis->op2=0;
-	  printMessage(3,"This: %p Parent: %p Name: %s\n",mthis,mthis->parent,xml_name);
+	  printMessage(3,SOLLYA_MSG_XML_PARSER_STATE_INFORMATION,"This: %p Parent: %p Name: %s\n",mthis,mthis->parent,xml_name);
 	}
       else if (!strcmp((char*)xml_name, "csymbol")) mthis->op_type=1;
       else if (!strcmp((char*)xml_name, "ci")) 		mthis->op_type=2;
@@ -633,7 +633,7 @@ int search_math_tree (xmlTextReaderPtr reader)
 	  mpfr_init2(n,tools_precision);
 	  if (readDecimalConstant(n,(char*)xml_value)) {
 	    if (!noRoundingWarnings) {
-	      printMessage(1,"Warning: rounding has happened upon reading constant \"%s\" in an XML file.\n",xml_value);
+	      printMessage(1,SOLLYA_MSG_ROUNDING_ON_READING_CONSTANT_IN_XML_FILE,"Warning: rounding has happened upon reading constant \"%s\" in an XML file.\n",xml_value);
 	    }
 	  }
 	  temp = makeConstant(n);
@@ -645,12 +645,12 @@ int search_math_tree (xmlTextReaderPtr reader)
       if (!strcmp((char*)xml_name, "lambda"))
 	{
 	  result_node=mthis->op1;
-	  printMessage(3,"This: %p Result: %p Name: /%s\n",mthis,result_node,xml_name);
+	  printMessage(3,SOLLYA_MSG_XML_PARSER_STATE_INFORMATION,"This: %p Result: %p Name: /%s\n",mthis,result_node,xml_name);
 	  change_xmlparser(search_annotations);
 	}
       else if (!strcmp((char*)xml_name, "apply") && mthis->operator)
 	{
-	  printMessage(3,"op1: %p op2: %p op: %p\n",mthis->op1,mthis->op2,mthis->operator);
+	  printMessage(3,SOLLYA_MSG_XML_PARSER_STATE_INFORMATION,"op1: %p op2: %p op: %p\n",mthis->op1,mthis->op2,mthis->operator);
 	  temp=mthis->operator(mthis->op1,mthis->op2);
 	  //printTree(temp);  printMessage(2,"\n");
 	  if (mthis->parent) mthis=mthis->parent;
@@ -662,7 +662,7 @@ int search_math_tree (xmlTextReaderPtr reader)
       /* Currently we DO NOT support this kind of logarithm but only ln and log10 */
       /* Any patch is welcome */
       /* if (!strcmp((char*)xml_name, "logbase")) ... */
-      printMessage(3,"This: %p Temp: %p Name: /%s\n",mthis,temp,xml_name);
+      printMessage(3,SOLLYA_MSG_XML_PARSER_STATE_INFORMATION,"This: %p Temp: %p Name: /%s\n",mthis,temp,xml_name);
     }
   if (temp) // some value/result to add in the tree
     {
@@ -674,7 +674,7 @@ int search_math_tree (xmlTextReaderPtr reader)
 	  mthis->op2=temp;
 	}
       else mthis->op1=mthis->op2=0,mthis->operator=0; // error
-      printMessage(3,"This: %p Temp: %p Name: /%s\n",mthis,temp,xml_name);
+      printMessage(3,SOLLYA_MSG_XML_PARSER_STATE_INFORMATION,"This: %p Temp: %p Name: /%s\n",mthis,temp,xml_name);
     }
   return 1;
 }
@@ -733,7 +733,7 @@ int search_annotations(xmlTextReaderPtr reader)
   // on_error 
   if (current_parser->depth>=xmlTextReaderDepth(reader))
     {
-      printMessage(3,"%s => %s\n",current_parser->element,mml_parser[current_parser->onerror_parser].element);
+      printMessage(3,SOLLYA_MSG_XML_PARSER_STATE_INFORMATION,"%s => %s\n",current_parser->element,mml_parser[current_parser->onerror_parser].element);
       current_parser=&mml_parser[current_parser->onerror_parser];
       change_xmlparser(current_parser->parser);
       return -1;
@@ -769,7 +769,7 @@ processNode(xmlTextReaderPtr reader) {
 
   ret = xmlTextReaderRead(reader);
   if (ret!=1) { // EOF or ERROR
-    if (ret) printMessage(1,"Warning: on parsing an XML file: failed to parse, return code %i\n",ret);
+    if (ret) printMessage(1,SOLLYA_MSG_XML_PARSER_FAILURE,"Warning: on parsing an XML file: failed to parse, return code %i\n",ret);
     return ret;
   }
   xml_name = xmlTextReaderConstName(reader);
@@ -778,19 +778,19 @@ processNode(xmlTextReaderPtr reader) {
 
   xml_value = xmlTextReaderConstValue(reader);
 
-  printMessage(3,"Depth: %02d Type: %02d Name: %s", 
+  printMessage(3,SOLLYA_MSG_XML_PARSER_STATE_INFORMATION,"Depth: %02d Type: %02d Name: %s", 
 	       xmlTextReaderDepth(reader),
 	       xmlTextReaderNodeType(reader),
 	       xml_name);
-  if (xmlTextReaderIsEmptyElement(reader)) printMessage(3," (EmptyElt)");
-  if (xmlTextReaderHasValue(reader))       printMessage(3," (HasValue)");
-  if (xmlTextReaderHasAttributes(reader))  printMessage(3," (HasAttrb)");
+  if (xmlTextReaderIsEmptyElement(reader)) printMessage(3,SOLLYA_MSG_XML_PARSER_STATE_INFORMATION," (EmptyElt)");
+  if (xmlTextReaderHasValue(reader))       printMessage(3,SOLLYA_MSG_XML_PARSER_STATE_INFORMATION," (HasValue)");
+  if (xmlTextReaderHasAttributes(reader))  printMessage(3,SOLLYA_MSG_XML_PARSER_STATE_INFORMATION," (HasAttrb)");
   if (xml_value == NULL || // XmlNodeType.SignificantWhitespace
-      xmlTextReaderNodeType(reader)==14)  	printMessage(3,"\n");
+      xmlTextReaderNodeType(reader)==14)  	printMessage(3,SOLLYA_MSG_CONTINUATION,"\n");
   else {
-    if (xmlStrlen(xml_value) > 40)       printMessage(3," %.40s...\n", xml_value);
-    else                                 printMessage(3," %s\n", xml_value);  }
-  while((*next_xmlparser)(reader)<0) printMessage(2,"Lost Sync! Try resync...\n");
+    if (xmlStrlen(xml_value) > 40)       printMessage(3,SOLLYA_MSG_XML_PARSER_STATE_INFORMATION," %.40s...\n", xml_value);
+    else                                 printMessage(3,SOLLYA_MSG_XML_PARSER_STATE_INFORMATION," %s\n", xml_value);  }
+  while((*next_xmlparser)(reader)<0) printMessage(2,SOLLYA_MSG_XML_SYNCHRONIZATION_LOST_TRYING_TO_RESYNCH,"Lost Sync! Try resync...\n");
   return ret;
 }
 
@@ -809,7 +809,7 @@ streamXmlFile(const char *filename) {
   xmlTextReaderPtr reader;
 
   reader = xmlReaderForFile(filename, NULL, 0);
-  if (reader == NULL) { printMessage(1,"Warning: Unable to open %s\n", filename); return NULL; }
+  if (reader == NULL) { printMessage(1,SOLLYA_MSG_XML_PARSER_UNABLE_TO_OPEN_A_CERTAIN_FILE,"Warning: Unable to open %s\n", filename); return NULL; }
   for(result_node=NULL,current_depth=0;processNode(reader)==1 && !result_node;);
   xmlFreeTextReader(reader);
   return result_node;
@@ -852,8 +852,8 @@ node *readXml(char *filename) {
 
 #else
 node *readXml(char *filename) {
-  printMessage(1,"Warning: We should now read the XML file \"%s\".\n",filename);
-  printMessage(1,"XInclude support not compiled in, cannot parse XML file.\n");
+  printMessage(1,SOLLYA_MSG_XML_PARSE_FUNCTIONALITY_NOT_COMPILED_IN,"Warning: We should now read the XML file \"%s\".\n",filename);
+  printMessage(1,SOLLYA_MSG_CONTINUATION,"XInclude support not compiled in, cannot parse XML file.\n");
   return NULL;
 }
 #endif

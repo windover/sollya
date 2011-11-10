@@ -745,13 +745,9 @@ int unaryFunctionCase(int nodeType, node *cste, char *functionName, int gamma0, 
     mpfr_clear(alpha); mpfr_clear(beta);
     free_memory(func); free_memory(deriv);
 
-    changeToWarningMode();
-    sollyaPrintf("Error in implementconstant: the following expression seems to be exactly zero:\n");
     func = makeUnary(copyTree(cste), nodeType);
-    printTree(func);
+    printMessage(1,SOLLYA_MSG_EXPR_SEEMS_TO_BE_ZERO_INCREASE_PREC,"Error in implementconstant: the following expression seems to be exactly zero: \n%b\nIf it is not exactly zero, increasing prec should solve the issue.\nAbort.\n",func);
     free_memory(func);
-    sollyaPrintf("\nIf it is not exactly zero, increasing prec should solve the issue.\nAbort.\n");
-    restoreMode();
     return 2;
   }
 
@@ -949,11 +945,7 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
     sollya_mpfi_clear(y); sollya_mpfi_clear(a); sollya_mpfi_clear(b);
     sollya_mpfi_clear(tmp); sollya_mpfi_clear(tmp2);
 
-    changeToWarningMode();
-    sollyaPrintf("Error in implementconstant: the following expression seems to be exactly zero:\n");
-    printTree(c);
-    sollyaPrintf("\nIf it is not exactly zero, increasing prec should solve the issue.\nAbort.\n");
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_EXPR_SEEMS_TO_BE_ZERO_INCREASE_PREC,"Error in implementconstant: the following expression seems to be exactly zero:\n%b\nIf it is not exactly zero, increasing prec should solve the issue.\nAbort.\n",c);
     return 2;
   }
   evaluateInterval(a, c->child1, NULL, a);
@@ -1210,63 +1202,43 @@ int constantImplementer(node *c, int gamma0, struct implementCsteProgram *progra
     appendUnaryfuncProg("mpfr_abs", program->counter, program->counter, program);
     break;
   case DOUBLE:
-    changeToWarningMode();
-    sollyaPrintf("implementconstant: error: the double function is not supported by this command.\nNo code will be produced.\n");
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_A_BASE_FUNC_IS_NOT_SUPPORTED_BY_IMPLEMENTCONST,"implementconstant: error: the double function is not supported by this command.\nNo code will be produced.\n");
     res = 1;
     break;
   case DOUBLEDOUBLE:
-    changeToWarningMode();
-    sollyaPrintf("implementconstant: error: the doubledouble function is not supported by this command.\nNo code will be produced.\n");
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_A_BASE_FUNC_IS_NOT_SUPPORTED_BY_IMPLEMENTCONST,"implementconstant: error: the doubledouble function is not supported by this command.\nNo code will be produced.\n");
     res = 1;
     break;
   case TRIPLEDOUBLE:
-    changeToWarningMode();
-    sollyaPrintf("implementconstant: error: the tripledouble function is not supported by this command.\nNo code will be produced.\n");
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_A_BASE_FUNC_IS_NOT_SUPPORTED_BY_IMPLEMENTCONST,"implementconstant: error: the tripledouble function is not supported by this command.\nNo code will be produced.\n");
     res = 1;
     break;
   case DOUBLEEXTENDED:
-    changeToWarningMode();
-    sollyaPrintf("implementconstant: error: the doubleextended function is not supported by this command.\nNo code will be produced.\n");
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_A_BASE_FUNC_IS_NOT_SUPPORTED_BY_IMPLEMENTCONST,"implementconstant: error: the doubleextended function is not supported by this command.\nNo code will be produced.\n");
     res = 1;
     break;
   case SINGLE:
-    changeToWarningMode();
-    sollyaPrintf("implementconstant: error: the single function is not supported by this command.\nNo code will be produced.\n");
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_A_BASE_FUNC_IS_NOT_SUPPORTED_BY_IMPLEMENTCONST,"implementconstant: error: the single function is not supported by this command.\nNo code will be produced.\n");
     res = 1;
     break;
   case HALFPRECISION:
-    changeToWarningMode();
-    sollyaPrintf("implementconstant: error: the half-precision function is not supported by this command.\nNo code will be produced.\n");
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_A_BASE_FUNC_IS_NOT_SUPPORTED_BY_IMPLEMENTCONST,"implementconstant: error: the half-precision function is not supported by this command.\nNo code will be produced.\n");
     res = 1;
     break;
   case QUAD:
-    changeToWarningMode();
-    sollyaPrintf("implementconstant: error: the quad function is not supported by this command.\nNo code will be produced.\n");
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_A_BASE_FUNC_IS_NOT_SUPPORTED_BY_IMPLEMENTCONST,"implementconstant: error: the quad function is not supported by this command.\nNo code will be produced.\n");
     res = 1;
     break;
   case NEARESTINT:
-    changeToWarningMode();
-    sollyaPrintf("implementconstant: error: the nearestint function is not supported by this command.\nNo code will be produced.\n");
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_A_BASE_FUNC_IS_NOT_SUPPORTED_BY_IMPLEMENTCONST,"implementconstant: error: the nearestint function is not supported by this command.\nNo code will be produced.\n");
     res = 1;
     break;
   case CEIL:
-    changeToWarningMode();
-    sollyaPrintf("implementconstant: error: the ceil function is not supported by this command.\nNo code will be produced.\n");
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_A_BASE_FUNC_IS_NOT_SUPPORTED_BY_IMPLEMENTCONST,"implementconstant: error: the ceil function is not supported by this command.\nNo code will be produced.\n");
     res = 1;
     break;
   case FLOOR:
-    changeToWarningMode();
-    sollyaPrintf("implementconstant: error: the floor function is not supported by this command.\nNo code will be produced.\n");
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_A_BASE_FUNC_IS_NOT_SUPPORTED_BY_IMPLEMENTCONST,"implementconstant: error: the floor function is not supported by this command.\nNo code will be produced.\n");
     res = 1;
     break;
   case PI_CONST:
@@ -1344,20 +1316,16 @@ int constantImplementer(node *c, int gamma0, struct implementCsteProgram *progra
     res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_expm1", gamma0, program);
     break;
   case LIBRARYFUNCTION:
-    changeToWarningMode();
-    sollyaPrintf("implementconstant: error: library functions are not supported by this command.\nNo code will be produced.\n");
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_A_BASE_FUNC_IS_NOT_SUPPORTED_BY_IMPLEMENTCONST,"implementconstant: error: library functions are not supported by this command.\nNo code will be produced.\n");
     res = 1;
     break;
   case PROCEDUREFUNCTION:
-    changeToWarningMode();
-    sollyaPrintf("implementconstant: error: procedure functions are not supported by this command.\nNo code will be produced.\n");
-    restoreMode();
+    printMessage(1,SOLLYA_MSG_A_BASE_FUNC_IS_NOT_SUPPORTED_BY_IMPLEMENTCONST,"implementconstant: error: procedure functions are not supported by this command.\nNo code will be produced.\n");
     res = 1;
     break;
-
   default:
-    printMessage(1, "Unknown identifier (%d) in the tree\n", c->nodeType);
+    sollyaFprintf(stderr, "Unknown identifier (%d) in the tree\n", c->nodeType);
+    exit(1);
     res = 1;
   }
 

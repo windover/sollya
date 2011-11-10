@@ -70,6 +70,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "config.h"
 #endif
 
+#include "message-numbers.h"
 
 #define DEFAULTPOINTS 501
 #define DEFAULTPRECISION 165
@@ -154,7 +155,7 @@ void demaskString(char*, char*);
 char *maskString(char *);
 void *safeCalloc (size_t nmemb, size_t size);
 void *safeMalloc (size_t size);
-int printMessage(int verb, const char *format, ...);
+int printMessage(int verb, int msgNum, const char *format, ...);
 int sollyaPrintf(const char *format, ...);
 int sollyaFprintf(FILE *fd, const char *format, ...);
 char *mpfr_to_binary_str(mpfr_t x);

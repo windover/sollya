@@ -2172,37 +2172,37 @@ int supremumNormBisect(sollya_mpfi_t result, node *poly, node *func, mpfr_t a, m
   /* In the following, perform error handling (messaging and return 0) */
   switch (res) {
   case SUPNORM_NO_TAYLOR:
-    printMessage(1,"Warning: during supnorm computation, no suitable Taylor form could be found.\n");
+    printMessage(1,SOLLYA_MSG_SUPNORM_NO_TAYLOR,"Warning: during supnorm computation, no suitable Taylor form could be found.\n");
     break;
   case SUPNORM_NOT_ENOUGH_WORKING_PRECISION:
-    printMessage(1,"Warning: during supnorm computation, no result could be found as the working precision seems to be too low.\n");
+    printMessage(1,SOLLYA_MSG_SUPNORM_NOT_ENOUGH_WORKING_PRECISION,"Warning: during supnorm computation, no result could be found as the working precision seems to be too low.\n");
     break;
   case SUPNORM_SINGULARITY_NOT_REMOVED:
-    printMessage(1,"Warning: during supnorm computation, a singularity in the expression tree could not be removed.\n");
+    printMessage(1,SOLLYA_MSG_SUPNORM_SINGULARITY_NOT_REMOVED,"Warning: during supnorm computation, a singularity in the expression tree could not be removed.\n");
     break;
   case SUPNORM_COULD_NOT_SHOW_POSITIVITY:
-    printMessage(1,"Warning: during supnorm computation, the positivity of a polynomial could not be established.\n");
+    printMessage(1,SOLLYA_MSG_SUPNORM_COULD_NOT_SHOW_POSITIVITY,"Warning: during supnorm computation, the positivity of a polynomial could not be established.\n");
     break;
   case SUPNORM_SINGULARITY_NOT_DETECTED:
-    printMessage(1,"Warning: during supnorm computation, a false singularity could not be detected.\n");
+    printMessage(1,SOLLYA_MSG_SUPNORM_SINGULARITY_NOT_DETECTED,"Warning: during supnorm computation, a false singularity could not be detected.\n");
     break;
   case SUPNORM_ANOTHER_SINGULARITY_IN_DOM:
-    printMessage(1,"Warning: during supnorm computation, there appeared to be at least two singularities in the domain. More bisection is needed.\n");
+    printMessage(1,SOLLYA_MSG_SUPNORM_ANOTHER_SINGULARITY_IN_DOM,"Warning: during supnorm computation, there appeared to be at least two singularities in the domain. More bisection is needed.\n");
     break;
   case SUPNORM_CANNOT_COMPUTE_LOWER_BOUND:
-    printMessage(1,"Warning: during supnorm computation, it was not possible to determine a valid lower bound for the error function.\n");
+    printMessage(1,SOLLYA_MSG_SUPNORM_CANNOT_COMPUTE_LOWER_BOUND,"Warning: during supnorm computation, it was not possible to determine a valid lower bound for the error function.\n");
     break;
   case SUPNORM_CANNOT_COMPUTE_ABSOLUTE_INF:
-    printMessage(1,"Warning: during supnorm computation, it was not possible to determine a valid lower bound for the absolute value of the function.\n");
+    printMessage(1,SOLLYA_MSG_SUPNORM_CANNOT_COMPUTE_ABSOLUTE_INF,"Warning: during supnorm computation, it was not possible to determine a valid lower bound for the absolute value of the function.\n");
     break;
   case SUPNORM_CANNOT_DETERMINE_SIGN_OF_T:
-    printMessage(1,"Warning: during supnorm computation, it was not possible to safely determine the sign of the Taylor polynomial.\n");
+    printMessage(1,SOLLYA_MSG_SUPNORM_CANNOT_DETERMINE_SIGN_OF_T,"Warning: during supnorm computation, it was not possible to safely determine the sign of the Taylor polynomial.\n");
     break;
   case SUPNORM_CANNOT_DETERMINE_ORDER_OF_SINGU:
-    printMessage(1,"Warning: during supnorm computation, it was not possible to safely determine the order of a presume zero of the given function.\n");
+    printMessage(1,SOLLYA_MSG_SUPNORM_CANNOT_DETERMINE_ORDER_OF_SINGU,"Warning: during supnorm computation, it was not possible to safely determine the order of a presume zero of the given function.\n");
     break;    
   default:
-    printMessage(1,"Warning: during supnorm computation, some generic error occured. No further description is available.\n");
+    printMessage(1,SOLLYA_MSG_SUPNORM_GENERIC_ERROR,"Warning: during supnorm computation, some generic error occured. No further description is available.\n");
   }
 
   return 0;
@@ -2265,8 +2265,8 @@ int supremumNormDegenerate(sollya_mpfi_t result, node *poly, node *func, mpfr_t 
 
   prec = getToolPrecision();
   if (pr > 2048 * prec) {
-    printMessage(1,"Warning: the given accuracy depasses the current maximum precision of %d bits.\n",2048 * prec);
-    printMessage(1,"Try to increase the precision of the tool.\n");
+    printMessage(1,SOLLYA_MSG_SUPNORM_ACCURACY_TOO_HIGH,"Warning: the given accuracy depasses the current maximum precision of %d bits.\n",2048 * prec);
+    printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the precision of the tool.\n");
     sollya_mpfi_set_nan(result);
     free_memory(absEps);
     return 0;
@@ -2300,7 +2300,7 @@ int supremumNormDegenerate(sollya_mpfi_t result, node *poly, node *func, mpfr_t 
     mpfr_clear(ya);
     mpfr_clear(yb);
   } else {
-    printMessage(1,"Warning: could not perform a faithful evaluation of the error function between the given polynomial and the given function at the given point.\n");
+    printMessage(1,SOLLYA_MSG_SUPNORM_COULD_NOT_FAITHFULLY_EVAL_ERROR_FUNC,"Warning: could not perform a faithful evaluation of the error function between the given polynomial and the given function at the given point.\n");
     sollya_mpfi_set_nan(result);
   }
 
@@ -2384,7 +2384,7 @@ int supremumnorm(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom
   int res;
 
   if (!isPolynomial(poly)) {
-    printMessage(1,"Warning: the given expression is not a polynomial.\n");
+    printMessage(1,SOLLYA_MSG_GIVEN_FUNCTION_IS_NO_POLYNOMIAL,"Warning: the given expression is not a polynomial.\n");
     sollya_mpfi_set_nan(result);
     return 0;
   }
@@ -2396,7 +2396,7 @@ int supremumnorm(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom
   sollya_mpfi_get_right(b,dom);
 
   if (!(mpfr_number_p(a) && mpfr_number_p(b))) {
-    printMessage(1,"Warning: the given domain is not a closed interval on the reals.\n");
+    printMessage(1,SOLLYA_MSG_DOMAIN_IS_NO_CLOSED_INTERVAL_ON_THE_REALS,"Warning: the given domain is not a closed interval on the reals.\n");
     sollya_mpfi_set_nan(result);
     mpfr_clear(a);
     mpfr_clear(b);
@@ -2404,7 +2404,7 @@ int supremumnorm(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom
   }
 
   if (mpfr_cmp(a,b) > 0) {
-    printMessage(1,"Warning: the given domain is empty.\n");
+    printMessage(1,SOLLYA_MSG_DOMAIN_IS_EMPTY,"Warning: the given domain is empty.\n");
     sollya_mpfi_set_nan(result);
     mpfr_clear(a);
     mpfr_clear(b);
@@ -2412,10 +2412,10 @@ int supremumnorm(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom
   }
 
   if (mpfr_cmp(a,b) == 0) {
-    printMessage(1,"Warning: the given domain is reduced to a point. Replacing the supremum norm with an evaluation.\n");
+    printMessage(1,SOLLYA_MSG_DOMAIN_IS_REDUCED_TO_A_POINT_WILL_SIMPLY_EVAL,"Warning: the given domain is reduced to a point. Replacing the supremum norm with an evaluation.\n");
     res = supremumNormDegenerate(result,poly,func,a,mode,accuracy);
     if (!res) {
-      printMessage(1,"Warning: could not evaluate the error function between the given polynomial and the given function at this point.\n");
+      printMessage(1,SOLLYA_MSG_SUPNORM_COULD_NOT_EVALUATE_ERROR_FUNC,"Warning: could not evaluate the error function between the given polynomial and the given function at this point.\n");
       sollya_mpfi_set_nan(result);
     } 
     mpfr_clear(a);
@@ -2424,7 +2424,7 @@ int supremumnorm(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom
   }
 
   if (!mpfr_number_p(accuracy)) {
-    printMessage(1,"Warning: the given accuracy is not a real number.\n");
+    printMessage(1,SOLLYA_MSG_ACCUARCY_INDICATION_IS_NOT_A_REAL_NUMBER,"Warning: the given accuracy is not a real number.\n");
     sollya_mpfi_set_nan(result);
     mpfr_clear(a);
     mpfr_clear(b);
@@ -2432,7 +2432,7 @@ int supremumnorm(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom
   }
 
   if (mpfr_zero_p(accuracy)) {
-    printMessage(1,"Warning: the given accuracy is zero. In order to ensure the termination of the supremum norm algorithm, the accuracy parameter must be non-zero.\n");
+    printMessage(1,SOLLYA_MSG_ACCUARCY_INDICATION_IS_ZERO,"Warning: the given accuracy is zero. In order to ensure the termination of the supremum norm algorithm, the accuracy parameter must be non-zero.\n");
     sollya_mpfi_set_nan(result);
     mpfr_clear(a);
     mpfr_clear(b);
@@ -2440,7 +2440,7 @@ int supremumnorm(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom
   }
 
   if (!hasOnlyMpqCoefficients(poly)) {
-    printMessage(1,"Warning: the coefficients of the given polynomial cannot all be written as ratios of floating-point numbers.\nSupremum norm computation is only possible on such polynomials. Try to use roundcoefficients().\n");
+    printMessage(1,SOLLYA_MSG_POLYNOMIAL_HAS_NON_DYADIC_COEFFICIENTS,"Warning: the coefficients of the given polynomial cannot all be written as ratios of floating-point numbers.\nSupremum norm computation is only possible on such polynomials. Try to use roundcoefficients().\n");
     sollya_mpfi_set_nan(result);
     mpfr_clear(a);
     mpfr_clear(b);
@@ -2469,7 +2469,7 @@ int supremumnorm(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t dom
 
   res = supremumNormBisect(result,poly,func,a,b,mode,absAccuracy,diameter);
   if (!res) {
-    printMessage(1,"Warning: an error occured during supremum norm computation. A safe enclosure of the supremum norm could not be computed.\n");
+    printMessage(1,SOLLYA_MSG_SUPNORM_SAFE_ENCLOSURE_COULD_NOT_BE_COMPUTED,"Warning: an error occured during supremum norm computation. A safe enclosure of the supremum norm could not be computed.\n");
     sollya_mpfi_set_nan(result);
   } 
 

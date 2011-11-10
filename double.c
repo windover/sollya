@@ -91,8 +91,8 @@ int round_to_format(mpfr_t rop, mpfr_t op, int prec, mp_rnd_t mode) {
   round_dir = mpfr_set(res,op, mode);
   if (mpfr_set(rop, res, GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: an undesired rounding occurred on invoking round_to_format.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      printMessage(1,SOLLYA_MSG_UNDESIRED_ROUNDING_IN_ROUND_TO_FORMAT,"Warning: an undesired rounding occurred on invoking round_to_format.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
     }
   }
 
@@ -109,8 +109,8 @@ int mpfr_round_to_double(mpfr_t rop, mpfr_t op) {
   d = mpfr_get_d(op,GMP_RNDN);
   if (mpfr_set_d(rop,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the double precision rounding operator.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_DOUBLE,"Warning: double rounding occurred on invoking the double precision rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
     }
   }
   
@@ -126,8 +126,8 @@ int mpfr_round_to_double_mode(mpfr_t rop, mpfr_t op, mp_rnd_t mode) {
   d = mpfr_get_d(op,mode);
   if (mpfr_set_d(rop,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the double precision rounding operator.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_DOUBLE,"Warning: double rounding occurred on invoking the double precision rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
     }
   }
   
@@ -147,8 +147,8 @@ int mpfr_round_to_prec(mpfr_t rop, mpfr_t op, mp_prec_t prec) {
   mpfr_set(temp,op,GMP_RNDN);
   if (mpfr_set(rop,temp,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the double precision rounding operator.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_PREC,"Warning: double rounding occurred on invoking the round-to-prec rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
     }
   }
   mpfr_clear(temp);
@@ -177,7 +177,7 @@ int mpfr_round_to_single(mpfr_t rop, mpfr_t x) {
   dd = xfloat;
   if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+      printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
     }
   }
   
@@ -204,7 +204,7 @@ int mpfr_round_to_single(mpfr_t rop, mpfr_t x) {
     dd = xfl.f;
     if (mpfr_set_d(temp2,dd,GMP_RNDN) != 0) {
       if (!noRoundingWarnings) {
-        printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+        printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
       }
     }
     mpfr_sub(temp,temp,x,GMP_RNDN);
@@ -213,7 +213,7 @@ int mpfr_round_to_single(mpfr_t rop, mpfr_t x) {
       xfloat = dd;
       if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
         if (!noRoundingWarnings) {
-          printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+          printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
         }
       }
     }
@@ -223,8 +223,8 @@ int mpfr_round_to_single(mpfr_t rop, mpfr_t x) {
 
   if (mpfr_set_d(rop,dd,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the single rounding operator.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_SINGLE,"Warning: double rounding occurred on invoking the single rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
     }
   }
 
@@ -254,7 +254,7 @@ int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
   dd = xfloat;
   if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+      printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
     }
   }
   
@@ -281,7 +281,7 @@ int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
     dd = xfl.f;
     if (mpfr_set_d(temp2,dd,GMP_RNDN) != 0) {
       if (!noRoundingWarnings) {
-        printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+        printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
       }
     }
     mpfr_sub(temp,temp,x,GMP_RNDN);
@@ -290,7 +290,7 @@ int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
       xfloat = dd;
       if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
         if (!noRoundingWarnings) {
-          printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+          printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
         }
       }
     }
@@ -299,7 +299,7 @@ int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
   dd = xfloat;
   if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+      printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
     }
   }
 
@@ -325,7 +325,7 @@ int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
       dd = xfl.f;
       if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
 	if (!noRoundingWarnings) {
-	  printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+	  printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
 	}
       }
     } else {
@@ -342,7 +342,7 @@ int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
 	dd = xfl.f;
 	if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+	    printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
 	  }
 	}
       } 
@@ -351,8 +351,8 @@ int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
 
   if (mpfr_set(rop,temp,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the single rounding operator.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_SINGLE,"Warning: double rounding occurred on invoking the single rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
     }
   }
 
@@ -384,33 +384,33 @@ int mpfr_round_to_doubledouble(mpfr_t rop, mpfr_t op) {
   d = mpfr_get_d(op,GMP_RNDN);
   if (mpfr_set_d(accu,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on recasting to MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_DOUBLE_DOUBLE,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on recasting to MPFR. This should not occur.\n");
     }
   }
   if (mpfr_sub(rest,op,accu,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_DOUBLE_DOUBLE,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on substracting in MPFR. This should not occur.\n");
     }
   }
   d = mpfr_get_d(rest,GMP_RNDN);
   if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on recasting to MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_DOUBLE_DOUBLE,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on recasting to MPFR. This should not occur.\n");
     }
   }
   if (mpfr_add(accu,accu,temp,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_DOUBLE_DOUBLE,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on substracting in MPFR. This should not occur.\n");
     }
   }
   if (mpfr_set(rop,accu,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_DOUBLE_DOUBLE,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
     }
   }
 
@@ -440,33 +440,33 @@ int mpfr_round_to_doubledouble_mode(mpfr_t rop, mpfr_t op, mp_rnd_t mode) {
   d = mpfr_get_d(op,GMP_RNDN);
   if (mpfr_set_d(accu,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on recasting to MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_DOUBLE_DOUBLE,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on recasting to MPFR. This should not occur.\n");
     }
   }
   if (mpfr_sub(rest,op,accu,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_DOUBLE_DOUBLE,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on substracting in MPFR. This should not occur.\n");
     }
   }
   d = mpfr_get_d(rest,mode);
   if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on recasting to MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_DOUBLE_DOUBLE,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on recasting to MPFR. This should not occur.\n");
     }
   }
   if (mpfr_add(accu,accu,temp,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_DOUBLE_DOUBLE,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on substracting in MPFR. This should not occur.\n");
     }
   }
   if (mpfr_set(rop,accu,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_DOUBLE_DOUBLE,"Warning: double rounding occurred on invoking the double-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
     }
   }
 
@@ -497,52 +497,52 @@ int mpfr_round_to_tripledouble(mpfr_t rop, mpfr_t op) {
   d = mpfr_get_d(op,GMP_RNDN);
   if (mpfr_set_d(accu,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on recasting to MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on recasting to MPFR. This should not occur.\n");
     }
   }
   if (mpfr_sub(rest,op,accu,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on substracting in MPFR. This should not occur.\n");
     }
   }
   d = mpfr_get_d(rest,GMP_RNDN);
   if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on recasting to MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on recasting to MPFR. This should not occur.\n");
     }
   }
   if (mpfr_add(accu,accu,temp,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on substracting in MPFR. This should not occur.\n");
     }
   }
   if (mpfr_sub(rest,op,accu,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on substracting in MPFR. This should not occur.\n");
     }
   }
   d = mpfr_get_d(rest,GMP_RNDN);
   if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on recasting to MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on recasting to MPFR. This should not occur.\n");
     }
   }
   if (mpfr_add(accu,accu,temp,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on substracting in MPFR. This should not occur.\n");
     }
   }
   if (mpfr_set(rop,accu,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
     }
   }
 
@@ -573,52 +573,52 @@ int mpfr_round_to_tripledouble_mode(mpfr_t rop, mpfr_t op, mp_rnd_t mode) {
   d = mpfr_get_d(op,GMP_RNDN);
   if (mpfr_set_d(accu,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on recasting to MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on recasting to MPFR. This should not occur.\n");
     }
   }
   if (mpfr_sub(rest,op,accu,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on substracting in MPFR. This should not occur.\n");
     }
   }
   d = mpfr_get_d(rest,GMP_RNDN);
   if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on recasting to MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on recasting to MPFR. This should not occur.\n");
     }
   }
   if (mpfr_add(accu,accu,temp,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on substracting in MPFR. This should not occur.\n");
     }
   }
   if (mpfr_sub(rest,op,accu,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on substracting in MPFR. This should not occur.\n");
     }
   }
   d = mpfr_get_d(rest,mode);
   if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on recasting to MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on recasting to MPFR. This should not occur.\n");
     }
   }
   if (mpfr_add(accu,accu,temp,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"The rounding occurred on substracting in MPFR. This should not occur.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"The rounding occurred on substracting in MPFR. This should not occur.\n");
     }
   }
   if (mpfr_set(rop,accu,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_TRIPLE_DOUBLE,"Warning: double rounding occurred on invoking the triple-double rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
     }
   }
 
@@ -643,7 +643,7 @@ int printDoubleInHexa(mpfr_t x) {
   d = mpfr_get_d(x,GMP_RNDN);
   if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+      printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
     }
   }
   
@@ -652,9 +652,9 @@ int printDoubleInHexa(mpfr_t x) {
   if (res) {
     if (!noRoundingWarnings) {
       if (res < 0) 
-        printMessage(1,"Warning: rounding down occurred before printing a value as a double.\n");
+        printMessage(1,SOLLYA_MSG_ROUNDING_DOWN_BEFORE_PRINTING_DOUBLE,"Warning: rounding down occurred before printing a value as a double.\n");
       else 
-        printMessage(1,"Warning: rounding up occurred before printing a value as a double.\n");
+        printMessage(1,SOLLYA_MSG_ROUNDING_UP_BEFORE_PRINTING_DOUBLE,"Warning: rounding up occurred before printing a value as a double.\n");
     }
   }
 
@@ -666,7 +666,7 @@ int printDoubleInHexa(mpfr_t x) {
     if ((endianessdb.i[0] == 0x3ff00000) && (endianessdb.i[1] == 0)) {
       sollyaPrintf("0x%08x%08x\n",xdb.i[0],xdb.i[1]);
     } else {
-      printMessage(1,"Warning: could not figure out the endianess of the system. Will print 1.0 instead of the value.\n");
+      printMessage(1,SOLLYA_MSG_COULD_NOT_FIGURE_OUT_ENDIANESS,"Warning: could not figure out the endianess of the system. Will print 1.0 instead of the value.\n");
       sollyaPrintf("0x3ff0000000000000\n");
     }
   }
@@ -693,7 +693,7 @@ int printSimpleInHexa(mpfr_t x) {
   dd = xfloat;
   if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+      printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
     }
   }
   
@@ -720,7 +720,7 @@ int printSimpleInHexa(mpfr_t x) {
     dd = xfl.f;
     if (mpfr_set_d(temp2,dd,GMP_RNDN) != 0) {
       if (!noRoundingWarnings) {
-        printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+        printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
       }
     }
     mpfr_sub(temp,temp,x,GMP_RNDN);
@@ -729,7 +729,7 @@ int printSimpleInHexa(mpfr_t x) {
       xfloat = dd;
       if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
         if (!noRoundingWarnings) {
-          printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+          printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
         }
       }
     }
@@ -740,9 +740,9 @@ int printSimpleInHexa(mpfr_t x) {
   if (res) {
     if (!noRoundingWarnings) {
       if (res < 0) 
-        printMessage(1,"Warning: rounding down occurred before printing a value as a simple.\n");
+        printMessage(1,SOLLYA_MSG_ROUNDING_DOWN_BEFORE_PRINTING_SINGLE,"Warning: rounding down occurred before printing a value as a single.\n");
       else 
-        printMessage(1,"Warning: rounding up occurred before printing a value as a simple.\n");
+        printMessage(1,SOLLYA_MSG_ROUNDING_DOWN_BEFORE_PRINTING_SINGLE,"Warning: rounding up occurred before printing a value as a single.\n");
     }
   }
 
@@ -790,7 +790,7 @@ int readHexaDouble(mpfr_t res, char *c) {
       xdb.i[0] = msb;
       xdb.i[1] = lsb;
     } else {
-      printMessage(1,"Warning: could not figure out the endianess of the system. Will read 1.0 instead of the value.\n");
+      printMessage(1,SOLLYA_MSG_COULD_NOT_FIGURE_OUT_ENDIANESS,"Warning: could not figure out the endianess of the system. Will read 1.0 instead of the value.\n");
       xdb.d = 1.0;
     }
   }
@@ -798,7 +798,7 @@ int readHexaDouble(mpfr_t res, char *c) {
   x = xdb.d;
 
   if ((!(x == x)) && ((msb & 0x00080000) == 0)) {
-    printMessage(1,"Warning: a sNaN might have been converted to a qNaN.\n");
+    printMessage(1,SOLLYA_MSG_SNAN_MIGHT_HAVE_BECOME_QNAN,"Warning: a sNaN might have been converted to a qNaN.\n");
   }
 
 
@@ -834,7 +834,7 @@ int readHexaSimple(mpfr_t res, char *c) {
   x = xfloat;
 
   if ((!(x == x)) && ((msb & 0x00400000) == 0)) {
-    printMessage(1,"Warning: a sNaN might have been converted to a qNaN.\n");
+    printMessage(1,SOLLYA_MSG_SNAN_MIGHT_HAVE_BECOME_QNAN,"Warning: a sNaN might have been converted to a qNaN.\n");
   }
 
 
@@ -852,7 +852,7 @@ int readHexa(mpfr_t res, char *c) {
   if (strlen(c) == 10) 
     return readHexaSimple(res, c);
 
-  printMessage(1,"Warning: unable to convert the hexadecimal sequence \"%s\" to a constant.\n");
+  printMessage(1,SOLLYA_MSG_UNABLE_TO_CONVERT_FROM_HEXADECIMAL_CONSTANT,"Warning: unable to convert the hexadecimal sequence \"%s\" to a constant.\n");
   
   mpfr_set_nan(res);
 
@@ -873,7 +873,7 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
   degree = getDegree(poly);
 
   if (degree < 0) {
-    printMessage(1,"Warning: the given function is not a polynomial.\n");
+    printMessage(1,SOLLYA_MSG_GIVEN_FUNCTION_IS_NO_POLYNOMIAL,"Warning: the given function is not a polynomial.\n");
     return copyTree(poly);
   }
 
@@ -886,7 +886,7 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
     curr = formats;
     fillUp = 0;
     if (listLength < (degree + 1)) {
-      printMessage(1,"Warning: the number of the given formats does not correspond to the degree of the given polynomial.\n");
+      printMessage(1,SOLLYA_MSG_NUM_OF_FORMATS_DOES_NOT_CORRESPOND_TO_DEGREE,"Warning: the number of the given formats does not correspond to the degree of the given polynomial.\n");
       monomials = makeIntPtrChainFromTo(0, listLength-1);
       subPolyToRound = getSubpolynomial(poly, monomials, 0, prec);
       freeChain(monomials, freeIntPtr);
@@ -931,7 +931,7 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
   getCoefficients(&deg,&coefficients,poly);
 
   if (deg != degree) {
-    printMessage(1,"Warning: an error occurred while extracting the coefficients of the polynomial.\n");
+    printMessage(1,SOLLYA_MSG_ERROR_WHILE_EXTRACTING_COEFFICIENTS_OF_POLY,"Warning: an error occurred while extracting the coefficients of the polynomial.\n");
     for (i=0;i<=deg;i++) {
       if (coefficients[i] != NULL) free_memory(coefficients[i]);
     }
@@ -951,15 +951,15 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
       free_memory(coefficients[i]);
       if (temp->nodeType != CONSTANT) {
 	if (!noRoundingWarnings) {
-	  printMessage(1,"Warning: the %dth coefficient of the given polynomial does not evaluate to a floating-point constant without any rounding.\n",i);
-	  printMessage(1,"Will evaluate the coefficient in the current precision in floating-point before rounding to the target format.\n");
+	  printMessage(1,SOLLYA_MSG_ERROR_POLY_COEFF_GETS_ROUNDED,"Warning: the %dth coefficient of the given polynomial does not evaluate to a floating-point constant without any rounding.\n",i);
+	  printMessage(1,SOLLYA_MSG_CONTINUATION,"Will evaluate the coefficient in the current precision in floating-point before rounding to the target format.\n");
 	}
 	mpfr_init2(fpcoefficients[i],prec);
 	mpfr_init2(dummyX, prec);
 	mpfr_set_si(dummyX, 1, GMP_RNDN);
 	if (!evaluateFaithful(fpcoefficients[i], temp, dummyX, prec)) {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: the evaluation of the %dth coefficient is not faithful.\n",i);
+	    printMessage(1,SOLLYA_MSG_ERROR_EVALUATION_OF_POLY_COEFF_NOT_FAITHFUL,"Warning: the evaluation of the %dth coefficient is not faithful.\n",i);
 	  }
 	  evaluateConstantExpression(fpcoefficients[i], temp, 256 * prec);
 	}
@@ -1001,13 +1001,13 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
 	if (mpfr_round_to_prec(tempMpfr, fpcoefficients[i], (mp_prec_t) (formatsArray[i] - 6)) != 0) 
 	  res = 1;
       } else {
-	printMessage(1,"Warning: unknown expansion format found. No rounding will be performed.\n");
+	printMessage(1,SOLLYA_MSG_ERROR_UNKNOWN_EXPANSION_FORMAT,"Warning: unknown expansion format found. No rounding will be performed.\n");
 	mpfr_set(tempMpfr,fpcoefficients[i],GMP_RNDN);
       }
     }
     if (mpfr_set(fpcoefficients[i],tempMpfr,GMP_RNDN) != 0) {
       if (!noRoundingWarnings) {
-	printMessage(1,"Warning: double rounding occurred on internal handling of a coefficient.\nTry to increase the precision.\n");
+	printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_ON_HANDLING_POLY_COEFF,"Warning: double rounding occurred on internal handling of a coefficient.\nTry to increase the precision.\n");
       }
     }
   }
@@ -1016,11 +1016,11 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
 
   if (res) {
     if (!noRoundingWarnings) {
-      printMessage(2,"Information: at least one coefficient has been rounded.\n");
+      printMessage(2,SOLLYA_MSG_AT_LEAST_ONE_POLY_COEFF_HAS_BEEN_ROUNDED,"Information: at least one coefficient has been rounded.\n");
     }
   } else {
     if (!noRoundingWarnings) {
-      printMessage(2,"Information: there has not been any rounding of the coefficients.\n");
+      printMessage(2,SOLLYA_MSG_NONE_OF_THE_POLY_COEFFS_HAS_BEEN_ROUNDED,"Information: there has not been any rounding of the coefficients.\n");
     }
   }
 
@@ -1049,13 +1049,13 @@ int printDoubleExpansion(mpfr_t x) {
   d = mpfr_get_d(x,GMP_RNDN);
   if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+      printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
     }
     roundingOccured = 1;
   }
   
   if (!mpfr_number_p(temp)) {
-    printMessage(1,"Warning: will not print a number that is not real as a double expansion.\n");
+    printMessage(1,SOLLYA_MSG_NON_REAL_NUMBER_CANNOT_BE_DOUBLE_EXPANSION,"Warning: will not print a number that is not real as a double expansion.\n");
     printValue(&temp);
     mpfr_clear(temp);
     mpfr_clear(rest);
@@ -1072,7 +1072,7 @@ int printDoubleExpansion(mpfr_t x) {
     d = mpfr_get_d(rest,GMP_RNDN);
     if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
       if (!noRoundingWarnings) {
-	printMessage(1,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
+	printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
       }
       roundingOccured = 1;
     }
@@ -1085,7 +1085,7 @@ int printDoubleExpansion(mpfr_t x) {
       if ((endianessdb.i[0] == 0x3ff00000) && (endianessdb.i[1] == 0)) {
 	sollyaPrintf("0x%08x%08x",xdb.i[0],xdb.i[1]);
       } else {
-	printMessage(1,"Warning: could not figure out the endianess of the system. Will print 1.0 instead of the value.\n");
+	printMessage(1,SOLLYA_MSG_COULD_NOT_FIGURE_OUT_ENDIANESS,"Warning: could not figure out the endianess of the system. Will print 1.0 instead of the value.\n");
 	sollyaPrintf("0x3ff0000000000000\n");
 	roundingOccured = 1;
       }
@@ -1093,7 +1093,7 @@ int printDoubleExpansion(mpfr_t x) {
 
     if (mpfr_sub(rest,rest,temp,GMP_RNDN) != 0) {
       if (!noRoundingWarnings) {
-	printMessage(1,"Warning: rounding occurred unexpectedly on subtracting.\n");
+	printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_ON_CONVERSION,"Warning: rounding occurred unexpectedly on subtracting.\n");
       }
       roundingOccured = 1;
     }
@@ -1110,7 +1110,7 @@ int printDoubleExpansion(mpfr_t x) {
 
   if (!mpfr_zero_p(rest)) {
     if (!noRoundingWarnings) {
-      printMessage(1,"\nWarning: the expansion is not complete because of the limited exponent range of double precision.");
+      printMessage(1,SOLLYA_MSG_DOUBLE_EXPANSION_INCOMPLETE,"\nWarning: the expansion is not complete because of the limited exponent range of double precision.");
     }
     roundingOccured = 1;
   }
@@ -1135,13 +1135,13 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
 
   if (!isPolynomial(simplifiedTreeSafe)) {
     if (!isPolynomial(simplifiedTree)) {
-      printMessage(1,"Warning: the given expression is not a polynomial.");
+      printMessage(1,SOLLYA_MSG_GIVEN_FUNCTION_IS_NO_POLYNOMIAL,"Warning: the given expression is not a polynomial.");
       free_memory(simplifiedTree);
       free_memory(simplifiedTreeSafe);
       return -1;
     } else {
       if (!noRoundingWarnings) {
-	printMessage(1,"Warning: rounding occurred while simplifying to a polynomial form.\n");
+	printMessage(1,SOLLYA_MSG_ROUNDING_WHILE_SIMPLIFYING_TO_POLYNOMIAL,"Warning: rounding occurred while simplifying to a polynomial form.\n");
       }
       roundingOccured = 1;
       myTree = simplifiedTree;
@@ -1179,12 +1179,12 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
 	roundingOccured |=  printDoubleExpansion(*(tempNode->value));
       } else {
 	if (!isConstant(tempNode)) {
-	  printMessage(1,"Error: a coefficient of a polynomial is not constant.\n");
+	  printMessage(1,SOLLYA_MSG_POLY_COEFF_IS_NOT_CONSTANT,"Error: a coefficient of a polynomial is not constant.\n");
 	  recoverFromError();
 	}
 	if (!evaluateFaithful(tempValue, tempNode, tempValue2, prec)) {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: an evaluation is not faithful.\n");
+	    printMessage(1,SOLLYA_MSG_SOME_EVALUATION_IS_NOT_FAITHFUL,"Warning: an evaluation is not faithful.\n");
 	  }
 	  evaluate(tempValue, tempNode, tempValue2, 256 * prec);
 	}
@@ -1621,8 +1621,8 @@ int mpfr_round_to_ieee_format(mpfr_t rop, mpfr_t op, mp_prec_t prec, unsigned in
   /* Double-rounding may occur if the precision of rop is smaller than the prec.     */
   if (mpfr_set(rop,result,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: double rounding occurred on invoking the IEEE 754-2008 general rounding operator.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_IEEE_754_2008_OPERATOR,"Warning: double rounding occurred on invoking the IEEE 754-2008 general rounding operator.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
     }
   }
 

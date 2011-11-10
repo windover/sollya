@@ -83,7 +83,7 @@ void yyerror(char *message) {
   char *str;
   if (!feof(yyget_in(scanner))) {
     str = getCurrentLexSymbol();
-    printMessage(1,"Warning: %s.\nThe last symbol read has been \"%s\".\nWill skip input until next semicolon after the unexpected token. May leak memory.\n",message,str);
+    printMessage(1,SOLLYA_MSG_SYNTAX_ERROR_ENCOUNTERED_WHILE_PARSING,"Warning: %s.\nThe last symbol read has been \"%s\".\nWill skip input until next semicolon after the unexpected token. May leak memory.\n",message,str);
     free(str);
     promptToBePrinted = 1;
     lastWasSyntaxError = 1;

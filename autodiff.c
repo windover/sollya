@@ -1147,8 +1147,8 @@ void abs_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
 
     if (!(*silent)) {
       *silent = 1;
-      printMessage(1, "Warning: the absolute value is not twice differentiable.\n");
-      printMessage(1, "Will return [@NaN@, @NaN@].\n");
+      printMessage(1, SOLLYA_MSG_ABS_NOT_TWICE_DIFFERENTIABLE, "Warning: the absolute value is not twice differentiable.\n");
+      printMessage(1, SOLLYA_MSG_CONTINUATION, "Will return [@NaN@, @NaN@].\n");
     }
     for(i=2;i<=n;i++) sollya_mpfi_set_fr(res[i], temp2);
     mpfr_clear(temp2);
@@ -1168,8 +1168,8 @@ void single_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
 
   if (!(*silent)) {
     *silent = 1;
-    printMessage(1, "Warning: the single rounding operator is not differentiable.\n");
-    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+    printMessage(1, SOLLYA_MSG_SINGLE_NOT_DIFFERENTIABLE, "Warning: the single rounding operator is not differentiable.\n");
+    printMessage(1, SOLLYA_MSG_CONTINUATION, "Will return [@NaN@, @NaN@].\n");
   }
   for(i=0;i<=n;i++) sollya_mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
@@ -1186,8 +1186,8 @@ void quad_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
 
   if (!(*silent)) {
     *silent = 1;
-    printMessage(1, "Warning: the quad rounding operator is not differentiable.\n");
-    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+    printMessage(1, SOLLYA_MSG_QUAD_NOT_DIFFERENTIABLE, "Warning: the quad rounding operator is not differentiable.\n");
+    printMessage(1, SOLLYA_MSG_CONTINUATION, "Will return [@NaN@, @NaN@].\n");
   }
   for(i=0;i<=n;i++) sollya_mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
@@ -1204,8 +1204,8 @@ void halfprecision_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent)
 
   if (!(*silent)) {
     *silent = 1;
-    printMessage(1, "Warning: the half-precision rounding operator is not differentiable.\n");
-    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+    printMessage(1, SOLLYA_MSG_HALF_NOT_DIFFERENTIABLE, "Warning: the half-precision rounding operator is not differentiable.\n");
+    printMessage(1, SOLLYA_MSG_CONTINUATION, "Will return [@NaN@, @NaN@].\n");
   }
   for(i=0;i<=n;i++) sollya_mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
@@ -1222,8 +1222,8 @@ void double_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
 
   if (!(*silent)) {
     *silent = 1;
-    printMessage(1, "Warning: the double rounding operator is not differentiable.\n");
-    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+    printMessage(1, SOLLYA_MSG_DOUBLE_NOT_DIFFERENTIABLE, "Warning: the double rounding operator is not differentiable.\n");
+    printMessage(1, SOLLYA_MSG_CONTINUATION, "Will return [@NaN@, @NaN@].\n");
   }
   for(i=0;i<=n;i++) sollya_mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
@@ -1240,8 +1240,8 @@ void double_double_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent)
 
   if (!(*silent)) {
     *silent = 1;
-    printMessage(1, "Warning: the doubledouble rounding operator is not differentiable.\n");
-    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+    printMessage(1, SOLLYA_MSG_DOUBLE_DOUBLE_NOT_DIFFERENTIABLE, "Warning: the doubledouble rounding operator is not differentiable.\n");
+    printMessage(1, SOLLYA_MSG_CONTINUATION, "Will return [@NaN@, @NaN@].\n");
   }
   for(i=0;i<=n;i++) sollya_mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
@@ -1258,8 +1258,8 @@ void triple_double_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent)
 
   if (!(*silent)) {
     *silent = 1;
-    printMessage(1, "Warning: the tripledouble rounding operator is not differentiable.\n");
-    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+    printMessage(1, SOLLYA_MSG_TRIPLE_DOUBLE_NOT_DIFFERENTIABLE, "Warning: the tripledouble rounding operator is not differentiable.\n");
+    printMessage(1, SOLLYA_MSG_CONTINUATION, "Will return [@NaN@, @NaN@].\n");
   }
   for(i=0;i<=n;i++) sollya_mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
@@ -1276,8 +1276,8 @@ void double_extended_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silen
 
   if (!(*silent)) {
     *silent = 1;
-    printMessage(1, "Warning: the doubleextended rounding operator is not differentiable.\n");
-    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+    printMessage(1, SOLLYA_MSG_DOUBLEEXTENDED_NOT_DIFFERENTIABLE, "Warning: the doubleextended rounding operator is not differentiable.\n");
+    printMessage(1, SOLLYA_MSG_CONTINUATION, "Will return [@NaN@, @NaN@].\n");
   }
   for(i=0;i<=n;i++) sollya_mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
@@ -1294,8 +1294,8 @@ void ceil_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
 
   if (!(*silent)) {
     *silent = 1;
-    printMessage(1, "Warning: the ceil operator is not differentiable.\n");
-    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+    printMessage(1, SOLLYA_MSG_CEIL_NOT_DIFFERENTIABLE, "Warning: the ceil operator is not differentiable.\n");
+    printMessage(1, SOLLYA_MSG_CONTINUATION, "Will return [@NaN@, @NaN@].\n");
   }
   for(i=0;i<=n;i++) sollya_mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
@@ -1312,8 +1312,8 @@ void floor_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
 
   if (!(*silent)) {
     *silent = 1;
-    printMessage(1, "Warning: the floor operator is not differentiable.\n");
-    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+    printMessage(1, SOLLYA_MSG_FLOOR_NOT_DIFFERENTIABLE, "Warning: the floor operator is not differentiable.\n");
+    printMessage(1, SOLLYA_MSG_CONTINUATION, "Will return [@NaN@, @NaN@].\n");
   }
   for(i=0;i<=n;i++) sollya_mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);
@@ -1330,8 +1330,8 @@ void nearestint_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
 
   if (!(*silent)) {
     *silent = 1;
-    printMessage(1, "Warning: the nearestint operator is not differentiable.\n");
-    printMessage(1, "Will return [@NaN@, @NaN@].\n");
+    printMessage(1, SOLLYA_MSG_NEARESTINT_NOT_DIFFERENTIABLE, "Warning: the nearestint operator is not differentiable.\n");
+    printMessage(1, SOLLYA_MSG_CONTINUATION, "Will return [@NaN@, @NaN@].\n");
   }
   for(i=0;i<=n;i++) sollya_mpfi_set_fr(res[i], temp);
   mpfr_clear(temp);

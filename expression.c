@@ -974,7 +974,7 @@ char *sprintValue(mpfr_t *aValue) {
       } else {
 	expo = mpfr_get_exp(y);
 	if (mpfr_set_exp(y,prec)) {
-	  printMessage(1,"\nWarning: %d is not in the current exponent range of a variable. Values displayed may be wrong.\n",(int)(prec));
+	  printMessage(1,SOLLYA_MSG_OUT_OF_CURRENT_EXPONENT_RANGE,"\nWarning: %d is not in the current exponent range of a variable. Values displayed may be wrong.\n",(int)(prec));
 	}
 	expo -= prec;
 	while (mpfr_integer_p(y)) {
@@ -984,7 +984,7 @@ char *sprintValue(mpfr_t *aValue) {
 	expo--;
 	if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"\nWarning: rounding occurred during displaying a value. Values displayed may be wrong.\n");
+	    printMessage(1,SOLLYA_MSG_INADVERTED_ROUNDING_WHILE_DISPLAYING,"\nWarning: rounding occurred during displaying a value. Values displayed may be wrong.\n");
 	  }
 	}
 	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
@@ -1466,7 +1466,7 @@ void fprintValue(FILE *fd, mpfr_t value) {
     } else {
       expo = mpfr_get_exp(y);
       if (mpfr_set_exp(y,prec+10)) {
-	printMessage(1,"\nWarning: upon printing to a file: %d is not in the current exponent range of a variable. Values printed may be wrong.\n",(int)(prec+10));
+	printMessage(1,SOLLYA_MSG_OUT_OF_CURRENT_EXPONENT_RANGE,"\nWarning: upon printing to a file: %d is not in the current exponent range of a variable. Values printed may be wrong.\n",(int)(prec+10));
       }
       expo -= prec+10;
       while (mpfr_integer_p(y)) {
@@ -1476,7 +1476,7 @@ void fprintValue(FILE *fd, mpfr_t value) {
       expo--;
       if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
 	if (!noRoundingWarnings) {
-	  printMessage(1,"\nWarning: upon printing to a file: rounding occurred. Values printed may be wrong.\n");
+	  printMessage(1,SOLLYA_MSG_INADVERTED_ROUNDING_WHILE_DISPLAYING,"\nWarning: upon printing to a file: rounding occurred. Values printed may be wrong.\n");
 	}
       }
       str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
@@ -1524,7 +1524,7 @@ void fprintValueForXml(FILE *fd, mpfr_t value) {
       } else {
 	expo = mpfr_get_exp(y);
 	if (mpfr_set_exp(y,prec+10)) {
-	  printMessage(1,"\nWarning: upon printing to a file: %d is not in the current exponent range of a variable. Values printed may be wrong.\n",(int)(prec+10));
+	  printMessage(1,SOLLYA_MSG_OUT_OF_CURRENT_EXPONENT_RANGE,"\nWarning: upon printing to a file: %d is not in the current exponent range of a variable. Values printed may be wrong.\n",(int)(prec+10));
 	}
 	expo -= prec+10;
 	while (mpfr_integer_p(y)) {
@@ -1534,7 +1534,7 @@ void fprintValueForXml(FILE *fd, mpfr_t value) {
 	expo--;
 	if (mpfr_mul_2ui(y,y,1,GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"\nWarning: upon printing to a file: rounding occurred. Values printed may be wrong.\n");
+	    printMessage(1,SOLLYA_MSG_INADVERTED_ROUNDING_WHILE_DISPLAYING,"\nWarning: upon printing to a file: rounding occurred. Values printed may be wrong.\n");
 	  }
 	}
 	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
@@ -5017,9 +5017,9 @@ node *simplifyTreeErrorfree(node *tree) {
   if (verbosity >= 7) {
     if (!isSyntacticallyEqual(temp,tree)) {
       if (verbosity < 9) {
-	printMessage(7,"Information: an expression has been simplified.\n");
+	printMessage(7,SOLLYA_MSG_EXPRESSION_HAS_BEEN_SIMPLIFIED,"Information: an expression has been simplified.\n");
       } else {
-	printMessage(9,"Information: expression '%b' has been simplified to expression '%b'.\n",tree,temp);
+	printMessage(9,SOLLYA_MSG_EXPRESSION_HAS_BEEN_SIMPLIFIED_TO_ANOTHER_ONE,"Information: expression '%b' has been simplified to expression '%b'.\n",tree,temp);
       }
     }
   }
@@ -5678,7 +5678,7 @@ node* differentiateUnsimplified(node *tree) {
 	derivative = temp_node;
 	break;
       case DOUBLE:
-	printMessage(1,
+	printMessage(1,SOLLYA_MSG_DOUBLE_NOT_DIFFERENTIABLE,
 		     "Warning: the double rounding operator is not differentiable.\nReplacing it by a constant function when differentiating.\n");
 	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*mpfr_temp,tools_precision);
@@ -5689,7 +5689,7 @@ node* differentiateUnsimplified(node *tree) {
 	derivative = temp_node;
 	break;
       case SINGLE:
-	printMessage(1,
+	printMessage(1,SOLLYA_MSG_SINGLE_NOT_DIFFERENTIABLE,
 		     "Warning: the single rounding operator is not differentiable.\nReplacing it by a constant function when differentiating.\n");
 	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*mpfr_temp,tools_precision);
@@ -5700,7 +5700,7 @@ node* differentiateUnsimplified(node *tree) {
 	derivative = temp_node;
 	break;
       case QUAD:
-	printMessage(1,
+	printMessage(1,SOLLYA_MSG_QUAD_NOT_DIFFERENTIABLE,
 		     "Warning: the quad rounding operator is not differentiable.\nReplacing it by a constant function when differentiating.\n");
 	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*mpfr_temp,tools_precision);
@@ -5711,7 +5711,7 @@ node* differentiateUnsimplified(node *tree) {
 	derivative = temp_node;
 	break;
       case HALFPRECISION:
-	printMessage(1,
+	printMessage(1,SOLLYA_MSG_HALF_NOT_DIFFERENTIABLE,
 		     "Warning: the half-precision rounding operator is not differentiable.\nReplacing it by a constant function when differentiating.\n");
 	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*mpfr_temp,tools_precision);
@@ -5722,7 +5722,7 @@ node* differentiateUnsimplified(node *tree) {
 	derivative = temp_node;
 	break;
       case DOUBLEDOUBLE:
-	printMessage(1,
+	printMessage(1,SOLLYA_MSG_DOUBLE_DOUBLE_NOT_DIFFERENTIABLE,
 		     "Warning: the double-double rounding operator is not differentiable.\nReplacing it by a constant function when differentiating.\n");
 	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*mpfr_temp,tools_precision);
@@ -5733,7 +5733,7 @@ node* differentiateUnsimplified(node *tree) {
 	derivative = temp_node;
 	break;
       case TRIPLEDOUBLE:
-	printMessage(1,
+	printMessage(1,SOLLYA_MSG_TRIPLE_DOUBLE_NOT_DIFFERENTIABLE,
 		     "Warning: the triple-double rounding operator is not differentiable.\nReplacing it by a constant function when differentiating.\n");
 	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*mpfr_temp,tools_precision);
@@ -5870,7 +5870,7 @@ node* differentiateUnsimplified(node *tree) {
 	derivative = temp_node;
 	break;
       case DOUBLEEXTENDED:
-	printMessage(1,
+	printMessage(1,SOLLYA_MSG_DOUBLEEXTENDED_NOT_DIFFERENTIABLE,
 		     "Warning: the double-extended rounding operator is not differentiable.\nReplacing it by a constant function when differentiating.\n");
 	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*mpfr_temp,tools_precision);
@@ -5909,7 +5909,7 @@ node* differentiateUnsimplified(node *tree) {
 	derivative = temp_node;
 	break;
       case CEIL:
-	printMessage(1,
+	printMessage(1,SOLLYA_MSG_CEIL_NOT_DIFFERENTIABLE,
 		     "Warning: the ceil operator is not differentiable.\nReplacing it by a constant function when differentiating.\n");
 	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*mpfr_temp,tools_precision);
@@ -5920,7 +5920,7 @@ node* differentiateUnsimplified(node *tree) {
 	derivative = temp_node;
 	break;
       case FLOOR:
-	printMessage(1,
+	printMessage(1,SOLLYA_MSG_FLOOR_NOT_DIFFERENTIABLE,
 		     "Warning: the floor operator is not differentiable.\nReplacing it by a constant function when differentiating.\n");
 	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*mpfr_temp,tools_precision);
@@ -5931,7 +5931,7 @@ node* differentiateUnsimplified(node *tree) {
 	derivative = temp_node;
 	break;
       case NEARESTINT:
-	printMessage(1,
+	printMessage(1,SOLLYA_MSG_NEARESTINT_NOT_DIFFERENTIABLE,
 		     "Warning: the nearestint operator is not differentiable.\nReplacing it by a constant function when differentiating.\n");
 	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*mpfr_temp,tools_precision);
@@ -5966,15 +5966,15 @@ int isCanonical(node *);
 node* differentiate(node *tree) {
   node *temp, *temp3;
 
-  printMessage(10,"Information: formally differentiating a function.\n");
+  printMessage(10,SOLLYA_MSG_FORMALLY_DIFFERENTIATING_AN_EXPRESSION,"Information: formally differentiating a function.\n");
   
-  printMessage(11,"Information: differentiating the expression '%b'\n",tree);
+  printMessage(11,SOLLYA_MSG_FORMALLY_DIFFERENTIATING_A_PARTICULAR_EXPR,"Information: differentiating the expression '%b'\n",tree);
 
   if (isPolynomial(tree) && (isHorner(tree) || isCanonical(tree))) {
     temp = differentiateUnsimplified(tree);
   } else {
     if ((treeSize(tree) > MAXDIFFSIMPLSIZE) || (getDegree(tree) > MAXDIFFSIMPLDEGREE)) {
-      printMessage(7,"Information: will not simplify the given expression before differentiating because it is too big.\n");
+      printMessage(7,SOLLYA_MSG_EXPR_TOO_BIG_FOR_SIMPLIFICATION_BEFORE_DIFF,"Information: will not simplify the given expression before differentiating because it is too big.\n");
       temp = differentiateUnsimplified(tree);
     } else {
       temp3 = simplifyTreeErrorfree(tree);
@@ -8275,8 +8275,7 @@ int getDegreeUnsafe(node *tree) {
           mpfr_init2(temp,mpfr_get_prec(*(simplifiedExponent->value)) + 10);
           mpfr_set_si(temp,r,GMP_RNDN);
           if (mpfr_cmp(*(simplifiedExponent->value),temp) != 0) {
-            printMessage(1, "Warning: tried to compute polynomial degree of an expression using a power operator with an exponent");
-            printMessage(1," which cannot be represented on an integer variable.\n");
+            printMessage(1, SOLLYA_MSG_DEGREE_OF_POLYNOMIAL_DOESNT_HOLD_ON_MACHINE_INT, "Warning: tried to compute polynomial degree of an expression using a power operator with an exponent which cannot be represented on an integer variable.\n");
             mpfr_clear(temp);
             free_memory(simplifiedExponent);
             return -1;
@@ -8303,8 +8302,7 @@ int getDegreeUnsafe(node *tree) {
         mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
         mpfr_set_si(temp,r,GMP_RNDN);
         if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
-          printMessage(1, "Warning: tried to compute polynomial degree of an expression using a power operator with an exponent");
-          printMessage(1," which cannot be represented on an integer variable.\n");
+          printMessage(1, SOLLYA_MSG_DEGREE_OF_POLYNOMIAL_DOESNT_HOLD_ON_MACHINE_INT, "Warning: tried to compute polynomial degree of an expression using a power operator with an exponent which cannot be represented on an integer variable.\n");
           mpfr_clear(temp);
           return -1;
         }
@@ -8379,9 +8377,8 @@ int getMaxPowerDividerUnsafe(node *tree) {
       mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
       mpfr_set_si(temp,r,GMP_RNDN);
       if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
-	printMessage(1,
-"Warning: tried to compute degree of maximal polynomial divider of a polynomial in an expression using a power operator with an exponent ");
-	printMessage(1,"which cannot be represented on an integer variable.\n");
+	printMessage(1,SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_DOESNT_HOLD_ON_MACHINE_INT,
+"Warning: tried to compute degree of maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which cannot be represented on an integer variable.\n");
 	mpfr_clear(temp);
 	return -1;
       }
@@ -8429,8 +8426,8 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     mpfr_init2(*coeffVal,prec);
     if(mpfr_set_z(*coeffVal,coeffGMP,GMP_RNDN) != 0) {
       if (!noRoundingWarnings) {
-	printMessage(1,"Warning: on expanding a power operator a rounding occurred when calculating a binomial coefficient.\n");
-	printMessage(1,"Try to increase the working precision.\n");
+	printMessage(1,SOLLYA_MSG_ROUNDING_UPON_BINOMIAL_COEFFICIENT_COMPUTATION,"Warning: on expanding a power operator a rounding occurred when calculating a binomial coefficient.\n");
+	printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
       }
     }
     if ((s < 0) && (((((unsigned int) n) - i) & 1) != 0)) { /* This is a modulo 2 to determine eveness */
@@ -8448,8 +8445,8 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     mpfr_init2(*mpfr_temp,tools_precision);
     if(mpfr_set_ui(*mpfr_temp,i,GMP_RNDN) != 0) {
       if (!noRoundingWarnings) {
-	printMessage(1,"Warning: on expanding a power operator a rounding occurred when calculating an exponent constant.\n");
-	printMessage(1,"Try to increase the working precision.\n");
+	printMessage(1,SOLLYA_MSG_ROUNDING_UPON_POW_EXPONENT_COMPUTATION,"Warning: on expanding a power operator a rounding occurred when calculating an exponent constant.\n");
+	printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
       }
     }
     tempNode->value = mpfr_temp;
@@ -8462,8 +8459,8 @@ node* makeBinomial(node *a, node *b, int n, int s) {
     mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*mpfr_temp,tools_precision);
     if(mpfr_set_ui(*mpfr_temp,((unsigned int) n) - i,GMP_RNDN) != 0) {
-      printMessage(1,"Warning: on expanding a power operator a rounding occurred when calculating an exponent constant.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      printMessage(1,SOLLYA_MSG_ROUNDING_UPON_POW_EXPONENT_COMPUTATION,"Warning: on expanding a power operator a rounding occurred when calculating an exponent constant.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
     }
     tempNode->value = mpfr_temp;
     bPow->child2 = tempNode;
@@ -9782,7 +9779,7 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
   simplifiedTemp = expandPowerInPolynomialUnsafe(polynom);
   simplified = expandPolynomialUnsafe(simplifiedTemp);
 
-  printMessage(7,"Warning: recursion on coefficients extraction: %b\ntransformed to\n%b\n",polynom,simplified);
+  printMessage(7,SOLLYA_MSG_RECURSION_ON_POLY_COEFFICIENTS_EXTRACTION,"Warning: recursion on coefficients extraction: %b\ntransformed to\n%b\n",polynom,simplified);
 
   getCoefficientsUnsafe(monomials, simplified, sign);  
 
@@ -9860,7 +9857,7 @@ void getCoefficientsHornerUnsafe(node **coefficients, node *poly, int offset, in
 void getCoefficientsHorner(node **coefficients, node *poly) {
   int offset;
 
-  printMessage(7,"Information: extraction of coefficient terms from a polynomial uses a special algorithm for Horner forms.\n");
+  printMessage(7,SOLLYA_MSG_POLY_COEFF_EXTRACTION_SPECIAL_ALGO_FOR_HORNER,"Information: extraction of coefficient terms from a polynomial uses a special algorithm for Horner forms.\n");
 
   if (poly->nodeType == MUL) {
     offset = getDegree(poly->child1);
@@ -9936,7 +9933,7 @@ void getCoefficientsCanonicalUnsafe(node **coefficients, node *poly) {
 
 void getCoefficientsCanonical(node **coefficients, node *poly) {
 
-  printMessage(7,"Information: extraction of coefficient terms from a polynomial uses a special algorithm for canonical forms.\n");
+  printMessage(7,SOLLYA_MSG_POLY_COEFF_EXTRACT_SPECIAL_ALGO_FOR_CANONICAL,"Information: extraction of coefficient terms from a polynomial uses a special algorithm for canonical forms.\n");
 
   getCoefficientsCanonicalUnsafe(coefficients, poly);
 }
@@ -10053,7 +10050,7 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
 
   *degree = getDegree(poly);
   if (*degree < 0) {
-    printMessage(1,"Warning: Tried to get coefficients of an expression that is not a polynomial.\n");
+    printMessage(1,SOLLYA_MSG_TRIED_TO_EXTRACT_COEFFS_OF_STH_NOT_POLYNOMIAL,"Warning: Tried to get coefficients of an expression that is not a polynomial.\n");
     return;
   }
 
@@ -10294,9 +10291,9 @@ node* hornerPolynomialUnsafe(node *tree) {
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,e,GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
+	    printMessage(1,SOLLYA_MSG_ROUNDING_UPON_POW_EXPONENT_COMPUTATION,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
 			 (int) tools_precision);
-	    printMessage(1,"Try to increase the precision.\n");
+	    printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the precision.\n");
 	  }
 	}
 	temp3->value = value;
@@ -10394,9 +10391,9 @@ node* dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha) {
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,e,GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
+	    printMessage(1,SOLLYA_MSG_ROUNDING_UPON_POW_EXPONENT_COMPUTATION,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
 			 (int) tools_precision);
-	    printMessage(1,"Try to increase the precision.\n");
+	    printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the precision.\n");
 	  }
 	}
 	temp3->value = value;
@@ -10450,7 +10447,7 @@ node* hornerPolynomial(node *tree) {
   if (isConstant(tree)) return copyTree(tree);
   if (getDegree(tree) < 0) return copyTree(tree);
   if (isHorner(tree)) {
-    printMessage(7,"Information: no Horner simplification will be performed because the given tree is already in Horner form.\n");
+    printMessage(7,SOLLYA_MSG_EXPR_NOT_HORNERIZED_AS_ALREADY_HORNERIZED,"Information: no Horner simplification will be performed because the given tree is already in Horner form.\n");
     return copyTree(tree);
   }
   
@@ -10758,7 +10755,7 @@ node* horner(node *tree) {
   int i;
 
   if (isHorner(tree)) {
-    printMessage(7,"Information: no Horner simplification will be performed because the given tree is already in Horner form.\n");
+    printMessage(7,SOLLYA_MSG_EXPR_NOT_HORNERIZED_AS_ALREADY_HORNERIZED,"Information: no Horner simplification will be performed because the given tree is already in Horner form.\n");
     return copyTree(tree);
   }
 
@@ -10795,7 +10792,7 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
 	value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,mpfr_get_prec(*(monomials[i]->value))+(sizeof(int)*8));
 	if (mpfr_mul_si(*value,*(monomials[i]->value),i,GMP_RNDN) != 0)
-	  printMessage(1,"Warning: rounding occurred while differentiating a polynomial in Horner form.\n");
+	  printMessage(1,SOLLYA_MSG_ROUNDING_UPON_DIFFERENTIATION_OF_HORNER_POLY,"Warning: rounding occurred while differentiating a polynomial in Horner form.\n");
 	mpfr_clear(*(monomials[i]->value));
 	free(monomials[i]->value);
 	monomials[i]->value = value;
@@ -10810,7 +10807,7 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
 	mpfr_init2(*(temp->child1->value),prec);
 	if (mpfr_set_si(*(temp->child1->value),i,GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: on differentiating a polynomial in Horner form rounding occurred while representing the degree of a monomial on a constant of the given precision\n");
+	    printMessage(1,SOLLYA_MSG_ROUNDING_UPON_DIFFERENTIATION_OF_HORNER_POLY,"Warning: on differentiating a polynomial in Horner form rounding occurred while representing the degree of a monomial on a constant of the given precision\n");
 	  }
 	}
 	temp->child2 = monomials[i];
@@ -10848,9 +10845,9 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,e,GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
+	    printMessage(1,SOLLYA_MSG_ROUNDING_UPON_POW_EXPONENT_COMPUTATION,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
 			 (int) tools_precision);
-	    printMessage(1,"Try to increase the precision.\n");
+	    printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the precision.\n");
 	  }
 	}
 	temp3->value = value;
@@ -10902,7 +10899,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
   mpfr_t *value;
 
   if (isHorner(tree)) {
-    printMessage(25,"Information: differentiating a polynomial in Horner form uses a special algorithm.\n");
+    printMessage(25,SOLLYA_MSG_DIFFERENTIATION_USES_SPECIAL_ALGO_FOR_HORNER,"Information: differentiating a polynomial in Horner form uses a special algorithm.\n");
     return differentiatePolynomialHornerUnsafe(tree);
   } 
 
@@ -10937,9 +10934,9 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,degree,GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: rounding occurred on differentiating a polynomial. A constant could not be written on %d bits.\n",
+	    printMessage(1,SOLLYA_MSG_ROUNDING_UPON_DIFFERENTIATION_OF_POLYNOMIAL,"Warning: rounding occurred on differentiating a polynomial. A constant could not be written on %d bits.\n",
 			 (int) tools_precision);
-	    printMessage(1,"Try to increase the precision.\n");
+	    printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the precision.\n");
 	  }
 	}
 	temp2->value = value;
@@ -10952,10 +10949,10 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,degree-1,GMP_RNDN) != 0) {
-	  printMessage(1,
+	  printMessage(1,SOLLYA_MSG_ROUNDING_UPON_DIFFERENTIATION_OF_POLYNOMIAL,
 		 "Warning: rounding occurred on differentiating a polynomial. An exponent constant could not be written on %d bits.\n",
 		 (int) tools_precision);
-	  printMessage(1,"Try to increase the precision.\n");
+	  printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the precision.\n");
 	}
 	temp2->value = value;
 	temp = (node*) safeMalloc(sizeof(node));
@@ -10976,9 +10973,9 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,degree,GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: rounding occurred on differentiating a polynomial. A constant could not be written on %d bits.\n",
+	  printMessage(1,SOLLYA_MSG_ROUNDING_UPON_DIFFERENTIATION_OF_POLYNOMIAL,"Warning: rounding occurred on differentiating a polynomial. A constant could not be written on %d bits.\n",
 		 (int) tools_precision);
-	  printMessage(1,"Try to increase the precision.\n");
+	  printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the precision.\n");
 	}
 	temp2->value = value;
 	temp3 = (node*) safeMalloc(sizeof(node));
@@ -11002,9 +10999,9 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	  value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*value,tools_precision);
 	  if (mpfr_set_si(*value,i,GMP_RNDN) != 0) {
-	    printMessage(1,"Warning: rounding occurred on differentiating a polynomial. A constant could not be written on %d bits.\n",
+	    printMessage(1,SOLLYA_MSG_ROUNDING_UPON_DIFFERENTIATION_OF_POLYNOMIAL,"Warning: rounding occurred on differentiating a polynomial. A constant could not be written on %d bits.\n",
 		   (int) tools_precision);
-	    printMessage(1,"Try to increase the precision.\n");
+	    printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the precision.\n");
 	  }
 	  temp2->value = value;
 	  temp3 = (node*) safeMalloc(sizeof(node));
@@ -11016,10 +11013,10 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	  value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*value,tools_precision);
 	  if (mpfr_set_si(*value,i-1,GMP_RNDN) != 0) {
-	    printMessage(1,
+	    printMessage(1,SOLLYA_MSG_ROUNDING_UPON_DIFFERENTIATION_OF_POLYNOMIAL,
 		   "Warning: rounding occurred on differentiating a polynomial. An exponent constant could not be written on %d bits.\n",
 		   (int) tools_precision);
-	    printMessage(1,"Try to increase the precision.\n");
+	    printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the precision.\n");
 	  }
 	  temp2->value = value;
 	  temp = (node*) safeMalloc(sizeof(node));
@@ -11090,8 +11087,8 @@ node *makeBinomialCoefficient(unsigned int n, unsigned int k) {
   mpfr_init2(*coeffVal,prec);
   if(mpfr_set_z(*coeffVal,coeffGMP,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,"Warning: rounding occurred when calculating a binomial coefficient.\n");
-      printMessage(1,"Try to increase the working precision.\n");
+      printMessage(1,SOLLYA_MSG_ROUNDING_UPON_BINOMIAL_COEFFICIENT_COMPUTATION,"Warning: rounding occurred when calculating a binomial coefficient.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
     }
   }
   mpz_clear(coeffGMP);
@@ -11937,9 +11934,9 @@ node *makePolynomialConstantExpressions(node **coeffs, int deg) {
 	mpfr_init2(*value,(tools_precision > (8 * sizeof(e) + 10) ? tools_precision : (8 * sizeof(e) + 10)));
 	if (mpfr_set_si(*value,e,GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
-	    printMessage(1,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
+	    printMessage(1,SOLLYA_MSG_ROUNDING_UPON_POW_EXPONENT_COMPUTATION,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",
 			 (int) mpfr_get_prec(*value));
-	    printMessage(1,"Try to increase the precision.\n");
+	    printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the precision.\n");
 	  }
 	}
 	temp3->value = value;
@@ -12179,7 +12176,7 @@ node *getSubpolynomial(node *poly, chain *monomials, int fillDegrees, mp_prec_t 
       tempNode3->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*(tempNode3->value),prec);
       if (mpfr_set_si(*(tempNode3->value),currDeg,GMP_RNDN) != 0) {
-	printMessage(1,"Warning: during subpolynomial extraction, the exponent of a power could not be represented exactly on with the given precision.\n");
+	printMessage(1,SOLLYA_MSG_ROUNDING_UPON_POW_EXPONENT_COMPUTATION,"Warning: during subpolynomial extraction, the exponent of a power could not be represented exactly on with the given precision.\n");
       }
       tempNode2->child2 = tempNode3;
       tempNode3 = (node *) safeMalloc(sizeof(node));
@@ -12208,7 +12205,7 @@ node *getSubpolynomial(node *poly, chain *monomials, int fillDegrees, mp_prec_t 
 	tempNode3->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*(tempNode3->value),prec);
 	if (mpfr_set_si(*(tempNode3->value),k,GMP_RNDN) != 0) {
-	  printMessage(1,"Warning: during subpolynomial extraction, the exponent of a power could not be represented exactly on with the given precision.\n");
+	  printMessage(1,SOLLYA_MSG_ROUNDING_UPON_POW_EXPONENT_COMPUTATION,"Warning: during subpolynomial extraction, the exponent of a power could not be represented exactly on with the given precision.\n");
 	}
 	tempNode2->child2 = tempNode3;
 	tempNode3 = (node *) safeMalloc(sizeof(node));
@@ -12282,7 +12279,7 @@ node *makeCanonicalPolyUnsafe(node *poly, mp_prec_t prec) {
 	  tempNode3->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*(tempNode3->value),prec);
 	  if (mpfr_set_si(*(tempNode3->value),k,GMP_RNDN) != 0) {
-	    printMessage(1,"Warning: during transformation to canonical form, the exponent of a power could not be represented exactly on with the given precision.\n");
+	    printMessage(1,SOLLYA_MSG_ROUNDING_UPON_POW_EXPONENT_COMPUTATION,"Warning: during transformation to canonical form, the exponent of a power could not be represented exactly on with the given precision.\n");
 	  }
 	  tempNode2->child2 = tempNode3;
 	  tempNode3 = (node *) safeMalloc(sizeof(node));
@@ -12356,7 +12353,7 @@ node *makeCanonical(node *tree, mp_prec_t prec) {
   mpfr_t temp;
 
   if (isCanonical(tree)) {
-    printMessage(7,"Information: no canonical form simplification will be performed because the given tree is already canonical.\n");
+    printMessage(7,SOLLYA_MSG_EXPR_NOT_CANONICALIZED_AS_ALREADY_CANONICAL,"Information: no canonical form simplification will be performed because the given tree is already canonical.\n");
     return copyTree(tree);
   }
 
@@ -12833,10 +12830,10 @@ int readDecimalConstant(mpfr_t result, char *str) {
   mpfr_set_str(b,str,10,GMP_RNDU);    
   if (mpfr_cmp(a,b) != 0) {
     if (!noRoundingWarnings) {
-      printMessage(1,
+      printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_READING_A_CONSTANT,
 		   "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
 		   str,(int) tools_precision);
-      printMessage(1,"If safe computation is needed, try to increase the precision.\n");
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"If safe computation is needed, try to increase the precision.\n");
     }
     ternary = mpfr_set_str(a,str,10,GMP_RNDN);
   } else {
