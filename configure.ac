@@ -11,6 +11,7 @@ AM_INIT_AUTOMAKE([1.6 no-define dist-zip dist-bzip2])
 AC_PROG_YACC
 AC_PROG_CC
 AC_PROG_CXX 
+AC_PROG_SED
 AM_PROG_CC_C_O
 AC_LANG_PUSH([C++])
 AC_MSG_CHECKING([whether C++ compiler works])
@@ -202,8 +203,9 @@ if test "x$XML2INCLUDEGIVEN" = "x"; then
 fi
 
 if test "x$XML2LIBGIVEN" = "x"; then
-  XML2LIBS=`$XML2CONFIG --libs`
-  AC_SEARCH_LIBS([xmlTextReaderIsEmptyElement], [$XML2LIBS], [])
+  XML2LIBS=`$XML2CONFIG --libs --static`
+  XML2LIBSPURE=`$XML2CONFIG --libs | $SED -e 's/^-l//g;s/[[:blank:]]-l//g;'`
+  AC_SEARCH_LIBS([xmlTextReaderIsEmptyElement], [$XML2LIBSPURE], [], [$XML2LIBS])
 fi
 
 
@@ -231,6 +233,7 @@ AC_CHECK_LIB([mpfr], [mpfr_init], [], AC_MSG_ERROR([libmpfr unusable]))
 AC_CHECK_LIB([mpfr], [mpfr_erfc], [], AC_MSG_ERROR([libmpfr version too old]))
 AC_CHECK_LIB([z], [gzdopen], [], [])
 AC_CHECK_LIB([iconv], [libiconv_open], [], [])
+AC_CHECK_LIB([m],[cos])
 AC_CHECK_LIB([xml2], [xmlTextReaderIsEmptyElement], [], AC_MSG_ERROR([libxml2 unusable]))
 
 #Special check for fplll
