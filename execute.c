@@ -19186,7 +19186,7 @@ node *evaluateThingInner(node *tree) {
 	printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_READING_A_CONSTANT,
 		     "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
 		     str1,(int) pTemp);
-	printMessage(1,SOLLYA_MSG_CONTINUATION,"If safe computation is needed, try to increase the precision.\n");
+	printMessage(1,SOLLYA_MSG_CONTINUATION,"The inclusion property is nevertheless satisfied.\n");
       }
       mpfr_set_str(a,str1,10,GMP_RNDD);
     }
@@ -19213,7 +19213,7 @@ node *evaluateThingInner(node *tree) {
 	printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_READING_A_CONSTANT,
 		     "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
 		     str2,(int) pTemp);
-	printMessage(1,SOLLYA_MSG_CONTINUATION,"If safe computation is needed, try to increase the precision.\n");
+	printMessage(1,SOLLYA_MSG_CONTINUATION,"The inclusion property is nevertheless satisfied.\n");
       }
       mpfr_set_str(a,str2,10,GMP_RNDU);
     }
@@ -19460,7 +19460,7 @@ node *evaluateThingInner(node *tree) {
             printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_READING_A_CONSTANT,
                          "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
                          tempString,(int) pTemp);
-            printMessage(1,SOLLYA_MSG_CONTINUATION,"If safe computation is needed, try to increase the precision.\n");
+            printMessage(1,SOLLYA_MSG_CONTINUATION,"The inclusion property is nevertheless satisfied.\n");
           }
           mpfr_set_str(a,tempString,10,GMP_RNDD);
         }
@@ -19530,7 +19530,7 @@ node *evaluateThingInner(node *tree) {
             printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_READING_A_CONSTANT,
                          "Warning: Rounding occurred when converting the constant \"%s\" to floating-point with %d bits.\n",
                          tempString,(int) pTemp);
-            printMessage(1,SOLLYA_MSG_CONTINUATION,"If safe computation is needed, try to increase the precision.\n");
+            printMessage(1,SOLLYA_MSG_CONTINUATION,"The inclusion property is nevertheless satisfied.\n");
           }
           mpfr_set_str(a,tempString,10,GMP_RNDU);
         }
