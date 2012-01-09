@@ -342,12 +342,15 @@ LDFLAGS="$OLDLDFLAGS"
 AC_FUNC_ALLOCA
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([inttypes.h libintl.h malloc.h stddef.h stdlib.h string.h sys/ioctl.h sys/time.h termios.h unistd.h limits.h])
+AC_CHECK_HEADERS([inttypes.h libintl.h malloc.h stddef.h stdlib.h string.h sys/ioctl.h sys/time.h termios.h unistd.h limits.h wchar.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_HEADER_STDBOOL
 AC_TYPE_INT32_T
+AC_TYPE_INT64_T
+AC_TYPE_SSIZE_T
+AC_TYPE_UINT64_T
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_TYPE_INT16_T
@@ -358,6 +361,7 @@ AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT8_T
 AC_C_VOLATILE
+AC_CHECK_TYPES([ptrdiff_t])
 
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
@@ -367,7 +371,7 @@ AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([gettimeofday memmove memset strchr strerror strrchr strtol backtrace])
+AC_CHECK_FUNCS([gettimeofday memmove memset strchr strerror strrchr strtol backtrace dup2])
 
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(AM_CFLAGS)
