@@ -253,6 +253,7 @@ The tool has been restarted.
 =============== Test number 20 ================
 3
 0
+The tool has been restarted.
 =============== Test number 21 ================
 Warning: the given expression does not evaluate to a machine integer.
 Will round it to the nearest machine integer.

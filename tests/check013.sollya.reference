@@ -203,7 +203,6 @@ false
 true
 true
 Warning: equality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.
-Warning: equality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.
 true
 Warning: inequality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.
 true
@@ -213,26 +212,6 @@ Warning: inequality test relies on floating-point result that is faithfully eval
 true
 Warning: inequality test relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.
 false
-true
-true
-true
-true
-true
-true
-true
-true
-true
-true
-true
-true
-true
-true
-true
-true
-true
-true
-true
-true
 The tool has been restarted.
 =============== Test number 251 ================
 5.53427734375e1
