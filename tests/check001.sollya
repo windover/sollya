@@ -315,3 +315,13 @@ restart;
 print("=============== Test number 21 ================");
 /* Non-regression test for revision 1596 */
 coeff(x+x^2/4, 1.75);
+
+
+/*********************************************************************************/
+restart;
+print("=============== Test number 22 ================");
+/* Non-regression test for revision 1623 */
+roundingwarnings = on!;
+d = [sin(pi/6)*(1-1b-40)];
+log2(sup(d)-inf(d));
+
