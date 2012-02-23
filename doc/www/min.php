@@ -32,10 +32,9 @@ tree that might be evaluated to any accuracy afterwards.
 expressions in argument or a list of constant expressions. The list 
 however must not be end-elliptic. 
 </li><li>Users should be aware that the behavior of <?php linkTo("command","min","min");?> follows the IEEE 
-754-2008 standard with respect to NaNs. In particular, a NaN given as 
-the first argument will not be promoted as a result unless the other 
-argument is a NaN. This means that NaNs may seem to disappear during 
-computations. 
+754-2008 standard with respect to NaNs. In particular, <?php linkTo("command","min","min");?> 
+evaluates to NaN if and only if all arguments of <?php linkTo("command","min","min");?> are 
+NaNs. This means that NaNs may disappear during computations. 
 </ul> 
 </div> 
 <div class="divExamples"> 

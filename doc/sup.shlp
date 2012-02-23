@@ -16,8 +16,7 @@ own precision, so this command is exact, even if the current precision is too
 small to represent the bound.
 
 #DESCRIPTION
-When called on a real number <x>, $COMMAND considers it as an interval formed
-of a single point: §§[x, x]§$\left[ x, x \right]$§§. In other words, $COMMAND behaves like the identity.
+When called on a real number <x>, $COMMAND behaves like the identity.
 
 #EXAMPLE
 sup([1;3]);

@@ -93,6 +93,13 @@ rangetype integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) 
     return sum;
   }
 
+  if ( (!mpfr_number_p(*(interval.a))) || (!mpfr_number_p(*(interval.b))) ) {
+    printMessage(1, SOLLYA_MSG_DOMAIN_IS_NO_CLOSED_INTERVAL_ON_THE_REALS, "Warning: the given domain is not a closed interval on the reals.\n");
+    mpfr_set_inf(*(sum.a), -1);
+    mpfr_set_inf(*(sum.b), 1);
+    return sum;
+  }
+
   mpfr_init2(delta,53);
   mpfr_sub(delta, *(interval.b), *(interval.a), GMP_RNDN);
   mpfr_mul(delta, delta, diam, GMP_RNDN);
@@ -174,6 +181,13 @@ void uncertifiedIntegral(mpfr_t result, node *tree, mpfr_t a, mpfr_t b, unsigned
   if (mpfr_sgn(step) < 0) {
     printMessage(1,SOLLYA_MSG_DOMAIN_IS_EMPTY,"Warning: the interval is empty.\n");
     mpfr_set_d(result,0.,GMP_RNDN);
+    mpfr_clear(step);
+    return;
+  }
+
+  if (!mpfr_number_p(step)) {
+    printMessage(1, SOLLYA_MSG_DOMAIN_IS_NO_CLOSED_INTERVAL_ON_THE_REALS, "Warning: the given domain is not a closed interval on the reals.\n");
+    mpfr_set_nan(result);
     mpfr_clear(step);
     return;
   }

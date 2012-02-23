@@ -204,8 +204,8 @@ void system_solve(mpfr_t *res, mpfr_t *M, mpfr_t *b, int n, mp_prec_t prec) {
     }
   }
 
-  free(order_i);
-  free(order_j);
+  safeFree(order_i);
+  safeFree(order_j);
   freeChain(i_list, freeIntPtr);
   freeChain(j_list, freeIntPtr);
   mpfr_clear(max);
@@ -968,9 +968,9 @@ void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
     mpfr_clear(c[j-1]);
     mpfr_clear(mui_vect[j-1]);
   }
-  free(N);
-  free(c);
-  free(mui_vect);
+  safeFree(N);
+  safeFree(c);
+  safeFree(mui_vect);
 
   mpfr_clear(zero_mpfr);
   mpfr_clear(var1);
@@ -1422,14 +1422,14 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
 	mpfr_clear(dummy_mpfr);
 	mpfr_clear(dummy_mpfr2);
 	mpfr_clear(max_val);
-	free(s);
+	safeFree(s);
 
 	for(i=0;i<=n;i++)  mpfr_clear(y[i]);
-	free(y);
+	safeFree(y);
 	for(i=1;i<=n;i++) {
 	  mpfr_clear(z[i-1]);
 	}
-	free(z);
+	safeFree(z);
 
 	return -1;
       }
@@ -1449,14 +1449,14 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
       mpfr_clear(dummy_mpfr);
       mpfr_clear(dummy_mpfr2);
       mpfr_clear(max_val);
-      free(s);
+      safeFree(s);
 
       for(i=0;i<=n;i++)  mpfr_clear(y[i]);
-      free(y);
+      safeFree(y);
       for(i=1;i<=n;i++) {
 	mpfr_clear(z[i-1]);
       }
-      free(z);
+      safeFree(z);
 
       return -1;
     }
@@ -1497,15 +1497,15 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
   mpfr_clear(dummy_mpfr);
   mpfr_clear(dummy_mpfr2);
   mpfr_clear(max_val);
-  free(s);
+  safeFree(s);
 
   for(i=0;i<=n;i++)  mpfr_clear(y[i]);
-  free(y);
+  safeFree(y);
   for(i=1;i<=n;i++) {
     mpfr_set(x[i-1], z[i-1], GMP_RNDN);
     mpfr_clear(z[i-1]);
   }
-  free(z);
+  safeFree(z);
 
   return 0;
 }
@@ -1859,10 +1859,10 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 	for(j=0;j<freeDegrees;j++) {
 	  free_memory(monomials_tree[j]);
 	}
-	free(monomials_tree);
+	safeFree(monomials_tree);
 
 	for(j=1;j<=freeDegrees+1;j++) mpfr_clear(x[j-1]);
-	free(x);
+	safeFree(x);
 
 	mpfr_clear(zero_mpfr);
 	mpfr_clear(var1);
@@ -1878,9 +1878,9 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 	  mpfr_clear(b[j-1]);
 	  mpfr_clear(ai_vect[j-1]);
 	}
-	free(M);
-	free(b);
-	free(ai_vect);
+	safeFree(M);
+	safeFree(b);
+	safeFree(ai_vect);
 
 	for(j=1; j <= freeDegrees ; j++) {
 	  for(i=1; i<= freeDegrees; i++) {
@@ -1892,14 +1892,19 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 	}
 	mpfr_clear(lambdai_vect[freeDegrees]);
 	mpfr_clear(previous_lambdai_vect[freeDegrees]);
-	free(N);
-	free(c);
-	free(lambdai_vect);
-	free(previous_lambdai_vect);
+	safeFree(N);
+	safeFree(c);
+	safeFree(lambdai_vect);
+	safeFree(previous_lambdai_vect);
 
 	gmp_randclear(random_state);
 
-	recoverFromError();
+	/* Christoph: replacing a recoverFromError with a construction
+	   of the error special symbol and a return.  I am not 100%
+	   sure that all memory has been freed at this point, as it
+	   should be.
+	*/
+	return makeError();
       }
 
       printMessage(3, SOLLYA_MSG_REMEZ_CURRENT_QUALITY_HAS_A_CERTAIN_VALUE, "Current quality: %v\n",computedQuality);
@@ -1960,12 +1965,12 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   for(j=0;j<freeDegrees;j++) {
     free_memory(monomials_tree[j]);
   }
-  free(monomials_tree);
+  safeFree(monomials_tree);
 
   for(i=1; i<=freeDegrees+1; i++) {
     mpfr_clear(x[i-1]);
   }
-  free(x);
+  safeFree(x);
 
 
   mpfr_clear(zero_mpfr);
@@ -1980,9 +1985,9 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     mpfr_clear(b[j-1]);
     mpfr_clear(ai_vect[j-1]);
   }
-  free(M);
-  free(b);
-  free(ai_vect);
+  safeFree(M);
+  safeFree(b);
+  safeFree(ai_vect);
 
   for(j=1; j <= freeDegrees ; j++) {
     for(i=1; i<= freeDegrees; i++) {
@@ -1994,10 +1999,10 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   }
   mpfr_clear(lambdai_vect[freeDegrees]);
   mpfr_clear(previous_lambdai_vect[freeDegrees]);
-  free(N);
-  free(c);
-  free(lambdai_vect);
-  free(previous_lambdai_vect);
+  safeFree(N);
+  safeFree(c);
+  safeFree(lambdai_vect);
+  safeFree(previous_lambdai_vect);
 
   gmp_randclear(random_state);
   mpfr_clear(computedQuality);
@@ -2203,15 +2208,15 @@ node *elementaryStepRemezAlgorithm(mpfr_t *h,
   if (h!=NULL)   mpfr_set(*h, ai_vect[n], GMP_RNDU);
 
   for(i=0;i<=n;i++) mpfr_clear(b[i]);
-  free(b);
+  safeFree(b);
 
   for(i=0;i<=n;i++) mpfr_clear(ai_vect[i]);
-  free(ai_vect);
+  safeFree(ai_vect);
 
   for(i=1;i<=n+1;i++) {
     for(j=1;j<=n+1;j++) mpfr_clear(M[coeff(i,j,n+1)]);
   }
-  free(M);
+  safeFree(M);
 
   mpfr_clear(zero_mpfr);
   return poly;
@@ -2236,10 +2241,10 @@ void radiusBasicMinimaxChebychevsPoints(mpfr_t *h, node *func, node *weight, mpf
   free_memory(poly);
 
   for(i=0;i<n;i++) free_memory(monomials_tree[i]);
-  free(monomials_tree);
+  safeFree(monomials_tree);
 
   for(i=0;i<=n;i++) mpfr_clear(x[i]);
-  free(x);
+  safeFree(x);
 
   return;
 }
@@ -2265,10 +2270,10 @@ void firstStepContinuousMinimaxChebychevsPoints(mpfr_t *h, node *func, node *wei
   free_memory(poly);
 
   for(i=0;i<n;i++) free_memory(monomials_tree[i]);
-  free(monomials_tree);
+  safeFree(monomials_tree);
 
   for(i=0;i<=n;i++) mpfr_clear(x[i]);
-  free(x);
+  safeFree(x);
 
   return;
 }

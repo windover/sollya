@@ -65,12 +65,14 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "chain.h"
 #include "library.h"
 #include <setjmp.h>
+#include <stdarg.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include "message-numbers.h"
+#include "sollya-messaging.h"
+#include "bitfields.h"
 
 #define DEFAULTPOINTS 501
 #define DEFAULTPRECISION 165
@@ -94,12 +96,14 @@ extern int oldVoidPrint;
 extern int printMode;
 extern FILE *warnFile;
 extern char *variablename;
+extern bitfield suppressedMessages;
 extern mp_prec_t defaultprecision;
 extern mp_prec_t tools_precision;
 extern int defaultpoints;
 extern int taylorrecursions;
 extern int dyadic;
 extern int verbosity;
+extern int activateMessageNumbers;
 extern int canonical;
 extern int fileNumber;
 extern int autosimplify;
@@ -112,6 +116,7 @@ extern int rationalMode;
 extern int noRoundingWarnings;
 extern int hopitalrecursions;
 extern int eliminatePromptBackup;
+extern int libraryMode;
 extern chain *readStack;
 extern chain *readStackTemp;
 extern chain *readStack2;
@@ -138,7 +143,6 @@ extern int tempInteger;
 extern chain *symbolTable;
 extern chain *declaredSymbolTable;
 extern mpfr_t statediam;
-extern jmp_buf recoverEnvironmentError;
 extern node *parsedThingIntern;
 extern int *tempIntPtr;
 extern FILE *inputFile;
@@ -148,6 +152,7 @@ extern int flushOutput;
 extern void *rpl_malloc(size_t n);
 extern void *rpl_realloc(void *, size_t n);
 
+
 int general(int argc, char *argv[]);
 void printPrompt(void);
 void recoverFromError(void);
@@ -155,7 +160,9 @@ void demaskString(char*, char*);
 char *maskString(char *);
 void *safeCalloc (size_t nmemb, size_t size);
 void *safeMalloc (size_t size);
+void safeFree(void *ptr);
 int printMessage(int verb, int msgNum, const char *format, ...);
+int sollyaVfprintf(FILE *fd, const char *format, va_list varlist);
 int sollyaPrintf(const char *format, ...);
 int sollyaFprintf(FILE *fd, const char *format, ...);
 char *mpfr_to_binary_str(mpfr_t x);
@@ -183,6 +190,16 @@ void restoreMode();
 void changeToWarningMode();
 int  getDisplayColor();
 void setDisplayColor(int);
+int installMessageCallback(int (*msgHandler) (int));
+int uninstallMessageCallback();
+int (*getMessageCallback())(int);
+int initializeLibraryMode(void *(*)(size_t),
+			  void *(*)(size_t, size_t),
+			  void *(*)(void *, size_t),
+			  void (*)(void*),
+			  void *(*)(void *, size_t, size_t),
+			  void (*)(void *, size_t));
+int finalizeLibraryMode();
 mp_prec_t getToolPrecision();
 void setToolPrecision(mp_prec_t prec);
 int getToolPoints();

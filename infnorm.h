@@ -93,6 +93,7 @@ int evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec);
 int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes, mp_prec_t startPrec);
 int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec);
 int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec);
+int evaluateFaithfulAtConstantExpression(mpfr_t result, node *func, node *deriv, node *x, mpfr_t cutoff, mp_prec_t startprec);
 void evaluateConstantExpressionToInterval(sollya_mpfi_t y, node *func);
 void evaluateConstantExpressionToSharpInterval(sollya_mpfi_t y, node *func);
 void evaluateInterval(sollya_mpfi_t y, node *func, node *deriv, sollya_mpfi_t x);

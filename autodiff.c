@@ -98,7 +98,7 @@ void multiplication_AD(sollya_mpfi_t *res, sollya_mpfi_t *f, sollya_mpfi_t *g, i
     sollya_mpfi_set(res[p], temp_array[p]);
     sollya_mpfi_clear(temp_array[p]);
   }
-  free(temp_array);
+  safeFree(temp_array);
   sollya_mpfi_clear(temp);
   return;
 }
@@ -148,9 +148,9 @@ void composition_AD(sollya_mpfi_t *res, sollya_mpfi_t *g, sollya_mpfi_t *f, int 
       sollya_mpfi_clear(gprime[i]);
     }
 
-    free(temp_array);
-    free(fprime);
-    free(gprime);
+    safeFree(temp_array);
+    safeFree(fprime);
+    safeFree(gprime);
   }
 
   return ;
@@ -199,7 +199,7 @@ void binary_function_diff(sollya_mpfi_t *res, int nodeType, sollya_mpfi_t x0, no
     multiplication_AD(res, res1, temp_array, n);
 
     for(i=0;i<=n;i++) sollya_mpfi_clear(temp_array[i]);
-    free(temp_array);
+    safeFree(temp_array);
     break;
 
   default:
@@ -211,8 +211,8 @@ void binary_function_diff(sollya_mpfi_t *res, int nodeType, sollya_mpfi_t x0, no
     sollya_mpfi_clear(res1[i]);
     sollya_mpfi_clear(res2[i]);
   }
-  free(res1);
-  free(res2);
+  safeFree(res1);
+  safeFree(res2);
 }
 
 
@@ -555,7 +555,7 @@ void tan_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
     sollya_mpfi_clear(coeffs_array[index]);
   }
   sollya_mpfi_clear(u);
-  free(coeffs_array);
+  safeFree(coeffs_array);
   
   return;
 }
@@ -610,7 +610,7 @@ void tanh_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
     sollya_mpfi_clear(coeffs_array[index]);
   }
   sollya_mpfi_clear(u);
-  free(coeffs_array);
+  safeFree(coeffs_array);
   
   return;
 }
@@ -690,8 +690,8 @@ void atan_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   }
   sollya_mpfi_clear(u);
   sollya_mpfi_clear(temp);
-  free(coeffs_array);
-  free(coeffs_array_diff);
+  safeFree(coeffs_array);
+  safeFree(coeffs_array_diff);
   
   return;
 }
@@ -772,8 +772,8 @@ void atanh_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   }
   sollya_mpfi_clear(u);
   sollya_mpfi_clear(temp);
-  free(coeffs_array);
-  free(coeffs_array_diff);
+  safeFree(coeffs_array);
+  safeFree(coeffs_array_diff);
   
   return;
 }
@@ -856,8 +856,8 @@ void asin_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   }
   sollya_mpfi_clear(u);
   sollya_mpfi_clear(temp);
-  free(coeffs_array);
-  free(coeffs_array_diff);
+  safeFree(coeffs_array);
+  safeFree(coeffs_array_diff);
   
   return;
 }
@@ -952,8 +952,8 @@ void asinh_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   }
   sollya_mpfi_clear(u);
   sollya_mpfi_clear(temp);
-  free(coeffs_array);
-  free(coeffs_array_diff);
+  safeFree(coeffs_array);
+  safeFree(coeffs_array_diff);
   
   return;
 }
@@ -1035,8 +1035,8 @@ void acosh_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   }
   sollya_mpfi_clear(u);
   sollya_mpfi_clear(temp);
-  free(coeffs_array);
-  free(coeffs_array_diff);
+  safeFree(coeffs_array);
+  safeFree(coeffs_array_diff);
   
   return;
 }
@@ -1110,8 +1110,8 @@ void erf_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   }
   sollya_mpfi_clear(u);
   sollya_mpfi_clear(temp);
-  free(coeffs_array);
-  free(coeffs_array_diff);
+  safeFree(coeffs_array);
+  safeFree(coeffs_array_diff);
   
   return;  
 }
@@ -1338,20 +1338,24 @@ void nearestint_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
 }
 
 void libraryFunction_diff(sollya_mpfi_t *res, node *f, sollya_mpfi_t x, int n, int *silent) {
-  sollya_mpfi_t fact;
+  sollya_mpfi_t fact, temp, temp2;
   mp_prec_t prec;
   int i;
 
   prec = getToolPrecision();
   sollya_mpfi_init2(fact, prec);
   sollya_mpfi_set_ui(fact, 1);
+  sollya_mpfi_init2(temp, prec);
 
   for(i=0;i<=n;i++) {
-    f->libFun->code(res[i], x, f->libFunDeriv + i);
-    sollya_mpfi_div(res[i], res[i], fact);
+    f->libFun->code(temp, x, f->libFunDeriv + i);
+    sollya_init_and_convert_interval(temp2, temp);
+    sollya_mpfi_div(res[i], temp2, fact);
+    sollya_mpfi_clear(temp2);
     sollya_mpfi_mul_ui(fact, fact, i+1);
   }
   sollya_mpfi_clear(fact);
+  sollya_mpfi_clear(temp);
 }
 
 void procedureFunction_diff(sollya_mpfi_t *res, node *f, sollya_mpfi_t x, int n, int *silent) {
@@ -1593,8 +1597,8 @@ void auto_diff_scaled(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n) {
       sollya_mpfi_clear(res1[i]);
       sollya_mpfi_clear(res2[i]);
     }
-    free(res1);
-    free(res2);
+    safeFree(res1);
+    safeFree(res2);
     break;
 
   case POW:
@@ -1653,8 +1657,8 @@ void auto_diff_scaled(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n) {
 	sollya_mpfi_clear(res1[i]);
 	sollya_mpfi_clear(res2[i]); 
       }
-      free(res1);
-      free(res2);    
+      safeFree(res1);
+      safeFree(res2);    
     } 
 
     /*  f^g case */

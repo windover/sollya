@@ -29,10 +29,11 @@ asin(1) * 2 == pi;
 exp(5) == log(4);
 
 #EXAMPLE
-sin(pi/6) == 1/2 * sqrt(3);
+sin(pi/6) == 1/4;
 
 #EXAMPLE
 prec = 12;
+verbosity = 1!;
 16384.1 == 16385.1;
 
 #EXAMPLE

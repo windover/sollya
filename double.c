@@ -926,7 +926,7 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
     }
   }
 
-  free(tempArray);
+  safeFree(tempArray);
 
   getCoefficients(&deg,&coefficients,poly);
 
@@ -935,7 +935,7 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
     for (i=0;i<=deg;i++) {
       if (coefficients[i] != NULL) free_memory(coefficients[i]);
     }
-    free(coefficients);
+    safeFree(coefficients);
     return copyTree(poly);
   }
 
@@ -1012,7 +1012,7 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
     }
   }
 
-  free(coefficients);
+  safeFree(coefficients);
 
   if (res) {
     if (!noRoundingWarnings) {
@@ -1027,8 +1027,8 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
   roundedPoly = makePolynomial(fpcoefficients, degree);
 
   for (i=0;i<=degree;i++) mpfr_clear(fpcoefficients[i]);
-  free(fpcoefficients);
-  free(formatsArray);
+  safeFree(fpcoefficients);
+  safeFree(formatsArray);
   mpfr_clear(tempMpfr);
   return roundedPoly;
 }
@@ -1180,7 +1180,6 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
       } else {
 	if (!isConstant(tempNode)) {
 	  printMessage(1,SOLLYA_MSG_POLY_COEFF_IS_NOT_CONSTANT,"Error: a coefficient of a polynomial is not constant.\n");
-	  recoverFromError();
 	}
 	if (!evaluateFaithful(tempValue, tempNode, tempValue2, prec)) {
 	  if (!noRoundingWarnings) {
@@ -1205,7 +1204,7 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
   for (i=0;i<l;i++) 
     sollyaPrintf(")");
 
-  free(coefficients);
+  safeFree(coefficients);
   mpfr_clear(tempValue);
   mpfr_clear(tempValue2);
   free_memory(myTree);

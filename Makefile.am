@@ -1,7 +1,5 @@
-SUBDIRS = doc tests
+SUBDIRS = doc tests-tool tests-lib
 EXTRA_DIST = autogen.sh sollya.h libsollyaexample.c compile.sh expansion.c expansion.h externalfun.c externalproc.c 
-
-check_PROGRAMS = sollya
 
 AM_YFLAGS = -d
 AM_LFLAGS = -o$(LEX_OUTPUT_ROOT).c
@@ -16,9 +14,16 @@ internlexer.c
 
 bin_PROGRAMS = sollya
 sollya_SOURCES = \
+sollya.h \
 mpfi-compat.c \
 mpfi-compat.h \
-message-numbers.h \
+sollya-messaging.h \
+sollya-messages.h \
+sollya-messaging.c \
+bitfields.h \
+bitfields.c \
+sollya-library-wrappers.c \
+sollya-library-wrappers.h \
 printf.c \
 printf.h \
 internparser.y \
@@ -81,14 +86,20 @@ xml.h
 sollya_CFLAGS = $(AM_CFLAGS)
 sollya_CXXFLAGS = $(AM_CXXFLAGS)
 
-include_HEADERS = sollya.h mpfi-compat.h
+include_HEADERS = sollya.h sollya-messages.h
 
 lib_LTLIBRARIES     = libsollya.la
 libsollya_la_SOURCES = \
 sollya.h \
 mpfi-compat.h \
 mpfi-compat.c \
-message-numbers.h \
+sollya-library-wrappers.c \
+sollya-library-wrappers.h \
+sollya-messaging.h \
+sollya-messages.h \
+sollya-messaging.c \
+bitfields.h \
+bitfields.c \
 printf.c \
 printf.h \
 internparser.y \
@@ -152,3 +163,30 @@ LIBTOOL_DEPS = @LIBTOOL_DEPS@
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
 
+check-lib: $(BUILT_SOURCES)
+	@fail= failcom='exit 1'; \
+	for f in x $$MAKEFLAGS; do \
+	  case $$f in \
+	    *=* | --[!k]*);; \
+	    *k*) failcom='fail=yes';; \
+	  esac; \
+	done; \
+	echo "Making check in tests-lib"; \
+	($(am__cd) tests-lib && $(MAKE) $(AM_MAKEFLAGS) check) \
+	|| eval $$failcom; \
+	$(MAKE) $(AM_MAKEFLAGS) check-am || exit 1; \
+	test -z "$$fail"
+
+check-tool: $(BUILT_SOURCES)
+	@fail= failcom='exit 1'; \
+	for f in x $$MAKEFLAGS; do \
+	  case $$f in \
+	    *=* | --[!k]*);; \
+	    *k*) failcom='fail=yes';; \
+	  esac; \
+	done; \
+	echo "Making check in tests-tool"; \
+	($(am__cd) tests-tool && $(MAKE) $(AM_MAKEFLAGS) check) \
+	|| eval $$failcom; \
+	$(MAKE) $(AM_MAKEFLAGS) check-am || exit 1; \
+	test -z "$$fail"

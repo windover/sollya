@@ -188,7 +188,7 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
 		  len = strlen(res);
 		  buf = safeCalloc(len + readLen + 1, sizeof(char));
 		  strcpy(buf,res);
-		  free(res);
+		  safeFree(res);
 		  res = buf;
 		  buf += len;
 		}
@@ -214,7 +214,7 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
 		  len = strlen(res);
 		  buf = safeCalloc(len + readLen + 1, sizeof(char));
 		  strcpy(buf,res);
-		  free(res);
+		  safeFree(res);
 		  res = buf;
 		  buf += len;
 		}
@@ -248,7 +248,7 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
   }
 
   if (!okay) {
-    if (res != NULL) free(res);
+    if (res != NULL) safeFree(res);
     res = NULL;
   }
 
@@ -415,8 +415,8 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
     }
   }
   
-  free(gplotname);
-  free(dataname);
-  free(outputname);
+  safeFree(gplotname);
+  safeFree(dataname);
+  safeFree(outputname);
   return;
 }

@@ -101,8 +101,8 @@ void *getEntry(chain *symTbl, char *name, void * (*copyValue) (void *)) {
 
 void freeEntry(void *e, void (*f) (void *)) {
   f(((entry *) e)->value);
-  free(((entry *) e)->name);
-  free(e);
+  safeFree(((entry *) e)->name);
+  safeFree(e);
 }
 
 
@@ -123,7 +123,7 @@ chain *removeEntry(chain *symTbl, char *name, void (*f) (void *)) {
 	}
       }
       freeEntry(((entry *) curr->value),f);
-      free(curr);
+      safeFree(curr);
       return newSymTbl;
     }
     prev = curr;
@@ -138,7 +138,7 @@ void freeSymbolTable(chain *symTbl, void (*f) (void *)) {
   if (symTbl != NULL) {
     if (symTbl->next != NULL) freeSymbolTable(symTbl->next,f);
     freeEntry(symTbl->value,f);
-    free(symTbl);
+    safeFree(symTbl);
   }
 }
 
@@ -175,7 +175,7 @@ chain *popFrame(chain *declSymTbl, void (*f) (void *)) {
 
   freeSymbolTable((chain *) (declSymTbl->value), f);
 
-  free(declSymTbl);
+  safeFree(declSymTbl);
 
   return newDeclSymTbl;
 }

@@ -75,7 +75,7 @@ typedef struct libraryFunctionStruct libraryFunction;
 struct libraryFunctionStruct 
 {
   char *functionName;
-  int (*code)(sollya_mpfi_t, sollya_mpfi_t, int); /* used for LIBRARYFUNCTION */
+  int (*code)(mpfi_t, mpfi_t, int); /* used for LIBRARYFUNCTION */
   void (*constant_code)(mpfr_t, mp_prec_t); /* used for LIBRARYCONSTANT */
 };
 
@@ -101,7 +101,8 @@ struct libraryProcedureStruct
 #define INTEGER_LIST_TYPE 10
 #define STRING_LIST_TYPE 11
 #define BOOLEAN_LIST_TYPE 12
-
+#define OBJECT_TYPE 13
+#define OBJECT_LIST_TYPE 14
 
 libraryFunction *bindFunction(char* libraryName, char *functionName);
 libraryFunction *bindConstantFunction(char* libraryName, char *functionName);

@@ -71,6 +71,21 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "config.h"
 #endif
 
+/* Mess with the mallocs used by the parser */
+extern void *parserCalloc(size_t, size_t);
+extern void *parserMalloc(size_t);
+extern void *parserRealloc(void *, size_t);
+extern void parserFree(void *);
+#undef malloc
+#undef realloc
+#undef calloc
+#undef free
+#define malloc parserMalloc
+#define realloc parserRealloc
+#define calloc parserCalloc
+#define free parserFree
+/* End of the malloc mess */
+
 #define YYERROR_VERBOSE 1
 #define YYPARSE_PARAM scanner
 #define YYLEX_PARAM   scanner
@@ -84,7 +99,7 @@ void yyerror(char *message) {
   if (!feof(yyget_in(scanner))) {
     str = getCurrentLexSymbol();
     printMessage(1,SOLLYA_MSG_SYNTAX_ERROR_ENCOUNTERED_WHILE_PARSING,"Warning: %s.\nThe last symbol read has been \"%s\".\nWill skip input until next semicolon after the unexpected token. May leak memory.\n",message,str);
-    free(str);
+    safeFree(str);
     promptToBePrinted = 1;
     lastWasSyntaxError = 1;
     considerDyingOnError();
@@ -220,6 +235,7 @@ int parserCheckEof() {
 %token  DIAMTOKEN;
 %token  DISPLAYTOKEN;
 %token  VERBOSITYTOKEN;
+%token  SHOWMESSAGENUMBERSTOKEN;
 %token  CANONICALTOKEN;
 %token  AUTOSIMPLIFYTOKEN;
 %token  TAYLORRECURSIONSTOKEN;
@@ -271,6 +287,7 @@ int parserCheckEof() {
 %token  SIMPLIFYTOKEN;
 %token  REMEZTOKEN;
 %token  BASHEVALUATETOKEN;
+%token  GETSUPPRESSEDMESSAGESTOKEN;
 %token  FPMINIMAXTOKEN;
 %token  HORNERTOKEN;
 %token  EXPANDTOKEN;
@@ -307,6 +324,8 @@ int parserCheckEof() {
 %token  PRINTHEXATOKEN;
 %token  PRINTFLOATTOKEN;
 %token  PRINTBINARYTOKEN;
+%token  SUPPRESSMESSAGETOKEN;
+%token  UNSUPPRESSMESSAGETOKEN;
 %token  PRINTEXPANSIONTOKEN;
 %token  BASHEXECUTETOKEN;
 %token  EXTERNALPLOTTOKEN;
@@ -358,6 +377,7 @@ int parserCheckEof() {
 %token  VOIDTOKEN;
 %token  CONSTANTTYPETOKEN;
 %token  FUNCTIONTOKEN;
+%token  OBJECTTOKEN;
 %token  RANGETOKEN;
 %token  INTEGERTOKEN;
 %token  STRINGTYPETOKEN;
@@ -548,17 +568,17 @@ ifcommand:              thing THENTOKEN command
 forcommand:             IDENTIFIERTOKEN FROMTOKEN thing TOTOKEN thing DOTOKEN command
                           {
 			    $$ = makeFor($1, $3, $5, makeConstantDouble(1.0), $7);
-			    free($1);
+			    safeFree($1);
                           }
                       | IDENTIFIERTOKEN FROMTOKEN thing TOTOKEN thing BYTOKEN thing DOTOKEN command
                           {
 			    $$ = makeFor($1, $3, $5, $7, $9);
-			    free($1);
+			    safeFree($1);
                           }
                       | IDENTIFIERTOKEN INTOKEN thing DOTOKEN command
                           {
 			    $$ = makeForIn($1, $3, $5);
-			    free($1);
+			    safeFree($1);
                           }
 ;
 
@@ -751,6 +771,14 @@ simplecommand:          QUITTOKEN
                           {
 			    $$ = makePrintBinary($3);
 			  }
+                      | SUPPRESSMESSAGETOKEN LPARTOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeSuppressMessage($3);
+			  }
+                      | UNSUPPRESSMESSAGETOKEN LPARTOKEN thinglist RPARTOKEN
+                          {
+			    $$ = makeUnsuppressMessage($3);
+			  }
                       | PRINTEXPANSIONTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makePrintExpansion($3);
@@ -806,18 +834,18 @@ simplecommand:          QUITTOKEN
                       | RENAMETOKEN LPARTOKEN IDENTIFIERTOKEN COMMATOKEN IDENTIFIERTOKEN RPARTOKEN
                           {
 			    $$ = makeRename($3, $5);
-			    free($3);
-			    free($5);
+			    safeFree($3);
+			    safeFree($5);
 			  }
                       | RENAMETOKEN LPARTOKEN FREEVARTOKEN COMMATOKEN IDENTIFIERTOKEN RPARTOKEN
                           {
 			    $$ = makeRename("_x_", $5);
-			    free($5);
+			    safeFree($5);
 			  }
                       | EXTERNALPROCTOKEN LPARTOKEN IDENTIFIERTOKEN COMMATOKEN thing COMMATOKEN externalproctypelist MINUSTOKEN RIGHTANGLETOKEN extendedexternalproctype RPARTOKEN
                           {
 			    $$ = makeExternalProc($3, $5, addElement($7, $10));
-			    free($3);
+			    safeFree($3);
 			  }
                       | assignment
                           {
@@ -830,7 +858,7 @@ simplecommand:          QUITTOKEN
                       | PROCEDURETOKEN IDENTIFIERTOKEN procbody
                           {
 			    $$ = makeAssignment($2, $3);
-			    free($2);
+			    safeFree($2);
 			  }
 ;
 
@@ -855,32 +883,32 @@ assignment:             stateassignment
 simpleassignment:       IDENTIFIERTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeAssignment($1, $3);
-			    free($1);
+			    safeFree($1);
 			  }
                       | IDENTIFIERTOKEN ASSIGNEQUALTOKEN thing
                           {
 			    $$ = makeFloatAssignment($1, $3);
-			    free($1);
+			    safeFree($1);
 			  }
                       | IDENTIFIERTOKEN EQUALTOKEN LIBRARYTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeLibraryBinding($1, $5);
-			    free($1);
+			    safeFree($1);
 			  }
                       | IDENTIFIERTOKEN EQUALTOKEN LIBRARYCONSTANTTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeLibraryConstantBinding($1, $5);
-			    free($1);
+			    safeFree($1);
 			  }
                       | indexing EQUALTOKEN thing
                           {
 			    $$ = makeAssignmentInIndexing($1->a,$1->b,$3);
-			    free($1);
+			    safeFree($1);
 			  }
                       | indexing ASSIGNEQUALTOKEN thing
                           {
 			    $$ = makeFloatAssignmentInIndexing($1->a,$1->b,$3);
-			    free($1);
+			    safeFree($1);
 			  }
                       | structuring EQUALTOKEN thing
                           {
@@ -895,7 +923,7 @@ simpleassignment:       IDENTIFIERTOKEN EQUALTOKEN thing
 structuring:            basicthing DOTTOKEN IDENTIFIERTOKEN 
 		          {
 			    $$ = makeStructAccess($1,$3);
-			    free($3);
+			    safeFree($3);
 			  }
 ;
 
@@ -918,6 +946,10 @@ stateassignment:        PRECTOKEN EQUALTOKEN thing
                       | VERBOSITYTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeVerbosityAssign($3);
+			  }
+                      | SHOWMESSAGENUMBERSTOKEN EQUALTOKEN thing
+                          {
+			    $$ = makeShowMessageNumbersAssign($3);
 			  }
                       | CANONICALTOKEN EQUALTOKEN thing
                           {
@@ -980,6 +1012,10 @@ stillstateassignment:   PRECTOKEN EQUALTOKEN thing
                       | VERBOSITYTOKEN EQUALTOKEN thing
                           {
 			    $$ = makeVerbosityStillAssign($3);
+			  }
+                      | SHOWMESSAGENUMBERSTOKEN EQUALTOKEN thing
+                          {
+			    $$ = makeShowMessageNumbersStillAssign($3);
 			  }
                       | CANONICALTOKEN EQUALTOKEN thing
                           {
@@ -1058,7 +1094,7 @@ structelement:          DOTTOKEN IDENTIFIERTOKEN EQUALTOKEN thing
 			    $$ = (entry *) safeMalloc(sizeof(entry));
 			    $$->name = (char *) safeCalloc(strlen($2) + 1, sizeof(char));
 			    strcpy($$->name,$2);
-			    free($2);
+			    safeFree($2);
 			    $$->value = (void *) ($4);
 			  }
 ;
@@ -1388,12 +1424,12 @@ basicthing:             ONTOKEN
                           {
 			    tempString = safeCalloc(strlen($1) + 1, sizeof(char));
 			    strcpy(tempString, $1);
-			    free($1);
+			    safeFree($1);
 			    tempString2 = safeCalloc(strlen(tempString) + 1, sizeof(char));
 			    strcpy(tempString2, tempString);
-			    free(tempString);
+			    safeFree(tempString);
 			    $$ = makeString(tempString2);
-			    free(tempString2);
+			    safeFree(tempString2);
 			  }
                       | constant
                           {
@@ -1402,22 +1438,22 @@ basicthing:             ONTOKEN
                       | IDENTIFIERTOKEN
                           {
 			    $$ = makeTableAccess($1);
-			    free($1);
+			    safeFree($1);
 			  }
                       | ISBOUNDTOKEN LPARTOKEN IDENTIFIERTOKEN RPARTOKEN
                           {
 			    $$ = makeIsBound($3);
-			    free($3);
+			    safeFree($3);
 			  }
                       | IDENTIFIERTOKEN LPARTOKEN thinglist RPARTOKEN
                           {
 			    $$ = makeTableAccessWithSubstitute($1, $3);
-			    free($1);
+			    safeFree($1);
 			  }
                       | IDENTIFIERTOKEN LPARTOKEN RPARTOKEN
                           {
 			    $$ = makeTableAccessWithSubstitute($1, NULL);
-			    free($1);
+			    safeFree($1);
 			  }
                       | list
                           {
@@ -1450,17 +1486,17 @@ basicthing:             ONTOKEN
                       | indexing
                           {
 			    $$ = makeIndex($1->a, $1->b);
-			    free($1);
+			    safeFree($1);
 			  }
                       | basicthing DOTTOKEN IDENTIFIERTOKEN 
 		          {
 			    $$ = makeStructAccess($1,$3);
-			    free($3);
+			    safeFree($3);
 			  }
                       | basicthing DOTTOKEN IDENTIFIERTOKEN LPARTOKEN thinglist RPARTOKEN
 		          {
 			    $$ = makeApply(makeStructAccess($1,$3),$5);
-			    free($3);
+			    safeFree($3);
 			  }
                       | LPARTOKEN thing RPARTOKEN LPARTOKEN thinglist RPARTOKEN
                           {
@@ -1527,32 +1563,32 @@ matchelement:          thing COLONTOKEN beginsymbol variabledeclarationlist comm
 constant:               CONSTANTTOKEN
                           {
 			    $$ = makeDecimalConstant($1);
-			    free($1);
+			    safeFree($1);
 			  }
                       | MIDPOINTCONSTANTTOKEN
                           {
 			    $$ = makeMidpointConstant($1);
-			    free($1);
+			    safeFree($1);
 			  }
                       | DYADICCONSTANTTOKEN
                           {
 			    $$ = makeDyadicConstant($1);
-			    free($1);
+			    safeFree($1);
 			  }
                       | HEXCONSTANTTOKEN
                           {
 			    $$ = makeHexConstant($1);
-			    free($1);
+			    safeFree($1);
 			  }
                       | HEXADECIMALCONSTANTTOKEN
                           {
 			    $$ = makeHexadecimalConstant($1);
-			    free($1);
+			    safeFree($1);
 			  }
                       | BINARYCONSTANTTOKEN
                           {
 			    $$ = makeBinaryConstant($1);
-			    free($1);
+			    safeFree($1);
 			  }
                       | PITOKEN
                           {
@@ -1647,6 +1683,10 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeBashevaluate(addElement(NULL,$3));
 			  }
+                      | GETSUPPRESSEDMESSAGESTOKEN LPARTOKEN RPARTOKEN
+                          {
+			    $$ = makeGetSuppressedMessages();
+			  }
                       | BASHEVALUATETOKEN LPARTOKEN thing COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeBashevaluate(addElement(addElement(NULL,$5),$3));
@@ -1658,7 +1698,7 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                       | BINDTOKEN LPARTOKEN thing COMMATOKEN IDENTIFIERTOKEN COMMATOKEN thing RPARTOKEN
                           {
 			    $$ = makeBind($3, $5, $7);
-			    free($5);
+			    safeFree($5);
 			  } 
                       | MINTOKEN LPARTOKEN thinglist RPARTOKEN
                           {
@@ -2028,6 +2068,10 @@ statedereference:       PRECTOKEN egalquestionmark
                           {
 			    $$ = makeVerbosityDeref();
 			  }
+                      | SHOWMESSAGENUMBERSTOKEN egalquestionmark
+                          {
+			    $$ = makeShowMessageNumbersDeref();
+			  }
                       | CANONICALTOKEN egalquestionmark
                           {
 			    $$ = makeCanonicalDeref();
@@ -2082,6 +2126,12 @@ externalproctype:       CONSTANTTYPETOKEN
 			    *tempIntPtr = FUNCTION_TYPE;
 			    $$ = tempIntPtr;
 			  }
+                      | OBJECTTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = OBJECT_TYPE;
+			    $$ = tempIntPtr;
+			  }
                       | RANGETOKEN
                           {
 			    tempIntPtr = (int *) safeMalloc(sizeof(int));
@@ -2116,6 +2166,12 @@ externalproctype:       CONSTANTTYPETOKEN
                           {
 			    tempIntPtr = (int *) safeMalloc(sizeof(int));
 			    *tempIntPtr = FUNCTION_LIST_TYPE;
+			    $$ = tempIntPtr;
+			  }
+                      | LISTTOKEN OFTOKEN OBJECTTOKEN
+                          {
+			    tempIntPtr = (int *) safeMalloc(sizeof(int));
+			    *tempIntPtr = OBJECT_LIST_TYPE;
 			    $$ = tempIntPtr;
 			  }
                       | LISTTOKEN OFTOKEN RANGETOKEN
@@ -2181,27 +2237,27 @@ externalproctypelist:       extendedexternalproctype
 help:                   CONSTANTTOKEN
                           {
 			    outputMode(); sollyaPrintf("\"%s\" is recognized as a base 10 constant.\n",$1);
-			    free($1);
+			    safeFree($1);
 			  }
                       | DYADICCONSTANTTOKEN
                           {
 			    outputMode(); sollyaPrintf("\"%s\" is recognized as a dyadic number constant.\n",$1);
-			    free($1);
+			    safeFree($1);
                           }
                       | HEXCONSTANTTOKEN
                           {
 			    outputMode(); sollyaPrintf("\"%s\" is recognized as a double or single precision constant.\n",$1);
-			    free($1);
+			    safeFree($1);
                           }
                       | HEXADECIMALCONSTANTTOKEN
                           {
 			    outputMode(); sollyaPrintf("\"%s\" is recognized as a hexadecimal constant.\n",$1);
-			    free($1);
+			    safeFree($1);
                           }
                       | BINARYCONSTANTTOKEN
                           {
 			    outputMode(); sollyaPrintf("\"%s_2\" is recognized as a base 2 constant.\n",$1);
-			    free($1);
+			    safeFree($1);
                           }
                       | PITOKEN
                           {
@@ -2217,12 +2273,12 @@ help:                   CONSTANTTOKEN
                       | IDENTIFIERTOKEN
                           {
 			    outputMode(); sollyaPrintf("\"%s\" is an identifier.\n",$1);
-			    free($1);
+			    safeFree($1);
                           }
                       | STRINGTOKEN
                           {
 			    outputMode(); sollyaPrintf("\"%s\" is a string constant.\n",$1);
-			    free($1);
+			    safeFree($1);
                           }
                       | LPARTOKEN
                           {
@@ -2993,6 +3049,17 @@ help:                   CONSTANTTOKEN
 #endif
 #endif
                           }
+                      | SHOWMESSAGENUMBERSTOKEN
+                          {
+#ifdef HELP_SHOWMESSAGENUMBERS_TEXT
+			    outputMode(); sollyaPrintf(HELP_SHOWMESSAGENUMBERS_TEXT);
+#else
+			    outputMode(); sollyaPrintf("Global environment variable activating the displaying of message numbers.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for SHOWMESSAGENUMBERS"
+#endif
+#endif
+                          }
                       | CANONICALTOKEN
                           {
 #ifdef HELP_CANONICAL_TEXT
@@ -3477,6 +3544,17 @@ help:                   CONSTANTTOKEN
 #endif
 #endif
                           }
+                      | GETSUPPRESSEDMESSAGESTOKEN
+                          {
+#ifdef HELP_GETSUPPRESSEDMESSAGES_TEXT
+			    outputMode(); sollyaPrintf(HELP_GETSUPPRESSEDMESSAGES_TEXT);
+#else
+			    outputMode(); sollyaPrintf("Get a list of message numbers that have been suppressed.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for GETSUPPRESSEDMESSAGES"
+#endif
+#endif
+                          }
                       | SIMPLIFYTOKEN
                           {
 #ifdef HELP_SIMPLIFY_TEXT
@@ -3827,6 +3905,28 @@ help:                   CONSTANTTOKEN
 			    outputMode(); sollyaPrintf("Print a constant in binary: printbinary(constant).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for PRINTBINARY"
+#endif
+#endif
+                          }
+                      | SUPPRESSMESSAGETOKEN
+                          {
+#ifdef HELP_SUPPRESSMESSAGE_TEXT
+			    outputMode(); sollyaPrintf(HELP_SUPPRESSMESSAGE_TEXT);
+#else
+			    outputMode(); sollyaPrintf("Suppress a message with a certain message number.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for SUPPRESSMESSAGE"
+#endif
+#endif
+                          }
+                      | UNSUPPRESSMESSAGETOKEN
+                          {
+#ifdef HELP_UNSUPPRESSMESSAGE_TEXT
+			    outputMode(); sollyaPrintf(HELP_UNSUPPRESSMESSAGE_TEXT);
+#else
+			    outputMode(); sollyaPrintf("Unsuppress a message with a certain message number.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for UNSUPPRESSMESSAGE"
 #endif
 #endif
                           }
@@ -4275,9 +4375,19 @@ help:                   CONSTANTTOKEN
 #ifdef HELP_FUNCTION_TEXT
 			    outputMode(); sollyaPrintf(HELP_FUNCTION_TEXT);
 #else
-			    outputMode(); sollyaPrintf("Represents the function type for externalproc.\n");
+			    outputMode(); sollyaPrintf("Represents the function type for externalproc or a procedure-based function.\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for FUNCTION"
+#endif
+#endif
+                          }
+                      | OBJECTTOKEN                          {
+#ifdef HELP_OBJECT_TEXT
+			    outputMode(); sollyaPrintf(HELP_OBJECT_TEXT);
+#else
+			    outputMode(); sollyaPrintf("Represents the object type for externalproc.\n");
+#if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
+#warning "No help text for OBJECT"
 #endif
 #endif
                           }
@@ -4533,6 +4643,7 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- numberroots\n");
 			    sollyaPrintf("- nop\n");
 			    sollyaPrintf("- numerator\n");
+			    sollyaPrintf("- object\n");
 			    sollyaPrintf("- of\n");
 			    sollyaPrintf("- off\n");
 			    sollyaPrintf("- on\n");
@@ -4574,6 +4685,7 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- roundingwarnings\n");
 			    sollyaPrintf("- safesimplify\n");
 			    sollyaPrintf("- searchgal\n");
+			    sollyaPrintf("- showmessagenumbers\n");
 			    sollyaPrintf("- simplify\n");
 			    sollyaPrintf("- simplifysafe\n");
 			    sollyaPrintf("- sin\n");
@@ -4586,6 +4698,7 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- substitute\n");
 			    sollyaPrintf("- sup\n");
 			    sollyaPrintf("- supnorm\n");
+			    sollyaPrintf("- suppressmessage\n");
 			    sollyaPrintf("- tail\n");
 			    sollyaPrintf("- tan\n");
 			    sollyaPrintf("- tanh\n");
@@ -4598,6 +4711,7 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- to\n");
 			    sollyaPrintf("- tripledouble\n");
 			    sollyaPrintf("- true\n");
+			    sollyaPrintf("- unsuppressmessage\n");
 			    sollyaPrintf("- var\n");
 			    sollyaPrintf("- verbosity\n");
 			    sollyaPrintf("- version\n");

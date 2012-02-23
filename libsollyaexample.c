@@ -53,9 +53,8 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
+#include <stdlib.h>
 #include "sollya.h"
-#include <setjmp.h>
-#include <stdio.h>
 
 /* Example for the usage of libsollya
 
@@ -67,98 +66,32 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
    The example...
 
-   1.) Initializes the library
-   2.) Computes a Remez polynomial for log(1 + x) with relative error
-   3.) Computes a Remez polynomial for log(1 + x) with relative error with wrong base
-   4.) Calls error handler because of failure
-   5.) Frees the library
-
-   The usage of the recovering functionality is not mandatory. In the case
-   of an error the library ends the program with return code 1.
+   TODO
 
 */
 
+int myMessageCallback(int msg) {
+  char *str;
+  str = sollya_lib_msg_number_to_text(msg);
+  sollya_lib_printf("Got message #%d - \"%s\"\n", msg, str);
+  safeFree(str);
+  return 1;
+}
+
 int main(int argc, char *argv[]) {
-  jmp_buf recover;
+  sollya_obj_t func;
 
-  node *tempNode, *tempNode2, *tempNode3;
-  chain *tempChain;
-  mpfr_t a;
-  mpfr_t b;
+  sollya_lib_init();
 
-  /* Start initialization */
+  sollya_lib_install_msg_callback(myMessageCallback);
+
+  func = sollya_lib_parse_string("exp(1.7 * x)");
+
+  sollya_lib_autoprint(func, NULL);
   
-  initTool();
+  sollya_lib_clear_obj(func);
 
-  if (setjmp(recover)) {
-    /* If we are here, we have come back from an error in the library */
-
-    fprintf(stderr,"An error occurred in the sollya library.\n");
-    finishTool();
-    return 1;
-  }
-  setRecoverEnvironment(&recover);
-
-  /* End of initialization */
-  
-
-  tempNode = parseString("1/log(1 + x)");
-  tempNode2 = parseString("1");
-
-  tempChain = makeIntPtrChainFromTo(1,5);
-
-  mpfr_init2(a,12);
-  mpfr_init2(b,12);
-
-  mpfr_set_d(a,-0.25,GMP_RNDN);
-  mpfr_set_d(b,0.25,GMP_RNDN);
-
-  tempNode3 = remez(tempNode2, tempNode, tempChain, a, b, NULL, getToolPrecision());
-
-  mpfr_clear(a);
-  mpfr_clear(b);
-
-
-  printTree(tempNode3);
-  printf("\n");
-
-  free_memory(tempNode);
-  free_memory(tempNode2);
-  free_memory(tempNode3);
-
-  freeChain(tempChain,freeIntPtr);
-
-  /* Second example that calls a error recovery function */
-
-  tempNode = parseString("1/log(1 + x)");
-  tempNode2 = parseString("1");
-
-  tempChain = makeIntPtrChainFromTo(0,5);
-
-  mpfr_init2(a,12);
-  mpfr_init2(b,12);
-
-  mpfr_set_d(a,-0.25,GMP_RNDN);
-  mpfr_set_d(b,0.25,GMP_RNDN);
-
-  tempNode3 = remez(tempNode2, tempNode, tempChain, a, b, NULL, getToolPrecision());
-
-  mpfr_clear(a);
-  mpfr_clear(b);
-
-
-  printTree(tempNode3);
-  printf("\n");
-
-  free_memory(tempNode);
-  free_memory(tempNode2);
-  free_memory(tempNode3);
-
-  freeChain(tempChain,freeIntPtr);
-
-  /* End the tool */
-
-  finishTool();
+  sollya_lib_close();
 
   return 0;
 }

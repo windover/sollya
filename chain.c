@@ -71,7 +71,7 @@ void freeChain(chain *c, void (*f) (void *)) {
     f(curr->value);
     prev = curr;
     curr = curr->next;
-    free(prev);
+    safeFree(prev);
   }
 }
 
@@ -124,7 +124,7 @@ chain *copyChainWithoutReversal(chain *c, void * (*f) (void *)) {
   for (i=len-1;i>=0;i--) {
     copy = addElement(copy,f(array[i]));
   }
-  free(array);
+  safeFree(array);
   return copy;
 }
 
@@ -218,8 +218,8 @@ chain *removeInt(chain *c, int n) {
   i = *(int *)(curr->value);
   if(i==n) {
     curr=c->next;
-    free(c->value);
-    free(c);
+    safeFree(c->value);
+    safeFree(c);
     return curr;
   }
   else {
@@ -233,30 +233,30 @@ void freeMpfrPtr(void *ptr) {
   if (ptr == NULL) return;
 
   mpfr_clear(*((mpfr_t *) ptr));
-  free((mpfr_t *) ptr);
+  safeFree((mpfr_t *) ptr);
 }
 
 void freeMpfiPtr(void *i) {
   if (i == NULL) return;
   sollya_mpfi_clear(*((sollya_mpfi_t *) i));
-  free(i);
+  safeFree(i);
 }
 
 void freeIntPtr(void *ptr) {
   if (ptr == NULL) return;
-  free(ptr);
+  safeFree(ptr);
 }
 
 void freeRangetypePtr(void *ptr) {
   mpfr_clear(*(((rangetype *) ptr)->a));
   mpfr_clear(*(((rangetype *) ptr)->b));
-  free(((rangetype *) ptr)->a);
-  free(((rangetype *) ptr)->b);
-  free(ptr);
+  safeFree(((rangetype *) ptr)->a);
+  safeFree(((rangetype *) ptr)->b);
+  safeFree(ptr);
 }
 
 void freeStringPtr(void *aString) {
-  free((char *) aString);
+  safeFree((char *) aString);
 }
 
 void freeMemoryOnVoid(void *tree) {
@@ -409,7 +409,7 @@ chain *copyChainAndReplaceNth(chain *c, int k, void *obj, void * (*f) (void *)) 
   for (i=len-1;i>=0;i--) {
     copy = addElement(copy,f(array[i]));
   }
-  free(array);
+  safeFree(array);
   return copy;
 }
 

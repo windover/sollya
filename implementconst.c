@@ -185,14 +185,14 @@ void free_implementCsteInstruction(void *instr) {
   struct implementCsteInstruction *ptr;
 
   ptr = (struct implementCsteInstruction *)instr;
-  if (ptr->strval != NULL )  free(ptr->strval);
+  if (ptr->strval != NULL )  safeFree(ptr->strval);
 
   freeChain(ptr->prog1.instructions, free_implementCsteInstruction);
-  freeChain(ptr->prog1.precisions, free);
+  freeChain(ptr->prog1.precisions, safeFree);
   freeChain(ptr->prog2.instructions, free_implementCsteInstruction);
-  freeChain(ptr->prog2.precisions, free);
+  freeChain(ptr->prog2.precisions, safeFree);
 
-  free(ptr);
+  safeFree(ptr);
   return;
 }
 
@@ -312,7 +312,7 @@ void fprintInstruction(FILE *output, struct implementCsteInstruction instr, int 
     sollyaFprintf(stderr, "Unknown instruction %d\n", instr.type);
   }
 
-  free(indent);
+  safeFree(indent);
   return;
 }
 
@@ -594,7 +594,7 @@ int implementconst(node *c, FILE *fd, char *name) {
   res = constantImplementer(c, 0, &program);
   if (res) {   /* Something went wrong */
     freeChain(program.instructions, free_implementCsteInstruction);
-    freeChain(program.precisions, free);
+    freeChain(program.precisions, safeFree);
     return res;
   }
 
@@ -641,7 +641,7 @@ int implementconst(node *c, FILE *fd, char *name) {
   sollyaFprintf(output, "}\n");
 
   freeChain(program.instructions, free_implementCsteInstruction);
-  freeChain(program.precisions, free);
+  freeChain(program.precisions, safeFree);
   return 0;
 }
 
@@ -1009,14 +1009,14 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
     str = safeCalloc(32 , sizeof(char));
     sprintf(str, "prec <= %d", (int)(*Ea-gamma0));
     appendIfThenElseProg(str, prog1, prog2, program);
-    free(str);
+    safeFree(str);
 
     /* No need to free progi.precisions: program.precisions now on it. */
     freeChain(prog1.instructions, free_implementCsteInstruction);
     freeChain(prog2.instructions, free_implementCsteInstruction);
   }
   if (res) { /* Something went wrong */
-    free(Ea); free(Eb); free(Ey);
+    safeFree(Ea); safeFree(Eb); safeFree(Ey);
     sollya_mpfi_clear(y); sollya_mpfi_clear(a);
     sollya_mpfi_clear(b); sollya_mpfi_clear(tmp);
     sollya_mpfi_clear(tmp2);
@@ -1049,14 +1049,14 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
     str = safeCalloc(32 , sizeof(char));
     sprintf(str, "prec <= %d", (int)(*Eb-gamma0));
     appendIfThenElseProg(str, prog1, prog2, program);
-    free(str);
+    safeFree(str);
     
     /* No need to free progi.precisions: program.precisions now on it. */
     freeChain(prog1.instructions, free_implementCsteInstruction);
     freeChain(prog2.instructions, free_implementCsteInstruction);
   }
   if (res) { /* Something went wrong */
-    free(Ea); free(Eb); free(Ey);
+    safeFree(Ea); safeFree(Eb); safeFree(Ey);
     sollya_mpfi_clear(y); sollya_mpfi_clear(a);
     sollya_mpfi_clear(b); sollya_mpfi_clear(tmp);
     sollya_mpfi_clear(tmp2);
@@ -1074,9 +1074,9 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
   }
 
   program->counter = counter;
-  free(Ea);
-  free(Eb);
-  free(Ey);
+  safeFree(Ea);
+  safeFree(Eb);
+  safeFree(Ey);
   sollya_mpfi_clear(y);
   sollya_mpfi_clear(a);
   sollya_mpfi_clear(b);

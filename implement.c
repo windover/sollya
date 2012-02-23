@@ -2052,16 +2052,16 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
   /* Issue the variable definitions and the code */
   if (sollyaFprintf(fd,"%s\n\n%s\n\n",variables,code) < 0) res = 0;
   
-  free(powers);
-  free(operand1);
-  free(operand2);
-  free(code);
-  free(variables);
-  free(buffer1);
-  free(buffer2);
-  free(operand1Name);
-  free(operand2Name);
-  free(resultName);
+  safeFree(powers);
+  safeFree(operand1);
+  safeFree(operand2);
+  safeFree(code);
+  safeFree(variables);
+  safeFree(buffer1);
+  safeFree(buffer2);
+  safeFree(operand1Name);
+  safeFree(operand2Name);
+  safeFree(resultName);
   return res;
 }
 
@@ -2146,7 +2146,7 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 	resultVariable = (char *) safeCalloc(CODESIZE,sizeof(char));
 	sprintf(resultVariable,"%s_coeff_%d",name,i);
 	newAssignment = newGappaConstant(format, resultVariable, constHi, constMi, constLo);
-	free(resultVariable);
+	safeFree(resultVariable);
 	*gappaAssign = addElement(*gappaAssign,newAssignment);
       }
     }
@@ -5795,18 +5795,18 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
   /* Issue the variable definitions and the code to the file */
   if (sollyaFprintf(fd,"%s\n\n%s\n\n",variables,code) < 0) res = 0;
 
-  free(code);
-  free(variables);
-  free(buffer1);
-  free(buffer2);
+  safeFree(code);
+  safeFree(variables);
+  safeFree(buffer1);
+  safeFree(buffer2);
 
-  free(tempVarNum);
+  safeFree(tempVarNum);
 
   if (gappaAssign != NULL) {
-    free(resultName);
-    free(operand1Name);
-    free(operand2Name);
-    free(operand3Name);
+    safeFree(resultName);
+    safeFree(operand1Name);
+    safeFree(operand2Name);
+    safeFree(operand3Name);
   } 
 
   return res;
@@ -5956,7 +5956,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
       mpfr_set_d(fpCoefficients[i],0.0,GMP_RNDN);
     }
   }
-  free(coefficients);
+  safeFree(coefficients);
   mpfr_clear(tempValue);
 
   if (honorCoeffPrec) {
@@ -6062,7 +6062,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
       proof->assignments[i] = ((gappaAssignment *) (assignments->value));
       i--;
       tempChain = assignments->next;
-      free(assignments);
+      safeFree(assignments);
       assignments = tempChain;
     }
     fprintGappaProof(gappaFD, proof);
@@ -6070,13 +6070,13 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   }
 
   for (i=0;i<=degree;i++) mpfr_clear(fpCoefficients[i]);
-  free(fpCoefficients);
-  free(fpCoeffRoundAutomatically);
-  free(addPrec);
-  free(mulPrec);
-  free(powPrec);
-  free(overlapsPowers);
-  free(powVarNum);
+  safeFree(fpCoefficients);
+  safeFree(fpCoeffRoundAutomatically);
+  safeFree(addPrec);
+  safeFree(mulPrec);
+  safeFree(powPrec);
+  safeFree(overlapsPowers);
+  safeFree(powVarNum);
   free_memory(simplifiedFunc);
   mpfr_clear(temp);
 

@@ -215,20 +215,20 @@ void freeFunctionLibraries() {
     currFunList = currLibHandle->functionList;
     while (currFunList != NULL) {
       currFunct = (libraryFunction *) currFunList->value;
-      free(currFunct->functionName);
-      free(currFunList->value);
+      safeFree(currFunct->functionName);
+      safeFree(currFunList->value);
       prevFunList = currFunList;
       currFunList = currFunList->next;
-      free(prevFunList);
+      safeFree(prevFunList);
     }
     dlerror();
     if (dlclose(currLibHandle->libraryDescriptor) != 0) 
       printMessage(1,SOLLYA_MSG_COULD_NOT_CLOSE_LIBRARY,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
-    free(currLibHandle->libraryName);
-    free(currLibHandle);
+    safeFree(currLibHandle->libraryName);
+    safeFree(currLibHandle);
     prevLibList = currLibList;
     currLibList = currLibList->next;
-    free(prevLibList);
+    safeFree(prevLibList);
   }
   openedFunctionLibraries = NULL;
 }
@@ -309,20 +309,20 @@ void freeConstantLibraries() {
     currFunList = currLibHandle->functionList;
     while (currFunList != NULL) {
       currFunct = (libraryFunction *) currFunList->value;
-      free(currFunct->functionName);
-      free(currFunList->value);
+      safeFree(currFunct->functionName);
+      safeFree(currFunList->value);
       prevFunList = currFunList;
       currFunList = currFunList->next;
-      free(prevFunList);
+      safeFree(prevFunList);
     }
     dlerror();
     if (dlclose(currLibHandle->libraryDescriptor) != 0) 
       printMessage(1,SOLLYA_MSG_COULD_NOT_CLOSE_LIBRARY,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
-    free(currLibHandle->libraryName);
-    free(currLibHandle);
+    safeFree(currLibHandle->libraryName);
+    safeFree(currLibHandle);
     prevLibList = currLibList;
     currLibList = currLibList->next;
-    free(prevLibList);
+    safeFree(prevLibList);
   }
   openedConstantLibraries = NULL;
 }
@@ -399,21 +399,21 @@ void freeProcLibraries() {
     currProcList = currLibHandle->functionList;
     while (currProcList != NULL) {
       currProc = (libraryProcedure *) currProcList->value;
-      free(currProc->procedureName);
+      safeFree(currProc->procedureName);
       freeChain(currProc->signature,freeIntPtr);
-      free(currProcList->value);
+      safeFree(currProcList->value);
       prevProcList = currProcList;
       currProcList = currProcList->next;
-      free(prevProcList);
+      safeFree(prevProcList);
     }
     dlerror();
     if (dlclose(currLibHandle->libraryDescriptor) != 0) 
       printMessage(1,SOLLYA_MSG_COULD_NOT_CLOSE_LIBRARY,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
-    free(currLibHandle->libraryName);
-    free(currLibHandle);
+    safeFree(currLibHandle->libraryName);
+    safeFree(currLibHandle);
     prevLibList = currLibList;
     currLibList = currLibList->next;
-    free(prevLibList);
+    safeFree(prevLibList);
   }
   openedProcLibraries = NULL;
 }

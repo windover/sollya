@@ -94,12 +94,12 @@ tModel* createEmptytModel(int n,  sollya_mpfi_t x0, sollya_mpfi_t x){
 void cleartModel(tModel *t){
   int i;
   for(i=0;i<t->n;i++) sollya_mpfi_clear(t->poly_array[i]);
-  free(t->poly_array);
+  safeFree(t->poly_array);
   sollya_mpfi_clear(t->rem_bound);
   sollya_mpfi_clear(t->poly_bound);  
   sollya_mpfi_clear(t->x);
   sollya_mpfi_clear(t->x0);
-  free(t);
+  safeFree(t);
 }
 
 /* This function pretty prints a taylor model */
@@ -224,7 +224,7 @@ void mpfr_get_poly(mpfr_t *rc, sollya_mpfi_t *errors_array, sollya_mpfi_t rest, 
   symbolic_poly_evaluation_horner(rest, p, temp, n);
   
   for (i=0; i<=n; i++)  sollya_mpfi_clear(errors[i]);  
-  free(errors);
+  safeFree(errors);
   sollya_mpfi_clear(temp);
 
   return;
@@ -330,7 +330,7 @@ void multiplication_TM(tModel *t, tModel *t1, tModel *t2, int mode){
   sollya_mpfi_set(tt->poly_bound,temp1);
 
   for(i=0;i<2*n-1;i++)  sollya_mpfi_clear(r[i]);
-  free(r);
+  safeFree(r);
 
   sollya_mpfi_clear(temp1);
   sollya_mpfi_clear(temp2);
@@ -635,7 +635,7 @@ void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, 
   else {
     for(i=0;i<=n;i++)  sollya_mpfi_clear(nDeriv[i]);
   }
-  free(nDeriv);  
+  safeFree(nDeriv);  
 }
 
 /* composition: g o f
@@ -749,7 +749,7 @@ void reduceOrder_TM(tModel*d, tModel*s, int n){
   for(i=0;i<oldn-n;i++){
     sollya_mpfi_clear(remTerms[i]);
   }
-  free(remTerms);
+  safeFree(remTerms);
   
 }
 
@@ -1412,15 +1412,15 @@ void taylorform(node **T, chain **errors, sollya_mpfi_t **delta,
     *delta=rest;
   } else {
     sollya_mpfi_clear(*rest);
-    free(rest);
+    safeFree(rest);
   }
 
   for(i=0;i<n;i++){
     mpfr_clear(coeffsMpfr[i]);
     sollya_mpfi_clear(coeffsErrors[i]);
   }
-  free(coeffsMpfr);
-  free(coeffsErrors);
+  safeFree(coeffsMpfr);
+  safeFree(coeffsErrors);
   sollya_mpfi_clear(x0Int);
   cleartModel(t);
 

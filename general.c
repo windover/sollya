@@ -1,6 +1,6 @@
 /*
 
-Copyright 2007-2011 by
+Copyright 2007-2012 by
 
 Laboratoire de l'Informatique du Parallelisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
@@ -78,11 +78,20 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <sys/resource.h>
 #include <time.h>
 #include "execute.h"
+#include "sollya-messaging.h"
+#include "bitfields.h"
 
 #if HAVE_BACKTRACE
 #include <execinfo.h>
 #endif
 
+/* Some internal signal numbers */
+
+#define HANDLING_SIGINT  1
+#define HANDLING_SIGSEGV 2
+#define HANDLING_SIGBUS  3
+#define HANDLING_SIGFPE  4
+#define HANDLING_SIGPIPE 5
 
 /* STATE OF THE TOOL */
 
@@ -91,12 +100,14 @@ int oldVoidPrint = 0;
 int printMode = PRINT_MODE_LEGACY;
 FILE *warnFile = NULL;
 char *variablename = NULL;
+bitfield suppressedMessages = NULL;
 mp_prec_t defaultprecision = DEFAULTPRECISION;
 mp_prec_t tools_precision = DEFAULTPRECISION;
 int defaultpoints = DEFAULTPOINTS;
 int taylorrecursions = DEFAULTTAYLORRECURSIONS;
 int dyadic = 0;
 int verbosity = 1;
+int activateMessageNumbers = 0;
 int canonical = 0;
 int fileNumber = 0;
 int autosimplify = 1;
@@ -111,6 +122,7 @@ int hopitalrecursions = DEFAULTHOPITALRECURSIONS;
 mpfr_t statediam;
 
 int eliminatePromptBackup;
+int libraryMode = 0;
 chain *readStack = NULL;
 chain *readStackTemp = NULL;
 chain *readStack2 = NULL;
@@ -125,13 +137,17 @@ node *parsedThing = NULL;
 node *parsedThingIntern = NULL;
 
 jmp_buf recoverEnvironment;
-jmp_buf recoverEnvironmentError;
 int handlingCtrlC = 0;
+int lastHandledSignal = 0;
 int recoverEnvironmentReady = 0;
 int exitInsteadOfRecover = 1;
 int numberBacktrace = 1;
 int displayColor = -1;
 int oldMode = 0;
+
+int (*messageCallback)(int) = NULL;
+int lastMessageCallbackResult = 1;
+int lastMessageSuppressedResult = -1;
 
 chain *symbolTable = NULL;
 chain *declaredSymbolTable = NULL;
@@ -169,6 +185,23 @@ node *minitree;
 
 /* END OF HELPER VARIABLES */
 
+/* GLOBAL VARIABLES FOR THE MEMORY ALLOCATION FUNCTIONS */
+
+void *wrapSafeRealloc(void *ptr, size_t old_size, size_t new_size);
+void wrapSafeFree(void *ptr, size_t size);
+
+void *(*actualCalloc)(size_t, size_t) = calloc;
+void *(*actualMalloc)(size_t) = malloc;
+void (*actualFree)(void *) = free;
+void *(*actualRealloc)(void *, size_t) = realloc;
+void (*actualFreeWithSize)(void *, size_t) = wrapSafeFree;
+void *(*actualReallocWithSize)(void *, size_t, size_t) = wrapSafeRealloc;
+
+void *(*oldGMPMalloc)(size_t) = NULL;
+void *(*oldGMPRealloc)(void *, size_t, size_t) = NULL;
+void (*oldGMPFree)(void *, size_t) = NULL;
+
+/* END OF GLOBAL VARIABLES FOR THE MEMORY ALLOCATION FUNCTIONS */
 
 extern int yyparse();
 extern void yylex_destroy(void *);
@@ -294,7 +327,14 @@ void warningMode() {
 
 void *safeCalloc (size_t nmemb, size_t size) {
   void *ptr;
-  ptr = calloc(nmemb,size);
+  size_t myNmemb, mySize;
+
+  myNmemb = nmemb;
+  if (myNmemb == 0) myNmemb = 1;
+  mySize = size;
+  if (mySize == 0) mySize = 1;
+ 
+  ptr = actualCalloc(myNmemb,mySize);
   if (ptr == NULL) {
     sollyaFprintf(stderr,"Error: calloc could not succeed. No more memory left.\n");
     exit(1);
@@ -305,9 +345,9 @@ void *safeCalloc (size_t nmemb, size_t size) {
 void *safeMalloc (size_t size) {
   void *ptr;
   if (size == 0) 
-    ptr = malloc(1);
+    ptr = actualMalloc(1);
   else
-    ptr = malloc(size);
+    ptr = actualMalloc(size);
   if (ptr == NULL) {
     sollyaFprintf(stderr,"Error: malloc could not succeed. No more memory left.\n");
     exit(1);
@@ -325,12 +365,63 @@ void *safeRealloc (void *ptr, size_t size) {
   return newPtr;
 }
 
+void safeFree(void *ptr) {
+  actualFree(ptr);
+}
+
 /* The gmp signature for realloc is strange, we have to wrap our function */
 void *wrapSafeRealloc(void *ptr, size_t old_size, size_t new_size) {
   UNUSED_PARAM(old_size);
   return (void *) safeRealloc(ptr,new_size);
 }
 
+/* Same for GMP's free */
+void wrapSafeFree(void *ptr, size_t size) {
+  UNUSED_PARAM(size);
+  safeFree(ptr);
+}
+
+/* Wrap the GMP mp_set_memory_functions function into one that not
+   only installs the functions but also stores the old values into the
+   global backup variables. Do nothing if the backup function pointers
+   are not NULL (i.e. if they have already been set.)
+*/
+void wrap_mp_set_memory_functions(void *(*alloc_func_ptr) (size_t),
+				  void *(*realloc_func_ptr) (void *, size_t, size_t),
+				  void (*free_func_ptr) (void *, size_t)) {
+  if ((oldGMPMalloc != NULL) ||
+      (oldGMPRealloc != NULL) ||
+      (oldGMPFree != NULL)) {
+    return;
+  }
+
+  mp_get_memory_functions(&oldGMPMalloc,&oldGMPRealloc,&oldGMPFree);
+  mp_set_memory_functions(alloc_func_ptr, realloc_func_ptr, free_func_ptr);
+}
+
+/* Provide memory management functions for the parsers 
+
+   These functions are wrappers that are currently provided to cope
+   with special behavior of memory allocation in the future.
+*/
+void *parserCalloc(size_t nmemb, size_t size) {
+  return safeCalloc(nmemb, size);
+}
+
+void *parserMalloc(size_t size) {
+  return safeMalloc(size);
+}
+
+void *parserRealloc(void *ptr, size_t size) {
+  return safeRealloc(ptr, size);
+}
+
+void parserFree(void *ptr) {
+  safeFree(ptr);
+}
+
+
+/* Other legacy stuff */
 char *maskString(char *src) {
   char *buf;
   char *res;
@@ -400,7 +491,7 @@ char *maskString(char *src) {
   
   res = (char *) safeCalloc(strlen(buf)+1,sizeof(char));
   strcpy(res,buf);
-  free(buf);
+  safeFree(buf);
 
   return res;
 }
@@ -609,12 +700,64 @@ int sollyaVfprintf(FILE *fd, const char *format, va_list varlist) {
   return sollyaInternalVfprintf(fd,format,varlist);
 }
 
+int installMessageCallback(int (*msgHandler) (int)) {
+  messageCallback = msgHandler;
+  lastMessageCallbackResult = 1;
+  return 1;
+}
+
+int (*getMessageCallback())(int) {
+  return messageCallback;
+}
+
+int uninstallMessageCallback() {
+  messageCallback = NULL;
+  lastMessageCallbackResult = 1;  
+  return 1;
+}
+
 int printMessage(int verb, int msgNum, const char *format, ...) {
   va_list varlist;
   int oldColor;
-  int res;
+  int res, suppressed;
+  const char *myFormat;
+  const char *tempStr;
 
   if ((verb >= 0) && (verbosity < verb)) return 0;
+
+  /* Check if message suppression is activated for that message */
+  suppressed = 0;
+  if ((suppressedMessages != NULL) && 
+      (verb >= 0) && 
+      (msgNum != SOLLYA_MSG_NO_MSG)) {
+    if (msgNum != SOLLYA_MSG_CONTINUATION) {
+      suppressed = getBitInBitfield(suppressedMessages, msgNum);
+    } else {
+      if (lastMessageSuppressedResult == -1) {
+	suppressed = 0;
+      } else {
+	suppressed = lastMessageSuppressedResult;
+      }
+    }
+  }
+  lastMessageSuppressedResult = suppressed;
+  if ((verb >= 0) && suppressed && (msgNum != SOLLYA_MSG_NO_MSG)) return 0;
+
+  /* If there is a message callback installed, call it.
+     If it says no message is to be displayed, just bail out.
+
+     Do call the message callback handler for no messages and
+     continuation messages. In the case of a continuation message,
+     take the last "display/don't display" value instead of what the 
+     handler would return.
+  */
+  if ((msgNum != SOLLYA_MSG_CONTINUATION) || (messageCallback == NULL)) lastMessageCallbackResult = 1;
+  if ((msgNum != SOLLYA_MSG_NO_MSG) && 
+      (msgNum != SOLLYA_MSG_CONTINUATION) && 
+      (messageCallback != NULL)) {
+    lastMessageCallbackResult = messageCallback(msgNum);
+  } 
+  if (!lastMessageCallbackResult) return 0;
 
   oldColor = displayColor;
   
@@ -622,10 +765,52 @@ int printMessage(int verb, int msgNum, const char *format, ...) {
 
   va_start(varlist,format);
 
-  if (verb >= 0) {
-    res = sollyaVfprintf(stdout,format,varlist);
+  if (activateMessageNumbers && (msgNum != SOLLYA_MSG_CONTINUATION) && (msgNum != SOLLYA_MSG_NO_MSG)) {
+    myFormat = format;
+    res = 0;
+    if (((tempStr = strstr(format,"Warning")) != NULL) && (tempStr == format)) {
+      if (verb >= 0) {
+	res += sollyaFprintf(stdout,"Warning (%d)",msgNum);
+      } else {
+	res += sollyaFprintf(stderr,"Warning (%d)",msgNum);
+      }
+      myFormat = tempStr + strlen("Warning");
+    } else {
+      if (((tempStr = strstr(format,"Error")) != NULL) && (tempStr == format)) {
+	if (verb >= 0) {
+	  res += sollyaFprintf(stdout,"Error (%d)",msgNum);
+	} else {
+	  res += sollyaFprintf(stderr,"Error (%d)",msgNum);
+	}
+	myFormat = tempStr + strlen("Error");
+      } else {
+	if (((tempStr = strstr(format,"Information")) != NULL) && (tempStr == format)) {
+	  if (verb >= 0) {
+	    res += sollyaFprintf(stdout,"Information (%d)",msgNum);
+	  } else {
+	    res += sollyaFprintf(stderr,"Information (%d)",msgNum);
+	  }
+	  myFormat = tempStr + strlen("Information");
+	} else {
+	  if (verb >= 0) {
+	    res += sollyaFprintf(stdout,"Message (%d): ",msgNum);
+	  } else {
+	    res += sollyaFprintf(stderr,"Message (%d): ",msgNum);
+	  }
+	}
+      }
+    }
+    if (verb >= 0) {
+      res += sollyaVfprintf(stdout,myFormat,varlist);
+    } else {
+      res += sollyaVfprintf(stderr,myFormat,varlist);
+    }
   } else {
-    res = sollyaVfprintf(stderr,format,varlist);
+    if (verb >= 0) {
+      res = sollyaVfprintf(stdout,format,varlist);
+    } else {
+      res = sollyaVfprintf(stderr,format,varlist);
+    }
   }
 
   va_end(varlist);
@@ -643,6 +828,8 @@ int sollyaPrintf(const char *format, ...) {
 
   res = sollyaVfprintf(stdout,format,varlist);
 
+  va_end(varlist);
+
   return res;
 }
 
@@ -653,6 +840,8 @@ int sollyaFprintf(FILE *fd, const char *format, ...) {
   va_start(varlist,format);
 
   res = sollyaVfprintf(fd,format,varlist);
+
+  va_end(varlist);
 
   return res;
 }
@@ -706,7 +895,7 @@ char *mpfr_to_binary_str(mpfr_t x) {
 }
 
 void freeCounter(void) {
-  freeChain(timeStack, free);
+  freeChain(timeStack, safeFree);
   timeStack=NULL;
   return;
 }
@@ -767,66 +956,30 @@ void popTimeCounter(char *s) {
 
     prev = timeStack;
     timeStack = timeStack->next;
-    free(prev);
-    free(buf_init);
-    free(buf_final);
+    safeFree(prev);
+    safeFree(buf_init);
+    safeFree(buf_final);
   }
   return;
 }
 
-
-
-void printBacktrace() {
-#if HAVE_BACKTRACE
-  void *array[BACKTRACELENGTH];
-  size_t size;
-  char **strings;
-  size_t i;
-
-  if (numberBacktrace > 0) {
-
-    size = backtrace (array, BACKTRACELENGTH);
-    strings = backtrace_symbols (array, size);
-
-    sollyaFprintf(stderr,"The current stack is:\n\n");
-
-    for (i=0; i<size; i++)
-      sollyaFprintf(stderr,"%s\n", strings[i]);
-
-    free (strings);
-    numberBacktrace--;
-
-  }
-#endif 
-}
-
-
-void signalHandler(int i) {
+void signalHandler(int i, siginfo_t *info, void *data) {
   switch (i) {
   case SIGINT: 
     handlingCtrlC = 1;
+    lastHandledSignal = HANDLING_SIGINT;
     break;
   case SIGSEGV:
-    changeToWarningMode();
-    sollyaPrintf("Warning: handling signal SIGSEGV\n");
-    printBacktrace(); 
-    sollyaPrintf("\n");
-    restoreMode();
+    lastHandledSignal = HANDLING_SIGSEGV;
     break;
   case SIGBUS:
-    changeToWarningMode();
-    sollyaPrintf("Warning: handling signal SIGBREAK\n");
-    restoreMode();
+    lastHandledSignal = HANDLING_SIGBUS;
     break;
   case SIGFPE:
-    changeToWarningMode();
-    sollyaPrintf("Warning: handling signal SIGFPE\n");
-    restoreMode();
+    lastHandledSignal = HANDLING_SIGFPE;
     break;
   case SIGPIPE:
-    changeToWarningMode();
-    sollyaPrintf("Warning: handling signal SIGPIPE\n");
-    restoreMode();
+    lastHandledSignal = HANDLING_SIGPIPE;
     break;
   default:
     sollyaFprintf(stderr,"Error: must handle an unknown signal.\n");
@@ -841,17 +994,6 @@ void signalHandler(int i) {
   } 
 }
 
-void recoverFromError(void) {
-  displayColor = -1; normalMode();
-  fflush(NULL);
-  if (exitInsteadOfRecover) {
-    sollyaFprintf(stderr,"Error: the recover environment has not been initialized. Exiting.\n");
-    exit(1);
-  }
-  longjmp(recoverEnvironmentError,1);
-}
-
-
 void printPrompt(void) {
   if (eliminatePromptBackup) return;
   if (readStack != NULL) return;
@@ -865,6 +1007,23 @@ void printPrompt(void) {
 
 void initSignalHandler() {
   sigset_t mask;
+  struct sigaction action;
+
+  if (libraryMode) return;
+
+  action.sa_sigaction = signalHandler;
+  action.sa_flags = SA_SIGINFO;
+  sigemptyset(&(action.sa_mask));
+  sigaddset(&(action.sa_mask),SIGINT);
+  sigaddset(&(action.sa_mask),SIGSEGV);
+  sigaddset(&(action.sa_mask),SIGBUS);
+  sigaddset(&(action.sa_mask),SIGFPE);
+  sigaddset(&(action.sa_mask),SIGPIPE);
+  sigaction(SIGINT, &action, NULL);
+  sigaction(SIGSEGV, &action, NULL);
+  sigaction(SIGBUS, &action, NULL);
+  sigaction(SIGFPE, &action, NULL);
+  sigaction(SIGPIPE, &action, NULL);
 
   sigemptyset(&mask);
   sigaddset(&mask,SIGINT);
@@ -873,19 +1032,15 @@ void initSignalHandler() {
   sigaddset(&mask,SIGFPE);
   sigaddset(&mask,SIGPIPE);
   sigprocmask(SIG_UNBLOCK, &mask, NULL);
-  signal(SIGINT,signalHandler);
-  signal(SIGSEGV,signalHandler);
-  signal(SIGBUS,signalHandler);
-  signal(SIGFPE,signalHandler);
-  signal(SIGPIPE,signalHandler);
 }
 
 void blockSignals() {
   sigset_t mask;
 
-  sigemptyset(&mask);
+  if (libraryMode) return;
 
-  if (readStack != NULL) sigaddset(&mask,SIGINT);
+  sigemptyset(&mask);
+  sigaddset(&mask,SIGINT);
   sigaddset(&mask,SIGSEGV);
   sigaddset(&mask,SIGBUS);
   sigaddset(&mask,SIGFPE);
@@ -894,8 +1049,9 @@ void blockSignals() {
 }
 
 void freeTool() {
-  if(variablename != NULL) free(variablename);
-  if(newReadFilename != NULL) free(newReadFilename);
+  if(variablename != NULL) safeFree(variablename);
+  if(newReadFilename != NULL) safeFree(newReadFilename);
+  if(suppressedMessages != NULL) freeBitfield(suppressedMessages);
 
   if (!(eliminatePromptBackup == 1)) {
     removePlotFiles();
@@ -904,13 +1060,13 @@ void freeTool() {
   while ((readStack != NULL) && (readStack2 != NULL)) {
     temp_fd = *((FILE **) (readStack2->value));
     fclose(temp_fd);
-    free(readStack2->value);
+    safeFree(readStack2->value);
     readStackTemp = readStack2->next;
-    free(readStack2);
+    safeFree(readStack2);
     readStack2 = readStackTemp;
-    free(readStack->value);
+    safeFree(readStack->value);
     readStackTemp = readStack->next;
-    free(readStack);
+    safeFree(readStack);
     readStack = readStackTemp;
   }
   yylex_destroy(scanner);
@@ -928,14 +1084,17 @@ void freeTool() {
 }
 
 void initToolDefaults() {
-  if(variablename != NULL) free(variablename); 
+  if(variablename != NULL) safeFree(variablename); 
   variablename = NULL;
+  if(suppressedMessages != NULL) freeBitfield(suppressedMessages);
+  suppressedMessages = NULL;
   defaultprecision = DEFAULTPRECISION;
   tools_precision = DEFAULTPRECISION;
   defaultpoints = DEFAULTPOINTS;
   taylorrecursions = DEFAULTTAYLORRECURSIONS;
   dyadic = 0;
   verbosity = 1;
+  activateMessageNumbers = 0;
   canonical = 0;
   fileNumber = 0;
   autosimplify = 1;
@@ -993,7 +1152,7 @@ void initTool() {
   
   initSignalHandler();
   blockSignals();
-  mp_set_memory_functions(safeMalloc,wrapSafeRealloc,NULL);
+  wrap_mp_set_memory_functions(safeMalloc,wrapSafeRealloc,wrapSafeFree);
   initToolDefaults();
   noColor = 1;
 }
@@ -1052,8 +1211,6 @@ void setToolDiameter(mpfr_t op) {
   mpfr_set_prec(statediam,mpfr_get_prec(op));
   mpfr_set(statediam,op,GMP_RNDN);
 }
-
-/* NEW */
 
 int getDisplayMode() {
   return dyadic;
@@ -1147,11 +1304,8 @@ void setRationalMode(int newRationalMode) {
   rationalMode = (!(!newRationalMode));
 }
 
-/* END NEW */
-
 void setRecoverEnvironment(jmp_buf *env) {
   memmove(&recoverEnvironment,env,sizeof(recoverEnvironment));
-  memmove(&recoverEnvironmentError,env,sizeof(recoverEnvironmentError));
   exitInsteadOfRecover = 0;
 }
 
@@ -1159,6 +1313,71 @@ void invalidateRecoverEnvironment() {
   exitInsteadOfRecover = 1;
 }
 
+int initializeLibraryMode(void *(*myActualMalloc)(size_t),
+			  void *(*myActualCalloc)(size_t, size_t),
+			  void *(*myActualRealloc)(void *, size_t),
+			  void (*myActualFree)(void*),
+			  void *(*myActualReallocWithSize)(void *, size_t, size_t),
+			  void (*myActualFreeWithSize)(void *, size_t)) {
+  libraryMode = 1;
+  if (myActualMalloc != NULL) actualMalloc = myActualMalloc;
+  if (myActualCalloc != NULL) actualCalloc = myActualCalloc;
+  if (myActualRealloc != NULL) actualRealloc = myActualRealloc;
+  if (myActualFree != NULL) actualFree = myActualFree;
+  if (myActualReallocWithSize != NULL) actualReallocWithSize = myActualReallocWithSize;
+  if (myActualFreeWithSize != NULL) actualFreeWithSize = myActualFreeWithSize;
+  messageCallback = NULL;
+  lastMessageCallbackResult = 1;
+  lastMessageSuppressedResult = -1;
+  inputFileOpened = 0;
+  flushOutput = 0;
+  oldAutoPrint = 0;
+  printMode = PRINT_MODE_LEGACY;
+  warnFile = NULL;
+  eliminatePromptBackup = 1;
+  wrap_mp_set_memory_functions(safeMalloc,wrapSafeRealloc,wrapSafeFree);
+  initToolDefaults();
+  handlingCtrlC = 0;
+  lastHandledSignal = 0;
+  noRoundingWarnings = 0;
+  return 1;
+}
+
+int finalizeLibraryMode() {
+  if(variablename != NULL) safeFree(variablename);
+  if(newReadFilename != NULL) safeFree(newReadFilename);
+  if(suppressedMessages != NULL) freeBitfield(suppressedMessages);
+
+  if (!(eliminatePromptBackup == 1)) {
+    removePlotFiles();
+  }
+
+  while ((readStack != NULL) && (readStack2 != NULL)) {
+    temp_fd = *((FILE **) (readStack2->value));
+    fclose(temp_fd);
+    safeFree(readStack2->value);
+    readStackTemp = readStack2->next;
+    safeFree(readStack2);
+    readStack2 = readStackTemp;
+    safeFree(readStack->value);
+    readStackTemp = readStack->next;
+    safeFree(readStack);
+    readStack = readStackTemp;
+  }
+  freeFunctionLibraries();
+  freeConstantLibraries();
+  freeProcLibraries();
+  freeCounter();
+  freeSymbolTable(symbolTable, freeThingOnVoid);
+  symbolTable = NULL;
+  freeDeclaredSymbolTable(declaredSymbolTable, freeThingOnVoid);
+  declaredSymbolTable = NULL;
+  mpfr_clear(statediam);
+  mpfr_free_cache();
+  mp_set_memory_functions(oldGMPMalloc,oldGMPRealloc,oldGMPFree);
+  libraryMode = 0;
+  return 1;
+}
 
 int general(int argc, char *argv[]) {
   struct termios termAttr;
@@ -1172,6 +1391,10 @@ int general(int argc, char *argv[]) {
   int lastWasError;
   int finishedBeforeParsing;
 
+  messageCallback = NULL;
+  libraryMode = 0;
+  lastMessageCallbackResult = 1;
+  lastMessageSuppressedResult = -1;
   doNotModifyStackSize = 0;
   inputFileOpened = 0;
   flushOutput = 0;
@@ -1307,7 +1530,7 @@ int general(int argc, char *argv[]) {
   }
   initSignalHandler();
   blockSignals();
-  mp_set_memory_functions(safeMalloc,wrapSafeRealloc,NULL);
+  wrap_mp_set_memory_functions(safeMalloc,wrapSafeRealloc,wrapSafeFree);
   initToolDefaults();
 
   exitInsteadOfRecover = 0;
@@ -1316,6 +1539,27 @@ int general(int argc, char *argv[]) {
   lastWasError = 0;
   lastCorrectlyExecuted = 0;
   while (1) {
+    if (lastHandledSignal != 0) {
+      switch (lastHandledSignal) {
+      case HANDLING_SIGINT:
+	break;
+      case HANDLING_SIGSEGV:
+	printMessage(1,SOLLYA_MSG_HANDLED_SIGSEGV,"Warning: a SIGSEGV signal has been handled.\n");
+	break;
+      case HANDLING_SIGBUS:
+	printMessage(1,SOLLYA_MSG_HANDLED_SIGBUS,"Warning: a SIGBUS signal has been handled.\n");
+	break;
+      case HANDLING_SIGFPE:
+	printMessage(1,SOLLYA_MSG_HANDLED_SIGFPE,"Warning: a SIGFPE signal has been handled.\n");
+	break;
+      case HANDLING_SIGPIPE:
+	printMessage(1,SOLLYA_MSG_HANDLED_SIGPIPE,"Warning: a SIGPIPE signal has been handled.\n");
+	break;
+      default:
+	break;
+      }
+      lastHandledSignal = 0;
+    }
     executeAbort = 0;
     parsedThing = NULL;
     lastWasSyntaxError = 0;
@@ -1325,8 +1569,8 @@ int general(int argc, char *argv[]) {
     if (parsedThing != NULL) {
       
       handlingCtrlC = 0;
+      lastHandledSignal = 0;
       if (!setjmp(recoverEnvironment)) {
-	memmove(&recoverEnvironmentError,&recoverEnvironment,sizeof(recoverEnvironmentError));
 	recoverEnvironmentReady = 1;
 	if (declaredSymbolTable != NULL) {
 	  printMessage(1,SOLLYA_MSG_FRAME_STACK_HAS_BEEN_CORRUPTED,"Warning: a preceeding command interruption corrupted the variable frame stack.\n");
@@ -1343,6 +1587,7 @@ int general(int argc, char *argv[]) {
             fflush(stdout); 
             fflush(stderr);
         }
+	libraryMode = 0;
 	pushTimeCounter();
 	executeAbort = executeCommand(parsedThing);
 	lastCorrectlyExecuted = 1;
@@ -1360,6 +1605,27 @@ int general(int argc, char *argv[]) {
 	displayColor = -1; normalMode();
 	blockSignals();
 	lastWasError = 1;
+	if (lastHandledSignal != 0) {
+	  switch (lastHandledSignal) {
+	  case HANDLING_SIGINT:
+	    break;
+	  case HANDLING_SIGSEGV:
+	    printMessage(1,SOLLYA_MSG_HANDLED_SIGSEGV,"Warning: a SIGSEGV signal has been handled.\n");
+	    break;
+	  case HANDLING_SIGBUS:
+	    printMessage(1,SOLLYA_MSG_HANDLED_SIGBUS,"Warning: a SIGBUS signal has been handled.\n");
+	    break;
+	  case HANDLING_SIGFPE:
+	    printMessage(1,SOLLYA_MSG_HANDLED_SIGFPE,"Warning: a SIGFPE signal has been handled.\n");
+	    break;
+	  case HANDLING_SIGPIPE:
+	    printMessage(1,SOLLYA_MSG_HANDLED_SIGPIPE,"Warning: a SIGPIPE signal has been handled.\n");
+	    break;
+	  default:
+	    break;
+	  }
+	  lastHandledSignal = 0;
+	}
 	if (handlingCtrlC) 
 	  printMessage(1,SOLLYA_MSG_LAST_COMMAND_INTERRUPTED,"Warning: the last command has been interrupted. May leak memory.\n");
 	else { 
@@ -1402,6 +1668,8 @@ int general(int argc, char *argv[]) {
     fclose(warnFile);
     warnFile = NULL;
   }
+
+  mp_set_memory_functions(oldGMPMalloc,oldGMPRealloc,oldGMPFree);
 
   if (lastWasError) {
     if (lastCorrectlyExecuted) {

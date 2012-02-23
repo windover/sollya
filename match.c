@@ -624,7 +624,7 @@ int isIntegerElement(int *res, node *thing) {
 
   okay = 0; i = 0;
   mpfr_init2(a, tools_precision);
-  if (evaluateThingToConstant(a, thing, NULL, 0)) {
+  if (evaluateThingToConstant(a, thing, NULL, 0, 0)) {
     if (mpfr_integer_p(a)) {
       i = mpfr_get_si(a, GMP_RNDN);
       mpfr_init2(b, 8 * sizeof(i) + 5);
@@ -655,14 +655,14 @@ int formConsecutiveIntegers(node *thing1, node *thing2) {
 
   okay = 0;
   mpfr_init2(a, tools_precision);
-  if (evaluateThingToConstant(a, thing1, NULL, 0)) {
+  if (evaluateThingToConstant(a, thing1, NULL, 0, 0)) {
     if (mpfr_integer_p(a)) {
       i = mpfr_get_si(a, GMP_RNDN);
       mpfr_init2(b, 8 * sizeof(i) + 5);
       mpfr_set_si(b, i, GMP_RNDN);
       if (mpfr_cmp(a, b) == 0) {
 	mpfr_init2(c, tools_precision);
-	if (evaluateThingToConstant(c, thing2, NULL, 0)) {
+	if (evaluateThingToConstant(c, thing2, NULL, 0, 0)) {
 	  if (mpfr_integer_p(c)) {
 	    j = mpfr_get_si(c, GMP_RNDN);
 	    mpfr_init2(d, 8 * sizeof(i) + 5);
@@ -727,7 +727,7 @@ chain *normalizeFinalEllipticList(chain *list) {
     copy = addElement(copy,copyThing(thingArray[i]));
   }
   for (i=0;i<len;i++) freeThing(thingArray[i]);
-  free(thingArray);
+  safeFree(thingArray);
 
   return copy;
 }
@@ -832,7 +832,7 @@ int tryMatchList(chain **associations, node *thingToMatch, node *possibleMatcher
     integerSequence = 0;
     integerBase = 0;
     mpfr_init2(c, tools_precision);
-    if (evaluateThingToConstant(c, (node *) (lastThingToMatch->value), NULL, 0)) {
+    if (evaluateThingToConstant(c, (node *) (lastThingToMatch->value), NULL, 0, 0)) {
       if (mpfr_integer_p(c)) {
 	integerBase = mpfr_get_si(c, GMP_RNDN);
 	mpfr_init2(d, 8 * sizeof(i) + 5);
@@ -954,7 +954,7 @@ int tryMatchAppend(chain **associations, node *thingToMatch, node *possibleMatch
       curr = addElement(curr,copyThing(elementArray[i]));
     }
     headList = makeList(curr);
-    free(elementArray);
+    safeFree(elementArray);
   } else {
     /* The list of things to match has only one element, so the head
        list is the empty list. The tail element is easy to get, too. 
@@ -1012,8 +1012,8 @@ int tryEvaluateRecursiveConcatMatcherToString(char **concatenatedString, node *t
       }
       okay = 1;
     }
-    if (okayLeft) free(bufLeft);
-    if (okayRight) free(bufRight);
+    if (okayLeft) safeFree(bufLeft);
+    if (okayRight) safeFree(bufRight);
 
     return okay;
   }
@@ -1069,11 +1069,11 @@ int tryCutPostfix(char **rest, char *mainString, char *postfix) {
   okay = tryCutPrefix(&revRest, revMainString, revPostfix);
   if (okay) {
     *rest = revertString(revRest);
-    free(revRest);
+    safeFree(revRest);
   }
   
-  free(revMainString);
-  free(revPostfix);
+  safeFree(revMainString);
+  safeFree(revPostfix);
 
   return okay;
 }
@@ -1089,7 +1089,7 @@ int tryMatchConcatOnString(chain **associations, char *stringToMatch, node *poss
   okayFullEvaluate = tryEvaluateRecursiveConcatMatcherToString(&stringFullEvaluate, possibleMatcher);
   if (okayFullEvaluate) {
     okay = !strcmp(stringToMatch,stringFullEvaluate);
-    free(stringFullEvaluate);
+    safeFree(stringFullEvaluate);
     return okay;
   }
 
@@ -1114,10 +1114,10 @@ int tryMatchConcatOnString(chain **associations, char *stringToMatch, node *poss
 	okay = tryMatch(&myAssociations,restStringThing,possibleMatcher->child1);
       }
       freeThing(restStringThing);
-      free(restString);
+      safeFree(restString);
     }
-    if (okayLeftEvaluate) free(stringLeftEvaluate);
-    if (okayRightEvaluate) free(stringRightEvaluate);
+    if (okayLeftEvaluate) safeFree(stringLeftEvaluate);
+    if (okayRightEvaluate) safeFree(stringRightEvaluate);
     if (okay) {
       *associations = myAssociations;
     } else {
@@ -1304,7 +1304,7 @@ int tryCutPostfixList(chain **associations, node **restList, node *mainList, nod
 	  }
 	  possibleRest = makeList(possibleRestList);
 	}
-	free(mainListArray);
+	safeFree(mainListArray);
 
 	okay = tryMatch(associations, possibleThingToMatch, postfix); 
 	freeThing(possibleThingToMatch);

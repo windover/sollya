@@ -1544,7 +1544,7 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	  }
 	  currBuf = buf;
 	  *currBuf = '\0';
-	  free(tempString);
+	  safeFree(tempString);
 	  shiftedState = 0;
 	  break;
 	default:
@@ -1571,7 +1571,7 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
     }
   }
 
-  free(buf);
+  safeFree(buf);
   return res;
 }
 

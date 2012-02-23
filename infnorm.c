@@ -834,7 +834,7 @@ void makeMpfiAroundMpfr(sollya_mpfi_t res, mpfr_t x, unsigned int thousandUlps) 
 
 
 chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t prec, int simplifiesA, int simplifiesB, mpfr_t *hopitalPoint, exprBoundTheo *theo, int noExcludes) {
-  sollya_mpfi_t stack1, stack2;
+  sollya_mpfi_t stack1, stack2, tempI, tempI2;
   sollya_mpfi_t stack3, zI, numeratorInZI, denominatorInZI, newExcludeTemp, xMXZ, temp1, temp2, tempA, tempB;
   sollya_mpfi_t *newExclude;
   sollya_mpfi_t leftConstantTerm, rightConstantTerm;
@@ -1772,7 +1772,12 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
     break;
   case LIBRARYFUNCTION:
     excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
-    tree->libFun->code(stack3, stack1, tree->libFunDeriv);
+    mpfi_init2(tempI, sollya_mpfi_get_prec(stack3));
+    tree->libFun->code(tempI, stack1, tree->libFunDeriv);
+    sollya_init_and_convert_interval(tempI2, tempI);
+    sollya_mpfi_set(stack3, tempI2);
+    sollya_mpfi_clear(tempI2);
+    mpfi_clear(tempI);
     if (internalTheo != NULL) {
       sollya_mpfi_set(*(internalTheo->boundLeft),stack1);
     }
@@ -2273,7 +2278,7 @@ void printInterval(sollya_mpfi_t interval) {
     temp_string = sprintMidpointMode(l, r);
     if (temp_string != NULL) {
       sollyaPrintf("%s ",temp_string);
-      free(temp_string);
+      safeFree(temp_string);
     } else {
       sollyaPrintf("[");
       printValue(&l);
@@ -2315,8 +2320,8 @@ char *sprintInterval(sollya_mpfi_t interval) {
       res = safeCalloc(strlen(temp_string) + strlen(temp_string2) + 3 + 1,
 		       sizeof(char));
       sprintf(res,"[%s;%s]",temp_string,temp_string2);
-      free(temp_string);
-      free(temp_string2);
+      safeFree(temp_string);
+      safeFree(temp_string2);
     }
   } else {
     temp_string = sprintValue(&l);
@@ -2324,8 +2329,8 @@ char *sprintInterval(sollya_mpfi_t interval) {
     res = safeCalloc(strlen(temp_string) + strlen(temp_string2) + 3 + 1,
 		     sizeof(char));
     sprintf(res,"[%s;%s]",temp_string,temp_string2);
-    free(temp_string);
-    free(temp_string2);
+    safeFree(temp_string);
+    safeFree(temp_string2);
   }
 
   mpfr_clear(l);
@@ -2552,8 +2557,8 @@ chain *excludeIntervals(chain *mainIntervals, chain *excludeIntervals) {
 		/* We are not the first interval in the chain */
 		previous->next = curr->next;
 		sollya_mpfi_clear(*interval);
-		free(interval);
-		free(curr);
+		safeFree(interval);
+		safeFree(curr);
 		curr = previous;
 	      } else {
 		/* We are the first interval in the chain */
@@ -2561,15 +2566,15 @@ chain *excludeIntervals(chain *mainIntervals, chain *excludeIntervals) {
 		  /* We have a successor that will become the head of the chain */
 		  mainIntervals = curr->next;
 		  sollya_mpfi_clear(*interval);
-		  free(interval);
-		  free(curr);
+		  safeFree(interval);
+		  safeFree(curr);
 		  curr = mainIntervals;
 		} else {
 		  /* We are the first and the last element in the chain, which will be empty */
 		  
 		  sollya_mpfi_clear(*interval);
-		  free(interval);
-		  free(curr);
+		  safeFree(interval);
+		  safeFree(curr);
 		  mpfr_clear(il);
 		  mpfr_clear(ir);
 		  mpfr_clear(el);
@@ -3370,8 +3375,8 @@ void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_pr
         if (mpfr_sgn(*(myrange.a)) * mpfr_sgn(*(myrange.b)) == 1) {
           mpfr_clear(*(myrange.a));
           mpfr_clear(*(myrange.b));
-          free(myrange.a);
-          free(myrange.b);
+          safeFree(myrange.a);
+          safeFree(myrange.b);
           mpfr_set_d(*(yrange.a),1.0,GMP_RNDD);
           mpfr_set_d(*(yrange.b),1.0,GMP_RNDU);
           free_memory(numerator);
@@ -3394,8 +3399,8 @@ void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_pr
         if (mpfr_sgn(*(myrange.a)) * mpfr_sgn(*(myrange.b)) == 1) {
           mpfr_clear(*(myrange.a));
           mpfr_clear(*(myrange.b));
-          free(myrange.a);
-          free(myrange.b);
+          safeFree(myrange.a);
+          safeFree(myrange.b);
           mpfr_set_d(*(yrange.a),1.0,GMP_RNDD);
           mpfr_set_d(*(yrange.b),1.0,GMP_RNDU);
           free_memory(numerator);
@@ -3408,8 +3413,8 @@ void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_pr
           if (mpfr_zero_p(*(myrange.a)) && mpfr_zero_p(*(myrange.b))) {
             mpfr_clear(*(myrange.a));
             mpfr_clear(*(myrange.b));
-            free(myrange.a);
-            free(myrange.b);
+            safeFree(myrange.a);
+            safeFree(myrange.b);
             mpfr_set_nan(*(yrange.a));
             mpfr_set_nan(*(yrange.b));
             free_memory(numerator);
@@ -3421,8 +3426,8 @@ void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_pr
           } else {
             mpfr_clear(*(myrange.a));
             mpfr_clear(*(myrange.b));
-            free(myrange.a);
-            free(myrange.b);
+            safeFree(myrange.a);
+            safeFree(myrange.b);
             f = copyTree(temp2);
           }
         }
@@ -3642,10 +3647,10 @@ void evaluateConstantWithErrorEstimate(mpfr_t res, mpfr_t err, node *func, mpfr_
   mpfr_clear(*(yrange.a));
   mpfr_clear(*(yrange.b));
   mpfr_init2(temp,prec);
-  free(xrange.a);
-  free(xrange.b);
-  free(yrange.a);
-  free(yrange.b);
+  safeFree(xrange.a);
+  safeFree(xrange.b);
+  safeFree(yrange.a);
+  safeFree(yrange.b);
 }
 
 chain* findZerosByNewton(node *func, mpfr_t a, mpfr_t b, mp_prec_t prec) {
@@ -3743,11 +3748,11 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
     fpZeros = concatChains(fpZeros, fpZerosOnInterval);
     mpfr_clear(*(((rangetype *) (intervalZeros->value))->a));
     mpfr_clear(*(((rangetype *) (intervalZeros->value))->b));
-    free(((rangetype *) (intervalZeros->value))->a);
-    free(((rangetype *) (intervalZeros->value))->b);
-    free(intervalZeros->value);
+    safeFree(((rangetype *) (intervalZeros->value))->a);
+    safeFree(((rangetype *) (intervalZeros->value))->b);
+    safeFree(intervalZeros->value);
     temp = intervalZeros->next;
-    free(intervalZeros);
+    safeFree(intervalZeros);
     intervalZeros = temp;
   }
   
@@ -3776,9 +3781,9 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
 
   while (fpZeros != NULL) {
     mpfr_clear(*((mpfr_t*) (fpZeros->value)));
-    free((fpZeros->value));
+    safeFree((fpZeros->value));
     temp = fpZeros->next;
-    free(fpZeros);
+    safeFree(fpZeros);
     fpZeros = temp;
   }
 
@@ -3833,7 +3838,7 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
       fpZeros = addElement(fpZeros,fpZeros2->value);
     }
     temp = fpZeros2->next;
-    free(fpZeros2);
+    safeFree(fpZeros2);
     fpZeros2 = temp;
   }
 
@@ -3863,9 +3868,9 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
 
   while (fpZeros != NULL) {
     mpfr_clear(*((mpfr_t*) (fpZeros->value)));
-    free((fpZeros->value));
+    safeFree((fpZeros->value));
     temp = fpZeros->next;
-    free(fpZeros);
+    safeFree(fpZeros);
     fpZeros = temp;
   }
 
@@ -3916,8 +3921,8 @@ chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t pre
     newZeros = fpFindZerosFunction(tree->child2, range, prec);
     mpfr_clear(*(range.a));
     mpfr_clear(*(range.b));
-    free(range.a);
-    free(range.b);
+    safeFree(range.a);
+    safeFree(range.b);
     leftPoles = concatChains(leftPoles,rightPoles);
     return concatChains(leftPoles,newZeros);
     break;
@@ -4077,10 +4082,10 @@ int isEvaluable(node *func, mpfr_t x, mpfr_t *y, mp_prec_t prec) {
       mpfr_clear(*(xrange.b));
       mpfr_clear(*(yrange.a));
       mpfr_clear(*(yrange.b));
-      free(xrange.a);
-      free(xrange.b);
-      free(yrange.a);
-      free(yrange.b);
+      safeFree(xrange.a);
+      safeFree(xrange.b);
+      safeFree(yrange.a);
+      safeFree(yrange.b);
       return ISNOTEVALUABLE;
     }
     if (y != NULL) {
@@ -4091,10 +4096,10 @@ int isEvaluable(node *func, mpfr_t x, mpfr_t *y, mp_prec_t prec) {
     mpfr_clear(*(xrange.b));
     mpfr_clear(*(yrange.a));
     mpfr_clear(*(yrange.b));
-    free(xrange.a);
-    free(xrange.b);
-    free(yrange.a);
-    free(yrange.b);
+    safeFree(xrange.a);
+    safeFree(xrange.b);
+    safeFree(yrange.a);
+    safeFree(yrange.b);
     return ISHOPITALEVALUABLE;
   } 
 
@@ -4103,10 +4108,10 @@ int isEvaluable(node *func, mpfr_t x, mpfr_t *y, mp_prec_t prec) {
   mpfr_clear(*(xrange.b));
   mpfr_clear(*(yrange.a));
   mpfr_clear(*(yrange.b));
-  free(xrange.a);
-  free(xrange.b);
-  free(yrange.a);
-  free(yrange.b);
+  safeFree(xrange.a);
+  safeFree(xrange.b);
+  safeFree(yrange.a);
+  safeFree(yrange.b);
   return ISNOTEVALUABLE;
 }
 
@@ -4138,10 +4143,10 @@ int evaluateWithAccuracyEstimate(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, m
     mpfr_clear(*(xrange.b));
     mpfr_clear(*(yrange.a));
     mpfr_clear(*(yrange.b));
-    free(xrange.a);
-    free(xrange.b);
-    free(yrange.a);
-    free(yrange.b);
+    safeFree(xrange.a);
+    safeFree(xrange.b);
+    safeFree(yrange.a);
+    safeFree(yrange.b);
     return 0;
   }
   
@@ -4152,10 +4157,10 @@ int evaluateWithAccuracyEstimate(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, m
     mpfr_clear(*(xrange.b));
     mpfr_clear(*(yrange.a));
     mpfr_clear(*(yrange.b));
-    free(xrange.a);
-    free(xrange.b);
-    free(yrange.a);
-    free(yrange.b);
+    safeFree(xrange.a);
+    safeFree(xrange.b);
+    safeFree(yrange.a);
+    safeFree(yrange.b);
     return 1;
   }
 
@@ -4182,10 +4187,10 @@ int evaluateWithAccuracyEstimate(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, m
   mpfr_clear(*(xrange.b));
   mpfr_clear(*(yrange.a));
   mpfr_clear(*(yrange.b));
-  free(xrange.a);
-  free(xrange.b);
-  free(yrange.a);
-  free(yrange.b);
+  safeFree(xrange.a);
+  safeFree(xrange.b);
+  safeFree(yrange.a);
+  safeFree(yrange.b);
 
   return 1;
 }
@@ -4355,8 +4360,8 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
     mpfr_set(result,*(res.a),GMP_RNDU);
     mpfr_clear(*(res.a));
     mpfr_clear(*(res.b));
-    free(res.a);
-    free(res.b);
+    safeFree(res.a);
+    safeFree(res.b);
     return 1;
   }
 
@@ -4492,8 +4497,8 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
 
   mpfr_clear(*(res.a));
   mpfr_clear(*(res.b));
-  free(res.a);
-  free(res.b);
+  safeFree(res.a);
+  safeFree(res.b);
 
   mpfr_clear(stopDiameter);
   mpfr_clear(currDiameter);
@@ -4592,10 +4597,10 @@ int evaluateFaithfulWithCutOffFastOld(mpfr_t result, node *func, node *deriv, mp
     if( (!mpfr_number_p(resUp)) || (!mpfr_number_p(resDown))) okay=3;
   }
   
-  free(yrange.a);
-  free(yrange.b);
-  free(xrange.a);
-  free(xrange.b);
+  safeFree(yrange.a);
+  safeFree(yrange.b);
+  safeFree(xrange.a);
+  safeFree(xrange.b);
 
   mpfr_clear(resUp);
   mpfr_clear(resDown);
@@ -4607,15 +4612,28 @@ int evaluateFaithfulWithCutOffFastOld(mpfr_t result, node *func, node *deriv, mp
   return okay;
 }
 
-int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec) {
+int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec, node *altX) {
   mp_prec_t p, prec;
-  sollya_mpfi_t yI, xI, cutoffI;
+  sollya_mpfi_t yI, xI, cutoffI, dummyI;
   int okay;
   mpfr_t resUp, resDown;
   mpfr_t cutoffLeft, cutoffRight;
   mpfr_t yILeft, yIRight;
   int testCutOff;
   
+  /* Check if we have a constant expression to evaluate at and if so,
+     check if it is constant 
+  */
+  if ((altX != NULL) && (!isConstant(altX))) {
+    /* Here the alternate abscissa expression is not constant */
+    mpfr_set_nan(result);
+    return 0;
+  }
+
+  /* We need a dummy interval for some evaluations */
+  sollya_mpfi_init2(dummyI,12);
+  sollya_mpfi_set_ui(dummyI,1);
+
   /* We test the cutoff only if it is not zero */
   testCutOff = 1;
 
@@ -4639,11 +4657,7 @@ int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_
   mpfr_init2(resUp,prec);
   mpfr_init2(resDown,prec);
 
-  /* Copy x into an interval with its own precision */
-  p = mpfr_get_prec(x);
-  sollya_mpfi_init2(xI,p);
-  sollya_mpfi_interv_fr(xI,x,x);
-
+  /* Determine a starting precision */
   if (startprec > prec) prec = startprec;
 
   /* Testing (comparing the final prec with the startprec on the examples in the check files)
@@ -4659,10 +4673,40 @@ int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_
   sollya_mpfi_init2(yI,startprec*16);
   mpfr_init2(yILeft,startprec*16);
   mpfr_init2(yIRight,startprec*16);
+
+  /* Initialize an interval for the abscissa point we evaluate at */
+  if (altX == NULL) {
+    /* If we have no alternate abscissa point, copy x into an interval
+       with its own precision 
+    */
+    p = mpfr_get_prec(x);
+    sollya_mpfi_init2(xI,p);
+    sollya_mpfi_interv_fr(xI,x,x);
+  } else {
+    /* Otherwise, initialize an interval with a little more than the
+       starting precision and then set the precision to the starting
+       precision. This allows for the first subsequent mpf*_set_prec
+       not to malloc which saves a couple of mallocs and copies.
+    */
+    sollya_mpfi_init2(xI,startprec * 16);
+    sollya_mpfi_set_prec(xI,startprec);
+  }
+
+  /* Start the rounding loop */
   p=startprec;
   okay = 0;
   while (p < prec * 512) {
     sollya_mpfi_set_prec(yI,p);
+    
+    /* If we evaluate at a constant expression instead of a point,
+       evaluate the constant expression to the current (loop)
+       precision.
+    */
+    if (altX != NULL) {
+      sollya_mpfi_set_prec(xI,p);
+      evaluateInterval(xI, altX, NULL, dummyI);
+    }
+
     mpfr_set_prec(yILeft,p);
     mpfr_set_prec(yIRight,p);
     evaluateInterval(yI, func, deriv, xI);
@@ -4702,7 +4746,7 @@ int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_
   mpfr_clear(yIRight);
 
   if (okay > 0) {
-    /* This rouning annihilates the effect of taking always the upper value */
+    /* This rounding annihilates the effect of taking always the upper value */
     mpfr_set(result,resUp,GMP_RNDN);
   } else {
     mpfr_set_nan(result);
@@ -4712,9 +4756,22 @@ int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_
   mpfr_clear(resUp);
   mpfr_clear(resDown);
   sollya_mpfi_clear(cutoffI);
+  sollya_mpfi_clear(dummyI);
   return okay;
 }
 
+int evaluateFaithfulWithCutOffFast(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec) {
+  return evaluateFaithfulWithCutOffFastInternalImplementation(result, func, deriv, x, cutoff, startprec, NULL);
+}
+
+int evaluateFaithfulAtConstantExpression(mpfr_t result, node *func, node *deriv, node *x, mpfr_t cutoff, mp_prec_t startprec) {
+  mpfr_t dummy;
+  if (x == NULL) {
+    mpfr_set_nan(result);
+    return 0;
+  }
+  return evaluateFaithfulWithCutOffFastInternalImplementation(result, func, deriv, dummy, cutoff, startprec, x);
+}
 
 int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec) {
   node *deriv;
@@ -4914,7 +4971,7 @@ int compareConstant(int *cmp, node *func1, node *func2) {
 		    }
 		    for (i=0;i<=degree;i++) 
 		      if (coefficients[i] != NULL) free_memory(coefficients[i]);
-		    free(coefficients);
+		    safeFree(coefficients);
 		  }
 		}
 		free_memory(tempNode);

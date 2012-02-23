@@ -120,202 +120,204 @@ void simplifyMpfrPrec(mpfr_t rop, mpfr_t op) {
 
 
 void mpfr_from_mpfi(mpfr_t rop, mpfr_t op, int n, int (*mpfifun)(sollya_mpfi_t, sollya_mpfi_t, int)) {
-  sollya_mpfi_t opI, ropI;
+  sollya_mpfi_t opI, ropI, ropItemp;
 
   sollya_mpfi_init2(opI,mpfr_get_prec(op));
-  sollya_mpfi_init2(ropI,mpfr_get_prec(rop)+2);
+  sollya_mpfi_init2(ropItemp,mpfr_get_prec(rop)+2);
   sollya_mpfi_set_fr(opI,op);
 
-  mpfifun(ropI,opI,n);
+  mpfifun(ropItemp,opI,n);
+  sollya_init_and_convert_interval(ropI, ropItemp);
   
   sollya_mpfi_mid(rop,ropI);
 
   sollya_mpfi_clear(opI);
   sollya_mpfi_clear(ropI);
+  sollya_mpfi_clear(ropItemp);
 }
 
 void free_memory(node *tree) {
   if (tree == NULL) return;
   switch (tree->nodeType) {
   case VARIABLE:
-    free(tree);
+    safeFree(tree);
     break;
   case CONSTANT:
     mpfr_clear(*(tree->value));
-    free(tree->value);
-    free(tree);
+    safeFree(tree->value);
+    safeFree(tree);
     break;
   case ADD:
     free_memory(tree->child1);
     free_memory(tree->child2);
-    free(tree);
+    safeFree(tree);
     break;
   case SUB:
     free_memory(tree->child1);
     free_memory(tree->child2);
-    free(tree);
+    safeFree(tree);
     break;
   case MUL:
     free_memory(tree->child1);
     free_memory(tree->child2);
-    free(tree);
+    safeFree(tree);
     break;
   case DIV:
     free_memory(tree->child1);
     free_memory(tree->child2);
-    free(tree);
+    safeFree(tree);
     break;
   case SQRT:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case EXP:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case LOG:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case LOG_2:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case LOG_10:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case SIN:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case COS:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case TAN:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case ASIN:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case ACOS:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case ATAN:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case SINH:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case COSH:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case TANH:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case ASINH:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case ACOSH:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case ATANH:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case POW:
     free_memory(tree->child1);
     free_memory(tree->child2);
-    free(tree);
+    safeFree(tree);
     break;
   case NEG:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case ABS:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case DOUBLE:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case SINGLE:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case QUAD:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;  
   case HALFPRECISION:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case DOUBLEDOUBLE:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case TRIPLEDOUBLE:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case ERF: 
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case ERFC:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case LOG_1P:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case EXP_M1:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case DOUBLEEXTENDED:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case LIBRARYFUNCTION:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case PROCEDUREFUNCTION:
     free_memory(tree->child1);
     freeThing(tree->child2);
-    free(tree);
+    safeFree(tree);
     break;
   case CEIL:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case FLOOR:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case NEARESTINT:
     free_memory(tree->child1);
-    free(tree);
+    safeFree(tree);
     break;
   case PI_CONST:
-    free(tree);
+    safeFree(tree);
     break;
   case LIBRARYCONSTANT:
-    free(tree);
+    safeFree(tree);
     break;
   default:
    sollyaFprintf(stderr,"Error: free_memory: unknown identifier (%d) in the tree\n",tree->nodeType);
@@ -532,7 +534,7 @@ int isInfix(node *tree) {
     if ((dyadic == 2) || (dyadic == 3)) {
       str = sprintValue(tree->value);
       res = (strchr(str,'*') != NULL);
-      free(str);
+      safeFree(str);
       return res;
     }
     break;
@@ -573,7 +575,7 @@ void printValue(mpfr_t *value) {
 
   str = sprintValue(value);
   sollyaPrintf("%s",str);
-  free(str);
+  safeFree(str);
 }
 
 char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
@@ -615,12 +617,12 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
 
   str3 = safeCalloc(strlen(str1) + 1, sizeof(char));
   removeTrailingZeros(str3,str1);
-  free(str1);
+  safeFree(str1);
   str1 = str3;
 
   str3 = safeCalloc(strlen(str2) + 1, sizeof(char));
   removeTrailingZeros(str3,str2);
-  free(str2);
+  safeFree(str2);
   str2 = str3;
 
   if (e1 == e2) {
@@ -629,7 +631,7 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
       str3 = sprintValue(&aP);
       str = (char *) safeCalloc(strlen(str3) + 3, sizeof(char));
       sprintf(str,"[%s]",str3);
-      free(str3);
+      safeFree(str3);
     } else { 
 
       if (str1[0] == str2[0]) {
@@ -670,7 +672,7 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
 	    str[i+4] = '~';
 	    str3 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
 	    removeTrailingZeros(str3,str);
-	    free(str);
+	    safeFree(str);
 	    str = str3;
 	    str3 = (char *) safeCalloc(strlen(str)+69,sizeof(char));
 	    if (sign < 0) {
@@ -686,11 +688,11 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
 		sprintf(str3,"0.%se%d",str,(int)e1);
 	      }
 	    }
-	    free(str);
+	    safeFree(str);
 	    str = str3;
 	    str3 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
 	    sprintf(str3,"%s",str);
-	    free(str);
+	    safeFree(str);
 	    str = str3;
 	  } else {
 	    str = NULL;
@@ -698,8 +700,8 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
 	} else {
 	  str = NULL;
 	}
-	free(s1);
-	free(s2);
+	safeFree(s1);
+	safeFree(s2);
       } else {
 	str = NULL;
       }
@@ -733,8 +735,8 @@ char *sPrintBinary(mpfr_t x) {
   if (mpfr_sgn(x) < 0) negative = 1;
   raw = mpfr_get_str(NULL,&expo,2,0,xx,GMP_RNDN);
   if (raw == NULL) {
-    sollyaPrintf("Error: unable to get a string for the given number.\n");
-    recoverFromError();
+    sollyaFprintf(stderr,"Error: unable to get a string for the given number.\n");
+    exit(1);
   } else {
     formatted = safeCalloc(strlen(raw) + 3, sizeof(char));
     temp1 = raw; temp2 = formatted;
@@ -776,14 +778,14 @@ char *sPrintBinary(mpfr_t x) {
       temp3 = (char *) safeCalloc(2,sizeof(char));
       sprintf(temp3,"0");
     }
-    free(formatted);
-    free(str3);
+    safeFree(formatted);
+    safeFree(str3);
   }
   mpfr_free_str(raw);  
   mpfr_clear(xx);
   resultStr = (char *) safeCalloc(strlen(temp3) + 1,sizeof(char));
   sprintf(resultStr,"%s",temp3);
-  free(temp3);
+  safeFree(temp3);
   return resultStr;
 }
 
@@ -803,8 +805,8 @@ char *sPrintHexadecimal(mpfr_t x) {
   if (mpfr_sgn(x) < 0) negative = 1;
   raw = mpfr_get_str(NULL,&expo,16,0,xx,GMP_RNDN);
   if (raw == NULL) {
-    sollyaPrintf("Error: unable to get a string for the given number.\n");
-    recoverFromError();
+    sollyaFprintf(stderr,"Error: unable to get a string for the given number.\n");
+    exit(1);
   } else {
     formatted = safeCalloc(strlen(raw) + 3, sizeof(char));
     temp1 = raw; temp2 = formatted;
@@ -836,14 +838,14 @@ char *sPrintHexadecimal(mpfr_t x) {
       temp3 = (char *) safeCalloc(2,sizeof(char));
       sprintf(temp3,"0");
     }
-    free(formatted);
-    free(str3);
+    safeFree(formatted);
+    safeFree(str3);
   }
   mpfr_free_str(raw);  
   mpfr_clear(xx);
   resultStr = (char *) safeCalloc(strlen(temp3) + 1,sizeof(char));
   sprintf(resultStr,"%s",temp3);
-  free(temp3);
+  safeFree(temp3);
   return resultStr;
 }
 
@@ -853,7 +855,7 @@ void printBinary(mpfr_t x) {
 
   str = sPrintBinary(x);
   sollyaPrintf("%s",str);
-  free(str);
+  safeFree(str);
 }
 
 void printHexadecimalValue(mpfr_t x) {
@@ -861,7 +863,7 @@ void printHexadecimalValue(mpfr_t x) {
 
   str = sPrintHexadecimal(x);
   sollyaPrintf("%s",str);
-  free(str);
+  safeFree(str);
 }
 
 
@@ -1003,7 +1005,7 @@ char *sprintValue(mpfr_t *aValue) {
 	    tempBuf += sprintf(tempBuf,"%s",str2);
 	  }
 	}
-	free(str2);
+	safeFree(str2);
       }
       mpfr_free_str(str);      
     } else {
@@ -1022,7 +1024,7 @@ char *sprintValue(mpfr_t *aValue) {
 	    mpfr_set_str(temp,buffer,10,GMP_RNDN);
 	    if (mpfr_cmp(temp,*value) == 0) break;
 	  }
-	  free(str4);
+	  safeFree(str4);
 	  mpfr_clear(temp);
 	} else {
 	  l = strlen(str3);
@@ -1052,11 +1054,11 @@ char *sprintValue(mpfr_t *aValue) {
 	      mpfr_set_str(temp,buffer,10,GMP_RNDN);
 	      if (mpfr_cmp(temp,*value) == 0) break;
 	    }
-	    free(str4);
+	    safeFree(str4);
 	    mpfr_clear(temp);
 	  }
 	}
-	free(str3);
+	safeFree(str3);
       } else {
 	tempBuf += sprintf(tempBuf,"%s",str);
       }
@@ -1067,7 +1069,7 @@ char *sprintValue(mpfr_t *aValue) {
 
   finalBuffer = (char *) safeCalloc(strlen(buffer)+1,sizeof(char));
   sprintf(finalBuffer,"%s",buffer);
-  free(buffer);
+  safeFree(buffer);
   mpfr_clear(myValue);
   mpfr_clear(two128);
   return finalBuffer;
@@ -1100,7 +1102,7 @@ void fprintValueWithPrintMode(FILE *fd, mpfr_t value) {
   str = sprintValue(&temp);
   mpfr_clear(temp);
   sollyaFprintf(fd,"%s",str);
-  free(str);
+  safeFree(str);
   
 }
 
@@ -1483,9 +1485,9 @@ void fprintValue(FILE *fd, mpfr_t value) {
       str2 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
       strncpy(str2,str,e);
       sollyaFprintf(fd,"%sb%d",str2,(int)expo);
-      free(str2);
+      safeFree(str2);
     }
-    free(str);
+    safeFree(str);
     mpfr_clear(y);
   }
 }
@@ -1561,7 +1563,7 @@ void fprintValueForXml(FILE *fd, mpfr_t value) {
 	  sollyaFprintf(fd,"</apply>\n");
 	  sollyaFprintf(fd,"</apply>\n");
 	}
-	free(str2);
+	safeFree(str2);
       }
     }
     mpfr_clear(y);
@@ -2278,9 +2280,9 @@ char *sprintTree(node *tree) {
 
   finalBuffer = (char *) safeCalloc(strlen(buffer)+1,sizeof(char));
   sprintf(finalBuffer,"%s",buffer);
-  free(buffer);
-  if (buffer1 != NULL) free(buffer1);
-  if (buffer2 != NULL) free(buffer2);
+  safeFree(buffer);
+  if (buffer1 != NULL) safeFree(buffer1);
+  if (buffer2 != NULL) safeFree(buffer2);
   return finalBuffer;
 }
 
@@ -3262,7 +3264,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->child1 = simplChild1;
 	simplified->child2 = simplChild2;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
 	free_memory(simplChild2);
@@ -3270,12 +3272,12 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     } else {
       if ((simplChild1->nodeType == CONSTANT) && (mpfr_zero_p(*(simplChild1->value)))) {
 	free_memory(simplChild1);
-	free(simplified);
+	safeFree(simplified);
 	simplified = simplChild2;
       } else {
 	if ((simplChild2->nodeType == CONSTANT) && (mpfr_zero_p(*(simplChild2->value)))) {
 	  free_memory(simplChild2);
-	  free(simplified);
+	  safeFree(simplified);
 	  simplified = simplChild1;
 	} else {
 	  if (simplChild1->nodeType == NEG) {
@@ -3347,7 +3349,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->child1 = simplChild1;
 	simplified->child2 = simplChild2;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
 	free_memory(simplChild2);
@@ -3360,7 +3362,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
       } else {
 	if ((simplChild2->nodeType == CONSTANT) && (mpfr_zero_p(*(simplChild2->value)))) {
 	  free_memory(simplChild2);
-	  free(simplified);
+	  safeFree(simplified);
 	  simplified = simplChild1;
 	} else {
 	  if (isSyntacticallyEqual(simplChild1,simplChild2)) {
@@ -3419,7 +3421,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->child1 = simplChild1;
 	simplified->child2 = simplChild2;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
 	free_memory(simplChild2);
@@ -3437,12 +3439,12 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
       } else {
 	if ((simplChild1->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild1->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild1->value)))) {
 	  free_memory(simplChild1);
-	  free(simplified);
+	  safeFree(simplified);
 	  simplified = simplChild2;
 	} else {
 	  if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild2->value)))) {
 	    free_memory(simplChild2);
-	    free(simplified);
+	    safeFree(simplified);
 	    simplified = simplChild1;
 	  } else {
 	    if ((simplChild1->nodeType == DIV) &&
@@ -3541,19 +3543,19 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 			    } else {
 			      if ((simplChild2->nodeType == DIV) && 
 				  (isSyntacticallyEqual(simplChild1,simplChild2->child2))) {
-				free(simplified);
+				safeFree(simplified);
 				free_memory(simplChild1);
 				free_memory(simplChild2->child2);
 				simplified = simplChild2->child1;
-				free(simplChild2);
+				safeFree(simplChild2);
 			      } else {
 				if ((simplChild1->nodeType == DIV) && 
 				    (isSyntacticallyEqual(simplChild2,simplChild1->child2))) {
-				  free(simplified);
+				  safeFree(simplified);
 				  free_memory(simplChild2);
 				  free_memory(simplChild1->child2);
 				  simplified = simplChild1->child1;
-				  free(simplChild1);
+				  safeFree(simplChild1);
 				} else {
 				  simplified->nodeType = MUL;
 				  simplified->child1 = simplChild1;
@@ -3596,7 +3598,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->child1 = simplChild1;
 	simplified->child2 = simplChild2;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
 	free_memory(simplChild2);
@@ -3630,7 +3632,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
       } else {
 	if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild2->value)))) {
 	  free_memory(simplChild2);
-	  free(simplified);
+	  safeFree(simplified);
 	  simplified = simplChild1;
 	} else {
 	  if (isSyntacticallyEqual(simplChild1,simplChild2)) {
@@ -3732,7 +3734,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = SQRT;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -3763,7 +3765,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = EXP;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -3785,7 +3787,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = LOG;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -3807,7 +3809,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	  free_memory(simplChild1);
 	} else {
 	  if (simplChild1->nodeType == EXP) {
-	    free(simplified);
+	    safeFree(simplified);
 	    simplified = copyTree(simplChild1->child1);
 	    free_memory(simplChild1);
 	  } else {
@@ -3831,7 +3833,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = LOG_2;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -3853,7 +3855,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = LOG_10;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -3875,7 +3877,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = SIN;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -3897,7 +3899,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = COS;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -3919,7 +3921,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = TAN;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -3958,7 +3960,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	    simplified->nodeType = ASIN;
 	    simplified->child1 = simplChild1;
 	    mpfr_clear(*value);
-	    free(value);
+	    safeFree(value);
 	  } else {
 	    free_memory(simplChild1);
 	  }
@@ -3992,7 +3994,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	  simplified->nodeType = ACOS;
 	  simplified->child1 = simplChild1;
 	  mpfr_clear(*value);
-	  free(value);
+	  safeFree(value);
 	} else {
 	  free_memory(simplChild1);
 	}
@@ -4033,7 +4035,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	    simplified->nodeType = ATAN;
 	    simplified->child1 = simplChild1;
 	    mpfr_clear(*value);
-	    free(value);
+	    safeFree(value);
 	  } else {
 	    free_memory(simplChild1);
 	  }
@@ -4058,7 +4060,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = SINH;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4080,7 +4082,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = COSH;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4102,7 +4104,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = TANH;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4124,7 +4126,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = ASINH;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4146,7 +4148,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = ACOSH;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4168,7 +4170,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = ATANH;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4192,14 +4194,14 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->child1 = simplChild1;
 	simplified->child2 = simplChild2;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
 	free_memory(simplChild2);
       }
     } else {
       if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild2->value)))) {
-	free(simplified);
+	safeFree(simplified);
 	free_memory(simplChild2);
 	simplified = simplChild1;
       } else {
@@ -4209,20 +4211,20 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	    (simplChild1->nodeType == POW) && 
 	    (simplChild1->child2->nodeType == CONSTANT) &&
 	    (mpfr_mul(*value,*(simplChild2->value),*(simplChild1->child2->value),GMP_RNDN) == 0)) {
-	  free(simplified);
+	  safeFree(simplified);
 	  simplified = simplChild1;
 	  mpfr_clear(*(simplified->child2->value));
-	  free(simplified->child2->value);
+	  safeFree(simplified->child2->value);
 	  simplified->child2->value = value;
 	  free_memory(simplChild2);
 	} else {
 	  mpfr_clear(*value);
-	  free(value);
+	  safeFree(value);
 	  if ((simplChild2->nodeType == CONSTANT) &&
 	      (mpfr_cmp_d(*(simplChild2->value),2.0) == 0) &&
 	      (!mpfr_nan_p(*(simplChild2->value))) &&
 	      (simplChild1->nodeType == SQRT)) {	    
-	    free(simplified);
+	    safeFree(simplified);
 	    simplified = copyTree(simplChild1->child1);
 	    free_memory(simplChild1);
 	    free_memory(simplChild2);
@@ -4253,13 +4255,13 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = NEG;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
     } else {
       if (simplChild1->nodeType == NEG) {
-	free(simplified);
+	safeFree(simplified);
 	simplified = copyTree(simplChild1->child1);
 	free_memory(simplChild1);
       } else {
@@ -4281,7 +4283,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = ABS;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4309,7 +4311,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = DOUBLE;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4345,10 +4347,10 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         mpfr_clear(*(xrange.b));
         mpfr_clear(*(yrange.a));
         mpfr_clear(*(yrange.b));
-        free(xrange.a);
-        free(xrange.b);
-        free(yrange.a);
-        free(yrange.b);
+        safeFree(xrange.a);
+        safeFree(xrange.b);
+        safeFree(yrange.a);
+        safeFree(yrange.b);
       } else {
         simplified->nodeType = DOUBLE;
         simplified->child1 = simplChild1;
@@ -4368,7 +4370,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = SINGLE;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4404,10 +4406,10 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         mpfr_clear(*(xrange.b));
         mpfr_clear(*(yrange.a));
         mpfr_clear(*(yrange.b));
-        free(xrange.a);
-        free(xrange.b);
-        free(yrange.a);
-        free(yrange.b);
+        safeFree(xrange.a);
+        safeFree(xrange.b);
+        safeFree(yrange.a);
+        safeFree(yrange.b);
       } else {
         simplified->nodeType = SINGLE;
         simplified->child1 = simplChild1;
@@ -4427,7 +4429,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = QUAD;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4463,10 +4465,10 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         mpfr_clear(*(xrange.b));
         mpfr_clear(*(yrange.a));
         mpfr_clear(*(yrange.b));
-        free(xrange.a);
-        free(xrange.b);
-        free(yrange.a);
-        free(yrange.b);
+        safeFree(xrange.a);
+        safeFree(xrange.b);
+        safeFree(yrange.a);
+        safeFree(yrange.b);
       } else {
         simplified->nodeType = QUAD;
         simplified->child1 = simplChild1;
@@ -4486,7 +4488,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = HALFPRECISION;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4522,10 +4524,10 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         mpfr_clear(*(xrange.b));
         mpfr_clear(*(yrange.a));
         mpfr_clear(*(yrange.b));
-        free(xrange.a);
-        free(xrange.b);
-        free(yrange.a);
-        free(yrange.b);
+        safeFree(xrange.a);
+        safeFree(xrange.b);
+        safeFree(yrange.a);
+        safeFree(yrange.b);
       } else {
         simplified->nodeType = HALFPRECISION;
         simplified->child1 = simplChild1;
@@ -4545,7 +4547,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = DOUBLEDOUBLE;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4581,10 +4583,10 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         mpfr_clear(*(xrange.b));
         mpfr_clear(*(yrange.a));
         mpfr_clear(*(yrange.b));
-        free(xrange.a);
-        free(xrange.b);
-        free(yrange.a);
-        free(yrange.b);
+        safeFree(xrange.a);
+        safeFree(xrange.b);
+        safeFree(yrange.a);
+        safeFree(yrange.b);
       } else {
         simplified->nodeType = DOUBLEDOUBLE;
         simplified->child1 = simplChild1;
@@ -4604,7 +4606,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = TRIPLEDOUBLE;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4640,10 +4642,10 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         mpfr_clear(*(xrange.b));
         mpfr_clear(*(yrange.a));
         mpfr_clear(*(yrange.b));
-        free(xrange.a);
-        free(xrange.b);
-        free(yrange.a);
-        free(yrange.b);
+        safeFree(xrange.a);
+        safeFree(xrange.b);
+        safeFree(yrange.a);
+        safeFree(yrange.b);
       } else {
         simplified->nodeType = TRIPLEDOUBLE;
         simplified->child1 = simplChild1;
@@ -4663,7 +4665,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = ERF;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4685,7 +4687,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = ERFC;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4707,7 +4709,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = LOG_1P;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4729,7 +4731,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = EXP_M1;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4751,7 +4753,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = DOUBLEEXTENDED;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4787,10 +4789,10 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         mpfr_clear(*(xrange.b));
         mpfr_clear(*(yrange.a));
         mpfr_clear(*(yrange.b));
-        free(xrange.a);
-        free(xrange.b);
-        free(yrange.a);
-        free(yrange.b);
+        safeFree(xrange.a);
+        safeFree(xrange.b);
+        safeFree(yrange.a);
+        safeFree(yrange.b);
       } else {
         simplified->nodeType = DOUBLEEXTENDED;
         simplified->child1 = simplChild1;
@@ -4824,7 +4826,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = CEIL;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4860,10 +4862,10 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         mpfr_clear(*(xrange.b));
         mpfr_clear(*(yrange.a));
         mpfr_clear(*(yrange.b));
-        free(xrange.a);
-        free(xrange.b);
-        free(yrange.a);
-        free(yrange.b);
+        safeFree(xrange.a);
+        safeFree(xrange.b);
+        safeFree(yrange.a);
+        safeFree(yrange.b);
       } else {
         simplified->nodeType = CEIL;
         simplified->child1 = simplChild1;
@@ -4883,7 +4885,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = FLOOR;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4919,10 +4921,10 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         mpfr_clear(*(xrange.b));
         mpfr_clear(*(yrange.a));
         mpfr_clear(*(yrange.b));
-        free(xrange.a);
-        free(xrange.b);
-        free(yrange.a);
-        free(yrange.b);
+        safeFree(xrange.a);
+        safeFree(xrange.b);
+        safeFree(yrange.a);
+        safeFree(yrange.b);
       } else {
         simplified->nodeType = FLOOR;
         simplified->child1 = simplChild1;
@@ -4942,7 +4944,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
 	simplified->nodeType = NEARESTINT;
 	simplified->child1 = simplChild1;
 	mpfr_clear(*value);
-	free(value);
+	safeFree(value);
       } else {
 	free_memory(simplChild1);
       }
@@ -4978,10 +4980,10 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         mpfr_clear(*(xrange.b));
         mpfr_clear(*(yrange.a));
         mpfr_clear(*(yrange.b));
-        free(xrange.a);
-        free(xrange.b);
-        free(yrange.a);
-        free(yrange.b);
+        safeFree(xrange.a);
+        safeFree(xrange.b);
+        safeFree(yrange.a);
+        safeFree(yrange.b);
       } else {
         simplified->nodeType = NEARESTINT;
         simplified->child1 = simplChild1;
@@ -6295,12 +6297,12 @@ node* simplifyTreeInner(node *tree) {
     } else {
       if ((simplChild1->nodeType == CONSTANT) && (mpfr_zero_p(*(simplChild1->value)))) {
 	free_memory(simplChild1);
-	free(simplified);
+	safeFree(simplified);
 	simplified = simplChild2;
       } else {
 	if ((simplChild2->nodeType == CONSTANT) && (mpfr_zero_p(*(simplChild2->value)))) {
 	  free_memory(simplChild2);
-	  free(simplified);
+	  safeFree(simplified);
 	  simplified = simplChild1;
 	} else {
 	  simplified->nodeType = ADD;
@@ -6330,7 +6332,7 @@ node* simplifyTreeInner(node *tree) {
       } else {
 	if ((simplChild2->nodeType == CONSTANT) && (mpfr_zero_p(*(simplChild2->value)))) {
 	  free_memory(simplChild2);
-	  free(simplified);
+	  safeFree(simplified);
 	  simplified = simplChild1;
 	} else {
 	  simplified->nodeType = SUB;
@@ -6365,12 +6367,12 @@ node* simplifyTreeInner(node *tree) {
       } else {
 	if ((simplChild1->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild1->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild1->value)))) {
 	  free_memory(simplChild1);
-	  free(simplified);
+	  safeFree(simplified);
 	  simplified = simplChild2;
 	} else {
 	  if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild2->value)))) {
 	    free_memory(simplChild2);
-	    free(simplified);
+	    safeFree(simplified);
 	    simplified = simplChild1;
 	  } else {
 	    simplified->nodeType = MUL;
@@ -6410,7 +6412,7 @@ node* simplifyTreeInner(node *tree) {
 	    simplified->child2 = simplChild2;
 	  } else {
 	    free_memory(simplChild2);
-	    free(simplified);
+	    safeFree(simplified);
 	    simplified = simplChild1;
 	  }
 	} else {
@@ -6690,7 +6692,7 @@ node* simplifyTreeInner(node *tree) {
       free_memory(simplChild2);
     } else {
       if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild2->value)))) {
-	free(simplified);
+	safeFree(simplified);
 	free_memory(simplChild2);
 	simplified = simplChild1;
       } else {
@@ -7038,12 +7040,12 @@ node* simplifyAllButDivisionInner(node *tree) {
     } else {
       if ((simplChild1->nodeType == CONSTANT) && (mpfr_zero_p(*(simplChild1->value)))) {
 	free_memory(simplChild1);
-	free(simplified);
+	safeFree(simplified);
 	simplified = simplChild2;
       } else {
 	if ((simplChild2->nodeType == CONSTANT) && (mpfr_zero_p(*(simplChild2->value)))) {
 	  free_memory(simplChild2);
-	  free(simplified);
+	  safeFree(simplified);
 	  simplified = simplChild1;
 	} else {
 	  simplified->nodeType = ADD;
@@ -7073,7 +7075,7 @@ node* simplifyAllButDivisionInner(node *tree) {
       } else {
 	if ((simplChild2->nodeType == CONSTANT) && (mpfr_zero_p(*(simplChild2->value)))) {
 	  free_memory(simplChild2);
-	  free(simplified);
+	  safeFree(simplified);
 	  simplified = simplChild1;
 	} else {
 	  simplified->nodeType = SUB;
@@ -7108,12 +7110,12 @@ node* simplifyAllButDivisionInner(node *tree) {
       } else {
 	if ((simplChild1->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild1->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild1->value)))) {
 	  free_memory(simplChild1);
-	  free(simplified);
+	  safeFree(simplified);
 	  simplified = simplChild2;
 	} else {
 	  if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild2->value)))) {
 	    free_memory(simplChild2);
-	    free(simplified);
+	    safeFree(simplified);
 	    simplified = simplChild1;
 	  } else {
 	    simplified->nodeType = MUL;
@@ -7401,7 +7403,7 @@ node* simplifyAllButDivisionInner(node *tree) {
       free_memory(simplChild2);
     } else {
       if ((simplChild2->nodeType == CONSTANT) && (mpfr_cmp_d(*(simplChild2->value),1.0) == 0) && (!mpfr_nan_p(*(simplChild2->value)))) {
-	free(simplified);
+	safeFree(simplified);
 	free_memory(simplChild2);
 	simplified = simplChild1;
       } else {
@@ -10012,7 +10014,7 @@ void computePowerOfPolynomialCoefficients(int *degreeRes, node ***coeffRes,
                                            coeffsQ[i-t]));
         }
       }
-      free(coeffsQ);
+      safeFree(coeffsQ);
       free_memory(factor);
     } else {
       if (k == t) {
@@ -10026,7 +10028,7 @@ void computePowerOfPolynomialCoefficients(int *degreeRes, node ***coeffRes,
                                              coeffsQ[i-t]));
           }
         }
-        free(coeffsQ);
+        safeFree(coeffsQ);
         free_memory(factor);
       }
     }
@@ -10075,7 +10077,7 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
     for (i=0;i<=degree1;i++) {
       (*coefficients)[i] = coefficients1[i];
     }
-    free(coefficients1);
+    safeFree(coefficients1);
     for (i=0;i<=degree2;i++) {
       if (coefficients2[i] != NULL) {
 	if ((*coefficients)[i] == NULL) {
@@ -10097,7 +10099,7 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
 	}
       }
     }
-    free(coefficients2);
+    safeFree(coefficients2);
     return;
   }
 
@@ -10126,8 +10128,8 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
     }
     for (i=0;i<=degree1;i++) free_memory(coefficients1[i]);
     for (i=0;i<=degree2;i++) free_memory(coefficients2[i]);
-    free(coefficients1);
-    free(coefficients2);
+    safeFree(coefficients1);
+    safeFree(coefficients2);
     return;
   }
 
@@ -10149,7 +10151,7 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
         free_memory(temp2);
         for (i=0;i<=degree1;i++) 
           (*coefficients)[i + k * mpd] = coefficients1[i];
-        free(coefficients1);    
+        safeFree(coefficients1);    
         mpfr_clear(y);
         return;
       }
@@ -10179,8 +10181,8 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
         }
         for (i=0;i<=degree1;i++) free_memory(coefficients1[i]);
         for (i=0;i<=degree2;i++) free_memory(coefficients2[i]);
-        free(coefficients1);
-        free(coefficients2);
+        safeFree(coefficients1);
+        safeFree(coefficients2);
         mpfr_clear(y);
         return;
       }
@@ -10211,9 +10213,9 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
       }
 
       for (i=0;i<=degree1;i++) free_memory(coefficients1[i]);
-      free(coefficients1);
+      safeFree(coefficients1);
       for (i=0;i<=degree2;i++) free_memory(coefficients2[i]);
-      free(coefficients2);
+      safeFree(coefficients2);
       mpfr_clear(y);
       return;
     } 
@@ -10333,7 +10335,7 @@ node* hornerPolynomialUnsafe(node *tree) {
   for (i=0;i<=degree;i++) {
     if (monomials[i] != NULL) free_memory(monomials[i]);
   }
-  free(monomials);
+  safeFree(monomials);
 
   free_memory(simplified);
   return copy;
@@ -10433,7 +10435,7 @@ node* dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha) {
   for (i=0;i<=degree;i++) {
     if (monomials[i] != NULL) free_memory(monomials[i]);
   }
-  free(monomials);
+  safeFree(monomials);
 
   free_memory(simplified);
   return copy;
@@ -10794,7 +10796,7 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
 	if (mpfr_mul_si(*value,*(monomials[i]->value),i,GMP_RNDN) != 0)
 	  printMessage(1,SOLLYA_MSG_ROUNDING_UPON_DIFFERENTIATION_OF_HORNER_POLY,"Warning: rounding occurred while differentiating a polynomial in Horner form.\n");
 	mpfr_clear(*(monomials[i]->value));
-	free(monomials[i]->value);
+	safeFree(monomials[i]->value);
 	monomials[i]->value = value;
 	temp = monomials[i];
       } else {
@@ -10887,7 +10889,7 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
   for (i=0;i<=degree;i++) {
     if (monomials[i] != NULL) free_memory(monomials[i]);
   }
-  free(monomials);
+  safeFree(monomials);
 
   return copy;
 }
@@ -11053,7 +11055,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
     for (i=0;i<=degree;i++) {
       if (monomials[i] != NULL) free_memory(monomials[i]);
     }
-    free(monomials);
+    safeFree(monomials);
   } 
 
   return copy;
@@ -11175,8 +11177,8 @@ node *polynomialShiftAndScaleAbscissaUnsafe(node *poly, node *a, node *b) {
     if (coeffs[i] != NULL) free_memory(coeffs[i]);
     if (coeffsRes[i] != NULL) free_memory(coeffsRes[i]);
   }
-  free(coeffs);
-  free(coeffsRes);
+  safeFree(coeffs);
+  safeFree(coeffsRes);
 
   return res;
 }
@@ -11223,7 +11225,7 @@ node *substitutePolynomialUnsafe(node *p, node *q) {
                                       coeffsQPi[k]));
         }
       }
-      free(coeffsQPi);
+      safeFree(coeffsQPi);
     }
   }
 
@@ -11240,17 +11242,17 @@ node *substitutePolynomialUnsafe(node *p, node *q) {
   for (i=0;i<=degP;i++) {
     if (coeffsP[i] != NULL) free_memory(coeffsP[i]);
   }
-  free(coeffsP);
+  safeFree(coeffsP);
 
   for (i=0;i<=degQ;i++) {
     if (coeffsQ[i] != NULL) free_memory(coeffsQ[i]);
   }
-  free(coeffsQ);
+  safeFree(coeffsQ);
 
   for (i=0;i<=deg;i++) {
     if (coeffs[i] != NULL) free_memory(coeffs[i]);
   }
-  free(coeffs);
+  safeFree(coeffs);
 
   return res;
 }
@@ -11283,13 +11285,13 @@ node *substitute(node* tree, node *t) {
         for (i=0;i<=degree;i++) {
           if (coeffs[i] != NULL) free_memory(coeffs[i]);
         }
-        free(coeffs);
+        safeFree(coeffs);
         return copy;
       }
       for (i=0;i<=degree;i++) {
         if (coeffs[i] != NULL) free_memory(coeffs[i]);
       }
-      free(coeffs);
+      safeFree(coeffs);
     }
 
     if ((getDegree(t) >= 2) && 
@@ -11627,8 +11629,8 @@ void composePolynomialsInner(sollya_mpfi_t *res, int degR, sollya_mpfi_t *p, int
     sollya_mpfi_clear(r[i]);
     sollya_mpfi_clear(s[i]);
   }
-  free(r);
-  free(s);
+  safeFree(r);
+  safeFree(s);
 
   // Clear the temporary
   //
@@ -11690,13 +11692,13 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
       free_memory(coeffsP[i]);
     }
   }
-  free(coeffsP);
+  safeFree(coeffsP);
   for (i=0;i<=degQ;i++) {
     if (coeffsQ[i] != NULL) {
       free_memory(coeffsQ[i]);
     }
   }
-  free(coeffsQ);
+  safeFree(coeffsQ);
   
   // Allocate and initialize an array of interval coefficients for the result 
   // polynomial
@@ -11716,11 +11718,11 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
   for (i=0;i<=degP;i++) {
     sollya_mpfi_clear(polyP[i]);
   }
-  free(polyP);
+  safeFree(polyP);
   for (i=0;i<=degQ;i++) {
     sollya_mpfi_clear(polyQ[i]);
   }
-  free(polyQ);
+  safeFree(polyQ);
 
   // Allocate and compute an array of centerpoints
   // 
@@ -11743,7 +11745,7 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
 
   // Free the array of intervals for the output coefficients
   //
-  free(polyR);
+  safeFree(polyR);
 
   // Convert the array of centerpoints to a tree.
   //
@@ -11754,7 +11756,7 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
   for (i=0;i<=degR;i++) {
     mpfr_clear(coeffsR[i]);
   }
-  free(coeffsR);
+  safeFree(coeffsR);
   
   // Convert the array of radii to a list of radii
   //
@@ -11766,7 +11768,7 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
   // Free the array holding the pointers to the 
   // intervals of radii.
   //
-  free(radiiArray);
+  safeFree(radiiArray);
   
 }
 
@@ -11812,7 +11814,7 @@ int readHexadecimal(mpfr_t rop, char *c) {
 
   mpfr_clear(vrd);
   mpfr_clear(vru);
-  free(c2);
+  safeFree(c2);
 
   return res;
 }
@@ -11876,8 +11878,8 @@ int readDyadic(mpfr_t res, char *c) {
   mpfr_clear(expo);
   mpfr_clear(temp1);
   mpfr_clear(temp2);
-  free(mantissa);
-  free(exponent);
+  safeFree(mantissa);
+  safeFree(exponent);
   return rounding;
 }
 
@@ -12009,7 +12011,7 @@ node *makePolynomial(mpfr_t *coefficients, int degree) {
   for (i=0;i<=degree;i++) {
     if (coeffs[i] != NULL) free_memory(coeffs[i]);
   }
-  free(coeffs);
+  safeFree(coeffs);
 
   /* Return the polynomial */
   return poly;
@@ -12137,7 +12139,7 @@ node *getIthCoefficient(node *poly, int i) {
     if (coefficients[k] != NULL) free_memory(coefficients[k]);
   }
 
-  free(coefficients);
+  safeFree(coefficients);
 
   return tempNode;
 }
@@ -12229,7 +12231,7 @@ node *getSubpolynomial(node *poly, chain *monomials, int fillDegrees, mp_prec_t 
     if (coefficients[k] != NULL) free_memory(coefficients[k]);
   }
 
-  free(coefficients);
+  safeFree(coefficients);
 
   tempNode2 = horner(tempNode);
 
@@ -12299,7 +12301,7 @@ node *makeCanonicalPolyUnsafe(node *poly, mp_prec_t prec) {
     }
   }
 
-  free(coefficients);
+  safeFree(coefficients);
 
   tempNode2 = simplifyTreeErrorfree(tempNode);
 

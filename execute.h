@@ -288,6 +288,12 @@ extern void endBuffer(void);
 #define QUADSYMBOL 268
 #define COMPOSEPOLYNOMIALS 269
 #define BIND 270
+#define SHOWMESSAGENUMBERSASSIGN 271
+#define SHOWMESSAGENUMBERSSTILLASSIGN 272
+#define SHOWMESSAGENUMBERSDEREF 273
+#define SUPPRESSMESSAGE 274
+#define UNSUPPRESSMESSAGE 275
+#define GETSUPPRESSEDMESSAGES 276
 
 int executeCommand(node *);
 
@@ -308,6 +314,8 @@ node *makeFalseQuit();
 node *makeFalseRestart();
 node *makeRestart();
 node *makePrint(chain *thinglist);
+node *makeSuppressMessage(chain *thinglist);
+node *makeUnsuppressMessage(chain *thinglist);
 node *makeNewFilePrint(node *thing, chain *thinglist);
 node *makeAppendFilePrint(node *thing, chain *thinglist);
 node *makePlot(chain *thinglist);
@@ -336,6 +344,7 @@ node *makePointsAssign(node *thing);
 node *makeDiamAssign(node *thing);
 node *makeDisplayAssign(node *thing);
 node *makeVerbosityAssign(node *thing);
+node *makeShowMessageNumbersAssign(node *thing);
 node *makeCanonicalAssign(node *thing);
 node *makeAutoSimplifyAssign(node *thing);
 node *makeTaylorRecursAssign(node *thing);
@@ -354,6 +363,7 @@ node *makePointsStillAssign(node *thing);
 node *makeDiamStillAssign(node *thing);
 node *makeDisplayStillAssign(node *thing);
 node *makeVerbosityStillAssign(node *thing);
+node *makeShowMessageNumbersStillAssign(node *thing);
 node *makeCanonicalStillAssign(node *thing);
 node *makeAutoSimplifyStillAssign(node *thing);
 node *makeTaylorRecursStillAssign(node *thing);
@@ -435,6 +445,7 @@ node *makeDeboundMid(node *thing);
 node *makeEvalConst(node *thing);
 node *makeDiff(node *thing);
 node *makeBashevaluate(chain *thinglist);
+node *makeGetSuppressedMessages();
 node *makeSimplify(node *thing);
 node *makeSimplifySafe(node *thing);
 node *makeRemez(chain *thinglist);
@@ -492,6 +503,7 @@ node *makePointsDeref();
 node *makeDiamDeref();
 node *makeDisplayDeref();
 node *makeVerbosityDeref();
+node *makeShowMessageNumbersDeref();
 node *makeCanonicalDeref();
 node *makeAutoSimplifyDeref();
 node *makeTaylorRecursDeref();
@@ -542,7 +554,10 @@ int isPureFinalEllipticList(node *);
 int isPureList(node *);
 int isEmptyList(node *);
 int isStructure(node *tree);
-int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal, int silent);
+int isError(node *);
+int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal, int silent, int superSilent);
+int evaluateThingToRange(mpfr_t a, mpfr_t b, node *tree);
+int evaluateThingToString(char **result, node *tree);
 int isMatchablePrepend(node *tree);
 int isMatchableAppend(node *tree);
 int isMatchableConcat(node *tree);

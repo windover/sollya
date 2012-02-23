@@ -65,6 +65,21 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #define YY_NO_UNPUT 1
 
+/* Mess with the mallocs used by the lexer */
+extern void *parserCalloc(size_t, size_t);
+extern void *parserMalloc(size_t);
+extern void *parserRealloc(void *, size_t);
+extern void parserFree(void *);
+#undef malloc
+#undef realloc
+#undef calloc
+#undef free
+#define malloc parserMalloc
+#define realloc parserRealloc
+#define calloc parserCalloc
+#define free parserFree
+/* End of the malloc mess */
+
 %}
 
 %option noyywrap
@@ -149,6 +164,8 @@ ASSIGNEQUAL     ":="
 SEMICOLON       ";"
 QUIT            "quit"
 PRINT           "print"
+SUPPRESSMESSAGE "suppressmessage"
+UNSUPPRESSMESSAGE "unsuppressmessage"
 DIFF            "diff"
 SIMPLIFY        "simplify"
 CANONICAL       "canonical"
@@ -229,6 +246,7 @@ STRING          ({STRINGDELIMITER})((("\\\\")|(("\\")[\"\'\?ntabfrv])|(("\\")({O
 
 
 VERBOSITY       "verbosity"
+SHOWMESSAGENUMBERS "showmessagenumbers"
 
 WORSTCASE       "worstcase"
 
@@ -282,6 +300,7 @@ PRINTEXPANSION  "printexpansion"
 
 BASHEXECUTE     "bashexecute"
 BASHEVALUATE    "bashevaluate"
+GETSUPPRESSEDMESSAGES "getsuppressedmessages"
 EXTERNALPLOT    "externalplot"
 PERTURB         "perturb"
 
@@ -412,6 +431,7 @@ EXTERNALPROC    "externalproc"
 VOID            "void"
 CONSTANTTYPE    "constant"
 FUNCTION        "function"
+OBJECT          "object"
 RANGE           "range"
 INTEGER         "integer"
 STRINGTYPE      "string"
@@ -496,7 +516,7 @@ NOP             "nop"
 					      constBuffer2 = (char *) safeCalloc(yyleng-1,sizeof(char));
 					      strncpy(constBuffer2,yytext+1,yyleng-2);
 					      demaskString(constBuffer,constBuffer2);
-					      free(constBuffer2);
+					      safeFree(constBuffer2);
 					      yylval->value = constBuffer;
                                                return STRINGTOKEN; }
 
@@ -579,6 +599,7 @@ NOP             "nop"
 {DIAM}            			    {  return DIAMTOKEN; }
 {DISPLAY}          			    {  return DISPLAYTOKEN; }
 {VERBOSITY}       			    {  return VERBOSITYTOKEN; }
+{SHOWMESSAGENUMBERS}       		    {  return SHOWMESSAGENUMBERSTOKEN; }
 {CANONICAL}       			    {  return CANONICALTOKEN; }
 {AUTOSIMPLIFY}    			    {  return AUTOSIMPLIFYTOKEN; }
 {TAYLORRECURSIONS}			    {  return TAYLORRECURSIONSTOKEN; }
@@ -670,6 +691,8 @@ NOP             "nop"
 {PARSE}           			    {  return PARSETOKEN; }
 
 {PRINT}           			    {  return PRINTTOKEN; }
+{SUPPRESSMESSAGE}           		    {  return SUPPRESSMESSAGETOKEN; }
+{UNSUPPRESSMESSAGE}           		    {  return UNSUPPRESSMESSAGETOKEN; }
 {PRINTXML}           			    {  return PRINTXMLTOKEN; }
 {EXECUTE}           			    {  return EXECUTETOKEN; }
 {PLOT}            			    {  return PLOTTOKEN; }
@@ -679,6 +702,7 @@ NOP             "nop"
 {PRINTEXPANSION}  			    {  return PRINTEXPANSIONTOKEN; }
 {BASHEXECUTE}     			    {  return BASHEXECUTETOKEN; }
 {BASHEVALUATE}     			    {  return BASHEVALUATETOKEN; }
+{GETSUPPRESSEDMESSAGES}     		    {  return GETSUPPRESSEDMESSAGESTOKEN; }
 {EXTERNALPLOT}    			    {  return EXTERNALPLOTTOKEN; }
 {WRITE}           			    {  return WRITETOKEN; }
 {ASCIIPLOT}       			    {  return ASCIIPLOTTOKEN; }
@@ -723,6 +747,7 @@ NOP             "nop"
 {VOID}                                      {  return VOIDTOKEN; }
 {CONSTANTTYPE}                              {  return CONSTANTTYPETOKEN; }
 {FUNCTION}                                  {  return FUNCTIONTOKEN; }
+{OBJECT}                                    {  return OBJECTTOKEN; }
 {RANGE}                                     {  return RANGETOKEN; }
 {INTEGER}                                   {  return INTEGERTOKEN; }
 {STRINGTYPE}                                {  return STRINGTYPETOKEN; }

@@ -341,7 +341,7 @@ void fPrintXmlInner(FILE *fd, node *tree) {
       sollyaFprintf(fd,"<apply>\n");
       sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">function(%s)</csymbol>\n",
 	      procString);
-      free(procString);
+      safeFree(procString);
       fPrintXmlInner(fd, tree->child1);
       sollyaFprintf(fd,"</apply>\n");	 
     } else {
@@ -360,7 +360,7 @@ void fPrintXmlInner(FILE *fd, node *tree) {
       procString = sPrintThing(tree->child2);
       sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">function(%s)</csymbol>\n",
 	      procString);
-      free(procString);
+      safeFree(procString);
       fPrintXmlInner(fd, tree->child1);
       sollyaFprintf(fd,"</apply>\n");	 
       sollyaFprintf(fd,"</apply>\n");
@@ -654,7 +654,7 @@ int search_math_tree (xmlTextReaderPtr reader)
 	  temp=mthis->operator(mthis->op1,mthis->op2);
 	  //printTree(temp);  printMessage(2,"\n");
 	  if (mthis->parent) mthis=mthis->parent;
-	  if (mthis->child)  free(mthis->child);
+	  if (mthis->child)  safeFree(mthis->child);
 	  mthis->child=0;
 	}
       else if (!strcmp((char*)xml_name, "csymbol")) mthis->op_type=0;

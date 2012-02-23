@@ -30,10 +30,9 @@ Parameters:
    however must not be end-elliptic.
 
 \item Users should be aware that the behavior of \textbf{max} follows the IEEE
-   754-2008 standard with respect to NaNs. In particular, a NaN given as
-   the first argument will not be promoted as a result unless the other
-   argument is a NaN. This means that NaNs may seem to disappear during
-   computations.
+   754-2008 standard with respect to NaNs. In particular, \textbf{max}
+   evaluates to NaN if and only if all arguments of \textbf{max} are
+   NaNs. This means that NaNs may disappear during computations.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]

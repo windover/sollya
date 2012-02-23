@@ -751,7 +751,7 @@ int computeTaylorModel(node **poly, sollya_mpfi_t delta,
     }
     sollya_mpfi_clear(lagrangeDelta);
     sollya_mpfi_clear(*myDelta);
-    free(myDelta);
+    safeFree(myDelta);
   }
 
   if (!res) free_memory(myPoly);
@@ -869,7 +869,7 @@ int isPolynomialWithConstantDyadicFiniteRealCoefficients(node *poly) {
     if (coefficients[i] != NULL) 
       free_memory(coefficients[i]);
   }
-  free(coefficients);
+  safeFree(coefficients);
 
   return res;
 }
@@ -1238,8 +1238,8 @@ int determineOrderOfZero(int *k, node *func, mpfr_t x0, int n, mp_prec_t prec) {
 	if (coefficients[i] != NULL) free_memory(coefficients[i]);
       }
     }
-    if (coefficients != NULL) free(coefficients);
-    free(errorsAsArray);
+    if (coefficients != NULL) safeFree(coefficients);
+    safeFree(errorsAsArray);
     freeChain(errors,freeMpfiPtr);
     free_memory(poly);
   }
@@ -2355,7 +2355,7 @@ int hasOnlyMpqCoefficients(node *poly) {
   for (i=0;i<=degree;i++) {
     if (coefficients[i] != NULL) free_memory(coefficients[i]);
   }
-  free(coefficients);
+  safeFree(coefficients);
 
   return res;
 }

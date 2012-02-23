@@ -40,7 +40,7 @@ returned by affecting the MPFR variable.  If the $SOLLYA result type
 is $FUNCTION, the first argument of the C function is of C type §§node**§\texttt{node **}§§,
 the result is returned by the §§node *§\texttt{node *}§§ pointed with a new §§node *§\texttt{node *}§§.
 If the $SOLLYA result type is $RANGE, the first argument of the C
-function is of C type §§sollya_mpfi_t *§\texttt{sollya\_mpfi\_t *}§§, the result is returned by affecting
+function is of C type §§mpfi_t *§\texttt{mpfi\_t *}§§, the result is returned by affecting
 the interval-arithmetic variable.  If the $SOLLYA result type is $INTEGER, the first
 argument of the C function is of C type §§int *§\texttt{int *}§§, the result is returned
 by affecting the int variable.  If the $SOLLYA result type is $STRING,
@@ -53,7 +53,7 @@ first argument of the C function is of C type §§chain **§\texttt{chain **}§�
 returned by the §§chain *§\texttt{chain *}§§ pointed with a new §§chain *§\texttt{chain *}§§.  This chain
 contains for $SOLLYA type $CONSTANT pointers §§mpfr_t *§\texttt{mpfr\_t *}§§ to new MPFR
 variables, for $SOLLYA type $FUNCTION pointers §§node *§\texttt{node *}§§ to new nodes, for
-$SOLLYA type $RANGE pointers §§sollya_mpfi_t *§\texttt{sollya\_mpfi\_t *}§§  to new interval-arithmetic variables, for
+$SOLLYA type $RANGE pointers §§mpfi_t *§\texttt{mpfi\_t *}§§  to new interval-arithmetic variables, for
 $SOLLYA type $INTEGER pointers §§int *§\texttt{int *}§§ to new int variables for $SOLLYA
 type $STRING pointers §§char *§\texttt{char *}§§ to new §§char *§\texttt{char *}§§ variables and for $SOLLYA
 type $BOOLEAN pointers §§int *§\texttt{int *}§§ to new int variables representing boolean
@@ -73,14 +73,14 @@ corresponding $SOLLYA type. If the $SOLLYA type is $CONSTANT, the C
 type the §§void *§\texttt{void *}§§ is to be casted to is §§mpfr_t *§\texttt{mpfr\_t *}§§.  If the $SOLLYA type
 is $FUNCTION, the C type the §§void *§\texttt{void *}§§ is to be casted to is §§node *§\texttt{node *}§§.  If
 the $SOLLYA type is $RANGE, the C type the §§void *§\texttt{void *}§§ is to be casted to is
-§§sollya_mpfi_t *§\texttt{sollya\_mpfi\_t *}§§.  If the $SOLLYA type is $INTEGER, the C type the §§void *§\texttt{void *}§§ is to
+§§mpfi_t *§\texttt{mpfi\_t *}§§.  If the $SOLLYA type is $INTEGER, the C type the §§void *§\texttt{void *}§§ is to
 be casted to is §§int *§\texttt{int *}§§.  If the $SOLLYA type is $STRING, the C type the
 §§void *§\texttt{void *}§§ is to be casted to is §§char *§\texttt{char *}§§.  If the $SOLLYA type is $BOOLEAN,
 the C type the §§void *§\texttt{void *}§§ is to be casted to is §§int *§\texttt{int *}§§.  If the $SOLLYA
 type is $LISTOF type, the C type the §§void *§\texttt{void *}§§ is to be casted to is
 §§chain *§\texttt{chain *}§§.  Here depending on type, the values in the chain are to be
 casted to §§mpfr_t *§\texttt{mpfr\_t *}§§  for $SOLLYA type $CONSTANT, §§node *§\texttt{node *}§§ for $SOLLYA type
-$FUNCTION, §§sollya_mpfi_t *§\texttt{sollya\_mpfi\_t *}§§ for $SOLLYA type $RANGE, §§int *§\texttt{int *}§§ for $SOLLYA type
+$FUNCTION, §§mpfi_t *§\texttt{mpfi\_t *}§§ for $SOLLYA type $RANGE, §§int *§\texttt{int *}§§ for $SOLLYA type
 $INTEGER, §§char *§\texttt{char *}§§ for $SOLLYA type $STRING and §§int *§\texttt{int *}§§ for $SOLLYA type
 $BOOLEAN.
 §§ § §§

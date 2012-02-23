@@ -76,19 +76,19 @@ void freeExprBoundTheo(exprBoundTheo *theo) {
   }
   if (theo->x != NULL) {
     sollya_mpfi_clear(*(theo->x));
-    free(theo->x);
+    safeFree(theo->x);
   }
   if (theo->boundLeft != NULL) {
     sollya_mpfi_clear(*(theo->boundLeft));
-    free(theo->boundLeft);
+    safeFree(theo->boundLeft);
   }
   if (theo->boundRight != NULL) {
     sollya_mpfi_clear(*(theo->boundRight));
-    free(theo->boundRight);
+    safeFree(theo->boundRight);
   }
   if (theo->y != NULL) {
     sollya_mpfi_clear(*(theo->y));
-    free(theo->y);
+    safeFree(theo->y);
   }
   if (theo->theoLeft != NULL) {
     freeExprBoundTheo(theo->theoLeft);
@@ -98,11 +98,11 @@ void freeExprBoundTheo(exprBoundTheo *theo) {
   }
   if (theo->xZ != NULL) {
     sollya_mpfi_clear(*(theo->xZ));
-    free(theo->xZ);
+    safeFree(theo->xZ);
   }
   if (theo->xMXZ != NULL) {
     sollya_mpfi_clear(*(theo->xMXZ));
-    free(theo->xMXZ);
+    safeFree(theo->xMXZ);
   }
   if (theo->leftDerivative != NULL) {
     free_memory(theo->leftDerivative);
@@ -124,21 +124,21 @@ void freeExprBoundTheo(exprBoundTheo *theo) {
   }
   if (theo->boundLeftLinear != NULL) {
     sollya_mpfi_clear(*(theo->boundLeftLinear));
-    free(theo->boundLeftLinear);
+    safeFree(theo->boundLeftLinear);
   }
   if (theo->boundRightLinear != NULL) {
     sollya_mpfi_clear(*(theo->boundRightLinear));
-    free(theo->boundRightLinear);
+    safeFree(theo->boundRightLinear);
   }
   if (theo->boundLeftConstant != NULL) {
     sollya_mpfi_clear(*(theo->boundLeftConstant));
-    free(theo->boundLeftConstant);
+    safeFree(theo->boundLeftConstant);
   }
   if (theo->boundRightConstant != NULL) {
     sollya_mpfi_clear(*(theo->boundRightConstant));
-    free(theo->boundRightConstant);
+    safeFree(theo->boundRightConstant);
   }
-  free(theo);
+  safeFree(theo);
 }
 
 void nullifyExprBoundTheo(exprBoundTheo *theo) {
@@ -264,8 +264,8 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       sprintf(gx,"g(%s)",((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"The given expression is of the form ");
       fprintHeadFunction(fd,theo->function,fx,gx);
-      free(fx);
-      free(gx);
+      safeFree(fx);
+      safeFree(gx);
       sollyaFprintf(fd,"\nwhere f(%s) = ",((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->theoLeft->function);
       sollyaFprintf(fd,"\nand g(%s) = ",((variablename == NULL) ? "_x_" : variablename));
@@ -341,8 +341,8 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       sprintf(fx,"f(%s)",((variablename == NULL) ? "_x_" : variablename));
       sprintf(gx,"g(%s)",((variablename == NULL) ? "_x_" : variablename));
       fprintHeadFunction(fd,theo->function,fx,gx);
-      free(fx);
-      free(gx);
+      safeFree(fx);
+      safeFree(gx);
       sollyaFprintf(fd," and of (");
       fprintHeadFunction(fd,theo->function,"_xC","_yC");
       sollyaFprintf(fd,") + (X - _xZ) * (");
@@ -358,8 +358,8 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       sprintf(gx,"g(%s)",((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"The given expression is of the form ");
       fprintHeadFunction(fd,theo->function,fx,gx);
-      free(fx);
-      free(gx);
+      safeFree(fx);
+      safeFree(gx);
       sollyaFprintf(fd,"\nwhere f(%s) = ",((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->theoLeft->function);
       sollyaFprintf(fd,"\nand g(%s) = ",((variablename == NULL) ? "_x_" : variablename));
@@ -415,8 +415,8 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       sprintf(gx,"g(%s)",((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"The given expression is of the form ");
       fprintHeadFunction(fd,theo->function,fx,gx);
-      free(fx);
-      free(gx);
+      safeFree(fx);
+      safeFree(gx);
       sollyaFprintf(fd,"\nwhere f(%s) = ",((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->theoLeft->function);
       sollyaFprintf(fd,"\nand g(%s) is some function in %s.\n",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
@@ -479,8 +479,8 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       sollyaFprintf(fd,"f'(%s)/g'(%s) is bounded by ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       fprintInterval(fd,*(theo->boundLeftLinear));
       sollyaFprintf(fd,".\nThis is bound that has had to be proven.\n");
-      free(fx);
-      free(gx);
+      safeFree(fx);
+      safeFree(gx);
       break;
     case IMPLICATION:
       sollyaFprintf(fd,"The theorem is a direct consequence of theorem %d.\n",theo->theoLeft->number);
@@ -492,8 +492,8 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       sprintf(fx,"f(%s)",((variablename == NULL) ? "_x_" : variablename));
       sprintf(gx,"g(%s)",((variablename == NULL) ? "_x_" : variablename));
       fprintHeadFunction(fd,theo->function,fx,gx);
-      free(fx);
-      free(gx);
+      safeFree(fx);
+      safeFree(gx);
       sollyaFprintf(fd,".\n");
       switch (arity(theo->function)) {
       case 1:
@@ -573,8 +573,8 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       sprintf(fx,"f(%s)",((variablename == NULL) ? "_x_" : variablename));
       sprintf(gx,"g(%s)",((variablename == NULL) ? "_x_" : variablename));
       fprintHeadFunction(fd,theo->function,fx,gx);
-      free(fx);
-      free(gx);
+      safeFree(fx);
+      safeFree(gx);
       sollyaFprintf(fd,", one can show the given bound for the given function.\n");
     }
   }
@@ -607,7 +607,7 @@ void freeEqualityTheo(equalityTheo *theo) {
   if (theo == NULL) return;
   free_memory(theo->expr1);
   free_memory(theo->expr2);
-  free(theo);
+  safeFree(theo);
 }
 
 
@@ -740,7 +740,7 @@ void freeNoZeroTheo(noZeroTheo *theo) {
   freeEqualityTheo(theo->funcEqual);
   freeEqualityTheo(theo->derivEqual);
   freeChain(theo->exprBoundTheos,freeExprBoundTheoOnVoid);
-  free(theo);
+  safeFree(theo);
 }
 
 
@@ -963,7 +963,7 @@ void freeInfnormTheo(infnormTheo *theo) {
   freeExprBoundTheo(theo->evalLeftBound);
   freeExprBoundTheo(theo->evalRightBound);
   freeChain(theo->evalOnZeros,freeExprBoundTheoOnVoid);
-  free(theo);
+  safeFree(theo);
 }
 
 
@@ -1026,11 +1026,11 @@ gappaAssignment *newGappaConstant(int resultType, char *resultVariable, double c
 
 void freeGappaAssignment(gappaAssignment *assign) {
   if (assign == NULL) return;
-  free(assign->resultVariable);
-  free(assign->operand1Variable);
-  free(assign->operand2Variable);
-  free(assign->operand3Variable);
-  free(assign);
+  safeFree(assign->resultVariable);
+  safeFree(assign->operand1Variable);
+  safeFree(assign->operand2Variable);
+  safeFree(assign->operand3Variable);
+  safeFree(assign);
 }
 
 void freeGappaAssignmentOnVoid(void *assign) {
@@ -1042,15 +1042,15 @@ void freeGappaProof(gappaProof *proof) {
   if (proof == NULL) return;
   mpfr_clear(proof->a);
   mpfr_clear(proof->b);
-  free(proof->variableName);
-  free(proof->resultName);
+  safeFree(proof->variableName);
+  safeFree(proof->resultName);
   free_memory(proof->polynomToImplement);
   free_memory(proof->polynomImplemented);
   for (i=0;i<proof->assignmentsNumber;i++) {
     freeGappaAssignment(proof->assignments[i]);
   }
-  free(proof->assignments);
-  free(proof);
+  safeFree(proof->assignments);
+  safeFree(proof);
 }
 
 void fprintGappaAssignmentAsMaths(FILE *fd, gappaAssignment *assign) {

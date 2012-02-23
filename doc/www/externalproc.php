@@ -52,7 +52,7 @@ returned by affecting the MPFR variable.  If the Sollya result type
 is <?php linkTo("command","function","function");?>, the first argument of the C function is of C type node**, 
 the result is returned by the node * pointed with a new node *. 
 If the Sollya result type is <?php linkTo("command","range","range");?>, the first argument of the C 
-function is of C type sollya_mpfi_t *, the result is returned by affecting 
+function is of C type mpfi_t *, the result is returned by affecting 
 the interval-arithmetic variable.  If the Sollya result type is <?php linkTo("command","integer","integer");?>, the first 
 argument of the C function is of C type int *, the result is returned 
 by affecting the int variable.  If the Sollya result type is <?php linkTo("command","string","string");?>, 
@@ -65,7 +65,7 @@ first argument of the C function is of C type chain **, the result is
 returned by the chain * pointed with a new chain *.  This chain 
 contains for Sollya type <?php linkTo("command","constant","constant");?> pointers mpfr_t * to new MPFR 
 variables, for Sollya type <?php linkTo("command","function","function");?> pointers node * to new nodes, for 
-Sollya type <?php linkTo("command","range","range");?> pointers sollya_mpfi_t *  to new interval-arithmetic variables, for 
+Sollya type <?php linkTo("command","range","range");?> pointers mpfi_t *  to new interval-arithmetic variables, for 
 Sollya type <?php linkTo("command","integer","integer");?> pointers int * to new int variables for Sollya 
 type <?php linkTo("command","string","string");?> pointers char * to new char * variables and for Sollya 
 type <?php linkTo("command","boolean","boolean");?> pointers int * to new int variables representing boolean 
@@ -85,14 +85,14 @@ corresponding Sollya type. If the Sollya type is <?php linkTo("command","constan
 type the void * is to be casted to is mpfr_t *.  If the Sollya type 
 is <?php linkTo("command","function","function");?>, the C type the void * is to be casted to is node *.  If 
 the Sollya type is <?php linkTo("command","range","range");?>, the C type the void * is to be casted to is 
-sollya_mpfi_t *.  If the Sollya type is <?php linkTo("command","integer","integer");?>, the C type the void * is to 
+mpfi_t *.  If the Sollya type is <?php linkTo("command","integer","integer");?>, the C type the void * is to 
 be casted to is int *.  If the Sollya type is <?php linkTo("command","string","string");?>, the C type the 
 void * is to be casted to is char *.  If the Sollya type is <?php linkTo("command","boolean","boolean");?>, 
 the C type the void * is to be casted to is int *.  If the Sollya 
 type is <?php linkTo("command","listof","list of");?> type, the C type the void * is to be casted to is 
 chain *.  Here depending on type, the values in the chain are to be 
 casted to mpfr_t *  for Sollya type <?php linkTo("command","constant","constant");?>, node * for Sollya type 
-<?php linkTo("command","function","function");?>, sollya_mpfi_t * for Sollya type <?php linkTo("command","range","range");?>, int * for Sollya type 
+<?php linkTo("command","function","function");?>, mpfi_t * for Sollya type <?php linkTo("command","range","range");?>, int * for Sollya type 
 <?php linkTo("command","integer","integer");?>, char * for Sollya type <?php linkTo("command","string","string");?> and int * for Sollya type 
 <?php linkTo("command","boolean","boolean");?>. 
 <br><br> 

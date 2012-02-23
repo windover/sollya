@@ -62,9 +62,9 @@ tSeries* createEmptytSeries(int n,  mpfi_t x){
 void cleartSeries(tSeries *t){
   int i;
   for(i=0;i<=t->n;i++) mpfi_clear(t->poly_array[i]);
-  free(t->poly_array);
+  safeFree(t->poly_array);
   mpfi_clear(t->x);
-  free(t);
+  safeFree(t);
 }
 
 /*This function pretty prints a taylor series
@@ -129,7 +129,7 @@ void mpfr_get_poly(mpfr_t *rc, mpfi_t rest, int n, mpfi_t *gc, mpfi_t x){
   for (i=0; i<=n; i++){
     mpfi_clear(res[i]);  
   }
-  free(res);
+  safeFree(res);
   mpfi_clear(r);
   return;
 
@@ -258,12 +258,12 @@ void polynomialBoundSharp(mpfi_t *bound,int n,mpfi_t *coeffs,mpfi_t x){
   for(i=0;i<nrRoots;i++){
   mpfi_clear(rootsIntervals[i]);
   }
-  free(rootsIntervals);
+  safeFree(rootsIntervals);
   
   for(i=0;i<=n;i++){
     mpfr_clear(polyCoeffs[i]);
   }
-  free(polyCoeffs);
+  safeFree(polyCoeffs);
   
   mpfr_clear(a);
   mpfr_clear(b);  
@@ -306,8 +306,8 @@ int TAD(chain **res, void **args) {
   }
     
   
-  free(t->poly_array);
-  free(t);
+  safeFree(t->poly_array);
+  safeFree(t);
   mpfi_clear(x);
 	   
   return 1;
@@ -330,7 +330,7 @@ int mpfi_set_node( mpfi_t *r, node * c) {
       default: mpfi_set_ui(rr,0);
       break;
       }
-    free(cc);
+    safeFree(cc);
   }
   else mpfi_set_ui(rr,0);
   mpfi_set(*r,rr);

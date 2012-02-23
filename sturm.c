@@ -156,8 +156,8 @@ char *sprintMpq(mpq_t x) {
   denomStr = sprintValue(&denomMpfr);
   res = (char *) safeCalloc(strlen(numStr) + strlen(denomStr) + 3 + 1, sizeof(char));
   sprintf(res,"%s / %s",numStr,denomStr);
-  free(numStr);
-  free(denomStr);
+  safeFree(numStr);
+  safeFree(denomStr);
 
   mpfr_clear(numMpfr);
   mpfr_clear(denomMpfr);
@@ -395,12 +395,12 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, sollya_mpfi_t x){
   for (i=0; i<=dp_degree; i++){ 
     mpq_clear(dp[i]);
   }
-  free(dp);
-  free(s0);
-  free(evalResA);
-  free(evalResB);
-  free(quotient); 
-  free(rest); 
+  safeFree(dp);
+  safeFree(s0);
+  safeFree(evalResA);
+  safeFree(evalResB);
+  safeFree(quotient); 
+  safeFree(rest); 
   mpfr_clear(a);
   mpfr_clear(b);
   mpq_clear(aq);
@@ -676,12 +676,12 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, sollya_mpfi_t x, mp_prec_t pre
   for (i=0; i<=dp_degree; i++){ 
     sollya_mpfi_clear(dp[i]);
   }
-  free(dp);
-  free(evalResA);
-  free(evalResB);
-  free(s0); 
-  free(quotient); 
-  free(rest); 
+  safeFree(dp);
+  safeFree(evalResA);
+  safeFree(evalResB);
+  safeFree(s0); 
+  safeFree(quotient); 
+  safeFree(rest); 
   sollya_mpfi_clear(evalRes);
   mpfr_clear(a);
   mpfr_clear(b);
@@ -691,7 +691,7 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, sollya_mpfi_t x, mp_prec_t pre
   for (i=0;i<=p_degree;i++) {
     sollya_mpfi_clear(p[i]);
   }
-  free(p);
+  safeFree(p);
   
   return resultat;
 }
@@ -776,7 +776,7 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t precision) {
       mpq_set_ui(qCoefficients[i],0,1);
     }
   }
-  free(coefficients);
+  safeFree(coefficients);
   mpfr_clear(tempValue); 
   mpfr_clear(tempValue2);
 
@@ -798,7 +798,7 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t precision) {
   for (i=0;i<=degree;i++) {
     mpq_clear(qCoefficients[i]);
   }
-  free(qCoefficients);
+  safeFree(qCoefficients);
   
   return 1;
 }

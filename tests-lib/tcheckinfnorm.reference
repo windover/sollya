@@ -1,0 +1,4 @@
+checkinfnorm(sin(_x_), [0;1.75], 1) = true - expecting true
+checkinfnorm(sin(_x_), [0;1.75], 0.5) = false - expecting false
+Caught the message: a certain expression should have been constant and has been faithfully rounded.
+checkinfnorm(sin(_x_), [0;0.512820512820512820512820512820512820512820512820514], 0.5) = true - expecting true
