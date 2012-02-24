@@ -8330,6 +8330,7 @@ int getDegree(node *tree) {
 int getMaxPowerDividerUnsafe(node *tree) {
   int l, r;
   mpfr_t temp;
+  node *simplifiedNode;
 
   if (isConstant(tree)) return 0;
 
@@ -8362,29 +8363,39 @@ int getMaxPowerDividerUnsafe(node *tree) {
   case POW:
     {
       l = getMaxPowerDividerUnsafe(tree->child1);
-      if (tree->child2->nodeType != CONSTANT) {
-	sollyaFprintf(stderr,"Error: getMaxPowerDividerUnsafe: an error occurred. The exponent in a power operator is not constant.\n");
-	exit(1);
+      if (l == 0) return 0;
+      simplifiedNode = simplifyRationalErrorfree(tree->child2);
+      if (simplifiedNode->nodeType != CONSTANT) {
+	printMessage(1,SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NOT_CONSTANT,
+		     "Warning: an attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is not a constant but a constant expression.\n");
+	free_memory(simplifiedNode);
+	return -1;	
       }
-      if (!mpfr_integer_p(*(tree->child2->value))) {
-	sollyaFprintf(stderr,"Error: getMaxPowerDividerUnsafe: an error occurred. The exponent in a power operator is not integer.\n");
-	exit(1);
+      if (!mpfr_integer_p(*(simplifiedNode->value))) {
+	printMessage(1,SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NOT_INTEGER,
+		     "Warning: an attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is not an integer.\n");
+	free_memory(simplifiedNode);
+	return -1;	
       }
-      if (mpfr_sgn(*(tree->child2->value)) < 0) {
-	sollyaFprintf(stderr,"Error: getMaxPowerDividerUnsafe: an error occurred. The exponent in a power operator is negative.\n");
-	exit(1);
+      if (mpfr_sgn(*(simplifiedNode->value)) < 0) {
+	printMessage(1,SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NEGATIVE,
+		     "Warning: an attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is negative.\n");
+	free_memory(simplifiedNode);
+	return -1;	
       }
 
-      r = mpfr_get_si(*(tree->child2->value),GMP_RNDN);
-      mpfr_init2(temp,mpfr_get_prec(*(tree->child2->value)) + 10);
+      r = mpfr_get_si(*(simplifiedNode->value),GMP_RNDN);
+      mpfr_init2(temp,mpfr_get_prec(*(simplifiedNode->value)) + 10);
       mpfr_set_si(temp,r,GMP_RNDN);
-      if (mpfr_cmp(*(tree->child2->value),temp) != 0) {
+      if (mpfr_cmp(*(simplifiedNode->value),temp) != 0) {
 	printMessage(1,SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_DOESNT_HOLD_ON_MACHINE_INT,
 "Warning: tried to compute degree of maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which cannot be represented on an integer variable.\n");
 	mpfr_clear(temp);
+	free_memory(simplifiedNode);
 	return -1;
       }
       mpfr_clear(temp);
+      free_memory(simplifiedNode);
       return l * r;
     }
     break;

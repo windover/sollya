@@ -529,6 +529,9 @@ static const messageEntry messageTextsTable[] = {
   { SOLLYA_MSG_MIN_RELIES_ON_FP_RESULT_FAITHFUL_BUT_NOT_REAL          , "A minimum computation relies on floating-point result that is faithfully evaluated and at least one of the terms is not a real number" },
   { SOLLYA_MSG_MAX_RELIES_ON_FP_RESULT_FAITHFUL_BUT_NOT_REAL          , "A maximum computation relies on floating-point result that is faithfully evaluated and at least one of the terms is not a real number" },
   { SOLLYA_MSG_EXPRESSION_EVALUATES_TO_INFINITY                       , "An expression evaluates to infinity" },
+  { SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NOT_CONSTANT                    , "An attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is not a constant but a constant expression" },
+  { SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NOT_INTEGER                     , "An attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is not an integer" },
+  { SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NEGATIVE                        , "An attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is negative" },
 
   /* Add your new warning message texts above here. */
 

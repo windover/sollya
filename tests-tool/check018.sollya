@@ -195,3 +195,9 @@ q = h(p);
 q(20);
 print(q);
 
+/* Tests for the bug #13930 Sollya crashes unexpectedly with message Error: getMaxPowerDividerUnsafe: an error occurred. The exponent in a power operator is not constant. */
+
+x^(0+1)/1;
+(x^(0+1))/1;
+x^((0+1)/1);
+
