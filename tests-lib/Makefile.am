@@ -4,6 +4,7 @@ tacos.c \
 tacosh.c \
 tadd.c \
 tand.c \
+tappend.c \
 tasin.c \
 tasinh.c \
 tasciiplot.c \
