@@ -65,6 +65,7 @@ tcmp_less_equal.c \
 tcmp_not_equal.c \
 tcmp_objs_structurally.c \
 tcoeff.c \
+tconcat.c \
 tconstant.c \
 tconstant_from_double.c \
 tconstant_from_int64.c \
