@@ -357,7 +357,7 @@ void *safeMalloc (size_t size) {
 
 void *safeRealloc (void *ptr, size_t size) {
   void *newPtr;
-  newPtr = realloc(ptr,size);
+  newPtr = actualRealloc(ptr,size);
   if ((size != 0) && (newPtr == NULL)) {
     sollyaFprintf(stderr,"Error: realloc could not succeed. No more memory left.\n");
     exit(1);
@@ -1152,7 +1152,7 @@ void initTool() {
   
   initSignalHandler();
   blockSignals();
-  wrap_mp_set_memory_functions(safeMalloc,wrapSafeRealloc,wrapSafeFree);
+  wrap_mp_set_memory_functions(safeMalloc,actualReallocWithSize,actualFreeWithSize);
   initToolDefaults();
   noColor = 1;
 }
@@ -1319,6 +1319,7 @@ int initializeLibraryMode(void *(*myActualMalloc)(size_t),
 			  void (*myActualFree)(void*),
 			  void *(*myActualReallocWithSize)(void *, size_t, size_t),
 			  void (*myActualFreeWithSize)(void *, size_t)) {
+  void *ptr;
   libraryMode = 1;
   if (myActualMalloc != NULL) actualMalloc = myActualMalloc;
   if (myActualCalloc != NULL) actualCalloc = myActualCalloc;
@@ -1335,11 +1336,18 @@ int initializeLibraryMode(void *(*myActualMalloc)(size_t),
   printMode = PRINT_MODE_LEGACY;
   warnFile = NULL;
   eliminatePromptBackup = 1;
-  wrap_mp_set_memory_functions(safeMalloc,wrapSafeRealloc,wrapSafeFree);
+  wrap_mp_set_memory_functions(safeMalloc,actualReallocWithSize,actualFreeWithSize);
   initToolDefaults();
   handlingCtrlC = 0;
   lastHandledSignal = 0;
   noRoundingWarnings = 0;
+  ptr = safeMalloc(sizeof(char));
+  safeFree(ptr);
+  ptr = safeCalloc(1,sizeof(char));
+  safeFree(ptr);
+  ptr = safeMalloc(sizeof(char));
+  ptr = safeRealloc(ptr, 2 * sizeof(char));
+  safeFree(ptr);
   return 1;
 }
 
@@ -1530,7 +1538,7 @@ int general(int argc, char *argv[]) {
   }
   initSignalHandler();
   blockSignals();
-  wrap_mp_set_memory_functions(safeMalloc,wrapSafeRealloc,wrapSafeFree);
+  wrap_mp_set_memory_functions(safeMalloc,actualReallocWithSize,actualFreeWithSize);
   initToolDefaults();
 
   exitInsteadOfRecover = 0;

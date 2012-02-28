@@ -130,6 +130,7 @@ thonorcoeffprec.c \
 thorner.c \
 timplementpoly.c \
 tinf.c \
+tinit_with_custom_memory_functions.c \
 tint_list_ops.c \
 tintegral.c \
 tinterval_list_ops.c \
