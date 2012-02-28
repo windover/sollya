@@ -48,6 +48,7 @@ int main(void) {
   sollya_lib_clear_obj(powers);
 
   /* Evaluate a 0-ary function */
+
   f = SOLLYA_PI;
   x = SOLLYA_CONST(3);
   mpfr_set_d(y, -17, GMP_RNDN);;
@@ -82,6 +83,7 @@ int main(void) {
 
 
   /* Evaluate a constant expression */
+
   f = SOLLYA_DIV(SOLLYA_CONST(1), SOLLYA_CONST(10));
   x = SOLLYA_CONST(3);
   mpfr_set_d(y, -17, GMP_RNDN);;
@@ -116,6 +118,7 @@ int main(void) {
 
 
   /* Evaluate the identity at 1/10 */
+
   f = SOLLYA_X_;
   x = SOLLYA_DIV(SOLLYA_CONST(1), SOLLYA_CONST(10));
   mpfr_set_d(y, -17, GMP_RNDN);;
@@ -150,6 +153,7 @@ int main(void) {
 
 
   /* Evaluate a string */
+
   f = sollya_lib_string("Hello");
   x = SOLLYA_CONST(3);
   mpfr_set_d(y, -17, GMP_RNDN);;
@@ -163,6 +167,7 @@ int main(void) {
 
 
   /* Evaluate an expression exactly equal to 0 */
+
   f = SOLLYA_SUB( SOLLYA_DIV(SOLLYA_LOG10(SOLLYA_X_), SOLLYA_LOG10(SOLLYA_CONST(2))),
                   SOLLYA_DIV(SOLLYA_LOG(SOLLYA_X_), SOLLYA_LOG(SOLLYA_CONST(2)))
                   );
@@ -191,6 +196,7 @@ int main(void) {
 
 
   /* Evaluate an expression */
+
   f = SOLLYA_EXP( SOLLYA_COS(SOLLYA_X_));
   x = SOLLYA_CONST(3);
   mpfr_set_d(y, -17, GMP_RNDN);
@@ -225,6 +231,7 @@ int main(void) {
 
 
   /* Evaluate a very small expression */
+
   f = SOLLYA_EXP(SOLLYA_X_);
   x = SOLLYA_CONST(-100);
   mpfr_set_d(y, -17, GMP_RNDN);;
@@ -259,6 +266,7 @@ int main(void) {
 
 
   /* Evaluate an undefined expression */
+
   f = SOLLYA_TAN(SOLLYA_X_);
   x = SOLLYA_DIV(SOLLYA_PI, SOLLYA_CONST(2));
   mpfr_set_d(y, -17, GMP_RNDN);;
@@ -293,6 +301,7 @@ int main(void) {
 
 
   /* Evaluate an expression at a point where its value is +Inf */
+
   f = SOLLYA_DIV(SOLLYA_CONST(1), SOLLYA_POW(SOLLYA_X_, SOLLYA_CONST(2)));
   x = SOLLYA_CONST(0);
   mpfr_set_d(y, -17, GMP_RNDN);;
@@ -329,6 +338,7 @@ int main(void) {
 
 
   /* Evaluate an expression at a point where it is undefined */
+
   f = SOLLYA_DIV(SOLLYA_CONST(1), SOLLYA_X_);
   x = SOLLYA_CONST(0);
   mpfr_set_d(y, -17, GMP_RNDN);;
@@ -363,6 +373,7 @@ int main(void) {
 
 
   /* Evaluate an expression at a point on the boundary of its domain */
+
   f = SOLLYA_LOG(SOLLYA_X_);
   x = SOLLYA_CONST(0);
   mpfr_set_d(y, -17, GMP_RNDN);;
@@ -398,6 +409,7 @@ int main(void) {
 
 
   /* Evaluate an expression at a point outside of its domain */
+
   f = SOLLYA_LOG(SOLLYA_X_);
   x = SOLLYA_CONST(-1);
   mpfr_set_d(y, -17, GMP_RNDN);;
@@ -433,6 +445,7 @@ int main(void) {
 
 
   /* Evaluate an expression at a point where it is very close to 0, but not zero */
+
   f = sollya_lib_parse_string("sin(pi/3)-x+1b-100000");
   x = SOLLYA_DIV(SOLLYA_SQRT(SOLLYA_CONST(3)), SOLLYA_CONST(2));
   mpfr_set_d(y, -17, GMP_RNDN);;
@@ -468,6 +481,7 @@ int main(void) {
 
 
   /* Evaluate tricky expressions. */
+
   f = sollya_lib_parse_string("(sin(pi/3)-x)*1b100000+3");
   x = SOLLYA_DIV(SOLLYA_SQRT(SOLLYA_CONST(3)), SOLLYA_CONST(2));
   mpfr_set_d(y, -17, GMP_RNDN);;
@@ -486,12 +500,11 @@ int main(void) {
   sollya_lib_clear_obj(f);
   sollya_lib_clear_obj(x);
 
-  f = sollya_lib_parse_string("(sin(pi/3)-x)*1b100000+3");
+  f = sollya_lib_parse_string("(sin(pi/3)-x)*1b10000+3");
   x = SOLLYA_DIV(SOLLYA_SQRT(SOLLYA_CONST(3)), SOLLYA_CONST(2));
   mpfr_set_d(y, -17, GMP_RNDN);
-  mpfr_set_d(cutoff, 4., GMP_RNDN);
   res = sollya_lib_evaluate_function_at_constant_expression(y, f, x, NULL);
-  sollya_lib_printf("Trying to faithfuly evaluate %b at %b with cutoff %.1g: returns %v (%s)", f, x, mpfr_get_d(cutoff, GMP_RNDN), y, get_status(res));
+  sollya_lib_printf("Trying to faithfuly evaluate %b at %b with cutoff NULL: returns %v (%s)", f, x, y, get_status(res));
   sollya_lib_printf("\n");
   sollya_lib_printf("\n");
   sollya_lib_clear_obj(f);
@@ -499,6 +512,7 @@ int main(void) {
 
 
   /* Trying negative cutoff, infinite cutoff and NaN cutoff */
+
   f = sollya_lib_parse_string("sin(pi/6)-x+1b-100000");
   x = SOLLYA_CONST(0.5);
   mpfr_set_d(y, -17, GMP_RNDN);
@@ -535,11 +549,12 @@ int main(void) {
 
 
   /* Cases when the constant function argument is not a constant function */
+
   f = SOLLYA_X_;
   x = SOLLYA_X_;
   mpfr_set_d(y, -17, GMP_RNDN);
   res = sollya_lib_evaluate_function_at_constant_expression(y, f, x, NULL);
-  sollya_lib_printf("Trying to faithfuly evaluate %b at %b with cutoff NULL: returns %v (%s)", f, x, mpfr_get_d(cutoff, GMP_RNDN), y, get_status(res));
+  sollya_lib_printf("Trying to faithfuly evaluate %b at %b with cutoff NULL: returns %v (%s)", f, x, y, get_status(res));
   sollya_lib_printf("\n");
   sollya_lib_clear_obj(f);
   sollya_lib_clear_obj(x);
@@ -548,16 +563,17 @@ int main(void) {
   x = sollya_lib_string("Hello");
   mpfr_set_d(y, -17, GMP_RNDN);
   res = sollya_lib_evaluate_function_at_constant_expression(y, f, x, NULL);
-  sollya_lib_printf("Trying to faithfuly evaluate %b at %b with cutoff NULL: returns %v (%s)", f, x, mpfr_get_d(cutoff, GMP_RNDN), y, get_status(res));
+  sollya_lib_printf("Trying to faithfuly evaluate %b at %b with cutoff NULL: returns %v (%s)", f, x, y, get_status(res));
   sollya_lib_printf("\n");
   sollya_lib_clear_obj(f);
   sollya_lib_clear_obj(x);
+
 
   f = sollya_lib_string("Hello");
   x = SOLLYA_X_;
   mpfr_set_d(y, -17, GMP_RNDN);
   res = sollya_lib_evaluate_function_at_constant_expression(y, f, x, NULL);
-  sollya_lib_printf("Trying to faithfuly evaluate %b at %b with cutoff NULL: returns %v (%s)", f, x, mpfr_get_d(cutoff, GMP_RNDN), y, get_status(res));
+  sollya_lib_printf("Trying to faithfuly evaluate %b at %b with cutoff NULL: returns %v (%s)", f, x, y, get_status(res));
   sollya_lib_printf("\n");
   sollya_lib_clear_obj(f);
   sollya_lib_clear_obj(x);

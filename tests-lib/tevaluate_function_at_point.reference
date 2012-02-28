@@ -45,7 +45,7 @@ Trying to faithfuly evaluate sin((pi) / 6) - x + (1 * 2^(-100000)) at 1 * 2^(-1)
 
 Trying to faithfuly evaluate (sin((pi) / 6) - x) * (1 * 2^(100000)) + 3 at 1 * 2^(-1) with cutoff NULL: returns 3 (status: FP_EVAL_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD)
 Trying to faithfuly evaluate (sin((pi) / 6) - x) * (1 * 2^(100000)) + (1 * 2^(50000)) at 1 * 2^(-1) with cutoff NULL: returns 1 * 2^(50000) (status: FP_EVAL_NOT_FAITHFUL_ZERO_NOT_CONTAINED)
-Trying to faithfuly evaluate (sin((pi) / 6) - x) * (1 * 2^(10000)) + 3 at 1 * 2^(-1) with cutoff 4: returns 3 (status: FP_EVAL_FAITHFUL)
+Trying to faithfuly evaluate (sin((pi) / 6) - x) * (1 * 2^(10000)) + 3 at 1 * 2^(-1) with cutoff NULL: returns 3 (status: FP_EVAL_FAITHFUL)
 
 Trying to faithfuly evaluate sin((pi) / 6) - x + (1 * 2^(-100000)) at 1 * 2^(-1) with cutoff -4: returns 0 (status: FP_EVAL_BELOW_CUTOFF)
 Trying to faithfuly evaluate sin((pi) / 6) - x + (1 * 2^(-100000)) at 1 * 2^(-1) with cutoff inf: returns 0 (status: FP_EVAL_BELOW_CUTOFF)

@@ -418,9 +418,8 @@ int main(void) {
   f = sollya_lib_parse_string("(sin(pi/6)-x)*1b10000+3");
   mpfr_set_d(x, 0.5, GMP_RNDN);
   mpfr_set_d(y, -17, GMP_RNDN);
-  mpfr_set_d(cutoff, 4., GMP_RNDN);
   res = sollya_lib_evaluate_function_at_point(y, f, x, NULL);
-  sollya_lib_printf("Trying to faithfuly evaluate %b at %v with cutoff %.1g: returns %v (%s)", f, x, mpfr_get_d(cutoff, GMP_RNDN), y, get_status(res));
+  sollya_lib_printf("Trying to faithfuly evaluate %b at %v with cutoff NULL: returns %v (%s)", f, x, y, get_status(res));
   sollya_lib_printf("\n");
   sollya_lib_printf("\n");
   sollya_lib_clear_obj(f);
