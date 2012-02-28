@@ -33,8 +33,8 @@ int main(void) {
   for (i=0;i<A_DIM;i++) {
     for (j=0;j<A_DIM;j++) {
       sollya_lib_printf("-----------------------------------------------------------------------------\n");
-      b[i * A_DIM + j] = sollya_lib_append(a[i],a[j]);
-      sollya_lib_printf("sollya_lib_append(\"%b\",\"%b\") yields to \"%b\"\n",a[i],a[j],b[i * A_DIM + j]);
+      b[i * A_DIM + j] = sollya_lib_prepend(a[i],a[j]);
+      sollya_lib_printf("sollya_lib_prepend(\"%b\",\"%b\") yields to \"%b\"\n",a[i],a[j],b[i * A_DIM + j]);
     }
   }
 

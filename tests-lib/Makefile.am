@@ -200,6 +200,7 @@ tpostscriptfile.c \
 tpow.c \
 tpowers.c \
 tprecision.c \
+tprepend.c \
 tprintdouble.c \
 tprintexpansion.c \
 tprintsingle.c \
