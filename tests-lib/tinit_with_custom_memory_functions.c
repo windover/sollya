@@ -150,6 +150,7 @@ int main(void) {
     printf("The before-and-after pointers for the GMP free are %p and %p\n", gmp_free_before, gmp_free_after);
   }
 
+
   /* Test #2 */
 
   mp_get_memory_functions(&gmp_malloc_before, &gmp_realloc_before, &gmp_free_before);
@@ -240,9 +241,6 @@ int main(void) {
     printf("The before-and-after pointers for the GMP realloc are %p and %p\n", gmp_realloc_before, gmp_realloc_after);
     printf("The before-and-after pointers for the GMP free are %p and %p\n", gmp_free_before, gmp_free_after);
   }
-
-
-
 
   if (!okay) return 1;
   return 0;

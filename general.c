@@ -1353,8 +1353,11 @@ int initializeLibraryMode(void *(*myActualMalloc)(size_t),
 
 int finalizeLibraryMode() {
   if(variablename != NULL) safeFree(variablename);
+  variablename = NULL;
   if(newReadFilename != NULL) safeFree(newReadFilename);
+  newReadFilename = NULL;
   if(suppressedMessages != NULL) freeBitfield(suppressedMessages);
+  suppressedMessages = NULL;
 
   if (!(eliminatePromptBackup == 1)) {
     removePlotFiles();
@@ -1382,7 +1385,14 @@ int finalizeLibraryMode() {
   declaredSymbolTable = NULL;
   mpfr_clear(statediam);
   mpfr_free_cache();
+  uninstallMessageCallback();
   mp_set_memory_functions(oldGMPMalloc,oldGMPRealloc,oldGMPFree);
+  actualCalloc = calloc;
+  actualMalloc = malloc;
+  actualFree = free;
+  actualRealloc = realloc;
+  actualFreeWithSize = wrapSafeFree;
+  actualReallocWithSize = wrapSafeRealloc;
   libraryMode = 0;
   return 1;
 }
