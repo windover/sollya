@@ -16,7 +16,7 @@ The derivative of sin(x) is cos(x)
 The derivative of cos(x) is -sin(x)
 The derivative of tan(x) is 1 + tan(x)^2
 The derivative of asin(x) is 1 / sqrt(1 - x^2)
-The derivative of acos(x) is -1 / sqrt(1 - x * x)
+The derivative of acos(x) is -1 / sqrt(1 - x^2)
 The derivative of atan(x) is 1 / (1 + x * x)
 The derivative of exp(x)^atan(x) is exp(x)^atan(x) * ((exp(x) * atan(x)) / exp(x) + x / (1 + x * x))
 The derivative of -x is -1
@@ -27,7 +27,7 @@ The derivative of log1p(x) is 1 / (1 + x)
 The derivative of expm1(x) is exp(x)
 The derivative of sinh(x) is cosh(x)
 The derivative of cosh(x) is sinh(x)
-The derivative of tanh(x) is 1 - tanh(x) * tanh(x)
+The derivative of tanh(x) is 1 - tanh(x)^2
 The derivative of asinh(x) is 1 / sqrt(1 + x * x)
 The derivative of acosh(x) is 1 / sqrt(-1 + x * x)
 The derivative of atanh(x) is 1 / (1 - x * x)

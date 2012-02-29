@@ -5371,7 +5371,6 @@ node* differentiateUnsimplified(node *tree) {
 	break;
       case ACOS:
 	g_copy = copyTree(tree->child1);
-	g_copy2 = copyTree(tree->child1);
 	g_diff = differentiateUnsimplified(tree->child1);
 	temp_node = (node*) safeMalloc(sizeof(node));
 	temp_node->nodeType = MUL;
@@ -5387,9 +5386,15 @@ node* differentiateUnsimplified(node *tree) {
 	temp_node3->value = mpfr_temp;
 	temp_node4->child1 = temp_node3;
 	temp_node3 = (node*) safeMalloc(sizeof(node));
-	temp_node3->nodeType = MUL;
+	temp_node3->nodeType = POW;
 	temp_node3->child1 = g_copy;
-	temp_node3->child2 = g_copy2;
+	temp_node5 = (node*) safeMalloc(sizeof(node));
+	temp_node5->nodeType = CONSTANT;
+	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*mpfr_temp,tools_precision);
+	mpfr_set_d(*mpfr_temp,2.0,GMP_RNDN);
+	temp_node5->value = mpfr_temp;
+	temp_node3->child2 = temp_node5;
 	temp_node2 = (node*) safeMalloc(sizeof(node));
 	temp_node2->nodeType = SUB;
 	temp_node2->child2 = temp_node3;
@@ -5480,12 +5485,17 @@ node* differentiateUnsimplified(node *tree) {
 	temp_node3->value = mpfr_temp;
 	temp_node2->child1 = temp_node3;
 	h_copy = copyTree(tree);
-	h_copy2 = copyTree(tree);
+	temp_node4 = (node*) safeMalloc(sizeof(node));
+	temp_node4->nodeType = CONSTANT;
+	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
+	mpfr_init2(*mpfr_temp,tools_precision);
+	mpfr_set_d(*mpfr_temp,2.0,GMP_RNDN);
+	temp_node4->value = mpfr_temp;
 	temp_node3 = (node*) safeMalloc(sizeof(node));
-	temp_node3->nodeType = MUL;
+	temp_node3->nodeType = POW;
 	temp_node2->child2 = temp_node3;
 	temp_node3->child1 = h_copy;
-	temp_node3->child2 = h_copy2;
+	temp_node3->child2 = temp_node4;
 	derivative = temp_node;
 	break;
       case ASINH:
