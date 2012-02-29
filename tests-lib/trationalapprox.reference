@@ -1,12 +1,18 @@
+Unexpected warning 174.
 17 gets approximated to 2 bits by rationalapprox with 16 which is correct.
 17 gets approximated to 15 bits by rationalapprox with 17 which is correct.
-double(pi) gets approximated to 15 bits by rationalapprox with 333 / 106 which is correct.
-tripledouble(pi) gets approximated to 150 bits by rationalapprox with 37535589513263342053361 / 11947949225808341100193 which is correct.
-double(pi) gets approximated to 19 bits by rationalapprox with 355 / 113 which is correct.
-double(pi) gets approximated to 19 bits by rationalapprox with 355 / 113 which is correct.
+double(pi) gets approximated to 15 bits by rationalapprox with 355 / 113 which is correct.
+tripledouble(pi) gets approximated to 150 bits by rationalapprox with 162037420598150024925394 / 51578112908112152590881 which is correct.
+Caught a message stating that a certain expression is not correctly typed.
+double(pi) gets approximated to 1 bits by rationalapprox with error which is correct.
+Caught a message stating that a certain expression is not correctly typed.
+double(pi) gets approximated to 0 bits by rationalapprox with error which is correct.
 double(pi) gets approximated to 2 bits by rationalapprox with 3 which is correct.
-double(pi) gets approximated to 2 bits by rationalapprox with 3 which is correct.
+Caught a message stating that a certain expression is not correctly typed.
+double(pi) gets approximated to -2 bits by rationalapprox with error which is correct.
 0.100000000000000005551115123125782702118158340454102 gets approximated to 10 bits by rationalapprox with 1 / 10 which is correct.
-0.100000000000000005551115123125782702118158340454102 gets approximated to 100 bits by rationalapprox with 1801439850948217 / 18014398509482169 which is correct.
+0.100000000000000005551115123125782702118158340454102 gets approximated to 100 bits by rationalapprox with 1801439850948208 / 18014398509482079 which is correct.
 tripledouble(1329 / 5971) gets approximated to 20 bits by rationalapprox with 2449 / 11003 which is correct.
 0 gets approximated to 17 bits by rationalapprox with 0 which is correct.
+Caught a message stating that a constant expression was given instead of a constant.
+(pi) / 5.9 gets approximated to 6 bits by rationalapprox with 8 / 15 which is correct.

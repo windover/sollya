@@ -1,9 +1,15 @@
 #include <sollya.h>
 
-#define A_DIM 12
+#define A_DIM 13
 
 int callback(int message) {
   switch(message) {
+  case SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST:
+    sollya_lib_printf("Caught a message stating that a constant expression was given instead of a constant.\n");
+    break;
+  case SOLLYA_MSG_EXPR_NOT_CORRECTLY_TYPED:
+    sollya_lib_printf("Caught a message stating that a certain expression is not correctly typed.\n");
+    break;
   default:
     sollya_lib_printf("Unexpected warning %d.\n", message);
   }
@@ -13,6 +19,8 @@ int callback(int message) {
 int checkrationalapprox(sollya_obj_t num, sollya_obj_t bits, sollya_obj_t res) {
   sollya_obj_t zero, temp, eps, bound;
   int numIsZero, resIsZero, okay;
+
+  if (sollya_lib_obj_is_error(res)) return 1;
 
   zero = SOLLYA_CONST(0.0);
   
@@ -65,16 +73,16 @@ int main(void) {
   b[3] = SOLLYA_CONST(150.0);
 
   a[4] = SOLLYA_D(SOLLYA_PI);
-  b[4] = SOLLYA_CONST(19.0); // Change this to 1.0
+  b[4] = SOLLYA_CONST(1.0); 
 
   a[5] = SOLLYA_D(SOLLYA_PI);
-  b[5] = SOLLYA_CONST(19.0); // Change this to 0.0
+  b[5] = SOLLYA_CONST(0.0); 
 
   a[6] = SOLLYA_D(SOLLYA_PI);
   b[6] = SOLLYA_CONST(2.0); 
 
   a[7] = SOLLYA_D(SOLLYA_PI);
-  b[7] = SOLLYA_CONST(2.0); // Change this to -2.0
+  b[7] = SOLLYA_CONST(-2.0); 
 
   a[8] = SOLLYA_CONST(0.1);
   b[8] = SOLLYA_CONST(10.0);
@@ -88,6 +96,9 @@ int main(void) {
   a[11] = SOLLYA_CONST(0.0);
   b[11] = SOLLYA_CONST(17.0);
 
+  a[12] = sollya_lib_parse_string("pi/5.9");
+  b[12] = SOLLYA_CONST(6.0);
+  
   for (i=0;i<A_DIM;i++) {
     c[i] = sollya_lib_rationalapprox(a[i],b[i]);
     check = checkrationalapprox(a[i],b[i],c[i]);
