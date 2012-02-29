@@ -1,0 +1,12 @@
+17 gets approximated to 2 bits by rationalapprox with 16 which is correct.
+17 gets approximated to 15 bits by rationalapprox with 17 which is correct.
+double(pi) gets approximated to 15 bits by rationalapprox with 333 / 106 which is correct.
+tripledouble(pi) gets approximated to 150 bits by rationalapprox with 37535589513263342053361 / 11947949225808341100193 which is correct.
+double(pi) gets approximated to 19 bits by rationalapprox with 355 / 113 which is correct.
+double(pi) gets approximated to 19 bits by rationalapprox with 355 / 113 which is correct.
+double(pi) gets approximated to 2 bits by rationalapprox with 3 which is correct.
+double(pi) gets approximated to 2 bits by rationalapprox with 3 which is correct.
+0.100000000000000005551115123125782702118158340454102 gets approximated to 10 bits by rationalapprox with 1 / 10 which is correct.
+0.100000000000000005551115123125782702118158340454102 gets approximated to 100 bits by rationalapprox with 1801439850948217 / 18014398509482169 which is correct.
+tripledouble(1329 / 5971) gets approximated to 20 bits by rationalapprox with 2449 / 11003 which is correct.
+0 gets approximated to 17 bits by rationalapprox with 0 which is correct.

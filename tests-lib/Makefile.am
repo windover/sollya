@@ -210,6 +210,7 @@ tquad.c \
 tquad_obj.c \
 trange_from_bounds.c \
 trange_from_interval.c \
+trationalapprox.c \
 trelative.c \
 tremez.c \
 trevert.c \
