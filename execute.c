@@ -16617,10 +16617,9 @@ node *evaluateThingInnerRationalapprox(node *tree, char *timingString) {
   if (!isPureTree(firstArg)) failure = 1;
   else { if (!evaluateThingToConstant(a, firstArg, NULL, 0, 0)) failure = 1; }
 
-  /* secondArg must be an integer >= 2 */
+  /* secondArg must be an integer */
   if (!isPureTree(secondArg)) failure = 1;
   else {if (!evaluateThingToInteger(&n, secondArg, NULL)) failure = 1; }
-  if ((!failure) && (n<=1)) failure = 1;
 
   if (failure) {
     result = copyThing(tree);

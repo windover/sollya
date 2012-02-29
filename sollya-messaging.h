@@ -532,7 +532,7 @@ static const messageEntry messageTextsTable[] = {
   { SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NOT_CONSTANT                    , "An attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is not a constant but a constant expression" },
   { SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NOT_INTEGER                     , "An attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is not an integer" },
   { SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NEGATIVE                        , "An attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is negative" },
-
+  { SOLLYA_MSG_RATIONALAPPROX_SECOND_ARG_MUST_BE_GREATER_THAN_TWO     , "Error in rationalapprox: the second argument of rationalapprox must be greater or equal to 2" },
   /* Add your new warning message texts above here. */
 
   { -1, "Unknown message number -1" }   /* Do not ever change the text in this default entry, which must be the last entry in the list */

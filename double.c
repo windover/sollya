@@ -1430,7 +1430,7 @@ void continuedFrac(mpq_t q, sollya_mpfi_t x) {
   return;
 }
 
-/* n is assumed to be >= 2 */
+
 node *rationalApprox(mpfr_t x, int n) {
   mpq_t q;
   mpz_t u;
@@ -1440,6 +1440,12 @@ node *rationalApprox(mpfr_t x, int n) {
   node *denom;
   mpfr_t *numerator;
   mpfr_t *denominator;
+
+  /* n should be >= 2 */
+  if (n<2) {
+    printMessage(1, SOLLYA_MSG_RATIONALAPPROX_SECOND_ARG_MUST_BE_GREATER_THAN_TWO, "Error in rationalapprox: the second argument of rationalapprox must be greater or equal to 2.\n");
+    return makeError();
+  }
 
   if ( (!mpfr_number_p(x)) || mpfr_zero_p(x) )  return makeConstant(x);
   mpq_init(q);
