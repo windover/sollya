@@ -65,6 +65,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <stdlib.h>
 #include <string.h>
 #include "expression.h"
+#include "execute.h"
 #include "double.h"
 #include "general.h"
 #include "infnorm.h"
@@ -1385,6 +1386,8 @@ void continuedFrac(mpq_t q, sollya_mpfi_t x) {
   mpz_t u;
 
   t = sollya_mpfi_get_prec(x);
+  if (t<= tools_precision) t=tools_precision;
+
   sollya_mpfi_init2(xprime,t);
   mpfr_init2(a,t);
   mpfr_init2(b,t);
