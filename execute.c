@@ -16366,12 +16366,12 @@ node *evaluateThingInnerRemez(node *tree, char *timingString) {
 
   /* Fifth argument */
   mpfr_init2(quality, tools_precision);
-  if (!evaluateThingToConstant(quality, fifthArg, NULL, 1,0))   failure = 1;
+  if (!evaluateThingToConstant(quality, fifthArg, NULL, 0,0))   failure = 1;
 
   /* Sixth argument */
   mpfr_init2(c, tools_precision); mpfr_init2(d, tools_precision);
   if (isPureTree(sixthArg)) { /* sixthArg can be a number */
-    if (!evaluateThingToConstant(c, sixthArg, NULL, 1,0))   failure = 1;
+    if (!evaluateThingToConstant(c, sixthArg, NULL, 0,0))   failure = 1;
     else {
       mpfr_set_prec(d, mpfr_get_prec(c));
       mpfr_set(d, c, GMP_RNDN); /* exact */
@@ -16599,6 +16599,41 @@ node *evaluateThingInnerFpminimax(node *tree, char *timingString) {
   freeThing(eighthArg);
   freeThing(pstarArg);
   free_memory(constrainedPartArg);
+  return result;
+}
+
+node *evaluateThingInnerRationalapprox(node *tree, char *timingString) {
+  node *result;
+  node *firstArg, *secondArg;
+  int failure = 0;
+  mpfr_t a;
+  int n;
+
+  firstArg = evaluateThingInner(tree->child1);
+  secondArg = evaluateThingInner(tree->child2);
+
+  /* firstArg must be a constant expression */
+  mpfr_init2(a, tools_precision);
+  if (!isPureTree(firstArg)) failure = 1;
+  else { if (!evaluateThingToConstant(a, firstArg, NULL, 0, 0)) failure = 1; }
+
+  /* secondArg must be an integer >= 2 */
+  if (!isPureTree(secondArg)) failure = 1;
+  else {if (!evaluateThingToInteger(&n, secondArg, NULL)) failure = 1; }
+  if ((!failure) && (n<=1)) failure = 1;
+
+  if (failure) {
+    result = copyThing(tree);
+  }
+  else {
+    if (timingString != NULL) pushTimeCounter();
+    result = rationalApprox(a, n);
+    if (timingString != NULL) popTimeCounter(timingString);
+  }
+
+  freeThing(firstArg);
+  freeThing(secondArg);
+  mpfr_clear(a);
   return result;
 }
 
@@ -20929,23 +20964,10 @@ node *evaluateThingInner(node *tree) {
       }
     }
     break; 		
-  case RATIONALAPPROX:    
-    copy->child1 = evaluateThingInner(tree->child1);
-    copy->child2 = evaluateThingInner(tree->child2);
-    if (isPureTree(copy->child1) && isPureTree(copy->child2)) {
-      mpfr_init2(a,tools_precision);
-      if (evaluateThingToConstant(a,copy->child1,NULL,0,0)) {
-	if (evaluateThingToInteger(&resA,copy->child2,NULL)) {
-	  if (timingString != NULL) pushTimeCounter();      
-	  tempNode = rationalApprox(a,resA);
-	  freeThing(copy);
-	  copy = tempNode;
-	  if (timingString != NULL) popTimeCounter(timingString);
-	}
-      }
-      mpfr_clear(a);
-    }
-    break; 			
+  case RATIONALAPPROX:
+    safeFree(copy);
+    copy = evaluateThingInnerRationalapprox(tree, timingString);
+    break;
   case ACCURATEINFNORM:
     copy->arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
     curr = copy->arguments;

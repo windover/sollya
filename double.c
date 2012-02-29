@@ -1430,7 +1430,8 @@ void continuedFrac(mpq_t q, sollya_mpfi_t x) {
   return;
 }
 
-node *rationalApprox(mpfr_t x, unsigned int n) {
+/* n is assumed to be >= 2 */
+node *rationalApprox(mpfr_t x, int n) {
   mpq_t q;
   mpz_t u;
   sollya_mpfi_t xprime;
@@ -1443,9 +1444,11 @@ node *rationalApprox(mpfr_t x, unsigned int n) {
   if ( (!mpfr_number_p(x)) || mpfr_zero_p(x) )  return makeConstant(x);
   mpq_init(q);
   mpz_init(u);
-  sollya_mpfi_init2(xprime,(mp_prec_t)n);
+  sollya_mpfi_init2(xprime,(mp_prec_t)(n+1));
 
-  sollya_mpfi_set_fr(xprime,x);
+  sollya_mpfi_set_fr(xprime,x); /* The bounds of xprime are two consecutive FP numbers at precision n+1.
+                                   Hence sup(xprime)-inf(xprime) <= 2^(1-(n+1))*inf(abs(xprime))
+                                   Hence, for any t in xprime, |x-t| <= 2^(-n)*|x| */
   continuedFrac(q,xprime);
  
   mpq_get_num(u,q);
