@@ -221,9 +221,9 @@ print(x - x);
 /*********************************************************************************/
 restart; 
 autosimplify = on !; 
-print(rationalapprox(sin(pi/5.9),7));
+print(rationalapprox(sin(pi/5.99),7));
 autosimplify = off !; 
-print(rationalapprox(sin(pi/5.9),7));
+print(rationalapprox(sin(pi/5.99),7));
 
 /*********************************************************************************/
 restart; 

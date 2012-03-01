@@ -92,9 +92,12 @@ print("=============== Test number 172 ================");
 pi10 = rationalapprox(Pi,10);
 pi50 = rationalapprox(Pi,50);
 pi100 = rationalapprox(Pi,100);
+r = rationalapprox(sin(pi/5.9),7);
+
 print( pi10, ": ", simplify(floor(-log2(abs(pi10-Pi)/Pi))), "bits." );
 print( pi50, ": ", simplify(floor(-log2(abs(pi50-Pi)/Pi))), "bits." );
 print( pi100, ": ", simplify(floor(-log2(abs(pi100-Pi)/Pi))), "bits." );
+print( r, ": ", simplify(floor(-log2(abs(r-sin(pi/5.9))/sin(pi/5.9)))), "bits." );
 
 /*********************************************************************************/
 restart;
