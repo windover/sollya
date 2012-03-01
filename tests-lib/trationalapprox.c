@@ -1,14 +1,17 @@
 #include <sollya.h>
 
-#define A_DIM 13
+#define A_DIM 14
 
 int callback(int message) {
   switch(message) {
   case SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST:
     sollya_lib_printf("Caught a message stating that a constant expression was given instead of a constant.\n");
     break;
-  case SOLLYA_MSG_EXPR_NOT_CORRECTLY_TYPED:
-    sollya_lib_printf("Caught a message stating that a certain expression is not correctly typed.\n");
+  case SOLLYA_MSG_RATIONALAPPROX_SECOND_ARG_MUST_BE_GREATER_THAN_TWO:
+    sollya_lib_printf("Caught a message stating that the precision is not large enough.\n");
+    break;
+  case SOLLYA_MSG_EXPR_OR_COMMAND_COULD_NOT_BE_HANDLED:
+    sollya_lib_printf("Caught a message stating that the command cannot be handeled.\n");
     break;
   default:
     sollya_lib_printf("Unexpected warning %d.\n", message);
@@ -23,7 +26,7 @@ int checkrationalapprox(sollya_obj_t num, sollya_obj_t bits, sollya_obj_t res) {
   if (sollya_lib_obj_is_error(res)) return 1;
 
   zero = SOLLYA_CONST(0.0);
-  
+
   temp = sollya_lib_cmp_equal(num, zero);
   numIsZero = sollya_lib_is_true(temp);
   sollya_lib_clear_obj(temp);
@@ -31,20 +34,20 @@ int checkrationalapprox(sollya_obj_t num, sollya_obj_t bits, sollya_obj_t res) {
   temp = sollya_lib_cmp_equal(res, zero);
   resIsZero = sollya_lib_is_true(temp);
   sollya_lib_clear_obj(temp);
-  
+
   sollya_lib_clear_obj(zero);
 
   if (numIsZero) {
     return resIsZero;
   }
-  
+
   eps = SOLLYA_ABS(SOLLYA_SUB(SOLLYA_DIV(sollya_lib_copy_obj(res), sollya_lib_copy_obj(num)), SOLLYA_CONST(1.0)));
   bound = SOLLYA_POW(SOLLYA_CONST(2.0), SOLLYA_NEG(sollya_lib_copy_obj(bits)));
 
   temp = sollya_lib_cmp_less_equal(eps, bound);
   okay = sollya_lib_is_true(temp);
   sollya_lib_clear_obj(temp);
-  
+
   sollya_lib_clear_obj(eps);
   sollya_lib_clear_obj(bound);
 
@@ -96,9 +99,12 @@ int main(void) {
   a[11] = SOLLYA_CONST(0.0);
   b[11] = SOLLYA_CONST(17.0);
 
-  a[12] = sollya_lib_parse_string("pi/5.9");
+  a[12] = SOLLYA_MUL(SOLLYA_CONST(10), SOLLYA_DIV(SOLLYA_PI, SOLLYA_CONST(59)));
   b[12] = SOLLYA_CONST(6.0);
-  
+
+  a[13] = SOLLYA_SIN(SOLLYA_MUL(SOLLYA_CONST(10), SOLLYA_DIV(SOLLYA_PI, SOLLYA_CONST(59))));
+  b[13] = SOLLYA_CONST(7.0);
+
   for (i=0;i<A_DIM;i++) {
     c[i] = sollya_lib_rationalapprox(a[i],b[i]);
     check = checkrationalapprox(a[i],b[i],c[i]);
