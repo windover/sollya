@@ -1401,7 +1401,7 @@ void continuedFrac(mpq_t q, sollya_mpfi_t x) {
   mpfr_floor(m1,a);
   mpfr_floor(m2,b);
 
-  if (mpfr_equal_p(m1,m2) && !mpfr_equal_p(a,m1)) {
+  if (mpfr_equal_p(m1,m2) && (!mpfr_equal_p(a, m1))) {
     mpfr_get_z(u,m1,GMP_RNDN); //exact
     mpfr_sub(a,a,m1,GMP_RNDD);
     mpfr_sub(b,b,m1,GMP_RNDU);
@@ -1414,9 +1414,11 @@ void continuedFrac(mpq_t q, sollya_mpfi_t x) {
     mpq_set_den(q,u);
     mpq_add(q,q,res);
   }
-  else {
-    mpfr_add(m1,a,b,GMP_RNDN);
-    mpfr_div_2ui(m1,m1,1,GMP_RNDN);
+  else { 
+    /* According to http://en.wikipedia.org/wiki/Continued_fraction,
+       section "Best rational within an interval", the best fraction
+       is given by taking the smallest integer in [a,b] */
+    if (!mpfr_equal_p(a,m1))  mpfr_add_ui(m1, m1,1,GMP_RNDU);
     mpfr_get_z(u,m1,GMP_RNDN);
     mpq_set_num(q,u);
     mpz_set_ui(u,1);
