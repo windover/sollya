@@ -21064,31 +21064,34 @@ node *evaluateThingInner(node *tree) {
 	    resB = tools_precision;
 	    if (isPureTree((node *) (curr->value)) || 
 		isDefault((node *) (curr->value))) {
-	      if (evaluateThingToInteger(&resA,(node *) (curr->value),&resB) &&
-		  (resA > 0)) {
-		curr = curr->next;
-		resD = GMP_RNDN;
-		if (evaluateThingToRoundingSymbol(&resC,(node *) (curr->value),&resD)) {		
-		  if (timingString != NULL) pushTimeCounter();      
-		  mpfr_init2(b,tools_precision);
-		  if (timingString != NULL) pushTimeCounter();      
-		  resE = round_to_format(b, a, resA, resC);
-		  if (timingString != NULL) popTimeCounter(timingString);
-		  if (verbosity >= 2) {
-		    if (resE == 0) {
-		      printMessage(2,SOLLYA_MSG_NO_ROUNDING_HAS_HAPPENED,"Information: no rounding has happened.\n");
-		    } else {
-		      if (resE < 0) {
-			printMessage(2,SOLLYA_MSG_ROUND_DOWN_HAS_HAPPENED,"Information: rounding down has happened.\n");
+	      if (evaluateThingToInteger(&resA,(node *) (curr->value),&resB)) {
+		if (resA >= 2) {
+		  curr = curr->next;
+		  resD = GMP_RNDN;
+		  if (evaluateThingToRoundingSymbol(&resC,(node *) (curr->value),&resD)) {		
+		    if (timingString != NULL) pushTimeCounter();      
+		    mpfr_init2(b,tools_precision);
+		    if (timingString != NULL) pushTimeCounter();      
+		    resE = round_to_format(b, a, resA, resC);
+		    if (timingString != NULL) popTimeCounter(timingString);
+		    if (verbosity >= 2) {
+		      if (resE == 0) {
+			printMessage(2,SOLLYA_MSG_NO_ROUNDING_HAS_HAPPENED,"Information: no rounding has happened.\n");
 		      } else {
-			printMessage(2,SOLLYA_MSG_ROUND_UP_HAS_HAPPENED,"Information: rounding up has happened.\n");
+			if (resE < 0) {
+			  printMessage(2,SOLLYA_MSG_ROUND_DOWN_HAS_HAPPENED,"Information: rounding down has happened.\n");
+			} else {
+			  printMessage(2,SOLLYA_MSG_ROUND_UP_HAS_HAPPENED,"Information: rounding up has happened.\n");
+			}
 		      }
 		    }
+		    tempNode = makeConstant(b);
+		    mpfr_clear(b);
+		    freeThing(copy);
+		    copy = tempNode;
 		  }
-		  tempNode = makeConstant(b);
-		  mpfr_clear(b);
-		  freeThing(copy);
-		  copy = tempNode;
+		} else {
+		  printMessage(1,SOLLYA_MSG_ROUND_PREC_MUST_BE_AT_LEAST_TWO_BITS, "Warning: the precision specified when rounding to a particular format must be at least 2 bits.\n");	
 		}
 	      }
 	    } else {

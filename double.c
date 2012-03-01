@@ -1446,7 +1446,7 @@ node *rationalApprox(mpfr_t x, int n) {
 
   /* n should be >= 2 */
   if (n<2) {
-    printMessage(1, SOLLYA_MSG_RATIONALAPPROX_SECOND_ARG_MUST_BE_GREATER_THAN_TWO, "Error in rationalapprox: the second argument of rationalapprox must be greater or equal to 2.\n");
+    printMessage(1, SOLLYA_MSG_RATIONALAPPROX_SECOND_ARG_MUST_BE_GREATER_THAN_ONE, "Error in rationalapprox: the second argument of rationalapprox must be greater or equal to 2.\n");
     return makeError();
   }
 

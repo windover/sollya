@@ -75,7 +75,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
    The table gets defined only when sollya-messaging is included from
    sollya-messaging.c
 
-   The table entries to not have to be sorted in any way. Just the
+   The table entries do not have to be sorted in any way. Just the
    last entry must have a negative (inexisting) message number. All
    other message numbers (used through their symbolic constants) must
    be positive.
@@ -510,7 +510,7 @@ static const messageEntry messageTextsTable[] = {
   { SOLLYA_MSG_STARTING_TO_WRITE_THE_PROOF                            , "Starting to write the proof" },
   { SOLLYA_MSG_THE_PROOF_HAS_BEEN_WRITTEN                             , "The proof has been written" },
   { SOLLYA_MSG_THE_EXPRESSION_IS_NOT_CONSTANT                         , "The given expression is not constant. It will be evaluated at 1" },
-  { SOLLYA_MSG_COULD_NOT_CHECK_INFNORM_ON_A_CERTAIN_INTERVAL          , "The given infinity norm result could not be check on a certain (sub-)interval" },
+  { SOLLYA_MSG_COULD_NOT_CHECK_INFNORM_ON_A_CERTAIN_INTERVAL          , "The given infinity norm result could not be checked on a certain (sub-)interval" },
   { SOLLYA_MSG_REMOVING_A_POSSIBLE_ZERO_AT_SOME_POINT                 , "A possible zero at some point is removed" },
   { SOLLYA_MSG_ZERO_FILTER_HAS_REMOVED_AT_LEAST_ONE_ZERO              , "The actual zero filter has removed at least one possible zero" },
   { SOLLYA_MSG_FAITHFUL_EVALUATION_RETURNS_NAN                        , "Faithful evaluation returns NaN" },
@@ -532,7 +532,9 @@ static const messageEntry messageTextsTable[] = {
   { SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NOT_CONSTANT                    , "An attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is not a constant but a constant expression" },
   { SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NOT_INTEGER                     , "An attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is not an integer" },
   { SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NEGATIVE                        , "An attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is negative" },
-  { SOLLYA_MSG_RATIONALAPPROX_SECOND_ARG_MUST_BE_GREATER_THAN_TWO     , "Error in rationalapprox: the second argument of rationalapprox must be greater or equal to 2" },
+  { SOLLYA_MSG_RATIONALAPPROX_SECOND_ARG_MUST_BE_GREATER_THAN_ONE     , "Error in rationalapprox: the second argument of rationalapprox must be greater or equal to 2" },
+  { SOLLYA_MSG_ROUND_PREC_MUST_BE_AT_LEAST_TWO_BITS                   , "The precision specified when rounding to a particular format must be at least 2 bits" },
+
   /* Add your new warning message texts above here. */
 
   { -1, "Unknown message number -1" }   /* Do not ever change the text in this default entry, which must be the last entry in the list */
