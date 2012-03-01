@@ -7,7 +7,7 @@ int callback(int message) {
   case SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST:
     sollya_lib_printf("Caught a message stating that a constant expression was given instead of a constant.\n");
     break;
-  case SOLLYA_MSG_RATIONALAPPROX_SECOND_ARG_MUST_BE_GREATER_THAN_TWO:
+  case SOLLYA_MSG_RATIONALAPPROX_SECOND_ARG_MUST_BE_GREATER_THAN_ONE:
     sollya_lib_printf("Caught a message stating that the precision is not large enough.\n");
     break;
   case SOLLYA_MSG_EXPR_OR_COMMAND_COULD_NOT_BE_HANDLED:
