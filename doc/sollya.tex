@@ -64,7 +64,16 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 \tableofcontents
 
-\section{Compilation and installation of the \sollya tool}
+\section{Compilation and installation of \sollya}
+
+\sollya comes in two flavors:
+\begin{itemize}
+\item Either as an interactive tool. This is achieved by running the \sollya executable file.
+\item Or as a C library that provides all the features of the tool within the C programming language.
+\end{itemize}
+
+The installation of the tool and the library follow the same steps, desribed below. The present documentation focuses more on the interactive tool. As a matter of fact, the library works exactly the same way as the tool, so it is necessary to know a little about the tool in order to correctly use the library. The reader who is only interested in the library should at least read the following Sections~\ref{sec:introduction}, \ref{sec:general_principles} and \ref{sec:data_types}. A documentation specifically describing the library usage is available in Appendix~\ref{Libsollya} at the end of the present documentation.
+
 
 \subsection{Compilation dependencies}
 
@@ -84,9 +93,9 @@ installed. In this case an error will be displayed at runtime.
 \item \texttt{gnuplot} (external tool)
 \end{itemize}
 The use of the external tool \texttt{rlwrap} is highly recommended but
-not required. Use the \texttt{-A} option of \texttt{rlwrap} for
-correctly displayed ANSI X3.64/ ISO/IEC 6429 colored prompts (see
-below).
+not required to use the \sollya interactive tool. Use the \texttt{-A}
+option of \texttt{rlwrap} for correctly displayed ANSI X3.64/ ISO/IEC
+6429 colored prompts (see below).
 
 \subsection{\sollya command line options}
 
@@ -169,6 +178,7 @@ nevertheless, use this deprecated option.
 
 
 \section{Introduction}
+\label{sec:introduction}
 \sollya is an interactive tool for handling numerical functions and working with arbitrary precision. It can evaluate functions accurately, compute polynomial approximations of functions, automatically implement polynomials for use in math libraries, plot functions, compute infinity norms, etc. \sollya is also a full-featured script programming language with support for procedures~etc.
 
 Let us begin this manual with an example. \sollya does not allow command line edition; since this may quickly become uncomfortable, we highly suggest to use the \rlwrap tool with \sollya:
@@ -304,7 +314,7 @@ and continues with ASCII letters or numerical digits.
 
 
 
-\section{Data types}
+\section{Data types}\label{sec:data_types}
 \sollya has a (very) basic system of types. If you try to perform an illicit operation (such as adding a number and a string, for instance), you will get a typing error. Let us see the available data types.
 
 \subsection{Booleans}
@@ -1017,7 +1027,7 @@ this point:
 \input{introExample59}
 
 \section{Commands and functions}
-
+\label{commandsAndFunctions}
 \input{CommandsAndFunctions}
 
 \newpage
@@ -1043,5 +1053,360 @@ If one and only one of the intervals is a point-interval (say $I_1 = [x]$), we c
 Finally, if neither $I_1$ nor $I_2$ are point-intervals, we try to give a meaning to $f(I_1,\,I_2)$ by an argument of limit-points when possible. For instance $[1,\,2] / [0,\,1]$ returns $[1,\,+\infty]$.
 
 As a special exception to these rules, $[0]^{[0]}$ returns $[1]$.
+
+\newpage
+\section{Appendix: the \sollya library}
+\label{Libsollya}
+ \subsection{Introduction}
+The header file of the \sollya library is \texttt{sollya.h}. It automatically includes \texttt{gmp.h}, \texttt{mpfr.h} and \texttt{mpfi.h}.
+
+The library provides a virtual \sollya session that is perfectly similar to an interactive session: environment variables such as \texttt{verbosity}, \texttt{prec}, \texttt{display}, \texttt{midpointmode}, etc. are maintained and affect the behavior of the library, warning messages are displayes when something is not exact, etc. Please note that the \sollya library is currently \textbf{not} reentrant, hence a process can only open one \sollya virtual session.
+
+The first thing to do when one wants to use \sollya in a C program is hence to initialize the virtual session. Accordingly, one should close the session at the end of the program (which has the effect of clearing all the memory used by \sollya). Here is hence a minimal file:
+
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+#include <sollya.h>
+
+int main(void) {
+  sollya_lib_init();
+
+    /* Functions of the library can be called here */
+
+  sollya_lib_close();
+  return 0;
+}
+\end{Verbatim}
+\end{minipage}\end{center}
+
+Suppose that this code is saved in a file called \texttt{foo.c}. The compilation is performed as usual without forgetting to link against \texttt{libsollya} (since the libraries \texttt{libgmp}, \texttt{libmpfr} and \texttt{libmpfi} are dependencies of \sollya, it might also be necessary to explicitely link against them):
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+~/% cc foo.c -c
+~/% cc foo.o -o foo -lsollya -lmpfi -lmpfr -lgmp
+\end{Verbatim}
+\end{minipage}\end{center}
+
+ \subsection{Sollya object data-type}
+The library provides a single data type called \texttt{sollya\_obj\_t} that can contain any \sollya object (a \sollya object is anything that can be stored in a variable within the interactive tool. See Section~\ref{sec:data_types} of the present documentation for details). Please note that \texttt{sollya\_obj\_t} is in fact a pointer type; this has two consequences:
+\begin{itemize}
+\item \texttt{NULL} is a placeholder that can be used as a \texttt{sollya\_obj\_t}. This is particularly useful as an end marker for functions with a variable number of arguments (see Section~\ref{library_commands_and_functions}).
+\item An affectation with the ``='' sign does not copy an object but only creates a reference to it. To perform a copy, the \texttt{sollya\_lib\_copy\_obj()} function is available.
+\end{itemize}
+Except for a few functions for which it is explicitely specified, the following conventions are used:
+\begin{itemize}
+\item  A function does not touch its arguments. Hence if \texttt{sollya\_lib\_foo} is a function of the library, a call to \texttt{sollya\_lib\_foo(a)} leaves the object referenced by \texttt{a} unchanged (the notable exceptions to that rule are the the functions called \texttt{sollya\_lib\_build\_*}).
+\item A function that returns a \texttt{sollya\_obj\_t} creates a fresh object (this means that memory is dynamically allocated for that object). The memory allocated to that object should manually be cleared when the object becomes useless: this is performed by the \texttt{sollya\_lib\_clear\_obj()} function.
+\end{itemize}
+
+In general, except if the users perfectly know what they are doing, the following rules should be applied (here \texttt{a} and \texttt{b} are C variables of type \texttt{sollya\_obj\_t}, and \texttt{sollya\_lib\_foo} and \texttt{sollya\_lib\_bar} are functions of the library):
+\begin{itemize}
+\item One should never write \texttt{a = b}. Instead, use \texttt{a = sollya\_lib\_copy\_obj(b)}.
+\item One should never write \texttt{a = sollya\_lib\_foo(a)} because one looses the reference to the object initially referenced by the variable \texttt{a} (which is hence not cleared).
+\item One should never chain function calls such as, e.g., \texttt{a = sollya\_lib\_foo(sollya\_lib\_bar(b))} (the reference to the object created by \texttt{sollya\_lib\_bar(b)} would be lost and hence not cleared).
+\item A variable \texttt{a} should never be used twice at the left-hand side of the ``='' sign without performing \texttt{sollya\_lib\_clear\_obj(a)} in-between.
+\item In an affectation of the form ``\texttt{a = ...}'', the right-hand side should always be a function call (i.e., something like \texttt{a = sollya\_lib\_foo(...);}).
+\end{itemize}
+
+Please note that \texttt{sollya\_lib\_close()} clears the memory allocated by the virtual \sollya session but not the objects that have been created and stored in C variables. All the \texttt{sollya\_obj\_t} created by function calls should manually be cleared.
+
+We can now, write a simple Hello World program using the \sollya library:
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+#include <sollya.h>
+
+int main(void) {
+  sollya_obj_t s1, s2, s;
+  sollya_lib_init();
+
+  s1 = sollya_lib_string("Hello ");
+  s2 = sollya_lib_string("World!");
+  s = sollya_lib_concat(s1, s2);
+  sollya_lib_clear_obj(s1);
+  sollya_lib_clear_obj(s2);
+
+  sollya_lib_printf("%b\n", s);
+  sollya_lib_clear_obj(s);
+  sollya_lib_close();
+  return 0;
+}
+\end{Verbatim}
+\end{minipage}\end{center}
+
+A universal function allows the user to execute any expression, as if it were given at the prompt of the \sollya tool, and to get a \texttt{sollya\_obj\_t} containing the result of the evaluation: this function is \texttt{sollya\_lib\_parse\_string("some expression here")}. This is very convenient, and indeed, any script written in the \sollya language, could easily be converted into a C program by intensively using \texttt{sollya\_lib\_parse\_string}. However, this should not be the preferred way if efficiency is targeted, because (as the name suggests it) this function uses a parser to decompose its argument, then constructs intermediate data structures to store the abstract interpretation of the expression, etc. Low-level functions are provided for efficiently creating \sollya objects; they are detailed in the next Section.
+
+\subsection{Creating \sollya objects}
+We conceptually divide \sollya objects into four categories: numerical constants (e.g. $1$ or $1.5$), functional expressions (they might contain numerical constants, e.g., $\sin(\cos(x+1.5))$), other simple objects (intervals, strings, built-in constants such as \texttt{dyadic}, etc.) and lists of objects (e.g., \texttt{[|1, "Hello"|]}).
+
+Table~\ref{creating_numerical_constant} lists the different functions available to construct numerical constants. The \sollya constant is always created without rounding (whatever the value of \texttt{prec} is at the moment of the call to \texttt{sollya\_lib\_constant\_*}): a sufficient precision is always allocated so that the constant is stored exactly. The object returned by these functions is fresh and is made from a copy of the argument. For instance, after the instruction \texttt{a = sollya\_lib\_constant(b)}, the user will eventually have to clear \texttt{a} (with \texttt{sollya\_lib\_clear(a)}) and to clear \texttt{b} (with \texttt{mpfr\_clear(b)}).
+
+The function \texttt{sollya\_lib\_constant\_from\_double} (or more conveniently its shortcut \texttt{SOLLYA\_CONST}) is probably the preferred way for constructing numerical constants. As the name indicates it, its argument is a \texttt{double}; however, due to implicit casting in~C, it is perfectly possible to give an \texttt{int} as argument: it will be converted into a \texttt{double} (without rounding if the integer fits on $53$~bits) before being passed to \texttt{SOLLYA\_CONST}.
+
+\begin{table}[htp]
+\begin{center}
+\caption{How to create numerical constants}
+\label{creating_numerical_constant}
+  \begin{tabular}{|l|c|l|}
+    \hline
+ \hfil Type of the argument \hfil & \hfil \phantom{\Large{$A^A$}}Name of the function\phantom{\Large{$A^A$}}\hfil & Shortcut macro \\ \hline
+\verb|double| & \verb|sollya_lib_constant_from_double(x)| & \verb|SOLLYA_CONST(x)| \\
+\verb|uint64_t| & \verb|sollya_lib_constant_from_uint64(x)| & \verb|SOLLYA_CONST_UI64(x)| \\
+\verb|int64_t| & \verb|sollya_lib_constant_from_int64(x)| &  \verb|SOLLYA_CONST_SI64(x)| \\
+\verb|int| & \verb|sollya_lib_constant_from_int(x)| & N/A \\
+\verb|mpfr_t| & \verb|sollya_lib_constant(x)| & N/A \\
+\hline
+  \end{tabular}
+\end{center}
+\end{table}
+
+Functional expressions are built by composition of basic functions with constants and the free variable. Since, it is convenient to build such expressions by chaining function calls, the library provides functions that ``eat up'' their arguments (actually embedding them in a bigger expression). The convention is that functions that eat up their arguments are prefixed by \texttt{sollya\_lib\_build\_}. For the purpose of building expressions, shortcut macros for the corresponding functions exist. They are all listed in Table~\ref{build_expr}.
+
+It is worth remarking that, though \texttt{SOLLYA\_X\_} and \texttt{SOLLYA\_PI} are used without parentheses (as if they would denote constants), they are in fact functions that create a new fresh object each time they are used. The absence of parentheses is just more convenient for constructing expressions, such as, e.g. \texttt{SOLLYA\_COS(SOLLYA\_X\_)}.
+
+\begin{table}[htp]
+\begin{center}
+\caption{How to build functional expressions}
+\label{build_expr}
+  \begin{tabular}{|c|l|l|}
+    \hline
+    Name in the interactive tool & \hfil \phantom{\Large{$A^A$}}Function to build it\phantom{\Large{$A^A$}}\hfil & Shortcut macro \\ \hline
+\verb|_x_| & \verb|sollya_lib_build_function_free_variable()| & \verb|SOLLYA_X_|\\
+\verb|pi| & \verb|sollya_lib_build_function_pi()| & \verb|SOLLYA_PI|\\
+\verb|e1 + e2| & \verb|sollya_lib_build_function_add(e1, e2)| & \verb|SOLLYA_ADD(e1, e2)|\\
+\verb|e1 - e2| & \verb|sollya_lib_build_function_sub(e1, e2)| & \verb|SOLLYA_SUB(e1, e2)|\\
+\verb|e1 * e2| & \verb|sollya_lib_build_function_mul(e1, e2)| & \verb|SOLLYA_MUL(e1, e2)|\\
+\verb|e1 / e2| & \verb|sollya_lib_build_function_div(e1, e2)| & \verb|SOLLYA_DIV(e1, e2)|\\
+\verb|pow(e1, e2)| & \verb|sollya_lib_build_function_pow(e1, e2)| & \verb|SOLLYA_POW(e1, e2)|\\
+\verb|-e| & \verb|sollya_lib_build_function_neg(e)| & \verb|SOLLYA_NEG(e)|\\
+\verb|sqrt(e)| & \verb|sollya_lib_build_function_sqrt(e)| & \verb|SOLLYA_SQRT(e)|\\
+\verb|abs(e)| & \verb|sollya_lib_build_function_abs(e)| & \verb|SOLLYA_ABS(e)|\\
+\verb|erf(e)| & \verb|sollya_lib_build_function_erf(e)| & \verb|SOLLYA_ERF(e)|\\
+\verb|erfc(e)| & \verb|sollya_lib_build_function_erfc(e)| & \verb|SOLLYA_ERFC(e)|\\
+\verb|exp(e)| & \verb|sollya_lib_build_function_exp(e)| & \verb|SOLLYA_EXP(e)|\\
+\verb|expm1(e)| & \verb|sollya_lib_build_function_expm1(e)| & \verb|SOLLYA_EXPM1(e)|\\
+\verb|log(e)| & \verb|sollya_lib_build_function_log(e)| & \verb|SOLLYA_LOG(e)|\\
+\verb|log2(e)| & \verb|sollya_lib_build_function_log2(e)| & \verb|SOLLYA_LOG2(e)|\\
+\verb|log10(e)| & \verb|sollya_lib_build_function_log10(e)| & \verb|SOLLYA_LOG10(e)|\\
+\verb|log1p(e)| & \verb|sollya_lib_build_function_log1p(e)| & \verb|SOLLYA_LOG1P(e)|\\
+\verb|sin(e)| & \verb|sollya_lib_build_function_sin(e)| & \verb|SOLLYA_SIN(e)|\\
+\verb|cos(e)| & \verb|sollya_lib_build_function_cos(e)| & \verb|SOLLYA_COS(e)|\\
+\verb|tan(e)| & \verb|sollya_lib_build_function_tan(e)| & \verb|SOLLYA_TAN(e)|\\
+\verb|asin(e)| & \verb|sollya_lib_build_function_asin(e)| & \verb|SOLLYA_ASIN(e)|\\
+\verb|acos(e)| & \verb|sollya_lib_build_function_acos(e)| & \verb|SOLLYA_ACOS(e)|\\
+\verb|atan(e)| & \verb|sollya_lib_build_function_atan(e)| & \verb|SOLLYA_ATAN(e)|\\
+\verb|sinh(e)| & \verb|sollya_lib_build_function_sinh(e)| & \verb|SOLLYA_SINH(e)|\\
+\verb|cosh(e)| & \verb|sollya_lib_build_function_cosh(e)| & \verb|SOLLYA_COSH(e)|\\
+\verb|tanh(e)| & \verb|sollya_lib_build_function_tanh(e)| & \verb|SOLLYA_TANH(e)|\\
+\verb|asinh(e)| & \verb|sollya_lib_build_function_asinh(e)| & \verb|SOLLYA_ASINH(e)|\\
+\verb|acosh(e)| & \verb|sollya_lib_build_function_acosh(e)| & \verb|SOLLYA_ACOSH(e)|\\
+\verb|atanh(e)| & \verb|sollya_lib_build_function_atanh(e)| & \verb|SOLLYA_ATANH(e)|\\
+\verb|D(e)|, \verb|double(e)| & \verb|sollya_lib_build_function_double(e)| & \verb|SOLLYA_D(e)|\\
+\verb|SG(e)|, \verb|single(e)| & \verb|sollya_lib_build_function_single(e)| & \verb|SOLLYA_SG(e)|\\
+\verb|QD(e)|, \verb|quad(e)| & \verb|sollya_lib_build_function_quad(e)| & \verb|SOLLYA_QD(e)|\\
+\verb|HP(e)|, \verb|halfprecision(e)| & \verb|sollya_lib_build_function_halfprecision(e)| & \verb|SOLLYA_HP(e)|\\
+\verb|DD(e)|, \verb|doubledouble(e)| & \verb|sollya_lib_build_function_double_double(e)| & \verb|SOLLYA_DD(e)|\\
+\verb|TD(e)|, \verb|tripledouble(e)| & \verb|sollya_lib_build_function_triple_double(e)| & \verb|SOLLYA_TD(e)|\\
+\verb|DE(e)|, \verb|doubleextended(e)| & \verb|sollya_lib_build_function_doubleextended(e)| & \verb|SOLLYA_DE(e)|\\
+\verb|ceil(e)| & \verb|sollya_lib_build_function_ceil(e)| & \verb|SOLLYA_CEIL(e)|\\
+\verb|floor(e)| & \verb|sollya_lib_build_function_floor(e)| & \verb|SOLLYA_FLOOR(e)|\\
+\verb|nearestint(e)| & \verb|sollya_lib_build_function_nearestint(e)| & \verb|SOLLYA_NEARESTINT(e)|\\
+\hline
+  \end{tabular}
+\end{center}
+\end{table}
+
+Other simple objects are created with functions listed in Table~\ref{creating_sollya_obj_t}. The functions \texttt{sollya\_lib\_range\_*} follow the same convention as \texttt{sollya\_lib\_constant}: they build a new object from a copy of their argument, and the conversion is always exact, whatever the value of \texttt{prec} is.
+
+Please note that in the interactive tool, \texttt{D} either denotes the discrete mathematical function that maps a real number to its closest \texttt{double} number, or is used as a symbolic constant to indicate that the \texttt{double} format must be used (as an argument of \texttt{round} for instance). In the library, they are completely distinct objects, the mathematical function being obtained with \texttt{sollya\_lib\_build\_function\_double} and the symbolic constant with \texttt{sollya\_lib\_double\_obj}. The same holds for other formats (\texttt{DD}, \texttt{SG}, etc.)
+\begin{table}[htp]
+  \caption{How to create \sollya objects from scratch}
+  \label{creating_sollya_obj_t}
+  \renewcommand{\footnoterule}{} % suppress the separation line between main text and footnotes.
+  \begin{minipage}{\textwidth}
+    \begin{center}
+      \begin{tabular}{|c|l|}
+    \hline
+    Name in the interactive tool & \hfil \phantom{\Large{$A^A$}}Function to create it\phantom{\Large{$A^A$}}\hfil \\ \hline
+\verb|on| & \verb|sollya_lib_on();| \\
+\verb|off| & \verb|sollya_lib_off();| \\
+\verb|dyadic| & \verb|sollya_lib_dyadic();| \\
+\verb|powers| & \verb|sollya_lib_powers();| \\
+\verb|binary| & \verb|sollya_lib_binary();| \\
+\verb|hexadecimal| & \verb|sollya_lib_hexadecimal();| \\
+\verb|file| & \verb|sollya_lib_file();| \\
+\verb|postscript| & \verb|sollya_lib_postscript();| \\
+\verb|postscriptfile| & \verb|sollya_lib_postscriptfile();| \\
+\verb|perturb| & \verb|sollya_lib_perturb();| \\
+\verb|RD| & \verb|sollya_lib_round_down();| \\
+\verb|RU| & \verb|sollya_lib_round_up();| \\
+\verb|RZ| & \verb|sollya_lib_round_towards_zero();| \\
+\verb|RN| & \verb|sollya_lib_round_to_nearest();| \\
+\verb|honorcoeffprec| & \verb|sollya_lib_honorcoeffprec();| \\
+\verb|true| & \verb|sollya_lib_true();| \\
+\verb|false| & \verb|sollya_lib_false();| \\
+\verb|void| & \verb|sollya_lib_void();| \\
+\verb|default| & \verb|sollya_lib_default();| \\
+\verb|decimal| & \verb|sollya_lib_decimal();| \\
+\verb|absolute| & \verb|sollya_lib_absolute();| \\
+\verb|relative| & \verb|sollya_lib_relative();| \\
+\verb|fixed| & \verb|sollya_lib_fixed();| \\
+\verb|floating| & \verb|sollya_lib_floating();| \\
+\verb|error| & \verb|sollya_lib_error();| \\
+\verb|D, double| & \verb|sollya_lib_double_obj();| \\
+\verb|SG, single| & \verb|sollya_lib_single_obj();| \\
+\verb|QD, quad| & \verb|sollya_lib_quad_obj();| \\
+\verb|HP, halfprecision| & \verb|sollya_lib_halfprecision_obj();| \\
+\verb|DE, doubleextended| & \verb|sollya_lib_doubleextended_obj();| \\
+\verb|DD, doubledouble| & \verb|sollya_lib_double_double_obj();| \\
+\verb|TD, tripledouble| & \verb|sollya_lib_triple_double_obj();| \\
+\verb|"Hello"| &  \verb|sollya_lib_string("Hello")| \\
+\verb|[1, 3.5]| &  \verb|sollya_lib_range_from_interval(a);|\footnote{\texttt{a} is a \texttt{mpfi\_t} containg the interval $[1, 3.5]$.} \\
+\verb|[1, 3.5]| &  \verb|sollya_lib_range_from_bounds(b, c);|\footnote[2]{\texttt{b} and \texttt{c} are \texttt{mpfr\_t} respectively containing the numbers $1$ and $3.5$.} \\ \hline
+  \end{tabular}
+\end{center}
+\end{minipage}
+\end{table}
+
+\subsection{Getting the type of an object}
+Functions are available to test the type of a \sollya object. They are liste in Table~\ref{type_of_an_object}. They all return a non-zero integer if the test is true, and zero otherwise. Please note that from a typing point of view, a mathematical constant and a non-constant functional expression are both functions.
+
+\begin{table}[htp]
+  \caption{Testing the type of a \sollya object}
+  \label{type_of_an_object}
+  \begin{center}
+    \begin{tabular}{|l|}
+      \hline
+      \verb|sollya_lib_obj_is_function(obj)| \\
+      \verb|sollya_lib_obj_is_range(obj)| \\
+      \verb|sollya_lib_obj_is_string(obj)| \\
+      \verb|sollya_lib_obj_is_list(obj)| \\
+      \verb|sollya_lib_obj_is_end_elliptic_list(obj)| \\
+      \verb|sollya_lib_obj_is_structure(obj)| \\
+      \verb|sollya_lib_obj_is_error(obj)| \\
+      ~\\
+      \hline
+      ~\\
+      \verb|sollya_lib_is_on(obj)| \\
+      \verb|sollya_lib_is_off(obj)| \\
+      \verb|sollya_lib_is_dyadic(obj)| \\
+      \verb|sollya_lib_is_powers(obj)| \\
+      \verb|sollya_lib_is_binary(obj)| \\
+      \verb|sollya_lib_is_hexadecimal(obj)| \\
+      \verb|sollya_lib_is_file(obj)| \\
+      \verb|sollya_lib_is_postscript(obj)| \\
+      \verb|sollya_lib_is_postscriptfile(obj)| \\
+      \verb|sollya_lib_is_perturb(obj)| \\
+      \verb|sollya_lib_is_round_down(obj)| \\
+      \verb|sollya_lib_is_round_up(obj)| \\
+      \verb|sollya_lib_is_round_towards_zero(obj)| \\
+      \verb|sollya_lib_is_round_to_nearest(obj)| \\
+      \verb|sollya_lib_is_honorcoeffprec(obj)| \\
+      \verb|sollya_lib_is_true(obj)| \\
+      \verb|sollya_lib_is_false(obj)| \\
+      \verb|sollya_lib_is_void(obj)| \\
+      \verb|sollya_lib_is_default(obj)| \\
+      \verb|sollya_lib_is_decimal(obj)| \\
+      \verb|sollya_lib_is_absolute(obj)| \\
+      \verb|sollya_lib_is_relative(obj)| \\
+      \verb|sollya_lib_is_fixed(obj)| \\
+      \verb|sollya_lib_is_floating(obj)| \\
+      \verb|sollya_lib_is_double_obj(obj)| \\
+      \verb|sollya_lib_is_single_obj(obj)| \\
+      \verb|sollya_lib_is_quad_obj(obj)| \\
+      \verb|sollya_lib_is_halfprecision_obj(obj)| \\
+      \verb|sollya_lib_is_doubleextended_obj(obj)| \\
+      \verb|sollya_lib_is_double_double_obj(obj)| \\
+      \verb|sollya_lib_is_triple_double_obj(obj)| \\
+      \verb|sollya_lib_is_pi(obj)| \\
+      \hline
+  \end{tabular}
+\end{center}
+\end{table}
+
+If a \texttt{sollya\_obj\_t} contains a functional expression, one can decompose the expression tree using the following functions. These functions all return 0 in case of success (i.e. if the \texttt{sollya\_obj\_t} argument really contains a functional expression) and a non-zero value otherwise.
+
+\begin{itemize}
+\item \verb|sollya_lib_get_function_arity(int *n, sollya_obj_t f)|: it stores the arity of \texttt{f} at the address referred by \texttt{n}. Currently, the mathematical functions handled in \sollya are at most dyadic. Mathematical constants are considered as a 0-adic functions.
+\item \verb|sollya_lib_get_head_function(sollya_base_function_t *type, sollya_obj_t f)|: it stores the type of \texttt{f} at the address referred by \texttt{type}. The \texttt{sollya\_base\_function\_t} is an enum type listing all possible cases (see Table~\ref{}).
+\item \verb|sollya_lib_get_subfunctions(sollya_obj_t f, int *n, ...)|: let us denote by \texttt{g\_1},\dots,\texttt{g\_k} the arguments after \texttt{n}. They must be of type \verb|sollya_obj_t *|. The function stores the arity of \texttt{f} at the address referred by \texttt{n}. Suppose that \texttt{f} contains an expression of the form $f_0(f_1,\dots,f_s)$. For each $i$ from $1$ to $s$, the function stores the expression corresponding to $f_i$ at the address referred by \texttt{g\_i}, unless one of the \texttt{g\_i} is \texttt{NULL} in which case the function returns when encountering it. In practice, it means that the users should always put \texttt{NULL} as last argument, in order to prevent the case when they would not provide enough variables \texttt{g\_i}. They can check afterwards that they provided enough variables by checking the value contained at the address referred by \texttt{n}. If users do not put \texttt{NULL} as last argument and do not provide enough variables \texttt{g\_i}, the algorithm will continue storing arguments at random places in the memory. Please note that the objects that have been stored in variables \texttt{g\_i} must manually be cleared once they become useless.
+\item \verb|sollya_lib_v_get_subfunctions(sollya_obj_t f, int *n, va_list va)|: the same as the previous function, but with a \texttt{va\_list}.
+\item \verb|sollya_lib_decompose_function(sollya_obj_t f, sollya_base_function_t *type,|\\
+      \verb|                                              int *n, ...)|:\\
+this function is a all-in-one function equivalent to using \verb|sollya_lib_get_head_function| and \verb|sollya_lib_get_subfunctions| in only one function call.
+\item \verb|sollya_lib_v_decompose_function(sollya_obj_t f, sollya_base_function_t *type,|\\
+      \verb|                                int *n, va_list va)|:\\
+ it simply is the \texttt{va\_list} version of the previous function.
+\end{itemize}
+
+As an example of use of these functions, the following code returns $1$ if \texttt{f} denotes a functional expression made only of constants (i.e. without the free variable), and returns $0$ otherwise:
+
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+#include <sollya.h>
+
+/* Note: we suppose that the library has already been initilized */
+int is_made_of_constants(sollya_obj_t f) {
+  sollya_obj_t tmp1, tmp2;
+  int n, r, res;
+  sollya_base_function_t type;
+
+  r = sollya_lib_decompose_function(f, &type, &n, &tmp1, &tmp2, NULL);
+  if (r) { sollya_lib_printf("Not a mathematical function\n"); return 0; }
+
+  if (n >= 3) {
+    sollya_lib_printf("Unexpected error: %b is more than dyadic\n", f);
+    res = 0;
+  }
+  else {
+    switch (type) {
+      case SOLLYA_BASE_FUNC_FREE_VARIABLE: return 0;
+      case SOLLYA_BASE_FUNC_PI: return 1;
+      case SOLLYA_BASE_FUNC_CONSTANT: return 1;
+      default:
+        res = is_made_of_constants(tmp1);
+        if ((res) && (n==2)) res = is_made_of_constants(tmp1);
+    }
+  }
+
+  sollya_lib_clear_obj(tmp1);
+  if (n == 2) sollya_lib_clear_obj(tmp2);
+  return res;
+}
+\end{Verbatim}
+\end{minipage}\end{center}
+
+\subsection{Name of the free variable}
+The default name for the free variable is the same in the library and in the interactive tool: it is \texttt{\_x\_}. In the interactive tool, this name is automatically changed at the first use of an undefined symbol. Accordingly in library mode, if an object is defined by \texttt{sollya\_lib\_parse\_string} with an expression containing an undefined symbol, that symbol will become the free variable name if it has not already been changed before. But what if one does not use \texttt{sollya\_lib\_parse\_string} (because it is not efficient) but one wants to change the name of the free variable? The name can be changed with \texttt{sollya\_lib\_name\_free\_variable("some\_name")}.
+
+It is possible to get the current name of the free variable with \texttt{sollya\_lib\_get\_free\_variable\_name()}. This function returns a \texttt{char *} containing the current name of the free variable. Please note that this \texttt{char *} is dynamically allocated on the heap and should be cleared after its use using \texttt{sollya\_lib\_free()} (see below).
+
+\subsection{Commands and functions}
+\label{library_commands_and_functions}
+Every commands and functions available in the \sollya interactive tool have their equivalent (with a very close syntax) in the library. The Section~\ref{commandsAndFunctions} of the present documentation gives the library syntax as well as the interactive tool syntax of each commands and functions. The same information is available within the interactive tool by typing \texttt{help some\_command}, so if one knows the name of a command or function in the interactive tool, it is easy to recover its library name and signature.
+
+A particular point is worth being mentioned: some functions of the tool such as \texttt{remez} for instance have a variable number of arguments. For instance, one might call \texttt{remez(exp(x), 4, [0,1])} or \texttt{remez(1, 4, [0,1], 1/exp(x))}. This feature is rendered in the C library by the facilities of stdarg. The notable difference is that there must \textbf{always be an explicit NULL argument} at the end of the function call. Hence one can write \texttt{sollya\_lib\_remez(a, b, c, NULL)} or \texttt{sollya\_lib\_remez(a, b, c, d, NULL)}. It is very easy to forget the \texttt{NULL} argument and use for instance \texttt{sollya\_lib\_remez(a, b, c)}. This is \textbf{completely wrong} because the memory will be read until a \texttt{NULL} pointer is found. In the best case, this will lead to an error or a result obviously wrong, but it could also lead to subtle, not-easy-to-debug errors. Please be particularly careful to this point.
+
+Each command or function accepting a variable number of arguments comes with a \texttt{sollya\_lib\_v\_*} version accepting a \texttt{va\_list} parameter containing the list of optional arguments. For instance, one might write a function that take as arguments a function $f$, an interval $I$, optionally a weight function $w$, optionally a quality parameter $q$. That function would display the minimax obtained when approximating $f$ over $I$ (possibly with weight $w$ and quality $q$) by polynomials of degree $n=2$ to $20$. So, that function would get a variable number of arguments (i.e. a \texttt{va\_list} in fact) and pass them straight to remez. In that case, one needs to use the \texttt{v\_remez} version, as the following code shows:
+
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+#include <sollya.h>
+#include <stdarg.h>
+
+/* Note: we suppose that the library has already been initilized */
+void my_function(sollya_obj_t f, sollya_obj_t I, ...) {
+  sollya_obj_t n, res;
+  int i;
+  va_list va;
+
+  for(i=2;i<=20;i++) {
+    n = SOLLYA_CONST(i);
+    va_start(va, I);
+    res = sollya_lib_v_remez(f, n, I, va);
+    sollya_lib_printf("Approximation of degree %b is %b\n", n, res);
+    va_end(va);
+    sollya_lib_clear_obj(n);
+    sollya_lib_clear_obj(res);
+  }
+
+  return;
+}
+\end{Verbatim}
+\end{minipage}\end{center}
 
 \end{document}
