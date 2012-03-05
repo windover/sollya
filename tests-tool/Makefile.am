@@ -5,6 +5,7 @@ EXTRA_DIST = check.proto $(TESTFILES) $(TESTFILES:.sollya=.sollya.reference)
 TESTS = $(TESTFILES:.sollya=.sh)
 
 check_PROGRAMS = force_compilation
+force_compilation_SOURCES =
 
 MOSTLYCLEANFILES = $(TESTS)
 

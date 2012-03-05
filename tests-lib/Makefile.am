@@ -286,6 +286,8 @@ LDADD = $(top_builddir)/.libs/libsollya.la
 
 MOSTLYCLEANFILES = $(TESTS)
 
+force_compilation_SOURCES =
+
 .PHONY: force_compilation
 
 force_compilation:
