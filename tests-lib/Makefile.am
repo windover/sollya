@@ -8,7 +8,6 @@ tappend.c \
 tasin.c \
 tasinh.c \
 tasciiplot.c \
-tassign_in_structure.c \
 tatan.c \
 tatanh.c \
 tbashexecute.c \
@@ -75,6 +74,7 @@ tconstant_from_uint64.c \
 tconstant_list_ops.c \
 tcos.c \
 tcosh.c \
+tcreate_structure.c \
 tdecimal.c \
 tdefault.c \
 tdegree.c \

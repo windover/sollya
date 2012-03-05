@@ -2977,7 +2977,7 @@ int sollya_lib_get_element_in_structure(sollya_obj_t *object, char *identifier, 
   return 0;
 }
 
-int sollya_lib_assign_in_structure(sollya_obj_t *object, sollya_obj_t obj1, char *identifier, sollya_obj_t obj2) {
+int sollya_lib_create_structure(sollya_obj_t *object, sollya_obj_t obj1, char *identifier, sollya_obj_t obj2) {
   entry *tempEntry;
   int added;
   chain *curr;
