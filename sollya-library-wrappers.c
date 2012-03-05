@@ -2159,9 +2159,8 @@ int sollya_lib_get_string(char **str, sollya_obj_t obj1) {
   return evaluateThingToString(str, obj1);
 }
 
-int sollya_lib_get_constant(mpfr_t value, sollya_obj_t obj1) {
+int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1) {
   sollya_obj_t evaluatedObj, simplifiedObj;
-  mpfr_t myValue;
 
   evaluatedObj = evaluateThing(obj1);
   if (!isPureTree(evaluatedObj)) {
@@ -2176,23 +2175,33 @@ int sollya_lib_get_constant(mpfr_t value, sollya_obj_t obj1) {
     return 0;
   }
 
-  mpfr_init2(myValue, mpfr_get_prec(value));
-  if (evaluateThingToConstant(myValue, simplifiedObj, NULL, 1, 0)) {
-    if (mpfr_set(value, myValue, GMP_RNDN) != 0) {
-      if (!noRoundingWarnings) {
-	printMessage(1,SOLLYA_MSG_ROUNDING_ON_CONSTANT_RETRIEVAL,"Warning: rounding occurred on retrieval of a constant.\n");
-      }
-    }
-    mpfr_clear(myValue);
+  if (evaluateThingToConstant(value, simplifiedObj, NULL, 1, 0)) {
     freeThing(evaluatedObj);
     freeThing(simplifiedObj);
     return 1;
   }
 
-  mpfr_clear(myValue);
   freeThing(evaluatedObj);
   freeThing(simplifiedObj);
   return 0;
+}
+
+int sollya_lib_get_constant(mpfr_t value, sollya_obj_t obj1) {
+  mpfr_t myValue;
+  int res;
+
+  mpfr_init2(myValue, mpfr_get_prec(value));
+  res = sollya_lib_get_constant_inner(myValue, obj1);
+  if (res) {
+    if (mpfr_set(value, myValue, GMP_RNDN) != 0) {
+      if (!noRoundingWarnings) {
+	printMessage(1,SOLLYA_MSG_ROUNDING_ON_CONSTANT_RETRIEVAL,"Warning: rounding occurred on retrieval of a constant.\n");
+      }
+    }
+  }
+  mpfr_clear(myValue);
+
+  return res;
 }
 
 int sollya_lib_get_prec_of_constant(mp_prec_t *pr, sollya_obj_t obj1) {
@@ -2226,8 +2235,8 @@ int sollya_lib_get_prec_of_constant(mp_prec_t *pr, sollya_obj_t obj1) {
 int sollya_lib_get_constant_as_double(double *value, sollya_obj_t obj1) {
   mpfr_t temp;
 
-  mpfr_init2(temp,64); /* sollya_lib_get_constant may change the precision afterwards */
-  if (sollya_lib_get_constant(temp, obj1)) {
+  mpfr_init2(temp,64); /* sollya_lib_get_constant_inner may change the precision afterwards */
+  if (sollya_lib_get_constant_inner(temp, obj1)) {
     *value = mpfr_get_d(temp, GMP_RNDN);
     mpfr_clear(temp);
     return 1;
@@ -2240,8 +2249,8 @@ int sollya_lib_get_constant_as_double(double *value, sollya_obj_t obj1) {
 int sollya_lib_get_constant_as_int(int *value, sollya_obj_t obj1) {
   mpfr_t temp;
 
-  mpfr_init2(temp,64); /* sollya_lib_get_constant may change the precision afterwards */
-  if (sollya_lib_get_constant(temp, obj1)) {
+  mpfr_init2(temp,64); /* sollya_lib_get_constant_inner may change the precision afterwards */
+  if (sollya_lib_get_constant_inner(temp, obj1)) {
     *value = mpfr_get_si(temp, GMP_RNDN);
     mpfr_clear(temp);
     return 1;
@@ -2337,8 +2346,8 @@ uint64_t sollya_lib_helper_mpfr_to_uint64(mpfr_t op) {
 int sollya_lib_get_constant_as_int64(int64_t *value, sollya_obj_t obj1) {
   mpfr_t temp;
 
-  mpfr_init2(temp,64); /* sollya_lib_get_constant may change the precision afterwards */
-  if (sollya_lib_get_constant(temp, obj1)) {
+  mpfr_init2(temp,64); /* sollya_lib_get_constant_inner may change the precision afterwards */
+  if (sollya_lib_get_constant_inner(temp, obj1)) {
     *value = sollya_lib_helper_mpfr_to_int64(temp);
     mpfr_clear(temp);
     return 1;
@@ -2351,8 +2360,8 @@ int sollya_lib_get_constant_as_int64(int64_t *value, sollya_obj_t obj1) {
 int sollya_lib_get_constant_as_uint64(uint64_t *value, sollya_obj_t obj1) {
   mpfr_t temp;
 
-  mpfr_init2(temp,64); /* sollya_lib_get_constant may change the precision afterwards */
-  if (sollya_lib_get_constant(temp, obj1)) {
+  mpfr_init2(temp,64); /* sollya_lib_get_constant_inner may change the precision afterwards */
+  if (sollya_lib_get_constant_inner(temp, obj1)) {
     *value = sollya_lib_helper_mpfr_to_uint64(temp);
     mpfr_clear(temp);
     return 1;
