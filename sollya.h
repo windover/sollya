@@ -579,9 +579,9 @@ extern "C" {
   /* Functions to decompose Sollya objects that represent mathematical
      functions.
 
-     All these functions return a zero value if the Sollya object
-     they are given is a mathematical function and a non-zero value
-     otherwise. 
+     All these functions return a zero value if the Sollya object they
+     are given is something else but a mathematical function and a
+     non-zero value otherwise (i.e. if it is a function with an arity).
   */
   int sollya_lib_get_function_arity(int *, sollya_obj_t);
   int sollya_lib_get_head_function(sollya_base_function_t *, sollya_obj_t);
