@@ -556,6 +556,7 @@ extern "C" {
   int sollya_lib_get_constant_as_uint64(uint64_t *, sollya_obj_t);
   int sollya_lib_get_constant(mpfr_t, sollya_obj_t);
   int sollya_lib_get_prec_of_constant(mp_prec_t *, sollya_obj_t);
+  int sollya_lib_get_prec_of_range(mp_prec_t *, sollya_obj_t);
 
   /* Functions to build up Sollya lists from arrays of objects and 
      to get arrays of Sollya objects out of Sollya lists 

@@ -2129,6 +2129,25 @@ int sollya_lib_get_interval_from_range(mpfi_t interval, sollya_obj_t obj1) {
   return 0;
 }
 
+int sollya_lib_get_prec_of_range(mp_prec_t *pr, sollya_obj_t obj1) {
+  mpfr_t a, b;
+  mp_prec_t p, prec;
+
+  mpfr_init2(a,tools_precision); /* evaluateThingToRange will change the precision afterwards */
+  mpfr_init2(b,tools_precision); /* evaluateThingToRange will change the precision afterwards */
+  if (evaluateThingToRange(a, b, obj1)) {
+    prec = mpfr_get_prec(a);
+    p = mpfr_get_prec(b);
+    if (p > prec) prec = p;
+    *pr = prec;
+    return 1;
+  }
+
+  mpfr_clear(a);
+  mpfr_clear(b);
+  return 0;
+}
+
 int sollya_lib_get_bounds_from_range(mpfr_t left, mpfr_t right, sollya_obj_t obj1) {
   mpfr_t a, b;
   mp_prec_t p, pp;
