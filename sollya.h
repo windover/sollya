@@ -286,6 +286,13 @@ extern "C" {
   */
   void sollya_lib_free(void *);
 
+  /* The same way, the user might want to allocate memory through
+     Sollya library's memory function call chain 
+  */
+  void *sollya_lib_malloc(size_t);
+  void *sollya_lib_calloc(size_t, size_t);
+  void *sollya_lib_realloc(void *, size_t);
+
   /* A function to structurally compare two Sollya objects */
   int sollya_lib_cmp_objs_structurally(sollya_obj_t, sollya_obj_t);
 

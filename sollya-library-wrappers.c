@@ -185,6 +185,18 @@ void sollya_lib_free(void *ptr) {
   safeFree(ptr);
 }
 
+void *sollya_lib_malloc(size_t size) {
+  return safeMalloc(size);
+}
+
+void *sollya_lib_calloc(size_t nmemb, size_t size) {
+  return safeCalloc(nmemb, size);
+}
+
+void *sollya_lib_realloc(void *ptr, size_t size) {
+  return safeRealloc(ptr, size);  
+}
+
 sollya_obj_t sollya_lib_copy_obj(sollya_obj_t obj1) {
   return copyThing(obj1);
 }

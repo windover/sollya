@@ -160,6 +160,7 @@ void demaskString(char*, char*);
 char *maskString(char *);
 void *safeCalloc (size_t nmemb, size_t size);
 void *safeMalloc (size_t size);
+void *safeRealloc (void *ptr, size_t size);
 void safeFree(void *ptr);
 int printMessage(int verb, int msgNum, const char *format, ...);
 int sollyaVfprintf(FILE *fd, const char *format, va_list varlist);
