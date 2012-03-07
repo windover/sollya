@@ -1088,7 +1088,7 @@ Suppose that this code is saved in a file called \texttt{foo.c}. The compilation
  \subsection{Sollya object data-type}
 The library provides a single data type called \texttt{sollya\_obj\_t} that can contain any \sollya object (a \sollya object is anything that can be stored in a variable within the interactive tool. See Section~\ref{sec:data_types} of the present documentation for details). Please note that \texttt{sollya\_obj\_t} is in fact a pointer type; this has two consequences:
 \begin{itemize}
-\item \texttt{NULL} is a placeholder that can be used as a \texttt{sollya\_obj\_t}. This is particularly useful as an end marker for functions with a variable number of arguments (see Section~\ref{library_commands_and_functions}).
+\item \texttt{NULL} is a placeholder that can be used as a \texttt{sollya\_obj\_t}. This is particularly useful as an end marker for functions with a variable number of arguments (see Sections~\ref{creating_lists} and~\ref{library_commands_and_functions}).
 \item An affectation with the ``='' sign does not copy an object but only creates a reference to it. To perform a copy, the \texttt{sollya\_lib\_copy\_obj()} function is available.
 \end{itemize}
 Except for a few functions for which it is explicitely specified, the following conventions are used:
@@ -1133,16 +1133,17 @@ int main(void) {
 A universal function allows the user to execute any expression, as if it were given at the prompt of the \sollya tool, and to get a \texttt{sollya\_obj\_t} containing the result of the evaluation: this function is \texttt{sollya\_lib\_parse\_string("some expression here")}. This is very convenient, and indeed, any script written in the \sollya language, could easily be converted into a C program by intensively using \texttt{sollya\_lib\_parse\_string}. However, this should not be the preferred way if efficiency is targeted, because (as the name suggests it) this function uses a parser to decompose its argument, then constructs intermediate data structures to store the abstract interpretation of the expression, etc. Low-level functions are provided for efficiently creating \sollya objects; they are detailed in the next Section.
 
 \subsection{Creating \sollya objects}
-We conceptually divide \sollya objects into four categories: numerical constants (e.g. $1$ or $1.5$), functional expressions (they might contain numerical constants, e.g., $\sin(\cos(x+1.5))$), other simple objects (intervals, strings, built-in constants such as \texttt{dyadic}, etc.) and lists of objects (e.g., \texttt{[|1, "Hello"|]}).
+We conceptually divide \sollya objects into five categories: numerical constants (e.g. $1$ or $1.5$), functional expressions (they might contain numerical constants, e.g., $\sin(\cos(x+1.5))$), other simple objects (intervals, strings, built-in constants such as \texttt{dyadic}, etc.), lists of objects (e.g., \texttt{[|1, "Hello"|]}) and structures (e.g., \verb|{.a = 1; .b = "Hello"}|).
 
+\subsubsection{Numerical constants}
 Table~\ref{creating_numerical_constant} lists the different functions available to construct numerical constants. The \sollya constant is always created without rounding (whatever the value of \texttt{prec} is at the moment of the call to \texttt{sollya\_lib\_constant\_*}): a sufficient precision is always allocated so that the constant is stored exactly. The object returned by these functions is fresh and is made from a copy of the argument. For instance, after the instruction \texttt{a = sollya\_lib\_constant(b)}, the user will eventually have to clear \texttt{a} (with \texttt{sollya\_lib\_clear(a)}) and to clear \texttt{b} (with \texttt{mpfr\_clear(b)}).
 
 The function \texttt{sollya\_lib\_constant\_from\_double} (or more conveniently its shortcut \texttt{SOLLYA\_CONST}) is probably the preferred way for constructing numerical constants. As the name indicates it, its argument is a \texttt{double}; however, due to implicit casting in~C, it is perfectly possible to give an \texttt{int} as argument: it will be converted into a \texttt{double} (without rounding if the integer fits on $53$~bits) before being passed to \texttt{SOLLYA\_CONST}.
 
 \begin{table}[htp]
-\begin{center}
-\caption{How to create numerical constants}
+\caption{Creating numerical constants (Creates a fresh \texttt{sollya\_obj\_t}. Conversion is always exact)}
 \label{creating_numerical_constant}
+\begin{center}
   \begin{tabular}{|l|c|l|}
     \hline
  \hfil Type of the argument \hfil & \hfil \phantom{\Large{$A^A$}}Name of the function\phantom{\Large{$A^A$}}\hfil & Shortcut macro \\ \hline
@@ -1156,14 +1157,15 @@ The function \texttt{sollya\_lib\_constant\_from\_double} (or more conveniently 
 \end{center}
 \end{table}
 
+\subsubsection{Functional expressions}
 Functional expressions are built by composition of basic functions with constants and the free variable. Since, it is convenient to build such expressions by chaining function calls, the library provides functions that ``eat up'' their arguments (actually embedding them in a bigger expression). The convention is that functions that eat up their arguments are prefixed by \texttt{sollya\_lib\_build\_}. For the purpose of building expressions, shortcut macros for the corresponding functions exist. They are all listed in Table~\ref{build_expr}.
 
 It is worth remarking that, though \texttt{SOLLYA\_X\_} and \texttt{SOLLYA\_PI} are used without parentheses (as if they would denote constants), they are in fact functions that create a new fresh object each time they are used. The absence of parentheses is just more convenient for constructing expressions, such as, e.g. \texttt{SOLLYA\_COS(SOLLYA\_X\_)}.
 
 \begin{table}[htp]
-\begin{center}
-\caption{How to build functional expressions}
+\caption{Building functional expressions (Eats up arguments, embedding them in the returned object.)}
 \label{build_expr}
+\begin{center}
   \begin{tabular}{|c|l|l|}
     \hline
     Name in the interactive tool & \hfil \phantom{\Large{$A^A$}}Function to build it\phantom{\Large{$A^A$}}\hfil & Shortcut macro \\ \hline
@@ -1212,14 +1214,24 @@ It is worth remarking that, though \texttt{SOLLYA\_X\_} and \texttt{SOLLYA\_PI} 
 \end{center}
 \end{table}
 
+For each function of the form \verb|sollya_lib_build_function_foo|, there exists a function called \verb|sollya_lib_foo|. There are two differences between them:
+\begin{itemize}
+\item First, \verb|sollya_lib_foo| does not eat up its argument. It can sometimes be useful, e.g., if one has an expression stored in a variable \texttt{a} and one wants to build the expression \texttt{exp(a)} without loosing the reference to the expression represented by \texttt{a}.
+\item Second, while \verb|sollya_lib_build_function_foo| mecanically constructs an expression, \verb|sollya_lib_foo| also evaluates it, as far as it is possible without performing a rounding.\\
+For instance, after the instructions \verb|a = SOLLYA_CONST(0); b = sollya_lib_exp(a);| the variable \texttt{b} contains the number $1$, whereas it would have contained the expression "\texttt{exp(0)}" if it had been created by \verb|b = sollya_lib_build_function(a)|.
+\end{itemize}
+Actually, \verb|sollya_lib_foo| has exactly the same behavior as writing an expression at the prompt within the interactive tool. In particular, it is possible to give a range as an argument to \verb|sollya_lib_foo|: the returned object will be the result of the evaluation of function \verb|foo| on that range by interval arithmetic. In contrast, trying to use \verb|sollya_lib_build_function_foo| on a range would result in a typing error.
+
+\subsubsection{Other simple objects}
 Other simple objects are created with functions listed in Table~\ref{creating_sollya_obj_t}. The functions \texttt{sollya\_lib\_range\_*} follow the same convention as \texttt{sollya\_lib\_constant}: they build a new object from a copy of their argument, and the conversion is always exact, whatever the value of \texttt{prec} is.
 
 Please note that in the interactive tool, \texttt{D} either denotes the discrete mathematical function that maps a real number to its closest \texttt{double} number, or is used as a symbolic constant to indicate that the \texttt{double} format must be used (as an argument of \texttt{round} for instance). In the library, they are completely distinct objects, the mathematical function being obtained with \texttt{sollya\_lib\_build\_function\_double} and the symbolic constant with \texttt{sollya\_lib\_double\_obj}. The same holds for other formats (\texttt{DD}, \texttt{SG}, etc.)
 \begin{table}[htp]
-  \caption{How to create \sollya objects from scratch}
+  \caption{Creating \sollya objects from scratch (Returns a fresh \texttt{sollya\_obj\_t})}
   \label{creating_sollya_obj_t}
   \renewcommand{\footnoterule}{} % suppress the separation line between main text and footnotes.
   \begin{minipage}{\textwidth}
+    ~
     \begin{center}
       \begin{tabular}{|c|l|}
     \hline
@@ -1257,18 +1269,54 @@ Please note that in the interactive tool, \texttt{D} either denotes the discrete
 \verb|DD, doubledouble| & \verb|sollya_lib_double_double_obj();| \\
 \verb|TD, tripledouble| & \verb|sollya_lib_triple_double_obj();| \\
 \verb|"Hello"| &  \verb|sollya_lib_string("Hello")| \\
-\verb|[1, 3.5]| &  \verb|sollya_lib_range_from_interval(a);|\footnote{\texttt{a} is a \texttt{mpfi\_t} containg the interval $[1, 3.5]$.} \\
-\verb|[1, 3.5]| &  \verb|sollya_lib_range_from_bounds(b, c);|\footnote[2]{\texttt{b} and \texttt{c} are \texttt{mpfr\_t} respectively containing the numbers $1$ and $3.5$.} \\ \hline
+\verb|[1, 3.5]| &  \verb|sollya_lib_range_from_interval(a);|\footnote{\texttt{a} is a \texttt{mpfi\_t} containg the interval $[1, 3.5]$. Conversion is always exact.} \\
+\verb|[1, 3.5]| &  \verb|sollya_lib_range_from_bounds(b, c);|\footnote[2]{\texttt{b} and \texttt{c} are \texttt{mpfr\_t} respectively containing the numbers $1$ and $3.5$.  Conversion is always exact.} \\ \hline
   \end{tabular}
 \end{center}
 \end{minipage}
 \end{table}
 
+\subsubsection{Lists}
+\label{creating_lists}
+There are actually two kinds of lists: regular lists (such as, e.g., \verb#[|1, 2, 3|]#) and semi-infinite lists (such as, e.g. \verb#[|1, 2, ...|]#). Withing the interactive tool, the ellipse ``\texttt{...}'' can sometimes be used as a shortcut to define regular lists, e.g. \verb#[|1, 2, ..., 10|]#.
+
+In the library, there is no symbol for the ellipse, and there are two distinct types: one for regular lists and one for semi-infinite lists (called end-elliptic). Defining a regular list with an ellipse is not possible in the library (except of course with \texttt{sollya\_lib\_parse\_string}).
+
+Constructing regular lists is achieved through three functions:
+\begin{itemize}
+\item \verb|sollya_lib_list(sollya_obj_t[] L, int n)|: this function returns a fresh new \verb|sollya_obj_t| that is a list, which elements are copies of \verb|L[0]|, \dots, \verb|L[n]|.
+\item \verb|sollya_lib_build_list(sollya_obj_t obj1, ...)|: this function accepts a variable number of arguments. The last one \textbf{must} be \texttt{NULL}. It eats up its arguments and returns a list containing the objects given as arguments. Since arguments are eaten up, they can be directly produced by function calls, without being stored in variables. A typical use could be
+  \begin{center}
+    \verb|sollya_lib_build_list(SOLLYA_CONST(1), SOLLYA_CONST(2), SOLLYA_CONST(3), NULL);|
+  \end{center}
+\item \verb|sollya_lib_v_build_list(va_list)|: the same as the previous functions, but with a \texttt{va\_list}.
+\end{itemize}
+
+Following the same conventions, end-elliptic lists can be constructed with the following functions:
+\begin{itemize}
+\item \verb|sollya_lib_end_elliptic_list(sollya_obj_t[] L, int n)|.
+\item \verb|sollya_lib_build_end_elliptic_list(sollya_obj_t obj1, ...)|.
+\item \verb|sollya_lib_v_build_end_elliptic_list(va_list)|.
+\end{itemize}
+
+\subsubsection{Structures}
+\label{creating_structures}
+\sollya structures are also available in library mode as any other \sollya object. However, there is currently no efficient way of creating structures in library mode. The only function available to create structures is\\
+\verb|sollya_lib_create_structure(sollya_obj_t *res, sollya_obj_t s, char *name, sollya_obj_t val)|.
+
+Three cases are possible. In all cases, the function creates a fresh object and stores it at the address referred by \texttt{res}. It returns $0$ in case of failure and a non-zero value in case of success.
+\begin{itemize}
+\item  If \texttt{s} is \texttt{NULL}: \texttt{*res} is filled with a structure with only one field. This field is named after the string \texttt{name} and contains a copy of the object \texttt{val}.
+\item If \texttt{s} is an already existing structure that have a field named after the string \texttt{name}: \texttt{*res} is filled with a newly created structure. This structure is the same as \texttt{s} except that the field corresponding to \texttt{name} contains a copy of \texttt{val}.
+\item If \texttt{s} is an already existing structure that does \textbf{not} have a field named after the string \texttt{name}: \texttt{*res} is filled with a newly created structure. This structure is the same as \texttt{s} except that it has been augmented with a field corresponding to \texttt{name} and that contains a copy of \texttt{val}.
+\end{itemize}
+Please note that \texttt{s} is not changed by this function: the structure stored in \texttt{*res} is a new one that does not refer to any of the components of \texttt{s}. As a consequence, one should not forget to explicitely clear \texttt{s} as well as \texttt{*res} when they become useless.
+
 \subsection{Getting the type of an object}
-Functions are available to test the type of a \sollya object. They are liste in Table~\ref{type_of_an_object}. They all return a non-zero integer if the test is true, and zero otherwise. Please note that from a typing point of view, a mathematical constant and a non-constant functional expression are both functions.
+Functions are provided that allow the users to test the type of a \sollya object. They are listed in Table~\ref{type_of_an_object}. They all return a non-zero integer if the test is true, and zero otherwise. Please note that from a typing point of view, a mathematical constant and a non-constant functional expression are both functions.
 
 \begin{table}[htp]
-  \caption{Testing the type of a \sollya object}
+  \caption{Testing the type of a \sollya object (Returns non-zero if true, 0 otherwise)}
   \label{type_of_an_object}
   \begin{center}
     \begin{tabular}{|l|}
@@ -1279,11 +1327,9 @@ Functions are available to test the type of a \sollya object. They are liste in 
       \verb|sollya_lib_obj_is_list(obj)| \\
       \verb|sollya_lib_obj_is_end_elliptic_list(obj)| \\
       \verb|sollya_lib_obj_is_structure(obj)| \\
-      \verb|sollya_lib_obj_is_error(obj)| \\
-      ~\\
+      \verb|sollya_lib_obj_is_error(obj)|\\[0.1cm]
       \hline
-      ~\\
-      \verb|sollya_lib_is_on(obj)| \\
+      \verb|sollya_lib_is_on(obj)|\phantom{\Large{$A^A$}} \\
       \verb|sollya_lib_is_off(obj)| \\
       \verb|sollya_lib_is_dyadic(obj)| \\
       \verb|sollya_lib_is_powers(obj)| \\
@@ -1320,11 +1366,119 @@ Functions are available to test the type of a \sollya object. They are liste in 
 \end{center}
 \end{table}
 
-If a \texttt{sollya\_obj\_t} contains a functional expression, one can decompose the expression tree using the following functions. These functions all return 0 in case of success (i.e. if the \texttt{sollya\_obj\_t} argument really contains a functional expression) and a non-zero value otherwise.
+\subsection{Recovering the value of a range}
+If a \verb|sollya_obj_t| is a range, it is possible to recover the values corresponding to the bounds of the range. The range can be recovered either as a \verb|mpfi_t| or as two \verb|mpfr_t| (one per bound). This is achieved by the following conversion functions:
+\begin{itemize}
+\item \verb|sollya_lib_get_interval_from_range(mpfi_t res, sollya_obj_t arg)|,
+\item \verb|sollya_lib_get_bounds_from_range(mpfr_t res_left, mpfr_t res_right, sollya_obj_t arg)|.
+\end{itemize}
+ They return 0 in case of failure (i.e. if the \verb|sollya_obj_t| is not a range) and a non-zero value in case of success. These functions follow the same conventions as those of the \verb|MPFR| and \verb|MPFI| libraries: the variables \verb|res|, \verb|res_left| and \verb|res_right| must be initialized beforehand, and are used to store the result of the conversion. Also, the functions \verb|sollya_lib_get_*_from_range| \textbf{do not change the internal precision} of \verb|res|, \verb|res_left| and \verb|res_right|. If the internal precision is sufficient to perform the conversion without rounding, then it is guaranteed to be exact. If, on the contrary, the internal precision is not sufficient, the actual bounds of the range stored in \verb|arg| will be rounded at the target precision using a rounding mode that ensures that the inclusion property remains valid, i.e. $\mathtt{arg} \subseteq \mathtt{res}$ (resp. $\mathtt{arg} \subseteq [\mathtt{res\_left}, \mathtt{res\_right}]$).
+
+The function  \verb|sollya_lib_get_prec_of_range(mp_prec_t *prec, sollya_obj_t arg)| stores in \verb|*prec| a precision that is guaranteed to be sufficient to represent the range stored in \verb|arg| without rounding. The returned value of this function is an \verb|int| that follows the same convention as above. In conclusion, here is an example of a completely safe conversion:
+
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+  ...
+  mp_prec_t prec;
+  mpfr_t a, b;
+
+  if (!sollya_lib_get_prec_of_range(&prec, arg)) {
+    sollya_lib_printf("Unexpected error: %b is not a range\n", arg);
+  }
+  else {
+    mpfr_init2(a, prec);
+    mpfr_init2(b, prec);
+    sollya_lib_get_bounds_from_range(a, b, arg);
+
+    /* Now [a, b] = arg exactly */
+  }
+  ...
+\end{Verbatim}
+\end{minipage}\end{center}
+
+\subsection{Recovering the value of a numerical constant or a constant expression}
+From a conceptual point of view, a numerical constant is nothing but a very simple constant functional expression. Hence there is no difference in \sollya between the way constants and constant expressions are handled. The functions presented in this Section allow one to recover the value of such constants or constant expressions into usual C data types.
+
+A constant expression being given, three cases are possible:
+\begin{itemize}
+\item \sollya manages to find a precision such that the value of the constant expression can be proven to be exactly representable (i.e., without rounding) at that precision. For instance numerical constants or simple expressions such as $(\exp(0)+5)/16$ fall in this category.
+\item The constant expressions would be exactly representable at some precision but \sollya does not manage to prove it either because the precision would be too big, or because the expression involves transcendental functions that simplify all-together, but in such a way that \sollya does not manage to prove it. An example would be $\sin(\pi/3)/\sqrt{3}$.
+\item Finally, a third possibility is that the value of the expression is not exactly representable at any precision on a binary floating-point number. Possible examples are $\pi$ or $1/10$.
+\end{itemize}
+
+From now on, we suppose that \verb|arg| is a \verb|sollya_obj_t| that contains a constant expression (or, as a particular case, a numerical constant). The general scheme followed by the conversion functions is the following: if \sollya manages to find a precision such that the the value of \verb|arg| is exactly representable at that precision, it first computes this exact value and then rounds it to the nearest number of the target format (tie-to-even). Otherwise, \sollya tries to automatically adapt its internal precision in order to ensure that the result of the conversion is one of both numbers in the target format that lie around the exact value (a faithful rounding). A warning message indicates that the conversion is not exact and that a faifhful rounding has been performed. On some cases really hard to evaluate, the algorithm can even fail to find a faithful rounding. In that case also, a warning message is emitted indicating that the result of the conversion should not be trusted. Let us remark that these messages can be caught instead of being displayed and adapted treatments can be provided by the user of the library at each emission of a warning (see Section \ref{}).
+
+The conversion functions are the following. The returned value is 0 if \verb|arg| is not a constant expression and a non-zero value otherwise.
+\begin{itemize}
+\item \verb|sollya_lib_get_constant_as_double(double *res, sollya_obj_t arg)|
+\item \verb|sollya_lib_get_constant_as_int(int *res, sollya_obj_t arg)|
+\item \verb|sollya_lib_get_constant_as_int64(int64_t *res, sollya_obj_t arg)|
+\item \verb|sollya_lib_get_constant_as_uint64(uint64_t *res, sollya_obj_t arg)|:
+\item \verb|sollya_lib_get_constant(mpfr_t res, sollya_obj_t arg)|: the result of the conversion is stored in \verb|res|. Please note that \verb|res| must be initialized beforehand and that its internal precision is not modified by the algorithm.
+\end{itemize}
+
+The function  \verb|sollya_lib_get_prec_of_constant(mp_prec_t *prec, sollya_obj_t arg)| tries to find a precision that would be sufficient to exactly represent the value of \verb|arg| without rounding. If it manages to find such a precision, it stores it in \verb|*prec| and return a non-zero value. If it does not manage to find such a precision, or if \verb|arg| is not a constant expression, it returns 0 and \verb|*prec| is left unchanged. In conclusion, here is an example of use for converting a constant expression to a \verb|mpfr_t|:
+
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+  ...
+  mp_prec_t prec;
+  mpfr_t a;
+  int test = 0;
+
+  test = sollya_lib_get_prec_of_constant(&prec, arg);
+  if (test) {
+    mpfr_init2(a, prec);
+    sollya_lib_get_constant(a, arg); /* Exact conversion */
+  }
+  else {
+    mpfr_init2(a, 165); /* Initialization at some default precision */
+    test = sollya_lib_get_constant(a, arg);
+    if (!test) {
+      sollya_lib_printf("Error: %b is not a constant expression\n", arg);
+    }
+  }
+  ...
+\end{Verbatim}
+\end{minipage}\end{center}
+
+\subsection{Converting a string from \sollya to C}
+If \verb|arg| is a \verb|sollya_obj_t| that contains a string, that string can be recovered using
+\begin{center}
+\verb|sollya_lib_get_string(char **res, sollya_obj_t arg)|.
+\end{center}
+If \verb|arg| really is a string, this function allocates enough memory on the heap to store the corresponding string, it copies the string at that newly allocated place, and set \verb|*res| so that it points to it. The function returns 0 if \verb|arg| is not a string and a non-zero integer otherwise.
+
+Since this function allocates memory on the heap, this memory should manually be cleared by the user with \verb|sollya_lib_free| once it becomes useless.
+
+\subsection{Converting a \sollya list to a C array}
+The function that allows the user to recover a C array of \verb|sollya_obj_t| objects from a \sollya list \verb|arg| is:
+\verb|sollya_lib_get_list_elements(sollya_obj_t **L, int *n, int *end_ell, sollya_obj_t arg)|.
+Three cases are possible:
+\begin{itemize}
+\item If \verb|arg| is a regular list of length $N$, the function allocates memory on the heap for $N$ \verb|sollya_obj_t|, sets \verb|*L| so that it points on that memory segment, and copies each of the elements $N$ of \verb|arg| at \verb|(*L)[0]|, \dots, \verb|(*L)[N-1]|. Finally, it sets \verb|*n| to $N$, \verb|*end_ell| to $0$ and returns a non-zero integer. A particular case is when \verb|arg| is the empty list: everything is the same except that no memory is allocated and \verb|*L| is left unchanged.
+\item If \verb|arg| is an end-elliptic list containing $N$ elements plus the ellipse. The function allocates memory on the heap for $N$ \verb|sollya_obj_t|, sets \verb|*L| so that it points on that memory segment, and copies each of the elements $N$ of \verb|arg| at \verb|(*L)[0]|, \dots, \verb|(*L)[N-1]|. Finally, it sets \verb|*n| to $N$, \verb|*end_ell| to $1$ and returns a non-zero integer. The only difference between a regular list and an end-elliptic list containing the same elements is hence that \verb|*end_ell| is set to $1$ in the latter.
+\item If \verb|arg| is neither a regular nor an end-elliptic list, \verb|*L|, \verb|*n| and \verb|*end_ell| are left unchanged and the function returns $0$.
+\end{itemize}
+
+\subsection{Recovering the content of a \sollya structure}
+If \verb|arg| is a \verb|sollya_obj_t| that contains a structure, the content of a given field can be recovered using
+\begin{center}
+\verb|sollya_lib_get_element_in_structure(sollya_obj_t *res, char *name, sollya_obj_t arg)|.
+\end{center}
+If \verb|arg| really is a structure and if that structure has a field named after the string \verb|name|, this function copies the content of that field into the \sollya object \verb|*res|. The function returns 0 if \verb|arg| is not a structure or if it does not have a field named after \verb|verb|, and it returns a non-zero integer otherwise.
+
+It is also possible to get all the field names and their content. This is achieved through the function
+\begin{center}
+\verb|sollya_lib_get_structure_elements(char ***names, sollya_obj_t **objs, int *n,|\\
+\verb|                                  sollya_obj_t arg).                         |
+\end{center}
+If \verb|arg| really is a structure, say with $N$ fields called ``fieldA'', \dots, ``fieldZ'', this functions sets \verb|*n| to~$N$, allocates and fills an array of $N$ strings and sets \verb|*names| so that it points to that segment of memory (hence \verb|(*names)[0]| is the string ``fieldA'', \dots, \verb|(*names)[N-1]| is the string ``fieldZ''). Moreover, it allocates memory for $N$ \verb|sollya_obj_t|, sets \verb|*objs| so that it points on that memory segment, and copies the content of each of the $N$ fields at \verb|(*objs)[0]|, \dots, \verb|(*objs)[N-1]|. Finally it returns a non-zero integer. If \verb|arg| is not a structure, the function simply returns 0 without doing anything. Please note that since \verb|*names| and \verb|*objs| point on memory segments that have been dynamically allocated, they should manually be cleared by the user with \verb|sollya_lib_free| once they become useless.
+
+\subsection{Decomposing a functional expression}
+If a \texttt{sollya\_obj\_t} contains a functional expression, one can decompose the expression tree using the following functions. These functions all return a non-zero value in case of success (i.e. if the \texttt{sollya\_obj\_t} argument really contains a functional expression) and zero otherwise.
 
 \begin{itemize}
 \item \verb|sollya_lib_get_function_arity(int *n, sollya_obj_t f)|: it stores the arity of \texttt{f} at the address referred by \texttt{n}. Currently, the mathematical functions handled in \sollya are at most dyadic. Mathematical constants are considered as a 0-adic functions.
-\item \verb|sollya_lib_get_head_function(sollya_base_function_t *type, sollya_obj_t f)|: it stores the type of \texttt{f} at the address referred by \texttt{type}. The \texttt{sollya\_base\_function\_t} is an enum type listing all possible cases (see Table~\ref{}).
+\item \verb|sollya_lib_get_head_function(sollya_base_function_t *type, sollya_obj_t f)|: it stores the type of \texttt{f} at the address referred by \texttt{type}. The \texttt{sollya\_base\_function\_t} is an enum type listing all possible cases (see Table~\ref{list_of_sollya_base_function_t}).
 \item \verb|sollya_lib_get_subfunctions(sollya_obj_t f, int *n, ...)|: let us denote by \texttt{g\_1},\dots,\texttt{g\_k} the arguments after \texttt{n}. They must be of type \verb|sollya_obj_t *|. The function stores the arity of \texttt{f} at the address referred by \texttt{n}. Suppose that \texttt{f} contains an expression of the form $f_0(f_1,\dots,f_s)$. For each $i$ from $1$ to $s$, the function stores the expression corresponding to $f_i$ at the address referred by \texttt{g\_i}, unless one of the \texttt{g\_i} is \texttt{NULL} in which case the function returns when encountering it. In practice, it means that the users should always put \texttt{NULL} as last argument, in order to prevent the case when they would not provide enough variables \texttt{g\_i}. They can check afterwards that they provided enough variables by checking the value contained at the address referred by \texttt{n}. If users do not put \texttt{NULL} as last argument and do not provide enough variables \texttt{g\_i}, the algorithm will continue storing arguments at random places in the memory. Please note that the objects that have been stored in variables \texttt{g\_i} must manually be cleared once they become useless.
 \item \verb|sollya_lib_v_get_subfunctions(sollya_obj_t f, int *n, va_list va)|: the same as the previous function, but with a \texttt{va\_list}.
 \item \verb|sollya_lib_decompose_function(sollya_obj_t f, sollya_base_function_t *type,|\\
@@ -1332,7 +1486,7 @@ If a \texttt{sollya\_obj\_t} contains a functional expression, one can decompose
 this function is a all-in-one function equivalent to using \verb|sollya_lib_get_head_function| and \verb|sollya_lib_get_subfunctions| in only one function call.
 \item \verb|sollya_lib_v_decompose_function(sollya_obj_t f, sollya_base_function_t *type,|\\
       \verb|                                int *n, va_list va)|:\\
- it simply is the \texttt{va\_list} version of the previous function.
+the same as the previous function, but with a \texttt{va\_list}.
 \end{itemize}
 
 As an example of use of these functions, the following code returns $1$ if \texttt{f} denotes a functional expression made only of constants (i.e. without the free variable), and returns $0$ otherwise:
@@ -1340,7 +1494,7 @@ As an example of use of these functions, the following code returns $1$ if \text
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 #include <sollya.h>
 
-/* Note: we suppose that the library has already been initilized */
+/* Note: we suppose that the library has already been initialized */
 int is_made_of_constants(sollya_obj_t f) {
   sollya_obj_t tmp1, tmp2;
   int n, r, res;
@@ -1360,16 +1514,120 @@ int is_made_of_constants(sollya_obj_t f) {
       case SOLLYA_BASE_FUNC_CONSTANT: return 1;
       default:
         res = is_made_of_constants(tmp1);
-        if ((res) && (n==2)) res = is_made_of_constants(tmp1);
+        if ((res) && (n==2)) res = is_made_of_constants(tmp2);
     }
   }
 
   sollya_lib_clear_obj(tmp1);
-  if (n == 2) sollya_lib_clear_obj(tmp2);
+  if (n >= 2) sollya_lib_clear_obj(tmp2);
   return res;
 }
 \end{Verbatim}
 \end{minipage}\end{center}
+
+\begin{table}[htp]
+\caption{List of values defined in type \texttt{sollya\_base\_function\_t}}
+\label{list_of_sollya_base_function_t}
+\begin{center}
+  \begin{tabular}{|c|l|l|}
+    \hline
+  \verb|SOLLYA_BASE_FUNC_ABS| \\
+  \verb|SOLLYA_BASE_FUNC_ACOS| \\
+  \verb|SOLLYA_BASE_FUNC_ACOSH| \\
+  \verb|SOLLYA_BASE_FUNC_ADD| \\
+  \verb|SOLLYA_BASE_FUNC_ASIN| \\
+  \verb|SOLLYA_BASE_FUNC_ASINH| \\
+  \verb|SOLLYA_BASE_FUNC_ATAN| \\
+  \verb|SOLLYA_BASE_FUNC_ATANH| \\
+  \verb|SOLLYA_BASE_FUNC_CEIL| \\
+  \verb|SOLLYA_BASE_FUNC_CONSTANT| \\
+  \verb|SOLLYA_BASE_FUNC_COS| \\
+  \verb|SOLLYA_BASE_FUNC_COSH| \\
+  \verb|SOLLYA_BASE_FUNC_DIV| \\
+  \verb|SOLLYA_BASE_FUNC_DOUBLE| \\
+  \verb|SOLLYA_BASE_FUNC_DOUBLEDOUBLE| \\
+  \verb|SOLLYA_BASE_FUNC_DOUBLEEXTENDED| \\
+  \verb|SOLLYA_BASE_FUNC_ERF| \\
+  \verb|SOLLYA_BASE_FUNC_ERFC| \\
+  \verb|SOLLYA_BASE_FUNC_EXP| \\
+  \verb|SOLLYA_BASE_FUNC_EXP_M1| \\
+  \verb|SOLLYA_BASE_FUNC_FLOOR| \\
+  \verb|SOLLYA_BASE_FUNC_FREE_VARIABLE| \\
+  \verb|SOLLYA_BASE_FUNC_HALFPRECISION| \\
+  \verb|SOLLYA_BASE_FUNC_LIBRARYCONSTANT| \\
+  \verb|SOLLYA_BASE_FUNC_LIBRARYFUNCTION| \\
+  \verb|SOLLYA_BASE_FUNC_LOG| \\
+  \verb|SOLLYA_BASE_FUNC_LOG_10| \\
+  \verb|SOLLYA_BASE_FUNC_LOG_1P| \\
+  \verb|SOLLYA_BASE_FUNC_LOG_2| \\
+  \verb|SOLLYA_BASE_FUNC_MUL| \\
+  \verb|SOLLYA_BASE_FUNC_NEARESTINT| \\
+  \verb|SOLLYA_BASE_FUNC_NEG| \\
+  \verb|SOLLYA_BASE_FUNC_PI| \\
+  \verb|SOLLYA_BASE_FUNC_POW| \\
+  \verb|SOLLYA_BASE_FUNC_PROCEDUREFUNCTION| \\
+  \verb|SOLLYA_BASE_FUNC_QUAD| \\
+  \verb|SOLLYA_BASE_FUNC_SIN| \\
+  \verb|SOLLYA_BASE_FUNC_SINGLE| \\
+  \verb|SOLLYA_BASE_FUNC_SINH| \\
+  \verb|SOLLYA_BASE_FUNC_SQRT| \\
+  \verb|SOLLYA_BASE_FUNC_SUB| \\
+  \verb|SOLLYA_BASE_FUNC_TAN| \\
+  \verb|SOLLYA_BASE_FUNC_TANH| \\
+  \verb|SOLLYA_BASE_FUNC_TRIPLEDOUBLE| \\
+\hline
+  \end{tabular}
+\end{center}
+\end{table}
+
+\subsection{Faithfully evaluate a functional expression}
+Let us suppose that \verb|f| is a functional expression and \verb|a| is a numerical value or a constant expression. One of the very convenient features of the interactive tool is that the users can simply write \verb|f(a)| at the prompt: the tool automatically adapts its internal precision in order to compute a value that is a faithful rounding (at the current tool precision) of the true value $f(a)$. Sometimes it does not achieve to find a faithful rounding, but in any case, if the result is not proven to be exact, a warning is displayed explaining how confident one should be with respect to the returned value. This feature is made available within the library with the two following functions:
+\begin{itemize}
+\item \verb|sollya_lib_evaluate_function_at_constant_expression(mpfr_t res, sollya_obj_t f,|\\
+      \verb|                                                    sollya_obj_t a, mpfr_t *cutoff)|,
+\item \verb|sollya_lib_evaluate_function_at_point(mpfr_t res, sollya_obj_t f,|\\
+      \verb|                                      mpfr_t a, mpfr_t *cutoff)|.
+\end{itemize}
+In the former, the argument \verb|a| is any \verb|sollya_obj_t| containing a numerical constant or a constant expression, while in the latter \verb|a| is a constant already stored in a \verb|mpfr_t|. These functions store the result in \verb|res| and return a \verb|fp_eval_result_t| which is an enum type described in Table~\ref{list_of_fp_eval_result_t}. In order to understand the role of the \verb|cutoff| parameter and the value returned by the function, it is necessary to describe the algorithm in a nutshell:
+\begin{enumerate}
+\item[\textbf {Input:} ] a functional expression \verb|f|, a constant expression \verb|a|, a target precision $q$, a parameter $\varepsilon$.
+\item Choose an initial working precision $p$.
+\item Evaluate \verb|a| by interval arithmetic, performing the computations at precision $p$.
+\item Replace the occurrences of the free variable in \verb|f| by the interval obtained at step 2. Evaluate the resulting expression by interval arithmetic, performing the computations at precision $p$. This yields an interval $I$.
+\item If $I$ only contains one floating-point number of precision $q$:
+  \begin{enumerate}
+  \item Then return this number.
+  \item Else if all numbers in $I$ are smaller than $\varepsilon$ in absolute value, then return $0$.
+  \item Else if $p$ has already been increased many times, then return the middle of $I$.
+  \item Else, increase $p$ and go back to step 2.
+  \end{enumerate}
+\end{enumerate}
+
+The target precision $q$ is chosen to be the precision of the \verb|mpfr_t| variable \verb|res|. The parameter $\varepsilon$ corresponds to the parameter \verb|cutoff|. The reason why \verb|cutoff| is a pointer is that, most of the time, the user does not want to provide it, and using a pointer makes it possible to pass \verb|NULL| as argument. So, if \verb|NULL| is given, $\varepsilon$ is set to $0$. If \verb|cutoff| is not \verb|NULL|, the absolute value of \verb|*cutoff| is used as value for $\varepsilon$. Using a non-zero value for $\varepsilon$ can be useful when one does not care about the precise value of $f(a)$ whenever its absolute value is below a given threshold. Typically, if one wants to compute the maximum of $|f(a_1)|$, \dots, $|f(a_n)|$, it is not necessary to spend too much effort on the computation of $|f(a_i)|$ is one already knows that it is smaller than $\varepsilon = \max \{|f(a_1)|,\dots,|f(a_{i-1})|\}$.
+\begin{table}[htp]
+\caption{List of values defined in type \texttt{fp\_eval\_result\_t}}
+\label{list_of_fp_eval_result_t}
+\begin{center}
+  \begin{tabular}{|l|p{7cm}|}
+    \hline
+    \hfil\phantom{\Large{$A^A$}}Value\phantom{\Large{$A^A$}}\hfil & \hfil Meaning\hfil \\ \hline
+  \verb|FP_EVAL_OBJ_NO_FUNCTION| & \verb|f| is not a functional expression.\\[0.3cm]
+  \verb|FP_EVAL_FAITHFUL| & The algorithm ended up at step (a) with a finite value.\\[0.3cm]
+  \verb|FP_EVAL_BELOW_CUTOFF| & The algorithm ended up at step (b).\\[0.3cm]
+  \verb|FP_EVAL_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD| & The algorithm ended up at step (c) and $I$ was an interval of the form $[-\delta_1,\,\delta_2]$ where the $\delta_i$ are positive and very small (below some threshold of the algorithm). This typically happens when $f(a)$ exactly equals zero, but the algorithm does not manage to prove this exact equality.\\[0.3cm]
+  \verb|FP_EVAL_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD| & The algorithm ended up at step (c) with an interval $I$ containing $0$ but too big to fall in the above case. In general, this should be considered as a case of failure and the value stored in \verb|res| might be completely irrelevant.\\[0.3cm]
+  \verb|FP_EVAL_NOT_FAITHFUL_ZERO_NOT_CONTAINED| & The algorithm ended up at step (c) with an interval $I$ that does not contain $0$. In general, this should be considered as a case of failure and the value stored in \verb|res| might be completely irrelevant.\\[0.3cm]
+  \verb|FP_EVAL_NOT_FAITHFUL_INFINITY_CONTAINED| & The algorithm ended up at step (c) and (at least) one of the bounds of $I$ was infinite. This typically happens when the set of limit points of $f(x)$ as $x$ goes to $a$ contain an infinity.\\[0.3cm]
+  \verb|FP_EVAL_INFINITY| & The algorithm ended up at step (a) with $I$ of the form $[+\infty, +\infty]$ or $[-\infty, -\infty]$. Hence $f(a)$ is proved to be an exact infinity.\\[0.3cm]
+  \verb|FP_EVAL_FAILURE| & The algorithm ended up at step (c) and $I$ contained NaN. This typically happens when $a$ is not in the definition domain of $f$.\\[0.3cm]
+  \verb|FP_EVAL_CUTOFF_IS_NAN| & \verb|cutoff| was not \verb|NULL| but the value of \verb|*cutoff| is NaN.\\[0.3cm]
+  \verb|FP_EVAL_EXPRESSION_NOT_CONSTANT| & \verb|a| is not a constant expression.\\
+\hline
+  \end{tabular}
+\end{center}
+\end{table}
+
+%ia_eval_result_t sollya_lib_evaluate_function_over_interval(mpfi_t, sollya_obj_t, mpfi_t);
 
 \subsection{Name of the free variable}
 The default name for the free variable is the same in the library and in the interactive tool: it is \texttt{\_x\_}. In the interactive tool, this name is automatically changed at the first use of an undefined symbol. Accordingly in library mode, if an object is defined by \texttt{sollya\_lib\_parse\_string} with an expression containing an undefined symbol, that symbol will become the free variable name if it has not already been changed before. But what if one does not use \texttt{sollya\_lib\_parse\_string} (because it is not efficient) but one wants to change the name of the free variable? The name can be changed with \texttt{sollya\_lib\_name\_free\_variable("some\_name")}.
@@ -1388,7 +1646,7 @@ Each command or function accepting a variable number of arguments comes with a \
 #include <sollya.h>
 #include <stdarg.h>
 
-/* Note: we suppose that the library has already been initilized */
+/* Note: we suppose that the library has already been initialized */
 void my_function(sollya_obj_t f, sollya_obj_t I, ...) {
   sollya_obj_t n, res;
   int i;
