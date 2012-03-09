@@ -550,5 +550,6 @@ static const messageEntry messageTextsTable[] = {
 /* Declaration of the function translating message numbers to texts */
 char *messageNumberToText(int);
 int messageNumberExists(int);
+int getMessageId(sollya_msg_t);
 
 #endif /* ifdef SOLLYA_MESSAGING_H*/

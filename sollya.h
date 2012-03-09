@@ -212,9 +212,13 @@ extern "C" {
   /* Functions to install and uninstall a call-back for the messages
      emitted by the Sollya core.  
   */
-  int sollya_lib_install_msg_callback(int (*) (int));
+  int sollya_lib_install_msg_callback(int (*) (sollya_msg_t));
   int sollya_lib_uninstall_msg_callback();
-  int (*sollya_lib_get_msg_callback())(int);
+  int (*sollya_lib_get_msg_callback())(sollya_msg_t);
+
+  /* A function to get a numerical message id out of the opaque
+     sollya_msg_t object 
+  */
   int sollya_lib_get_msg_id(sollya_msg_t);
 
   /* A function to translate a message (as received by the message

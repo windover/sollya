@@ -103,3 +103,7 @@ int messageNumberExists(int msgNum) {
 
   return 0;
 }
+
+int getMessageId(sollya_msg_t msg) {
+  return msg.msg_id;
+}

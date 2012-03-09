@@ -120,7 +120,7 @@ int sollya_lib_close() {
   return finalizeLibraryMode();
 }
 
-int sollya_lib_install_msg_callback(int (*callback_func) (int)) {
+int sollya_lib_install_msg_callback(int (*callback_func) (sollya_msg_t)) {
   return installMessageCallback(callback_func);
 }
 
@@ -128,16 +128,16 @@ int sollya_lib_uninstall_msg_callback() {
   return uninstallMessageCallback();
 }
 
-int (*sollya_lib_get_msg_callback())(int) {
+int (*sollya_lib_get_msg_callback())(sollya_msg_t) {
   return getMessageCallback();
 }
 
 int sollya_lib_get_msg_id(sollya_msg_t msg) {
-  return msg.msg_id;
+  return getMessageId(msg);
 }
 
 char *sollya_lib_msg_to_text(sollya_msg_t msg) {
-  return messageNumberToText(msg.msg_id);
+  return messageNumberToText(getMessageId(msg));
 }
 
 int sollya_lib_printf(const char *format, ...) {
