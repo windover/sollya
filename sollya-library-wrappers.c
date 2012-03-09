@@ -60,6 +60,7 @@
 #include "chain.h"
 #include "assignment.h"
 #include "mpfi-compat.h"
+#include "sollya-messaging.h"
 #include "sollya-library-wrappers.h"
 
 /* Some helper macros */
@@ -131,8 +132,12 @@ int (*sollya_lib_get_msg_callback())(int) {
   return getMessageCallback();
 }
 
-char *sollya_lib_msg_number_to_text(int msgNum) {
-  return messageNumberToText(msgNum);
+int sollya_lib_get_msg_id(sollya_msg_t msg) {
+  return msg.msg_id;
+}
+
+char *sollya_lib_msg_to_text(sollya_msg_t msg) {
+  return messageNumberToText(msg.msg_id);
 }
 
 int sollya_lib_printf(const char *format, ...) {
@@ -3061,7 +3066,7 @@ int sollya_lib_create_structure(sollya_obj_t *object, sollya_obj_t obj1, char *i
   return 1;
 }
 
-fp_eval_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t obj1, mpfr_t x, mpfr_t *cutoff) {
+sollya_fp_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t obj1, mpfr_t x, mpfr_t *cutoff) {
   int res;
   mpfr_t myCutOff;
   sollya_mpfi_t xInt, yInt;
@@ -3072,7 +3077,7 @@ fp_eval_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t ob
   /* Check if object is a function */
   if (!isPureTree(obj1)) {
     mpfr_set_nan(y);
-    return FP_EVAL_OBJ_NO_FUNCTION;
+    return SOLLYA_FP_OBJ_NO_FUNCTION;
   }
 
   /* Determine start precision */
@@ -3085,7 +3090,7 @@ fp_eval_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t ob
   } else {
     if (mpfr_nan_p(*cutoff)) {
       mpfr_set_nan(y);
-      return FP_EVAL_CUTOFF_IS_NAN;
+      return SOLLYA_FP_CUTOFF_IS_NAN;
     }
     mpfr_init2(myCutOff, mpfr_get_prec(*cutoff));
     mpfr_abs(myCutOff, *cutoff, GMP_RNDN);
@@ -3101,12 +3106,12 @@ fp_eval_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t ob
   switch (res) {
   case 1:
     /* Faithful rounding was possible */
-    return FP_EVAL_FAITHFUL;
+    return SOLLYA_FP_FAITHFUL;
     break;
   case 2:
     /* Result was shown to be smaller than cutoff */
     mpfr_set_ui(y,0,GMP_RNDN); /* Set to zero because we are below the cutoff */
-    return FP_EVAL_BELOW_CUTOFF;
+    return SOLLYA_FP_BELOW_CUTOFF;
     break;
   default:
     break;
@@ -3145,13 +3150,13 @@ fp_eval_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t ob
     mpfr_set(y, yLeft, GMP_RNDN); /* Copying an infinity */
     mpfr_clear(yLeft);
     mpfr_clear(yRight);
-    return FP_EVAL_INFINITY;
+    return SOLLYA_FP_INFINITY;
   }
 
   /* Check if one of the bounds is a NaN */
   if (mpfr_nan_p(yLeft) || mpfr_nan_p(yRight)) {
     mpfr_set_nan(y);
-    return FP_EVAL_FAILURE;
+    return SOLLYA_FP_FAILURE;
   }
 
   /* Check if we have an infinity left over */
@@ -3165,7 +3170,7 @@ fp_eval_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t ob
     mpfr_div_2ui(y, yLeft, 1, GMP_RNDN);
     mpfr_clear(yLeft);
     mpfr_clear(yRight);
-    return FP_EVAL_NOT_FAITHFUL_INFINITY_CONTAINED;
+    return SOLLYA_FP_NOT_FAITHFUL_INFINITY_CONTAINED;
   }
 
   /* Here, both bounds of the proof interval are numbers.
@@ -3194,7 +3199,7 @@ fp_eval_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t ob
       mpfr_set_ui(y,0,GMP_RNDN);
       mpfr_clear(yLeft);
       mpfr_clear(yRight);
-      return FP_EVAL_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD;
+      return SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD;
     } 
     mpfr_clear(threshold);
 
@@ -3207,7 +3212,7 @@ fp_eval_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t ob
     mpfr_div_2ui(y, yLeft, 1, GMP_RNDN);
     mpfr_clear(yLeft);
     mpfr_clear(yRight);
-    return FP_EVAL_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD; 
+    return SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD; 
   }
 
   /* Here, zero is not in the proof interval. Take the approximate
@@ -3219,10 +3224,10 @@ fp_eval_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t ob
   mpfr_div_2ui(y, yLeft, 1, GMP_RNDN);
   mpfr_clear(yLeft);
   mpfr_clear(yRight);
-  return FP_EVAL_NOT_FAITHFUL_ZERO_NOT_CONTAINED;
+  return SOLLYA_FP_NOT_FAITHFUL_ZERO_NOT_CONTAINED;
 }
 
-fp_eval_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y, sollya_obj_t obj1, sollya_obj_t x, mpfr_t *cutoff) {
+sollya_fp_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y, sollya_obj_t obj1, sollya_obj_t x, mpfr_t *cutoff) {
   int res;
   mpfr_t myCutOff;
   sollya_mpfi_t xInt, yInt;
@@ -3234,13 +3239,13 @@ fp_eval_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y, s
   /* Check if object is a function */
   if ((!isPureTree(obj1)) || (!isPureTree(x))) {
     mpfr_set_nan(y);
-    return FP_EVAL_OBJ_NO_FUNCTION;
+    return SOLLYA_FP_OBJ_NO_FUNCTION;
   }
   
   /* Check if abscissa expression is constant */
   if (!isConstant(x)) {
     mpfr_set_nan(y);
-    return FP_EVAL_EXPRESSION_NOT_CONSTANT;
+    return SOLLYA_FP_EXPRESSION_NOT_CONSTANT;
   }
 
   /* Determine start precision */
@@ -3253,7 +3258,7 @@ fp_eval_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y, s
   } else {
     if (mpfr_nan_p(*cutoff)) {
       mpfr_set_nan(y);
-      return FP_EVAL_CUTOFF_IS_NAN;
+      return SOLLYA_FP_CUTOFF_IS_NAN;
     }
     mpfr_init2(myCutOff, mpfr_get_prec(*cutoff));
     mpfr_abs(myCutOff, *cutoff, GMP_RNDN);
@@ -3269,12 +3274,12 @@ fp_eval_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y, s
   switch (res) {
   case 1:
     /* Faithful rounding was possible */
-    return FP_EVAL_FAITHFUL;
+    return SOLLYA_FP_FAITHFUL;
     break;
   case 2:
     /* Result was shown to be smaller than cutoff */
     mpfr_set_ui(y,0,GMP_RNDN); /* Set to zero because we are below the cutoff */
-    return FP_EVAL_BELOW_CUTOFF;
+    return SOLLYA_FP_BELOW_CUTOFF;
     break;
   default:
     break;
@@ -3317,13 +3322,13 @@ fp_eval_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y, s
     mpfr_set(y, yLeft, GMP_RNDN); /* Copying an infinity */
     mpfr_clear(yLeft);
     mpfr_clear(yRight);
-    return FP_EVAL_INFINITY;
+    return SOLLYA_FP_INFINITY;
   }
 
   /* Check if one of the bounds is a NaN */
   if (mpfr_nan_p(yLeft) || mpfr_nan_p(yRight)) {
     mpfr_set_nan(y);
-    return FP_EVAL_FAILURE;
+    return SOLLYA_FP_FAILURE;
   }
 
   /* Check if we have an infinity left over */
@@ -3337,7 +3342,7 @@ fp_eval_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y, s
     mpfr_div_2ui(y, yLeft, 1, GMP_RNDN);
     mpfr_clear(yLeft);
     mpfr_clear(yRight);
-    return FP_EVAL_NOT_FAITHFUL_INFINITY_CONTAINED;
+    return SOLLYA_FP_NOT_FAITHFUL_INFINITY_CONTAINED;
   }
 
   /* Here, both bounds of the proof interval are numbers.
@@ -3366,7 +3371,7 @@ fp_eval_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y, s
       mpfr_set_ui(y,0,GMP_RNDN);
       mpfr_clear(yLeft);
       mpfr_clear(yRight);
-      return FP_EVAL_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD;
+      return SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD;
     } 
     mpfr_clear(threshold);
 
@@ -3379,7 +3384,7 @@ fp_eval_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y, s
     mpfr_div_2ui(y, yLeft, 1, GMP_RNDN);
     mpfr_clear(yLeft);
     mpfr_clear(yRight);
-    return FP_EVAL_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD; 
+    return SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD; 
   }
 
   /* Here, zero is not in the proof interval. Take the approximate
@@ -3391,10 +3396,10 @@ fp_eval_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y, s
   mpfr_div_2ui(y, yLeft, 1, GMP_RNDN);
   mpfr_clear(yLeft);
   mpfr_clear(yRight);
-  return FP_EVAL_NOT_FAITHFUL_ZERO_NOT_CONTAINED;
+  return SOLLYA_FP_NOT_FAITHFUL_ZERO_NOT_CONTAINED;
 }
 
-ia_eval_result_t sollya_lib_evaluate_function_over_interval(mpfi_t y, sollya_obj_t obj1, mpfi_t op_x) {
+int sollya_lib_evaluate_function_over_interval(mpfi_t y, sollya_obj_t obj1, mpfi_t op_x) {
   sollya_mpfi_t myY, myPointY, x;
   mpfr_t xLeft, xRight, yLeft, yRight, myCutOff;
   mp_prec_t prec, p;
@@ -3402,7 +3407,7 @@ ia_eval_result_t sollya_lib_evaluate_function_over_interval(mpfi_t y, sollya_obj
   /* Check if object is a function */
   if (!isPureTree(obj1)) {
     sollya_mpfi_set_nan(y);
-    return INT_EVAL_OBJ_NO_FUNCTION;
+    return 0;
   }
 
   /* Convert entering mpfi_t interval to sollya_mpfi_t */
@@ -3457,13 +3462,8 @@ ia_eval_result_t sollya_lib_evaluate_function_over_interval(mpfi_t y, sollya_obj
   /* Clear our sollya_mpfi_t copy of the entering interval */
   sollya_mpfi_clear(x);
 
-  /* Return evaluation status result as a function of the result */
-  if (sollya_mpfi_bounded_p(y)) return INT_EVAL_BOUNDED;
-  if (sollya_mpfi_has_nan(y)) return INT_EVAL_FAILURE;
-  if (sollya_mpfi_has_infinity(y)) return INT_EVAL_UNBOUNDED;
-
-  /* Just in case we missed something */
-  return INT_EVAL_FAILURE;
+  /* Indicate success, independently if we produced NaN or an interval */
+  return 1;
 }
 
 sollya_obj_t sollya_lib_get_object_list_head(sollya_obj_list_t list) {

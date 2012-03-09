@@ -65,6 +65,14 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "execute.h"
 #include "mpfi-compat.h"
 
+typedef node * sollya_obj_t;
+typedef chain * sollya_obj_list_t;
+typedef chain * sollya_constant_list_t;
+typedef chain * sollya_interval_list_t;
+typedef chain * sollya_int_list_t;
+typedef chain * sollya_string_list_t;
+typedef chain * sollya_boolean_list_t;
+
 /* Here is where things actually do happen */
 #include "sollya.h"
 

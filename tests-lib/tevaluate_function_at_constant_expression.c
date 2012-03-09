@@ -3,30 +3,30 @@
 #include <sollya.h>
 
 
-const char *get_status(fp_eval_result_t s) {
+const char *get_status(sollya_fp_result_t s) {
   switch(s) {
-  case FP_EVAL_OBJ_NO_FUNCTION:
-    return "status: FP_EVAL_OBJ_NO_FUNCTION";
-  case FP_EVAL_FAITHFUL:
-    return "status: FP_EVAL_FAITHFUL";
-  case FP_EVAL_BELOW_CUTOFF:
-    return "status: FP_EVAL_BELOW_CUTOFF";
-  case FP_EVAL_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD:
-    return "status: FP_EVAL_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD";
-  case FP_EVAL_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD:
-    return "status: FP_EVAL_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD";
-  case FP_EVAL_NOT_FAITHFUL_ZERO_NOT_CONTAINED:
-    return "status: FP_EVAL_NOT_FAITHFUL_ZERO_NOT_CONTAINED";
-  case FP_EVAL_NOT_FAITHFUL_INFINITY_CONTAINED:
-    return "status: FP_EVAL_NOT_FAITHFUL_INFINITY_CONTAINED";
-  case FP_EVAL_INFINITY:
-    return "status: FP_EVAL_INFINITY";
-  case FP_EVAL_FAILURE:
-    return "status: FP_EVAL_FAILURE";
-  case FP_EVAL_CUTOFF_IS_NAN:
-    return "status: FP_EVAL_CUTOFF_IS_NAN";
-  case FP_EVAL_EXPRESSION_NOT_CONSTANT:
-    return "status: FP_EVAL_EXPRESSION_NOT_CONSTANT";
+  case SOLLYA_FP_OBJ_NO_FUNCTION:
+    return "status: SOLLYA_FP_OBJ_NO_FUNCTION";
+  case SOLLYA_FP_FAITHFUL:
+    return "status: SOLLYA_FP_FAITHFUL";
+  case SOLLYA_FP_BELOW_CUTOFF:
+    return "status: SOLLYA_FP_BELOW_CUTOFF";
+  case SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD:
+    return "status: SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD";
+  case SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD:
+    return "status: SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD";
+  case SOLLYA_FP_NOT_FAITHFUL_ZERO_NOT_CONTAINED:
+    return "status: SOLLYA_FP_NOT_FAITHFUL_ZERO_NOT_CONTAINED";
+  case SOLLYA_FP_NOT_FAITHFUL_INFINITY_CONTAINED:
+    return "status: SOLLYA_FP_NOT_FAITHFUL_INFINITY_CONTAINED";
+  case SOLLYA_FP_INFINITY:
+    return "status: SOLLYA_FP_INFINITY";
+  case SOLLYA_FP_FAILURE:
+    return "status: SOLLYA_FP_FAILURE";
+  case SOLLYA_FP_CUTOFF_IS_NAN:
+    return "status: SOLLYA_FP_CUTOFF_IS_NAN";
+  case SOLLYA_FP_EXPRESSION_NOT_CONSTANT:
+    return "status: SOLLYA_FP_EXPRESSION_NOT_CONSTANT";
   default:
     fprintf(stderr, "Unexpected case. Exiting.\n");
     exit(1);
@@ -35,7 +35,7 @@ const char *get_status(fp_eval_result_t s) {
 
 /* tester cutoff = NaN, +inf, négatif */
 int main(void) {
-  fp_eval_result_t res;
+  sollya_fp_result_t res;
   sollya_obj_t f, x, powers;
   mpfr_t y, cutoff;
 

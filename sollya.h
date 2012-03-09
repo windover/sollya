@@ -96,9 +96,9 @@ extern "C" {
      to know that in the end of the following #if block, a
      type 
 
-     sollya_obj_t
+     sollya_obj_t,
 
-     and types
+     types
 
      sollya_obj_list_t         (list of Sollya objects)
      sollya_constant_list_t    (list of MPFRs)
@@ -107,24 +107,16 @@ extern "C" {
      sollya_string_list_t      (list of char *s)
      sollya_boolean_list_t     (list of ints as booleans)
 
+     and the type
+
+     sollya_msg_t
+
      are defined. These types represent the different objects the Sollya
      library is able to handle and objects that can be chained together.
 
    */
-#if (defined(__SOLLYA_NODE_TYPE_ALREADY_DEFINED) && (__SOLLYA_NODE_TYPE_ALREADY_DEFINED))
-  typedef node * sollya_obj_t;
-  typedef chain * sollya_obj_list_t;
-  typedef chain * sollya_constant_list_t;
-  typedef chain * sollya_interval_list_t;
-  typedef chain * sollya_int_list_t;
-  typedef chain * sollya_string_list_t;
-  typedef chain * sollya_boolean_list_t;
-#else
+#if (!(defined(__SOLLYA_NODE_TYPE_ALREADY_DEFINED) && (__SOLLYA_NODE_TYPE_ALREADY_DEFINED)))
   typedef struct __sollya_internal_type_chain_struct __sollya_internal_type_chain;
-  struct __sollya_internal_type_chain_struct {
-    void *value;
-    __sollya_internal_type_chain *next;
-  };
 
   typedef __sollya_internal_type_chain * sollya_obj_list_t;
   typedef __sollya_internal_type_chain * sollya_constant_list_t;
@@ -133,63 +125,29 @@ extern "C" {
   typedef __sollya_internal_type_chain * sollya_string_list_t;
   typedef __sollya_internal_type_chain * sollya_boolean_list_t;
 
-  typedef struct __sollya_internal_type_library_function_struct __sollya_internal_type_library_function;
-  struct __sollya_internal_type_library_function_struct {
-    char *functionName;
-    int (*code)(mpfi_t, mpfi_t, int); 
-    void (*constant_code)(mpfr_t, mp_prec_t);       
-  };
-
-  typedef struct __sollya_internal_type_library_procedure_struct __sollya_internal_type_library_procedure;
-  struct __sollya_internal_type_library_procedure_struct {
-    char *procedureName;
-    void *code;
-    __sollya_internal_type_chain *signature;
-  };
-
   typedef struct __sollya_internal_type_object_base_struct __sollya_internal_type_object_base;
-  struct __sollya_internal_type_object_base_struct {
-    int nodeType;
-    mpfr_t *value;
-    __sollya_internal_type_object_base *child1;
-    __sollya_internal_type_object_base *child2;
-    __sollya_internal_type_library_function *libFun;
-    int libFunDeriv;
-    char *string;
-    __sollya_internal_type_chain *arguments;
-    __sollya_internal_type_library_procedure *libProc;
-  };
-
   typedef __sollya_internal_type_object_base * sollya_obj_t;
+
+  typedef struct __sollya_internal_type_msg_struct sollya_msg_t;
 #endif
+
 
   /* Define an enumeration type for the status
      of floating-point evaluation
   */
-  typedef enum fp_eval_result_enum_t fp_eval_result_t;
-  enum fp_eval_result_enum_t {
-    FP_EVAL_OBJ_NO_FUNCTION = 0,
-    FP_EVAL_FAITHFUL,
-    FP_EVAL_BELOW_CUTOFF,
-    FP_EVAL_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD,
-    FP_EVAL_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD,
-    FP_EVAL_NOT_FAITHFUL_ZERO_NOT_CONTAINED,
-    FP_EVAL_NOT_FAITHFUL_INFINITY_CONTAINED,
-    FP_EVAL_INFINITY,
-    FP_EVAL_FAILURE,
-    FP_EVAL_CUTOFF_IS_NAN,
-    FP_EVAL_EXPRESSION_NOT_CONSTANT
-  };
-
-  /* Define an enumeration type for the status
-     of interval evaluation
-  */
-  typedef enum ia_eval_result_enum_t ia_eval_result_t;
-  enum ia_eval_result_enum_t {
-    INT_EVAL_OBJ_NO_FUNCTION = 0,
-    INT_EVAL_BOUNDED,
-    INT_EVAL_UNBOUNDED,
-    INT_EVAL_FAILURE
+  typedef enum sollya_fp_result_enum_t sollya_fp_result_t;
+  enum sollya_fp_result_enum_t {
+    SOLLYA_FP_OBJ_NO_FUNCTION = 0,
+    SOLLYA_FP_FAITHFUL,
+    SOLLYA_FP_BELOW_CUTOFF,
+    SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD,
+    SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD,
+    SOLLYA_FP_NOT_FAITHFUL_ZERO_NOT_CONTAINED,
+    SOLLYA_FP_NOT_FAITHFUL_INFINITY_CONTAINED,
+    SOLLYA_FP_INFINITY,
+    SOLLYA_FP_FAILURE,
+    SOLLYA_FP_CUTOFF_IS_NAN,
+    SOLLYA_FP_EXPRESSION_NOT_CONSTANT
   };
 
   /* Define an enumeration type for the mathematical base functions */
@@ -257,14 +215,15 @@ extern "C" {
   int sollya_lib_install_msg_callback(int (*) (int));
   int sollya_lib_uninstall_msg_callback();
   int (*sollya_lib_get_msg_callback())(int);
+  int sollya_lib_get_msg_id(sollya_msg_t);
 
-  /* A function to translate a message number (as received by the 
-     message call-back function) to text.
+  /* A function to translate a message (as received by the message
+     call-back function) to text.
 
      Attention: the function malloc's the returned character string, which
      must therefore be freed by the user.
   */
-  char *sollya_lib_msg_number_to_text(int);
+  char *sollya_lib_msg_to_text(sollya_msg_t);
 
   /* Functions to print anything, including Sollya objects */
   int sollya_lib_printf(const char *, ...);
@@ -674,9 +633,9 @@ extern "C" {
   /* Functions to evaluate Sollya objects that are mathematical
      functions at points, over intervals or at points given by constant expressions
   */
-  fp_eval_result_t sollya_lib_evaluate_function_at_point(mpfr_t, sollya_obj_t, mpfr_t, mpfr_t *);
-  ia_eval_result_t sollya_lib_evaluate_function_over_interval(mpfi_t, sollya_obj_t, mpfi_t);
-  fp_eval_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t, sollya_obj_t, sollya_obj_t, mpfr_t *);
+  sollya_fp_result_t sollya_lib_evaluate_function_at_point(mpfr_t, sollya_obj_t, mpfr_t, mpfr_t *);
+  sollya_fp_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t, sollya_obj_t, sollya_obj_t, mpfr_t *);
+  int sollya_lib_evaluate_function_over_interval(mpfi_t, sollya_obj_t, mpfi_t);
 
   /* Functions to manipulate lists
 

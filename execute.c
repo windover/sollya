@@ -91,6 +91,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "xml.h"
 #include "miniparser.h"
 #include "match.h"
+#include "sollya-messaging.h"
 #include <setjmp.h>
 
 #define READBUFFERSIZE 16000
