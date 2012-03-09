@@ -1060,7 +1060,7 @@ As a special exception to these rules, $[0]^{[0]}$ returns $[1]$.
  \subsection{Introduction}
 The header file of the \sollya library is \texttt{sollya.h}. It automatically includes \texttt{gmp.h}, \texttt{mpfr.h} and \texttt{mpfi.h}.
 
-The library provides a virtual \sollya session that is perfectly similar to an interactive session: environment variables such as \texttt{verbosity}, \texttt{prec}, \texttt{display}, \texttt{midpointmode}, etc. are maintained and affect the behavior of the library, warning messages are displayes when something is not exact, etc. Please note that the \sollya library is currently \textbf{not} reentrant, hence a process can only open one \sollya virtual session.
+The library provides a virtual \sollya session that is perfectly similar to an interactive session: environment variables such as \texttt{verbosity}, \texttt{prec}, \texttt{display}, \texttt{midpointmode}, etc. are maintained and affect the behavior of the library, warning messages are displayed when something is not exact, etc. Please note that the \sollya library is currently \textbf{not} re-entrant, hence a process can only open one \sollya virtual session.
 
 The first thing to do when one wants to use \sollya in a C program is hence to initialize the virtual session. Accordingly, one should close the session at the end of the program (which has the effect of clearing all the memory used by \sollya). Here is hence a minimal file:
 
@@ -1078,7 +1078,7 @@ int main(void) {
 \end{Verbatim}
 \end{minipage}\end{center}
 
-Suppose that this code is saved in a file called \texttt{foo.c}. The compilation is performed as usual without forgetting to link against \texttt{libsollya} (since the libraries \texttt{libgmp}, \texttt{libmpfr} and \texttt{libmpfi} are dependencies of \sollya, it might also be necessary to explicitely link against them):
+Suppose that this code is saved in a file called \texttt{foo.c}. The compilation is performed as usual without forgetting to link against \texttt{libsollya} (since the libraries \texttt{libgmp}, \texttt{libmpfr} and \texttt{libmpfi} are dependencies of \sollya, it might also be necessary to explicitly link against them):
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 ~/% cc foo.c -c
 ~/% cc foo.o -o foo -lsollya -lmpfi -lmpfr -lgmp
@@ -1091,9 +1091,9 @@ The library provides a single data type called \texttt{sollya\_obj\_t} that can 
 \item \texttt{NULL} is a placeholder that can be used as a \texttt{sollya\_obj\_t}. This is particularly useful as an end marker for functions with a variable number of arguments (see Sections~\ref{creating_lists} and~\ref{library_commands_and_functions}).
 \item An affectation with the ``='' sign does not copy an object but only creates a reference to it. To perform a copy, the \texttt{sollya\_lib\_copy\_obj()} function is available.
 \end{itemize}
-Except for a few functions for which it is explicitely specified, the following conventions are used:
+Except for a few functions for which it is explicitly specified, the following conventions are used:
 \begin{itemize}
-\item  A function does not touch its arguments. Hence if \texttt{sollya\_lib\_foo} is a function of the library, a call to \texttt{sollya\_lib\_foo(a)} leaves the object referenced by \texttt{a} unchanged (the notable exceptions to that rule are the the functions called \texttt{sollya\_lib\_build\_*}).
+\item  A function does not touch its arguments. Hence if \texttt{sollya\_lib\_foo} is a function of the library, a call to \texttt{sollya\_lib\_foo(a)} leaves the object referenced by \texttt{a} unchanged (the notable exceptions to that rule are the functions containing \verb|build| in their name, e.g., \texttt{sollya\_lib\_build\_foo}).
 \item A function that returns a \texttt{sollya\_obj\_t} creates a fresh object (this means that memory is dynamically allocated for that object). The memory allocated to that object should manually be cleared when the object becomes useless: this is performed by the \texttt{sollya\_lib\_clear\_obj()} function.
 \end{itemize}
 
@@ -1132,11 +1132,19 @@ int main(void) {
 
 A universal function allows the user to execute any expression, as if it were given at the prompt of the \sollya tool, and to get a \texttt{sollya\_obj\_t} containing the result of the evaluation: this function is \texttt{sollya\_lib\_parse\_string("some expression here")}. This is very convenient, and indeed, any script written in the \sollya language, could easily be converted into a C program by intensively using \texttt{sollya\_lib\_parse\_string}. However, this should not be the preferred way if efficiency is targeted, because (as the name suggests it) this function uses a parser to decompose its argument, then constructs intermediate data structures to store the abstract interpretation of the expression, etc. Low-level functions are provided for efficiently creating \sollya objects; they are detailed in the next Section.
 
+\subsection{Conventions in use in the library}
+The library follows some conventions that it is useful to remember:
+\begin{itemize}
+\item When a function is a direct transposition of a command or function available in the interactive tool, it returns a \verb|sollya_obj_t|. This is true, even when it would sound natural to return, e.g. an \verb|int|. For instance \verb|sollya_lib_get_verbosity()| returns a \verb|sollya_obj_t|, which integer value must then be recovered with \verb|sollya_lib_get_constant_as_int|. This forces the user to declare (and clear afterwards) a temporary \verb|sollya_obj_t| to store the value, but this is the price of homogeneity in the library.
+\item When a function returns an integer, this integer generally is a boolean in the usual C meaning, i.e. $0$ represents false and any non-zero value represents true. In many cases, the integer returned by the function indicates a status of success or failure: the convention is ``false means failure'' and ``true means success''. In case of failure, the convention is that the function did not touch any of its arguments.
+\item When a function would need to return several things, or when a function would need to return something together with a status of failure or success, the convention is that pointers are given as the first arguments of the function. These pointers shall point to valid addresses where the function will store the results. This can sometimes give obscure signatures, when the function morally returns a pointer and actually takes as argument a pointer to a pointer (this typically happens when the function allocates a segment of memory and should return a pointer to that segment of memory).
+\end{itemize}
+
 \subsection{Creating \sollya objects}
 We conceptually divide \sollya objects into five categories: numerical constants (e.g. $1$ or $1.5$), functional expressions (they might contain numerical constants, e.g., $\sin(\cos(x+1.5))$), other simple objects (intervals, strings, built-in constants such as \texttt{dyadic}, etc.), lists of objects (e.g., \texttt{[|1, "Hello"|]}) and structures (e.g., \verb|{.a = 1; .b = "Hello"}|).
 
 \subsubsection{Numerical constants}
-Table~\ref{creating_numerical_constant} lists the different functions available to construct numerical constants. The \sollya constant is always created without rounding (whatever the value of \texttt{prec} is at the moment of the call to \texttt{sollya\_lib\_constant\_*}): a sufficient precision is always allocated so that the constant is stored exactly. The object returned by these functions is fresh and is made from a copy of the argument. For instance, after the instruction \texttt{a = sollya\_lib\_constant(b)}, the user will eventually have to clear \texttt{a} (with \texttt{sollya\_lib\_clear(a)}) and to clear \texttt{b} (with \texttt{mpfr\_clear(b)}).
+Table~\ref{creating_numerical_constant} lists the different functions available to construct numerical constants. The \sollya constant is always created without rounding (whatever the value of \texttt{prec} is at the moment of the function call): a sufficient precision is always allocated so that the constant is stored exactly. The object returned by these functions is fresh and is made from a copy of the argument. For instance, after the instruction \texttt{a = sollya\_lib\_constant(b)}, the user will eventually have to clear \texttt{a} (with \texttt{sollya\_lib\_clear(a)}) and to clear \texttt{b} (with \texttt{mpfr\_clear(b)}).
 
 The function \texttt{sollya\_lib\_constant\_from\_double} (or more conveniently its shortcut \texttt{SOLLYA\_CONST}) is probably the preferred way for constructing numerical constants. As the name indicates it, its argument is a \texttt{double}; however, due to implicit casting in~C, it is perfectly possible to give an \texttt{int} as argument: it will be converted into a \texttt{double} (without rounding if the integer fits on $53$~bits) before being passed to \texttt{SOLLYA\_CONST}.
 
@@ -1217,13 +1225,13 @@ It is worth remarking that, though \texttt{SOLLYA\_X\_} and \texttt{SOLLYA\_PI} 
 For each function of the form \verb|sollya_lib_build_function_foo|, there exists a function called \verb|sollya_lib_foo|. There are two differences between them:
 \begin{itemize}
 \item First, \verb|sollya_lib_foo| does not eat up its argument. It can sometimes be useful, e.g., if one has an expression stored in a variable \texttt{a} and one wants to build the expression \texttt{exp(a)} without loosing the reference to the expression represented by \texttt{a}.
-\item Second, while \verb|sollya_lib_build_function_foo| mecanically constructs an expression, \verb|sollya_lib_foo| also evaluates it, as far as it is possible without performing a rounding.\\
+\item Second, while \verb|sollya_lib_build_function_foo| mechanically constructs an expression, \verb|sollya_lib_foo| also evaluates it, as far as it is possible without performing a rounding.\\
 For instance, after the instructions \verb|a = SOLLYA_CONST(0); b = sollya_lib_exp(a);| the variable \texttt{b} contains the number $1$, whereas it would have contained the expression "\texttt{exp(0)}" if it had been created by \verb|b = sollya_lib_build_function(a)|.
 \end{itemize}
 Actually, \verb|sollya_lib_foo| has exactly the same behavior as writing an expression at the prompt within the interactive tool. In particular, it is possible to give a range as an argument to \verb|sollya_lib_foo|: the returned object will be the result of the evaluation of function \verb|foo| on that range by interval arithmetic. In contrast, trying to use \verb|sollya_lib_build_function_foo| on a range would result in a typing error.
 
 \subsubsection{Other simple objects}
-Other simple objects are created with functions listed in Table~\ref{creating_sollya_obj_t}. The functions \texttt{sollya\_lib\_range\_*} follow the same convention as \texttt{sollya\_lib\_constant}: they build a new object from a copy of their argument, and the conversion is always exact, whatever the value of \texttt{prec} is.
+Other simple objects are created with functions listed in Table~\ref{creating_sollya_obj_t}. The functions \texttt{sollya\_lib\_range\_something} follow the same convention as \texttt{sollya\_lib\_constant}: they build a new object from a copy of their argument, and the conversion is always exact, whatever the value of \texttt{prec} is.
 
 Please note that in the interactive tool, \texttt{D} either denotes the discrete mathematical function that maps a real number to its closest \texttt{double} number, or is used as a symbolic constant to indicate that the \texttt{double} format must be used (as an argument of \texttt{round} for instance). In the library, they are completely distinct objects, the mathematical function being obtained with \texttt{sollya\_lib\_build\_function\_double} and the symbolic constant with \texttt{sollya\_lib\_double\_obj}. The same holds for other formats (\texttt{DD}, \texttt{SG}, etc.)
 \begin{table}[htp]
@@ -1269,7 +1277,7 @@ Please note that in the interactive tool, \texttt{D} either denotes the discrete
 \verb|DD, doubledouble| & \verb|sollya_lib_double_double_obj();| \\
 \verb|TD, tripledouble| & \verb|sollya_lib_triple_double_obj();| \\
 \verb|"Hello"| &  \verb|sollya_lib_string("Hello")| \\
-\verb|[1, 3.5]| &  \verb|sollya_lib_range_from_interval(a);|\footnote{\texttt{a} is a \texttt{mpfi\_t} containg the interval $[1, 3.5]$. Conversion is always exact.} \\
+\verb|[1, 3.5]| &  \verb|sollya_lib_range_from_interval(a);|\footnote{\texttt{a} is a \texttt{mpfi\_t} containing the interval $[1, 3.5]$. Conversion is always exact.} \\
 \verb|[1, 3.5]| &  \verb|sollya_lib_range_from_bounds(b, c);|\footnote[2]{\texttt{b} and \texttt{c} are \texttt{mpfr\_t} respectively containing the numbers $1$ and $3.5$.  Conversion is always exact.} \\ \hline
   \end{tabular}
 \end{center}
@@ -1303,17 +1311,18 @@ Following the same conventions, end-elliptic lists can be constructed with the f
 \label{creating_structures}
 \sollya structures are also available in library mode as any other \sollya object. However, there is currently no efficient way of creating structures in library mode. The only function available to create structures is\\
 \verb|sollya_lib_create_structure(sollya_obj_t *res, sollya_obj_t s, char *name, sollya_obj_t val)|.
+This function returns an \verb|int| interpreted as a boolean: false means failure, and true means success.
 
-Three cases are possible. In all cases, the function creates a fresh object and stores it at the address referred by \texttt{res}. It returns $0$ in case of failure and a non-zero value in case of success.
+Three cases are possible. In all cases, the function creates a fresh object and stores it at the address referred by \texttt{res}.
 \begin{itemize}
 \item  If \texttt{s} is \texttt{NULL}: \texttt{*res} is filled with a structure with only one field. This field is named after the string \texttt{name} and contains a copy of the object \texttt{val}.
 \item If \texttt{s} is an already existing structure that have a field named after the string \texttt{name}: \texttt{*res} is filled with a newly created structure. This structure is the same as \texttt{s} except that the field corresponding to \texttt{name} contains a copy of \texttt{val}.
 \item If \texttt{s} is an already existing structure that does \textbf{not} have a field named after the string \texttt{name}: \texttt{*res} is filled with a newly created structure. This structure is the same as \texttt{s} except that it has been augmented with a field corresponding to \texttt{name} and that contains a copy of \texttt{val}.
 \end{itemize}
-Please note that \texttt{s} is not changed by this function: the structure stored in \texttt{*res} is a new one that does not refer to any of the components of \texttt{s}. As a consequence, one should not forget to explicitely clear \texttt{s} as well as \texttt{*res} when they become useless.
+Please note that \texttt{s} is not changed by this function: the structure stored in \texttt{*res} is a new one that does not refer to any of the components of \texttt{s}. As a consequence, one should not forget to explicitly clear \texttt{s} as well as \texttt{*res} when they become useless.
 
 \subsection{Getting the type of an object}
-Functions are provided that allow the users to test the type of a \sollya object. They are listed in Table~\ref{type_of_an_object}. They all return a non-zero integer if the test is true, and zero otherwise. Please note that from a typing point of view, a mathematical constant and a non-constant functional expression are both functions.
+Functions are provided that allow the users to test the type of a \sollya object. They are listed in Table~\ref{type_of_an_object}. They all return an \verb|int| interpreted as the boolean result of the test. Please note that from a typing point of view, a mathematical constant and a non-constant functional expression are both functions.
 
 \begin{table}[htp]
   \caption{Testing the type of a \sollya object (Returns non-zero if true, 0 otherwise)}
@@ -1372,7 +1381,7 @@ If a \verb|sollya_obj_t| is a range, it is possible to recover the values corres
 \item \verb|sollya_lib_get_interval_from_range(mpfi_t res, sollya_obj_t arg)|,
 \item \verb|sollya_lib_get_bounds_from_range(mpfr_t res_left, mpfr_t res_right, sollya_obj_t arg)|.
 \end{itemize}
- They return 0 in case of failure (i.e. if the \verb|sollya_obj_t| is not a range) and a non-zero value in case of success. These functions follow the same conventions as those of the \verb|MPFR| and \verb|MPFI| libraries: the variables \verb|res|, \verb|res_left| and \verb|res_right| must be initialized beforehand, and are used to store the result of the conversion. Also, the functions \verb|sollya_lib_get_*_from_range| \textbf{do not change the internal precision} of \verb|res|, \verb|res_left| and \verb|res_right|. If the internal precision is sufficient to perform the conversion without rounding, then it is guaranteed to be exact. If, on the contrary, the internal precision is not sufficient, the actual bounds of the range stored in \verb|arg| will be rounded at the target precision using a rounding mode that ensures that the inclusion property remains valid, i.e. $\mathtt{arg} \subseteq \mathtt{res}$ (resp. $\mathtt{arg} \subseteq [\mathtt{res\_left}, \mathtt{res\_right}]$).
+They return an \verb|int| that is interpreted as a boolean: false means failure (i.e., if the \verb|sollya_obj_t| is not a range) and true means success. These functions follow the same conventions as those of the \verb|MPFR| and \verb|MPFI| libraries: the variables \verb|res|, \verb|res_left| and \verb|res_right| must be initialized beforehand, and are used to store the result of the conversion. Also, the functions \verb|sollya_lib_get_something_from_range| \textbf{do not change the internal precision} of \verb|res|, \verb|res_left| and \verb|res_right|. If the internal precision is sufficient to perform the conversion without rounding, then it is guaranteed to be exact. If, on the contrary, the internal precision is not sufficient, the actual bounds of the range stored in \verb|arg| will be rounded at the target precision using a rounding mode that ensures that the inclusion property remains valid, i.e. $\mathtt{arg} \subseteq \mathtt{res}$ (resp. $\mathtt{arg} \subseteq [\mathtt{res\_left}, \mathtt{res\_right}]$).
 
 The function  \verb|sollya_lib_get_prec_of_range(mp_prec_t *prec, sollya_obj_t arg)| stores in \verb|*prec| a precision that is guaranteed to be sufficient to represent the range stored in \verb|arg| without rounding. The returned value of this function is an \verb|int| that follows the same convention as above. In conclusion, here is an example of a completely safe conversion:
 
@@ -1400,14 +1409,14 @@ From a conceptual point of view, a numerical constant is nothing but a very simp
 
 A constant expression being given, three cases are possible:
 \begin{itemize}
-\item \sollya manages to find a precision such that the value of the constant expression can be proven to be exactly representable (i.e., without rounding) at that precision. For instance numerical constants or simple expressions such as $(\exp(0)+5)/16$ fall in this category.
+\item \sollya manages to find a precision such that the value of the constant expression can be proved to be exactly representable (i.e., without rounding) at that precision. For instance numerical constants or simple expressions such as $(\exp(0)+5)/16$ fall in this category.
 \item The constant expressions would be exactly representable at some precision but \sollya does not manage to prove it either because the precision would be too big, or because the expression involves transcendental functions that simplify all-together, but in such a way that \sollya does not manage to prove it. An example would be $\sin(\pi/3)/\sqrt{3}$.
 \item Finally, a third possibility is that the value of the expression is not exactly representable at any precision on a binary floating-point number. Possible examples are $\pi$ or $1/10$.
 \end{itemize}
 
-From now on, we suppose that \verb|arg| is a \verb|sollya_obj_t| that contains a constant expression (or, as a particular case, a numerical constant). The general scheme followed by the conversion functions is the following: if \sollya manages to find a precision such that the the value of \verb|arg| is exactly representable at that precision, it first computes this exact value and then rounds it to the nearest number of the target format (tie-to-even). Otherwise, \sollya tries to automatically adapt its internal precision in order to ensure that the result of the conversion is one of both numbers in the target format that lie around the exact value (a faithful rounding). A warning message indicates that the conversion is not exact and that a faifhful rounding has been performed. On some cases really hard to evaluate, the algorithm can even fail to find a faithful rounding. In that case also, a warning message is emitted indicating that the result of the conversion should not be trusted. Let us remark that these messages can be caught instead of being displayed and adapted treatments can be provided by the user of the library at each emission of a warning (see Section \ref{}).
+From now on, we suppose that \verb|arg| is a \verb|sollya_obj_t| that contains a constant expression (or, as a particular case, a numerical constant). The general scheme followed by the conversion functions is the following: if \sollya manages to find a precision such that the the value of \verb|arg| is exactly representable at that precision, it first computes this exact value and then rounds it to the nearest number of the target format (tie-to-even). Otherwise, \sollya tries to automatically adapt its internal precision in order to ensure that the result of the conversion is one of both numbers in the target format that lie around the exact value (a faithful rounding). A warning message indicates that the conversion is not exact and that a faithful rounding has been performed. On some cases really hard to evaluate, the algorithm can even fail to find a faithful rounding. In that case also, a warning message is emitted indicating that the result of the conversion should not be trusted. Let us remark that these messages can be caught instead of being displayed and adapted treatments can be provided by the user of the library at each emission of a warning (see Section \ref{callbacks}).
 
-The conversion functions are the following. The returned value is 0 if \verb|arg| is not a constant expression and a non-zero value otherwise.
+The conversion functions are the following. They return an \verb|int| interpreted as a boolean: false means failure (i.e., \verb|arg| is not a constant expression) and true means success.
 \begin{itemize}
 \item \verb|sollya_lib_get_constant_as_double(double *res, sollya_obj_t arg)|
 \item \verb|sollya_lib_get_constant_as_int(int *res, sollya_obj_t arg)|
@@ -1416,7 +1425,7 @@ The conversion functions are the following. The returned value is 0 if \verb|arg
 \item \verb|sollya_lib_get_constant(mpfr_t res, sollya_obj_t arg)|: the result of the conversion is stored in \verb|res|. Please note that \verb|res| must be initialized beforehand and that its internal precision is not modified by the algorithm.
 \end{itemize}
 
-The function  \verb|sollya_lib_get_prec_of_constant(mp_prec_t *prec, sollya_obj_t arg)| tries to find a precision that would be sufficient to exactly represent the value of \verb|arg| without rounding. If it manages to find such a precision, it stores it in \verb|*prec| and return a non-zero value. If it does not manage to find such a precision, or if \verb|arg| is not a constant expression, it returns 0 and \verb|*prec| is left unchanged. In conclusion, here is an example of use for converting a constant expression to a \verb|mpfr_t|:
+The function  \verb|sollya_lib_get_prec_of_constant(mp_prec_t *prec, sollya_obj_t arg)| tries to find a precision that would be sufficient to exactly represent the value of \verb|arg| without rounding. If it manages to find such a precision, it stores it in \verb|*prec| and returns an \verb|int| which boolean value is true. If it does not manage to find such a precision, or if \verb|arg| is not a constant expression, it returns false and \verb|*prec| is left unchanged. In conclusion, here is an example of use for converting a constant expression to a \verb|mpfr_t|:
 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
   ...
@@ -1445,7 +1454,7 @@ If \verb|arg| is a \verb|sollya_obj_t| that contains a string, that string can b
 \begin{center}
 \verb|sollya_lib_get_string(char **res, sollya_obj_t arg)|.
 \end{center}
-If \verb|arg| really is a string, this function allocates enough memory on the heap to store the corresponding string, it copies the string at that newly allocated place, and set \verb|*res| so that it points to it. The function returns 0 if \verb|arg| is not a string and a non-zero integer otherwise.
+If \verb|arg| really is a string, this function allocates enough memory on the heap to store the corresponding string, it copies the string at that newly allocated place, and set \verb|*res| so that it points to it. The function returns an \verb|int| interpreted as a boolean: false means failure (i.e., \verb|arg| is not a string) and true means success.
 
 Since this function allocates memory on the heap, this memory should manually be cleared by the user with \verb|sollya_lib_free| once it becomes useless.
 
@@ -1454,9 +1463,9 @@ The function that allows the user to recover a C array of \verb|sollya_obj_t| ob
 \verb|sollya_lib_get_list_elements(sollya_obj_t **L, int *n, int *end_ell, sollya_obj_t arg)|.
 Three cases are possible:
 \begin{itemize}
-\item If \verb|arg| is a regular list of length $N$, the function allocates memory on the heap for $N$ \verb|sollya_obj_t|, sets \verb|*L| so that it points on that memory segment, and copies each of the elements $N$ of \verb|arg| at \verb|(*L)[0]|, \dots, \verb|(*L)[N-1]|. Finally, it sets \verb|*n| to $N$, \verb|*end_ell| to $0$ and returns a non-zero integer. A particular case is when \verb|arg| is the empty list: everything is the same except that no memory is allocated and \verb|*L| is left unchanged.
-\item If \verb|arg| is an end-elliptic list containing $N$ elements plus the ellipse. The function allocates memory on the heap for $N$ \verb|sollya_obj_t|, sets \verb|*L| so that it points on that memory segment, and copies each of the elements $N$ of \verb|arg| at \verb|(*L)[0]|, \dots, \verb|(*L)[N-1]|. Finally, it sets \verb|*n| to $N$, \verb|*end_ell| to $1$ and returns a non-zero integer. The only difference between a regular list and an end-elliptic list containing the same elements is hence that \verb|*end_ell| is set to $1$ in the latter.
-\item If \verb|arg| is neither a regular nor an end-elliptic list, \verb|*L|, \verb|*n| and \verb|*end_ell| are left unchanged and the function returns $0$.
+\item If \verb|arg| is a regular list of length $N$, the function allocates memory on the heap for $N$ \verb|sollya_obj_t|, sets \verb|*L| so that it points on that memory segment, and copies each of the elements $N$ of \verb|arg| at \verb|(*L)[0]|, \dots, \verb|(*L)[N-1]|. Finally, it sets \verb|*n| to $N$, \verb|*end_ell| to $0$ and returns an \verb|int| which boolean value is true. A particular case is when \verb|arg| is the empty list: everything is the same except that no memory is allocated and \verb|*L| is left unchanged.
+\item If \verb|arg| is an end-elliptic list containing $N$ elements plus the ellipse. The function allocates memory on the heap for $N$ \verb|sollya_obj_t|, sets \verb|*L| so that it points on that memory segment, and copies each of the elements $N$ of \verb|arg| at \verb|(*L)[0]|, \dots, \verb|(*L)[N-1]|. Finally, it sets \verb|*n| to $N$, \verb|*end_ell| to $1$ and returns an \verb|int| which boolean value is true. The only difference between a regular list and an end-elliptic list containing the same elements is hence that \verb|*end_ell| is set to $1$ in the latter.
+\item If \verb|arg| is neither a regular nor an end-elliptic list, \verb|*L|, \verb|*n| and \verb|*end_ell| are left unchanged and the function returns an \verb|int| which boolean value is false.
 \end{itemize}
 
 \subsection{Recovering the content of a \sollya structure}
@@ -1464,17 +1473,17 @@ If \verb|arg| is a \verb|sollya_obj_t| that contains a structure, the content of
 \begin{center}
 \verb|sollya_lib_get_element_in_structure(sollya_obj_t *res, char *name, sollya_obj_t arg)|.
 \end{center}
-If \verb|arg| really is a structure and if that structure has a field named after the string \verb|name|, this function copies the content of that field into the \sollya object \verb|*res|. The function returns 0 if \verb|arg| is not a structure or if it does not have a field named after \verb|verb|, and it returns a non-zero integer otherwise.
+If \verb|arg| really is a structure and if that structure has a field named after the string \verb|name|, this function copies the content of that field into the \sollya object \verb|*res|. The function returns an \verb|int| interpreted as a boolean: false means failure (i.e., if \verb|arg| is not a structure or if it does not have a field named after \verb|verb|) and true means success.
 
 It is also possible to get all the field names and their content. This is achieved through the function
 \begin{center}
 \verb|sollya_lib_get_structure_elements(char ***names, sollya_obj_t **objs, int *n,|\\
 \verb|                                  sollya_obj_t arg).                         |
 \end{center}
-If \verb|arg| really is a structure, say with $N$ fields called ``fieldA'', \dots, ``fieldZ'', this functions sets \verb|*n| to~$N$, allocates and fills an array of $N$ strings and sets \verb|*names| so that it points to that segment of memory (hence \verb|(*names)[0]| is the string ``fieldA'', \dots, \verb|(*names)[N-1]| is the string ``fieldZ''). Moreover, it allocates memory for $N$ \verb|sollya_obj_t|, sets \verb|*objs| so that it points on that memory segment, and copies the content of each of the $N$ fields at \verb|(*objs)[0]|, \dots, \verb|(*objs)[N-1]|. Finally it returns a non-zero integer. If \verb|arg| is not a structure, the function simply returns 0 without doing anything. Please note that since \verb|*names| and \verb|*objs| point on memory segments that have been dynamically allocated, they should manually be cleared by the user with \verb|sollya_lib_free| once they become useless.
+If \verb|arg| really is a structure, say with $N$ fields called ``fieldA'', \dots, ``fieldZ'', this functions sets \verb|*n| to~$N$, allocates and fills an array of $N$ strings and sets \verb|*names| so that it points to that segment of memory (hence \verb|(*names)[0]| is the string ``fieldA'', \dots, \verb|(*names)[N-1]| is the string ``fieldZ''). Moreover, it allocates memory for $N$ \verb|sollya_obj_t|, sets \verb|*objs| so that it points on that memory segment, and copies the content of each of the $N$ fields at \verb|(*objs)[0]|, \dots, \verb|(*objs)[N-1]|. Finally it returns an \verb|int| which boolean value is true. If \verb|arg| is not a structure, the function simply returns false without doing anything. Please note that since \verb|*names| and \verb|*objs| point on memory segments that have been dynamically allocated, they should manually be cleared by the user with \verb|sollya_lib_free| once they become useless.
 
 \subsection{Decomposing a functional expression}
-If a \texttt{sollya\_obj\_t} contains a functional expression, one can decompose the expression tree using the following functions. These functions all return a non-zero value in case of success (i.e. if the \texttt{sollya\_obj\_t} argument really contains a functional expression) and zero otherwise.
+If a \texttt{sollya\_obj\_t} contains a functional expression, one can decompose the expression tree using the following functions. These functions all return an \verb|int| interpreted as a boolean: true in case of success (i.e. if the \texttt{sollya\_obj\_t} argument really contains a functional expression) and false otherwise.
 
 \begin{itemize}
 \item \verb|sollya_lib_get_function_arity(int *n, sollya_obj_t f)|: it stores the arity of \texttt{f} at the address referred by \texttt{n}. Currently, the mathematical functions handled in \sollya are at most dyadic. Mathematical constants are considered as a 0-adic functions.
@@ -1581,16 +1590,17 @@ int is_made_of_constants(sollya_obj_t f) {
 \end{table}
 
 \subsection{Faithfully evaluate a functional expression}
-Let us suppose that \verb|f| is a functional expression and \verb|a| is a numerical value or a constant expression. One of the very convenient features of the interactive tool is that the users can simply write \verb|f(a)| at the prompt: the tool automatically adapts its internal precision in order to compute a value that is a faithful rounding (at the current tool precision) of the true value $f(a)$. Sometimes it does not achieve to find a faithful rounding, but in any case, if the result is not proven to be exact, a warning is displayed explaining how confident one should be with respect to the returned value. This feature is made available within the library with the two following functions:
+Let us suppose that \verb|f| is a functional expression and \verb|a| is a numerical value or a constant expression. One of the very convenient features of the interactive tool is that the users can simply write \verb|f(a)| at the prompt: the tool automatically adapts its internal precision in order to compute a value that is a faithful rounding (at the current tool precision) of the true value $f(a)$. Sometimes it does not achieve to find a faithful rounding, but in any case, if the result is not proved to be exact, a warning is displayed explaining how confident one should be with respect to the returned value. This feature is made available within the library with the two following functions:
 \begin{itemize}
 \item \verb|sollya_lib_evaluate_function_at_constant_expression(mpfr_t res, sollya_obj_t f,|\\
       \verb|                                                    sollya_obj_t a, mpfr_t *cutoff)|,
 \item \verb|sollya_lib_evaluate_function_at_point(mpfr_t res, sollya_obj_t f,|\\
       \verb|                                      mpfr_t a, mpfr_t *cutoff)|.
 \end{itemize}
-In the former, the argument \verb|a| is any \verb|sollya_obj_t| containing a numerical constant or a constant expression, while in the latter \verb|a| is a constant already stored in a \verb|mpfr_t|. These functions store the result in \verb|res| and return a \verb|fp_eval_result_t| which is an enum type described in Table~\ref{list_of_fp_eval_result_t}. In order to understand the role of the \verb|cutoff| parameter and the value returned by the function, it is necessary to describe the algorithm in a nutshell:
+In the former, the argument \verb|a| is any \verb|sollya_obj_t| containing a numerical constant or a constant expression, while in the latter \verb|a| is a constant already stored in a \verb|mpfr_t|. These functions store the result in \verb|res| and return a \verb|sollya_fp_result_t| which is an enum type described in Table~\ref{list_of_sollya_fp_result_t}. In order to understand the role of the \verb|cutoff| parameter and the value returned by the function, it is necessary to describe the algorithm in a nutshell:\\
+\rule{\textwidth}{0.5px}
 \begin{enumerate}
-\item[\textbf {Input:} ] a functional expression \verb|f|, a constant expression \verb|a|, a target precision $q$, a parameter $\varepsilon$.
+\item[~]\textbf {Input:} a functional expression \verb|f|, a constant expression \verb|a|, a target precision $q$, a parameter $\varepsilon$.
 \item Choose an initial working precision $p$.
 \item Evaluate \verb|a| by interval arithmetic, performing the computations at precision $p$.
 \item Replace the occurrences of the free variable in \verb|f| by the interval obtained at step 2. Evaluate the resulting expression by interval arithmetic, performing the computations at precision $p$. This yields an interval $I$.
@@ -1602,32 +1612,35 @@ In the former, the argument \verb|a| is any \verb|sollya_obj_t| containing a num
   \item Else, increase $p$ and go back to step 2.
   \end{enumerate}
 \end{enumerate}
-
-The target precision $q$ is chosen to be the precision of the \verb|mpfr_t| variable \verb|res|. The parameter $\varepsilon$ corresponds to the parameter \verb|cutoff|. The reason why \verb|cutoff| is a pointer is that, most of the time, the user does not want to provide it, and using a pointer makes it possible to pass \verb|NULL| as argument. So, if \verb|NULL| is given, $\varepsilon$ is set to $0$. If \verb|cutoff| is not \verb|NULL|, the absolute value of \verb|*cutoff| is used as value for $\varepsilon$. Using a non-zero value for $\varepsilon$ can be useful when one does not care about the precise value of $f(a)$ whenever its absolute value is below a given threshold. Typically, if one wants to compute the maximum of $|f(a_1)|$, \dots, $|f(a_n)|$, it is not necessary to spend too much effort on the computation of $|f(a_i)|$ is one already knows that it is smaller than $\varepsilon = \max \{|f(a_1)|,\dots,|f(a_{i-1})|\}$.
+\vspace{-0.2cm}
+\rule{\textwidth}{0.5px}\\[0.7cm]
+The target precision $q$ is chosen to be the precision of the \verb|mpfr_t| variable \verb|res|. The parameter $\varepsilon$ corresponds to the parameter \verb|cutoff|. The reason why \verb|cutoff| is a pointer is that, most of the time, the user does not want to provide it, and using a pointer makes it possible to pass \verb|NULL| as argument. So, if \verb|NULL| is given, $\varepsilon$ is set to $0$. If \verb|cutoff| is not \verb|NULL|, the absolute value of \verb|*cutoff| is used as value for $\varepsilon$. Using a non-zero value for $\varepsilon$ can be useful when one does not care about the precise value of $f(a)$ whenever its absolute value is below a given threshold. Typically, if one wants to compute the maximum of $|f(a_1)|$, \dots, $|f(a_n)|$, it is not necessary to spend too much effort on the computation of $|f(a_i)|$ if one already knows that it is smaller than $\varepsilon = \max \{|f(a_1)|,\dots,|f(a_{i-1})|\}$.
 \begin{table}[htp]
-\caption{List of values defined in type \texttt{fp\_eval\_result\_t}}
-\label{list_of_fp_eval_result_t}
-\begin{center}
-  \begin{tabular}{|l|p{7cm}|}
+\caption{List of values defined in type \texttt{sollya\_fp\_result\_t}}
+\label{list_of_sollya_fp_result_t}
+\hspace{-1cm}
+\begin{tabular}{|l|p{7cm}|}
+  \multicolumn{1}{c}{~}\\
     \hline
     \hfil\phantom{\Large{$A^A$}}Value\phantom{\Large{$A^A$}}\hfil & \hfil Meaning\hfil \\ \hline
-  \verb|FP_EVAL_OBJ_NO_FUNCTION| & \verb|f| is not a functional expression.\\[0.3cm]
-  \verb|FP_EVAL_FAITHFUL| & The algorithm ended up at step (a) with a finite value.\\[0.3cm]
-  \verb|FP_EVAL_BELOW_CUTOFF| & The algorithm ended up at step (b).\\[0.3cm]
-  \verb|FP_EVAL_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD| & The algorithm ended up at step (c) and $I$ was an interval of the form $[-\delta_1,\,\delta_2]$ where the $\delta_i$ are positive and very small (below some threshold of the algorithm). This typically happens when $f(a)$ exactly equals zero, but the algorithm does not manage to prove this exact equality.\\[0.3cm]
-  \verb|FP_EVAL_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD| & The algorithm ended up at step (c) with an interval $I$ containing $0$ but too big to fall in the above case. In general, this should be considered as a case of failure and the value stored in \verb|res| might be completely irrelevant.\\[0.3cm]
-  \verb|FP_EVAL_NOT_FAITHFUL_ZERO_NOT_CONTAINED| & The algorithm ended up at step (c) with an interval $I$ that does not contain $0$. In general, this should be considered as a case of failure and the value stored in \verb|res| might be completely irrelevant.\\[0.3cm]
-  \verb|FP_EVAL_NOT_FAITHFUL_INFINITY_CONTAINED| & The algorithm ended up at step (c) and (at least) one of the bounds of $I$ was infinite. This typically happens when the set of limit points of $f(x)$ as $x$ goes to $a$ contain an infinity.\\[0.3cm]
-  \verb|FP_EVAL_INFINITY| & The algorithm ended up at step (a) with $I$ of the form $[+\infty, +\infty]$ or $[-\infty, -\infty]$. Hence $f(a)$ is proved to be an exact infinity.\\[0.3cm]
-  \verb|FP_EVAL_FAILURE| & The algorithm ended up at step (c) and $I$ contained NaN. This typically happens when $a$ is not in the definition domain of $f$.\\[0.3cm]
-  \verb|FP_EVAL_CUTOFF_IS_NAN| & \verb|cutoff| was not \verb|NULL| but the value of \verb|*cutoff| is NaN.\\[0.3cm]
-  \verb|FP_EVAL_EXPRESSION_NOT_CONSTANT| & \verb|a| is not a constant expression.\\
+  \verb|SOLLYA_FP_OBJ_NO_FUNCTION| & \verb|f| is not a functional expression.\\[0.3cm]
+  \verb|SOLLYA_FP_FAITHFUL| & The algorithm ended up at step (a) with a finite value.\\[0.3cm]
+  \verb|SOLLYA_FP_BELOW_CUTOFF| & The algorithm ended up at step (b).\\[0.3cm]
+  \verb|SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD| & The algorithm ended up at step (c) and $I$ was an interval of the form $[-\delta_1,\,\delta_2]$ where the $\delta_i$ are positive and very small (below some threshold of the algorithm). This typically happens when $f(a)$ exactly equals zero, but the algorithm does not manage to prove this exact equality.\\[0.3cm]
+  \verb|SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD| & The algorithm ended up at step (c) with an interval $I$ containing $0$ but too big to fall in the above case. In general, this should be considered as a case of failure and the value stored in \verb|res| might be completely irrelevant.\\[0.3cm]
+  \verb|SOLLYA_FP_NOT_FAITHFUL_ZERO_NOT_CONTAINED| & The algorithm ended up at step (c) with an interval $I$ that does not contain $0$. In general, this should be considered as a case of failure and the value stored in \verb|res| might be completely irrelevant.\\[0.3cm]
+  \verb|SOLLYA_FP_NOT_FAITHFUL_INFINITY_CONTAINED| & The algorithm ended up at step (c) and (at least) one of the bounds of $I$ was infinite. This typically happens when the limit of $f(x)$ when $x$ goes to $a$ is infinite.\\[0.3cm]
+  \verb|SOLLYA_FP_INFINITY| & The algorithm ended up at step (a) with $I$ of the form $[+\infty, +\infty]$ or $[-\infty, -\infty]$. Hence $f(a)$ is proved to be an exact infinity.\\[0.3cm]
+  \verb|SOLLYA_FP_FAILURE| & The algorithm ended up at step (c) and $I$ contained NaN. This typically happens when $a$ is not in the definition domain of $f$.\\[0.3cm]
+  \verb|SOLLYA_FP_CUTOFF_IS_NAN| & \verb|cutoff| was not \verb|NULL| but the value of \verb|*cutoff| is NaN.\\[0.3cm]
+  \verb|SOLLYA_FP_EXPRESSION_NOT_CONSTANT| & \verb|a| is not a constant expression.\\
 \hline
   \end{tabular}
-\end{center}
 \end{table}
 
-%ia_eval_result_t sollya_lib_evaluate_function_over_interval(mpfi_t, sollya_obj_t, mpfi_t);
+In the interactive tool, it is also possible to write \verb|f(a)| when \verb|a| contains an interval: \sollya performs the evaluation using an enhanced interval arithmetic, e.g., using L'Hopital's rule to produce finite (yet valid of course) enclosures even in cases when $f$ exhibits removable singularities (for instance $\sin(x)/x$ over an interval containing $0$). This feature is achieved in the library with the function\\
+\verb|sollya_lib_evaluate_function_over_interval(mpfi_t res, sollya_obj_t f, mpfi_t a).|\\
+This function returns an \verb|int| interpreted as a boolean: false means failure (i.e., \verb|f| is not a functional expression), in which case \verb|res| is left unchanged, and true means success, in which case \verb|res| contains the result of the evaluation. The function might succeed, and yet \verb|res| might contain something useless such as an unbounded interval or even $[\textrm{NaN},\textrm{NaN}]$ (this happens for instance when \verb|a| contains points that lie in the interior of the complement of the definition domain of \verb|f|). It is the responsibility of the user to check afterwards whether the computed interval is bounded, unbounded or NaN.
 
 \subsection{Name of the free variable}
 The default name for the free variable is the same in the library and in the interactive tool: it is \texttt{\_x\_}. In the interactive tool, this name is automatically changed at the first use of an undefined symbol. Accordingly in library mode, if an object is defined by \texttt{sollya\_lib\_parse\_string} with an expression containing an undefined symbol, that symbol will become the free variable name if it has not already been changed before. But what if one does not use \texttt{sollya\_lib\_parse\_string} (because it is not efficient) but one wants to change the name of the free variable? The name can be changed with \texttt{sollya\_lib\_name\_free\_variable("some\_name")}.
@@ -1640,7 +1653,7 @@ Every commands and functions available in the \sollya interactive tool have thei
 
 A particular point is worth being mentioned: some functions of the tool such as \texttt{remez} for instance have a variable number of arguments. For instance, one might call \texttt{remez(exp(x), 4, [0,1])} or \texttt{remez(1, 4, [0,1], 1/exp(x))}. This feature is rendered in the C library by the facilities of stdarg. The notable difference is that there must \textbf{always be an explicit NULL argument} at the end of the function call. Hence one can write \texttt{sollya\_lib\_remez(a, b, c, NULL)} or \texttt{sollya\_lib\_remez(a, b, c, d, NULL)}. It is very easy to forget the \texttt{NULL} argument and use for instance \texttt{sollya\_lib\_remez(a, b, c)}. This is \textbf{completely wrong} because the memory will be read until a \texttt{NULL} pointer is found. In the best case, this will lead to an error or a result obviously wrong, but it could also lead to subtle, not-easy-to-debug errors. Please be particularly careful to this point.
 
-Each command or function accepting a variable number of arguments comes with a \texttt{sollya\_lib\_v\_*} version accepting a \texttt{va\_list} parameter containing the list of optional arguments. For instance, one might write a function that take as arguments a function $f$, an interval $I$, optionally a weight function $w$, optionally a quality parameter $q$. That function would display the minimax obtained when approximating $f$ over $I$ (possibly with weight $w$ and quality $q$) by polynomials of degree $n=2$ to $20$. So, that function would get a variable number of arguments (i.e. a \texttt{va\_list} in fact) and pass them straight to remez. In that case, one needs to use the \texttt{v\_remez} version, as the following code shows:
+Each command or function accepting a variable number of arguments comes with a \texttt{sollya\_lib\_v\_} version accepting a \texttt{va\_list} parameter containing the list of optional arguments. For instance, one might write a function that take as arguments a function $f$, an interval $I$, optionally a weight function $w$, optionally a quality parameter $q$. That function would display the minimax obtained when approximating $f$ over $I$ (possibly with weight $w$ and quality $q$) by polynomials of degree $n=2$ to $20$. So, that function would get a variable number of arguments (i.e. a \texttt{va\_list} in fact) and pass them straight to remez. In that case, one needs to use the \texttt{v\_remez} version, as the following code shows:
 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 #include <sollya.h>
@@ -1667,4 +1680,98 @@ void my_function(sollya_obj_t f, sollya_obj_t I, ...) {
 \end{Verbatim}
 \end{minipage}\end{center}
 
+\subsection{Warning messages in library mode}
+\label{callbacks}
+The philosophy of \sollya is ``whenever something is not exact, mention it explicitly''. This is a nice feature since this ensures that the users always perfectly know the degree of confidence they can have in a result (is it exact? or only faithful? or even purely numerical, without any warranty?) However, it is sometimes desirable to hide some (or all) of these messages. This is especially true in library mode where messages coming from \sollya are intermingled with the messages of the main program. The library hence provides a specific mechanism to catch all messages emitted by \sollya and handle each of them specifically: installing a callback for messages.
+
+Before describing the principle of the message callback, it seems appropriate to recall that several mechanisms are available in the interactive tool to filter the messages emitted by \sollya. These mechanisms are also available in library mode for completeness. When a message is emitted, it has two characteristics: a verbosity level and an id (a number uniquely identifying the message). After it has been emitted, it passes through the following steps where it can be filtered. If it has not been filtered (and only in this case) it is displayed.
+\begin{enumerate}
+\item If the verbosity level of the message if greater than the value of the environment variable \verb|verbosity|, it is filtered.
+\item If the environment variable \verb|roundingwarnings| is set to \verb|on| and if the message informs the user that a rounding occurred, it is filtered.
+\item If the id of the message has been registered with the \verb|suppressmessage| command, the message is filtered.
+\item If a message callback has been installed and if the message has not been previously filtered, it is handled by the callback, which decides to filter it or display it.
+\end{enumerate}
+
+A message callback is a function of the form \verb|int my_callback(sollya_message_t msg)|. It receives as input an object representing the message, performs whatever treatment seems appropriate, and returns an integer interpreted as a boolean. If the returned value is false, the message is not displayed. If, on the contrary, the returned value is true, the message is displayed as usual. By default, no callback is installed and all messages are displayed. To install a callback, just use \verb|sollya_lib_install_msg_callback(my_callback)|. Please remember that, if a message is filtered because of one of the three other mechanisms, it will never be transmitted to the callback. Hence, in library mode, if one wants to catch every single message through the callback, one should set the value of \verb|verbosity| to \verb|MAX_INT|, set \verb|roundingwarnings| to \verb|off| (this is the default anyway) and one should not use the \verb|suppressmessage| mechanism.
+
+It is always possible to come back to the default behavior, using \verb|sollya_lib_uninstall_msg_callback()|. In particular, if a callback is installed and one wants to install another one, one should always uninstall the first callback and, only then, install the new one.
+
+Both \verb|sollya_lib_install_msg_callback| and \verb|sollya_lib_uninstall_msg_callback| return an integer interpreted as a boolean: false means failure and true means success.
+
+It is possible to get the currently installed callback using \verb|sollya_lib_get_msg_callback()|. This function returns a pointer to the current callback --- i.e., something of type \verb|int (*)(sollya_msg_t)| --- if a callback is installed, or \verb|NULL| if no callback is currently installed.
+
+Currently the type \verb|sollya_msg_t| has only two accessors:
+\begin{itemize}
+\item \verb|sollya_lib_get_msg_id(sollya_msg_t msg)| returns an \verb|int| that identifies the type of the message. The message types are listed in the file \verb|sollya-messages.h|. Please note that this file not only lists the possible identifiers but only defines meaningful names to each possible message number (e.g., \verb|SOLLYA_MSG_UNDEFINED_ERROR| is an alias for the number $2$ but is more meaningful to understand what the message is about). It is recommended to use these names instead of numerical values.
+\item \verb|sollya_lib_msg_to_text(sollya_msg_t msg)| returns a \verb|char *| which is a generic string briefly summarizing the content of the message. Please note that this \verb|char *| is dynamically allocated on the heap and should manually be cleared with \verb|sollya_lib_free| when it becomes useless.
+\end{itemize}
+In the future, other accessors could be added (to get the verbosity level at which the message has been emitted, to get data associated to the message, etc.) The developers of \sollya are open to suggestions and feature requests on this subject.
+
+As an illustration we give a few examples of possible use of callbacks:
+\paragraph{Example 1:} A callback that filters everything.
+\begin{center}
+\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+int hide_everything(sollya_msg_t msg) {
+  return 0;
+}
+\end{Verbatim}
+\end{minipage}\end{center}
+
+\paragraph{Example 2:} filter everything but the messages indicating that a comparison is uncertain.
+\begin{center}
+\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+int keep_comparison_warnings(sollya_msg_t msg) {
+  switch(sollya_lib_get_msg_id(msg)) {
+    case SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT_THAT_IS_NOT_FAITHFUL:
+    case SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT:
+    case SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT_FAITHFUL_BUT_UNDECIDED:
+    case SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT_FAITHFUL_BUT_NOT_REAL:
+      return 1;
+    default:
+      return 0;
+  }
+}
+\end{Verbatim}
+\end{minipage}\end{center}
+
+\paragraph{Example 3:} ensuring perfect silence for a particular function call (uses the callback defined in Example~1).
+\begin{center}
+\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+...
+int (*)(int) old_callback = sollya_lib_get_msg_callback();
+sollya_lib_uninstall_msg_callback();
+sollya_lib_install_msg_callback(hide_everything);
+  /* Here takes place the function call that must be completely silent */
+sollya_lib_uninstall_msg_callback();
+sollya_lib_install_msg_callback(old_callback);
+...
+\end{Verbatim}
+\end{minipage}\end{center}
+
+\paragraph{Example 4:} changing the value of some flag when some message is emitted.
+\begin{center}
+\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+int flag_double_rounding = 0;
+
+int set_flag_on_problem(sollya_msg_t msg) {
+  switch(sollya_lib_get_msg_id(msg)) {
+    case SOLLYA_MSG_DOUBLE_ROUNDING_ON_CONVERSION:
+      flag  = 1;
+  }
+  return 1;
+}
+
+...
+
+int main() {
+  ...
+  sollya_lib_init();
+  sollya_lib_install_msg_callback(set_flag_on_problem);
+  ...
+}
+
+\end{Verbatim}
+\end{minipage}\end{center}
+
+More involved examples are possible: for instance, instead of setting a flag, it is possible to keep in some variable what the last message was. One may even implement a stack mechanism and store the messages in a stack, in order to handle them later. One may also decide to raise an exception on a a particular message, etc.
 \end{document}
