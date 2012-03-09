@@ -1,6 +1,7 @@
 #include <sollya.h>
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   if (message == SOLLYA_MSG_EXPR_NOT_CORRECTLY_TYPED)
     sollya_lib_printf("The following test produces a typing error\n");
   else
@@ -8,6 +9,7 @@ int callback(int message) {
   return 0;
 
 }
+
 int main(void) {
   sollya_obj_t true, false, a, b, res;
 

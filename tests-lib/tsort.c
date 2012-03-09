@@ -2,7 +2,8 @@
 
 #define A_DIM 8
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_EXPR_SHOULD_BE_CONSTANT_AND_IS_NOT_FAITHFUL:
     sollya_lib_printf("The expected error message stating that the a certain expression should have been a constant and that faithful evaluation is not possible has been caught.\n");

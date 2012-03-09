@@ -1,6 +1,7 @@
 #include <sollya.h>
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT_THAT_IS_NOT_FAITHFUL:
     sollya_lib_printf("The test will rely on pure FP evaluation.\n");

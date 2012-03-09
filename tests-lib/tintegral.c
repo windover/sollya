@@ -2,7 +2,8 @@
 
 #define NB_OF_TESTS 8
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_DOMAIN_IS_NO_CLOSED_INTERVAL_ON_THE_REALS:
     sollya_lib_printf("Caught the message: the given domain is not a closed subset of the reals.\n");

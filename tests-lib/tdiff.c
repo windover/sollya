@@ -2,7 +2,8 @@
 
 #define A_DIM 34
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   default:
     sollya_lib_printf("Unexpected warning %d.\n", message);

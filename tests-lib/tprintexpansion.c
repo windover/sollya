@@ -1,6 +1,7 @@
 #include <sollya.h>
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   switch (message) {
   case SOLLYA_MSG_ERROR_POLY_COEFF_GETS_ROUNDED:
   case SOLLYA_MSG_ROUNDING_WHILE_PRINTING:

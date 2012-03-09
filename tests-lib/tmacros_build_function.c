@@ -1,6 +1,7 @@
 #include <sollya.h>
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   if (message==SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_READING_A_CONSTANT)
     sollya_lib_printf("Caught the message about the fact that faithful rounding has occurred.\n");
   else

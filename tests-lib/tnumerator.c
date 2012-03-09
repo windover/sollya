@@ -1,6 +1,7 @@
 #include <sollya.h>
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   switch (message) {
   case SOLLYA_MSG_EXPR_IS_NO_FRACTION:
     sollya_lib_printf("The following object is not a fraction.\n");

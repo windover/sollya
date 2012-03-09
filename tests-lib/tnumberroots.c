@@ -2,7 +2,8 @@
 
 #define NB_OF_TESTS 12
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_STURM_COEFF_NOT_CONSTANT_NOR_RATIONAL_ROUNDING:
     sollya_lib_printf("Caught the message that a certain polynomial coefficient is neither a constant nor a rational expression and that it got rounded.\n");

@@ -2,7 +2,8 @@
 
 #define A_DIM 11
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_EXPR_NOT_CORRECTLY_TYPED:
     sollya_lib_printf("The expected error message stating that the tail operation on an empty list cannot be performed has been caught.\n");

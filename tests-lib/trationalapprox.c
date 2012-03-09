@@ -2,7 +2,8 @@
 
 #define A_DIM 14
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST:
     sollya_lib_printf("Caught a message stating that a constant expression was given instead of a constant.\n");

@@ -10,7 +10,8 @@ sollya_obj_t stupid_wrapper(sollya_obj_t arg1, ...) {
   return a;
 }
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_MIN_RELIES_ON_FP_RESULT_FAITHFUL_BUT_UNDECIDED:
     sollya_lib_printf("The following test is not certified (probably because the min is reached by two equal values).\n");

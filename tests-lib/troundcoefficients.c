@@ -3,7 +3,8 @@
 #define A_DIM 4
 #define B_DIM 5
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_GIVEN_FUNCTION_IS_NO_POLYNOMIAL:
     sollya_lib_printf("The message \"The given function is not a polynomial\" has been caught.\n");

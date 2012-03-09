@@ -2,7 +2,8 @@
 
 #define NB_OF_TESTS 11
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_EXPRESSION_IS_CONSTANT:
     sollya_lib_printf("Caught message: a certain expression is constant.\n");

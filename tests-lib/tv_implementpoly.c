@@ -11,7 +11,8 @@
 #define TEMP_PROOF_FILE "timplementpoly.implementation.gappa"
 #define READBUFFERSIZE 1024
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_IMPLEMENTED_POLY_DIFFERS_FROM_ORIGINAL_ONE:
     sollya_lib_printf("Caught the message: the implemented polynomial is different from the original one.\n");

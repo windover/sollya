@@ -1,6 +1,7 @@
 #include <sollya.h>
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   if (message==SOLLYA_MSG_RANGE_BOUNDS_IN_INVERSE_ORDER)
     sollya_lib_printf("Caught the message about bounds in inverse order.\n");
   else if (message==SOLLYA_MSG_ONLY_ONE_ENDPOINT_OF_RANGE_IS_NAN)

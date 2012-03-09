@@ -12,7 +12,8 @@ int myFreeUsed = 0;
 int myReallocWithSizeUsed = 0;
 int myFreeWithSizeUsed = 0;
 
-int callback(int message) {
+int callback(sollya_msg_t msg) {
+  int message = sollya_lib_get_msg_id(msg);
   return 0;
 }
 
