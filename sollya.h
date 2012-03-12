@@ -127,17 +127,7 @@ extern "C" {
 
   typedef struct __sollya_internal_type_object_base_struct __sollya_internal_type_object_base;
   typedef __sollya_internal_type_object_base * sollya_obj_t;
-
-  /* WARNING - WARNING - WARNING */
-  /* @Christoph: I had to add these lines in order to make the compiler happy */
-  /* Please inspect the problem by removing the following lines and see the */
-  /* error given by the compiler. */
-  struct __sollya_internal_type_msg_struct {
-    int msg_id;
-  };
-  /***************************************************************************/
-
-  typedef struct __sollya_internal_type_msg_struct sollya_msg_t;
+  typedef struct __sollya_internal_type_msg_struct * sollya_msg_t;
 #endif
 
 

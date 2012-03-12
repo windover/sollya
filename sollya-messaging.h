@@ -70,7 +70,8 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 struct __sollya_internal_type_msg_struct {
   int msg_id;
 };
-typedef struct __sollya_internal_type_msg_struct sollya_msg_t;
+typedef struct __sollya_internal_type_msg_struct * sollya_msg_t;
+typedef struct __sollya_internal_type_msg_struct sollya_msg_decl_t;
 
 /* A table with textual explanations of the messages
 

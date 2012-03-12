@@ -722,7 +722,7 @@ int printMessage(int verb, int msgNum, const char *format, ...) {
   int res, suppressed;
   const char *myFormat;
   const char *tempStr;
-  sollya_msg_t myMsg;
+  sollya_msg_decl_t myMsg;
 
   if ((verb >= 0) && (verbosity < verb)) return 0;
 
@@ -757,7 +757,7 @@ int printMessage(int verb, int msgNum, const char *format, ...) {
       (msgNum != SOLLYA_MSG_CONTINUATION) && 
       (messageCallback != NULL)) {
     myMsg.msg_id = msgNum;
-    lastMessageCallbackResult = messageCallback(myMsg);
+    lastMessageCallbackResult = messageCallback(&myMsg);
   } 
   if (!lastMessageCallbackResult) return 0;
 

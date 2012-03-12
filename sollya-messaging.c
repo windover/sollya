@@ -105,5 +105,5 @@ int messageNumberExists(int msgNum) {
 }
 
 int getMessageId(sollya_msg_t msg) {
-  return msg.msg_id;
+  return msg->msg_id;
 }
