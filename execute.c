@@ -20264,12 +20264,14 @@ node *evaluateThingInner(node *tree) {
 		mpfr_prec_round(a, tools_precision, GMP_RNDU); /* No rounding as precision always higher */
 	      }
 	      mpfr_nextabove(a);
+	      mpfr_prec_round(a, tools_precision, GMP_RNDU);
 	    }
 	    if (resB != 2) {
 	      if (tools_precision > mpfr_get_prec(b)) {
 		mpfr_prec_round(b, tools_precision, GMP_RNDD); /* No rounding as precision always higher */
 	      }
 	      mpfr_nextbelow(b);
+	      mpfr_prec_round(b, tools_precision, GMP_RNDD);
 	    }
 	    copy->child1 = makeConstant(b);
 	    copy->child2 = makeConstant(a);
@@ -20284,12 +20286,14 @@ node *evaluateThingInner(node *tree) {
 		mpfr_prec_round(a, tools_precision, GMP_RNDD); /* No rounding as precision always higher */
 	      }
 	      mpfr_nextbelow(a);
+	      mpfr_prec_round(a, tools_precision, GMP_RNDD);
 	    }
 	    if (resB != 2) {
 	      if (tools_precision > mpfr_get_prec(b)) {
 		mpfr_prec_round(b, tools_precision, GMP_RNDU); /* No rounding as precision always higher */
 	      }
 	      mpfr_nextabove(b);
+	      mpfr_prec_round(b, tools_precision, GMP_RNDU);
 	    }
 	    copy->child1 = makeConstant(a);
 	    copy->child2 = makeConstant(b);
