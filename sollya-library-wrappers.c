@@ -2331,7 +2331,7 @@ int sollya_lib_get_constant_as_int(int *value, sollya_obj_t obj1) {
     *value = mpfr_get_si(temp, GMP_RNDN);
     mpfr_init2(reconvert,8 * sizeof(int) + 10);
     mpfr_set_si(reconvert, *value, GMP_RNDN); /* Exact as precision enough for an int */
-    if (mpfr_cmp(temp, reconvert) != 0) {
+    if ((mpfr_cmp(temp, reconvert) != 0) || mpfr_nan_p(temp) || mpfr_nan_p(reconvert)) {
       if (mpfr_number_p(temp) || mpfr_inf_p(temp)) {
 	if (!noRoundingWarnings) {
 	  printMessage(1,SOLLYA_MSG_ROUNDING_ON_CONSTANT_RETRIEVAL,"Warning: rounding occurred on retrieval of a constant.\n");
@@ -2461,7 +2461,7 @@ int sollya_lib_get_constant_as_int64(int64_t *value, sollya_obj_t obj1) {
     *value = sollya_lib_helper_mpfr_to_int64(temp);
     mpfr_init2(reconvert,8 * sizeof(int64_t) + 10);
     sollya_lib_helper_mpfr_from_int64(reconvert, *value, GMP_RNDN); /* Exact as precision enough for an int64 */
-    if (mpfr_cmp(temp, reconvert) != 0) {
+    if ((mpfr_cmp(temp, reconvert) != 0) || mpfr_nan_p(temp) || mpfr_nan_p(reconvert)) { 
       if (mpfr_number_p(temp) || mpfr_inf_p(temp)) {
 	if (!noRoundingWarnings) {
 	  printMessage(1,SOLLYA_MSG_ROUNDING_ON_CONSTANT_RETRIEVAL,"Warning: rounding occurred on retrieval of a constant.\n");
@@ -2487,7 +2487,7 @@ int sollya_lib_get_constant_as_uint64(uint64_t *value, sollya_obj_t obj1) {
     *value = sollya_lib_helper_mpfr_to_uint64(temp);
     mpfr_init2(reconvert,8 * sizeof(uint64_t) + 10);
     sollya_lib_helper_mpfr_from_uint64(reconvert, *value, GMP_RNDN); /* Exact as precision enough for an uint64 */
-    if (mpfr_cmp(temp, reconvert) != 0) {
+    if ((mpfr_cmp(temp, reconvert) != 0) || mpfr_nan_p(temp) || mpfr_nan_p(reconvert)) { 
       if (mpfr_number_p(temp) || mpfr_inf_p(temp)) {
 	if (!noRoundingWarnings) {
 	  printMessage(1,SOLLYA_MSG_ROUNDING_ON_CONSTANT_RETRIEVAL,"Warning: rounding occurred on retrieval of a constant.\n");
