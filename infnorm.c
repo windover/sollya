@@ -1,6 +1,6 @@
 /*
 
-Copyright 2006-2011 by
+Copyright 2006-2012 by
 
 Laboratoire de l'Informatique du Parallelisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
@@ -4115,163 +4115,6 @@ int isEvaluable(node *func, mpfr_t x, mpfr_t *y, mp_prec_t prec) {
   return ISNOTEVALUABLE;
 }
 
-int evaluateWithAccuracyEstimate(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, mp_prec_t prec) {
-  rangetype xrange, yrange;
-
-  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-
-  mpfr_init2(*(xrange.a),prec);
-  mpfr_init2(*(xrange.b),prec);
-  mpfr_init2(*(yrange.a),prec);
-  mpfr_init2(*(yrange.b),prec);
-
-  mpfr_set(*(xrange.a),x,GMP_RNDD);
-  mpfr_set(*(xrange.b),x,GMP_RNDU);
-
-  evaluateRangeFunction(yrange, func, xrange, prec);
-
-  mpfr_add(*(xrange.a),*(yrange.a),*(yrange.b),GMP_RNDN);
-  mpfr_div_2ui(*(xrange.a),*(xrange.a),1,GMP_RNDN);
-  mpfr_set(y,*(xrange.a),GMP_RNDN);
-
-  /* We have a zero in the output interval or are not a number */
-  if ((mpfr_sgn(*(yrange.a)) != mpfr_sgn(*(yrange.b))) || (!mpfr_number_p(y))) {
-    mpfr_clear(*(xrange.a));
-    mpfr_clear(*(xrange.b));
-    mpfr_clear(*(yrange.a));
-    mpfr_clear(*(yrange.b));
-    safeFree(xrange.a);
-    safeFree(xrange.b);
-    safeFree(yrange.a);
-    safeFree(yrange.b);
-    return 0;
-  }
-  
-  /* We have the exact interval [0;0] with an error of 0 */
-  if (mpfr_zero_p(*(yrange.a)) && mpfr_zero_p(*(yrange.b))) {
-    mpfr_set_d(accur,0.0,GMP_RNDN);
-    mpfr_clear(*(xrange.a));
-    mpfr_clear(*(xrange.b));
-    mpfr_clear(*(yrange.a));
-    mpfr_clear(*(yrange.b));
-    safeFree(xrange.a);
-    safeFree(xrange.b);
-    safeFree(yrange.a);
-    safeFree(yrange.b);
-    return 1;
-  }
-
-  if (mpfr_cmp(y,*(yrange.b)) > 0) {
-    mpfr_set(*(yrange.b),y,GMP_RNDU);
-  }
-
-  if (mpfr_cmp(y,*(yrange.a)) < 0) {
-    mpfr_set(*(yrange.a),y,GMP_RNDD);
-  }
-
-  mpfr_abs(*(yrange.a),*(yrange.a),GMP_RNDD);
-  mpfr_abs(*(yrange.b),*(yrange.b),GMP_RNDD);
-  sollya_mpfr_min(*(xrange.a),*(yrange.a),*(yrange.b),GMP_RNDD);
-  sollya_mpfr_max(*(xrange.b),*(yrange.a),*(yrange.b),GMP_RNDU);
-
-  mpfr_sub(*(xrange.b),*(xrange.b),*(xrange.a),GMP_RNDU);
-
-  mpfr_div(*(xrange.b),*(xrange.b),*(xrange.a),GMP_RNDU);
-  mpfr_mul_2ui(*(xrange.b),*(xrange.b),1,GMP_RNDU);
-  mpfr_set(accur,*(xrange.b),GMP_RNDU);
-
-  mpfr_clear(*(xrange.a));
-  mpfr_clear(*(xrange.b));
-  mpfr_clear(*(yrange.a));
-  mpfr_clear(*(yrange.b));
-  safeFree(xrange.a);
-  safeFree(xrange.b);
-  safeFree(yrange.a);
-  safeFree(yrange.b);
-
-  return 1;
-}
-
-
-int evaluateWithAccuracy(node *func, mpfr_t x, mpfr_t y, mpfr_t accur, 
-			 mp_prec_t minprec, mp_prec_t maxprec, mp_prec_t *needPrec) {
-  mpfr_t temp, currY, currX, currAccur, resY;
-  mp_prec_t p;
-  int res, okay;
-
-  if (mpfr_sgn(accur) <= 0) return 0;
-
-  mpfr_init2(temp,minprec);
-  mpfr_set_d(temp,1.0,GMP_RNDN);
-  p = mpfr_get_prec(y);
-  if (maxprec < p) p = maxprec;
-  mpfr_div_2ui(temp,temp,p,GMP_RNDN);
-  if (mpfr_cmp(accur,temp) < 0) {
-    mpfr_clear(temp);
-    return 0;
-  }
-  mpfr_clear(temp);
-
-  mpfr_init2(currAccur,mpfr_get_prec(accur));
-
-  p = minprec;
-  if ((mpfr_get_prec(y) + 10) > minprec) minprec = mpfr_get_prec(y) + 10;
-
-  res = 0; okay = 0;
-  while (p <= maxprec) {
-    mpfr_init2(currY,p);
-    mpfr_init2(currX,p);
-    mpfr_set(currX,x,GMP_RNDN);
-    res = evaluateWithAccuracyEstimate(func, currX, currY, currAccur, p);
-    mpfr_clear(currX);
-
-    if (res && (mpfr_cmp(currAccur,accur) <= 0)) {
-      mpfr_init2(resY,mpfr_get_prec(currY));
-      mpfr_set(resY,currY,GMP_RNDN);
-      mpfr_clear(currY);
-      okay = 1;
-      break;
-    }
-    mpfr_clear(currY);
-    p *= 2;
-  }
-  
-  if (okay) {
-    mpfr_set(y,resY,GMP_RNDN);
-    mpfr_clear(resY);
-    if (needPrec != NULL) {
-      *needPrec = p;
-    }
-  }
-
-  mpfr_clear(currAccur);
-  return okay;
-}
-
-
-int evaluateFaithfulOrFail(node *func, mpfr_t x, mpfr_t y, unsigned int precFactor, mp_prec_t *needPrec) {
-  mp_prec_t startPrec, endPrec, p;
-  mpfr_t accur;
-  int res;
-
-  p = mpfr_get_prec(y);
-  startPrec = p + 10;
-  endPrec = startPrec * precFactor;
-
-  mpfr_init2(accur,startPrec);
-  mpfr_set_d(accur,1.0,GMP_RNDN);
-  mpfr_div_2ui(accur,accur,p,GMP_RNDD);
-
-  res = evaluateWithAccuracy(func, x, y, accur, startPrec, endPrec, needPrec);
-  
-  mpfr_clear(accur);
-  
-  return res;
-}
-
 int evaluateFaithful(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
   mp_prec_t startPrec, p;
   mpfr_t cutoff;
@@ -4616,7 +4459,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
   mp_prec_t p, prec;
   sollya_mpfi_t yI, xI, cutoffI, dummyI;
   int okay;
-  mpfr_t resUp, resDown;
+  mpfr_t resUp, resDown, resDownTemp;
   mpfr_t cutoffLeft, cutoffRight;
   mpfr_t yILeft, yIRight;
   int testCutOff;
@@ -4652,10 +4495,11 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
   mpfr_clear(cutoffLeft);
   mpfr_clear(cutoffRight);
 
-  /* Need a little more because we always take the upper value below */
-  prec = mpfr_get_prec(result)+5;
+  /* Initialize the variables that hold the possible roundings */
+  prec = mpfr_get_prec(result);
   mpfr_init2(resUp,prec);
   mpfr_init2(resDown,prec);
+  mpfr_init2(resDownTemp,prec);
 
   /* Determine a starting precision */
   if (startprec > prec) prec = startprec;
@@ -4727,12 +4571,14 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 	) {
       if (mpfr_cmp(resDown,resUp) == 0) 
 	okay = 1;
-      mpfr_nextabove(resDown);
-      if (mpfr_cmp(resDown,resUp) == 0) 
+      mpfr_set(resDownTemp, resDown, GMP_RNDN); /* exact, same precision */
+      mpfr_nextabove(resDownTemp);
+      if (mpfr_cmp(resDownTemp,resUp) == 0) 
 	okay = 1;
       if (testCutOff && (okay == 0)) {
 	if (sollya_mpfi_is_inside(yI,cutoffI)) {
 	  sollya_mpfi_mid(resUp,yI);
+	  mpfr_set(resDown, resUp, GMP_RNDN); /* exact, same precision */
 	  okay = 2;
 	} 
       }
@@ -4746,8 +4592,39 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
   mpfr_clear(yIRight);
 
   if (okay > 0) {
-    /* This rounding annihilates the effect of taking always the upper value */
-    mpfr_set(result,resUp,GMP_RNDN);
+    /* Now compute the correct rounding wherever possible and the
+       correct rounding of the midpoint of both possible answers
+       otherwise 
+
+       To do so, compute the midpoint of resUp and resDown and round
+       it to the target precision.
+
+       There are 3 possible cases:
+
+       a) The loop above has been left because both endpoints of the 
+          proof interval rounded to the same value, resUp = resDown.
+          In this case, the midpoint of resUp and resDown is 
+	  resUp = resDown, which is also the correct rounding.
+
+       b) The loop above has been left because resUp was the 
+          next floating-point number above resDown. resDown
+          and resUp are the two possible answers for a faithful
+	  rounding. Their midpoint is the point where the rounding 
+	  changes. The proof interval contained that midpoint.
+          Returning the correct rounding of the midpoint to the 
+          nearest floating-point value hence chooses the even of 
+          both possible faithful roundings.
+
+       c) The loop above has been left because the proof interval
+          was contained in [-cutoff,cutoff]. In this case, resUp and 
+	  resDown have both been set to the midpoint of the proof 
+          interval, which is certainly less than cutoff in magnitude.
+	  Computing the midpoint of resUp and resDown and rounding 
+          to target precision does not change anything to that value.
+    */
+    mpfr_div_2ui(resDown, resDown, 1, GMP_RNDN); /* exact, power of 2 */
+    mpfr_div_2ui(resUp, resUp, 1, GMP_RNDN); /* exact, power of 2 */
+    mpfr_add(result,resDown, resUp, GMP_RNDN); /* Computes the midpoint and rounds it to target precision */
   } else {
     mpfr_set_nan(result);
     if( (!mpfr_number_p(resUp)) || (!mpfr_number_p(resDown))) okay=3;
@@ -4755,6 +4632,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
  
   mpfr_clear(resUp);
   mpfr_clear(resDown);
+  mpfr_clear(resDownTemp);
   sollya_mpfi_clear(cutoffI);
   sollya_mpfi_clear(dummyI);
   return okay;
