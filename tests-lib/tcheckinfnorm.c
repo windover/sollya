@@ -62,7 +62,7 @@ int main(void) {
   }
   
   a[0] = SOLLYA_SIN(SOLLYA_X_);
-  a[1] = sollya_lib_parse_string("[0;20/39]");
+  a[1] = sollya_lib_parse_string("[0;23983616612609688914111751100985157245635816089863b-165]");
   a[2] = SOLLYA_CONST(0.5);
 
   res = sollya_lib_checkinfnorm(a[0],a[1],a[2]);
