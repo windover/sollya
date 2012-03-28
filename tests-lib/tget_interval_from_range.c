@@ -45,7 +45,7 @@ int main(void) {
   a = sollya_lib_parse_string("[exp(1), pi]");
   s = sollya_lib_get_interval_from_range(res, a);
   if (s==0) sollya_lib_printf("%b is not a range\n\n", a);
-  else sollya_lib_printf("%b has been converted to %w.\n\n", a, res);
+  else sollya_lib_printf("%b has been converted to\n%w (should be [430728948929449700355022696705 * 2^(-97), 995610453248924340922087778489 * 2^(-98)]).\n\n", a, res);
   sollya_lib_clear_obj(a);
 
 
