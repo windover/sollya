@@ -2057,11 +2057,11 @@ sollya_obj_t sollya_lib_constant_from_int(int value) {
   return temp;
 }
 
-sollya_obj_t sollya_lib_constant_from_int64(int64_t value) {
-  sollya_obj_t temp;
+int sollya_lib_helper_mpfr_from_int64(mpfr_t rop, int64_t value, mp_rnd_t rnd) {
   double valueDoubleHi, valueDoubleLo;
   int64_t valueHi, valueLo, tempInt64;
   mpfr_t valueMpfr, tempMpfr;
+  int res;
 
   /* Cut the 64 bit signed value into two pieces
      such that
@@ -2086,18 +2086,21 @@ sollya_obj_t sollya_lib_constant_from_int64(int64_t value) {
   mpfr_set_d(valueMpfr, valueDoubleHi, GMP_RNDN);
   mpfr_set_d(tempMpfr, valueDoubleLo, GMP_RNDN);
   mpfr_add(valueMpfr, valueMpfr, tempMpfr, GMP_RNDN); /* exact */
-  temp = makeConstant(valueMpfr);
-  mpfr_clear(valueMpfr);
-  mpfr_clear(tempMpfr);
 
-  return temp;
+  /* Set the result, this may round and sets the ternary value */
+  res = mpfr_set(rop, valueMpfr, rnd);
+
+  mpfr_clear(tempMpfr);
+  mpfr_clear(valueMpfr);
+  
+  return res;
 }
 
-sollya_obj_t sollya_lib_constant_from_uint64(uint64_t value) {
-  sollya_obj_t temp;
+int sollya_lib_helper_mpfr_from_uint64(mpfr_t rop, uint64_t value, mp_rnd_t rnd) {
   double valueDoubleHi, valueDoubleLo;
   uint64_t valueHi, valueLo, tempInt64;
   mpfr_t valueMpfr, tempMpfr;
+  int res;
 
   /* Cut the 64 bit unsigned value into two pieces
      such that
@@ -2122,9 +2125,37 @@ sollya_obj_t sollya_lib_constant_from_uint64(uint64_t value) {
   mpfr_set_d(valueMpfr, valueDoubleHi, GMP_RNDN);
   mpfr_set_d(tempMpfr, valueDoubleLo, GMP_RNDN);
   mpfr_add(valueMpfr, valueMpfr, tempMpfr, GMP_RNDN); /* exact */
-  temp = makeConstant(valueMpfr);
+
+  /* Set the result, this may round and sets the ternary value */
+  res = mpfr_set(rop, valueMpfr, rnd);
+
   mpfr_clear(valueMpfr);
   mpfr_clear(tempMpfr);
+  
+  return res;
+}
+
+
+sollya_obj_t sollya_lib_constant_from_int64(int64_t value) {
+  sollya_obj_t temp;
+  mpfr_t valueMpfr;
+
+  mpfr_init2(valueMpfr, 64);
+  sollya_lib_helper_mpfr_from_int64(valueMpfr, value, GMP_RNDN); /* exact as 64 are enough */
+  temp = makeConstant(valueMpfr);
+  mpfr_clear(valueMpfr);
+
+  return temp;
+}
+
+sollya_obj_t sollya_lib_constant_from_uint64(uint64_t value) {
+  sollya_obj_t temp;
+  mpfr_t valueMpfr;
+
+  mpfr_init2(valueMpfr, 64);
+  sollya_lib_helper_mpfr_from_uint64(valueMpfr, value, GMP_RNDN); /* exact as 64 are enough */
+  temp = makeConstant(valueMpfr);
+  mpfr_clear(valueMpfr);
 
   return temp;
 }
@@ -2211,7 +2242,7 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1) {
     return 0;
   }
 
-  if (evaluateThingToConstant(value, simplifiedObj, NULL, 1, 0)) {
+  if (evaluateThingToConstant(value, simplifiedObj, NULL, 0, 0)) {
     freeThing(evaluatedObj);
     freeThing(simplifiedObj);
     return 1;
@@ -2269,11 +2300,21 @@ int sollya_lib_get_prec_of_constant(mp_prec_t *pr, sollya_obj_t obj1) {
 }
 
 int sollya_lib_get_constant_as_double(double *value, sollya_obj_t obj1) {
-  mpfr_t temp;
+  mpfr_t temp, reconvert;
 
-  mpfr_init2(temp,64); /* sollya_lib_get_constant_inner may change the precision afterwards */
+  mpfr_init2(temp,53); /* sollya_lib_get_constant_inner may change the precision afterwards */
   if (sollya_lib_get_constant_inner(temp, obj1)) {
     *value = mpfr_get_d(temp, GMP_RNDN);
+    mpfr_init2(reconvert,64);
+    mpfr_set_d(reconvert, *value, GMP_RNDN); /* Exact as precision enough for a double */
+    if ((mpfr_cmp(temp, reconvert) != 0) && 
+	(mpfr_number_p(temp) || mpfr_inf_p(temp)) &&
+	(mpfr_number_p(reconvert) || mpfr_inf_p(reconvert))) {
+      if (!noRoundingWarnings) {
+	printMessage(1,SOLLYA_MSG_ROUNDING_ON_CONSTANT_RETRIEVAL,"Warning: rounding occurred on retrieval of a constant.\n");
+      }
+    }
+    mpfr_clear(reconvert);
     mpfr_clear(temp);
     return 1;
   }
@@ -2283,56 +2324,29 @@ int sollya_lib_get_constant_as_double(double *value, sollya_obj_t obj1) {
 }
 
 int sollya_lib_get_constant_as_int(int *value, sollya_obj_t obj1) {
-  mpfr_t temp;
+  mpfr_t temp, reconvert;
 
-  mpfr_init2(temp,64); /* sollya_lib_get_constant_inner may change the precision afterwards */
+  mpfr_init2(temp,8 * sizeof(int)); /* sollya_lib_get_constant_inner may change the precision afterwards */
   if (sollya_lib_get_constant_inner(temp, obj1)) {
     *value = mpfr_get_si(temp, GMP_RNDN);
+    mpfr_init2(reconvert,8 * sizeof(int) + 10);
+    mpfr_set_si(reconvert, *value, GMP_RNDN); /* Exact as precision enough for an int */
+    if (mpfr_cmp(temp, reconvert) != 0) {
+      if (mpfr_number_p(temp) || mpfr_inf_p(temp)) {
+	if (!noRoundingWarnings) {
+	  printMessage(1,SOLLYA_MSG_ROUNDING_ON_CONSTANT_RETRIEVAL,"Warning: rounding occurred on retrieval of a constant.\n");
+	}
+      } else {
+	printMessage(1,	SOLLYA_MSG_NAN_CONVERTED_TO_NUMBER_ON_CONSTANT_RETRIEVAL,"Warning: a Not-A-Number value has been converted to a number upon retrieval of a constant.\n");
+      }
+    }
+    mpfr_clear(reconvert);
     mpfr_clear(temp);
     return 1;
   }
 
   mpfr_clear(temp);
   return 0;
-}
-
-int64_t sollya_lib_helper_mpfr_to_int64(mpfr_t op) {
-  int64_t res;
-  mp_prec_t p;
-  mpfr_t op_int, temp, temp2;
-  int bytes[8];
-  int i;
-
-
-  p = mpfr_get_prec(op);
-  if (p < 64) p = 64;
-  mpfr_init2(op_int,p);
-  mpfr_init2(temp,p);
-  mpfr_init2(temp2,p);
-  mpfr_nearestint(op_int,op);
-  for (i=0;i<8;i++) {
-    mpfr_div_2ui(temp, op_int, 3, GMP_RNDN); /* exact */
-    mpfr_floor(temp, temp);
-    mpfr_mul_2ui(temp, temp, 3, GMP_RNDN); /* exact */
-    mpfr_sub(temp2, op_int, temp, GMP_RNDN); /* Sterbenz */
-    bytes[i] = mpfr_get_si(temp2, GMP_RNDN); /* exact */
-    mpfr_set(op_int, temp, GMP_RNDN); /* exact */
-  }
-  if (mpfr_zero_p(op_int)) {
-    res = 0;
-    for (i=7;i>=0;i--) {
-      res = res * ((int64_t) 256) + (int64_t) (bytes[i]);
-    }
-  } else {
-    /* The mpfr value overflows on int64 */
-    res = (int64_t) 1e65;
-  }
-
-  mpfr_clear(op_int);
-  mpfr_clear(temp);
-  mpfr_clear(temp2);
-
-  return res;
 }
 
 uint64_t sollya_lib_helper_mpfr_to_uint64(mpfr_t op) {
@@ -2342,49 +2356,121 @@ uint64_t sollya_lib_helper_mpfr_to_uint64(mpfr_t op) {
   unsigned int bytes[8];
   int i;
 
-
-  p = mpfr_get_prec(op);
-  if (p < 64) p = 64;
-  mpfr_init2(op_int,p);
-  mpfr_init2(temp,p);
-  mpfr_init2(temp2,p);
-  mpfr_nearestint(op_int,op);
-  if (mpfr_sgn(op_int) >= 0) {
-    for (i=0;i<8;i++) {
-      mpfr_div_2ui(temp, op_int, 3, GMP_RNDN); /* exact */
-      mpfr_floor(temp, temp);
-      mpfr_mul_2ui(temp, temp, 3, GMP_RNDN); /* exact */
-      mpfr_sub(temp2, op_int, temp, GMP_RNDN); /* Sterbenz */
-      bytes[i] = mpfr_get_ui(temp2, GMP_RNDN); /* exact */
-      mpfr_set(op_int, temp, GMP_RNDN); /* exact */
-    }
-    if (mpfr_zero_p(op_int)) {
-      res = 0;
-      for (i=7;i>=0;i--) {
-        res = res * ((uint64_t) 256) + (uint64_t) (bytes[i]);
+  if (mpfr_number_p(op)) {
+    p = mpfr_get_prec(op);
+    if (p < 64) p = 64;
+    mpfr_init2(op_int,p);
+    mpfr_init2(temp,p);
+    mpfr_init2(temp2,p);
+    mpfr_nearestint(op_int,op);
+    if (mpfr_sgn(op_int) >= 0) {
+      for (i=0;i<8;i++) {
+	mpfr_div_2ui(temp, op_int, 8, GMP_RNDN); /* exact */
+	mpfr_floor(temp, temp);
+	mpfr_mul_2ui(temp2, temp, 8, GMP_RNDN); /* exact */
+	mpfr_sub(temp2, op_int, temp2, GMP_RNDN); /* Sterbenz */
+	bytes[i] = mpfr_get_ui(temp2, GMP_RNDN); /* exact */
+	mpfr_set(op_int, temp, GMP_RNDN); /* exact */
+      }
+      if (mpfr_zero_p(op_int)) {
+	res = 0;
+	for (i=7;i>=0;i--) {
+	  res = res * ((uint64_t) 256) + (uint64_t) (bytes[i]);
+	}
+      } else {
+	/* The mpfr value overflows on uint64 */
+	res = UINT64_MAX;
       }
     } else {
-      /* The mpfr value overflows on uint64 */
-      res = (uint64_t) 1e65;
+      /* The mpfr value is negative */
+      res = 0;
     }
+
+    mpfr_clear(op_int);
+    mpfr_clear(temp);
+    mpfr_clear(temp2);
   } else {
-    /* The mpfr value is negative */
-    res = (uint64_t) -1.0;
+    /* The value is a NaN or an Inf */
+    if (mpfr_inf_p(op)) {
+      if (mpfr_sgn(op) < 0) {
+	/* -Infty becomes 0 */
+	res = (uint64_t) 0;
+      } else {
+	/* +Infty becomes the maximum uint64 */
+	res = UINT64_MAX;
+      }
+    } else {
+      /* The value is a NaN. It becomes 0. */
+      res = (uint64_t) 0;
+    }
   }
 
-  mpfr_clear(op_int);
-  mpfr_clear(temp);
-  mpfr_clear(temp2);
+  return res;
+}
+
+int64_t sollya_lib_helper_mpfr_to_int64(mpfr_t op) {
+  mpfr_t opAbs;
+  uint64_t opAbsAsUint64;
+  uint64_t int64MaxAsUint64, minusInt64MinAsUint64;
+  int64_t res;
+
+  if (mpfr_number_p(op)) {
+    mpfr_init2(opAbs, mpfr_get_prec(op));
+    mpfr_abs(opAbs, op, GMP_RNDN); /* Exact, same precision */
+    opAbsAsUint64 = sollya_lib_helper_mpfr_to_uint64(opAbs);
+    int64MaxAsUint64 = (uint64_t) (INT64_MAX);
+    minusInt64MinAsUint64 = ((uint64_t) (-(INT64_MIN + ((int64_t) 16)))) + ((uint64_t) 16);
+    if (mpfr_sgn(op) >= 0) {
+      if (opAbsAsUint64 <= int64MaxAsUint64) {
+	res = (int64_t) opAbsAsUint64;
+      } else {
+	res = INT64_MAX;
+      }
+    } else {
+      if (opAbsAsUint64 < minusInt64MinAsUint64) {
+	res = -((int64_t) opAbsAsUint64);
+      } else {
+	res = INT64_MIN;
+      }
+    }
+    mpfr_clear(opAbs);
+  } else {
+    /* The value is a NaN or an Inf */
+    if (mpfr_inf_p(op)) {
+      if (mpfr_sgn(op) < 0) {
+	/* -Infty becomes the minimum int64 */
+	res = INT64_MIN;
+      } else {
+	/* +Infty becomes the maximum int64 */
+	res = INT64_MAX;
+      }
+    } else {
+      /* The value is a NaN. It becomes 0. */
+      res = (int64_t) 0;
+    }
+  }
 
   return res;
 }
 
 int sollya_lib_get_constant_as_int64(int64_t *value, sollya_obj_t obj1) {
-  mpfr_t temp;
+  mpfr_t temp, reconvert;
 
   mpfr_init2(temp,64); /* sollya_lib_get_constant_inner may change the precision afterwards */
   if (sollya_lib_get_constant_inner(temp, obj1)) {
     *value = sollya_lib_helper_mpfr_to_int64(temp);
+    mpfr_init2(reconvert,8 * sizeof(int64_t) + 10);
+    sollya_lib_helper_mpfr_from_int64(reconvert, *value, GMP_RNDN); /* Exact as precision enough for an int64 */
+    if (mpfr_cmp(temp, reconvert) != 0) {
+      if (mpfr_number_p(temp) || mpfr_inf_p(temp)) {
+	if (!noRoundingWarnings) {
+	  printMessage(1,SOLLYA_MSG_ROUNDING_ON_CONSTANT_RETRIEVAL,"Warning: rounding occurred on retrieval of a constant.\n");
+	}
+      } else {
+	printMessage(1,	SOLLYA_MSG_NAN_CONVERTED_TO_NUMBER_ON_CONSTANT_RETRIEVAL,"Warning: a Not-A-Number value has been converted to a number upon retrieval of a constant.\n");
+      }
+    }
+    mpfr_clear(reconvert);
     mpfr_clear(temp);
     return 1;
   }
@@ -2394,11 +2480,23 @@ int sollya_lib_get_constant_as_int64(int64_t *value, sollya_obj_t obj1) {
 }
 
 int sollya_lib_get_constant_as_uint64(uint64_t *value, sollya_obj_t obj1) {
-  mpfr_t temp;
+  mpfr_t temp, reconvert;
 
   mpfr_init2(temp,64); /* sollya_lib_get_constant_inner may change the precision afterwards */
   if (sollya_lib_get_constant_inner(temp, obj1)) {
     *value = sollya_lib_helper_mpfr_to_uint64(temp);
+    mpfr_init2(reconvert,8 * sizeof(uint64_t) + 10);
+    sollya_lib_helper_mpfr_from_uint64(reconvert, *value, GMP_RNDN); /* Exact as precision enough for an uint64 */
+    if (mpfr_cmp(temp, reconvert) != 0) {
+      if (mpfr_number_p(temp) || mpfr_inf_p(temp)) {
+	if (!noRoundingWarnings) {
+	  printMessage(1,SOLLYA_MSG_ROUNDING_ON_CONSTANT_RETRIEVAL,"Warning: rounding occurred on retrieval of a constant.\n");
+	}
+      } else {
+	printMessage(1,	SOLLYA_MSG_NAN_CONVERTED_TO_NUMBER_ON_CONSTANT_RETRIEVAL,"Warning: a Not-A-Number value has been converted to a number upon retrieval of a constant.\n");
+      }
+    }
+    mpfr_clear(reconvert);
     mpfr_clear(temp);
     return 1;
   }

@@ -540,6 +540,7 @@ static const messageEntry messageTextsTable[] = {
   { SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NEGATIVE                        , "An attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is negative" },
   { SOLLYA_MSG_RATIONALAPPROX_SECOND_ARG_MUST_BE_GREATER_THAN_ONE     , "Error in rationalapprox: the second argument of rationalapprox must be greater or equal to 2" },
   { SOLLYA_MSG_ROUND_PREC_MUST_BE_AT_LEAST_TWO_BITS                   , "The precision specified when rounding to a particular format must be at least 2 bits" },
+  { SOLLYA_MSG_NAN_CONVERTED_TO_NUMBER_ON_CONSTANT_RETRIEVAL          , "A Not-A-Number value has been converted to a number upon retrieval of a constant." },
 
   /* Add your new warning message texts above here. */
 
