@@ -2,11 +2,15 @@
 #include <inttypes.h>
 
 int main(void) {
-  sollya_obj_t a;
+  sollya_obj_t a, prec;
   int64_t res;
   int i;
 
   sollya_lib_init();
+
+  prec = SOLLYA_CONST(20);
+  sollya_lib_set_prec_and_print(prec);
+  sollya_lib_clear_obj(prec);
 
   /* something that is obviously not a constant */
   res = -17;
@@ -49,6 +53,17 @@ int main(void) {
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
     sollya_lib_printf("%b has been converted to %" PRId64 " (expecting 3)\n\n", a, res);
+  }
+  sollya_lib_clear_obj(a);
+
+
+  /* A constant, but that does not fit on 20 bits */
+  res = -17;
+  a = SOLLYA_CONST(1073741824);
+  if (!sollya_lib_get_constant_as_int64(&res, a))
+    sollya_lib_printf("%b is not a constant.\n\n", a);
+  else {
+    sollya_lib_printf("%b has been converted to %" PRId64 " (expecting 1073741824)\n\n", a, res);
   }
   sollya_lib_clear_obj(a);
 
@@ -213,13 +228,24 @@ int main(void) {
   sollya_lib_clear_obj(a);
 
 
+  /* Trying -inf */
+  res = -17;
+  a = sollya_lib_parse_string("-@Inf@");
+  if (!sollya_lib_get_constant_as_int64(&res, a))
+    sollya_lib_printf("%b is not a constant.\n\n", a);
+  else {
+    sollya_lib_printf("%b has been converted to %" PRId64 " (expecting 0).\n\n", a, res);
+  }
+  sollya_lib_clear_obj(a);
+
+
  /* Trying NaN */
   res = -17;
   a = sollya_lib_parse_string("@NaN@");
   if (!sollya_lib_get_constant_as_int64(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %" PRId64 " (expecting NaN).\n\n", a, res);
+    sollya_lib_printf("%b has been converted to %" PRId64 " (expecting 0).\n\n", a, res);
   }
   sollya_lib_clear_obj(a);
 

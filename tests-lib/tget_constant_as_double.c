@@ -1,10 +1,15 @@
 #include <sollya.h>
 
 int main(void) {
-  sollya_obj_t a;
+  sollya_obj_t a, prec;
   double res;
 
   sollya_lib_init();
+
+
+  prec = SOLLYA_CONST(20);
+  sollya_lib_set_prec_and_print(prec);
+  sollya_lib_clear_obj(prec);
 
   /* something that is obviously not a constant */
   res = -17;
@@ -51,6 +56,17 @@ int main(void) {
   sollya_lib_clear_obj(a);
 
 
+  /* A constant, but that does not fit on 20 bits */
+  res = -17;
+  a = SOLLYA_CONST(7.62939453125e4);
+  if (!sollya_lib_get_constant_as_double(&res, a))
+    sollya_lib_printf("%b is not a constant.\n\n", a);
+  else {
+    sollya_lib_printf("%b has been converted to %a (expecting 0x1.2a05f2p16)\n\n", a, res);
+  }
+  sollya_lib_clear_obj(a);
+
+
   /* A constant expression exactly representable as a double
    but it cannot be decided. */
   res = -17;
@@ -64,7 +80,7 @@ int main(void) {
 
 
   /* A constant expression very close to the middle between two doubles
-   and it cannote be decided. */
+   and it cannot be decided. */
   res = -17;
   a = sollya_lib_parse_string("1 + 1b-400 + 1b-53*(log2(3)/log2(7) - log(3)/log(7) + 1)");
   if (!sollya_lib_get_constant_as_double(&res, a))
@@ -81,7 +97,8 @@ int main(void) {
   if (!sollya_lib_get_constant_as_double(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %a (expecting 0x1.0000000000001p+0)\n\n", a, res);
+    sollya_lib_printf("%b has been converted to %a (expecting one of 0x1p+0 or 0x1.0000000000001p+0 -- the second one would be better)\n\n", a, res);
+
   }
   sollya_lib_clear_obj(a);
 
@@ -104,7 +121,7 @@ int main(void) {
   if (!sollya_lib_get_constant_as_double(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %a (expecting 0x1p+0)\n\n", a, res);
+    sollya_lib_printf("%b has been converted to %a (expecting one of 0x1p+0 or 0xf.ffffffffffff8p-4 -- the first one would be better)\n\n", a, res);
   }
   sollya_lib_clear_obj(a);
 
@@ -127,7 +144,7 @@ int main(void) {
   if (!sollya_lib_get_constant_as_double(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %a (expecting 0x1.0000000000002p0)\n\n", a, res);
+    sollya_lib_printf("%b has been converted to %a (expecting one of 0x1.0000000000001p0 or 0x1.0000000000002p0 -- the second one would be better)\n\n", a, res);
   }
   sollya_lib_clear_obj(a);
 
@@ -175,6 +192,28 @@ int main(void) {
   }
   sollya_lib_clear_obj(a);
 
+
+ /* Trying -inf */
+  res = -17;
+  a = sollya_lib_parse_string("-@Inf@");
+  if (!sollya_lib_get_constant_as_double(&res, a))
+    sollya_lib_printf("%b is not a constant.\n\n", a);
+  else {
+    sollya_lib_printf("%b has been converted to %a (expecting -inf).\n\n", a, res);
+  }
+  sollya_lib_clear_obj(a);
+
+ /* Trying -Huge */
+  res = -17;
+  a = sollya_lib_parse_string("-1b2000");
+  if (!sollya_lib_get_constant_as_double(&res, a))
+    sollya_lib_printf("%b is not a constant.\n\n", a);
+  else {
+    sollya_lib_printf("%b has been converted to %a (expecting -inf).\n\n", a, res);
+  }
+  sollya_lib_clear_obj(a);
+
+
  /* Trying NaN */
   res = -17;
   a = sollya_lib_parse_string("@NaN@");
@@ -184,6 +223,7 @@ int main(void) {
     sollya_lib_printf("%b has been converted to %a (expecting NaN).\n\n", a, res);
   }
   sollya_lib_clear_obj(a);
+
 
   sollya_lib_close();
   return 0;
