@@ -4456,10 +4456,10 @@ int evaluateFaithfulWithCutOffFastOld(mpfr_t result, node *func, node *deriv, mp
 }
 
 int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec, node *altX) {
-  mp_prec_t p, prec;
+  mp_prec_t p, prec, pTemp;
   sollya_mpfi_t yI, xI, cutoffI, dummyI;
   int okay;
-  mpfr_t resUp, resDown, resDownTemp;
+  mpfr_t resUp, resDown, resUpFaith, resDownFaith, resDownTemp;
   mpfr_t cutoffLeft, cutoffRight;
   mpfr_t yILeft, yIRight;
   int testCutOff;
@@ -4499,6 +4499,8 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
   prec = mpfr_get_prec(result);
   mpfr_init2(resUp,prec);
   mpfr_init2(resDown,prec);
+  mpfr_init2(resUpFaith,prec);
+  mpfr_init2(resDownFaith,prec);
   mpfr_init2(resDownTemp,prec);
 
   /* Determine a starting precision */
@@ -4567,20 +4569,90 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
      */
     if ((mpfr_number_p(resDown)) &&
 	(mpfr_number_p(resUp)) &&
-	(sollya_mpfi_bounded_p(yI))
-	) {
-      if (mpfr_cmp(resDown,resUp) == 0) 
+	(sollya_mpfi_bounded_p(yI))) {
+      /* Check if correct rounding is already possible */
+      if (mpfr_cmp(resDown,resUp) == 0) {
+	/* Correct rounding is possible, resDown = resUp is that
+	   correct rounding 
+	*/
 	okay = 1;
-      mpfr_set(resDownTemp, resDown, GMP_RNDN); /* exact, same precision */
-      mpfr_nextabove(resDownTemp);
-      if (mpfr_cmp(resDownTemp,resUp) == 0) 
-	okay = 1;
-      if (testCutOff && (okay == 0)) {
-	if (sollya_mpfi_is_inside(yI,cutoffI)) {
-	  sollya_mpfi_mid(resUp,yI);
-	  mpfr_set(resDown, resUp, GMP_RNDN); /* exact, same precision */
-	  okay = 2;
-	} 
+      } else {
+	/* Check if faithful rounding is already possible */
+	sollya_mpfi_get_left(resDownFaith,yI);
+	sollya_mpfi_get_right(resUpFaith,yI);
+	mpfr_set(resDownTemp, resDownFaith, GMP_RNDN); /* exact, same precision */
+	mpfr_nextabove(resDownTemp);
+	if (mpfr_number_p(resDownFaith) && 
+	    mpfr_number_p(resUpFaith) && 
+	    (mpfr_cmp(resDownTemp,resUpFaith) == 0)) {
+	  /* A faithful rounding is already possible 
+
+	     As the rounding process implemented here will start with
+             some small precision (yielding large proof intervals at
+             first) and increase that precision more and more until
+             correct or faithful rounding becomes possible and since
+             faithful rounding is easier than correct rounding, there
+             are more chances to fall into this case of faithful
+             rounding than into the case for correct rounding.
+
+	     In order to allow for correct rounding in most cases
+	     anyway, we are hence going to try to recompute the proof
+	     interval at a slightly higher precision to see if we
+	     can't get correct rounding "for just one dollar more."
+	     
+	   */
+	  pTemp = p + (p >> 2); /* That is 25% more of precision */
+	  
+	  /* Recompute at that slightly higher precision */
+	  sollya_mpfi_set_prec(yI,pTemp);
+	  
+	  /* If we evaluate at a constant expression instead of a point,
+	     evaluate the constant expression to the current (loop)
+	     precision.
+	  */
+	  if (altX != NULL) {
+	    sollya_mpfi_set_prec(xI,pTemp);
+	    evaluateInterval(xI, altX, NULL, dummyI);
+	  }
+	  
+	  mpfr_set_prec(yILeft,pTemp);
+	  mpfr_set_prec(yIRight,pTemp);
+	  evaluateInterval(yI, func, deriv, xI);
+	  sollya_mpfi_get_left(yILeft,yI);
+	  sollya_mpfi_get_right(yIRight,yI);
+	  mpfr_set(resDown,yILeft,GMP_RNDN);
+	  mpfr_set(resUp,yIRight,GMP_RNDN);
+
+	  /* Check if we have a correct rounding now. */
+	  if (mpfr_number_p(resDown) &&
+	      mpfr_number_p(resUp) &&
+	      sollya_mpfi_bounded_p(yI) && 
+	      (mpfr_cmp(resDown,resUp) == 0)) {
+	    /* We did find a correct rounding now, which we're gonna
+	       use. 
+	    */
+	    okay = 1;
+	  } else {
+	    /* We couldn't find a correct rounding with a
+	       recomputation at a slightly higher precision. So we'll
+	       go for our faithful rounding. 
+	    */
+	    okay = 1;
+	    mpfr_set(resDown, resDownFaith, GMP_RNDN); /* exact, same precision */
+	    mpfr_set(resUp, resUpFaith, GMP_RNDN); /* exact, same precision */
+	  }
+	} else {
+	  /* Check if the proof interval is already contained in the
+	     cutoff interval 
+	  */
+	  if (testCutOff && (okay == 0)) {
+	    if (sollya_mpfi_is_inside(yI,cutoffI)) {
+	      sollya_mpfi_mid(resUp,yI);
+	      mpfr_set(resDown, resUp, GMP_RNDN); /* exact, same precision */
+	      okay = 2;
+	    } 
+	  }
+	}
       }
     }
     if (okay > 0) break;
@@ -4632,6 +4704,8 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
  
   mpfr_clear(resUp);
   mpfr_clear(resDown);
+  mpfr_clear(resUpFaith);
+  mpfr_clear(resDownFaith);
   mpfr_clear(resDownTemp);
   sollya_mpfi_clear(cutoffI);
   sollya_mpfi_clear(dummyI);
