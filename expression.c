@@ -4304,7 +4304,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 64)? tools_precision : 64));
       simplified->value = value;
       mpfr_round_to_double(*value, *(simplChild1->value)); 
       if (!mpfr_number_p(*value)) {
@@ -4323,8 +4323,8 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
         mpfr_init2(*(yrange.a),4* tools_precision);
         mpfr_init2(*(yrange.b),4 * tools_precision);
-        mpfr_init2(*(xrange.a),tools_precision);
-        mpfr_init2(*(xrange.b),tools_precision);
+        mpfr_init2(*(xrange.a),((tools_precision > 64)? tools_precision : 64));
+        mpfr_init2(*(xrange.b),((tools_precision > 64)? tools_precision : 64));
         mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
         mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
@@ -4335,7 +4335,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
           value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-          mpfr_init2(*value,tools_precision);
+          mpfr_init2(*value,((tools_precision > 64)? tools_precision : 64));
           simplified->value = value;
           mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
 	  free_memory(simplChild1);
@@ -4363,7 +4363,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 64)? tools_precision : 64));
       simplified->value = value;
       mpfr_round_to_single(*value, *(simplChild1->value)); 
       if (!mpfr_number_p(*value)) {
@@ -4382,8 +4382,8 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
         mpfr_init2(*(yrange.a),4* tools_precision);
         mpfr_init2(*(yrange.b),4 * tools_precision);
-        mpfr_init2(*(xrange.a),tools_precision);
-        mpfr_init2(*(xrange.b),tools_precision);
+        mpfr_init2(*(xrange.a),((tools_precision > 64)? tools_precision : 64));
+        mpfr_init2(*(xrange.b),((tools_precision > 64)? tools_precision : 64));
         mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
         mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
@@ -4394,7 +4394,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
           value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-          mpfr_init2(*value,tools_precision);
+          mpfr_init2(*value,((tools_precision > 64)? tools_precision : 64));
           simplified->value = value;
           mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
 	  free_memory(simplChild1);
@@ -4422,7 +4422,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 128)? tools_precision : 128));
       simplified->value = value;
       mpfr_round_to_quad(*value, *(simplChild1->value)); 
       if (!mpfr_number_p(*value)) {
@@ -4441,8 +4441,8 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
         mpfr_init2(*(yrange.a),4* tools_precision);
         mpfr_init2(*(yrange.b),4 * tools_precision);
-        mpfr_init2(*(xrange.a),tools_precision);
-        mpfr_init2(*(xrange.b),tools_precision);
+        mpfr_init2(*(xrange.a),((tools_precision > 128)? tools_precision : 128));
+        mpfr_init2(*(xrange.b),((tools_precision > 128)? tools_precision : 128));
         mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
         mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
@@ -4453,7 +4453,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
           value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-          mpfr_init2(*value,tools_precision);
+          mpfr_init2(*value,((tools_precision > 128)? tools_precision : 128));
           simplified->value = value;
           mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
 	  free_memory(simplChild1);
@@ -4481,7 +4481,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 64)? tools_precision : 64));
       simplified->value = value;
       mpfr_round_to_halfprecision(*value, *(simplChild1->value)); 
       if (!mpfr_number_p(*value)) {
@@ -4500,8 +4500,8 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
         mpfr_init2(*(yrange.a),4* tools_precision);
         mpfr_init2(*(yrange.b),4 * tools_precision);
-        mpfr_init2(*(xrange.a),tools_precision);
-        mpfr_init2(*(xrange.b),tools_precision);
+        mpfr_init2(*(xrange.a),((tools_precision > 64)? tools_precision : 64));
+        mpfr_init2(*(xrange.b),((tools_precision > 64)? tools_precision : 64));
         mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
         mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
@@ -4512,7 +4512,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
           value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-          mpfr_init2(*value,tools_precision);
+          mpfr_init2(*value,((tools_precision > 64)? tools_precision : 64));
           simplified->value = value;
           mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
 	  free_memory(simplChild1);
@@ -4540,7 +4540,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 129)? tools_precision : 129));
       simplified->value = value;
       mpfr_round_to_doubledouble(*value, *(simplChild1->value)); 
       if (!mpfr_number_p(*value)) {
@@ -4559,8 +4559,8 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
         mpfr_init2(*(yrange.a),4* tools_precision);
         mpfr_init2(*(yrange.b),4 * tools_precision);
-        mpfr_init2(*(xrange.a),tools_precision);
-        mpfr_init2(*(xrange.b),tools_precision);
+        mpfr_init2(*(xrange.a),((tools_precision > 129)? tools_precision : 129));
+        mpfr_init2(*(xrange.b),((tools_precision > 129)? tools_precision : 129));
         mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
         mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
@@ -4571,7 +4571,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
           value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-          mpfr_init2(*value,tools_precision);
+          mpfr_init2(*value,((tools_precision > 129)? tools_precision : 129));
           simplified->value = value;
           mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
 	  free_memory(simplChild1);
@@ -4599,7 +4599,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 200)? tools_precision : 200));
       simplified->value = value;
       mpfr_round_to_tripledouble(*value, *(simplChild1->value)); 
       if (!mpfr_number_p(*value)) {
@@ -4618,8 +4618,8 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
         mpfr_init2(*(yrange.a),4* tools_precision);
         mpfr_init2(*(yrange.b),4 * tools_precision);
-        mpfr_init2(*(xrange.a),tools_precision);
-        mpfr_init2(*(xrange.b),tools_precision);
+        mpfr_init2(*(xrange.a),((tools_precision > 200)? tools_precision : 200));
+        mpfr_init2(*(xrange.b),((tools_precision > 200)? tools_precision : 200));
         mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
         mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
@@ -4630,7 +4630,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
           value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-          mpfr_init2(*value,tools_precision);
+          mpfr_init2(*value,((tools_precision > 200)? tools_precision : 200));
           simplified->value = value;
           mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
 	  free_memory(simplChild1);
@@ -4746,7 +4746,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 128)? tools_precision : 128));
       simplified->value = value;
       mpfr_round_to_doubleextended(*value, *(simplChild1->value)); 
       if (!mpfr_number_p(*value)) {
@@ -4765,8 +4765,8 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
         yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
         mpfr_init2(*(yrange.a),4* tools_precision);
         mpfr_init2(*(yrange.b),4 * tools_precision);
-        mpfr_init2(*(xrange.a),tools_precision);
-        mpfr_init2(*(xrange.b),tools_precision);
+        mpfr_init2(*(xrange.a),((tools_precision > 128)? tools_precision : 128));
+        mpfr_init2(*(xrange.b),((tools_precision > 128)? tools_precision : 128));
         mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
         mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
@@ -4777,7 +4777,7 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
           value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-          mpfr_init2(*value,tools_precision);
+          mpfr_init2(*value,((tools_precision > 128)? tools_precision : 128));
           simplified->value = value;
           mpfr_set(*value,*(xrange.a),GMP_RNDN); /* Exact */
 	  free_memory(simplChild1);
@@ -5999,7 +5999,7 @@ node* differentiate(node *tree) {
 
 
 int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
-  mpfr_t stack1, stack2;
+  mpfr_t stack1, stack2, myResult;
   sollya_mpfi_t stackI;
   int isConstant;
 
@@ -6147,31 +6147,49 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
   case DOUBLE:
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
-    mpfr_round_to_double(result, stack1);
+    mpfr_init2(myResult, ((mpfr_get_prec(result) > 64)? mpfr_get_prec(result) : 64));
+    mpfr_round_to_double(myResult, stack1);
+    mpfr_set(result, myResult, GMP_RNDN);
+    mpfr_clear(myResult);
     break;
   case SINGLE:
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
-    mpfr_round_to_single(result, stack1);
+    mpfr_init2(myResult, ((mpfr_get_prec(result) > 64)? mpfr_get_prec(result) : 64));
+    mpfr_round_to_single(myResult, stack1);
+    mpfr_set(result, myResult, GMP_RNDN);
+    mpfr_clear(myResult);
     break;
   case QUAD:
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
-    mpfr_round_to_quad(result, stack1);
+    mpfr_init2(myResult, ((mpfr_get_prec(result) > 128)? mpfr_get_prec(result) : 128));
+    mpfr_round_to_quad(myResult, stack1);
+    mpfr_set(result, myResult, GMP_RNDN);
+    mpfr_clear(myResult);
     break;
   case HALFPRECISION:
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
-    mpfr_round_to_halfprecision(result, stack1);
+    mpfr_init2(myResult, ((mpfr_get_prec(result) > 64)? mpfr_get_prec(result) : 64));
+    mpfr_round_to_halfprecision(myResult, stack1);
+    mpfr_set(result, myResult, GMP_RNDN);
+    mpfr_clear(myResult);
     break;
   case DOUBLEDOUBLE:
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
-    mpfr_round_to_doubledouble(result, stack1);
+    mpfr_init2(myResult, ((mpfr_get_prec(result) > 129)? mpfr_get_prec(result) : 129));
+    mpfr_round_to_doubledouble(myResult, stack1);
+    mpfr_set(result, myResult, GMP_RNDN);
+    mpfr_clear(myResult);
   case TRIPLEDOUBLE:
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
-    mpfr_round_to_tripledouble(result, stack1);
+    mpfr_init2(myResult, ((mpfr_get_prec(result) > 200)? mpfr_get_prec(result) : 200));
+    mpfr_round_to_tripledouble(myResult, stack1);
+    mpfr_set(result, myResult, GMP_RNDN);
+    mpfr_clear(myResult);
     break;
   case ERF:
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
@@ -6196,7 +6214,10 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
   case DOUBLEEXTENDED:
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
-    mpfr_round_to_doubleextended(result, stack1);
+    mpfr_init2(myResult, ((mpfr_get_prec(result) > 128)? mpfr_get_prec(result) : 128));
+    mpfr_round_to_doubleextended(myResult, stack1);
+    mpfr_set(result, myResult, GMP_RNDN);
+    mpfr_clear(myResult);
     break;
   case LIBRARYFUNCTION:
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
@@ -6748,7 +6769,7 @@ node* simplifyTreeInner(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 64)? tools_precision : 64));
       simplified->value = value;
       mpfr_round_to_double(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -6763,7 +6784,7 @@ node* simplifyTreeInner(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 64)? tools_precision : 64));
       simplified->value = value;
       mpfr_round_to_single(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -6778,7 +6799,7 @@ node* simplifyTreeInner(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 128)? tools_precision : 128));
       simplified->value = value;
       mpfr_round_to_quad(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -6793,7 +6814,7 @@ node* simplifyTreeInner(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 64)? tools_precision : 64));
       simplified->value = value;
       mpfr_round_to_halfprecision(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -6808,7 +6829,7 @@ node* simplifyTreeInner(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 129)? tools_precision : 129));
       simplified->value = value;
       mpfr_round_to_doubledouble(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -6823,7 +6844,7 @@ node* simplifyTreeInner(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 200)? tools_precision : 200));
       simplified->value = value;
       mpfr_round_to_tripledouble(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -6898,7 +6919,7 @@ node* simplifyTreeInner(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 128)? tools_precision : 128));
       simplified->value = value;
       mpfr_round_to_doubleextended(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -7459,7 +7480,7 @@ node* simplifyAllButDivisionInner(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 64)? tools_precision : 64));
       simplified->value = value;
       mpfr_round_to_double(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -7474,7 +7495,7 @@ node* simplifyAllButDivisionInner(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 64)? tools_precision : 64));
       simplified->value = value;
       mpfr_round_to_single(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -7489,7 +7510,7 @@ node* simplifyAllButDivisionInner(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 64)? tools_precision : 64));
       simplified->value = value;
       mpfr_round_to_halfprecision(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -7504,7 +7525,7 @@ node* simplifyAllButDivisionInner(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 128)? tools_precision : 128));
       simplified->value = value;
       mpfr_round_to_quad(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -7519,7 +7540,7 @@ node* simplifyAllButDivisionInner(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 129)? tools_precision : 129));
       simplified->value = value;
       mpfr_round_to_doubledouble(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -7534,7 +7555,7 @@ node* simplifyAllButDivisionInner(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 200)? tools_precision : 200));
       simplified->value = value;
       mpfr_round_to_tripledouble(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -7609,7 +7630,7 @@ node* simplifyAllButDivisionInner(node *tree) {
     if (simplChild1->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,((tools_precision > 128)? tools_precision : 128));
       simplified->value = value;
       mpfr_round_to_doubleextended(*value, *(simplChild1->value));
       free_memory(simplChild1);
@@ -7746,7 +7767,7 @@ node *simplifyAllButDivision(node *tree) {
 
 
 void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
-  mpfr_t stack1, stack2;
+  mpfr_t stack1, stack2, myResult;
   sollya_mpfi_t stackI;
 
   mpfr_init2(stack1, prec);
@@ -7862,27 +7883,45 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
     break;
   case DOUBLE:
     evaluate(stack1, tree->child1, x, prec);
-    mpfr_round_to_double(result, stack1);
+    mpfr_init2(myResult, ((mpfr_get_prec(result) > 64)? mpfr_get_prec(result) : 64));
+    mpfr_round_to_double(myResult, stack1);
+    mpfr_set(result, myResult, GMP_RNDN);
+    mpfr_clear(myResult);
     break;
   case SINGLE:
     evaluate(stack1, tree->child1, x, prec);
-    mpfr_round_to_single(result, stack1);
+    mpfr_init2(myResult, ((mpfr_get_prec(result) > 64)? mpfr_get_prec(result) : 64));
+    mpfr_round_to_single(myResult, stack1);
+    mpfr_set(result, myResult, GMP_RNDN);
+    mpfr_clear(myResult);
     break;
   case QUAD:
     evaluate(stack1, tree->child1, x, prec);
-    mpfr_round_to_quad(result, stack1);
+    mpfr_init2(myResult, ((mpfr_get_prec(result) > 128)? mpfr_get_prec(result) : 128));
+    mpfr_round_to_single(myResult, stack1);
+    mpfr_set(result, myResult, GMP_RNDN);
+    mpfr_clear(myResult);
     break;
   case HALFPRECISION:
     evaluate(stack1, tree->child1, x, prec);
-    mpfr_round_to_halfprecision(result, stack1);
+    mpfr_init2(myResult, ((mpfr_get_prec(result) > 64)? mpfr_get_prec(result) : 64));
+    mpfr_round_to_single(myResult, stack1);
+    mpfr_set(result, myResult, GMP_RNDN);
+    mpfr_clear(myResult);
     break;
   case DOUBLEDOUBLE:
     evaluate(stack1, tree->child1, x, prec);
-    mpfr_round_to_doubledouble(result, stack1);
+    mpfr_init2(myResult, ((mpfr_get_prec(result) > 129)? mpfr_get_prec(result) : 129));
+    mpfr_round_to_single(myResult, stack1);
+    mpfr_set(result, myResult, GMP_RNDN);
+    mpfr_clear(myResult);
     break;
   case TRIPLEDOUBLE:
     evaluate(stack1, tree->child1, x, prec);
-    mpfr_round_to_tripledouble(result, stack1);
+    mpfr_init2(myResult, ((mpfr_get_prec(result) > 200)? mpfr_get_prec(result) : 200));
+    mpfr_round_to_single(myResult, stack1);
+    mpfr_set(result, myResult, GMP_RNDN);
+    mpfr_clear(myResult);
     break;
   case ERF:
     evaluate(stack1, tree->child1, x, prec);
@@ -7902,7 +7941,10 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
     break;
   case DOUBLEEXTENDED:
     evaluate(stack1, tree->child1, x, prec);
-    mpfr_round_to_doubleextended(result, stack1);
+    mpfr_init2(myResult, ((mpfr_get_prec(result) > 128)? mpfr_get_prec(result) : 128));
+    mpfr_round_to_single(myResult, stack1);
+    mpfr_set(result, myResult, GMP_RNDN);
+    mpfr_clear(myResult);
     break;
   case LIBRARYFUNCTION:
     evaluate(stack1, tree->child1, x, prec);

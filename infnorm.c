@@ -191,13 +191,17 @@ void sollya_mpfi_pow(sollya_mpfi_t z, sollya_mpfi_t x, sollya_mpfi_t y) {
 
 void sollya_mpfi_round_to_double(sollya_mpfi_t rop, sollya_mpfi_t op) {
   mpfr_t l,r, lres, rres;
-  mp_prec_t prec;
+  mp_prec_t prec, p, pp;
 
   prec = sollya_mpfi_get_prec(op) + 10;
+  pp = sollya_mpfi_get_prec(rop);
+  p = prec;
+  if (pp > p) p = pp;
+  if (64 > p) p = 64;
   mpfr_init2(l,prec);
   mpfr_init2(r,prec);
-  mpfr_init2(lres,prec);
-  mpfr_init2(rres,prec);
+  mpfr_init2(lres,p);
+  mpfr_init2(rres,p);
 
   sollya_mpfi_get_left(l,op);
   sollya_mpfi_get_right(r,op);
@@ -216,13 +220,17 @@ void sollya_mpfi_round_to_double(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
 void sollya_mpfi_round_to_single(sollya_mpfi_t rop, sollya_mpfi_t op) {
   mpfr_t l,r, lres, rres;
-  mp_prec_t prec;
+  mp_prec_t prec, p, pp;
 
   prec = sollya_mpfi_get_prec(op) + 10;
+  pp = sollya_mpfi_get_prec(rop);
+  p = prec;
+  if (pp > p) p = pp;
+  if (64 > p) p = 64;
   mpfr_init2(l,prec);
   mpfr_init2(r,prec);
-  mpfr_init2(lres,prec);
-  mpfr_init2(rres,prec);
+  mpfr_init2(lres,p);
+  mpfr_init2(rres,p);
 
   sollya_mpfi_get_left(l,op);
   sollya_mpfi_get_right(r,op);
@@ -240,13 +248,17 @@ void sollya_mpfi_round_to_single(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
 void sollya_mpfi_round_to_quad(sollya_mpfi_t rop, sollya_mpfi_t op) {
   mpfr_t l,r, lres, rres;
-  mp_prec_t prec;
+  mp_prec_t prec, p, pp;
 
   prec = sollya_mpfi_get_prec(op) + 10;
+  pp = sollya_mpfi_get_prec(rop);
+  p = prec;
+  if (pp > p) p = pp;
+  if (128 > p) p = 128;
   mpfr_init2(l,prec);
   mpfr_init2(r,prec);
-  mpfr_init2(lres,prec);
-  mpfr_init2(rres,prec);
+  mpfr_init2(lres,p);
+  mpfr_init2(rres,p);
 
   sollya_mpfi_get_left(l,op);
   sollya_mpfi_get_right(r,op);
@@ -264,13 +276,17 @@ void sollya_mpfi_round_to_quad(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
 void sollya_mpfi_round_to_halfprecision(sollya_mpfi_t rop, sollya_mpfi_t op) {
   mpfr_t l,r, lres, rres;
-  mp_prec_t prec;
+  mp_prec_t prec, p, pp;
 
   prec = sollya_mpfi_get_prec(op) + 10;
+  pp = sollya_mpfi_get_prec(rop);
+  p = prec;
+  if (pp > p) p = pp;
+  if (64 > p) p = 64;
   mpfr_init2(l,prec);
   mpfr_init2(r,prec);
-  mpfr_init2(lres,prec);
-  mpfr_init2(rres,prec);
+  mpfr_init2(lres,p);
+  mpfr_init2(rres,p);
 
   sollya_mpfi_get_left(l,op);
   sollya_mpfi_get_right(r,op);
@@ -288,13 +304,17 @@ void sollya_mpfi_round_to_halfprecision(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
 void sollya_mpfi_round_to_doubledouble(sollya_mpfi_t rop, sollya_mpfi_t op) {
   mpfr_t l,r, lres, rres;
-  mp_prec_t prec;
+  mp_prec_t prec, p, pp;
 
   prec = sollya_mpfi_get_prec(op) + 10;
+  pp = sollya_mpfi_get_prec(rop);
+  p = prec;
+  if (pp > p) p = pp;
+  if (129 > p) p = 129;
   mpfr_init2(l,prec);
   mpfr_init2(r,prec);
-  mpfr_init2(lres,prec);
-  mpfr_init2(rres,prec);
+  mpfr_init2(lres,p);
+  mpfr_init2(rres,p);
 
   sollya_mpfi_get_left(l,op);
   sollya_mpfi_get_right(r,op);
@@ -312,13 +332,17 @@ void sollya_mpfi_round_to_doubledouble(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
 void sollya_mpfi_round_to_tripledouble(sollya_mpfi_t rop, sollya_mpfi_t op) {
   mpfr_t l,r, lres, rres;
-  mp_prec_t prec;
+  mp_prec_t prec, p, pp;
 
   prec = sollya_mpfi_get_prec(op) + 10;
+  pp = sollya_mpfi_get_prec(rop);
+  p = prec;
+  if (pp > p) p = pp;
+  if (200 > p) p = 200;
   mpfr_init2(l,prec);
   mpfr_init2(r,prec);
-  mpfr_init2(lres,prec);
-  mpfr_init2(rres,prec);
+  mpfr_init2(lres,p);
+  mpfr_init2(rres,p);
 
   sollya_mpfi_get_left(l,op);
   sollya_mpfi_get_right(r,op);
@@ -336,13 +360,17 @@ void sollya_mpfi_round_to_tripledouble(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
 void sollya_mpfi_round_to_doubleextended(sollya_mpfi_t rop, sollya_mpfi_t op) {
   mpfr_t l,r, lres, rres;
-  mp_prec_t prec;
+  mp_prec_t prec, p, pp;
 
   prec = sollya_mpfi_get_prec(op) + 10;
+  pp = sollya_mpfi_get_prec(rop);
+  p = prec;
+  if (pp > p) p = pp;
+  if (128 > p) p = 128;
   mpfr_init2(l,prec);
   mpfr_init2(r,prec);
-  mpfr_init2(lres,prec);
-  mpfr_init2(rres,prec);
+  mpfr_init2(lres,p);
+  mpfr_init2(rres,p);
 
   sollya_mpfi_get_left(l,op);
   sollya_mpfi_get_right(r,op);
