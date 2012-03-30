@@ -2291,7 +2291,7 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1, sollya_obj_t 
   } else {
     mpfr_set_nan(value);
     evalRes = sollya_lib_evaluate_function_at_constant_expression(value, roundOp, simplifiedObj, NULL);
-    if (!mpfr_number_p(value)) {
+    if ((!mpfr_number_p(value)) || (evalRes != SOLLYA_FP_FAITHFUL)) {
       mpfr_init2(dummyX, 12);
       mpfr_set_si(dummyX, 1, GMP_RNDN);
       evalRes = sollya_lib_evaluate_function_at_point(value, simplifiedObj, dummyX, NULL);
