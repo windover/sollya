@@ -2309,10 +2309,14 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1, sollya_obj_t 
     return 1;      
     break;
   case SOLLYA_FP_BELOW_CUTOFF:
-  case SOLLYA_FP_INFINITY:
     if ((!noRoundingWarnings) && (roundOp != NULL)) {
       printMessage(1,SOLLYA_MSG_ROUNDING_ON_CONSTANT_RETRIEVAL,"Warning: rounding occurred on retrieval of a constant.\n");
     }
+    freeThing(evaluatedObj);
+    freeThing(simplifiedObj);
+    return 1;
+    break;
+  case SOLLYA_FP_INFINITY:
     freeThing(evaluatedObj);
     freeThing(simplifiedObj);
     return 1;
