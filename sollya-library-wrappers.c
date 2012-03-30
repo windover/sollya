@@ -2335,7 +2335,7 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1, sollya_obj_t 
     if (!noRoundingWarnings) {
       if (*warning) {
 	printMessage(1,SOLLYA_MSG_EXPR_SHOULD_BE_CONSTANT_AND_IS_NOT_FAITHFUL,"Warning: the given expression is not a constant but an expression to evaluate\n");
-	printMessage(1,SOLLYA_MSG_CONTINUATION,"and a faithful evaluation is not possible. Will consider the constant to be 0.\n");
+	printMessage(1,SOLLYA_MSG_CONTINUATION,"and a faithful evaluation is *NOT* possible.\n");
 	*warning = 0;
       } 
     }
@@ -2346,7 +2346,7 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1, sollya_obj_t 
   case SOLLYA_FP_NOT_FAITHFUL_ZERO_NOT_CONTAINED:
   case SOLLYA_FP_NOT_FAITHFUL_INFINITY_CONTAINED:
     if (!noRoundingWarnings) {
-      printMessage(1,SOLLYA_MSG_SOME_EVALUATION_IS_NOT_FAITHFUL,"Warning: the expression could not be faithfully evaluated.\n");
+      printMessage(1,SOLLYA_MSG_SOME_EVALUATION_IS_NOT_FAITHFUL,"Warning: the expression could *NOT* be faithfully evaluated.\n");
       if (roundOp != NULL) {
 	if (*warning) {
 	  *warning = 0;
