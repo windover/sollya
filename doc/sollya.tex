@@ -1140,6 +1140,17 @@ The library follows some conventions that it is useful to remember:
 \item When a function would need to return several things, or when a function would need to return something together with a status of failure or success, the convention is that pointers are given as the first arguments of the function. These pointers shall point to valid addresses where the function will store the results. This can sometimes give obscure signatures, when the function morally returns a pointer and actually takes as argument a pointer to a pointer (this typically happens when the function allocates a segment of memory and should return a pointer to that segment of memory).
 \end{itemize}
 
+\subsection{Displaying \sollya objects and numerical values}
+Within the interactive tool, the most simplest way of displaying the content of a variable or the value of an expression is to write the name of the variable or the expression, followed by the character ``;''. As a result, \sollya evaluates the expression or the variable and displays the result. Alternatively, a set of objects can be displayed the same way, separating the objects with commas. In library mode, the same behavior can be reproduced using the function \verb|void sollya_lib_autoprint(sollya_obj_t, ...)|. Please note that this function has a variable number of arguments: they are all displayed, until an argument equal to \verb|NULL| is found. The \verb|NULL| argument is mandatory, even if only one object shall be displayed (the function has no other way to know if other arguments follow or not). So, if only one argument should be displayed, the correct function call is \verb|sollya_lib_autoprint(arg, NULL)|. Accordingly, if two arguments should be displayed, the function call is \verb|sollya_lib_autoprint(arg1, arg2, NULL)|, etc. The function \verb|void sollya_lib_v_autoprint(sollya_obj_t, va_list)| is the same, but it takes a \verb|va_list| argument instead of a variable number of arguments.
+
+A more convenient way is provided that allows the user to display formatted strings containing \sollya objects, using a printf-like syntax. The functions provided are \verb|sollya_lib_printf|, \verb|sollya_lib_v_printf|, \verb|sollya_lib_fprintf|, \verb|sollya_lib_v_fprintf|. Each of these functions overloads the usual function (respectively, \verb|printf|, \verb|vprintf|, \verb|fprintf| and \verb|vfprintf|). The full syntax of the usual functions is handled (please note that the style using '\verb|$|' ---~as in \verb|%3$| or \verb|*3$|~--- is not handled though. It is not included in the C99 standard anyway). Moreover, the following conversion specifiers are provided:
+\begin{itemize}
+\item \verb|%b|: corresponds to a \verb|sollya_obj_t| argument.
+\item \verb|%v|: corresponds to a \verb|mpfr_t| argument. An optional precision modifier can be applied (e.g \verb|%.5v|).
+\item \verb|%w|: corresponds to a \verb|mpfi_t| argument. An optional precision modifier can be applied (e.g \verb|%.5w|).
+\end{itemize}
+When one of the above conversion specifiers is used, the corresponding argument is displayed as it would be within the interactive tool: i.e. the way the argument is displayed depends on \sollya environment variables, such as \verb|prec|, \verb|display|, \verb|midpointmode|, etc. When a precision modifier $n$ is used, the argument is first rounded to a precision of roughly $\log_2(10)\times n$ bits (i.e. roughly equivalent to $n$ decimal digits) before being displayed. The "\verb|*|" syntax is allowed to specify that the precision modifier is actually given by the next argument of the function.
+
 \subsection{Creating \sollya objects}
 \sollya objects conceptually fall into one of five categories: numerical constants (e.g. $1$ or $1.5$), functional expressions (they might contain numerical constants, e.g., $\sin(\cos(x+1.5))$), other simple objects (intervals, strings, built-in constants such as \texttt{dyadic}, etc.), lists of objects (e.g., \texttt{[|1, "Hello"|]}) and structures (e.g., \verb|{.a = 1; .b = "Hello"}|).
 
@@ -1738,7 +1749,7 @@ int keep_comparison_warnings(sollya_msg_t msg) {
 \begin{center}
 \begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 ...
-int (*)(int) old_callback = sollya_lib_get_msg_callback();
+int (*)(sollya_msg_t) old_callback = sollya_lib_get_msg_callback();
 sollya_lib_uninstall_msg_callback();
 sollya_lib_install_msg_callback(hide_everything);
   /* Here takes place the function call that must be completely silent */
