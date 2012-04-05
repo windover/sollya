@@ -75,7 +75,7 @@ int main(void) {
   if (!sollya_lib_get_constant_as_uint64(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %" PRIu64 " (expecting 18446744073709551613)\n\n", a, res);
+    sollya_lib_printf("%b has been converted to %" PRIu64 " (expecting 0)\n\n", a, res);
   }
   sollya_lib_clear_obj(a);
 
@@ -88,7 +88,8 @@ int main(void) {
   if (!sollya_lib_get_constant_as_uint64(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %" PRIu64 " (expecting 18446744073709551615)\n\n", a, res);
+    if (res == UINT64_MAX) sollya_lib_printf("%b has been converted to UINT64_MAX\n\n", a);
+    else sollya_lib_printf("%b has been converted to %" PRIu64 " (expected UINT64_MAX=%" PRIu64 ")\n\n", a, res, UINT64_MAX);
   }
   sollya_lib_clear_obj(a);
 
@@ -99,7 +100,8 @@ int main(void) {
   if (!sollya_lib_get_constant_as_uint64(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %" PRIu64 " (expecting 0)\n\n", a, res);
+    if (res == UINT64_MAX) sollya_lib_printf("%b has been converted to UINT64_MAX (with an overflow warning expected)\n\n", a);
+    else sollya_lib_printf("%b has been converted to %" PRIu64 " (expected UINT64_MAX=%" PRIu64 ")\n\n", a, res, UINT64_MAX);
   }
   sollya_lib_clear_obj(a);
 
@@ -202,7 +204,7 @@ int main(void) {
   if (!sollya_lib_get_constant_as_uint64(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %" PRIu64 " (ideally 0, but any value would do the trick, provided that a warning message be displayed.)\n\n", a, res);
+    sollya_lib_printf("%b has been converted to %" PRIu64 " (expecting 0).\n\n", a, res);
   }
   sollya_lib_clear_obj(a);
 
@@ -213,7 +215,7 @@ int main(void) {
   if (!sollya_lib_get_constant_as_uint64(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %" PRIu64 " (ideally 3, but any value would do the trick, provided that a warning message be displayed.)\n\n", a, res);
+    sollya_lib_printf("%b has been converted to some number. Expecting that the above warning message states that faithtul evaluation is *NOT* possible.\n\n", a);
   }
   sollya_lib_clear_obj(a);
 
@@ -224,7 +226,7 @@ int main(void) {
   if (!sollya_lib_get_constant_as_uint64(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %" PRIu64 " (ideally 0, but any value would do the trick, provided that a warning message be displayed.)\n\n", a, res);
+    sollya_lib_printf("%b has been converted to some number. Expecting that the above warning message states that faithtul evaluation is *NOT* possible.\n\n", a);
   }
   sollya_lib_clear_obj(a);
 
@@ -246,7 +248,8 @@ int main(void) {
   if (!sollya_lib_get_constant_as_uint64(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %" PRIu64 " (expecting 0).\n\n", a, res);
+    if (res == UINT64_MAX) sollya_lib_printf("%b has been converted to UINT64_MAX\n\n", a);
+    else sollya_lib_printf("%b has been converted to %" PRIu64 " (expected UINT64_MAX=%" PRIu64 ")\n\n", a, res, UINT64_MAX);
   }
   sollya_lib_clear_obj(a);
 

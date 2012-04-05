@@ -11,10 +11,11 @@ The precision has been set to 20 bits.
 
 -3 has been converted to -3 (expecting -3)
 
-1 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 - 1 has been converted to 9223372036854775807 (expecting 9223372036854775807)
+Warning: rounding occurred on retrieval of a constant.
+1 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 - 1 has been converted to INT64_MAX
 
 Warning: rounding occurred on retrieval of a constant.
-1 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 has been converted to -9223372036854775808 (expecting -9223372036854775808)
+1 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 has been converted to INT64_MAX (with an overflow warning expected)
 
 Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation will be used.
 1.606938e60 + 1 - 1.606938e60 * (log2(3) / log2(7) - log(3) / log(7) + 1) has been converted to 1 (expecting 1)
@@ -40,19 +41,19 @@ Warning: rounding occurred on retrieval of a constant.
 Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation will be used.
 exp(pi) + log(2) has been converted to 24 (expecting either 23 or 24 -- 24 would be better)
 
-Warning: the given expression is not a constant but an expression to evaluate
-and a faithful evaluation is not possible. Will consider the constant to be 0.
-log10(2) / log10(3) - log(2) / log(3) has been converted to 0 (ideally 0, but any value would do the trick, provided that a warning message be displayed.)
-
-Warning: the given expression is not a constant but an expression to evaluate
-and a faithful evaluation is not possible. Will consider the constant to be 0.
-(sin((pi) / 3) - sqrt(3) / 2) * 9.99002e30102 + 3 has been converted to 0 (ideally 3, but any value would do the trick, provided that a warning message be displayed.)
-
 Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation will be used.
-(sin((pi) / 3) - sqrt(3) / 2) * 9.99002e30102 + 6.305794e18061 has been converted to 9223372036854775807 (ideally inf, but any value would do the trick, provided that a warning message be displayed.)
+log10(2) / log10(3) - log(2) / log(3) has been converted to 0 (expecting 0).
+
+Warning: the given expression is not a constant but an expression to evaluate
+and a faithful evaluation is *NOT* possible.
+(sin((pi) / 3) - sqrt(3) / 2) * 9.99002e30102 + 3 has been converted to some number. Expecting that the above warning message states that faithtul evaluation is *NOT* possible.
+
+Warning: the given expression is not a constant but an expression to evaluate
+and a faithful evaluation is *NOT* possible.
+(sin((pi) / 3) - sqrt(3) / 2) * 9.99002e30102 + 6.305794e18061 has been converted to some number. Expecting that the above warning message states that faithtul evaluation is *NOT* possible.
 
 Warning: rounding occurred on retrieval of a constant.
--@Inf@ has been converted to 0 (expecting 0).
+-@Inf@ has been converted to INT64_MIN
 
 Warning: a Not-A-Number value has been converted to a number upon retrieval of a constant.
 @NaN@ has been converted to 0 (expecting 0).

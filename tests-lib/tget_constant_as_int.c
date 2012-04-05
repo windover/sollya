@@ -1,3 +1,4 @@
+#include <limits.h>
 #include <sollya.h>
 
 int main(void) {
@@ -84,7 +85,8 @@ int main(void) {
   if (!sollya_lib_get_constant_as_int(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %d (expecting MAXINT, i.e. probably 2147483647 or 9223372036854775807)\n\n", a, res);
+    if (res == INT_MAX) sollya_lib_printf("%b has been converted to INT_MAX\n\n", a);
+    else sollya_lib_printf("%b has been converted to %d (expected INT_MAX=%d)\n\n", a, res, INT_MAX);
   }
   sollya_lib_clear_obj(a);
 
@@ -95,7 +97,8 @@ int main(void) {
   if (!sollya_lib_get_constant_as_int(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %d (expecting -MAXINT-1, i.e. probably -2147483648 or -9223372036854775808)\n\n", a, res);
+    if (res == INT_MAX) sollya_lib_printf("%b has been converted to INT_MAX (with an overflow warning expected)\n\n", a);
+    else sollya_lib_printf("%b has been converted to %d (expected INT_MAX=%d)\n\n", a, res, INT_MAX);
   }
   sollya_lib_clear_obj(a);
 
@@ -198,7 +201,7 @@ int main(void) {
   if (!sollya_lib_get_constant_as_int(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %d (ideally 0, but any value would do the trick, provided that a warning message be displayed.)\n\n", a, res);
+    sollya_lib_printf("%b has been converted to %d (expecting 0).\n\n", a, res);
   }
   sollya_lib_clear_obj(a);
 
@@ -209,7 +212,7 @@ int main(void) {
   if (!sollya_lib_get_constant_as_int(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %d (ideally 3, but any value would do the trick, provided that a warning message be displayed.)\n\n", a, res);
+    sollya_lib_printf("%b has been converted to some number. Expecting that the above warning message states that faithtul evaluation is *NOT* possible.\n\n", a);
   }
   sollya_lib_clear_obj(a);
 
@@ -220,7 +223,7 @@ int main(void) {
   if (!sollya_lib_get_constant_as_int(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %d (ideally inf, but any value would do the trick, provided that a warning message be displayed.)\n\n", a, res);
+    sollya_lib_printf("%b has been converted to some number. Expecting that the above warning message states that faithtul evaluation is *NOT* possible.\n\n", a);
   }
   sollya_lib_clear_obj(a);
 
@@ -231,7 +234,8 @@ int main(void) {
   if (!sollya_lib_get_constant_as_int(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to %d (expecting 0).\n\n", a, res);
+    if (res == INT_MIN) sollya_lib_printf("%b has been converted to INT_MIN (with an overflow warning expected)\n\n", a);
+    else sollya_lib_printf("%b has been converted to %d (expected INT_MIN=%d)\n\n", a, res, INT_MIN);
   }
   sollya_lib_clear_obj(a);
 
