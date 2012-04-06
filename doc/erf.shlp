@@ -1,6 +1,10 @@
 #NAME $ERF
 #QUICK_DESCRIPTION the error function.
 
+#LIBRARYNAME sollya_obj_t sollya_lib_erf(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_build_function_erf(sollya_obj_t)
+#LIBRARYNAME #define SOLLYA_ERF(x) sollya_lib_build_function_erf(x)
+
 #DESCRIPTION 
 $COMMAND is the error function defined by:
 §§erf(x) = (2/sqrt(Pi)) * integral(exp(-t^2), [0;x])§$$\mathrm{erf}(x) = \frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} {\rm d}t.$$§§

@@ -3,6 +3,9 @@
 #CALLING $COMMAND
 #TYPE $ERROR_TYPE
 
+#LIBRARYNAME sollya_obj_t sollya_lib_error()
+#LIBRARYNAME int sollya_lib_obj_is_error(sollya_obj_t)
+
 #DESCRIPTION 
 The variable $COMMAND represents an input during the evaluation of
 which a type or execution error has been detected or is to be

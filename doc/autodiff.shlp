@@ -7,6 +7,8 @@
 #CALLING $COMMAND(<f>, <n>, <I>)
 #TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $RANGE_TYPE) -> $LIST_TYPE
 
+#LIBRARYNAME sollya_obj_t sollya_lib_autodiff(sollya_obj_t, sollya_obj_t, sollya_obj_t)
+
 #PARAMETERS <f> is the function to be differentiated.
 #PARAMETERS <n> is the order of differentiation.
 #PARAMETERS <§§x0§$x_0$§§> is the point at which the function is differentiated.

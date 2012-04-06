@@ -2,6 +2,12 @@
 #NAME $QD
 #QUICK_DESCRIPTION rounding to the nearest IEEE 754 quad (binary128).
 
+#LIBRARYNAME sollya_obj_t sollya_lib_quad(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_quad_obj()
+#LIBRARYNAME int sollya_lib_is_quad_obj(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_build_function_quad(sollya_obj_t)
+#LIBRARYNAME #define SOLLYA_QD(x) sollya_lib_build_function_quad(x)
+
 #DESCRIPTION 
 $COMMAND is both a function and a constant.
 

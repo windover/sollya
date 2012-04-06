@@ -4,6 +4,7 @@
 #CALLING $COMMAND(<ident>)
 #TYPE $BOOLEAN_TYPE
 
+
 #PARAMETERS <ident> is a name.
 
 #DESCRIPTION 
@@ -57,4 +58,3 @@ rename(x,y);
 isbound(x);
 x;
 
-#SEEALSO $RENAME

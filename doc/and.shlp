@@ -2,6 +2,8 @@
 #QUICK_DESCRIPTION boolean AND operator
 #CALLING <expr1> $COMMAND <expr2>
 #TYPE ($BOOLEAN_TYPE, $BOOLEAN_TYPE) -> $BOOLEAN_TYPE
+#LIBRARYNAME sollya_obj_t sollya_lib_and(sollya_obj_t, sollya_obj_t)
+
 #PARAMETERS <expr1> and <expr2> represent boolean expressions
 
 

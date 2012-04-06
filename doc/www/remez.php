@@ -4,6 +4,11 @@
 <span class="smallDescription">computes the minimax of a function on an interval. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_remez(sollya_obj_t, sollya_obj_t, sollya_obj_t, ...)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_v_remez(sollya_obj_t, sollya_obj_t, sollya_obj_t, va_list)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","remez","remez");?>(<span class="arg">f</span>, <span class="arg">n</span>, <span class="arg">range</span>, <span class="arg">w</span>, <span class="arg">quality</span>) : (<span class="type">function</span>, <span class="type">integer</span>, <span class="type">range</span>, <span class="type">function</span>, <span class="type">constant</span>) -&gt; <span class="type">function</span></span> 
@@ -61,14 +66,14 @@ between ek and e is less than <span class="arg">quality</span>.
 &nbsp;&nbsp;&nbsp;&gt; degree(p);<br> 
 &nbsp;&nbsp;&nbsp;5<br> 
 &nbsp;&nbsp;&nbsp;&gt; dirtyinfnorm(p-exp(x),[0;1]);<br> 
-&nbsp;&nbsp;&nbsp;1.12956984638214536849843017679626063762687501534126e-6<br> 
+&nbsp;&nbsp;&nbsp;1.12956984638214536849843017679626063762687503980789e-6<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 2: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; p = remez(1,[|0,2,4,6,8|],[0,Pi/4],1/cos(x));<br> 
 &nbsp;&nbsp;&nbsp;&gt; canonical=on!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; p;<br> 
-&nbsp;&nbsp;&nbsp;0.99999999994393749280444571988532724907643631727381 + -0.49999999571557467737204931630836834563663039748203 * x^2 + 4.16666132335010905188253972212748718651775241902969e-2 * x^4 + -1.38865291475286141707180658383176799662601691348739e-3 * x^6 + 2.437267919111162694221738667927916761689966804242e-5 * x^8<br> 
+&nbsp;&nbsp;&nbsp;0.99999999994393749280444571988532724907643631727379 + -0.499999995715574677372049316308368345636630397481628 * x^2 + 4.166661323350109051882539722127487186517752418561e-2 * x^4 + -1.38865291475286141707180658383176799662601690152622e-3 * x^6 + 2.43726791911116269422173866792791676168996590663655e-5 * x^8<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 3: </h2> 
@@ -76,11 +81,11 @@ between ek and e is less than <span class="arg">quality</span>.
 &nbsp;&nbsp;&nbsp;&gt; p2 = remez(exp(x),5,[0;1],default,1e-10);<br> 
 &nbsp;&nbsp;&nbsp;&gt; p3 = remez(exp(x),5,[0;1],default,1e-15);<br> 
 &nbsp;&nbsp;&nbsp;&gt; dirtyinfnorm(p1-exp(x),[0;1]);<br> 
-&nbsp;&nbsp;&nbsp;1.12956984638214536849843017679626063762687501534126e-6<br> 
+&nbsp;&nbsp;&nbsp;1.12956984638214536849843017679626063762687503980789e-6<br> 
 &nbsp;&nbsp;&nbsp;&gt; dirtyinfnorm(p2-exp(x),[0;1]);<br> 
-&nbsp;&nbsp;&nbsp;1.12956980227478687332174207517728389861926659249056e-6<br> 
+&nbsp;&nbsp;&nbsp;1.1295698022747868733217420751772838986192666255395e-6<br> 
 &nbsp;&nbsp;&nbsp;&gt; dirtyinfnorm(p3-exp(x),[0;1]);<br> 
-&nbsp;&nbsp;&nbsp;1.12956980227478687332174207517728389861926659249056e-6<br> 
+&nbsp;&nbsp;&nbsp;1.1295698022747868733217420751772838986192666255395e-6<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 4: </h2> 
@@ -89,9 +94,9 @@ between ek and e is less than <span class="arg">quality</span>.
 &nbsp;&nbsp;&nbsp;&gt; p1 = remez(g, L, [-1/16;1/16]);<br> 
 &nbsp;&nbsp;&nbsp;&gt; p2 = remez(g, 3, [-1/16;1/16]);<br> 
 &nbsp;&nbsp;&nbsp;&gt; dirtyinfnorm(p1 - g, [-1/16;1/16]);<br> 
-&nbsp;&nbsp;&nbsp;9.8841323805554845968308959691395564355375312205068e-8<br> 
+&nbsp;&nbsp;&nbsp;9.8841323805554845968308959691395564355375299670614e-8<br> 
 &nbsp;&nbsp;&nbsp;&gt; dirtyinfnorm(p2 - g, [-1/16;1/16]);<br> 
-&nbsp;&nbsp;&nbsp;2.5433780105975429703888838928671089431318650967714e-9<br> 
+&nbsp;&nbsp;&nbsp;2.5433780105975429703888838928671089431318650991836e-9<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

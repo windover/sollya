@@ -6,6 +6,8 @@
 #TYPE ($FUNCTION_TYPE, $RANGE_TYPE) -> $RANGE_TYPE
 #CALLING $COMMAND(<function>, <function2>)
 #TYPE ($FUNCTION_TYPE, $FUNCTION_TYPE) -> $FUNCTION_TYPE
+#LIBRARYNAME sollya_obj_t sollya_lib_evaluate(sollya_obj_t, sollya_obj_t)
+
 #PARAMETERS <function> represents a function
 #PARAMETERS <constant> represents a constant point
 #PARAMETERS <range> represents a range

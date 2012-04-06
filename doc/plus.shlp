@@ -8,6 +8,10 @@
 #TYPE ($RANGE_TYPE, $CONSTANT_TYPE) -> $RANGE_TYPE
 #CALLING <interval1> $COMMAND <constant>
 #TYPE ($CONSTANT_TYPE, $RANGE_TYPE) -> $RANGE_TYPE
+#LIBRARYNAME sollya_obj_t sollya_lib_add(sollya_obj_t, sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_build_function_add(sollya_obj_t, sollya_obj_t)
+#LIBRARYNAME #define SOLLYA_ADD(x,y) sollya_lib_build_function_add((x), (y))
+
 #PARAMETERS <function1> and <function2> represent functions
 #PARAMETERS <interval1> and <interval2> represent intervals (ranges)
 #PARAMETERS <constant> represents a constant or constant expression

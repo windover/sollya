@@ -7,6 +7,10 @@
 #CALLING $COMMAND
 #TYPE $DISPLAY_TYPE
 
+#LIBRARYNAME void sollya_lib_set_display_and_print(sollya_obj_t)
+#LIBRARYNAME void sollya_lib_set_display(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_get_display()
+
 #PARAMETERS <notation value> represents a variable of type $DISPLAY_TYPE
 
 #DESCRIPTION 

@@ -1,6 +1,9 @@
 #NAME $OFF
 #QUICK_DESCRIPTION special value for certain global variables.
 
+#LIBRARYNAME sollya_obj_t sollya_lib_off()
+#LIBRARYNAME int sollya_lib_is_off(sollya_obj_t)
+
 #DESCRIPTION 
 $COMMAND is a special value used to deactivate certain functionnalities
 of $SOLLYA.

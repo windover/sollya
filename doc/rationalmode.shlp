@@ -7,6 +7,10 @@
 #CALLING $COMMAND
 #TYPE $ONOFF_TYPE
 
+#LIBRARYNAME void sollya_lib_set_rationalmode_and_print(sollya_obj_t)
+#LIBRARYNAME void sollya_lib_set_rationalmode(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_get_rationalmode()
+
 #PARAMETERS <activation value> controls if rational arithmetic should be used or not
 
 #DESCRIPTION 

@@ -4,6 +4,8 @@
 #CALLING $COMMAND(<p>, <I>)
 #TYPE ($FUNCTION_TYPE, $RANGE_TYPE) -> $INTEGER_TYPE
 
+#LIBRARYNAME sollya_obj_t sollya_lib_numberroots(sollya_obj_t, sollya_obj_t)
+
 #PARAMETERS <p> is a polynomial.
 #PARAMETERS <I> is an interval.
 

@@ -1,6 +1,11 @@
 #NAME $PI
 #QUICK_DESCRIPTION the constant §§Pi§$\pi$§§.
 
+#LIBRARYNAME sollya_obj_t sollya_lib_pi()
+#LIBRARYNAME int sollya_lib_is_pi(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_build_function_pi()
+#LIBRARYNAME #define SOLLYA_PI (sollya_lib_build_function_pi())
+
 #DESCRIPTION 
 $COMMAND is the constant §§Pi§$\pi$§§, defined as half the period of sine and cosine.
 

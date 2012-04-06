@@ -132,6 +132,21 @@ processName() {
  printf "\n" >> $target
 }
 
+
+processLibraryName() {
+ nLines=`cat $tempfile | grep "#LIBRARYNAME" | wc -l`
+ if [ $nLines -eq 0 ]
+ then printf "Error: you must specify at least one library name. Exiting\n"; exit 1
+ fi
+
+ if [ $nLines -eq 1 ]
+   then printf "<h2 class=\"libraryname\">Library name:</h2>\n" >> $target
+   else printf "<h2 class=\"libraryname\">Library names:</h2>\n" >> $target
+ fi
+
+ grep "#LIBRARYNAME" $tempfile | sed -n 's/#LIBRARYNAME \(.*\)/<span class="commandline type">\1<\/span>/;p' >> $target
+}
+
 processQuickDescription() {
  nLines=`cat $tempfile | grep "#QUICK_DESCRIPTION" | wc -l`
  if [ $nLines -eq 0 ]
@@ -397,11 +412,15 @@ processFile() {
 
   sed -n -i 's/$SOLLYA/'"$sollya_name"'/g;p' $tempfile
 
-  
+
   printf "<a name=\""$nameOfCommand"\"></a>\n" > $target
   printf "<div class=\"divName\">\n" >> $target
   processName
   processQuickDescription
+  printf "</div>\n" >> $target
+
+  printf "<div class=\"divLibraryName\">\n" >> $target
+  processLibraryName
   printf "</div>\n" >> $target
 
   processCallingAndTypes

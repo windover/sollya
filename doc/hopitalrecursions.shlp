@@ -7,6 +7,10 @@
 #CALLING $COMMAND
 #TYPE $INTEGER_TYPE
 
+#LIBRARYNAME void sollya_lib_set_hopitalrecursions_and_print(sollya_obj_t)
+#LIBRARYNAME void sollya_lib_set_hopitalrecursions(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_get_hopitalrecursions()
+
 #PARAMETERS <n> represents the number of recursions
 
 #DESCRIPTION 

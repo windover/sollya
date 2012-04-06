@@ -4,6 +4,8 @@
 #CALLING $COMMAND(<command>)
 #TYPE $STRING_TYPE -> $VOID_TYPE
 
+#LIBRARYNAME void sollya_lib_bashexecute(sollya_obj_t)
+
 #PARAMETERS <command> is a command to be interpreted by the shell.
 
 #DESCRIPTION 

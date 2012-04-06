@@ -7,6 +7,10 @@
 #CALLING $COMMAND
 #TYPE $INTEGER_TYPE
 
+#LIBRARYNAME void sollya_lib_set_verbosity_and_print(sollya_obj_t)
+#LIBRARYNAME void sollya_lib_set_verbosity(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_get_verbosity()
+
 #PARAMETERS <n> controls the amount of information to be displayed
 
 
@@ -30,4 +34,3 @@ verbosity=1!;
 verbosity=2!;
 1.2+"toto";
 
-#SEEALSO $ROUNDINGWARNINGS

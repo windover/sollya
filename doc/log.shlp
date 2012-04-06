@@ -1,6 +1,10 @@
 #NAME $LOG
 #QUICK_DESCRIPTION natural logarithm.
 
+#LIBRARYNAME sollya_obj_t sollya_lib_log(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_build_function_log(sollya_obj_t)
+#LIBRARYNAME #define SOLLYA_LOG(x) sollya_lib_build_function_log(x)
+
 #DESCRIPTION 
 $COMMAND is the natural logarithm defined as the inverse of the exponential
 function: §§log(y)§$\log(y)$§§ is the unique real number §§x§$x$§§ such that §§exp(x)=y§$\exp(x)=y$§§.

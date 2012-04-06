@@ -1,6 +1,9 @@
 #NAME $ON
 #QUICK_DESCRIPTION special value for certain global variables.
 
+#LIBRARYNAME sollya_obj_t sollya_lib_on()
+#LIBRARYNAME int sollya_lib_is_on(sollya_obj_t)
+
 #DESCRIPTION 
 $COMMAND is a special value used to activate certain functionnalities 
 of $SOLLYA.

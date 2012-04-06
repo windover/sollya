@@ -7,6 +7,10 @@
 #CALLING $COMMAND
 #TYPE $ONOFF_TYPE
 
+#LIBRARYNAME void sollya_lib_set_roundingwarnings_and_print(sollya_obj_t)
+#LIBRARYNAME void sollya_lib_set_roundingwarnings(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_get_roundingwarnings()
+
 #PARAMETERS <activation value> controls if warnings should be shown or not
 
 

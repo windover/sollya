@@ -4,6 +4,8 @@
 #CALLING $COMMAND(<p>,<q>)
 #TYPE ($FUNCTION_TYPE, $FUNCTION_TYPE) -> $STRUCTURE_TYPE
 
+#LIBRARYNAME sollya_obj_t sollya_lib_composepolynomials(sollya_obj_t, sollya_obj_t)
+
 #PARAMETERS <p> and <q> are polynomials
 
 #DESCRIPTION 

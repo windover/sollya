@@ -4,6 +4,9 @@
 #TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $RANGE_TYPE, $INTEGER_TYPE, $CONSTANT_TYPE) -> $VOID_TYPE
 #CALLING $COMMAND(<function>, <preimage precision>, <preimage exponent range>, <image precision>, <error bound>, <filename>)
 #TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $RANGE_TYPE, $INTEGER_TYPE, $CONSTANT_TYPE, $STRING_TYPE) -> $VOID_TYPE
+#LIBRARYNAME void sollya_lib_worstcase(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, ...)
+#LIBRARYNAME void sollya_lib_v_worstcase(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, va_list)
+
 #PARAMETERS <function> represents the function to be considered
 #PARAMETERS <preimage precision> represents the precision of the preimages
 #PARAMETERS <preimage exponent range> represents the exponents in the preimage format

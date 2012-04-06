@@ -4,6 +4,8 @@
 #CALLING $COMMAND(<ident1>,<ident2>)
 #TYPE $VOID_TYPE
 
+#LIBRARYNAME void sollya_lib_name_free_variable(const char *)
+
 #PARAMETERS <ident1> is the current name of the free variable.
 #PARAMETERS <ident2> is a fresh name.
 
@@ -56,4 +58,3 @@ rename(x,y);
 isbound(x);
 isbound(y);
 
-#SEEALSO $ISBOUND

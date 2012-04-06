@@ -121,6 +121,20 @@ processName() {
  printf "\\\\\\\\\n" >> $target
 }
 
+
+processLibraryName() {
+ nLines=`cat $tempfile | grep "#LIBRARYNAME" | wc -l`
+ if [ $nLines -eq 0 ]
+ then printf "Error: you must specify at least one library name. Exiting\n"; exit 1
+ fi
+
+ if [ $nLines -eq 1 ]
+   then printf "\\\\noindent Library name:\\\\\\\\\n" >> $target
+   else printf "\\\\noindent Library names:\\\\\\\\\n" >> $target
+ fi
+ grep "#LIBRARYNAME" $tempfile | sed -n 's/#LIBRARYNAME \(.*\)/\\verb|   \1|\\\\ /;p' | tr -d '\n' | sed -n 's/ $/[0.2cm]\n/;p' | sed -n 's/\\\\ /\\\\\n/g;p' >> $target
+}
+
 processQuickDescription() {
  nLines=`cat $tempfile | grep "#QUICK_DESCRIPTION" | wc -l`
  if [ $nLines -eq 0 ]
@@ -128,9 +142,9 @@ processQuickDescription() {
  fi
 
  ( grep "#QUICK_DESCRIPTION" $tempfile | \
-     sed -n 's/#QUICK_DESCRIPTION //;p' | \
+     sed -n 's/#QUICK_DESCRIPTION /\\phantom{aaa}/;p' | \
      tr -d '\n' ;
-     printf "\\\\\\\\\n") >> $target
+     printf "\\\\\\\\[0.2cm]\n") >> $target
 }
 
 processCallingAndTypes() {
@@ -325,6 +339,7 @@ processFile() {
   printf "\\\\label{lab$sectionName}\n" | sed -n 's/ //g;p' >> $target
   processName
   processQuickDescription
+  processLibraryName
   processCallingAndTypes
   processParameters
   processDescriptions

@@ -12,6 +12,13 @@
 #TYPE $FUNCTION_TYPE -> $FUNCTION_TYPE
 #CALLING $COMMAND <interval1>
 #TYPE $RANGE_TYPE -> $RANGE_TYPE
+#LIBRARYNAME sollya_obj_t sollya_lib_sub(sollya_obj_t, sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_build_function_sub(sollya_obj_t, sollya_obj_t)
+#LIBRARYNAME #define SOLLYA_SUB(x,y) sollya_lib_build_function_sub((x), (y))
+#LIBRARYNAME sollya_obj_t sollya_lib_neg(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_build_function_neg(sollya_obj_t)
+#LIBRARYNAME #define SOLLYA_NEG(x) sollya_lib_build_function_neg(x)
+
 #PARAMETERS <function1> and <function2> represent functions
 #PARAMETERS <interval1> and <interval2> represent intervals (ranges)
 #PARAMETERS <constant> represents a constant or constant expression

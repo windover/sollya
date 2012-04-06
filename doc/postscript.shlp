@@ -1,6 +1,9 @@
 #NAME $POSTSCRIPT
 #QUICK_DESCRIPTION special value for commands $PLOT and $EXTERNALPLOT
 
+#LIBRARYNAME sollya_obj_t sollya_lib_postscript()
+#LIBRARYNAME int sollya_lib_is_postscript(sollya_obj_t)
+
 #DESCRIPTION 
 $COMMAND is a special value used in commands $PLOT and $EXTERNALPLOT to save
 the result of the command in a postscript file.

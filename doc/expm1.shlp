@@ -1,6 +1,10 @@
 #NAME $EXPM1
 #QUICK_DESCRIPTION shifted exponential function.
 
+#LIBRARYNAME sollya_obj_t sollya_lib_expm1(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_build_function_expm1(sollya_obj_t)
+#LIBRARYNAME #define SOLLYA_EXPM1(x) sollya_lib_build_function_expm1(x)
+
 #DESCRIPTION 
 $COMMAND is defined by §§expm1(x) = exp(x)-1§${\rm expm1}(x) = \exp(x)-1$§§.
 

@@ -1,6 +1,10 @@
 #NAME $PREC
 #QUICK_DESCRIPTION controls the precision used in numerical computations.
 
+#LIBRARYNAME void sollya_lib_set_prec_and_print(sollya_obj_t)
+#LIBRARYNAME void sollya_lib_set_prec(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_get_prec()
+
 #DESCRIPTION 
 $COMMAND is a global variable. Its value represents the precision of the 
 floating-point format used in numerical computations.

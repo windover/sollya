@@ -2,6 +2,12 @@
 #NAME $SG
 #QUICK_DESCRIPTION rounding to the nearest IEEE 754 single (binary32).
 
+#LIBRARYNAME sollya_obj_t sollya_lib_single(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_single_obj()
+#LIBRARYNAME int sollya_lib_is_single_obj(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_build_function_single(sollya_obj_t)
+#LIBRARYNAME #define SOLLYA_SG(x) sollya_lib_build_function_single(x)
+
 #DESCRIPTION 
 $COMMAND is both a function and a constant.
 

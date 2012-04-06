@@ -8,6 +8,10 @@
 #CALLING $COMMAND
 #TYPE $CONSTANT_TYPE
 
+#LIBRARYNAME void sollya_lib_set_points_and_print(sollya_obj_t)
+#LIBRARYNAME void sollya_lib_set_points(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_get_points()
+
 #PARAMETERS <n> represents the number of points
 
 #DESCRIPTION 

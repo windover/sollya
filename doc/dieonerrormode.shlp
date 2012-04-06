@@ -7,6 +7,10 @@
 #CALLING $COMMAND
 #TYPE $ONOFF_TYPE
 
+#LIBRARYNAME void sollya_lib_set_dieonerrormode_and_print(sollya_obj_t)
+#LIBRARYNAME void sollya_lib_set_dieonerrormode(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_get_dieonerrormode()
+
 #PARAMETERS <activation value> controls if $SOLLYA is exited on an error or not.
 
 #DESCRIPTION 

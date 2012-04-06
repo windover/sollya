@@ -4,6 +4,9 @@
 #CALLING $COMMAND(<f>,<I>,<filename>,<Ilist>)
 #TYPE ($FUNCTION_TYPE, $RANGE_TYPE, $STRING_TYPE, $LIST_TYPE) -> $RANGE_TYPE
 
+#LIBRARYNAME sollya_obj_t sollya_lib_infnorm(sollya_obj_t, sollya_obj_t, ...)
+#LIBRARYNAME sollya_obj_t sollya_lib_v_infnorm(sollya_obj_t, sollya_obj_t, va_list)
+
 #PARAMETERS <f> is a function.
 #PARAMETERS <I> is an interval.
 #PARAMETERS <filename> (optional) is the name of the file into a proof will be saved.

@@ -1,6 +1,9 @@
 #NAME $TRUE
 #QUICK_DESCRIPTION the boolean value representing the truth.
 
+#LIBRARYNAME sollya_obj_t sollya_lib_true()
+#LIBRARYNAME int sollya_lib_is_true(sollya_obj_t)
+
 #DESCRIPTION 
 $COMMAND is the usual boolean value.
 

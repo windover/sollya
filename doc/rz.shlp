@@ -1,6 +1,9 @@
 #NAME $RZ
 #QUICK_DESCRIPTION constant representing rounding-to-zero mode.
 
+#LIBRARYNAME sollya_obj_t sollya_lib_round_towards_zero()
+#LIBRARYNAME int sollya_lib_is_round_towards_zero(sollya_obj_t)
+
 #DESCRIPTION 
 $COMMAND is used in command $ROUND to specify that the value must be rounded
 to the closest floating-point number towards zero. It just consists in 

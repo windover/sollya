@@ -1,6 +1,10 @@
 #NAME $LOG2
 #QUICK_DESCRIPTION binary logarithm.
 
+#LIBRARYNAME sollya_obj_t sollya_lib_log2(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_build_function_log2(sollya_obj_t)
+#LIBRARYNAME #define SOLLYA_LOG2(x) sollya_lib_build_function_log2(x)
+
 #DESCRIPTION 
 $COMMAND is the binary logarithm defined by: §§log2(x) = log(x)/log(2)§${\rm log2}(x) = \log(x)/\log(2)$§§.
 

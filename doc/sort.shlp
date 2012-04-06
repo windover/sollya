@@ -4,6 +4,8 @@
 #CALLING $COMMAND(<L>)
 #TYPE $LIST_TYPE -> $LIST_TYPE
 
+#LIBRARYNAME sollya_obj_t sollya_lib_sort(sollya_obj_t)
+
 #PARAMETERS <L> is a list.
 
 #DESCRIPTION 

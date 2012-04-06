@@ -2,6 +2,8 @@
 #QUICK_DESCRIPTION parses an expression contained in a string
 #CALLING $COMMAND(<string>)
 #TYPE $STRING_TYPE -> $FUNCTION_TYPE §§|§$|$§§ $ERROR_TYPE
+#LIBRARYNAME sollya_obj_t sollya_lib_parse(sollya_obj_t)
+
 #PARAMETERS <string> represents a character sequence
 
 

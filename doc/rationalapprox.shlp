@@ -4,6 +4,8 @@
 #CALLING $COMMAND(<x>,<n>)
 #TYPE ($CONSTANT_TYPE, $INTEGER_TYPE) -> $FUNCTION_TYPE
 
+#LIBRARYNAME sollya_obj_t sollya_lib_rationalapprox(sollya_obj_t, sollya_obj_t)
+
 #PARAMETERS <x> is a number to approximate.
 #PARAMETERS <n> is a integer (representing a format).
 

@@ -1,6 +1,10 @@
 #NAME $TANH
 #QUICK_DESCRIPTION the hyperbolic tangent function.
 
+#LIBRARYNAME sollya_obj_t sollya_lib_tanh(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_build_function_tanh(sollya_obj_t)
+#LIBRARYNAME #define SOLLYA_TANH(x) sollya_lib_build_function_tanh(x)
+
 #DESCRIPTION 
 $COMMAND is the hyperbolic tangent function, defined by §§tanh(x) = sinh(x)/cosh(x)§$\tanh(x) = \sinh(x)/\cosh(x)$§§.
 

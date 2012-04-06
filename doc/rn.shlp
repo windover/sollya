@@ -1,6 +1,9 @@
 #NAME $RN
 #QUICK_DESCRIPTION constant representing rounding-to-nearest mode.
 
+#LIBRARYNAME sollya_obj_t sollya_lib_round_to_nearest()
+#LIBRARYNAME int sollya_lib_is_round_to_nearest(sollya_obj_t)
+
 #DESCRIPTION 
 $COMMAND is used in command $ROUND to specify that the value must be rounded
 to the nearest representable floating-point number.

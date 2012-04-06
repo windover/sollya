@@ -2,6 +2,8 @@
 #QUICK_DESCRIPTION prints a polynomial in Horner form with its coefficients written as a expansions of double precision numbers
 #CALLING $COMMAND(<polynomial>)
 #TYPE $FUNCTION_TYPE -> $VOID_TYPE
+#LIBRARYNAME void sollya_lib_printexpansion(sollya_obj_t)
+
 #PARAMETERS <polynomial> represents the polynomial to be printed
 
 #DESCRIPTION 

@@ -3,6 +3,9 @@
 #CALLING $COMMAND
 #TYPE $HONORCOEFF_TYPE
 
+#LIBRARYNAME sollya_obj_t sollya_lib_honorcoeffprec()
+#LIBRARYNAME int sollya_lib_is_honorcoeffprec(sollya_obj_t)
+
 #DESCRIPTION 
 Used with command $IMPLEMENTPOLY, $COMMAND makes $IMPLEMENTPOLY honor
 the precision of the given polynomial. This means if a coefficient

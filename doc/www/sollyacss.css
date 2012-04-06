@@ -21,6 +21,7 @@ list-style-type: none;
 }
 
 .divName,
+.divLibraryName,
 .divUsage,
 .divParameters,
 .divDescription,
@@ -37,6 +38,16 @@ list-style-type: none;
   font-weight: bold;
   font-size: inherit;
   margin: 0 0 5px 0;
+}
+
+.libraryname {
+  font-weight: bold;
+  font-size: inherit;
+  margin: 0 0 10px 0;
+}
+
+.divLibraryName span {
+  margin-left: 15px;
 }
 
 .category {

@@ -4,6 +4,8 @@
 #CALLING <L>$COMMAND<x>
 #TYPE ($LIST_TYPE, $ANY_TYPE) -> $LIST_TYPE
 
+#LIBRARYNAME sollya_obj_t sollya_lib_append(sollya_obj_t, sollya_obj_t)
+
 #PARAMETERS <L> is a list (possibly empty).
 #PARAMETERS <x> is an object of any type.
 

@@ -25,6 +25,9 @@
 #CALLING $COMMAND(<L>, <I>, $POSTSCRIPTFILE, <name>)
 #TYPE ($LIST_TYPE, $RANGE_TYPE, $POSTSCRIPTFILE, $STRING_TYPE) -> $VOID_TYPE
 
+#LIBRARYNAME void sollya_lib_plot(sollya_obj_t, sollya_obj_t, ...)
+#LIBRARYNAME void sollya_lib_v_plot(sollya_obj_t, sollya_obj_t, va_list)
+
 #PARAMETERS <f1>, ..., <fn> are functions to be plotted.
 #PARAMETERS <L> is a list of functions to be plotted.
 #PARAMETERS <I> is the interval where the functions have to be plotted.

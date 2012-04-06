@@ -7,6 +7,10 @@
 #CALLING $COMMAND
 #TYPE $ONOFF_TYPE
 
+#LIBRARYNAME void sollya_lib_set_timing_and_print(sollya_obj_t)
+#LIBRARYNAME void sollya_lib_set_timing(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_get_timing()
+
 #PARAMETERS <activation value> controls if timing should be performed or not
 \
 #DESCRIPTION 

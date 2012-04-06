@@ -1,6 +1,9 @@
 #NAME $DYADIC
 #QUICK_DESCRIPTION special value for global state $DISPLAY
 
+#LIBRARYNAME sollya_obj_t sollya_lib_dyadic()
+#LIBRARYNAME int sollya_lib_is_dyadic(sollya_obj_t)
+
 #DESCRIPTION 
 $COMMAND is a special value used for the global state $DISPLAY.
 If the global state $DISPLAY is equal to $COMMAND, all data will

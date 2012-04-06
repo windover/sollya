@@ -8,6 +8,10 @@
 #CALLING $COMMAND
 #TYPE $CONSTANT_TYPE
 
+#LIBRARYNAME void sollya_lib_set_diam_and_print(sollya_obj_t)
+#LIBRARYNAME void sollya_lib_set_diam(sollya_obj_t)
+#LIBRARYNAME sollya_obj_t sollya_lib_get_diam()
+
 #PARAMETERS <width> represents the maximal relative width of the intervals used
 
 

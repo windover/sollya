@@ -1,6 +1,9 @@
 #NAME $DEFAULT
 #QUICK_DESCRIPTION default value for some commands.
 
+#LIBRARYNAME sollya_obj_t sollya_lib_default()
+#LIBRARYNAME int sollya_lib_is_default(sollya_obj_t)
+
 #DESCRIPTION 
 $COMMAND is a special value and is replaced by something depending on the 
 context where it is used. It can often be used as a joker, when you want to 
@@ -18,4 +21,3 @@ p==q;
 #EXAMPLE
 prec;
 prec=200;
-prec=default;

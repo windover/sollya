@@ -4,6 +4,8 @@
 #CALLING $COMMAND(<f>,<n>)
 #TYPE ($FUNCTION_TYPE, $INTEGER_TYPE) -> $CONSTANT_TYPE
 
+#LIBRARYNAME sollya_obj_t sollya_lib_coeff(sollya_obj_t, sollya_obj_t)
+
 #PARAMETERS <f> is a function (usually a polynomial).
 #PARAMETERS <n> is an integer
 

@@ -2,6 +2,8 @@
 #QUICK_DESCRIPTION plots a function in a range using ASCII characters
 #CALLING $COMMAND(<function>, <range>)
 #TYPE ($FUNCTION_TYPE, $RANGE_TYPE) -> $VOID_TYPE
+#LIBRARYNAME void sollya_lib_asciiplot(sollya_obj_t, sollya_obj_t)
+
 #PARAMETERS <function> represents a function to be plotted
 #PARAMETERS <range> represents a range the function is to be plotted in 
 

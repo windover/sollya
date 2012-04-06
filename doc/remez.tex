@@ -1,7 +1,10 @@
 \subsection{remez}
 \label{labremez}
 \noindent Name: \textbf{remez}\\
-computes the minimax of a function on an interval.\\
+\phantom{aaa}computes the minimax of a function on an interval.\\[0.2cm]
+\noindent Library names:\\
+\verb|   sollya_obj_t sollya_lib_remez(sollya_obj_t, sollya_obj_t, sollya_obj_t, ...)|\\
+\verb|   sollya_obj_t sollya_lib_v_remez(sollya_obj_t, sollya_obj_t, sollya_obj_t, va_list)|\\[0.2cm]
 \noindent Usage: 
 \begin{center}
 \textbf{remez}(\emph{f}, \emph{n}, \emph{range}, \emph{w}, \emph{quality}) : (\textsf{function}, \textsf{integer}, \textsf{range}, \textsf{function}, \textsf{constant}) $\rightarrow$ \textsf{function}\\
@@ -34,8 +37,8 @@ Parameters:
    greater than $n$.
    If \emph{L} is given and is a list of integers, $p$ is searched as a linear
    combination of monomials $X^k$ where $k$ belongs to \emph{L}.
-   In the case when \emph{L} is a list of integers, it may contain ellipses but cannot be
-   end-elliptic.
+   In the case when \emph{L} is a list of integers, it may contain ellipses but cannot
+   be end-elliptic.
    If \emph{L} is given and is a list of functions $g_k$, $p$ is searched as a
    linear combination of the $g_k$. In that case \emph{L} cannot contain ellipses.
    It is the user responsability to check that the $g_k$ are linearly independent
@@ -44,8 +47,8 @@ Parameters:
    algorithm might fail or even silently return a result as if it successfully
    found the minimax, though the returned $p$ is not optimal.
 
-\item The polynomial is obtained by a convergent iteration called Remez' algorithm
-   (and an extension of this algorithm, due to Stiefel).
+\item The polynomial is obtained by a convergent iteration called Remez'
+   algorithm (and an extension of this algorithm, due to Stiefel).
    The algorithm computes a sequence $p_1,\dots ,p_k,\dots$
    such that $e_k = \|p_k w-f\|_{\infty}$ converges towards
    the optimal value $e$. The algorithm is stopped when the relative error
@@ -57,7 +60,7 @@ Parameters:
 > degree(p);
 5
 > dirtyinfnorm(p-exp(x),[0;1]);
-1.12956984638214536849843017679626063762687501534126e-6
+1.12956984638214536849843017679626063762687503980789e-6
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
@@ -65,10 +68,10 @@ Parameters:
 > p = remez(1,[|0,2,4,6,8|],[0,Pi/4],1/cos(x));
 > canonical=on!;
 > p;
-0.99999999994393749280444571988532724907643631727381 + -0.4999999957155746773720
-4931630836834563663039748203 * x^2 + 4.16666132335010905188253972212748718651775
-241902969e-2 * x^4 + -1.38865291475286141707180658383176799662601691348739e-3 * 
-x^6 + 2.437267919111162694221738667927916761689966804242e-5 * x^8
+0.99999999994393749280444571988532724907643631727379 + -0.4999999957155746773720
+49316308368345636630397481628 * x^2 + 4.1666613233501090518825397221274871865177
+52418561e-2 * x^4 + -1.38865291475286141707180658383176799662601690152622e-3 * x
+^6 + 2.43726791911116269422173866792791676168996590663655e-5 * x^8
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
@@ -77,11 +80,11 @@ x^6 + 2.437267919111162694221738667927916761689966804242e-5 * x^8
 > p2 = remez(exp(x),5,[0;1],default,1e-10);
 > p3 = remez(exp(x),5,[0;1],default,1e-15);
 > dirtyinfnorm(p1-exp(x),[0;1]);
-1.12956984638214536849843017679626063762687501534126e-6
+1.12956984638214536849843017679626063762687503980789e-6
 > dirtyinfnorm(p2-exp(x),[0;1]);
-1.12956980227478687332174207517728389861926659249056e-6
+1.1295698022747868733217420751772838986192666255395e-6
 > dirtyinfnorm(p3-exp(x),[0;1]);
-1.12956980227478687332174207517728389861926659249056e-6
+1.1295698022747868733217420751772838986192666255395e-6
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
@@ -91,9 +94,9 @@ x^6 + 2.437267919111162694221738667927916761689966804242e-5 * x^8
 > p1 = remez(g, L, [-1/16;1/16]);
 > p2 = remez(g, 3, [-1/16;1/16]);
 > dirtyinfnorm(p1 - g, [-1/16;1/16]);
-9.8841323805554845968308959691395564355375312205068e-8
+9.8841323805554845968308959691395564355375299670614e-8
 > dirtyinfnorm(p2 - g, [-1/16;1/16]);
-2.5433780105975429703888838928671089431318650967714e-9
+2.5433780105975429703888838928671089431318650991836e-9
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{dirtyinfnorm} (\ref{labdirtyinfnorm}), \textbf{infnorm} (\ref{labinfnorm}), \textbf{fpminimax} (\ref{labfpminimax}), \textbf{guessdegree} (\ref{labguessdegree}), \textbf{taylorform} (\ref{labtaylorform}), \textbf{taylor} (\ref{labtaylor})

@@ -2,6 +2,8 @@
 #QUICK_DESCRIPTION prints a constant value as a hexadecimal double precision number
 #CALLING $COMMAND(<constant>)
 #TYPE $CONSTANT_TYPE -> $VOID_TYPE
+#LIBRARYNAME void sollya_lib_printdouble(sollya_obj_t)
+
 #PARAMETERS <constant> represents a constant
 
 #DESCRIPTION 
