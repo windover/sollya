@@ -4387,109 +4387,33 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
   return okay;
 }
 
-/* Tries to evaluate func(x) with faithful rounding to the precision of result                            */
-/* If it can be proven that |func(x)|<cutoff, the returned value is 2 and result ~ func(x)                */
-/* If the faithful value can successfully be computed, it is stored in result and the returned value is 1 */
-/* If after increasing the precision many times, a satisfying value has not been obtained, result is set  */
-/* to NaN and the returned value is:                                                                      */
-/*    3 if the last computed value was NaN, or Inf                                                        */
-/*    0 if the last computed value was a regular number (in which case, func(x) might be an exact 0)      */
-int evaluateFaithfulWithCutOffFastOld(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec) {
-  mp_prec_t p, prec, oldPrec, oldPrec2;
-  rangetype xrange, yrange;
-  int okay;
-  mpfr_t resUp, resDown;
+/* Return values:
 
+   0 -> evaluation did not allow for a faithful evaluation nor to get
+        below the threshold but the proof interval was a closed subset
+        of the reals or an exact infinity
 
-  prec = mpfr_get_prec(result);
-  mpfr_init2(resUp,prec);
-  mpfr_init2(resDown,prec);
+   1 -> evaluation gave a faithful result, we do not know if it is
+        exact or inexact
 
-  p = mpfr_get_prec(x);
-  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-  mpfr_init2(*(xrange.a),p);
-  mpfr_init2(*(xrange.b),p);
-  mpfr_set(*(xrange.a),x,GMP_RNDD);
-  mpfr_set(*(xrange.b),x,GMP_RNDU);
+   2 -> evaluation got the proof interval below the cutoff
 
-  if (p > prec) prec = p;
-  if (startprec > prec) prec = startprec;
+   3 -> evaluation did not allow to conclude on a function as it
+        evaluated to NaN or Inf
 
-  oldPrec = tools_precision;
-  oldPrec2 = defaultprecision;
+   4 -> evaluation gave a faithful result and we know that it is exact
 
-  // tools_precision = prec;
-  // defaultprecision = prec;
+   5 -> evaluation gave a faithful result and we know that it is
+        inexact 
 
-
-  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-
-  p=startprec;
-  okay = 0;
-  while (p < prec * 512) {
-    mpfr_init2(*(yrange.a),p);
-    mpfr_init2(*(yrange.b),p);
-    evaluateRangeFunctionFast(yrange, func, deriv, xrange, p);
-    mpfr_set(resDown,*(yrange.a),GMP_RNDN);
-    mpfr_set(resUp,*(yrange.b),GMP_RNDN);
-    if ((mpfr_number_p(resDown)) &&
-	(mpfr_number_p(resUp)) &&
-	(mpfr_number_p(*(yrange.a))) &&
-	(mpfr_number_p(*(yrange.b)))
-	) {
-      if (mpfr_cmp(resDown,resUp) == 0)
-	okay = 1;
-      mpfr_nextabove(resDown);
-      if (mpfr_cmp(resDown,resUp) == 0)
-	okay = 1;
-      if (okay == 0) {
-	if ((mpfr_cmpabs(*(yrange.a),cutoff) < 0) && (mpfr_cmpabs(*(yrange.b),cutoff) < 0)) {
-	  mpfr_add(*(yrange.a),*(yrange.b),*(yrange.a),GMP_RNDN);
-	  mpfr_div_2ui(*(yrange.a),*(yrange.a),1,GMP_RNDN);
-	  mpfr_set(resUp,*(yrange.a),GMP_RNDN);
-	  okay = 2;
-	}
-      }
-    }
-    mpfr_clear(*(yrange.a));
-    mpfr_clear(*(yrange.b));
-    if (okay > 0) break;
-    p *= 2;
-  }
-  mpfr_clear(*(xrange.a));
-  mpfr_clear(*(xrange.b));
-
-  if (okay > 0) {
-    mpfr_set(result,resUp,GMP_RNDN);
-  } else {
-    mpfr_set_nan(result);
-    if( (!mpfr_number_p(resUp)) || (!mpfr_number_p(resDown))) okay=3;
-  }
-  
-  safeFree(yrange.a);
-  safeFree(yrange.b);
-  safeFree(xrange.a);
-  safeFree(xrange.b);
-
-  mpfr_clear(resUp);
-  mpfr_clear(resDown);
-
-
-  // tools_precision = oldPrec;
-  // defaultprecision = oldPrec2;
-
-  return okay;
-}
-
+*/
 int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec, node *altX) {
   mp_prec_t p, prec, pTemp;
   sollya_mpfi_t yI, xI, cutoffI, dummyI;
   int okay;
   mpfr_t resUp, resDown, resUpFaith, resDownFaith, resDownTemp;
   mpfr_t cutoffLeft, cutoffRight;
-  mpfr_t yILeft, yIRight;
+  mpfr_t yILeft, yIRight, yILeftCheck, yIRightCheck;
   int testCutOff;
   
   /* Check if we have a constant expression to evaluate at and if so,
@@ -4687,7 +4611,6 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
     p <<= 1;
   }
   sollya_mpfi_clear(xI);
-  sollya_mpfi_clear(yI);
   mpfr_clear(yILeft);
   mpfr_clear(yIRight);
 
@@ -4725,11 +4648,66 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
     mpfr_div_2ui(resDown, resDown, 1, GMP_RNDN); /* exact, power of 2 */
     mpfr_div_2ui(resUp, resUp, 1, GMP_RNDN); /* exact, power of 2 */
     mpfr_add(result,resDown, resUp, GMP_RNDN); /* Computes the midpoint and rounds it to target precision */
+
+    /* Now check if we are in a case when we can tell if the result is
+       an exact or inexact one. We do this check only if we had a
+       correct or faithful result; we do nothing for the case when 
+       the proof interval was below the threshold.
+    */
+    if (okay == 1) {
+      /* We have a correctly or faithfully rounded result in result and we 
+	 want to check if the proof interval we had, yI allows anything 
+	 else to be said than just "it's a faithful rounding".
+
+	 We won't do the additional check if there are quantities
+	 involved that are no real numbers.
+      */
+      p = sollya_mpfi_get_prec(yI);
+      mpfr_init2(yILeftCheck, p);
+      mpfr_init2(yIRightCheck, p);
+      sollya_mpfi_get_left(yILeftCheck,yI);
+      sollya_mpfi_get_right(yIRightCheck,yI);
+      if (mpfr_number_p(result) && 
+	  mpfr_number_p(yILeftCheck) &&
+	  mpfr_number_p(yIRightCheck)) {
+	/* Here, we have real numbers to work on */
+	if (mpfr_equal_p(yILeftCheck, yIRightCheck)) {
+	  /* Here, the proof interval is reduced to a point */
+	  if (mpfr_equal_p(result, yILeftCheck)) {
+	    /* The result is exact as it is equal to both bounds of
+	       the proof interval. 
+	    */
+	    okay = 4;
+	  } else {
+	    /* The result is inexact as it is unequal to both bounds
+	       of the proof interval which are themselves equal one to
+	       another.
+	    */
+	    okay = 5;
+	  }
+	} else {
+	  /* Given the correctly or faithfully rounded result, check
+	     if the proof interval is sufficiently small to prove that
+	     the result is not in the proof interval, which means that
+	     the result must be inexact.
+	  */
+	  if (!((mpfr_cmp(yILeftCheck, result) <= 0) && (mpfr_cmp(result, yIRightCheck) <= 0))) {
+	    /* Here, the result is not in the proof interval and
+	       therefore it is necessarily inexact. 
+	    */
+	    okay = 5;
+	  }
+	}
+      }
+      mpfr_clear(yILeftCheck);
+      mpfr_clear(yIRightCheck);
+    }
   } else {
     mpfr_set_nan(result);
     if( (!mpfr_number_p(resUp)) || (!mpfr_number_p(resDown))) okay=3;
   }
  
+  sollya_mpfi_clear(yI);
   mpfr_clear(resUp);
   mpfr_clear(resDown);
   mpfr_clear(resUpFaith);

@@ -861,13 +861,13 @@ void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
   // Computation of the matrix
   for (i=1 ; i <= freeDegrees ; i++) {
     r = evaluateFaithfulWithCutOffFast(var1, w, NULL, x[i-1], zero_mpfr, prec);
-    if((r==1) && (mpfr_number_p(var1))) test=1;
+    if(((r==1) || (r==4) || (r==5)) && (mpfr_number_p(var1))) test=1;
     else test=0;
 
     for (j=1 ; j <= freeDegrees ; j++) {
       if(test==1) {
 	r = evaluateFaithfulWithCutOffFast(var2, monomials_tree[j-1], NULL, x[i-1], zero_mpfr, prec);
-	if((r==1) && (mpfr_number_p(var2))) {
+	if(((r==1) || (r==4) || (r==5)) && (mpfr_number_p(var2))) {
 	  mpfr_mul(var2, var1, var2, GMP_RNDN);
 	  mpfr_set(N[coeff(j,i,freeDegrees)],var2,GMP_RNDN);
 	}
@@ -893,13 +893,13 @@ void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
 
   // Computation of the vector corresponding to the new point
   r = evaluateFaithfulWithCutOffFast(var1, w, NULL, newx, zero_mpfr, prec);
-  if((r==1) && (mpfr_number_p(var1))) test=1;
+  if(((r==1) || (r==4) || (r==5)) && (mpfr_number_p(var1))) test=1;
   else test=0;
 
   for (j=1 ; j <= freeDegrees ; j++) {
     if(test==1) {
       r = evaluateFaithfulWithCutOffFast(var2, monomials_tree[j-1], NULL, newx, zero_mpfr, prec);
-      if((r==1) && (mpfr_number_p(var2))) {
+      if(((r==1) || (r==4) || (r==5)) && (mpfr_number_p(var2))) {
 	mpfr_mul(var2, var1, var2, GMP_RNDN);
 	mpfr_set(c[j-1],var2,GMP_RNDN);
       }
@@ -1323,7 +1323,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
   i = 0;
   while(test && (i<=n)) {
     r = evaluateFaithfulWithCutOffFast(dummy_mpfr, error_diff, error_diff2, y[i], zero_mpfr, prec);
-    if((!mpfr_number_p(dummy_mpfr)) && (r==1)) test=0;
+    if((!mpfr_number_p(dummy_mpfr)) && ((r==1) || (r==4) || (r==5))) test=0;
     else {
       if(r==0) s[i]=0;
       else s[i] = mpfr_sgn(dummy_mpfr);
@@ -1352,7 +1352,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
 
   if(test && (case1 || case2b) && (s[0]*s[1]>0)) {
     r = evaluateFaithfulWithCutOffFast(dummy_mpfr, error, error_diff, y[0], zero_mpfr, prec);
-    if((!mpfr_number_p(dummy_mpfr)) && (r==1)) test=0;
+    if((!mpfr_number_p(dummy_mpfr)) && ((r==1) || (r==4) || (r==5))) test=0;
     else {
       if((r!=0) && (mpfr_sgn(dummy_mpfr)*s[0] > 0)) test=0;
     }
@@ -1360,7 +1360,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
 
   if(test && (case1 || case2) && (s[n-1]*s[n]>0)) {
     r = evaluateFaithfulWithCutOffFast(dummy_mpfr, error, error_diff, y[n], zero_mpfr, prec);
-    if((!mpfr_number_p(dummy_mpfr)) && (r==1)) test=0;
+    if((!mpfr_number_p(dummy_mpfr)) && ((r==1) || (r==4) || (r==5))) test=0;
     else {
       if((r!=0) && (mpfr_sgn(dummy_mpfr)*s[n] < 0)) test=0;
     }
@@ -1722,13 +1722,13 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
       for (i=1 ; i <= freeDegrees+1 ; i++) {
 	r = evaluateFaithfulWithCutOffFast(var1, w, NULL, x[i-1], zero_mpfr, prec);
-	if((r==1) && (mpfr_number_p(var1))) test=1;
+	if(((r==1) || (r==4) || (r==5)) && (mpfr_number_p(var1))) test=1;
 	else test=0;
 
 	for (j=1 ; j <= freeDegrees ; j++) {
 	  if(test==1) {
 	    r = evaluateFaithfulWithCutOffFast(var2, monomials_tree[j-1], NULL, x[i-1], zero_mpfr, prec);
-	    if((r==1) && (mpfr_number_p(var2))) {
+	    if(((r==1) || (r==4) || (r==5)) && (mpfr_number_p(var2))) {
 	      mpfr_mul(var2, var1, var2, GMP_RNDN);
 	      mpfr_set(M[coeff(i,j,freeDegrees+1)],var2,GMP_RNDN);
 	      if (i<=freeDegrees) mpfr_set(N[coeff(j,i,freeDegrees)],var2,GMP_RNDN);
@@ -2132,7 +2132,7 @@ mpfr_t *remezMatrix(node *w, mpfr_t *x, node **monomials_tree, int n, mp_prec_t 
     else mpfr_set_si(M[coeff(i,n+1,n+1)], -1, GMP_RNDN);
 
     r = evaluateFaithfulWithCutOffFast(var1, w, NULL, x[i-1], zero_mpfr, prec);
-    if((r==1) && (mpfr_number_p(var1))) test=1;
+    if(((r==1) || (r==4) || (r==5)) && (mpfr_number_p(var1))) test=1;
     else test=0;
 
     for (j=1 ; j <= n ; j++) {
@@ -2140,7 +2140,7 @@ mpfr_t *remezMatrix(node *w, mpfr_t *x, node **monomials_tree, int n, mp_prec_t 
 
       if(test==1) {
 	r = evaluateFaithfulWithCutOffFast(var2, monomials_tree[j-1], NULL, x[i-1], zero_mpfr, prec);
-	if((r==1) && (mpfr_number_p(var2))) {
+	if(((r==1) || (r==4) || (r==5)) && (mpfr_number_p(var2))) {
 	  mpfr_mul(var2, var1, var2, GMP_RNDN);
 	  mpfr_set(M[coeff(i,j,n+1)],var2,GMP_RNDN);
 	}

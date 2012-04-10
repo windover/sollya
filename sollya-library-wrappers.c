@@ -2291,7 +2291,7 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1, sollya_obj_t 
   } else {
     mpfr_set_nan(value);
     evalRes = sollya_lib_evaluate_function_at_constant_expression(value, roundOp, simplifiedObj, NULL);
-    if ((!mpfr_number_p(value)) || (evalRes != SOLLYA_FP_FAITHFUL)) {
+    if ((!mpfr_number_p(value)) || ((evalRes != SOLLYA_FP_FAITHFUL) && (evalRes != SOLLYA_FP_FAITHFUL_PROVEN_EXACT) && (evalRes != SOLLYA_FP_FAITHFUL_PROVEN_INEXACT))) {
       mpfr_init2(dummyX, 12);
       mpfr_set_si(dummyX, 1, GMP_RNDN);
       evalRes = sollya_lib_evaluate_function_at_point(value, simplifiedObj, dummyX, NULL);
@@ -2304,6 +2304,8 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1, sollya_obj_t 
     
   switch (evalRes) {
   case SOLLYA_FP_FAITHFUL:
+  case SOLLYA_FP_FAITHFUL_PROVEN_EXACT:
+  case SOLLYA_FP_FAITHFUL_PROVEN_INEXACT:
     if (!noRoundingWarnings) {
       if (*warning) {
 	printMessage(1,SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST,"Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation will be used.\n");
@@ -2630,7 +2632,7 @@ int sollya_lib_get_constant_as_int64(int64_t *value, sollya_obj_t obj1) {
   int warning = 1;
 
   roundOp = makeNearestInt(makeVariable());
-  mpfr_init2(temp,64); /* sollya_lib_get_constant_inner may change the precision afterwards */
+  mpfr_init2(temp,8 * sizeof(int64_t)); /* sollya_lib_get_constant_inner may change the precision afterwards */
   if (sollya_lib_get_constant_inner(temp, obj1, roundOp, &warning)) {
     *value = sollya_lib_helper_mpfr_to_int64(temp);
     mpfr_init2(reconvert,8 * sizeof(int64_t) + 10);
@@ -2661,7 +2663,7 @@ int sollya_lib_get_constant_as_uint64(uint64_t *value, sollya_obj_t obj1) {
   int warning = 1;
 
   roundOp = makeNearestInt(makeVariable());
-  mpfr_init2(temp,64); /* sollya_lib_get_constant_inner may change the precision afterwards */
+  mpfr_init2(temp,8 * sizeof(uint64_t)); /* sollya_lib_get_constant_inner may change the precision afterwards */
   if (sollya_lib_get_constant_inner(temp, obj1, roundOp, &warning)) {
     *value = sollya_lib_helper_mpfr_to_uint64(temp);
     mpfr_init2(reconvert,8 * sizeof(uint64_t) + 10);
@@ -3387,6 +3389,14 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t 
     /* Faithful rounding was possible */
     return SOLLYA_FP_FAITHFUL;
     break;
+  case 4:
+    /* Faithful rounding was possible and the result was exact */
+    return SOLLYA_FP_FAITHFUL_PROVEN_EXACT;
+    break;
+  case 5:
+    /* Faithful rounding was possible and the result was inexact */
+    return SOLLYA_FP_FAITHFUL_PROVEN_INEXACT;
+    break;
   case 2:
     /* Result was shown to be smaller than cutoff */
     mpfr_set_ui(y,0,GMP_RNDN); /* Set to zero because we are below the cutoff */
@@ -3554,6 +3564,14 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y,
   case 1:
     /* Faithful rounding was possible */
     return SOLLYA_FP_FAITHFUL;
+    break;
+  case 4:
+    /* Faithful rounding was possible and the result was exact */
+    return SOLLYA_FP_FAITHFUL_PROVEN_EXACT;
+    break;
+  case 5:
+    /* Faithful rounding was possible and the result was inexact */
+    return SOLLYA_FP_FAITHFUL_PROVEN_INEXACT;
     break;
   case 2:
     /* Result was shown to be smaller than cutoff */
