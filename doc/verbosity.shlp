@@ -34,3 +34,4 @@ verbosity=1!;
 verbosity=2!;
 1.2+"toto";
 
+#SEEALSO $ROUNDINGWARNINGS

@@ -2,11 +2,6 @@
 #QUICK_DESCRIPTION declaration of a local variable in a scope
 #CALLING $COMMAND <identifier1>, <identifier2>,... , <identifiern>
 #TYPE $VOID_TYPE
-#LIBRARYNAME void sollya_lib_name_free_variable(const char *)
-#LIBRARYNAME char *sollya_lib_get_free_variable_name()
-#LIBRARYNAME sollya_obj_t sollya_lib_free_variable()
-#LIBRARYNAME sollya_obj_t sollya_lib_build_function_free_variable()
-#LIBRARYNAME #define SOLLYA_X_ sollya_lib_build_function_free_variable()
 
 #PARAMETERS <identifier1>, <identifier2>,... , <identifiern> represent variable identifiers
 

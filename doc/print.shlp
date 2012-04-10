@@ -6,12 +6,6 @@
 #TYPE ($ANY_TYPE,..., $ANY_TYPE, $STRING_TYPE) -> $VOID_TYPE
 #CALLING $COMMAND(<expr1>,...,<exprn>) §§>>§$>>$§§ <filename>
 #TYPE ($ANY_TYPE,...,$ANY_TYPE, $STRING_TYPE) -> $VOID_TYPE
-#LIBRARYNAME int sollya_lib_printf(const char *, ...)
-#LIBRARYNAME int sollya_lib_v_printf(const char *, va_list)
-#LIBRARYNAME int sollya_lib_fprintf(FILE *, const char *, ...)
-#LIBRARYNAME int sollya_lib_v_fprintf(FILE *, const char *, va_list)
-#LIBRARYNAME void sollya_lib_autoprint(sollya_obj_t, ...)
-#LIBRARYNAME void sollya_lib_v_autoprint(sollya_obj_t, va_list)
 
 #PARAMETERS <expr> represents an expression
 #PARAMETERS <filename> represents a character sequence indicating a file name

@@ -111,3 +111,4 @@ if (q != p) then print("During implementation, rounding has happened.") else pri
 #SEEALSO $REMEZ
 #SEEALSO $FPMINIMAX
 #SEEALSO $TAYLOR
+#SEEALSO $IMPLEMENTCONSTANT

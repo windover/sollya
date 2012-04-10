@@ -58,3 +58,4 @@ rename(x,y);
 isbound(x);
 x;
 
+#SEEALSO $RENAME
