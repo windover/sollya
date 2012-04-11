@@ -1,7 +1,7 @@
 \subsection{accurateinfnorm}
 \label{labaccurateinfnorm}
 \noindent Name: \textbf{accurateinfnorm}\\
-computes a faithful rounding of the infinity norm of a function \\
+\phantom{aaa}computes a faithful rounding of the infinity norm of a function \\[0.2cm]
 \noindent Usage: 
 \begin{center}
 \textbf{accurateinfnorm}(\emph{function},\emph{range},\emph{constant}) : (\textsf{function}, \textsf{range}, \textsf{constant}) $\rightarrow$ \textsf{constant}\\
@@ -28,7 +28,8 @@ Parameters:
    \emph{exclusion range 1} through \emph{exclusion range n} the infinity norm of
    the function \emph{function} is not to be considered on.
 
-\item Users should be aware about the fact that the algorithm behind
+\item The command \textbf{accurateinfnorm} is now considered DEPRECATED in \sollya.
+   Users should be aware about the fact that the algorithm behind
    \textbf{accurateinfnorm} is highly inefficient and that other, better suited
    algorithms, such as \textbf{supnorm}, are available inside \sollya. As a
    matter of fact, while \textbf{accurateinfnorm} is maintained for compatibility reasons
