@@ -38,7 +38,7 @@ procedure isEvaluableEmulation(f, c) {
 	  	       NaN : (false)
 		       [NaN;NaN] : (false)
 		       default : (true);
-}
+};
 
 isEvaluableEmulation(sin(pi * 1/x), 0.75);
 isEvaluableEmulation(sin(pi * 1/x), 0.5);

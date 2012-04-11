@@ -55,12 +55,13 @@ false
                    NaN : (false)
                  [NaN;NaN] : (false)
                  default : (true);
-  }
-  isEvaluableEmulation(sin(pi * 1/x), 0.75);
-  isEvaluableEmulation(sin(pi * 1/x), 0.5);
-error
+  };
+> isEvaluableEmulation(sin(pi * 1/x), 0.75);
+true
+> isEvaluableEmulation(sin(pi * 1/x), 0.5);
+true
 > isEvaluableEmulation(sin(pi * 1/x), 0);
-error
+false
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{evaluate} (\ref{labevaluate})
