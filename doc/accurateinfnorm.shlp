@@ -24,6 +24,8 @@ If given, the fourth and further arguments of the command $COMMAND,
 the function <function> is not to be considered on.
 
 #DESCRIPTION
+The command $COMMAND is now considered DEPRECATED in $SOLLYA.
+
 Users should be aware about the fact that the algorithm behind
 $COMMAND is highly inefficient and that other, better suited
 algorithms, such as $SUPNORM, are available inside $SOLLYA. As a

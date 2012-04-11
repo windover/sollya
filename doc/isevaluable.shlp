@@ -12,6 +12,13 @@ a boolean indicating whether or not a subsequent call to $EVALUATE on the
 same function <function> and constant <constant> will produce a numerical
 result or NaN. This means $COMMAND returns false iff $EVALUATE will return NaN.
 
+#DESCRIPTION
+The command $COMMAND is now considered DEPRECATED in $SOLLYA.
+
+As checks for NaNs are now possible in Sollya, the command $COMMAND
+can be fully emulated with a call to evaluate and a couple of tests, 
+as shown below in the last example.
+
 #EXAMPLE
 isevaluable(sin(pi * 1/x), 0.75);
 print(evaluate(sin(pi * 1/x), 0.75));
@@ -24,6 +31,18 @@ print(evaluate(sin(pi * 1/x), 0.5));
 #EXAMPLE
 isevaluable(sin(pi * 1/x), 0);
 print(evaluate(sin(pi * 1/x), 0));
+
+#EXAMPLE
+procedure isEvaluableEmulation(f, c) {
+	  return match evaluate(f, c) with 
+	  	       NaN : (false)
+		       [NaN;NaN] : (false)
+		       default : (true);
+}
+
+isEvaluableEmulation(sin(pi * 1/x), 0.75);
+isEvaluableEmulation(sin(pi * 1/x), 0.5);
+isEvaluableEmulation(sin(pi * 1/x), 0);
 
 #SEEALSO $EVALUATE
 
