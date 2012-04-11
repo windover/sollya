@@ -7,6 +7,10 @@ const char *get_status(sollya_fp_result_t s) {
   switch(s) {
   case SOLLYA_FP_OBJ_NO_FUNCTION:
     return "status: SOLLYA_FP_OBJ_NO_FUNCTION";
+  case SOLLYA_FP_FAITHFUL_PROVEN_EXACT:
+    return "status: SOLLYA_FP_PROVEN_EXACT";
+  case SOLLYA_FP_FAITHFUL_PROVEN_INEXACT:
+    return "status: SOLLYA_FP_PROVEN_INEXACT";
   case SOLLYA_FP_FAITHFUL:
     return "status: SOLLYA_FP_FAITHFUL";
   case SOLLYA_FP_BELOW_CUTOFF:
@@ -75,6 +79,32 @@ int main(void) {
   sollya_lib_printf(" -- expecting one of 105414357 * 2^(-25) or 843314857 * 2^(-28)\n");
   sollya_lib_printf("\n");
   sollya_lib_clear_obj(f);
+
+
+ /* Evaluate a simple expression */
+
+  f = SOLLYA_DIV(SOLLYA_EXP(SOLLYA_CONST(0)), SOLLYA_CONST(4));
+  mpfr_set_d(x, 3, GMP_RNDN);
+  mpfr_set_d(y, -17, GMP_RNDN);;
+  res = sollya_lib_evaluate_function_at_point(y, f, x, NULL);
+  sollya_lib_printf("Trying to faithfuly evaluate %b at %v with cutoff NULL: returns %v (%s)", f, x, y, get_status(res));
+  sollya_lib_printf(" -- expecting 1 * 2^(-2)\n\n");
+  sollya_lib_clear_obj(f);
+
+  /* Evaluate an exact expression, but it is hard to decide that it is exact */
+
+  f = SOLLYA_ADD( SOLLYA_CONST(1),
+                  SOLLYA_SUB( SOLLYA_DIV(SOLLYA_LOG10(SOLLYA_X_), SOLLYA_LOG10(SOLLYA_CONST(2))),
+                              SOLLYA_DIV(SOLLYA_LOG(SOLLYA_X_), SOLLYA_LOG(SOLLYA_CONST(2)))
+                              )
+                  );
+  mpfr_set_d(x, 3, GMP_RNDN);
+  mpfr_set_d(y, -17, GMP_RNDN);;
+  res = sollya_lib_evaluate_function_at_point(y, f, x, NULL);
+  sollya_lib_printf("Trying to faithfuly evaluate %b at %v with cutoff NULL: returns %v (%s)", f, x, y, get_status(res));
+  sollya_lib_printf(" -- expecting 1\n\n");
+  sollya_lib_clear_obj(f);
+
 
 
   /* Evaluate a constant expression */
