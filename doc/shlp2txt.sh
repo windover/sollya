@@ -118,7 +118,7 @@ processName() {
 processLibraryName() {
  nLines=`cat $tempfile | grep "#LIBRARYNAME" | wc -l`
  if [ $nLines -eq 0 ]
- then printf "Error: you must specify at least one library name. Exiting\n"; exit 1
+ then return
  fi
 
  if [ $nLines -eq 1 ]
