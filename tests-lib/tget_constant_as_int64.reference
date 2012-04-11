@@ -48,9 +48,8 @@ Warning: the given expression is not a constant but an expression to evaluate
 and a faithful evaluation is *NOT* possible.
 (sin((pi) / 3) - sqrt(3) / 2) * 9.99002e30102 + 3 has been converted to some number. Expecting that the above warning message states that faithtul evaluation is *NOT* possible.
 
-Warning: the given expression is not a constant but an expression to evaluate
-and a faithful evaluation is *NOT* possible.
-(sin((pi) / 3) - sqrt(3) / 2) * 9.99002e30102 + 6.305794e18061 has been converted to some number. Expecting that the above warning message states that faithtul evaluation is *NOT* possible.
+Testing a tricky expression. Might return INT64_MAX with an overflow message or return anything with a message stating that faithful rounding was not possible... OK
+(sin((pi) / 3) - sqrt(3) / 2) * 9.99002e30102 + 6.305794e18061 has been converted to some number.
 
 Warning: rounding occurred on retrieval of a constant.
 -@Inf@ has been converted to INT64_MIN

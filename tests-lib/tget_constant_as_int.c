@@ -1,6 +1,19 @@
 #include <limits.h>
 #include <sollya.h>
 
+int flag = 0;
+
+int special_callback(sollya_msg_t msg) {
+  sollya_lib_printf("Testing a tricky expression. Might return MAX_INT with an overflow message or return anything with a message stating that faithful rounding was not possible... ");
+  if( sollya_lib_get_msg_id(msg) == SOLLYA_MSG_EXPR_SHOULD_BE_CONSTANT_AND_IS_NOT_FAITHFUL )
+    sollya_lib_printf("OK\n");
+  else if ( sollya_lib_get_msg_id(msg) == SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST ) {
+    flag = 1;
+  }
+  else sollya_lib_printf("not OK.\n");
+  return 0;
+}
+
 int main(void) {
   sollya_obj_t a, prec;
   int res;
@@ -219,12 +232,22 @@ int main(void) {
 
   /* Another tricky one. */
   res = -17;
+  sollya_lib_install_msg_callback(special_callback);
   a = sollya_lib_parse_string("(sin((pi) / 3) - sqrt(3) / 2 ) * (1 * 2^(100000)) + (1 * 2^(60000))");
   if (!sollya_lib_get_constant_as_int(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {
-    sollya_lib_printf("%b has been converted to some number. Expecting that the above warning message states that faithtul evaluation is *NOT* possible.\n\n", a);
+    if(flag) {
+      if (res != INT_MAX)
+        sollya_lib_printf("%b has been converted to %d (expected INT_MAX=%d\n\n", a, res, INT_MAX);
+      else {
+        sollya_lib_printf("OK\n");
+      }
+    }
+    sollya_lib_printf("%b has been converted to some number.\n\n", a);
   }
+  sollya_lib_uninstall_msg_callback();
+  flag = 0;
   sollya_lib_clear_obj(a);
 
 
