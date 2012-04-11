@@ -2291,7 +2291,12 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1, sollya_obj_t 
   } else {
     mpfr_set_nan(value);
     evalRes = sollya_lib_evaluate_function_at_constant_expression(value, roundOp, simplifiedObj, NULL);
-    if ((!mpfr_number_p(value)) || ((evalRes != SOLLYA_FP_FAITHFUL) && (evalRes != SOLLYA_FP_FAITHFUL_PROVEN_EXACT) && (evalRes != SOLLYA_FP_FAITHFUL_PROVEN_INEXACT))) {
+    if ((!mpfr_number_p(value)) || 
+	((evalRes != SOLLYA_FP_FAITHFUL) && 
+	 (evalRes != SOLLYA_FP_PROVEN_EXACT) && 
+	 (evalRes != SOLLYA_FP_FAITHFUL_PROVEN_INEXACT) && 
+	 (evalRes != SOLLYA_FP_CORRECTLY_ROUNDED) && 
+	 (evalRes != SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT))) {
       mpfr_init2(dummyX, 12);
       mpfr_set_si(dummyX, 1, GMP_RNDN);
       evalRes = sollya_lib_evaluate_function_at_point(value, simplifiedObj, dummyX, NULL);
@@ -2304,7 +2309,9 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1, sollya_obj_t 
     
   switch (evalRes) {
   case SOLLYA_FP_FAITHFUL:
-  case SOLLYA_FP_FAITHFUL_PROVEN_EXACT:
+  case SOLLYA_FP_CORRECTLY_ROUNDED:
+  case SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT:
+  case SOLLYA_FP_PROVEN_EXACT:
   case SOLLYA_FP_FAITHFUL_PROVEN_INEXACT:
     if (!noRoundingWarnings) {
       if (*warning) {
@@ -3390,13 +3397,21 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t 
     return SOLLYA_FP_FAITHFUL;
     break;
   case 4:
-    /* Faithful rounding was possible and the result was exact */
-    return SOLLYA_FP_FAITHFUL_PROVEN_EXACT;
+    /* Faithful/ correct rounding was possible and the result was exact */
+    return SOLLYA_FP_PROVEN_EXACT;
     break;
   case 5:
     /* Faithful rounding was possible and the result was inexact */
     return SOLLYA_FP_FAITHFUL_PROVEN_INEXACT;
     break;
+  case 6:
+    /* Correct rounding was possible */
+    return SOLLYA_FP_CORRECTLY_ROUNDED;
+    break;
+  case 7:
+    /* Correct rounding was possible and the result was inexact */
+    return SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT;
+    break;    
   case 2:
     /* Result was shown to be smaller than cutoff */
     mpfr_set_ui(y,0,GMP_RNDN); /* Set to zero because we are below the cutoff */
@@ -3566,13 +3581,21 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y,
     return SOLLYA_FP_FAITHFUL;
     break;
   case 4:
-    /* Faithful rounding was possible and the result was exact */
-    return SOLLYA_FP_FAITHFUL_PROVEN_EXACT;
+    /* Faithful/ correct rounding was possible and the result was exact */
+    return SOLLYA_FP_PROVEN_EXACT;
     break;
   case 5:
     /* Faithful rounding was possible and the result was inexact */
     return SOLLYA_FP_FAITHFUL_PROVEN_INEXACT;
     break;
+  case 6:
+    /* Correct rounding was possible */
+    return SOLLYA_FP_CORRECTLY_ROUNDED;
+    break;
+  case 7:
+    /* Correct rounding was possible and the result was inexact */
+    return SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT;
+    break;    
   case 2:
     /* Result was shown to be smaller than cutoff */
     mpfr_set_ui(y,0,GMP_RNDN); /* Set to zero because we are below the cutoff */

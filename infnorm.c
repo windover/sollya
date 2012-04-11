@@ -4401,10 +4401,17 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
    3 -> evaluation did not allow to conclude on a function as it
         evaluated to NaN or Inf
 
-   4 -> evaluation gave a faithful result and we know that it is exact
+   4 -> evaluation gave a faithfully resp. correctly rounded result
+        and we know that it is exact
 
    5 -> evaluation gave a faithful result and we know that it is
         inexact 
+
+   6 -> evaluation gave a correctly rounded result, we do not know if
+        it is inexact
+	
+   7 -> evaluation gave a correctly rounded result and we know that it
+        is inexact
 
 */
 int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec, node *altX) {
