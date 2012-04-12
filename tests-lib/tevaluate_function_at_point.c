@@ -7,7 +7,7 @@ const char *get_status(sollya_fp_result_t s) {
   switch(s) {
   case SOLLYA_FP_OBJ_NO_FUNCTION:
     return "status: SOLLYA_FP_OBJ_NO_FUNCTION";
-  case SOLLYA_FP_FAITHFUL_PROVEN_EXACT:
+  case SOLLYA_FP_PROVEN_EXACT:
     return "status: SOLLYA_FP_PROVEN_EXACT";
   case SOLLYA_FP_FAITHFUL_PROVEN_INEXACT:
     return "status: SOLLYA_FP_PROVEN_INEXACT";

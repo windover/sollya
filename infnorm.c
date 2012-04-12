@@ -4422,6 +4422,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
   mpfr_t cutoffLeft, cutoffRight;
   mpfr_t yILeft, yIRight, yILeftCheck, yIRightCheck;
   int testCutOff;
+  int correctlyRounded;
   
   /* Check if we have a constant expression to evaluate at and if so,
      check if it is constant 
@@ -4501,6 +4502,8 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
   p=startprec;
   okay = 0;
   while (p < prec * 512) {
+    correctlyRounded = 0;
+
     sollya_mpfi_set_prec(yI,p);
     
     /* If we evaluate at a constant expression instead of a point,
@@ -4535,6 +4538,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 	   correct rounding 
 	*/
 	okay = 1;
+	correctlyRounded = 1;
       } else {
 	/* Check if faithful rounding is already possible */
 	sollya_mpfi_get_left(resDownFaith,yI);
@@ -4591,6 +4595,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 	       use. 
 	    */
 	    okay = 1;
+	    correctlyRounded = 1;
 	  } else {
 	    /* We couldn't find a correct rounding with a
 	       recomputation at a slightly higher precision. So we'll
@@ -4708,6 +4713,19 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
       }
       mpfr_clear(yILeftCheck);
       mpfr_clear(yIRightCheck);
+    }
+
+    /* If we got a correctly rounded result, we can express this fact
+       with the return code 
+    */
+    if (correctlyRounded) {
+      if (okay == 1) {
+	okay = 6;
+      } else {
+	if (okay == 5) {
+	  okay = 7;
+	}
+      }
     }
   } else {
     mpfr_set_nan(result);

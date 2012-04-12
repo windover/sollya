@@ -762,13 +762,13 @@ node *FPminimaxMain(node *f,
   pushTimeCounter();
   for (i=1; i <= nbpoints; i++) {
     r = evaluateFaithfulWithCutOffFast(var1, w, NULL, x[i-1], zero_mpfr, prec);
-    if(((r==1) || (r==4) || (r==5)) && (mpfr_number_p(var1))) test=1;
+    if(((r==1) || (r==4) || (r==5) || (r==6) || (r==7)) && (mpfr_number_p(var1))) test=1;
     else test=0;
 
     for (j=1; j <= dim; j++) {
       if(test==1) {
 	r = evaluateFaithfulWithCutOffFast(var2, monomials_tree[j-1], NULL, x[i-1], zero_mpfr, prec);
-	if(((r==1) || (r==4) || (r==5)) && (mpfr_number_p(var2))) {
+	if(((r==1) || (r==4) || (r==5) || (r==6) || (r==7)) && (mpfr_number_p(var2))) {
 	  mpfr_mul(var2, var1, var2, GMP_RNDN);
 	  mpfr_set(M[coeff(i,j,dim+1)],var2,GMP_RNDN);
 	}
