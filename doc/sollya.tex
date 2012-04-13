@@ -1062,7 +1062,9 @@ The header file of the \sollya library is \texttt{sollya.h}. Its inclusion may p
 
 The library provides a virtual \sollya session that is perfectly similar to an interactive session: environment variables such as \texttt{verbosity}, \texttt{prec}, \texttt{display}, \texttt{midpointmode}, etc. are maintained and affect the behavior of the library, warning messages are displayed when something is not exact, etc. Please notice that the \sollya library currently is \textbf{not} re-entrant and can only be opened once. A process using the library must hence not be multi-threaded and is limited to one single virtual \sollya session.
 
-In order to get started with the \sollya library, the first thing to do is hence to initialize this virtual session. Accordingly, one should close the session at the end of the program (which has the effect of releasing all the memory used by \sollya). This is hence a minimal file:
+In order to get started with the \sollya library, the first thing to do is hence to initialize this virtual session. This is performed with the \verb|sollya_lib_init| function. Accordingly, one should close the session at the end of the program (which has the effect of releasing all the memory used by \sollya). Please notice that \sollya uses its own allocation functions and registers them to \verb|GMP| using the custom allocation functions provided by \verb|GMP|. Particular precautions should hence be taken when using the \sollya library in a program that also registers its own functions to \verb|GMP|: in that case \verb|sollya_lib_init_with_custom_memory_functions| should be used instead of \verb|sollya_lib_init| for initializing the library. This is discussed in Section~\ref{customMemoryFunctions}.
+
+In the usual case when \sollya is used in a program that does not register allocation functions to~\verb|GMP|, a minimal file using the library is hence the following.
 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 #include <sollya.h>
@@ -1777,4 +1779,44 @@ int main() {
 \end{minipage}\end{center}
 
 More involved examples are possible: for instance, instead of setting a flag, it is possible to keep in some variable what the last message was. One may even implement a stack mechanism and store the messages in a stack, in order to handle them later. One may also decide to raise an exception flag on a particular message, etc.
+
+\subsection{Using \sollya in a program that has its own allocation functions}
+\label{customMemoryFunctions}
+\sollya uses its own allocation functions: as a consequence, pointers that have been allocated by \sollya functions must be freed using \verb|sollya_lib_free| instead of the usual \verb|free| function. Another consequence is that \sollya registers its own allocation functions to the \verb|GMP| library, using the mechanism provided by \verb|GMP|, so that \verb|GMP| also uses \sollya allocation functions behind the scene, when the user performs a call to, e.g., \verb|mpz_init|, \verb|mpfr_init2|, etc.
+
+In general, this is completely harmless and the user might even not notice it. However, this is a problem if \sollya is used in a program that also uses its own allocation functions and that has already registered these functions to \verb|GMP|. Actually:
+\begin{itemize}
+\item If the main program has already registered allocation functions to \verb|GMP| and if \sollya is naively initialized with \verb|sollya_lib_init()|, \sollya will register its own allocation functions, thus overriding the previously registered functions.
+\item If the user initializes first \sollya, and then registers its own allocation functions to \verb|GMP|, the exact opposite happens: \sollya allocation functions are overridden by those of the user, and this will likely cause \sollya to crash (or worst, silently behave not reliably).
+\end{itemize}
+
+In order to solve this issue, \sollya provides a chaining mechanism that we are now going to describe. The idea is the following: suppose that the main program should use a function \verb|custom_malloc|. The user should not use \verb|mp_set_memory_functions| as usual, but should instead initialize \sollya with the initializing function described above. This will cause \sollya to register an allocation function \verb|sollya_lib_malloc| to \verb|GMP|. This function overloads \verb|custom_malloc|: when called, it first does its own stuff and then terminates by calling \verb|custom_malloc| which performs the actual allocation. The pointer returned by \verb|sollya_lib_malloc| is exactly the one returned by \verb|custom_malloc|. Hence, from the point of view of the user, the mechanism is completely transparent and equivalent to directly registering \verb|custom_malloc| to \verb|GMP|. The same holds for all other allocation functions: in particular, this is true for \verb|free| as well: if a function \verb|custom_free| is given at the initialization of \sollya, then the function \verb|sollya_lib_free| eventually uses \verb|custom_free| to free the memory. 
+
+The initialization function providing this mechanism is:
+\begin{center}
+\verb|int sollya_lib_init_with_custom_memory_functions(                   |\\
+\verb|         void *(*custom_malloc)(size_t),                            |\\
+\verb|         void *(*custom_calloc)(size_t, size_t),                    |\\
+\verb|         void *(*custom_realloc)(void *, size_t),                   |\\
+\verb|         void (*custom_free)(void *),                               |\\
+\verb|         void *(*custom_realloc_with_size)(void *, size_t, size_t),|\\
+\verb|         void (*custom_free_with_size)(void *, size_t)).            |
+\end{center}
+None of the arguments is mandatory: if the user does not want to provide an argument, they may use \verb|NULL| as a placeholder for that argument. In that case, the default corresponding \sollya function will be used. Indeed, the default initializing function \verb|sollya_lib_init()| is just an alias to \verb|sollya_lib_init_with_custom_memory_functions(NULL, NULL, NULL, NULL, NULL, NULL)|.
+
+Please notice, that if \verb|custom_malloc| is provided, then the function \verb|sollya_lib_malloc| will be defined as an overloaded version of \verb|custom_malloc|. Hence, \verb|custom_malloc| will eventually be used for all the allocations performed by \sollya (including the allocation of memory for its own purpose). This is true also for \verb|custom_calloc|, \verb|custom_realloc| and \verb|custom_free|. However, this is not the case for \verb|custom_realloc_with_size| and \verb|custom_free_with_size|: these functions are only required for the registration to \verb|GMP| and are not used by \sollya itself (except of course when \sollya allocates function through a call to a \verb|GMP|, \verb|MPFR| or \verb|MPFI| function). Thus, to sum up:
+\begin{itemize}
+\item If the user only wants to register their own functions to \verb|GMP| through \sollya, they  only need to provide \verb|custom_malloc|, \verb|custom_realloc_with_size| and \verb|custom_free_with_size| at the initialization of \sollya (actually an overloaded version will be registered to \verb|GMP| but this is transparent for the user, as explained above).
+\item If the user also wants \sollya to use their custom allocation functions for all allocations of memory by \sollya, then they also need to provide \verb|custom_calloc|, \verb|custom_realloc| and \verb|custom_free|.
+\end{itemize}
+
+Of course, even if the user registers \verb|custom_malloc|, \verb|custom_free|, etc., at the initialization of \sollya, they stay free to use them for their own allocation needs: only allocations performed by \verb|GMP| (and consequently \verb|MPFR| and \verb|MPFI|) and allocations performed by \sollya have to use the chaining mechanism. However, for the convenience of the user, the library also provides access to the allocation functions of \sollya. They are the following:
+\begin{itemize}
+\item \verb|void sollya_lib_free(void *)|
+\item \verb|void *sollya_lib_malloc(size_t)|
+\item \verb|void *sollya_lib_calloc(size_t, size_t)|
+\item \verb|void *sollya_lib_realloc(void *, size_t)|.
+\end{itemize}
+No access to the overloaded version of \verb|custom_realloc_with_size| and \verb|custom_free_with_size| is provided, but if the user really wants to retrieve them, they can do it with \verb|mp_get_memory_functions| since they are registered to \verb|GMP|.
+
 \end{document}
