@@ -14,7 +14,7 @@ const char *get_status(sollya_fp_result_t s) {
   case SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT:
     return "status: SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT";
   case SOLLYA_FP_FAITHFUL_PROVEN_INEXACT:
-    return "status: SOLLYA_FP_PROVEN_INEXACT";
+    return "status: SOLLYA_FP_FAITHFUL_PROVEN_INEXACT";
   case SOLLYA_FP_FAITHFUL:
     return "status: SOLLYA_FP_FAITHFUL";
   case SOLLYA_FP_BELOW_CUTOFF:
@@ -115,6 +115,24 @@ int main(void) {
   sollya_lib_printf(" -- expecting 1\n\n");
   sollya_lib_clear_obj(f);
   sollya_lib_clear_obj(x);
+
+
+  /* Evaluate an expression exactly at the middle of two fp numbers
+     but it is hard to decide that it is exact */
+
+  f = SOLLYA_ADD( SOLLYA_ADD(SOLLYA_CONST(1), SOLLYA_POW(SOLLYA_CONST(2), SOLLYA_NEG(SOLLYA_CONST(mpfr_get_prec(y))))),
+                  SOLLYA_SUB( SOLLYA_DIV(SOLLYA_LOG10(SOLLYA_X_), SOLLYA_LOG10(SOLLYA_CONST(2))),
+                              SOLLYA_DIV(SOLLYA_LOG(SOLLYA_X_), SOLLYA_LOG(SOLLYA_CONST(2)))
+                              )
+                  );
+  x = SOLLYA_DIV(SOLLYA_CONST(3), SOLLYA_PI);
+  mpfr_set_d(y, -17, GMP_RNDN);;
+  res = sollya_lib_evaluate_function_at_constant_expression(y, f, x, NULL);
+  sollya_lib_printf("Trying to faithfuly evaluate %b at %b with cutoff NULL: returns %v (%s)", f, x, y, get_status(res));
+  sollya_lib_printf(" -- expecting 1\n\n");
+  sollya_lib_clear_obj(f);
+  sollya_lib_clear_obj(x);
+
 
 
   /* Evaluate a constant expression */
@@ -535,8 +553,8 @@ int main(void) {
   sollya_lib_clear_obj(f);
   sollya_lib_clear_obj(x);
 
-  f = sollya_lib_parse_string("(sin(pi/3)-x)*1b10000+3");
-  x = SOLLYA_DIV(SOLLYA_SQRT(SOLLYA_CONST(3)), SOLLYA_CONST(2));
+  f = sollya_lib_parse_string("3+7b-31*sin(1/(280b-18000 + (sin(pi/6)-x)))");
+  x = SOLLYA_CONST(0.5);
   mpfr_set_d(y, -17, GMP_RNDN);
   res = sollya_lib_evaluate_function_at_constant_expression(y, f, x, NULL);
   sollya_lib_printf("Trying to faithfuly evaluate %b at %b with cutoff NULL: returns %v (%s)", f, x, y, get_status(res));

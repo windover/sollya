@@ -14,7 +14,7 @@ const char *get_status(sollya_fp_result_t s) {
   case SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT:
     return "status: SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT";
   case SOLLYA_FP_FAITHFUL_PROVEN_INEXACT:
-    return "status: SOLLYA_FP_PROVEN_INEXACT";
+    return "status: SOLLYA_FP_FAITHFUL_PROVEN_INEXACT";
   case SOLLYA_FP_FAITHFUL:
     return "status: SOLLYA_FP_FAITHFUL";
   case SOLLYA_FP_BELOW_CUTOFF:
@@ -465,11 +465,11 @@ int main(void) {
   sollya_lib_printf("\n");
   sollya_lib_clear_obj(f);
 
-  f = sollya_lib_parse_string("(sin(pi/6)-x)*1b25572 *1063004405 * 2^(-30)+3"); /* TODO: achieve to obtain SOLLYA_FP_FAITHFUL here */
+  f = sollya_lib_parse_string("3+7b-31*sin(1/(280b-18000 + (sin(pi/6)-x)))");
   mpfr_set_d(x, 0.5, GMP_RNDN);
   mpfr_set_d(y, -17, GMP_RNDN);
   res = sollya_lib_evaluate_function_at_point(y, f, x, NULL);
-  sollya_lib_printf("Trying to faithfuly evaluate %b at %v with cutoff NULL: returns %v (%s) xxx", f, x, y, get_status(res));
+  sollya_lib_printf("Trying to faithfuly evaluate %b at %v with cutoff NULL: returns %v (%s)", f, x, y, get_status(res));
   sollya_lib_printf("\n");
   sollya_lib_printf("\n");
   sollya_lib_clear_obj(f);
