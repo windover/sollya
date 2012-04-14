@@ -1,7 +1,9 @@
 \subsection{parse}
 \label{labparse}
 \noindent Name: \textbf{parse}\\
-parses an expression contained in a string\\
+\phantom{aaa}parses an expression contained in a string\\[0.2cm]
+\noindent Library name:\\
+\verb|   sollya_obj_t sollya_lib_parse(sollya_obj_t)|\\[0.2cm]
 \noindent Usage: 
 \begin{center}
 \textbf{parse}(\emph{string}) : \textsf{string} $\rightarrow$ \textsf{function} $|$ \textsf{error}\\
@@ -34,12 +36,12 @@ exp(x)
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > text = "remez(exp(x),5,[-1;1])";
 > print("The string", text, "gives", parse(text));
-The string remez(exp(x),5,[-1;1]) gives 1.00004475029055070643077052482053398765
-426158966754 + x * (1.00003834652983970735244541124504033817544233075356 + x * (
-0.49919698262882986492168824494240374771969012861297 + x * (0.166424656075155194
-415920597322727380932279602909199 + x * (4.3793696387328047027125756620718349665
-9575464236489e-2 + x * 8.7381910388065551140158420278330960479960476713376e-3)))
-)
+The string remez(exp(x),5,[-1;1]) gives 8.73819103880655511401584202783309604799
+60476712009e-3 * x^5 + 4.3793696387328047027125756620718349665957546423673e-2 * 
+x^4 + 0.16642465607515519441592059732272738093227960290946 * x^3 + 0.49919698262
+8829864921688244942403747719690128612986 * x^2 + 1.00003834652983970735244541124
+504033817544233075343 * x + 1.00004475029055070643077052482053398765426158966754
+
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 

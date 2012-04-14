@@ -4,6 +4,14 @@
 <span class="smallDescription">rounding to the nearest IEEE 754 double (binary64). 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_double(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_double_obj()</span> 
+<span class="commandline type">int sollya_lib_is_double_obj(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_build_function_double(sollya_obj_t)</span> 
+<span class="commandline type">#define SOLLYA_D(x) sollya_lib_build_function_double(x)</span> 
+</div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
 <li><?php linkTo("command","double","double");?> is both a function and a constant. 

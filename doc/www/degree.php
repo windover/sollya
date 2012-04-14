@@ -4,6 +4,10 @@
 <span class="smallDescription">gives the degree of a polynomial. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_degree(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","degree","degree");?>(<span class="arg">f</span>) : <span class="type">function</span> -&gt; <span class="type">integer</span></span> 

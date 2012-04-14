@@ -4,6 +4,11 @@
 <span class="smallDescription">expression representing an input that is wrongly typed or that cannot be executed 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_error()</span> 
+<span class="commandline type">int sollya_lib_obj_is_error(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","error","error");?> : <span class="type">error</span></span> 

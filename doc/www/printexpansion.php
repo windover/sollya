@@ -4,6 +4,10 @@
 <span class="smallDescription">prints a polynomial in Horner form with its coefficients written as a expansions of double precision numbers 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">void sollya_lib_printexpansion(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","printexpansion","printexpansion");?>(<span class="arg">polynomial</span>) : <span class="type">function</span> -&gt; <span class="type">void</span></span> 
@@ -45,7 +49,7 @@ warning or a newline is displayed. Constants can be displayed using
 <div class="divExample"> 
 <h2 class="category">Example 2: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; printexpansion(remez(exp(x),5,[-1;1]));<br> 
-&nbsp;&nbsp;&nbsp;(0x3ff0002eec908ce9 + 0xbc7df99eb225af5b + 0xb8d55834b08b1f18) + x * ((0x3ff0002835917719 + 0x3c6d82c073b25ebf + 0xb902cf062b54b7b6 + 0x35b0000000000000) + x * ((0x3fdff2d7e6a9c5e9 + 0xbc7b09a95b0d520f + 0xb915b639add55731 + 0x35a8000000000000) + x * ((0x3fc54d67338ba09f + 0x3c4867596d0631cf + 0xb8ef0756bdb4af6e) + x * ((0x3fa66c209b825167 + 0x3c45ec5b6655b076 + 0xb8d8c125286400bc) + x * (0x3f81e55425e72ab4 + 0x3c263b25a1bf597b + 0xb8c843e0401dadd0 + 0x3540000000000000)))))<br> 
+&nbsp;&nbsp;&nbsp;(0x3ff0002eec908ce9 + 0xbc7df99eb225af5b + 0xb8d55834b08b1f18) + x * ((0x3ff0002835917719 + 0x3c6d82c073b25ebf + 0xb902cf062b54b7b7) + x * ((0x3fdff2d7e6a9c5e9 + 0xbc7b09a95b0d520f + 0xb915b639add55731 + 0x35b0000000000000) + x * ((0x3fc54d67338ba09f + 0x3c4867596d0631cf + 0xb8ef0756bdb4af62 + 0x3580000000000000) + x * ((0x3fa66c209b825167 + 0x3c45ec5b6655b076 + 0xb8d8c125286400ba + 0x3570000000000000) + x * (0x3f81e55425e72ab4 + 0x3c263b25a1bf597b + 0xb8c843e0401dadea + 0x3570000000000000)))))<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 3: </h2> 

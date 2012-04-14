@@ -1,7 +1,11 @@
 \subsection{erfc}
 \label{laberfc}
 \noindent Name: \textbf{erfc}\\
-the complementary error function.\\
+\phantom{aaa}the complementary error function.\\[0.2cm]
+\noindent Library names:\\
+\verb|   sollya_obj_t sollya_lib_erfc(sollya_obj_t)|\\
+\verb|   sollya_obj_t sollya_lib_build_function_erfc(sollya_obj_t)|\\
+\verb|   #define SOLLYA_ERFC(x) sollya_lib_build_function_erfc(x)|\\[0.2cm]
 \noindent Description: \begin{itemize}
 
 \item \textbf{erfc} is the complementary error function defined by $\mathrm{erfc}(x) = 1 - \mathrm{erf}(x)$.

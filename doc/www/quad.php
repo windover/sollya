@@ -4,6 +4,14 @@
 <span class="smallDescription">rounding to the nearest IEEE 754 quad (binary128). 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_quad(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_quad_obj()</span> 
+<span class="commandline type">int sollya_lib_is_quad_obj(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_build_function_quad(sollya_obj_t)</span> 
+<span class="commandline type">#define SOLLYA_QD(x) sollya_lib_build_function_quad(x)</span> 
+</div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
 <li><?php linkTo("command","quad","quad");?> is both a function and a constant. 

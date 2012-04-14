@@ -4,6 +4,12 @@
 <span class="smallDescription">global variable controlling if Sollya is exited on an error or not. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">void sollya_lib_set_dieonerrormode_and_print(sollya_obj_t)</span> 
+<span class="commandline type">void sollya_lib_set_dieonerrormode(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_get_dieonerrormode()</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","dieonerrormode","dieonerrormode");?> = <span class="arg">activation value</span> : <span class="type">on|off</span> -&gt; <span class="type">void</span></span> 

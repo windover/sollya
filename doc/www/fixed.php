@@ -4,6 +4,11 @@
 <span class="smallDescription">indicates that fixed-point formats should be used for <?php linkTo("command","fpminimax","fpminimax");?> 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_fixed()</span> 
+<span class="commandline type">int sollya_lib_is_fixed(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","fixed","fixed");?> : <span class="type">fixed|floating</span></span> 

@@ -4,6 +4,12 @@
 <span class="smallDescription">controls the precision used in numerical computations. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">void sollya_lib_set_prec_and_print(sollya_obj_t)</span> 
+<span class="commandline type">void sollya_lib_set_prec(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_get_prec()</span> 
+</div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
 <li><?php linkTo("command","prec","prec");?> is a global variable. Its value represents the precision of the  

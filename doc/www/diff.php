@@ -4,6 +4,10 @@
 <span class="smallDescription">differentiation operator 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_diff(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","diff","diff");?>(<span class="arg">function</span>) : <span class="type">function</span> -&gt; <span class="type">function</span></span> 

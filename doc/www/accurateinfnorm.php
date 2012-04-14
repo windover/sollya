@@ -4,6 +4,8 @@
 <span class="smallDescription">computes a faithful rounding of the infinity norm of a function  
 </span> 
 </div> 
+<div class="divLibraryName"> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","accurateinfnorm","accurateinfnorm");?>(<span class="arg">function</span>,<span class="arg">range</span>,<span class="arg">constant</span>) : (<span class="type">function</span>, <span class="type">range</span>, <span class="type">constant</span>) -&gt; <span class="type">constant</span></span> 
@@ -32,7 +34,8 @@ bits of the infinity norm of function <span class="arg">function</span> on range
 If given, the fourth and further arguments of the command <?php linkTo("command","accurateinfnorm","accurateinfnorm");?>, 
 <span class="arg">exclusion range 1</span> through <span class="arg">exclusion range n</span> the infinity norm of 
 the function <span class="arg">function</span> is not to be considered on. 
-</li><li>Users should be aware about the fact that the algorithm behind 
+</li><li>The command <?php linkTo("command","accurateinfnorm","accurateinfnorm");?> is now considered DEPRECATED in Sollya. 
+Users should be aware about the fact that the algorithm behind 
 <?php linkTo("command","accurateinfnorm","accurateinfnorm");?> is highly inefficient and that other, better suited 
 algorithms, such as <?php linkTo("command","supnorm","supnorm");?>, are available inside Sollya. As a 
 matter of fact, while <?php linkTo("command","accurateinfnorm","accurateinfnorm");?> is maintained for compatibility reasons 

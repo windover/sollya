@@ -4,6 +4,10 @@
 <span class="smallDescription">parses an expression contained in a string 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_parse(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","parse","parse");?>(<span class="arg">string</span>) : <span class="type">string</span> -&gt; <span class="type">function</span> | <span class="type">error</span></span> 
@@ -39,7 +43,7 @@ sequence <span class="arg">string</span>.
 <h2 class="category">Example 2: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; text = "remez(exp(x),5,[-1;1])";<br> 
 &nbsp;&nbsp;&nbsp;&gt; print("The string", text, "gives", parse(text));<br> 
-&nbsp;&nbsp;&nbsp;The string remez(exp(x),5,[-1;1]) gives 1.00004475029055070643077052482053398765426158966754 + x * (1.00003834652983970735244541124504033817544233075356 + x * (0.49919698262882986492168824494240374771969012861297 + x * (0.166424656075155194415920597322727380932279602909199 + x * (4.37936963873280470271257566207183496659575464236489e-2 + x * 8.7381910388065551140158420278330960479960476713376e-3))))<br> 
+&nbsp;&nbsp;&nbsp;The string remez(exp(x),5,[-1;1]) gives 8.7381910388065551140158420278330960479960476712009e-3 * x^5 + 4.3793696387328047027125756620718349665957546423673e-2 * x^4 + 0.16642465607515519441592059732272738093227960290946 * x^3 + 0.499196982628829864921688244942403747719690128612986 * x^2 + 1.00003834652983970735244541124504033817544233075343 * x + 1.00004475029055070643077052482053398765426158966754<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 3: </h2> 

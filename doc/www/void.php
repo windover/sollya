@@ -4,6 +4,11 @@
 <span class="smallDescription">the functional result of a side-effect or empty argument resp. the corresponding type 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_void()</span> 
+<span class="commandline type">int sollya_lib_is_void(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","void","void");?> : <span class="type">void</span> | <span class="type">type type</span></span> 

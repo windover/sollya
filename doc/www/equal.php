@@ -4,6 +4,10 @@
 <span class="smallDescription">equality test operator 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_cmp_equal(sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><span class="arg">expr1</span> <?php linkTo("command","equal","==");?> <span class="arg">expr2</span> : (<span class="type">any type</span>, <span class="type">any type</span>) -&gt; <span class="type">boolean</span></span> 
@@ -51,14 +55,19 @@ compare equal to any other floating-point datum, including NaN.
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 3: </h2> 
-&nbsp;&nbsp;&nbsp;&gt; sin(pi/6) == 1/2 * sqrt(3);<br> 
+&nbsp;&nbsp;&nbsp;&gt; sin(pi/6) == 1/4;<br> 
 &nbsp;&nbsp;&nbsp;false<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 4: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; prec = 12;<br> 
 &nbsp;&nbsp;&nbsp;The precision has been set to 12 bits.<br> 
+&nbsp;&nbsp;&nbsp;&gt; verbosity = 1!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; 16384.1 == 16385.1;<br> 
+&nbsp;&nbsp;&nbsp;Warning: Rounding occurred when converting the constant "16384.1" to floating-point with 12 bits.<br> 
+&nbsp;&nbsp;&nbsp;If safe computation is needed, try to increase the precision.<br> 
+&nbsp;&nbsp;&nbsp;Warning: Rounding occurred when converting the constant "16385.1" to floating-point with 12 bits.<br> 
+&nbsp;&nbsp;&nbsp;If safe computation is needed, try to increase the precision.<br> 
 &nbsp;&nbsp;&nbsp;true<br> 
 </div> 
 <div class="divExample"> 

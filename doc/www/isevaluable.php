@@ -4,6 +4,8 @@
 <span class="smallDescription">tests whether a function can be evaluated at a point  
 </span> 
 </div> 
+<div class="divLibraryName"> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","isevaluable","isevaluable");?>(<span class="arg">function</span>, <span class="arg">constant</span>) : (<span class="type">function</span>, <span class="type">constant</span>) -&gt; <span class="type">boolean</span></span> 
@@ -22,6 +24,10 @@
 a boolean indicating whether or not a subsequent call to <?php linkTo("command","evaluate","evaluate");?> on the 
 same function <span class="arg">function</span> and constant <span class="arg">constant</span> will produce a numerical 
 result or NaN. This means <?php linkTo("command","isevaluable","isevaluable");?> returns false iff <?php linkTo("command","evaluate","evaluate");?> will return NaN. 
+</li><li>The command <?php linkTo("command","isevaluable","isevaluable");?> is now considered DEPRECATED in Sollya. 
+As checks for NaNs are now possible in Sollya, the command <?php linkTo("command","isevaluable","isevaluable");?> 
+can be fully emulated with a call to evaluate and a couple of tests,  
+as shown below in the last example. 
 </ul> 
 </div> 
 <div class="divExamples"> 
@@ -45,6 +51,21 @@ result or NaN. This means <?php linkTo("command","isevaluable","isevaluable");?>
 &nbsp;&nbsp;&nbsp;false<br> 
 &nbsp;&nbsp;&nbsp;&gt; print(evaluate(sin(pi * 1/x), 0));<br> 
 &nbsp;&nbsp;&nbsp;[@NaN@;@NaN@]<br> 
+</div> 
+<div class="divExample"> 
+<h2 class="category">Example 4: </h2> 
+&nbsp;&nbsp;&nbsp;&gt; procedure isEvaluableEmulation(f, c) {<br> 
+&nbsp;&nbsp;&nbsp;&nbsp; 	&nbsp;&nbsp;return match evaluate(f, c) with <br> 
+&nbsp;&nbsp;&nbsp;&nbsp; 	&nbsp;&nbsp;	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NaN : (false)<br> 
+&nbsp;&nbsp;&nbsp;&nbsp; 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[NaN;NaN] : (false)<br> 
+&nbsp;&nbsp;&nbsp;&nbsp; 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;default : (true);<br> 
+&nbsp;&nbsp;&nbsp;&nbsp; };<br> 
+&nbsp;&nbsp;&nbsp;&gt; isEvaluableEmulation(sin(pi * 1/x), 0.75);<br> 
+&nbsp;&nbsp;&nbsp;true<br> 
+&nbsp;&nbsp;&nbsp;&gt; isEvaluableEmulation(sin(pi * 1/x), 0.5);<br> 
+&nbsp;&nbsp;&nbsp;true<br> 
+&nbsp;&nbsp;&nbsp;&gt; isEvaluableEmulation(sin(pi * 1/x), 0);<br> 
+&nbsp;&nbsp;&nbsp;false<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

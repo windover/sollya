@@ -4,6 +4,12 @@
 <span class="smallDescription">the function mapping the reals to the integers nearest to them. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_nearestint(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_build_function_nearestint(sollya_obj_t)</span> 
+<span class="commandline type">#define SOLLYA_NEARESTINT(x) sollya_lib_build_function_nearestint(x)</span> 
+</div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
 <li><?php linkTo("command","nearestint","nearestint");?> is defined as usual: <?php linkTo("command","nearestint","nearestint");?>(x) is the integer nearest to x, with the 

@@ -4,6 +4,10 @@
 <span class="smallDescription">restricts the monomial basis of a polynomial to a list of monomials 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_subpoly(sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","subpoly","subpoly");?>(<span class="arg">polynomial</span>, <span class="arg">list</span>) : (<span class="type">function</span>, <span class="type">list</span>) -&gt; <span class="type">function</span></span> 
@@ -43,7 +47,7 @@ equal to j are taken.
 <h2 class="category">Example 2: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; p = remez(atan(x),10,[-1,1]);<br> 
 &nbsp;&nbsp;&nbsp;&gt; subpoly(p,[|1,3,5...|]);<br> 
-&nbsp;&nbsp;&nbsp;x * (0.99986632946591986997581285958052433296267358727229 + x^2 * (-0.330304785504861260596093435534236137298206064685038 + x^2 * (0.180159294636523467997437751178959039617773054107393 + x * (-1.21704858321866028906175835649390114311877360260197e-14 + x * (-8.5156350833702702996505336803770858918120961566741e-2 + x * (1.39681284176342339364451388757935358048374878126733e-14 + x * (2.0845114175434561643018447784809880955983412532269e-2 + x * (-5.6810131012579436265697622426011349460288598691964e-15))))))))<br> 
+&nbsp;&nbsp;&nbsp;x * (0.99986632946591986997581285958052433296267358727218 + x^2 * (-0.33030478550486126059609343553423613729820606468353 + x^2 * (0.180159294636523467997437751178959039617773054102026 + x * (-1.21704858321866028906175835649390033851985005594189e-14 + x * (-8.5156350833702702996505336803770858918120961559704e-2 + x * (1.39681284176342339364451388757935284353552217389724e-14 + x * (2.08451141754345616430184477848098809559834125291788e-2 + x * (-5.6810131012579436265697622426011325584073285588859e-15))))))))<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 3: </h2> 

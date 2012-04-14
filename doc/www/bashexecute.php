@@ -4,6 +4,10 @@
 <span class="smallDescription">executes a shell command. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">void sollya_lib_bashexecute(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","bashexecute","bashexecute");?>(<span class="arg">command</span>) : <span class="type">string</span> -&gt; <span class="type">void</span></span> 
@@ -28,7 +32,7 @@ with help of commands like <?php linkTo("command","execute","execute");?>, <?php
 <div class="divExample"> 
 <h2 class="category">Example 1: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; bashexecute("LANG=C date");<br> 
-&nbsp;&nbsp;&nbsp;Mon May 23 17:51:46 CEST 2011<br> 
+&nbsp;&nbsp;&nbsp;Sun Apr 15 00:18:17 CEST 2012<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

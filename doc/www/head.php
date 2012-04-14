@@ -4,6 +4,10 @@
 <span class="smallDescription">gives the first element of a list. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_head(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","head","head");?>(<span class="arg">L</span>) : <span class="type">list</span> -&gt; <span class="type">any type</span></span> 

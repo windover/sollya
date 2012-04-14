@@ -4,6 +4,8 @@
 <span class="smallDescription">binds an external mathematical function to a variable in Sollya 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","library","library");?>(<span class="arg">path</span>) : <span class="type">string</span> -&gt; <span class="type">function</span></span> 

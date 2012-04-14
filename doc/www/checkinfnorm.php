@@ -4,6 +4,10 @@
 <span class="smallDescription">checks whether the infinity norm of a function is bounded by a value 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_checkinfnorm(sollya_obj_t, sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","checkinfnorm","checkinfnorm");?>(<span class="arg">function</span>,<span class="arg">range</span>,<span class="arg">constant</span>) : (<span class="type">function</span>, <span class="type">range</span>, <span class="type">constant</span>) -&gt; <span class="type">boolean</span></span> 

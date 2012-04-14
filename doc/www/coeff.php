@@ -4,6 +4,10 @@
 <span class="smallDescription">gives the coefficient of degree n of a polynomial 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_coeff(sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","coeff","coeff");?>(<span class="arg">f</span>,<span class="arg">n</span>) : (<span class="type">function</span>, <span class="type">integer</span>) -&gt; <span class="type">constant</span></span> 

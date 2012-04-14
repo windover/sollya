@@ -4,6 +4,15 @@
 <span class="smallDescription">subtraction function 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_sub(sollya_obj_t, sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_build_function_sub(sollya_obj_t, sollya_obj_t)</span> 
+<span class="commandline type">#define SOLLYA_SUB(x,y) sollya_lib_build_function_sub((x), (y))</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_neg(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_build_function_neg(sollya_obj_t)</span> 
+<span class="commandline type">#define SOLLYA_NEG(x) sollya_lib_build_function_neg(x)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><span class="arg">function1</span> <?php linkTo("command","minus","-");?> <span class="arg">function2</span> : (<span class="type">function</span>, <span class="type">function</span>) -&gt; <span class="type">function</span></span> 

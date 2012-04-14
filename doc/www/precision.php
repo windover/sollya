@@ -4,6 +4,10 @@
 <span class="smallDescription">returns the precision necessary to represent a number. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_precision(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","precision","precision");?>(<span class="arg">x</span>) : <span class="type">constant</span> -&gt; <span class="type">integer</span></span> 

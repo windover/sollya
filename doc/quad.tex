@@ -1,7 +1,13 @@
 \subsection{quad}
 \label{labquad}
 \noindent Names: \textbf{quad}, \textbf{QD}\\
-rounding to the nearest IEEE 754 quad (binary128).\\
+\phantom{aaa}rounding to the nearest IEEE 754 quad (binary128).\\[0.2cm]
+\noindent Library names:\\
+\verb|   sollya_obj_t sollya_lib_quad(sollya_obj_t)|\\
+\verb|   sollya_obj_t sollya_lib_quad_obj()|\\
+\verb|   int sollya_lib_is_quad_obj(sollya_obj_t)|\\
+\verb|   sollya_obj_t sollya_lib_build_function_quad(sollya_obj_t)|\\
+\verb|   #define SOLLYA_QD(x) sollya_lib_build_function_quad(x)|\\[0.2cm]
 \noindent Description: \begin{itemize}
 
 \item \textbf{quad} is both a function and a constant.

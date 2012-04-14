@@ -4,6 +4,11 @@
 <span class="smallDescription">the boolean value representing the truth. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_true()</span> 
+<span class="commandline type">int sollya_lib_is_true(sollya_obj_t)</span> 
+</div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
 <li><?php linkTo("command","true","true");?> is the usual boolean value. 

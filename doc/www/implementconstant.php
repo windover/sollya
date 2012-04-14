@@ -4,6 +4,8 @@
 <span class="smallDescription">implements a constant in arbitrary precision 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","implementconstant","implementconstant");?>(<span class="arg">expr</span>) : <span class="type">constant</span> -&gt; <span class="type">void</span></span> 

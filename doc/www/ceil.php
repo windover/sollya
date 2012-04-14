@@ -4,6 +4,12 @@
 <span class="smallDescription">the usual function ceil. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_ceil(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_build_function_ceil(sollya_obj_t)</span> 
+<span class="commandline type">#define SOLLYA_CEIL(x) sollya_lib_build_function_ceil(x)</span> 
+</div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
 <li><?php linkTo("command","ceil","ceil");?> is defined as usual: <?php linkTo("command","ceil","ceil");?>(x) is the smallest integer y such that y &gt;= x. 

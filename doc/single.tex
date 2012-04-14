@@ -1,7 +1,13 @@
 \subsection{single}
 \label{labsingle}
 \noindent Names: \textbf{single}, \textbf{SG}\\
-rounding to the nearest IEEE 754 single (binary32).\\
+\phantom{aaa}rounding to the nearest IEEE 754 single (binary32).\\[0.2cm]
+\noindent Library names:\\
+\verb|   sollya_obj_t sollya_lib_single(sollya_obj_t)|\\
+\verb|   sollya_obj_t sollya_lib_single_obj()|\\
+\verb|   int sollya_lib_is_single_obj(sollya_obj_t)|\\
+\verb|   sollya_obj_t sollya_lib_build_function_single(sollya_obj_t)|\\
+\verb|   #define SOLLYA_SG(x) sollya_lib_build_function_single(x)|\\[0.2cm]
 \noindent Description: \begin{itemize}
 
 \item \textbf{single} is both a function and a constant.

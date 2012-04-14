@@ -4,6 +4,11 @@
 <span class="smallDescription">indicates the (forced) honoring the precision of the coefficients in <?php linkTo("command","implementpoly","implementpoly");?> 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_honorcoeffprec()</span> 
+<span class="commandline type">int sollya_lib_is_honorcoeffprec(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","honorcoeffprec","honorcoeffprec");?> : <span class="type">honorcoeffprec</span></span> 

@@ -4,6 +4,10 @@
 <span class="smallDescription">rounds a number to a floating-point format. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_round(sollya_obj_t, sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","round","round");?>(<span class="arg">x</span>,<span class="arg">n</span>,<span class="arg">mode</span>) : (<span class="type">constant</span>, <span class="type">integer</span>, <span class="type">RN|RZ|RU|RD</span>) -&gt; <span class="type">constant</span></span> 

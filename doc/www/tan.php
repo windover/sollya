@@ -4,6 +4,12 @@
 <span class="smallDescription">the tangent function. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_tan(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_build_function_tan(sollya_obj_t)</span> 
+<span class="commandline type">#define SOLLYA_TAN(x) sollya_lib_build_function_tan(x)</span> 
+</div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
 <li><?php linkTo("command","tan","tan");?> is the tangent function, defined by tan(x) = sin(x)/cos(x). 

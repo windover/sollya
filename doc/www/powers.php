@@ -4,6 +4,11 @@
 <span class="smallDescription">special value for global state <?php linkTo("command","display","display");?> 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_powers()</span> 
+<span class="commandline type">int sollya_lib_is_powers(sollya_obj_t)</span> 
+</div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
 <li><?php linkTo("command","powers","powers");?> is a special value used for the global state <?php linkTo("command","display","display");?>.  If 

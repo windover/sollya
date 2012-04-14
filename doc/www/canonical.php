@@ -4,6 +4,13 @@
 <span class="smallDescription">brings all polynomial subexpressions of an expression to canonical form or activates, deactivates or checks canonical form printing 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">void sollya_lib_set_canonical_and_print(sollya_obj_t)</span> 
+<span class="commandline type">void sollya_lib_set_canonical(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_canonical(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_get_canonical()</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","canonical","canonical");?>(<span class="arg">function</span>) : <span class="type">function</span> -&gt; <span class="type">function</span></span> 

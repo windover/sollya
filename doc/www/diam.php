@@ -4,6 +4,12 @@
 <span class="smallDescription">parameter used in safe algorithms of Sollya and controlling the maximal length of the involved intervals. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">void sollya_lib_set_diam_and_print(sollya_obj_t)</span> 
+<span class="commandline type">void sollya_lib_set_diam(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_get_diam()</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","diam","diam");?> = <span class="arg">width</span> : <span class="type">constant</span> -&gt; <span class="type">void</span></span> 

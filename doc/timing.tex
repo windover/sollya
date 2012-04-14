@@ -1,7 +1,11 @@
 \subsection{timing}
 \label{labtiming}
 \noindent Name: \textbf{timing}\\
-global variable controlling timing measures in \sollya.\\
+\phantom{aaa}global variable controlling timing measures in \sollya.\\[0.2cm]
+\noindent Library names:\\
+\verb|   void sollya_lib_set_timing_and_print(sollya_obj_t)|\\
+\verb|   void sollya_lib_set_timing(sollya_obj_t)|\\
+\verb|   sollya_obj_t sollya_lib_get_timing()|\\[0.2cm]
 \noindent Usage: 
 \begin{center}
 \textbf{timing} = \emph{activation value} : \textsf{on$|$off} $\rightarrow$ \textsf{void}\\
@@ -23,15 +27,15 @@ Parameters:
 > timing=on;
 Timing has been activated.
 > p=remez(sin(x),10,[-1;1]);
-Information: Remez: computing the matrix spent 2 ms
-Information: Remez: computing the quality of approximation spent 11 ms
 Information: Remez: computing the matrix spent 1 ms
-Information: Remez: computing the quality of approximation spent 7 ms
+Information: Remez: computing the quality of approximation spent 13 ms
 Information: Remez: computing the matrix spent 1 ms
-Information: Remez: computing the quality of approximation spent 7 ms
-Information: computing a minimax approximation spent 142 ms
-Information: assignment spent 142 ms
-Information: full execution of the last parse chunk spent 142 ms
+Information: Remez: computing the quality of approximation spent 13 ms
+Information: Remez: computing the matrix spent 1 ms
+Information: Remez: computing the quality of approximation spent 13 ms
+Information: computing a minimax approximation spent 214 ms
+Information: assignment spent 229 ms
+Information: full execution of the last parse chunk spent 245 ms
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{on} (\ref{labon}), \textbf{off} (\ref{laboff}), \textbf{time} (\ref{labtime})

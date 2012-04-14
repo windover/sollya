@@ -4,6 +4,8 @@
 <span class="smallDescription">procedure for timing Sollya code. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","time","time");?>(<span class="arg">code</span>) : <span class="type">code</span> -&gt; <span class="type">constant</span></span> 
@@ -33,25 +35,25 @@ machine when evaluating an algorithm's performance.
 <h2 class="category">Example 1: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; t = time(p=remez(sin(x),10,[-1;1]));<br> 
 &nbsp;&nbsp;&nbsp;&gt; write(t,"s were spent computing p = ",p,"\n");<br> 
-&nbsp;&nbsp;&nbsp;0.14229400000000000001913053049307222863717470318079s were spent computing p = -3.3426550293345171908513995127407122194691200059639e-17 + x * (0.99999999973628359955372011464713121003442988167693 + x * (7.8802751877302786684499343799047732495568873819693e-16 + x * (-0.166666661386013037032912982196741385680498698107285 + x * (-5.3734444911159112186289355138557504839692987221233e-15 + x * (8.3333037186548537651002133031675072810009327877148e-3 + x * (1.33797221389218815884112341005509831429347230871284e-14 + x * (-1.98344863018277416493268155154158924422004290239026e-4 + x * (-1.3789116451286674170531616441916183417598709732816e-14 + x * (2.6876259495430304684251822024896210963401672262005e-6 + x * 5.0282378350010211058128384123578805586173782863605e-15)))))))))<br> 
+&nbsp;&nbsp;&nbsp;0.242978000000000000024261842535011624022445175796747s were spent computing p = 5.0282378350010211058128384123578806139307237364901e-15 * x^10 + 2.68762594954303046842518220248962109634016728684035e-6 * x^9 + -1.3789116451286674170531616441916183590574659143235e-14 * x^8 + -1.98344863018277416493268155154158924422004290362704e-4 * x^7 + 1.33797221389218815884112341005509833434214820600635e-14 * x^6 + 8.3333037186548537651002133031675072810009327877946e-3 * x^5 + -5.3734444911159112186289355138557505858711113724049e-15 * x^4 + -0.1666666613860130370329129821967413856804986981073 * x^3 + 7.8802751877302786684499343799047734446049787623868e-16 * x^2 + 0.9999999997362835995537201146471312100344298816769 * x + (-3.3426550293345171908513995127407123097704733272204e-17)<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 2: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; write(time({ p=remez(sin(x),10,[-1;1]); write("The error is 2^(", log2(dirtyinfnorm(p-sin(x),[-1;1])), ")\n"); }), " s were spent\n");<br> 
-&nbsp;&nbsp;&nbsp;The error is 2^(log2(2.39602467695631727848641768186659313738474584992648e-11))<br> 
-&nbsp;&nbsp;&nbsp;0.248156000000000000009752615381941609484783839434385 s were spent<br> 
+&nbsp;&nbsp;&nbsp;The error is 2^(log2(2.3960246769563172784864176818665931373861902892867e-11))<br> 
+&nbsp;&nbsp;&nbsp;0.4395199999999999999856711840884315734001575037837 s were spent<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 3: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; t = time(bashexecute("sleep 10"));<br> 
 &nbsp;&nbsp;&nbsp;&gt; write(~(t-10),"s of execution overhead.\n");<br> 
-&nbsp;&nbsp;&nbsp;2.45499999999999884980894648833782412111759185791016e-3s of execution overhead.<br> 
+&nbsp;&nbsp;&nbsp;1.82399999999999923305793458894186187535524368286133e-3s of execution overhead.<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 4: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; ratio := time(p=remez(sin(x),10,[-1;1]))/time(nop(10));<br> 
 &nbsp;&nbsp;&nbsp;&gt; write("This ratio = ", ratio, " should somehow be independent of the type of machine.\n");<br> 
-&nbsp;&nbsp;&nbsp;This ratio = 3.73952158631904736942211379919425684937321681904859 should somehow be independent of the type of machine.<br> 
+&nbsp;&nbsp;&nbsp;This ratio = 6.21652855431309904115326057437160360447329054308859 should somehow be independent of the type of machine.<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

@@ -4,6 +4,8 @@
 <span class="smallDescription">binds an external mathematical constant to a variable in Sollya 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","libraryconstant","libraryconstant");?>(<span class="arg">path</span>) : <span class="type">string</span> -&gt; <span class="type">function</span></span> 
@@ -59,7 +61,7 @@ accurate constant (i.e. a 0-ary function, exactly like <?php linkTo("command","p
 &nbsp;&nbsp;&nbsp;&gt; midpointmode = on;<br> 
 &nbsp;&nbsp;&nbsp;Midpoint mode has been activated.<br> 
 &nbsp;&nbsp;&nbsp;&gt; [euler_gamma];<br> 
-&nbsp;&nbsp;&nbsp;0.577215664901532860606512090~0/1~<br> 
+&nbsp;&nbsp;&nbsp;0.57721566490153286060651209008~2/4~<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

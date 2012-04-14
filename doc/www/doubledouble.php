@@ -4,6 +4,14 @@
 <span class="smallDescription">represents a number as the sum of two IEEE doubles. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_double_double(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_double_double_obj()</span> 
+<span class="commandline type">int sollya_lib_is_double_double_obj(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_build_function_double_double(sollya_obj_t)</span> 
+<span class="commandline type">#define SOLLYA_DD(x) sollya_lib_build_function_double_double(x)</span> 
+</div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
 <li><?php linkTo("command","doubledouble","doubledouble");?> is both a function and a constant. 
@@ -28,9 +36,7 @@ See the corresponding help pages for examples.
 &nbsp;&nbsp;&nbsp;1.0000000000000000000000000000007888609052210118054<br> 
 &nbsp;&nbsp;&nbsp;&gt; prec=50!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; DD(a);<br> 
-&nbsp;&nbsp;&nbsp;Warning: double rounding occurred on invoking the double-double rounding operator.<br> 
-&nbsp;&nbsp;&nbsp;Try to increase the working precision.<br> 
-&nbsp;&nbsp;&nbsp;1<br> 
+&nbsp;&nbsp;&nbsp;1.0000000000000000000000000000008<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

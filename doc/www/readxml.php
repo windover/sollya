@@ -4,6 +4,10 @@
 <span class="smallDescription">reads an expression written as a MathML-Content-Tree in a file 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_readxml(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","readxml","readxml");?>(<span class="arg">filename</span>) : <span class="type">string</span> -&gt; <span class="type">function</span> | <span class="type">error</span></span> 
@@ -34,7 +38,7 @@ that can be parsed by <?php linkTo("command","parse","parse");?>, <?php linkTo("
 <div class="divExample"> 
 <h2 class="category">Example 1: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; readxml("readxmlexample.xml");<br> 
-&nbsp;&nbsp;&nbsp;2 + x + exp(sin(x))<br> 
+&nbsp;&nbsp;&nbsp;2 + _x_ + exp(sin(_x_))<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

@@ -4,6 +4,10 @@
 <span class="smallDescription">returns a fraction close to a given number. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_rationalapprox(sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","rationalapprox","rationalapprox");?>(<span class="arg">x</span>,<span class="arg">n</span>) : (<span class="type">constant</span>, <span class="type">integer</span>) -&gt; <span class="type">function</span></span> 
@@ -44,11 +48,11 @@ and <?php linkTo("command","denominator","denominator");?>.
 &nbsp;&nbsp;&nbsp;&gt; pi50 = rationalapprox(Pi,50);<br> 
 &nbsp;&nbsp;&nbsp;&gt; pi100 = rationalapprox(Pi,100);<br> 
 &nbsp;&nbsp;&nbsp;&gt; print( pi10, ": ", simplify(floor(-log2(abs(pi10-Pi)/Pi))), "bits." );<br> 
-&nbsp;&nbsp;&nbsp;22 / 7 :&nbsp;&nbsp;11 bits.<br> 
+&nbsp;&nbsp;&nbsp;3.140625 :&nbsp;&nbsp;11 bits.<br> 
 &nbsp;&nbsp;&nbsp;&gt; print( pi50, ": ", simplify(floor(-log2(abs(pi50-Pi)/Pi))), "bits." );<br> 
-&nbsp;&nbsp;&nbsp;90982559 / 28960648 :&nbsp;&nbsp;50 bits.<br> 
+&nbsp;&nbsp;&nbsp;85563208 / 27235615 :&nbsp;&nbsp;51 bits.<br> 
 &nbsp;&nbsp;&nbsp;&gt; print( pi100, ": ", simplify(floor(-log2(abs(pi100-Pi)/Pi))), "bits." );<br> 
-&nbsp;&nbsp;&nbsp;4850225745369133 / 1543874804974140 :&nbsp;&nbsp;101 bits.<br> 
+&nbsp;&nbsp;&nbsp;4422001152019829 / 1407566683404023 :&nbsp;&nbsp;100 bits.<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 2: </h2> 

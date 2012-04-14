@@ -4,6 +4,11 @@
 <span class="smallDescription">special value for commands <?php linkTo("command","plot","plot");?> and <?php linkTo("command","externalplot","externalplot");?> 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_postscript()</span> 
+<span class="commandline type">int sollya_lib_is_postscript(sollya_obj_t)</span> 
+</div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
 <li><?php linkTo("command","postscript","postscript");?> is a special value used in commands <?php linkTo("command","plot","plot");?> and <?php linkTo("command","externalplot","externalplot");?> to save 

@@ -1,7 +1,11 @@
 \subsection{abs}
 \label{lababs}
 \noindent Name: \textbf{abs}\\
-the absolute value.\\
+\phantom{aaa}the absolute value.\\[0.2cm]
+\noindent Library names:\\
+\verb|   sollya_obj_t sollya_lib_abs(sollya_obj_t)|\\
+\verb|   sollya_obj_t sollya_lib_build_function_abs(sollya_obj_t)|\\
+\verb|   #define SOLLYA_ABS(x) sollya_lib_build_function_abs(x)|\\[0.2cm]
 \noindent Description: \begin{itemize}
 
 \item \textbf{abs} is the absolute value function. \textbf{abs}(x)=$\left \lbrace \begin{array}{rl} x & x > 0 \\ -x & x \leq 0 \end{array}  \right.$.

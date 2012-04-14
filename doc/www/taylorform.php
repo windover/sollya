@@ -4,6 +4,11 @@
 <span class="smallDescription">computes a rigorous polynomial approximation (polynomial, interval error bound) for a function, based on Taylor expansions. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_taylorform(sollya_obj_t, sollya_obj_t, sollya_obj_t, ...)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_v_taylorform(sollya_obj_t, sollya_obj_t, sollya_obj_t, va_list)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","taylorform","taylorform");?>(<span class="arg">f</span>, <span class="arg">n</span>, <span class="arg">x0</span>, <span class="arg">I</span>, <span class="arg">errorType</span>) : (<span class="type">function</span>, <span class="type">integer</span>, <span class="type">constant</span>, <span class="type">range</span>, <span class="type">absolute|relative</span>) -&gt; <span class="type">list</span></span> 

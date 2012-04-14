@@ -1,7 +1,10 @@
 \subsection{fpminimax}
 \label{labfpminimax}
 \noindent Name: \textbf{fpminimax}\\
-computes a good polynomial approximation with fixed-point or floating-point coefficients\\
+\phantom{aaa}computes a good polynomial approximation with fixed-point or floating-point coefficients\\[0.2cm]
+\noindent Library names:\\
+\verb|   sollya_obj_t sollya_lib_fpminimax(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, ...)|\\
+\verb|   sollya_obj_t sollya_lib_v_fpminimax(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, va_list)|\\[0.2cm]
 \noindent Usage: 
 \begin{center}
 \textbf{fpminimax}(\emph{f}, \emph{n}, \emph{formats}, \emph{range}, \emph{indic1}, \emph{indic2}, \emph{indic3}, \emph{P}) : (\textsf{function}, \textsf{integer}, \textsf{list}, \textsf{range}, \textsf{absolute$|$relative} $|$ \textsf{fixed$|$floating} $|$ \textsf{function}, \textsf{absolute$|$relative} $|$ \textsf{fixed$|$floating} $|$ \textsf{function}, \textsf{absolute$|$relative} $|$ \textsf{fixed$|$floating} $|$ \textsf{function}, \textsf{function}) $\rightarrow$ \textsf{function}\\
@@ -163,7 +166,7 @@ Parameters:
 > P = fpminimax(cos(x),6,[|DD, DD, D...|],[-1b-5;1b-5]);
 > printexpansion(P);
 (0x3ff0000000000000 + 0xbc09fda20235c100) + x * ((0x3b29ecd485d34781 + 0xb7c1cbc
-97120359a) + x * (0xbfdfffffffffff98 + x * (0xbbfa6e0b3183cb0d + x * (0x3fa55555
+971529754) + x * (0xbfdfffffffffff98 + x * (0xbbfa6e0b3183cb0d + x * (0x3fa55555
 55145337 + x * (0x3ca3540480618939 + x * 0xbf56c138142d8c3b)))))
 \end{Verbatim}
 \end{minipage}\end{center}
@@ -196,7 +199,7 @@ x * (1 + x^2 * (-357913941 * 2^(-31) + x^2 * (35789873 * 2^(-32))))
 > P3 = fpminimax(f, 5, [|D, D, D, 24...|], listpoints, absolute, default, defaul
 t, pstar);
 > print("Error of pstar: ", dirtyinfnorm(f-pstar, [-1b-7; 1b-7]));
-Error of pstar:  7.9048441305459735102879831325718745399379329453102e-16
+Error of pstar:  7.9048441305459735102879831325718747183089581485922e-16
 > print("Error of P1:    ", dirtyinfnorm(f-P1, [-1b-7; 1b-7]));
 Error of P1:     7.9048441305459735159848647089192667442047469404883e-16
 > print("Error of P2:    ", dirtyinfnorm(f-P2, [-1b-7; 1b-7]));

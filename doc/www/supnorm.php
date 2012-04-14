@@ -4,6 +4,10 @@
 <span class="smallDescription">computes an interval bounding the supremum norm of an approximation error (absolute or relative) between a given polynomial and a function. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_supnorm(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","supnorm","supnorm");?>(<span class="arg">p</span>, <span class="arg">f</span>, <span class="arg">I</span>, <span class="arg">errorType</span>, <span class="arg">accuracy</span>) : (<span class="type">function</span>, <span class="type">function</span>, <span class="type">range</span>, <span class="type">absolute|relative</span>, <span class="type">constant</span>) -&gt; <span class="type">range</span></span> 

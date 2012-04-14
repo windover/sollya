@@ -4,6 +4,12 @@
 <span class="smallDescription">global variable controlling the amount of information displayed by commands. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">void sollya_lib_set_verbosity_and_print(sollya_obj_t)</span> 
+<span class="commandline type">void sollya_lib_set_verbosity(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_get_verbosity()</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","verbosity","verbosity");?> = <span class="arg">n</span> : <span class="type">integer</span> -&gt; <span class="type">void</span></span> 
@@ -50,4 +56,7 @@ roundings happen.
 &nbsp;&nbsp;&nbsp;(1.19999999999999999999999999999999999999999999999999) + ("toto")<br> 
 &nbsp;&nbsp;&nbsp;error<br> 
 </div> 
+</div> 
+<div class="divSeeAlso"> 
+<span class="category">See also: </span><?php linkTo("command","roundingwarnings","roundingwarnings");?> 
 </div> 

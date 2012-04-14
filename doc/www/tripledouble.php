@@ -4,6 +4,14 @@
 <span class="smallDescription">represents a number as the sum of three IEEE doubles. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_triple_double(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_triple_double_obj()</span> 
+<span class="commandline type">int sollya_lib_is_triple_double_obj(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_build_function_triple_double(sollya_obj_t)</span> 
+<span class="commandline type">#define SOLLYA_TD(x) sollya_lib_build_function_triple_double(x)</span> 
+</div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
 <li><?php linkTo("command","tripledouble","tripledouble");?> is both a function and a constant. 
@@ -29,9 +37,7 @@ See the corresponding help pages for examples.
 &nbsp;&nbsp;&nbsp;1.00000000000000002775557561562891353466491600711096<br> 
 &nbsp;&nbsp;&nbsp;&gt; prec=110!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; TD(a);<br> 
-&nbsp;&nbsp;&nbsp;Warning: double rounding occurred on invoking the triple-double rounding operator.<br> 
-&nbsp;&nbsp;&nbsp;Try to increase the working precision.<br> 
-&nbsp;&nbsp;&nbsp;1.000000000000000027755575615628913<br> 
+&nbsp;&nbsp;&nbsp;1.00000000000000002775557561562891353<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

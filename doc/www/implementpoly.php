@@ -4,6 +4,11 @@
 <span class="smallDescription">implements a polynomial using double, double-double and triple-double arithmetic and generates a Gappa proof 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_implementpoly(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, ...)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_v_implementpoly(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, va_list)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","implementpoly","implementpoly");?>(<span class="arg">polynomial</span>, <span class="arg">range</span>, <span class="arg">error bound</span>, <span class="arg">format</span>, <span class="arg">functionname</span>, <span class="arg">filename</span>) : (<span class="type">function</span>, <span class="type">range</span>, <span class="type">constant</span>, <span class="type">D|double|DD|doubledouble|TD|tripledouble</span>, <span class="type">string</span>, <span class="type">string</span>) -&gt; <span class="type">function</span></span> 
@@ -149,5 +154,5 @@ in Gappa.
 </div> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","honorcoeffprec","honorcoeffprec");?>, <?php linkTo("command","roundcoefficients","roundcoefficients");?>, <?php linkTo("command","double","double");?>, <?php linkTo("command","doubledouble","doubledouble");?>, <?php linkTo("command","tripledouble","tripledouble");?>, <?php linkTo("command","readfile","readfile");?>, <?php linkTo("command","printexpansion","printexpansion");?>, <?php linkTo("command","error","error");?>, <?php linkTo("command","remez","remez");?>, <?php linkTo("command","fpminimax","fpminimax");?>, <?php linkTo("command","taylor","taylor");?> 
+<span class="category">See also: </span><?php linkTo("command","honorcoeffprec","honorcoeffprec");?>, <?php linkTo("command","roundcoefficients","roundcoefficients");?>, <?php linkTo("command","double","double");?>, <?php linkTo("command","doubledouble","doubledouble");?>, <?php linkTo("command","tripledouble","tripledouble");?>, <?php linkTo("command","readfile","readfile");?>, <?php linkTo("command","printexpansion","printexpansion");?>, <?php linkTo("command","error","error");?>, <?php linkTo("command","remez","remez");?>, <?php linkTo("command","fpminimax","fpminimax");?>, <?php linkTo("command","taylor","taylor");?>, <?php linkTo("command","implementconstant","implementconstant");?> 
 </div> 

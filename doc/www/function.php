@@ -4,6 +4,8 @@
 <span class="smallDescription">keyword for declaring a procedure-based function or a keyword representing a <span class="type">function</span> type  
 </span> 
 </div> 
+<div class="divLibraryName"> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","function","function");?>(<span class="arg">procedure</span>)  : <span class="type">procedure</span> -&gt; <span class="type">function</span></span> 

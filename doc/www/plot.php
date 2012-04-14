@@ -4,6 +4,11 @@
 <span class="smallDescription">plots one or several functions 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">void sollya_lib_plot(sollya_obj_t, sollya_obj_t, ...)</span> 
+<span class="commandline type">void sollya_lib_v_plot(sollya_obj_t, sollya_obj_t, va_list)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","plot","plot");?>(<span class="arg">f1</span>, ... ,<span class="arg">fn</span>, <span class="arg">I</span>) : (<span class="type">function</span>, ... ,<span class="type">function</span>, <span class="type">range</span>) -&gt; <span class="type">void</span></span> 

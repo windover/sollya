@@ -4,6 +4,10 @@
 <span class="smallDescription">prints a constant value as a hexadecimal single precision number 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">void sollya_lib_printsingle(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","printsingle","printsingle");?>(<span class="arg">constant</span>) : <span class="type">constant</span> -&gt; <span class="type">void</span></span> 
@@ -39,7 +43,7 @@ displayed. A warning is displayed in this case.
 &nbsp;&nbsp;&nbsp;&gt; verbosity = 1!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; printsingle(exp(5));<br> 
 &nbsp;&nbsp;&nbsp;Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation will be used.<br> 
-&nbsp;&nbsp;&nbsp;Warning: rounding down occurred before printing a value as a simple.<br> 
+&nbsp;&nbsp;&nbsp;Warning: rounding down occurred before printing a value as a single.<br> 
 &nbsp;&nbsp;&nbsp;0x431469c5<br> 
 </div> 
 </div> 

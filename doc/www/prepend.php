@@ -4,6 +4,10 @@
 <span class="smallDescription">add an element at the beginning of a list. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_prepend(sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><span class="arg">x</span><?php linkTo("command","prepend",".:");?><span class="arg">L</span> : (<span class="type">any type</span>, <span class="type">list</span>) -&gt; <span class="type">list</span></span> 

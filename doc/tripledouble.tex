@@ -1,7 +1,13 @@
 \subsection{tripledouble}
 \label{labtripledouble}
 \noindent Names: \textbf{tripledouble}, \textbf{TD}\\
-represents a number as the sum of three IEEE doubles.\\
+\phantom{aaa}represents a number as the sum of three IEEE doubles.\\[0.2cm]
+\noindent Library names:\\
+\verb|   sollya_obj_t sollya_lib_triple_double(sollya_obj_t)|\\
+\verb|   sollya_obj_t sollya_lib_triple_double_obj()|\\
+\verb|   int sollya_lib_is_triple_double_obj(sollya_obj_t)|\\
+\verb|   sollya_obj_t sollya_lib_build_function_triple_double(sollya_obj_t)|\\
+\verb|   #define SOLLYA_TD(x) sollya_lib_build_function_triple_double(x)|\\[0.2cm]
 \noindent Description: \begin{itemize}
 
 \item \textbf{tripledouble} is both a function and a constant.
@@ -28,10 +34,7 @@ represents a number as the sum of three IEEE doubles.\\
 1.00000000000000002775557561562891353466491600711096
 > prec=110!;
 > TD(a);
-Warning: double rounding occurred on invoking the triple-double rounding operato
-r.
-Try to increase the working precision.
-1.000000000000000027755575615628913
+1.00000000000000002775557561562891353
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{halfprecision} (\ref{labhalfprecision}), \textbf{single} (\ref{labsingle}), \textbf{double} (\ref{labdouble}), \textbf{doubleextended} (\ref{labdoubleextended}), \textbf{doubledouble} (\ref{labdoubledouble}), \textbf{quad} (\ref{labquad}), \textbf{roundcoefficients} (\ref{labroundcoefficients}), \textbf{implementpoly} (\ref{labimplementpoly}), \textbf{fpminimax} (\ref{labfpminimax}), \textbf{printexpansion} (\ref{labprintexpansion})

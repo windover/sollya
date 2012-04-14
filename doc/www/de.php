@@ -4,6 +4,8 @@
 <span class="smallDescription">short form for <?php linkTo("command","doubleextended","doubleextended");?> 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+</div> 
 <div class="divExamples"> 
 </div> 
 <div class="divSeeAlso"> 

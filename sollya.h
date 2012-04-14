@@ -510,6 +510,9 @@ extern "C" {
   sollya_obj_t sollya_lib_parse_string(const char *);
 
   /* Functions to convert from constants to Sollya objects */
+  /* There is no specific constructor for NaN and +/-Inf: they
+     can be created through a call to sollya_lib_constant_from_double
+  */
   sollya_obj_t sollya_lib_string(char *);
   sollya_obj_t sollya_lib_range_from_interval(mpfi_t);
   sollya_obj_t sollya_lib_range_from_bounds(mpfr_t, mpfr_t);
@@ -534,6 +537,13 @@ extern "C" {
   /* Functions to build up Sollya lists from arrays of objects and 
      to get arrays of Sollya objects out of Sollya lists 
   */
+  /* Please notice that the list is created from copies of the elements
+     given in the argument array. There exist sollya_lib_build_*list to
+     create a list with references to the elements of the argument array
+  */
+  /* The empty list is created with sollya_lib_list(NULL, 0)
+     The end-elliptic list has no meaning.
+     Hence sollya_lib_end_elliptic_list(NULL, 0) leads to an error */
   sollya_obj_t sollya_lib_list(sollya_obj_t[], int);
   sollya_obj_t sollya_lib_end_elliptic_list(sollya_obj_t[], int);
   int sollya_lib_get_list_elements(sollya_obj_t **, int *, int *, sollya_obj_t);
@@ -541,6 +551,10 @@ extern "C" {
   /* Functions to check if a Sollya object represents a mathematical
      function, a list, an end-elliptic list, a range, a string, a
      structure or error.
+  */
+  /* Constants and 0-ary functions as pi are considered as functions
+     The empty list is considered both as a regular and
+     an end-elliptic list.
   */
   int sollya_lib_obj_is_function(sollya_obj_t);
   int sollya_lib_obj_is_list(sollya_obj_t);

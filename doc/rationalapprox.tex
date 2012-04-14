@@ -1,7 +1,9 @@
 \subsection{rationalapprox}
 \label{labrationalapprox}
 \noindent Name: \textbf{rationalapprox}\\
-returns a fraction close to a given number.\\
+\phantom{aaa}returns a fraction close to a given number.\\[0.2cm]
+\noindent Library name:\\
+\verb|   sollya_obj_t sollya_lib_rationalapprox(sollya_obj_t, sollya_obj_t)|\\[0.2cm]
 \noindent Usage: 
 \begin{center}
 \textbf{rationalapprox}(\emph{x},\emph{n}) : (\textsf{constant}, \textsf{integer}) $\rightarrow$ \textsf{function}\\
@@ -40,11 +42,11 @@ Parameters:
 > pi50 = rationalapprox(Pi,50);
 > pi100 = rationalapprox(Pi,100);
 > print( pi10, ": ", simplify(floor(-log2(abs(pi10-Pi)/Pi))), "bits." );
-22 / 7 :  11 bits.
+3.140625 :  11 bits.
 > print( pi50, ": ", simplify(floor(-log2(abs(pi50-Pi)/Pi))), "bits." );
-90982559 / 28960648 :  50 bits.
+85563208 / 27235615 :  51 bits.
 > print( pi100, ": ", simplify(floor(-log2(abs(pi100-Pi)/Pi))), "bits." );
-4850225745369133 / 1543874804974140 :  101 bits.
+4422001152019829 / 1407566683404023 :  100 bits.
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 

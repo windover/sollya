@@ -4,6 +4,10 @@
 <span class="smallDescription">Computes the first n derivatives of a function at a point or over an interval. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_autodiff(sollya_obj_t, sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","autodiff","autodiff");?>(<span class="arg">f</span>, <span class="arg">n</span>, <span class="arg">x0</span>) : (<span class="type">function</span>, <span class="type">integer</span>, <span class="type">constant</span>) -&gt; <span class="type">list</span></span> 

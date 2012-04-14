@@ -4,6 +4,10 @@
 <span class="smallDescription">gives the lower bound of an interval. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_inf(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","inf","inf");?>(<span class="arg">I</span>) : <span class="type">range</span> -&gt; <span class="type">constant</span></span> 
@@ -22,8 +26,7 @@
 <li>Returns the lower bound of the interval <span class="arg">I</span>. Each bound of an interval has its  
 own precision, so this command is exact, even if the current precision is too  
 small to represent the bound. 
-</li><li>When called on a real number <span class="arg">x</span>, <?php linkTo("command","inf","inf");?> considers it as an interval formed 
-of a single point: [x, x]. In other words, <?php linkTo("command","inf","inf");?> behaves like the identity. 
+</li><li>When called on a real number <span class="arg">x</span>, <?php linkTo("command","inf","inf");?> behaves like the identity. 
 </ul> 
 </div> 
 <div class="divExamples"> 

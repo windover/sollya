@@ -4,6 +4,10 @@
 <span class="smallDescription">searches for a preimage of a function such that the rounding the image yields an error smaller than a constant 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_searchgal(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","searchgal","searchgal");?>(<span class="arg">function</span>, <span class="arg">start</span>, <span class="arg">preimage precision</span>, <span class="arg">steps</span>, <span class="arg">format</span>, <span class="arg">error bound</span>) : (<span class="type">function</span>, <span class="type">constant</span>, <span class="type">integer</span>, <span class="type">integer</span>, <span class="type">HP|halfprecision|SG|single|D|double|DE|doubleextended|DD|doubledouble|QD|quad|TD|tripledouble</span>, <span class="type">constant</span>) -&gt; <span class="type">list</span></span> 

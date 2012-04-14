@@ -4,6 +4,11 @@
 <span class="smallDescription">executes a shell command and returns its output as a string 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_bashevaluate(sollya_obj_t, ...)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_v_bashevaluate(sollya_obj_t, va_list)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","bashevaluate","bashevaluate");?>(<span class="arg">command</span>) : <span class="type">string</span> -&gt; <span class="type">string</span></span> 
@@ -39,7 +44,7 @@ such.
 <div class="divExample"> 
 <h2 class="category">Example 1: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; bashevaluate("LANG=C date");<br> 
-&nbsp;&nbsp;&nbsp;Mon May 23 17:51:41 CEST 2011<br> 
+&nbsp;&nbsp;&nbsp;Sun Apr 15 00:18:14 CEST 2012<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 2: </h2> 

@@ -4,6 +4,11 @@
 <span class="smallDescription">indicates a relative error for <?php linkTo("command","externalplot","externalplot");?>, <?php linkTo("command","fpminimax","fpminimax");?> or <?php linkTo("command","supnorm","supnorm");?> 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_relative()</span> 
+<span class="commandline type">int sollya_lib_is_relative(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","relative","relative");?> : <span class="type">absolute|relative</span></span> 

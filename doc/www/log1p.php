@@ -4,6 +4,12 @@
 <span class="smallDescription">translated logarithm. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_log1p(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_build_function_log1p(sollya_obj_t)</span> 
+<span class="commandline type">#define SOLLYA_LOG1P(x) sollya_lib_build_function_log1p(x)</span> 
+</div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
 <li><?php linkTo("command","log1p","log1p");?> is the function defined by log1p(x) = log(1+x). 

@@ -4,6 +4,8 @@
 <span class="smallDescription">brings Sollya back to its initial state 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","restart","restart");?> : <span class="type">void</span> -&gt; <span class="type">void</span></span> 

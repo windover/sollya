@@ -4,6 +4,10 @@
 <span class="smallDescription">containment test operator 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_cmp_in(sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><span class="arg">expr</span> <?php linkTo("command","in","in");?> <span class="arg">range1</span> : (<span class="type">constant</span>, <span class="type">range</span>) -&gt; <span class="type">boolean</span></span> 

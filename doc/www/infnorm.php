@@ -4,6 +4,11 @@
 <span class="smallDescription">computes an interval bounding the infinity norm of a function on an interval. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_infnorm(sollya_obj_t, sollya_obj_t, ...)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_v_infnorm(sollya_obj_t, sollya_obj_t, va_list)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","infnorm","infnorm");?>(<span class="arg">f</span>,<span class="arg">I</span>,<span class="arg">filename</span>,<span class="arg">Ilist</span>) : (<span class="type">function</span>, <span class="type">range</span>, <span class="type">string</span>, <span class="type">list</span>) -&gt; <span class="type">range</span></span> 

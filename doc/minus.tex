@@ -1,7 +1,14 @@
 \subsection{$-$}
 \label{labminus}
 \noindent Name: \textbf{$-$}\\
-subtraction function\\
+\phantom{aaa}subtraction function\\[0.2cm]
+\noindent Library names:\\
+\verb|   sollya_obj_t sollya_lib_sub(sollya_obj_t, sollya_obj_t)|\\
+\verb|   sollya_obj_t sollya_lib_build_function_sub(sollya_obj_t, sollya_obj_t)|\\
+\verb|   #define SOLLYA_SUB(x,y) sollya_lib_build_function_sub((x), (y))|\\
+\verb|   sollya_obj_t sollya_lib_neg(sollya_obj_t)|\\
+\verb|   sollya_obj_t sollya_lib_build_function_neg(sollya_obj_t)|\\
+\verb|   #define SOLLYA_NEG(x) sollya_lib_build_function_neg(x)|\\[0.2cm]
 \noindent Usage: 
 \begin{center}
 \emph{function1} \textbf{$-$} \emph{function2} : (\textsf{function}, \textsf{function}) $\rightarrow$ \textsf{function}\\

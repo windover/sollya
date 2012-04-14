@@ -1,7 +1,9 @@
 \subsection{sup}
 \label{labsup}
 \noindent Name: \textbf{sup}\\
-gives the upper bound of an interval.\\
+\phantom{aaa}gives the upper bound of an interval.\\[0.2cm]
+\noindent Library name:\\
+\verb|   sollya_obj_t sollya_lib_sup(sollya_obj_t)|\\[0.2cm]
 \noindent Usage: 
 \begin{center}
 \textbf{sup}(\emph{I}) : \textsf{range} $\rightarrow$ \textsf{constant}\\
@@ -18,8 +20,7 @@ Parameters:
    own precision, so this command is exact, even if the current precision is too 
    small to represent the bound.
 
-\item When called on a real number \emph{x}, \textbf{sup} considers it as an interval formed
-   of a single point: $\left[ x, x \right]$. In other words, \textbf{sup} behaves like the identity.
+\item When called on a real number \emph{x}, \textbf{sup} behaves like the identity.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]

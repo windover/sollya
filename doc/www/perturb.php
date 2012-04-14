@@ -4,6 +4,11 @@
 <span class="smallDescription">indicates random perturbation of sampling points for <?php linkTo("command","externalplot","externalplot");?> 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_perturb()</span> 
+<span class="commandline type">int sollya_lib_is_perturb(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","perturb","perturb");?> : <span class="type">perturb</span></span> 

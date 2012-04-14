@@ -4,6 +4,8 @@
 <span class="smallDescription">declaration of a local variable in a scope 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","var","var");?> <span class="arg">identifier1</span>, <span class="arg">identifier2</span>,... , <span class="arg">identifiern</span> : <span class="type">void</span></span> 

@@ -4,6 +4,11 @@
 <span class="smallDescription">computes a good polynomial approximation with fixed-point or floating-point coefficients 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_fpminimax(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, ...)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_v_fpminimax(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, va_list)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","fpminimax","fpminimax");?>(<span class="arg">f</span>, <span class="arg">n</span>, <span class="arg">formats</span>, <span class="arg">range</span>, <span class="arg">indic1</span>, <span class="arg">indic2</span>, <span class="arg">indic3</span>, <span class="arg">P</span>) : (<span class="type">function</span>, <span class="type">integer</span>, <span class="type">list</span>, <span class="type">range</span>, <span class="type">absolute|relative</span> | <span class="type">fixed|floating</span> | <span class="type">function</span>, <span class="type">absolute|relative</span> | <span class="type">fixed|floating</span> | <span class="type">function</span>, <span class="type">absolute|relative</span> | <span class="type">fixed|floating</span> | <span class="type">function</span>, <span class="type">function</span>) -&gt; <span class="type">function</span></span> 
@@ -160,7 +165,7 @@ currently <?php linkTo("command","fpminimax","fpminimax");?> has to be run with 
 <h2 class="category">Example 1: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; P = fpminimax(cos(x),6,[|DD, DD, D...|],[-1b-5;1b-5]);<br> 
 &nbsp;&nbsp;&nbsp;&gt; printexpansion(P);<br> 
-&nbsp;&nbsp;&nbsp;(0x3ff0000000000000 + 0xbc09fda20235c100) + x * ((0x3b29ecd485d34781 + 0xb7c1cbc97120359a) + x * (0xbfdfffffffffff98 + x * (0xbbfa6e0b3183cb0d + x * (0x3fa5555555145337 + x * (0x3ca3540480618939 + x * 0xbf56c138142d8c3b)))))<br> 
+&nbsp;&nbsp;&nbsp;(0x3ff0000000000000 + 0xbc09fda20235c100) + x * ((0x3b29ecd485d34781 + 0xb7c1cbc971529754) + x * (0xbfdfffffffffff98 + x * (0xbbfa6e0b3183cb0d + x * (0x3fa5555555145337 + x * (0x3ca3540480618939 + x * 0xbf56c138142d8c3b)))))<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 2: </h2> 
@@ -185,7 +190,7 @@ currently <?php linkTo("command","fpminimax","fpminimax");?> has to be run with 
 &nbsp;&nbsp;&nbsp;&gt; P2 = fpminimax(f, 5, [|D...|], listpoints, absolute, default, default, pstar);<br> 
 &nbsp;&nbsp;&nbsp;&gt; P3 = fpminimax(f, 5, [|D, D, D, 24...|], listpoints, absolute, default, default, pstar);<br> 
 &nbsp;&nbsp;&nbsp;&gt; print("Error of pstar: ", dirtyinfnorm(f-pstar, [-1b-7; 1b-7]));<br> 
-&nbsp;&nbsp;&nbsp;Error of pstar:&nbsp;&nbsp;7.9048441305459735102879831325718745399379329453102e-16<br> 
+&nbsp;&nbsp;&nbsp;Error of pstar:&nbsp;&nbsp;7.9048441305459735102879831325718747183089581485922e-16<br> 
 &nbsp;&nbsp;&nbsp;&gt; print("Error of P1:&nbsp;&nbsp;&nbsp;&nbsp;", dirtyinfnorm(f-P1, [-1b-7; 1b-7]));<br> 
 &nbsp;&nbsp;&nbsp;Error of P1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7.9048441305459735159848647089192667442047469404883e-16<br> 
 &nbsp;&nbsp;&nbsp;&gt; print("Error of P2:&nbsp;&nbsp;&nbsp;&nbsp;", dirtyinfnorm(f-P2, [-1b-7; 1b-7]));<br> 

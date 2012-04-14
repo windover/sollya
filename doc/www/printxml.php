@@ -4,6 +4,12 @@
 <span class="smallDescription">prints an expression as an MathML-Content-Tree 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">void sollya_lib_printxml(sollya_obj_t)</span> 
+<span class="commandline type">void sollya_lib_printxml_newfile(sollya_obj_t, sollya_obj_t)</span> 
+<span class="commandline type">void sollya_lib_printxml_appendfile(sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","printxml","printxml");?>(<span class="arg">expr</span>) : <span class="type">function</span> -&gt; <span class="type">void</span></span> 

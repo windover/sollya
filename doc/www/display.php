@@ -4,6 +4,12 @@
 <span class="smallDescription">sets or inspects the global variable specifying number notation 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">void sollya_lib_set_display_and_print(sollya_obj_t)</span> 
+<span class="commandline type">void sollya_lib_set_display(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_get_display()</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","display","display");?> = <span class="arg">notation value</span> : <span class="type">decimal|binary|dyadic|powers|hexadecimal</span> -&gt; <span class="type">void</span></span> 

@@ -1,7 +1,9 @@
 \subsection{readxml}
 \label{labreadxml}
 \noindent Name: \textbf{readxml}\\
-reads an expression written as a MathML-Content-Tree in a file\\
+\phantom{aaa}reads an expression written as a MathML-Content-Tree in a file\\[0.2cm]
+\noindent Library name:\\
+\verb|   sollya_obj_t sollya_lib_readxml(sollya_obj_t)|\\[0.2cm]
 \noindent Usage: 
 \begin{center}
 \textbf{readxml}(\emph{filename}) : \textsf{string} $\rightarrow$ \textsf{function} $|$ \textsf{error}\\
@@ -27,7 +29,7 @@ Parameters:
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > readxml("readxmlexample.xml");
-2 + x + exp(sin(x))
+2 + _x_ + exp(sin(_x_))
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{printxml} (\ref{labprintxml}), \textbf{readfile} (\ref{labreadfile}), \textbf{parse} (\ref{labparse}), \textbf{error} (\ref{laberror})

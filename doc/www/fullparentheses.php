@@ -4,6 +4,8 @@
 <span class="smallDescription">activates, deactivates or inspects the state variable controlling output with full parenthesising 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","fullparentheses","fullparentheses");?> = <span class="arg">activation value</span> : <span class="type">on|off</span> -&gt; <span class="type">void</span></span> 

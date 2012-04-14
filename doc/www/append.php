@@ -4,6 +4,10 @@
 <span class="smallDescription">add an element at the end of a list. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_append(sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><span class="arg">L</span><?php linkTo("command","append",":.");?><span class="arg">x</span> : (<span class="type">list</span>, <span class="type">any type</span>) -&gt; <span class="type">list</span></span> 

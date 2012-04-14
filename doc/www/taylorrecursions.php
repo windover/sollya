@@ -4,6 +4,12 @@
 <span class="smallDescription">controls the number of recursion steps when applying Taylor's rule. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">void sollya_lib_set_taylorrecursions_and_print(sollya_obj_t)</span> 
+<span class="commandline type">void sollya_lib_set_taylorrecursions(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_get_taylorrecursions()</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","taylorrecursions","taylorrecursions");?> = <span class="arg">n</span> : <span class="type">integer</span> -&gt; <span class="type">void</span></span> 

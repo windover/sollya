@@ -4,6 +4,10 @@
 <span class="smallDescription">prints a constant value as a hexadecimal double precision number 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">void sollya_lib_printdouble(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","printdouble","printdouble");?>(<span class="arg">constant</span>) : <span class="type">constant</span> -&gt; <span class="type">void</span></span> 

@@ -4,6 +4,10 @@
 <span class="smallDescription">less-than-or-equal-to operator 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_cmp_less_equal(sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><span class="arg">expr1</span> <?php linkTo("command","le","&lt;=");?> <span class="arg">expr2</span> : (<span class="type">constant</span>, <span class="type">constant</span>) -&gt; <span class="type">boolean</span></span> 

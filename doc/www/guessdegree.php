@@ -4,6 +4,11 @@
 <span class="smallDescription">returns the minimal degree needed for a polynomial to approximate a function with a certain error on an interval. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_guessdegree(sollya_obj_t, sollya_obj_t, sollya_obj_t, ...)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_v_guessdegree(sollya_obj_t, sollya_obj_t, sollya_obj_t, va_list)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","guessdegree","guessdegree");?>(<span class="arg">f</span>,<span class="arg">I</span>,<span class="arg">eps</span>,<span class="arg">w</span>,<span class="arg">bound</span>) : (<span class="type">function</span>, <span class="type">range</span>, <span class="type">constant</span>, <span class="type">function</span>, <span class="type">constant</span>) -&gt; <span class="type">range</span></span> 

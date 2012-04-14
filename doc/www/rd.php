@@ -4,6 +4,11 @@
 <span class="smallDescription">constant representing rounding-downwards mode. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_round_down()</span> 
+<span class="commandline type">int sollya_lib_is_round_down(sollya_obj_t)</span> 
+</div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
 <li><?php linkTo("command","rd","RD");?> is used in command <?php linkTo("command","round","round");?> to specify that the value x must be rounded 

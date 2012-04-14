@@ -4,6 +4,14 @@
 <span class="smallDescription">rounding to the nearest IEEE 754 half-precision number (binary16). 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_halfprecision(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_halfprecision_obj()</span> 
+<span class="commandline type">int sollya_lib_is_halfprecision_obj(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_build_function_halfprecision(sollya_obj_t)</span> 
+<span class="commandline type">#define SOLLYA_HP(x) sollya_lib_build_function_halfprecision(x)</span> 
+</div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
 <li><?php linkTo("command","halfprecision","halfprecision");?> is both a function and a constant. 

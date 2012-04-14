@@ -1,7 +1,9 @@
 \subsection{printexpansion}
 \label{labprintexpansion}
 \noindent Name: \textbf{printexpansion}\\
-prints a polynomial in Horner form with its coefficients written as a expansions of double precision numbers\\
+\phantom{aaa}prints a polynomial in Horner form with its coefficients written as a expansions of double precision numbers\\[0.2cm]
+\noindent Library name:\\
+\verb|   void sollya_lib_printexpansion(sollya_obj_t)|\\[0.2cm]
 \noindent Usage: 
 \begin{center}
 \textbf{printexpansion}(\emph{polynomial}) : \textsf{function} $\rightarrow$ \textsf{void}\\
@@ -42,11 +44,12 @@ x3fc5555555555555 + 0x3c65555555555555) + x * ((0x3fa5555555555555 + 0x3c4555555
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > printexpansion(remez(exp(x),5,[-1;1]));
 (0x3ff0002eec908ce9 + 0xbc7df99eb225af5b + 0xb8d55834b08b1f18) + x * ((0x3ff0002
-835917719 + 0x3c6d82c073b25ebf + 0xb902cf062b54b7b6 + 0x35b0000000000000) + x * 
-((0x3fdff2d7e6a9c5e9 + 0xbc7b09a95b0d520f + 0xb915b639add55731 + 0x35a8000000000
-000) + x * ((0x3fc54d67338ba09f + 0x3c4867596d0631cf + 0xb8ef0756bdb4af6e) + x *
- ((0x3fa66c209b825167 + 0x3c45ec5b6655b076 + 0xb8d8c125286400bc) + x * (0x3f81e5
-5425e72ab4 + 0x3c263b25a1bf597b + 0xb8c843e0401dadd0 + 0x3540000000000000)))))
+835917719 + 0x3c6d82c073b25ebf + 0xb902cf062b54b7b7) + x * ((0x3fdff2d7e6a9c5e9 
++ 0xbc7b09a95b0d520f + 0xb915b639add55731 + 0x35b0000000000000) + x * ((0x3fc54d
+67338ba09f + 0x3c4867596d0631cf + 0xb8ef0756bdb4af62 + 0x3580000000000000) + x *
+ ((0x3fa66c209b825167 + 0x3c45ec5b6655b076 + 0xb8d8c125286400ba + 0x357000000000
+0000) + x * (0x3f81e55425e72ab4 + 0x3c263b25a1bf597b + 0xb8c843e0401dadea + 0x35
+70000000000000)))))
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 

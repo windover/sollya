@@ -4,6 +4,11 @@
 <span class="smallDescription">determines which of given constant expressions has minimum value 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_min(sollya_obj_t, ...)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_v_min(sollya_obj_t, va_list)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","min","min");?>(<span class="arg">expr1</span>,<span class="arg">expr2</span>,...,<span class="arg">exprn</span>) : (<span class="type">constant</span>, <span class="type">constant</span>, ..., <span class="type">constant</span>) -&gt; <span class="type">constant</span></span> 
@@ -60,7 +65,7 @@ NaNs. This means that NaNs may disappear during computations.
 <h2 class="category">Example 4: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; verbosity = 1!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; print(min(17 + log2(13)/log2(9),17 + log(13)/log(9)));<br> 
-&nbsp;&nbsp;&nbsp;Warning: minimum computation relies on floating-point result that is faithfully evaluated and different faithful roundings toggle the result.<br> 
+&nbsp;&nbsp;&nbsp;Warning: the tool is unable to decide a minimum computation by evaluation even though faithful evaluation of the terms has been possible. The terms will be considered to be equal.<br> 
 &nbsp;&nbsp;&nbsp;17 + log(13) / log(9)<br> 
 </div> 
 </div> 

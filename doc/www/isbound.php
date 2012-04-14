@@ -4,6 +4,8 @@
 <span class="smallDescription">indicates whether a variable is bound or not. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","isbound","isbound");?>(<span class="arg">ident</span>) : <span class="type">boolean</span></span> 
@@ -85,4 +87,7 @@ that <span class="arg">ident1</span> has been renamed.
 &nbsp;&nbsp;&nbsp;&gt; x;<br> 
 &nbsp;&nbsp;&nbsp;1<br> 
 </div> 
+</div> 
+<div class="divSeeAlso"> 
+<span class="category">See also: </span><?php linkTo("command","rename","rename");?> 
 </div> 

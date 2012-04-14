@@ -4,6 +4,11 @@
 <span class="smallDescription">indicates an absolute error for <?php linkTo("command","externalplot","externalplot");?>, <?php linkTo("command","fpminimax","fpminimax");?> or <?php linkTo("command","supnorm","supnorm");?> 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_absolute()</span> 
+<span class="commandline type">int sollya_lib_is_absolute(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","absolute","absolute");?> : <span class="type">absolute|relative</span></span> 

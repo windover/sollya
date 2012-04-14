@@ -1,7 +1,13 @@
 \subsection{halfprecision}
 \label{labhalfprecision}
 \noindent Names: \textbf{halfprecision}, \textbf{HP}\\
-rounding to the nearest IEEE 754 half-precision number (binary16).\\
+\phantom{aaa}rounding to the nearest IEEE 754 half-precision number (binary16).\\[0.2cm]
+\noindent Library names:\\
+\verb|   sollya_obj_t sollya_lib_halfprecision(sollya_obj_t)|\\
+\verb|   sollya_obj_t sollya_lib_halfprecision_obj()|\\
+\verb|   int sollya_lib_is_halfprecision_obj(sollya_obj_t)|\\
+\verb|   sollya_obj_t sollya_lib_build_function_halfprecision(sollya_obj_t)|\\
+\verb|   #define SOLLYA_HP(x) sollya_lib_build_function_halfprecision(x)|\\[0.2cm]
 \noindent Description: \begin{itemize}
 
 \item \textbf{halfprecision} is both a function and a constant.

@@ -4,6 +4,10 @@
 <span class="smallDescription">gives the tail of a list. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_tail(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","tail","tail");?>(<span class="arg">L</span>) : <span class="type">list</span> -&gt; <span class="type">list</span></span> 

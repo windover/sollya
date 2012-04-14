@@ -4,6 +4,10 @@
 <span class="smallDescription">rounds the coefficients of a polynomial to classical formats. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_roundcoefficients(sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","roundcoefficients","roundcoefficients");?>(<span class="arg">p</span>,<span class="arg">L</span>) : (<span class="type">function</span>, <span class="type">list</span>) -&gt; <span class="type">function</span></span> 

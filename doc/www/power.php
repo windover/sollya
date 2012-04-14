@@ -4,6 +4,12 @@
 <span class="smallDescription">power function 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_pow(sollya_obj_t, sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_build_function_pow(sollya_obj_t, sollya_obj_t)</span> 
+<span class="commandline type">#define SOLLYA_POW(x,y) sollya_lib_build_function_pow((x), (y))</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><span class="arg">function1</span> <?php linkTo("command","power","^");?> <span class="arg">function2</span> : (<span class="type">function</span>, <span class="type">function</span>) -&gt; <span class="type">function</span></span> 

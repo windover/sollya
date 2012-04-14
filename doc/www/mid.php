@@ -4,6 +4,10 @@
 <span class="smallDescription">gives the middle of an interval. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_mid(sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","mid","mid");?>(<span class="arg">I</span>) : <span class="type">range</span> -&gt; <span class="type">constant</span></span> 
@@ -22,8 +26,7 @@
 <li>Returns the middle of the interval <span class="arg">I</span>. If the middle is not exactly 
 representable at the current precision, the value is returned as an 
 unevaluated expression. 
-</li><li>When called on a real number <span class="arg">x</span>, <?php linkTo("command","mid","mid");?> considers it as an interval formed 
-of a single point: [x, x]. In other words, <?php linkTo("command","mid","mid");?> behaves like the identity. 
+</li><li>When called on a real number <span class="arg">x</span>, <?php linkTo("command","mid","mid");?> behaves like the identity. 
 </ul> 
 </div> 
 <div class="divExamples"> 

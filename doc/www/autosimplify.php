@@ -4,6 +4,12 @@
 <span class="smallDescription">activates, deactivates or inspects the value of the automatic simplification state variable 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">void sollya_lib_set_autosimplify_and_print(sollya_obj_t)</span> 
+<span class="commandline type">void sollya_lib_set_autosimplify(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_get_autosimplify()</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","autosimplify","autosimplify");?> = <span class="arg">activation value</span> : <span class="type">on|off</span> -&gt; <span class="type">void</span></span> 
@@ -61,10 +67,10 @@ global mode by an indication.
 <h2 class="category">Example 2: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; autosimplify = on !; <br> 
 &nbsp;&nbsp;&nbsp;&gt; print(rationalapprox(sin(pi/5.9),7));<br> 
-&nbsp;&nbsp;&nbsp;0.5<br> 
+&nbsp;&nbsp;&nbsp;33 / 65<br> 
 &nbsp;&nbsp;&nbsp;&gt; autosimplify = off !; <br> 
 &nbsp;&nbsp;&nbsp;&gt; print(rationalapprox(sin(pi/5.9),7));<br> 
-&nbsp;&nbsp;&nbsp;1 / 2<br> 
+&nbsp;&nbsp;&nbsp;33 / 65<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

@@ -4,6 +4,10 @@
 <span class="smallDescription">concatenates two lists or strings or applies a list as arguments to a procedure 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library name:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_concat(sollya_obj_t, sollya_obj_t)</span> 
+</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><span class="arg">L1</span><?php linkTo("command","concat","@");?><span class="arg">L2</span> : (<span class="type">list</span>, <span class="type">list</span>) -&gt; <span class="type">list</span></span> 

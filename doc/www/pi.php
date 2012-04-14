@@ -4,6 +4,13 @@
 <span class="smallDescription">the constant Pi. 
 </span> 
 </div> 
+<div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">sollya_obj_t sollya_lib_pi()</span> 
+<span class="commandline type">int sollya_lib_is_pi(sollya_obj_t)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_build_function_pi()</span> 
+<span class="commandline type">#define SOLLYA_PI (sollya_lib_build_function_pi())</span> 
+</div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
 <li><?php linkTo("command","pi","pi");?> is the constant Pi, defined as half the period of sine and cosine. 
