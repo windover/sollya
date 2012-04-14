@@ -1624,11 +1624,13 @@ The target precision $q$ is chosen to be the precision of the \verb|mpfr_t| vari
     \hline
     \hfil\phantom{\Large{$A^A$}}Value\phantom{\Large{$A^A$}}\hfil & \hfil Meaning\hfil \\ \hline
   \verb|SOLLYA_FP_OBJ_NO_FUNCTION| & \verb|f| is not a functional expression.\phantom{\Large{$A^A$}}\\[0.3cm]
-  \verb|SOLLYA_FP_FAITHFUL_PROVEN_EXACT| & The algorithm ended up at step (a) and $I$ was equal to $[x,x]$ where $x$ was a finite floating-point number at precision~$q$.\\[0.3cm]
+  \verb|SOLLYA_FP_PROVEN_EXACT| & The algorithm ended up at step (a) and $I$ was equal to $[x,x]$ where $x$ was a finite floating-point number at precision~$q$.\\[0.3cm]
+  \verb|SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT| & The algorithm ended up at step (a) with a finite value. $I$ was equal to $[x,y]$ with $\textrm{RN}(x) = \textrm{RN}(y) \not\in I$.\\[0.3cm]
+  \verb|SOLLYA_FP_CORRECTLY_ROUNDED| & The algorithm ended up at step (a) with a finite value. $I$ was equal to $[x,y]$ with $\textrm{RN}(x) = \textrm{RN}(y) \in I$.\\[0.3cm]
   \verb|SOLLYA_FP_FAITHFUL_PROVEN_INEXACT| & The algorithm ended up at step (a) with a finite value, and $I$ did not contain any floating-point number at precision $q$.\\[0.3cm]
   \verb|SOLLYA_FP_FAITHFUL| & The algorithm ended up at step (a) with a finite value. This does not say anything about the exactness of the result, though it might have been proved exact or inexact if the algorithm had been run with a larger precision.\\[0.3cm]
   \verb|SOLLYA_FP_BELOW_CUTOFF| & The algorithm ended up at step (b).\\[0.3cm]
-  \verb|SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD| & The algorithm ended up at step (c) and $I$ was an interval of the form $[-\delta_1,\,\delta_2]$ where the $\delta_i$ are positive and very small (below some threshold of the algorithm). This typically happens when $f(a)$ exactly equals zero, but the algorithm does not manage to prove this exact equality.\\[0.3cm]
+  \verb|SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD| & The algorithm ended up at step (c) and $I$ was of the form $[-\delta_1,\,\delta_2]$ where $0 < \delta_i \ll 1$ (below some threshold of the algorithm). This typically happens when $f(a)$ exactly equals zero, but the algorithm does not manage to prove this exact equality.\\[0.3cm]
   \verb|SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD| & The algorithm ended up at step (c) with an interval $I$ containing $0$ but too large to fall in the above case. In general, this should be considered as a case of failure and the value stored in \verb|res| might be completely irrelevant.\\[0.3cm]
   \verb|SOLLYA_FP_NOT_FAITHFUL_ZERO_NOT_CONTAINED| & The algorithm ended up at step (c) with an interval $I$ that does not contain $0$. In general, this should be considered as a case of failure and the value stored in \verb|res| might be completely irrelevant.\\[0.3cm]
   \verb|SOLLYA_FP_NOT_FAITHFUL_INFINITY_CONTAINED| & The algorithm ended up at step (c) and (at least) one of the bounds of $I$ was infinite. This typically happens when the limit of $f(x)$ when $x$ goes to $a$ is infinite.\\[0.3cm]
