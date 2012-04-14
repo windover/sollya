@@ -9,6 +9,10 @@ const char *get_status(sollya_fp_result_t s) {
     return "status: SOLLYA_FP_OBJ_NO_FUNCTION";
   case SOLLYA_FP_PROVEN_EXACT:
     return "status: SOLLYA_FP_PROVEN_EXACT";
+  case SOLLYA_FP_CORRECTLY_ROUNDED:
+    return "status: SOLLYA_FP_CORRECTLY_ROUNDED";
+  case SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT:
+    return "status: SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT";
   case SOLLYA_FP_FAITHFUL_PROVEN_INEXACT:
     return "status: SOLLYA_FP_PROVEN_INEXACT";
   case SOLLYA_FP_FAITHFUL:

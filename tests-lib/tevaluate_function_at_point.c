@@ -9,6 +9,10 @@ const char *get_status(sollya_fp_result_t s) {
     return "status: SOLLYA_FP_OBJ_NO_FUNCTION";
   case SOLLYA_FP_PROVEN_EXACT:
     return "status: SOLLYA_FP_PROVEN_EXACT";
+  case SOLLYA_FP_CORRECTLY_ROUNDED:
+    return "status: SOLLYA_FP_CORRECTLY_ROUNDED";
+  case SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT:
+    return "status: SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT";
   case SOLLYA_FP_FAITHFUL_PROVEN_INEXACT:
     return "status: SOLLYA_FP_PROVEN_INEXACT";
   case SOLLYA_FP_FAITHFUL:
@@ -103,6 +107,22 @@ int main(void) {
   res = sollya_lib_evaluate_function_at_point(y, f, x, NULL);
   sollya_lib_printf("Trying to faithfuly evaluate %b at %v with cutoff NULL: returns %v (%s)", f, x, y, get_status(res));
   sollya_lib_printf(" -- expecting 1\n\n");
+  sollya_lib_clear_obj(f);
+
+
+  /* Evaluate an expression exactly at the middle of two fp numbers
+     but it is hard to decide that it is exact */
+
+  f = SOLLYA_ADD( SOLLYA_ADD(SOLLYA_CONST(1), SOLLYA_POW(SOLLYA_CONST(2), SOLLYA_NEG(SOLLYA_CONST(mpfr_get_prec(y))))),
+                  SOLLYA_SUB( SOLLYA_DIV(SOLLYA_LOG10(SOLLYA_X_), SOLLYA_LOG10(SOLLYA_CONST(2))),
+                              SOLLYA_DIV(SOLLYA_LOG(SOLLYA_X_), SOLLYA_LOG(SOLLYA_CONST(2)))
+                              )
+                  );
+  mpfr_set_d(x, 3, GMP_RNDN);
+  mpfr_set_d(y, -17, GMP_RNDN);;
+  res = sollya_lib_evaluate_function_at_point(y, f, x, NULL);
+  sollya_lib_printf("Trying to faithfuly evaluate %b at %v with cutoff NULL: returns %v (%s)", f, x, y, get_status(res));
+  sollya_lib_printf(" -- expecting 1 or 536870913 * 2^(-29)\n\n");
   sollya_lib_clear_obj(f);
 
 
@@ -445,11 +465,11 @@ int main(void) {
   sollya_lib_printf("\n");
   sollya_lib_clear_obj(f);
 
-  f = sollya_lib_parse_string("(sin(pi/6)-x)*1b10000+3");
+  f = sollya_lib_parse_string("(sin(pi/6)-x)*1b25572 *1063004405 * 2^(-30)+3"); /* TODO: achieve to obtain SOLLYA_FP_FAITHFUL here */
   mpfr_set_d(x, 0.5, GMP_RNDN);
   mpfr_set_d(y, -17, GMP_RNDN);
   res = sollya_lib_evaluate_function_at_point(y, f, x, NULL);
-  sollya_lib_printf("Trying to faithfuly evaluate %b at %v with cutoff NULL: returns %v (%s)", f, x, y, get_status(res));
+  sollya_lib_printf("Trying to faithfuly evaluate %b at %v with cutoff NULL: returns %v (%s) xxx", f, x, y, get_status(res));
   sollya_lib_printf("\n");
   sollya_lib_printf("\n");
   sollya_lib_clear_obj(f);
