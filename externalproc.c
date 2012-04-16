@@ -75,6 +75,8 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
                    the result is returned by affecting the MPFR variable
    * function:     the first argument of the C function is of C type sollya_obj_t *,
                    the result is returned by the sollya_obj_t  pointed with a new sollya_obj_t 
+   * object:       the first argument of the C function is of C type sollya_obj_t *,
+                   the result is returned by the sollya_obj_t  pointed with a new sollya_obj_t 
    * range:        the first argument of the C function is of C type mpfi_t *,
                    the result is returned by affecting the MPFI variable
    * integer:      the first argument of the C function is of C type int *,

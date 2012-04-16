@@ -27,7 +27,7 @@
 
 \newcommand{\ligne}[1]{\texttt{#1}\\}
 
-\title{Users' manual for the \sollya tool \\ {\large Release 3.0}}
+\title{Users' manual for the \sollya tool \\ {\large Release 4.0-alpha}}
 
 \author{Sylvain Chevillard \\ \small{\url{sylvain.chevillard@ens-lyon.org}} \and Christoph Lauter \\ \small{\url{christoph.lauter@ens-lyon.org}} \and Mioara Jolde\c{s} \\ \small{\url{mioara.joldes@ens-lyon.fr}} }
 
@@ -40,7 +40,7 @@
 
 \section*{License}
 
-The \sollya tool is Copyright \copyright~2006-2011 by \vspace{2mm} \\
+The \sollya tool is Copyright \copyright~2006-2012 by \vspace{2mm} \\
 \indent Laboratoire de
 l'Informatique du Parall\'elisme - UMR CNRS - ENS Lyon - UCB Lyon 1 -
 INRIA 5668, Lyon, France, \vspace{2mm} \\
@@ -1603,13 +1603,15 @@ In the former, the argument \verb|a| is any \verb|sollya_obj_t| containing a num
 \item[~]\textbf {Input:} a functional expression \verb|f|, a constant expression \verb|a|, a target precision $q$, a parameter $\varepsilon$.
 \item Choose an initial working precision $p$.
 \item Evaluate \verb|a| with interval arithmetic, performing the computations at precision $p$.
-\item Replace the occurrences of the free variable in \verb|f| by the interval obtained at step 2. Evaluate the resulting expression with interval arithmetic, performing the computations at precision $p$. This yields an interval $I$.
-\item If $I$ contains at most one floating-point number of precision $q$:
+\item Replace the occurrences of the free variable in \verb|f| by the interval obtained at step 2. Evaluate the resulting expression with interval arithmetic, performing the computations at precision $p$. This yields an interval $I = [x,y]$.
+\item Examine the following cases successively ($\mathrm{RN}$ denotes rounding to nearest at precision~$q$):
   \begin{enumerate}
-  \item Then set \verb|res| to that number (or set it to any of the two enclosing numbers, if $I$ does not contain any number of precision $q$) and return.
-  \item Else if all numbers in $I$ are smaller than $\varepsilon$ in absolute value, then set \verb|res| to $0$ and return .
-  \item Else if $p$ has already been increased many times, then set \verb|res| to the middle of $I$ and return.
-  \item Else, increase $p$ and go back to step 2.
+  \item If $\mathrm{RN}(x) = \mathrm{RN}(y)$, set \verb|res| to that value and return.
+  \item If $I$ does not contain any floating-point number at precision $q$, set \verb|res| to one of both floating-point numbers enclosing $I$ and return.
+  \item If $I$ contains exactly one floating-point number at precision $q$, set \verb|res| to that number and return.
+  \item If all numbers in $I$ are smaller than $\varepsilon$ in absolute value, then set \verb|res| to $0$ and return.
+  \item If $p$ has already been increased many times, then set \verb|res| to the middle of $I$ and return.
+  \item Otherwise, increase $p$ and go back to step 2.
   \end{enumerate}
 \end{enumerate}
 \vspace{-0.2cm}
@@ -1618,28 +1620,31 @@ The target precision $q$ is chosen to be the precision of the \verb|mpfr_t| vari
 \begin{table}[htp]
 \caption{List of values defined in type \texttt{sollya\_fp\_result\_t}}
 \label{list_of_sollya_fp_result_t}
+\renewcommand{\footnoterule}{} % suppress the separation line between main text and footnotes.
+\begin{minipage}{\textwidth}
 \hspace{-1cm}
 \begin{tabular}{|l|p{7cm}|}
   \multicolumn{1}{c}{~}\\
     \hline
     \hfil\phantom{\Large{$A^A$}}Value\phantom{\Large{$A^A$}}\hfil & \hfil Meaning\hfil \\ \hline
   \verb|SOLLYA_FP_OBJ_NO_FUNCTION| & \verb|f| is not a functional expression.\phantom{\Large{$A^A$}}\\[0.3cm]
-  \verb|SOLLYA_FP_PROVEN_EXACT| & The algorithm ended up at step (a) and $I$ was equal to $[x,x]$ where $x$ was a finite floating-point number at precision~$q$.\\[0.3cm]
-  \verb|SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT| & The algorithm ended up at step (a) with a finite value. $I$ was equal to $[x,y]$ with $\textrm{RN}(x) = \textrm{RN}(y) \not\in I$.\\[0.3cm]
-  \verb|SOLLYA_FP_CORRECTLY_ROUNDED| & The algorithm ended up at step (a) with a finite value. $I$ was equal to $[x,y]$ with $\textrm{RN}(x) = \textrm{RN}(y) \in I$.\\[0.3cm]
-  \verb|SOLLYA_FP_FAITHFUL_PROVEN_INEXACT| & The algorithm ended up at step (a) with a finite value, and $I$ did not contain any floating-point number at precision $q$.\\[0.3cm]
-  \verb|SOLLYA_FP_FAITHFUL| & The algorithm ended up at step (a) with a finite value. This does not say anything about the exactness of the result, though it might have been proved exact or inexact if the algorithm had been run with a larger precision.\\[0.3cm]
-  \verb|SOLLYA_FP_BELOW_CUTOFF| & The algorithm ended up at step (b).\\[0.3cm]
-  \verb|SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD| & The algorithm ended up at step (c) and $I$ was of the form $[-\delta_1,\,\delta_2]$ where $0 < \delta_i \ll 1$ (below some threshold of the algorithm). This typically happens when $f(a)$ exactly equals zero, but the algorithm does not manage to prove this exact equality.\\[0.3cm]
-  \verb|SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD| & The algorithm ended up at step (c) with an interval $I$ containing $0$ but too large to fall in the above case. In general, this should be considered as a case of failure and the value stored in \verb|res| might be completely irrelevant.\\[0.3cm]
-  \verb|SOLLYA_FP_NOT_FAITHFUL_ZERO_NOT_CONTAINED| & The algorithm ended up at step (c) with an interval $I$ that does not contain $0$. In general, this should be considered as a case of failure and the value stored in \verb|res| might be completely irrelevant.\\[0.3cm]
-  \verb|SOLLYA_FP_NOT_FAITHFUL_INFINITY_CONTAINED| & The algorithm ended up at step (c) and (at least) one of the bounds of $I$ was infinite. This typically happens when the limit of $f(x)$ when $x$ goes to $a$ is infinite.\\[0.3cm]
-  \verb|SOLLYA_FP_INFINITY| & The algorithm ended up at step (a) with $I$ of the form $[+\infty, +\infty]$ or $[-\infty, -\infty]$. Hence $f(a)$ is proved to be an exact infinity.\\[0.3cm]
-  \verb|SOLLYA_FP_FAILURE| & The algorithm ended up at step (c) and $I$ contained NaN. This typically happens when $a$ is not in the definition domain of $f$.\\[0.3cm]
+  \verb|SOLLYA_FP_EXPRESSION_NOT_CONSTANT| & \verb|a| is not a constant expression.\\[0.3cm]
+ \verb|SOLLYA_FP_FAILURE| & The algorithm ended up at step (e) and $I$ contained NaN. This typically happens when $a$ is not in the definition domain of $f$.\\[0.3cm]
   \verb|SOLLYA_FP_CUTOFF_IS_NAN| & \verb|cutoff| was not \verb|NULL| and the value of \verb|*cutoff| is NaN.\\[0.3cm]
-  \verb|SOLLYA_FP_EXPRESSION_NOT_CONSTANT| & \verb|a| is not a constant expression.\\
+  \verb|SOLLYA_FP_INFINITY| & The algorithm ended up at step (a) with $I$ of the form $[+\infty, +\infty]$ or $[-\infty, -\infty]$. Hence $f(a)$ is proved to be an exact infinity.\\[0.3cm]
+  \verb|SOLLYA_FP_PROVEN_EXACT| & The algorithm ended up at step (a) with a finite value and $x = \mathrm{RN}(x) = \mathrm{RN}(y)=y$.\\[0.3cm]
+  \verb|SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT| & The algorithm ended up at step (b) with a finite value. and $\mathtt{res} \le x \le y$ or $x \le y \le \mathtt{res}$.\\[0.3cm]
+  \verb|SOLLYA_FP_CORRECTLY_ROUNDED| & The algorithm ended up at step (a) with a finite value and $x \le \mathtt{res} \le y$.$~^a$\footnotetext[1]{Please notice that this means that the algorithm did not manage to conclude whether the result is exact or not. However, it might have been able to conclude if the working precision had been increased.}\\[0.3cm]
+  \verb|SOLLYA_FP_FAITHFUL_PROVEN_INEXACT| & The algorithm ended up at step (b) with a finite value.\\[0.3cm]
+  \verb|SOLLYA_FP_FAITHFUL| & The algorithm ended up at step (c) with a finite value.$~^a$\\[0.3cm]
+  \verb|SOLLYA_FP_BELOW_CUTOFF| & The algorithm ended up at step (d).\\[0.3cm]
+  \verb|SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD| & The algorithm ended up at step (e) and $I$ was of the form $[-\delta_1,\,\delta_2]$ where $0 < \delta_i \ll 1$ (below some threshold of the algorithm). This typically happens when $f(a)$ exactly equals zero, but the algorithm does not manage to prove this exact equality.\\[0.3cm]
+  \verb|SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD| & The algorithm ended up at step (e) with an interval $I$ containing $0$ but too large to fall in the above case.$~^b$\footnotetext[2]{In general, this should be considered as a case of failure and the value stored in \texttt{res} might be completely irrelevant.}\\[0.3cm]
+  \verb|SOLLYA_FP_NOT_FAITHFUL_ZERO_NOT_CONTAINED| & The algorithm ended up at step (e) with an interval $I$ that does not contain $0$.$~^b$\\[0.3cm]
+  \verb|SOLLYA_FP_NOT_FAITHFUL_INFINITY_CONTAINED| & The algorithm ended up at step (e) and (at least) one of the bounds of $I$ was infinite. This typically happens when the limit of $f(x)$ when $x$ goes to $a$ is infinite.\\[0.3cm]
 \hline
   \end{tabular}
+\end{minipage}
 \end{table}
 
 In the interactive tool, it is also possible to write \verb|f(a)| when \verb|a| contains an interval: \sollya performs the evaluation using an enhanced interval arithmetic, e.g., using L'Hopital's rule to produce finite (yet valid of course) enclosures even in cases when $f$ exhibits removable singularities (for instance $\sin(x)/x$ over an interval containing $0$). This feature is achieved in the library with the function
