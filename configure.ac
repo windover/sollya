@@ -25,6 +25,9 @@ AC_MSG_ERROR(no)
 ])
 AC_LANG_POP([C++])	
 AC_PROG_LEX
+if test "$missing_dir" = ""; then
+   missing_dir="."
+fi
 if test "$LEX" != flex; then
   LEX="$SHELL $missing_dir/missing flex"
   AC_SUBST(LEX_OUTPUT_ROOT, lex.yy)

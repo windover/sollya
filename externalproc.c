@@ -48,7 +48,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
 #include <mpfr.h>
-#include "sollya.h"
+#include <sollya.h>
 
 /* Example of an external procedure linked to an identifier in sollya
 
