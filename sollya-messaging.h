@@ -541,7 +541,11 @@ static const messageEntry messageTextsTable[] = {
   { SOLLYA_MSG_RATIONALAPPROX_SECOND_ARG_MUST_BE_GREATER_THAN_ONE     , "Error in rationalapprox: the second argument of rationalapprox must be greater or equal to 2" },
   { SOLLYA_MSG_ROUND_PREC_MUST_BE_AT_LEAST_TWO_BITS                   , "The precision specified when rounding to a particular format must be at least 2 bits" },
   { SOLLYA_MSG_NAN_CONVERTED_TO_NUMBER_ON_CONSTANT_RETRIEVAL          , "A Not-A-Number value has been converted to a number upon retrieval of a constant." },
-
+  {SOLLYA_MSG_CHEBYSHEVFORM_DEGREE_MUST_NOT_BE_NEGATIVE               ,"The degree of a Chebyshev form must be at least zero."},
+  {SOLLYA_MSG_CHEBYSHEVFORM_DOMAIN_MUST_NOT_BE_POINT_INTERVAL         ,"The domain of a Chebyshev Model can not be a point interval"},
+  { SOLLYA_MSG_CHEBYSHEVFORM_ERROR_IN_COMPUTATION                     , "An error occurred during computation of a Chebyshev form."},
+  {SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_COPYING_INCOMPAT_MODELS          ,"Error in Chebyshev form computation: copy of incompatible models."},
+  {SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_UNKNOWN_FUNC_FOR_ZUMKELLER       ,"Error in Chebyshev form computation: unkown type of function used with Zumkeller's technique. "},
   /* Add your new warning message texts above here. */
 
   { -1, "Unknown message number -1" }   /* Do not ever change the text in this default entry, which must be the last entry in the list */
