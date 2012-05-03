@@ -663,6 +663,16 @@ int sollya_mpfi_add(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   return res;
 }
 
+int sollya_mpfi_add_fr(sollya_mpfi_t rop, sollya_mpfi_t op1, mpfr_t op2) {
+  int res;
+ 
+  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop); 
+
+  res = mpfi_add_fr(rop,op1,op2); sollya_mpfi_nan_normalize(rop);
+
+  return res;
+}
+
 int sollya_mpfi_add_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) {
   int res;
  

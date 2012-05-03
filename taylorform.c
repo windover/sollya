@@ -221,7 +221,7 @@ void mpfr_get_poly(mpfr_t *rc, sollya_mpfi_t *errors_array, sollya_mpfi_t rest, 
     if (errors_array != NULL) sollya_mpfi_set(errors_array[i], errors[i]);
   }
   sollya_mpfi_sub(temp, x, x0);
-  symbolic_poly_evaluation_horner(rest, p, temp, n);
+  symbolic_poly_evaluation_horner(rest, errors, temp, n);
   
   for (i=0; i<=n; i++)  sollya_mpfi_clear(errors[i]);  
   safeFree(errors);

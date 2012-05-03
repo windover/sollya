@@ -274,6 +274,7 @@ extern FILE *internyyget_in(void *scanner);
 %token  SIMPLIFYSAFETOKEN;
 %token  TAYLORTOKEN;
 %token  TAYLORFORMTOKEN;
+%token  CHEBYSHEVFORMTOKEN;
 %token  AUTODIFFTOKEN;
 %token  DEGREETOKEN;
 %token  NUMERATORTOKEN;

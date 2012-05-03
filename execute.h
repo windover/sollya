@@ -1,5 +1,4 @@
 /*
-
 Copyright 2007-2011 by
 
 Laboratoire de l'Informatique du Parallelisme,
@@ -294,6 +293,7 @@ extern void endBuffer(void);
 #define SUPPRESSMESSAGE 274
 #define UNSUPPRESSMESSAGE 275
 #define GETSUPPRESSEDMESSAGES 276
+#define CHEBYSHEVFORM 277
 
 int executeCommand(node *);
 
@@ -457,6 +457,7 @@ node *makeCanonicalThing(node *thing);
 node *makeExpand(node *thing);
 node *makeTaylor(node *thing1, node *thing2, node *thing3);
 node *makeTaylorform(chain *thinglist);
+node *makeChebyshevform(chain *thinglist);
 node *makeAutodiff(chain *thinglist);
 node *makeDegree(node *thing);
 node *makeNumerator(node *thing);

@@ -130,6 +130,7 @@ int sollya_mpfi_log1p(sollya_mpfi_t rop, sollya_mpfi_t op);
 int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2); 
 int sollya_mpfi_mul(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2); 
 int sollya_mpfi_add(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2); 
+int sollya_mpfi_add_fr(sollya_mpfi_t rop, sollya_mpfi_t op1, mpfr_t op2);
 int sollya_mpfi_add_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2); 
 int sollya_mpfi_sub(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2); 
 int sollya_mpfi_sub_fr(sollya_mpfi_t rop, sollya_mpfi_t op1, mpfr_t op2); 

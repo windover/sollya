@@ -215,6 +215,7 @@ SIMPLIFYSAFE    ({SIMPLIFYSAFE1}|{SIMPLIFYSAFE2})
 
 TAYLOR          "taylor"
 TAYLORFORM      "taylorform"
+CHEBYSHEVFORM   "chebyshevform"
 AUTODIFF        "autodiff"
 
 FINDZEROS       "findzeros"
@@ -675,6 +676,7 @@ NOP             "nop"
 {SIMPLIFYSAFE}				    {  return SIMPLIFYSAFETOKEN; }
 {TAYLOR}         			    {  return TAYLORTOKEN; }
 {TAYLORFORM}         			    {  return TAYLORFORMTOKEN; }
+{CHEBYSHEVFORM}         		    {  return CHEBYSHEVFORMTOKEN; }
 {AUTODIFF}         			    {  return AUTODIFFTOKEN; }
 {DEGREE}          			    {  return DEGREETOKEN; }
 {NUMERATOR}       			    {  return NUMERATORTOKEN; }

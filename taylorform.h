@@ -98,4 +98,6 @@ void composition_TM(tModel *t,tModel *g, tModel *f, int mode);
 void taylorform(node **T, chain **errors, sollya_mpfi_t **delta,
 		node *f, int n, sollya_mpfi_t *x0, sollya_mpfi_t *d, int mode);
 
+chain *constructChain(sollya_mpfi_t *err, int n);
+
 #endif /* TAYLORFORM_H */

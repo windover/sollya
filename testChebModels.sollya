@@ -1,0 +1,26 @@
+restart;
+verbosity = 1!;
+prec=1000!;
+midpointmode = on!;
+externalproc(CM, "./chebModels", (function, range, integer,integer, integer) ->list of function);
+externalproc(CertifiedIntegral, "./chebModels", (function, range, integer,integer, integer) ->list of function);
+r=3/2;
+f=sin(1/((10^(-3)+(1-x)^2))^r);
+/*between 27/32+ 1/64  +*/
+
+step=2^10;
+
+initialVal=940/1024;
+
+L=[||];
+for i from 40 to 40 do {
+
+smallInt=[initialVal+(i-1)/step,initialVal+i/step];
+deg = 200;
+mode=0;
+verb=16;
+I=CertifiedIntegral(f,smallInt,deg,mode, verb);
+II=[I[0], I[1]];
+print(II);
+L=L:.II;
+};

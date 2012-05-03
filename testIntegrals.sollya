@@ -1,0 +1,28 @@
+restart;
+verbosity = 1!;
+prec=1200!;
+midpointmode = on!;
+externalproc(CM, "./chebModels", (function, range, integer,integer, integer) ->list of function);
+externalproc(CertifiedIntegral, "./chebModels", (function, range, integer,integer, integer) ->list of function);
+r=3/2;
+f=sin(1/((10^(-3)+(1-x)^2))^r);
+
+L=[|18071/16384, 1141/1024|]; //, 74185/65536, 76549/65536, 3
+
+deg = 200;
+mode=1;
+verb=0;
+ResultList=[||];
+//for i from 0 to length(L)-2 do {
+i=0;
+print("Now working on the interval: ",L[i],L[i+1],"\n");
+I2:=[L[i],L[i+1]];
+I=CertifiedIntegral(f,I2,deg,mode, verb);
+II=[I[0], I[1]];
+print("Result = ", II);
+ResultList=ResultList:.II;
+//};
+
+//L=CM(f,I2,deg,mode, verb);
+
+
