@@ -23,6 +23,7 @@ $listOfCommands=array(
 "boolean","boolean",
 "canonical","canonical",
 "ceil","ceil",
+"chebyshevform","chebyshevform",
 "checkinfnorm","checkinfnorm",
 "coeff","coeff",
 "composepolynomials","composepolynomials",
