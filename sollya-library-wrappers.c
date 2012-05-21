@@ -387,6 +387,24 @@ void sollya_lib_unsuppressmessage(sollya_obj_t obj1, ...) {
   freeThing(thingToExecute);
 }
 
+void sollya_lib_implementconstant(sollya_obj_t obj1, ...) {
+  node *thingToExecute;
+  MAKE_THINGLIST_DECLS(thinglist);
+  MAKE_THINGLIST_FROM_VARIADIC(obj1);
+  thingToExecute = makeImplementConst(thinglist);
+  executeCommand(thingToExecute);
+  freeThing(thingToExecute);
+}
+
+void sollya_lib_v_implementconstant(sollya_obj_t obj1, va_list varlist) {
+  node *thingToExecute;
+  MAKE_THINGLIST_DECLS_FROM_VA_LIST(thinglist);
+  MAKE_THINGLIST_FROM_VA_LIST(obj1,varlist);
+  thingToExecute = makeImplementConst(thinglist);
+  executeCommand(thingToExecute);
+  freeThing(thingToExecute);
+}
+
 void sollya_lib_v_autoprint(sollya_obj_t obj1, va_list varlist) {
   node *thingToExecute;
   MAKE_THINGLIST_DECLS_FROM_VA_LIST(thinglist);
@@ -459,6 +477,13 @@ void sollya_lib_set_canonical_and_print(sollya_obj_t obj1) {
 void sollya_lib_set_autosimplify_and_print(sollya_obj_t obj1) {
   node *thingToExecute;
   thingToExecute = makeAutoSimplifyAssign(copyThing(obj1));
+  executeCommand(thingToExecute);
+  freeThing(thingToExecute);
+}
+
+void sollya_lib_set_fullparentheses_and_print(sollya_obj_t obj1) {
+  node *thingToExecute;
+  thingToExecute = makeFullParenAssign(copyThing(obj1));
   executeCommand(thingToExecute);
   freeThing(thingToExecute);
 }
@@ -564,6 +589,13 @@ void sollya_lib_set_canonical(sollya_obj_t obj1) {
 void sollya_lib_set_autosimplify(sollya_obj_t obj1) {
   node *thingToExecute;
   thingToExecute = makeAutoSimplifyStillAssign(copyThing(obj1));
+  executeCommand(thingToExecute);
+  freeThing(thingToExecute);
+}
+
+void sollya_lib_set_fullparentheses(sollya_obj_t obj1) {
+  node *thingToExecute;
+  thingToExecute = makeFullParenStillAssign(copyThing(obj1));
   executeCommand(thingToExecute);
   freeThing(thingToExecute);
 }
@@ -1015,6 +1047,14 @@ sollya_obj_t sollya_lib_v_taylorform(sollya_obj_t obj1, sollya_obj_t obj2, solly
   MAKE_THINGLIST_DECLS_FROM_VA_LIST(thinglist);
   MAKE_THINGLIST_FROM_VA_LIST(obj3,varlist);
   thingToEvaluate = makeTaylorform(addElement(addElement(thinglist, copyThing(obj2)),copyThing(obj1)));
+  evaluatedThing = evaluateThing(thingToEvaluate);
+  freeThing(thingToEvaluate);
+  return evaluatedThing;
+}
+
+sollya_obj_t sollya_lib_chebyshevform(sollya_obj_t obj1, sollya_obj_t obj2, sollya_obj_t obj3) {
+  node *thingToEvaluate, *evaluatedThing;
+  thingToEvaluate = makeChebyshevform(addElement(addElement(addElement(NULL,copyThing(obj3)),copyThing(obj2)),copyThing(obj1)));
   evaluatedThing = evaluateThing(thingToEvaluate);
   freeThing(thingToEvaluate);
   return evaluatedThing;
@@ -1661,6 +1701,14 @@ sollya_obj_t sollya_lib_get_canonical() {
 sollya_obj_t sollya_lib_get_autosimplify() {
   node *thingToEvaluate, *evaluatedThing;
   thingToEvaluate = makeAutoSimplifyDeref();
+  evaluatedThing = evaluateThing(thingToEvaluate);
+  freeThing(thingToEvaluate);
+  return evaluatedThing;
+}
+
+sollya_obj_t sollya_lib_get_fullparentheses() {
+  node *thingToEvaluate, *evaluatedThing;
+  thingToEvaluate = makeFullParenDeref();
   evaluatedThing = evaluateThing(thingToEvaluate);
   freeThing(thingToEvaluate);
   return evaluatedThing;
@@ -2731,6 +2779,8 @@ int sollya_lib_get_list_elements(sollya_obj_t **objects, int *num, int *end_elli
     freeThing(evaluatedObj);
     return 1;
   }
+
+  tempVal = 0;
   if (isPureList(evaluatedObj) || (tempVal = isPureFinalEllipticList(evaluatedObj))) {
     *num = lengthChain(evaluatedObj->arguments);
     *objects = (sollya_obj_t *) safeCalloc(*num,sizeof(sollya_obj_t));
@@ -2739,6 +2789,40 @@ int sollya_lib_get_list_elements(sollya_obj_t **objects, int *num, int *end_elli
     }
     *end_elliptic = tempVal;
     freeThing(evaluatedObj);
+    return 1;
+  }
+
+  freeThing(evaluatedObj);
+  return 0;
+}
+
+int sollya_lib_get_element_in_list(sollya_obj_t *res, sollya_obj_t obj1, int n) {
+  sollya_obj_t evaluatedObj;
+  int tempVal, num;
+  sollya_obj_t indexObj, protoObj;
+  mpfr_t nAsMpfr;
+
+  if (n < 0) return 0;
+
+  evaluatedObj = evaluateThing(obj1);
+
+  tempVal = 0;
+  if (isPureList(evaluatedObj) || (tempVal = isPureFinalEllipticList(evaluatedObj))) {
+    num = lengthChain(evaluatedObj->arguments);
+    if ((!tempVal) && (n >= num)) {
+      freeThing(evaluatedObj);
+      return 0;
+    }
+
+    mpfr_init2(nAsMpfr, 8 * sizeof(n) + 10);
+    mpfr_set_si(nAsMpfr, n, GMP_RNDN); /* exact */
+    indexObj = makeConstant(nAsMpfr);
+    mpfr_clear(nAsMpfr);
+
+    protoObj = makeIndex(evaluatedObj, indexObj);
+    *res = evaluateThing(protoObj);
+    
+    freeThing(protoObj);
     return 1;
   }
 
@@ -4212,3 +4296,215 @@ sollya_obj_t sollya_lib_build_function_pi() {
   return makePi();
 }
 
+sollya_obj_t sollya_lib_build_function_libraryconstant(char *name, void (*func)(mpfr_t, mp_prec_t)) {
+  return NULL; // TODO
+}
+
+sollya_obj_t sollya_lib_build_function_libraryfunction(char *name, int (*func)(mpfi_t, mpfi_t, int), sollya_obj_t obj1) {
+  return NULL; // TODO
+}
+
+sollya_obj_t sollya_lib_build_function_procedurefunction(sollya_obj_t obj1, sollya_obj_t obj2) {
+  return NULL; // TODO
+}
+
+
+sollya_obj_t sollya_lib_build_function(sollya_base_function_t func, ...) {
+  va_list varlist;
+  sollya_obj_t arg1, arg2;
+  sollya_obj_t res;
+  void (*libConst)(mpfr_t, mp_prec_t);
+  int (*libFunc)(mpfi_t, mpfi_t, int);
+  char *str;
+
+  va_start(varlist,func);  
+
+  switch (func) {
+  case SOLLYA_BASE_FUNC_ABS:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_abs(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_ACOS:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_acos(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_ACOSH:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_acosh(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_ADD:
+    arg1 = va_arg(varlist,node *);
+    arg2 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_add(arg1,arg2);
+    break;
+  case SOLLYA_BASE_FUNC_ASIN:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_asin(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_ASINH:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_asinh(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_ATAN:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_atan(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_ATANH:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_atanh(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_CEIL:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_ceil(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_CONSTANT:
+    res = sollya_lib_constant((void *) va_arg(varlist,const mpfr_srcptr));
+    break;
+  case SOLLYA_BASE_FUNC_COS:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_cos(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_COSH:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_cosh(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_DIV:
+    arg1 = va_arg(varlist,node *);
+    arg2 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_div(arg1,arg2);
+    break;
+  case SOLLYA_BASE_FUNC_DOUBLE:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_double(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_DOUBLEDOUBLE:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_double_double(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_DOUBLEEXTENDED:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_doubleextended(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_ERF:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_erf(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_ERFC:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_erfc(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_EXP:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_exp(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_EXP_M1:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_expm1(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_FLOOR:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_floor(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_FREE_VARIABLE:
+    res = sollya_lib_build_function_free_variable();
+    break;
+  case SOLLYA_BASE_FUNC_HALFPRECISION:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_halfprecision(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_LOG:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_log(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_LOG_10:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_log10(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_LOG_1P:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_log1p(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_LOG_2:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_log2(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_MUL:
+    arg1 = va_arg(varlist,node *);
+    arg2 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_mul(arg1,arg2);
+    break;
+  case SOLLYA_BASE_FUNC_NEARESTINT:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_nearestint(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_NEG:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_neg(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_PI:
+    res = sollya_lib_build_function_pi();
+    break;
+  case SOLLYA_BASE_FUNC_POW:
+    arg1 = va_arg(varlist,node *);
+    arg2 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_pow(arg1,arg2);
+    break;
+  case SOLLYA_BASE_FUNC_QUAD:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_quad(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_SIN:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_sin(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_SINGLE:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_single(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_SINH:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_sinh(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_SQRT:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_sqrt(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_SUB:
+    arg1 = va_arg(varlist,node *);
+    arg2 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_sub(arg1,arg2);
+    break;
+  case SOLLYA_BASE_FUNC_TAN:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_tan(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_TANH:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_tanh(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_TRIPLEDOUBLE:
+    arg1 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_triple_double(arg1);
+    break;
+  case SOLLYA_BASE_FUNC_LIBRARYCONSTANT:
+    str = va_arg(varlist,char *);
+    libConst = va_arg(varlist,void (*)(mpfr_t, mp_prec_t));
+    res = sollya_lib_build_function_libraryconstant(str, libConst);
+    break;
+  case SOLLYA_BASE_FUNC_LIBRARYFUNCTION:
+    str = va_arg(varlist,char *);
+    libFunc = va_arg(varlist,int (*)(mpfi_t, mpfi_t, int));
+    arg2 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_libraryfunction(str, libFunc, arg2);
+    break;
+  case SOLLYA_BASE_FUNC_PROCEDUREFUNCTION:
+    arg1 = va_arg(varlist,node *);
+    arg2 = va_arg(varlist,node *);
+    res = sollya_lib_build_function_procedurefunction(arg1, arg2);
+    break;
+  }
+
+  va_end(varlist);
+
+  return res;
+}

@@ -305,6 +305,8 @@ extern "C" {
   void sollya_lib_v_suppressmessage(sollya_obj_t, va_list);
   void sollya_lib_unsuppressmessage(sollya_obj_t, ...);
   void sollya_lib_v_unsuppressmessage(sollya_obj_t, va_list);
+  void sollya_lib_implementconstant(sollya_obj_t, ...);
+  void sollya_lib_v_implementconstant(sollya_obj_t, va_list);
   void sollya_lib_set_prec_and_print(sollya_obj_t);
   void sollya_lib_set_points_and_print(sollya_obj_t);
   void sollya_lib_set_diam_and_print(sollya_obj_t);
@@ -312,6 +314,7 @@ extern "C" {
   void sollya_lib_set_verbosity_and_print(sollya_obj_t);
   void sollya_lib_set_canonical_and_print(sollya_obj_t);
   void sollya_lib_set_autosimplify_and_print(sollya_obj_t);
+  void sollya_lib_set_fullparentheses_and_print(sollya_obj_t);
   void sollya_lib_set_showmessagenumbers_and_print(sollya_obj_t);
   void sollya_lib_set_taylorrecursions_and_print(sollya_obj_t);
   void sollya_lib_set_timing_and_print(sollya_obj_t);
@@ -327,6 +330,7 @@ extern "C" {
   void sollya_lib_set_verbosity(sollya_obj_t);
   void sollya_lib_set_canonical(sollya_obj_t);
   void sollya_lib_set_autosimplify(sollya_obj_t);
+  void sollya_lib_set_fullparentheses(sollya_obj_t);
   void sollya_lib_set_showmessagenumbers(sollya_obj_t);
   void sollya_lib_set_taylorrecursions(sollya_obj_t);
   void sollya_lib_set_timing(sollya_obj_t);
@@ -383,6 +387,7 @@ extern "C" {
   sollya_obj_t sollya_lib_taylor(sollya_obj_t, sollya_obj_t, sollya_obj_t);
   sollya_obj_t sollya_lib_taylorform(sollya_obj_t, sollya_obj_t, sollya_obj_t, ...);
   sollya_obj_t sollya_lib_v_taylorform(sollya_obj_t, sollya_obj_t, sollya_obj_t, va_list);
+  sollya_obj_t sollya_lib_chebyshevform(sollya_obj_t, sollya_obj_t, sollya_obj_t);
   sollya_obj_t sollya_lib_autodiff(sollya_obj_t, sollya_obj_t, sollya_obj_t);
   sollya_obj_t sollya_lib_degree(sollya_obj_t);
   sollya_obj_t sollya_lib_numerator(sollya_obj_t);
@@ -462,6 +467,7 @@ extern "C" {
   sollya_obj_t sollya_lib_get_verbosity();
   sollya_obj_t sollya_lib_get_canonical();
   sollya_obj_t sollya_lib_get_autosimplify();
+  sollya_obj_t sollya_lib_get_fullparentheses();
   sollya_obj_t sollya_lib_get_showmessagenumbers();
   sollya_obj_t sollya_lib_get_taylorrecursions();
   sollya_obj_t sollya_lib_get_timing();
@@ -547,6 +553,7 @@ extern "C" {
   sollya_obj_t sollya_lib_list(sollya_obj_t[], int);
   sollya_obj_t sollya_lib_end_elliptic_list(sollya_obj_t[], int);
   int sollya_lib_get_list_elements(sollya_obj_t **, int *, int *, sollya_obj_t);
+  int sollya_lib_get_element_in_list(sollya_obj_t *, sollya_obj_t, int);
 
   /* Functions to check if a Sollya object represents a mathematical
      function, a list, an end-elliptic list, a range, a string, a
@@ -773,6 +780,9 @@ extern "C" {
   sollya_obj_t sollya_lib_build_function_acosh(sollya_obj_t);
   sollya_obj_t sollya_lib_build_function_atanh(sollya_obj_t);
   sollya_obj_t sollya_lib_build_function_pi();
+  sollya_obj_t sollya_lib_build_function_libraryconstant(char *, void (*)(mpfr_t, mp_prec_t));
+  sollya_obj_t sollya_lib_build_function_libraryfunction(char *, int (*)(mpfi_t, mpfi_t, int), sollya_obj_t);
+  sollya_obj_t sollya_lib_build_function_procedurefunction(sollya_obj_t, sollya_obj_t);
 
   /* Macros provided as shortcuts to functions sollya_lib_build_function_* */
 #define SOLLYA_X_ sollya_lib_build_function_free_variable()

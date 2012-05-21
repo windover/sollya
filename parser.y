@@ -4580,6 +4580,7 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- by\n");
 			    sollyaPrintf("- canonical\n");
 			    sollyaPrintf("- ceil\n");
+			    sollyaPrintf("- chebyshevform\n");
 			    sollyaPrintf("- checkinfnorm\n");
 			    sollyaPrintf("- coeff\n");
 			    sollyaPrintf("- constant\n");
