@@ -696,10 +696,15 @@ int sollya_mpfi_sub(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
 
 int sollya_mpfi_sub_fr(sollya_mpfi_t rop, sollya_mpfi_t op1, mpfr_t op2) {
   int res;
+  mpfi_t tmp;
  
   if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop); 
 
-  res = mpfi_sub_fr(rop,op1,op2); sollya_mpfi_nan_normalize(rop);
+  mpfi_init2(tmp, mpfr_get_prec(op2));
+  mpfi_set_fr(tmp, op2); /* exact */
+  res = mpfi_sub(rop,op1,tmp);
+  mpfi_clear(tmp);
+  sollya_mpfi_nan_normalize(rop);
 
   return res;
 }
