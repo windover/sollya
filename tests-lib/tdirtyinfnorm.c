@@ -20,8 +20,20 @@ int callback(sollya_msg_t msg) {
   return 0;
 }
 
+int boolean_not_eq(sollya_obj_t a, sollya_obj_t b) {
+  sollya_obj_t tmp;
+  int res;
+
+  tmp = sollya_lib_cmp_not_equal(a,b);
+  res = sollya_lib_is_true(tmp);
+  sollya_lib_clear_obj(tmp);
+  return res;
+}
+
+
 int main(void) {
   sollya_obj_t a[NB_OF_TESTS], b[NB_OF_TESTS], c[NB_OF_TESTS];
+  sollya_obj_t vold32, vold64, vsvn;
   int i;
 
   sollya_lib_init();
@@ -60,11 +72,21 @@ int main(void) {
   a[10] = sollya_lib_parse_string("(-5 * x^2 + 5) * cos(x * 10000)");
   b[10] = sollya_lib_parse_string("[-1;1]");
 
-
-  for (i=0;i<NB_OF_TESTS;i++) {
+  for (i=0;i<NB_OF_TESTS-1;i++) {
     c[i] = sollya_lib_dirtyinfnorm(a[i],b[i]);
     sollya_lib_printf("The supremum norm of %b over %b gets approximated with dirtyinfnorm by %b\n",a[i],b[i],c[i]);
   }
+
+  c[10] = sollya_lib_dirtyinfnorm(a[10],b[10]);
+  vold32 = sollya_lib_parse_string("29227078620752385174690861915460872239107789574239b-162");
+  vold64 = sollya_lib_parse_string("29227078620752385174690861915460872239107789574239b-162");
+  vsvn = sollya_lib_parse_string("29211104992902755825848922629443447049332431007237b-162");
+  if (boolean_not_eq(c[10], vsvn) && boolean_not_eq(c[10], vold32) && boolean_not_eq(c[10], vold64))
+    sollya_lib_printf("%b\n", c[10]);
+  else sollya_lib_printf("Check that mpfr_urandom has the expected behavior (either one of the old 32-bit or 64-bit behavior), or the new one. OK\n");
+  sollya_lib_clear_obj(vsvn);
+  sollya_lib_clear_obj(vold32);
+  sollya_lib_clear_obj(vold64);
 
   for (i=0;i<NB_OF_TESTS;i++) {
     sollya_lib_clear_obj(a[i]);
