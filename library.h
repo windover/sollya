@@ -1,6 +1,6 @@
 /*
 
-Copyright 2007-2011 by 
+Copyright 2007-2012 by 
 
 Laboratoire de l'Informatique du Parallelisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
@@ -113,5 +113,7 @@ libraryProcedure *getProcedure(char *procedureName);
 void freeFunctionLibraries();
 void freeConstantLibraries();
 void freeProcLibraries();
+libraryFunction *bindFunctionByPtr(char *suggestedName, int (*func)(mpfi_t, mpfi_t, int));
+libraryFunction *bindConstantFunctionByPtr(char *suggestedName, void (*func)(mpfr_t, mp_prec_t));
 
 #endif /* ifdef LIBRARY_H*/

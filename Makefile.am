@@ -77,6 +77,8 @@ taylorform.c \
 taylorform.h \
 chebyshevform.c \
 chebyshevform.h \
+chebyshevformaux.c \
+chebyshevformaux.h \
 supnorm.c \
 supnorm.h \
 sturm.c \
@@ -151,6 +153,8 @@ taylorform.c \
 taylorform.h \
 chebyshevform.c \
 chebyshevform.h \
+chebyshevformaux.c \
+chebyshevformaux.h \
 supnorm.c \
 supnorm.h \
 sturm.c \

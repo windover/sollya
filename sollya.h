@@ -511,6 +511,9 @@ extern "C" {
   sollya_obj_t sollya_lib_double_double_obj();
   sollya_obj_t sollya_lib_triple_double_obj();
   sollya_obj_t sollya_lib_pi();
+  sollya_obj_t sollya_lib_libraryconstant(char *, void (*)(mpfr_t, mp_prec_t));
+  sollya_obj_t sollya_lib_libraryfunction(sollya_obj_t, char *, int (*)(mpfi_t, mpfi_t, int));
+  sollya_obj_t sollya_lib_procedurefunction(sollya_obj_t, sollya_obj_t);
 
   /* A function to parse expressions and evaluate them */
   sollya_obj_t sollya_lib_parse_string(const char *);
@@ -781,7 +784,7 @@ extern "C" {
   sollya_obj_t sollya_lib_build_function_atanh(sollya_obj_t);
   sollya_obj_t sollya_lib_build_function_pi();
   sollya_obj_t sollya_lib_build_function_libraryconstant(char *, void (*)(mpfr_t, mp_prec_t));
-  sollya_obj_t sollya_lib_build_function_libraryfunction(char *, int (*)(mpfi_t, mpfi_t, int), sollya_obj_t);
+  sollya_obj_t sollya_lib_build_function_libraryfunction(sollya_obj_t, char *, int (*)(mpfi_t, mpfi_t, int));
   sollya_obj_t sollya_lib_build_function_procedurefunction(sollya_obj_t, sollya_obj_t);
 
   /* Macros provided as shortcuts to functions sollya_lib_build_function_* */

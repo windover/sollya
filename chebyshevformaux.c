@@ -53,7 +53,8 @@
   implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#include  "chebModelsAux.h"
+#include "chebyshevformaux.h"
+#include "general.h"
 /*This file contains auxiliary functions for constructing 
                  Chebyshev Models/forms
 */
@@ -63,6 +64,7 @@ if c constant after simplification-> ok
 if not sets the value to 0
 */
 
+/* Remark by Christoph: what about using evaluateConstantExpressionToInterval ? */
 int mpfi_set_node( sollya_mpfi_t r, node * c,  mp_prec_t prec) {
   sollya_mpfi_t rr;
   sollya_mpfi_t *rrr;
@@ -85,14 +87,14 @@ int mpfi_set_node( sollya_mpfi_t r, node * c,  mp_prec_t prec) {
       default:  auto_diff(rrr,c,dummy,0); sollya_mpfi_set(rr, *rrr);
       break;
       }
-    free(cc);
+    free_memory(cc); 
   }
   else sollya_mpfi_set_ui(rr,0);
   sollya_mpfi_set(r,rr);
   sollya_mpfi_clear(rr);
   sollya_mpfi_clear(dummy);
   sollya_mpfi_clear(*rrr);
-  free(rrr);
+  safeFree(rrr);
   return 0;
 }
 
@@ -286,7 +288,7 @@ sollya_mpfi_clear(temp);
 for (i=0;i<n;i++){
   sollya_mpfi_clear(chebPoints[i]);
   }
-free(chebPoints);
+safeFree(chebPoints);
 }
 
 /* Returns a matrix chebCoeffsMatrix of dimension nxn,
@@ -356,12 +358,12 @@ int i,j;
   for (i=0;i<n;i++){
     sollya_mpfi_clear(pAux[i]);
   }
-  free(pAux);
+  safeFree(pAux);
   
   for (i=0;i<n*n;i++){
     mpz_clear(chebMatrix[i]);
   }
-  free(chebMatrix);
+  safeFree(chebMatrix);
   
   sollya_mpfi_clear(temp);
 }
@@ -410,7 +412,7 @@ int i;
   for (i=0;i<n;i++){
     sollya_mpfi_clear(pAux[i]);
   }
-  free(pAux);
+  safeFree(pAux);
   
   sollya_mpfi_clear(temp);
   sollya_mpfi_clear(pow);
@@ -487,7 +489,7 @@ fValues=safeMalloc((n+1)*sizeof(sollya_mpfi_t));
 for (i=0;i<=n;i++){
   sollya_mpfi_clear(fValues[i]);
   }
-free(fValues);
+safeFree(fValues);
 
 }
 
@@ -522,7 +524,7 @@ void getChebCoeffsFromPolynomial(sollya_mpfi_t**coeffs, int *n, node *f, sollya_
     if (coefficients[i] != NULL) 
       free_memory(coefficients[i]);
     }
-    free(coefficients);
+    safeFree(coefficients);
     
     /*Here we have the coeffs of the polynomial in p, over the interval x=[a,b]*/
     /*we need to compute the polynomial over [-1,1]*/
@@ -560,8 +562,8 @@ void getChebCoeffsFromPolynomial(sollya_mpfi_t**coeffs, int *n, node *f, sollya_
       sollya_mpfi_clear(p[i]);
       sollya_mpfi_clear(c[i]);
     }
-    free(p);
-    free(c);
+    safeFree(p);
+    safeFree(c);
     
     sollya_mpfi_clear(ui);
     sollya_mpfi_clear(vi);
@@ -657,12 +659,12 @@ void getCoeffsFromChebPolynomial(sollya_mpfi_t**coeffs, sollya_mpfi_t *chebCoeff
     for (i=0;i<n*n;i++){
       mpz_clear(chebMatrix[i]);
     }
-    free(chebMatrix);
+    safeFree(chebMatrix);
     
     for (i=0;i<n;i++){
       sollya_mpfi_clear(c[i]);
     }
-    free(c);
+    safeFree(c);
 
 }
   
@@ -706,15 +708,15 @@ void getNChebCoeffsFromPolynomial(sollya_mpfi_t *coeffs, sollya_mpfi_t bound, no
        /*cleaning r*/
        for(i=0; i < d; i++)
          sollya_mpfi_clear(r[i]);
-       free(r);  
+       safeFree(r);  
   }
   
   /*cleaning*/
   for (i=0;i<d;i++){
       sollya_mpfi_clear((*c)[i]);
   }
-  free(*c);
-  free(c);
+  safeFree(*c);
+  safeFree(c);
   
 }
 
@@ -794,7 +796,7 @@ void getChebCoeffsDerivativePolynomial(sollya_mpfi_t*coeffs, sollya_mpfi_t *cheb
     for (i=0;i<n-1;i++){
       sollya_mpfi_clear(c[i]);
     }
-    free(c);
+    safeFree(c);
     sollya_mpfi_clear(z1);
     sollya_mpfi_clear(z2);
     sollya_mpfi_clear(ui);
@@ -881,7 +883,7 @@ void getChebCoeffsIntegrationPolynomial(sollya_mpfi_t*coeffs, sollya_mpfi_t *che
     for (i=0;i<n+1;i++){
       sollya_mpfi_clear(c[i]);
     }
-    free(c);
+    safeFree(c);
     sollya_mpfi_clear(z1);
     sollya_mpfi_clear(z2);
     sollya_mpfi_clear(ui);

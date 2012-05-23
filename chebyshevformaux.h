@@ -1,5 +1,5 @@
 /*
-  Copyright 2011-2013 by 
+  Copyright 2011-2012 by 
   
   Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
   Sophia Antipolis, France.
@@ -52,7 +52,15 @@
   This program is distributed WITHOUT ANY WARRANTY; without even the
   implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
-//#include "sollya.h"
+
+#ifndef CHEBYSHEVFORMAUX_H
+#define CHEBYSHEVFORMAUX_H
+
+#include <gmp.h>
+#include <mpfr.h>
+#include "mpfi-compat.h"
+#include "expression.h"
+
 /*This file contains headers of functions in chebModelsAux.c
   i.e. of auxiliary functions for constructing Chebyshev Models/forms*/
 
@@ -169,3 +177,4 @@ void chebPolynomialBound(sollya_mpfi_t bound, int n, sollya_mpfi_t *coeffs, int 
 void evaluateChebPolynomialClenshaw(sollya_mpfi_t bound, int n, sollya_mpfi_t *coeffs, mpfi_t x,mpfi_t x0);
 
 
+#endif /* CHEBYSHEVFORMAUX_H */

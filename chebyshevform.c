@@ -1,5 +1,5 @@
 /*
- Copyright 2012 by 
+  Copyright 2012 by 
   
   Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
   Sophia Antipolis, France.
@@ -54,14 +54,13 @@
 */
 
 
-
-#include "external.h"
 #include "infnorm.h"
 #include "autodiff.h"
 #include "general.h"
+#include <mpfr.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "chebModelsAux.c"
+#include "chebyshevformaux.h"
 #include "chebyshevform.h"
 #include "taylorform.h"
 
@@ -170,15 +169,15 @@ return t;
 void clearcModelLight(chebModel *t){
   int i;
   for(i=0;i<t->n;i++) sollya_mpfi_clear(t->poly_array[i]);
-  free(t->poly_array);
+  safeFree(t->poly_array);
     
   sollya_mpfi_clear(t->rem_bound);
   sollya_mpfi_clear(t->poly_bound);  
    
   sollya_mpfi_clear(t->x);
-  free(t->cheb_matrix);
-  free(t->cheb_array);
-  free(t);
+  safeFree(t->cheb_matrix);
+  safeFree(t->cheb_array);
+  safeFree(t);
 }
 
 /*This function dealocates a cheb model, distroying
@@ -187,20 +186,20 @@ void clearcModelLight(chebModel *t){
 void clearcModelComplete(chebModel *t){
   int i;
   for(i=0;i<t->n;i++) sollya_mpfi_clear(t->poly_array[i]);
-  free(t->poly_array);
+  safeFree(t->poly_array);
     
   sollya_mpfi_clear(t->rem_bound);
   sollya_mpfi_clear(t->poly_bound);  
    
   sollya_mpfi_clear(t->x);
   for(i=0;i<t->n;i++) sollya_mpfi_clear((*(t->cheb_array))[i]);
-  free(*(t->cheb_array));
-  free(t->cheb_array);
+  safeFree(*(t->cheb_array));
+  safeFree(t->cheb_array);
   
   for(i=0;i<(t->n)* (t->n);i++) sollya_mpfi_clear((*(t->cheb_matrix))[i]);
-  free(*(t->cheb_matrix));
-  free(t->cheb_matrix);
-  free(t);
+  safeFree(*(t->cheb_matrix));
+  safeFree(t->cheb_matrix);
+  safeFree(t);
 }
 
 
@@ -415,7 +414,7 @@ void  multiplication_CM(chebModel *t,chebModel *c1, chebModel *c2, int boundLeve
   sollya_mpfi_add(tt->rem_bound, tt->rem_bound,temp1);
   
   for(i=0;i<2*n-1;i++) { sollya_mpfi_clear(r[i]);}
-  free(r); 
+  safeFree(r); 
   
   sollya_mpfi_clear(temp1);
   sollya_mpfi_clear(temp2);
@@ -774,12 +773,12 @@ void base_CMAux(chebModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t 
   clearcModelLight(tt);
   
   for(i=0;i<=n+1;i++)  sollya_mpfi_clear(nDeriv[i]);
-  free(nDeriv);  
+  safeFree(nDeriv);  
   
   for(i=0;i<n;i++){
     sollya_mpfi_clear(fValues[i]);
   }
-  free(fValues);
+  safeFree(fValues);
 }
 
 /*This function computes a chebyshevform of order n, over x, for a function f;
@@ -1345,12 +1344,12 @@ void chebyshevform(node **Ch, chain **errors, sollya_mpfi_t delta,
     sollya_mpfi_clear((*monomialCoeffs)[i]);
   }
   sollya_mpfi_clear(zero);
-  free(coeffsMpfr);
-  free(coeffsErrors);
-  free(chebCoeffs);
-  free(*monomialCoeffs);
-  free(monomialCoeffs);
+  safeFree(coeffsMpfr);
+  safeFree(coeffsErrors);
+  safeFree(chebCoeffs);
+  safeFree(*monomialCoeffs);
+  safeFree(monomialCoeffs);
   clearcModelComplete(t);
   sollya_mpfi_clear(*rest);
-  free(rest);
+  safeFree(rest);
 }

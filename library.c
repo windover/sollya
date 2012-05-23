@@ -159,7 +159,7 @@ char *getBaseFunctionName(void *func) {
 #endif
   funcName = (char *) safeCalloc(strlen(myFuncName)+1,sizeof(char));
   strcpy(funcName, myFuncName);
-  free(myFuncName);
+  safeFree(myFuncName);
   return funcName;
 }
 
@@ -181,7 +181,7 @@ char *unifySymbolName(char *basename) {
   str = NULL;
   do {
     if (str != NULL) {
-      free(str);
+      safeFree(str);
       str = NULL;
     }
     str = (char *) safeCalloc(lenbasename + 1 + 8 * sizeof(uint64_t) + 1, sizeof(char));
@@ -195,7 +195,7 @@ char *unifySymbolName(char *basename) {
   
   res = safeCalloc(strlen(str)+1,sizeof(char));
   strcpy(res, str);
-  free(str);
+  safeFree(str);
 
   return res;
 }
@@ -357,6 +357,30 @@ libraryFunction *getFunctionByPtr(int (*func)(mpfi_t, mpfi_t, int)) {
   return NULL;
 }
 
+libraryFunction *bindFunctionByPtr(char *suggestedName, int (*func)(mpfi_t, mpfi_t, int)) {
+  libraryFunction *res;
+  char *unifiedName, *basename;
+
+  res = getFunctionByPtr(func);
+  if (res != NULL) return res;
+
+  if (suggestedName != NULL) {
+    unifiedName = unifySymbolName(suggestedName);
+  } else {
+    basename = getBaseFunctionName(func);
+    unifiedName = unifySymbolName(basename);
+    safeFree(basename);
+  }
+
+  res = (libraryFunction *) safeMalloc(sizeof(libraryFunction));
+  res->functionName = unifiedName;
+  res->code = func;
+  
+  globalLibraryFunctions = addElement(globalLibraryFunctions, res);
+
+  return res;
+}
+
 void freeFunctionLibraries() {
   chain *currLibList, *currFunList, *prevFunList, *prevLibList;
   libraryFunction *currFunct;
@@ -492,6 +516,30 @@ libraryFunction *getConstantFunctionByPtr(void (*func)(mpfr_t, mp_prec_t)) {
   }
 
   return NULL;
+}
+
+libraryFunction *bindConstantFunctionByPtr(char *suggestedName, void (*func)(mpfr_t, mp_prec_t)) {
+  libraryFunction *res;
+  char *unifiedName, *basename;
+
+  res = getConstantFunctionByPtr(func);
+  if (res != NULL) return res;
+
+  if (suggestedName != NULL) {
+    unifiedName = unifySymbolName(suggestedName);
+  } else {
+    basename = getBaseFunctionName(func);
+    unifiedName = unifySymbolName(basename);
+    safeFree(basename);
+  }
+
+  res = (libraryFunction *) safeMalloc(sizeof(libraryFunction));
+  res->functionName = unifiedName;
+  res->constant_code = func;
+  
+  globalLibraryConstants = addElement(globalLibraryConstants, res);
+
+  return res;
 }
 
 void freeConstantLibraries() {

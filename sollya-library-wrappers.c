@@ -1642,6 +1642,30 @@ sollya_obj_t sollya_lib_nearestint(sollya_obj_t obj1) {
   return evaluatedThing;
 }
 
+sollya_obj_t sollya_lib_libraryconstant(char *name, void (*func)(mpfr_t, mp_prec_t)) {
+  node *thingToEvaluate, *evaluatedThing;
+  thingToEvaluate = sollya_lib_build_function_libraryconstant(name, func);
+  evaluatedThing = evaluateThing(thingToEvaluate);
+  freeThing(thingToEvaluate);
+  return evaluatedThing;
+}
+
+sollya_obj_t sollya_lib_libraryfunction(sollya_obj_t obj1, char *name, int (*func)(mpfi_t, mpfi_t, int)) {
+  node *thingToEvaluate, *evaluatedThing;
+  thingToEvaluate = sollya_lib_build_function_libraryfunction(copyThing(obj1),name,func);
+  evaluatedThing = evaluateThing(thingToEvaluate);
+  freeThing(thingToEvaluate);
+  return evaluatedThing;
+}
+
+sollya_obj_t sollya_lib_procedurefunction(sollya_obj_t obj1, sollya_obj_t obj2) {
+  node *thingToEvaluate, *evaluatedThing;
+  thingToEvaluate = sollya_lib_build_function_procedurefunction(copyThing(obj1), copyThing(obj2));
+  evaluatedThing = evaluateThing(thingToEvaluate);
+  freeThing(thingToEvaluate);
+  return evaluatedThing;
+}
+
 sollya_obj_t sollya_lib_length(sollya_obj_t obj1) {
   node *thingToEvaluate, *evaluatedThing;
   thingToEvaluate = makeLength(copyThing(obj1));
@@ -3014,16 +3038,39 @@ int sollya_lib_v_get_subfunctions(sollya_obj_t obj1, int *ari, va_list varlist) 
   if (ari != NULL) {
     *ari = funcArity;
   }
+  switch (obj1->nodeType) {
+  case LIBRARYCONSTANT:
+    funcArity = 1;
+    break;
+  case LIBRARYFUNCTION:
+    funcArity = 2;
+    break;
+  case PROCEDUREFUNCTION:
+    funcArity = 2;
+    break;    
+  }
   i = 1;
   while ((elem = va_arg(varlist,sollya_obj_t *)) != NULL) {
     if (i <= funcArity) {
       gottaBreak = 0;
       switch (i) {
       case 1:
-        *elem = copyThing(obj1->child1);
+	if (obj1->nodeType == LIBRARYCONSTANT) {
+	  *elem = copyThing(obj1);
+	} else {
+	  *elem = copyThing(obj1->child1);
+	}
         break;
       case 2:
-        *elem = copyThing(obj1->child2);
+	if (obj1->nodeType == LIBRARYFUNCTION) {
+	  *elem = (node *) safeMalloc(sizeof(node));
+	  (*elem)->nodeType = LIBRARYFUNCTION;
+	  (*elem)->libFun = obj1->libFun;
+	  (*elem)->libFunDeriv = obj1->libFunDeriv;
+	  (*elem)->child1 = makeVariable();
+	} else {
+	  *elem = copyThing(obj1->child1);
+	}
         break;
       default:
         gottaBreak = 1;
@@ -3197,12 +3244,15 @@ int sollya_lib_v_decompose_function(sollya_obj_t obj1, sollya_base_function_t *b
     *ari = funcArity;
   }
   switch (obj1->nodeType) {
-  case LIBRARYFUNCTION:
+  case LIBRARYCONSTANT:
     funcArity = 1;
+    break;
+  case LIBRARYFUNCTION:
+    funcArity = 2;
     break;
   case PROCEDUREFUNCTION:
     funcArity = 2;
-    break;
+    break;    
   }
   i = 1;
   while ((elem = va_arg(varlist,sollya_obj_t *)) != NULL) {
@@ -3210,10 +3260,22 @@ int sollya_lib_v_decompose_function(sollya_obj_t obj1, sollya_base_function_t *b
       gottaBreak = 0;
       switch (i) {
       case 1:
-        *elem = copyThing(obj1->child1);
+	if (obj1->nodeType == LIBRARYCONSTANT) {
+	  *elem = copyThing(obj1);
+	} else {
+	  *elem = copyThing(obj1->child1);
+	}
         break;
       case 2:
-        *elem = copyThing(obj1->child2);
+	if (obj1->nodeType == LIBRARYFUNCTION) {
+	  *elem = (node *) safeMalloc(sizeof(node));
+	  (*elem)->nodeType = LIBRARYFUNCTION;
+	  (*elem)->libFun = obj1->libFun;
+	  (*elem)->libFunDeriv = obj1->libFunDeriv;
+	  (*elem)->child1 = makeVariable();
+	} else {
+	  *elem = copyThing(obj1->child1);
+	}
         break;
       default:
         gottaBreak = 1;
@@ -3225,8 +3287,6 @@ int sollya_lib_v_decompose_function(sollya_obj_t obj1, sollya_base_function_t *b
     }
     i++;
   }
-
-  // TODO LIBRARYFUNCTIONS 
 
   return 1;
 }
@@ -4308,11 +4368,29 @@ sollya_obj_t sollya_lib_build_function_pi() {
 }
 
 sollya_obj_t sollya_lib_build_function_libraryconstant(char *name, void (*func)(mpfr_t, mp_prec_t)) {
-  return NULL; // TODO
+  libraryFunction *libFunc;
+  node *res;
+
+  libFunc = bindConstantFunctionByPtr(name, func);
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = LIBRARYCONSTANT;
+  res->libFun = libFunc;
+
+  return res;
 }
 
-sollya_obj_t sollya_lib_build_function_libraryfunction(char *name, int (*func)(mpfi_t, mpfi_t, int), sollya_obj_t obj1) {
-  return NULL; // TODO
+sollya_obj_t sollya_lib_build_function_libraryfunction(sollya_obj_t obj1, char *name, int (*func)(mpfi_t, mpfi_t, int)) {
+  libraryFunction *libFunc;
+  node *res;
+
+  libFunc = bindFunctionByPtr(name, func);
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = LIBRARYFUNCTION;
+  res->libFun = libFunc;
+  res->libFunDeriv = 0;
+  res->child1 = obj1;
+
+  return res;
 }
 
 sollya_obj_t sollya_lib_build_function_procedurefunction(sollya_obj_t obj1, sollya_obj_t obj2) {
@@ -4509,10 +4587,10 @@ sollya_obj_t sollya_lib_build_function(sollya_base_function_t func, ...) {
     res = sollya_lib_build_function_libraryconstant(str, libConst);
     break;
   case SOLLYA_BASE_FUNC_LIBRARYFUNCTION:
+    arg1 = va_arg(varlist,node *);
     str = va_arg(varlist,char *);
     libFunc = va_arg(varlist,int (*)(mpfi_t, mpfi_t, int));
-    arg2 = va_arg(varlist,node *);
-    res = sollya_lib_build_function_libraryfunction(str, libFunc, arg2);
+    res = sollya_lib_build_function_libraryfunction(arg1, str, libFunc);
     break;
   case SOLLYA_BASE_FUNC_PROCEDUREFUNCTION:
     arg1 = va_arg(varlist,node *);

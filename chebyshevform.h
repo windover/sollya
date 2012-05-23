@@ -1,5 +1,5 @@
 /*
-Copyright 2011-2012 by 
+  Copyright 2011-2012 by 
   
   Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
   Sophia Antipolis, France.
@@ -60,7 +60,7 @@ Copyright 2011-2012 by
 
 #include "expression.h"
 #include "chain.h"
-#include "chebModelsAux.h"
+#include "chebyshevformaux.h"
 /*Cheb model (CM, cm) structure:
 n - order: polynomial of degree n-1, remainder of order O(x^n)
 x - interval on which the cm is computed
