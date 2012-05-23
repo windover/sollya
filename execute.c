@@ -6662,6 +6662,17 @@ int setMessageSuppressionState(int msgNum, int state) {
   return 1;
 }
 
+int symbolNameAlreadyUsed(char *basename) {
+
+  if ((variablename != NULL) && (strcmp(variablename,basename) == 0)) return 1;
+  if (containsEntry(symbolTable, basename) || containsDeclaredEntry(declaredSymbolTable, basename)) return 1;
+  if (getProcedure(basename) != NULL) return 1;
+  if (getFunction(basename) != NULL) return 1;
+  if (getConstantFunction(basename) != NULL) return 1;
+
+  return 0;
+}
+
 int executeCommandInner(node *tree) {
   int result, res, intTemp, resA, resB, resC, resD, resE, resF, resG, defaultVal, i;  
   chain *curr, *tempList, *tempList2, *tempChain, *tempChain2; 

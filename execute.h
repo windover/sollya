@@ -566,6 +566,6 @@ int isMatchableStructure(node *tree);
 int associationContainsDoubleEntries(chain *assoc);
 node *evaluateThing(node *tree);
 int isString(node *);
-
+int symbolNameAlreadyUsed(char *);
 
 #endif /* ifdef EXECUTE_H*/

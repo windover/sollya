@@ -1,6 +1,6 @@
 /*
 
-Copyright 2007-2011 by 
+Copyright 2007-2012 by 
 
 Laboratoire de l'Informatique du Parallelisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
@@ -55,6 +55,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -72,6 +73,18 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #define RTLD_LOCAL 0
 #endif
 
+
+#if (defined(HAVE_DLADDR) && (HAVE_DLADDR))
+typedef struct {
+  const char *dli_fname;
+  void       *dli_fbase;                          
+  const char *dli_sname;                          
+  void       *dli_saddr;                          
+} Dl_info;
+
+#endif
+
+
 #define LIBRARYFUNCTION_CASE 0
 #define LIBRARYCONSTANT_CASE 1
 #define LIBRARYPROC_CASE 2
@@ -79,6 +92,113 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 chain *openedFunctionLibraries = NULL;
 chain *openedConstantLibraries = NULL;
 chain *openedProcLibraries = NULL;
+
+chain *globalLibraryFunctions = NULL;
+chain *globalLibraryConstants = NULL;
+
+void copyIdentifierSymbols(char *ptr, const char *src) {
+  char *currPtr;
+  const char *currSrc;
+
+  currPtr = ptr;
+  currSrc = src;
+  if ((*currSrc == '\0') || 
+      ((*currSrc >= 'a') && (*currSrc <= 'z')) ||
+      ((*currSrc >= 'A') && (*currSrc <= 'Z')) ||
+      (*currSrc == '_') ||
+      (*currSrc == '$')) {
+    *currPtr = *currSrc;
+    currPtr++;
+  }
+  if (*currSrc == '\0') return;
+  currSrc++;
+  
+  while ((*currPtr = *currSrc) != '\0') {
+    if (((*currSrc >= 'a') && (*currSrc <= 'z')) ||
+	((*currSrc >= 'A') && (*currSrc <= 'Z')) ||
+	((*currSrc >= '0') && (*currSrc <= '9')) ||
+	(*currSrc == '_') ||
+	(*currSrc == '$')) {
+      currPtr++;
+    }
+    currSrc++;
+  }
+}
+
+char *getBaseFunctionName(void *func) {
+  char *myFuncName, *funcName;  
+#if (defined(HAVE_DLADDR) && (HAVE_DLADDR))
+  int errorOccurred;
+  Dl_info myInfo;
+  errorOccurred = 0;
+  if (dladdr(func, &myInfo) != 0) {
+    if ((myInfo.dli_sname != NULL) && (myInfo.dli_saddr != NULL)) {
+      if (myInfo.dli_saddr == func) {
+	if (strlen(myInfo.dli_sname) > 0) {
+	  myFuncName = (char *) safeCalloc(strlen(myInfo.dli_sname) + 1, sizeof(char));
+	  copyIdentifierSymbols(myFuncName, myInfo.dli_sname);
+	} else {
+	  errorOccurred = 1;
+	}
+      } else {
+	errorOccurred = 1;
+      }
+    } else {
+      errorOccurred = 1;
+    }
+  } else {
+    errorOccurred = 1;
+  }
+  if (errorOccurred) {
+    myFuncName = (char *) safeCalloc(strlen("func_") + 2 + 8 * sizeof(void *) + 1,sizeof(char));
+    sprintf(myFuncName, "func_%p", func);
+  }
+#else
+  myFuncName = (char *) safeCalloc(strlen("func_") + 2 + 8 * sizeof(void *) + 1,sizeof(char));
+  sprintf(myFuncName, "func_%p", func);
+#endif
+  funcName = (char *) safeCalloc(strlen(myFuncName)+1,sizeof(char));
+  strcpy(funcName, myFuncName);
+  free(myFuncName);
+  return funcName;
+}
+
+char *unifySymbolName(char *basename) {
+  char *res, *str;
+  uint64_t number;
+  int found;
+  size_t lenbasename;
+
+  if (!symbolNameAlreadyUsed(basename)) {
+    res = (char *) safeCalloc(strlen(basename)+1,sizeof(char));
+    strcpy(res, basename);
+    return res;
+  }
+
+  lenbasename = strlen(basename);
+  number = 0;
+  found = 0;
+  str = NULL;
+  do {
+    if (str != NULL) {
+      free(str);
+      str = NULL;
+    }
+    str = (char *) safeCalloc(lenbasename + 1 + 8 * sizeof(uint64_t) + 1, sizeof(char));
+    sprintf(str,"%s_%" PRIu64, basename, number);
+    if (!symbolNameAlreadyUsed(str)) {
+      found = 1;
+    } else {
+      number++;
+    }
+  } while (!found);
+  
+  res = safeCalloc(strlen(str)+1,sizeof(char));
+  strcpy(res, str);
+  free(str);
+
+  return res;
+}
 
 libraryHandle *getLibraryHandle(char *libraryName, int type) {
   chain *curr;
@@ -188,6 +308,12 @@ libraryFunction *getFunction(char *functionName) {
   libraryFunction *currFunct;
   libraryHandle *currLibHandle;
 
+  for (currFunList=globalLibraryFunctions;currFunList!=NULL;currFunList=currFunList->next) {
+    currFunct = (libraryFunction *) currFunList->value;
+    if (strcmp(currFunct->functionName,functionName) == 0)
+      return currFunct;
+  }
+
   currLibList = openedFunctionLibraries;
   while (currLibList != NULL) {
     currLibHandle = (libraryHandle *) currLibList->value;
@@ -204,10 +330,47 @@ libraryFunction *getFunction(char *functionName) {
   return NULL;
 }
 
+libraryFunction *getFunctionByPtr(int (*func)(mpfi_t, mpfi_t, int)) {
+  chain *currLibList, *currFunList;
+  libraryFunction *currFunct;
+  libraryHandle *currLibHandle;
+
+  for (currFunList=globalLibraryFunctions;currFunList!=NULL;currFunList=currFunList->next) {
+    currFunct = (libraryFunction *) currFunList->value;
+    if (currFunct->code == func)
+      return currFunct;
+  }
+
+  currLibList = openedFunctionLibraries;
+  while (currLibList != NULL) {
+    currLibHandle = (libraryHandle *) currLibList->value;
+    currFunList = currLibHandle->functionList;
+    while (currFunList != NULL) {
+      currFunct = (libraryFunction *) currFunList->value;
+      if (currFunct->code == func)
+        return currFunct;
+      currFunList = currFunList->next;
+    }
+    currLibList = currLibList->next;
+  }
+
+  return NULL;
+}
+
 void freeFunctionLibraries() {
   chain *currLibList, *currFunList, *prevFunList, *prevLibList;
   libraryFunction *currFunct;
   libraryHandle *currLibHandle;
+
+  currFunList = globalLibraryFunctions;
+  while (currFunList != NULL) {
+    currFunct = (libraryFunction *) currFunList->value;
+    safeFree(currFunct->functionName);
+    safeFree(currFunList->value);
+    prevFunList = currFunList;
+    currFunList = currFunList->next;
+    safeFree(prevFunList);
+  }
 
   currLibList = openedFunctionLibraries;
   while (currLibList != NULL) {
@@ -282,6 +445,12 @@ libraryFunction *getConstantFunction(char *functionName) {
   libraryFunction *currFunct;
   libraryHandle *currLibHandle;
 
+  for (currFunList=globalLibraryConstants;currFunList!=NULL;currFunList=currFunList->next) {
+    currFunct = (libraryFunction *) currFunList->value;
+    if (strcmp(currFunct->functionName,functionName) == 0)
+      return currFunct;
+  }
+
   currLibList = openedConstantLibraries;
   while (currLibList != NULL) {
     currLibHandle = (libraryHandle *) currLibList->value;
@@ -298,10 +467,47 @@ libraryFunction *getConstantFunction(char *functionName) {
   return NULL;
 }
 
+libraryFunction *getConstantFunctionByPtr(void (*func)(mpfr_t, mp_prec_t)) { 
+  chain *currLibList, *currFunList;
+  libraryFunction *currFunct;
+  libraryHandle *currLibHandle;
+
+  for (currFunList=globalLibraryConstants;currFunList!=NULL;currFunList=currFunList->next) {
+    currFunct = (libraryFunction *) currFunList->value;
+    if (currFunct->constant_code == func)
+      return currFunct;
+  }
+
+  currLibList = openedConstantLibraries;
+  while (currLibList != NULL) {
+    currLibHandle = (libraryHandle *) currLibList->value;
+    currFunList = currLibHandle->functionList;
+    while (currFunList != NULL) {
+      currFunct = (libraryFunction *) currFunList->value;
+      if (currFunct->constant_code == func)
+        return currFunct;
+      currFunList = currFunList->next;
+    }
+    currLibList = currLibList->next;
+  }
+
+  return NULL;
+}
+
 void freeConstantLibraries() {
   chain *currLibList, *currFunList, *prevFunList, *prevLibList;
   libraryFunction *currFunct;
   libraryHandle *currLibHandle;
+
+  currFunList = globalLibraryConstants;
+  while (currFunList != NULL) {
+    currFunct = (libraryFunction *) currFunList->value;
+    safeFree(currFunct->functionName);
+    safeFree(currFunList->value);
+    prevFunList = currFunList;
+    currFunList = currFunList->next;
+    safeFree(prevFunList);
+  }
 
   currLibList = openedConstantLibraries;
   while (currLibList != NULL) {

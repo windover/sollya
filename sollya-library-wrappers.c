@@ -3196,6 +3196,14 @@ int sollya_lib_v_decompose_function(sollya_obj_t obj1, sollya_base_function_t *b
   if (ari != NULL) {
     *ari = funcArity;
   }
+  switch (obj1->nodeType) {
+  case LIBRARYFUNCTION:
+    funcArity = 1;
+    break;
+  case PROCEDUREFUNCTION:
+    funcArity = 2;
+    break;
+  }
   i = 1;
   while ((elem = va_arg(varlist,sollya_obj_t *)) != NULL) {
     if (i <= funcArity) {
@@ -3217,6 +3225,9 @@ int sollya_lib_v_decompose_function(sollya_obj_t obj1, sollya_base_function_t *b
     }
     i++;
   }
+
+  // TODO LIBRARYFUNCTIONS 
+
   return 1;
 }
 
@@ -4305,7 +4316,13 @@ sollya_obj_t sollya_lib_build_function_libraryfunction(char *name, int (*func)(m
 }
 
 sollya_obj_t sollya_lib_build_function_procedurefunction(sollya_obj_t obj1, sollya_obj_t obj2) {
-  return NULL; // TODO
+  sollya_obj_t res;
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = PROCEDUREFUNCTION;
+  res->libFunDeriv = 0;
+  res->child1 = obj1;
+  res->child2 = obj2;
+  return res;
 }
 
 
