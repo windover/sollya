@@ -12479,7 +12479,7 @@ void freeThing(node *tree) {
     break; 			 	
   case CHEBYSHEVFORM:
     freeChain(tree->arguments, freeThingOnVoid);
-    free(tree);
+    safeFree(tree);
     break; 			 	
   case AUTODIFF:
     freeChain(tree->arguments, freeThingOnVoid);
