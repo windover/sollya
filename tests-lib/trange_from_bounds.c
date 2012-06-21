@@ -1,6 +1,6 @@
 #include <sollya.h>
 
-int callback(sollya_msg_t msg) {
+int callback(sollya_msg_t msg, void *data) {
   int message = sollya_lib_get_msg_id(msg);
   if (message==SOLLYA_MSG_RANGE_BOUNDS_IN_INVERSE_ORDER)
     sollya_lib_printf("Caught the message about bounds in inverse order.\n");
@@ -17,7 +17,7 @@ int main(void) {
   double nan;
 
   sollya_lib_init();
-  sollya_lib_install_msg_callback(callback);
+  sollya_lib_install_msg_callback(callback, NULL);
 
   tmp = sollya_lib_binary();
   sollya_lib_set_display(tmp);

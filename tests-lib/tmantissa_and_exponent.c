@@ -1,6 +1,6 @@
 #include <sollya.h>
 
-int callback(sollya_msg_t msg) {
+int callback(sollya_msg_t msg, void *data) {
   int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST:
@@ -18,7 +18,7 @@ int main(void) {
   int i;
 
   sollya_lib_init();
-  sollya_lib_install_msg_callback(callback);
+  sollya_lib_install_msg_callback(callback, NULL);
 
   a[0] = SOLLYA_PI;
   a[1] = SOLLYA_CONST(20.0);

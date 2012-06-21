@@ -12,7 +12,7 @@ int myFreeUsed = 0;
 int myReallocWithSizeUsed = 0;
 int myFreeWithSizeUsed = 0;
 
-int callback(sollya_msg_t msg) {
+int callback(sollya_msg_t msg, void *data) {
   int message = sollya_lib_get_msg_id(msg);
   return 0;
 }
@@ -72,7 +72,7 @@ int main(void) {
   myFreeWithSizeUsed = 0;
 
   sollya_lib_init_with_custom_memory_functions(myMalloc, myCalloc, myRealloc, myFree, myReallocWithSize, myFreeWithSize);
-  sollya_lib_install_msg_callback(callback);
+  sollya_lib_install_msg_callback(callback, NULL);
 
   /* Just do some stuff to use the memory functions */
 
@@ -164,7 +164,7 @@ int main(void) {
   myFreeWithSizeUsed = 0;
 
   sollya_lib_init_with_custom_memory_functions(myMalloc, myCalloc, myRealloc, myFree, NULL, NULL);
-  sollya_lib_install_msg_callback(callback);
+  sollya_lib_install_msg_callback(callback, NULL);
 
   /* Just do some stuff to use the memory functions */
 

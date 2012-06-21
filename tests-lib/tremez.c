@@ -10,12 +10,12 @@ int boolean_not_eq(sollya_obj_t a, sollya_obj_t b) {
   return res;
 }
 
-int callback(sollya_msg_t msg) {return 0;}
+int callback(sollya_msg_t msg, void *data) {return 0;}
 
 int main(void) {
   sollya_obj_t f, n, I, w, quality, p, res, pold32, pold64, psvn, prec;
   sollya_lib_init();
-  sollya_lib_install_msg_callback(callback);
+  sollya_lib_install_msg_callback(callback, NULL);
 
   /* This set of tests the problem mentioned in the commit message
      of revision 1270 */

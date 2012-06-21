@@ -2,7 +2,7 @@
 
 #define A_DIM 7
 
-int callback(sollya_msg_t msg) {
+int callback(sollya_msg_t msg, void *data) {
   int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST:
@@ -20,7 +20,7 @@ int main(void) {
   int i;
 
   sollya_lib_init();
-  sollya_lib_install_msg_callback(callback);
+  sollya_lib_install_msg_callback(callback, NULL);
 
   /* checkinfnorm(sin(x),[0;1.75], 1); */
   for (i=0;i<A_DIM;i++) {

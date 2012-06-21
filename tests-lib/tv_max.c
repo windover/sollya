@@ -11,7 +11,7 @@ sollya_obj_t stupid_wrapper(sollya_obj_t arg1, ...) {
 }
 
 
-int callback(sollya_msg_t msg) {
+int callback(sollya_msg_t msg, void *data) {
   int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_MAX_RELIES_ON_FP_RESULT_FAITHFUL_BUT_UNDECIDED:
@@ -38,7 +38,7 @@ int main(void) {
   int i;
 
   sollya_lib_init();
-  sollya_lib_install_msg_callback(callback);
+  sollya_lib_install_msg_callback(callback, NULL);
 
   /* Tests a simple maximum */
   a[0] = sollya_lib_constant_from_int(4);

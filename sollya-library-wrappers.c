@@ -121,15 +121,15 @@ int sollya_lib_close() {
   return finalizeLibraryMode();
 }
 
-int sollya_lib_install_msg_callback(int (*callback_func) (sollya_msg_t)) {
-  return installMessageCallback(callback_func);
+int sollya_lib_install_msg_callback(int (*callback_func) (sollya_msg_t, void *), void *data) {
+  return installMessageCallback(callback_func, data);
 }
 
 int sollya_lib_uninstall_msg_callback() {
   return uninstallMessageCallback();
 }
 
-int (*sollya_lib_get_msg_callback())(sollya_msg_t) {
+int (*sollya_lib_get_msg_callback())(sollya_msg_t, void *) {
   return getMessageCallback();
 }
 

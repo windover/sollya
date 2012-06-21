@@ -3,7 +3,7 @@
 #define A_DIM 4
 #define B_DIM 5
 
-int callback(sollya_msg_t msg) {
+int callback(sollya_msg_t msg, void *data) {
   int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_GIVEN_FUNCTION_IS_NO_POLYNOMIAL:
@@ -27,7 +27,7 @@ int main(void) {
   sollya_obj_t temp;
 
   sollya_lib_init();
-  sollya_lib_install_msg_callback(callback);
+  sollya_lib_install_msg_callback(callback, NULL);
 
   a[0] = SOLLYA_EXP(SOLLYA_ADD(SOLLYA_MUL(SOLLYA_PI,SOLLYA_X_),SOLLYA_SIN(SOLLYA_CONST(9.0))));
   a[1] = SOLLYA_ADD(SOLLYA_MUL(SOLLYA_PI,SOLLYA_X_),SOLLYA_SIN(SOLLYA_CONST(9.0)));

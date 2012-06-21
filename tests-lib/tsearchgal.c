@@ -2,7 +2,7 @@
 
 #define A_DIM 15
 
-int callback(sollya_msg_t msg) {
+int callback(sollya_msg_t msg, void *data) {
   int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   default:
@@ -19,7 +19,7 @@ int main(void) {
   int i;
 
   sollya_lib_init();
-  sollya_lib_install_msg_callback(callback);
+  sollya_lib_install_msg_callback(callback, NULL);
 
   /* searchgal(log(x),2,53,15,DD,1b-112); */
   for (i=0;i<A_DIM;i++) {

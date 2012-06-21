@@ -1,6 +1,6 @@
 #include <sollya.h>
 
-int callback(sollya_msg_t msg) {
+int callback(sollya_msg_t msg, void *data) {
   int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT_FAITHFUL_BUT_UNDECIDED:
@@ -27,7 +27,7 @@ int main(void) {
   double nan = 0./0.;
 
   sollya_lib_init();
-  sollya_lib_install_msg_callback(callback);
+  sollya_lib_install_msg_callback(callback, NULL);
 
   /* Inequality between numbers */
   a = SOLLYA_CONST(17);

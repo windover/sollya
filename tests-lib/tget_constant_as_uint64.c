@@ -3,7 +3,7 @@
 
 int flag = 0;
 
-int special_callback(sollya_msg_t msg) {
+int special_callback(sollya_msg_t msg, void *data) {
   sollya_lib_printf("Testing a tricky expression. Might return UINT64_MAX with an overflow message or return anything with a message stating that faithful rounding was not possible... ");
   if( sollya_lib_get_msg_id(msg) == SOLLYA_MSG_EXPR_SHOULD_BE_CONSTANT_AND_IS_NOT_FAITHFUL )
     sollya_lib_printf("OK\n");
@@ -235,7 +235,7 @@ int main(void) {
 
   /* Another tricky one. */
   res = -17;
-  sollya_lib_install_msg_callback(special_callback);
+  sollya_lib_install_msg_callback(special_callback, NULL);
   a = sollya_lib_parse_string("(sin((pi) / 3) - sqrt(3) / 2 ) * (1 * 2^(100000)) + (1 * 2^(60000))");
   if (!sollya_lib_get_constant_as_uint64(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);

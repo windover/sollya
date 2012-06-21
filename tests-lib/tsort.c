@@ -2,7 +2,7 @@
 
 #define A_DIM 8
 
-int callback(sollya_msg_t msg) {
+int callback(sollya_msg_t msg, void *data) {
   int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_EXPR_SHOULD_BE_CONSTANT_AND_IS_NOT_FAITHFUL:
@@ -25,7 +25,7 @@ int main(void) {
   int i;
 
   sollya_lib_init();
-  sollya_lib_install_msg_callback(callback);
+  sollya_lib_install_msg_callback(callback, NULL);
 
   a[0] = sollya_lib_parse_string("[||]");
   a[1] = sollya_lib_parse_string("[|1|]");

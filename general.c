@@ -145,7 +145,8 @@ int numberBacktrace = 1;
 int displayColor = -1;
 int oldMode = 0;
 
-int (*messageCallback)(sollya_msg_t) = NULL;
+int (*messageCallback)(sollya_msg_t, void *) = NULL;
+void *messageCallbackData = NULL;
 int lastMessageCallbackResult = 1;
 int lastMessageSuppressedResult = -1;
 
@@ -700,18 +701,20 @@ int sollyaVfprintf(FILE *fd, const char *format, va_list varlist) {
   return sollyaInternalVfprintf(fd,format,varlist);
 }
 
-int installMessageCallback(int (*msgHandler) (sollya_msg_t)) {
+int installMessageCallback(int (*msgHandler) (sollya_msg_t, void *), void *data) {
   messageCallback = msgHandler;
+  messageCallbackData = data;
   lastMessageCallbackResult = 1;
   return 1;
 }
 
-int (*getMessageCallback())(sollya_msg_t) {
+int (*getMessageCallback())(sollya_msg_t, void *) {
   return messageCallback;
 }
 
 int uninstallMessageCallback() {
   messageCallback = NULL;
+  messageCallbackData = NULL;
   lastMessageCallbackResult = 1;  
   return 1;
 }
@@ -757,7 +760,7 @@ int printMessage(int verb, int msgNum, const char *format, ...) {
       (msgNum != SOLLYA_MSG_CONTINUATION) && 
       (messageCallback != NULL)) {
     myMsg.msg_id = msgNum;
-    lastMessageCallbackResult = messageCallback(&myMsg);
+    lastMessageCallbackResult = messageCallback(&myMsg, messageCallbackData);
   } 
   if (!lastMessageCallbackResult) return 0;
 

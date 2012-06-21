@@ -1,6 +1,6 @@
 #include <sollya.h>
 
-int callback(sollya_msg_t msg) {
+int callback(sollya_msg_t msg, void *data) {
   int message = sollya_lib_get_msg_id(msg);
   if (message==SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_READING_A_CONSTANT)
     sollya_lib_printf("Caught the message about rounding while reading a constant.\n");
@@ -14,7 +14,7 @@ int main(void) {
   double d;
 
   sollya_lib_init();
-  sollya_lib_install_msg_callback(callback);
+  sollya_lib_install_msg_callback(callback, NULL);
 
   tmp = sollya_lib_binary();
   sollya_lib_set_display(tmp);

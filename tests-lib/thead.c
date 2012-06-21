@@ -2,7 +2,7 @@
 
 #define A_DIM 11
 
-int callback(sollya_msg_t msg) {
+int callback(sollya_msg_t msg, void *data) {
   int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_EXPR_NOT_CORRECTLY_TYPED:
@@ -19,7 +19,7 @@ int main(void) {
   int i;
 
   sollya_lib_init();
-  sollya_lib_install_msg_callback(callback);
+  sollya_lib_install_msg_callback(callback, NULL);
 
   a[0] = sollya_lib_parse_string("[||]");
   a[1] = sollya_lib_parse_string("[|1|]");

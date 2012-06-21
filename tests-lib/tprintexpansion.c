@@ -1,6 +1,6 @@
 #include <sollya.h>
 
-int callback(sollya_msg_t msg) {
+int callback(sollya_msg_t msg, void *data) {
   int message = sollya_lib_get_msg_id(msg);
   switch (message) {
   case SOLLYA_MSG_ERROR_POLY_COEFF_GETS_ROUNDED:
@@ -18,7 +18,7 @@ int main(void) {
   int i;
 
   sollya_lib_init();
-  sollya_lib_install_msg_callback(callback);
+  sollya_lib_install_msg_callback(callback, NULL);
 
   a[0] = sollya_lib_parse_string("roundcoefficients(taylor(exp(x),5,0),[|DD...|])");
   a[1] = sollya_lib_parse_string("11692536319630510474283968587625525849426869787677b-163 + x * (23384922893552793741208186896732057180708286140565b-164 + x * (46692941277611593554424973690517694800554713844979b-166 + x * (3891678517537147456387754739468835779118224484425b-164 + x * (1024072943597638219514404758611859127188920401873b-164 + x * 26154763285557255659575812244171511366994513699585b-171))))");

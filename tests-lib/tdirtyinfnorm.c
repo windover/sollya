@@ -2,7 +2,7 @@
 
 #define NB_OF_TESTS 11
 
-int callback(sollya_msg_t msg) {
+int callback(sollya_msg_t msg, void *data) {
   int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_EXPRESSION_IS_CONSTANT:
@@ -37,7 +37,7 @@ int main(void) {
   int i;
 
   sollya_lib_init();
-  sollya_lib_install_msg_callback(callback);
+  sollya_lib_install_msg_callback(callback, NULL);
 
   a[0] = SOLLYA_CONST(17.0);
   b[0] = sollya_lib_parse_string("[-1;1]");
