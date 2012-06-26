@@ -24,7 +24,7 @@ int main(void) {
   sollya_lib_init();
   sollya_lib_install_msg_callback(callback, NULL);
 
-  a[0] = sollya_lib_constant_from_double(1);
+  a[0] = sollya_lib_constant_from_double(1.);
 
   infval = huge * huge;
   nanval = infval - infval;

@@ -233,7 +233,7 @@ int main(void) {
   sollya_lib_clear_obj(a);
   sollya_lib_clear_obj(b);
 
-  a = SOLLYA_CONST_UI64(281474976710656); b = sollya_lib_constant_from_double(281474976710656);
+  a = SOLLYA_CONST_UI64(281474976710656); b = sollya_lib_constant_from_double(281474976710656.);
   sollya_lib_printf("%b is %b\n",a,b);
   sollya_lib_clear_obj(a);
   sollya_lib_clear_obj(b);
@@ -243,7 +243,7 @@ int main(void) {
   sollya_lib_clear_obj(a);
   sollya_lib_clear_obj(b);
 
-  a = SOLLYA_CONST_SI64(-281474976710656); b = sollya_lib_constant_from_double(-281474976710656);
+  a = SOLLYA_CONST_SI64(-281474976710656); b = sollya_lib_constant_from_double(-281474976710656.);
   sollya_lib_printf("%b is %b\n",a,b);
   sollya_lib_clear_obj(a);
   sollya_lib_clear_obj(b);
