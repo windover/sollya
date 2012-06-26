@@ -24,7 +24,7 @@ int main(void) {
   b = tinterval_list_ops_make_mpfi_ptr(1.25,1.75);
   c = tinterval_list_ops_make_mpfi_ptr(3.75,3.75);
   d = tinterval_list_ops_make_mpfi_ptr(9.125,12.125);
-  e = tinterval_list_ops_make_mpfi_ptr(17.0e17,1700000000000000256); 
+  e = tinterval_list_ops_make_mpfi_ptr(17.0e17,1700000000000000256.); 
   
   list1 = sollya_lib_construct_interval_list(a, sollya_lib_construct_interval_list(b, sollya_lib_construct_interval_list(c, sollya_lib_construct_interval_list(d, NULL))));
   
