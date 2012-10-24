@@ -5936,7 +5936,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
 	sollyaFprintf(stderr,"Error: implementpoly: an error occurred. A polynomial coefficient is not constant.\n");
 	exit(1);
       }
-      if (tempTree->nodeType != CONSTANT) {
+      if (accessThruMemRef(tempTree)->nodeType != CONSTANT) {
 	printMessage(1,SOLLYA_MSG_COEFF_DOES_NOT_HOLD_ON_TD_USING_FAITHFUL_EVAL,"Warning: the %dth coefficient of the polynomial to implement is neither a floating point\n",i);
 	printMessage(1,SOLLYA_MSG_CONTINUATION,"constant nor is able to be evaluated without rounding to a floating point constant.\n");
 	printMessage(1,SOLLYA_MSG_CONTINUATION,"Will evaluate it in round-to-nearest with the current precision (%d bits) before rounding to\n",prec);
@@ -5944,7 +5944,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
 	evaluateFaithful(fpCoefficients[i], tempTree, tempValue, prec);
 	fpCoeffRoundAutomatically[i] = 1;
       } else {
-	if (mpfr_set(fpCoefficients[i],*(tempTree->value),GMP_RNDN) != 0) {
+	if (mpfr_set(fpCoefficients[i],*(accessThruMemRef(tempTree)->value),GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
 	    printMessage(1,SOLLYA_MSG_ROUNDING_ON_INTERNAL_HANDLING_OF_A_COEFFICIENT,"Warning: rounding occurred on internal handling of a coefficient of the given polynomial.\n");
 	  }

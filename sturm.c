@@ -748,7 +748,7 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t precision) {
 	sollyaFprintf(stderr,"Error: getNrRoots: an error occurred. A polynomial coefficient is not constant.\n");
 	exit(1);
       }
-      if (tempTree->nodeType != CONSTANT) {
+      if (accessThruMemRef(tempTree)->nodeType != CONSTANT) {
 	if (tryEvaluateConstantTermToMpq(qCoefficients[i], tempTree)) {
 	  printMessage(3,SOLLYA_MSG_STURM_COEFF_EVALUATED_TO_RATIONAL_NUMBER,"Information: in getNrRoots: evaluated the %dth coefficient to %r\n",i,qCoefficients[i]);
 	} else {
@@ -769,7 +769,7 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t precision) {
 	}
       } 
       else {
-	mpfr_to_mpq(qCoefficients[i], *(tempTree->value));
+	mpfr_to_mpq(qCoefficients[i], *(accessThruMemRef(tempTree)->value));
       }
       free_memory(tempTree);
     } else {

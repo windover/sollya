@@ -141,6 +141,9 @@ node *headFunction(node *tree) {
   node *copy;
   
   switch (tree->nodeType) {
+  case MEMREF:
+    return headFunction(tree->child1);
+    break;
   case VARIABLE:
   case CONSTANT:
   case ADD:
@@ -220,29 +223,29 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
      Everthing that is correctly typed (and we know it is) matches
      without creating any binding.
   */
-  if (possibleMatcher->nodeType == DEFAULT) {
+  if (accessThruMemRef(possibleMatcher)->nodeType == DEFAULT) {
     return 1;
   }
 
   /* The free variable matches the free variable */
-  if ((possibleMatcher->nodeType == VARIABLE) && 
-      (thingToMatch->nodeType == VARIABLE)) {
+  if ((accessThruMemRef(possibleMatcher)->nodeType == VARIABLE) && 
+      (accessThruMemRef(thingToMatch)->nodeType == VARIABLE)) {
     return 1;
   }
 
   /* Special case: possibleMatcher is an apply 
      of the free variable on a function 
   */
-  if (possibleMatcher->nodeType == APPLY) {
+  if (accessThruMemRef(possibleMatcher)->nodeType == APPLY) {
     /* Check if the child of the apply is the free variable */
-    if (possibleMatcher->child1->nodeType != VARIABLE) {
+    if (accessThruMemRef(accessThruMemRef(possibleMatcher)->child1)->nodeType != VARIABLE) {
       if (variablename == NULL) return 0;
-      if (possibleMatcher->child1->nodeType != TABLEACCESS) return 0;
-      if (strcmp(variablename,possibleMatcher->child1->string)) return 0;
+      if (accessThruMemRef(accessThruMemRef(possibleMatcher)->child1)->nodeType != TABLEACCESS) return 0;
+      if (strcmp(variablename,accessThruMemRef(accessThruMemRef(possibleMatcher)->child1)->string)) return 0;
     }
 
     /* Check if recursion is possible on the thing to match */
-    switch (thingToMatch->nodeType) {
+    switch (accessThruMemRef(thingToMatch)->nodeType) {
     case VARIABLE:
     case CONSTANT:
     case PI_CONST:
@@ -262,7 +265,7 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
        on the one, first and only child of the thing to match.
 
     */
-    okay = tryMatchExtendedPureTree(associations, thingToMatch, ((node *) (possibleMatcher->arguments->value)));
+    okay = tryMatchExtendedPureTree(associations, thingToMatch, ((node *) (accessThruMemRef(possibleMatcher)->arguments->value)));
     if (okay) {
       if (variablename != NULL) {
 	printMessage(1,SOLLYA_MSG_FREE_VAR_INTERPRETED_AS_IDENTITY_FUNCTION,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
@@ -278,9 +281,9 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
      Check if it is possible equal to the mathematical free 
      variable. If not, create an association 
   */
-  if (possibleMatcher->nodeType == TABLEACCESS) {
+  if (accessThruMemRef(possibleMatcher)->nodeType == TABLEACCESS) {
     if ((variablename != NULL) &&
-	(!strcmp(variablename, possibleMatcher->string))) {
+	(!strcmp(variablename, accessThruMemRef(possibleMatcher)->string))) {
       /* Here, the free variable to bind is actually equal
 	 to the free mathematical variable. 
 	 
@@ -292,13 +295,13 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
 	 In none of the cases, we have to establish an 
 	 association nor call ourselves for recursion.
       */
-      return (thingToMatch->nodeType == VARIABLE);
+      return (accessThruMemRef(thingToMatch)->nodeType == VARIABLE);
     }
     /* Here, the free variable is not the mathematical one.
        We have to establish an association and return success
        (unless the association fails).
     */
-    return associateThing(associations, possibleMatcher->string, thingToMatch);
+    return associateThing(associations, accessThruMemRef(possibleMatcher)->string, thingToMatch);
   }
 
   /* Second special case: possibleMatcher is a free variable in an 
@@ -322,9 +325,9 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
      makes sense.
      
   */
-  if (possibleMatcher->nodeType == TABLEACCESSWITHSUBSTITUTE) {
+  if (accessThruMemRef(possibleMatcher)->nodeType == TABLEACCESSWITHSUBSTITUTE) {
     /* Check if recursion is possible on the thing to match */
-    switch (thingToMatch->nodeType) {
+    switch (accessThruMemRef(thingToMatch)->nodeType) {
     case VARIABLE:
     case CONSTANT:
     case PI_CONST:
@@ -347,12 +350,12 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
        mathematical variable.
     */
     if ((variablename != NULL) &&
-	(!strcmp(variablename, possibleMatcher->string))) {
+	(!strcmp(variablename, accessThruMemRef(possibleMatcher)->string))) {
       /* Here, the free variable to bind is actually equal
 	 to the free mathematical variable. 
 
       */
-      okay = tryMatchExtendedPureTree(associations, thingToMatch, ((node *) (possibleMatcher->arguments->value)));
+      okay = tryMatchExtendedPureTree(associations, thingToMatch, ((node *) (accessThruMemRef(possibleMatcher)->arguments->value)));
       if (okay) {
 	if (variablename != NULL) {
 	  printMessage(1,SOLLYA_MSG_FREE_VAR_INTERPRETED_AS_IDENTITY_FUNCTION,"Warning: the identifier \"%s\" is bound to the current free variable. In a functional context it will be considered as the identity function.\n",
@@ -371,9 +374,9 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
     */
     okay = 0;
     recursion = 1;
-    currentThingToMatch = thingToMatch->child1; /* No copy, just the ptr */
-    currentPossibleMatcher = (node *) (possibleMatcher->arguments->value); /* No copy, just the ptr */
-    currentIdentifier = possibleMatcher->string; /* No copy, just the ptr */
+    currentThingToMatch = accessThruMemRef(thingToMatch)->child1; /* No copy, just the ptr */
+    currentPossibleMatcher = (node *) (accessThruMemRef(possibleMatcher)->arguments->value); /* No copy, just the ptr */
+    currentIdentifier = accessThruMemRef(possibleMatcher)->string; /* No copy, just the ptr */
     headSymbol = headFunction(thingToMatch); /* This one performs mallocs */
     if (headSymbol == NULL) {
       /* This case should never happen */
@@ -404,7 +407,7 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
                 -- binary function
              - if the current possible matcher is a free variable in an application context
 	*/
-	switch (currentThingToMatch->nodeType) {
+	switch (accessThruMemRef(currentThingToMatch)->nodeType) {
 	case VARIABLE:
 	case CONSTANT:
 	case PI_CONST:
@@ -420,7 +423,7 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
 	  break;
 	}
 	if (recursion) {
-	  if (currentPossibleMatcher->nodeType == TABLEACCESSWITHSUBSTITUTE) recursion = 0;
+	  if (accessThruMemRef(currentPossibleMatcher)->nodeType == TABLEACCESSWITHSUBSTITUTE) recursion = 0;
 	  if (recursion) {
 	    /* Here, recursion is possible 
 
@@ -439,7 +442,7 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
 	      free_memory(tempNode);
 	      free_memory(headSymbol);
 	      headSymbol = newHeadSymbol;
-	      currentThingToMatch = currentThingToMatch->child1;
+	      currentThingToMatch = accessThruMemRef(currentThingToMatch)->child1;
 	    }
 	  }
 	}
@@ -457,18 +460,18 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
      To start with, we cannot have a match if the head symbols are not
      the same.
   */
-  if (possibleMatcher->nodeType != thingToMatch->nodeType) return 0;
+  if (accessThruMemRef(possibleMatcher)->nodeType != accessThruMemRef(thingToMatch)->nodeType) return 0;
 
   /* Here, the head symbols are always the same */
-  switch (possibleMatcher->nodeType) {
+  switch (accessThruMemRef(possibleMatcher)->nodeType) {
   case VARIABLE:
     /* The free mathematical variable matches the free mathematical variable */
     return 1;
     break;
   case CONSTANT:
     /* Constants match if they are the same. We have to be careful with NaNs */
-    if (mpfr_nan_p(*(possibleMatcher->value)) && mpfr_nan_p(*(thingToMatch->value))) return 1;
-    if (mpfr_equal_p(*(possibleMatcher->value),*(thingToMatch->value))) return 1; 
+    if (mpfr_nan_p(*(accessThruMemRef(possibleMatcher)->value)) && mpfr_nan_p(*(accessThruMemRef(thingToMatch)->value))) return 1;
+    if (mpfr_equal_p(*(accessThruMemRef(possibleMatcher)->value),*(accessThruMemRef(thingToMatch)->value))) return 1; 
     return 0;
     break;
   case ADD:
@@ -481,8 +484,8 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
     */
     leftAssoc = NULL;
     rightAssoc = NULL;
-    if (!tryMatchExtendedPureTree(&leftAssoc, thingToMatch->child1, possibleMatcher->child1)) return 0;
-    if (!tryMatchExtendedPureTree(&rightAssoc, thingToMatch->child2, possibleMatcher->child2)) return 0;
+    if (!tryMatchExtendedPureTree(&leftAssoc, accessThruMemRef(thingToMatch)->child1, accessThruMemRef(possibleMatcher)->child1)) return 0;
+    if (!tryMatchExtendedPureTree(&rightAssoc, accessThruMemRef(thingToMatch)->child2, accessThruMemRef(possibleMatcher)->child2)) return 0;
     okay = tryCombineAssociations(associations, leftAssoc, rightAssoc);
     if (leftAssoc != NULL) freeChain(leftAssoc, freeEntryOnVoid);
     if (rightAssoc != NULL) freeChain(rightAssoc, freeEntryOnVoid);
@@ -524,7 +527,7 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
     /* Unary functions: we have a match if we have a match on recursion
        Possible associations are established on recursion. 
     */
-    return tryMatchExtendedPureTree(associations, thingToMatch->child1, possibleMatcher->child1);
+    return tryMatchExtendedPureTree(associations, accessThruMemRef(thingToMatch)->child1, accessThruMemRef(possibleMatcher)->child1);
     break;
   case PI_CONST:
     /* Pi matches pi */
@@ -534,26 +537,26 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
     /* Library functions to not match if they are not bound to the same code
        or if they are at different differentiation levels
     */
-    if ((possibleMatcher->libFun != thingToMatch->libFun) ||
-	(possibleMatcher->libFunDeriv != thingToMatch->libFunDeriv)) return 0;
+    if ((accessThruMemRef(possibleMatcher)->libFun != accessThruMemRef(thingToMatch)->libFun) ||
+	(accessThruMemRef(possibleMatcher)->libFunDeriv != accessThruMemRef(thingToMatch)->libFunDeriv)) return 0;
     /* Otherwise they match when recursion matches */
-    return tryMatchExtendedPureTree(associations, thingToMatch->child1, possibleMatcher->child1);
+    return tryMatchExtendedPureTree(associations, accessThruMemRef(thingToMatch)->child1, accessThruMemRef(possibleMatcher)->child1);
     break;
   case LIBRARYCONSTANT:
     /* Library constants match iff they are bound to the same code */
-    return (possibleMatcher->libFun == thingToMatch->libFun);
+    return (accessThruMemRef(possibleMatcher)->libFun == accessThruMemRef(thingToMatch)->libFun);
     break;
   case PROCEDUREFUNCTION:
     /* Procedure functions do not match if they are not based on the same
        procedure or if they are at different differentiation levels
     */
-    if ((!isEqualThing(possibleMatcher->child2, thingToMatch->child2)) ||
-	(possibleMatcher->libFunDeriv != thingToMatch->libFunDeriv)) return 0;
+    if ((!isEqualThing(accessThruMemRef(possibleMatcher)->child2, accessThruMemRef(thingToMatch)->child2)) ||
+	(accessThruMemRef(possibleMatcher)->libFunDeriv != accessThruMemRef(thingToMatch)->libFunDeriv)) return 0;
     /* Otherwise they match when recursion matches */
-    return tryMatchExtendedPureTree(associations, thingToMatch->child1, possibleMatcher->child1);    
+    return tryMatchExtendedPureTree(associations, accessThruMemRef(thingToMatch)->child1, accessThruMemRef(possibleMatcher)->child1);    
     break;
   default:
-    sollyaFprintf(stderr,"Error: tryMatchExtendedPureTree: unknown identifier (%d) in the tree\n",possibleMatcher->nodeType);
+    sollyaFprintf(stderr,"Error: tryMatchExtendedPureTree: unknown identifier (%d) in the tree\n",accessThruMemRef(possibleMatcher)->nodeType);
     exit(1);
   }
 
@@ -566,25 +569,25 @@ int tryMatchRange(chain **associations, mpfr_t a, mpfr_t b, node *possibleMatche
   node *tempNode;
   int okay;
 
-  if (possibleMatcher->nodeType != RANGE) return 0;
-  if (!((possibleMatcher->child1->nodeType == CONSTANT) || (possibleMatcher->child1->nodeType == TABLEACCESS) || (possibleMatcher->child1->nodeType == DEFAULT))) return 0;
-  if (!((possibleMatcher->child2->nodeType == CONSTANT) || (possibleMatcher->child2->nodeType == TABLEACCESS) || (possibleMatcher->child2->nodeType == DEFAULT))) return 0;
+  if (accessThruMemRef(possibleMatcher)->nodeType != RANGE) return 0;
+  if (!((accessThruMemRef(accessThruMemRef(possibleMatcher)->child1)->nodeType == CONSTANT) || (accessThruMemRef(accessThruMemRef(possibleMatcher)->child1)->nodeType == TABLEACCESS) || (accessThruMemRef(accessThruMemRef(possibleMatcher)->child1)->nodeType == DEFAULT))) return 0;
+  if (!((accessThruMemRef(accessThruMemRef(possibleMatcher)->child2)->nodeType == CONSTANT) || (accessThruMemRef(accessThruMemRef(possibleMatcher)->child2)->nodeType == TABLEACCESS) || (accessThruMemRef(accessThruMemRef(possibleMatcher)->child2)->nodeType == DEFAULT))) return 0;
   if (variablename != NULL) {
-    if (possibleMatcher->child1->nodeType == TABLEACCESS) {
-      if (!strcmp(possibleMatcher->child1->string,variablename)) return 0;
+    if (accessThruMemRef(accessThruMemRef(possibleMatcher)->child1)->nodeType == TABLEACCESS) {
+      if (!strcmp(accessThruMemRef(accessThruMemRef(possibleMatcher)->child1)->string,variablename)) return 0;
     }
-    if (possibleMatcher->child2->nodeType == TABLEACCESS) {
-      if (!strcmp(possibleMatcher->child2->string,variablename)) return 0;
+    if (accessThruMemRef(accessThruMemRef(possibleMatcher)->child2)->nodeType == TABLEACCESS) {
+      if (!strcmp(accessThruMemRef(accessThruMemRef(possibleMatcher)->child2)->string,variablename)) return 0;
     }
   }
 
-  if (possibleMatcher->child1->nodeType == CONSTANT) {
-    if ((!mpfr_equal_p(*(possibleMatcher->child1->value),a)) && 
-	(!(mpfr_nan_p(*(possibleMatcher->child1->value)) && mpfr_nan_p(a)))) return 0;
+  if (accessThruMemRef(accessThruMemRef(possibleMatcher)->child1)->nodeType == CONSTANT) {
+    if ((!mpfr_equal_p(*(accessThruMemRef(accessThruMemRef(possibleMatcher)->child1)->value),a)) && 
+	(!(mpfr_nan_p(*(accessThruMemRef(accessThruMemRef(possibleMatcher)->child1)->value)) && mpfr_nan_p(a)))) return 0;
   }
-  if (possibleMatcher->child2->nodeType == CONSTANT) {
-    if ((!mpfr_equal_p(*(possibleMatcher->child2->value),b)) && 
-	(!(mpfr_nan_p(*(possibleMatcher->child2->value)) && mpfr_nan_p(b)))) return 0;
+  if (accessThruMemRef(accessThruMemRef(possibleMatcher)->child2)->nodeType == CONSTANT) {
+    if ((!mpfr_equal_p(*(accessThruMemRef(accessThruMemRef(possibleMatcher)->child2)->value),b)) && 
+	(!(mpfr_nan_p(*(accessThruMemRef(accessThruMemRef(possibleMatcher)->child2)->value)) && mpfr_nan_p(b)))) return 0;
   }
 
   /* Here, we know that the possible Matcher is a range, that its
@@ -595,15 +598,15 @@ int tryMatchRange(chain **associations, mpfr_t a, mpfr_t b, node *possibleMatche
   myAssociations = NULL;
   okay = 1;
 
-  if (possibleMatcher->child1->nodeType == TABLEACCESS) {
+  if (accessThruMemRef(accessThruMemRef(possibleMatcher)->child1)->nodeType == TABLEACCESS) {
     tempNode = makeConstant(a);
-    okay = associateThing(&myAssociations, possibleMatcher->child1->string, tempNode);
+    okay = associateThing(&myAssociations, accessThruMemRef(accessThruMemRef(possibleMatcher)->child1)->string, tempNode);
     free_memory(tempNode);
   } 
 
-  if (okay && (possibleMatcher->child2->nodeType == TABLEACCESS)) {
+  if (okay && (accessThruMemRef(accessThruMemRef(possibleMatcher)->child2)->nodeType == TABLEACCESS)) {
     tempNode = makeConstant(b);
-    okay = associateThing(&myAssociations, possibleMatcher->child2->string, tempNode);
+    okay = associateThing(&myAssociations, accessThruMemRef(accessThruMemRef(possibleMatcher)->child2)->string, tempNode);
     free_memory(tempNode);
   }
 
@@ -699,18 +702,18 @@ chain *normalizeFinalEllipticList(chain *list) {
 
   while (shortenedLen >= 2) {
     mayShorten = 0;
-    if ((thingArray[shortenedLen - 2]->nodeType != TABLEACCESS) && 
-	(thingArray[shortenedLen - 1]->nodeType != TABLEACCESS)) {
+    if ((accessThruMemRef(thingArray[shortenedLen - 2])->nodeType != TABLEACCESS) && 
+	(accessThruMemRef(thingArray[shortenedLen - 1])->nodeType != TABLEACCESS)) {
       if (formConsecutiveIntegers(thingArray[shortenedLen - 2], 
 				  thingArray[shortenedLen - 1])) {
 	mayShorten = 1;
       } else {
 	if (isEqualThing(thingArray[shortenedLen - 2],
 			 thingArray[shortenedLen - 1]) || 
-	    ((thingArray[shortenedLen - 2]->nodeType == CONSTANT) && 
-	     (thingArray[shortenedLen - 1]->nodeType == CONSTANT) && 
-	     mpfr_nan_p(*(thingArray[shortenedLen - 2]->value)) &&
-	     mpfr_nan_p(*(thingArray[shortenedLen - 2]->value)))) {
+	    ((accessThruMemRef(thingArray[shortenedLen - 2])->nodeType == CONSTANT) && 
+	     (accessThruMemRef(thingArray[shortenedLen - 1])->nodeType == CONSTANT) && 
+	     mpfr_nan_p(*(accessThruMemRef(thingArray[shortenedLen - 2])->value)) &&
+	     mpfr_nan_p(*(accessThruMemRef(thingArray[shortenedLen - 2])->value)))) {
 	  mayShorten = 1;
 	}
       }
@@ -760,7 +763,7 @@ int tryMatchList(chain **associations, node *thingToMatch, node *possibleMatcher
  
      Check if both are of the same type of lists.
   */
-  if (thingToMatch->nodeType != possibleMatcher->nodeType) return 0;
+  if (accessThruMemRef(thingToMatch)->nodeType != accessThruMemRef(possibleMatcher)->nodeType) return 0;
 
   /* Here, both lists are of the same type 
 
@@ -771,13 +774,13 @@ int tryMatchList(chain **associations, node *thingToMatch, node *possibleMatcher
   myAssociations = NULL;
   freeLists = 0;
   if (isPureFinalEllipticList(thingToMatch) && 
-      (lengthChain(thingToMatch->arguments) != lengthChain(possibleMatcher->arguments))) {
-    thingToMatchList = normalizeFinalEllipticList(thingToMatch->arguments);
-    possibleMatcherList = normalizeFinalEllipticList(possibleMatcher->arguments);
+      (lengthChain(accessThruMemRef(thingToMatch)->arguments) != lengthChain(accessThruMemRef(possibleMatcher)->arguments))) {
+    thingToMatchList = normalizeFinalEllipticList(accessThruMemRef(thingToMatch)->arguments);
+    possibleMatcherList = normalizeFinalEllipticList(accessThruMemRef(possibleMatcher)->arguments);
     freeLists = 1;
   } else {
-    thingToMatchList = thingToMatch->arguments;
-    possibleMatcherList = possibleMatcher->arguments;
+    thingToMatchList = accessThruMemRef(thingToMatch)->arguments;
+    possibleMatcherList = accessThruMemRef(possibleMatcher)->arguments;
     freeLists = 0;
   }
 
@@ -902,18 +905,18 @@ int tryMatchPrepend(chain **associations, node *thingToMatch, node *possibleMatc
   chain *myAssociations, *headAssoc, *tailAssoc;
   node *tailList, *tempNode;
 
-  if ((thingToMatch->nodeType != LIST) && (thingToMatch->nodeType != FINALELLIPTICLIST)) return 0;
+  if ((accessThruMemRef(thingToMatch)->nodeType != LIST) && (accessThruMemRef(thingToMatch)->nodeType != FINALELLIPTICLIST)) return 0;
   
   myAssociations = NULL;
   
   headAssoc = NULL;
-  okay = tryMatch(&headAssoc, (node *) (thingToMatch->arguments->value), possibleMatcher->child1);
+  okay = tryMatch(&headAssoc, (node *) (accessThruMemRef(thingToMatch)->arguments->value), accessThruMemRef(possibleMatcher)->child1);
   if (okay) {
     tempNode = makeTail(copyThing(thingToMatch));
     tailList = evaluateThing(tempNode);
     freeThing(tempNode);
     tailAssoc = NULL;
-    okay = tryMatch(&tailAssoc, tailList, possibleMatcher->child2);
+    okay = tryMatch(&tailAssoc, tailList, accessThruMemRef(possibleMatcher)->child2);
     if (okay) {
 	okay = tryCombineAssociations(&myAssociations, headAssoc, tailAssoc);
     }
@@ -935,17 +938,17 @@ int tryMatchAppend(chain **associations, node *thingToMatch, node *possibleMatch
   chain *myAssociations, *headAssoc, *tailAssoc, *curr;
   node *headList, *tailElement, **elementArray;
 
-  if (thingToMatch->nodeType != LIST) return 0;
+  if (accessThruMemRef(thingToMatch)->nodeType != LIST) return 0;
   
   myAssociations = NULL;
 
-  if (thingToMatch->arguments->next != NULL) {
+  if (accessThruMemRef(thingToMatch)->arguments->next != NULL) {
     /* The list of things to match has more than one element. Its is
        easy to compute the head list and the tailElement.
     */
-    len = lengthChain(thingToMatch->arguments);
+    len = lengthChain(accessThruMemRef(thingToMatch)->arguments);
     elementArray = (node **) safeCalloc(len,sizeof(node *));
-    for (i=0, curr=thingToMatch->arguments; curr != NULL; curr = curr->next, i++) {
+    for (i=0, curr=accessThruMemRef(thingToMatch)->arguments; curr != NULL; curr = curr->next, i++) {
       elementArray[i] = (node *) (curr->value);
     }
     tailElement = elementArray[len-1];
@@ -959,15 +962,15 @@ int tryMatchAppend(chain **associations, node *thingToMatch, node *possibleMatch
     /* The list of things to match has only one element, so the head
        list is the empty list. The tail element is easy to get, too. 
     */
-    tailElement = (node *) (thingToMatch->arguments->value);
+    tailElement = (node *) (accessThruMemRef(thingToMatch)->arguments->value);
     headList = makeEmptyList();
   }
 
   headAssoc = NULL;
-  okay = tryMatch(&headAssoc, headList, possibleMatcher->child1);
+  okay = tryMatch(&headAssoc, headList, accessThruMemRef(possibleMatcher)->child1);
   if (okay) {
     tailAssoc = NULL;
-    okay = tryMatch(&tailAssoc, tailElement, possibleMatcher->child2);
+    okay = tryMatch(&tailAssoc, tailElement, accessThruMemRef(possibleMatcher)->child2);
     if (okay) {
 	okay = tryCombineAssociations(&myAssociations, headAssoc, tailAssoc);
     }
@@ -989,16 +992,16 @@ int tryEvaluateRecursiveConcatMatcherToString(char **concatenatedString, node *t
   char *buf, *bufLeft, *bufRight, *curr;
   int okayLeft, okayRight, okay;
 
-  if (tree->nodeType == STRING) {
-    buf = (char *) safeCalloc(strlen(tree->string) + 1, sizeof(char));
-    strcpy(buf,tree->string);
+  if (accessThruMemRef(tree)->nodeType == STRING) {
+    buf = (char *) safeCalloc(strlen(accessThruMemRef(tree)->string) + 1, sizeof(char));
+    strcpy(buf,accessThruMemRef(tree)->string);
     *concatenatedString = buf;
     return 1;
   }
   
-  if (tree->nodeType == CONCAT) {
-    okayLeft = tryEvaluateRecursiveConcatMatcherToString(&bufLeft, tree->child1);
-    okayRight = tryEvaluateRecursiveConcatMatcherToString(&bufRight, tree->child2);
+  if (accessThruMemRef(tree)->nodeType == CONCAT) {
+    okayLeft = tryEvaluateRecursiveConcatMatcherToString(&bufLeft, accessThruMemRef(tree)->child1);
+    okayRight = tryEvaluateRecursiveConcatMatcherToString(&bufRight, accessThruMemRef(tree)->child2);
     
     okay = 0;
     if (okayLeft && okayRight) {
@@ -1093,10 +1096,10 @@ int tryMatchConcatOnString(chain **associations, char *stringToMatch, node *poss
     return okay;
   }
 
-  if (possibleMatcher->nodeType != CONCAT) return 0;
+  if (accessThruMemRef(possibleMatcher)->nodeType != CONCAT) return 0;
 
-  okayLeftEvaluate = tryEvaluateRecursiveConcatMatcherToString(&stringLeftEvaluate, possibleMatcher->child1);
-  okayRightEvaluate = tryEvaluateRecursiveConcatMatcherToString(&stringRightEvaluate, possibleMatcher->child2);
+  okayLeftEvaluate = tryEvaluateRecursiveConcatMatcherToString(&stringLeftEvaluate, accessThruMemRef(possibleMatcher)->child1);
+  okayRightEvaluate = tryEvaluateRecursiveConcatMatcherToString(&stringRightEvaluate, accessThruMemRef(possibleMatcher)->child2);
 
   if (okayLeftEvaluate || okayRightEvaluate) {
     okay = 0;
@@ -1109,9 +1112,9 @@ int tryMatchConcatOnString(chain **associations, char *stringToMatch, node *poss
       restStringThing = makeString(restString);
       myAssociations = NULL;
       if (okayLeftEvaluate) {
-	okay = tryMatch(&myAssociations,restStringThing,possibleMatcher->child2);
+	okay = tryMatch(&myAssociations,restStringThing,accessThruMemRef(possibleMatcher)->child2);
       } else {
-	okay = tryMatch(&myAssociations,restStringThing,possibleMatcher->child1);
+	okay = tryMatch(&myAssociations,restStringThing,accessThruMemRef(possibleMatcher)->child1);
       }
       freeThing(restStringThing);
       safeFree(restString);
@@ -1134,7 +1137,7 @@ int tryEvaluateRecursiveConcatMatcherToList(node **concatenatedList, node *tree)
   int okayLeft, okayRight, okay;
   chain *tempChain, *tempChain2;
 
-  switch (tree->nodeType) {
+  switch (accessThruMemRef(tree)->nodeType) {
   case EMPTYLIST:
   case LIST:
   case FINALELLIPTICLIST:
@@ -1143,23 +1146,23 @@ int tryEvaluateRecursiveConcatMatcherToList(node **concatenatedList, node *tree)
     break;
   case PREPEND:
     evalRight = NULL;
-    okayRight = tryEvaluateRecursiveConcatMatcherToList(&evalRight, tree->child2);
+    okayRight = tryEvaluateRecursiveConcatMatcherToList(&evalRight, accessThruMemRef(tree)->child2);
     if (okayRight) {
       okay = 0;
-      switch (evalRight->nodeType) {
+      switch (accessThruMemRef(evalRight)->nodeType) {
       case EMPTYLIST:
-	*concatenatedList = makeList(addElement(NULL, copyThing(tree->child1)));
+	*concatenatedList = makeList(addElement(NULL, copyThing(accessThruMemRef(tree)->child1)));
 	okay = 1;
 	break;
       case LIST:
-	tempChain = copyChainWithoutReversal(evalRight->arguments, copyThingOnVoid);
-	tempChain = addElement(tempChain, copyThing(tree->child1));
+	tempChain = copyChainWithoutReversal(accessThruMemRef(evalRight)->arguments, copyThingOnVoid);
+	tempChain = addElement(tempChain, copyThing(accessThruMemRef(tree)->child1));
 	*concatenatedList = makeList(tempChain);
 	okay = 1;
 	break;	
       case FINALELLIPTICLIST:
-	tempChain = copyChainWithoutReversal(evalRight->arguments, copyThingOnVoid);
-	tempChain = addElement(tempChain, copyThing(tree->child1));
+	tempChain = copyChainWithoutReversal(accessThruMemRef(evalRight)->arguments, copyThingOnVoid);
+	tempChain = addElement(tempChain, copyThing(accessThruMemRef(tree)->child1));
 	*concatenatedList = makeFinalEllipticList(tempChain);
 	okay = 1;
 	break;
@@ -1173,17 +1176,17 @@ int tryEvaluateRecursiveConcatMatcherToList(node **concatenatedList, node *tree)
     break;
   case APPEND:
     evalLeft = NULL;
-    okayLeft = tryEvaluateRecursiveConcatMatcherToList(&evalLeft, tree->child1);
+    okayLeft = tryEvaluateRecursiveConcatMatcherToList(&evalLeft, accessThruMemRef(tree)->child1);
     if (okayLeft) {
       okay = 0;
-      switch (evalLeft->nodeType) {
+      switch (accessThruMemRef(evalLeft)->nodeType) {
       case EMPTYLIST:
-	*concatenatedList = makeList(addElement(NULL, copyThing(tree->child2)));
+	*concatenatedList = makeList(addElement(NULL, copyThing(accessThruMemRef(tree)->child2)));
 	okay = 1;
 	break;
       case LIST:
-	tempChain = copyChain(evalLeft->arguments, copyThingOnVoid);
-	tempChain = addElement(tempChain, copyThing(tree->child2));
+	tempChain = copyChain(accessThruMemRef(evalLeft)->arguments, copyThingOnVoid);
+	tempChain = addElement(tempChain, copyThing(accessThruMemRef(tree)->child2));
 	tempChain2 = copyChain(tempChain, copyThingOnVoid);
 	freeChain(tempChain, freeThingOnVoid);
 	*concatenatedList = makeList(tempChain2);
@@ -1199,15 +1202,15 @@ int tryEvaluateRecursiveConcatMatcherToList(node **concatenatedList, node *tree)
     break;
   case CONCAT:
     evalLeft = NULL;
-    okayLeft = tryEvaluateRecursiveConcatMatcherToList(&evalLeft, tree->child1);
+    okayLeft = tryEvaluateRecursiveConcatMatcherToList(&evalLeft, accessThruMemRef(tree)->child1);
     if (okayLeft) {
       okay = 0;
       evalRight = NULL;
-      okayRight = tryEvaluateRecursiveConcatMatcherToList(&evalRight, tree->child2);
+      okayRight = tryEvaluateRecursiveConcatMatcherToList(&evalRight, accessThruMemRef(tree)->child2);
       if (okayRight) {
-	switch (evalLeft->nodeType) {
+	switch (accessThruMemRef(evalLeft)->nodeType) {
 	case EMPTYLIST:
-	  switch (evalRight->nodeType) {
+	  switch (accessThruMemRef(evalRight)->nodeType) {
 	  case EMPTYLIST:
 	  case LIST:
 	  case FINALELLIPTICLIST:
@@ -1220,20 +1223,20 @@ int tryEvaluateRecursiveConcatMatcherToList(node **concatenatedList, node *tree)
 	  }
 	  break;
 	case LIST:
-	  switch (evalRight->nodeType) {
+	  switch (accessThruMemRef(evalRight)->nodeType) {
 	  case EMPTYLIST:
 	    *concatenatedList = copyThing(evalLeft);
 	    okay = 1;
 	    break;
 	  case LIST:
-	    tempChain = concatChains(copyChainWithoutReversal(evalLeft->arguments, copyThingOnVoid),
-				     copyChainWithoutReversal(evalRight->arguments, copyThingOnVoid));
+	    tempChain = concatChains(copyChainWithoutReversal(accessThruMemRef(evalLeft)->arguments, copyThingOnVoid),
+				     copyChainWithoutReversal(accessThruMemRef(evalRight)->arguments, copyThingOnVoid));
 	    *concatenatedList = makeList(tempChain);
 	    okay = 1;
 	    break;
 	  case FINALELLIPTICLIST:
-	    tempChain = concatChains(copyChainWithoutReversal(evalLeft->arguments, copyThingOnVoid),
-				     copyChainWithoutReversal(evalRight->arguments, copyThingOnVoid));
+	    tempChain = concatChains(copyChainWithoutReversal(accessThruMemRef(evalLeft)->arguments, copyThingOnVoid),
+				     copyChainWithoutReversal(accessThruMemRef(evalRight)->arguments, copyThingOnVoid));
 	    *concatenatedList = makeFinalEllipticList(tempChain);
 	    okay = 1;	    
 	    break;
@@ -1270,24 +1273,24 @@ int tryCutPostfixList(chain **associations, node **restList, node *mainList, nod
   chain *mainListCurr;
   int mainListInt, postfixInt;
 
-  if ((mainList->nodeType == FINALELLIPTICLIST) && 
-      (postfix->nodeType != FINALELLIPTICLIST)) return 0;
-  if ((postfix->nodeType == FINALELLIPTICLIST) && 
-      (mainList->nodeType != FINALELLIPTICLIST)) return 0;
+  if ((accessThruMemRef(mainList)->nodeType == FINALELLIPTICLIST) && 
+      (accessThruMemRef(postfix)->nodeType != FINALELLIPTICLIST)) return 0;
+  if ((accessThruMemRef(postfix)->nodeType == FINALELLIPTICLIST) && 
+      (accessThruMemRef(mainList)->nodeType != FINALELLIPTICLIST)) return 0;
 
-  switch (postfix->nodeType) {
+  switch (accessThruMemRef(postfix)->nodeType) {
   case EMPTYLIST:
     *restList = copyThing(mainList);
     *associations = NULL;
     return 1;
     break;
   case LIST:
-    if (mainList->nodeType == LIST) {
-      lenMainList = lengthChain(mainList->arguments);
-      lenPostfix = lengthChain(postfix->arguments);
+    if (accessThruMemRef(mainList)->nodeType == LIST) {
+      lenMainList = lengthChain(accessThruMemRef(mainList)->arguments);
+      lenPostfix = lengthChain(accessThruMemRef(postfix)->arguments);
       if (lenMainList >= lenPostfix) {
 	mainListArray = (node **) safeCalloc(lenMainList, sizeof(node *));
-	for (i=0, curr = mainList->arguments; curr != NULL; curr = curr->next, i++) {
+	for (i=0, curr = accessThruMemRef(mainList)->arguments; curr != NULL; curr = curr->next, i++) {
 	  mainListArray[i] = (node *) (curr->value);
 	}
 	possibleMatchList = NULL;
@@ -1322,13 +1325,13 @@ int tryCutPostfixList(chain **associations, node **restList, node *mainList, nod
     }
     break;
   case FINALELLIPTICLIST:
-    if (mainList->nodeType == FINALELLIPTICLIST) {
-      lenMainList = lengthChain(mainList->arguments);
+    if (accessThruMemRef(mainList)->nodeType == FINALELLIPTICLIST) {
+      lenMainList = lengthChain(accessThruMemRef(mainList)->arguments);
       possibleRest = makeEmptyList();
       myMainList = copyThing(mainList);
       offset = 1;
-      postfixFirstElem = (node *) (((chain *) (postfix->arguments))->value);
-      for (mainListCurr = mainList->arguments;
+      postfixFirstElem = (node *) (((chain *) (accessThruMemRef(postfix)->arguments))->value);
+      for (mainListCurr = accessThruMemRef(mainList)->arguments;
 	   mainListCurr->next != NULL;
 	   mainListCurr = mainListCurr->next);
       mainListLastElem = (node *) (mainListCurr->value);
@@ -1374,17 +1377,17 @@ int tryCutPrefixList(chain **associations, node **restList, node *mainList, node
   node *myRestList, *possibleMatchingPrefix, *tempNode;
   int lenPrefix, i, okay;
 
-  switch (prefix->nodeType) {
+  switch (accessThruMemRef(prefix)->nodeType) {
   case EMPTYLIST:
     *restList = copyThing(mainList);
     *associations = NULL;
     return 1;
     break;
   case LIST:
-    switch (mainList->nodeType) {
+    switch (accessThruMemRef(mainList)->nodeType) {
     case LIST:
     case FINALELLIPTICLIST:
-      lenPrefix = lengthChain(prefix->arguments);
+      lenPrefix = lengthChain(accessThruMemRef(prefix)->arguments);
       possibleMatchingPrefix = makeEmptyList();
       myRestList = copyThing(mainList);
       for (i=0; i<lenPrefix; i++) {
@@ -1440,18 +1443,18 @@ int tryMatchConcatOnList(chain **associations, node *thingToMatch, node *possibl
     return okay;    
   }
 
-  if (possibleMatcher->nodeType != CONCAT) return 0;
+  if (accessThruMemRef(possibleMatcher)->nodeType != CONCAT) return 0;
 
   leftEval = NULL;
   rightEval = NULL;
-  okayLeft = tryEvaluateRecursiveConcatMatcherToList(&leftEval, possibleMatcher->child1);
-  okayRight = tryEvaluateRecursiveConcatMatcherToList(&rightEval, possibleMatcher->child2);
+  okayLeft = tryEvaluateRecursiveConcatMatcherToList(&leftEval, accessThruMemRef(possibleMatcher)->child1);
+  okayRight = tryEvaluateRecursiveConcatMatcherToList(&rightEval, accessThruMemRef(possibleMatcher)->child2);
   
   if (okayLeft || okayRight) {
     myAssociations = NULL;
     okay = 1;
     
-    if (okayLeft && (leftEval->nodeType == FINALELLIPTICLIST)) okay = 0;
+    if (okayLeft && (accessThruMemRef(leftEval)->nodeType == FINALELLIPTICLIST)) okay = 0;
     
     if (okay) {
       if (okayRight) {
@@ -1460,7 +1463,7 @@ int tryMatchConcatOnList(chain **associations, node *thingToMatch, node *possibl
 	okay = tryCutPostfixList(&cutAssociations, &restList, thingToMatch, rightEval);
 	if (okay) {
 	  restAssociations = NULL;
-	  okay = tryMatch(&restAssociations,restList,possibleMatcher->child1);
+	  okay = tryMatch(&restAssociations,restList,accessThruMemRef(possibleMatcher)->child1);
 	  if (okay) {
 	    myAssociations = NULL;
 	    okay = tryCombineAssociations(&myAssociations, restAssociations, cutAssociations);
@@ -1475,7 +1478,7 @@ int tryMatchConcatOnList(chain **associations, node *thingToMatch, node *possibl
 	okay = tryCutPrefixList(&cutAssociations, &restList, thingToMatch, leftEval);
 	if (okay) {
 	  restAssociations = NULL;
-	  okay = tryMatch(&restAssociations,restList,possibleMatcher->child2);
+	  okay = tryMatch(&restAssociations,restList,accessThruMemRef(possibleMatcher)->child2);
 	  if (okay) {
 	    myAssociations = NULL;
 	    okay = tryCombineAssociations(&myAssociations, restAssociations, cutAssociations);
@@ -1506,18 +1509,18 @@ int tryMatchStructure(chain **associations, node *thingToMatch, node *possibleMa
   char *currPossibleMatcherName, *currThingToMatchName;
   node *currPossibleMatcherMatcher, *currThingToMatchThing;
 
-  if (thingToMatch->nodeType != STRUCTURE) return 0;
-  if (possibleMatcher->nodeType != STRUCTURE) return 0;
+  if (accessThruMemRef(thingToMatch)->nodeType != STRUCTURE) return 0;
+  if (accessThruMemRef(possibleMatcher)->nodeType != STRUCTURE) return 0;
 
   okay = 1;
   myAssociations = NULL;
 
-  for (currPossibleMatcher=possibleMatcher->arguments;
+  for (currPossibleMatcher=accessThruMemRef(possibleMatcher)->arguments;
        currPossibleMatcher != NULL;
        currPossibleMatcher=currPossibleMatcher->next) {
     currPossibleMatcherName = (char *) (((entry *) (currPossibleMatcher->value))->name);
     currPossibleMatcherMatcher = (node *) (((entry *) (currPossibleMatcher->value))->value);
-    for (found = 0, currThingToMatch=thingToMatch->arguments;
+    for (found = 0, currThingToMatch=accessThruMemRef(thingToMatch)->arguments;
 	 (!found) && (currThingToMatch != NULL);
 	 currThingToMatch=currThingToMatch->next) {
       currThingToMatchName = (char *) (((entry *) (currThingToMatch->value))->name);
@@ -1557,7 +1560,7 @@ int tryMatchStructure(chain **associations, node *thingToMatch, node *possibleMa
 int tryMatchInner(chain **associations, node *thingToMatch, node *possibleMatcher) {
 
   /* Default case: a match for everything, no association to perform */
-  if (possibleMatcher->nodeType == DEFAULT) return 1;
+  if (accessThruMemRef(possibleMatcher)->nodeType == DEFAULT) return 1;
 
   /* Base symbols: a match is obtained if the thing to match is equal
      to the matcher */
@@ -1573,14 +1576,14 @@ int tryMatchInner(chain **associations, node *thingToMatch, node *possibleMatche
      without variables)
   */
   if (isExtendedPureTree(possibleMatcher)) {
-    if (!isPureTree(thingToMatch) && !(possibleMatcher->nodeType == TABLEACCESS)) return 0;
+    if (!isPureTree(thingToMatch) && !(accessThruMemRef(possibleMatcher)->nodeType == TABLEACCESS)) return 0;
     return tryMatchExtendedPureTree(associations, thingToMatch, possibleMatcher);
   }
 
   /* Match ranges */
-  if (possibleMatcher->nodeType == RANGE) {
+  if (accessThruMemRef(possibleMatcher)->nodeType == RANGE) {
     if (!isRange(thingToMatch)) return 0;
-    return tryMatchRange(associations, *(thingToMatch->child1->value), *(thingToMatch->child2->value), possibleMatcher);
+    return tryMatchRange(associations, *(accessThruMemRef(accessThruMemRef(thingToMatch)->child1)->value), *(accessThruMemRef(accessThruMemRef(thingToMatch)->child2)->value), possibleMatcher);
   }
 
   /* Match lists */
@@ -1610,7 +1613,7 @@ int tryMatchInner(chain **associations, node *thingToMatch, node *possibleMatche
 	  isEmptyList(thingToMatch) ||
 	  isString(thingToMatch))) return 0;
     if (isString(thingToMatch)) {
-      return tryMatchConcatOnString(associations, thingToMatch->string, possibleMatcher);
+      return tryMatchConcatOnString(associations, accessThruMemRef(thingToMatch)->string, possibleMatcher);
     } else {
       return tryMatchConcatOnList(associations, thingToMatch, possibleMatcher);
     }
@@ -1619,7 +1622,7 @@ int tryMatchInner(chain **associations, node *thingToMatch, node *possibleMatche
   /* Match literate structures */
   if (isMatchableStructure(possibleMatcher)) {
     if (!isStructure(thingToMatch)) return 0;
-    if (associationContainsDoubleEntries(thingToMatch->arguments)) return 0;
+    if (associationContainsDoubleEntries(accessThruMemRef(thingToMatch)->arguments)) return 0;
     return tryMatchStructure(associations, thingToMatch, possibleMatcher);
   }
 

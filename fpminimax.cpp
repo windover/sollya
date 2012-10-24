@@ -1,6 +1,6 @@
 /*
 
-Copyright 2008-2011 by
+Copyright 2008-2012 by
 
 Laboratoire de l'Informatique du Parallelisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
@@ -316,10 +316,10 @@ int findCoeffInPseudoPolynomial(node **c, node *poly, node *g) {
   int r1, r2;
 
   if (poly == NULL)  return 0;
-  switch (poly->nodeType) {
+  switch (accessThruMemRef(poly)->nodeType) {
   case ADD:
-    r1 = findCoeffInPseudoPolynomial(&a, poly->child1, g);
-    r2 = findCoeffInPseudoPolynomial(&b, poly->child2, g);
+    r1 = findCoeffInPseudoPolynomial(&a, accessThruMemRef(poly)->child1, g);
+    r2 = findCoeffInPseudoPolynomial(&b, accessThruMemRef(poly)->child2, g);
     if (r1) {
       if (r2) *c = makeAdd(a,b);
       else *c = a;
@@ -330,8 +330,8 @@ int findCoeffInPseudoPolynomial(node **c, node *poly, node *g) {
     }
     break;
   case SUB:
-    r1 = findCoeffInPseudoPolynomial(&a, poly->child1, g);
-    r2 = findCoeffInPseudoPolynomial(&b, poly->child2, g);
+    r1 = findCoeffInPseudoPolynomial(&a, accessThruMemRef(poly)->child1, g);
+    r2 = findCoeffInPseudoPolynomial(&b, accessThruMemRef(poly)->child2, g);
     if (r1) {
       if (r2) *c = makeSub(a,b);
       else *c = a;
@@ -342,23 +342,23 @@ int findCoeffInPseudoPolynomial(node **c, node *poly, node *g) {
     }
     break;
   case NEG:
-    r1 = findCoeffInPseudoPolynomial(&a, poly->child1, g);
+    r1 = findCoeffInPseudoPolynomial(&a, accessThruMemRef(poly)->child1, g);
     if (r1) { *c = makeNeg(a); return 1; }
     break;
   case MUL:
-    if ( isSyntacticallyEqual(poly->child2, g) && isConstant(poly->child1) ) {
-      *c = copyTree(poly->child1); return 1;
+    if ( isSyntacticallyEqual(accessThruMemRef(poly)->child2, g) && isConstant(accessThruMemRef(poly)->child1) ) {
+      *c = copyTree(accessThruMemRef(poly)->child1); return 1;
     }
-    if ( isSyntacticallyEqual(poly->child1, g) && isConstant(poly->child2) ) {
-      *c = copyTree(poly->child2); return 1;
+    if ( isSyntacticallyEqual(accessThruMemRef(poly)->child1, g) && isConstant(accessThruMemRef(poly)->child2) ) {
+      *c = copyTree(accessThruMemRef(poly)->child2); return 1;
     }
     break;
   case DIV:
-    if ( isSyntacticallyEqual(poly->child1, g) && isConstant(poly->child2) ) {
-      *c = makeDiv(makeConstantDouble(1.0), copyTree(poly->child2)); return 1;
+    if ( isSyntacticallyEqual(accessThruMemRef(poly)->child1, g) && isConstant(accessThruMemRef(poly)->child2) ) {
+      *c = makeDiv(makeConstantDouble(1.0), copyTree(accessThruMemRef(poly)->child2)); return 1;
     }
-    temp = makeDiv(makeConstantDouble(1.0), copyTree(poly->child2));
-    if ( isSyntacticallyEqual(temp, g) && isConstant(poly->child1) ) {
+    temp = makeDiv(makeConstantDouble(1.0), copyTree(accessThruMemRef(poly)->child2));
+    if ( isSyntacticallyEqual(temp, g) && isConstant(accessThruMemRef(poly)->child1) ) {
       *c = copyTree(poly->child1);
       free_memory(temp); return 1;
     }
@@ -495,14 +495,14 @@ node *FPminimax(node *f,
     g = simplifyTreeErrorfree(tempTree);
     free_memory(tempTree);
 
-    w = makeConstantDouble(1);
+    w = makeConstantDouble(1.);
   }
   else {
-    tempTree = makeSub(makeConstantDouble(1), makeDiv(copyTree(consPart),copyTree(f)));
+    tempTree = makeSub(makeConstantDouble(1.), makeDiv(copyTree(consPart),copyTree(f)));
     g = simplifyTreeErrorfree(tempTree);
     free_memory(tempTree);
 
-    tempTree = makeDiv(makeConstantDouble(1), copyTree(f));
+    tempTree = makeDiv(makeConstantDouble(1.), copyTree(f));
     w = simplifyTreeErrorfree(tempTree);
     free_memory(tempTree);
   }

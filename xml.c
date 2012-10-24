@@ -80,6 +80,10 @@ void fPrintXmlInner(FILE *fd, node *tree) {
 
   if (tree == NULL) return;
   switch (tree->nodeType) {
+  case MEMREF:
+    fPrintXmlInner(fd, tree->child1);
+    return;
+    break;
   case VARIABLE:
     if (variablename == NULL) 
       sollyaFprintf(fd,"<ci> _x_ </ci>\n");

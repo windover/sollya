@@ -1,6 +1,6 @@
 /*
 
-Copyright 2008-2011 by
+Copyright 2008-2012 by
 
 Laboratoire de l'Informatique du Parallelisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
@@ -1348,7 +1348,7 @@ void libraryFunction_diff(sollya_mpfi_t *res, node *f, sollya_mpfi_t x, int n, i
   sollya_mpfi_init2(temp, prec);
 
   for(i=0;i<=n;i++) {
-    f->libFun->code(temp, x, f->libFunDeriv + i);
+    accessThruMemRef(f)->libFun->code(temp, x, accessThruMemRef(f)->libFunDeriv + i);
     sollya_init_and_convert_interval(temp2, temp);
     sollya_mpfi_div(res[i], temp2, fact);
     sollya_mpfi_clear(temp2);
@@ -1368,7 +1368,7 @@ void procedureFunction_diff(sollya_mpfi_t *res, node *f, sollya_mpfi_t x, int n,
   sollya_mpfi_set_ui(fact, 1);
 
   for(i=0;i<=n;i++) {
-    computeFunctionWithProcedure(res[i], f->child2, x, (unsigned int) (f->libFunDeriv + i));
+    computeFunctionWithProcedure(res[i], accessThruMemRef(f)->child2, x, (unsigned int) (accessThruMemRef(f)->libFunDeriv + i));
     sollya_mpfi_div(res[i], res[i], fact);
     sollya_mpfi_mul_ui(fact, fact, i+1);
   }
@@ -1510,7 +1510,7 @@ void auto_diff_scaled(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n) {
   int silent = 0;
 
   prec = getToolPrecision();
-  switch (f->nodeType) {
+  switch (accessThruMemRef(f)->nodeType) {
   case VARIABLE:
     sollya_mpfi_set(res[0], x0);
     if(n>=1) {
@@ -1525,17 +1525,17 @@ void auto_diff_scaled(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n) {
     break;
 
   case LIBRARYCONSTANT:
-    libraryConstantToInterval(res[0], f);
+    libraryConstantToInterval(res[0], accessThruMemRef(f));
     for(i=1; i<=n; i++) sollya_mpfi_set_ui(res[i], 0);
     break;
 
   case CONSTANT:
-    sollya_mpfi_set_fr(res[0], *(f->value));
+    sollya_mpfi_set_fr(res[0], *(accessThruMemRef(f)->value));
     for(i=1; i<=n; i++) sollya_mpfi_set_ui(res[i], 0);
     break;
 
   case NEG:
-    auto_diff_scaled(res, f->child1, x0, n);
+    auto_diff_scaled(res, accessThruMemRef(f)->child1, x0, n);
     for(i=0;i<=n;i++) sollya_mpfi_neg(res[i], res[i]);
     break;
 
@@ -1543,7 +1543,7 @@ void auto_diff_scaled(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n) {
   case SUB:
   case MUL:
   case DIV:
-    binary_function_diff(res, f->nodeType, x0, f->child1, f->child2, n, &silent);
+    binary_function_diff(res, accessThruMemRef(f)->nodeType, x0, accessThruMemRef(f)->child1, accessThruMemRef(f)->child2, n, &silent);
     break;
 
   case SQRT:
@@ -1587,10 +1587,10 @@ void auto_diff_scaled(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n) {
       sollya_mpfi_init2(res2[i], prec);
     }
 
-    auto_diff_scaled(res1, f->child1, x0, n);
-    if(f->nodeType==LIBRARYFUNCTION) libraryFunction_diff(res2, f, res1[0], n, &silent); 
-    else if(f->nodeType==PROCEDUREFUNCTION) procedureFunction_diff(res2, f, res1[0], n, &silent);
-    else baseFunction_diff(res2, f->nodeType, res1[0], n, &silent);
+    auto_diff_scaled(res1, accessThruMemRef(f)->child1, x0, n);
+    if(accessThruMemRef(f)->nodeType==LIBRARYFUNCTION) libraryFunction_diff(res2, accessThruMemRef(f), res1[0], n, &silent); 
+    else if(accessThruMemRef(f)->nodeType==PROCEDUREFUNCTION) procedureFunction_diff(res2, accessThruMemRef(f), res1[0], n, &silent);
+    else baseFunction_diff(res2, accessThruMemRef(f)->nodeType, res1[0], n, &silent);
     composition_AD(res, res2, res1, n);
 
     for(i=0;i<=n;i++) {
@@ -1602,28 +1602,28 @@ void auto_diff_scaled(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n) {
     break;
 
   case POW:
-    simplifiedChild2 = simplifyTreeErrorfree(f->child2);
-    simplifiedChild1 = simplifyTreeErrorfree(f->child1);
+    simplifiedChild2 = simplifyTreeErrorfree(accessThruMemRef(f)->child2);
+    simplifiedChild1 = simplifyTreeErrorfree(accessThruMemRef(f)->child1);
     
     /* x^p case */
-    if ( (simplifiedChild1->nodeType == VARIABLE) &&
-	 (simplifiedChild2->nodeType == CONSTANT) ) {
-      constantPower_diff(res, x0, *(simplifiedChild2->value), n, &silent);
+    if ( (accessThruMemRef(simplifiedChild1)->nodeType == VARIABLE) &&
+	 (accessThruMemRef(simplifiedChild2)->nodeType == CONSTANT) ) {
+      constantPower_diff(res, x0, *(accessThruMemRef(simplifiedChild2)->value), n, &silent);
     }
 
     /* p^x case */
-    else if ( (simplifiedChild1->nodeType == CONSTANT) &&
-	      (simplifiedChild2->nodeType == VARIABLE) ) {
-      powerFunction_diff(res, *(simplifiedChild1->value), x0, n, &silent);
+    else if ( (accessThruMemRef(simplifiedChild1)->nodeType == CONSTANT) &&
+	      (accessThruMemRef(simplifiedChild2)->nodeType == VARIABLE) ) {
+      powerFunction_diff(res, *(accessThruMemRef(simplifiedChild1)->value), x0, n, &silent);
     }
 
     /* p^q case */
-    else if ( (simplifiedChild1->nodeType == CONSTANT) &&
-	      (simplifiedChild2->nodeType == CONSTANT) ) {
+    else if ( (accessThruMemRef(simplifiedChild1)->nodeType == CONSTANT) &&
+	      (accessThruMemRef(simplifiedChild2)->nodeType == CONSTANT) ) {
       sollya_mpfi_init2(temp1, prec);
-      sollya_mpfi_set_fr(temp1, *(simplifiedChild1->value));
+      sollya_mpfi_set_fr(temp1, *(accessThruMemRef(simplifiedChild1)->value));
       sollya_mpfi_init2(temp2, prec);
-      sollya_mpfi_set_fr(temp2, *(simplifiedChild2->value));
+      sollya_mpfi_set_fr(temp2, *(accessThruMemRef(simplifiedChild2)->value));
       sollya_mpfi_pow(res[0], temp1, temp2);
       for(i=1; i<=n; i++) sollya_mpfi_set_ui(res[i], 0);
       
@@ -1632,8 +1632,8 @@ void auto_diff_scaled(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n) {
     }
     
     /* p^f or f^p case */
-    else if ( (simplifiedChild1->nodeType==CONSTANT) ||
-	      (simplifiedChild2->nodeType==CONSTANT) ) {
+    else if ( (accessThruMemRef(simplifiedChild1)->nodeType==CONSTANT) ||
+	      (accessThruMemRef(simplifiedChild2)->nodeType==CONSTANT) ) {
       
       res1 = (sollya_mpfi_t *)safeCalloc((n+1),sizeof(sollya_mpfi_t));
       res2 = (sollya_mpfi_t *)safeCalloc((n+1),sizeof(sollya_mpfi_t));
@@ -1642,13 +1642,13 @@ void auto_diff_scaled(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n) {
 	sollya_mpfi_init2(res2[i], prec);
       }
       
-      if (simplifiedChild1->nodeType == CONSTANT) { /* p^f */
+      if (accessThruMemRef(simplifiedChild1)->nodeType == CONSTANT) { /* p^f */
 	auto_diff_scaled(res1, simplifiedChild2, x0, n);
-	powerFunction_diff(res2, *(simplifiedChild1->value), res1[0], n, &silent);
+	powerFunction_diff(res2, *(accessThruMemRef(simplifiedChild1)->value), res1[0], n, &silent);
       }
       else { /* f^p */
 	auto_diff_scaled(res1, simplifiedChild1, x0, n);
-	constantPower_diff(res2, res1[0], *(simplifiedChild2->value), n, &silent);
+	constantPower_diff(res2, res1[0], *(accessThruMemRef(simplifiedChild2)->value), n, &silent);
       }
       
       composition_AD(res, res2, res1, n); 
@@ -1674,7 +1674,7 @@ void auto_diff_scaled(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n) {
     break;
     
   default:
-   sollyaFprintf(stderr,"Error in autodiff: unknown identifier (%d) in the tree\n",f->nodeType);
+    sollyaFprintf(stderr,"Error in autodiff: unknown identifier (%d) in the tree\n",accessThruMemRef(f)->nodeType);
    exit(1);
   }
 

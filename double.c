@@ -950,7 +950,7 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
     if (coefficients[i] != NULL) {
       temp = simplifyTreeErrorfree(coefficients[i]);
       free_memory(coefficients[i]);
-      if (temp->nodeType != CONSTANT) {
+      if (accessThruMemRef(temp)->nodeType != CONSTANT) {
 	if (!noRoundingWarnings) {
 	  printMessage(1,SOLLYA_MSG_ERROR_POLY_COEFF_GETS_ROUNDED,"Warning: the %dth coefficient of the given polynomial does not evaluate to a floating-point constant without any rounding.\n",i);
 	  printMessage(1,SOLLYA_MSG_CONTINUATION,"Will evaluate the coefficient in the current precision in floating-point before rounding to the target format.\n");
@@ -967,8 +967,8 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
 	mpfr_clear(dummyX);
 	res = 1;
       } else {
-	mpfr_init2(fpcoefficients[i],mpfr_get_prec(*(temp->value)));
-	mpfr_set(fpcoefficients[i],*(temp->value),GMP_RNDN);
+	mpfr_init2(fpcoefficients[i],mpfr_get_prec(*(accessThruMemRef(temp)->value)));
+	mpfr_set(fpcoefficients[i],*(accessThruMemRef(temp)->value),GMP_RNDN);
       }
       free_memory(temp);
     } else {
@@ -1176,8 +1176,8 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
       }
 
       tempNode = simplifyTreeErrorfree(coefficients[i]);
-      if (tempNode->nodeType == CONSTANT) {
-	roundingOccured |=  printDoubleExpansion(*(tempNode->value));
+      if (accessThruMemRef(tempNode)->nodeType == CONSTANT) {
+	roundingOccured |=  printDoubleExpansion(*(accessThruMemRef(tempNode)->value));
       } else {
 	if (!isConstant(tempNode)) {
 	  printMessage(1,SOLLYA_MSG_POLY_COEFF_IS_NOT_CONSTANT,"Error: a coefficient of a polynomial is not constant.\n");

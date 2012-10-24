@@ -1,5 +1,5 @@
 /*
-  Copyright 2011-2013 by 
+  Copyright 2011-2012 by 
   
   Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
   Sophia Antipolis, France.
@@ -79,10 +79,10 @@ int mpfi_set_node( sollya_mpfi_t r, node * c,  mp_prec_t prec) {
   sollya_mpfi_init2(*rrr,prec);
   if (c!=NULL){
     cc=simplifyTreeErrorfree(c);
-    switch (cc->nodeType){
+    switch (accessThruMemRef(cc)->nodeType){
       case PI_CONST: sollya_mpfi_const_pi(rr);
       break;
-      case CONSTANT:sollya_mpfi_set_fr(rr,*(cc->value));
+      case CONSTANT:sollya_mpfi_set_fr(rr,*(accessThruMemRef(cc)->value));
       break;
       default:  auto_diff(rrr,c,dummy,0); sollya_mpfi_set(rr, *rrr);
       break;
@@ -578,7 +578,7 @@ void getChebCoeffsFromPolynomial(sollya_mpfi_t**coeffs, int *n, node *f, sollya_
     
   }
   else{
-     printf("The given function is not a polynomial, no modif is made \n");  
+    printf("The given function is not a polynomial, no modif is made \n");  // ARGL! THIS SHOULD BE A CALL TO printmessage!
   }
 }
 
@@ -785,7 +785,7 @@ void getChebCoeffsDerivativePolynomial(sollya_mpfi_t*coeffs, sollya_mpfi_t *cheb
      }
     
     if (verbosity>10) {
-    printf("\nThe %d coefficients of the derivated polynomial are :\n ",n-1);
+      printf("\nThe %d coefficients of the derivated polynomial are :\n ",n-1); // ARGL: THESE SHOULD ALL BE CALLS TO printmessage!
       for (i=0;i<n-1;i++){
       printInterval(c[i]);
       }

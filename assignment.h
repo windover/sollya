@@ -76,6 +76,10 @@ int containsDeclaredEntry(chain *declSymTbl, char *name);
 void *getDeclaredEntry(chain *declSymTbl, char *name, void * (*copyValue) (void *));
 chain *assignDeclaredEntry(chain *declSymTbl, char *name, void *value, void * (*copyValue) (void *), void (*freeValue) (void *));
 chain *declareNewEntry(chain *declSymTbl, char *name, void *value, void * (*copyValue) (void *));
+int performListPrependOnDeclaredEntry(chain *symTbl, char *ident, node *tree);
+int performListPrependOnEntry(chain *symTbl, char *ident, node *tree);
+int performListTailOnDeclaredEntry(chain *symTbl, char *ident);
+int performListTailOnEntry(chain *symTbl, char *ident);
 
 
 #endif /* ifdef ASSIGNMENT_H*/

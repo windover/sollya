@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2009-2011 by
+  Copyright 2009-2012 by
 
   Laboratoire de l'Informatique du Parallelisme,
   UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
@@ -450,14 +450,14 @@ int computeMonotoneRemainder(sollya_mpfi_t *bound, int mode, int typeOfFunction,
     if ((mode==ABSOLUTE)&&(n%2==0))  baseFunction_diff(&boundfx0,nodeType,x0,0, silent);
     break;
   case MONOTONE_REMAINDER_LIBRARY_FUNCTION:
-    libraryFunction_diff(&boundf1, f, xinf, 0, silent);
-    libraryFunction_diff(&boundf2, f, xsup, 0, silent);
-    if ((mode==ABSOLUTE)&&(n%2==0))  libraryFunction_diff(&boundfx0, f, x0, 0, silent);
+    libraryFunction_diff(&boundf1, accessThruMemRef(f), xinf, 0, silent);
+    libraryFunction_diff(&boundf2, accessThruMemRef(f), xsup, 0, silent);
+    if ((mode==ABSOLUTE)&&(n%2==0))  libraryFunction_diff(&boundfx0, accessThruMemRef(f), x0, 0, silent);
     break;
   case MONOTONE_REMAINDER_PROCEDURE_FUNCTION:
-    procedureFunction_diff(&boundf1, f, xinf, 0, silent);
-    procedureFunction_diff(&boundf2, f, xsup, 0, silent);
-    if ((mode==ABSOLUTE)&&(n%2==0))  procedureFunction_diff(&boundfx0, f, x0, 0, silent);
+    procedureFunction_diff(&boundf1, accessThruMemRef(f), xinf, 0, silent);
+    procedureFunction_diff(&boundf2, accessThruMemRef(f), xsup, 0, silent);
+    if ((mode==ABSOLUTE)&&(n%2==0))  procedureFunction_diff(&boundfx0, accessThruMemRef(f), x0, 0, silent);
     break;
   case MONOTONE_REMAINDER_INV:
     sollya_mpfi_inv(boundf1, xinf);
@@ -567,11 +567,11 @@ void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, 
     break;
   case MONOTONE_REMAINDER_LIBRARY_FUNCTION:
     libraryFunction_diff(tt->poly_array, f, x0, n-1, silent);
-    libraryFunction_diff(nDeriv, f, x, (mode==RELATIVE)?(n+1):n, silent);
+    libraryFunction_diff(nDeriv, accessThruMemRef(f), x, (mode==RELATIVE)?(n+1):n, silent);
     break;
   case MONOTONE_REMAINDER_PROCEDURE_FUNCTION:
     procedureFunction_diff(tt->poly_array, f, x0, n-1, silent);
-    procedureFunction_diff(nDeriv, f, x, (mode==RELATIVE)?(n+1):n, silent);
+    procedureFunction_diff(nDeriv, accessThruMemRef(f), x, (mode==RELATIVE)?(n+1):n, silent);
     break;
   case MONOTONE_REMAINDER_INV: 
     mpfr_init2(minusOne, prec);
@@ -803,7 +803,7 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
   /*used by base functions*/
   sollya_mpfi_t fx0,rangef,pow;
   
-  switch (f->nodeType) {
+  switch (accessThruMemRef(f)->nodeType) {
   
   case VARIABLE:
   
@@ -837,9 +837,9 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
 
     sollya_mpfi_init2(ct, getToolPrecision());
     tt=createEmptytModel(n,x0,x); 
-    if (f->nodeType == PI_CONST) sollya_mpfi_const_pi(ct);
-    else if (f->nodeType == LIBRARYCONSTANT) libraryConstantToInterval(ct, f);
-    else sollya_mpfi_set_fr(ct, *(f->value));
+    if (accessThruMemRef(f)->nodeType == PI_CONST) sollya_mpfi_const_pi(ct);
+    else if (accessThruMemRef(f)->nodeType == LIBRARYCONSTANT) libraryConstantToInterval(ct, accessThruMemRef(f));
+    else sollya_mpfi_set_fr(ct, *(accessThruMemRef(f)->value));
 
     consttModel(tt,ct);
     sollya_mpfi_set_ui(tt->rem_bound,0);
@@ -855,7 +855,7 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
     //create a new empty taylor model the child
     child1_tm=createEmptytModel(n, x0, x);
     //call taylor_model on the child
-    taylor_model(child1_tm, f->child1,n,x0,x,mode);
+    taylor_model(child1_tm, accessThruMemRef(f)->child1,n,x0,x,mode);
     //do the necessary chages from child to parent
     for(i=0;i<n;i++) 
       sollya_mpfi_neg(tt->poly_array[i], child1_tm->poly_array[i]);
@@ -875,8 +875,8 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
     child1_tm=createEmptytModel(n, x0,x);
     child2_tm=createEmptytModel(n, x0,x);
     //call taylor_model on the children
-    taylor_model(child1_tm, f->child1,n,x0,x,mode);
-    taylor_model(child2_tm, f->child2,n,x0,x,mode);
+    taylor_model(child1_tm, accessThruMemRef(f)->child1,n,x0,x,mode);
+    taylor_model(child2_tm, accessThruMemRef(f)->child2,n,x0,x,mode);
     
     addition_TM(tt,child1_tm, child2_tm,mode);
     copytModel(t,tt);
@@ -893,8 +893,8 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
     child1_tm=createEmptytModel(n, x0,x);
     child2_tm=createEmptytModel(n, x0,x);
     //call taylor_model on the children
-    taylor_model(child1_tm, f->child1,n,x0,x,mode);
-    taylor_model(child2_tm, f->child2,n,x0,x,mode);
+    taylor_model(child1_tm, accessThruMemRef(f)->child1,n,x0,x,mode);
+    taylor_model(child2_tm, accessThruMemRef(f)->child2,n,x0,x,mode);
     
     //do the necessary chages from children to parent
     sollya_mpfi_init2(minusOne,getToolPrecision());
@@ -917,8 +917,8 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
     child1_tm=createEmptytModel(n,x0,x);
     child2_tm=createEmptytModel(n, x0,x);
     //call taylor_model on the children
-    taylor_model(child1_tm, f->child1,n,x0,x,mode);
-    taylor_model(child2_tm, f->child2,n,x0,x,mode);
+    taylor_model(child1_tm, accessThruMemRef(f)->child1,n,x0,x,mode);
+    taylor_model(child2_tm, accessThruMemRef(f)->child2,n,x0,x,mode);
     
     //do the necessary chages from children to parent
     multiplication_TM(tt,child1_tm, child2_tm,mode);
@@ -936,7 +936,7 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
     
     //check whether g(x0)is zero
     sollya_mpfi_init2(gx0, getToolPrecision());
-    evaluateInterval(gx0,f->child2, NULL, x0)  ;
+    evaluateInterval(gx0,accessThruMemRef(f)->child2, NULL, x0)  ;
   
     ttt=createEmptytModel(n,x0,x); 
    
@@ -949,8 +949,8 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
       child2Extended_tm=createEmptytModel(n+orderUpperBound,x0,x);
       
       //call taylor_model for the children
-      taylor_model(child1Extended_tm, f->child1,n+orderUpperBound,x0,x,mode);
-      taylor_model(child2Extended_tm, f->child2,n+orderUpperBound,x0,x,mode);
+      taylor_model(child1Extended_tm, accessThruMemRef(f)->child1,n+orderUpperBound,x0,x,mode);
+      taylor_model(child2Extended_tm, accessThruMemRef(f)->child2,n+orderUpperBound,x0,x,mode);
       
       //reduce order taylor model
       int l;
@@ -987,8 +987,8 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
       child1_tm=createEmptytModel(n,x0,x);
       child2_tm=createEmptytModel(n,x0,x);
       //call taylor_model for the children
-      taylor_model(child1_tm, f->child1,n,x0,x,mode);
-      taylor_model(child2_tm, f->child2,n,x0,x,mode);
+      taylor_model(child1_tm, accessThruMemRef(f)->child1,n,x0,x,mode);
+      taylor_model(child2_tm, accessThruMemRef(f)->child2,n,x0,x,mode);
     }
     sollya_mpfi_set(gx0,child2_tm->poly_array[0]);
     sollya_mpfi_init2(rangeg, getToolPrecision());
@@ -1064,7 +1064,7 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
     child1_tm=createEmptytModel(n,x0,x);
 
     //call taylor_model on the child
-    taylor_model(child1_tm, f->child1,n,x0,x,mode);
+    taylor_model(child1_tm, accessThruMemRef(f)->child1,n,x0,x,mode);
     //compute tm for the basic case
 
 
@@ -1074,7 +1074,7 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
     sollya_mpfi_init2(pow, getToolPrecision());
     sollya_mpfi_set_ui(pow,n);
 
-    evaluateInterval(fx0, f->child1, NULL, x0);
+    evaluateInterval(fx0, accessThruMemRef(f)->child1, NULL, x0);
     if (mode==RELATIVE){
       sollya_mpfi_sub(rangef, x,x0);
       sollya_mpfi_pow(rangef,rangef,pow);
@@ -1087,12 +1087,12 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
 
     child2_tm=createEmptytModel(n,fx0,rangef);
 
-    if (f->nodeType == LIBRARYFUNCTION)
-      base_TMAux(child2_tm, MONOTONE_REMAINDER_LIBRARY_FUNCTION, 0, f, NULL, n, fx0, rangef,mode,&silent);
-    else if (f->nodeType == PROCEDUREFUNCTION)
-      base_TMAux(child2_tm, MONOTONE_REMAINDER_PROCEDURE_FUNCTION, 0, f, NULL, n, fx0, rangef,mode,&silent);
+    if (accessThruMemRef(f)->nodeType == LIBRARYFUNCTION)
+      base_TMAux(child2_tm, MONOTONE_REMAINDER_LIBRARY_FUNCTION, 0, accessThruMemRef(f), NULL, n, fx0, rangef,mode,&silent);
+    else if (accessThruMemRef(f)->nodeType == PROCEDUREFUNCTION)
+      base_TMAux(child2_tm, MONOTONE_REMAINDER_PROCEDURE_FUNCTION, 0, accessThruMemRef(f), NULL, n, fx0, rangef,mode,&silent);
     else
-      base_TMAux(child2_tm, MONOTONE_REMAINDER_BASE_FUNCTION, f->nodeType, NULL, NULL, n, fx0, rangef,mode,&silent);
+      base_TMAux(child2_tm, MONOTONE_REMAINDER_BASE_FUNCTION, accessThruMemRef(f)->nodeType, NULL, NULL, n, fx0, rangef,mode,&silent);
     composition_TM(tt,child2_tm, child1_tm,mode);
     cleartModel(child1_tm);
     cleartModel(child2_tm);
@@ -1108,15 +1108,15 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
     //create the result taylorModel
     tt=createEmptytModel(n,x0,x);
 
-    simplifiedChild2=simplifyTreeErrorfree(f->child2);
-    simplifiedChild1=simplifyTreeErrorfree(f->child1);
+    simplifiedChild2=simplifyTreeErrorfree(accessThruMemRef(f)->child2);
+    simplifiedChild1=simplifyTreeErrorfree(accessThruMemRef(f)->child1);
 
-    if ((simplifiedChild2->nodeType==CONSTANT) &&(simplifiedChild1->nodeType==CONSTANT)) { //we have the ct1^ct2 case
+    if ((accessThruMemRef(simplifiedChild2)->nodeType==CONSTANT) &&(accessThruMemRef(simplifiedChild1)->nodeType==CONSTANT)) { //we have the ct1^ct2 case
       // printf("We are in the  ct1^ct2 case");
       sollya_mpfi_init2(temp1, getToolPrecision());
-      sollya_mpfi_set_fr(temp1, *(simplifiedChild1->value));
+      sollya_mpfi_set_fr(temp1, *(accessThruMemRef(simplifiedChild1)->value));
       sollya_mpfi_init2(temp2, getToolPrecision());
-      sollya_mpfi_set_fr(temp2, *(simplifiedChild2->value));
+      sollya_mpfi_set_fr(temp2, *(accessThruMemRef(simplifiedChild2)->value));
       sollya_mpfi_pow(temp1,temp1,temp2);
       consttModel(tt,temp1);
       copytModel(t,tt);
@@ -1124,18 +1124,18 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
       sollya_mpfi_clear(temp1);
       sollya_mpfi_clear(temp2);
     }
-    else if (simplifiedChild2->nodeType==CONSTANT) { //we have the f^p case
+    else if (accessThruMemRef(simplifiedChild2)->nodeType==CONSTANT) { //we have the f^p case
       //printf("We are in the  f^p case");
       //sollya_mpfi_t powx,fx0,rangef;
       //create a new empty taylor model the child
       child1_tm=createEmptytModel(n,x0,x);
       //call taylor_model for the child
-      taylor_model(child1_tm, f->child1,n,x0,x,mode);
+      taylor_model(child1_tm, accessThruMemRef(f)->child1,n,x0,x,mode);
       //printf("\n\n-----------taylormodel child1: \n");
       //printtModel(child1_tm);
       //printf("-----------------------------\n");
       sollya_mpfi_init2(fx0,getToolPrecision());
-      evaluateInterval(fx0, f->child1, NULL, x0);
+      evaluateInterval(fx0, accessThruMemRef(f)->child1, NULL, x0);
         
       sollya_mpfi_init2(rangef, getToolPrecision());
       sollya_mpfi_init2(powx, getToolPrecision());
@@ -1152,7 +1152,7 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
       //create tm for x^p over ragef in fx0
       ctPowVar_tm=createEmptytModel(n,fx0,rangef);
         
-      base_TMAux(ctPowVar_tm, MONOTONE_REMAINDER_CONSTPOWERVAR, 0, NULL, *(simplifiedChild2->value), n, fx0,rangef,mode,&silent);
+      base_TMAux(ctPowVar_tm, MONOTONE_REMAINDER_CONSTPOWERVAR, 0, NULL, *(accessThruMemRef(simplifiedChild2)->value), n, fx0,rangef,mode,&silent);
         
       //printf("\n\n-----------taylormodel child1: \n");
       //printtModel(ctPowVar_tm);
@@ -1170,16 +1170,16 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
       sollya_mpfi_clear(powx);
       sollya_mpfi_clear(fx0);
     } 
-    else if (simplifiedChild1->nodeType==CONSTANT) { //we have the p^f case
+    else if (accessThruMemRef(simplifiedChild1)->nodeType==CONSTANT) { //we have the p^f case
         
       //sollya_mpfi_t powx,fx0,rangef;        
       //create a new empty taylor model the child
       child2_tm=createEmptytModel(n,x0,x);
       //call taylor_model for the child
-      taylor_model(child2_tm, f->child2,n,x0,x,mode);
+      taylor_model(child2_tm, accessThruMemRef(f)->child2,n,x0,x,mode);
         
       sollya_mpfi_init2(fx0,getToolPrecision());
-      evaluateInterval(fx0, f->child2, NULL, x0);
+      evaluateInterval(fx0, accessThruMemRef(f)->child2, NULL, x0);
         
       sollya_mpfi_init2(rangef, getToolPrecision());
       sollya_mpfi_init2(powx, getToolPrecision());
@@ -1197,7 +1197,7 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
       //create tm for p^x over ragef in fx0
       varCtPower_tm=createEmptytModel(n,fx0,rangef);
         
-      base_TMAux(varCtPower_tm, MONOTONE_REMAINDER_VARCONSTPOWER, 0, NULL, *(simplifiedChild1->value), n, fx0,rangef,mode,&silent );
+      base_TMAux(varCtPower_tm, MONOTONE_REMAINDER_VARCONSTPOWER, 0, NULL, *(accessThruMemRef(simplifiedChild1)->value), n, fx0,rangef,mode,&silent );
       composition_TM(tt,varCtPower_tm,child2_tm,mode);
     
       //clear old child
@@ -1217,15 +1217,15 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
       child1_tm=createEmptytModel(n,x0,x);
       child2_tm=createEmptytModel(n,x0,x);
       //call taylor_model for child 2 = g
-      taylor_model(child2_tm, f->child2,n,x0,x,mode);
+      taylor_model(child2_tm, accessThruMemRef(f)->child2,n,x0,x,mode);
 
       //call taylor_model for child 1 = f
-      taylor_model(child1_tm, f->child1,n,x0,x,mode);
+      taylor_model(child1_tm, accessThruMemRef(f)->child1,n,x0,x,mode);
 
       //create  taylor_model for log (child 1) = log(f)
 
       sollya_mpfi_init2(fx0,getToolPrecision());
-      evaluateInterval(fx0, f->child1, NULL, x0);
+      evaluateInterval(fx0, accessThruMemRef(f)->child1, NULL, x0);
 
       sollya_mpfi_init2(rangef, getToolPrecision());
       sollya_mpfi_init2(powx, getToolPrecision());
@@ -1254,7 +1254,7 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
 
       //------------------------------------------
       sollya_mpfi_init2(gx0,getToolPrecision());
-      evaluateInterval(gx0, f->child2, NULL, x0);
+      evaluateInterval(gx0, accessThruMemRef(f)->child2, NULL, x0);
       sollya_mpfi_log(fx0,fx0);
       sollya_mpfi_mul(gx0,gx0,fx0);
 
@@ -1294,7 +1294,7 @@ void taylor_model(tModel *t, node *f, int n, sollya_mpfi_t x0, sollya_mpfi_t x, 
     break;
 
   default:
-    sollyaFprintf(stderr,"Error: TM: unknown identifier (%d) in the tree\n",f->nodeType);
+    sollyaFprintf(stderr,"Error: TM: unknown identifier (%d) in the tree\n",accessThruMemRef(f)->nodeType);
     exit(1);
     //  }
   }

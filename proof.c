@@ -169,7 +169,7 @@ void nullifyExprBoundTheo(exprBoundTheo *theo) {
 
 int exprBoundTheoIsTrivial(exprBoundTheo *theo) {
   if (theo->function == NULL) return 0;
-  if ((theo->function->nodeType == CONSTANT) || (theo->function->nodeType == VARIABLE)) return 1;
+  if ((accessThruMemRef(theo->function)->nodeType == CONSTANT) || (accessThruMemRef(theo->function)->nodeType == VARIABLE)) return 1;
   return 0;
 }
 
@@ -624,7 +624,7 @@ void fprintNumeratorSufficesLemma(FILE *fd, node *func, node *numerator, int the
   fprintTree(fd,numerator);
   sollyaFprintf(fd,"\n");
   sollyaFprintf(fd,"Proof:\n");
-  if (func->nodeType == DIV) {
+  if (accessThruMemRef(func)->nodeType == DIV) {
     sollyaFprintf(fd,"The function f(%s) is a fraction. The function g(%s) is the numerator of this fraction.\n",
 	    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   } else {

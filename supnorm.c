@@ -857,8 +857,8 @@ int isPolynomialWithConstantDyadicFiniteRealCoefficients(node *poly) {
   res = 1;
   for (i=0;i<=degree;i++) {
     if (coefficients[i] != NULL) {
-      if ((!(coefficients[i]->nodeType == CONSTANT)) ||
-	  (!mpfr_number_p(*(coefficients[i]->value)))) {
+      if ((!(accessThruMemRef(coefficients[i])->nodeType == CONSTANT)) ||
+	  (!mpfr_number_p(*(accessThruMemRef(coefficients[i])->value)))) {
 	res = 0;
 	break;
       }
@@ -1222,8 +1222,8 @@ int determineOrderOfZero(int *k, node *func, mpfr_t x0, int n, mp_prec_t prec) {
 	while ((myK <= degree) && (myK <= n-1) && (!res)) { /* Normally n==degree */
 	  if (   (    (coefficients[myK] == NULL)
                       || 
-                      ( (coefficients[myK]->nodeType == CONSTANT) && 
-                        (mpfr_zero_p(*(coefficients[myK]->value)))
+                      ( (accessThruMemRef(coefficients[myK])->nodeType == CONSTANT) && 
+                        (mpfr_zero_p(*(accessThruMemRef(coefficients[myK])->value)))
                       )
                  ) && 
                  (sollya_mpfi_is_zero(*(errorsAsArray[myK])))
@@ -2335,14 +2335,14 @@ int hasOnlyMpqCoefficients(node *poly) {
     if (coefficients[i] != NULL) {
       simplified = simplifyRationalErrorfree(coefficients[i]);
       okay = 0;
-      if ((simplified->nodeType == CONSTANT) &&
-	  (mpfr_number_p(*(simplified->value)))) okay = 1;
+      if ((accessThruMemRef(simplified)->nodeType == CONSTANT) &&
+	  (mpfr_number_p(*(accessThruMemRef(simplified)->value)))) okay = 1;
       else {
-	if ((simplified->nodeType == DIV) &&
-	    (((simplified->child1->nodeType == CONSTANT) && 
-	      (mpfr_number_p(*(simplified->child1->value)))) && 
-	     ((simplified->child2->nodeType == CONSTANT) && 
-	      (mpfr_number_p(*(simplified->child2->value)))))) okay = 1;
+	if ((accessThruMemRef(simplified)->nodeType == DIV) &&
+	    (((accessThruMemRef(accessThruMemRef(simplified)->child1)->nodeType == CONSTANT) && 
+	      (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(simplified)->child1)->value)))) && 
+	     ((accessThruMemRef(accessThruMemRef(simplified)->child2)->nodeType == CONSTANT) && 
+	      (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(simplified)->child2)->value)))))) okay = 1;
       }
       free_memory(simplified);
       if (!okay) {

@@ -794,15 +794,15 @@ void normalizeDivMul(node *c, chain **numerator, chain **denominator) {
   chain *num2 = NULL;
   chain *denom2 = NULL;
 
-  if (c->nodeType == MUL) {
-    normalizeDivMul(c->child1, &num1, &denom1);
-    normalizeDivMul(c->child2, &num2, &denom2);
+  if (accessThruMemRef(c)->nodeType == MUL) {
+    normalizeDivMul(accessThruMemRef(c)->child1, &num1, &denom1);
+    normalizeDivMul(accessThruMemRef(c)->child2, &num2, &denom2);
     *numerator = concatChains(num1, num2);
     *denominator = concatChains(denom1, denom2);
   }
-  else if (c->nodeType == DIV) {
-    normalizeDivMul(c->child1, &num1, &denom1);
-    normalizeDivMul(c->child2, &denom2, &num2);
+  else if (accessThruMemRef(c)->nodeType == DIV) {
+    normalizeDivMul(accessThruMemRef(c)->child1, &num1, &denom1);
+    normalizeDivMul(accessThruMemRef(c)->child2, &denom2, &num2);
     *numerator = concatChains(num1, num2);
     *denominator = concatChains(denom1, denom2);
   }
@@ -914,10 +914,10 @@ int implementDivMul(node *c, int gamma0, struct implementCsteProgram *program) {
 }
 
 int summation_weight(node *c) {
-  if ( (c->nodeType == ADD) || (c->nodeType == SUB) )
-    return (summation_weight(c->child1) + summation_weight(c->child2) + 1);
-  else if (c->nodeType == NEG)
-    return summation_weight(c->child1);
+  if ( (accessThruMemRef(c)->nodeType == ADD) || (accessThruMemRef(c)->nodeType == SUB) )
+    return (summation_weight(accessThruMemRef(c)->child1) + summation_weight(accessThruMemRef(c)->child2) + 1);
+  else if (accessThruMemRef(c)->nodeType == NEG)
+    return summation_weight(accessThruMemRef(c)->child1);
   else return 1;
 }
 
@@ -948,11 +948,11 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
     printMessage(1,SOLLYA_MSG_EXPR_SEEMS_TO_BE_ZERO_INCREASE_PREC,"Error in implementconstant: the following expression seems to be exactly zero:\n%b\nIf it is not exactly zero, increasing prec should solve the issue.\nAbort.\n",c);
     return 2;
   }
-  evaluateInterval(a, c->child1, NULL, a);
-  evaluateInterval(b, c->child2, NULL, b);
+  evaluateInterval(a, accessThruMemRef(c)->child1, NULL, a);
+  evaluateInterval(b, accessThruMemRef(c)->child2, NULL, b);
 
-  na = 2*summation_weight(c->child1)-1;
-  nb = 2*summation_weight(c->child2)-1;
+  na = 2*summation_weight(accessThruMemRef(c)->child1)-1;
+  nb = 2*summation_weight(accessThruMemRef(c)->child2)-1;
   n = na+nb+1;
 
   sollya_mpfi_div(tmp, y, a); sollya_mpfi_mul_ui(tmp, tmp, na); sollya_mpfi_div_ui(tmp, tmp, n);
@@ -986,7 +986,7 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
   if( gamma0+1-*Ea>=0 ) { /* No need to perform a test inside
                              the generated code */
     tmpa = program->counter;
-    res = constantImplementer(c->child1, gamma0+1-*Ea, program);
+    res = constantImplementer(accessThruMemRef(c)->child1, gamma0+1-*Ea, program);
   }
   else {
     prog1.instructions = NULL;
@@ -1003,7 +1003,7 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
     incrementProgramCounter(&prog1);
 
     prog2.precisions = prog1.precisions;
-    res = constantImplementer(c->child1, gamma0+1-*Ea, &prog2);
+    res = constantImplementer(accessThruMemRef(c)->child1, gamma0+1-*Ea, &prog2);
     prog1.precisions = prog2.precisions;
 
     str = safeCalloc(32 , sizeof(char));
@@ -1026,7 +1026,7 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
   if( gamma0+1-*Eb>=0 ) { /* No need to perform a test inside 
                              the generated code */
     tmpb = program->counter;
-    res = constantImplementer(c->child2, gamma0+1-*Eb, program);
+    res = constantImplementer(accessThruMemRef(c)->child2, gamma0+1-*Eb, program);
   }
   else {
     prog1.instructions = NULL;
@@ -1064,9 +1064,9 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
   }
 
   appendSetprecProg(counter, gamma0+2-*Ey, program);
-  if (c->nodeType==ADD)
+  if (accessThruMemRef(c)->nodeType==ADD)
     appendBinaryfuncProg("mpfr_add", counter, tmpa, tmpb, program);
-  else if (c->nodeType==SUB)
+  else if (accessThruMemRef(c)->nodeType==SUB)
     appendBinaryfuncProg("mpfr_sub", counter, tmpa, tmpb, program);
   else {
     sollyaFprintf(stderr, "Unexpected error: an addition/subtraction must have nodeType=ADD or nodeType=SUB\n");
@@ -1092,58 +1092,58 @@ int implementPow(node *c, int gamma0, struct implementCsteProgram *program) {
   int res;
 
   counter = program->counter;
-  if ( (c->child1->nodeType==CONSTANT) 
-       && mpfr_integer_p(*(c->child1->value))
-       && mpfr_fits_ulong_p(*(c->child1->value), GMP_RNDN)
-       && (c->child2->nodeType==CONSTANT) 
-       && mpfr_integer_p(*(c->child2->value))
-       && mpfr_fits_ulong_p(*(c->child2->value), GMP_RNDN)) { /* Case n^p */
+  if ( (accessThruMemRef(accessThruMemRef(c)->child1)->nodeType==CONSTANT) 
+       && mpfr_integer_p(*(accessThruMemRef(accessThruMemRef(c)->child1)->value))
+       && mpfr_fits_ulong_p(*(accessThruMemRef(accessThruMemRef(c)->child1)->value), GMP_RNDN)
+       && (accessThruMemRef(accessThruMemRef(c)->child2)->nodeType==CONSTANT) 
+       && mpfr_integer_p(*(accessThruMemRef(accessThruMemRef(c)->child2)->value))
+       && mpfr_fits_ulong_p(*(accessThruMemRef(accessThruMemRef(c)->child2)->value), GMP_RNDN)) { /* Case n^p */
     appendSetprecProg(counter, gamma0, program);
-    appendUipowui(counter, mpfr_get_ui(*(c->child1->value), GMP_RNDN), mpfr_get_ui(*(c->child2->value), GMP_RNDN), program);
+    appendUipowui(counter, mpfr_get_ui(*(accessThruMemRef(accessThruMemRef(c)->child1)->value), GMP_RNDN), mpfr_get_ui(*(accessThruMemRef(accessThruMemRef(c)->child2)->value), GMP_RNDN), program);
     program->counter = counter;
     return 0;
   }
 
-  if ( (c->child2->nodeType==CONSTANT) 
-       && mpfr_integer_p(*(c->child2->value))
-       && mpfr_fits_ulong_p(*(c->child2->value), GMP_RNDN) ) { /* Case x^p */
-    p = mpfr_get_ui(*(c->child2->value), GMP_RNDN);
+  if ( (accessThruMemRef(accessThruMemRef(c)->child2)->nodeType==CONSTANT) 
+       && mpfr_integer_p(*(accessThruMemRef(accessThruMemRef(c)->child2)->value))
+       && mpfr_fits_ulong_p(*(accessThruMemRef(accessThruMemRef(c)->child2)->value), GMP_RNDN) ) { /* Case x^p */
+    p = mpfr_get_ui(*(accessThruMemRef(accessThruMemRef(c)->child2)->value), GMP_RNDN);
     log2p = ceil_log2n(p);
     incrementProgramCounter(program);
-    res = constantImplementer(c->child1, gamma0+log2p+3, program);
+    res = constantImplementer(accessThruMemRef(c)->child1, gamma0+log2p+3, program);
     appendSetprecProg(counter, gamma0+2, program);
     appendPowuiProg(counter, counter+1, p, program);
     program->counter = counter;
     return res;
   }
 
-  if ( (c->child2->nodeType==DIV)
-       && (c->child2->child1->nodeType==CONSTANT)
-       && (mpfr_cmp_ui(*(c->child2->child1->value), 1)==0)
-       && (c->child2->child2->nodeType==CONSTANT)
-       && mpfr_integer_p(*(c->child2->child2->value))
-       && mpfr_fits_ulong_p(*(c->child2->child2->value), GMP_RNDN)
+  if ( (accessThruMemRef(accessThruMemRef(c)->child2)->nodeType==DIV)
+       && (accessThruMemRef(accessThruMemRef(accessThruMemRef(c)->child2)->child1)->nodeType==CONSTANT)
+       && (mpfr_cmp_ui(*(accessThruMemRef(accessThruMemRef(accessThruMemRef(c)->child2)->child1)->value), 1)==0)
+       && (accessThruMemRef(accessThruMemRef(accessThruMemRef(c)->child2)->child2)->nodeType==CONSTANT)
+       && mpfr_integer_p(*(accessThruMemRef(accessThruMemRef(accessThruMemRef(c)->child2)->child2)->value))
+       && mpfr_fits_ulong_p(*(accessThruMemRef(accessThruMemRef(accessThruMemRef(c)->child2)->child2)->value), GMP_RNDN)
        ) { /* Case x^(1/p) (note that this does not handle the case when p=2^k */
-    p = mpfr_get_ui(*(c->child2->child2->value), GMP_RNDN);
+    p = mpfr_get_ui(*(accessThruMemRef(accessThruMemRef(accessThruMemRef(c)->child2)->child2)->value), GMP_RNDN);
     log2p = ceil_log2n(p);
     incrementProgramCounter(program);
-    res = constantImplementer(c->child1, gamma0-log2p+3, program);
+    res = constantImplementer(accessThruMemRef(c)->child1, gamma0-log2p+3, program);
     appendSetprecProg(counter, gamma0+2, program);
     appendRootProg(counter, counter+1, p, program);
     program->counter = counter;
     return res; 
   }
 
-  if (c->child2->nodeType==CONSTANT) {
+  if (accessThruMemRef(accessThruMemRef(c)->child2)->nodeType==CONSTANT) {
     mpfr_init2(tmp, 64);
-    if ( (mpfr_ui_div(tmp, 1, *(c->child2->value), GMP_RNDN) == 0)
+    if ( (mpfr_ui_div(tmp, 1, *(accessThruMemRef(accessThruMemRef(c)->child2)->value), GMP_RNDN) == 0)
          && mpfr_integer_p(tmp)
          && mpfr_fits_ulong_p(tmp, GMP_RNDN)
          ) { /* Case x^(1/p) where p is a power of 2 */
       p = mpfr_get_ui(tmp, GMP_RNDN);
       log2p = ceil_log2n(p);
       incrementProgramCounter(program);
-      res = constantImplementer(c->child1, gamma0-log2p+3, program);
+      res = constantImplementer(accessThruMemRef(c)->child1, gamma0-log2p+3, program);
       appendSetprecProg(counter, gamma0+2, program);
       appendRootProg(counter, counter+1, p, program);
       program->counter = counter;
@@ -1154,7 +1154,7 @@ int implementPow(node *c, int gamma0, struct implementCsteProgram *program) {
   }
 
   /* else... case x^y with x possibly integer. Handled as exp(y*ln(x)) */
-  tmpNode = makeExp(makeMul(copyTree(c->child2), makeLog(copyTree(c->child1))));
+  tmpNode = makeExp(makeMul(copyTree(accessThruMemRef(c)->child2), makeLog(copyTree(accessThruMemRef(c)->child1))));
   res = constantImplementer(tmpNode, gamma0, program);
   free_memory(tmpNode);
   program->counter = counter;
@@ -1163,14 +1163,14 @@ int implementPow(node *c, int gamma0, struct implementCsteProgram *program) {
 
 int implementCsteCase(node *c, int gamma0, struct implementCsteProgram *program) {
   appendSetprecProg(program->counter, gamma0, program);
-  if (mpfr_integer_p(*(c->value)) && mpfr_fits_ulong_p(*(c->value), GMP_RNDN)) {
-    appendSetuiProg(program->counter, mpfr_get_ui(*(c->value), GMP_RNDN), program);
+  if (mpfr_integer_p(*(accessThruMemRef(c)->value)) && mpfr_fits_ulong_p(*(accessThruMemRef(c)->value), GMP_RNDN)) {
+    appendSetuiProg(program->counter, mpfr_get_ui(*(accessThruMemRef(c)->value), GMP_RNDN), program);
   }
-  else if (mpfr_integer_p(*(c->value)) && mpfr_fits_slong_p(*(c->value), GMP_RNDN)) {
-    appendSetsiProg(program->counter, mpfr_get_si(*(c->value), GMP_RNDN), program);
+  else if (mpfr_integer_p(*(accessThruMemRef(c)->value)) && mpfr_fits_slong_p(*(accessThruMemRef(c)->value), GMP_RNDN)) {
+    appendSetsiProg(program->counter, mpfr_get_si(*(accessThruMemRef(c)->value), GMP_RNDN), program);
   }
   else {
-    appendSetstrProg(program->counter, *(c->value), program);
+    appendSetstrProg(program->counter, *(accessThruMemRef(c)->value), program);
   }
   return 0;
 }
@@ -1178,7 +1178,7 @@ int implementCsteCase(node *c, int gamma0, struct implementCsteProgram *program)
 int constantImplementer(node *c, int gamma0, struct implementCsteProgram *program) {
   int res;
 
-  switch (c->nodeType) {
+  switch (accessThruMemRef(c)->nodeType) {
   case ADD:
   case SUB:
     res = implementAddSub(c, gamma0, program);
@@ -1194,11 +1194,11 @@ int constantImplementer(node *c, int gamma0, struct implementCsteProgram *progra
     res = implementCsteCase(c, gamma0, program);
     break;
   case NEG:
-    res = constantImplementer(c->child1, gamma0, program);
+    res = constantImplementer(accessThruMemRef(c)->child1, gamma0, program);
     appendUnaryfuncProg("mpfr_neg", program->counter, program->counter, program);
     break;
   case ABS:
-    res = constantImplementer(c->child1, gamma0, program);
+    res = constantImplementer(accessThruMemRef(c)->child1, gamma0, program);
     appendUnaryfuncProg("mpfr_abs", program->counter, program->counter, program);
     break;
   case DOUBLE:
@@ -1253,67 +1253,67 @@ int constantImplementer(node *c, int gamma0, struct implementCsteProgram *progra
     break;
 
   case SQRT:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_sqrt", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_sqrt", gamma0, program);
     break;
   case EXP:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_exp", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_exp", gamma0, program);
     break;
   case LOG:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_log", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_log", gamma0, program);
     break;
   case LOG_2:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_log2", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_log2", gamma0, program);
     break;
   case LOG_10:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_log10", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_log10", gamma0, program);
     break;
   case SIN:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_sin", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_sin", gamma0, program);
     break;
   case COS:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_cos", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_cos", gamma0, program);
     break;
   case TAN:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_tan", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_tan", gamma0, program);
     break;
   case ASIN:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_asin", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_asin", gamma0, program);
     break;
   case ACOS:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_acos", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_acos", gamma0, program);
     break;
   case ATAN:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_atan", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_atan", gamma0, program);
     break;
   case SINH:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_sinh", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_sinh", gamma0, program);
     break;
   case COSH:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_cosh", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_cosh", gamma0, program);
     break;
   case TANH:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_tanh", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_tanh", gamma0, program);
     break;
   case ASINH:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_asinh", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_asinh", gamma0, program);
     break;
   case ACOSH:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_acosh", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_acosh", gamma0, program);
     break;
   case ATANH:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_atanh", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_atanh", gamma0, program);
     break;
   case ERF:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_erf", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_erf", gamma0, program);
     break;
   case ERFC:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_erfc", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_erfc", gamma0, program);
     break;
   case LOG_1P:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_log1p", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_log1p", gamma0, program);
     break;
   case EXP_M1:
-    res = unaryFunctionCase(c->nodeType, c->child1, "mpfr_expm1", gamma0, program);
+    res = unaryFunctionCase(accessThruMemRef(c)->nodeType, accessThruMemRef(c)->child1, "mpfr_expm1", gamma0, program);
     break;
   case LIBRARYFUNCTION:
     printMessage(1,SOLLYA_MSG_A_BASE_FUNC_IS_NOT_SUPPORTED_BY_IMPLEMENTCONST,"implementconstant: error: library functions are not supported by this command.\nNo code will be produced.\n");

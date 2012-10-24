@@ -294,10 +294,13 @@ extern void endBuffer(void);
 #define UNSUPPRESSMESSAGE 275
 #define GETSUPPRESSEDMESSAGES 276
 #define CHEBYSHEVFORM 277
+/* Attention: #define MEMREF 278 is used elsewhere */
+
 
 int executeCommand(node *);
 
 node *copyThing(node *);
+node *deepCopyThing(node *);
 void *copyThingOnVoid(void *);
 void freeThing(node *);
 void rawPrintThing(node *);

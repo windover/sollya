@@ -1,6 +1,6 @@
 /*
 
-Copyright 2006-2011 by
+Copyright 2006-2012 by
 
 Laboratoire de l'Informatique du Parallelisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
@@ -146,6 +146,42 @@ struct rangetypeStruct
   mpfr_t *b;
 };
 
+/* Two static functions needed to access indirectly memory-referenced
+   node * structs.  The functions should be inlined for maximum
+   performance. They can be static for performance as they are used
+   only internally.
+*/
+
+#define MEMREF 278
+
+void *safeMalloc (size_t);
+
+static inline node* addMemRef(node *tree) {
+  node *res;
+
+  if (tree == NULL) return NULL;
+  if (tree->nodeType == MEMREF) return tree;
+  
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = MEMREF;
+  res->child1 = tree;
+  res->libFunDeriv = 1;
+  res->child2 = NULL;
+
+  return res;
+}
+
+static inline node* accessThruMemRef(node *tree) {
+  node *res;
+  if (tree == NULL) return NULL;
+  res = tree;
+  while (res->nodeType == MEMREF) {
+    res = res->child1;
+  }
+  return res;
+}
+
+/* End of the static inline functions */
 
 void printTree(node *tree);
 node* differentiate(node *tree);
@@ -244,6 +280,7 @@ node *makeAtanh(node *op1);
 node *makeUnary(node *op1, int nodeType);
 int mpfr_nearestint(mpfr_t rop, mpfr_t op);
 
-
+node* addMemRef(node *);
+node* accessThruMemRef(node *);
 
 #endif /* ifdef EXPRESSION_H*/

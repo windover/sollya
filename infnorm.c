@@ -508,7 +508,7 @@ void libraryConstantToInterval(sollya_mpfi_t res, node *tree) {
   mp_prec_t prec = sollya_mpfi_get_prec(res);
 
   mpfr_init2(approx, prec + 20); /* some guard bits may avoid reinit in tree->libFun */
-  tree->libFun->constant_code(approx, prec);
+  accessThruMemRef(tree)->libFun->constant_code(approx, prec);
   mpfr_init2(lbound, prec-2);
   mpfr_init2(rbound, prec-2);
   mpfr_set(lbound, approx, GMP_RNDD);
@@ -527,9 +527,9 @@ int newtonMPFRWithStartPoint(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, 
   node *myTree, *myDiffTree;
 
   freeTrees = 0;
-  if (tree->nodeType == DIV) {
+  if (accessThruMemRef(tree)->nodeType == DIV) {
     freeTrees = 1;
-    myTree = copyTree(tree->child1);
+    myTree = copyTree(accessThruMemRef(tree)->child1);
     myDiffTree = differentiate(myTree);
   } else {
     myTree = tree;
@@ -667,9 +667,9 @@ int newtonMPFRWithStartPointFaithful(mpfr_t res, node *tree, node *diff_tree, mp
   node *myTree, *myDiffTree;
 
   freeTrees = 0;
-  if (tree->nodeType == DIV) {
+  if (accessThruMemRef(tree)->nodeType == DIV) {
     freeTrees = 1;
-    myTree = copyTree(tree->child1);
+    myTree = copyTree(accessThruMemRef(tree)->child1);
     myDiffTree = differentiate(myTree);
   } else {
     myTree = tree;
@@ -850,7 +850,7 @@ void makeMpfiAroundMpfr(sollya_mpfi_t res, mpfr_t x, unsigned int thousandUlps) 
 
   sollya_mpfi_interv_fr(xI,xp,xs);
   
-  sollya_mpfi_blow(xI,xI,(((double) thousandUlps) * 250.0));
+  sollya_mpfi_blow(xI,xI,(((double) thousandUlps) * 250.0)); // THIS CAST IS DANGEROUS ON SYSTEMS WHERE INTS ARE 64 BITS
 
   sollya_mpfi_set(res,xI);
   
@@ -878,6 +878,8 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
   exprBoundTheo *leftTheoConstant, *rightTheoConstant, *leftTheoLinear, *rightTheoLinear;
   int isPolynom;
   int xIsPoint;
+
+  if (tree->nodeType == MEMREF) return evaluateI(result, tree->child1, x, prec, simplifiesA, simplifiesB, hopitalPoint, theo, noExcludes);
 
   excludes = NULL;
 
@@ -1879,9 +1881,9 @@ chain* evaluateITaylorOnDiv(sollya_mpfi_t result, node *func, sollya_mpfi_t x, m
 
   mpfr_init2(tempNaN, prec);
 
-  if (func->nodeType == DIV) {
-    numerator = func->child1;
-    denominator = func->child2;
+  if (accessThruMemRef(func)->nodeType == DIV) {
+    numerator = accessThruMemRef(func)->child1;
+    denominator = accessThruMemRef(func)->child2;
     derivNumerator = differentiate(numerator);
     derivDenominator = differentiate(denominator);
     sollya_mpfi_init2(resultNumerator, prec);
@@ -2023,7 +2025,7 @@ chain* evaluateITaylor(sollya_mpfi_t result, node *func, node *deriv, sollya_mpf
   sollya_mpfi_set_fr(xZI,xZ);
 
 
-  if ((recurse > 0) && (func->nodeType != DIV)) {
+  if ((recurse > 0) && (accessThruMemRef(func)->nodeType != DIV)) {
     nextderiv = differentiate(deriv);
     size = treeSize(nextderiv);
 
@@ -2808,21 +2810,21 @@ int isTrivialInfnormCase(rangetype result, node *func) {
   isTrivial = 0;
   simplifiedFunc = horner(func);
 
-  if (simplifiedFunc->nodeType == CONSTANT) {
-    mpfr_set(*(result.a),*(simplifiedFunc->value),GMP_RNDD);
-    mpfr_set(*(result.b),*(simplifiedFunc->value),GMP_RNDU);
+  if (accessThruMemRef(simplifiedFunc)->nodeType == CONSTANT) {
+    mpfr_set(*(result.a),*(accessThruMemRef(simplifiedFunc)->value),GMP_RNDD);
+    mpfr_set(*(result.b),*(accessThruMemRef(simplifiedFunc)->value),GMP_RNDU);
     isTrivial = 1;
   } else {
-    if (simplifiedFunc->nodeType == SUB) {
-      if (isSyntacticallyEqual(simplifiedFunc->child1,simplifiedFunc->child2)) {
+    if (accessThruMemRef(simplifiedFunc)->nodeType == SUB) {
+      if (isSyntacticallyEqual(accessThruMemRef(simplifiedFunc)->child1,accessThruMemRef(simplifiedFunc)->child2)) {
 	mpfr_set_d(*(result.a),0.0,GMP_RNDN);
 	mpfr_set_d(*(result.b),0.0,GMP_RNDN);
 	isTrivial = 1;
       }
     } else {
       if (getNumeratorDenominator(&numerator, &denominator, simplifiedFunc)) {
-	if ((numerator->nodeType == CONSTANT) &&
-	    mpfr_zero_p(*(numerator->value))) {
+	if ((accessThruMemRef(numerator)->nodeType == CONSTANT) &&
+	    mpfr_zero_p(*(accessThruMemRef(numerator)->value))) {
 	  mpfr_set_d(*(result.a),0.0,GMP_RNDN);
 	  mpfr_set_d(*(result.b),0.0,GMP_RNDN);
 	  isTrivial = 1;
@@ -3379,10 +3381,10 @@ void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_pr
   temp = differentiate(func);
   deriv = horner(temp);
 
-  if ((func->nodeType == POW) && 
-      (func->child1->nodeType == VARIABLE) &&
-      (func->child2->nodeType == CONSTANT) &&
-      mpfr_zero_p(*(func->child2->value))) {
+  if ((accessThruMemRef(func)->nodeType == POW) && 
+      (accessThruMemRef(accessThruMemRef(func)->child1)->nodeType == VARIABLE) &&
+      (accessThruMemRef(accessThruMemRef(func)->child2)->nodeType == CONSTANT) &&
+      mpfr_zero_p(*(accessThruMemRef(accessThruMemRef(func)->child2)->value))) {
     temp2 = copyTree(func);
   } else {
     temp2 = horner(func);
@@ -3913,6 +3915,7 @@ chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t pre
   rangetype range;
 
   if (tree == NULL) return NULL;
+  if (tree->nodeType == MEMREF) return uncertifiedZeroDenominators(tree->child1, a, b, prec);
   switch (tree->nodeType) {
   case VARIABLE:
     return NULL;
@@ -4853,7 +4856,7 @@ node *makeDoubleConstant(double d) {
   tempNode = (node *) safeMalloc(sizeof(node));
   tempNode->nodeType = CONSTANT;
   tempNode->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-  mpfr_init2(*(tempNode->value),53);
+  mpfr_init2(*(tempNode->value),64);
   mpfr_set_d(*(tempNode->value),d,GMP_RNDN);
   
   return tempNode;
@@ -4864,6 +4867,8 @@ int evaluateSign(int *s, node *func);
 node *convertConstantToFunctionInPiInner(node *tree) {
   node *res;
   int a;
+
+  if (tree->nodeType == MEMREF) return convertConstantToFunctionInPiInner(tree->child1);
 
   if (tree->nodeType == PI_CONST) {
     res = (node *) safeMalloc(sizeof(node));
@@ -4912,6 +4917,8 @@ node *convertConstantToFunctionInPi(node *tree) {
 int containsPi(node *tree) {
   int a;
 
+  if (tree->nodeType == MEMREF) return containsPi(tree->child1);
+  
   if (tree->nodeType == PI_CONST) return 1;
   
   a = arity(tree);
@@ -4956,11 +4963,11 @@ int compareConstant(int *cmp, node *func1, node *func2) {
     res = mpfr_sgn(value);
     okay = 1;
   } else {
-    if ((func1->nodeType == DIV) && 
-	evaluateSign(&signA,func1->child2) && 
+    if ((accessThruMemRef(func1)->nodeType == DIV) && 
+	evaluateSign(&signA,accessThruMemRef(func1)->child2) && 
 	(signA != 0)) {
-      tempNode = makeMul(copyTree(func1->child2),copyTree(func2));
-      okayB = compareConstant(&signB, func1->child1, tempNode);
+      tempNode = makeMul(copyTree(accessThruMemRef(func1)->child2),copyTree(func2));
+      okayB = compareConstant(&signB, accessThruMemRef(func1)->child1, tempNode);
       if (okayB) {
 	okay = 1;
 	res = signB;
@@ -4968,11 +4975,11 @@ int compareConstant(int *cmp, node *func1, node *func2) {
       free_memory(tempNode);
     } 
     if (!okay) {
-      if ((func2->nodeType == DIV) && 
-	  evaluateSign(&signA,func2->child2) && 
+      if ((accessThruMemRef(func2)->nodeType == DIV) && 
+	  evaluateSign(&signA,accessThruMemRef(func2)->child2) && 
 	  (signA != 0)) {
-	tempNode = makeMul(copyTree(func2->child2),copyTree(func1));
-	okayB = compareConstant(&signB, tempNode, func2->child1);
+	tempNode = makeMul(copyTree(accessThruMemRef(func2)->child2),copyTree(func1));
+	okayB = compareConstant(&signB, tempNode, accessThruMemRef(func2)->child1);
 	if (okayB) {
 	  okay = 1;
 	  res = signB;
@@ -4980,22 +4987,22 @@ int compareConstant(int *cmp, node *func1, node *func2) {
 	free_memory(tempNode);
       } 
       if (!okay) {
-	if (((func1->nodeType == EXP) && (func2->nodeType == EXP)) ||
-	    ((func1->nodeType == SINH) && (func2->nodeType == SINH)) || 
-	    ((func1->nodeType == TANH) && (func2->nodeType == TANH)) || 
-	    ((func1->nodeType == ASINH) && (func2->nodeType == ASINH)) || 
-	    ((func1->nodeType == ERF) && (func2->nodeType == ERF)) || 
-	    ((func1->nodeType == EXP_M1) && (func2->nodeType == EXP_M1))) {
-	  okayA = compareConstant(&signA, func1->child1, func2->child1);
+	if (((accessThruMemRef(func1)->nodeType == EXP) && (accessThruMemRef(func2)->nodeType == EXP)) ||
+	    ((accessThruMemRef(func1)->nodeType == SINH) && (accessThruMemRef(func2)->nodeType == SINH)) || 
+	    ((accessThruMemRef(func1)->nodeType == TANH) && (accessThruMemRef(func2)->nodeType == TANH)) || 
+	    ((accessThruMemRef(func1)->nodeType == ASINH) && (accessThruMemRef(func2)->nodeType == ASINH)) || 
+	    ((accessThruMemRef(func1)->nodeType == ERF) && (accessThruMemRef(func2)->nodeType == ERF)) || 
+	    ((accessThruMemRef(func1)->nodeType == EXP_M1) && (accessThruMemRef(func2)->nodeType == EXP_M1))) {
+	  okayA = compareConstant(&signA, accessThruMemRef(func1)->child1, accessThruMemRef(func2)->child1);
 	  if (okayA) {
 	    okay = 1;
 	    res = signA;
 	  }
 	}
 	if (!okay) {
-	  if (((func1->nodeType == ERFC) && (func2->nodeType == ERFC)) ||
-	      ((func1->nodeType == NEG) && (func2->nodeType == NEG))) {
-	    okayA = compareConstant(&signA, func1->child1, func2->child1);
+	  if (((accessThruMemRef(func1)->nodeType == ERFC) && (accessThruMemRef(func2)->nodeType == ERFC)) ||
+	      ((accessThruMemRef(func1)->nodeType == NEG) && (accessThruMemRef(func2)->nodeType == NEG))) {
+	    okayA = compareConstant(&signA, accessThruMemRef(func1)->child1, accessThruMemRef(func2)->child1);
 	    if (okayA) {
 	      okay = 1;
 	      res = -signA;
@@ -5135,6 +5142,8 @@ int evaluateSign(int *s, node *rawFunc) {
   okay = 0;
   if (!isConstant(rawFunc)) return 0;
 
+  if (rawFunc->nodeType == MEMREF) return evaluateSign(s, rawFunc->child1);
+
   if ((rawFunc->nodeType == CONSTANT) &&
       (!mpfr_number_p(*(rawFunc->value)))) return 0;
 
@@ -5154,39 +5163,39 @@ int evaluateSign(int *s, node *rawFunc) {
       sign = mpfr_sgn(value);
       okay = 1;
     } else {
-      switch (func->nodeType) {
+      switch (accessThruMemRef(func)->nodeType) {
       case CONSTANT:
-	sign = mpfr_sgn(*(func->value));
+	sign = mpfr_sgn(*(accessThruMemRef(func)->value));
 	okay = 1;
 	break;
       case ADD:
-	tempNode = makeNeg(copyTree(func->child2));
-	okay = compareConstant(&sign, func->child1, func->child2);
+	tempNode = makeNeg(copyTree(accessThruMemRef(func)->child2));
+	okay = compareConstant(&sign, accessThruMemRef(func)->child1, accessThruMemRef(func)->child2);
 	free_memory(tempNode);
 	break;
       case SUB:
-	okay = compareConstant(&sign, func->child1, func->child2);
+	okay = compareConstant(&sign, accessThruMemRef(func)->child1, accessThruMemRef(func)->child2);
 	break;
       case MUL:
-	okay = (evaluateSign(&signA, func->child1) && evaluateSign(&signB, func->child2));
+	okay = (evaluateSign(&signA, accessThruMemRef(func)->child1) && evaluateSign(&signB, accessThruMemRef(func)->child2));
 	sign = signA * signB;
 	break;
       case DIV:
-	okayA = (evaluateSign(&signA, func->child1) && evaluateSign(&signB, func->child2));
+	okayA = (evaluateSign(&signA, accessThruMemRef(func)->child1) && evaluateSign(&signB, accessThruMemRef(func)->child2));
 	if (okayA && (signB != 0)) {
 	  okay = 1;
 	  sign = signA * signB;
 	}
 	break;
       case SQRT:
-	okayA = evaluateSign(&signA, func->child1);
+	okayA = evaluateSign(&signA, accessThruMemRef(func)->child1);
 	if (okayA && (signA >= 0)) {
 	  okay = 1;
 	  sign = signA;
 	}
 	break;
       case EXP:
-	okayA = evaluateSign(&signA, func->child1);
+	okayA = evaluateSign(&signA, accessThruMemRef(func)->child1);
 	if (okayA) {
 	  okay = 1;
 	  sign = 1;
@@ -5198,8 +5207,8 @@ int evaluateSign(int *s, node *rawFunc) {
 	// fall-through
       case LOG_10:
 	tempNode = makeDoubleConstant(1.0);
-	okayA = compareConstant(&signA, func->child1, tempNode);
-	okayB = evaluateSign(&signB, func->child1);
+	okayA = compareConstant(&signA, accessThruMemRef(func)->child1, tempNode);
+	okayB = evaluateSign(&signB, accessThruMemRef(func)->child1);
 	if (okayA && okayB && (signB > 0)) {
 	  okay = 1;
 	  sign = signA;
@@ -5211,17 +5220,17 @@ int evaluateSign(int *s, node *rawFunc) {
       case COS:
 	// fall-through
       case TAN:
-	okayA = evaluateSign(&signA, func->child1);
+	okayA = evaluateSign(&signA, accessThruMemRef(func)->child1);
 	if (okayA && (signA == 0)) {
 	  okay = 1;
 	  sign = 0;
 	} else {
-	  okay = evaluateSignTrigoUnsafe(&sign, func->child1, func->nodeType);
+	  okay = evaluateSignTrigoUnsafe(&sign, accessThruMemRef(func)->child1, accessThruMemRef(func)->nodeType);
 	}
 	break;
       case ASIN:
-	okayA = evaluateSign(&signA, func->child1);
-	tempNode = makeAbs(copyTree(func->child1));
+	okayA = evaluateSign(&signA, accessThruMemRef(func)->child1);
+	tempNode = makeAbs(copyTree(accessThruMemRef(func)->child1));
 	tempNode2 = makeDoubleConstant(1.0);
 	okayB = compareConstant(&signB, tempNode, tempNode2);
 	if (okayA && okayB && (signB <= 0)) {
@@ -5232,11 +5241,11 @@ int evaluateSign(int *s, node *rawFunc) {
 	free_memory(tempNode2);
 	break;
       case ACOS:
-	okayA = evaluateSign(&signA, func->child1);
-	tempNode = makeAbs(copyTree(func->child1));
+	okayA = evaluateSign(&signA, accessThruMemRef(func)->child1);
+	tempNode = makeAbs(copyTree(accessThruMemRef(func)->child1));
 	tempNode2 = makeDoubleConstant(1.0);
 	okayB = compareConstant(&signB, tempNode, tempNode2);
-	okayC = compareConstant(&signC, func->child1, tempNode2);
+	okayC = compareConstant(&signC, accessThruMemRef(func)->child1, tempNode2);
 	if (okayA && okayB && okayC && (signB <= 0)) {
 	  okay = 1;
 	  if (signC == 0) sign = 0; else sign = 1;
@@ -5245,24 +5254,24 @@ int evaluateSign(int *s, node *rawFunc) {
 	free_memory(tempNode2);
 	break;
       case ATAN:
-	okay = evaluateSign(&sign, func->child1);
+	okay = evaluateSign(&sign, accessThruMemRef(func)->child1);
 	break;
       case SINH:
-	okay = evaluateSign(&sign, func->child1);
+	okay = evaluateSign(&sign, accessThruMemRef(func)->child1);
 	break;
       case COSH:
 	okay = 1;
 	sign = 1;
 	break;
       case TANH:
-	okay = evaluateSign(&sign, func->child1);
+	okay = evaluateSign(&sign, accessThruMemRef(func)->child1);
 	break;
       case ASINH:
-	okay = evaluateSign(&sign, func->child1);
+	okay = evaluateSign(&sign, accessThruMemRef(func)->child1);
 	break;
       case ACOSH:
 	tempNode = makeDoubleConstant(1.0);
-	okayA = compareConstant(&signA, func->child1, tempNode);
+	okayA = compareConstant(&signA, accessThruMemRef(func)->child1, tempNode);
 	if (okayA && (signA >= 0)) {
 	  okay = 1;
 	  sign = 1;
@@ -5270,8 +5279,8 @@ int evaluateSign(int *s, node *rawFunc) {
 	free_memory(tempNode);
 	break;
       case ATANH:
-	okayA = evaluateSign(&signA, func->child1);
-	tempNode = makeAbs(copyTree(func->child1));
+	okayA = evaluateSign(&signA, accessThruMemRef(func)->child1);
+	tempNode = makeAbs(copyTree(accessThruMemRef(func)->child1));
 	tempNode2 = makeDoubleConstant(1.0);
 	okayB = compareConstant(&signB, tempNode, tempNode2);
 	if (okayA && okayB && (signB < 0)) {
@@ -5282,8 +5291,8 @@ int evaluateSign(int *s, node *rawFunc) {
 	free_memory(tempNode2);
 	break;
       case POW:
-	okayA = evaluateSign(&signA, func->child1);
-	okayB = evaluateSign(&signB, func->child1);
+	okayA = evaluateSign(&signA, accessThruMemRef(func)->child1);
+	okayB = evaluateSign(&signB, accessThruMemRef(func)->child1);
 	if (okayA && okayB) {
 	  if (okayB == 0) {
 	    if (okayA != 0) {
@@ -5299,11 +5308,11 @@ int evaluateSign(int *s, node *rawFunc) {
 	}
 	break;
       case NEG:
-	okay = evaluateSign(&signA, func->child1);
+	okay = evaluateSign(&signA, accessThruMemRef(func)->child1);
 	sign = -1 * signA;
 	break;
       case ABS:
-	okayA = evaluateSign(&signA, func->child1);
+	okayA = evaluateSign(&signA, accessThruMemRef(func)->child1);
 	if (okayA) {
 	  okay = 1;
 	  if (signA == 0) sign = 0; else sign = 1;
@@ -5322,7 +5331,7 @@ int evaluateSign(int *s, node *rawFunc) {
       case TRIPLEDOUBLE:
 	break;
       case ERF:
-	okay = evaluateSign(&sign, func->child1); 
+	okay = evaluateSign(&sign, accessThruMemRef(func)->child1); 
 	break;
       case ERFC:
 	okay = 1;
@@ -5330,8 +5339,8 @@ int evaluateSign(int *s, node *rawFunc) {
 	break;
       case LOG_1P:
 	tempNode = makeDoubleConstant(-1.0);
-	okayA = compareConstant(&signA, func->child1, tempNode);
-	okayB = evaluateSign(&signB, func->child1);
+	okayA = compareConstant(&signA, accessThruMemRef(func)->child1, tempNode);
+	okayB = evaluateSign(&signB, accessThruMemRef(func)->child1);
 	if (okayA && okayB && (signA > 0)) {
 	  okay = 1;
 	  sign = signB;
@@ -5339,7 +5348,7 @@ int evaluateSign(int *s, node *rawFunc) {
 	free_memory(tempNode);
 	break;
       case EXP_M1:
-	okay = evaluateSign(&sign, func->child1);
+	okay = evaluateSign(&sign, accessThruMemRef(func)->child1);
 	break;
       case DOUBLEEXTENDED:
 	break;
@@ -5348,10 +5357,10 @@ int evaluateSign(int *s, node *rawFunc) {
       case PROCEDUREFUNCTION:
 	break;
       case CEIL:
-	okayA = evaluateSign(&signA, func->child1);
+	okayA = evaluateSign(&signA, accessThruMemRef(func)->child1);
 	tempNode = makeDoubleConstant(-1.0);
 	if (okayA) 
-	  okayB = compareConstant(&signB, func->child1, tempNode);
+	  okayB = compareConstant(&signB, accessThruMemRef(func)->child1, tempNode);
 	else
 	  okayB = 0;
 	if (okayA && okayB) {
@@ -5369,10 +5378,10 @@ int evaluateSign(int *s, node *rawFunc) {
 	free_memory(tempNode);
 	break;
       case FLOOR:
-	okayA = evaluateSign(&signA, func->child1);
+	okayA = evaluateSign(&signA, accessThruMemRef(func)->child1);
 	tempNode = makeDoubleConstant(1.0);
 	if (okayA) 
-	  okayB = compareConstant(&signB, func->child1, tempNode);
+	  okayB = compareConstant(&signB, accessThruMemRef(func)->child1, tempNode);
 	else
 	  okayB = 0;
 	if (okayA && okayB) {
@@ -5390,10 +5399,10 @@ int evaluateSign(int *s, node *rawFunc) {
 	free_memory(tempNode);
 	break;
       case NEARESTINT:
-	okayA = evaluateSign(&signA, func->child1);
+	okayA = evaluateSign(&signA, accessThruMemRef(func)->child1);
 	tempNode = makeDoubleConstant(1.0);
 	if (okayA) 
-	  okayB = compareConstant(&signB, func->child1, tempNode);
+	  okayB = compareConstant(&signB, accessThruMemRef(func)->child1, tempNode);
 	else
 	  okayB = 0;
 	if (okayA && okayB) {
@@ -5419,7 +5428,7 @@ int evaluateSign(int *s, node *rawFunc) {
            smaller that ~ 2^(-prec). So we can decide the sign, based on low
            approximation of the constant. */
         sollya_mpfi_init2(valueI, 12); 
-        libraryConstantToInterval(valueI, func);
+        libraryConstantToInterval(valueI, accessThruMemRef(func));
         if (sollya_mpfi_is_zero(valueI)) {
           okay = 1;
           sign = 0;
