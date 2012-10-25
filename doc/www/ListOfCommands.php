@@ -1,6 +1,5 @@
 <?php
 $listOfCommands=array(
-"","",
 "abs","abs",
 "absolute","absolute",
 "accurateinfnorm","accurateinfnorm",

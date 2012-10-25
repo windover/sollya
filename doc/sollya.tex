@@ -1091,7 +1091,7 @@ Suppose that this code is saved in a file called \texttt{foo.c}. The compilation
 The library provides a single data type called \texttt{sollya\_obj\_t} that can contain any \sollya object (a \sollya object is anything that can be stored in a variable within the interactive tool. See Section~\ref{sec:data_types} of the present documentation for details). Please notice that \texttt{sollya\_obj\_t} is in fact a pointer type; this has two consequences:
 \begin{itemize}
 \item \texttt{NULL} is a placeholder that can be used as a \texttt{sollya\_obj\_t} in some contexts. This placeholder is particularly useful as an end marker for functions with a variable number of arguments (see Sections~\ref{creating_lists} and~\ref{library_commands_and_functions}).
-\item An affectation with the ``='' sign does not copy an object but only copies the reference to it. To perform a (deep) copy, the \texttt{sollya\_lib\_copy\_obj()} function is available.
+\item An assignment with the ``='' sign does not copy an object but only copies the reference to it. To perform a (deep) copy, the \texttt{sollya\_lib\_copy\_obj()} function is available.
 \end{itemize}
 Except for a few functions for which the contrary is explicitly specified, the following conventions are used:
 \begin{itemize}
@@ -1105,7 +1105,7 @@ In general, except if the user perfectly knows what they are doing, the followin
 \item One should never write \texttt{a = sollya\_lib\_foo(a)} because one loses the reference to the object initially referenced by the variable \texttt{a} (which is hence not cleared).
 \item One should never chain function calls such as, e.g., \texttt{a = sollya\_lib\_foo(sollya\_lib\_bar(b))} (the reference to the object created by \texttt{sollya\_lib\_bar(b)} would be lost and hence not cleared).
 \item A variable \texttt{a} should never be used twice at the left-hand side of the ``='' sign (or as an lvalue in general) without performing \texttt{sollya\_lib\_clear\_obj(a)} in-between.
-\item In an affectation of the form ``\texttt{a = ...}'', the right-hand side should always be a function call (i.e., something like \texttt{a = sollya\_lib\_foo(...);}).
+\item In an assignment of the form ``\texttt{a = ...}'', the right-hand side should always be a function call (i.e., something like \texttt{a = sollya\_lib\_foo(...);}).
 \end{itemize}
 
 Please notice that \texttt{sollya\_lib\_close()} clears the memory allocated by the virtual \sollya session but not the objects that have been created and stored in C variables. All the \texttt{sollya\_obj\_t} created by function calls should be cleared manually.
@@ -1143,7 +1143,7 @@ The library follows some conventions that it is useful to remember:
 \end{itemize}
 
 \subsection{Displaying \sollya objects and numerical values}
-Within the interactive tool, the most simplest way of displaying the content of a variable or the value of an expression is to write the name of the variable or the expression, followed by the character ``;''. As a result, \sollya evaluates the expression or the variable and displays the result. Alternatively, a set of objects can be displayed the same way, separating the objects with commas. In library mode, the same behavior can be reproduced using the function \verb|void sollya_lib_autoprint(sollya_obj_t, ...)|. Please notice that this function has a variable number of arguments: they are all displayed, until an argument equal to \verb|NULL| is found. The \verb|NULL| argument is mandatory, even if only one object shall be displayed (the function has no other way to know if other arguments follow or not). So, if only one argument should be displayed, the correct function call is \verb|sollya_lib_autoprint(arg, NULL)|. Accordingly, if two arguments should be displayed, the function call is \verb|sollya_lib_autoprint(arg1, arg2, NULL)|, etc. The function \verb|void sollya_lib_v_autoprint(sollya_obj_t, va_list)| is the same, but it takes a \verb|va_list| argument instead of a variable number of arguments.
+Within the interactive tool, the most simple way of displaying the content of a variable or the value of an expression is to write the name of the variable or the expression, followed by the character ``;''. As a result, \sollya evaluates the expression or the variable and displays the result. Alternatively, a set of objects can be displayed the same way, separating the objects with commas. In library mode, the same behavior can be reproduced using the function \verb|void sollya_lib_autoprint(sollya_obj_t, ...)|. Please notice that this function has a variable number of arguments: they are all displayed, until an argument equal to \verb|NULL| is found. The \verb|NULL| argument is mandatory, even if only one object shall be displayed (the function has no other way to know if other arguments follow or not). So, if only one argument should be displayed, the correct function call is \verb|sollya_lib_autoprint(arg, NULL)|. Accordingly, if two arguments should be displayed, the function call is \verb|sollya_lib_autoprint(arg1, arg2, NULL)|, etc. The function \verb|void sollya_lib_v_autoprint(sollya_obj_t, va_list)| is the same, but it takes a \verb|va_list| argument instead of a variable number of arguments.
 
 Further, there is another way of displaying formatted strings containing \sollya objects, using a {\tt printf}-like syntax. Four functions are provided, namely \verb|sollya_lib_printf|, \verb|sollya_lib_v_printf|, \verb|sollya_lib_fprintf|, \verb|sollya_lib_v_fprintf|. Each one of these functions overloads the usual function (respectively, \verb|printf|, \verb|vprintf|, \verb|fprintf| and \verb|vfprintf|). The full syntax of conversions specifiers supported with the usual functions is handled (please note that the style using '\verb|$|' ---~as in \verb|%3$| or \verb|*3$|~--- is not handled though. It is not included in the C99 standard anyway). Additionally, the following conversion specifiers are provided:
 \begin{itemize}
@@ -1182,7 +1182,7 @@ The function \texttt{sollya\_lib\_constant\_from\_double} (or more conveniently 
 \end{table}
 
 \subsubsection{Functional expressions}
-Functional expressions are built by composition of basic functions with constants and the free mathematical variable. Since, it is convenient to build such expressions by chaining function calls, the library provides functions that ``eat up'' their arguments (actually embedding them in a bigger expression). The convention is that functions that eat up their arguments are prefixed by \texttt{sollya\_lib\_build\_}. For the purpose of building expressions, shortcut macros for the corresponding functions exist. They are all listed in Table~\ref{build_expr}.
+Functional expressions are built by composition of basic functions with constants and the free mathematical variable. Since it is convenient to build such expressions by chaining function calls, the library provides functions that ``eat up'' their arguments (actually embedding them in a bigger expression). The convention is that functions that eat up their arguments are prefixed by \texttt{sollya\_lib\_build\_}. For the purpose of building expressions, shortcut macros for the corresponding functions exist. They are all listed in Table~\ref{build_expr}.
 
 It is worth mentioning that, although \texttt{SOLLYA\_X\_} and \texttt{SOLLYA\_PI} are used without parentheses (as if they denoted constants), they are in fact function calls that create a new object each time they are used. The absence of parentheses is just more convenient for constructing expressions, such as, e.g. \texttt{SOLLYA\_COS(SOLLYA\_X\_)}.
 
@@ -1302,9 +1302,9 @@ Please note that in the interactive tool, \texttt{D} either denotes the discrete
 
 \subsubsection{Lists}
 \label{creating_lists}
-There are actually two kinds of lists: regular lists (such as, e.g., \verb#[|1, 2, 3|]#) and semi-infinite lists (such as, e.g. \verb#[|1, 2, ...|]#). Withing the interactive tool, the ellipse ``\texttt{...}'' can sometimes be used as a shortcut to define regular lists, e.g. \verb#[|1, 2, ..., 10|]#.
+There are actually two kinds of lists: regular lists (such as, e.g., \verb#[|1, 2, 3|]#) and semi-infinite lists (such as, e.g. \verb#[|1, 2, ...|]#). Withing the interactive tool, the ellipsis ``\texttt{...}'' can sometimes be used as a shortcut to define regular lists, e.g. \verb#[|1, 2, ..., 10|]#.
 
-In the library, there is no symbol for the ellipse, and there are two distinct types: one for regular lists and one for semi-infinite lists (called end-elliptic). Defining a regular list with an ellipse is not possible in the library (except of course with \texttt{sollya\_lib\_parse\_string}).
+In the library, there is no symbol for the ellipsis, and there are two distinct types: one for regular lists and one for semi-infinite lists (called end-elliptic). Defining a regular list with an ellipsis is not possible in the library (except of course with \texttt{sollya\_lib\_parse\_string}).
 
 Constructing regular lists is achieved through three functions:
 \begin{itemize}
@@ -1488,24 +1488,24 @@ The function that allows user to recover a C array of \verb|sollya_obj_t| object
 Three cases are possible:
 \begin{itemize}
 \item If \verb|arg| is a regular list of length $N$, the function allocates memory on the heap for $N$ \verb|sollya_obj_t|, sets \verb|*L| so that it points to that memory segment, and copies each of the elements $N$ of \verb|arg| to \verb|(*L)[0]|, \dots, \verb|(*L)[N-1]|. Finally, it sets \verb|*n| to $N$, \verb|*end_ell| to zero and returns true. A particular case is when \verb|arg| is the empty list: everything is the same except that no memory is allocated and \verb|*L| is left unchanged.
-\item If \verb|arg| is an end-elliptic list containing $N$ elements plus the ellipse. The function allocates memory on the heap for $N$ \verb|sollya_obj_t|, sets \verb|*L| so that it points to that memory segment, and copies each of the elements $N$ of \verb|arg| at \verb|(*L)[0]|, \dots, \verb|(*L)[N-1]|. Finally, it sets \verb|*n| to $N$, \verb|*end_ell| to a non-zero value and returns true. The only difference between a regular list and an end-elliptic list containing the same elements is hence that \verb|*end_ell| is set to a non-zero value in the latter.
+\item If \verb|arg| is an end-elliptic list containing $N$ elements plus the ellipsis. The function allocates memory on the heap for $N$ \verb|sollya_obj_t|, sets \verb|*L| so that it points to that memory segment, and copies each of the elements $N$ of \verb|arg| at \verb|(*L)[0]|, \dots, \verb|(*L)[N-1]|. Finally, it sets \verb|*n| to $N$, \verb|*end_ell| to a non-zero value and returns true. The only difference between a regular list and an end-elliptic list containing the same elements is hence that \verb|*end_ell| is set to a non-zero value in the latter.
 \item If \verb|arg| is neither a regular nor an end-elliptic list, \verb|*L|, \verb|*n| and \verb|*end_ell| are left unchanged and the function returns false.
 \end{itemize}
 
-\subsection{Recovering the content of a \sollya structure}
-If \verb|arg| is a \verb|sollya_obj_t| that contains a structure, the content of a given field can be recovered using
+\subsection{Recovering the contents of a \sollya structure}
+If \verb|arg| is a \verb|sollya_obj_t| that contains a structure, the contents of a given field can be recovered using
 \begin{center}
 \verb|int sollya_lib_get_element_in_structure(sollya_obj_t *res, char *name,|\\
 \verb|                                        sollya_obj_t arg).             |
 \end{center}
-If \verb|arg| really is a structure and if that structure has a field named after the string \verb|name|, this function copies the content of that field into the \sollya object \verb|*res|. The function returns a boolean integer: false means failure (i.e., if \verb|arg| is not a structure or if it does not have a field named after \verb|name|) and true means success.
+If \verb|arg| really is a structure and if that structure has a field named after the string \verb|name|, this function copies the contents of that field into the \sollya object \verb|*res|. The function returns a boolean integer: false means failure (i.e., if \verb|arg| is not a structure or if it does not have a field named after \verb|name|) and true means success.
 
-It is also possible to get all the field names and their content. This is achieved through the function
+It is also possible to get all the field names and their contents. This is achieved through the function
 \begin{center}
 \verb|int sollya_lib_get_structure_elements(char ***names, sollya_obj_t **objs, int *n,|\\
 \verb|                                      sollya_obj_t arg).                          |
 \end{center}
-If \verb|arg| really is a structure, say with $N$ fields called ``fieldA'', \dots, ``fieldZ'', this functions sets \verb|*n| to~$N$, allocates and fills an array of $N$ strings and sets \verb|*names| so that it points to that segment of memory (hence \verb|(*names)[0]| is the string ``fieldA'', \dots, \verb|(*names)[N-1]| is the string ``fieldZ''). Moreover, it allocates memory for $N$ \verb|sollya_obj_t|, sets \verb|*objs| so that it points on that memory segment, and copies the content of each of the $N$ fields at \verb|(*objs)[0]|, \dots, \verb|(*objs)[N-1]|. Finally it returns true. If \verb|arg| is not a structure, the function simply returns false without doing anything. Please note that since \verb|*names| and \verb|*objs| point to memory segments that have been dynamically allocated, they should manually be cleared by the user with \verb|sollya_lib_free| once they become useless.
+If \verb|arg| really is a structure, say with $N$ fields called ``fieldA'', \dots, ``fieldZ'', this functions sets \verb|*n| to~$N$, allocates and fills an array of $N$ strings and sets \verb|*names| so that it points to that segment of memory (hence \verb|(*names)[0]| is the string ``fieldA'', \dots, \verb|(*names)[N-1]| is the string ``fieldZ''). Moreover, it allocates memory for $N$ \verb|sollya_obj_t|, sets \verb|*objs| so that it points on that memory segment, and copies the contents of each of the $N$ fields at \verb|(*objs)[0]|, \dots, \verb|(*objs)[N-1]|. Finally it returns true. If \verb|arg| is not a structure, the function simply returns false without doing anything. Please note that since \verb|*names| and \verb|*objs| point to memory segments that have been dynamically allocated, they should manually be cleared by the user with \verb|sollya_lib_free| once they become useless.
 
 \subsection{Decomposing a functional expression}
 If a \texttt{sollya\_obj\_t} contains a functional expression, one can decompose the expression tree using the following functions. These functions all return a boolean integer: true in case of success (i.e., if the \texttt{sollya\_obj\_t} argument really contains a functional expression) and false otherwise.
@@ -1715,7 +1715,7 @@ It is possible to get the currently installed callback using \verb|sollya_lib_ge
 Currently the type \verb|sollya_msg_t| has only two accessors:
 \begin{itemize}
 \item \verb|int sollya_lib_get_msg_id(sollya_msg_t msg)| returns an integer that identifies the type of the message. The message types are listed in the file \verb|sollya-messages.h|. Please note that this file not only lists the possible identifiers but only defines meaningful names to each possible message number (e.g., \verb|SOLLYA_MSG_UNDEFINED_ERROR| is an alias for the number $2$ but is more meaningful to understand what the message is about). It is recommended to use these names instead of numerical values.
-\item \verb|char *sollya_lib_msg_to_text(sollya_msg_t msg)| returns a generic string briefly summarizing the content of the message. Please note that this \verb|char *| is dynamically allocated on the heap and should manually be cleared with \verb|sollya_lib_free| when it becomes useless.
+\item \verb|char *sollya_lib_msg_to_text(sollya_msg_t msg)| returns a generic string briefly summarizing the contents of the message. Please note that this \verb|char *| is dynamically allocated on the heap and should manually be cleared with \verb|sollya_lib_free| when it becomes useless.
 \end{itemize}
 In the future, other accessors could be added (to get the verbosity level at which the message has been emitted, to get data associated with the message, etc.) The developers of \sollya are open to suggestions and feature requests on this subject.
 
@@ -1797,7 +1797,7 @@ In general, this is completely harmless and the user might even not notice it. H
 \item If the user initializes first \sollya, and then registers its own allocation functions to \verb|GMP|, the exact opposite happens: \sollya allocation functions are overridden by those of the user, and this will likely cause \sollya to crash (or worst, silently behave not reliably).
 \end{itemize}
 
-In order to solve this issue, \sollya provides a chaining mechanism that we are now going to describe. The idea is the following: suppose that the main program should use a function \verb|custom_malloc|. The user should not use \verb|mp_set_memory_functions| as usual, but should instead initialize \sollya with the initializing function described above. This will cause \sollya to register an allocation function \verb|sollya_lib_malloc| to \verb|GMP|. This function overloads \verb|custom_malloc|: when called, it uses \verb|custom_malloc| to performs the actual allocation and does nothing else but some internal accounting and verification for that allocation. To repeat, the actual allocation is done by \verb|custom_malloc|; hence from the point of view of the user, the mechanism is completely transparent and equivalent to directly registering \verb|custom_malloc| to \verb|GMP|. The same holds for all other allocation functions: in particular, this is true for \verb|free| as well: if a function \verb|custom_free| is given at the initialization of \sollya, then the function \verb|sollya_lib_free| eventually uses \verb|custom_free| to free the memory. 
+In order to solve this issue, \sollya provides a chaining mechanism that we are now going to describe. The idea is the following: suppose that the main program should use a function \verb|custom_malloc|. The user should not use \verb|mp_set_memory_functions| as usual, but should instead initialize \sollya with the initializing function described above. This will cause \sollya to register an allocation function \verb|sollya_lib_malloc| to \verb|GMP|. This function overloads \verb|custom_malloc|: when called, it uses \verb|custom_malloc| to perform the actual allocation and does nothing else but some internal accounting and verification for that allocation. To repeat, the actual allocation is done by \verb|custom_malloc|; hence from the point of view of the user, the mechanism is completely transparent and equivalent to directly registering \verb|custom_malloc| to \verb|GMP|. The same holds for all other allocation functions: in particular, this is true for \verb|free| as well: if a function \verb|custom_free| is given at the initialization of \sollya, then the function \verb|sollya_lib_free| eventually uses \verb|custom_free| to free the memory. 
 
 The initialization function providing this mechanism is:
 \begin{center}
