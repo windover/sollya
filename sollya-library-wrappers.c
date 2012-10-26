@@ -1194,7 +1194,7 @@ sollya_obj_t sollya_lib_v_infnorm(sollya_obj_t obj1, sollya_obj_t obj2, va_list 
 
 sollya_obj_t sollya_lib_supnorm(sollya_obj_t obj1, sollya_obj_t obj2, sollya_obj_t obj3, sollya_obj_t obj4, sollya_obj_t obj5) {
   node *thingToEvaluate, *evaluatedThing;
-  thingToEvaluate = makeAutodiff(addElement(addElement(addElement(addElement(addElement(NULL,copyThing(obj5)),copyThing(obj4)),
+  thingToEvaluate = makeSupnorm(addElement(addElement(addElement(addElement(addElement(NULL,copyThing(obj5)),copyThing(obj4)),
                                                                   copyThing(obj3)),copyThing(obj2)),copyThing(obj1)));
   evaluatedThing = evaluateThing(thingToEvaluate);
   freeThing(thingToEvaluate);
