@@ -949,13 +949,16 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
     case FLOOR: 
     case NEARESTINT: 
     case LIBRARYFUNCTION:
+    case PROCEDUREFUNCTION:
       
       if ((accessThruMemRef((accessThruMemRef(f)->child1))->nodeType)==VARIABLE) {
          child1_tm=createEmptycModelPrecomp(n,t->x, t->cheb_array,t->cheb_matrix, prec);
          /* CM for elementary function */
          if (accessThruMemRef(f)->nodeType == LIBRARYFUNCTION)
 	   base_CMAux(child1_tm, MONOTONE_REMAINDER_LIBRARY_FUNCTION, 0, accessThruMemRef(f), NULL, n, x, verbosity,prec);
-         else
+         else if (accessThruMemRef(f)->nodeType == PROCEDUREFUNCTION)
+	   base_CMAux(child1_tm, MONOTONE_REMAINDER_PROCEDURE_FUNCTION, 0, accessThruMemRef(f), NULL, n, x, verbosity,prec);
+	 else
 	   base_CMAux(child1_tm, MONOTONE_REMAINDER_BASE_FUNCTION, accessThruMemRef(f)->nodeType, NULL, NULL, n,x, verbosity,prec);
 
       copycModel(t,child1_tm);
@@ -979,7 +982,9 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
       /*CM for elementary functions*/
       if (accessThruMemRef(f)->nodeType == LIBRARYFUNCTION)
         base_CMAux(child2_tm, MONOTONE_REMAINDER_LIBRARY_FUNCTION, 0, accessThruMemRef(f), NULL, n, rangeg, verbosity,prec);
-      else
+      else if (accessThruMemRef(f)->nodeType == PROCEDUREFUNCTION)
+        base_CMAux(child2_tm, MONOTONE_REMAINDER_PROCEDURE_FUNCTION, 0, accessThruMemRef(f), NULL, n, rangeg, verbosity,prec);
+      else 
         base_CMAux(child2_tm, MONOTONE_REMAINDER_BASE_FUNCTION, accessThruMemRef(f)->nodeType, NULL, NULL, n,rangeg, verbosity,prec);
 
      
