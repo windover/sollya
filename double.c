@@ -998,7 +998,7 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
       if (mpfr_round_to_double(tempMpfr, fpcoefficients[i]) != 0) res = 1;
       break;
     default:
-      if (formatsArray[i] > 5) {
+      if (formatsArray[i] > 7) {
 	if (mpfr_round_to_prec(tempMpfr, fpcoefficients[i], (mp_prec_t) (formatsArray[i] - 6)) != 0) 
 	  res = 1;
       } else {

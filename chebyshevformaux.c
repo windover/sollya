@@ -578,7 +578,8 @@ void getChebCoeffsFromPolynomial(sollya_mpfi_t**coeffs, int *n, node *f, sollya_
     
   }
   else{
-    printf("The given function is not a polynomial, no modif is made \n");  // ARGL! THIS SHOULD BE A CALL TO printmessage!
+    printMessage(1,SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_NOT_A_POLYNOMIAL,
+		 "The given function is not a polynomial, no modification is made.\n");
   }
 }
 
@@ -683,7 +684,6 @@ void getNChebCoeffsFromPolynomial(sollya_mpfi_t *coeffs, sollya_mpfi_t bound, no
   c= (sollya_mpfi_t **)safeMalloc(sizeof(sollya_mpfi_t*));  
   getChebCoeffsFromPolynomial(c, &d, f, x, prec);
  
-  /*printf("the degree of the polynomial is: %d\n", d-1);*/
   if (d<=n) {
     for(i=0;i<d;i++)
       sollya_mpfi_set(coeffs[i],(*c)[i]);
@@ -784,12 +784,6 @@ void getChebCoeffsDerivativePolynomial(sollya_mpfi_t*coeffs, sollya_mpfi_t *cheb
       sollya_mpfi_mul(c[i], c[i],z1);
      }
     
-    if (verbosity>10) {
-      printf("\nThe %d coefficients of the derivated polynomial are :\n ",n-1); // ARGL: THESE SHOULD ALL BE CALLS TO printmessage!
-      for (i=0;i<n-1;i++){
-      printInterval(c[i]);
-      }
-    }
     for (i=0;i<n-1;i++){
       sollya_mpfi_set(coeffs[i], c[i]);
     }

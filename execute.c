@@ -4147,7 +4147,7 @@ int evaluateThingToExtendedExpansionFormat(int *result, node *tree) {
       printMessage(1,SOLLYA_MSG_CONTINUATION,"Will change the precision indication to 2 bits.\n");
       resA = 2;
     } 
-    *result = resA + 6; // WHAT THE F**K?
+    *result = resA + 6; // WHAT THE F**K? Look at line 1002 in double.c to understand.
     freeThing(evaluatedResult);
     return 1;
   }
@@ -17420,7 +17420,7 @@ void *makeMonomialFromIntOnVoid(void *n) {
   a = *((int *)n);
   if (a==0) return makeConstantDouble(1.0);
   if (a==1) return makeVariable();
-  return (void *)makePow(makeVariable(), makeConstantDouble((double)a)); /* This is a dangerous cast on systems where ints are 64 bit and doubles are 53 bit. */
+  return (void *)makePow(makeVariable(), makeConstantDouble((double)a)); /* CAUTION: This is a dangerous cast on systems where ints are 64 bit and doubles are 53 bit. */
 }
 
 /* Check that tree is a finite non-empty list that does not contain the symbol "..."
@@ -23253,14 +23253,18 @@ node *evaluateThingInnerst(node *tree) {
       fourthArg = copyThing((node *) (curr->value));
       curr = curr->next;
     }
-    if ( (fourthArg==NULL)||(isDefault(fourthArg)) ) // Memory leak here if fourthArg is default?
+    if ( (fourthArg==NULL)||(isDefault(fourthArg)) ) { 
+      if (fourthArg!=NULL) freeThing(fourthArg);
       fourthArg = makeConstantDouble(1.0);
+    }
 
     fifthArg = NULL;
     if (curr != NULL)
       fifthArg = copyThing((node *) (curr->value));
-    if ( (fifthArg==NULL)||(isDefault(fifthArg)) ) // Memory leak here if fifthArg is default?
+    if ( (fifthArg==NULL)||(isDefault(fifthArg)) ) { 
+      if (fifthArg!=NULL) freeThing(fifthArg);
       fifthArg = makeConstantDouble(128.0);
+    }
 
     if (isPureTree(firstArg) &&
 	isRange(secondArg) &&

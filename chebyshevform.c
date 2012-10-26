@@ -203,20 +203,6 @@ void clearcModelComplete(chebModel *t){
 }
 
 
-/*This function pretty prints a cheb model
-*/
-void printcModel(chebModel *t){
-  int i;
-  sollyaPrintf("\nChebModel of order %d in Chebyshev basis ", t->n);
-  sollyaPrintf("over %w", t->x);
-  sollyaPrintf("\nCoeffs:");
-  for(i=0;i<t->n;i++) {
-    sollyaPrintf(" %w,",t->poly_array[i]);
-  }  
-  sollyaPrintf(" r= %w ",t->rem_bound);
-  sollyaPrintf(",b= %w \n", t->poly_bound);  
-  }
-
 /***************************************************************/
 /*******The convention for all the following functions is:******/
 /***the cmodel given as parameter must be previously created ***/ 
@@ -731,10 +717,6 @@ void base_CMAux(chebModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t 
   /* Use Zumkeller technique to improve the bound in the absolute case,
      when the (n+1)th derivative has constant sign */
   if((sollya_mpfi_is_nonpos(nDeriv[n+1]) > 0)||(sollya_mpfi_is_nonneg(nDeriv[n+1]) > 0)){ 
-  /*Debugging of Z technique*/
-  /*    if (verbosity>10) {*/
-  /*      printf("\nthe remainder is monotone\n");*/
-  /*    }*/
     computeMonotoneRemainderCheb(&tt->rem_bound, typeOfFunction, nodeType, accessThruMemRef(f), p, n, tt->poly_array, x);
   }
   else{
@@ -810,12 +792,6 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
     tt=createEmptycModelPrecomp(n,t->x, t->cheb_array, t->cheb_matrix, prec);
     getNChebCoeffsFromPolynomial(tt->poly_array, tt->rem_bound, f, x,n,boundLevel);
     copycModel(t,tt);
-    /*NOTE: The following printing is for debugging - we can cut it if necessary*/
-    if (verbosity>10) {
-      printf("\nPolynomial model\n"); // ARGL: THESE SHOULD ALL BE CALLS TO printmessage
-      printcModel(t);
-      printf("\n****************\n");
-    }
     /*clear old cheby models*/
     clearcModelLight(tt);
   }
@@ -834,12 +810,6 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
       sollya_mpfi_neg(tt->rem_bound,child1_tm->rem_bound);
     
       copycModel(t,tt);
-      /*NOTE: The following printing is for debugging - we can cut it if necessary*/
-      if (verbosity>10) {
-        printf("\nNegation model\n"); // ARGL: THESE SHOULD ALL BE CALLS TO printmessage
-        printcModel(t);
-        printf("\n****************\n");
-      }
       /*clear old cheby models*/
       clearcModelLight(child1_tm);
       clearcModelLight(tt);
@@ -858,12 +828,6 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
       tt=createEmptycModelPrecomp(n,child1_tm->x, child1_tm->cheb_array,child1_tm->cheb_matrix, prec);
       addition_CM(tt,child1_tm, child2_tm, prec);
       copycModel(t,tt);
-      /*NOTE: The following printing is for debugging - we can cut it if necessary*/
-      if (verbosity>10) {
-        printf("\nADD model\n"); // THESE SHOULD ALL BE CALLS TO printmessage
-        printcModel(t);
-        printf("\n****************\n");
-      }
       /*clear old cheby model*/
       clearcModelLight(child1_tm);
       clearcModelLight(child2_tm);
@@ -885,12 +849,6 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
       ctMultiplication_CM(child2_tm,child2_tm, minusOne, prec);
       tt=createEmptycModelPrecomp(n,child1_tm->x, child1_tm->cheb_array, child1_tm->cheb_matrix, prec);
       addition_CM(tt,child1_tm, child2_tm, prec);
-      /*NOTE: The following printing is for debugging - we can cut it if necessary*/
-      if (verbosity>10) {
-        printf("\nSUB model\n"); // THESE SHOULD ALL BE CALLS TO printmessage
-        printcModel(t);
-        printf("\n****************\n");
-      }
       
       copycModel(t,tt);
     
@@ -916,12 +874,6 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
      
      copycModel(t,tt);
 
-     /*NOTE: The following printing is for debugging - we can cut it if necessary*/
-     if (verbosity>10) {
-       printf("\nMultiplication model\n"); // ARGL: THESE SHOULD ALL BE CALLS TO printmessage
-        printcModel(t);
-        printf("\n****************\n");
-      }
      /*clear old cheby model*/
      clearcModelLight(child1_tm);
      clearcModelLight(child2_tm);     
@@ -951,12 +903,6 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
       ttt=createEmptycModelPrecomp(n,child2_tm->x, child2_tm->cheb_array,child2_tm->cheb_matrix, prec);
       composition_CM(ttt,inv_tm, child2_tm, boundLevel, NULL,prec);
  
-      /*NOTE: The following printing is for debugging - we can cut it if necessary*/
-      if (verbosity>10) {
-        printf("\nIn inverse Composition model\n"); // ARGL: THESE SHOULD ALL BE CALLS TO printmessage
-        printcModel(ttt);
-        printf("\n****************\n");
-      }
       /*child1 * inverse(child2)*/
       tt=createEmptycModelPrecomp(n,child1_tm->x, child1_tm->cheb_array,  child1_tm->cheb_matrix, prec);
       multiplication_CM(tt, ttt, child1_tm, boundLevel,0,prec);
@@ -968,12 +914,6 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
       clearcModelLight(ttt);
       copycModel(t,tt);
 
-      /*NOTE: The following printing is for debugging - we can cut it if necessary*/
-      if (verbosity>10) {
-        printf("\nInverse model\n"); // ARGL: THESE SHOULD ALL BE CALLS TO printmessage
-        printcModel(t);
-        printf("\n****************\n");
-      }
 
       clearcModelLight(tt);
       sollya_mpfi_clear(rangeg);
@@ -1018,12 +958,6 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
          else
 	   base_CMAux(child1_tm, MONOTONE_REMAINDER_BASE_FUNCTION, accessThruMemRef(f)->nodeType, NULL, NULL, n,x, verbosity,prec);
 
-         /*NOTE: The following printing is for debugging - we can cut it if necessary*/
-         if (verbosity>10) {
-	   printf("\nIn Basic function of x\n"); // ARGL: THESE SHOULD ALL BE CALLS TO printmessage
-          printcModel(child1_tm);
-          printf("****************\n");
-         }
       copycModel(t,child1_tm);
       clearcModelLight(child1_tm);   
       }
@@ -1035,23 +969,11 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
       /*call cheb_model on the child*/
       cheb_model(child1_tm, accessThruMemRef(f)->child1,n,x,boundLevel, verbosity, prec);
  
-      /*NOTE: The following printing is for debugging - we can cut it if necessary*/
-      if (verbosity>10) {
-        printf("\nIn Base function, child model\n"); // ARGL: THESE SHOULD ALL BE CALLS TO printmessage
-        printcModel(child1_tm);
-        printf("\n****************\n");
-      }
       sollya_mpfi_init2(rangeg, prec);
       
       chebPolynomialBound(child1_tm->poly_bound, n, child1_tm->poly_array, boundLevel);
       sollya_mpfi_add(rangeg,child1_tm->rem_bound, child1_tm->poly_bound);
 
-      /*NOTE: The following printing is for debugging - we can cut it if necessary*/
-      if (verbosity>12) {
-        printf("\n We compute the cheb model over:"); // ARGL: THESE SHOULD ALL BE CALLS TO printmessage
-        printInterval(rangeg);
-        printf("\n");
-       }
       child2_tm=createEmptycModelCompute(n,rangeg,1,1, prec);
       
       /*CM for elementary functions*/
@@ -1060,12 +982,6 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
       else
         base_CMAux(child2_tm, MONOTONE_REMAINDER_BASE_FUNCTION, accessThruMemRef(f)->nodeType, NULL, NULL, n,rangeg, verbosity,prec);
 
-      /*NOTE: The following printing is for debugging - we can cut it if necessary*/
-      if (verbosity>10) {
-        printf("\nIn Basic function, parent model\n"); // ARGL: THESE SHOULD ALL BE CALLS TO printmessage
-        printcModel(child2_tm);
-        printf("****************\n");
-      }
      
       
       tt=createEmptycModelPrecomp(n,child1_tm->x, child1_tm->cheb_array, child1_tm->cheb_matrix, prec);
@@ -1281,12 +1197,12 @@ void chebyshevform(node **Ch, chain **errors, sollya_mpfi_t delta,
   }
   mpfr_clear(domL);
   mpfr_clear(domR);
-  /*printf("prec is=%d ", prec);*/
+
   t=createEmptycModelCompute(n,dom,1,1, prec);
-  /*  printf("we have created an emptyChebmodel \n");*/
+
   
   cheb_model(t, accessThruMemRef(f), n, dom, 0, 0, prec);
-  /*  printcModel(t);*/
+
   
   
   monomialCoeffs= (sollya_mpfi_t **)safeMalloc(sizeof(sollya_mpfi_t *));
@@ -1294,13 +1210,6 @@ void chebyshevform(node **Ch, chain **errors, sollya_mpfi_t delta,
   /*get interval coefficients in monomial basis*/
   getCoeffsFromChebPolynomial(monomialCoeffs, t->poly_array, n, dom);
   
-/*   if ((*monomialCoeffs)!=NULL){*/
-/*     printf("not null");*/
-/*     for(i=0;i<n;i++){*/
-/*       if (((*monomialCoeffs)[i])!=NULL)  printInterval((*monomialCoeffs)[i]);*/
-/*     }*/
-/*   }*/
-/*  */
   /*Transform interval coeffs in monomial basis into (mpfr, error)*/ 
   coeffsMpfr= (mpfr_t *)safeCalloc((n),sizeof(mpfr_t));
   coeffsErrors = (sollya_mpfi_t *)safeCalloc((n),sizeof(sollya_mpfi_t));
