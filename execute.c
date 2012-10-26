@@ -6978,6 +6978,7 @@ void autoprint(node *thing, int inList, node *func, node *cst) {
   int faithfulAlreadyKnown;
   node *simplCst;
   int infinityCase;
+  int deg;
 
   shown = 0; shown2 = 0;
   if (isPureTree(thing)) {
@@ -7123,7 +7124,7 @@ void autoprint(node *thing, int inList, node *func, node *cst) {
 	  shown = 1;
 	}
       }
-      if (treeSize(tempNode3) > MAXHORNERTREESIZE) {
+      if ((treeSize(tempNode3) > MAXHORNERTREESIZE) || (isPolynomialExtraSafe(tempNode3) && (((deg = getDegreeSilent(tempNode3)) > MAXHORNERDEGREE) || (deg < 0)))) {
 	if (canonical) 
 	  printMessage(1,SOLLYA_MSG_EXPRESSION_TOO_BIG_FOR_CANONICAL_FORM,"Warning: the expression is too big for being written in canonical form.\n");
 	else 

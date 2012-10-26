@@ -5140,6 +5140,7 @@ node* differentiateUnsimplified(node *tree) {
   mpfr_t *mpfr_temp;
   node *temp_node, *temp_node2, *temp_node3, *f_diff, *g_diff, *f_copy, *g_copy, *g_copy2, *h_copy, *h_copy2;
   node *temp_node4, *f_copy2, *temp_node5;
+  int deg;
 
   if (tree->nodeType == MEMREF) {
     return addMemRef(differentiateUnsimplified(tree->child1));
@@ -5154,7 +5155,7 @@ node* differentiateUnsimplified(node *tree) {
     temp_node->value = mpfr_temp;
     derivative = temp_node;    
   } else {
-    if (isPolynomial(tree) && (getDegree(tree) <= MAXDIFFPOLYSPECIALDEGREE)) {
+    if (isPolynomial(tree) && ((deg = getDegreeSilent(tree)) <= MAXDIFFPOLYSPECIALDEGREE) && (deg >= 0)) {
       derivative = differentiatePolynomialUnsafe(tree);
     } else {
       
@@ -8456,14 +8457,15 @@ int isAffine(node *tree) {
 #define MAX_MACRO(a,b) (a) > (b) ? (a) : (b)
 #define MIN_MACRO(a,b) (a) < (b) ? (a) : (b)
 
-int getDegreeUnsafe(node *tree) {
+int getDegreeUnsafe(node *tree, int silent) {
   int l, r;
   mpfr_t temp;
   node *simplifiedExponent;
+  unsigned int h;
 
   if (isConstant(tree)) return 0;
 
-  if (tree->nodeType == MEMREF) return getDegreeUnsafe(tree->child1);
+  if (tree->nodeType == MEMREF) return getDegreeUnsafe(tree->child1, silent);
 
   switch (tree->nodeType) {
   case VARIABLE:
@@ -8474,43 +8476,44 @@ int getDegreeUnsafe(node *tree) {
     return 0;
     break;
   case ADD:
-    l = getDegreeUnsafe(tree->child1);
-    r = getDegreeUnsafe(tree->child2);
-    return MAX_MACRO(l,r);
+    l = getDegreeUnsafe(tree->child1, silent);
+    r = getDegreeUnsafe(tree->child2, silent);
+    if ((l >= 0) && (r >= 0)) return MAX_MACRO(l,r); else return -1;
     break;
   case SUB:
-    l = getDegreeUnsafe(tree->child1);
-    r = getDegreeUnsafe(tree->child2);
-    return MAX_MACRO(l,r);
+    l = getDegreeUnsafe(tree->child1, silent);
+    r = getDegreeUnsafe(tree->child2, silent);
+    if ((l >= 0) && (r >= 0)) return MAX_MACRO(l,r); else return -1;
     break;
   case MUL:
-    l = getDegreeUnsafe(tree->child1);
-    r = getDegreeUnsafe(tree->child2);
-    return l + r;
+    l = getDegreeUnsafe(tree->child1, silent);
+    r = getDegreeUnsafe(tree->child2, silent);
+    if ((l >= 0) && (r >= 0)) return l + r; else return -1;
     break;
   case DIV:
-    return getDegreeUnsafe(tree->child1);
+    return getDegreeUnsafe(tree->child1, silent);
     break;
   case POW:
     {
-      l = getDegreeUnsafe(tree->child1);
+      l = getDegreeUnsafe(tree->child1, silent);
       if (accessThruMemRef(tree->child2)->nodeType != CONSTANT) {
         simplifiedExponent = simplifyRationalErrorfree(tree->child2);
         if ((accessThruMemRef(simplifiedExponent)->nodeType == CONSTANT) && 
             mpfr_integer_p(*(accessThruMemRef(simplifiedExponent)->value)) &&
             (mpfr_sgn(*(accessThruMemRef(simplifiedExponent)->value)) >= 0)) {
-          r = mpfr_get_si(*(accessThruMemRef(simplifiedExponent)->value),GMP_RNDN);
+          h = mpfr_get_ui(*(accessThruMemRef(simplifiedExponent)->value),GMP_RNDN);
           mpfr_init2(temp,mpfr_get_prec(*(accessThruMemRef(simplifiedExponent)->value)) + 10);
-          mpfr_set_si(temp,r,GMP_RNDN);
+          mpfr_set_ui(temp,h,GMP_RNDN);
           if (mpfr_cmp(*(accessThruMemRef(simplifiedExponent)->value),temp) != 0) {
-            printMessage(1, SOLLYA_MSG_DEGREE_OF_POLYNOMIAL_DOESNT_HOLD_ON_MACHINE_INT, "Warning: tried to compute polynomial degree of an expression using a power operator with an exponent which cannot be represented on an integer variable.\n");
+            if (!silent) printMessage(1, SOLLYA_MSG_DEGREE_OF_POLYNOMIAL_DOESNT_HOLD_ON_MACHINE_INT, "Warning: tried to compute polynomial degree of an expression using a power operator with an exponent which cannot be represented on an integer variable.\n");
             mpfr_clear(temp);
             free_memory(simplifiedExponent);
             return -1;
           }
           mpfr_clear(temp);
           free_memory(simplifiedExponent);
-          return l * r;
+	  r = (int) h;
+          if ((l >= 0) && (r >= 0)) return l * r; else return -1;
         } else {
           sollyaFprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is not constant, not integer or not non-negative.\n");
           exit(1);
@@ -8526,21 +8529,22 @@ int getDegreeUnsafe(node *tree) {
           exit(1);
         }
 
-        r = mpfr_get_si(*(accessThruMemRef(tree->child2)->value),GMP_RNDN);
+        h = mpfr_get_ui(*(accessThruMemRef(tree->child2)->value),GMP_RNDN);
         mpfr_init2(temp,mpfr_get_prec(*(accessThruMemRef(tree->child2)->value)) + 10);
-        mpfr_set_si(temp,r,GMP_RNDN);
+        mpfr_set_ui(temp,h,GMP_RNDN);
         if (mpfr_cmp(*(accessThruMemRef(tree->child2)->value),temp) != 0) {
-          printMessage(1, SOLLYA_MSG_DEGREE_OF_POLYNOMIAL_DOESNT_HOLD_ON_MACHINE_INT, "Warning: tried to compute polynomial degree of an expression using a power operator with an exponent which cannot be represented on an integer variable.\n");
+          if (!silent) printMessage(1, SOLLYA_MSG_DEGREE_OF_POLYNOMIAL_DOESNT_HOLD_ON_MACHINE_INT, "Warning: tried to compute polynomial degree of an expression using a power operator with an exponent which cannot be represented on an integer variable.\n");
           mpfr_clear(temp);
           return -1;
         }
         mpfr_clear(temp);
-        return l * r;
+	r = (int) h;
+        if ((l >= 0) && (r >= 0)) return l * r; else return -1;
       }
     }
     break;
   case NEG:
-    return getDegreeUnsafe(tree->child1);
+    return getDegreeUnsafe(tree->child1, silent);
     break;
   default:
     sollyaFprintf(stderr,"Error: getDegreeUnsafe: an error occurred on handling the expression tree\n");
@@ -8550,7 +8554,16 @@ int getDegreeUnsafe(node *tree) {
 
 int getDegree(node *tree) {
   if (!isPolynomial(tree)) return -1;
-  return getDegreeUnsafe(tree);
+  return getDegreeUnsafe(tree, 0);
+}
+
+int getDegreeSilent(node *tree) {
+  if (!isPolynomial(tree)) return -1;
+  return getDegreeUnsafe(tree, 1);
+}
+
+int isPolynomialExtraSafe(node *tree) {
+  return (isPolynomial(tree) && (getDegreeSilent(tree) >= 0));
 }
 
 int getMaxPowerDividerUnsafe(node *tree) {

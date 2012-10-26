@@ -193,6 +193,8 @@ void printValue(mpfr_t *value);
 node* copyTree(node *tree);
 node* horner(node *tree);
 int getDegree(node *tree);
+int getDegreeSilent(node *tree);
+int isPolynomialExtraSafe(node *tree);
 node* expand(node *tree);
 node* simplifyTreeErrorfree(node *tree);
 int getNumeratorDenominator(node **numerator, node **denominator, node *tree);
