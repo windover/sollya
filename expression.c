@@ -12922,12 +12922,24 @@ node *makeVariable() {
 
 node *makeConstantDouble(double d) {
   node *res;
-  
+
   res = (node *) safeMalloc(sizeof(node));
   res->nodeType = CONSTANT;
   res->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*(res->value),53);
   mpfr_set_d(*(res->value),d,GMP_RNDN);
+
+  return res;
+}
+
+node *makeConstantInt(int a) {
+  node *res;
+
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = CONSTANT;
+  res->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*(res->value),sizeof(int)*8);
+  mpfr_set_si(*(res->value), a, GMP_RNDN);
 
   return res;
 }

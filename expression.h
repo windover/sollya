@@ -238,6 +238,7 @@ mp_prec_t getMpzPrecision(mpz_t x);
 node *makeVariable();
 node *makeConstant(mpfr_t x);
 node *makeConstantDouble(double x);
+node *makeConstantInt(int x);
 node *makeAdd(node *op1, node *op2);
 node *makeSub(node *op1, node *op2);
 node *makeMul(node *op1, node *op2);

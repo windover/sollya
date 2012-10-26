@@ -17420,7 +17420,7 @@ void *makeMonomialFromIntOnVoid(void *n) {
   a = *((int *)n);
   if (a==0) return makeConstantDouble(1.0);
   if (a==1) return makeVariable();
-  return (void *)makePow(makeVariable(), makeConstantDouble((double)a)); /* CAUTION: This is a dangerous cast on systems where ints are 64 bit and doubles are 53 bit. */
+  return (void *)makePow(makeVariable(), makeConstantInt(a));
 }
 
 /* Check that tree is a finite non-empty list that does not contain the symbol "..."
