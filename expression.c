@@ -71,6 +71,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #define MAXDIFFSIMPLSIZE 100
 #define MAXDIFFSIMPLDEGREE 25
+#define MAXDIFFPOLYSPECIALDEGREE 300
 
 void simplifyMpfrPrec(mpfr_t rop, mpfr_t op) {
   mpz_t mant;
@@ -5153,7 +5154,7 @@ node* differentiateUnsimplified(node *tree) {
     temp_node->value = mpfr_temp;
     derivative = temp_node;    
   } else {
-    if (isPolynomial(tree)) {
+    if (isPolynomial(tree) && (getDegree(tree) <= MAXDIFFPOLYSPECIALDEGREE)) {
       derivative = differentiatePolynomialUnsafe(tree);
     } else {
       
