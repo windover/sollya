@@ -547,6 +547,7 @@ static const messageEntry messageTextsTable[] = {
   { SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_COPYING_INCOMPAT_MODELS         , "Error in Chebyshev form computation: copy of incompatible models."},
   { SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_UNKNOWN_FUNC_FOR_ZUMKELLER      , "Error in Chebyshev form computation: unkown type of function used with Zumkeller's technique."},
   { SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_NOT_A_POLYNOMIAL                , "Error in Chebyshev form computation: the given function is not a polynomial, no modification is made." },  
+  { SOLLYA_MSG_SPECIAL_ALGORITHM_USED_FOR_COEFF                       , "A special algorithm is used to extract the i-th coefficient of an expression that is a polynomial." },
   /* Add your new warning message texts above here. */
 
   { -1, "Unknown message number -1" }   /* Do not ever change the text in this default entry, which must be the last entry in the list */

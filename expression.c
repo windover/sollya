@@ -12420,9 +12420,65 @@ int highestDegreeOfPolynomialSubexpression(node *tree) {
   return -1;
 }
 
+node *makeAddSimplified(node *a, node *b) {
+
+  if ((accessThruMemRef(a)->nodeType == CONSTANT) && 
+      mpfr_zero_p(*(accessThruMemRef(a)->value))) {
+    free_memory(a);
+    return b;
+  }
+
+  if ((accessThruMemRef(b)->nodeType == CONSTANT) && 
+      mpfr_zero_p(*(accessThruMemRef(b)->value))) {
+    free_memory(b);
+    return a;
+  }
+
+  return makeAdd(a, b);
+}
+
+node *makeSubSimplified(node *a, node *b) {
+
+  if ((accessThruMemRef(a)->nodeType == CONSTANT) && 
+      mpfr_zero_p(*(accessThruMemRef(a)->value))) {
+    free_memory(a);
+    return b;
+  }
+
+  if ((accessThruMemRef(b)->nodeType == CONSTANT) && 
+      mpfr_zero_p(*(accessThruMemRef(b)->value))) {
+    free_memory(b);
+    return a;
+  }
+
+  return makeSub(a, b);
+}
+
+node *makeMulSimplified(node *a, node *b) {
+
+  if ((accessThruMemRef(a)->nodeType == CONSTANT) && 
+      mpfr_zero_p(*(accessThruMemRef(a)->value))) {
+    free_memory(b);
+    return a;
+  }
+
+  if ((accessThruMemRef(b)->nodeType == CONSTANT) && 
+      mpfr_zero_p(*(accessThruMemRef(b)->value))) {
+    free_memory(a);
+    return b;
+  }
+
+  /* TODO: 1 * q resp. q * 1 */
+
+  return makeMul(a, b);
+}
+
 int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
   node *resLeft, *resRight;
-  mpfr_t iAsMpfr;
+  mpfr_t iAsMpfr, tAsMpfr;
+  int t;
+
+  if (i < 0) return 0;
 
   if (isConstant(poly)) {
     if (i == 0) {
@@ -12458,27 +12514,27 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
   case ADD:
     if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, i) && 
 	tryGetIthCoefficientSparseUnsafe(&resRight, poly->child2, i)) {
-      *res = makeAdd(resLeft, resRight);
+      *res = makeAddSimplified(resLeft, resRight);
       return 1;
     }
     break;
   case SUB:
     if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, i) && 
 	tryGetIthCoefficientSparseUnsafe(&resRight, poly->child2, i)) {
-      *res = makeSub(resLeft, resRight);
+      *res = makeSubSimplified(resLeft, resRight);
       return 1;
     }
     break;
   case MUL:
     if (isConstant(poly->child1)) {
       if (tryGetIthCoefficientSparseUnsafe(&resRight, poly->child2, i)) {
-	*res = makeMul(copyTree(poly->child1), resRight);
+	*res = makeMulSimplified(copyTree(poly->child1), resRight);
 	return 1;
       }
     }
     if (isConstant(poly->child2)) {
       if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, i)) {
-	*res = makeMul(resLeft, copyTree(poly->child2));
+	*res = makeMulSimplified(resLeft, copyTree(poly->child2));
 	return 1;
       }
     }
@@ -12487,6 +12543,48 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     }
     if (accessThruMemRef(poly->child2)->nodeType == VARIABLE) {
       if (tryGetIthCoefficientSparseUnsafe(res, poly->child1, i - 1)) return 1;
+    }
+    if ((accessThruMemRef(poly->child1)->nodeType == POW) && 
+	(accessThruMemRef(accessThruMemRef(poly->child1)->child1)->nodeType == VARIABLE) &&
+	((accessThruMemRef(accessThruMemRef(poly->child1)->child2)->nodeType == CONSTANT) && 
+	 (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(poly->child1)->child2)->value))))) {
+      t = mpfr_get_si(*(accessThruMemRef(accessThruMemRef(poly->child1)->child2)->value),GMP_RNDN);
+      mpfr_init2(tAsMpfr, 8 * sizeof(int) + 10);
+      mpfr_set_si(tAsMpfr, t, GMP_RNDN); /* exact */
+      if (mpfr_cmp(*(accessThruMemRef(accessThruMemRef(poly->child1)->child2)->value), tAsMpfr) == 0) {
+	if (t <= i) {
+	  if (tryGetIthCoefficientSparseUnsafe(res, poly->child2, i - t)) {
+	    mpfr_clear(tAsMpfr);
+	    return 1;
+	  } 
+	} else {
+	  mpfr_clear(tAsMpfr);
+	  *res = makeConstantDouble(0.0);
+	  return 1;
+	}
+      }
+      mpfr_clear(tAsMpfr);
+    }
+    if ((accessThruMemRef(poly->child2)->nodeType == POW) && 
+	(accessThruMemRef(accessThruMemRef(poly->child2)->child1)->nodeType == VARIABLE) &&
+	((accessThruMemRef(accessThruMemRef(poly->child2)->child2)->nodeType == CONSTANT) && 
+	 (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(poly->child2)->child2)->value))))) {
+      t = mpfr_get_si(*(accessThruMemRef(accessThruMemRef(poly->child2)->child2)->value),GMP_RNDN);
+      mpfr_init2(tAsMpfr, 8 * sizeof(int) + 10);
+      mpfr_set_si(tAsMpfr, t, GMP_RNDN); /* exact */
+      if (mpfr_cmp(*(accessThruMemRef(accessThruMemRef(poly->child2)->child2)->value), tAsMpfr) == 0) {
+	if (t <= i) {
+	  if (tryGetIthCoefficientSparseUnsafe(res, poly->child1, i - t)) {
+	    mpfr_clear(tAsMpfr);
+	    return 1;
+	  } 
+	} else {
+	  mpfr_clear(tAsMpfr);
+	  *res = makeConstantDouble(0.0);
+	  return 1;
+	}
+      }
+      mpfr_clear(tAsMpfr);
     }
     /* Continue with other optimized ways to get the i-th coefficient
        of a sparse polynomial that is a product here. 
@@ -12504,7 +12602,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     if ((accessThruMemRef(poly->child1)->nodeType == VARIABLE) && 
 	(accessThruMemRef(poly->child2)->nodeType == CONSTANT) && 
 	mpfr_number_p(*(accessThruMemRef(poly->child2)->value))) {
-      mpfr_init2(iAsMpfr, 8*sizeof(int) + 10);
+      mpfr_init2(iAsMpfr, 8 * sizeof(int) + 10);
       mpfr_set_si(iAsMpfr, i, GMP_RNDN); /* exact */
       if (mpfr_cmp(*(accessThruMemRef(poly->child2)->value), iAsMpfr) == 0) {
 	*res = makeConstantDouble(1.0);
@@ -12561,6 +12659,7 @@ node *getIthCoefficient(node *poly, int i) {
   } 
 
   if (tryGetIthCoefficientSparse(&tempNode, poly, i)) {
+    printMessage(8, SOLLYA_MSG_SPECIAL_ALGORITHM_USED_FOR_COEFF, "Information: a special algorithm is used to extract the i-th coefficient of an expression that is a polynomial.\n");
     return tempNode;
   }
 
