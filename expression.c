@@ -12468,7 +12468,19 @@ node *makeMulSimplified(node *a, node *b) {
     return b;
   }
 
-  /* TODO: 1 * q resp. q * 1 */
+  if ((accessThruMemRef(a)->nodeType == CONSTANT) && 
+      mpfr_number_p(*(accessThruMemRef(a)->value)) &&
+      (mpfr_cmp_si(*(accessThruMemRef(a)->value),1) == 0)) {
+    free_memory(a);
+    return b;
+  }
+
+  if ((accessThruMemRef(b)->nodeType == CONSTANT) && 
+      mpfr_number_p(*(accessThruMemRef(b)->value)) &&
+      (mpfr_cmp_si(*(accessThruMemRef(b)->value),1) == 0)) {
+    free_memory(b);
+    return a;
+  }
 
   return makeMul(a, b);
 }
@@ -12496,6 +12508,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
   case CONSTANT:
   case PI_CONST:
   case LIBRARYCONSTANT:
+    /* p = c */
     if (i == 0) {
       *res = copyTree(poly);
     } else {
@@ -12504,6 +12517,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     return 1;
     break;
   case VARIABLE:
+    /* p = x */
     if (i == 1) {
       *res = makeConstantDouble(1.0);
     } else {
@@ -12512,6 +12526,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     return 1;
     break;
   case ADD:
+    /* p = q + r */
     if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, i) && 
 	tryGetIthCoefficientSparseUnsafe(&resRight, poly->child2, i)) {
       *res = makeAddSimplified(resLeft, resRight);
@@ -12519,6 +12534,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     }
     break;
   case SUB:
+    /* p = q - r */
     if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, i) && 
 	tryGetIthCoefficientSparseUnsafe(&resRight, poly->child2, i)) {
       *res = makeSubSimplified(resLeft, resRight);
@@ -12526,24 +12542,29 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     }
     break;
   case MUL:
+    /* p = c * q */
     if (isConstant(poly->child1)) {
       if (tryGetIthCoefficientSparseUnsafe(&resRight, poly->child2, i)) {
 	*res = makeMulSimplified(copyTree(poly->child1), resRight);
 	return 1;
       }
     }
+    /* p = q * c */
     if (isConstant(poly->child2)) {
       if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, i)) {
 	*res = makeMulSimplified(resLeft, copyTree(poly->child2));
 	return 1;
       }
     }
+    /* p = x * q */
     if (accessThruMemRef(poly->child1)->nodeType == VARIABLE) {
       if (tryGetIthCoefficientSparseUnsafe(res, poly->child2, i - 1)) return 1;
     }
+    /* p = q * x */
     if (accessThruMemRef(poly->child2)->nodeType == VARIABLE) {
       if (tryGetIthCoefficientSparseUnsafe(res, poly->child1, i - 1)) return 1;
     }
+    /* p = x^t * q */
     if ((accessThruMemRef(poly->child1)->nodeType == POW) && 
 	(accessThruMemRef(accessThruMemRef(poly->child1)->child1)->nodeType == VARIABLE) &&
 	((accessThruMemRef(accessThruMemRef(poly->child1)->child2)->nodeType == CONSTANT) && 
@@ -12565,6 +12586,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
       }
       mpfr_clear(tAsMpfr);
     }
+    /* p = q * x^t */
     if ((accessThruMemRef(poly->child2)->nodeType == POW) && 
 	(accessThruMemRef(accessThruMemRef(poly->child2)->child1)->nodeType == VARIABLE) &&
 	((accessThruMemRef(accessThruMemRef(poly->child2)->child2)->nodeType == CONSTANT) && 
@@ -12591,6 +12613,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     */
     break;
   case DIV:
+    /* p = q / c */
     if (isConstant(poly->child2)) {
       if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, i)) {
 	*res = makeDiv(resLeft, copyTree(poly->child2));
@@ -12599,6 +12622,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     }
     break;
   case POW:
+    /* p = x^k */
     if ((accessThruMemRef(poly->child1)->nodeType == VARIABLE) && 
 	(accessThruMemRef(poly->child2)->nodeType == CONSTANT) && 
 	mpfr_number_p(*(accessThruMemRef(poly->child2)->value))) {
