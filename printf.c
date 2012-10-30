@@ -1,6 +1,6 @@
 /*
 
-Copyright 2011 by
+Copyright 2011-2012 by
 
 Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
 UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
@@ -1575,9 +1575,32 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
   return res;
 }
 
-static inline int specialSnprintf(char *str, size_t size, int res, int useSize, char *buf, ...) {
+static inline int specialSnprintf(char *str, size_t size, int offset, int useSize, char *format, ...) {
+  va_list varlist;
+  size_t actualSize;
+  char *actualStr;
+  int res = -1;
 
-  return -1;
+  if (offset < 0) return offset;
+  
+  actualSize = size - offset;
+  actualStr = str + offset;
+
+  va_start(varlist, format);
+
+  if (useSize) {
+    if (actualSize >= 1) {
+      res = vsnprintf(actualStr, actualSize, format, varlist);
+    } else {
+      res = vsnprintf(actualStr, 0, format, varlist);
+    }
+  } else {
+    res = vsprintf(actualStr, format, varlist);
+  }
+
+  va_end(varlist);
+
+  return res;
 }
 
 int sollyaInternalBaseSnprintf(char *str, size_t size, int useSize, const char *format, va_list varlist) {
