@@ -8552,6 +8552,139 @@ int getDegreeUnsafe(node *tree, int silent) {
   }
 }
 
+int getDegreeUnsafeMpz(mpz_t res, node *tree) {
+  mpz_t left, right;
+  int l, r;
+  mpfr_t temp;
+  node *simplifiedExponent;
+
+  if (isConstant(tree)) {
+    mpz_set_si(res, 0);
+    return 1;
+  }
+
+  if (tree->nodeType == MEMREF) return getDegreeUnsafeMpz(res, tree->child1);
+
+  switch (tree->nodeType) {
+  case VARIABLE:
+    mpz_set_si(res, 1);
+    return 1;
+    break;
+  case CONSTANT:
+  case PI_CONST:
+    mpz_set_si(res, 1);
+    return 1;
+    break;
+  case ADD:
+    mpz_init(left);
+    mpz_init(right);
+    l = getDegreeUnsafeMpz(left, tree->child1);
+    r = getDegreeUnsafeMpz(right, tree->child2);
+    if (l && r) {
+      if (mpz_cmp(left, right) < 0) {
+	mpz_set(res, right);
+      } else {
+	mpz_set(res, left);
+      }
+      mpz_clear(left);
+      mpz_clear(right);
+      return 1;
+    } 
+    mpz_clear(left);
+    mpz_clear(right);
+    break;
+  case SUB:
+    mpz_init(left);
+    mpz_init(right);
+    l = getDegreeUnsafeMpz(left, tree->child1);
+    r = getDegreeUnsafeMpz(right, tree->child2);
+    if (l && r) {
+      if (mpz_cmp(left, right) < 0) {
+	mpz_set(res, right);
+      } else {
+	mpz_set(res, left);
+      }
+      mpz_clear(left);
+      mpz_clear(right);
+      return 1;
+    } 
+    mpz_clear(left);
+    mpz_clear(right);
+    break;
+  case MUL:
+    mpz_init(left);
+    mpz_init(right);
+    l = getDegreeUnsafeMpz(left, tree->child1);
+    r = getDegreeUnsafeMpz(right, tree->child2);
+    if (l && r) {
+      mpz_add(res, left, right);
+      mpz_clear(left);
+      mpz_clear(right);
+      return 1;
+    } 
+    mpz_clear(left);
+    mpz_clear(right);
+    break;
+  case DIV:
+    return getDegreeUnsafeMpz(res, tree->child1);
+    break;
+  case POW:
+    {
+      mpz_init(left);
+      l = getDegreeUnsafeMpz(left, tree->child1);
+      if (accessThruMemRef(tree->child2)->nodeType != CONSTANT) {
+        simplifiedExponent = simplifyRationalErrorfree(tree->child2);
+        if ((accessThruMemRef(simplifiedExponent)->nodeType == CONSTANT) && 
+            mpfr_integer_p(*(accessThruMemRef(simplifiedExponent)->value)) &&
+            (mpfr_sgn(*(accessThruMemRef(simplifiedExponent)->value)) >= 0)) {
+	  mpz_init(right);
+	  mpfr_get_z(right, *(accessThruMemRef(simplifiedExponent)->value), GMP_RNDN); /* exact */
+	  if (l) {
+	    mpz_mul(res, left, right);
+	    mpz_clear(left);
+	    mpz_clear(right);
+	    free_memory(simplifiedExponent);
+	    return 1;
+	  }
+	  mpz_init(right);
+        } else {
+          sollyaFprintf(stderr,"Error: getDegreeUnsafeMpz: an error occurred. The exponent in a power operator is not constant, not integer or not non-negative.\n");
+          exit(1);
+        }
+        free_memory(simplifiedExponent);
+      } else {
+        if (!mpfr_integer_p(*(accessThruMemRef(tree->child2)->value))) {
+          sollyaFprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is not integer.\n");
+          exit(1);
+        }
+        if (mpfr_sgn(*(accessThruMemRef(tree->child2)->value)) < 0) {
+          sollyaFprintf(stderr,"Error: getDegreeUnsafe: an error occurred. The exponent in a power operator is negative.\n");
+          exit(1);
+        }
+	mpz_init(right);
+	mpfr_get_z(right, *(accessThruMemRef(tree->child2)->value), GMP_RNDN); /* exact */
+	if (l) {
+	  mpz_mul(res, left, right);
+	  mpz_clear(left);
+	  mpz_clear(right);
+	  return 1;
+	}
+	mpz_init(right);
+      }
+      mpz_init(left);
+    }
+    break;
+  case NEG:
+    return getDegreeUnsafeMpz(res, tree->child1);
+    break;
+  default:
+    sollyaFprintf(stderr,"Error: getDegreeUnsafeMpz: an error occurred on handling the expression tree\n");
+    exit(1);
+  }
+
+  return 0;
+}
+
 int getDegree(node *tree) {
   if (!isPolynomial(tree)) return -1;
   return getDegreeUnsafe(tree, 0);
@@ -8560,6 +8693,14 @@ int getDegree(node *tree) {
 int getDegreeSilent(node *tree) {
   if (!isPolynomial(tree)) return -1;
   return getDegreeUnsafe(tree, 1);
+}
+
+int getDegreeMpz(mpz_t res, node *tree) {
+  if (!isPolynomial(tree)) {
+    mpz_set_si(res, -1);
+    return 0;
+  }
+  return getDegreeUnsafeMpz(res, tree);
 }
 
 int isPolynomialExtraSafe(node *tree) {
@@ -13205,6 +13346,25 @@ node *makeConstantInt(int a) {
   res->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*(res->value),sizeof(int)*8);
   mpfr_set_si(*(res->value), a, GMP_RNDN);
+
+  return res;
+}
+
+node *makeConstantMpz(mpz_t x) {
+  node *res;
+  mp_prec_t prec;
+  
+  res = (node *) safeMalloc(sizeof(node));
+  res->nodeType = CONSTANT;
+  if (mpz_sgn(x) == 0) {
+    prec = 12;
+  } else {
+    prec = (mp_prec_t) mpz_sizeinbase(x, 2);
+    if (prec < 12) prec = 12;
+  }
+  res->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+  mpfr_init2(*(res->value),prec);
+  mpfr_set_z(*(res->value),x,GMP_RNDN); /* exact */
 
   return res;
 }

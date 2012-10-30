@@ -17887,7 +17887,7 @@ node *evaluateThingInnerst(node *tree) {
   entry *structEntry;
   chain *assoclist;
   int floatingPointEvaluationAlreadyDone;
-
+  mpz_t tempMpz;
 
   /* Make compiler happy: */
   pTemp = 12;
@@ -22157,11 +22157,10 @@ node *evaluateThingInnerst(node *tree) {
     copy->child1 = evaluateThingInner(tree->child1);
     if (isPureTree(copy->child1)) {
       if (timingString != NULL) pushTimeCounter();      
-      resA = getDegree(copy->child1);
-      mpfr_init2(a,sizeof(int) * 8);
-      mpfr_set_si(a,resA,GMP_RNDN);
-      tempNode = makeConstant(a);
-      mpfr_clear(a);
+      mpz_init(tempMpz);
+      getDegreeMpz(tempMpz, copy->child1);
+      tempNode = makeConstantMpz(tempMpz);
+      mpz_clear(tempMpz);
       freeThing(copy);
       copy = tempNode; 
       if (timingString != NULL) popTimeCounter(timingString);
