@@ -11057,7 +11057,7 @@ node* horner(node *tree) {
   node *temp, *temp2, *temp3;
   int i;
 
-  if (isHorner(tree)) {
+  if (isHorner(tree) || isPowerOfVariable(tree)) {
     printMessage(7,SOLLYA_MSG_EXPR_NOT_HORNERIZED_AS_ALREADY_HORNERIZED,"Information: no Horner simplification will be performed because the given tree is already in Horner form.\n");
     return copyTree(tree);
   }

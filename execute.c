@@ -7127,8 +7127,11 @@ void autoprint(node *thing, int inList, node *func, node *cst) {
       if ((treeSize(tempNode3) > MAXHORNERTREESIZE) || (isPolynomialExtraSafe(tempNode3) && (((deg = getDegreeSilent(tempNode3)) > MAXHORNERDEGREE) || (deg < 0)))) {
 	if (canonical) 
 	  printMessage(1,SOLLYA_MSG_EXPRESSION_TOO_BIG_FOR_CANONICAL_FORM,"Warning: the expression is too big for being written in canonical form.\n");
-	else 
-	  printMessage(1,SOLLYA_MSG_EXPRESSION_TOO_BIG_FOR_HORNER_FORM,"Warning: the expression is too big for being written in Horner form.\n");
+	else {
+	  if (!(isHorner(tempNode3) || isPowerOfVariable(tempNode3))) {
+	    printMessage(1,SOLLYA_MSG_EXPRESSION_TOO_BIG_FOR_HORNER_FORM,"Warning: the expression is too big for being written in Horner form.\n");
+	  }
+	}	
 	temp_node = copyTree(tempNode3);
       } else {
 	okay = 0;

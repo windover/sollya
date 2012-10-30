@@ -224,6 +224,7 @@ char *sprintValue(mpfr_t *value);
 void printBinary(mpfr_t x);
 int isHorner(node *tree);
 int isCanonical(node *tree);
+int isPowerOfVariable(node *);
 char *sprintMidpointMode(mpfr_t a, mpfr_t b);
 void fprintValueForXml(FILE *, mpfr_t );
 void fprintValueWithPrintMode(FILE *, mpfr_t );
