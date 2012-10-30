@@ -183,6 +183,40 @@ int sollya_lib_v_fprintf(FILE *fd, const char *format, va_list varlist) {
   return res;
 }
 
+int sollya_lib_sprintf(char *str, const char *format, ...) {
+  va_list varlist;
+  int res;
+
+  va_start(varlist,format);
+
+  res = sollyaInternalVsprintf(str, format, varlist);
+
+  va_end(varlist);
+
+  return res;
+}
+
+int sollya_lib_v_sprintf(char *str, const char *format, va_list varlist) {
+  return sollyaInternalVsprintf(str, format, varlist);
+}
+
+int sollya_lib_snprintf(char *str, size_t size, const char *format, ...) {
+  va_list varlist;
+  int res;
+
+  va_start(varlist,format);
+
+  res = sollyaInternalVsnprintf(str, size, format, varlist);
+
+  va_end(varlist);
+
+  return res;
+}
+
+int sollya_lib_v_snprintf(char *str, size_t size, const char *format, va_list varlist) {
+  return sollyaInternalVsnprintf(str, size, format, varlist);
+}
+
 void sollya_lib_clear_obj(sollya_obj_t obj1) {
   freeThing(obj1);
 }

@@ -237,6 +237,11 @@ extern "C" {
   int sollya_lib_v_printf(const char *, va_list);
   int sollya_lib_fprintf(FILE *, const char *, ...);
   int sollya_lib_v_fprintf(FILE *, const char *, va_list);
+  int sollya_lib_sprintf(char *, const char *, ...);  
+  int sollya_lib_v_sprintf(char *, const char *, va_list);  
+  int sollya_lib_snprintf(char *, size_t, const char *, ...);  
+  int sollya_lib_v_snprintf(char *, size_t, const char *, va_list);  
+  
 
   /* A function to clear Sollya_objects */
   void sollya_lib_clear_obj(sollya_obj_t);

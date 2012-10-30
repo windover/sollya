@@ -54,6 +54,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <stdarg.h>
 
 int sollyaInternalVfprintf(FILE *, const char *, va_list);
-
+int sollyaInternalVsnprintf(char *, size_t, const char *, va_list);
+int sollyaInternalVsprintf(char *, const char *, va_list);
 
 #endif /* ifdef PRINTF_H*/
