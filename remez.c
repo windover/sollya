@@ -251,7 +251,7 @@ node *constructPolynomial(mpfr_t *coeff, chain *monomials, mp_prec_t prec) {
   while(curr != NULL) {
     n = *((int *)(curr->value));
     poly = makeAdd( makeMul( makeConstant(coeff[i-1]),
-                             makePow(makeVariable(), makeConstantDouble((double)(n)))
+                             makePow(makeVariable(), makeConstantInt(n))
                            ),
                     poly
                   );
@@ -1185,7 +1185,7 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
 // It uses the derivative and the second derivative of these functions to
 // search the zeros of (poly*w-f)' by Newton's algorithm
 // It expects to find at least freeDegrees+1 alternates extrema and
-// returns it as a result. An intial estimation of these points is given
+// returns it as a result. An initial estimation of these points is given
 // in the vector x.
 // Moreover, the quality of the approximation
 // (defined by abs(err_max)/abs(err_min) - 1 where err_min and err_max
@@ -2230,7 +2230,7 @@ void radiusBasicMinimaxChebychevsPoints(mpfr_t *h, node *func, node *weight, mpf
 
   monomials_tree = (node **)safeMalloc(n*sizeof(node *));
   monomials_tree[0] = makeConstantDouble(1.);
-  for(i=1;i<n;i++) monomials_tree[i] = makePow(makeVariable(), makeConstantDouble((double)i));
+  for(i=1;i<n;i++) monomials_tree[i] = makePow(makeVariable(), makeConstantInt(i));
 
 
   x = chebychevsPoints(a,b,n+1,currentPrec);
@@ -2257,7 +2257,7 @@ void firstStepContinuousMinimaxChebychevsPoints(mpfr_t *h, node *func, node *wei
   node *error;
   monomials_tree = (node **)(safeMalloc(n*sizeof(node *)));
   monomials_tree[0] = makeConstantDouble(1.);
-  for(i=1;i<n;i++) monomials_tree[i] = makePow(makeVariable(), makeConstantDouble((double)i));
+  for(i=1;i<n;i++) monomials_tree[i] = makePow(makeVariable(), makeConstantInt(i));
 
   x = chebychevsPoints(a,b,n+1,currentPrec);
   perturbPoints(x, n+1, currentPrec);

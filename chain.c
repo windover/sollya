@@ -301,7 +301,7 @@ chain *makeConstantIntChainFromTo(int m, int n) {
 
   c = NULL;
   for (i=n;i>=m;i--) {
-    elem = makeConstantDouble((double)i);
+    elem = makeConstantInt(i);
     c = addElement(c,elem);
   }
 
