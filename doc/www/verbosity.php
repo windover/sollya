@@ -58,5 +58,5 @@ roundings happen.
 </div> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","roundingwarnings","roundingwarnings");?> 
+<span class="category">See also: </span><?php linkTo("command","roundingwarnings","roundingwarnings");?>, <?php linkTo("command","suppressmessage","suppressmessage");?>, <?php linkTo("command","unsuppressmessage","unsuppressmessage");?>, <?php linkTo("command","showmessagenumbers","showmessagenumbers");?>, <?php linkTo("command","getsuppressedmessages","getsuppressedmessages");?> 
 </div> 

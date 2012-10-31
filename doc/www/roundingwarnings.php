@@ -52,5 +52,5 @@ occur.  When its value is <?php linkTo("command","off","off");?>, these warnings
 </div> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","on","on");?>, <?php linkTo("command","off","off");?>, <?php linkTo("command","verbosity","verbosity");?>, <?php linkTo("command","midpointmode","midpointmode");?>, <?php linkTo("command","rationalmode","rationalmode");?> 
+<span class="category">See also: </span><?php linkTo("command","on","on");?>, <?php linkTo("command","off","off");?>, <?php linkTo("command","verbosity","verbosity");?>, <?php linkTo("command","midpointmode","midpointmode");?>, <?php linkTo("command","rationalmode","rationalmode");?>, <?php linkTo("command","suppressmessage","suppressmessage");?>, <?php linkTo("command","unsuppressmessage","unsuppressmessage");?>, <?php linkTo("command","showmessagenumbers","showmessagenumbers");?>, <?php linkTo("command","getsuppressedmessages","getsuppressedmessages");?> 
 </div> 

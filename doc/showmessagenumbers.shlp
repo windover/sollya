@@ -1,0 +1,60 @@
+#NAME $SHOWMESSAGENUMBERS
+#QUICK_DESCRIPTION activates, deactivates or inspects the state variable controlling the displaying of numbers for messages
+#CALLING $COMMAND = <activation value>
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND = <activation value> !
+#TYPE $ONOFF_TYPE -> $VOID_TYPE
+#CALLING $COMMAND
+#TYPE $ONOFF_TYPE
+
+#PARAMETERS <activation value> represents $ON or $OFF, i.e. activation or deactivation
+
+#DESCRIPTION
+An assignment $COMMAND = <activation value>, where <activation value>
+is one of $ON or $OFF, activates respectively deactivates the
+displaying of numbers for warning and information messages. All
+$SOLLYA warning or information messages (that are not fatal to the
+tool's execution) have message numbers. By default, these numbers are
+not displayed when a message is output. When message number displaying
+is activated, the message numbers are displayed together with the
+message. This allows the user to recover the number of a particular
+message in order to suppress resp. unsuppress the displaying of this
+particular message (see $SUPPRESSMESSAGE and $UNSUPPRESSMESSAGE).
+
+#DESCRIPTION
+The user should be aware of the fact that message number display
+activation resp. deactivation through $COMMAND does not affect message
+displaying in general. For instance, even with message number
+displaying activated, messages with only displayed when general
+verbosity and rounding warning mode are set accordingly.
+
+#DESCRIPTION
+If the assignment $COMMAND = <activation value> is followed by an
+exclamation mark, no message indicating the new state is
+displayed. Otherwise the user is informed of the new state of the
+global mode by an indication.
+
+#EXAMPLE
+verbosity = 1;
+0.1;
+showmessagenumbers = on;
+0.1;
+showmessagenumbers;
+showmessagenumbers = off!;
+0.1;
+
+#EXAMPLE
+showmessagenumbers = on;
+verbosity = 1;
+diff(0.1 * x + 1.5 * x^2);
+verbosity = 0;
+diff(0.1 * x + 1.5 * x^2);
+verbosity = 12;
+diff(0.1 * x + 1.5 * x^2);
+
+
+#SEEALSO $GETSUPPRESSEDMESSAGES
+#SEEALSO $SUPPRESSMESSAGE
+#SEEALSO $UNSUPPRESSMESSAGE
+#SEEALSO $VERBOSITY
+#SEEALSO $ROUNDINGWARNINGS

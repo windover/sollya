@@ -159,6 +159,7 @@ $listOfCommands=array(
 "rz","RZ",
 "searchgal","searchgal",
 "sg","SG",
+"showmessagenumbers","showmessagenumbers",
 "simplifysafe","simplifysafe",
 "simplify","simplify",
 "single","single",

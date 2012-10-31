@@ -1,0 +1,97 @@
+\subsection{showmessagenumbers}
+\label{labshowmessagenumbers}
+\noindent Name: \textbf{showmessagenumbers}\\
+\phantom{aaa}activates, deactivates or inspects the state variable controlling the displaying of numbers for messages\\[0.2cm]
+\noindent Usage: 
+\begin{center}
+\textbf{showmessagenumbers} = \emph{activation value} : \textsf{on$|$off} $\rightarrow$ \textsf{void}\\
+\textbf{showmessagenumbers} = \emph{activation value} ! : \textsf{on$|$off} $\rightarrow$ \textsf{void}\\
+\textbf{showmessagenumbers} : \textsf{on$|$off}\\
+\end{center}
+Parameters: 
+\begin{itemize}
+\item \emph{activation value} represents \textbf{on} or \textbf{off}, i.e. activation or deactivation
+\end{itemize}
+\noindent Description: \begin{itemize}
+
+\item An assignment \textbf{showmessagenumbers} = \emph{activation value}, where \emph{activation value}
+   is one of \textbf{on} or \textbf{off}, activates respectively deactivates the
+   displaying of numbers for warning and information messages. All
+   \sollya warning or information messages (that are not fatal to the
+   tool's execution) have message numbers. By default, these numbers are
+   not displayed when a message is output. When message number displaying
+   is activated, the message numbers are displayed together with the
+   message. This allows the user to recover the number of a particular
+   message in order to suppress resp. unsuppress the displaying of this
+   particular message (see \textbf{suppressmessage} and \textbf{unsuppressmessage}).
+
+\item The user should be aware of the fact that message number display
+   activation resp. deactivation through \textbf{showmessagenumbers} does not affect message
+   displaying in general. For instance, even with message number
+   displaying activated, messages with only displayed when general
+   verbosity and rounding warning mode are set accordingly.
+
+\item If the assignment \textbf{showmessagenumbers} = \emph{activation value} is followed by an
+   exclamation mark, no message indicating the new state is
+   displayed. Otherwise the user is informed of the new state of the
+   global mode by an indication.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity = 1;
+The verbosity level has been set to 1.
+> 0.1;
+Warning: Rounding occurred when converting the constant "0.1" to floating-point 
+with 165 bits.
+If safe computation is needed, try to increase the precision.
+0.1
+> showmessagenumbers = on;
+Displaying of message numbers has been activated.
+> 0.1;
+Warning (174): Rounding occurred when converting the constant "0.1" to floating-
+point with 165 bits.
+If safe computation is needed, try to increase the precision.
+0.1
+> showmessagenumbers;
+on
+> showmessagenumbers = off!;
+> 0.1;
+Warning: Rounding occurred when converting the constant "0.1" to floating-point 
+with 165 bits.
+If safe computation is needed, try to increase the precision.
+0.1
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> showmessagenumbers = on;
+Displaying of message numbers has been activated.
+> verbosity = 1;
+The verbosity level has been set to 1.
+> diff(0.1 * x + 1.5 * x^2);
+Warning (174): Rounding occurred when converting the constant "0.1" to floating-
+point with 165 bits.
+If safe computation is needed, try to increase the precision.
+0.1 + 3 * x
+> verbosity = 0;
+The verbosity level has been set to 0.
+> diff(0.1 * x + 1.5 * x^2);
+0.1 + 3 * x
+> verbosity = 12;
+The verbosity level has been set to 12.
+> diff(0.1 * x + 1.5 * x^2);
+Warning (174): Rounding occurred when converting the constant "0.1" to floating-
+point with 165 bits.
+If safe computation is needed, try to increase the precision.
+Information (196): formally differentiating a function.
+Information (197): differentiating the expression '0.1 * x + 1.5 * x^2'
+Information (205): extraction of coefficient terms from a polynomial uses a spec
+ial algorithm for canonical forms.
+Information (195): expression '0.1 + 2 * 1.5 * x' has been simplified to express
+ion '0.1 + 3 * x'.
+Information (207): no Horner simplification will be performed because the given 
+tree is already in Horner form.
+0.1 + 3 * x
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{getsuppressedmessages} (\ref{labgetsuppressedmessages}), \textbf{suppressmessage} (\ref{labsuppressmessage}), \textbf{unsuppressmessage} (\ref{labunsuppressmessage}), \textbf{verbosity} (\ref{labverbosity}), \textbf{roundingwarnings} (\ref{labroundingwarnings})
