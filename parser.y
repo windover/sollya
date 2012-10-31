@@ -4627,6 +4627,7 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- from\n");
 			    sollyaPrintf("- fullparentheses\n");
 			    sollyaPrintf("- function\n");
+			    sollyaPrintf("- getsuppressedmessages\n");
 			    sollyaPrintf("- guessdegree\n");
 			    sollyaPrintf("- head\n");
 			    sollyaPrintf("- hexadecimal\n");
