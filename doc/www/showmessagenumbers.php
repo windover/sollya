@@ -27,9 +27,9 @@
 <h2 class="category">Description: </h2><ul> 
 <li>An assignment <?php linkTo("command","showmessagenumbers","showmessagenumbers");?> = <span class="arg">activation value</span>, where <span class="arg">activation value</span> 
 is one of <?php linkTo("command","on","on");?> or <?php linkTo("command","off","off");?>, activates respectively deactivates the 
-displaying of numbers for warning and information messages. All 
-Sollya warning or information messages (that are not fatal to the 
-tool's execution) have message numbers. By default, these numbers are 
+displaying of numbers for warning and information messages. Every 
+Sollya warning or information message (that is not fatal to the 
+tool's execution) has a message number. By default, these numbers are 
 not displayed when a message is output. When message number displaying 
 is activated, the message numbers are displayed together with the 
 message. This allows the user to recover the number of a particular 
