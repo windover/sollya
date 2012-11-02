@@ -1,0 +1,70 @@
+#NAME $SUPPRESSMESSAGE
+#QUICK_DESCRIPTION suppresses the displaying of messages with a certain number
+#CALLING $COMMAND(<msg num 1>, ..., <msg num n>)  
+#TYPE ($INTEGER_TYPE, ..., $INTEGER_TYPE) -> $VOID_TYPE
+#CALLING $COMMAND(<msg list>)  
+#TYPE $LIST_TYPE -> $VOID_TYPE
+
+#LIBRARYNAME void sollya_lib_suppressmessage(sollya_obj_t, ...);
+
+#PARAMETERS <msg num 1> thru <msg num n> represent the numbers of §§n§$n$§§ messages to be suppressed
+#PARAMETERS <msg list> represents a list with numbers of messages to be suppressed
+
+#DESCRIPTION 
+The $COMMAND command allows particular warning and information
+messages to be suppressed from message output, while maintaining
+global verbosity levels (see $VERBOSITY) high. Every $SOLLYA warning
+or information message (that is not fatal to the tool's execution) has
+a message number. When these message numbers <msg num 1> thru <msg num n> 
+are given to $COMMAND, the corresponding message are no longer
+displayed.  The $UNSUPPRESSMESSAGE command reverts this suppression
+from output for a particular message.
+
+#DESCRIPTION
+Instead of giving $COMMAND several message numbers <msg num 1> thru
+<msg num n> or calling $COMMAND several times, it is possible to give
+a whole list <msg list> of message numbers to $COMMAND.
+
+#DESCRIPTION
+The user should be aware that $COMMAND presents sticky behavior for
+the warning and information messages suppressed from output. This
+means that even if subsequent calls to $COMMAND occur, a message
+suppressed by a call to $COMMAND stays suppressed until it is
+unsuppressed using $UNSUPPRESSMESSAGE or the tool is restarted. This
+behavior distinguishes message suppression from other global states of
+the $SOLLYA tool. The user may use $GETSUPPRESSEDMESSAGES to obtain a
+list of currently suppressed messages.
+
+#DESCRIPTION
+When $COMMAND is used on message numbers that do not exist in the
+current version of the tool, a warning is displayed. The call has no
+other effect though.
+
+#EXAMPLE
+verbosity = 1;
+0.1;
+suppressmessage(174);
+0.1;
+suppressmessage(407);
+0.1;
+verbosity = 12;
+showmessagenumbers = on;
+diff(exp(x * 0.1));
+suppressmessage(207, 196);
+diff(exp(x * 0.1));
+unsuppressmessage(174);
+0.1;
+
+#EXAMPLE
+verbosity = 12;
+showmessagenumbers = on; 
+diff(exp(x * 0.1));
+suppressmessage([| 174, 207, 196 |]);
+diff(exp(x * 0.1));
+
+
+#SEEALSO $GETSUPPRESSEDMESSAGES
+#SEEALSO $SUPPRESSMESSAGE
+#SEEALSO $UNSUPPRESSMESSAGE
+#SEEALSO $VERBOSITY
+#SEEALSO $ROUNDINGWARNINGS

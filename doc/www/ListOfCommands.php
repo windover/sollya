@@ -171,6 +171,7 @@ $listOfCommands=array(
 "subpoly","subpoly",
 "substitute","substitute",
 "supnorm","supnorm",
+"suppressmessage","suppressmessage",
 "sup","sup",
 "tail","tail",
 "tanh","tanh",

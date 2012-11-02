@@ -1,0 +1,123 @@
+\subsection{suppressmessage}
+\label{labsuppressmessage}
+\noindent Name: \textbf{suppressmessage}\\
+\phantom{aaa}suppresses the displaying of messages with a certain number\\[0.2cm]
+\noindent Library name:\\
+\verb|   void sollya_lib_suppressmessage(sollya_obj_t, ...);|\\[0.2cm]
+\noindent Usage: 
+\begin{center}
+\textbf{suppressmessage}(\emph{msg num 1}, ..., \emph{msg num n})   : (\textsf{integer}, ..., \textsf{integer}) $\rightarrow$ \textsf{void}\\
+\textbf{suppressmessage}(\emph{msg list})   : \textsf{list} $\rightarrow$ \textsf{void}\\
+\end{center}
+Parameters: 
+\begin{itemize}
+\item \emph{msg num 1} thru \emph{msg num n} represent the numbers of $n$ messages to be suppressed
+\item \emph{msg list} represents a list with numbers of messages to be suppressed
+\end{itemize}
+\noindent Description: \begin{itemize}
+
+\item The \textbf{suppressmessage} command allows particular warning and information
+   messages to be suppressed from message output, while maintaining
+   global verbosity levels (see \textbf{verbosity}) high. Every \sollya warning
+   or information message (that is not fatal to the tool's execution) has
+   a message number. When these message numbers \emph{msg num 1} thru \emph{msg num n} 
+   are given to \textbf{suppressmessage}, the corresponding message are no longer
+   displayed.  The \textbf{unsuppressmessage} command reverts this suppression
+   from output for a particular message.
+
+\item Instead of giving \textbf{suppressmessage} several message numbers \emph{msg num 1} thru
+   \emph{msg num n} or calling \textbf{suppressmessage} several times, it is possible to give
+   a whole list \emph{msg list} of message numbers to \textbf{suppressmessage}.
+
+\item The user should be aware that \textbf{suppressmessage} presents sticky behavior for
+   the warning and information messages suppressed from output. This
+   means that even if subsequent calls to \textbf{suppressmessage} occur, a message
+   suppressed by a call to \textbf{suppressmessage} stays suppressed until it is
+   unsuppressed using \textbf{unsuppressmessage} or the tool is restarted. This
+   behavior distinguishes message suppression from other global states of
+   the \sollya tool. The user may use \textbf{getsuppressedmessages} to obtain a
+   list of currently suppressed messages.
+
+\item When \textbf{suppressmessage} is used on message numbers that do not exist in the
+   current version of the tool, a warning is displayed. The call has no
+   other effect though.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity = 1;
+The verbosity level has been set to 1.
+> 0.1;
+Warning: Rounding occurred when converting the constant "0.1" to floating-point 
+with 165 bits.
+If safe computation is needed, try to increase the precision.
+0.1
+> suppressmessage(174);
+> 0.1;
+0.1
+> suppressmessage(407);
+> 0.1;
+0.1
+> verbosity = 12;
+The verbosity level has been set to 12.
+> showmessagenumbers = on;
+Displaying of message numbers has been activated.
+> diff(exp(x * 0.1));
+Information (196): formally differentiating a function.
+Information (197): differentiating the expression 'exp(x * 0.1)'
+Information (204): extraction of coefficient terms from a polynomial uses a spec
+ial algorithm for Horner forms.
+Information (207): no Horner simplification will be performed because the given 
+tree is already in Horner form.
+Information (207): no Horner simplification will be performed because the given 
+tree is already in Horner form.
+Information (207): no Horner simplification will be performed because the given 
+tree is already in Horner form.
+Information (207): no Horner simplification will be performed because the given 
+tree is already in Horner form.
+exp(x * 0.1) * 0.1
+> suppressmessage(207, 196);
+> diff(exp(x * 0.1));
+Information (197): differentiating the expression 'exp(x * 0.1)'
+Information (204): extraction of coefficient terms from a polynomial uses a spec
+ial algorithm for Horner forms.
+exp(x * 0.1) * 0.1
+> unsuppressmessage(174);
+> 0.1;
+Warning (174): Rounding occurred when converting the constant "0.1" to floating-
+point with 165 bits.
+If safe computation is needed, try to increase the precision.
+0.1
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity = 12;
+The verbosity level has been set to 12.
+> showmessagenumbers = on; 
+Displaying of message numbers has been activated.
+> diff(exp(x * 0.1));
+Warning (174): Rounding occurred when converting the constant "0.1" to floating-
+point with 165 bits.
+If safe computation is needed, try to increase the precision.
+Information (196): formally differentiating a function.
+Information (197): differentiating the expression 'exp(x * 0.1)'
+Information (204): extraction of coefficient terms from a polynomial uses a spec
+ial algorithm for Horner forms.
+Information (207): no Horner simplification will be performed because the given 
+tree is already in Horner form.
+Information (207): no Horner simplification will be performed because the given 
+tree is already in Horner form.
+Information (207): no Horner simplification will be performed because the given 
+tree is already in Horner form.
+Information (207): no Horner simplification will be performed because the given 
+tree is already in Horner form.
+exp(x * 0.1) * 0.1
+> suppressmessage([| 174, 207, 196 |]);
+> diff(exp(x * 0.1));
+Information (197): differentiating the expression 'exp(x * 0.1)'
+Information (204): extraction of coefficient terms from a polynomial uses a spec
+ial algorithm for Horner forms.
+exp(x * 0.1) * 0.1
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{getsuppressedmessages} (\ref{labgetsuppressedmessages}), \textbf{suppressmessage} (\ref{labsuppressmessage}), \textbf{unsuppressmessage} (\ref{labunsuppressmessage}), \textbf{verbosity} (\ref{labverbosity}), \textbf{roundingwarnings} (\ref{labroundingwarnings})
