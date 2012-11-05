@@ -213,6 +213,7 @@ tprepend.c \
 tprintdouble.c \
 tprintf.c \
 tprintexpansion.c \
+tprintf.c \
 tprintsingle.c \
 tquad.c \
 tquad_obj.c \

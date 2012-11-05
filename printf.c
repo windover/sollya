@@ -66,7 +66,21 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "execute.h"
 #include "sturm.h"
 
-int analyzePrecModifier(uint64_t *analyzedPrec, int *analyzedStar,
+/* Some flag constants used only in this file */
+#define SOLLYA_PRINTF_IMPL_FLAG_ALTERNATE_FORM          1
+#define SOLLYA_PRINTF_IMPL_FLAG_ZERO_PADDING            2
+#define SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT         4
+#define SOLLYA_PRINTF_IMPL_FLAG_POSITIVE_LEAVE_SPACE    8
+#define SOLLYA_PRINTF_IMPL_FLAG_POSITIVE_GET_PLUS      16
+#define SOLLYA_PRINTF_IMPL_FLAG_GROUP_THOUSANDS        32
+#define SOLLYA_PRINTF_IMPL_FLAG_ALTERNATE_DIGITS       64
+
+/* Remark: we don't really know how large the maximum precision could
+   ever be and if we should apply some modulo behavior. Anyway, we
+   can't test the whole thing so the precision is stored on a uint64_t
+   for now.  
+*/
+static inline int analyzePrecModifier(uint64_t *analyzedPrec, int *analyzedStar,
 			char *startBuf, char *endBuf) {
   char *curr;
   char *myStart, *myEnd, *endBufBeforeNull;
@@ -85,6 +99,8 @@ int analyzePrecModifier(uint64_t *analyzedPrec, int *analyzedStar,
   switch (*endBufBeforeNull) {
   case 'v':
   case 'w':
+  case 'b':
+  case 'r':
     break;
   default:
     return 0;
@@ -131,6 +147,131 @@ int analyzePrecModifier(uint64_t *analyzedPrec, int *analyzedStar,
   return 1;
 }
 
+/* Remark: we don't really know how large the maximum width could
+   ever be and if we should apply some modulo behavior. Anyway, we
+   can't test the whole thing so the width is stored on a uint64_t
+   for now.  
+*/
+static inline int analyzeWidthModifier(uint64_t *analyzedWidth, int *setAnalyzedWidth, int *analyzedStar, uint64_t *analyzedFlags, 
+				       char *startBuf, char *endBuf) {
+  char *myStartBuf, *myEndBuf;
+  char *curr;
+  int gottaBreak;
+  uint64_t flags, width;
+
+  /* Trim off a possible leading '%' and a possible trailing '\0'. */
+  myStartBuf = startBuf;
+  if (*myStartBuf == '%') myStartBuf++;
+  myEndBuf = endBuf;
+  if (*myEndBuf == '\0') myEndBuf--;
+  
+  /* Now check if we have at least one character to analyze between
+     myStartBuf and myEndBuf 
+  */  
+  if (myEndBuf < myStartBuf) return 0;
+
+  /* Trim off a possible trailing '.', 'b', 'v', 'w' or 'r'. */
+  switch (*myEndBuf) {
+  case '.':
+  case 'b':
+  case 'v':
+  case 'w':
+  case 'r':
+    myEndBuf--;
+    break;
+  default:
+    break;
+  }
+
+  /* Now check if we have at least one character to analyze between
+     myStartBuf and myEndBuf 
+  */
+  if (myEndBuf < myStartBuf) return 0;
+
+  /* Now analyze the flag characters */
+  flags = (uint64_t) 0;
+  for (curr = myStartBuf; curr <= myEndBuf; curr++) {
+    gottaBreak = 0;
+    switch (*curr) {
+    case '#':
+      flags |= SOLLYA_PRINTF_IMPL_FLAG_ALTERNATE_FORM;
+      break;
+    case '0':
+      flags |= SOLLYA_PRINTF_IMPL_FLAG_ZERO_PADDING;
+      break;
+    case '-':
+      flags |= SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT;
+      break;
+    case ' ':
+      flags |= SOLLYA_PRINTF_IMPL_FLAG_POSITIVE_LEAVE_SPACE;
+      break;
+    case '+':
+      flags |= SOLLYA_PRINTF_IMPL_FLAG_POSITIVE_GET_PLUS;
+      break;
+    case '\'':
+      flags |= SOLLYA_PRINTF_IMPL_FLAG_GROUP_THOUSANDS;
+      break;
+    case 'I':
+      flags |= SOLLYA_PRINTF_IMPL_FLAG_ALTERNATE_DIGITS;
+      break;
+    default:
+      gottaBreak = 1;
+    }
+    if (gottaBreak) break;
+  }
+
+  /* Check for flags that override each other. */
+  if (flags & SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT) {
+    /* Left adjustment overrides zero padding */
+    flags &= ~SOLLYA_PRINTF_IMPL_FLAG_ZERO_PADDING;
+  }
+  if (flags & SOLLYA_PRINTF_IMPL_FLAG_POSITIVE_GET_PLUS) {
+    /* Plus-sign display overrides space display for signed
+       conversions. 
+    */
+    flags &= ~SOLLYA_PRINTF_IMPL_FLAG_POSITIVE_LEAVE_SPACE;
+  }
+
+  /* Check if we already got everything (because there are only flags,
+     no width) and return. 
+  */
+  if (curr > myEndBuf) {
+    *analyzedFlags = flags;
+    *setAnalyzedWidth = 0;
+    *analyzedStar = 0;
+    return 1;
+  }
+
+  /* Analyze now the width field, which can either be a '*' or a
+     decimal number.
+
+     If the field is a star, this character must be the only one left.
+     Otherwise all characters must be decimal digits.
+  */
+  if ((curr == myEndBuf) && (*curr == '*')) {
+    *analyzedFlags = flags;
+    *setAnalyzedWidth = 0;
+    *analyzedStar = 1;
+    return 1;
+  }
+
+  /* Here all characters must be decimal digits. */
+  width = (uint64_t) 0;
+  for (; curr <= myEndBuf; curr++) {
+    /* If a character is not a decimal digit, return failure */
+    if ((*curr < '0') || (*curr > '9')) return 0;
+    width *= (uint64_t) 10;
+    width += (uint64_t) (*curr - '0');
+  }
+
+  /* Here, everthing went fine and we have an analyzed width */
+  *analyzedFlags = flags;
+  *analyzedWidth = width;
+  *setAnalyzedWidth = 1;
+  *analyzedStar = 0;
+  return 1;
+}
+
 void initAndCopyMpfr(mpfr_t rop, mpfr_srcptr op) {
   mpfr_init2(rop,mpfr_get_prec(op));
   mpfr_set(rop,op,GMP_RNDN);
@@ -151,7 +292,7 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
   char *buf;
   const char *currFormat;
   char *currBuf;
-  char *dotBuf;
+  char *dotBuf, *percentBuf, *percentEndBuf;
   int r, shiftedState, starModifiers, hModifiers;
   int lModifiers, LModifier, jModifier, zModifier;
   int tModifier, dotModifier;
@@ -189,8 +330,9 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
   sollya_mpfi_t tempMpfiOrig;
   node *tempNode;
   mpq_t tempMpqOrig;
-  int correctPrecModifier, analyzedStar;
-  uint64_t analyzedPrec;
+  int correctPrecModifier, analyzedStar, correctWidthModifier, analyzedWidthStar;
+  int setAnalyzedWidth;
+  uint64_t analyzedPrec, analyzedWidth, analyzedFlags;
   int precisionSpecified;
   mp_prec_t prec;
   mpfr_t tempMpfr;
@@ -1452,6 +1594,12 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	  /* Still free, too: k, y */
 	  correctPrecModifier = 0;
 	  analyzedStar = 0;
+	  percentBuf = currBuf;
+	  percentEndBuf = currBuf;
+	  while (percentBuf > buf) {
+	    percentBuf--;
+	    if (*percentBuf == '%') break;
+	  }
 	  if (dotModifier) {
 	    dotBuf = currBuf;
 	    while (dotBuf > buf) {
@@ -1459,8 +1607,16 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	      if (*dotBuf == '.') break;
 	    }
 	    if (*dotBuf == '.') {
+	      percentEndBuf = dotBuf;
 	      correctPrecModifier = analyzePrecModifier(&analyzedPrec,&analyzedStar,dotBuf,currBuf);
 	    }
+	  }
+	  correctWidthModifier = 0;
+	  analyzedFlags = (uint64_t) 0;
+	  setAnalyzedWidth = 0;
+	  analyzedWidthStar = 0;
+	  if (percentBuf < percentEndBuf - 1) {
+	    correctWidthModifier = analyzeWidthModifier(&analyzedWidth,&setAnalyzedWidth,&analyzedWidthStar,&analyzedFlags,percentBuf,percentEndBuf);
 	  }
 	  while (currBuf > buf) {
 	    currBuf--;
@@ -1473,6 +1629,17 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	  *currBuf = 's';
 	  currBuf++;
 	  *currBuf = '\0';
+	  if (correctWidthModifier) {
+	    if (analyzedWidthStar) {
+	      firstStarInt = va_arg(varlist,int);
+	      if (firstStarInt >= 1) {
+		analyzedWidth = firstStarInt;
+	      } else {
+		analyzedWidth = 1;
+	      }
+	      setAnalyzedWidth = 1;
+	    } 
+	  }
 	  precisionSpecified = 0;
 	  if (correctPrecModifier) {
 	    if (analyzedStar) {
@@ -1608,7 +1775,7 @@ int sollyaInternalBaseSnprintf(char *str, size_t size, int useSize, const char *
   char *buf;
   const char *currFormat;
   char *currBuf;
-  char *dotBuf;
+  char *dotBuf, *percentBuf, *percentEndBuf;
   int r, shiftedState, starModifiers, hModifiers;
   int lModifiers, LModifier, jModifier, zModifier;
   int tModifier, dotModifier;
@@ -1646,8 +1813,9 @@ int sollyaInternalBaseSnprintf(char *str, size_t size, int useSize, const char *
   sollya_mpfi_t tempMpfiOrig;
   node *tempNode;
   mpq_t tempMpqOrig;
-  int correctPrecModifier, analyzedStar;
-  uint64_t analyzedPrec;
+  int correctPrecModifier, analyzedStar, correctWidthModifier, analyzedWidthStar;
+  int setAnalyzedWidth;
+  uint64_t analyzedPrec, analyzedWidth, analyzedFlags;
   int precisionSpecified;
   mp_prec_t prec;
   mpfr_t tempMpfr;
@@ -2909,6 +3077,12 @@ int sollyaInternalBaseSnprintf(char *str, size_t size, int useSize, const char *
 	  /* Still free, too: k, y */
 	  correctPrecModifier = 0;
 	  analyzedStar = 0;
+	  percentBuf = currBuf;
+	  percentEndBuf = currBuf;
+	  while (percentBuf > buf) {
+	    percentBuf--;
+	    if (*percentBuf == '%') break;
+	  }
 	  if (dotModifier) {
 	    dotBuf = currBuf;
 	    while (dotBuf > buf) {
@@ -2916,8 +3090,16 @@ int sollyaInternalBaseSnprintf(char *str, size_t size, int useSize, const char *
 	      if (*dotBuf == '.') break;
 	    }
 	    if (*dotBuf == '.') {
+	      percentEndBuf = dotBuf;
 	      correctPrecModifier = analyzePrecModifier(&analyzedPrec,&analyzedStar,dotBuf,currBuf);
 	    }
+	  }
+	  correctWidthModifier = 0;
+	  analyzedFlags = (uint64_t) 0;
+	  setAnalyzedWidth = 0;
+	  analyzedWidthStar = 0;
+	  if (percentBuf < percentEndBuf - 1) {
+	    correctWidthModifier = analyzeWidthModifier(&analyzedWidth,&setAnalyzedWidth,&analyzedWidthStar,&analyzedFlags,percentBuf,percentEndBuf);
 	  }
 	  while (currBuf > buf) {
 	    currBuf--;
@@ -2930,6 +3112,17 @@ int sollyaInternalBaseSnprintf(char *str, size_t size, int useSize, const char *
 	  *currBuf = 's';
 	  currBuf++;
 	  *currBuf = '\0';
+	  if (correctWidthModifier) {
+	    if (analyzedWidthStar) {
+	      firstStarInt = va_arg(varlist,int);
+	      if (firstStarInt >= 1) {
+		analyzedWidth = firstStarInt;
+	      } else {
+		analyzedWidth = 1;
+	      }
+	      setAnalyzedWidth = 1;
+	    } 
+	  }
 	  precisionSpecified = 0;
 	  if (correctPrecModifier) {
 	    if (analyzedStar) {
