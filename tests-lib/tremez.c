@@ -1157,7 +1157,6 @@ int main(void) {
   sollya_lib_clear_obj(prec);
 
 
-  sollya_lib_uninstall_msg_callback();
   sollya_lib_close();
   return 0;
 }

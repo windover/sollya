@@ -246,7 +246,6 @@ int main(void) {
     }
     sollya_lib_printf("%b has been converted to some number.\n\n", a);
   }
-  sollya_lib_uninstall_msg_callback();
   flag = 0;
   sollya_lib_clear_obj(a);
 

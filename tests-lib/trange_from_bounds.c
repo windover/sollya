@@ -64,7 +64,6 @@ int main(void) {
   mpfr_clear(b1);
   mpfr_clear(b2);
 
-  sollya_lib_uninstall_msg_callback();
   sollya_lib_close();
   return 0;
 }

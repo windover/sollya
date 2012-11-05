@@ -274,7 +274,6 @@ int main(void) {
   sollya_lib_clear_obj(c);
   for(i=0;i<4;i++) sollya_lib_clear_obj(a[i]);
 
-  sollya_lib_uninstall_msg_callback();
   sollya_lib_close();
   return 0;
 }
