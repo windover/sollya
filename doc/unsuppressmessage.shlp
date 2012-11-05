@@ -1,0 +1,85 @@
+#NAME $UNSUPPRESSMESSAGE
+#QUICK_DESCRIPTION unsuppresses the displaying of messages with a certain number
+#CALLING $COMMAND(<msg num 1>, ..., <msg num n>)  
+#TYPE ($INTEGER_TYPE, ..., $INTEGER_TYPE) -> $VOID_TYPE
+#CALLING $COMMAND(<msg list>)  
+#TYPE $LIST_TYPE -> $VOID_TYPE
+
+#LIBRARYNAME void sollya_lib_unsuppressmessage(sollya_obj_t, ...);
+
+#PARAMETERS <msg num 1> thru <msg num n> represent the numbers of §§n§$n$§§ messages to be suppressed
+#PARAMETERS <msg list> represents a list with numbers of messages to be suppressed
+
+#DESCRIPTION 
+The $COMMAND command allows particular warning and information
+messages that have been suppressed from message output to be
+unsuppressed, i.e. activated for display again. Every $SOLLYA warning
+or information message (that is not fatal to the tool's execution) has
+a message number. When these message numbers <msg num 1> thru <msg num n> 
+are given to $COMMAND, the corresponding message are displayed
+again, as they are by default at according verbosity levels. Actually,
+the $COMMAND command just reverts the effects of the $SUPPRESSMESSAGE
+command.
+
+#DESCRIPTION
+Instead of giving $COMMAND several message numbers <msg num 1> thru
+<msg num n> or calling $COMMAND several times, it is possible to give
+a whole list <msg list> of message numbers to $COMMAND.
+
+#DESCRIPTION
+The user should be aware that $COMMAND presents sticky behavior for
+the warning and information messages suppressed from output.  In fact,
+$COMMAND just unsuppresses the warning or information messages given
+in argument.  All other suppressed messages stay suppressed until they
+get unsuppressed by subsequent calls to $COMMAND or the $SOLLYA tool
+is restarted. This behavior distinguishes message suppression from
+other global states of the $SOLLYA tool. The user may use
+$GETSUPPRESSEDMESSAGES to obtain a list of currently suppressed
+messages. In particular, in order to unsuppressed all currently
+suppressed warning or information messages, the user may feed the
+output of $GETSUPPRESSEDMESSAGES (a list) into $COMMAND.
+
+#DESCRIPTION
+The user should also note that unsuppressing warning or information
+messages with $COMMAND just reverts the effects of the $SUPPRESSMESSAGE
+command but that other conditions exist that affect the actual displaying 
+of a message, such as global verbosity (see $VERBOSITY) and modes
+like rounding warnings (see $ROUNDINGWARNINGS). A message will not just 
+get displayed because it was unsuppressed with $COMMAND.
+
+#DESCRIPTION
+When $COMMAND is used on message numbers that do not exist in the
+current version of the tool, a warning is displayed. The call has no
+other effect though.
+
+#EXAMPLE
+verbosity = 1;
+0.1;
+suppressmessage(174);
+0.1;
+suppressmessage(174);
+0.1;
+
+#EXAMPLE
+verbosity = 12;
+showmessagenumbers = on; 
+diff(exp(x * 0.1));
+suppressmessage([| 174, 207, 196 |]);
+diff(exp(x * 0.1));
+unsuppressmessage([| 174, 196 |]);
+
+#EXAMPLE
+verbosity = 12;
+showmessagenumbers = on;
+suppressmessage(207, 387, 390, 388, 391, 196, 195, 197, 205);
+getsuppressedmessages();
+evaluate(x/sin(x) - 1, [-1;1]);
+unsuppressmessage(getsuppressedmessages());
+getsuppressedmessages();
+
+
+#SEEALSO $GETSUPPRESSEDMESSAGES
+#SEEALSO $SUPPRESSMESSAGE
+#SEEALSO $UNSUPPRESSMESSAGE
+#SEEALSO $VERBOSITY
+#SEEALSO $ROUNDINGWARNINGS

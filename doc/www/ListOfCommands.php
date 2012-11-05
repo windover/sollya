@@ -184,6 +184,7 @@ $listOfCommands=array(
 "timing","timing",
 "tripledouble","tripledouble",
 "true","true",
+"unsuppressmessage","unsuppressmessage",
 "var","var",
 "verbosity","verbosity",
 "void","void",

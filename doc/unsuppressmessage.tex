@@ -1,0 +1,121 @@
+\subsection{unsuppressmessage}
+\label{labunsuppressmessage}
+\noindent Name: \textbf{unsuppressmessage}\\
+\phantom{aaa}unsuppresses the displaying of messages with a certain number\\[0.2cm]
+\noindent Library name:\\
+\verb|   void sollya_lib_unsuppressmessage(sollya_obj_t, ...);|\\[0.2cm]
+\noindent Usage: 
+\begin{center}
+\textbf{unsuppressmessage}(\emph{msg num 1}, ..., \emph{msg num n})   : (\textsf{integer}, ..., \textsf{integer}) $\rightarrow$ \textsf{void}\\
+\textbf{unsuppressmessage}(\emph{msg list})   : \textsf{list} $\rightarrow$ \textsf{void}\\
+\end{center}
+Parameters: 
+\begin{itemize}
+\item \emph{msg num 1} thru \emph{msg num n} represent the numbers of $n$ messages to be suppressed
+\item \emph{msg list} represents a list with numbers of messages to be suppressed
+\end{itemize}
+\noindent Description: \begin{itemize}
+
+\item The \textbf{unsuppressmessage} command allows particular warning and information
+   messages that have been suppressed from message output to be
+   unsuppressed, i.e. activated for display again. Every \sollya warning
+   or information message (that is not fatal to the tool's execution) has
+   a message number. When these message numbers \emph{msg num 1} thru \emph{msg num n} 
+   are given to \textbf{unsuppressmessage}, the corresponding message are displayed
+   again, as they are by default at according verbosity levels. Actually,
+   the \textbf{unsuppressmessage} command just reverts the effects of the \textbf{suppressmessage}
+   command.
+
+\item Instead of giving \textbf{unsuppressmessage} several message numbers \emph{msg num 1} thru
+   \emph{msg num n} or calling \textbf{unsuppressmessage} several times, it is possible to give
+   a whole list \emph{msg list} of message numbers to \textbf{unsuppressmessage}.
+
+\item The user should be aware that \textbf{unsuppressmessage} presents sticky behavior for
+   the warning and information messages suppressed from output.  In fact,
+   \textbf{unsuppressmessage} just unsuppresses the warning or information messages given
+   in argument.  All other suppressed messages stay suppressed until they
+   get unsuppressed by subsequent calls to \textbf{unsuppressmessage} or the \sollya tool
+   is restarted. This behavior distinguishes message suppression from
+   other global states of the \sollya tool. The user may use
+   \textbf{getsuppressedmessages} to obtain a list of currently suppressed
+   messages. In particular, in order to unsuppressed all currently
+   suppressed warning or information messages, the user may feed the
+   output of \textbf{getsuppressedmessages} (a list) into \textbf{unsuppressmessage}.
+
+\item The user should also note that unsuppressing warning or information
+   messages with \textbf{unsuppressmessage} just reverts the effects of the \textbf{suppressmessage}
+   command but that other conditions exist that affect the actual displaying 
+   of a message, such as global verbosity (see \textbf{verbosity}) and modes
+   like rounding warnings (see \textbf{roundingwarnings}). A message will not just 
+   get displayed because it was unsuppressed with \textbf{unsuppressmessage}.
+
+\item When \textbf{unsuppressmessage} is used on message numbers that do not exist in the
+   current version of the tool, a warning is displayed. The call has no
+   other effect though.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity = 1;
+The verbosity level has been set to 1.
+> 0.1;
+Warning: Rounding occurred when converting the constant "0.1" to floating-point 
+with 165 bits.
+If safe computation is needed, try to increase the precision.
+0.1
+> suppressmessage(174);
+> 0.1;
+0.1
+> suppressmessage(174);
+> 0.1;
+0.1
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity = 12;
+The verbosity level has been set to 12.
+> showmessagenumbers = on; 
+Displaying of message numbers has been activated.
+> diff(exp(x * 0.1));
+Warning (174): Rounding occurred when converting the constant "0.1" to floating-
+point with 165 bits.
+If safe computation is needed, try to increase the precision.
+Information (196): formally differentiating a function.
+Information (197): differentiating the expression 'exp(x * 0.1)'
+Information (204): extraction of coefficient terms from a polynomial uses a spec
+ial algorithm for Horner forms.
+Information (207): no Horner simplification will be performed because the given 
+tree is already in Horner form.
+Information (207): no Horner simplification will be performed because the given 
+tree is already in Horner form.
+Information (207): no Horner simplification will be performed because the given 
+tree is already in Horner form.
+Information (207): no Horner simplification will be performed because the given 
+tree is already in Horner form.
+exp(x * 0.1) * 0.1
+> suppressmessage([| 174, 207, 196 |]);
+> diff(exp(x * 0.1));
+Information (197): differentiating the expression 'exp(x * 0.1)'
+Information (204): extraction of coefficient terms from a polynomial uses a spec
+ial algorithm for Horner forms.
+exp(x * 0.1) * 0.1
+> unsuppressmessage([| 174, 196 |]);
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 3: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity = 12;
+The verbosity level has been set to 12.
+> showmessagenumbers = on;
+Displaying of message numbers has been activated.
+> suppressmessage(207, 387, 390, 388, 391, 196, 195, 197, 205);
+> getsuppressedmessages();
+[|195, 196, 197, 205, 207, 387, 388, 390, 391|]
+> evaluate(x/sin(x) - 1, [-1;1]);
+[0;0.85081571768092561791175324139865019347039665509409]
+> unsuppressmessage(getsuppressedmessages());
+> getsuppressedmessages();
+[| |]
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{getsuppressedmessages} (\ref{labgetsuppressedmessages}), \textbf{suppressmessage} (\ref{labsuppressmessage}), \textbf{unsuppressmessage} (\ref{labunsuppressmessage}), \textbf{verbosity} (\ref{labverbosity}), \textbf{roundingwarnings} (\ref{labroundingwarnings})
