@@ -11193,8 +11193,24 @@ int isHorner(node *tree) {
   return 0;
 }
 
+node* hornerInner(node *);
 
 node* horner(node *tree) {
+  node *res;
+
+  res = hornerInner(tree);
+
+  if ((tree != NULL) && (res != NULL) && (tree != res) &&
+      (tree->nodeType == MEMREF) && 
+      isSyntacticallyEqual(tree,res)) {  
+    free_memory(res);
+    res = copyTree(tree);
+  }
+
+  return addMemRef(res);
+}
+
+node* hornerInner(node *tree) {
   node *temp, *temp2, *temp3;
   int i;
 
