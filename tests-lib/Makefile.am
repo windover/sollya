@@ -211,7 +211,6 @@ tpowers.c \
 tprecision.c \
 tprepend.c \
 tprintdouble.c \
-tprintf.c \
 tprintexpansion.c \
 tprintf.c \
 tprintsingle.c \
