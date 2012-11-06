@@ -49,5 +49,5 @@ and a faithful evaluation is *NOT* possible.
 Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation will be used.
 -1.1481307e602 has been converted to -inf (expecting -inf with an overflow warning).
 
-@NaN@ has been converted to -nan (expecting NaN).
+@NaN@ has been converted to nan (expecting NaN).
 

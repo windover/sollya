@@ -2092,7 +2092,7 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 	}
 	res = 0;
       }
-      current = mpfr_get_d(temp,GMP_RNDN);
+      current = sollya_mpfr_get_d(temp,GMP_RNDN);
       if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
 	if (!noRoundingWarnings) {
 	  printMessage(1,SOLLYA_MSG_ROUNDING_ON_INTERNAL_HANDLING_OF_A_COEFFICIENT,"Warning: a rounding occurred on internal handling (on recasting) of the %dth coefficient.\n");
@@ -2107,7 +2107,7 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
       }
       sollyaFprintf(fd,"#define %s_coeff_%dh %1.80e\n",name,i,current);
       constHi = current;
-      current = mpfr_get_d(temp,GMP_RNDN);
+      current = sollya_mpfr_get_d(temp,GMP_RNDN);
       if (current != 0.0) {
 	if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
@@ -2123,7 +2123,7 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 	}
 	sollyaFprintf(fd,"#define %s_coeff_%dm %1.80e\n",name,i,current);
 	constMi = current;
-	current = mpfr_get_d(temp,GMP_RNDN);
+	current = sollya_mpfr_get_d(temp,GMP_RNDN);
 	if (current != 0.0) {
 	  if (mpfr_set_d(temp2,current,GMP_RNDN) != 0) {
 	    if (!noRoundingWarnings) {

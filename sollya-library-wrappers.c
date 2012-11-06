@@ -2538,7 +2538,7 @@ int sollya_lib_get_constant_as_double(double *value, sollya_obj_t obj1) {
   roundOp = makeDouble(makeVariable());
   mpfr_init2(temp,53); /* sollya_lib_get_constant_inner may change the precision afterwards */
   if (sollya_lib_get_constant_inner(temp, obj1, roundOp, &warning)) {
-    *value = mpfr_get_d(temp, GMP_RNDN);
+    *value = sollya_mpfr_get_d(temp, GMP_RNDN);
     mpfr_init2(reconvert,64);
     mpfr_set_d(reconvert, *value, GMP_RNDN); /* Exact as precision enough for a double */
     if ((mpfr_cmp(temp, reconvert) != 0) && 

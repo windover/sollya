@@ -1402,6 +1402,21 @@ int finalizeLibraryMode() {
   return 1;
 }
 
+double sollya_mpfr_get_d(mpfr_t op, mpfr_rnd_t rnd) {
+  union {
+    uint64_t i; 
+    double d;
+  } xdb;
+
+  /* Handle NaNs on our own */
+  if (mpfr_nan_p(op)) {
+    xdb.i = 0x7ff800007ff80000ull;
+    return xdb.d;
+  }
+
+  return mpfr_get_d(op, rnd);
+}
+
 int general(int argc, char *argv[]) {
   struct termios termAttr;
   int parseAbort, executeAbort;

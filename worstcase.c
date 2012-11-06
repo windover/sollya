@@ -188,7 +188,7 @@ void printWorstCases(node *func,
       sollyaPrintf("\t\teps = ");
       printValue(&temp2);
       mpfr_log2(temp,temp2,GMP_RNDN);
-      eps = mpfr_get_d(temp,GMP_RNDN);
+      eps = sollya_mpfr_get_d(temp,GMP_RNDN);
       sollyaPrintf(" = 2^(%f) \n",eps);
       if (fd != NULL) {
 	sollyaFprintf(fd,"%s = ",((variablename == NULL) ? "_x_" : variablename));

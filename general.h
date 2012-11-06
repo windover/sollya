@@ -1,6 +1,6 @@
 /*
 
-Copyright 2007-2011 by
+Copyright 2007-2012 by
 
 Laboratoire de l'Informatique du Parallelisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
@@ -232,6 +232,6 @@ int getRoundingWarnings();
 void setRoundingWarnings(int);
 int getRationalMode();
 void setRationalMode(int);
-
+double sollya_mpfr_get_d(mpfr_t, mpfr_rnd_t);
 
 #endif /* ifdef GENERAL_H*/

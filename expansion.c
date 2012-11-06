@@ -74,7 +74,7 @@ extern void POLYNOMIALNAME(double *, double *, double *, double, double, double)
 #endif
 
 void mpfr_to_double(double *dh, mpfr_t op) {
-  *dh = mpfr_get_d(op, GMP_RNDN);
+  *dh = sollya_mpfr_get_d(op, GMP_RNDN);
 }
 
 void mpfr_to_doubledouble(double *dh, double *dm, mpfr_t op) {
@@ -85,11 +85,11 @@ void mpfr_to_doubledouble(double *dh, double *dm, mpfr_t op) {
 
   mpfr_set(rest,op,GMP_RNDN);
 
-  *dh = mpfr_get_d(rest, GMP_RNDN);
+  *dh = sollya_mpfr_get_d(rest, GMP_RNDN);
   mpfr_set_d(temp,*dh,GMP_RNDN);
   mpfr_sub(rest,rest,temp,GMP_RNDN);
   
-  *dm = mpfr_get_d(rest, GMP_RNDN);
+  *dm = sollya_mpfr_get_d(rest, GMP_RNDN);
   mpfr_set_d(temp,*dm,GMP_RNDN);
   mpfr_sub(rest,rest,temp,GMP_RNDN);
 
@@ -105,15 +105,15 @@ void mpfr_to_tripledouble(double *dh, double *dm, double *dl, mpfr_t op) {
 
   mpfr_set(rest,op, GMP_RNDN);
 
-  *dh = mpfr_get_d(rest, GMP_RNDN);
+  *dh = sollya_mpfr_get_d(rest, GMP_RNDN);
   mpfr_set_d(temp,*dh,GMP_RNDN);
   mpfr_sub(rest,rest,temp,GMP_RNDN);
   
-  *dm = mpfr_get_d(rest, GMP_RNDN);
+  *dm = sollya_mpfr_get_d(rest, GMP_RNDN);
   mpfr_set_d(temp,*dm,GMP_RNDN);
   mpfr_sub(rest,rest,temp,GMP_RNDN);
 
-  *dl = mpfr_get_d(rest, GMP_RNDN);
+  *dl = sollya_mpfr_get_d(rest, GMP_RNDN);
   mpfr_set_d(temp,*dl,GMP_RNDN);
   mpfr_sub(rest,rest,temp,GMP_RNDN);
 
