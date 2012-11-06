@@ -89,6 +89,7 @@ extern void parserFree(void *);
 #define YYERROR_VERBOSE 1
 #define YYPARSE_PARAM scanner
 #define YYLEX_PARAM   scanner
+#define YYFPRINTF sollyaFprintf
 
 extern int yylex(YYSTYPE *lvalp, void *scanner);
 extern FILE *yyget_in(void *scanner);

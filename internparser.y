@@ -83,9 +83,7 @@ extern void parserFree(void *);
 /* End of the malloc mess */
 
 #define YYERROR_VERBOSE 1
-  // #define YYPARSE_PARAM scanner
-  // #define YYLEX_PARAM   scanner
-
+#define YYFPRINTF sollyaFprintf
 
 extern int internyylex(YYSTYPE *lvalp, void *scanner);
 extern FILE *internyyget_in(void *scanner);

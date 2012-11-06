@@ -80,6 +80,7 @@ extern void parserFree(void *);
 /* End of the malloc mess */
 
 #define YYERROR_VERBOSE 1
+#define YYFPRINTF sollyaFprintf
 
 extern int miniyylex(YYSTYPE *lvalp, void *scanner);
 
