@@ -82,6 +82,11 @@ extern void parserFree(void *);
 #define free parserFree
 /* End of the malloc mess */
 
+/* Mess with fprintf to use sollyaFprintf instead. */
+#undef  fprintf
+#define fprintf sollyaFprintf
+/* End of fprintf mess */
+
 %}
 
 %option noyywrap
