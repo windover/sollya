@@ -678,10 +678,17 @@ int printDoubleInHexa(mpfr_t x) {
 
 int printSimpleInHexa(mpfr_t x) {
   int res;
-  double d, dd;
+  volatile double dd;
+  volatile double d;
   mpfr_t temp, tempRound, temp2;
   fl_number xfl;
-  float xfloat;
+  volatile float xfloat;
+
+  if (mpfr_nan_p(x)) {
+    xfl.i = 0x7fc00003;
+    sollyaPrintf("0x%08x\n",xfl.i);
+    return 0;
+  }
 
   mpfr_init2(temp,mpfr_get_prec(x));
   mpfr_init2(temp2,mpfr_get_prec(x));
