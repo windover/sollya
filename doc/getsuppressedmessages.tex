@@ -1,0 +1,87 @@
+\subsection{getsuppressedmessages}
+\label{labgetsuppressedmessages}
+\noindent Name: \textbf{getsuppressedmessages}\\
+\phantom{aaa}returns a list of numbers of messages that have been suppressed from message output\\[0.2cm]
+\noindent Library name:\\
+\verb|   sollya_obj_t sollya_lib_getsuppressedmessages();|\\[0.2cm]
+\noindent Usage: 
+\begin{center}
+\textbf{getsuppressedmessages}()   : \textsf{void} $\rightarrow$ \textsf{list}\\
+\end{center}
+\noindent Description: \begin{itemize}
+
+\item The \textbf{getsuppressedmessages} command allows the user to inspect the state of warning
+   and information message suppression. When called, \textbf{getsuppressedmessages} returns a
+   list of integers numbers that stand for the warning and information
+   messages that have been suppressed.  If no message is suppressed,
+   \textbf{getsuppressedmessages} returns an empty list.
+
+\item Every \sollya warning or information message (that is not fatal to the
+   tool's execution) has a message number. By default, these numbers are
+   not displayed when a message is output. When message number displaying
+   is activated using \textbf{showmessagenumbers}, the message numbers are
+   displayed together with the message. This allows the user to match the
+   numbers returned in a list by \textbf{getsuppressedmessages} with the actual warning and
+   information messages.
+
+\item The list of message numbers returned by \textbf{getsuppressedmessages} is suitable to be fed
+   into the \textbf{unsuppressmessage} command. This way, the user may unsuppress
+   all warning and information messages that have been suppressed.
+\end{itemize}
+\noindent Example 1: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity = 1;
+The verbosity level has been set to 1.
+> 0.1;
+Warning: Rounding occurred when converting the constant "0.1" to floating-point 
+with 165 bits.
+If safe computation is needed, try to increase the precision.
+0.1
+> suppressmessage(174);
+> 0.1;
+0.1
+> suppressmessage(407);
+> 0.1;
+0.1
+> getsuppressedmessages();
+[|174, 407|]
+> suppressmessage(207, 196);
+> getsuppressedmessages();
+[|174, 196, 207, 407|]
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 2: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> suppressmessage(174, 209, 13, 24, 196);
+> suppressmessage([| 16, 17 |]);
+> suppressmessage(19);
+> unsuppressmessage([| 13, 17 |]);
+> getsuppressedmessages();
+[|16, 19, 24, 174, 196, 209|]
+> unsuppressmessage(getsuppressedmessages());
+> getsuppressedmessages();
+[| |]
+\end{Verbatim}
+\end{minipage}\end{center}
+\noindent Example 3: 
+\begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
+> verbosity = 12;
+The verbosity level has been set to 12.
+> suppressmessage(174);
+> exp(x * 0.1);
+Information: no Horner simplification will be performed because the given tree i
+s already in Horner form.
+Information: no Horner simplification will be performed because the given tree i
+s already in Horner form.
+exp(x * 0.1)
+> getsuppressedmessages();
+[|174|]
+> verbosity = 0;
+The verbosity level has been set to 0.
+> exp(x * 0.1);
+exp(x * 0.1)
+> getsuppressedmessages();
+[|174|]
+\end{Verbatim}
+\end{minipage}\end{center}
+See also: \textbf{getsuppressedmessages} (\ref{labgetsuppressedmessages}), \textbf{suppressmessage} (\ref{labsuppressmessage}), \textbf{unsuppressmessage} (\ref{labunsuppressmessage}), \textbf{verbosity} (\ref{labverbosity}), \textbf{roundingwarnings} (\ref{labroundingwarnings})

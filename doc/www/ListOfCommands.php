@@ -71,6 +71,7 @@ $listOfCommands=array(
 "fullparentheses","fullparentheses",
 "function","function",
 "ge",">=",
+"getsuppressedmessages","getsuppressedmessages",
 "gt",">",
 "guessdegree","guessdegree",
 "halfprecision","halfprecision",

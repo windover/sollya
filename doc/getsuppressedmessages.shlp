@@ -1,0 +1,65 @@
+#NAME $GETSUPPRESSEDMESSAGES
+#QUICK_DESCRIPTION returns a list of numbers of messages that have been suppressed from message output
+#CALLING $COMMAND()  
+#TYPE $VOID_TYPE -> $LIST_TYPE
+
+#LIBRARYNAME sollya_obj_t sollya_lib_getsuppressedmessages();
+
+#DESCRIPTION 
+The $COMMAND command allows the user to inspect the state of warning
+and information message suppression. When called, $COMMAND returns a
+list of integers numbers that stand for the warning and information
+messages that have been suppressed.  If no message is suppressed,
+$COMMAND returns an empty list.
+
+#DESCRIPTION
+Every $SOLLYA warning or information message (that is not fatal to the
+tool's execution) has a message number. By default, these numbers are
+not displayed when a message is output. When message number displaying
+is activated using $SHOWMESSAGENUMBERS, the message numbers are
+displayed together with the message. This allows the user to match the
+numbers returned in a list by $COMMAND with the actual warning and
+information messages.
+
+
+#DESCRIPTION
+The list of message numbers returned by $COMMAND is suitable to be fed
+into the $UNSUPPRESSMESSAGE command. This way, the user may unsuppress
+all warning and information messages that have been suppressed.
+
+
+#EXAMPLE
+verbosity = 1;
+0.1;
+suppressmessage(174);
+0.1;
+suppressmessage(407);
+0.1;
+getsuppressedmessages();
+suppressmessage(207, 196);
+getsuppressedmessages();
+
+#EXAMPLE
+suppressmessage(174, 209, 13, 24, 196);
+suppressmessage([| 16, 17 |]);
+suppressmessage(19);
+unsuppressmessage([| 13, 17 |]);
+getsuppressedmessages();
+unsuppressmessage(getsuppressedmessages());
+getsuppressedmessages();
+
+#EXAMPLE
+verbosity = 12;
+suppressmessage(174);
+exp(x * 0.1);
+getsuppressedmessages();
+verbosity = 0;
+exp(x * 0.1);
+getsuppressedmessages();
+
+
+#SEEALSO $GETSUPPRESSEDMESSAGES
+#SEEALSO $SUPPRESSMESSAGE
+#SEEALSO $UNSUPPRESSMESSAGE
+#SEEALSO $VERBOSITY
+#SEEALSO $ROUNDINGWARNINGS
