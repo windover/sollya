@@ -566,11 +566,11 @@ void base_TMAux(tModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t p, 
     baseFunction_diff(nDeriv, nodeType, x, (mode==RELATIVE)?(n+1):n, silent);
     break;
   case MONOTONE_REMAINDER_LIBRARY_FUNCTION:
-    libraryFunction_diff(tt->poly_array, f, x0, n-1, silent);
+    libraryFunction_diff(tt->poly_array, accessThruMemRef(f), x0, n-1, silent);
     libraryFunction_diff(nDeriv, accessThruMemRef(f), x, (mode==RELATIVE)?(n+1):n, silent);
     break;
   case MONOTONE_REMAINDER_PROCEDURE_FUNCTION:
-    procedureFunction_diff(tt->poly_array, f, x0, n-1, silent);
+    procedureFunction_diff(tt->poly_array, accessThruMemRef(f), x0, n-1, silent);
     procedureFunction_diff(nDeriv, accessThruMemRef(f), x, (mode==RELATIVE)?(n+1):n, silent);
     break;
   case MONOTONE_REMAINDER_INV: 
