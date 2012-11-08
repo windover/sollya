@@ -2928,10 +2928,10 @@ int mpfr_to_mpq( mpq_t y, mpfr_t x){
     mpq_set_z(aux,mant);
     
     if (expo>=0)
-      mpq_mul_2exp(aux,aux,(unsigned int)expo);
+      mpq_mul_2exp(y,aux,(unsigned int)expo);
     else
-      mpq_div_2exp(aux,aux,(unsigned int)(-expo));
-    mpq_set(y,aux);
+      mpq_div_2exp(y,aux,(unsigned int)(-expo));
+
     mpq_clear(aux);
     mpz_clear(mant);
     return 1;
