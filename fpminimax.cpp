@@ -854,13 +854,13 @@ node *FPminimaxMain(node *f,
   // LLL reduction
   pushTimeCounter();
 
-  printFPLLLMat(FPlllMat);
+  //printFPLLLMat(FPlllMat);
   LLLwrapper = new wrapper(FPlllMat);
   LLLwrapper->LLL();
   popTimeCounter((char *)"FPminimax: LLL call");
-  printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
-  LLLwrapper->GetBase()->print();
-  printf("\n");
+  // printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+  //LLLwrapper->GetBase()->print();
+  //printf("\n");
 
   // Converting all stuff into exact numbers
 
