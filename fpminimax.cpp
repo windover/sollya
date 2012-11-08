@@ -690,6 +690,9 @@ node *FPminimaxMain(node *f,
   mpfr_t *mpfr_coefficients;
 
   ZZ_mat<mpz_t> * FPlllMat;
+
+  volatile ZZ_mat<mpz_t> * FPlllMatCopy;
+
   Z_NR<mpz_t>  zval;
   mpz_t mpzval;
   wrapper *LLLwrapper;
@@ -852,6 +855,9 @@ node *FPminimaxMain(node *f,
 
   // LLL reduction
   pushTimeCounter();
+
+  FPlllMatCopy = FPlllMat;
+
   LLLwrapper = new wrapper(FPlllMat);
   LLLwrapper->LLL();
   popTimeCounter((char *)"FPminimax: LLL call");
