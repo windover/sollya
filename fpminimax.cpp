@@ -691,8 +691,6 @@ node *FPminimaxMain(node *f,
 
   ZZ_mat<mpz_t> * FPlllMat;
 
-  volatile ZZ_mat<mpz_t> * FPlllMatCopy;
-
   Z_NR<mpz_t>  zval;
   mpz_t mpzval;
   wrapper *LLLwrapper;
@@ -856,11 +854,13 @@ node *FPminimaxMain(node *f,
   // LLL reduction
   pushTimeCounter();
 
-  FPlllMatCopy = FPlllMat;
-
+  printFPLLLMat(FPlllMat);
   LLLwrapper = new wrapper(FPlllMat);
   LLLwrapper->LLL();
   popTimeCounter((char *)"FPminimax: LLL call");
+  printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+  LLLwrapper->GetBase()->print();
+  printf("\n");
 
   // Converting all stuff into exact numbers
 
