@@ -3802,7 +3802,7 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal, int s
       if (accessThruMemRef(simplified)->nodeType != CONSTANT) {
 	if (!noMessage) {
 	  if ((!noRoundingWarnings) && (!silent) && (!superSilent)) {
-	    printMessage(1,SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST,"Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation will be used.\n");
+	    printMessage(1,SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST,"Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation will be used.\n"); // TODO F2D
 	  }
 	}
       }
