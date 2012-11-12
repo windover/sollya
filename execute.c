@@ -22387,8 +22387,8 @@ node *evaluateThingInnerst(node *tree) {
 	curr = curr->next;
 	if (isRoundingSymbol((node *) (curr->value)) || isDefault((node *) (curr->value))) {
 	  curr = copy->arguments;
-	  mpfr_init2(a,tools_precision);
-	  if (evaluateThingToConstant(a,(node *) (curr->value),NULL,0,0)) {
+	  firstArg = (node *) (curr->value);
+	  if (isConstant(firstArg)) {
 	    curr = curr->next;
 	    resB = tools_precision;
 	    if (isPureTree((node *) (curr->value)) || 
@@ -22399,11 +22399,12 @@ node *evaluateThingInnerst(node *tree) {
 		  resD = GMP_RNDN;
 		  if (evaluateThingToRoundingSymbol(&resC,(node *) (curr->value),&resD)) {		
 		    if (timingString != NULL) pushTimeCounter();      
-		    mpfr_init2(b,tools_precision);
+		    mpfr_init2(b,((tools_precision > resB) ? tools_precision : resB));
+		    resG = 0;
 		    if (timingString != NULL) pushTimeCounter();
-		    resE = round_to_format_or_expansion_format(b, a, 0, 1, resA, resC);
+		    resF = round_constant_expr_to_format_or_expansion_format(&resE, &resG, b, firstArg, 0, 1, resA, resC);
 		    if (timingString != NULL) popTimeCounter(timingString);
-		    if (verbosity >= 2) {
+		    if (resG) {
 		      if (resE == 0) {
 			printMessage(2,SOLLYA_MSG_NO_ROUNDING_HAS_HAPPENED,"Information: no rounding has happened.\n");
 		      } else {
@@ -22414,10 +22415,12 @@ node *evaluateThingInnerst(node *tree) {
 			}
 		      }
 		    }
-		    tempNode = makeConstant(b);
+		    if (resF) {
+		      tempNode = makeConstant(b);
+		      freeThing(copy);
+		      copy = tempNode;
+		    }
 		    mpfr_clear(b);
-		    freeThing(copy);
-		    copy = tempNode;
 		  }
 		} else {
 		  printMessage(1,SOLLYA_MSG_ROUND_PREC_MUST_BE_AT_LEAST_TWO_BITS, "Warning: the precision specified when rounding to a particular format must be at least 2 bits.\n");	
@@ -22428,11 +22431,12 @@ node *evaluateThingInnerst(node *tree) {
 		curr = curr->next;
 		resD = GMP_RNDN;
 		if (evaluateThingToRoundingSymbol(&resC,(node *) (curr->value),&resD)) {		
-		  mpfr_init2(b,tools_precision);
+		  mpfr_init2(b,((tools_precision > 200) ? tools_precision : 200));
+		  resG = 0;
 		  if (timingString != NULL) pushTimeCounter();      
-		  resE = round_to_format_or_expansion_format(b, a, 1, resA, 1, resC);
+		  resF = round_constant_expr_to_format_or_expansion_format(&resE, &resG, b, firstArg, 1, resA, 1, resC);
 		  if (timingString != NULL) popTimeCounter(timingString);
-		  if (verbosity >= 2) {
+		  if (resG) {
 		    if (resE == 0) {
 		      printMessage(2,SOLLYA_MSG_NO_ROUNDING_HAS_HAPPENED,"Information: no rounding has happened.\n");
 		    } else {
@@ -22443,15 +22447,16 @@ node *evaluateThingInnerst(node *tree) {
 		      }
 		    }
 		  }
-		  tempNode = makeConstant(b);
+		  if (resF) {
+		    tempNode = makeConstant(b);
+		    freeThing(copy);
+		    copy = tempNode;
+		  }
 		  mpfr_clear(b);
-		  freeThing(copy);
-		  copy = tempNode;
 		}
 	      }
 	    }
 	  }
-	  mpfr_clear(a);
 	}
       }
     }

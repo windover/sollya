@@ -63,6 +63,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 int round_to_format(mpfr_t rop, mpfr_t op, int prec, mp_rnd_t mode);
 int round_to_expansion_format(mpfr_t rop, mpfr_t op, int format, mp_rnd_t mode);
 int round_to_format_or_expansion_format(mpfr_t rop, mpfr_t op, int expansion_format_round, int format, mp_prec_t prec, mp_rnd_t mode);
+int round_constant_expr_to_format_or_expansion_format(int *ternary, int *ternaryOkay, mpfr_t rop, node *op, int expansion_format_round, int format, mp_prec_t prec, mp_rnd_t mode);
 int mpfr_round_to_double(mpfr_t rop, mpfr_t op);
 int mpfr_round_to_single(mpfr_t rop, mpfr_t op);
 int mpfr_round_to_quad(mpfr_t rop, mpfr_t x);
