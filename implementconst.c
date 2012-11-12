@@ -530,8 +530,8 @@ void appendLibraryConstantProg(node *c, int gamma0, struct implementCsteProgram 
   strcpy(instr->var2, "");
   strcpy(instr->var3, "");
   strcpy(instr->name, "");
-  instr->strval = safeCalloc(strlen(c->libFun->functionName)+1, sizeof(char));
-  strcpy(instr->strval, c->libFun->functionName);
+  instr->strval = safeCalloc(strlen(accessThruMemRef(c)->libFun->functionName)+1, sizeof(char));
+  strcpy(instr->strval, accessThruMemRef(c)->libFun->functionName);
   instr->prog1.instructions = NULL;
   instr->prog1.precisions = NULL;
   instr->prog2.instructions = NULL;
