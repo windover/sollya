@@ -1,6 +1,6 @@
 /*
 
-Copyright 2006-2011 by
+Copyright 2006-2012 by
 
 Laboratoire de l'Informatique du Parallelisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
@@ -1284,7 +1284,11 @@ int round_to_expansion_format(mpfr_t rop, mpfr_t op, int format, mp_rnd_t mode) 
   return res;
 }
 
+int round_to_format_or_expansion_format(mpfr_t rop, mpfr_t op, int expansion_format_round, int format, mp_prec_t prec, mp_rnd_t mode) {
+  if (expansion_format_round) return round_to_expansion_format(rop, op, format, mode);
 
+  return round_to_format(rop, op, prec, mode);
+}
 
 int mpfr_mant_exp(mpfr_t rop, mp_exp_t *expo, mpfr_t op) {
   mp_exp_t e;

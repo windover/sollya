@@ -22400,8 +22400,8 @@ node *evaluateThingInnerst(node *tree) {
 		  if (evaluateThingToRoundingSymbol(&resC,(node *) (curr->value),&resD)) {		
 		    if (timingString != NULL) pushTimeCounter();      
 		    mpfr_init2(b,tools_precision);
-		    if (timingString != NULL) pushTimeCounter();      
-		    resE = round_to_format(b, a, resA, resC);
+		    if (timingString != NULL) pushTimeCounter();
+		    resE = round_to_format_or_expansion_format(b, a, 0, 1, resA, resC);
 		    if (timingString != NULL) popTimeCounter(timingString);
 		    if (verbosity >= 2) {
 		      if (resE == 0) {
@@ -22430,7 +22430,7 @@ node *evaluateThingInnerst(node *tree) {
 		if (evaluateThingToRoundingSymbol(&resC,(node *) (curr->value),&resD)) {		
 		  mpfr_init2(b,tools_precision);
 		  if (timingString != NULL) pushTimeCounter();      
-		  resE = round_to_expansion_format(b, a, resA, resC);
+		  resE = round_to_format_or_expansion_format(b, a, 1, resA, 1, resC);
 		  if (timingString != NULL) popTimeCounter(timingString);
 		  if (verbosity >= 2) {
 		    if (resE == 0) {
