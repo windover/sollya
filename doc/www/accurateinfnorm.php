@@ -51,9 +51,9 @@ in new Sollya scripts and to replace it, where possible, by the
 &nbsp;&nbsp;&nbsp;&gt; accurateinfnorm(p - exp(x), [-1;1], 20);<br> 
 &nbsp;&nbsp;&nbsp;4.52055246569216251373291015625e-5<br> 
 &nbsp;&nbsp;&nbsp;&gt; accurateinfnorm(p - exp(x), [-1;1], 30);<br> 
-&nbsp;&nbsp;&nbsp;4.520552107578623690642416477203369140625e-5<br> 
+&nbsp;&nbsp;&nbsp;4.5205513970358879305422306060791015625e-5<br> 
 &nbsp;&nbsp;&nbsp;&gt; accurateinfnorm(p - exp(x), [-1;1], 40);<br> 
-&nbsp;&nbsp;&nbsp;4.5205521043867324948450914234854280948638916015625e-5<br> 
+&nbsp;&nbsp;&nbsp;4.520551396713923253400935209356248378753662109375e-5<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 2: </h2> 
@@ -62,7 +62,7 @@ in new Sollya scripts and to replace it, where possible, by the
 &nbsp;&nbsp;&nbsp;&gt; infnorm(p - exp(x), [-1;1]);<br> 
 &nbsp;&nbsp;&nbsp;0.45205~5/7~e-4<br> 
 &nbsp;&nbsp;&nbsp;&gt; accurateinfnorm(p - exp(x), [-1;1], 40);<br> 
-&nbsp;&nbsp;&nbsp;4.5205521043867324948450914234854280948638916015625e-5<br> 
+&nbsp;&nbsp;&nbsp;4.520551396713923253400935209356248378753662109375e-5<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

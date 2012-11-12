@@ -40,7 +40,7 @@ type <span class="type">error</span>.
 <h2 class="category">Example 2: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; verbosity=1!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; readfile("afile.txt");<br> 
-&nbsp;&nbsp;&nbsp;Warning: the file "afile.txt" could not be opened for reading.<br> 
+&nbsp;&nbsp;&nbsp;Warning: the file "(null)" could not be opened for reading.<br> 
 &nbsp;&nbsp;&nbsp;Warning: at least one of the given expressions or a subexpression is not correctly typed<br> 
 &nbsp;&nbsp;&nbsp;or its evaluation has failed because of some error on a side-effect.<br> 
 &nbsp;&nbsp;&nbsp;error<br> 

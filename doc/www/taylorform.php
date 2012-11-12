@@ -150,7 +150,7 @@ The same difference exists between commands <?php linkTo("command","diff","diff"
 &nbsp;&nbsp;&nbsp;&gt; print(coeff(T1, 2));<br> 
 &nbsp;&nbsp;&nbsp;-1.35914091422952261768014373567633124887862354684999<br> 
 &nbsp;&nbsp;&nbsp;&gt; print(coeff(T2, 2));<br> 
-&nbsp;&nbsp;&nbsp;-(0.5 * exp(1))<br> 
+&nbsp;&nbsp;&nbsp;0.5 * exp(1)<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

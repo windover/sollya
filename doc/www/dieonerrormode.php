@@ -44,7 +44,7 @@ be printed in these cases at appropriate <?php linkTo("command","verbosity","ver
 &nbsp;&nbsp;&nbsp;Warning: one of the arguments of the for loop does not evaluate to a constant.<br> 
 &nbsp;&nbsp;&nbsp;The for loop will not be executed.<br> 
 &nbsp;&nbsp;&nbsp;&gt; exp(17);<br> 
-&nbsp;&nbsp;&nbsp;Warning: rounding has happened. The value displayed is a faithful rounding of the true result.<br> 
+&nbsp;&nbsp;&nbsp;Warning: rounding has happened. The value displayed is a faithful rounding to 165 bits of the true result.<br> 
 &nbsp;&nbsp;&nbsp;2.41549527535752982147754351803858238798675673527224e7<br> 
 </div> 
 <div class="divExample"> 
@@ -56,7 +56,7 @@ be printed in these cases at appropriate <?php linkTo("command","verbosity","ver
 &nbsp;&nbsp;&nbsp;The last symbol read has been "/".<br> 
 &nbsp;&nbsp;&nbsp;Will skip input until next semicolon after the unexpected token. May leak memory.<br> 
 &nbsp;&nbsp;&nbsp;&nbsp; exp(17);<br> 
-&nbsp;&nbsp;&nbsp;Warning: rounding has happened. The value displayed is a faithful rounding of the true result.<br> 
+&nbsp;&nbsp;&nbsp;Warning: rounding has happened. The value displayed is a faithful rounding to 165 bits of the true result.<br> 
 &nbsp;&nbsp;&nbsp;2.41549527535752982147754351803858238798675673527224e7<br> 
 </div> 
 <div class="divExample"> 

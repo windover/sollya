@@ -2421,7 +2421,11 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1, sollya_obj_t 
   case SOLLYA_FP_FAITHFUL_PROVEN_INEXACT:
     if (!noRoundingWarnings) {
       if (*warning) {
-	printMessage(1,SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST,"Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation will be used.\n");
+	if (roundOp == NULL) {
+	  printMessage(1,SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST,"Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation to %d bits will be used.\n",mpfr_get_prec(value));
+	} else {
+	  printMessage(1,SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST,"Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation will be used.\n");
+	}
 	*warning = 0;
       } 
     }

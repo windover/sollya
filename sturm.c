@@ -1,6 +1,6 @@
 /*
 
-Copyright 2008-2011 by 
+Copyright 2008-2012 by 
 
 Laboratoire de l'Informatique du Parallelisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
@@ -752,12 +752,12 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t precision) {
 	if (tryEvaluateConstantTermToMpq(qCoefficients[i], tempTree)) {
 	  printMessage(3,SOLLYA_MSG_STURM_COEFF_EVALUATED_TO_RATIONAL_NUMBER,"Information: in getNrRoots: evaluated the %dth coefficient to %r\n",i,qCoefficients[i]);
 	} else {
+	  r=evaluateFaithful(tempValue2, tempTree, tempValue, prec); 
 	  if (!noRoundingWarnings) {
 	    printMessage(1,SOLLYA_MSG_STURM_COEFF_NOT_CONSTANT_NOR_RATIONAL_ROUNDING,"Warning: the %dth coefficient of the polynomial is neither a floating point\n",i);
 	    printMessage(1,SOLLYA_MSG_CONTINUATION,"constant nor can be evaluated without rounding to a floating point constant.\n");
-	    printMessage(1,SOLLYA_MSG_CONTINUATION,"Will faithfully evaluate it with the current precision (%d bits) \n",prec);
+	    printMessage(1,SOLLYA_MSG_CONTINUATION,"Will faithfully evaluate it with the current precision (%d bits) \n",((mpfr_get_prec(tempValue2) > prec) ? mpfr_get_prec(tempValue2) : prec));
 	  }
-	  r=evaluateFaithful(tempValue2, tempTree, tempValue, prec);
 	  if (!r){
 	    mpfr_set_ui(tempValue2,0,GMP_RNDN);
 	    if (!noRoundingWarnings) {

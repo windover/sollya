@@ -5,15 +5,13 @@
 > evaluate(f,[-infty;infty]);
 [5;@Inf@]
 > f(infty);
-Warning: the given expression is undefined or numerically unstable.
-@NaN@
+@Inf@
 > [-infty;5] * [3;4];
 [-@Inf@;20]
 > -infty < 5;
 true
 > log(0);
-Warning: the given expression is undefined or numerically unstable.
-@NaN@
+-@Inf@
 > [log(0);17];
 Warning: the given expression is not a constant but an expression to evaluate
 and a faithful evaluation is not possible.

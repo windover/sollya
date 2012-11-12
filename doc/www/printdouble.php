@@ -42,7 +42,7 @@ displayed. A warning is displayed in this case.
 &nbsp;&nbsp;&nbsp;&gt; prec=100!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; verbosity = 1!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; printdouble(exp(5));<br> 
-&nbsp;&nbsp;&nbsp;Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation will be used.<br> 
+&nbsp;&nbsp;&nbsp;Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation to 100 bits will be used.<br> 
 &nbsp;&nbsp;&nbsp;Warning: rounding down occurred before printing a value as a double.<br> 
 &nbsp;&nbsp;&nbsp;0x40628d389970338f<br> 
 </div> 

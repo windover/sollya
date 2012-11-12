@@ -72,7 +72,7 @@ removable discontinuities (see Example 3).
 &nbsp;&nbsp;&nbsp;&gt; p = remez(exp(x), 5, [-1;1]);<br> 
 &nbsp;&nbsp;&nbsp;&gt; midpointmode=on!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; supnorm(p, exp(x), [-1;1], absolute, 2^(-40));<br> 
-&nbsp;&nbsp;&nbsp;0.452055210438~2/7~e-4<br> 
+&nbsp;&nbsp;&nbsp;0.45205513967~0/2~e-4<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 2: </h2> 

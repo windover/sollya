@@ -10,8 +10,8 @@
 &nbsp;&nbsp;&nbsp;8096<br>
 &nbsp;&nbsp;&nbsp;&gt; [8095.1; 8096.1];<br>
 &nbsp;&nbsp;&nbsp;Warning: Rounding occurred when converting the constant "8095.1" to floating-point with 12 bits.<br>
-&nbsp;&nbsp;&nbsp;If safe computation is needed, try to increase the precision.<br>
+&nbsp;&nbsp;&nbsp;The inclusion property is nevertheless satisfied.<br>
 &nbsp;&nbsp;&nbsp;Warning: Rounding occurred when converting the constant "8096.1" to floating-point with 12 bits.<br>
-&nbsp;&nbsp;&nbsp;If safe computation is needed, try to increase the precision.<br>
+&nbsp;&nbsp;&nbsp;The inclusion property is nevertheless satisfied.<br>
 &nbsp;&nbsp;&nbsp;[8094;8098]<br>
 </div>

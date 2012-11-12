@@ -236,25 +236,6 @@ code on one machine whilst it has been produced on another.
 &nbsp;&nbsp;&nbsp;&gt; bashexecute("gcc -shared -o libraryconstantexample libraryconstantexample.o -lgmp -lmpfr");<br> 
 &nbsp;&nbsp;&nbsp;&gt; euler_gamma = libraryconstant("./libraryconstantexample");<br> 
 &nbsp;&nbsp;&nbsp;&gt; implementconstant(euler_gamma^(1/3));<br> 
-&nbsp;&nbsp;&nbsp;#include &lt;mpfr.h&gt;<br> 
-&nbsp;&nbsp;&nbsp;<br> 
-&nbsp;&nbsp;&nbsp;void<br> 
-&nbsp;&nbsp;&nbsp;const_something (mpfr_ptr y, mp_prec_t prec)<br> 
-&nbsp;&nbsp;&nbsp;{<br> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* Declarations */<br> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mpfr_t tmp1;<br> 
-&nbsp;&nbsp;&nbsp;<br> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* Initializations */<br> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mpfr_init2 (tmp1, prec+1);<br> 
-&nbsp;&nbsp;&nbsp;<br> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* Core */<br> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;euler_gamma (tmp1, prec+1);<br> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mpfr_set_prec (y, prec+2);<br> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mpfr_root (y, tmp1, 3, MPFR_RNDN);<br> 
-&nbsp;&nbsp;&nbsp;<br> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* Cleaning stuff */<br> 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mpfr_clear(tmp1);<br> 
-&nbsp;&nbsp;&nbsp;}<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

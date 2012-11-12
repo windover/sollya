@@ -243,25 +243,6 @@ e");
 gmp -lmpfr");
 > euler_gamma = libraryconstant("./libraryconstantexample");
 > implementconstant(euler_gamma^(1/3));
-#include <mpfr.h>
-
-void
-const_something (mpfr_ptr y, mp_prec_t prec)
-{
-  /* Declarations */
-  mpfr_t tmp1;
-
-  /* Initializations */
-  mpfr_init2 (tmp1, prec+1);
-
-  /* Core */
-  euler_gamma (tmp1, prec+1);
-  mpfr_set_prec (y, prec+2);
-  mpfr_root (y, tmp1, 3, MPFR_RNDN);
-
-  /* Cleaning stuff */
-  mpfr_clear(tmp1);
-}
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{implementpoly} (\ref{labimplementpoly}), \textbf{libraryconstant} (\ref{lablibraryconstant}), \textbf{library} (\ref{lablibrary}), \textbf{function} (\ref{labfunction})

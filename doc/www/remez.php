@@ -66,14 +66,14 @@ between ek and e is less than <span class="arg">quality</span>.
 &nbsp;&nbsp;&nbsp;&gt; degree(p);<br> 
 &nbsp;&nbsp;&nbsp;5<br> 
 &nbsp;&nbsp;&nbsp;&gt; dirtyinfnorm(p-exp(x),[0;1]);<br> 
-&nbsp;&nbsp;&nbsp;1.12956984638214536849843017679626063762687503980789e-6<br> 
+&nbsp;&nbsp;&nbsp;1.12956981510961487071711938292660776072226345893629e-6<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 2: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; p = remez(1,[|0,2,4,6,8|],[0,Pi/4],1/cos(x));<br> 
 &nbsp;&nbsp;&nbsp;&gt; canonical=on!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; p;<br> 
-&nbsp;&nbsp;&nbsp;0.99999999994393749280444571988532724907643631727379 + -0.499999995715574677372049316308368345636630397481628 * x^2 + 4.166661323350109051882539722127487186517752418561e-2 * x^4 + -1.38865291475286141707180658383176799662601690152622e-3 * x^6 + 2.43726791911116269422173866792791676168996590663655e-5 * x^8<br> 
+&nbsp;&nbsp;&nbsp;0.99999999994393732180959690352543887130348096061124 + -0.499999995715568577687720530637215446709494672222587 * x^2 + 4.1666613233473633009941059480570275870113220089059e-2 * x^4 + -1.3886529147145693651355523880319714051047635695061e-3 * x^6 + 2.4372679177224179934800328511009205218114284220126e-5 * x^8<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 3: </h2> 
@@ -81,11 +81,11 @@ between ek and e is less than <span class="arg">quality</span>.
 &nbsp;&nbsp;&nbsp;&gt; p2 = remez(exp(x),5,[0;1],default,1e-10);<br> 
 &nbsp;&nbsp;&nbsp;&gt; p3 = remez(exp(x),5,[0;1],default,1e-15);<br> 
 &nbsp;&nbsp;&nbsp;&gt; dirtyinfnorm(p1-exp(x),[0;1]);<br> 
-&nbsp;&nbsp;&nbsp;1.12956984638214536849843017679626063762687503980789e-6<br> 
+&nbsp;&nbsp;&nbsp;1.12956981510961487071711938292660776072226345893629e-6<br> 
 &nbsp;&nbsp;&nbsp;&gt; dirtyinfnorm(p2-exp(x),[0;1]);<br> 
-&nbsp;&nbsp;&nbsp;1.1295698022747868733217420751772838986192666255395e-6<br> 
+&nbsp;&nbsp;&nbsp;1.12956980227478675612619255125474525171079325793124e-6<br> 
 &nbsp;&nbsp;&nbsp;&gt; dirtyinfnorm(p3-exp(x),[0;1]);<br> 
-&nbsp;&nbsp;&nbsp;1.1295698022747868733217420751772838986192666255395e-6<br> 
+&nbsp;&nbsp;&nbsp;1.12956980227478675612619255125474525171079325793124e-6<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 4: </h2> 
@@ -94,9 +94,9 @@ between ek and e is less than <span class="arg">quality</span>.
 &nbsp;&nbsp;&nbsp;&gt; p1 = remez(g, L, [-1/16;1/16]);<br> 
 &nbsp;&nbsp;&nbsp;&gt; p2 = remez(g, 3, [-1/16;1/16]);<br> 
 &nbsp;&nbsp;&nbsp;&gt; dirtyinfnorm(p1 - g, [-1/16;1/16]);<br> 
-&nbsp;&nbsp;&nbsp;9.8841323805554845968308959691395564355375299670614e-8<br> 
+&nbsp;&nbsp;&nbsp;9.8841323829271038137685646777951687620288462194745e-8<br> 
 &nbsp;&nbsp;&nbsp;&gt; dirtyinfnorm(p2 - g, [-1/16;1/16]);<br> 
-&nbsp;&nbsp;&nbsp;2.5433780105975429703888838928671089431318650991836e-9<br> 
+&nbsp;&nbsp;&nbsp;2.54337800593461418356437401152248866818783932027105e-9<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

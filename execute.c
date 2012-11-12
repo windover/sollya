@@ -3802,7 +3802,7 @@ int evaluateThingToConstant(mpfr_t result, node *tree, mpfr_t *defaultVal, int s
       if (accessThruMemRef(simplified)->nodeType != CONSTANT) {
 	if (!noMessage) {
 	  if ((!noRoundingWarnings) && (!silent) && (!superSilent)) {
-	    printMessage(1,SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST,"Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation will be used.\n"); // TODO F2D
+	    printMessage(1,SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST,"Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation to %d bits will be used.\n", mpfr_get_prec(tempResult)); 
 	  }
 	}
       }
@@ -7022,7 +7022,7 @@ void autoprint(node *thing, int inList, node *func, node *cst) {
 	      if (!noRoundingWarnings) {
 		if (!shown) {
 		  if ((!faithfulAlreadyKnown) || (!mpfr_zero_p(a))) {
-		    printMessage(1,SOLLYA_MSG_DISPLAYED_VALUE_IS_FAITHFULLY_ROUNDED,"Warning: rounding has happened. The value displayed is a faithful rounding of the true result.\n");
+		    printMessage(1,SOLLYA_MSG_DISPLAYED_VALUE_IS_FAITHFULLY_ROUNDED,"Warning: rounding has happened. The value displayed is a faithful rounding to %d bits of the true result.\n", mpfr_get_prec(a));
 		  }
 		}
 		shown = 1;

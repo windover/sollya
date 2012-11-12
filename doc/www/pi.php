@@ -31,11 +31,11 @@ current precision at this time.
 &nbsp;&nbsp;&nbsp;&gt; verbosity=1!; prec=12!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; a = 2*pi;<br> 
 &nbsp;&nbsp;&nbsp;&gt; a;<br> 
-&nbsp;&nbsp;&nbsp;Warning: rounding has happened. The value displayed is a faithful rounding of the true result.<br> 
+&nbsp;&nbsp;&nbsp;Warning: rounding has happened. The value displayed is a faithful rounding to 12 bits of the true result.<br> 
 &nbsp;&nbsp;&nbsp;6.283<br> 
 &nbsp;&nbsp;&nbsp;&gt; prec=20!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; a;<br> 
-&nbsp;&nbsp;&nbsp;Warning: rounding has happened. The value displayed is a faithful rounding of the true result.<br> 
+&nbsp;&nbsp;&nbsp;Warning: rounding has happened. The value displayed is a faithful rounding to 20 bits of the true result.<br> 
 &nbsp;&nbsp;&nbsp;6.283187<br> 
 </div> 
 <div class="divExample"> 

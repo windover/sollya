@@ -47,11 +47,11 @@ In particular: the rule is always applied at least once.
 &nbsp;&nbsp;&nbsp;&gt; taylorrecursions=0;<br> 
 &nbsp;&nbsp;&nbsp;The number of recursions for Taylor evaluation has been set to 0.<br> 
 &nbsp;&nbsp;&nbsp;&gt; evaluate(f-p, [0;1]);<br> 
-&nbsp;&nbsp;&nbsp;[-0.46839364816303627522963565754743169862357620487739;0.46947781754667086491682464997088054443583003517779]<br> 
+&nbsp;&nbsp;&nbsp;[-0.46839364816268368775174657814112460243249079671039;0.46947781754646820647293019728402934746974652584671]<br> 
 &nbsp;&nbsp;&nbsp;&gt; taylorrecursions=1;<br> 
 &nbsp;&nbsp;&nbsp;The number of recursions for Taylor evaluation has been set to 1.<br> 
 &nbsp;&nbsp;&nbsp;&gt; evaluate(f-p, [0;1]);<br> 
-&nbsp;&nbsp;&nbsp;[-0.13813111495387910066337940912697015317218647208804;0.13921528433751369035056840155041899898444030238844]<br> 
+&nbsp;&nbsp;&nbsp;[-0.138131114954063839905475752120786856031651747712954;0.13921528433784835862665937126369160106890747684927]<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

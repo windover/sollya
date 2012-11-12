@@ -9,7 +9,6 @@
 &nbsp;&nbsp;&nbsp;Warning: the given expression is undefined or numerically unstable.<br>
 &nbsp;&nbsp;&nbsp;@NaN@<br>
 &nbsp;&nbsp;&nbsp;&gt; infty + infty;<br>
-&nbsp;&nbsp;&nbsp;Warning: the given expression is undefined or numerically unstable.<br>
 &nbsp;&nbsp;&nbsp;@Inf@<br>
 &nbsp;&nbsp;&nbsp;&gt; infty - infty;<br>
 &nbsp;&nbsp;&nbsp;Warning: the given expression is undefined or numerically unstable.<br>

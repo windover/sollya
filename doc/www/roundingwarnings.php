@@ -43,7 +43,7 @@ occur.  When its value is <?php linkTo("command","off","off");?>, these warnings
 &nbsp;&nbsp;&nbsp;&gt; exp(0.1);<br> 
 &nbsp;&nbsp;&nbsp;Warning: Rounding occurred when converting the constant "0.1" to floating-point with 165 bits.<br> 
 &nbsp;&nbsp;&nbsp;If safe computation is needed, try to increase the precision.<br> 
-&nbsp;&nbsp;&nbsp;Warning: rounding has happened. The value displayed is a faithful rounding of the true result.<br> 
+&nbsp;&nbsp;&nbsp;Warning: rounding has happened. The value displayed is a faithful rounding to 165 bits of the true result.<br> 
 &nbsp;&nbsp;&nbsp;1.1051709180756476248117078264902466682245471947375<br> 
 &nbsp;&nbsp;&nbsp;&gt; roundingwarnings = off;<br> 
 &nbsp;&nbsp;&nbsp;Rounding warning mode has been deactivated.<br> 
