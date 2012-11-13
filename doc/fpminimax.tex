@@ -165,9 +165,9 @@ Parameters:
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > P = fpminimax(cos(x),6,[|DD, DD, D...|],[-1b-5;1b-5]);
 > printexpansion(P);
-(0x3ff0000000000000 + 0xbc09fda15e029b00) + x * ((0x3af9eb57163024a8 + 0x37942c2
-f3f3e3839) + x * (0xbfdfffffffffff98 + x * (0xbbd1693f9c028849 + x * (0x3fa55555
-55145337 + x * (0x3c7a25f610ad9ebc + x * 0xbf56c138142da5b0)))))
+(0x3ff0000000000000 + 0xbc09fda20235c100) + x * ((0x3b29ecd485d34781 + 0xb7c1cbc
+971529754) + x * (0xbfdfffffffffff98 + x * (0xbbfa6e0b3183cb0d + x * (0x3fa55555
+55145337 + x * (0x3ca3540480618939 + x * 0xbf56c138142d8c3b)))))
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 2: 
@@ -199,11 +199,11 @@ x * (1 + x^2 * (-357913941 * 2^(-31) + x^2 * (35789873 * 2^(-32))))
 > P3 = fpminimax(f, 5, [|D, D, D, 24...|], listpoints, absolute, default, defaul
 t, pstar);
 > print("Error of pstar: ", dirtyinfnorm(f-pstar, [-1b-7; 1b-7]));
-Error of pstar:  7.9048441259903026332577436001060063099817726177425e-16
+Error of pstar:  7.9048441305459735102879831325718747183089581485922e-16
 > print("Error of P1:    ", dirtyinfnorm(f-P1, [-1b-7; 1b-7]));
-Error of P1:     7.9048441259903026580081299123420463921479618202064e-16
+Error of P1:     7.9048441305459735159848647089192667442047469404883e-16
 > print("Error of P2:    ", dirtyinfnorm(f-P2, [-1b-7; 1b-7]));
-Error of P2:     8.2477144579950871737109573536791331686347620955984e-16
+Error of P2:     8.2477144579950871061147021597406077993657714575238e-16
 > print("Error of P3:    ", dirtyinfnorm(f-P3, [-1b-7; 1b-7]));
 Error of P3:     1.08454277156993282593701156841863009789063333951055e-15
 \end{Verbatim}
@@ -215,8 +215,8 @@ Error of P3:     1.08454277156993282593701156841863009789063333951055e-15
 > p = fpminimax(g, L, [|D...|], [-1/16;1/16],absolute);
 > display = powers!;
 > p;
--3267884797436153 * 2^(-54) * sin(x^3) + 5247089102535885 * 2^(-53) * (cos(x) - 
-1) + -8159095033730771 * 2^(-54) * sin(x) + 6243315658446641 * 2^(-53) * exp(x)
+-6535769594871261 * 2^(-55) * sin(x^3) + 5247089102535871 * 2^(-53) * (cos(x) - 
+1) + -8159095033730773 * 2^(-54) * sin(x) + 6243315658446641 * 2^(-53) * exp(x)
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 6: 
@@ -228,14 +228,14 @@ Error of P3:     1.08454277156993282593701156841863009789063333951055e-15
 > PCheb = fpminimax(g, T, [|DD,DE...|], [-1/16;1/16],absolute);
 > display = dyadic!;
 > print(PCheb);
-8733930098894247371b-98 * (9 * x + -120 * x^3 + 432 * x^5 + -576 * x^7 + 256 * x
-^9) + 15750497046710770365b-94 * (1 + -32 * x^2 + 160 * x^4 + -256 * x^6 + 128 *
- x^8) + 6467380330985872933b-88 * (-7 * x + 56 * x^3 + -112 * x^5 + 64 * x^7) + 
-9342762606926218927b-84 * (-1 + 18 * x^2 + -48 * x^4 + 32 * x^6) + 1181452136745
-6461131b-80 * (5 * x + -20 * x^3 + 16 * x^5) + 6405479474328570593b-75 * (1 + -8
- * x^2 + 8 * x^4) + 11584457324781949889b-72 * (-3 * x + 4 * x^3) + 167797053124
-47201161b-69 * (-1 + 2 * x^2) + 18265014280997359319b-66 * x + 11705449744817514
-3902009975397253b-107
+17467860179204885735b-99 * (9 * x + -120 * x^3 + 432 * x^5 + -576 * x^7 + 256 * 
+x^9) + 7875248523371081439b-93 * (1 + -32 * x^2 + 160 * x^4 + -256 * x^6 + 128 *
+ x^8) + 12934760661809036231b-89 * (-7 * x + 56 * x^3 + -112 * x^5 + 64 * x^7) +
+ 9342762606926463323b-84 * (-1 + 18 * x^2 + -48 * x^4 + 32 * x^6) + 590726068372
+7596799b-79 * (5 * x + -20 * x^3 + 16 * x^5) + 12810958948657144519b-76 * (1 + -
+8 * x^2 + 8 * x^4) + 5792228662390969179b-71 * (-3 * x + 4 * x^3) + 167797053124
+47201213b-69 * (-1 + 2 * x^2) + 18265014280997359049b-66 * x + 11705449744817514
+3910939038333811b-107
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{remez} (\ref{labremez}), \textbf{dirtyfindzeros} (\ref{labdirtyfindzeros}), \textbf{absolute} (\ref{lababsolute}), \textbf{relative} (\ref{labrelative}), \textbf{fixed} (\ref{labfixed}), \textbf{floating} (\ref{labfloating}), \textbf{default} (\ref{labdefault}), \textbf{halfprecision} (\ref{labhalfprecision}), \textbf{single} (\ref{labsingle}), \textbf{double} (\ref{labdouble}), \textbf{doubleextended} (\ref{labdoubleextended}), \textbf{doubledouble} (\ref{labdoubledouble}), \textbf{quad} (\ref{labquad}), \textbf{tripledouble} (\ref{labtripledouble}), \textbf{implementpoly} (\ref{labimplementpoly}), \textbf{coeff} (\ref{labcoeff}), \textbf{degree} (\ref{labdegree}), \textbf{roundcoefficients} (\ref{labroundcoefficients}), \textbf{guessdegree} (\ref{labguessdegree})
