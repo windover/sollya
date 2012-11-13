@@ -23408,7 +23408,7 @@ node *evaluateThingInnerst(node *tree) {
 	}
 	fclose(fd);
       } else {
-	printMessage(1,SOLLYA_MSG_FILE_COULD_NOT_BE_OPENED_FOR_READING,"Warning: the file \"%s\" could not be opened for reading.\n",copy->child1->string);
+	printMessage(1,SOLLYA_MSG_FILE_COULD_NOT_BE_OPENED_FOR_READING,"Warning: the file \"%s\" could not be opened for reading.\n",accessThruMemRef(copy->child1)->string);
         considerDyingOnError();
       }
     }
