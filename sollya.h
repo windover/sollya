@@ -59,10 +59,6 @@
 #ifndef SOLLYA_H
 #define SOLLYA_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* The following #include should be first ! 
 
    IT MUST BE PROTECTED BY THE #if THAT IS USED! 
@@ -75,13 +71,22 @@ extern "C" {
 #include <sollya-messages.h>
 #endif
 
-/* Now some other #includes we need to get the different types defined. */
+/* Now some other #includes we need to get the different types defined. 
+
+   For some reason we can't really understand, some systems need the
+   inclusions to be done in the order they are given.
+
+*/
 #include <stdarg.h>
-#include <gmp.h>
 #include <mpfr.h>
 #include <mpfi.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <gmp.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
   /* Define a type for all Sollya objects and for lists
      of Sollya objects, constants, intervals, integers, strings and booleans.
@@ -134,7 +139,6 @@ extern "C" {
   /* Define an enumeration type for the status
      of floating-point evaluation
   */
-  typedef enum sollya_fp_result_enum_t sollya_fp_result_t;
   enum sollya_fp_result_enum_t {
     SOLLYA_FP_OBJ_NO_FUNCTION = 0,
     SOLLYA_FP_PROVEN_EXACT,
@@ -152,9 +156,9 @@ extern "C" {
     SOLLYA_FP_CUTOFF_IS_NAN,
     SOLLYA_FP_EXPRESSION_NOT_CONSTANT
   };
+  typedef enum sollya_fp_result_enum_t sollya_fp_result_t;
 
   /* Define an enumeration type for the mathematical base functions */
-  typedef enum sollya_base_function_enum_t sollya_base_function_t;
   enum sollya_base_function_enum_t {
     SOLLYA_BASE_FUNC_ABS,
     SOLLYA_BASE_FUNC_ACOS,
@@ -201,7 +205,8 @@ extern "C" {
     SOLLYA_BASE_FUNC_TANH,
     SOLLYA_BASE_FUNC_TRIPLEDOUBLE
   };
-  
+  typedef enum sollya_base_function_enum_t sollya_base_function_t;  
+
   /* Initialization and finalization functions */
   int sollya_lib_init();
   int sollya_lib_init_with_custom_memory_functions(void *(*custom_malloc)(size_t),
