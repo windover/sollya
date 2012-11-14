@@ -2165,6 +2165,10 @@ int supremumNormBisect(sollya_mpfi_t result, node *poly, node *func, mpfr_t a, m
     if (p>prec)  prec = p + (p/2);
     if (p<=prec)  prec = prec + (p/2);
   }
+  if (prec < (p + p/2) / 4) {
+    prec = p + p/2;
+  }
+
   res = supremumNormBisectInner(result, poly, func, a, b, mode, accuracy, diameter, prec);
 
   if (res == 0) return 1; /* everything's fine */
