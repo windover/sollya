@@ -272,6 +272,45 @@ static inline int analyzeWidthModifier(uint64_t *analyzedWidth, int *setAnalyzed
   return 1;
 }
 
+char *justifyString(char *str, int justify, int justifyLeft, size_t width) {
+  size_t len, num;
+  char *res, *curr1, *curr2;
+
+  /* Nothing to do if we don't justify at all or if the string is already longer than the field */
+  if (!justify) return str;
+  len = strlen(str);
+  if (len >= width) return str;
+
+  /* Compute number of justification characters */
+  num = width - len;
+
+  /* Allocate string for the output */
+  res = safeCalloc(num + 1, sizeof(char));
+  
+  /* Justify to the left or to the right */
+  if (justifyLeft) {
+    for (curr1=str,curr2=res;*curr1!='\0';curr1++,curr2++) {
+      *curr2 = *curr1;
+    }
+    for (;num>0;num--) {
+      *curr2 = ' ';
+    }
+  } else {
+    for (curr2=res;num>0;num--) {
+      *curr2 = ' ';
+    }
+    for (curr1=str;*curr1!='\0';curr1++,curr2++) {
+      *curr2 = *curr1;
+    }
+  }
+
+  /* Free the old string */
+  safeFree(str);
+
+  /* Return the new justified string */
+  return res;
+}
+
 void initAndCopyMpfr(mpfr_t rop, mpfr_srcptr op) {
   mpfr_init2(rop,mpfr_get_prec(op));
   mpfr_set(rop,op,GMP_RNDN);
@@ -1644,10 +1683,10 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	  if (correctPrecModifier) {
 	    if (analyzedStar) {
 	      firstStarInt = va_arg(varlist,int);
-	      if (firstStarInt >= 1) {
+	      if (firstStarInt >= 0) {
 		analyzedPrec = firstStarInt;
 	      } else {
-		analyzedPrec = 1;
+		analyzedPrec = 0;
 	      }
 	      precisionSpecified = 1;
 	      prec = (mp_prec_t) (((double) analyzedPrec) * 3.32192809488736234787031942948939017586483139302458); /* Digits to bits */
@@ -1696,11 +1735,17 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	      tempString = safeCalloc(5,sizeof(char));
 	      sprintf(tempString,"NULL");
 	    }
+	    if ((precisionSpecified) && (strlen(tempString) > analyzedPrec)) {
+	      tempString[analyzedPrec] = '\0';
+	    }
 	    break;
 	  default:
 	    tempString = (char *) safeCalloc(1,sizeof(char));
 	    break;
 	  }
+	  tempString = justifyString(tempString, setAnalyzedWidth, 
+				     ((analyzedFlags & SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT) != ((uint64_t) 0)), 
+				     (size_t) analyzedWidth); /* Does not leak memory */
 	  r = fprintf(fd, buf, tempString);
 	  if (r >= 0) {
 	    if (res >= 0) {
@@ -3179,11 +3224,17 @@ int sollyaInternalBaseSnprintf(char *str, size_t size, int useSize, const char *
 	      tempString = safeCalloc(5,sizeof(char));
 	      sprintf(tempString,"NULL");
 	    }
+	    if ((precisionSpecified) && (strlen(tempString) > analyzedPrec)) {
+	      tempString[analyzedPrec] = '\0';
+	    }
 	    break;
 	  default:
 	    tempString = (char *) safeCalloc(1,sizeof(char));
 	    break;
 	  }
+	  tempString = justifyString(tempString, setAnalyzedWidth, 
+				     ((analyzedFlags & SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT) != ((uint64_t) 0)), 
+				     (size_t) analyzedWidth); /* Does not leak memory */
 	  r = specialSnprintf(str, size, res, useSize, buf, tempString);
 	  if (r >= 0) {
 	    if (res >= 0) {
