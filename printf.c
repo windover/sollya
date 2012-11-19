@@ -1676,11 +1676,7 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	      } else {
 		firstStarInt = -firstStarInt;
 		analyzedWidth = firstStarInt;
-		if (analyzedFlags & SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT) {
-		  analyzedFlags &= ~SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT;
-		} else {
-		  analyzedFlags |= SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT;
-		}
+		analyzedFlags |= SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT;
 	      }
 	      setAnalyzedWidth = 1;
 	    } 
@@ -3168,11 +3164,7 @@ int sollyaInternalBaseSnprintf(char *str, size_t size, int useSize, const char *
 	      } else {
 		firstStarInt = -firstStarInt;
 		analyzedWidth = firstStarInt;
-		if (analyzedFlags & SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT) {
-		  analyzedFlags &= ~SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT;
-		} else {
-		  analyzedFlags |= SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT;
-		}
+		analyzedFlags |= SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT;
 	      }
 	      setAnalyzedWidth = 1;
 	    } 
