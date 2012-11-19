@@ -1741,9 +1741,6 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	      tempString = safeCalloc(5,sizeof(char));
 	      sprintf(tempString,"NULL");
 	    }
-	    if ((precisionSpecified) && (strlen(tempString) > analyzedPrec)) {
-	      tempString[analyzedPrec] = '\0';
-	    }
 	    break;
 	  default:
 	    tempString = (char *) safeCalloc(1,sizeof(char));
@@ -3235,9 +3232,6 @@ int sollyaInternalBaseSnprintf(char *str, size_t size, int useSize, const char *
 	    } else {
 	      tempString = safeCalloc(5,sizeof(char));
 	      sprintf(tempString,"NULL");
-	    }
-	    if ((precisionSpecified) && (strlen(tempString) > analyzedPrec)) {
-	      tempString[analyzedPrec] = '\0';
 	    }
 	    break;
 	  default:
