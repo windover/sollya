@@ -1671,10 +1671,16 @@ int sollyaInternalVfprintf(FILE *fd, const char *format, va_list varlist) {
 	  if (correctWidthModifier) {
 	    if (analyzedWidthStar) {
 	      firstStarInt = va_arg(varlist,int);
-	      if (firstStarInt >= 1) {
+	      if (firstStarInt >= 0) {
 		analyzedWidth = firstStarInt;
 	      } else {
-		analyzedWidth = 1;
+		firstStarInt = -firstStarInt;
+		analyzedWidth = firstStarInt;
+		if (analyzedFlags & SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT) {
+		  analyzedFlags &= ~SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT;
+		} else {
+		  analyzedFlags |= SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT;
+		}
 	      }
 	      setAnalyzedWidth = 1;
 	    } 
@@ -3160,10 +3166,16 @@ int sollyaInternalBaseSnprintf(char *str, size_t size, int useSize, const char *
 	  if (correctWidthModifier) {
 	    if (analyzedWidthStar) {
 	      firstStarInt = va_arg(varlist,int);
-	      if (firstStarInt >= 1) {
+	      if (firstStarInt >= 0) {
 		analyzedWidth = firstStarInt;
 	      } else {
-		analyzedWidth = 1;
+		firstStarInt = -firstStarInt;
+		analyzedWidth = firstStarInt;
+		if (analyzedFlags & SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT) {
+		  analyzedFlags &= ~SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT;
+		} else {
+		  analyzedFlags |= SOLLYA_PRINTF_IMPL_FLAG_LEFT_ADJUSTMENT;
+		}
 	      }
 	      setAnalyzedWidth = 1;
 	    } 
