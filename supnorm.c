@@ -843,6 +843,10 @@ int checkDegreeTaylorModel(node **poly, node *func, sollya_mpfi_t dom, mpfr_t de
    Returns a non-zero value if poly fullfills the constraints and zero
    otherwise.
 
+   I believe that this code is useless. It is here to cover the case where
+   checkDegreeTaylorModel would successfully return, but the returned
+   polynomial would contain non-dyadic coefficients. I think that this
+   cannot happen.
 */
 int isPolynomialWithConstantDyadicFiniteRealCoefficients(node *poly) {
   node **coefficients;
@@ -900,7 +904,7 @@ int computeTaylorModelOfLeastDegree(node **poly, node *func, sollya_mpfi_t dom, 
   node *shifterBack;
   node *pShifted;
   mpfr_t x0;
-  int n, okay, resCompute, res, nMin, nMax;
+  int n, okay, resCompute, nMin, nMax;
   nMax = 1; nMin = 0; okay = 0;
 
   bestPoly = NULL;
@@ -952,22 +956,8 @@ int computeTaylorModelOfLeastDegree(node **poly, node *func, sollya_mpfi_t dom, 
   free_memory(pShifted);
   mpfr_clear(x0);
 
-  /* Though unlikely, it could be possible that some coefficient of the polynomial be a NaN or Inf */
-  /*   (despite a successful return of checkDegreeTaylorModel...). So we check it. */
-  if (isPolynomialWithConstantDyadicFiniteRealCoefficients(bestPoly)) {
-	*poly = bestPoly;
-	res = 1;
-  }
-  else {
-    /* Here, we are in the strange case that should almost never
-       happen.  We indicate failure and hope the problem will go
-       away by bisecting dom.
-    */
-    res = 0;
-    if (bestPoly != NULL) free_memory(bestPoly);
-  }
-
-  return res;
+  *poly = bestPoly;
+  return 1;
 }
 
 /* Determines if func has a zero in dom.
@@ -1358,6 +1348,25 @@ int supnormAbsolute(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t 
      safety of the algorithm, i.e. validates it.
 
   */
+  if ( (!isPolynomialWithConstantDyadicFiniteRealCoefficients(s1)) ||
+       (!isPolynomialWithConstantDyadicFiniteRealCoefficients(s2))) {
+    /* I believe that this is dead code. It is here to cover the case where
+       checkDegreeTaylorModel would successfully return, but the returned
+       polynomial would contain non-dyadic coefficients. I think that this
+       cannot happen.
+     */
+    mpfr_clear(ell);
+    mpfr_clear(gamma);
+    mpfr_clear(errMax);
+    mpfr_clear(bound);
+    free_memory(T);
+    free_memory(boundAsNode);
+    free_memory(s1);
+    free_memory(s2);
+    free_memory(pMinusT);
+    free_memory(TMinusp);
+    return SUPNORM_NO_TAYLOR;
+  }
   if ((!showPositivity(s1, dom, prec)) ||
       (!showPositivity(s2, dom, prec))) {
     /* At least one of s1 or s2 has a point in dom where it is non-positive 
@@ -1639,6 +1648,30 @@ int supnormRelativeNoSingularity(sollya_mpfi_t result, node *poly, node *func, s
      safety of the algorithm, i.e. validates it.
 
   */
+  if ( (!isPolynomialWithConstantDyadicFiniteRealCoefficients(s1)) ||
+       (!isPolynomialWithConstantDyadicFiniteRealCoefficients(s2))) {
+    /* I believe that this is dead code. It is here to cover the case where
+       checkDegreeTaylorModel would successfully return, but the returned
+       polynomial would contain non-dyadic coefficients. I think that this
+       cannot happen.
+     */
+    mpfr_clear(F);
+    mpfr_clear(ell);
+    mpfr_clear(gamma);
+    mpfr_clear(u);
+    mpfr_clear(thirtyoneThirtySecond);
+    mpfr_clear(errMax);
+    mpfr_clear(midDom);
+    mpfr_clear(bound);
+    mpfr_clear(signT);
+    free_memory(T);
+    free_memory(boundTimesT);
+    free_memory(s1);
+    free_memory(s2);
+    free_memory(pMinusT);
+    free_memory(TMinusp);
+    return SUPNORM_NO_TAYLOR;
+  }
   if ((!showPositivity(s1, dom, prec)) ||
       (!showPositivity(s2, dom, prec))) {
     /* At least one of s1 or s2 has a point in dom where it is non-positive 
