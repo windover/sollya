@@ -192,8 +192,6 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
     if (!(bd-bd == 0.0))
       bd = MAX_VALUE_GNUPLOT;
     if ((type==PLOTPOSTSCRIPT) || (type==PLOTPOSTSCRIPTFILE)) sollyaFprintf(file,"set terminal postscript eps color\nset out \"%s\"\n",outputname);
-    sollyaFprintf(file, "set format x \"%e\"\n");
-    sollyaFprintf(file, "set format y \"%e\"\n");
     sollyaFprintf(file, "set xrange [%1.50e:%1.50e]\n",  ad, bd);
     
     sollyaFprintf(file, "plot ");
