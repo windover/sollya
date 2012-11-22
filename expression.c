@@ -55,6 +55,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
+#include <limits.h>
 #include <mpfr.h>
 #include "mpfi-compat.h"
 #include <gmp.h>
@@ -2958,6 +2959,7 @@ int tryEvaluateConstantTermToMpq(mpq_t res, node *tree) {
   mpz_t num, denom;
   mpz_t num2, denom2;
   signed long int expo;
+  size_t num2size, denom2size;
 
   if (tree == NULL) return 0;
 
@@ -3044,11 +3046,16 @@ int tryEvaluateConstantTermToMpq(mpq_t res, node *tree) {
 	    mpz_fits_slong_p(num)) {
 	  expo = mpz_get_si(num);
 	  /* Must set resC to (num2^expo)/(denom2^expo), expo is positive */
-	  mpz_pow_ui(num2, num2, (unsigned long int) expo);
-	  mpz_pow_ui(denom2, denom2, (unsigned long int) expo);
-	  mpq_set_num(resC,num2);
-	  mpq_set_den(resC,denom2);
-	  mpq_canonicalize(resC);
+	  num2size = mpz_sizeinbase(num2, 2);
+	  denom2size = mpz_sizeinbase(denom2, 2);
+	  if ((((((unsigned long long int) num2size) + 1ull) * ((unsigned long long int) expo)) < ((unsigned long long int) (INT_MAX >> 1))) &&
+	      (((((unsigned long long int) denom2size) + 1ull) * ((unsigned long long int) expo)) < ((unsigned long long int) (INT_MAX >> 1)))) {
+	    mpz_pow_ui(num2, num2, (unsigned long int) expo);
+	    mpz_pow_ui(denom2, denom2, (unsigned long int) expo);
+	    mpq_set_num(resC,num2);
+	    mpq_set_den(resC,denom2);
+	    mpq_canonicalize(resC);
+	  } else result = 0;
 	} else result = 0;
 	mpz_clear(num2);
 	mpz_clear(denom2);

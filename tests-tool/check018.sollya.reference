@@ -134,3 +134,10 @@ x * ((pi) * 2.9999931792880649195147840469235426699172368828171 + x * ((pi) * (-
 x
 x
 x
+Warning: the given expression is undefined or numerically unstable.
+@Inf@
+Warning: the given expression is undefined or numerically unstable.
+@Inf@
+1.43195535216538855908787738992005803060063628522583e256152523
+Warning: the given expression is undefined or numerically unstable.
+@Inf@

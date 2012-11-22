@@ -201,3 +201,10 @@ x^(0+1)/1;
 (x^(0+1))/1;
 x^((0+1)/1);
 
+/* Tests for the bug #14259 An overflow in GMP makes Sollya crash (on 64bit machines only) */
+
+1.87^1.52e10;
+2^(2^62);
+3^(2^29);
+3^(2^30);
+
