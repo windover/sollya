@@ -352,6 +352,36 @@ AM_LDFLAGS="$AM_LDFLAGS -Xlinker --allow-multiple-definition"
 
 LDFLAGS="$OLDLDFLAGS"
 
+AC_MSG_CHECKING([if compiler activates FTZ by default])
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdint.h>]], [[  union {
+    uint64_t i;
+    double d;
+  } xct, yct;
+  volatile double x, y;
+
+  xct.i = 0x1f20000000000000ull;
+  x = xct.d;
+
+  y = x * x;
+
+  yct.d = y;
+
+  if (yct.i == 0x0000000000000000ull) return 1;]])],
+[AC_MSG_RESULT(no) 
+],[AC_MSG_RESULT(yes)
+AC_MSG_CHECKING([if compiler supports -fp-model precise flag])
+CPPFLAGS="$OLDCPPFLAGS"
+CFLAGS="$OLDCFLAGS -fp-model precise"
+LDFLAGS="$OLDLDFLAGS"
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]], [[exit(0);]])],
+[AC_MSG_RESULT(yes) 
+AM_CFLAGS="$AM_CFLAGS -fp-model precise"
+],[AC_MSG_RESULT(no)
+])
+CFLAGS="$OLDCFLAGS"
+])
+
+
 
 
 # Checks for header files.
