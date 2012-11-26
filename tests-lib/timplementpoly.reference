@@ -306,11 +306,10 @@ Mp_res = Mp_t_27_0;
 epsilon = (p_reshm - Mp_res) / Mp_res;
 
 # Implication to prove
-{((
-   xhm in [-1b-1,-1b-401]
-) \/ (
-   xhm in [1b-401,1b-1]
-))
+{(
+   xhm in [-1b-1,1b-1]
+/\ not    xhm in [-1b-401,1b-401]
+)
 ->
 (
    epsilon in ?

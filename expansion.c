@@ -59,6 +59,8 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <sys/time.h>
 #include <time.h>
 
+double sollya_mpfr_get_d(mpfr_t, mp_rnd_t);
+
 #if defined(D_TO_D)
 extern void POLYNOMIALNAME(double *, double);
 #elif defined(D_TO_DD)

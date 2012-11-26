@@ -1745,7 +1745,7 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
 
   if ((mpfr_sgn(proof->a) != mpfr_sgn(proof->b)) && (!mpfr_zero_p(proof->a)) && (!mpfr_zero_p(proof->b))) {
     
-    sollyaFprintf(fd,"{((\n");
+    sollyaFprintf(fd,"{(\n");
     switch (proof->variableType) {
     case 3:
       sollyaFprintf(fd,"   %shml",proof->variableName);
@@ -1763,20 +1763,9 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
     sollyaFprintf(fd," in [");
     fprintValue(fd, proof->a);
     sollyaFprintf(fd,",");
-    mpfr_set(temp,proof->a,GMP_RNDN);
-    mpfr_div_2ui(temp,temp,400,GMP_RNDN);
-    fprintValue(fd, temp);
+    fprintValue(fd, proof->b);
     sollyaFprintf(fd,"]\n");
-    if (proof->variableType == 3) {
-      sollyaFprintf(fd,"/\\ |overlap_%s| in [1b-400, 1b-52]  # Verify the lower bound for the overlap interval\n",proof->variableName);
-      sollyaFprintf(fd,"/\\ |%sml| in [1b-1021, 1b1023]\n",proof->variableName);
-    }
-    for (i=0;i<proof->assignmentsNumber;i++) {
-      fprintGappaAssignmentAsOverlapBound(fd, proof->assignments[i]);
-    }
-
-    sollyaFprintf(fd,") \\/ (\n");
-
+    sollyaFprintf(fd,"/\\ not ");
     switch (proof->variableType) {
     case 3:
       sollyaFprintf(fd,"   %shml",proof->variableName);
@@ -1792,12 +1781,14 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
       exit(1);
     }
     sollyaFprintf(fd," in [");
-    mpfr_set(temp,proof->b,GMP_RNDN);
+    mpfr_set(temp, proof->a, GMP_RNDN);
     mpfr_div_2ui(temp,temp,400,GMP_RNDN);
     fprintValue(fd, temp);
     sollyaFprintf(fd,",");
-    fprintValue(fd, proof->b);
-    sollyaFprintf(fd,"]\n");
+    mpfr_set(temp, proof->b, GMP_RNDN);
+    mpfr_div_2ui(temp,temp,400,GMP_RNDN);
+    fprintValue(fd, temp);
+    sollyaFprintf(fd,"]\n");    
     if (proof->variableType == 3) {
       sollyaFprintf(fd,"/\\ |overlap_%s| in [1b-400, 1b-52]  # Verify the lower bound for the overlap interval\n",proof->variableName);
       sollyaFprintf(fd,"/\\ |%sml| in [1b-1021, 1b1023]\n",proof->variableName);
@@ -1805,8 +1796,8 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
     for (i=0;i<proof->assignmentsNumber;i++) {
       fprintGappaAssignmentAsOverlapBound(fd, proof->assignments[i]);
     }
-    
-    sollyaFprintf(fd,"))\n->\n(\n   epsilon in ?\n)}\n");
+
+    sollyaFprintf(fd,")\n->\n(\n   epsilon in ?\n)}\n");
   } else {
     sollyaFprintf(fd,"{(\n");
     switch (proof->variableType) {
