@@ -9068,7 +9068,7 @@ int executeCommandInner(node *tree) {
 	      freeThing(tempNode2);
 	      if (resC) {
 		curr = tree->arguments;
-		if (!assignThingToTable(((node *) (curr->value))->string, tempNode3)) {
+		if (!assignThingToTable(accessThruMemRef((node *) (curr->value))->string, tempNode3)) {
 		  printMessage(1,SOLLYA_MSG_ASSIGNMENT_WILL_HAVE_NO_EFFECT,"Warning: the last assignment will have no effect.\n");
                   considerDyingOnError();
 		}
@@ -9098,7 +9098,7 @@ int executeCommandInner(node *tree) {
 		tempNode2 = evaluateThing((node *) (curr->value));
 		tempNode3 = makeList(addElement(NULL,tempNode2));
 		curr = tree->arguments;
-		if (!assignThingToTable(((node *) (curr->value))->string, tempNode3)) {
+		if (!assignThingToTable(accessThruMemRef((node *) (curr->value))->string, tempNode3)) {
 		  printMessage(1,SOLLYA_MSG_ASSIGNMENT_WILL_HAVE_NO_EFFECT,"Warning: the last assignment will have no effect.\n");
                   considerDyingOnError();
 		}
@@ -9133,7 +9133,7 @@ int executeCommandInner(node *tree) {
 			(accessThruMemRef(tempNode3)->string)[resB] = tempString[0];
 		      }
 		      curr = tree->arguments;
-		      if (!assignThingToTable(((node *) (curr->value))->string, tempNode3)) {
+		      if (!assignThingToTable(accessThruMemRef((node *) (curr->value))->string, tempNode3)) {
 			printMessage(1,SOLLYA_MSG_ASSIGNMENT_WILL_HAVE_NO_EFFECT,"Warning: the last assignment will have no effect.\n");
                         considerDyingOnError();
 		      }
