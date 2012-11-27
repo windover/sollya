@@ -1076,8 +1076,136 @@ double mh, ml;                                        \
     Renormalize3((resh),(resm),(resl),_t21,_t22,_t23);                                        \
 }
 
+/* Some special MulAdd macros needed for argument reduction */
 
+#define MulAdd1111(rh, ah, bh, ch)			                                      \
+{                                                                                             \
+    double _t1, _t2, _t3, _t4, _t5;                                                           \
+    Mul12(&_t1, &_t2, (bh), (ch));                                                            \
+    Add12Cond(_t3, _t4, (ah), _t1);                                                           \
+    _t5 = _t4 + _t2;                                                                          \
+    (*(rh)) = _t3 + _t5;                                                                      \
+}
 
+#define MulAdd1112(rh, rm, ah, bh, ch)                                                        \
+{                                                                                             \
+    double _t1, _t2, _t3, _t4, _t5;                                                           \
+    Mul12(&_t1, &_t2, (bh), (ch));                                                            \
+    Add12Cond(_t3, _t4, (ah), _t1);                                                           \
+    _t5 = _t4 + _t2;                                                                          \
+    Add12Cond((*(rh)),(*(rm)), _t3, _t5);                                                     \
+}
 
+#define MulAdd1113(rh, rm, rl, ah, bh, ch)				                      \
+{                                                                                             \
+    double _t1, _t2, _t3, _t4, _t5, _t6;                                                      \
+    Mul12(&_t1, &_t2, (bh), (ch));                                                            \
+    Add12Cond(_t3, _t4, (ah), _t1);                                                           \
+    Add12Cond(_t5, _t6, _t2, _t4);                                                            \
+    Renormalize3((rh),(rm),(rl),_t3,_t5,_t6);                                                 \
+}
+
+#define MulAdd1121(rh, ah, bh, ch, cm)                                                        \
+{                                                                                             \
+    double _t1, _t2, _t3, _t4, _t5, _t6, _t7;                                                 \
+    Mul12(&_t1, &_t2, (bh), (ch));                                                            \
+    _t3 = (bh) * (cm);                                                                        \
+    Add12Cond(_t4, _t5, (ah), _t1);                                                           \
+    _t6 = _t5 + _t2;                                                                          \
+    _t7 = _t6 + _t3;                                                                          \
+    (*(rh)) = _t4 + _t7;                                                                      \
+}
+
+#define MulAdd1122(rh, rm, ah, bh, ch, cm)                                                    \
+{                                                                                             \
+}
+
+#define MulAdd1123(rh, rm, rl, ah, bh, ch, cm)                                                \
+{                                                                                             \
+}
+
+#define MulAdd1131(rh, ah, bh, ch, cm, cl)                                                    \
+{                                                                                             \
+}
+
+#define MulAdd1132(rh, rm, ah, bh, ch, cm, cl)                                                \
+{                                                                                             \
+}
+
+#define MulAdd1133(rh, rm, rl, ah, bh, ch, cm, cl)                                            \
+{                                                                                             \
+}
+
+#define MulAdd2111(rh, ah, am, bh, ch)                                                        \
+{                                                                                             \
+}
+
+#define MulAdd2112(rh, rm, ah, am, bh, ch)                                                    \
+{                                                                                             \
+}
+
+#define MulAdd2113(rh, rm, rl, ah, am, bh, ch)                                                \
+{                                                                                             \
+}
+
+#define MulAdd2121(rh, ah, am, bh, ch, cm)                                                    \
+{                                                                                             \
+}
+
+#define MulAdd2122(rh, rm, ah, am, bh, ch, cm)                                                \
+{                                                                                             \
+}
+
+#define MulAdd2123(rh, rm, rl, ah, am, bh, ch, cm)                                            \
+{                                                                                             \
+}
+
+#define MulAdd2131(rh, ah, am, bh, ch, cm, cl)                                                \
+{                                                                                             \
+}
+
+#define MulAdd2132(rh, rm, ah, am, bh, ch, cm, cl)                                            \
+{                                                                                             \
+}
+
+#define MulAdd2133(rh, rm, rl, ah, am, bh, ch, cm, cl)                                        \
+{                                                                                             \
+}
+
+#define MulAdd3111(rh, ah, am, al, bh, ch)                                                    \
+{                                                                                             \
+}
+
+#define MulAdd3112(rh, rm, ah, am, al, bh, ch)                                                \
+{                                                                                             \
+}
+
+#define MulAdd3113(rh, rm, rl, ah, am, al, bh, ch)                                            \
+{                                                                                             \
+}
+
+#define MulAdd3121(rh, ah, am, al, bh, ch, cm)                                                \
+{                                                                                             \
+}
+
+#define MulAdd3122(rh, rm, ah, am, al, bh, ch, cm)                                            \
+{                                                                                             \
+}
+
+#define MulAdd3123(rh, rm, rl, ah, am, al, bh, ch, cm)                                        \
+{                                                                                             \
+}
+
+#define MulAdd3131(rh, ah, am, al, bh, ch, cm, cl)                                            \
+{                                                                                             \
+}
+
+#define MulAdd3132(rh, rm, ah, am, al, bh, ch, cm, cl)                                        \
+{                                                                                             \
+}
+
+#define MulAdd3133(rh, rm, rl, ah, am, al, bh, ch, cm, cl)                                    \
+{                                                                                             \
+}
 
 #endif /* ifdef EXPANSION_H*/
