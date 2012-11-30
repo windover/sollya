@@ -107,24 +107,24 @@ chain *copyChain(chain *c, void *(*f) (void *)) {
 }
 
 chain *copyChainWithoutReversal(chain *c, void * (*f) (void *)) {
-  void **array;
-  int len, i;
-  chain *curr, *copy;
+  chain *curr, *copy, *prev, *elem;
 
   if (c == NULL) return NULL;
 
-  len = lengthChain(c);
-  array = (void *) safeCalloc(len,sizeof(void *));
-  curr = c; i = 0;
-  while (curr != NULL) {
-    array[i++] = curr->value;
-    curr = curr->next;
-  }
   copy = NULL;
-  for (i=len-1;i>=0;i--) {
-    copy = addElement(copy,f(array[i]));
+  for (curr=c; curr!=NULL; curr=curr->next) {
+    if (copy == NULL) {
+      copy = (chain *) safeMalloc(sizeof(chain));
+      elem = copy;
+    } else {
+      prev->next = (chain *) safeMalloc(sizeof(chain));
+      elem = prev->next;
+    }
+    elem->value = f(curr->value);
+    elem->next = NULL;
+    prev = elem;
   }
-  safeFree(array);
+
   return copy;
 }
 

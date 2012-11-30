@@ -282,7 +282,7 @@ int performListPrependOnEntry(chain *symTbl, char *ident, node *tree) {
 	if (oldNode->libFunDeriv > 1) {
 	  if ((oldNode->child1->nodeType == LIST) ||
 	      (oldNode->child1->nodeType == FINALELLIPTICLIST)) {
-	    newArgs = addElement(copyChain(oldNode->child1->arguments, copyThingOnVoid), tree);
+	    newArgs = addElement(copyChainWithoutReversal(oldNode->child1->arguments, copyThingOnVoid), tree);
 	    newNode = (node *) safeMalloc(sizeof(node));
 	    newNode->nodeType = oldNode->child1->nodeType;
 	    newNode->arguments = newArgs;
@@ -367,7 +367,7 @@ int performListTailOnEntry(chain *symTbl, char *ident) {
 	      ((oldNode->child1->arguments != NULL) && 
 	       (oldNode->child1->arguments->next != NULL) &&
 	       (oldNode->child1->arguments->next != NULL))) {
-	    newArgs = copyChain(oldNode->child1->arguments->next, copyThingOnVoid);
+	    newArgs = copyChainWithoutReversal(oldNode->child1->arguments->next, copyThingOnVoid);
 	    newNode = (node *) safeMalloc(sizeof(node));
 	    newNode->nodeType = oldNode->child1->nodeType;
 	    newNode->arguments = newArgs;
