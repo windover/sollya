@@ -159,3 +159,21 @@ f=sin(x);
 rename(x,a);
 a;
 f;
+
+/*********************************************************************************/
+restart;
+print("=============== Test number 181 ================");
+mylist = [|"0", "1", "2", "3"|];
+procedure enumerate(l) {
+  var k, h;
+  k = 0;
+  while (l != [||]) do {
+    h = head(l);
+    "l = ", l;
+    "k = ", k;
+    "h = ", h;
+    l = tail(l);
+    k = k + 1;
+  };
+};
+enumerate(mylist);

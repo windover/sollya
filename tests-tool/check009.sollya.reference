@@ -129,3 +129,17 @@ The tool has been restarted.
 Information: the free variable has been renamed from "x" to "a".
 a
 sin(a)
+The tool has been restarted.
+=============== Test number 181 ================
+l = [|"0", "1", "2", "3"|]
+k = 0
+h = 0
+l = [|"1", "2", "3"|]
+k = 1
+h = 1
+l = [|"2", "3"|]
+k = 2
+h = 2
+l = [|"3"|]
+k = 3
+h = 3
