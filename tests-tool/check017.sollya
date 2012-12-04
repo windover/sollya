@@ -36,3 +36,7 @@ bashevaluate("true");
 
 bashevaluate("caca 2> /dev/null");
 
+/* A test for [#15162] Comparison of accesses to structures yields a wrong result or segfaults */
+
+procedure a(n) { return n.a.b; }; procedure b(n) { return n.a.b; }; a == b; c = a; d = b; c == d;
+
