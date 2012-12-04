@@ -1162,7 +1162,6 @@ double mh, ml;                                        \
 
 #define MulAdd1132(rh, rm, ah, bh, ch, cm, cl)                          \
 {                                                                       \
-
 }
 
 #define MulAdd1133(rh, rm, rl, ah, bh, ch, cm, cl)                      \
