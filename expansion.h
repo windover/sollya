@@ -1078,166 +1078,1176 @@ double mh, ml;                                        \
 
 /* Some special MulAdd macros needed for argument reduction */
 
-#define MulAdd1111(rh, ah, bh, ch)			                \
-{                                                                       \
-    double _t1, _t2, _t3, _t4, _t5;                                     \
-    Mul12(&_t1, &_t2, (bh), (ch));                                      \
+#define MulAdd1111(rh,ah,b,ch) do {                                     \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
     Add12Cond(_t3, _t4, (ah), _t1);                                     \
-    _t5 = _t4 + _t2;                                                    \
-    (*(rh)) = _t3 + _t5;                                                \
-}
+    Add12Cond(_t5, _t6, _t4, _t2);                                      \
+    _t7 = _t6 + _t5;                                                    \
+    _t8 = _t7 + _t3;                                                    \
+    (*(rh)) = _t8;                                                      \
+} while (0);
 
-#define MulAdd1112(rh, rm, ah, bh, ch)                                  \
-{                                                                       \
-    double _t1, _t2, _t3, _t4, _t5;                                     \
-    Mul12(&_t1, &_t2, (bh), (ch));                                      \
-    Add12Cond(_t3, _t4, (ah), _t1);                                     \
-    _t5 = _t4 + _t2;                                                    \
-    Add12Cond((*(rh)),(*(rm)), _t3, _t5);                               \
-}
 
-#define MulAdd1113(rh, rm, rl, ah, bh, ch)				\
-{                                                                       \
-    double _t1, _t2, _t3, _t4, _t5, _t6;                                \
-    Mul12(&_t1, &_t2, (bh), (ch));                                      \
-    Add12Cond(_t3, _t4, (ah), _t1);                                     \
-    Add12Cond(_t5, _t6, _t2, _t4);                                      \
-    Renormalize3((rh),(rm),(rl),_t3,_t5,_t6);                           \
-}
-
-#define MulAdd1121(rh, ah, bh, ch, cm)                                  \
-{                                                                       \
-    double _t1, _t2, _t3, _t4, _t5, _t6, _t7;                           \
-    Mul12(&_t1, &_t2, (bh), (ch));                                      \
-    _t3 = (bh) * (cm);                                                  \
-    Add12Cond(_t4, _t5, (ah), _t1);                                     \
-    _t6 = _t5 + _t2;                                                    \
-    _t7 = _t6 + _t3;                                                    \
-    (*(rh)) = _t4 + _t7;                                                \
-}
-
-#define MulAdd1122(rh, rm, ah, bh, ch, cm)                              \
-{                                                                       \
-    double _t1, _t2, _t3, _t4, _t5, _t6, _t7, _t8, _t9, _t10, _t11;	\
-    Mul12(&_t1, &_t2, (bh), (ch));                                      \
-    Mul12(&_t3, &_t4, (bh), (cm));					\
+#define MulAdd1121(rh,ah,b,ch,cm) do {                                  \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
     Add12Cond(_t5, _t6, (ah), _t1);                                     \
-    Add12Cond(_t7, _t8, _t2, _t3);                                      \
+    Add12Cond(_t7, _t8, _t6, _t3);                                      \
     _t9 = _t8 + _t4;                                                    \
-    _t10 = _t7 + _t9;                                                   \
-    _t11 = _t6 + _t10;                                                  \
-    Add12Cond((*(rh)),(*(rm)),_t5,_t11);                                \
-}
+    Add12Cond(_t10, _t11, _t7, _t2);                                    \
+    _t12 = _t11 + _t9;                                                  \
+    _t13 = _t12 + _t10;                                                 \
+    _t14 = _t13 + _t5;                                                  \
+    (*(rh)) = _t14;                                                     \
+} while (0);
 
-#define MulAdd1123(rh, rm, rl, ah, bh, ch, cm)				\
-{									\
-    double _t1, _t2, _t3, _t4, _t5, _t6, _t7, _t8, _t9, _t10, _t11;     \
-    double _t12;	                                                \
-    Mul12(&_t1, &_t2, (bh), (ch));                                      \
-    Mul12(&_t3, &_t4, (bh), (cm));					\
-    Add12Cond(_t5, _t6, (ah), _t1);                                     \
-    Add12Cond(_t7, _t8, _t2, _t3);                                      \
-    Add12Cond(_t9, _t10, _t7, _t6);                                     \
-    _t11 = _t4 + _t8;                                                   \
-    _t12 = _t10 + _t11;                                                 \
-    Renormalize3((rh),(rm),(rl),_t5,_t9,_t12);                          \
-}
 
-#define MulAdd1131(rh, ah, bh, ch, cm, cl)                              \
-{                                                                       \
-    double _t1, _t2, _t3, _t4, _t5, _t6, _t7, _t8, _t9, _t10, _t11;     \
-    double _t12, _t13, _t14, _t15;					\
-    Mul12(&_t1, &_t2, (bh), (ch));                                      \
-    Mul12(&_t3, &_t4, (bh), (cm));					\
-    _t5 = (bh) * (cl);                                                  \
-    Add12Cond(_t6, _t7, _t2, _t3);                                      \
-    _t8 = _t4 + _t5;                                                    \
-    _t9 = _t8 + _t7;                                                    \
-    Add12Cond(_t10, _t11, (ah), _t1);                                   \
-    Add12Cond(_t12, _t13, _t6, _t11);                                   \
-    _t14 = _t9 + _t13;                                                  \
+#define MulAdd1131(rh,ah,b,ch,cm,cl) do {                               \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Mul12(&_t5, &_t6, (b), (cl));                                       \
+    Add12Cond(_t7, _t8, (ah), _t1);                                     \
+    Add12Cond(_t9, _t10, _t8, _t3);                                     \
+    _t11 = _t10 + _t5;                                                  \
+    _t12 = _t11 + _t4;                                                  \
+    Add12Cond(_t13, _t14, _t9, _t2);                                    \
     _t15 = _t14 + _t12;                                                 \
-    (*(rh)) = _t15 + _t10;                                              \
-}
+    _t16 = _t6 + _t15;                                                  \
+    _t17 = _t16 + _t13;                                                 \
+    _t18 = _t17 + _t7;                                                  \
+    (*(rh)) = _t18;                                                     \
+} while (0);
 
-#define MulAdd1132(rh, rm, ah, bh, ch, cm, cl)                          \
-{                                                                       \
-}
 
-#define MulAdd1133(rh, rm, rl, ah, bh, ch, cm, cl)                      \
-{                                                                       \
-}
+#define MulAdd2111(rh,ah,am,b,ch) do {                                  \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Add12Cond(_t3, _t4, (am), _t2);                                     \
+    Add12Cond(_t5, _t6, (ah), _t1);                                     \
+    Add12Cond(_t7, _t8, _t6, _t3);                                      \
+    Add12Cond(_t9, _t10, _t8, _t4);                                     \
+    _t11 = _t10 + _t9;                                                  \
+    _t12 = _t11 + _t7;                                                  \
+    _t13 = _t12 + _t5;                                                  \
+    (*(rh)) = _t13;                                                     \
+} while (0);
 
-#define MulAdd2111(rh, ah, am, bh, ch)                                  \
-{                                                                       \
-}
 
-#define MulAdd2112(rh, rm, ah, am, bh, ch)                              \
-{                                                                       \
-}
+#define MulAdd2121(rh,ah,am,b,ch,cm) do {                               \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    double _t19;                                                        \
+    double _t20;                                                        \
+    double _t21;                                                        \
+    double _t22;                                                        \
+    double _t23;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Add12Cond(_t5, _t6, (am), _t3);                                     \
+    Add12Cond(_t7, _t8, _t6, _t4);                                      \
+    Add12Cond(_t9, _t10, _t5, _t2);                                     \
+    Add12Cond(_t11, _t12, _t10, _t7);                                   \
+    _t13 = _t12 + _t8;                                                  \
+    Add12Cond(_t14, _t15, (ah), _t1);                                   \
+    Add12Cond(_t16, _t17, _t15, _t9);                                   \
+    Add12Cond(_t18, _t19, _t17, _t11);                                  \
+    _t20 = _t19 + _t13;                                                 \
+    _t21 = _t20 + _t18;                                                 \
+    _t22 = _t21 + _t16;                                                 \
+    _t23 = _t22 + _t14;                                                 \
+    (*(rh)) = _t23;                                                     \
+} while (0);
 
-#define MulAdd2113(rh, rm, rl, ah, am, bh, ch)                          \
-{                                                                       \
-}
 
-#define MulAdd2121(rh, ah, am, bh, ch, cm)                              \
-{                                                                       \
-}
+#define MulAdd2131(rh,ah,am,b,ch,cm,cl) do {                            \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    double _t19;                                                        \
+    double _t20;                                                        \
+    double _t21;                                                        \
+    double _t22;                                                        \
+    double _t23;                                                        \
+    double _t24;                                                        \
+    double _t25;                                                        \
+    double _t26;                                                        \
+    double _t27;                                                        \
+    double _t28;                                                        \
+    double _t29;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Mul12(&_t5, &_t6, (b), (cl));                                       \
+    Add12Cond(_t7, _t8, (am), _t3);                                     \
+    Add12Cond(_t9, _t10, _t8, _t5);                                     \
+    _t11 = _t10 + _t6;                                                  \
+    Add12Cond(_t12, _t13, _t9, _t4);                                    \
+    _t14 = _t13 + _t11;                                                 \
+    Add12Cond(_t15, _t16, _t7, _t2);                                    \
+    Add12Cond(_t17, _t18, _t16, _t12);                                  \
+    _t19 = _t18 + _t14;                                                 \
+    Add12Cond(_t20, _t21, (ah), _t1);                                   \
+    Add12Cond(_t22, _t23, _t21, _t15);                                  \
+    Add12Cond(_t24, _t25, _t23, _t17);                                  \
+    _t26 = _t25 + _t19;                                                 \
+    _t27 = _t26 + _t24;                                                 \
+    _t28 = _t27 + _t22;                                                 \
+    _t29 = _t28 + _t20;                                                 \
+    (*(rh)) = _t29;                                                     \
+} while (0);
 
-#define MulAdd2122(rh, rm, ah, am, bh, ch, cm)                          \
-{                                                                       \
-}
 
-#define MulAdd2123(rh, rm, rl, ah, am, bh, ch, cm)                      \
-{                                                                       \
-}
+#define MulAdd3111(rh,ah,am,al,b,ch) do {                               \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Add12Cond(_t3, _t4, (am), _t2);                                     \
+    Add12Cond(_t5, _t6, _t4, (al));                                     \
+    Add12Cond(_t7, _t8, (ah), _t1);                                     \
+    Add12Cond(_t9, _t10, _t8, _t3);                                     \
+    Add12Cond(_t11, _t12, _t10, _t5);                                   \
+    Add12Cond(_t13, _t14, _t12, _t6);                                   \
+    _t15 = _t14 + _t13;                                                 \
+    _t16 = _t15 + _t11;                                                 \
+    _t17 = _t16 + _t9;                                                  \
+    _t18 = _t17 + _t7;                                                  \
+    (*(rh)) = _t18;                                                     \
+} while (0);
 
-#define MulAdd2131(rh, ah, am, bh, ch, cm, cl)                          \
-{                                                                       \
-}
 
-#define MulAdd2132(rh, rm, ah, am, bh, ch, cm, cl)                      \
-{                                                                       \
-}
+#define MulAdd3121(rh,ah,am,al,b,ch,cm) do {                            \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    double _t19;                                                        \
+    double _t20;                                                        \
+    double _t21;                                                        \
+    double _t22;                                                        \
+    double _t23;                                                        \
+    double _t24;                                                        \
+    double _t25;                                                        \
+    double _t26;                                                        \
+    double _t27;                                                        \
+    double _t28;                                                        \
+    double _t29;                                                        \
+    double _t30;                                                        \
+    double _t31;                                                        \
+    double _t32;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Add12Cond(_t5, _t6, (al), _t4);                                     \
+    Add12Cond(_t7, _t8, (am), _t3);                                     \
+    Add12Cond(_t9, _t10, _t8, _t5);                                     \
+    Add12Cond(_t11, _t12, _t10, _t6);                                   \
+    Add12Cond(_t13, _t14, _t7, _t2);                                    \
+    Add12Cond(_t15, _t16, _t14, _t9);                                   \
+    Add12Cond(_t17, _t18, _t16, _t11);                                  \
+    _t19 = _t18 + _t12;                                                 \
+    Add12Cond(_t20, _t21, (ah), _t1);                                   \
+    Add12Cond(_t22, _t23, _t21, _t13);                                  \
+    Add12Cond(_t24, _t25, _t23, _t15);                                  \
+    Add12Cond(_t26, _t27, _t25, _t17);                                  \
+    _t28 = _t27 + _t19;                                                 \
+    _t29 = _t28 + _t26;                                                 \
+    _t30 = _t29 + _t24;                                                 \
+    _t31 = _t30 + _t22;                                                 \
+    _t32 = _t31 + _t20;                                                 \
+    (*(rh)) = _t32;                                                     \
+} while (0);
 
-#define MulAdd2133(rh, rm, rl, ah, am, bh, ch, cm, cl)                  \
-{                                                                       \
-}
 
-#define MulAdd3111(rh, ah, am, al, bh, ch)                              \
-{                                                                       \
-}
+#define MulAdd3131(rh,ah,am,al,b,ch,cm,cl) do {                         \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    double _t19;                                                        \
+    double _t20;                                                        \
+    double _t21;                                                        \
+    double _t22;                                                        \
+    double _t23;                                                        \
+    double _t24;                                                        \
+    double _t25;                                                        \
+    double _t26;                                                        \
+    double _t27;                                                        \
+    double _t28;                                                        \
+    double _t29;                                                        \
+    double _t30;                                                        \
+    double _t31;                                                        \
+    double _t32;                                                        \
+    double _t33;                                                        \
+    double _t34;                                                        \
+    double _t35;                                                        \
+    double _t36;                                                        \
+    double _t37;                                                        \
+    double _t38;                                                        \
+    double _t39;                                                        \
+    double _t40;                                                        \
+    double _t41;                                                        \
+    double _t42;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Mul12(&_t5, &_t6, (b), (cl));                                       \
+    Add12Cond(_t7, _t8, (al), _t5);                                     \
+    Add12Cond(_t9, _t10, _t8, _t6);                                     \
+    Add12Cond(_t11, _t12, _t7, _t4);                                    \
+    Add12Cond(_t13, _t14, _t12, _t9);                                   \
+    _t15 = _t14 + _t10;                                                 \
+    Add12Cond(_t16, _t17, (am), _t3);                                   \
+    Add12Cond(_t18, _t19, _t17, _t11);                                  \
+    Add12Cond(_t20, _t21, _t19, _t13);                                  \
+    _t22 = _t21 + _t15;                                                 \
+    Add12Cond(_t23, _t24, _t16, _t2);                                   \
+    Add12Cond(_t25, _t26, _t24, _t18);                                  \
+    Add12Cond(_t27, _t28, _t26, _t20);                                  \
+    _t29 = _t28 + _t22;                                                 \
+    Add12Cond(_t30, _t31, (ah), _t1);                                   \
+    Add12Cond(_t32, _t33, _t31, _t23);                                  \
+    Add12Cond(_t34, _t35, _t33, _t25);                                  \
+    Add12Cond(_t36, _t37, _t35, _t27);                                  \
+    _t38 = _t37 + _t29;                                                 \
+    _t39 = _t38 + _t36;                                                 \
+    _t40 = _t39 + _t34;                                                 \
+    _t41 = _t40 + _t32;                                                 \
+    _t42 = _t41 + _t30;                                                 \
+    (*(rh)) = _t42;                                                     \
+} while (0);
 
-#define MulAdd3112(rh, rm, ah, am, al, bh, ch)                          \
-{                                                                       \
-}
 
-#define MulAdd3113(rh, rm, rl, ah, am, al, bh, ch)                      \
-{                                                                       \
-}
+#define MulAdd1112(rh,rm,ah,b,ch) do {                                  \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Add12Cond(_t3, _t4, (ah), _t1);                                     \
+    Add12Cond(_t5, _t6, _t4, _t2);                                      \
+    _t7 = _t6 + _t5;                                                    \
+    Add12Cond((*(rh)),(*(rm)),_t3,_t7);                                 \
+} while (0);
 
-#define MulAdd3121(rh, ah, am, al, bh, ch, cm)                          \
-{                                                                       \
-}
 
-#define MulAdd3122(rh, rm, ah, am, al, bh, ch, cm)                      \
-{                                                                       \
-}
+#define MulAdd1122(rh,rm,ah,b,ch,cm) do {                               \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Add12Cond(_t5, _t6, (ah), _t1);                                     \
+    Add12Cond(_t7, _t8, _t6, _t3);                                      \
+    Add12Cond(_t9, _t10, _t8, _t4);                                     \
+    Add12Cond(_t11, _t12, _t7, _t2);                                    \
+    Add12Cond(_t13, _t14, _t12, _t9);                                   \
+    _t15 = _t14 + _t10;                                                 \
+    _t16 = _t15 + _t13;                                                 \
+    _t17 = _t16 + _t11;                                                 \
+    Add12Cond((*(rh)),(*(rm)),_t5,_t17);                                \
+} while (0);
 
-#define MulAdd3123(rh, rm, rl, ah, am, al, bh, ch, cm)                  \
-{                                                                       \
-}
 
-#define MulAdd3131(rh, ah, am, al, bh, ch, cm, cl)                      \
-{                                                                       \
-}
+#define MulAdd1132(rh,rm,ah,b,ch,cm,cl) do {                            \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    double _t19;                                                        \
+    double _t20;                                                        \
+    double _t21;                                                        \
+    double _t22;                                                        \
+    double _t23;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Mul12(&_t5, &_t6, (b), (cl));                                       \
+    Add12Cond(_t7, _t8, (ah), _t1);                                     \
+    Add12Cond(_t9, _t10, _t8, _t3);                                     \
+    Add12Cond(_t11, _t12, _t10, _t5);                                   \
+    _t13 = _t12 + _t6;                                                  \
+    Add12Cond(_t14, _t15, _t11, _t4);                                   \
+    _t16 = _t15 + _t13;                                                 \
+    Add12Cond(_t17, _t18, _t9, _t2);                                    \
+    Add12Cond(_t19, _t20, _t18, _t14);                                  \
+    _t21 = _t20 + _t16;                                                 \
+    _t22 = _t21 + _t19;                                                 \
+    _t23 = _t22 + _t17;                                                 \
+    Add12Cond((*(rh)),(*(rm)),_t7,_t23);                                \
+} while (0);
 
-#define MulAdd3132(rh, rm, ah, am, al, bh, ch, cm, cl)                  \
-{                                                                       \
-}
 
-#define MulAdd3133(rh, rm, rl, ah, am, al, bh, ch, cm, cl)              \
-{                                                                       \
-}
+#define MulAdd2112(rh,rm,ah,am,b,ch) do {                               \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Add12Cond(_t3, _t4, (am), _t2);                                     \
+    Add12Cond(_t5, _t6, (ah), _t1);                                     \
+    Add12Cond(_t7, _t8, _t6, _t3);                                      \
+    Add12Cond(_t9, _t10, _t8, _t4);                                     \
+    _t11 = _t10 + _t9;                                                  \
+    _t12 = _t11 + _t7;                                                  \
+    Add12Cond((*(rh)),(*(rm)),_t5,_t12);                                \
+} while (0);
+
+
+#define MulAdd2122(rh,rm,ah,am,b,ch,cm) do {                            \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    double _t19;                                                        \
+    double _t20;                                                        \
+    double _t21;                                                        \
+    double _t22;                                                        \
+    double _t23;                                                        \
+    double _t24;                                                        \
+    double _t25;                                                        \
+    double _t26;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Add12Cond(_t5, _t6, (am), _t3);                                     \
+    Add12Cond(_t7, _t8, _t6, _t4);                                      \
+    Add12Cond(_t9, _t10, _t5, _t2);                                     \
+    Add12Cond(_t11, _t12, _t10, _t7);                                   \
+    Add12Cond(_t13, _t14, _t12, _t8);                                   \
+    Add12Cond(_t15, _t16, (ah), _t1);                                   \
+    Add12Cond(_t17, _t18, _t16, _t9);                                   \
+    Add12Cond(_t19, _t20, _t18, _t11);                                  \
+    Add12Cond(_t21, _t22, _t20, _t13);                                  \
+    _t23 = _t22 + _t14;                                                 \
+    _t24 = _t23 + _t21;                                                 \
+    _t25 = _t24 + _t19;                                                 \
+    _t26 = _t25 + _t17;                                                 \
+    Add12Cond((*(rh)),(*(rm)),_t15,_t26);                               \
+} while (0);
+
+
+#define MulAdd2132(rh,rm,ah,am,b,ch,cm,cl) do {                         \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    double _t19;                                                        \
+    double _t20;                                                        \
+    double _t21;                                                        \
+    double _t22;                                                        \
+    double _t23;                                                        \
+    double _t24;                                                        \
+    double _t25;                                                        \
+    double _t26;                                                        \
+    double _t27;                                                        \
+    double _t28;                                                        \
+    double _t29;                                                        \
+    double _t30;                                                        \
+    double _t31;                                                        \
+    double _t32;                                                        \
+    double _t33;                                                        \
+    double _t34;                                                        \
+    double _t35;                                                        \
+    double _t36;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Mul12(&_t5, &_t6, (b), (cl));                                       \
+    Add12Cond(_t7, _t8, (am), _t3);                                     \
+    Add12Cond(_t9, _t10, _t8, _t5);                                     \
+    Add12Cond(_t11, _t12, _t10, _t6);                                   \
+    Add12Cond(_t13, _t14, _t9, _t4);                                    \
+    Add12Cond(_t15, _t16, _t14, _t11);                                  \
+    _t17 = _t16 + _t12;                                                 \
+    Add12Cond(_t18, _t19, _t7, _t2);                                    \
+    Add12Cond(_t20, _t21, _t19, _t13);                                  \
+    Add12Cond(_t22, _t23, _t21, _t15);                                  \
+    _t24 = _t23 + _t17;                                                 \
+    Add12Cond(_t25, _t26, (ah), _t1);                                   \
+    Add12Cond(_t27, _t28, _t26, _t18);                                  \
+    Add12Cond(_t29, _t30, _t28, _t20);                                  \
+    Add12Cond(_t31, _t32, _t30, _t22);                                  \
+    _t33 = _t32 + _t24;                                                 \
+    _t34 = _t33 + _t31;                                                 \
+    _t35 = _t34 + _t29;                                                 \
+    _t36 = _t35 + _t27;                                                 \
+    Add12Cond((*(rh)),(*(rm)),_t25,_t36);                               \
+} while (0);
+
+
+#define MulAdd3112(rh,rm,ah,am,al,b,ch) do {                            \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Add12Cond(_t3, _t4, (am), _t2);                                     \
+    Add12Cond(_t5, _t6, _t4, (al));                                     \
+    Add12Cond(_t7, _t8, (ah), _t1);                                     \
+    Add12Cond(_t9, _t10, _t8, _t3);                                     \
+    Add12Cond(_t11, _t12, _t10, _t5);                                   \
+    Add12Cond(_t13, _t14, _t12, _t6);                                   \
+    _t15 = _t14 + _t13;                                                 \
+    _t16 = _t15 + _t11;                                                 \
+    _t17 = _t16 + _t9;                                                  \
+    Add12Cond((*(rh)),(*(rm)),_t7,_t17);                                \
+} while (0);
+
+
+#define MulAdd3122(rh,rm,ah,am,al,b,ch,cm) do {                         \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    double _t19;                                                        \
+    double _t20;                                                        \
+    double _t21;                                                        \
+    double _t22;                                                        \
+    double _t23;                                                        \
+    double _t24;                                                        \
+    double _t25;                                                        \
+    double _t26;                                                        \
+    double _t27;                                                        \
+    double _t28;                                                        \
+    double _t29;                                                        \
+    double _t30;                                                        \
+    double _t31;                                                        \
+    double _t32;                                                        \
+    double _t33;                                                        \
+    double _t34;                                                        \
+    double _t35;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Add12Cond(_t5, _t6, (al), _t4);                                     \
+    Add12Cond(_t7, _t8, (am), _t3);                                     \
+    Add12Cond(_t9, _t10, _t8, _t5);                                     \
+    Add12Cond(_t11, _t12, _t10, _t6);                                   \
+    Add12Cond(_t13, _t14, _t7, _t2);                                    \
+    Add12Cond(_t15, _t16, _t14, _t9);                                   \
+    Add12Cond(_t17, _t18, _t16, _t11);                                  \
+    Add12Cond(_t19, _t20, _t18, _t12);                                  \
+    Add12Cond(_t21, _t22, (ah), _t1);                                   \
+    Add12Cond(_t23, _t24, _t22, _t13);                                  \
+    Add12Cond(_t25, _t26, _t24, _t15);                                  \
+    Add12Cond(_t27, _t28, _t26, _t17);                                  \
+    Add12Cond(_t29, _t30, _t28, _t19);                                  \
+    _t31 = _t30 + _t20;                                                 \
+    _t32 = _t31 + _t29;                                                 \
+    _t33 = _t32 + _t27;                                                 \
+    _t34 = _t33 + _t25;                                                 \
+    _t35 = _t34 + _t23;                                                 \
+    Add12Cond((*(rh)),(*(rm)),_t21,_t35);                               \
+} while (0);
+
+
+#define MulAdd3132(rh,rm,ah,am,al,b,ch,cm,cl) do {                      \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    double _t19;                                                        \
+    double _t20;                                                        \
+    double _t21;                                                        \
+    double _t22;                                                        \
+    double _t23;                                                        \
+    double _t24;                                                        \
+    double _t25;                                                        \
+    double _t26;                                                        \
+    double _t27;                                                        \
+    double _t28;                                                        \
+    double _t29;                                                        \
+    double _t30;                                                        \
+    double _t31;                                                        \
+    double _t32;                                                        \
+    double _t33;                                                        \
+    double _t34;                                                        \
+    double _t35;                                                        \
+    double _t36;                                                        \
+    double _t37;                                                        \
+    double _t38;                                                        \
+    double _t39;                                                        \
+    double _t40;                                                        \
+    double _t41;                                                        \
+    double _t42;                                                        \
+    double _t43;                                                        \
+    double _t44;                                                        \
+    double _t45;                                                        \
+    double _t46;                                                        \
+    double _t47;                                                        \
+    double _t48;                                                        \
+    double _t49;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Mul12(&_t5, &_t6, (b), (cl));                                       \
+    Add12Cond(_t7, _t8, (al), _t5);                                     \
+    Add12Cond(_t9, _t10, _t8, _t6);                                     \
+    Add12Cond(_t11, _t12, _t7, _t4);                                    \
+    Add12Cond(_t13, _t14, _t12, _t9);                                   \
+    Add12Cond(_t15, _t16, _t14, _t10);                                  \
+    Add12Cond(_t17, _t18, (am), _t3);                                   \
+    Add12Cond(_t19, _t20, _t18, _t11);                                  \
+    Add12Cond(_t21, _t22, _t20, _t13);                                  \
+    Add12Cond(_t23, _t24, _t22, _t15);                                  \
+    _t25 = _t24 + _t16;                                                 \
+    Add12Cond(_t26, _t27, _t17, _t2);                                   \
+    Add12Cond(_t28, _t29, _t27, _t19);                                  \
+    Add12Cond(_t30, _t31, _t29, _t21);                                  \
+    Add12Cond(_t32, _t33, _t31, _t23);                                  \
+    _t34 = _t33 + _t25;                                                 \
+    Add12Cond(_t35, _t36, (ah), _t1);                                   \
+    Add12Cond(_t37, _t38, _t36, _t26);                                  \
+    Add12Cond(_t39, _t40, _t38, _t28);                                  \
+    Add12Cond(_t41, _t42, _t40, _t30);                                  \
+    Add12Cond(_t43, _t44, _t42, _t32);                                  \
+    _t45 = _t44 + _t34;                                                 \
+    _t46 = _t45 + _t43;                                                 \
+    _t47 = _t46 + _t41;                                                 \
+    _t48 = _t47 + _t39;                                                 \
+    _t49 = _t48 + _t37;                                                 \
+    Add12Cond((*(rh)),(*(rm)),_t35,_t49);                               \
+} while (0);
+
+
+#define MulAdd1113(rh,rm,rl,ah,b,ch) do {                               \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Add12Cond(_t3, _t4, (ah), _t1);                                     \
+    Add12Cond(_t5, _t6, _t4, _t2);                                      \
+    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t3,_t5,_t6);                  \
+} while (0);
+
+
+#define MulAdd1123(rh,rm,rl,ah,b,ch,cm) do {                            \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Add12Cond(_t5, _t6, (ah), _t1);                                     \
+    Add12Cond(_t7, _t8, _t6, _t3);                                      \
+    Add12Cond(_t9, _t10, _t8, _t4);                                     \
+    Add12Cond(_t11, _t12, _t7, _t2);                                    \
+    Add12Cond(_t13, _t14, _t12, _t9);                                   \
+    Add12Cond(_t15, _t16, _t14, _t10);                                  \
+    _t17 = _t16 + _t15;                                                 \
+    _t18 = _t17 + _t13;                                                 \
+    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t5,_t11,_t18);                \
+} while (0);
+
+
+#define MulAdd1133(rh,rm,rl,ah,b,ch,cm,cl) do {                         \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    double _t19;                                                        \
+    double _t20;                                                        \
+    double _t21;                                                        \
+    double _t22;                                                        \
+    double _t23;                                                        \
+    double _t24;                                                        \
+    double _t25;                                                        \
+    double _t26;                                                        \
+    double _t27;                                                        \
+    double _t28;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Mul12(&_t5, &_t6, (b), (cl));                                       \
+    Add12Cond(_t7, _t8, (ah), _t1);                                     \
+    Add12Cond(_t9, _t10, _t8, _t3);                                     \
+    Add12Cond(_t11, _t12, _t10, _t5);                                   \
+    Add12Cond(_t13, _t14, _t12, _t6);                                   \
+    Add12Cond(_t15, _t16, _t11, _t4);                                   \
+    Add12Cond(_t17, _t18, _t16, _t13);                                  \
+    _t19 = _t18 + _t14;                                                 \
+    Add12Cond(_t20, _t21, _t9, _t2);                                    \
+    Add12Cond(_t22, _t23, _t21, _t15);                                  \
+    Add12Cond(_t24, _t25, _t23, _t17);                                  \
+    _t26 = _t25 + _t19;                                                 \
+    _t27 = _t26 + _t24;                                                 \
+    _t28 = _t27 + _t22;                                                 \
+    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t7,_t20,_t28);                \
+} while (0);
+
+
+#define MulAdd2113(rh,rm,rl,ah,am,b,ch) do {                            \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Add12Cond(_t3, _t4, (am), _t2);                                     \
+    Add12Cond(_t5, _t6, (ah), _t1);                                     \
+    Add12Cond(_t7, _t8, _t6, _t3);                                      \
+    Add12Cond(_t9, _t10, _t8, _t4);                                     \
+    _t11 = _t10 + _t9;                                                  \
+    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t5,_t7,_t11);                 \
+} while (0);
+
+
+#define MulAdd2123(rh,rm,rl,ah,am,b,ch,cm) do {                         \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    double _t19;                                                        \
+    double _t20;                                                        \
+    double _t21;                                                        \
+    double _t22;                                                        \
+    double _t23;                                                        \
+    double _t24;                                                        \
+    double _t25;                                                        \
+    double _t26;                                                        \
+    double _t27;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Add12Cond(_t5, _t6, (am), _t3);                                     \
+    Add12Cond(_t7, _t8, _t6, _t4);                                      \
+    Add12Cond(_t9, _t10, _t5, _t2);                                     \
+    Add12Cond(_t11, _t12, _t10, _t7);                                   \
+    Add12Cond(_t13, _t14, _t12, _t8);                                   \
+    Add12Cond(_t15, _t16, (ah), _t1);                                   \
+    Add12Cond(_t17, _t18, _t16, _t9);                                   \
+    Add12Cond(_t19, _t20, _t18, _t11);                                  \
+    Add12Cond(_t21, _t22, _t20, _t13);                                  \
+    Add12Cond(_t23, _t24, _t22, _t14);                                  \
+    _t25 = _t24 + _t23;                                                 \
+    _t26 = _t25 + _t21;                                                 \
+    _t27 = _t26 + _t19;                                                 \
+    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t15,_t17,_t27);               \
+} while (0);
+
+
+#define MulAdd2133(rh,rm,rl,ah,am,b,ch,cm,cl) do {                      \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    double _t19;                                                        \
+    double _t20;                                                        \
+    double _t21;                                                        \
+    double _t22;                                                        \
+    double _t23;                                                        \
+    double _t24;                                                        \
+    double _t25;                                                        \
+    double _t26;                                                        \
+    double _t27;                                                        \
+    double _t28;                                                        \
+    double _t29;                                                        \
+    double _t30;                                                        \
+    double _t31;                                                        \
+    double _t32;                                                        \
+    double _t33;                                                        \
+    double _t34;                                                        \
+    double _t35;                                                        \
+    double _t36;                                                        \
+    double _t37;                                                        \
+    double _t38;                                                        \
+    double _t39;                                                        \
+    double _t40;                                                        \
+    double _t41;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Mul12(&_t5, &_t6, (b), (cl));                                       \
+    Add12Cond(_t7, _t8, (am), _t3);                                     \
+    Add12Cond(_t9, _t10, _t8, _t5);                                     \
+    Add12Cond(_t11, _t12, _t10, _t6);                                   \
+    Add12Cond(_t13, _t14, _t9, _t4);                                    \
+    Add12Cond(_t15, _t16, _t14, _t11);                                  \
+    Add12Cond(_t17, _t18, _t16, _t12);                                  \
+    Add12Cond(_t19, _t20, _t7, _t2);                                    \
+    Add12Cond(_t21, _t22, _t20, _t13);                                  \
+    Add12Cond(_t23, _t24, _t22, _t15);                                  \
+    Add12Cond(_t25, _t26, _t24, _t17);                                  \
+    _t27 = _t26 + _t18;                                                 \
+    Add12Cond(_t28, _t29, (ah), _t1);                                   \
+    Add12Cond(_t30, _t31, _t29, _t19);                                  \
+    Add12Cond(_t32, _t33, _t31, _t21);                                  \
+    Add12Cond(_t34, _t35, _t33, _t23);                                  \
+    Add12Cond(_t36, _t37, _t35, _t25);                                  \
+    _t38 = _t37 + _t27;                                                 \
+    _t39 = _t38 + _t36;                                                 \
+    _t40 = _t39 + _t34;                                                 \
+    _t41 = _t40 + _t32;                                                 \
+    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t28,_t30,_t41);               \
+} while (0);
+
+
+#define MulAdd3113(rh,rm,rl,ah,am,al,b,ch) do {                         \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Add12Cond(_t3, _t4, (am), _t2);                                     \
+    Add12Cond(_t5, _t6, _t4, (al));                                     \
+    Add12Cond(_t7, _t8, (ah), _t1);                                     \
+    Add12Cond(_t9, _t10, _t8, _t3);                                     \
+    Add12Cond(_t11, _t12, _t10, _t5);                                   \
+    Add12Cond(_t13, _t14, _t12, _t6);                                   \
+    _t15 = _t14 + _t13;                                                 \
+    _t16 = _t15 + _t11;                                                 \
+    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t7,_t9,_t16);                 \
+} while (0);
+
+
+#define MulAdd3123(rh,rm,rl,ah,am,al,b,ch,cm) do {                      \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    double _t19;                                                        \
+    double _t20;                                                        \
+    double _t21;                                                        \
+    double _t22;                                                        \
+    double _t23;                                                        \
+    double _t24;                                                        \
+    double _t25;                                                        \
+    double _t26;                                                        \
+    double _t27;                                                        \
+    double _t28;                                                        \
+    double _t29;                                                        \
+    double _t30;                                                        \
+    double _t31;                                                        \
+    double _t32;                                                        \
+    double _t33;                                                        \
+    double _t34;                                                        \
+    double _t35;                                                        \
+    double _t36;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Add12Cond(_t5, _t6, (al), _t4);                                     \
+    Add12Cond(_t7, _t8, (am), _t3);                                     \
+    Add12Cond(_t9, _t10, _t8, _t5);                                     \
+    Add12Cond(_t11, _t12, _t10, _t6);                                   \
+    Add12Cond(_t13, _t14, _t7, _t2);                                    \
+    Add12Cond(_t15, _t16, _t14, _t9);                                   \
+    Add12Cond(_t17, _t18, _t16, _t11);                                  \
+    Add12Cond(_t19, _t20, _t18, _t12);                                  \
+    Add12Cond(_t21, _t22, (ah), _t1);                                   \
+    Add12Cond(_t23, _t24, _t22, _t13);                                  \
+    Add12Cond(_t25, _t26, _t24, _t15);                                  \
+    Add12Cond(_t27, _t28, _t26, _t17);                                  \
+    Add12Cond(_t29, _t30, _t28, _t19);                                  \
+    Add12Cond(_t31, _t32, _t30, _t20);                                  \
+    _t33 = _t32 + _t31;                                                 \
+    _t34 = _t33 + _t29;                                                 \
+    _t35 = _t34 + _t27;                                                 \
+    _t36 = _t35 + _t25;                                                 \
+    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t21,_t23,_t36);               \
+} while (0);
+
+
+#define MulAdd3133(rh,rm,rl,ah,am,al,b,ch,cm,cl) do {                   \
+    double _t1;                                                         \
+    double _t2;                                                         \
+    double _t3;                                                         \
+    double _t4;                                                         \
+    double _t5;                                                         \
+    double _t6;                                                         \
+    double _t7;                                                         \
+    double _t8;                                                         \
+    double _t9;                                                         \
+    double _t10;                                                        \
+    double _t11;                                                        \
+    double _t12;                                                        \
+    double _t13;                                                        \
+    double _t14;                                                        \
+    double _t15;                                                        \
+    double _t16;                                                        \
+    double _t17;                                                        \
+    double _t18;                                                        \
+    double _t19;                                                        \
+    double _t20;                                                        \
+    double _t21;                                                        \
+    double _t22;                                                        \
+    double _t23;                                                        \
+    double _t24;                                                        \
+    double _t25;                                                        \
+    double _t26;                                                        \
+    double _t27;                                                        \
+    double _t28;                                                        \
+    double _t29;                                                        \
+    double _t30;                                                        \
+    double _t31;                                                        \
+    double _t32;                                                        \
+    double _t33;                                                        \
+    double _t34;                                                        \
+    double _t35;                                                        \
+    double _t36;                                                        \
+    double _t37;                                                        \
+    double _t38;                                                        \
+    double _t39;                                                        \
+    double _t40;                                                        \
+    double _t41;                                                        \
+    double _t42;                                                        \
+    double _t43;                                                        \
+    double _t44;                                                        \
+    double _t45;                                                        \
+    double _t46;                                                        \
+    double _t47;                                                        \
+    double _t48;                                                        \
+    double _t49;                                                        \
+    double _t50;                                                        \
+    double _t51;                                                        \
+    double _t52;                                                        \
+    double _t53;                                                        \
+    double _t54;                                                        \
+    Mul12(&_t1, &_t2, (b), (ch));                                       \
+    Mul12(&_t3, &_t4, (b), (cm));                                       \
+    Mul12(&_t5, &_t6, (b), (cl));                                       \
+    Add12Cond(_t7, _t8, (al), _t5);                                     \
+    Add12Cond(_t9, _t10, _t8, _t6);                                     \
+    Add12Cond(_t11, _t12, _t7, _t4);                                    \
+    Add12Cond(_t13, _t14, _t12, _t9);                                   \
+    Add12Cond(_t15, _t16, _t14, _t10);                                  \
+    Add12Cond(_t17, _t18, (am), _t3);                                   \
+    Add12Cond(_t19, _t20, _t18, _t11);                                  \
+    Add12Cond(_t21, _t22, _t20, _t13);                                  \
+    Add12Cond(_t23, _t24, _t22, _t15);                                  \
+    Add12Cond(_t25, _t26, _t24, _t16);                                  \
+    Add12Cond(_t27, _t28, _t17, _t2);                                   \
+    Add12Cond(_t29, _t30, _t28, _t19);                                  \
+    Add12Cond(_t31, _t32, _t30, _t21);                                  \
+    Add12Cond(_t33, _t34, _t32, _t23);                                  \
+    Add12Cond(_t35, _t36, _t34, _t25);                                  \
+    _t37 = _t36 + _t26;                                                 \
+    Add12Cond(_t38, _t39, (ah), _t1);                                   \
+    Add12Cond(_t40, _t41, _t39, _t27);                                  \
+    Add12Cond(_t42, _t43, _t41, _t29);                                  \
+    Add12Cond(_t44, _t45, _t43, _t31);                                  \
+    Add12Cond(_t46, _t47, _t45, _t33);                                  \
+    Add12Cond(_t48, _t49, _t47, _t35);                                  \
+    _t50 = _t49 + _t37;                                                 \
+    _t51 = _t50 + _t48;                                                 \
+    _t52 = _t51 + _t46;                                                 \
+    _t53 = _t52 + _t44;                                                 \
+    _t54 = _t53 + _t42;                                                 \
+    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t38,_t40,_t54);               \
+} while (0);
 
 #endif /* ifdef EXPANSION_H*/
