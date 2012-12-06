@@ -20379,7 +20379,6 @@ node *evaluateThingInnerst(node *tree) {
 	    tempNode2 = evaluateThing(copy->child2);
 	    if (!isError(tempNode2) || isError(copy->child2)) {
 	      tempString2 = sPrintThing(tempNode2);
-	      freeThing(tempNode2);
 	      tempString = (char *) safeCalloc(strlen(accessThruMemRef(copy->child1)->string) + strlen(tempString2) + 1, sizeof(char));
 	      sprintf(tempString,"%s%s",accessThruMemRef(copy->child1)->string,tempString2);
 	      freeThing(copy->child1);
@@ -20388,14 +20387,14 @@ node *evaluateThingInnerst(node *tree) {
 	      copy->string = tempString;
 	      safeFree(tempString2);
 	    } 
+	    freeThing(tempNode2);
 	    if (timingString != NULL) popTimeCounter(timingString);
 	  } else {
 	    if (isString(copy->child2)) {
 	      if (timingString != NULL) pushTimeCounter();	    
 	      tempNode2 = evaluateThing(copy->child1);
-	      if (!isError(tempNode2) || isError(copy->child2)) {
+	      if (!isError(tempNode2) || isError(copy->child1)) {
 		tempString2 = sPrintThing(tempNode2);
-		freeThing(tempNode2);
 		tempString = (char *) safeCalloc(strlen(accessThruMemRef(copy->child2)->string) + strlen(tempString2) + 1, sizeof(char));
 		sprintf(tempString,"%s%s",tempString2,accessThruMemRef(copy->child2)->string);
 		freeThing(copy->child1);
@@ -20404,6 +20403,7 @@ node *evaluateThingInnerst(node *tree) {
 		copy->string = tempString;
 		safeFree(tempString2);
 	      } 
+	      freeThing(tempNode2);
 	      if (timingString != NULL) popTimeCounter(timingString);
 	    } else {
 	      if (isEmptyList(copy->child1) && isEmptyList(copy->child2)) {

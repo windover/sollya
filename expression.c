@@ -12654,6 +12654,9 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
   mpfr_t iAsMpfr, tAsMpfr;
   int t;
 
+  resLeft = NULL;
+  resRight = NULL;
+
   if (i < 0) return 0;
 
   if (isConstant(poly)) {
@@ -12694,6 +12697,8 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, i) && 
 	tryGetIthCoefficientSparseUnsafe(&resRight, poly->child2, i)) {
       *res = makeAddSimplified(resLeft, resRight);
+      resLeft = NULL;
+      resRight = NULL;
       return 1;
     }
     break;
@@ -12702,6 +12707,8 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, i) && 
 	tryGetIthCoefficientSparseUnsafe(&resRight, poly->child2, i)) {
       *res = makeSubSimplified(resLeft, resRight);
+      resLeft = NULL;
+      resRight = NULL;      
       return 1;
     }
     break;
@@ -12710,6 +12717,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     if (isConstant(poly->child1)) {
       if (tryGetIthCoefficientSparseUnsafe(&resRight, poly->child2, i)) {
 	*res = makeMulSimplified(copyTree(poly->child1), resRight);
+	resRight = NULL;
 	return 1;
       }
     }
@@ -12717,6 +12725,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     if (isConstant(poly->child2)) {
       if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, i)) {
 	*res = makeMulSimplified(resLeft, copyTree(poly->child2));
+	resLeft = NULL;
 	return 1;
       }
     }
@@ -12781,6 +12790,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     if (isConstant(poly->child2)) {
       if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, i)) {
 	*res = makeDiv(resLeft, copyTree(poly->child2));
+	resLeft = NULL;
 	return 1;
       }
     }
@@ -12812,6 +12822,9 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
   default:
     return 0;
   }
+
+  if (resLeft != NULL) free_memory(resLeft);
+  if (resRight != NULL) free_memory(resRight);
 
   return 0;
 }
