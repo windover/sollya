@@ -58,6 +58,9 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #ifndef EXPRESSION_H
 #define EXPRESSION_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <mpfr.h>
 #include <stdio.h>
@@ -156,6 +159,12 @@ struct rangetypeStruct
 
 void *safeMalloc (size_t);
 
+#if defined (HAVE_ENABLE_LEGACY_MEMORY_MANAGEMENT) && HAVE_ENABLE_LEGACY_MEMORY_MANAGEMENT
+
+static inline node* addMemRef(node *tree) { return tree; }
+
+#else
+
 static inline node* addMemRef(node *tree) {
   node *res;
 
@@ -170,6 +179,9 @@ static inline node* addMemRef(node *tree) {
 
   return res;
 }
+
+#endif
+
 
 static inline node* accessThruMemRef(node *tree) {
   node *res;

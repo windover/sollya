@@ -40,6 +40,14 @@ AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 AC_CONFIG_MACRO_DIR([m4])
 
+#Enable 
+ENABLE_LEGACY_MEMORY_MANAGEMENT=no
+AC_ARG_ENABLE(legacy-memory-management, [  --enable-legacy-memory-management enables legacy memory management without reference counting (default is "disabled")], [ENABLE_LEGACY_MEMORY_MANAGEMENT=yes], [ENABLE_LEGACY_MEMORY_MANAGEMENT=no])
+
+if test "x${ENABLE_LEGACY_MEMORY_MANAGEMENT}y" == "xyesy" ; then 
+AC_DEFINE([HAVE_ENABLE_LEGACY_MEMORY_MANAGEMENT],[1],[Enabling legacy memory management w/o reference counting])
+fi
+
 #Check whether flex and bison support interactive and pure parsers
 
 AC_ARG_ENABLE(strict-lexer-parser-check, [  --enable-strict-lexer-parser-check enables strict compatibility checking for building the lexer and parser files], [STRICTFLEXBISONTESTING="1"], [STRICTFLEXBISONTESTING=""])
