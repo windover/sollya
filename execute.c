@@ -21596,7 +21596,7 @@ node *evaluateThingInnerst(node *tree) {
 	}
 	if (floatingPointEvaluationAlreadyDone || evaluateThingToConstant(a,tempNode,NULL,1,0)) {
 	  tempNode2 = makeConstant(a);
-	  freeThing(copy->child1);
+	  freeThing(copy); 
 	  copy = tempNode2;
 	} else {
 	  tempNode2 = copy->child1;
