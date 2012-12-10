@@ -1495,18 +1495,22 @@ constant:               CONSTANTTOKEN
                       | DYADICCONSTANTTOKEN
                           {
 			    $$ = makeDyadicConstant($1);
+			    safeFree($1);
 			  }
                       | HEXCONSTANTTOKEN
                           {
 			    $$ = makeHexConstant($1);
+			    safeFree($1);
 			  }
                       | HEXADECIMALCONSTANTTOKEN
                           {
 			    $$ = makeHexadecimalConstant($1);
+			    safeFree($1);
 			  }
                       | BINARYCONSTANTTOKEN
                           {
 			    $$ = makeBinaryConstant($1);
+			    safeFree($1);
 			  }
                       | PITOKEN
                           {
