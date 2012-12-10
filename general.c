@@ -77,6 +77,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <time.h>
+#include <unistd.h>
 #include "execute.h"
 #include "sollya-messaging.h"
 #include "bitfields.h"
@@ -103,6 +104,8 @@ char *variablename = NULL;
 bitfield suppressedMessages = NULL;
 mp_prec_t defaultprecision = DEFAULTPRECISION;
 mp_prec_t tools_precision = DEFAULTPRECISION;
+char *temporyDirectory = NULL;
+char *uniqueIdentifier = NULL;
 int defaultpoints = DEFAULTPOINTS;
 int taylorrecursions = DEFAULTTAYLORRECURSIONS;
 int dyadic = 0;
@@ -1084,6 +1087,8 @@ void freeTool() {
   freeDeclaredSymbolTable(declaredSymbolTable, freeThingOnVoid);
   declaredSymbolTable = NULL;
   mpfr_clear(statediam);
+  safeFree(temporyDirectory); temporyDirectory = NULL;
+  safeFree(uniqueIdentifier); uniqueIdentifier = NULL;
   mpfr_free_cache();
   normalMode();
 }
@@ -1172,6 +1177,74 @@ void finishTool() {
     fclose(warnFile);
     warnFile = NULL;
   }
+}
+
+char *initTempDir() {
+  char *res;
+  char *staticRes;
+  size_t len;
+
+  staticRes = getenv("TMPDIR");
+  if ((staticRes != NULL) && ((len = strlen(staticRes)) != 0)) {
+    res = safeCalloc(len + 1, sizeof(char));
+    strcpy(res, staticRes);
+  } else {
+    staticRes = getenv("%TEMP%");
+    if ((staticRes != NULL) && ((len = strlen(staticRes)) != 0)) {
+      res = safeCalloc(len + 1, sizeof(char));
+      strcpy(res, staticRes);
+    } else {
+      staticRes = getenv("%TMP%");
+      if ((staticRes != NULL) && ((len = strlen(staticRes)) != 0)) {
+	res = safeCalloc(len + 1, sizeof(char));
+	strcpy(res, staticRes);
+      } else {
+	staticRes = "/tmp";
+	len = strlen(staticRes);
+	res = safeCalloc(len + 1, sizeof(char));
+	strcpy(res, staticRes);	
+      }
+    }
+  }
+
+  return res; 
+}
+
+char *initUniqueId() {
+  char *res, *str;
+  pid_t pid;
+  size_t size;
+
+  size = 8 * sizeof(signed long long int) + 10;
+
+  pid = getpid();
+
+  str = safeCalloc(size + 1, sizeof(char));
+  snprintf(str, size, "%lld", (signed long long int) pid);
+  
+  res = safeCalloc(strlen(str) + 1, sizeof(char));
+  strcpy(res, str);
+  safeFree(str);
+
+  return res;
+}
+
+char *getTempDir() {
+
+  if (temporyDirectory == NULL) {
+    temporyDirectory = initTempDir();
+  }
+
+  return temporyDirectory;
+}
+
+char *getUniqueId() {
+
+  if (uniqueIdentifier == NULL) {
+    uniqueIdentifier = initUniqueId();
+  }
+
+  return uniqueIdentifier;
 }
 
 mp_prec_t getToolPrecision() {
@@ -1389,6 +1462,8 @@ int finalizeLibraryMode() {
   freeDeclaredSymbolTable(declaredSymbolTable, freeThingOnVoid);
   declaredSymbolTable = NULL;
   mpfr_clear(statediam);
+  safeFree(temporyDirectory); temporyDirectory = NULL;
+  safeFree(uniqueIdentifier); uniqueIdentifier = NULL;
   mpfr_free_cache();
   uninstallMessageCallback();
   mp_set_memory_functions(oldGMPMalloc,oldGMPRealloc,oldGMPFree);

@@ -212,6 +212,8 @@ int getToolHopitalRecursions();
 void setToolHopitalRecursions(int i);
 int getToolDiameter(mpfr_t rop);
 void setToolDiameter(mpfr_t op);
+char *getTempDir();
+char *getUniqueId();
 int getDisplayMode();
 int setDisplayMode(int);
 int getVerbosity();
