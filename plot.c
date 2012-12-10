@@ -98,6 +98,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   mp_prec_t p, pp;
   int overflow;
   int plotPossible;
+  int n;
 
   plotPossible = 0;
 
@@ -163,10 +164,11 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   }
 
   if(name==NULL) {
-    gplotname = (char *)safeCalloc(13 + strlen(PACKAGE_NAME), sizeof(char));
-    sprintf(gplotname,"/tmp/%s-%04d.p",PACKAGE_NAME,fileNumber);
-    dataname = (char *)safeCalloc(15 + strlen(PACKAGE_NAME), sizeof(char));
-    sprintf(dataname,"/tmp/%s-%04d.dat",PACKAGE_NAME,fileNumber);
+    n = snprintf(NULL, 0, "%s/%s%s-%04d", getTempDir(), PACKAGE_NAME, getUniqueId(), fileNumber);
+    gplotname = (char *)safeCalloc(n+3, sizeof(char));
+    snprintf(gplotname, n+3, "%s/%s%s-%04d.p",getTempDir(), PACKAGE_NAME, getUniqueId(), fileNumber);
+    dataname = (char *)safeCalloc(n+5, sizeof(char));
+    snprintf(dataname, n+5, "%s/%s%s-%04d.dat",getTempDir(),PACKAGE_NAME,getUniqueId(), fileNumber);
     outputname = (char *)safeCalloc(1, sizeof(char));
     fileNumber++;
     if (fileNumber >= NUMBEROFFILES) fileNumber=0;
@@ -176,7 +178,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
     sprintf(gplotname,"%s.p",name);
     dataname = (char *)safeCalloc(strlen(name)+5,sizeof(char));
     sprintf(dataname,"%s.dat",name);
-    outputname = (char *)safeCalloc(strlen(name)+5,sizeof(char));   
+    outputname = (char *)safeCalloc(strlen(name)+5,sizeof(char));
     if ((type==PLOTPOSTSCRIPT) || (type==PLOTPOSTSCRIPTFILE)) sprintf(outputname,"%s.eps",name);
   }
 
@@ -286,6 +288,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
 
   mpfr_clear(x); mpfr_clear(y); mpfr_clear(step);
 
+  
   if (plotPossible) {
     if ((name==NULL) || (type==PLOTFILE)) {
       if (fork()==0) {
@@ -311,7 +314,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
       }
     }
   }
-  
+
   safeFree(gplotname);
   safeFree(dataname);
   safeFree(outputname);
@@ -321,12 +324,15 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
 void removePlotFiles(void) {
   int i;
   char *name;
-  name = (char *)safeCalloc(40 + strlen(PACKAGE_NAME), sizeof(char));
+  int n;
+
+  n = snprintf(NULL, 0, "%s/%s%s-%04d", getTempDir(), PACKAGE_NAME, getUniqueId(), NUMBEROFFILES);
+  name = (char *)safeCalloc(n+5, sizeof(char));
 
   for(i=0;i<NUMBEROFFILES;i++) {
-    sprintf(name,"/tmp/%s-%04d.p",PACKAGE_NAME,i);
+    snprintf(name, n+3, "%s/%s%s-%04d.p",getTempDir(), PACKAGE_NAME, getUniqueId(), i);
     remove(name);
-    sprintf(name,"/tmp/%s-%04d.dat",PACKAGE_NAME,i);
+    snprintf(name, n+5, "%s/%s%s-%04d.dat",getTempDir(),PACKAGE_NAME,getUniqueId(), i);
     remove(name);
   }
 

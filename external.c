@@ -269,6 +269,7 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
   char *gplotname;
   char *dataname;
   char *outputname;
+  int n;
 
   if(samplingPrecision > prec) {
     printMessage(1,SOLLYA_MSG_SAMPLING_PREC_MUST_BE_LOWER_THAN_CURR_PREC,"Error: you must use a sampling precision lower than the current precision\n");
@@ -289,10 +290,11 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
   }
 
   if(name==NULL) {
-    gplotname = (char *)safeCalloc(13 + strlen(PACKAGE_NAME), sizeof(char));
-    sprintf(gplotname,"/tmp/%s-%04d.p",PACKAGE_NAME,fileNumber);
-    dataname = (char *)safeCalloc(15 + strlen(PACKAGE_NAME), sizeof(char));
-    sprintf(dataname,"/tmp/%s-%04d.dat",PACKAGE_NAME,fileNumber);
+    n = snprintf(NULL, 0, "%s/%s%s-%04d", getTempDir(), PACKAGE_NAME, getUniqueId(), fileNumber);
+    gplotname = (char *)safeCalloc(n+3, sizeof(char));
+    snprintf(gplotname, n+3, "%s/%s%s-%04d.p",getTempDir(), PACKAGE_NAME, getUniqueId(), fileNumber);
+    dataname = (char *)safeCalloc(n+5, sizeof(char));
+    snprintf(dataname, n+5, "%s/%s%s-%04d.dat",getTempDir(),PACKAGE_NAME,getUniqueId(), fileNumber);
     outputname = (char *)safeCalloc(1, sizeof(char));
     fileNumber++;
     if (fileNumber >= NUMBEROFFILES) fileNumber=0;
@@ -302,11 +304,11 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
     sprintf(gplotname,"%s.p",name);
     dataname = (char *)safeCalloc(strlen(name)+5,sizeof(char));
     sprintf(dataname,"%s.dat",name);
-    outputname = (char *)safeCalloc(strlen(name)+5,sizeof(char));   
+    outputname = (char *)safeCalloc(strlen(name)+5,sizeof(char));
     if ((type==PLOTPOSTSCRIPT) || (type==PLOTPOSTSCRIPTFILE)) sprintf(outputname,"%s.eps",name);
   }
 
-  
+
   /* Beginning of the interesting part of the code */
   file = fopen(gplotname, "w");
   if (file == NULL) {
