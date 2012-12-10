@@ -270,9 +270,6 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
   char *dataname;
   char *outputname;
 
-
-  gmp_randinit_default (state);
-
   if(samplingPrecision > prec) {
     printMessage(1,SOLLYA_MSG_SAMPLING_PREC_MUST_BE_LOWER_THAN_CURR_PREC,"Error: you must use a sampling precision lower than the current precision\n");
     return;
@@ -331,6 +328,8 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
     printMessage(1,SOLLYA_MSG_CONTINUATION,"\"%s\".\n",strerror(errno));
     return;
   }
+
+  gmp_randinit_default (state);
 
   mpfr_init2(x_h,samplingPrecision);
   mpfr_init2(perturb, prec);
@@ -420,5 +419,6 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
   safeFree(gplotname);
   safeFree(dataname);
   safeFree(outputname);
+  gmp_randclear(state);
   return;
 }
