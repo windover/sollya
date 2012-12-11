@@ -23,13 +23,19 @@
 #PARAMETERS <I> is the interval over which the function is to be approximated. If this parameter is omitted, the behavior is changed (see detailed description below).
 #PARAMETERS <errorType> (optional) is the type of error to be considered. See the detailed description below. Default is $ABSOLUTE.
 
-#DESCRIPTION 
-$COMMAND computes an approximation polynomial and an interval error bound
-for function §§f§$f$§§. More precisely, it returns a list §§L=[p, coeffErrors, Delta]§$L = \left[p, \textrm{coeffErrors},\Delta \right]$§§
-where:
+#DESCRIPTION
+§§WARNING:§\textbf{WARNING:}§§ $COMMAND is a certified command, not difficult to use but not
+completely straightforward to use either. In order to be sure to use it
+correctly, the reader is invited to carefully read this documentation
+entirely.
+
+#DESCRIPTION
+$COMMAND computes an approximation polynomial and an interval error
+bound for function §§f§$f$§§. More precisely, it returns a list
+§§L=[p, coeffErrors, Delta]§$L = \left[p, \textrm{coeffErrors},\Delta \right]$§§ where:
 §§ §\begin{itemize}§§
-§§  -§\item§§ §§p§$p$§§ is an approximation polynomial of degree §§n§$n$§§ which is roughly speaking
-a numerical Taylor expansion of §§f§$f$§§ at the point §§x0§$x_0$§§.
+§§  -§\item§§ §§p§$p$§§ is an approximation polynomial of degree §§n§$n$§§ such that §§p(x-x0)§$p(x-x_0)$§§ is
+roughly speaking a numerical Taylor expansion of §§f§$f$§§ at the point §§x0§$x_0$§§.
 §§  -§\item§§ coeffsErrors is a list of §§n+1§$n+1$§§ intervals. Each interval coeffsErrors[§§i§$i$§§]
 contains an enclosure of all the errors accumulated when computing the §§i-th§$i$-th§§
 coefficient of §§p§$p$§§.

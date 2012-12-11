@@ -29,12 +29,16 @@
 </div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
-<li><?php linkTo("command","taylorform","taylorform");?> computes an approximation polynomial and an interval error bound 
-for function f. More precisely, it returns a list L=[p, coeffErrors, Delta] 
-where: 
+<li>WARNING: <?php linkTo("command","taylorform","taylorform");?> is a certified command, not difficult to use but not 
+completely straightforward to use either. In order to be sure to use it 
+correctly, the reader is invited to carefully read this documentation 
+entirely. 
+</li><li><?php linkTo("command","taylorform","taylorform");?> computes an approximation polynomial and an interval error 
+bound for function f. More precisely, it returns a list 
+L=[p, coeffErrors, Delta] where: 
 <ul> 
-<li> p is an approximation polynomial of degree n which is roughly speaking 
-a numerical Taylor expansion of f at the point x0. 
+<li> p is an approximation polynomial of degree n such that p(x-x0) is 
+roughly speaking a numerical Taylor expansion of f at the point x0. 
 </li><li> coeffsErrors is a list of n+1 intervals. Each interval coeffsErrors[i] 
 contains an enclosure of all the errors accumulated when computing the i-th 
 coefficient of p. 

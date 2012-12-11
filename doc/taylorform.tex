@@ -22,12 +22,17 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{taylorform} computes an approximation polynomial and an interval error bound
-   for function $f$. More precisely, it returns a list $L = \left[p, \textrm{coeffErrors},\Delta \right]$
-   where:
+\item \textbf{WARNING:} \textbf{taylorform} is a certified command, not difficult to use but not
+   completely straightforward to use either. In order to be sure to use it
+   correctly, the reader is invited to carefully read this documentation
+   entirely.
+
+\item \textbf{taylorform} computes an approximation polynomial and an interval error
+   bound for function $f$. More precisely, it returns a list
+   $L = \left[p, \textrm{coeffErrors},\Delta \right]$ where:
    \begin{itemize}
-   \item $p$ is an approximation polynomial of degree $n$ which is roughly speaking
-   a numerical Taylor expansion of $f$ at the point $x_0$.
+   \item $p$ is an approximation polynomial of degree $n$ such that $p(x-x_0)$ is
+   roughly speaking a numerical Taylor expansion of $f$ at the point $x_0$.
    \item coeffsErrors is a list of $n+1$ intervals. Each interval coeffsErrors[$i$]
    contains an enclosure of all the errors accumulated when computing the $i$-th
    coefficient of $p$.
