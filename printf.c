@@ -394,6 +394,9 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
   wchar_t *tempWCharPtr;
   void *tempVoidPtr;
   int *tempIntPtr;
+  intmax_t *tempIntMaxTPtr;
+  ssize_t *tempSSizePtr;
+  ptrdiff_t *tempPtrDiffTPtr;
   signed char *tempSignedCharPtr;
   short int *tempShortIntPtr;
   long int *tempLongIntPtr;
@@ -1543,24 +1546,87 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	  case 0:
 	    switch (lModifiers) {
 	    case 0:
-	      // int * argument
-	      //
-	      tempIntPtr = va_arg(varlist,int *);
-	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, &tempInt);
-	      if (res >= 0) {
-		*tempIntPtr = tempInt + res;
-	      } else {
-		*tempIntPtr = 0;
-	      }
-	      if (r >= 0) {
+	      if (jModifier) {
+		// intmax_t * argument
+		//
+		tempIntMaxTPtr = va_arg(varlist,intmax_t *);
+		r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, &tempIntmax_t);
 		if (res >= 0) {
-		  res += r;
-		} 
+		  *tempIntMaxTPtr = tempIntmax_t + res;
+		} else {
+		  *tempIntMaxTPtr = 0;
+		}
+		if (r >= 0) {
+		  if (res >= 0) {
+		    res += r;
+		  } 
+		} else {
+		  res = r;
+		}
+		currBuf = buf;
+		*currBuf = '\0';
 	      } else {
-		res = r;
+		if (zModifier) {
+		  // ssize_t * argument
+		  //
+		  tempSSizePtr = va_arg(varlist,ssize_t *);
+		  r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, &tempSsize_t);
+		  if (res >= 0) {
+		    *tempSSizePtr = tempSsize_t + res;
+		  } else {
+		    *tempSSizePtr = 0;
+		  }
+		  if (r >= 0) {
+		    if (res >= 0) {
+		      res += r;
+		    } 
+		  } else {
+		    res = r;
+		  }
+		  currBuf = buf;
+		  *currBuf = '\0';
+		} else {
+		  if (tModifier) {
+		    // ptrdiff_t * argument
+		    //
+		    tempPtrDiffTPtr = va_arg(varlist,ptrdiff_t *);
+		    r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, &tempPtrdiff_t);
+		    if (res >= 0) {
+		      *tempPtrDiffTPtr = tempPtrdiff_t + res;
+		    } else {
+		      *tempPtrDiffTPtr = 0;
+		    }
+		    if (r >= 0) {
+		      if (res >= 0) {
+			res += r;
+		      } 
+		    } else {
+		      res = r;
+		    }
+		    currBuf = buf;
+		    *currBuf = '\0';
+		  } else {
+		    // int * argument
+		    //
+		    tempIntPtr = va_arg(varlist,int *);
+		    r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, &tempInt);
+		    if (res >= 0) {
+		      *tempIntPtr = tempInt + res;
+		    } else {
+		      *tempIntPtr = 0;
+		    }
+		    if (r >= 0) {
+		      if (res >= 0) {
+			res += r;
+		      } 
+		    } else {
+		      res = r;
+		    }
+		    currBuf = buf;
+		    *currBuf = '\0';
+		  }
+		}
 	      }
-	      currBuf = buf;
-	      *currBuf = '\0';
 	      break;
 	    case 1:
 	      // long int * argument
