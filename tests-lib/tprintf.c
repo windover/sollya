@@ -3,7 +3,7 @@
 #include <inttypes.h>
 #include <stdint.h>
 #include <unistd.h>
-#include <malloc.h>
+#include <stddef.h>
 #include <sollya.h>
 
 #define SIZE 32
