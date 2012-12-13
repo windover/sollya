@@ -51,7 +51,7 @@ void clean(char tab1[2][SIZE], char tab2[2][SIZE], char res[2][BUFSIZE]) {
 
 }
 
-int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][SIZE]) {
+int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][SIZE], int length) {
   int test = 1;
   int i;
   int counter[2];
@@ -84,7 +84,21 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
   }
   else {
     n = ptr-result[0];
-    *((hh_t *)((test3[0])+9)) = (hh_t)n;
+    switch(length) {
+    case 0: *((hh_t *)(test3[0]+9)) = (hh_t)n; break;
+    case 1: *((hhu_t *)(test3[0]+9)) = (hhu_t)n; break;
+    case 2: *((h_t *)(test3[0]+9)) = (h_t)n; break;
+    case 3: *((hu_t *)(test3[0]+9)) = (hu_t)n; break;
+    case 4: *((l_t *)(test3[0]+9)) = (l_t)n; break;
+    case 5: *((lu_t *)(test3[0]+9)) = (lu_t)n; break;
+    case 6: *((ll_t *)(test3[0]+9)) = (ll_t)n; break;
+    case 7: *((llu_t *)(test3[0]+9)) = (llu_t)n; break;
+    case 8: *((j_t *)(test3[0]+9)) = (j_t)n; break;
+    case 9: *((ju_t *)(test3[0]+9)) = (ju_t)n; break;
+    case 10: *((z_t *)(test3[0]+9)) = (z_t)n; break;
+    case 11: *((zu_t *)(test3[0]+9)) = (zu_t)n; break;
+    default: *((t_t *)(test3[0]+9)) = (t_t)n; break;
+    }
   }
 
   for(i=0;i<SIZE;i++) {
@@ -110,7 +124,21 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
   }
   else {
     n = ptr-result[0];
-    *((hh_t *)((test3[1])+9)) = (hh_t)n;
+    switch(length) {
+    case 0: *((hh_t *)(test3[1]+9)) = (hh_t)n; break;
+    case 1: *((hhu_t *)(test3[1]+9)) = (hhu_t)n; break;
+    case 2: *((h_t *)(test3[1]+9)) = (h_t)n; break;
+    case 3: *((hu_t *)(test3[1]+9)) = (hu_t)n; break;
+    case 4: *((l_t *)(test3[1]+9)) = (l_t)n; break;
+    case 5: *((lu_t *)(test3[1]+9)) = (lu_t)n; break;
+    case 6: *((ll_t *)(test3[1]+9)) = (ll_t)n; break;
+    case 7: *((llu_t *)(test3[1]+9)) = (llu_t)n; break;
+    case 8: *((j_t *)(test3[1]+9)) = (j_t)n; break;
+    case 9: *((ju_t *)(test3[1]+9)) = (ju_t)n; break;
+    case 10: *((z_t *)(test3[1]+9)) = (z_t)n; break;
+    case 11: *((zu_t *)(test3[1]+9)) = (zu_t)n; break;
+    default: *((t_t *)(test3[1]+9)) = (t_t)n; break;
+    }
   }
 
   for(i=0;i<SIZE;i++) {
@@ -158,19 +186,52 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
   return test;
 }
 
+#define DO_TESTS(cast)                                                  \
+  if (p!=1) {                                                           \
+    clean(test1, test2, result);                                        \
+    sprintf(format, "|%%%s%d.%.0d%s%c| %%%sn %%s |%%%s%d.%.0d%s%c| %%%sn %%s", \
+            flags, width[w], prec[p], length[L], conv[c], length[L],    \
+            flags, width[w], prec[p], length[L], conv[c], length[L]);   \
+    for(i=0;i<2;i++) r[i] = prntf[i](result[i], format,  (cast)(val[v]), (cast *)(test1[i]+9), str, (cast)(val[v]), (cast *)(test2[i]+9), str); \
+    if(!verif(r, result, test1, test2, 2*L+(!c)))  printf("Tested format string was: \"%s\", %d\n\n", format, val[v]); \
+                                                                        \
+    clean(test1, test2, result);                                        \
+    sprintf(format, "|%%%s*.%.0d%s%c| %%%sn %%s |%%%s*.%.0d%s%c| %%%sn %%s", flags, prec[p], length[L], conv[c], length[L], flags, prec[p], length[L], conv[c], length[L]); \
+    for(i=0;i<2;i++) r[i] = prntf[i](result[i], format, width[w], (cast)(val[v]), (cast *)(test1[i] + 9), str, width[w], (cast)(val[v]), (cast *)(test2[i]+9), str); \
+    if(!verif(r, result, test1, test2, 2*L+(!c)))  printf("Tested format string was: \"%s\", %d, %d\n\n", format, width[w], val[v]); \
+  }                                                                     \
+                                                                        \
+  clean(test1, test2, result);                                          \
+  sprintf(format, "|%%%s%d.*%s%c| %%%sn %%s |%%%s%d.*%s%c| %%%sn %%s", flags, width[w], length[L], conv[c], length[L], flags, width[w], length[L], conv[c], length[L]); \
+  for(i=0;i<2;i++) r[i] = prntf[i](result[i], format, prec[p], (cast)(val[v]), (cast *)(test1[i]+9), str, prec[p], (cast)(val[v]), (cast *)(test2[i]+9), str); \
+  if(!verif(r, result, test1, test2, 2*L+(!c)))  printf("Tested format string was: \"%s\", %d, %d\n\n", format, prec[p], val[v]); \
+                                                                        \
+  clean(test1, test2, result);                                          \
+  sprintf(format, "|%%%s*.*%s%c| %%%sn %%s |%%%s*.*%s%c| %%%sn %%s", flags, length[L], conv[c], length[L], flags, length[L], conv[c], length[L]); \
+  for(i=0;i<2;i++) r[i] = prntf[i](result[i], format, width[w], prec[p], (cast)(val[v]), (cast *)(test1[i]+9), str, width[w], prec[p], (cast)(val[v]), (cast *)(test2[i]+9), str); \
+  if(!verif(r, result, test1, test2, 2*L+(!c)))  printf("Tested format string was: \"%s\", %d, %d\n\n", format, width[w], prec[p], val[v]);
+
+
+
 int main(void) {
   int flag; char flags[6];
-  int w, width;
-  int p, prec;
-  int c; char conv;
-  int v, val;
+  int w;
+  int width[4] = {-17, 0, 1, 17};
+  int p;
+  int prec[4] = {0, -5, 1, 17};
+  int c;
+  char conv[6] = {'u', 'd','i', 'o', 'x', 'X'};
+  int v;
+  int val[3] = {-42, 0, 42};
+  int L;
+  char *length[7] = {"hh", "h", "l", "ll", "j", "z", "t" };
   char *str = "Hello, world!";
   char format[BUFSIZE];
   char test1[2][SIZE];
   char test2[2][SIZE];
   int r[2];
   char result[2][BUFSIZE];
-  int (*prntf[2])(char *str, const char *format, ...);
+  int (*prntf[2])(char *str, const char *formats, ...);
   prntf[0] = sprintf; prntf[1] = wrapper_sollya_sprintf;
   int i;
 
@@ -187,40 +248,37 @@ int main(void) {
   for(flag=0;flag<32;flag++) {
     sprintf(flags, "%s%s%s%s%s", (flag & 1)?"-":"", (flag & 2)?"#":"", (flag & 4)?"+":"", (flag & 8)?" ":"", (flag & 16)?"0":"");
     for(w=0;w<4;w++) {
-      width = (w==0)?(-17):( (w==1)?0: ( (w==2)?1:17 ) );
       for(p=0;p<4;p++) {
-        prec = (p==0)?(0):( (p==1)?(-5): ( (p==2)?1:17 ) );
         for(v=0; v<3; v++) {
-          val = (v==0)?(-42):( (v==1)?0:42 );
-          for(c=0; c<5; c++) {
-            conv = (c==0)?'d':( (c==1)?'i':( (c==2)?'o':( (c==3)?'x':'X' ) ) );
-            
-            if (p!=1) {
-              clean(test1, test2, result);
-              sprintf(format, "|%%%s%d.%.0dhh%c| %%hhn %%s |%%%s%d.%.0dhh%c| %%hhn %%s", flags, width, prec, conv, flags, width, prec, conv);
-              for(i=0;i<2;i++) r[i] = prntf[i](result[i], format, (hh_t)(val), (hh_t *)(test1[i]+9), str, (hh_t)(val), (hh_t *)(test2[i]+9), str);
-              if(!verif(r, result, test1, test2))  printf("Tested format string was: \"%s\", %d\n\n", format, val);
-
-              clean(test1, test2, result);
-              sprintf(format, "|%%%s*.%.0dhh%c| %%hhn %%s |%%%s*.%.0dhh%c| %%hhn %%s", flags, prec, conv, flags, prec, conv);
-              for(i=0;i<2;i++) r[i] = prntf[i](result[i], format, width, (hh_t)(val), (hh_t *)(test1[i] + 9), str, width, (hh_t)(val), (hh_t *)(test2[i]+9), str);
-              if(!verif(r, result, test1, test2))  printf("Tested format string was: \"%s\", %d, %d\n\n", format, width, val);
+          for(c=0; c<6; c++) {
+            for(L=0;L< (7-(!c)); L++) {  /* The trick 7-(!c) ensures that L ranges from 0 to 6 when c!=0
+                                            i.e., length can be any of 'h', 'hh', 'l', 'll', 'j', 'z,' or 't' when the conversion is unsigned,
+                                            but ranges from 0 to 5 when c==0,
+                                            i.e. length 't' is excluded when the conversion is 'u'
+                                         */
+              /* The trick 2*L+(!c) permits us to consider 0 for hh, 1 for hhu,    2 for h, 3 for hu, etc. */
+              switch(2*L+(!c)) {
+              case 0: DO_TESTS(hh_t) break;
+              case 1: DO_TESTS(hhu_t) break;
+              case 2: DO_TESTS(h_t) break;
+              case 3: DO_TESTS(hu_t) break;
+              case 4: DO_TESTS(l_t) break;
+              case 5: DO_TESTS(lu_t) break;
+              case 6: DO_TESTS(ll_t) break;
+              case 7: DO_TESTS(llu_t) break;
+              case 8: DO_TESTS(j_t) break;
+              case 9: DO_TESTS(ju_t) break;
+              case 10: DO_TESTS(z_t) break;
+              case 11: DO_TESTS(zu_t) break;
+              default: DO_TESTS(t_t) break;
+              }
             }
-
-            clean(test1, test2, result);
-            sprintf(format, "|%%%s%d.*hh%c| %%hhn %%s |%%%s%d.*hh%c| %%hhn %%s", flags, width, conv, flags, width, conv);
-            for(i=0;i<2;i++) r[i] = prntf[i](result[i], format, prec, (hh_t)(val), (hh_t *)(test1[i]+9), str, prec, (hh_t)(val), (hh_t *)(test2[i]+9), str);
-              if(!verif(r, result, test1, test2))  printf("Tested format string was: \"%s\", %d, %d\n\n", format, prec, val);
-
-            clean(test1, test2, result);
-            sprintf(format, "|%%%s*.*hh%c| %%hhn %%s |%%%s*.*hh%c| %%hhn %%s", flags, conv, flags, conv);
-            for(i=0;i<2;i++) r[i] = prntf[i](result[i], format, width, prec, (hh_t)(val), (hh_t *)(test1[i]+9), str, width, prec, (hh_t)(val), (hh_t *)(test2[i]+9), str);
-            if(!verif(r, result, test1, test2))  printf("Tested format string was: \"%s\", %d, %d\n\n", format, width, prec, val);
           }
         }
       }
     }
   }
+
 
   printf("Performed %d tests.\n", counter);
   sollya_lib_close();
