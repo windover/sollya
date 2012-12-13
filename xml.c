@@ -1,6 +1,6 @@
 /*
 
-Copyright 2007-2011 by
+Copyright 2007-2012 by
 
 Laboratoire de l'Informatique du Parallelisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
@@ -561,6 +561,9 @@ void switch_parser_index (int new_index)
   printMessage(3,SOLLYA_MSG_CONTINUATION,"depth: %i\n",current_parser->depth);
 }
 
+void *sollyaXmlMallocFunc(size_t);
+void sollyaXmlFreeFunc(void *);
+
 int search_math_tree (xmlTextReaderPtr reader)
 {
   node* temp=0;
@@ -569,7 +572,7 @@ int search_math_tree (xmlTextReaderPtr reader)
     {
       if (!strcmp((char*)xml_name, "apply"))
 	{
-	  mthis->child=safeMalloc(sizeof(nodemath));
+	  mthis->child=sollyaXmlMallocFunc(sizeof(nodemath));
 	  mthis->child->parent=mthis;
 	  mthis=mthis->child;
 	  mthis->child=0;
@@ -658,7 +661,7 @@ int search_math_tree (xmlTextReaderPtr reader)
 	  temp=mthis->operator(mthis->op1,mthis->op2);
 	  //printTree(temp);  printMessage(2,"\n");
 	  if (mthis->parent) mthis=mthis->parent;
-	  if (mthis->child)  safeFree(mthis->child);
+	  if (mthis->child)  sollyaXmlFreeFunc(mthis->child); 
 	  mthis->child=0;
 	}
       else if (!strcmp((char*)xml_name, "csymbol")) mthis->op_type=0;
@@ -819,6 +822,92 @@ streamXmlFile(const char *filename) {
   return result_node;
 }
 
+chain *sollyaXmlAllocatedMemory = NULL;
+
+void sollyaXmlMarkAllocated(void *ptr) {
+  sollyaXmlAllocatedMemory = addElement(sollyaXmlAllocatedMemory, ptr);
+}
+
+void sollyaXmlMarkFreed(void *ptr) {
+  chain *curr, *prev;
+
+  for (curr=sollyaXmlAllocatedMemory, prev=NULL; curr != NULL; curr=((prev=curr)->next)) {
+    if (curr->value == ptr) {
+      if (prev == NULL) {
+	sollyaXmlAllocatedMemory = curr->next;
+      } else {
+	prev->next = curr->next;
+      }
+      safeFree(curr);
+      return;
+    }
+  }
+  
+}
+
+void cleanupSollyaXmlMemory() {
+  chain *curr, *prev;
+  if (sollyaXmlAllocatedMemory == NULL) return;
+  curr = sollyaXmlAllocatedMemory;
+  while (curr != NULL) {
+    safeFree(curr->value);
+    prev = curr;
+    curr = curr->next;
+    safeFree(prev);
+  }
+  sollyaXmlAllocatedMemory = NULL;
+}
+
+void sollyaXmlFreeFunc(void *ptr) {
+  sollyaXmlMarkFreed(ptr);
+  safeFree(ptr);
+}
+
+void *sollyaXmlMallocFunc(size_t size) {
+  void *ptr;
+  ptr = safeMalloc(size);
+  sollyaXmlMarkAllocated(ptr);
+  return ptr;
+}
+
+void *sollyaXmlReallocFunc(void *ptr, size_t size) {
+  void *reallocPtr;
+
+  reallocPtr = safeRealloc(ptr, size);
+  
+  if (ptr == NULL) {
+    /* realloc is like malloc */
+    sollyaXmlMarkAllocated(reallocPtr);
+  } else {
+    if (size == 0) {
+      /* realloc is like free */
+      sollyaXmlMarkFreed(ptr);
+    } else {
+      /* realloc is a real realloc
+
+	 If the new pointer is the same, do nothing.
+	 Otherwise mark the old pointer as freed and the new one as 
+	 allocated.
+      */
+      if (reallocPtr != ptr) {
+	sollyaXmlMarkFreed(ptr);
+	sollyaXmlMarkAllocated(reallocPtr);
+      }
+    }
+  }
+  
+  return reallocPtr;
+}
+
+char *sollyaXmlStrdupFunc(const char *str) {
+  void *ptr;
+  ptr = safeCalloc(strlen(str) + 1, sizeof(char));
+  strcpy(ptr, str);
+  sollyaXmlMarkAllocated(ptr);
+  return ptr;
+}
+
+
 /* Reads the file filename containing a lambda construct
    into a node * 
    Return NULL if parsing the file is impossible
@@ -832,6 +921,10 @@ streamXmlFile(const char *filename) {
 */
 node *readXml(char *filename) {
   node* result=NULL;
+
+  /* Initialize the xml memory functions */   
+  sollyaXmlAllocatedMemory = NULL;
+  if (xmlMemSetup(sollyaXmlFreeFunc, sollyaXmlMallocFunc, sollyaXmlReallocFunc, sollyaXmlStrdupFunc)) return NULL;
 	
   /*
    * this initialize the library and check potential ABI mismatches
@@ -840,7 +933,9 @@ node *readXml(char *filename) {
    */
   LIBXML_TEST_VERSION
 
-    result=streamXmlFile(filename);
+  /* Parse the xml file */
+
+  result=streamXmlFile(filename);
 
   /*
    * Cleanup function for the XML library.
@@ -850,6 +945,8 @@ node *readXml(char *filename) {
    * this is to debug memory for regression tests
    */
   xmlMemoryDump();
+
+  cleanupSollyaXmlMemory();
 
   return result;
 }
