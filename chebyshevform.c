@@ -1022,7 +1022,6 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
       }
       else if (accessThruMemRef(simplifiedChild2)->nodeType==CONSTANT) { 
         /*We are in the  f^p case*/
-        tt=createEmptycModelPrecomp(n,t->x,t->cheb_array, t->cheb_matrix, prec);           
         child1_tm=createEmptycModelPrecomp(n,t->x,t->cheb_array, t->cheb_matrix, prec);
         /*call cheb_model for the child*/
         cheb_model(child1_tm, accessThruMemRef(f)->child1,n,x, boundLevel, verbosity, prec);
