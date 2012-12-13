@@ -629,7 +629,6 @@ void getCoeffsFromChebPolynomial(sollya_mpfi_t**coeffs, sollya_mpfi_t *chebCoeff
     sollya_mpfi_init2(ui, prec);
     sollya_mpfi_init2(vi, prec);
     
-    
     mpfr_init2(u, prec);
     mpfr_init2(v, prec);
     
@@ -656,6 +655,8 @@ void getCoeffsFromChebPolynomial(sollya_mpfi_t**coeffs, sollya_mpfi_t *chebCoeff
     sollya_mpfi_clear(ui);
     sollya_mpfi_clear(vi);
     sollya_mpfi_clear(temp);
+    mpfr_clear(u);
+    mpfr_clear(v);
     
     for (i=0;i<n*n;i++){
       mpz_clear(chebMatrix[i]);
