@@ -25,6 +25,14 @@ typedef ptrdiff_t t_t;
 
 int counter = 0;
 
+size_t my_strnlen(const char *s, size_t lngmax) {
+  int i;
+  for(i=0;i<lngmax;i++) {
+    if (s[i]=='\0') return strlen(s);
+  }
+  return lngmax;
+}
+
 int wrapper_sollya_sprintf(char *str, const char *format, ...) {
   va_list va;
   int r;
@@ -60,7 +68,7 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
   int n;
 
   for(i=0;i<2;i++) {
-    counter[i] = strnlen(result[i], BUFSIZE);
+    counter[i] = my_strnlen(result[i], BUFSIZE);
     if (counter[i]==BUFSIZE) counter[i] = -1;
   }
 
