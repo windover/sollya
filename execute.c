@@ -12764,6 +12764,13 @@ void freeThing(node *tree) {
     tree->libFunDeriv--;
     if (tree->libFunDeriv < 1) {
       freeThing(tree->child1);
+      if (tree->arguments != NULL) {
+	sollya_mpfi_clear(*((sollya_mpfi_t *) tree->arguments->next->value));
+	safeFree(tree->arguments->next->value);
+	safeFree(tree->arguments->next);
+	safeFree(tree->arguments->value);
+	safeFree(tree->arguments);
+      }
       safeFree(tree);
     } 
     return;
@@ -19323,7 +19330,7 @@ node *evaluateThingInnerst(node *tree) {
                   }
                 }
                 if (resE) {
-                  if (compareConstant(&resD, copy->child1, copy->child2)) {
+                  if (compareConstant(&resD, copy->child1, copy->child2, NULL, 0)) {
                     resC = (resD == 0);
                   } else {
                     printMessage(1,SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT_FAITHFUL_BUT_UNDECIDED,"Warning: the tool is unable to decide an equality test by evaluation even though faithful evaluation of the terms has been possible. The terms will be considered to be equal.\n");
@@ -19430,8 +19437,8 @@ node *evaluateThingInnerst(node *tree) {
 	      if (resB) {
 		tempNode = makeConstant(b);
 		tempNode2 = makeConstant(c);
-		if (compareConstant(&resA, tempNode, copy->child1) && 
-		    compareConstant(&resB, copy->child1, tempNode2)) {
+		if (compareConstant(&resA, tempNode, copy->child1, NULL, 0) && 
+		    compareConstant(&resB, copy->child1, tempNode2, NULL, 0)) {
 		  resC = (resA <= 0) && (resB <= 0);
 		} else {
 		  if (resH) {
@@ -19534,7 +19541,7 @@ node *evaluateThingInnerst(node *tree) {
               if (resB == 1) mpfr_nextabove(b);
             }
             if ((mpfr_cmp(a,b) < 0) != resC) {
-              if (compareConstant(&resD, copy->child1, copy->child2)) {
+              if (compareConstant(&resD, copy->child1, copy->child2, NULL, 0)) {
                 resC = (resD < 0);
               } else {
 		if (resH) {
@@ -19629,7 +19636,7 @@ node *evaluateThingInnerst(node *tree) {
                     if (resB == 1) mpfr_nextabove(b);
                   }
                   if ((mpfr_cmp(a,b) < 0) != resC) {
-                    if (compareConstant(&resD, tempNode, tempNode2)) {
+                    if (compareConstant(&resD, tempNode, tempNode2, NULL, 0)) {
                       resC = (resD < 0);
 		      resG = 1;
                     } else {
@@ -19735,7 +19742,7 @@ node *evaluateThingInnerst(node *tree) {
                     if (resB == 1) mpfr_nextabove(b);
                   }
                   if ((mpfr_cmp(a,b) < 0) != resC) {
-                    if (compareConstant(&resD, tempNode, tempNode2)) {
+                    if (compareConstant(&resD, tempNode, tempNode2, NULL, 0)) {
                       resC = (resD < 0);
 		      resG = 1;
                     } else {
@@ -19848,7 +19855,7 @@ node *evaluateThingInnerst(node *tree) {
                     if (resB == 1) mpfr_nextabove(b);
                   }
                   if ((mpfr_cmp(a,b) < 0) != resC) {
-                    if (compareConstant(&resD, tempNode, tempNode2)) {
+                    if (compareConstant(&resD, tempNode, tempNode2, NULL, 0)) {
                       resC = (resD < 0);
 		      resG = 1;
                     } else {
@@ -19954,7 +19961,7 @@ node *evaluateThingInnerst(node *tree) {
                     if (resB == 1) mpfr_nextabove(b);
                   }
                   if ((mpfr_cmp(a,b) < 0) != resC) {
-                    if (compareConstant(&resD, tempNode, tempNode2)) {
+                    if (compareConstant(&resD, tempNode, tempNode2, NULL, 0)) {
                       resC = (resD < 0);
 		      resG = 1;
                     } else {
@@ -20045,7 +20052,7 @@ node *evaluateThingInnerst(node *tree) {
               if (resB == 1) mpfr_nextbelow(b);
             }
             if ((mpfr_cmp(a,b) > 0) != resC) {
-              if (compareConstant(&resD, copy->child1, copy->child2)) {
+              if (compareConstant(&resD, copy->child1, copy->child2, NULL, 0)) {
                 resC = (resD > 0);
               } else {
 		if (resH) {
@@ -20118,7 +20125,7 @@ node *evaluateThingInnerst(node *tree) {
               if (resB == 1) mpfr_nextabove(b);
             }
             if ((mpfr_cmp(a,b) <= 0) != resC) {
-              if (compareConstant(&resD, copy->child1, copy->child2)) {
+              if (compareConstant(&resD, copy->child1, copy->child2, NULL, 0)) {
                 resC = (resD <= 0);
               } else {
 		if (resH) {
@@ -20191,7 +20198,7 @@ node *evaluateThingInnerst(node *tree) {
               if (resB == 1) mpfr_nextbelow(b);
             }
             if ((mpfr_cmp(a,b) >= 0) != resC) {
-              if (compareConstant(&resD, copy->child1, copy->child2)) {
+              if (compareConstant(&resD, copy->child1, copy->child2, NULL, 0)) {
                 resC = (resD >= 0);
               } else {
 		if (resH) {
@@ -20284,7 +20291,7 @@ node *evaluateThingInnerst(node *tree) {
                   }
                 }
                 if (resE) {
-                  if (compareConstant(&resD, copy->child1, copy->child2)) {
+                  if (compareConstant(&resD, copy->child1, copy->child2, NULL, 0)) {
                     resC = (resD != 0);
                   } else {
 		    if (resH) {

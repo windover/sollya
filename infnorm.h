@@ -97,7 +97,7 @@ void evaluateInterval(sollya_mpfi_t y, node *func, node *deriv, sollya_mpfi_t x)
 
 int newtonMPFR(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, mpfr_t b, mp_prec_t prec);
 int evaluateSign(int *s, node *rawFunc);
-int compareConstant(int *cmp, node *func1, node *func2);
+int compareConstant(int *cmp, node *func1, node *func2, node *difference, int doNotEval);
 
 void sollya_mpfi_pow(sollya_mpfi_t z, sollya_mpfi_t x, sollya_mpfi_t y);
 void sollya_mpfi_round_to_double(sollya_mpfi_t rop, sollya_mpfi_t op);

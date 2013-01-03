@@ -145,6 +145,13 @@ void free_memory(node *tree) {
     tree->libFunDeriv--;
     if (tree->libFunDeriv < 1) {
       free_memory(tree->child1);
+      if (tree->arguments != NULL) {
+	sollya_mpfi_clear(*((sollya_mpfi_t *) tree->arguments->next->value));
+	safeFree(tree->arguments->next->value);
+	safeFree(tree->arguments->next);
+	safeFree(tree->arguments->value);
+	safeFree(tree->arguments);
+      }
       safeFree(tree);
     } 
     return;
@@ -3153,8 +3160,18 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
   mpfr_t num, denom, resDiv, resA, resB;
   int numberChilds;
   int signOkay, sign;
+  node *res;
 
   if (tree->nodeType == MEMREF) {
+    if ((tree->arguments != NULL) &&
+	(*((mp_prec_t *) tree->arguments->value) >= 12) &&
+	sollya_mpfi_is_point_and_real(*((sollya_mpfi_t *) tree->arguments->next->value))) {
+      mpfr_init2(temp, sollya_mpfi_get_prec(*((sollya_mpfi_t *) tree->arguments->next->value)));
+      sollya_mpfi_get_left(temp, *((sollya_mpfi_t *) tree->arguments->next->value));
+      res = makeConstant(temp);
+      mpfr_clear(temp);
+      return addMemRef(res); 
+    }
     return addMemRef(simplifyTreeErrorfreeInner(tree->child1, rec, doRational));
   }
 
@@ -9986,6 +10003,7 @@ node* expand(node *tree) {
 int isConstant(node *tree) {
   switch (tree->nodeType) {
   case MEMREF:
+    if (tree->arguments != NULL) return 1;
     return isConstant(tree->child1);
     break;
   case VARIABLE:
@@ -10002,7 +10020,7 @@ int isConstant(node *tree) {
   case MUL:
   case DIV:
   case POW:
-    return (isConstant(tree->child1) & isConstant(tree->child2));
+    return (!(!((isConstant(tree->child1) && isConstant(tree->child2)))));
     break;
 
   case SQRT:

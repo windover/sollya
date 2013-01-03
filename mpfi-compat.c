@@ -896,3 +896,12 @@ int sollya_mpfi_union(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   sollya_mpfi_empty_normalize(rop);
   return res;
 }
+
+int sollya_mpfi_is_point_and_real(sollya_mpfi_t op) {
+  /* HACK ALERT: For performance reasons, we will access the internals
+     of an mpfi_t !!!
+  */  
+  return ((!(mpfr_nan_p(&(op->left)) || mpfr_nan_p(&(op->right)))) &&
+	  (!(mpfr_inf_p(&(op->left)) || mpfr_inf_p(&(op->right)))) && 
+	  (mpfr_equal_p(&(op->left),&(op->right))));
+}
