@@ -10721,7 +10721,8 @@ node* hornerPolynomialUnsafe(node *tree) {
     }
   }
 
-  if (monomials[degree] == NULL) {
+  while ((degree >= 0) && (monomials[degree] == NULL)) degree--;
+  if ((degree < 0) || (monomials[degree] == NULL)) {
     sollyaFprintf(stderr,
 "Error: hornerPolynomialUnsafe: an error occurred. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
     exit(1);
@@ -10820,8 +10821,8 @@ node* dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha) {
     degree = degree - alpha;
   }
 
-
-  if (monomials[degree] == NULL) {
+  while ((degree >= 0) && (monomials[degree] == NULL)) degree--;
+  if ((degree < 0) || (monomials[degree] == NULL)) {
     sollyaFprintf(stderr,
 "Error: hornerPolynomialUnsafe: an error occurred. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
     exit(1);
