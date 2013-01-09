@@ -6979,6 +6979,7 @@ void autoprint(node *thing, int inList, node *func, node *cst) {
   node *simplCst;
   int infinityCase;
   int deg;
+  int counter;
 
   shown = 0; shown2 = 0;
   if (isPureTree(thing)) {
@@ -7135,6 +7136,7 @@ void autoprint(node *thing, int inList, node *func, node *cst) {
 	temp_node = copyTree(tempNode3);
       } else {
 	okay = 0;
+	counter = 0;
 	do {
 	  if (canonical) temp_node = makeCanonical(tempNode3,tools_precision); else temp_node = horner(tempNode3);
 	  if (rationalMode) 
@@ -7156,6 +7158,7 @@ void autoprint(node *thing, int inList, node *func, node *cst) {
 		okay = 1;
 	      }
 	    }
+	    if (counter > 15) okay = 1;
 	    if (!okay) {
 	      if (!shown2) printMessage(2,SOLLYA_MSG_DOUBLE_SIMPLIFICATION_NECESSARY,"Information: double simplification necessary\n");
 	      shown2 = 1;
@@ -7166,6 +7169,7 @@ void autoprint(node *thing, int inList, node *func, node *cst) {
 	    }
 	  } else okay = 1;
 	  freeThing(tempNode4);
+	  counter++;
 	} while (!okay);
       }
       printTree(temp_node);
