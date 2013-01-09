@@ -1962,7 +1962,7 @@ chain* evaluateITaylor(sollya_mpfi_t result, node *func, node *deriv, sollya_mpf
       (func->arguments != NULL) &&
       (*((mp_prec_t *) func->arguments->value) >= prec)) {
     sollya_mpfi_set(result, *((sollya_mpfi_t *) func->arguments->next->value));
-    return NULL;
+    if (!(sollya_mpfi_has_nan(result) || sollya_mpfi_has_infinity(result))) return NULL;
   }
   
   excludes = evaluateITaylorInner(result, func, deriv, x, prec, recurse, theo, noExcludes);
@@ -2984,7 +2984,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
     if (r==0) mpfr_set_d(y1, 0. , GMP_RNDN);
 
     if (!mpfr_number_p(y1)) {
-      printMessage(1,SOLLYA_MSG_EVALUATION_AT_POINT_GIVES_NAN_EXCLUDING_POINT,"Warning: the evaluation of the given function in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",x1);
+      printMessage(1,SOLLYA_MSG_EVALUATION_AT_POINT_GIVES_NAN_EXCLUDING_POINT,"Warning: the evaluation of the given function %b in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",f,x1);
       mpfr_add(current_x, current_x, step, GMP_RNDU); /* rounding up ensures that x1(new) > x1(old) */
       mpfr_urandomb(perturb, random_state); mpfr_mul_2ui(perturb, perturb, 1, GMP_RNDN);
       mpfr_sub_ui(perturb, perturb, 1, GMP_RNDN); mpfr_div_2ui(perturb, perturb, 2, GMP_RNDN);
@@ -3017,7 +3017,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
     if (r==2) mpfr_set_d(y2, 0. , GMP_RNDN); /* under the cutoff */
     
     if (!mpfr_number_p(y2)) {
-      printMessage(1,SOLLYA_MSG_EVALUATION_AT_POINT_GIVES_NAN_EXCLUDING_POINT,"Warning: the evaluation of the given function in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",x2);
+      printMessage(1,SOLLYA_MSG_EVALUATION_AT_POINT_GIVES_NAN_EXCLUDING_POINT,"Warning: the evaluation of the given function %b in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",f,x2);
     }
   } while ( ( (!mpfr_number_p(y2)) || mpfr_equal_p(y1,y2) )
 	    &&
@@ -3057,7 +3057,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
       if (r==2) mpfr_set_d(y3, 0. , GMP_RNDN); /* under the cutoff */
       
       if (!mpfr_number_p(y3)) {
-	printMessage(1,SOLLYA_MSG_EVALUATION_AT_POINT_GIVES_NAN_EXCLUDING_POINT,"Warning: the evaluation of the given function in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",x3);
+	printMessage(1,SOLLYA_MSG_EVALUATION_AT_POINT_GIVES_NAN_EXCLUDING_POINT,"Warning: the evaluation of the given function %b in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",f,x3);
       }
     } while ( ( (!mpfr_number_p(y3))|| mpfr_equal_p(y2,y3) )
 	      &&
@@ -3081,7 +3081,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
       if (r==0) mpfr_set_d(y3diff, 0. , GMP_RNDN);
       
       if ( (!mpfr_number_p(y1diff)) || (!mpfr_number_p(y3diff)) ) {
-	printMessage(1,SOLLYA_MSG_EVALUATION_OF_DERIVATIVE_GIVES_NAN_NO_NEWTON,"Warning: the evaluation of the derivative of the given function in %v or %v gives NaN.\nNewton's algorithm will not be used on this interval.\n",x1,x3);
+	printMessage(1,SOLLYA_MSG_EVALUATION_OF_DERIVATIVE_GIVES_NAN_NO_NEWTON,"Warning: the evaluation of the derivative %b of the given function in %v or %v gives NaN.\nNewton's algorithm will not be used on this interval.\n",f_diff,x1,x3);
       }
       else if(mpfr_sgn(y1diff)*mpfr_sgn(y3diff)<0) { /* If y1diff=0 or y3diff=0, there is no need to */
                                                      /* use Newton's algorithm since we already have */
@@ -3096,7 +3096,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 	  if (r==2) mpfr_set_d(ystar, 0. , GMP_RNDN); /* under the cutoff */
 	  
 	  if (!mpfr_number_p(ystar)) {
-	    printMessage(1,SOLLYA_MSG_EVALUATION_AT_POINT_GIVES_NAN_EXCLUDING_POINT,"Warning: the evaluation of the given function in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",xstar);
+	    printMessage(1,SOLLYA_MSG_EVALUATION_AT_POINT_GIVES_NAN_EXCLUDING_POINT,"Warning: the evaluation of the given function %b in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",f,xstar);
 	  }
 	  if (mpfr_cmpabs(ystar, max) > 0) { /* evaluates to false when ystar=NaN */
 	    mpfr_abs(max, ystar, GMP_RNDU); 
