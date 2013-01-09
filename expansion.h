@@ -1847,7 +1847,7 @@ double mh, ml;                                        \
     Mul12(&_t1, &_t2, (b), (ch));                                       \
     Add12Cond(_t3, _t4, (ah), _t1);                                     \
     Add12Cond(_t5, _t6, _t4, _t2);                                      \
-    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t3,_t5,_t6);                  \
+    Renormalize3((rh),(rm),(rl),_t3,_t5,_t6);                           \
 } while (0);
 
 
@@ -1880,7 +1880,7 @@ double mh, ml;                                        \
     Add12Cond(_t15, _t16, _t14, _t10);                                  \
     _t17 = _t16 + _t15;                                                 \
     _t18 = _t17 + _t13;                                                 \
-    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t5,_t11,_t18);                \
+    Renormalize3((rh),(rm),(rl),_t5,_t11,_t18);                         \
 } while (0);
 
 
@@ -1929,7 +1929,7 @@ double mh, ml;                                        \
     _t26 = _t25 + _t19;                                                 \
     _t27 = _t26 + _t24;                                                 \
     _t28 = _t27 + _t22;                                                 \
-    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t7,_t20,_t28);                \
+    Renormalize3((rh),(rm),(rl),_t7,_t20,_t28);                         \
 } while (0);
 
 
@@ -1951,7 +1951,7 @@ double mh, ml;                                        \
     Add12Cond(_t7, _t8, _t6, _t3);                                      \
     Add12Cond(_t9, _t10, _t8, _t4);                                     \
     _t11 = _t10 + _t9;                                                  \
-    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t5,_t7,_t11);                 \
+    Renormalize3((rh),(rm),(rl),_t5,_t7,_t11);                          \
 } while (0);
 
 
@@ -1998,7 +1998,7 @@ double mh, ml;                                        \
     _t25 = _t24 + _t23;                                                 \
     _t26 = _t25 + _t21;                                                 \
     _t27 = _t26 + _t19;                                                 \
-    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t15,_t17,_t27);               \
+    Renormalize3((rh),(rm),(rl),_t15,_t17,_t27);                        \
 } while (0);
 
 
@@ -2067,7 +2067,7 @@ double mh, ml;                                        \
     _t39 = _t38 + _t36;                                                 \
     _t40 = _t39 + _t34;                                                 \
     _t41 = _t40 + _t32;                                                 \
-    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t28,_t30,_t41);               \
+    Renormalize3((rh),(rm),(rl),_t28,_t30,_t41);                        \
 } while (0);
 
 
@@ -2097,7 +2097,7 @@ double mh, ml;                                        \
     Add12Cond(_t13, _t14, _t12, _t6);                                   \
     _t15 = _t14 + _t13;                                                 \
     _t16 = _t15 + _t11;                                                 \
-    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t7,_t9,_t16);                 \
+    Renormalize3((rh),(rm),(rl),_t7,_t9,_t16);                          \
 } while (0);
 
 
@@ -2158,7 +2158,7 @@ double mh, ml;                                        \
     _t34 = _t33 + _t29;                                                 \
     _t35 = _t34 + _t27;                                                 \
     _t36 = _t35 + _t25;                                                 \
-    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t21,_t23,_t36);               \
+    Renormalize3((rh),(rm),(rl),_t21,_t23,_t36);                        \
 } while (0);
 
 
@@ -2247,7 +2247,7 @@ double mh, ml;                                        \
     _t52 = _t51 + _t46;                                                 \
     _t53 = _t52 + _t44;                                                 \
     _t54 = _t53 + _t42;                                                 \
-    Renormalize3((*(rh)),(*(rm)),(*(rl)),_t38,_t40,_t54);               \
+    Renormalize3((rh),(rm),(rl),_t38,_t40,_t54);                        \
 } while (0);
 
 #endif /* ifdef EXPANSION_H*/
