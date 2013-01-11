@@ -1334,7 +1334,11 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 	printMessage(8,SOLLYA_MSG_SIMPLIFYING_INTERVAL_DIV_WITH_ZERO_POINT_NUMERA, "Information: simplifying an interval division with 0 point numerator.\n");
 	printMessage(12,SOLLYA_MSG_CONTINUATION,"Simplification on function\n%b\n",tree);
 
-	sollya_mpfi_interv_d(stack3,0.0,0.0);
+	if (sollya_mpfi_has_nan(stack2)) {
+	  sollya_mpfi_set(stack3, stack2);
+	} else {
+	  sollya_mpfi_interv_d(stack3,0.0,0.0);
+	}
 	excludes = leftExcludes;
 	if (internalTheo != NULL) {
 	  internalTheo->simplificationUsed = NUMERATOR_IS_ZERO;
