@@ -12,34 +12,11 @@
 &nbsp;&nbsp;&nbsp;&gt; <br>
 &nbsp;&nbsp;&nbsp;&gt; f = sin(x);<br>
 &nbsp;&nbsp;&nbsp;&gt; T = ChebPolynomials(4);<br>
-&nbsp;&nbsp;&nbsp;Warning: a SIGSEGV signal has been handled.<br>
-&nbsp;&nbsp;&nbsp;Warning: the last command could not be executed. May leak memory.<br>
-&nbsp;&nbsp;&nbsp;Warning: releasing the variable frame stack.<br>
-&nbsp;&nbsp;&nbsp;&nbsp; canonical = on!;<br>
+&nbsp;&nbsp;&nbsp;&gt; canonical = on!;<br>
 &nbsp;&nbsp;&nbsp;&gt; for i from 0 to 4 do T[i];<br>
-&nbsp;&nbsp;&nbsp;Warning: the identifier "T" is neither assigned to, nor bound to a library function nor external procedure, nor equal to the current free variable.<br>
-&nbsp;&nbsp;&nbsp;Will interpret "T" as "x".<br>
-&nbsp;&nbsp;&nbsp;Warning: at least one of the given expressions or a subexpression is not correctly typed<br>
-&nbsp;&nbsp;&nbsp;or its evaluation has failed because of some error on a side-effect.<br>
-&nbsp;&nbsp;&nbsp;error<br>
-&nbsp;&nbsp;&nbsp;Warning: the identifier "T" is neither assigned to, nor bound to a library function nor external procedure, nor equal to the current free variable.<br>
-&nbsp;&nbsp;&nbsp;Will interpret "T" as "x".<br>
-&nbsp;&nbsp;&nbsp;Warning: at least one of the given expressions or a subexpression is not correctly typed<br>
-&nbsp;&nbsp;&nbsp;or its evaluation has failed because of some error on a side-effect.<br>
-&nbsp;&nbsp;&nbsp;error<br>
-&nbsp;&nbsp;&nbsp;Warning: the identifier "T" is neither assigned to, nor bound to a library function nor external procedure, nor equal to the current free variable.<br>
-&nbsp;&nbsp;&nbsp;Will interpret "T" as "x".<br>
-&nbsp;&nbsp;&nbsp;Warning: at least one of the given expressions or a subexpression is not correctly typed<br>
-&nbsp;&nbsp;&nbsp;or its evaluation has failed because of some error on a side-effect.<br>
-&nbsp;&nbsp;&nbsp;error<br>
-&nbsp;&nbsp;&nbsp;Warning: the identifier "T" is neither assigned to, nor bound to a library function nor external procedure, nor equal to the current free variable.<br>
-&nbsp;&nbsp;&nbsp;Will interpret "T" as "x".<br>
-&nbsp;&nbsp;&nbsp;Warning: at least one of the given expressions or a subexpression is not correctly typed<br>
-&nbsp;&nbsp;&nbsp;or its evaluation has failed because of some error on a side-effect.<br>
-&nbsp;&nbsp;&nbsp;error<br>
-&nbsp;&nbsp;&nbsp;Warning: the identifier "T" is neither assigned to, nor bound to a library function nor external procedure, nor equal to the current free variable.<br>
-&nbsp;&nbsp;&nbsp;Will interpret "T" as "x".<br>
-&nbsp;&nbsp;&nbsp;Warning: at least one of the given expressions or a subexpression is not correctly typed<br>
-&nbsp;&nbsp;&nbsp;or its evaluation has failed because of some error on a side-effect.<br>
-&nbsp;&nbsp;&nbsp;error<br>
+&nbsp;&nbsp;&nbsp;1<br>
+&nbsp;&nbsp;&nbsp;x<br>
+&nbsp;&nbsp;&nbsp;-1 + 2 * x^2<br>
+&nbsp;&nbsp;&nbsp;-3 * x + 4 * x^3<br>
+&nbsp;&nbsp;&nbsp;1 + -8 * x^2 + 8 * x^4<br>
 </div>

@@ -36,13 +36,15 @@ command is measured and displayed (for <?php linkTo("command","verbosity","verbo
 &nbsp;&nbsp;&nbsp;&gt; timing=on;<br> 
 &nbsp;&nbsp;&nbsp;Timing has been activated.<br> 
 &nbsp;&nbsp;&nbsp;&gt; p=remez(sin(x),10,[-1;1]);<br> 
-&nbsp;&nbsp;&nbsp;Information: Remez: computing the matrix spent 2 ms<br> 
-&nbsp;&nbsp;&nbsp;Information: Remez: computing the quality of approximation spent 20 ms<br> 
+&nbsp;&nbsp;&nbsp;Information: Remez: computing the matrix spent 3 ms<br> 
+&nbsp;&nbsp;&nbsp;Information: Remez: computing the quality of approximation spent 16 ms<br> 
+&nbsp;&nbsp;&nbsp;Information: Remez: computing the matrix spent 1 ms<br> 
 &nbsp;&nbsp;&nbsp;Information: Remez: computing the quality of approximation spent 10 ms<br> 
+&nbsp;&nbsp;&nbsp;Information: Remez: computing the matrix spent 1 ms<br> 
 &nbsp;&nbsp;&nbsp;Information: Remez: computing the quality of approximation spent 10 ms<br> 
-&nbsp;&nbsp;&nbsp;Information: computing a minimax approximation spent 166 ms<br> 
-&nbsp;&nbsp;&nbsp;Information: assignment spent 178 ms<br> 
-&nbsp;&nbsp;&nbsp;Information: full execution of the last parse chunk spent 200 ms<br> 
+&nbsp;&nbsp;&nbsp;Information: computing a minimax approximation spent 186 ms<br> 
+&nbsp;&nbsp;&nbsp;Information: assignment spent 199 ms<br> 
+&nbsp;&nbsp;&nbsp;Information: full execution of the last parse chunk spent 217 ms<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 
