@@ -263,7 +263,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
 	}
 	sollyaFprintf(file,"\n");
 
-	mpfr_add(current_x, current_x,step,GMP_RNDN);
+	mpfr_add(current_x, current_x,step,GMP_RNDU);
 	mpfr_urandomb(perturb, random_state); mpfr_mul_2ui(perturb, perturb, 1, GMP_RNDN);
 	mpfr_sub_ui(perturb, perturb, 1, GMP_RNDN); mpfr_div_2ui(perturb, perturb, 2, GMP_RNDN);
 	mpfr_mul(perturb, perturb, step, GMP_RNDN); // perturb \in [-step/4; step/4]
