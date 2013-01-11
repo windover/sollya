@@ -878,8 +878,45 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
   exprBoundTheo *leftTheoConstant, *rightTheoConstant, *leftTheoLinear, *rightTheoLinear;
   int isPolynom;
   int xIsPoint;
+  sollya_mpfi_t tempInterval;
+  mp_prec_t *precPtr;
+  sollya_mpfi_t *intervalPtr;
 
-  if (tree->nodeType == MEMREF) return evaluateI(result, tree->child1, x, prec, simplifiesA, simplifiesB, hopitalPoint, theo, noExcludes);
+  if (tree->nodeType == MEMREF) {
+    if ((theo != NULL) || (!noExcludes)) return evaluateI(result, tree->child1, x, prec, simplifiesA, simplifiesB, hopitalPoint, theo, noExcludes);
+    
+    if ((tree->arguments != NULL) &&
+	(*((mp_prec_t *) tree->arguments->value) >= prec)) {
+      sollya_mpfi_set(result, *((sollya_mpfi_t *) tree->arguments->next->value));
+      if (!(sollya_mpfi_has_nan(result) || sollya_mpfi_has_infinity(result))) return NULL;
+    }
+    
+    excludes = evaluateI(result, tree->child1, x, prec, simplifiesA, simplifiesB, hopitalPoint, theo, noExcludes);    
+
+    if ((excludes == NULL) && (!(sollya_mpfi_has_nan(result) || sollya_mpfi_has_infinity(result)))) {
+      if (tree->arguments != NULL) {
+	if (prec > *((mp_prec_t *) tree->arguments->value)) {
+	  *((mp_prec_t *) tree->arguments->value) = prec;
+	  sollya_mpfi_init2(tempInterval, sollya_mpfi_get_prec(*((sollya_mpfi_t *) tree->arguments->next->value)));
+	  sollya_mpfi_set(tempInterval, *((sollya_mpfi_t *) tree->arguments->next->value));
+	  sollya_mpfi_set_prec(*((sollya_mpfi_t *) tree->arguments->next->value), sollya_mpfi_get_prec(result));
+	  sollya_mpfi_intersect(*((sollya_mpfi_t *) tree->arguments->next->value), tempInterval, result);
+	  sollya_mpfi_clear(tempInterval);
+	}
+      } else {
+	if (isConstant(tree)) {
+	  precPtr = (mp_prec_t *) safeMalloc(sizeof(mp_prec_t));
+	  *precPtr = prec;
+	  intervalPtr = (sollya_mpfi_t *) safeMalloc(sizeof(sollya_mpfi_t));
+	  sollya_mpfi_init2(*intervalPtr, sollya_mpfi_get_prec(result));
+	  sollya_mpfi_set(*intervalPtr, result);
+	  tree->arguments = addElement(addElement(NULL, intervalPtr), precPtr);
+	}
+      }
+    } 
+    
+    return excludes;
+  }
 
   excludes = NULL;
 

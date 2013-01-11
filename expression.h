@@ -177,6 +177,7 @@ static inline node* addMemRef(node *tree) {
   res->libFunDeriv = 1;
   res->child2 = NULL;
   res->arguments = NULL;
+  res->value = NULL;
 
   return res;
 }

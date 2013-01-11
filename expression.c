@@ -10001,10 +10001,17 @@ node* expand(node *tree) {
 
 
 int isConstant(node *tree) {
+  int res;
+
   switch (tree->nodeType) {
   case MEMREF:
     if (tree->arguments != NULL) return 1;
-    return isConstant(tree->child1);
+    if (tree->value != NULL) return 0;
+    res = isConstant(tree->child1);
+    if (!res) {
+      tree->value = (mpfr_t *) (-1);
+    }
+    return res;
     break;
   case VARIABLE:
     return 0;
@@ -10498,7 +10505,8 @@ void computePowerOfPolynomialCoefficients(int *degreeRes, node ***coeffRes,
   }
 }
 
-void getCoefficients(int *degree, node ***coefficients, node *poly) {
+
+void getCoefficientsInner(int *degree, node ***coefficients, node *poly) {
   node *temp, *temp2, *temp3, *temp4;
   int i,k,j, mpd;
   node **coefficients1, **coefficients2;
@@ -10695,6 +10703,17 @@ void getCoefficients(int *degree, node ***coefficients, node *poly) {
   free_memory(temp4);
 }
 
+void getCoefficients(int *degree, node ***coefficients, node *poly) {
+  int i;
+
+  getCoefficientsInner(degree, coefficients, poly);
+
+  if (*degree >= 0) {
+    for (i=0;i<=*degree;i++) {
+      if ((*coefficients)[i] != NULL) (*coefficients)[i] = addMemRef((*coefficients)[i]);
+    }
+  }
+}
 
 
 node* hornerPolynomialUnsafe(node *tree) {
