@@ -3103,14 +3103,24 @@ int sollya_lib_v_get_subfunctions(sollya_obj_t obj1, int *ari, va_list varlist) 
 	}
         break;
       case 2:
-	if (obj1->nodeType == LIBRARYFUNCTION) {
+	switch (obj1->nodeType) {
+	case LIBRARYFUNCTION:
 	  *elem = (node *) safeMalloc(sizeof(node));
 	  (*elem)->nodeType = LIBRARYFUNCTION;
 	  (*elem)->libFun = obj1->libFun;
 	  (*elem)->libFunDeriv = obj1->libFunDeriv;
 	  (*elem)->child1 = makeVariable();
-	} else {
+	  break;
+	case PROCEDUREFUNCTION:
+	  *elem = (node *) safeMalloc(sizeof(node));
+	  (*elem)->nodeType = PROCEDUREFUNCTION;
+	  (*elem)->libFunDeriv = obj1->libFunDeriv;
+	  (*elem)->child1 = makeVariable();	
+	  (*elem)->child2 = copyThing(obj1->child2);
+	  break;
+	default:
 	  *elem = copyThing(obj1->child2);
+	  break;
 	}
         break;
       default:
@@ -3309,14 +3319,24 @@ int sollya_lib_v_decompose_function(sollya_obj_t obj1, sollya_base_function_t *b
 	}
         break;
       case 2:
-	if (obj1->nodeType == LIBRARYFUNCTION) {
+	switch (obj1->nodeType) {
+	case LIBRARYFUNCTION:
 	  *elem = (node *) safeMalloc(sizeof(node));
 	  (*elem)->nodeType = LIBRARYFUNCTION;
 	  (*elem)->libFun = obj1->libFun;
 	  (*elem)->libFunDeriv = obj1->libFunDeriv;
 	  (*elem)->child1 = makeVariable();
-	} else {
+	  break;
+	case PROCEDUREFUNCTION:
+	  *elem = (node *) safeMalloc(sizeof(node));
+	  (*elem)->nodeType = PROCEDUREFUNCTION;
+	  (*elem)->libFunDeriv = obj1->libFunDeriv;
+	  (*elem)->child1 = makeVariable();	
+	  (*elem)->child2 = copyThing(obj1->child2);
+	  break;
+	default:
 	  *elem = copyThing(obj1->child2);
+	  break;
 	}
         break;
       default:
