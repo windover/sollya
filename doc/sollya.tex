@@ -1540,9 +1540,14 @@ If a \texttt{sollya\_obj\_t} contains a functional expression, one can decompose
 \item \verb|int sollya_lib_get_function_arity(int *n, sollya_obj_t f)|: it stores the arity of the head function in \texttt{f} at the address referred to by \texttt{n}. Currently, the mathematical functions handled in \sollya are at most dyadic. Mathematical constants are considered as 0-adic functions.
 \item \verb|int sollya_lib_get_head_function(sollya_base_function_t *type, sollya_obj_t f)|:\\
 it stores the type of \texttt{f} at the address referred to by \texttt{type}. The \texttt{sollya\_base\_function\_t} is an enum type listing all possible cases (see Table~\ref{list_of_sollya_base_function_t}).
-\item \verb|int sollya_lib_get_subfunctions(sollya_obj_t f, int *n, ...)|: let us denote by \texttt{g\_1}, \dots, \texttt{g\_k} the arguments following the argument \texttt{n}. They must be of type \verb|sollya_obj_t *|. The function stores the arity of \texttt{f} at the address referred to by \texttt{n}. Suppose that \texttt{f} contains an expression of the form $f_0(f_1,\dots,f_s)$. For each $i$ from $1$ to $s$, the expression corresponding to $f_i$ is stored at the address referred to by \texttt{g\_i}, unless one of the \texttt{g\_i} is \texttt{NULL} in which case the function returns when encountering it. In practice, it means that the users should always put \texttt{NULL} as last argument, in order to prevent the case when they would not provide enough variables \texttt{g\_i}. They can check afterwards that they provided enough variables by checking the value contained at the address referred to by \texttt{n}. If users do not put \texttt{NULL} as last argument and do not provide enough variables \texttt{g\_i}, the algorithm will continue storing arguments at random places in the memory. Please note that the objects that have been stored in variables \texttt{g\_i} must manually be cleared once they become useless.
+\item \verb|int sollya_lib_get_subfunctions(sollya_obj_t f, int *n, ...)|: let us denote by \texttt{g\_1}, \dots, \texttt{g\_k} the arguments following the argument \texttt{n}. They must be of type \verb|sollya_obj_t *|. The function stores the arity of \texttt{f} at the address referred to by \texttt{n}. Suppose that \texttt{f} contains an expression of the form $f_0(f_1,\dots,f_s)$. For each $i$ from $1$ to $s$, the expression corresponding to $f_i$ is stored at the address referred to by \texttt{g\_i}, unless one of the \texttt{g\_i} is \texttt{NULL} in which case the function returns when encountering it. In practice, it means that the user should always put \texttt{NULL} as last argument, in order to prevent the case when they would not provide enough variables \texttt{g\_i}. They can check afterwards that they provided enough variables by checking the value contained at the address referred to by \texttt{n}. If the user does not put \texttt{NULL} as last argument and do not provide enough variables \texttt{g\_i}, the algorithm will continue storing arguments at random places in the memory (on the contrary, providing more arguments than necessary does not harm: useless arguments are simply ignored and left unchanged). In the case when $f_0$ is a library function, a library constant or a procedure function, and if the user provides a non-\texttt{NULL} argument \texttt{g\_t} after \texttt{g\_s}, additionnal information is returned in the remaining arguments:
+  \begin{itemize}
+  \item If $f_0$ is a library function, a sollya object corresponding to the expression $f_0(x)$ is stored at the address referred to by \texttt{g\_t}. Please notice that $f_0$ might not be itself directly bound to a library code: for instance, $f_0$ could be the derivative of some function defined by a library bounding.
+  \item If $f_0$ is a procedure function, TODO.
+  \item If $f_0$ is a library constant, TODO.
+  \end{itemize}
+Please note that the objects that have been stored in variables \texttt{g\_i} must manually be cleared once they become useless.
 
-The user should be aware that the function shows a particular behavior in the case when the Sollya object \verb|f| is a library constant, a library function or a procedure function. This particular behavior allows the actual library constant, library function or procedure function to be recovered somehow. In this case, the function (resp. constant) itself, $f_0$, is stored at the address \texttt{g\_t} provided after the addresses \texttt{g\_1} thru \texttt{g\_s}. As a matter of course, the object is only stored if the argument list is sufficiently long until \texttt{NULL} is encountered. The user should additionnally be aware that in this particular case, the number of Sollya library objects \texttt{g\_i} returned is one more than the arity of the function stored at the address pointed by \texttt{n}.
 \item \verb|int sollya_lib_v_get_subfunctions(sollya_obj_t f, int *n, va_list va)|: the same as the previous function, but with a \texttt{va\_list} argument.
 \item \verb|int sollya_lib_decompose_function(sollya_obj_t f, sollya_base_function_t *type,|\\
       \verb|                                  int *n, ...)|:\\
@@ -1575,9 +1580,10 @@ int is_made_of_constants(sollya_obj_t f) {
       case SOLLYA_BASE_FUNC_FREE_VARIABLE: res = 0; break;
       case SOLLYA_BASE_FUNC_PI: res = 1; break;
       case SOLLYA_BASE_FUNC_CONSTANT: res = 1; break;
+      case SOLLYA_BASE_FUNC_LIBRARYCONSTANT: res = 1; break;
       default:
         res = is_made_of_constants(tmp1);
-        if ((res) && tmp2) res = is_made_of_constants(tmp2);
+        if ((res) && (n==2)) res = is_made_of_constants(tmp2);
     }
   }
 

@@ -37,7 +37,7 @@ does. See $PLOT for details.
 §§ § §§
 The external function evaluation code given in the object file name
 <filename> is supposed to define a function name §§f§\texttt{f}§§ as
-follows (here in C syntax): §§void f(mpfr_t rop, mpfr_t op)§\texttt{void f(mpfr\_t rop, mpfr\_ op)}§§. 
+follows (here in C syntax): §§void f(mpfr_t rop, mpfr_t op)§\texttt{void f(mpfr\_t rop, mpfr\_t op)}§§. 
 This function is supposed to evaluate §§op§\texttt{op}§§ with an accuracy corresponding
 to the precision of §§rop§\texttt{rop}§§ and assign this value to
 §§rop§\texttt{rop}§§.
