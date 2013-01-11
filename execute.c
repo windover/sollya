@@ -23333,9 +23333,14 @@ node *evaluateThingInnerst(node *tree) {
       mpfr_init2(a,tools_precision);
       mpfr_init2(b,tools_precision);
       if (evaluateThingToRange(a,b,copy->child2)) {
-	if (timingString != NULL) pushTimeCounter(); 
-	tempChain = uncertifiedFindZeros(copy->child1, a, b, defaultpoints, tools_precision);
-	if (timingString != NULL) popTimeCounter(timingString);
+	if (mpfr_number_p(a) && mpfr_number_p(b)) {
+	  if (timingString != NULL) pushTimeCounter(); 
+	  tempChain = uncertifiedFindZeros(copy->child1, a, b, defaultpoints, tools_precision);
+	  if (timingString != NULL) popTimeCounter(timingString);
+	} else {
+	  tempChain = NULL;
+	  printMessage(1,SOLLYA_MSG_DOMAIN_IS_NO_CLOSED_INTERVAL_ON_THE_REALS,"Warning: the range to search for zeros in is not bounded by real numbers.\n");
+	}
 	if (tempChain == NULL) {
 	  tempNode = makeEmptyList();
 	} else {
