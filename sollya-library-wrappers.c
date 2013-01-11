@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2011-2012 by
+  Copyright 2011-2013 by
 
   Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
   UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
@@ -3362,6 +3362,43 @@ int sollya_lib_decompose_function(sollya_obj_t obj1, sollya_base_function_t *bas
   va_end(varlist);
 
   return res;
+}
+
+int sollya_lib_decompose_library_function(void **func, int *deriv, sollya_obj_t *sub_func, sollya_obj_t obj) {
+
+  if (obj->nodeType == MEMREF) return sollya_lib_decompose_library_function(func, deriv, sub_func, obj->child1);
+
+  if (obj->nodeType != LIBRARYFUNCTION) return 0;
+
+  *func = (void *) obj->libFun->code;
+  *deriv = obj->libFunDeriv;
+  *sub_func = copyThing(obj->child1);
+  
+  return 1;
+}
+
+int sollya_lib_decompose_library_constant(void **func, sollya_obj_t obj) {
+
+  if (obj->nodeType == MEMREF) return sollya_lib_decompose_library_constant(func, obj->child1);
+
+  if (obj->nodeType != LIBRARYCONSTANT) return 0;
+
+  *func = (void *) obj->libFun->constant_code;
+  
+  return 1;
+}
+
+int sollya_lib_decompose_procedure_function(sollya_obj_t *proc, int *deriv, sollya_obj_t *sub_func, sollya_obj_t obj) {
+
+  if (obj->nodeType == MEMREF) return sollya_lib_decompose_procedure_function(proc, deriv, sub_func, obj->child1);
+
+  if (obj->nodeType != PROCEDUREFUNCTION) return 0;
+
+  *proc = copyThing(obj->child2);
+  *deriv = obj->libFunDeriv;
+  *sub_func = copyThing(obj->child1);
+  
+  return 1;
 }
 
 int sollya_lib_is_on(sollya_obj_t obj1){

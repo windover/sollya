@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2007-2012 by
+  Copyright 2007-2013 by
 
   Laboratoire de l'Informatique du Parallelisme,
   UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
@@ -627,6 +627,12 @@ extern "C" {
   int sollya_lib_decompose_function(sollya_obj_t, sollya_base_function_t *, int *, ...);
   int sollya_lib_v_decompose_function(sollya_obj_t, sollya_base_function_t *, int *, va_list);
 
+  /* Some particular functions to decompose library function objects,
+     library constant objects and procedure function objects
+  */
+  int sollya_lib_decompose_library_function(void **, int *, sollya_obj_t *, sollya_obj_t);
+  int sollya_lib_decompose_library_constant(void **, sollya_obj_t);
+  int sollya_lib_decompose_procedure_function(sollya_obj_t *, int *, sollya_obj_t *, sollya_obj_t);
 
   /* Functions that work on Sollya objects that are structures 
 
