@@ -142,3 +142,6 @@ Warning: the given expression is undefined or numerically unstable.
 1.43195535216538855908787738992005803060063628522583e256152523
 Warning: the given expression is undefined or numerically unstable.
 @Inf@
+Error in rationalapprox: the second argument of rationalapprox must be greater or equal to 2.
+Warning: the given expression or command could not be handled.
+error
