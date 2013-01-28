@@ -1247,6 +1247,93 @@ For instance, after the instructions \verb|a = SOLLYA_CONST(0); b = sollya_lib_e
 \end{itemize}
 Actually, \verb|sollya_lib_foo| has exactly the same behavior as writing an expression at the prompt within the interactive tool. In particular, it is possible to give a range as an argument to \verb|sollya_lib_foo|: the returned object will be the result of the evaluation of function \verb|foo| on that range by interval arithmetic. In contrast, trying to use \verb|sollya_lib_build_function_foo| on a range would result in a typing error.
 
+\subsubsection{Library functions, library constants and procedure functions}
+
+In addition to the mathematical base functions and constants provided
+by \sollya and listed in the Section above, the user may bind other
+mathematical functions and constants to \sollya objects under the
+condition that they can provide code to evaluate these functions or
+constants. The mechanism behind is similar to the one available in
+interactive \sollya through the {\tt library}, {\tt libraryconstant}
+and {\tt function} commands (see Sections \ref{lablibrary},
+\ref{lablibraryconstant} and \ref{labfunction}).
+
+With the \sollya library, this binding is done through one of the
+following functions:
+\begin{itemize}
+\item Binding of a (non-constant) mathematical function for which evaluation 
+code is available through a {\tt C} pointer to a function: \\
+\verb|sollya_obj_t sollya_lib_libraryfunction(sollya_obj_t e, | \\
+\verb|                                        char *name, | \\
+\verb|                                        int (*f)(mpfi_t, mpfi_t, int));| \\
+\verb|sollya_obj_t sollya_lib_build_function_libraryfunction(sollya_obj_t e, | \\
+\verb|                                        char *name, | \\
+\verb|                                        int (*f)(mpfi_t, mpfi_t, int));| 
+
+These two functions construct a \sollya object representing $f(e)$
+where $e$ is given as the \sollya object {\tt e} and $f$ is given as
+the pointer to a function \verb|f(mpfi_t y, mpfi_t x, int n)|. This
+code must evaluate the $n$-th derivative of $f$ over the interval $x$,
+yielding $y$. 
+
+As usual, \verb|sollya_lib_build_function_libraryfunction| ``eats up''
+the object {\tt e}, while the function
+\verb|sollya_lib_libraryfunction| does not.
+
+The \verb|name| argument of the function is taken as a suggestion to
+the name the \sollya object representing the function should be
+printed as when displayed. The user may choose to provide \verb|NULL|
+instead.  In any case, upon the binding, the \sollya library will
+determine a unique displaying name for the function. If it is not yet
+taken as a name (for some other \sollya object or \sollya keyword),
+the suggested name will be used. If no suggested name is provided, the
+name of the dynamic object behind the behind the pointer to the
+function will be used if it can be determined. Otherwise, a
+more-or-less random name is used. If the (suggested) base name is
+already taken, the name is unified appending an underscore and a
+unique number to it. The \verb|name| argument is never ``eaten up'',
+i.e. the it is up to the user to free any memory allocated to that
+pointer.
+
+\item Binding of a mathematical constant for which evaluation code is 
+available through a {\tt C} pointer to a function: \\
+\verb|sollya_obj_t sollya_lib_libraryconstant(char *name, | \\
+\verb|                                        void (*c)(mpfr_t, mp_prec_t));| \\
+\verb|sollya_obj_t sollya_lib_build_function_libraryconstant(char *name, | \\
+\verb|                                        void (*c)(mpfr_t, mp_prec_t));| 
+
+These two functions construct a \sollya object representing the
+mathematical constant $c$ for which a pointer to a function
+\verb|c(mpfr_t rop, mp_prec_t prec)| is provided. This code must
+evaluate the constant to precision \verb|prec| and affect the result
+to \verb|rop|. See Section \ref{lablibraryconstant} for details with
+respect to \verb|prec|.
+
+The same remark as above concerning the suggested displaying name
+of the \sollya object applies for the \verb|name| argument.
+
+\item Binding of a mathematical function for which evaluation code is 
+available through a \sollya object representing a \sollya procedure: \\
+\verb|sollya_obj_t sollya_lib_procedurefunction(sollya_obj_t e, sollya_obj_t f);|  \\
+\verb|sollya_obj_t sollya_lib_build_function_procedurefunction(sollya_obj_t e, | \\
+\verb|                                                         sollya_obj_t f);|  
+
+These two functions construct a \sollya library object representing $f(e)$
+where $e$ corresponds to the mathematical function (or constant) given with argument
+\verb|e| and where $f$ is given as a \sollya procedure \verb|f(x, n, p)| evaluating the
+$n$-th derivative of $f$ over the interval $x$ with precision $p$. See Section \ref{labfunction} 
+concerning details of the arguments of that \sollya procedure.
+
+As usual, \verb|sollya_lib_build_function_procedurefunction| ``eats
+up'' its arguments \verb|e| and \verb|f| while
+\verb|sollya_obj_t sollya_lib_procedurefunction| does not.
+
+Currently, the only way of constructing a \sollya library object
+representing a \sollya procedure is to use
+\verb|sollya_lib_parse_string|.
+
+\end{itemize}
+
 \subsubsection{Other simple objects}
 Other simple objects are created with functions listed in Table~\ref{creating_sollya_obj_t}. The functions with a name of the form \texttt{sollya\_lib\_range\_something} follow the same convention as \texttt{sollya\_lib\_constant}: they build a new object from a copy of their argument, and the conversion is always exact, whatever the value of \texttt{prec} is.
 

@@ -1,6 +1,6 @@
 /*
 
-Copyright 2007-2012 by 
+Copyright 2007-2013 by 
 
 Laboratoire de l'Informatique du Parallelisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
@@ -163,13 +163,33 @@ char *getBaseFunctionName(void *func) {
   return funcName;
 }
 
+char *filterSymbolName(char *basename) {
+  char *res, *curr, *r;
+
+  res = (char *) safeCalloc(strlen(basename)+1,sizeof(char));
+
+  copyIdentifierSymbols(res, basename);
+
+  return res;
+}
+
+int symbolNameIsKeyword(char *name) {
+  int i;
+
+  for (i=0; sollyaKeywords[i] != NULL; i++) {
+    if (!strcmp(name, sollyaKeywords[i])) return 1;
+  }
+
+  return 0;
+}
+
 char *unifySymbolName(char *basename) {
   char *res, *str;
   uint64_t number;
   int found;
   size_t lenbasename;
 
-  if (!symbolNameAlreadyUsed(basename)) {
+  if (!(symbolNameAlreadyUsed(basename) || symbolNameIsKeyword(basename))) {
     res = (char *) safeCalloc(strlen(basename)+1,sizeof(char));
     strcpy(res, basename);
     return res;
@@ -186,7 +206,7 @@ char *unifySymbolName(char *basename) {
     }
     str = (char *) safeCalloc(lenbasename + 1 + 8 * sizeof(uint64_t) + 1, sizeof(char));
     sprintf(str,"%s_%" PRIu64, basename, number);
-    if (!symbolNameAlreadyUsed(str)) {
+    if (!(symbolNameAlreadyUsed(str) || symbolNameIsKeyword(str))) {
       found = 1;
     } else {
       number++;
@@ -359,17 +379,37 @@ libraryFunction *getFunctionByPtr(int (*func)(mpfi_t, mpfi_t, int)) {
 
 libraryFunction *bindFunctionByPtr(char *suggestedName, int (*func)(mpfi_t, mpfi_t, int)) {
   libraryFunction *res;
-  char *unifiedName, *basename;
+  char *unifiedName, *basename, *filteredSuggestedName, *filteredBaseName;
 
   res = getFunctionByPtr(func);
   if (res != NULL) return res;
 
   if (suggestedName != NULL) {
-    unifiedName = unifySymbolName(suggestedName);
+    filteredSuggestedName = filterSymbolName(suggestedName);
+    if (filteredSuggestedName[0] == '\0') {
+      basename = getBaseFunctionName(func);
+      filteredBaseName = filterSymbolName(basename);
+      safeFree(basename);
+      if (filteredBaseName[0] == '\0') {
+	unifiedName = unifySymbolName("func");
+      } else {
+	unifiedName = unifySymbolName(filteredBaseName);
+      }
+      safeFree(filteredBaseName);
+    } else {
+      unifiedName = unifySymbolName(filteredSuggestedName);
+    }
+    safeFree(filteredSuggestedName);
   } else {
     basename = getBaseFunctionName(func);
-    unifiedName = unifySymbolName(basename);
+    filteredBaseName = filterSymbolName(basename);
     safeFree(basename);
+    if (filteredBaseName[0] == '\0') {
+      unifiedName = unifySymbolName("func");
+    } else {
+      unifiedName = unifySymbolName(filteredBaseName);
+    }
+    safeFree(filteredBaseName);
   }
 
   res = (libraryFunction *) safeMalloc(sizeof(libraryFunction));
@@ -520,17 +560,37 @@ libraryFunction *getConstantFunctionByPtr(void (*func)(mpfr_t, mp_prec_t)) {
 
 libraryFunction *bindConstantFunctionByPtr(char *suggestedName, void (*func)(mpfr_t, mp_prec_t)) {
   libraryFunction *res;
-  char *unifiedName, *basename;
+  char *unifiedName, *basename, *filteredBaseName, *filteredSuggestedName;
 
   res = getConstantFunctionByPtr(func);
   if (res != NULL) return res;
 
   if (suggestedName != NULL) {
-    unifiedName = unifySymbolName(suggestedName);
+    filteredSuggestedName = filterSymbolName(suggestedName);
+    if (filteredSuggestedName[0] == '\0') {
+      basename = getBaseFunctionName(func);
+      filteredBaseName = filterSymbolName(basename);
+      safeFree(basename);
+      if (filteredBaseName[0] == '\0') {
+	unifiedName = unifySymbolName("func");
+      } else {
+	unifiedName = unifySymbolName(filteredBaseName);
+      }
+      safeFree(filteredBaseName);
+    } else {
+      unifiedName = unifySymbolName(filteredSuggestedName);
+    }
+    safeFree(filteredSuggestedName);
   } else {
     basename = getBaseFunctionName(func);
-    unifiedName = unifySymbolName(basename);
+    filteredBaseName = filterSymbolName(basename);
     safeFree(basename);
+    if (filteredBaseName[0] == '\0') {
+      unifiedName = unifySymbolName("func");
+    } else {
+      unifiedName = unifySymbolName(filteredBaseName);
+    }
+    safeFree(filteredBaseName);
   }
 
   res = (libraryFunction *) safeMalloc(sizeof(libraryFunction));
