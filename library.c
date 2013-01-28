@@ -102,30 +102,28 @@ void copyIdentifierSymbols(char *ptr, const char *src) {
 
   currPtr = ptr;
   currSrc = src;
-  if ((*currSrc == '\0') || 
-      ((*currSrc >= 'a') && (*currSrc <= 'z')) ||
-      ((*currSrc >= 'A') && (*currSrc <= 'Z')) ||
-      (*currSrc == '_') ||
-      (*currSrc == '$')) {
-    *currPtr = *currSrc;
-    currPtr++;
-  }
-  if (*currSrc == '\0') return;
-  currSrc++;
-  
   while ((*currPtr = *currSrc) != '\0') {
-    if (((*currSrc >= 'a') && (*currSrc <= 'z')) ||
-	((*currSrc >= 'A') && (*currSrc <= 'Z')) ||
-	((*currSrc >= '0') && (*currSrc <= '9')) ||
-	(*currSrc == '_') ||
-	(*currSrc == '$')) {
-      currPtr++;
+    if (currPtr == ptr) {
+      if (((*currSrc >= 'a') && (*currSrc <= 'z')) ||
+	  ((*currSrc >= 'A') && (*currSrc <= 'Z')) ||
+	  (*currSrc == '_') ||
+	  (*currSrc == '$')) {
+	currPtr++;
+      }
+    } else {
+      if (((*currSrc >= 'a') && (*currSrc <= 'z')) ||
+	  ((*currSrc >= 'A') && (*currSrc <= 'Z')) ||
+	  ((*currSrc >= '0') && (*currSrc <= '9')) ||
+	  (*currSrc == '_') ||
+	  (*currSrc == '$')) {
+	currPtr++;
+      }
     }
     currSrc++;
   }
 }
 
-char *getBaseFunctionName(void *func) {
+char *getBaseFunctionName(void *func, const char *base) {
   char *myFuncName, *funcName;  
 #if (defined(HAVE_DLADDR) && (HAVE_DLADDR))
   int errorOccurred;
@@ -150,12 +148,12 @@ char *getBaseFunctionName(void *func) {
     errorOccurred = 1;
   }
   if (errorOccurred) {
-    myFuncName = (char *) safeCalloc(strlen("func_") + 2 + 8 * sizeof(void *) + 1,sizeof(char));
-    sprintf(myFuncName, "func_%p", func);
+    myFuncName = (char *) safeCalloc(strlen(base) + 3 + 8 * sizeof(void *) + 1,sizeof(char));
+    sprintf(myFuncName, "%s_%p", base, func);
   }
 #else
-  myFuncName = (char *) safeCalloc(strlen("func_") + 2 + 8 * sizeof(void *) + 1,sizeof(char));
-  sprintf(myFuncName, "func_%p", func);
+  myFuncName = (char *) safeCalloc(strlen(base) + 3 + 8 * sizeof(void *) + 1,sizeof(char));
+  sprintf(myFuncName, "%s_%p", base, func);
 #endif
   funcName = (char *) safeCalloc(strlen(myFuncName)+1,sizeof(char));
   strcpy(funcName, myFuncName);
@@ -387,7 +385,7 @@ libraryFunction *bindFunctionByPtr(char *suggestedName, int (*func)(mpfi_t, mpfi
   if (suggestedName != NULL) {
     filteredSuggestedName = filterSymbolName(suggestedName);
     if (filteredSuggestedName[0] == '\0') {
-      basename = getBaseFunctionName(func);
+      basename = getBaseFunctionName(func, "func");
       filteredBaseName = filterSymbolName(basename);
       safeFree(basename);
       if (filteredBaseName[0] == '\0') {
@@ -401,7 +399,7 @@ libraryFunction *bindFunctionByPtr(char *suggestedName, int (*func)(mpfi_t, mpfi
     }
     safeFree(filteredSuggestedName);
   } else {
-    basename = getBaseFunctionName(func);
+    basename = getBaseFunctionName(func, "func");
     filteredBaseName = filterSymbolName(basename);
     safeFree(basename);
     if (filteredBaseName[0] == '\0') {
@@ -568,7 +566,7 @@ libraryFunction *bindConstantFunctionByPtr(char *suggestedName, void (*func)(mpf
   if (suggestedName != NULL) {
     filteredSuggestedName = filterSymbolName(suggestedName);
     if (filteredSuggestedName[0] == '\0') {
-      basename = getBaseFunctionName(func);
+      basename = getBaseFunctionName(func, "const");
       filteredBaseName = filterSymbolName(basename);
       safeFree(basename);
       if (filteredBaseName[0] == '\0') {
@@ -582,7 +580,7 @@ libraryFunction *bindConstantFunctionByPtr(char *suggestedName, void (*func)(mpf
     }
     safeFree(filteredSuggestedName);
   } else {
-    basename = getBaseFunctionName(func);
+    basename = getBaseFunctionName(func, "const");
     filteredBaseName = filterSymbolName(basename);
     safeFree(basename);
     if (filteredBaseName[0] == '\0') {
