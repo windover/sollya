@@ -570,7 +570,7 @@ libraryFunction *bindConstantFunctionByPtr(char *suggestedName, void (*func)(mpf
       filteredBaseName = filterSymbolName(basename);
       safeFree(basename);
       if (filteredBaseName[0] == '\0') {
-	unifiedName = unifySymbolName("func");
+	unifiedName = unifySymbolName("const");
       } else {
 	unifiedName = unifySymbolName(filteredBaseName);
       }
@@ -584,7 +584,7 @@ libraryFunction *bindConstantFunctionByPtr(char *suggestedName, void (*func)(mpf
     filteredBaseName = filterSymbolName(basename);
     safeFree(basename);
     if (filteredBaseName[0] == '\0') {
-      unifiedName = unifySymbolName("func");
+      unifiedName = unifySymbolName("const");
     } else {
       unifiedName = unifySymbolName(filteredBaseName);
     }
