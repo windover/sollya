@@ -122,6 +122,7 @@ int main(void) {
   int i;
   void *ptr;
   char str[256];
+  char str2[256];
 
   sollya_lib_init();
   f[0] = sollya_lib_free_variable();
@@ -157,14 +158,29 @@ int main(void) {
 
   /* Leaving NULL as second argument */
   f[7] = sollya_lib_libraryfunction(f[0], NULL, stupid2);
-  sollya_lib_printf("%b (expecting stupid2(_x_))\n", f[7]);
+  sollya_lib_sprintf(str, "%b", f[7]);
+  sollya_lib_sprintf(str2, "func_%p(_x_)", stupid2);
+  if (strcmp(str, str2)==0) sollya_lib_printf("The behavior when the second argument is NULL is conform to the semantic.\n");
+  else {
+    strcpy(str2, "stupid2(_x_)");
+    if (strcmp(str, str2)==0) sollya_lib_printf("The behavior when the second argument is NULL is conform to the semantic.\n");
+    else sollya_lib_printf("The behavior when the second argument is *NOT* conform to the semantic.\n");
+  }
 
   /* Unauthorized names */
   f[8] = sollya_lib_libraryfunction(f[0], "e]xp", stupid3);
   sollya_lib_printf("%b (expecting exp_0(_x_))\n", f[8]);
 
   f[9] = sollya_lib_libraryfunction(f[0], "]0", stupid4);
-  sollya_lib_printf("%b (expecting stupid4(_x_))\n", f[9]);
+  sollya_lib_sprintf(str, "%b", f[9]);
+  sollya_lib_sprintf(str2, "func_%p(_x_)", stupid4);
+  if (strcmp(str, str2)==0) sollya_lib_printf("The behavior when the second argument is NULL is conform to the semantic.\n");
+  else {
+    strcpy(str2, "stupid4(_x_)");
+    if (strcmp(str, str2)==0) sollya_lib_printf("The behavior when the second argument is NULL is conform to the semantic.\n");
+    else sollya_lib_printf("The behavior when the second argument is *NOT* conform to the semantic.\n");
+  }
+
 
   f[10] = sollya_lib_libraryfunction(f[0], "0]a", stupid5);
   sollya_lib_printf("%b (expecting a(_x_))\n", f[10]);
@@ -172,36 +188,28 @@ int main(void) {
   /* Pointer to non-valid functions, together with NULL/illicit as second argument */
   f[11] = sollya_lib_libraryfunction(f[0], NULL, stupid6+17);
   sollya_lib_sprintf(str, "%b", f[11]);
-  if (strlen(str)>= 8) {
-    str[7] = '\0';
-    if (strcmp(str, "func_0x")==0) sollya_lib_printf("Testing NULL/invalid ptr combination: OK\n");
-    else sollya_lib_printf("Testing NULL/invalid ptr combination: *NOT* OK: %b\n", f[11]);
-  }
+  sollya_lib_sprintf(str2, "func_%p(_x_)", stupid6+17);
+  if (strcmp(str, str2)==0) sollya_lib_printf("Testing NULL/invalid ptr combination: OK\n");
+  else sollya_lib_printf("Testing NULL/invalid ptr combination: *NOT* OK: %b versus %s\n", f[11], str2);
 
   f[12] = sollya_lib_libraryfunction(f[0], NULL, stupid7-17);
   sollya_lib_sprintf(str, "%b", f[12]);
-  if (strlen(str)>= 8) {
-    str[7] = '\0';
-    if (strcmp(str, "func_0x")==0) sollya_lib_printf("Testing NULL/invalid ptr combination: OK\n");
-    else sollya_lib_printf("Testing NULL/invalid ptr combination: *NOT* OK: %b\n", f[12]);
-  }
+  sollya_lib_sprintf(str2, "func_%p(_x_)", stupid7-17);
+  if (strcmp(str, str2)==0) sollya_lib_printf("Testing NULL/invalid ptr combination: OK\n");
+  else sollya_lib_printf("Testing NULL/invalid ptr combination: *NOT* OK: %b versus %s\n", f[12], str2);
 
   f[13] = sollya_lib_libraryfunction(f[0], "", (int (*)(mpfi_t, mpfi_t, int))(&x));
   sollya_lib_sprintf(str, "%b", f[13]);
-  if (strlen(str)>= 8) {
-    str[7] = '\0';
-    if (strcmp(str, "func_0x")==0) sollya_lib_printf("Testing NULL/invalid ptr combination: OK\n");
-    else sollya_lib_printf("Testing NULL/invalid ptr combination: *NOT* OK: %b\n", f[13]);
-  }
+  sollya_lib_sprintf(str2, "func_%p(_x_)", &x);
+  if (strcmp(str, str2)==0) sollya_lib_printf("Testing NULL/invalid ptr combination: OK\n");
+  else sollya_lib_printf("Testing NULL/invalid ptr combination: *NOT* OK: %b versus %s\n", f[13], str2);
 
   ptr = malloc(1);
   f[14] = sollya_lib_libraryfunction(f[0], "*]%", (int (*)(mpfi_t, mpfi_t, int))(ptr));
   sollya_lib_sprintf(str, "%b", f[14]);
-  if (strlen(str)>= 8) {
-    str[7] = '\0';
-    if (strcmp(str, "func_0x")==0) sollya_lib_printf("Testing NULL/invalid ptr combination: OK\n");
-    else sollya_lib_printf("Testing NULL/invalid ptr combination: *NOT* OK: %b\n", f[14]);
-  }
+  sollya_lib_sprintf(str2, "func_%p(_x_)", ptr);
+  if (strcmp(str, str2)==0) sollya_lib_printf("Testing NULL/invalid ptr combination: OK\n");
+  else sollya_lib_printf("Testing NULL/invalid ptr combination: *NOT* OK: %b versus %s\n", f[14], str2);
 
   for(i=0;i<=14;i++) sollya_lib_clear_obj(f[i]);
   mpfr_clear(x);

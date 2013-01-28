@@ -11,9 +11,9 @@ true (expecting true)
 true (expecting true)
 true (expecting true)
 superconst_0 (expecting superconst_0)
-stupid2 (expecting stupid2)
+The behavior when the first argument is NULL is conform to the semantic.
 exp_0 (expecting exp_0)
-stupid4 (expecting stupid4)
+The behavior when the first argument is NULL is conform to the semantic.
 a (expecting a)
 Testing NULL/invalid ptr combination: OK
 Testing NULL/invalid ptr combination: OK

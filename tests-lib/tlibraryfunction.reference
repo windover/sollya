@@ -9,9 +9,9 @@ true (expecting true)
 true (expecting true)
 true (expecting true)
 superfunc_0(_x_) (expecting superfunc_0(_x_))
-stupid2(_x_) (expecting stupid2(_x_))
+The behavior when the second argument is NULL is conform to the semantic.
 exp_0(_x_) (expecting exp_0(_x_))
-stupid4(_x_) (expecting stupid4(_x_))
+The behavior when the second argument is NULL is conform to the semantic.
 a(_x_) (expecting a(_x_))
 Testing NULL/invalid ptr combination: OK
 Testing NULL/invalid ptr combination: OK

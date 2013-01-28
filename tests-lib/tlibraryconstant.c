@@ -87,14 +87,29 @@ int main(void) {
 
   /* Leaving NULL as first argument */
   f[7] = sollya_lib_libraryconstant(NULL, stupid2);
-  sollya_lib_printf("%b (expecting stupid2)\n", f[7]);
+  sollya_lib_sprintf(str, "%b", f[7]);
+  sollya_lib_sprintf(str2, "const_%p", stupid2);
+  if (strcmp(str, str2)==0) sollya_lib_printf("The behavior when the first argument is NULL is conform to the semantic.\n");
+  else {
+    strcpy(str2, "stupid2");
+    if (strcmp(str, str2)==0) sollya_lib_printf("The behavior when the first argument is NULL is conform to the semantic.\n");
+    else sollya_lib_printf("The behavior when the first argument is *NOT* conform to the semantic.\n");
+  }
 
   /* Unauthorized names */
   f[8] = sollya_lib_libraryconstant("e]xp", stupid3);
   sollya_lib_printf("%b (expecting exp_0)\n", f[8]);
 
   f[9] = sollya_lib_libraryconstant("]0", stupid4);
-  sollya_lib_printf("%b (expecting stupid4)\n", f[9]);
+  sollya_lib_sprintf(str, "%b", f[9]);
+  sollya_lib_sprintf(str2, "const_%p", stupid4);
+  if (strcmp(str, str2)==0) sollya_lib_printf("The behavior when the first argument is NULL is conform to the semantic.\n");
+  else {
+    strcpy(str2, "stupid4");
+    if (strcmp(str, str2)==0) sollya_lib_printf("The behavior when the first argument is NULL is conform to the semantic.\n");
+    else sollya_lib_printf("The behavior when the first argument is *NOT* conform to the semantic.\n");
+  }
+
 
   f[10] = sollya_lib_libraryconstant("0]a", stupid5);
   sollya_lib_printf("%b (expecting a)\n", f[10]);
