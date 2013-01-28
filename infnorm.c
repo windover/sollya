@@ -515,8 +515,11 @@ void libraryConstantToInterval(sollya_mpfi_t res, node *tree) {
   mpfr_set(rbound, approx, GMP_RNDU);
   mpfr_nextbelow(lbound);
   mpfr_nextabove(rbound);
-  
+
   sollya_mpfi_interv_fr(res, lbound, rbound);
+  mpfr_clear(approx);
+  mpfr_clear(lbound);
+  mpfr_clear(rbound);
   return;
 }
 
