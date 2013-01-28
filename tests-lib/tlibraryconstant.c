@@ -103,7 +103,7 @@ int main(void) {
   sollya_lib_sprintf(str, "%b", f[11]);
   if (strlen(str)>= 8) {
     str[7] = '\0';
-    if (strcmp(str, "func_0x")==0) sollya_lib_printf("Testing NULL/invalid ptr combination: OK\n");
+    if (strcmp(str, "const_0x")==0) sollya_lib_printf("Testing NULL/invalid ptr combination: OK\n");
     else sollya_lib_printf("Testing NULL/invalid ptr combination: *NOT* OK: %b\n", f[11]);
   }
 
