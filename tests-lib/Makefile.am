@@ -175,6 +175,8 @@ tis_triple_double_obj.c \
 tis_true.c \
 tis_void.c \
 tlength.c \
+tlibraryconstant.c \
+tlibraryfunction.c \
 tlog10.c \
 tlog1p.c \
 tlog2.c \
@@ -214,6 +216,7 @@ tprintdouble.c \
 tprintexpansion.c \
 tprintf.c \
 tprintsingle.c \
+tprocedurefunction.c \
 tquad.c \
 tquad_obj.c \
 trange_from_bounds.c \

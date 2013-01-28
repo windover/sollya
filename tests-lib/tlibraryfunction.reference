@@ -1,0 +1,19 @@
+superfunc(_x_) (expecting: superfunc(_x_))
+0.6931471805599453972490664455108344554901123046875 (expecting: approximate value of log(2))
+superfunc(_x_) (expecting superfunc(_x_))
+superfunc(_x_) (expecting superfunc(_x_))
+superfunc(_x_) (expecting superfunc(_x_))
+superfunc(_x_) (expecting superfunc(_x_))
+true (expecting true)
+true (expecting true)
+true (expecting true)
+true (expecting true)
+superfunc_0(_x_) (expecting superfunc_0(_x_))
+stupid2(_x_) (expecting stupid2(_x_))
+exp_0(_x_) (expecting exp_0(_x_))
+stupid4(_x_) (expecting stupid4(_x_))
+a(_x_) (expecting a(_x_))
+Testing NULL/invalid ptr combination: OK
+Testing NULL/invalid ptr combination: OK
+Testing NULL/invalid ptr combination: OK
+Testing NULL/invalid ptr combination: OK
