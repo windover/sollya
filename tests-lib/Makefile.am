@@ -35,6 +35,8 @@ tbuild_function_expm1.c \
 tbuild_function_floor.c \
 tbuild_function_free_variable.c \
 tbuild_function_halfprecision.c \
+tbuild_function_libraryconstant.c \
+tbuild_function_libraryfunction.c \
 tbuild_function_log10.c \
 tbuild_function_log1p.c \
 tbuild_function_log2.c \
@@ -44,6 +46,7 @@ tbuild_function_nearestint.c \
 tbuild_function_neg.c \
 tbuild_function_pi.c \
 tbuild_function_pow.c \
+tbuild_function_procedurefunction.c \
 tbuild_function_quad.c \
 tbuild_function_sin.c \
 tbuild_function_single.c \
