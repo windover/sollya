@@ -4874,7 +4874,7 @@ char *sRawPrintThing(node *tree) {
     break;
   case LIBRARYFUNCTION:
     {
-      if (isPureTree(tree->child1) && (tree->child1->nodeType == VARIABLE)) {
+      if (isPureTree(tree->child1) && (accessThruMemRef(tree->child1)->nodeType == VARIABLE)) {
         res = newString("");
         for (i=1;i<=tree->libFunDeriv;i++) {
           res = concatAndFree(res,newString("diff("));
@@ -4907,7 +4907,7 @@ char *sRawPrintThing(node *tree) {
     break;
   case PROCEDUREFUNCTION:
     {
-      if (isPureTree(tree->child1) && (tree->child1->nodeType == VARIABLE)) {
+      if (isPureTree(tree->child1) && (accessThruMemRef(tree->child1)->nodeType == VARIABLE)) {
         res = newString("");
         for (i=1;i<=tree->libFunDeriv;i++) {
           res = concatAndFree(res,newString("diff("));

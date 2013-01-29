@@ -1381,7 +1381,7 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
     break;
   case LIBRARYFUNCTION:
     {
-      if (tree->child1->nodeType == VARIABLE) {
+      if (accessThruMemRef(tree->child1)->nodeType == VARIABLE) {
 	for (i=1;i<=tree->libFunDeriv;i++) {
 	  sollyaFprintf(fd,"diff(");
 	}
@@ -1412,7 +1412,7 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
     break;
   case PROCEDUREFUNCTION:
     {
-      if (tree->child1->nodeType == VARIABLE) {
+      if (accessThruMemRef(tree->child1)->nodeType == VARIABLE) {
 	for (i=1;i<=tree->libFunDeriv;i++) {
 	  sollyaFprintf(fd,"diff(");
 	}
@@ -2212,7 +2212,7 @@ char *sprintTree(node *tree) {
   case LIBRARYFUNCTION:
     {
       buffer1 = sprintTree(tree->child1);
-      if (tree->child1->nodeType == VARIABLE) {
+      if (accessThruMemRef(tree->child1)->nodeType == VARIABLE) {
 	buffer = (char *) safeCalloc(strlen(tree->libFun->functionName) + 6 * tree->libFunDeriv + 1, sizeof(char));
 	tempBuf = buffer;
 	for (i=1;i<=tree->libFunDeriv;i++) {
@@ -2251,7 +2251,7 @@ char *sprintTree(node *tree) {
     {
       buffer1 = sprintTree(tree->child1);
       buffer2 = sPrintThing(tree->child2);
-      if (tree->child1->nodeType == VARIABLE) {
+      if (accessThruMemRef(tree->child1)->nodeType == VARIABLE) {
 	buffer = (char *) safeCalloc(strlen(buffer2) + 6 * tree->libFunDeriv + 10 + 1, sizeof(char));
 	tempBuf = buffer;
 	for (i=1;i<=tree->libFunDeriv;i++) {
