@@ -18,6 +18,6 @@ int main(void) {
   sollya_lib_clear_obj(f1);
   mpfr_clear(x);
   mpfr_clear(y);
-  sollya_lib_close();  
+  sollya_lib_close();
   return 0;
 }

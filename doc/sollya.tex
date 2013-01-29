@@ -1682,6 +1682,17 @@ int is_made_of_constants(sollya_obj_t f) {
 \end{Verbatim}
 \end{minipage}\end{center}
 
+Functions are provided to allow the user to retrieve further information from library function, library constant or procedure function objects:
+\begin{itemize}
+\item \verb|int sollya_lib_decompose_library_function(void **f, int *deriv, sollya_obj_t *e,|\\
+\phantom{\texttt{int sollya\_lib\_decompose\_library\_function( }}\verb|sollya_obj_t g)|:\\ assume that \verb|g| represents an expression $f_0(f_1)$ where $f_0$ is a library function. Then, $f_0$ is the $n$-th derivative (for some $n$) of a function provided within Sollya via an external C function \verb|int func(mpfi_t, mpfi_t, int)|.\\
+As a result of a call to \verb|sollya_lib_decompose_library_function|, the value $n$ is stored at the address referred to by \verb|deriv|, a pointer to \verb|func| is stored at the address referred to by \verb|f| and a Sollya object representing $f_1$ is stored at the address referred to by \verb|e|. Please notice that the object stored in \verb|e| must manually be cleared once it becomes useless. Upon success, a boolean integer representing true is returned. If \verb|g| is not a library function object, nothing happens and false is returned.
+\item \verb|int sollya_lib_decompose_procedure_function(sollya_obj_t *f, int *deriv,|\\
+\phantom{\texttt{int sollya\_lib\_decompose\_procedure\_function( }}\verb|sollya_obj_t *e, sollya_obj_t g)|:\\
+assume that \verb|g| represents an expression $f_0(f_1)$ where $f_0$ is a procedure function. Then, $f_0$ is the $n$-th derivative (for some $n$) of a function provided within Sollya via a procedure \verb|proc(X, n, p) {...}|.\\
+As a result of a call to \verb|sollya_lib_decompose_procedure_function|, the value $n$ is stored at the address referred to by \verb|deriv|, a Sollya object representing the procedure is stored at the address referred to by \verb|f|, a Sollya object representing $f_1$ is stored at the address referred to by \verb|e|. Please notice that the objects stored in \verb|f| and \verb|e| must manually be cleared once it becomes useless. Upon success, a boolean integer representing true is returned. If \verb|g| is not a procedure function object, nothing happens and false is returned.
+\item \verb|int sollya_lib_decompose_library_constant(void **f, sollya_obj_t c)|: assume that \verb|c| is a constant provided within Sollya via an external C function \verb|void func(mpfr_t, mp_prec_t)|. As a result of a call to \verb|sollya_lib_decompose_library_constant|, a pointer to \verb|func| is stored at the addresse referred to by \verb|f| and a boolean integer representing true is returned. Otherwise, nothing happens and false is returned.
+\end{itemize}
 \subsection{Faithfully evaluate a functional expression}
 Let us suppose that \verb|f| is a functional expression and \verb|a| is a numerical value or a constant expression. One of the very convenient features of the interactive tool is that the user can simply write \verb|f(a)| at the prompt: the tool automatically adapts its internal precision in order to compute a value that is a faithful rounding (at the current tool precision) of the true value $f(a)$. Sometimes it does not achieve to find a faithful rounding, but in any case, if the result is not proved to be exact, a warning is displayed explaining how confident one should be with respect to the returned value. This feature is made available within the library with the two following functions:
 \begin{itemize}

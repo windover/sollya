@@ -79,6 +79,7 @@ tcos.c \
 tcosh.c \
 tcreate_structure.c \
 tdecimal.c \
+tdecompose_library_function.c \
 tdefault.c \
 tdegree.c \
 tdenominator.c \
@@ -301,6 +302,14 @@ LDADD = $(top_builddir)/.libs/libsollya.la
 MOSTLYCLEANFILES = $(TESTS)
 
 force_compilation_SOURCES =
+
+libraryexample.o: libraryexample.c
+	gcc $(CFLAGS) $(AM_CPPFLAGS) -fPIC -Wall -c libraryexample.c
+
+libraryexample: libraryexample.o
+	gcc $(LDFLAGS) $(AM_LDFLAGS) -shared -o libraryexample libraryexample.o -lgmp -lmpfr
+
+tdecompose_library_function_PROGRAMS: libraryexample
 
 .PHONY: force_compilation
 
