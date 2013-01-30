@@ -427,6 +427,11 @@ startsymbolwitherr:     thing
                           {
 			    $$ = $1;
 			  }
+                      | thing SEMICOLONTOKEN
+                          {
+                            miniparserSemicolonAtEnd = 1;
+			    $$ = $1;
+			  }
                       | error
                           {
 			    $$ = NULL;

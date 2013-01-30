@@ -193,9 +193,24 @@ int checkInequalityFast(int *res, node *a, node *b) {
   return okay;
 }
 
+int parseStringCheckExcessCharacters(char *str) {
+  char *curr;
+
+  for (curr=str; *curr != '\0'; curr++) {
+    if (!((*curr == ' ') ||
+	  (*curr == '\n') ||
+	  (*curr == '\t'))) return 0;
+  }
+
+  return 1;
+}
+
 node *parseStringInternal(char *str) {
   node *result;
   node *oldMinitree;
+  int oldMiniparserCharactersRead;
+  int oldMiniparserEofReached;
+  int oldMiniparserSemicolonAtEnd;
   void *myScanner;
   void *buffer;
   char *myStr;
@@ -204,13 +219,31 @@ node *parseStringInternal(char *str) {
   myStr = (char *) safeCalloc(strlen(str)+1,sizeof(char));
   strcpy(myStr,str);
   oldMinitree = minitree;
+  oldMiniparserCharactersRead = miniparserCharactersRead;
+  oldMiniparserEofReached = miniparserEofReached;
+  oldMiniparserSemicolonAtEnd = miniparserSemicolonAtEnd;
+  miniparserCharactersRead = 0;
+  miniparserEofReached = 0;
+  miniparserSemicolonAtEnd = 0;
   minitree = NULL;
   miniyylex_init(&myScanner);
   miniyyset_in(stdin, myScanner);
   buffer = startMiniparser(myScanner,myStr);
   if (!miniyyparse(myScanner)) {
     if (minitree != NULL) {
-      result = evaluateThing(minitree);
+      
+      // sollyaPrintf("read = %d, all = %d, eof = %d, semicolon = %d\n",miniparserCharactersRead, strlen(myStr), miniparserEofReached, miniparserSemicolonAtEnd);
+
+      if (miniparserEofReached || 
+	  (miniparserSemicolonAtEnd && 
+	   ((miniparserCharactersRead <= strlen(myStr)) && parseStringCheckExcessCharacters(myStr+miniparserCharactersRead)))) {
+	result = evaluateThing(minitree);
+      } else {
+	printMessage(1,SOLLYA_MSG_SYNTAX_ERROR_ENCOUNTERED_WHILE_PARSING,
+		     "Warning: syntax error parsing \"%s\" because of unexpecting excess characters at the end of the input.\n",
+		     myStr);
+	result = NULL;
+      }
       freeThing(minitree);
     } else {
       result = NULL;
@@ -220,6 +253,9 @@ node *parseStringInternal(char *str) {
   }
   miniyylex_destroy(myScanner);
   minitree = oldMinitree;
+  miniparserCharactersRead = oldMiniparserCharactersRead;
+  miniparserEofReached = oldMiniparserEofReached;
+  miniparserSemicolonAtEnd = oldMiniparserSemicolonAtEnd;
   safeFree(myStr);
   initSignalHandler();
 

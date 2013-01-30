@@ -186,6 +186,10 @@ node * temp_node;
 mpfr_t *mpfr_temp;
 mpfr_t *mpfr_temp2;
 node *minitree;
+int miniparserCharactersRead;
+int miniparserSemicolonAtEnd;
+int miniparserEofReached;
+
 
 /* END OF HELPER VARIABLES */
 
