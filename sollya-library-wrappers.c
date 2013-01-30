@@ -3364,26 +3364,26 @@ int sollya_lib_decompose_function(sollya_obj_t obj1, sollya_base_function_t *bas
   return res;
 }
 
-int sollya_lib_decompose_library_function(void **func, int *deriv, sollya_obj_t *sub_func, sollya_obj_t obj) {
+int sollya_lib_decompose_library_function(int (**func)(mpfi_t, mpfi_t, int), int *deriv, sollya_obj_t *sub_func, sollya_obj_t obj) {
 
   if (obj->nodeType == MEMREF) return sollya_lib_decompose_library_function(func, deriv, sub_func, obj->child1);
 
   if (obj->nodeType != LIBRARYFUNCTION) return 0;
 
-  *func = (void *) obj->libFun->code;
+  *func = obj->libFun->code;
   *deriv = obj->libFunDeriv;
   *sub_func = copyThing(obj->child1);
   
   return 1;
 }
 
-int sollya_lib_decompose_library_constant(void **func, sollya_obj_t obj) {
+int sollya_lib_decompose_library_constant(void (**func)(mpfr_t, mp_prec_t), sollya_obj_t obj) {
 
   if (obj->nodeType == MEMREF) return sollya_lib_decompose_library_constant(func, obj->child1);
 
   if (obj->nodeType != LIBRARYCONSTANT) return 0;
 
-  *func = (void *) obj->libFun->constant_code;
+  *func = obj->libFun->constant_code;
   
   return 1;
 }

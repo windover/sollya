@@ -414,7 +414,7 @@ void miniyyerror(void *myScanner, char *message) {
 
 %%
 
-startsymbol:            startsymbolwitherr
+startsymbol:            startsymbolwitherr 
                           {
 			    minitree = $1;
 			    $$ = NULL;

@@ -630,8 +630,8 @@ extern "C" {
   /* Some particular functions to decompose library function objects,
      library constant objects and procedure function objects
   */
-  int sollya_lib_decompose_library_function(void **, int *, sollya_obj_t *, sollya_obj_t);
-  int sollya_lib_decompose_library_constant(void **, sollya_obj_t);
+  int sollya_lib_decompose_library_function(int (**)(mpfi_t, mpfi_t, int), int *, sollya_obj_t *, sollya_obj_t);
+  int sollya_lib_decompose_library_constant(void (**)(mpfr_t, mp_prec_t), sollya_obj_t);
   int sollya_lib_decompose_procedure_function(sollya_obj_t *, int *, sollya_obj_t *, sollya_obj_t);
 
   /* Functions that work on Sollya objects that are structures 
