@@ -240,7 +240,7 @@ node *parseStringInternal(char *str) {
 	result = evaluateThing(minitree);
       } else {
 	printMessage(1,SOLLYA_MSG_SYNTAX_ERROR_ENCOUNTERED_WHILE_PARSING,
-		     "Warning: syntax error parsing \"%s\" because of unexpecting excess characters at the end of the input.\n",
+		     "Warning: syntax error parsing \"%s\" because of unexpected excess characters at the end of the input.\n",
 		     myStr);
 	result = NULL;
       }
