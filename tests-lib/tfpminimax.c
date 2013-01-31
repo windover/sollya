@@ -54,7 +54,7 @@ int main(void) {
 
   pstar = sollya_lib_parse_string("x^3 * (7794680717168470900797342378780962700124730873177b-165 + x * 31179902867931546748200780881663744737011812548003b-169)");
   f = SOLLYA_EXP(SOLLYA_X_);
-  n =  sollya_lib_parse_string("[|3,4|])");
+  n =  sollya_lib_parse_string("[|3,4|]");
   formats = sollya_lib_parse_string("[|D,24|]");
 
   tmp1 = sollya_lib_off();
