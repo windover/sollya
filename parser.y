@@ -1504,6 +1504,10 @@ basicthing:             ONTOKEN
                           {
 			    $$ = makeApply($2,$5);
 			  }
+                      | LPARTOKEN thing RPARTOKEN LPARTOKEN RPARTOKEN
+                          {
+			    $$ = makeApply($2,addElement(NULL,makeUnit()));
+			  }
                       | PROCTOKEN procbody
                           {
 			    $$ = $2;
