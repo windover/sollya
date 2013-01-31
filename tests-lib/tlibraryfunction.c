@@ -115,9 +115,14 @@ int stupid7(mpfi_t result, mpfi_t x, int n) {
   return 0;
 }
 
+int stupid8(mpfi_t result, mpfi_t x, int n) {
+  mpfi_set_ui(result, 3);
+  return 0;
+}
+
 
 int main(void) {
-  sollya_obj_t f[15];
+  sollya_obj_t f[18];
   mpfr_t x,y;
   int i;
   void *ptr;
@@ -129,22 +134,30 @@ int main(void) {
 
   /* Testing normal use */
   f[1] = sollya_lib_libraryfunction(f[0], "superfunc", myownlog);
-  sollya_lib_printf("%b (expecting: superfunc(_x_))\n", f[1]);
+  sollya_lib_printf("%b (expecting: superfunc)\n", f[1]);
   mpfr_init2(x, 30);
   mpfr_init2(y, 50);
   mpfr_set_ui(x, 2, GMP_RNDN);
   sollya_lib_evaluate_function_at_point(y, f[1], x, NULL);
   sollya_lib_printf("%v (expecting: approximate value of log(2))\n", y);
+  sollya_lib_clear_obj(f[1]);
+  f[1] = sollya_lib_parse_string("diff(superfunc(sin(_x_)))");
+  sollya_lib_printf("%b (expecting: (diff(superfunc))(sin(_x_)) * cos(_x_))\n", f[1]);
+  sollya_lib_clear_obj(f[1]);
+  f[1] = sollya_lib_parse_string("diff(superfunc(_x_))");
+  sollya_lib_printf("%b (expecting: diff(superfunc))\n", f[1]);
+  sollya_lib_clear_obj(f[1]);
+  f[1] = sollya_lib_parse_string("superfunc");
 
   /* Trying to rebind a function already bounded */
   f[2] = sollya_lib_libraryfunction(f[0], "superfunc", myownlog);
-  sollya_lib_printf("%b (expecting superfunc(_x_))\n", f[2]);
+  sollya_lib_printf("%b (expecting superfunc)\n", f[2]);
   f[3] = sollya_lib_libraryfunction(f[0], "foo", myownlog);
-  sollya_lib_printf("%b (expecting superfunc(_x_))\n", f[3]);
+  sollya_lib_printf("%b (expecting superfunc)\n", f[3]);
   f[4] = sollya_lib_libraryfunction(f[0], NULL, myownlog);
-  sollya_lib_printf("%b (expecting superfunc(_x_))\n", f[4]);
+  sollya_lib_printf("%b (expecting superfunc)\n", f[4]);
   f[5] = sollya_lib_libraryfunction(f[0], "exp", myownlog);
-  sollya_lib_printf("%b (expecting superfunc(_x_))\n", f[5]);
+  sollya_lib_printf("%b (expecting superfunc)\n", f[5]);
 
   for(i=2;i<=5;i++) {
     f[6] = sollya_lib_cmp_equal(f[1], f[i]);
@@ -154,64 +167,71 @@ int main(void) {
 
   /* Trying to bind a function to an already assigned name */
   f[6] = sollya_lib_libraryfunction(f[0], "superfunc", stupid1);
-  sollya_lib_printf("%b (expecting superfunc_0(_x_))\n", f[6]);
+  sollya_lib_printf("%b (expecting superfunc_0)\n", f[6]);
 
   /* Leaving NULL as second argument */
   f[7] = sollya_lib_libraryfunction(f[0], NULL, stupid2);
   sollya_lib_sprintf(str, "%b", f[7]);
-  sollya_lib_sprintf(str2, "func_%p(_x_)", stupid2);
+  sollya_lib_sprintf(str2, "func_%p", stupid2);
   if (strcmp(str, str2)==0) sollya_lib_printf("The behavior when the second argument is NULL is conform to the semantic.\n");
   else {
-    strcpy(str2, "stupid2(_x_)");
+    strcpy(str2, "stupid2");
     if (strcmp(str, str2)==0) sollya_lib_printf("The behavior when the second argument is NULL is conform to the semantic.\n");
     else sollya_lib_printf("The behavior when the second argument is *NOT* conform to the semantic.\n");
   }
 
   /* Unauthorized names */
   f[8] = sollya_lib_libraryfunction(f[0], "e]xp", stupid3);
-  sollya_lib_printf("%b (expecting exp_0(_x_))\n", f[8]);
+  sollya_lib_printf("%b (expecting exp_0)\n", f[8]);
 
   f[9] = sollya_lib_libraryfunction(f[0], "]0", stupid4);
   sollya_lib_sprintf(str, "%b", f[9]);
-  sollya_lib_sprintf(str2, "func_%p(_x_)", stupid4);
+  sollya_lib_sprintf(str2, "func_%p", stupid4);
   if (strcmp(str, str2)==0) sollya_lib_printf("The behavior when the second argument is NULL is conform to the semantic.\n");
   else {
-    strcpy(str2, "stupid4(_x_)");
+    strcpy(str2, "stupid4");
     if (strcmp(str, str2)==0) sollya_lib_printf("The behavior when the second argument is NULL is conform to the semantic.\n");
     else sollya_lib_printf("The behavior when the second argument is *NOT* conform to the semantic.\n");
   }
 
 
   f[10] = sollya_lib_libraryfunction(f[0], "0]a", stupid5);
-  sollya_lib_printf("%b (expecting a(_x_))\n", f[10]);
+  sollya_lib_printf("%b (expecting a)\n", f[10]);
 
   /* Pointer to non-valid functions, together with NULL/illicit as second argument */
   f[11] = sollya_lib_libraryfunction(f[0], NULL, stupid6+17);
   sollya_lib_sprintf(str, "%b", f[11]);
-  sollya_lib_sprintf(str2, "func_%p(_x_)", stupid6+17);
+  sollya_lib_sprintf(str2, "func_%p", stupid6+17);
   if (strcmp(str, str2)==0) sollya_lib_printf("Testing NULL/invalid ptr combination: OK\n");
   else sollya_lib_printf("Testing NULL/invalid ptr combination: *NOT* OK: %b versus %s\n", f[11], str2);
 
   f[12] = sollya_lib_libraryfunction(f[0], NULL, stupid7-17);
   sollya_lib_sprintf(str, "%b", f[12]);
-  sollya_lib_sprintf(str2, "func_%p(_x_)", stupid7-17);
+  sollya_lib_sprintf(str2, "func_%p", stupid7-17);
   if (strcmp(str, str2)==0) sollya_lib_printf("Testing NULL/invalid ptr combination: OK\n");
   else sollya_lib_printf("Testing NULL/invalid ptr combination: *NOT* OK: %b versus %s\n", f[12], str2);
 
   f[13] = sollya_lib_libraryfunction(f[0], "", (int (*)(mpfi_t, mpfi_t, int))(&x));
   sollya_lib_sprintf(str, "%b", f[13]);
-  sollya_lib_sprintf(str2, "func_%p(_x_)", &x);
+  sollya_lib_sprintf(str2, "func_%p", &x);
   if (strcmp(str, str2)==0) sollya_lib_printf("Testing NULL/invalid ptr combination: OK\n");
   else sollya_lib_printf("Testing NULL/invalid ptr combination: *NOT* OK: %b versus %s\n", f[13], str2);
 
   ptr = malloc(1);
   f[14] = sollya_lib_libraryfunction(f[0], "*]%", (int (*)(mpfi_t, mpfi_t, int))(ptr));
   sollya_lib_sprintf(str, "%b", f[14]);
-  sollya_lib_sprintf(str2, "func_%p(_x_)", ptr);
+  sollya_lib_sprintf(str2, "func_%p", ptr);
   if (strcmp(str, str2)==0) sollya_lib_printf("Testing NULL/invalid ptr combination: OK\n");
   else sollya_lib_printf("Testing NULL/invalid ptr combination: *NOT* OK: %b versus %s\n", f[14], str2);
 
-  for(i=0;i<=14;i++) sollya_lib_clear_obj(f[i]);
+  /* Called on an interval, should return the interval, and the function should still being alive */
+  f[15] = sollya_lib_parse_string("[1,2]");
+  f[16] = sollya_lib_libraryfunction(f[15], "foo", stupid8);
+  sollya_lib_printf("%b (expecting [3;3])\n", f[16]);
+  f[17] = sollya_lib_parse_string("diff(foo(sin(_x_)))");
+  sollya_lib_printf("%b (expecting (diff(foo))(sin(_x_)) * cos(_x_))\n", f[17]);
+
+  for(i=0;i<=17;i++) sollya_lib_clear_obj(f[i]);
   mpfr_clear(x);
   mpfr_clear(y);
   free(ptr);

@@ -1,19 +1,23 @@
-superfunc(_x_) (expecting: superfunc(_x_))
+superfunc (expecting: superfunc)
 0.6931471805599453972490664455108344554901123046875 (expecting: approximate value of log(2))
-superfunc(_x_) (expecting superfunc(_x_))
-superfunc(_x_) (expecting superfunc(_x_))
-superfunc(_x_) (expecting superfunc(_x_))
-superfunc(_x_) (expecting superfunc(_x_))
+(diff(superfunc))(sin(_x_)) * cos(_x_) (expecting: (diff(superfunc))(sin(_x_)) * cos(_x_))
+diff(superfunc) (expecting: diff(superfunc))
+superfunc (expecting superfunc)
+superfunc (expecting superfunc)
+superfunc (expecting superfunc)
+superfunc (expecting superfunc)
 true (expecting true)
 true (expecting true)
 true (expecting true)
 true (expecting true)
-superfunc_0(_x_) (expecting superfunc_0(_x_))
+superfunc_0 (expecting superfunc_0)
 The behavior when the second argument is NULL is conform to the semantic.
-exp_0(_x_) (expecting exp_0(_x_))
+exp_0 (expecting exp_0)
 The behavior when the second argument is NULL is conform to the semantic.
-a(_x_) (expecting a(_x_))
+a (expecting a)
 Testing NULL/invalid ptr combination: OK
 Testing NULL/invalid ptr combination: OK
 Testing NULL/invalid ptr combination: OK
 Testing NULL/invalid ptr combination: OK
+[3;3] (expecting [3;3])
+(diff(foo))(sin(_x_)) * cos(_x_) (expecting (diff(foo))(sin(_x_)) * cos(_x_))

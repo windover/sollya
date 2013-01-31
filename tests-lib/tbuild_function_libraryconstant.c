@@ -62,6 +62,10 @@ int main(void) {
   mpfr_set_ui(x, 0, GMP_RNDN);
   sollya_lib_evaluate_function_at_point(y, f[0], x, NULL);
   sollya_lib_printf("%v (expecting: 0.5772...)\n", y);
+  sollya_lib_clear_obj(f[0]);
+  f[0] = sollya_lib_parse_string("superconst");
+  sollya_lib_evaluate_function_at_point(y, f[0], x, NULL);
+  sollya_lib_printf("%v (expecting: 0.5772...)\n", y);
 
   /* Trying to rebind a constant already bounded */
   f[1] = sollya_lib_build_function_libraryconstant("*]%", euler_gamma);
