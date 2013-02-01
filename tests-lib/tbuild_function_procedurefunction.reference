@@ -1,4 +1,4 @@
-(function(proc(X, n, p)
+function(proc(X, n, p)
 {
 var res, oldPrec;
 oldPrec = prec;
