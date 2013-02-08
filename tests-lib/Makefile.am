@@ -79,6 +79,7 @@ tcos.c \
 tcosh.c \
 tcreate_structure.c \
 tdecimal.c \
+tdecompose_library_constant.c \
 tdecompose_library_function.c \
 tdefault.c \
 tdegree.c \
@@ -294,12 +295,12 @@ tvoid.c
 
 EXTRA_DIST = check.proto $(TESTFILES) $(TESTFILES:.c=.reference)
 
-check_PROGRAMS = force_compilation $(TESTFILES:.c=)
+check_PROGRAMS = force_compilation libraryexample $(TESTFILES:.c=)
 TESTS= $(TESTFILES:.c=.sh)
 
 LDADD = $(top_builddir)/.libs/libsollya.la
 
-MOSTLYCLEANFILES = $(TESTS)
+MOSTLYCLEANFILES = $(TESTS) libraryexample
 
 force_compilation_SOURCES =
 
@@ -308,8 +309,6 @@ libraryexample.o: libraryexample.c
 
 libraryexample: libraryexample.o
 	gcc $(LDFLAGS) $(AM_LDFLAGS) -shared -o libraryexample libraryexample.o -lgmp -lmpfr
-
-tdecompose_library_function_PROGRAMS: libraryexample
 
 .PHONY: force_compilation
 
