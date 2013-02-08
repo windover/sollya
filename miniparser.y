@@ -251,6 +251,7 @@ void miniyyerror(void *myScanner, char *message) {
 %token  ERRORTOKEN;
 
 %token  LIBRARYTOKEN;
+%token  LIBRARYCONSTANTTOKEN;
 
 %token  DIFFTOKEN;
 %token  BASHEVALUATETOKEN;
@@ -825,6 +826,11 @@ simpleassignment:       IDENTIFIERTOKEN EQUALTOKEN thing
                       | IDENTIFIERTOKEN EQUALTOKEN LIBRARYTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeLibraryBinding($1, $5);
+			    safeFree($1);
+			  }
+                      | IDENTIFIERTOKEN EQUALTOKEN LIBRARYCONSTANTTOKEN LPARTOKEN thing RPARTOKEN
+                          {
+			    $$ = makeLibraryConstantBinding($1, $5);
 			    safeFree($1);
 			  }
                       | indexing EQUALTOKEN thing

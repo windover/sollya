@@ -354,6 +354,7 @@ SUPPRESSWARNINGS "roundingwarnings"
 RATIONALMODE    "rationalmode"
 
 LIBRARY         "library"
+LIBRARYCONSTANT "libraryconstant"
 
 HOPITALRECURSIONS "hopitalrecursions"
 
@@ -677,6 +678,7 @@ NOP             "nop"
 {RESTART}         			    { miniparserCharactersRead += yyleng; return FALSERESTARTTOKEN; }
 
 {LIBRARY}         			    {  miniparserCharactersRead += yyleng; return LIBRARYTOKEN; }
+{LIBRARYCONSTANT}         		    {  miniparserCharactersRead += yyleng; return LIBRARYCONSTANTTOKEN; }
 
 {DIFF}            			    {  miniparserCharactersRead += yyleng; return DIFFTOKEN; }
 {SIMPLIFY}				    {  miniparserCharactersRead += yyleng; return SIMPLIFYTOKEN; }
