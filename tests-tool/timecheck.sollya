@@ -130,5 +130,24 @@ if 1.25*t5 >= t3 then "Okay" else print("t5 = ", round(t5,12,RN), " and t3 = ", 
 if 1.25*t5 >= t4 then "Okay" else print("t5 = ", round(t5,12,RN), " and t4 = ", round(t4, 12, RN));
 i := i+1;
 
+/* Test #12 */
+/* Non-regression for bug #15363, solved at revision 1934 */
+i;
+f = 5 / 48 * cos(x^(-0.625) / 2)^(-3.5) + 5 / 48 * cos((x^(-0.625) + (2 * (pi)) / 3) / 2)^(-3.5) + 5 / 48 * cos((x^(-0.625) - (2 * (pi)) / 3) / 2)^(-3.5) + 5 / 48 * cos(x^(-0.625) / 2)^(-3.5) * 5 / 48 * cos((x^(-0.625) + (2 * (pi)) / 3) / 2)^(-3.5) + 5 / 48 * cos(x^(-0.625) / 2)^(-3.5) * 5 / 48 * cos((x^(-0.625) - (2 * (pi)) / 3) / 2)^(-3.5) + 5 / 48 * cos((x^(-0.625) + (2 * (pi)) / 3) / 2)^(-3.5) * 5 / 48 * cos((x^(-0.625) - (2 * (pi)) / 3) / 2)^(-3.5) + 5 / 48 * cos(x^(-0.625) / 2)^(-3.5) * 5 / 48 * cos((x^(-0.625) + (2 * (pi)) / 3) / 2)^(-3.5) * 5 / 48 * cos((x^(-0.625) - (2 * (pi)) / 3) / 2)^(-3.5);
+t = time(a=evaluate(f, [10]))/yardstick;
+if (t in 3e-4 * variance) then "Okay" else round(t,12,RN);
+i := i + 1;
+
+
+/* Test #13 */
+/* Other problem, discovered as a side effect of bug report #15363, solved at revision 1935 */
+i;
+f = 5 / 48 * cos(x^(-0.625) / 2)^(-3.5) + 5 / 48 * cos((x^(-0.625) + (2 * (pi)) / 3) / 2)^(-3.5) + 5 / 48 * cos((x^(-0.625) - (2 * (pi)) / 3) / 2)^(-3.5) + 5 / 48 * cos(x^(-0.625) / 2)^(-3.5) * 5 / 48 * cos((x^(-0.625) + (2 * (pi)) / 3) / 2)^(-3.5) + 5 / 48 * cos(x^(-0.625) / 2)^(-3.5) * 5 / 48 * cos((x^(-0.625) - (2 * (pi)) / 3) / 2)^(-3.5) + 5 / 48 * cos((x^(-0.625) + (2 * (pi)) / 3) / 2)^(-3.5) * 5 / 48 * cos((x^(-0.625) - (2 * (pi)) / 3) / 2)^(-3.5) + 5 / 48 * cos(x^(-0.625) / 2)^(-3.5) * 5 / 48 * cos((x^(-0.625) + (2 * (pi)) / 3) / 2)^(-3.5) * 5 / 48 * cos((x^(-0.625) - (2 * (pi)) / 3) / 2)^(-3.5);
+t1 = time(a=horner(f))/yardstick;
+t2 = time(a=horner(f*5))/yardstick;
+if 1.25*t1 >= t2 then "Okay" else print("t1 = ", round(t1,12,RN), " and t2 = ", round(t2, 12, RN));
+if 1.25*t2 >= t1 then "Okay" else print("t1 = ", round(t1,12,RN), " and t2 = ", round(t2, 12, RN));
+i := i + 1;
+
 "End of test";
 
