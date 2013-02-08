@@ -12,7 +12,7 @@ void stupid2(mpfr_t res, mp_prec_t prec) {
 }
 
 int main(void) {
-  sollya_obj_t f[11];
+  sollya_obj_t f[13];
   void (*libfun)(mpfr_t, mp_prec_t) = NULL;
   int res = -1;
   int i;
@@ -32,39 +32,41 @@ int main(void) {
   res = -1;  libfun = NULL;
   res = sollya_lib_decompose_library_constant(&libfun, f[0]);
   f[3] = sollya_lib_libraryconstant("should_not_be_used", libfun);
-  f[4] = sollya_lib_cmp_equal(f[2], f[3]);
+  f[4] = SOLLYA_COS(SOLLYA_CONST(4));
+  f[5] = sollya_lib_add(f[3], f[4]);
+  f[6] = sollya_lib_cmp_equal(f[2], f[5]);
   if (!res) sollya_lib_printf("sollya_lib_decompose_library_constant should succeed on %b. It did not.\n", f[0]);
   else {
-    sollya_lib_printf("%b == %b gives %b (expecting true)\n", f[2], f[3], f[4]);
+    sollya_lib_printf("%b == %b gives %b (expecting true)\n", f[2], f[5], f[6]);
   }
 
 
   /* Trying to decompose a library constant created with sollya_lib_libraryconstant */
   /* Trying also to recompose an object with the function pointer that we get and to test if both objects compare equal. */
   res = -1; libfun = NULL;
-  f[5] = sollya_lib_libraryconstant("foo", stupid1);
-  res = sollya_lib_decompose_library_constant(&libfun, f[5]);
-  f[6] = sollya_lib_libraryconstant("should_not_be_used", libfun);
-  f[7] = sollya_lib_cmp_equal(f[5], f[6]);
-  if (!res) sollya_lib_printf("sollya_lib_decompose_library_constant should succeed on %b. It did not.\n", f[5]);
+  f[7] = sollya_lib_libraryconstant("foo", stupid1);
+  res = sollya_lib_decompose_library_constant(&libfun, f[7]);
+  f[8] = sollya_lib_libraryconstant("should_not_be_used", libfun);
+  f[9] = sollya_lib_cmp_equal(f[7], f[8]);
+  if (!res) sollya_lib_printf("sollya_lib_decompose_library_constant should succeed on %b. It did not.\n", f[7]);
   else {
-    sollya_lib_printf("%b == %b gives %b (expecting true)\n", f[5], f[6], f[7]);
+    sollya_lib_printf("%b == %b gives %b (expecting true)\n", f[7], f[8], f[9]);
   }
 
 
   /* Trying to decompose a library constant created with sollya_lib_build_function_libraryconstant */
   /* Trying also to recompose an object with the function pointer that we get and to test if both objects compare equal. */
   res = -1; libfun = NULL;
-  f[8] = sollya_lib_build_function_libraryconstant("bar", stupid2);
-  res = sollya_lib_decompose_library_constant(&libfun, f[8]);
-  f[9] = sollya_lib_libraryconstant("should_not_be_used", libfun);
-  f[10] = sollya_lib_cmp_equal(f[8], f[9]);
-  if (!res) sollya_lib_printf("sollya_lib_decompose_library_constant should succeed on %b. It did not.\n", f[8]);
+  f[10] = sollya_lib_build_function_libraryconstant("bar", stupid2);
+  res = sollya_lib_decompose_library_constant(&libfun, f[10]);
+  f[11] = sollya_lib_libraryconstant("should_not_be_used", libfun);
+  f[12] = sollya_lib_cmp_equal(f[10], f[11]);
+  if (!res) sollya_lib_printf("sollya_lib_decompose_library_constant should succeed on %b. It did not.\n", f[10]);
   else {
-    sollya_lib_printf("%b == %b gives %b (expecting true)\n", f[8], f[9], f[10]);
+    sollya_lib_printf("%b == %b gives %b (expecting true)\n", f[10], f[11], f[12]);
   }
 
-  for(i=0;i<=10;i++)  sollya_lib_clear_obj(f[i]);
+  for(i=0;i<=12;i++)  sollya_lib_clear_obj(f[i]);
 
   sollya_lib_close();
   return 0;
