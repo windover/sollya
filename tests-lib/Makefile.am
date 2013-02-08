@@ -81,6 +81,7 @@ tcreate_structure.c \
 tdecimal.c \
 tdecompose_library_constant.c \
 tdecompose_library_function.c \
+tdecompose_procedure_function.c \
 tdefault.c \
 tdegree.c \
 tdenominator.c \
