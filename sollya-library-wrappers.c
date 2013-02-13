@@ -3096,10 +3096,14 @@ int sollya_lib_v_get_subfunctions(sollya_obj_t obj1, int *ari, va_list varlist) 
       gottaBreak = 0;
       switch (i) {
       case 1:
-	if (obj1->nodeType == LIBRARYCONSTANT) {
+	switch (obj1->nodeType) {
+	case LIBRARYCONSTANT:
+	case VARIABLE:
 	  *elem = copyThing(obj1);
-	} else {
+	  break;
+	default:
 	  *elem = copyThing(obj1->child1);
+	  break;
 	}
         break;
       case 2:
@@ -3312,10 +3316,14 @@ int sollya_lib_v_decompose_function(sollya_obj_t obj1, sollya_base_function_t *b
       gottaBreak = 0;
       switch (i) {
       case 1:
-	if (obj1->nodeType == LIBRARYCONSTANT) {
+	switch (obj1->nodeType) {
+	case LIBRARYCONSTANT:
+	case VARIABLE:
 	  *elem = copyThing(obj1);
-	} else {
+	  break;
+	default:
 	  *elem = copyThing(obj1->child1);
+	  break;
 	}
         break;
       case 2:
