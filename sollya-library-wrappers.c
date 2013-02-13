@@ -3068,89 +3068,6 @@ int sollya_lib_get_head_function(sollya_base_function_t *base_func, sollya_obj_t
   return 1;
 }
 
-int sollya_lib_v_get_subfunctions(sollya_obj_t obj1, int *ari, va_list varlist) {
-  sollya_obj_t *elem;
-  int i, funcArity, gottaBreak;
-
-  if (obj1->nodeType == MEMREF) return sollya_lib_v_get_subfunctions(obj1->child1, ari, varlist);
-
-  if (!isPureTree(obj1)) return 0;
-  funcArity = arity(obj1);
-  if (ari != NULL) {
-    *ari = funcArity;
-  }
-  switch (obj1->nodeType) {
-  case LIBRARYCONSTANT:
-    funcArity = 1;
-    break;
-  case LIBRARYFUNCTION:
-    funcArity = 2;
-    break;
-  case PROCEDUREFUNCTION:
-    funcArity = 2;
-    break;    
-  }
-  i = 1;
-  while ((elem = va_arg(varlist,sollya_obj_t *)) != NULL) {
-    if (i <= funcArity) {
-      gottaBreak = 0;
-      switch (i) {
-      case 1:
-	switch (obj1->nodeType) {
-	case LIBRARYCONSTANT:
-	case VARIABLE:
-	  *elem = copyThing(obj1);
-	  break;
-	default:
-	  *elem = copyThing(obj1->child1);
-	  break;
-	}
-        break;
-      case 2:
-	switch (obj1->nodeType) {
-	case LIBRARYFUNCTION:
-	  *elem = (node *) safeMalloc(sizeof(node));
-	  (*elem)->nodeType = LIBRARYFUNCTION;
-	  (*elem)->libFun = obj1->libFun;
-	  (*elem)->libFunDeriv = obj1->libFunDeriv;
-	  (*elem)->child1 = makeVariable();
-	  break;
-	case PROCEDUREFUNCTION:
-	  *elem = (node *) safeMalloc(sizeof(node));
-	  (*elem)->nodeType = PROCEDUREFUNCTION;
-	  (*elem)->libFunDeriv = obj1->libFunDeriv;
-	  (*elem)->child1 = makeVariable();	
-	  (*elem)->child2 = copyThing(obj1->child2);
-	  break;
-	default:
-	  *elem = copyThing(obj1->child2);
-	  break;
-	}
-        break;
-      default:
-        gottaBreak = 1;
-        break;
-      }
-      if (gottaBreak) break;
-    } else {
-      break;
-    }
-    i++;
-  }
-  return 1;
-}
-
-int sollya_lib_get_subfunctions(sollya_obj_t obj1, int *ari, ...) {
-  va_list varlist;
-  int res;
-
-  va_start(varlist,ari);
-  res = sollya_lib_v_get_subfunctions(obj1, ari, varlist);
-  va_end(varlist);
-
-  return res;
-}
-
 int sollya_lib_v_decompose_function(sollya_obj_t obj1, sollya_base_function_t *base_func, int *ari, va_list varlist) {
   sollya_obj_t *elem;
   int i, funcArity, gottaBreak;
@@ -3367,6 +3284,21 @@ int sollya_lib_decompose_function(sollya_obj_t obj1, sollya_base_function_t *bas
 
   va_start(varlist,ari);
   res = sollya_lib_v_decompose_function(obj1, base_func, ari, varlist);
+  va_end(varlist);
+
+  return res;
+}
+
+int sollya_lib_v_get_subfunctions(sollya_obj_t obj1, int *ari, va_list varlist) {
+  return sollya_lib_v_decompose_function(obj1, NULL, ari, varlist);
+}
+
+int sollya_lib_get_subfunctions(sollya_obj_t obj1, int *ari, ...) {
+  va_list varlist;
+  int res;
+
+  va_start(varlist,ari);
+  res = sollya_lib_v_get_subfunctions(obj1, ari, varlist);
   va_end(varlist);
 
   return res;
