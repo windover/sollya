@@ -122,6 +122,8 @@ tget_diam.c \
 tget_dieonerrormode.c \
 tget_display.c \
 tget_free_variable_name.c \
+tget_function_arity.c \
+tget_head_function.c \
 tget_hopitalrecursions.c \
 tget_interval_from_range.c \
 tget_midpointmode.c \
@@ -132,6 +134,7 @@ tget_roundingwarnings.c \
 tget_showmessagenumbers.c \
 tget_string.c \
 tget_structure_elements.c \
+tget_subfunctions.c \
 tget_element_in_structure.c \
 tget_taylorrecursions.c \
 tget_timing.c \
