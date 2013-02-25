@@ -79,6 +79,7 @@ tcos.c \
 tcosh.c \
 tcreate_structure.c \
 tdecimal.c \
+tdecompose_function.c \
 tdecompose_library_constant.c \
 tdecompose_library_function.c \
 tdecompose_procedure_function.c \
@@ -290,7 +291,9 @@ ttanh.c \
 ttriple_double.c \
 ttriple_double_obj.c \
 ttrue.c \
+tv_decompose_function.c \
 tv_fpminimax.c \
+tv_get_subfunctions.c \
 tv_implementpoly.c \
 tv_max.c \
 tv_min.c \

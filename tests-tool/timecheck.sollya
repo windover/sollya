@@ -149,5 +149,28 @@ if 1.25*t1 >= t2 then "Okay" else print("t1 = ", round(t1,12,RN), " and t2 = ", 
 if 1.25*t2 >= t1 then "Okay" else print("t1 = ", round(t1,12,RN), " and t2 = ", round(t2, 12, RN));
 i := i + 1;
 
-"End of test";
+/* Test #14 */
+/* Non-regression tests for memory optimizations introduced into the trunk at revision 1775 */
+i;
+n = 1000;
+t1 = time({L=[||]; for k from 0 to n do L = 1.:L;})/yardstick;
+t2 = time(for k from 0 to n do a = head(L))/yardstick;
+t3 = time(for k from 0 to n do L = tail(L))/yardstick;
+if (t1 in 1.38e-3 * variance) then "Okay" else "t1 = ", round(t1,12,RN);
+if (t2 in 9.25e-4 * variance) then "Okay" else "t2 = ", round(t2,12,RN);
+if (t3 in 8.5e-4 * variance) then "Okay" else "t3 = ", round(t3,12,RN);
+i := i+1;
 
+/* Test #15 */
+/* Non-regression tests for optimizations of lists introduced in the branch optimLists */
+i;
+n = 1000; L = [||]; for k from 0 to n do L = 1.:L;
+t1 = time(for k from 0 to n do a = L[n]);
+n = 2000; L = [||]; for k from 0 to n do L = 1.:L;
+t2 = time(for k from 0 to n do a = L[n]);
+if (1.75 <= t2/t1) && (t2/t1 <= 2.25)
+  then "Okay"
+  else print("t1 = ", round(t1,12,RN), " and t2 = ", round(t2, 12, RN));
+i:=i+1;
+
+"End of test";
