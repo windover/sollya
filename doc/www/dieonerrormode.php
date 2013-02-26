@@ -52,7 +52,7 @@ be printed in these cases at appropriate <?php linkTo("command","verbosity","ver
 &nbsp;&nbsp;&nbsp;&gt; verbosity = 1!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; dieonerrormode = off!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; 5 */&nbsp;&nbsp;4;<br> 
-&nbsp;&nbsp;&nbsp;Warning: syntax error, unexpected DIVTOKEN.<br> 
+&nbsp;&nbsp;&nbsp;Warning: syntax error, unexpected /.<br> 
 &nbsp;&nbsp;&nbsp;The last symbol read has been "/".<br> 
 &nbsp;&nbsp;&nbsp;Will skip input until next semicolon after the unexpected token. May leak memory.<br> 
 &nbsp;&nbsp;&nbsp;&nbsp; exp(17);<br> 
@@ -78,7 +78,7 @@ be printed in these cases at appropriate <?php linkTo("command","verbosity","ver
 &nbsp;&nbsp;&nbsp;&gt; verbosity = 1!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; dieonerrormode = on!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; 5 */&nbsp;&nbsp;4;<br> 
-&nbsp;&nbsp;&nbsp;Warning: syntax error, unexpected DIVTOKEN.<br> 
+&nbsp;&nbsp;&nbsp;Warning: syntax error, unexpected /.<br> 
 &nbsp;&nbsp;&nbsp;The last symbol read has been "/".<br> 
 &nbsp;&nbsp;&nbsp;Will skip input until next semicolon after the unexpected token. May leak memory.<br> 
 &nbsp;&nbsp;&nbsp;Warning: some syntax, typing or side-effect error has occurred.<br> 

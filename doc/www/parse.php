@@ -49,7 +49,7 @@ sequence <span class="arg">string</span>.
 <h2 class="category">Example 3: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; verbosity = 1!;<br> 
 &nbsp;&nbsp;&nbsp;&gt; parse("5 + * 3");<br> 
-&nbsp;&nbsp;&nbsp;Warning: syntax error, unexpected MULTOKEN. Will try to continue parsing (expecting ";"). May leak memory.<br> 
+&nbsp;&nbsp;&nbsp;Warning: syntax error, unexpected *. Will try to continue parsing (expecting ";"). May leak memory.<br> 
 &nbsp;&nbsp;&nbsp;Warning: the string "5 + * 3" could not be parsed by the miniparser.<br> 
 &nbsp;&nbsp;&nbsp;Warning: at least one of the given expressions or a subexpression is not correctly typed<br> 
 &nbsp;&nbsp;&nbsp;or its evaluation has failed because of some error on a side-effect.<br> 

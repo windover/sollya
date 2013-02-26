@@ -27,7 +27,7 @@ Parameters:
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > t = time(p=remez(sin(x),10,[-1;1]));
 > write(t,"s were spent computing p = ",p,"\n");
-0.21185799999999999998576832860308627459744457155466s were spent computing p = 9
+0.20953300000000000001326369569731866704387357458472s were spent computing p = 9
 .0486898749977990986908851357759191711354777014602e-17 * x^10 + 2.68762595115123
 596299959320959141640012683406736586e-6 * x^9 + -2.42479784925213133490732322892
 46205727856268698001e-16 * x^8 + -1.98344863020965929701245606503586461226130937
@@ -44,14 +44,14 @@ Parameters:
 > write(time({ p=remez(sin(x),10,[-1;1]); write("The error is 2^(", log2(dirtyin
 fnorm(p-sin(x),[-1;1])), ")\n"); }), " s were spent\n");
 The error is 2^(log2(2.39601979446524486606649528289933482070294808074097e-11))
-0.378276999999999999965000219148691940063145011663437 s were spent
+0.333375000000000000000867361737988403547205962240696 s were spent
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > t = time(bashexecute("sleep 10"));
 > write(~(t-10),"s of execution overhead.\n");
-2.4519999999999993189891966949289781041443347930908e-3s of execution overhead.
+2.3190000000000016155965454345277976244688034057617e-3s of execution overhead.
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
@@ -59,8 +59,8 @@ The error is 2^(log2(2.39601979446524486606649528289933482070294808074097e-11))
 > ratio := time(p=remez(sin(x),10,[-1;1]))/time(nop(10));
 > write("This ratio = ", ratio, " should somehow be independent of the type of m
 achine.\n");
-This ratio = 6.4305484827606865780800941105998536515778270814605 should somehow 
-be independent of the type of machine.
+This ratio = 9.356549194409620652895461692568222727739666106013 should somehow b
+e independent of the type of machine.
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{timing} (\ref{labtiming}), \textbf{nop} (\ref{labnop})

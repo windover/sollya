@@ -86,9 +86,6 @@ other effect though.
 &nbsp;&nbsp;&nbsp;Information (197): differentiating the expression 'exp(x * 0.1)'<br> 
 &nbsp;&nbsp;&nbsp;Information (204): extraction of coefficient terms from a polynomial uses a special algorithm for Horner forms.<br> 
 &nbsp;&nbsp;&nbsp;Information (207): no Horner simplification will be performed because the given tree is already in Horner form.<br> 
-&nbsp;&nbsp;&nbsp;Information (207): no Horner simplification will be performed because the given tree is already in Horner form.<br> 
-&nbsp;&nbsp;&nbsp;Information (207): no Horner simplification will be performed because the given tree is already in Horner form.<br> 
-&nbsp;&nbsp;&nbsp;Information (207): no Horner simplification will be performed because the given tree is already in Horner form.<br> 
 &nbsp;&nbsp;&nbsp;exp(x * 0.1) * 0.1<br> 
 &nbsp;&nbsp;&nbsp;&gt; suppressmessage([| 174, 207, 196 |]);<br> 
 &nbsp;&nbsp;&nbsp;&gt; diff(exp(x * 0.1));<br> 

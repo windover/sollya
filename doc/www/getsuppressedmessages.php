@@ -72,7 +72,6 @@ all warning and information messages that have been suppressed.
 &nbsp;&nbsp;&nbsp;&gt; suppressmessage(174);<br> 
 &nbsp;&nbsp;&nbsp;&gt; exp(x * 0.1);<br> 
 &nbsp;&nbsp;&nbsp;Information: no Horner simplification will be performed because the given tree is already in Horner form.<br> 
-&nbsp;&nbsp;&nbsp;Information: no Horner simplification will be performed because the given tree is already in Horner form.<br> 
 &nbsp;&nbsp;&nbsp;exp(x * 0.1)<br> 
 &nbsp;&nbsp;&nbsp;&gt; getsuppressedmessages();<br> 
 &nbsp;&nbsp;&nbsp;[|174|]<br> 
