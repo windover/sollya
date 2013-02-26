@@ -1,9 +1,14 @@
 /*
 
-Copyright 2006-2009 by 
+Copyright 2006-2013 by 
 
 Laboratoire de l'Informatique du Parallelisme, 
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+
+and by
+
+Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
 
 Contributors Ch. Lauter, S. Chevillard
 
@@ -258,6 +263,7 @@ int performListPrependOnEntry(chain *symTbl, char *ident, node *tree) {
   node *oldNode, *newNode;
   int okay;
   int oldChecked, addedChecked, newChecked;
+  size_t neededSize;
 
   oldChecked = 0;
   newChecked = 0;
@@ -285,6 +291,9 @@ int performListPrependOnEntry(chain *symTbl, char *ident, node *tree) {
 	    newArgs = addElement(copyChainWithoutReversal(oldNode->child1->arguments, copyThingOnVoid), tree);
 	    newNode = (node *) safeMalloc(sizeof(node));
 	    newNode->nodeType = oldNode->child1->nodeType;
+	    newNode->argArray = NULL;
+	    newNode->argArraySize = 0;
+	    newNode->argArrayAllocSize = 0;
 	    newNode->arguments = newArgs;
 	    newNode = addMemRef(newNode);
 	    if (newChecked && (newNode->nodeType == MEMREF)) {
@@ -299,6 +308,9 @@ int performListPrependOnEntry(chain *symTbl, char *ident, node *tree) {
 		(newNode->nodeType == FINALELLIPTICLIST)) {
 	      freeThing(oldNode);
 	      newNode->arguments = addElement(newNode->arguments, tree);
+	      newNode->argArray = NULL;
+	      newNode->argArraySize = 0;
+	      newNode->argArrayAllocSize = 0;
 	      ((entry *) curr->value)->value = newNode;
 	      newNode = addMemRef(newNode);
 	      if (newChecked && (newNode->nodeType == MEMREF)) {
@@ -314,6 +326,27 @@ int performListPrependOnEntry(chain *symTbl, char *ident, node *tree) {
       case LIST:
       case FINALELLIPTICLIST:
 	oldNode->arguments = addElement(oldNode->arguments, tree);
+	if (oldNode->argArray != NULL) {
+	  neededSize = ((size_t) (oldNode->argArraySize + 1)) * sizeof(node *);
+	  if (neededSize <= (oldNode->argArrayAllocSize)) {
+	    oldNode->argArraySize++;
+	    (oldNode->argArray)[(oldNode->argArraySize - 1) - 0] = tree;
+	  } else {
+	    if ((neededSize <= ((size_t) (2 * oldNode->argArrayAllocSize))) && 
+		(((size_t) (2 * oldNode->argArrayAllocSize)) <= ((size_t) SOLLYA_MAX_ARG_ARRAY_ALLOC_SIZE)) &&
+		(((size_t) (2 * oldNode->argArrayAllocSize)) > ((size_t) 0))) {
+	      oldNode->argArrayAllocSize = (size_t) (2 * oldNode->argArrayAllocSize);
+	      oldNode->argArray = safeRealloc(oldNode->argArray, oldNode->argArrayAllocSize);
+	      oldNode->argArraySize++;
+	      (oldNode->argArray)[(oldNode->argArraySize - 1) - 0] = tree;
+	    } else {
+	      safeFree(oldNode->argArray);
+	      oldNode->argArray = NULL;
+	      oldNode->argArraySize = 0;
+	      oldNode->argArrayAllocSize = 0;
+	    }
+	  }
+	}
 	okay = 1;
 	break;
       default:
@@ -371,6 +404,9 @@ int performListTailOnEntry(chain *symTbl, char *ident) {
 	    newNode = (node *) safeMalloc(sizeof(node));
 	    newNode->nodeType = oldNode->child1->nodeType;
 	    newNode->arguments = newArgs;
+	    newNode->argArray = NULL;
+	    newNode->argArraySize = 0;
+	    newNode->argArrayAllocSize = 0;
 	    newNode = addMemRef(newNode);
 	    if (oldChecked && (newNode->nodeType == MEMREF)) {
 	      newNode->child2 = newNode->child1;
@@ -390,6 +426,9 @@ int performListTailOnEntry(chain *symTbl, char *ident) {
 	      newArgs = newNode->arguments->next;
 	      safeFree(newNode->arguments);
 	      newNode->arguments = newArgs;
+	      newNode->argArray = NULL;
+	      newNode->argArraySize = 0;
+	      newNode->argArrayAllocSize = 0;
 	      newNode = addMemRef(newNode);
 	      if (oldChecked && (newNode->nodeType == MEMREF)) {
 		newNode->child2 = newNode->child1;
@@ -411,6 +450,16 @@ int performListTailOnEntry(chain *symTbl, char *ident) {
 	  newArgs = oldNode->arguments->next;
 	  safeFree(oldNode->arguments);
 	  oldNode->arguments = newArgs;
+	  if (oldNode->argArray != NULL) {
+	    if (oldNode->argArraySize >= 2) {
+	      oldNode->argArraySize--;
+	    } else {
+	      safeFree(oldNode->argArray);
+	      oldNode->argArray = NULL;
+	      oldNode->argArraySize = 0;
+	      oldNode->argArrayAllocSize = 0;
+	    }
+	  }
 	  okay = 1;
 	} else {
 	  okay = 0;

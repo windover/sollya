@@ -2870,8 +2870,12 @@ int sollya_lib_get_element_in_list(sollya_obj_t *res, sollya_obj_t obj1, int n) 
 
   tempVal = 0;
   if (isPureList(evaluatedObj) || (tempVal = isPureFinalEllipticList(evaluatedObj))) {
-    num = lengthChain(accessThruMemRef(evaluatedObj)->arguments);
-    if ((!tempVal) && (n >= num)) {
+    if (accessThruMemRef(evaluatedObj)->argArray != NULL) {
+      num = accessThruMemRef(evaluatedObj)->argArraySize;
+    } else {
+      num = lengthChain(accessThruMemRef(evaluatedObj)->arguments);
+    }
+    if ((n < 0) || ((!tempVal) && (n >= num))) {
       freeThing(evaluatedObj);
       return 0;
     }

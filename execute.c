@@ -1,6 +1,6 @@
 /*
 
-Copyright 2007-2012 by
+Copyright 2007-2013 by
 
 Laboratoire de l'Informatique du Parallelisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
@@ -191,6 +191,56 @@ int checkInequalityFast(int *res, node *a, node *b) {
   sollya_mpfi_clear(aI);
 
   return okay;
+}
+
+/* Sets up the random access data-structure on a LIST or
+   FINALELLIPTICLIST object, if it has not yet been set up.
+
+   The function does nothing if:
+
+   * The object is NULL
+   * The object is neither a LIST nor a FINALELLIPTICLIST
+   * The object has the random-access already set up
+   * The list contains ellipses that still need to be
+     expanded before we know its length.
+
+*/
+void setupRandomAccessOnLists(node *obj) {
+  chain *curr;
+  int i;
+
+  if (obj == NULL) return;
+
+  switch (obj->nodeType) {
+  case MEMREF: 
+    setupRandomAccessOnLists(obj->child1);
+    break;
+  case LIST:
+  case FINALELLIPTICLIST:
+    if (obj->argArray != NULL) return;
+    obj->argArraySize = lengthChain(obj->arguments);
+    if (obj->argArraySize < 1) {
+      obj->argArraySize = 0;
+      return;
+    }
+    obj->argArrayAllocSize = ((size_t) (obj->argArraySize)) * sizeof(node *);
+    obj->argArray = (node **) safeMalloc(obj->argArrayAllocSize);
+    for (curr=obj->arguments, i=0; curr != NULL; curr=curr->next, i++) {
+      if (!isElliptic((node *) (curr->value))) {
+	(obj->argArray)[(obj->argArraySize - 1) - i] = (node *) (curr->value);
+      } else {
+	safeFree(obj->argArray);
+	obj->argArray = NULL;
+	obj->argArraySize = 0;
+	obj->argArrayAllocSize = 0;
+	return;
+      }
+    }
+    break;
+  default:
+    return;
+    break;
+  }
 }
 
 int parseStringCheckExcessCharacters(char *str) {
@@ -946,12 +996,18 @@ node *copyThingInner(node *tree) {
     break; 			
   case LIST:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+    copy->argArray = NULL;
+    copy->argArraySize = 0;
+    copy->argArrayAllocSize = 0;
     break; 	
   case STRUCTURE:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyEntryOnVoid);
     break; 			 	
   case FINALELLIPTICLIST:
     copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+    copy->argArray = NULL;
+    copy->argArraySize = 0;
+    copy->argArrayAllocSize = 0;
     break; 		
   case ELLIPTIC:
     break; 			
@@ -1822,12 +1878,18 @@ node *deepCopyThing(node *tree) {
     break; 			
   case LIST:
     copy->arguments = copyChainWithoutReversal(tree->arguments, deepCopyThingOnVoid);
+    copy->argArray = NULL;
+    copy->argArraySize = 0;
+    copy->argArrayAllocSize = 0;
     break; 	
   case STRUCTURE:
     copy->arguments = copyChainWithoutReversal(tree->arguments, deepCopyEntryOnVoid);
     break; 			 	
   case FINALELLIPTICLIST:
     copy->arguments = copyChainWithoutReversal(tree->arguments, deepCopyThingOnVoid);
+    copy->argArray = NULL;
+    copy->argArraySize = 0;
+    copy->argArrayAllocSize = 0;
     break; 		
   case ELLIPTIC:
     break; 			
@@ -2560,7 +2622,7 @@ char *getTimingStringForThing(node *tree) {
     constString = "compare not equal";
     break;		
   case CONCAT:
-    constString = "concatination of strings or lists";
+    constString = "concatenation of strings or lists";
     break; 			
   case ADDTOLIST:
     constString = "adding an element to a list";
@@ -3445,6 +3507,8 @@ int isPureList(node *tree) {
 
   if (!isList(tree)) return 0;
 
+  if (tree->argArray != NULL) return 1;
+
   curr = tree->arguments;
   while (curr != NULL) {
     if (isElliptic((node *) (curr->value))) return 0;
@@ -3465,6 +3529,8 @@ int isPureFinalEllipticList(node *tree) {
   if (tree->nodeType == MEMREF) return isPureFinalEllipticList(tree->child1);
 
   if (!isFinalEllipticList(tree)) return 0;
+
+  if (tree->argArray != NULL) return 1;
 
   curr = tree->arguments;
   while (curr != NULL) {
@@ -4253,6 +4319,7 @@ int evaluateThingToPureListOfThings(chain **ch, node *tree) {
   evaluatedResult = evaluateThing(tree);
 
   if (isPureList(evaluatedResult)) { 
+    setupRandomAccessOnLists(evaluatedResult);	
     *ch = copyChainWithoutReversal(accessThruMemRef(evaluatedResult)->arguments, copyThingOnVoid);
     freeThing(evaluatedResult);
     return 1;
@@ -4269,6 +4336,7 @@ int evaluateThingToPureListOfPureTrees(chain **ch, node *tree) {
   evaluatedResult = evaluateThing(tree);
 
   if (isPureList(evaluatedResult)) { 
+    setupRandomAccessOnLists(evaluatedResult);	
     *ch = copyChainWithoutReversal(accessThruMemRef(evaluatedResult)->arguments, copyThingOnVoid);
     freeThing(evaluatedResult);
     curr = *ch;
@@ -4297,6 +4365,7 @@ int evaluateThingToIntegerList(chain **ch, int *finalelliptic, node *tree) {
 
   if (finalelliptic == NULL) {
     if (isPureList(evaluatedResult)) {
+      setupRandomAccessOnLists(evaluatedResult);	
       curr = accessThruMemRef(evaluatedResult)->arguments;
       i = 0;
       while (curr != NULL) {
@@ -4333,6 +4402,7 @@ int evaluateThingToIntegerList(chain **ch, int *finalelliptic, node *tree) {
     }
   } else {
     if (isPureList(evaluatedResult) || isPureFinalEllipticList(evaluatedResult)) {
+      setupRandomAccessOnLists(evaluatedResult);	
       if (isList(evaluatedResult)) *finalelliptic = 0; else *finalelliptic = 1;
       curr = accessThruMemRef(evaluatedResult)->arguments;
       i = 0;
@@ -4384,6 +4454,7 @@ int evaluateThingToBooleanList(chain **ch, node *tree) {
   evaluatedResult = evaluateThing(tree);
 
   if (isPureList(evaluatedResult)) {
+    setupRandomAccessOnLists(evaluatedResult);	
     curr = accessThruMemRef(evaluatedResult)->arguments;
     i = 0;
     while (curr != NULL) {
@@ -4434,6 +4505,7 @@ int evaluateThingToExpansionFormatList(chain **ch, node *tree) {
   evaluatedResult = evaluateThing(tree);
 
   if (isPureList(evaluatedResult) || isPureFinalEllipticList(evaluatedResult)) {
+    setupRandomAccessOnLists(evaluatedResult);	
     if (isList(evaluatedResult)) finalelliptic = 0; else finalelliptic = 1;
     curr = accessThruMemRef(evaluatedResult)->arguments;
     i = 0;
@@ -4490,6 +4562,7 @@ int evaluateThingToExtendedExpansionFormatList(chain **ch, node *tree) {
   evaluatedResult = evaluateThing(tree);
 
   if (isPureList(evaluatedResult) || isPureFinalEllipticList(evaluatedResult)) {
+    setupRandomAccessOnLists(evaluatedResult);	
     if (isList(evaluatedResult)) finalelliptic = 0; else finalelliptic = 1;
     curr = accessThruMemRef(evaluatedResult)->arguments;
     i = 0;
@@ -4566,6 +4639,7 @@ void printThingWithFullStrings(node *thing) {
       }
     } else {
       if (isList(thing)) {
+	setupRandomAccessOnLists(thing);	
 	curr = accessThruMemRef(thing)->arguments;
 	sollyaPrintf("[|");
 	while (curr != NULL) {
@@ -4576,6 +4650,7 @@ void printThingWithFullStrings(node *thing) {
 	sollyaPrintf("|]");
       } else {
 	if (isFinalEllipticList(thing)) {
+	  setupRandomAccessOnLists(thing);
 	  curr = accessThruMemRef(thing)->arguments;
 	  sollyaPrintf("[|");
 	  while (curr != NULL) {
@@ -4634,6 +4709,7 @@ void printThing(node *thing) {
       }
     } else {
       if (isList(thing)) {
+	setupRandomAccessOnLists(thing);
 	curr = accessThruMemRef(thing)->arguments;
 	sollyaPrintf("[|");
 	while (curr != NULL) {
@@ -4644,6 +4720,7 @@ void printThing(node *thing) {
 	sollyaPrintf("|]");
       } else {
 	if (isFinalEllipticList(thing)) {
+	  setupRandomAccessOnLists(thing);
 	  curr = accessThruMemRef(thing)->arguments;
 	  sollyaPrintf("[|");
 	  while (curr != NULL) {
@@ -4696,7 +4773,6 @@ char *concatAndFree(char *str1, char *str2) {
   
   return newStr;
 }
-
 
 char *sRawPrintThing(node *tree) {
   int i;
@@ -5804,6 +5880,7 @@ char *sRawPrintThing(node *tree) {
     res = newString("[| |]");
     break; 			
   case LIST:
+    setupRandomAccessOnLists(tree);
     res = newString("[|");
     curr = tree->arguments;
     while (curr != NULL) {
@@ -5826,6 +5903,7 @@ char *sRawPrintThing(node *tree) {
     res = concatAndFree(res, newString(" }"));
     break; 			 	
   case FINALELLIPTICLIST:
+    setupRandomAccessOnLists(tree);
     res = newString("[|");
     curr = tree->arguments;
     while (curr != NULL) {
@@ -6483,6 +6561,7 @@ char *sPrintThingWithFullStrings(node *thing) {
       }
     } else {
       if (isList(thing)) {
+	setupRandomAccessOnLists(thing);
 	curr = accessThruMemRef(thing)->arguments;
 	temp = (char *) safeCalloc(2 + 1, sizeof(char));
 	sprintf(temp,"[|");
@@ -6508,6 +6587,7 @@ char *sPrintThingWithFullStrings(node *thing) {
 	return temp;
       } else {
 	if (isFinalEllipticList(thing)) {
+	  setupRandomAccessOnLists(thing);
 	  curr = accessThruMemRef(thing)->arguments;
 	  temp = (char *) safeCalloc(2 + 1, sizeof(char));
 	  sprintf(temp,"[|");
@@ -6573,6 +6653,7 @@ char *sPrintThing(node *thing) {
       }
     } else {
       if (isList(thing)) {
+	setupRandomAccessOnLists(thing);
 	curr = accessThruMemRef(thing)->arguments;
 	temp = (char *) safeCalloc(2 + 1, sizeof(char));
 	sprintf(temp,"[|");
@@ -6598,6 +6679,7 @@ char *sPrintThing(node *thing) {
 	return temp;
       } else {
 	if (isFinalEllipticList(thing)) {
+	  setupRandomAccessOnLists(thing);
 	  curr = accessThruMemRef(thing)->arguments;
 	  temp = (char *) safeCalloc(2 + 1, sizeof(char));
 	  sprintf(temp,"[|");
@@ -6667,6 +6749,7 @@ void fPrintThingWithFullStrings(FILE *fd, node *thing) {
       }
     } else {
       if (isList(thing)) {
+	setupRandomAccessOnLists(thing);
 	curr = accessThruMemRef(thing)->arguments;
 	sollyaFprintf(fd,"[|");
 	while (curr != NULL) {
@@ -6677,6 +6760,7 @@ void fPrintThingWithFullStrings(FILE *fd, node *thing) {
 	sollyaFprintf(fd,"|]");
       } else {
 	if (isFinalEllipticList(thing)) {
+	  setupRandomAccessOnLists(thing);
 	  curr = accessThruMemRef(thing)->arguments;
 	  sollyaFprintf(fd,"[|");
 	  while (curr != NULL) {
@@ -6735,6 +6819,7 @@ void fPrintThing(FILE *fd, node *thing) {
       }
     } else {
       if (isList(thing)) {
+	setupRandomAccessOnLists(thing);
 	curr = accessThruMemRef(thing)->arguments;
 	sollyaFprintf(fd,"[|");
 	while (curr != NULL) {
@@ -6745,6 +6830,7 @@ void fPrintThing(FILE *fd, node *thing) {
 	sollyaFprintf(fd,"|]");
       } else {
 	if (isFinalEllipticList(thing)) {
+	  setupRandomAccessOnLists(thing);
 	  curr = accessThruMemRef(thing)->arguments;
 	  sollyaFprintf(fd,"[|");
 	  while (curr != NULL) {
@@ -7215,6 +7301,7 @@ void autoprint(node *thing, int inList, node *func, node *cst) {
     if (freeThingAfterwards) free_memory(tempNode2);
   } else {
     if (isList(thing)) {
+      setupRandomAccessOnLists(thing);
       sollyaPrintf("[|");
       curr = accessThruMemRef(thing)->arguments;
       while (curr != NULL) {
@@ -7225,6 +7312,7 @@ void autoprint(node *thing, int inList, node *func, node *cst) {
       sollyaPrintf("|]");
     } else {
       if (isFinalEllipticList(thing)) {
+	setupRandomAccessOnLists(thing);
 	sollyaPrintf("[|");
 	curr = accessThruMemRef(thing)->arguments;
 	while (curr != NULL) {
@@ -7305,6 +7393,7 @@ int evaluateThingToConstantList(chain **ch, node *tree) {
   evaluated = evaluateThing(tree);
 
   if (isPureList(evaluated)) {
+    setupRandomAccessOnLists(evaluated);
     evaluateThingListToThingArray(&number, &arrayTrees, accessThruMemRef(evaluated)->arguments); 
     arrayMpfr = (mpfr_t **) safeCalloc(number,sizeof(mpfr_t *));
     for (i=0;i<number;i++) {
@@ -7353,6 +7442,7 @@ int evaluateThingToRangeList(chain **ch, node *tree) {
   evaluated = evaluateThing(tree);
 
   if (isPureList(evaluated)) {
+    setupRandomAccessOnLists(evaluated);
     mpfr_init2(a, tools_precision);
     mpfr_init2(b, tools_precision);
     evaluateThingListToThingArray(&number, &arrayTrees, accessThruMemRef(evaluated)->arguments); 
@@ -7405,6 +7495,7 @@ int evaluateThingToStringList(chain **ch, node *tree) {
   evaluated = evaluateThing(tree);
 
   if (isPureList(evaluated)) {
+    setupRandomAccessOnLists(evaluated);
     evaluateThingListToThingArray(&number, &arrayTrees, accessThruMemRef(evaluated)->arguments); 
     arrayString = (char **) safeCalloc(number,sizeof(char *));
     for (i=0;i<number;i++) {
@@ -9042,11 +9133,13 @@ int executeCommandInner(node *tree) {
 		freeChain(tempList,freeThingOnVoid);
 		tempNode3 = makeList(tempList2);
 		tempNode3->nodeType = accessThruMemRef(tempNode)->nodeType;
+		setupRandomAccessOnLists(tempNode3);
 		resC = 1;
 	      } else {
 		if (resB < lengthChain(accessThruMemRef(tempNode)->arguments)) {
 		  tempNode3 = makeList(copyChainAndReplaceNth(accessThruMemRef(tempNode)->arguments, resB, tempNode2, copyThingOnVoid));
 		  tempNode3->nodeType = accessThruMemRef(tempNode)->nodeType;
+		  setupRandomAccessOnLists(tempNode3);
 		  resC = 1;
 		} else {
 		  if (isFinalEllipticList(tempNode)) {
@@ -9070,10 +9163,14 @@ int executeCommandInner(node *tree) {
 			      tempList = addElement(tempList,makeConstant(b));
 			    }
 			    tempList = addElement(tempList, copyThing(tempNode2));
+			    resD += 2;
+			    mpfr_set_si(b, resD, GMP_RNDN);
+			    tempList = addElement(tempList,makeConstant(b));			    
 			    tempList2 = copyChain(tempList,copyThingOnVoid);
 			    freeChain(tempList,freeThingOnVoid);
 			    tempNode3 = makeList(tempList2);
 			    tempNode3->nodeType = accessThruMemRef(tempNode)->nodeType;
+			    setupRandomAccessOnLists(tempNode3);
 			    resC = 1;
 			  } else {
 			    resE = 1;
@@ -9096,10 +9193,12 @@ int executeCommandInner(node *tree) {
 			tempList = addElement(tempList,copyThing(tempNode4));
 		      }
 		      tempList = addElement(tempList, copyThing(tempNode2));
+		      tempList = addElement(tempList,copyThing(tempNode4));
 		      tempList2 = copyChain(tempList,copyThingOnVoid);
 		      freeChain(tempList,freeThingOnVoid);
 		      tempNode3 = makeList(tempList2);
-		      tempNode3->nodeType = tempNode->nodeType;
+		      tempNode3->nodeType = accessThruMemRef(tempNode)->nodeType;
+		      setupRandomAccessOnLists(tempNode3);
 		      resC = 1;
 		    }
 		  }
@@ -9280,11 +9379,13 @@ int executeCommandInner(node *tree) {
 		freeChain(tempList,freeThingOnVoid);
 		tempNode3 = makeList(tempList2);
 		tempNode3->nodeType = accessThruMemRef(tempNode)->nodeType;
+		setupRandomAccessOnLists(tempNode3);
 		resC = 1;
 	      } else {
 		if (resB < lengthChain(accessThruMemRef(tempNode)->arguments)) {
 		  tempNode3 = makeList(copyChainAndReplaceNth(accessThruMemRef(tempNode)->arguments, resB, tempNode2, copyThingOnVoid));
 		  tempNode3->nodeType = accessThruMemRef(tempNode)->nodeType;
+		  setupRandomAccessOnLists(tempNode3);
 		  resC = 1;
 		} else {
 		  if (isFinalEllipticList(tempNode)) {
@@ -9308,10 +9409,14 @@ int executeCommandInner(node *tree) {
 			      tempList = addElement(tempList,makeConstant(b));
 			    }
 			    tempList = addElement(tempList, copyThing(tempNode2));
+			    resD += 2;
+			    mpfr_set_si(b, resD, GMP_RNDN);
+			    tempList = addElement(tempList,makeConstant(b));			    
 			    tempList2 = copyChain(tempList,copyThingOnVoid);
 			    freeChain(tempList,freeThingOnVoid);
 			    tempNode3 = makeList(tempList2);
 			    tempNode3->nodeType = accessThruMemRef(tempNode)->nodeType;
+			    setupRandomAccessOnLists(tempNode3);
 			    resC = 1;
 			  } else {
 			    resE = 1;
@@ -9334,10 +9439,12 @@ int executeCommandInner(node *tree) {
 			tempList = addElement(tempList,copyThing(tempNode4));
 		      }
 		      tempList = addElement(tempList, copyThing(tempNode2));
+		      tempList = addElement(tempList,copyThing(tempNode4));
 		      tempList2 = copyChain(tempList,copyThingOnVoid);
 		      freeChain(tempList,freeThingOnVoid);
 		      tempNode3 = makeList(tempList2);
 		      tempNode3->nodeType = accessThruMemRef(tempNode)->nodeType;
+		      setupRandomAccessOnLists(tempNode3);
 		      resC = 1;
 		    }
 		  }
@@ -9424,6 +9531,7 @@ int executeCommandInner(node *tree) {
 		  mpfr_clear(a);
 		}
 		tempNode3 = makeList(addElement(NULL,tempNode2));
+		setupRandomAccessOnLists(tempNode3);
 		curr = tree->arguments;
 		if (isPureTree(tempNode3) && isConstant(tempNode3)) {
 		  mpfr_init2(a, tools_precision);
@@ -11717,6 +11825,10 @@ node *makeList(chain *thinglist) {
   res = (node *) safeMalloc(sizeof(node));
   res->nodeType = LIST;
   res->arguments = thinglist;
+  res->argArray = NULL;
+  res->argArraySize = 0;
+  res->argArrayAllocSize = 0;
+    
 
   return res;
 
@@ -11753,6 +11865,10 @@ node *makeRevertedList(chain *thinglist) {
   tempList = copyChain(thinglist,copyThingOnVoid);
   freeChain(thinglist,freeThingOnVoid);
   res->arguments = tempList;
+  res->argArray = NULL;
+  res->argArraySize = 0;
+  res->argArrayAllocSize = 0;
+
 
   return res;
 
@@ -11764,6 +11880,10 @@ node *makeFinalEllipticList(chain *thinglist) {
   res = (node *) safeMalloc(sizeof(node));
   res->nodeType = FINALELLIPTICLIST;
   res->arguments = thinglist;
+  res->argArray = NULL;
+  res->argArraySize = 0;
+  res->argArrayAllocSize = 0;
+
 
   return res;
 
@@ -11778,6 +11898,10 @@ node *makeRevertedFinalEllipticList(chain *thinglist) {
   tempList = copyChain(thinglist,copyThingOnVoid);
   freeChain(thinglist,freeThingOnVoid);
   res->arguments = tempList;
+  res->argArray = NULL;
+  res->argArraySize = 0;
+  res->argArrayAllocSize = 0;
+
 
   return res;
 
@@ -13525,6 +13649,12 @@ void freeThing(node *tree) {
     break; 			
   case LIST:
     freeChain(tree->arguments, freeThingOnVoid);
+    if (tree->argArray != NULL) {
+      safeFree(tree->argArray);
+      tree->argArray = NULL;
+      tree->argArraySize = 0;
+      tree->argArrayAllocSize = 0;
+    }
     safeFree(tree);
     break; 			 	
   case STRUCTURE:
@@ -13533,6 +13663,12 @@ void freeThing(node *tree) {
     break; 			 	
   case FINALELLIPTICLIST:
     freeChain(tree->arguments, freeThingOnVoid);
+    if (tree->argArray != NULL) {
+      safeFree(tree->argArray);
+      tree->argArray = NULL;
+      tree->argArraySize = 0;
+      tree->argArrayAllocSize = 0;
+    }
     safeFree(tree);
     break; 		
   case ELLIPTIC:
@@ -14478,6 +14614,8 @@ int isEqualThing(node *tree, node *tree2) {
     break; 			
   case LIST:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
+    setupRandomAccessOnLists(tree);
+    setupRandomAccessOnLists(tree2);
     break; 			 	
   case STRUCTURE:
     if (lengthChain(tree->arguments) != lengthChain(tree2->arguments)) return 0;
@@ -14499,6 +14637,8 @@ int isEqualThing(node *tree, node *tree2) {
     break; 			 	
   case FINALELLIPTICLIST:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
+    setupRandomAccessOnLists(tree);
+    setupRandomAccessOnLists(tree2);
     break; 		
   case ELLIPTIC:
     break; 			
@@ -16523,6 +16663,9 @@ node *preevaluateMatcher(node *tree) {
     }
     freeChain(tempChain, freeThingOnVoid);
     copy->arguments = newChain;
+    copy->argArray = NULL;
+    copy->argArraySize = 0;
+    copy->argArrayAllocSize = 0;
     if (resC && (!isPureList(copy))) {
       tempNode = preevaluateMatcher(copy);
       freeThing(copy);
@@ -16558,6 +16701,9 @@ node *preevaluateMatcher(node *tree) {
     }
     freeChain(tempChain, freeThingOnVoid);
     copy->arguments = newChain;
+    copy->argArray = NULL;
+    copy->argArraySize = 0;
+    copy->argArrayAllocSize = 0;
     if (resC && (!isPureFinalEllipticList(copy))) {
       tempNode = preevaluateMatcher(copy);
       freeThing(copy);
@@ -19226,42 +19372,72 @@ node *evaluateThingInnerst(node *tree) {
 	  }
 	} else {
 	  if (isPureList(copy->child1)) {
-	    if ((resA >= 0) && (resA < lengthChain(accessThruMemRef(copy->child1)->arguments))) {
-	      if (timingString != NULL) pushTimeCounter();
-	      tempNode = copyThing((node *) accessInList(accessThruMemRef(copy->child1)->arguments, resA));
-	      freeThing(copy);
-	      copy = tempNode;
-	      if (timingString != NULL) popTimeCounter(timingString);
-	    }
-	  } else {
-	    if (isPureFinalEllipticList(copy->child1)) {
+	    if ((accessThruMemRef(copy->child1)->argArray != NULL) && 
+		((resA >= 0) && (resA < accessThruMemRef(copy->child1)->argArraySize))) {
+		if (timingString != NULL) pushTimeCounter();
+		tempNode = copyThing((accessThruMemRef(copy->child1)->argArray)[(accessThruMemRef(copy->child1)->argArraySize - 1) - resA]);
+		freeThing(copy);
+		copy = tempNode;
+		if (timingString != NULL) popTimeCounter(timingString);
+	    } else {
 	      if (resA >= 0) {
+		setupRandomAccessOnLists(copy->child1);
 		if (resA < lengthChain(accessThruMemRef(copy->child1)->arguments)) {
 		  if (timingString != NULL) pushTimeCounter();
 		  tempNode = copyThing((node *) accessInList(accessThruMemRef(copy->child1)->arguments, resA));
 		  freeThing(copy);
 		  copy = tempNode;
 		  if (timingString != NULL) popTimeCounter(timingString);
-		} else {
-		  if (isPureTree((node *) accessInList(accessThruMemRef(copy->child1)->arguments, 
-						       lengthChain(accessThruMemRef(copy->child1)->arguments) - 1))) {
-		    mpfr_init2(a, tools_precision);
-		    if (evaluateThingToConstant(a, 
-						(node *) accessInList(accessThruMemRef(copy->child1)->arguments, 
-								      lengthChain(accessThruMemRef(copy->child1)->arguments) - 1), 
-						NULL, 0, 0)) {
-		      if (mpfr_integer_p(a)) {
-			resB = mpfr_get_si(a, GMP_RNDN);
-			mpfr_init2(b, 8 * sizeof(resB) + 5);
-			mpfr_set_si(b, resB, GMP_RNDN);
-			if (mpfr_cmp(a, b) == 0) {
-			  resB = resA + resB - lengthChain(accessThruMemRef(copy->child1)->arguments) + 1;
+		}
+	      }
+	    }
+	  } else {
+	    if (isPureFinalEllipticList(copy->child1)) {
+	      if ((accessThruMemRef(copy->child1)->argArray != NULL) && 
+		  ((resA >= 0) && (resA < accessThruMemRef(copy->child1)->argArraySize))) {
+		if (timingString != NULL) pushTimeCounter();
+		tempNode = copyThing((accessThruMemRef(copy->child1)->argArray)[(accessThruMemRef(copy->child1)->argArraySize - 1) - resA]);
+		freeThing(copy);
+		copy = tempNode;
+		if (timingString != NULL) popTimeCounter(timingString);
+	      } else {
+		if (resA >= 0) {
+		  setupRandomAccessOnLists(copy->child1);
+		  if (resA < lengthChain(accessThruMemRef(copy->child1)->arguments)) {
+		    if (timingString != NULL) pushTimeCounter();
+		    tempNode = copyThing((node *) accessInList(accessThruMemRef(copy->child1)->arguments, resA));
+		    freeThing(copy);
+		    copy = tempNode;
+		    if (timingString != NULL) popTimeCounter(timingString);
+		  } else {
+		    if (isPureTree((node *) accessInList(accessThruMemRef(copy->child1)->arguments, 
+							 lengthChain(accessThruMemRef(copy->child1)->arguments) - 1))) {
+		      mpfr_init2(a, tools_precision);
+		      if (evaluateThingToConstant(a, 
+						  (node *) accessInList(accessThruMemRef(copy->child1)->arguments, 
+									lengthChain(accessThruMemRef(copy->child1)->arguments) - 1), 
+						  NULL, 0, 0)) {
+			if (mpfr_integer_p(a)) {
+			  resB = mpfr_get_si(a, GMP_RNDN);
+			  mpfr_init2(b, 8 * sizeof(resB) + 5);
 			  mpfr_set_si(b, resB, GMP_RNDN);
-			  if (timingString != NULL) pushTimeCounter();
-			  tempNode = makeConstant(b);
-			  freeThing(copy);
-			  copy = tempNode;
-			  if (timingString != NULL) popTimeCounter(timingString);
+			  if (mpfr_cmp(a, b) == 0) {
+			    resB = resA + resB - lengthChain(accessThruMemRef(copy->child1)->arguments) + 1;
+			    mpfr_set_si(b, resB, GMP_RNDN);
+			    if (timingString != NULL) pushTimeCounter();
+			    tempNode = makeConstant(b);
+			    freeThing(copy);
+			    copy = tempNode;
+			    if (timingString != NULL) popTimeCounter(timingString);
+			  } else {
+			    if (timingString != NULL) pushTimeCounter();
+			    tempNode = copyThing((node *) accessInList(accessThruMemRef(copy->child1)->arguments, 
+								       lengthChain(accessThruMemRef(copy->child1)->arguments) - 1));
+			    freeThing(copy);
+			    copy = tempNode;
+			    if (timingString != NULL) popTimeCounter(timingString);
+			  }
+			  mpfr_clear(b);
 			} else {
 			  if (timingString != NULL) pushTimeCounter();
 			  tempNode = copyThing((node *) accessInList(accessThruMemRef(copy->child1)->arguments, 
@@ -19270,7 +19446,6 @@ node *evaluateThingInnerst(node *tree) {
 			  copy = tempNode;
 			  if (timingString != NULL) popTimeCounter(timingString);
 			}
-			mpfr_clear(b);
 		      } else {
 			if (timingString != NULL) pushTimeCounter();
 			tempNode = copyThing((node *) accessInList(accessThruMemRef(copy->child1)->arguments, 
@@ -19279,6 +19454,7 @@ node *evaluateThingInnerst(node *tree) {
 			copy = tempNode;
 			if (timingString != NULL) popTimeCounter(timingString);
 		      }
+		      mpfr_clear(a);
 		    } else {
 		      if (timingString != NULL) pushTimeCounter();
 		      tempNode = copyThing((node *) accessInList(accessThruMemRef(copy->child1)->arguments, 
@@ -19287,22 +19463,14 @@ node *evaluateThingInnerst(node *tree) {
 		      copy = tempNode;
 		      if (timingString != NULL) popTimeCounter(timingString);
 		    }
-		    mpfr_clear(a);
-		  } else {
-		    if (timingString != NULL) pushTimeCounter();
-		    tempNode = copyThing((node *) accessInList(accessThruMemRef(copy->child1)->arguments, 
-							       lengthChain(accessThruMemRef(copy->child1)->arguments) - 1));
-		    freeThing(copy);
-		    copy = tempNode;
-		    if (timingString != NULL) popTimeCounter(timingString);
 		  }
 		}
 	      }
 	    }
 	  }
 	}
-      }
-    } 
+      } 
+    }
     break; 				
   case COMPAREEQUAL:
     resJ = 0;
@@ -20461,6 +20629,9 @@ node *evaluateThingInnerst(node *tree) {
 		if (isEmptyList(copy->child1) && (isList(copy->child2) || isFinalEllipticList(copy->child2))) {
 		  copy->nodeType = accessThruMemRef(copy->child2)->nodeType;
 		  copy->arguments = copyChainWithoutReversal(accessThruMemRef(copy->child2)->arguments,copyThingOnVoid);
+		  copy->argArray = NULL;
+		  copy->argArraySize = 0;
+		  copy->argArrayAllocSize = 0;
 		  freeThing(copy->child1);
 		  freeThing(copy->child2);
 		} else {
@@ -20468,6 +20639,9 @@ node *evaluateThingInnerst(node *tree) {
 		    if (timingString != NULL) pushTimeCounter();
 		    copy->nodeType = LIST;
 		    copy->arguments = copyChainWithoutReversal(accessThruMemRef(copy->child1)->arguments,copyThingOnVoid);
+		    copy->argArray = NULL;
+		    copy->argArraySize = 0;
+		    copy->argArrayAllocSize = 0;
 		    freeThing(copy->child2);
 		    freeThing(copy->child1);
 		    if (timingString != NULL) popTimeCounter(timingString);
@@ -20477,6 +20651,9 @@ node *evaluateThingInnerst(node *tree) {
 		      copy->nodeType = LIST;
 		      copy->arguments = concatChains(copyChainWithoutReversal(accessThruMemRef(copy->child1)->arguments,copyThingOnVoid), 
 						     copyChainWithoutReversal(accessThruMemRef(copy->child2)->arguments,copyThingOnVoid));
+		      copy->argArray = NULL;
+		      copy->argArraySize = 0;
+		      copy->argArrayAllocSize = 0;
 		      freeThing(copy->child1);
 		      freeThing(copy->child2);
 		      if (timingString != NULL) popTimeCounter(timingString);
@@ -20486,6 +20663,9 @@ node *evaluateThingInnerst(node *tree) {
 			copy->nodeType = FINALELLIPTICLIST;
 			copy->arguments = concatChains(copyChainWithoutReversal(accessThruMemRef(copy->child1)->arguments,copyThingOnVoid), 
 						       copyChainWithoutReversal(accessThruMemRef(copy->child2)->arguments,copyThingOnVoid));
+			copy->argArray = NULL;
+			copy->argArraySize = 0;
+			copy->argArrayAllocSize = 0;
 			freeThing(copy->child1);
 			freeThing(copy->child2);
 			if (timingString != NULL) popTimeCounter(timingString);
@@ -20545,6 +20725,9 @@ node *evaluateThingInnerst(node *tree) {
       if (timingString != NULL) pushTimeCounter();
       copy->nodeType = LIST;
       copy->arguments = addElement(copyChainWithoutReversal(accessThruMemRef(copy->child2)->arguments, copyThingOnVoid),copy->child1);
+      copy->argArray = NULL;
+      copy->argArraySize = 0;
+      copy->argArrayAllocSize = 0;
       freeThing(copy->child2);
       if (timingString != NULL) popTimeCounter(timingString);
     } else {
@@ -20552,6 +20735,9 @@ node *evaluateThingInnerst(node *tree) {
 	if (timingString != NULL) pushTimeCounter();
 	copy->nodeType = LIST;
 	copy->arguments = addElement(NULL, copy->child1);
+	copy->argArray = NULL;
+	copy->argArraySize = 0;
+	copy->argArrayAllocSize = 0;
 	freeThing(copy->child2);
 	if (timingString != NULL) popTimeCounter(timingString);
       } else {
@@ -20559,6 +20745,9 @@ node *evaluateThingInnerst(node *tree) {
 	  if (timingString != NULL) pushTimeCounter();
 	  copy->nodeType = FINALELLIPTICLIST;
 	  copy->arguments = addElement(copyChainWithoutReversal(accessThruMemRef(copy->child2)->arguments, copyThingOnVoid),copy->child1);
+	  copy->argArray = NULL;
+	  copy->argArraySize = 0;
+	  copy->argArrayAllocSize = 0;
 	  freeThing(copy->child2);
 	  if (timingString != NULL) popTimeCounter(timingString);
 	} else {
@@ -20575,6 +20764,9 @@ node *evaluateThingInnerst(node *tree) {
 	      if (timingString != NULL) pushTimeCounter();
 	      copy->nodeType = LIST;
 	      copy->arguments = addElement(NULL, copy->child2);
+	      copy->argArray = NULL;
+	      copy->argArraySize = 0;
+	      copy->argArrayAllocSize = 0;
 	      freeThing(copy->child1);
 	      if (timingString != NULL) popTimeCounter(timingString);
 	    }
@@ -20590,6 +20782,10 @@ node *evaluateThingInnerst(node *tree) {
       if (timingString != NULL) pushTimeCounter();
       copy->nodeType = LIST;
       copy->arguments = addElement(copyChainWithoutReversal(accessThruMemRef(copy->child2)->arguments, copyThingOnVoid),copy->child1);
+      copy->argArray = NULL;
+      copy->argArraySize = 0;
+      copy->argArrayAllocSize = 0;
+      setupRandomAccessOnLists(copy);	
       freeThing(copy->child2);
       if (timingString != NULL) popTimeCounter(timingString);
     } else {
@@ -20597,6 +20793,10 @@ node *evaluateThingInnerst(node *tree) {
 	if (timingString != NULL) pushTimeCounter();
 	copy->nodeType = LIST;
 	copy->arguments = addElement(NULL, copy->child1);
+	copy->argArray = NULL;
+	copy->argArraySize = 0;
+	copy->argArrayAllocSize = 0;
+	setupRandomAccessOnLists(copy);	
 	freeThing(copy->child2);
 	if (timingString != NULL) popTimeCounter(timingString);
       } else {
@@ -20604,6 +20804,10 @@ node *evaluateThingInnerst(node *tree) {
 	  if (timingString != NULL) pushTimeCounter();
 	  copy->nodeType = FINALELLIPTICLIST;
 	  copy->arguments = addElement(copyChainWithoutReversal(accessThruMemRef(copy->child2)->arguments, copyThingOnVoid),copy->child1);
+	  copy->argArray = NULL;
+	  copy->argArraySize = 0;
+	  copy->argArrayAllocSize = 0;
+	  setupRandomAccessOnLists(copy);	
 	  freeThing(copy->child2);
 	  if (timingString != NULL) popTimeCounter(timingString);
 	} 
@@ -20626,6 +20830,9 @@ node *evaluateThingInnerst(node *tree) {
 	if (timingString != NULL) pushTimeCounter();
 	copy->nodeType = LIST;
 	copy->arguments = addElement(NULL, copy->child2);
+	copy->argArray = NULL;
+	copy->argArraySize = 0;
+	copy->argArrayAllocSize = 0;
 	freeThing(copy->child1);
 	if (timingString != NULL) popTimeCounter(timingString);
       }
@@ -21279,11 +21486,15 @@ node *evaluateThingInnerst(node *tree) {
     }
     freeChain(tempChain, freeThingOnVoid);
     copy->arguments = newChain;
+    copy->argArray = NULL;
+    copy->argArraySize = 0;
+    copy->argArrayAllocSize = 0;
     if (resC && (!isPureList(copy))) {
       tempNode = evaluateThing(copy);
       freeThing(copy);
       copy = tempNode;
     }
+    setupRandomAccessOnLists(copy);
     if (timingString != NULL) popTimeCounter(timingString);
     break; 	
   case STRUCTURE:
@@ -21326,11 +21537,15 @@ node *evaluateThingInnerst(node *tree) {
     }
     freeChain(tempChain, freeThingOnVoid);
     copy->arguments = newChain;
+    copy->argArray = NULL;
+    copy->argArraySize = 0;
+    copy->argArrayAllocSize = 0;
     if (resC && (!isPureFinalEllipticList(copy))) {
       tempNode = evaluateThing(copy);
       freeThing(copy);
       copy = tempNode;
     }
+    setupRandomAccessOnLists(copy);
     if (timingString != NULL) popTimeCounter(timingString);
     break; 		
   case ELLIPTIC:
@@ -23515,9 +23730,11 @@ node *evaluateThingInnerst(node *tree) {
     copy->child1 = evaluateThingInner(tree->child1);
     if (isList(copy->child1)) {
       if (timingString != NULL) pushTimeCounter();      
+      setupRandomAccessOnLists(tree->child1);
       tempNode = makeList(copyChain(accessThruMemRef(copy->child1)->arguments,copyThingOnVoid));
       freeThing(copy);
       copy = tempNode;
+      setupRandomAccessOnLists(copy);
       if (timingString != NULL) popTimeCounter(timingString);
     } else {
       if (isEmptyList(copy->child1)) {
@@ -23638,6 +23855,10 @@ node *evaluateThingInnerst(node *tree) {
 	  copy->arguments = copyChainWithoutReversal(accessThruMemRef(copy->child1)->arguments->next,copyThingOnVoid);
 	  freeThing(copy->child1);
 	  copy->nodeType = LIST;
+	  copy->argArray = NULL;
+	  copy->argArraySize = 0;
+	  copy->argArrayAllocSize = 0;
+	  setupRandomAccessOnLists(copy);	
 	  if (timingString != NULL) popTimeCounter(timingString);
 	}
       }
@@ -23649,6 +23870,10 @@ node *evaluateThingInnerst(node *tree) {
 	    copy->arguments = copyChainWithoutReversal(accessThruMemRef(copy->child1)->arguments->next,copyThingOnVoid);
 	    freeThing(copy->child1);
 	    copy->nodeType = FINALELLIPTICLIST;
+	    copy->argArray = NULL;
+	    copy->argArraySize = 0;
+	    copy->argArrayAllocSize = 0;
+	    setupRandomAccessOnLists(copy);	
 	    if (timingString != NULL) popTimeCounter(timingString);
 	  } 
 	} else {
@@ -23700,7 +23925,12 @@ node *evaluateThingInnerst(node *tree) {
     } else {
       if (isPureList(copy->child1)) {
 	if (timingString != NULL) pushTimeCounter();      
-	resA = lengthChain(accessThruMemRef(copy->child1)->arguments);
+	if (accessThruMemRef(copy->child1)->argArray != NULL) {
+	  resA = accessThruMemRef(copy->child1)->argArraySize;
+	} else {
+	  setupRandomAccessOnLists(copy->child1);
+	  resA = lengthChain(accessThruMemRef(copy->child1)->arguments);
+	}
 	mpfr_init2(a,sizeof(int) * 8);
 	mpfr_set_si(a,resA,GMP_RNDN);
 	freeThing(copy);
