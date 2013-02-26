@@ -121,257 +121,260 @@ extern FILE *internyyget_in(void *scanner);
 
 
 
-%token  <value> CONSTANTTOKEN;
-%token  <value> MIDPOINTCONSTANTTOKEN;
-%token  <value> DYADICCONSTANTTOKEN;
-%token  <value> HEXCONSTANTTOKEN;
-%token  <value> HEXADECIMALCONSTANTTOKEN;
-%token  <value> BINARYCONSTANTTOKEN;
 
-%token  PITOKEN;
+%token  <value> CONSTANTTOKEN "decimal constant"
+%token  <value> MIDPOINTCONSTANTTOKEN "interval"
+%token  <value> DYADICCONSTANTTOKEN "dyadic constant"
+%token  <value> HEXCONSTANTTOKEN "constant in memory notation"
+%token  <value> HEXADECIMALCONSTANTTOKEN "hexadecimal constant"
+%token  <value> BINARYCONSTANTTOKEN "binary constant"
 
-%token  <value> IDENTIFIERTOKEN;
+%token  PITOKEN "pi"
 
-%token  <value> STRINGTOKEN;
+%token  <value> IDENTIFIERTOKEN "identifier"
 
-%token  LPARTOKEN;
-%token  RPARTOKEN;
-%token  LBRACKETTOKEN;
-%token  RBRACKETTOKEN;
-%token  EQUALTOKEN;
-%token  ASSIGNEQUALTOKEN;
-%token  COMPAREEQUALTOKEN;
-%token  COMMATOKEN;
-%token  EXCLAMATIONTOKEN;
-%token  SEMICOLONTOKEN;
-%token  STARLEFTANGLETOKEN;
-%token  LEFTANGLETOKEN;
-%token  RIGHTANGLEUNDERSCORETOKEN;
-%token  RIGHTANGLEDOTTOKEN;
-%token  RIGHTANGLESTARTOKEN;
-%token  RIGHTANGLETOKEN;
-%token  DOTSTOKEN;
-%token  DOTTOKEN;
-%token  QUESTIONMARKTOKEN;
-%token  VERTBARTOKEN;
-%token  ATTOKEN;
-%token  DOUBLECOLONTOKEN;
-%token  COLONTOKEN;
-%token  DOTCOLONTOKEN;
-%token  COLONDOTTOKEN;
-%token  EXCLAMATIONEQUALTOKEN;
-%token  APPROXTOKEN;
-%token  ANDTOKEN;
-%token  ORTOKEN;
+%token  <value> STRINGTOKEN "character string"
 
-%token  PLUSTOKEN;
-%token  MINUSTOKEN;
-%token  MULTOKEN;
-%token  DIVTOKEN;
-%token  POWTOKEN;
+%token  LPARTOKEN "("
+%token  RPARTOKEN ")"
+%token  LBRACKETTOKEN "["
+%token  RBRACKETTOKEN "]"
+%token  EQUALTOKEN "="
+%token  ASSIGNEQUALTOKEN ":="
+%token  COMPAREEQUALTOKEN "=="
+%token  COMMATOKEN ","
+%token  EXCLAMATIONTOKEN "!"
+%token  SEMICOLONTOKEN ";"
+%token  STARLEFTANGLETOKEN "*<"
+%token  LEFTANGLETOKEN "<"
+%token  RIGHTANGLEUNDERSCORETOKEN ">_"
+%token  RIGHTANGLEDOTTOKEN ">."
+%token  RIGHTANGLESTARTOKEN ">*"
+%token  RIGHTANGLETOKEN ">"
+%token  DOTSTOKEN "..."
+%token  DOTTOKEN "."
+%token  QUESTIONMARKTOKEN "?"
+%token  VERTBARTOKEN "|"
+%token  ATTOKEN "@"
+%token  DOUBLECOLONTOKEN "::"
+%token  COLONTOKEN ":"
+%token  DOTCOLONTOKEN ".:"
+%token  COLONDOTTOKEN ":."
+%token  EXCLAMATIONEQUALTOKEN "!="
+%token  APPROXTOKEN "~"
+%token  ANDTOKEN "&&"
+%token  ORTOKEN "||"
 
-%token  SQRTTOKEN;
-%token  EXPTOKEN;
-%token  FREEVARTOKEN;
-%token  LOGTOKEN;
-%token  LOG2TOKEN;
-%token  LOG10TOKEN;
-%token  SINTOKEN;
-%token  COSTOKEN;
-%token  TANTOKEN;
-%token  ASINTOKEN;
-%token  ACOSTOKEN;
-%token  ATANTOKEN;
-%token  SINHTOKEN;
-%token  COSHTOKEN;
-%token  TANHTOKEN;
-%token  ASINHTOKEN;
-%token  ACOSHTOKEN;
-%token  ATANHTOKEN;
-%token  ABSTOKEN;
-%token  ERFTOKEN;
-%token  ERFCTOKEN;
-%token  LOG1PTOKEN;
-%token  EXPM1TOKEN;
-%token  DOUBLETOKEN;
-%token  SINGLETOKEN;
-%token  QUADTOKEN;
-%token  HALFPRECISIONTOKEN;
-%token  DOUBLEDOUBLETOKEN;
-%token  TRIPLEDOUBLETOKEN;
-%token  DOUBLEEXTENDEDTOKEN;
-%token  CEILTOKEN;
-%token  FLOORTOKEN;
-%token  NEARESTINTTOKEN;
+%token  PLUSTOKEN "+"
+%token  MINUSTOKEN "-"
+%token  MULTOKEN "*"
+%token  DIVTOKEN "/"
+%token  POWTOKEN "^"
 
-%token  HEADTOKEN;
-%token  REVERTTOKEN;
-%token  SORTTOKEN;
-%token  TAILTOKEN;
-%token  MANTISSATOKEN;
-%token  EXPONENTTOKEN;
-%token  PRECISIONTOKEN;
-%token  ROUNDCORRECTLYTOKEN;
+%token  SQRTTOKEN "sqrt"
+%token  EXPTOKEN "exp"
+%token  FREEVARTOKEN "_x_"
+%token  LOGTOKEN "log"
+%token  LOG2TOKEN "log2"
+%token  LOG10TOKEN "log10"
+%token  SINTOKEN "sin"
+%token  COSTOKEN "cos"
+%token  TANTOKEN "tan"
+%token  ASINTOKEN "asin"
+%token  ACOSTOKEN "acos"
+%token  ATANTOKEN "atan"
+%token  SINHTOKEN "sinh"
+%token  COSHTOKEN "cosh"
+%token  TANHTOKEN "tanh"
+%token  ASINHTOKEN "asinh"
+%token  ACOSHTOKEN "acosh"
+%token  ATANHTOKEN "atanh"
+%token  ABSTOKEN "abs"
+%token  ERFTOKEN "erf"
+%token  ERFCTOKEN "erfc"
+%token  LOG1PTOKEN "log1p"
+%token  EXPM1TOKEN "expm1"
+%token  DOUBLETOKEN "D"
+%token  SINGLETOKEN "SG"
+%token  HALFPRECISIONTOKEN "HP"
+%token  QUADTOKEN "QD"
+%token  DOUBLEDOUBLETOKEN "DD"
+%token  TRIPLEDOUBLETOKEN "TD"
+%token  DOUBLEEXTENDEDTOKEN "DE"
+%token  CEILTOKEN "ceil"
+%token  FLOORTOKEN "floor"
+%token  NEARESTINTTOKEN "nearestint"
 
-%token  PRECTOKEN;
-%token  POINTSTOKEN;
-%token  DIAMTOKEN;
-%token  DISPLAYTOKEN;
-%token  VERBOSITYTOKEN;
-%token  SHOWMESSAGENUMBERSTOKEN;
-%token  CANONICALTOKEN;
-%token  AUTOSIMPLIFYTOKEN;
-%token  TAYLORRECURSIONSTOKEN;
-%token  TIMINGTOKEN;
-%token  FULLPARENTHESESTOKEN;
-%token  MIDPOINTMODETOKEN;
-%token  DIEONERRORMODETOKEN;
-%token  SUPPRESSWARNINGSTOKEN;
-%token  HOPITALRECURSIONSTOKEN;
-%token  RATIONALMODETOKEN;
+%token  HEADTOKEN "head"
+%token  REVERTTOKEN "revert"
+%token  SORTTOKEN "sort"
+%token  TAILTOKEN "tail"
+%token  MANTISSATOKEN "mantissa"
+%token  EXPONENTTOKEN "exponent"
+%token  PRECISIONTOKEN "precision"
+%token  ROUNDCORRECTLYTOKEN "roundcorrectly"
 
-%token  ONTOKEN;
-%token  OFFTOKEN;
-%token  DYADICTOKEN;
-%token  POWERSTOKEN;
-%token  BINARYTOKEN;
-%token  HEXADECIMALTOKEN;
-%token  FILETOKEN;
-%token  POSTSCRIPTTOKEN;
-%token  POSTSCRIPTFILETOKEN;
-%token  PERTURBTOKEN;
-%token  MINUSWORDTOKEN;
-%token  PLUSWORDTOKEN;
-%token  ZEROWORDTOKEN;
-%token  NEARESTTOKEN;
-%token  HONORCOEFFPRECTOKEN;
-%token  TRUETOKEN;
-%token  FALSETOKEN;
-%token  DEFAULTTOKEN;
-%token  MATCHTOKEN;
-%token  WITHTOKEN;
-%token  ABSOLUTETOKEN;
-%token  DECIMALTOKEN;
-%token  RELATIVETOKEN;
-%token  FIXEDTOKEN;
-%token  FLOATINGTOKEN;
+%token  PRECTOKEN "prec"
+%token  POINTSTOKEN "points"
+%token  DIAMTOKEN "diam"
+%token  DISPLAYTOKEN "display"
+%token  VERBOSITYTOKEN "verbosity"
+%token  SHOWMESSAGENUMBERSTOKEN "showmessagenumbers"
+%token  CANONICALTOKEN "canonical"
+%token  AUTOSIMPLIFYTOKEN "autosimplify"
+%token  TAYLORRECURSIONSTOKEN "taylorrecursions"
+%token  TIMINGTOKEN "timing"
+%token  TIMETOKEN "time"
+%token  FULLPARENTHESESTOKEN "fullparentheses"
+%token  MIDPOINTMODETOKEN "midpointmode"
+%token  DIEONERRORMODETOKEN "dieonerrormode"
+%token  SUPPRESSWARNINGSTOKEN "roundingwarnings"
+%token  RATIONALMODETOKEN "rationalmode"
+%token  HOPITALRECURSIONSTOKEN "hopitalrecursions"
 
-%token  ERRORTOKEN;
+%token  ONTOKEN "on"
+%token  OFFTOKEN "off"
+%token  DYADICTOKEN "dyadic"
+%token  POWERSTOKEN "powers"
+%token  BINARYTOKEN "binary"
+%token  HEXADECIMALTOKEN "hexadecimal"
+%token  FILETOKEN "file"
+%token  POSTSCRIPTTOKEN "postscript"
+%token  POSTSCRIPTFILETOKEN "postscriptfile"
+%token  PERTURBTOKEN "perturb"
+%token  MINUSWORDTOKEN "RD"
+%token  PLUSWORDTOKEN "RU"
+%token  ZEROWORDTOKEN "RZ"
+%token  NEARESTTOKEN "RN"
+%token  HONORCOEFFPRECTOKEN "honorcoeffprec"
+%token  TRUETOKEN "true"
+%token  FALSETOKEN "false"
+%token  DEFAULTTOKEN "default"
+%token  MATCHTOKEN "match"
+%token  WITHTOKEN "with"
+%token  ABSOLUTETOKEN "absolute"
+%token  DECIMALTOKEN "decimal"
+%token  RELATIVETOKEN "relative"
+%token  FIXEDTOKEN "fixed"
+%token  FLOATINGTOKEN "floating"
 
-%token  LIBRARYTOKEN;
-%token  LIBRARYCONSTANTTOKEN;
+%token  ERRORTOKEN "error"
 
-%token  DIFFTOKEN;
-%token  BASHEVALUATETOKEN;
-%token  GETSUPPRESSEDMESSAGESTOKEN;
-%token  SIMPLIFYTOKEN;
-%token  REMEZTOKEN;
-%token  FPMINIMAXTOKEN;
-%token  HORNERTOKEN;
-%token  EXPANDTOKEN;
-%token  SIMPLIFYSAFETOKEN;
-%token  TAYLORTOKEN;
-%token  TAYLORFORMTOKEN;
-%token  CHEBYSHEVFORMTOKEN;
-%token  AUTODIFFTOKEN;
-%token  DEGREETOKEN;
-%token  NUMERATORTOKEN;
-%token  DENOMINATORTOKEN;
-%token  SUBSTITUTETOKEN;
-%token  COMPOSEPOLYNOMIALSTOKEN;
-%token  COEFFTOKEN;
-%token  SUBPOLYTOKEN;
-%token  ROUNDCOEFFICIENTSTOKEN;
-%token  RATIONALAPPROXTOKEN;
-%token  ACCURATEINFNORMTOKEN;
-%token  ROUNDTOFORMATTOKEN;
-%token  EVALUATETOKEN;
-%token  LENGTHTOKEN;
-%token  INFTOKEN;
-%token  MIDTOKEN;
-%token  SUPTOKEN;
-%token  MINTOKEN;
-%token  MAXTOKEN;
+%token  QUITTOKEN "quit"
+%token  FALSEQUITTOKEN "quit in an included file"
+%token  FALSERESTARTTOKEN "restart"
 
-%token  READXMLTOKEN;
-%token  PARSETOKEN;
+%token  LIBRARYTOKEN "library"
+%token  LIBRARYCONSTANTTOKEN "libraryconstant"
 
-%token  PRINTTOKEN;
-%token  PRINTXMLTOKEN;
-%token  PLOTTOKEN;
-%token  PRINTHEXATOKEN;
-%token  PRINTFLOATTOKEN;
-%token  PRINTBINARYTOKEN;
-%token  SUPPRESSMESSAGETOKEN;
-%token  UNSUPPRESSMESSAGETOKEN;
-%token  PRINTEXPANSIONTOKEN;
-%token  BASHEXECUTETOKEN;
-%token  EXTERNALPLOTTOKEN;
-%token  WRITETOKEN;
-%token  ASCIIPLOTTOKEN;
-%token  RENAMETOKEN;
-%token  BINDTOKEN;
+%token  DIFFTOKEN "diff"
+%token  SIMPLIFYTOKEN "simplify"
+%token  REMEZTOKEN "remez"
+%token  BASHEVALUATETOKEN "bashevaluate"
+%token  GETSUPPRESSEDMESSAGESTOKEN "getsuppressedmessages"
+%token  FPMINIMAXTOKEN "fpminimax"
+%token  HORNERTOKEN "horner"
+%token  EXPANDTOKEN "expand"
+%token  SIMPLIFYSAFETOKEN "simplifysafe"
 
-%token  INFNORMTOKEN;
-%token  SUPNORMTOKEN;
-%token  FINDZEROSTOKEN;
-%token  FPFINDZEROSTOKEN;
-%token  DIRTYINFNORMTOKEN;
-%token  NUMBERROOTSTOKEN;
-%token  INTEGRALTOKEN;
-%token  DIRTYINTEGRALTOKEN;
-%token  WORSTCASETOKEN;
-%token  IMPLEMENTPOLYTOKEN;
-%token  IMPLEMENTCONSTTOKEN;
-%token  CHECKINFNORMTOKEN;
-%token  ZERODENOMINATORSTOKEN;
-%token  ISEVALUABLETOKEN;
-%token  SEARCHGALTOKEN;
-%token  GUESSDEGREETOKEN;
-%token  DIRTYFINDZEROSTOKEN;
+%token  TAYLORTOKEN "taylor"
+%token  TAYLORFORMTOKEN "taylorform"
+%token  CHEBYSHEVFORMTOKEN "chebyshevform"
+%token  AUTODIFFTOKEN "autodiff"
+%token  DEGREETOKEN "degree"
+%token  NUMERATORTOKEN "numerator"
+%token  DENOMINATORTOKEN "denominator"
+%token  SUBSTITUTETOKEN "substitute"
+%token  COMPOSEPOLYNOMIALSTOKEN "composepolynomials"
+%token  COEFFTOKEN "coeff"
+%token  SUBPOLYTOKEN "subpoly"
+%token  ROUNDCOEFFICIENTSTOKEN "roundcoefficients"
+%token  RATIONALAPPROXTOKEN "rationalapprox"
+%token  ACCURATEINFNORMTOKEN "accurateinfnorm"
+%token  ROUNDTOFORMATTOKEN "round"
+%token  EVALUATETOKEN "evaluate"
+%token  LENGTHTOKEN "length"
+%token  INFTOKEN "inf"
+%token  MIDTOKEN "mid"
+%token  SUPTOKEN "sup"
+%token  MINTOKEN "min"
+%token  MAXTOKEN "max"
 
-%token  IFTOKEN;
-%token  THENTOKEN;
-%token  ELSETOKEN;
-%token  FORTOKEN;
-%token  INTOKEN;
-%token  FROMTOKEN;
-%token  TOTOKEN;
-%token  BYTOKEN;
-%token  DOTOKEN;
-%token  BEGINTOKEN;
-%token  ENDTOKEN;
-%token  LEFTCURLYBRACETOKEN;
-%token  RIGHTCURLYBRACETOKEN;
-%token  WHILETOKEN;
+%token  READXMLTOKEN "read"
+%token  PARSETOKEN "parse"
 
-%token  READFILETOKEN;
+%token  PRINTTOKEN "print"
+%token  PRINTXMLTOKEN "printxml"
+%token  PLOTTOKEN "plot"
+%token  PRINTHEXATOKEN "printhexa"
+%token  PRINTFLOATTOKEN "printfloat"
+%token  PRINTBINARYTOKEN "printbinary"
+%token  SUPPRESSMESSAGETOKEN "suppressmessage"
+%token  UNSUPPRESSMESSAGETOKEN "unsuppressmessage"
+%token  PRINTEXPANSIONTOKEN "printexpansion"
+%token  BASHEXECUTETOKEN "bashexecute"
+%token  EXTERNALPLOTTOKEN "externalplot"
+%token  WRITETOKEN "write"
+%token  ASCIIPLOTTOKEN "asciiplot"
+%token  RENAMETOKEN "rename"
+%token  BINDTOKEN "bind"
 
-%token  ISBOUNDTOKEN;
+%token  INFNORMTOKEN "infnorm"
+%token  SUPNORMTOKEN "supnorm"
+%token  FINDZEROSTOKEN "findzeros"
+%token  FPFINDZEROSTOKEN "fpfindzeros"
+%token  DIRTYINFNORMTOKEN "dirtyinfnorm"
+%token  NUMBERROOTSTOKEN "numberroots"
+%token  INTEGRALTOKEN "integral"
+%token  DIRTYINTEGRALTOKEN "dirtyintegral"
+%token  WORSTCASETOKEN "worstcase"
+%token  IMPLEMENTPOLYTOKEN "implementpoly"
+%token  IMPLEMENTCONSTTOKEN "implementconst"
+%token  CHECKINFNORMTOKEN "checkinfnorm"
+%token  ZERODENOMINATORSTOKEN "zerodenominators"
+%token  ISEVALUABLETOKEN "isevaluable"
+%token  SEARCHGALTOKEN "searchgal"
+%token  GUESSDEGREETOKEN "guessdegree"
+%token  DIRTYFINDZEROSTOKEN "dirtyfindzeros"
 
-%token  EXECUTETOKEN;
+%token  IFTOKEN "if"
+%token  THENTOKEN "then"
+%token  ELSETOKEN "else"
+%token  FORTOKEN "for"
+%token  INTOKEN "in"
+%token  FROMTOKEN "from"
+%token  TOTOKEN "to"
+%token  BYTOKEN "by"
+%token  DOTOKEN "do"
+%token  BEGINTOKEN "begin"
+%token  ENDTOKEN "end"
+%token  LEFTCURLYBRACETOKEN "{"
+%token  RIGHTCURLYBRACETOKEN "}"
+%token  WHILETOKEN "while"
 
-%token  FALSERESTARTTOKEN;
-%token  FALSEQUITTOKEN;
+%token  READFILETOKEN "readfile"
 
-%token  EXTERNALPROCTOKEN;
-%token  VOIDTOKEN;
-%token  CONSTANTTYPETOKEN;
-%token  FUNCTIONTOKEN;
-%token  OBJECTTOKEN;
-%token  RANGETOKEN;
-%token  INTEGERTOKEN;
-%token  STRINGTYPETOKEN;
-%token  BOOLEANTOKEN;
-%token  LISTTOKEN;
-%token  OFTOKEN;
+%token  ISBOUNDTOKEN "isbound"
 
-%token  VARTOKEN;
-%token  PROCTOKEN;
-%token  TIMETOKEN;
-%token  PROCEDURETOKEN;
-%token  RETURNTOKEN;
-%token  NOPTOKEN;
+%token  EXECUTETOKEN "execute"
+
+%token  EXTERNALPROCTOKEN "externalproc"
+%token  VOIDTOKEN "void"
+%token  CONSTANTTYPETOKEN "constant"
+%token  FUNCTIONTOKEN "function"
+%token  OBJECTTOKEN "object"
+%token  RANGETOKEN "range"
+%token  INTEGERTOKEN "integer"
+%token  STRINGTYPETOKEN "string"
+%token  BOOLEANTOKEN "boolean"
+%token  LISTTOKEN "list"
+%token  OFTOKEN "of"
+
+%token  VARTOKEN "var"
+%token  PROCTOKEN "proc"
+%token  PROCEDURETOKEN "procedure"
+%token  RETURNTOKEN "return"
+%token  NOPTOKEN "nop"
 
 
 %type <other> startsymbol;
@@ -1126,10 +1129,6 @@ hyperterm:                term
                           {
 			    $$ = makeAddToList($1, $3);
 			  }
-                      | hyperterm DOTCOLONTOKEN term
-                          {
-			    $$ = makePrepend($1, $3);
-			  }
                       | hyperterm COLONDOTTOKEN term
                           {
 			    $$ = makeAppend($1, $3);
@@ -1220,6 +1219,14 @@ subterm:                basicthing
                       | basicthing POWTOKEN APPROXTOKEN subterm
                           {
 			    $$ = makePow($1, makeEvalConst($4));
+			  }
+                      | basicthing DOTCOLONTOKEN subterm
+                          {
+			    $$ = makePrepend($1, $3);
+			  }
+                      | basicthing DOTCOLONTOKEN APPROXTOKEN subterm
+                          {
+			    $$ = makePrepend($1, makeEvalConst($4));
 			  }
 ;
 
