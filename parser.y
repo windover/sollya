@@ -2353,7 +2353,7 @@ help:                   CONSTANTTOKEN
                           }
                       | COMMATOKEN
                           {
-			    outputMode(); sollyaPrintf("Separator in lists or ranges.\n");
+			    outputMode(); sollyaPrintf("Separator in lists, ranges or structures.\n");
                           }
                       | EXCLAMATIONTOKEN
                           {
@@ -4536,7 +4536,6 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- (\n");
 			    sollyaPrintf("- )\n");
 			    sollyaPrintf("- *\n");
-			    sollyaPrintf("- *<\n");
 			    sollyaPrintf("- +\n");
 			    sollyaPrintf("- ,\n");
 			    sollyaPrintf("- -\n");
@@ -4545,17 +4544,12 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- .:\n");
 			    sollyaPrintf("- /\n");
 			    sollyaPrintf("- :.\n");
-			    sollyaPrintf("- ::\n");
 			    sollyaPrintf("- :=\n");
-			    sollyaPrintf("- ;\n");
+			    sollyaPrintf("- ; (separator in ranges)\n");
 			    sollyaPrintf("- <\n");
 			    sollyaPrintf("- =\n");
 			    sollyaPrintf("- ==\n");
 			    sollyaPrintf("- >\n");
-			    sollyaPrintf("- >*\n");
-			    sollyaPrintf("- >.\n");
-			    sollyaPrintf("- >_\n");
-			    sollyaPrintf("- ?\n");
 			    sollyaPrintf("- @\n");
 			    sollyaPrintf("- D\n");
 			    sollyaPrintf("- DD\n");
@@ -4748,7 +4742,8 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- write\n");
 			    sollyaPrintf("- zerodenominators\n");
 			    sollyaPrintf("- {\n");
-			    sollyaPrintf("- |\n");
+			    sollyaPrintf("- [|\n");
+			    sollyaPrintf("- |]\n");
 			    sollyaPrintf("- ||\n");
 			    sollyaPrintf("- }\n");
 			    sollyaPrintf("- ~\n");
