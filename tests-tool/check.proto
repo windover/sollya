@@ -7,7 +7,7 @@ do
   TEST=1
  else 
   $SOLLYA < $i > $i.output
-  if diff $i.output $i.reference > /dev/null
+  if ! diff $i.output $i.reference > /dev/null
   then
      TEST=1
   else
