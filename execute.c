@@ -7682,18 +7682,42 @@ int timeCommand(mpfr_t time, node *tree) {
 }
 
 void doNothing(int n) {
-  volatile int k, l;
-  int i, j, t;
+  mpfr_t x, y;
+  mpfr_t z;
+  volatile unsigned long int t;
+  int i, j;
+  gmp_randstate_t random_state;
+  struct timeval buf;
+  unsigned long int seed;
 
-  k = 1;
-  l = 1;
-  for (j=0;j<n;j++) {
-    for (i=0;i<1000000;i++) {
-      t = k + l;
-      l = k;
-      k = t;
+  if (gettimeofday(&buf, NULL) == 0) {
+    seed = (unsigned long int) (buf.tv_sec);
+  } else {
+    seed = 17;
+  }
+
+  gmp_randinit_default(random_state);
+  gmp_randseed_ui(random_state, seed);
+
+  mpfr_init2(x, 10000);
+  mpfr_init2(y, 10000);
+  mpfr_init2(z, 20000 - 20);
+
+  mpfr_urandomb(x, random_state); 
+  mpfr_urandomb(y, random_state); 
+
+  t = 0;
+  for (i=0;i<n;i++) {
+    for (j=0;j<171;j++) {
+      mpfr_mul(z, x, y, GMP_RNDN);
+      t += mpfr_get_ui(z, GMP_RNDN);
     }
   }
+
+  mpfr_clear(x);
+  mpfr_clear(y);
+  mpfr_clear(z);
+  gmp_randclear(random_state);
 }
 
 int tryToRewriteLeftHandStructAccessInner(chain **idents, node *thing) {
