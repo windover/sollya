@@ -13,7 +13,7 @@ do
   else
     if test -s $i.reference
     then
-      if ! ./$i > $i.tmp < /dev/null
+      if ! ./$i > $i.output < /dev/null
       then
         ############################################################
         ##### $i.reference exists but $i returns an error code #####
@@ -29,7 +29,7 @@ do
           TEST=1
         fi
       fi
-      test -e $i.tmp && rm $i.tmp
+      test -e $i.output && test $TEST -eq 0 && rm $i.output
     else
       if ! ./$i > /dev/null < /dev/null
       then

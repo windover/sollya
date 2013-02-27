@@ -6,9 +6,12 @@ do
   echo "Unexpected error: test input file seems to be missing. Are you in the right directory?" >&2
   TEST=1
  else 
-  if ! $SOLLYA < $i | diff - $i.reference > /dev/null
+  $SOLLYA < $i > $i.output
+  if diff $i.output $i.reference > /dev/null
   then
      TEST=1
+  else
+     rm $i.output
   fi
  fi
 done
