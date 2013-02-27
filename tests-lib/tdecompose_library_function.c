@@ -21,7 +21,7 @@ int main(void) {
 
   sollya_lib_init();
 
-  f[0] = sollya_lib_parse_string("(proc() {myownlog = library(\"./libraryexample\"); return myownlog;})()");
+  f[0] = sollya_lib_parse_string("(proc() {myownlog = library(\"./libraryexample.a\"); return myownlog;})()");
   f[1] = SOLLYA_COS(SOLLYA_ADD(SOLLYA_X_, SOLLYA_CONST(1)));
 
   /* Trying to decompose an object that is *not* a library function */

@@ -19,7 +19,7 @@ int main(void) {
 
   sollya_lib_init();
 
-  f[0] = sollya_lib_parse_string("(proc() {euler_gamma = libraryconstant(\"./libraryexample\"); return euler_gamma;})()");
+  f[0] = sollya_lib_parse_string("(proc() {euler_gamma = libraryconstant(\"./libraryexample.a\"); return euler_gamma;})()");
 
   /* Trying to decompose an object that is *not* a library constant */
   f[1] = SOLLYA_COS(SOLLYA_CONST(4));

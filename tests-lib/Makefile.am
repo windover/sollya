@@ -302,20 +302,21 @@ tvoid.c
 
 EXTRA_DIST = check.proto $(TESTFILES) $(TESTFILES:.c=.reference)
 
-check_PROGRAMS = force_compilation libraryexample $(TESTFILES:.c=)
+check_PROGRAMS = force_compilation $(TESTFILES:.c=)
+check_LIBRARIES = libraryexample.a # libraryexample.a will be a shared library actually,
+                                   # but we do not know how to explain it to automake.
+
 TESTS= $(TESTFILES:.c=.sh)
 
 LDADD = $(top_builddir)/.libs/libsollya.la
 
-MOSTLYCLEANFILES = $(TESTS) libraryexample
-
-force_compilation_SOURCES =
+MOSTLYCLEANFILES = $(TESTS) libraryexample.a
 
 libraryexample.$(OBJEXT): libraryexample.c
 	$(CC) $(CFLAGS) $(AM_CPPFLAGS) -fPIC -Wall -c libraryexample.c
 
-libraryexample: libraryexample.$(OBJEXT)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -shared -o libraryexample libraryexample.$(OBJEXT) -lgmp -lmpfr
+libraryexample.a: libraryexample.$(OBJEXT)
+	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -shared -o libraryexample.a libraryexample.$(OBJEXT) -lgmp -lmpfr
 
 .PHONY: force_compilation$(EXEEXT)
 
