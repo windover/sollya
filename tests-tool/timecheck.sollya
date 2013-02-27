@@ -143,8 +143,8 @@ i := i + 1;
 /* Other problem, discovered as a side effect of bug report #15363, solved at revision 1935 */
 i;
 f = 5 / 48 * cos(x^(-0.625) / 2)^(-3.5) + 5 / 48 * cos((x^(-0.625) + (2 * (pi)) / 3) / 2)^(-3.5) + 5 / 48 * cos((x^(-0.625) - (2 * (pi)) / 3) / 2)^(-3.5) + 5 / 48 * cos(x^(-0.625) / 2)^(-3.5) * 5 / 48 * cos((x^(-0.625) + (2 * (pi)) / 3) / 2)^(-3.5) + 5 / 48 * cos(x^(-0.625) / 2)^(-3.5) * 5 / 48 * cos((x^(-0.625) - (2 * (pi)) / 3) / 2)^(-3.5) + 5 / 48 * cos((x^(-0.625) + (2 * (pi)) / 3) / 2)^(-3.5) * 5 / 48 * cos((x^(-0.625) - (2 * (pi)) / 3) / 2)^(-3.5) + 5 / 48 * cos(x^(-0.625) / 2)^(-3.5) * 5 / 48 * cos((x^(-0.625) + (2 * (pi)) / 3) / 2)^(-3.5) * 5 / 48 * cos((x^(-0.625) - (2 * (pi)) / 3) / 2)^(-3.5);
-t1 = time(a=horner(f))/yardstick;
-t2 = time(a=horner(f*5))/yardstick;
+t1 = time(for k from 0 to 1000 do a=horner(f))/yardstick;
+t2 = time(for k from 0 to 1000 do a=horner(f*5))/yardstick;
 if 1.25*t1 >= t2 then "Okay" else print("t1 = ", round(t1,12,RN), " and t2 = ", round(t2, 12, RN));
 if 1.25*t2 >= t1 then "Okay" else print("t1 = ", round(t1,12,RN), " and t2 = ", round(t2, 12, RN));
 i := i + 1;

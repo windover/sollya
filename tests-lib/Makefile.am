@@ -311,11 +311,11 @@ MOSTLYCLEANFILES = $(TESTS) libraryexample
 
 force_compilation_SOURCES =
 
-libraryexample.o: libraryexample.c
+libraryexample.$(OBJEXT): libraryexample.c
 	$(CC) $(CFLAGS) $(AM_CPPFLAGS) -fPIC -Wall -c libraryexample.c
 
-libraryexample: libraryexample.o
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -shared -o libraryexample libraryexample.o -lgmp -lmpfr
+libraryexample: libraryexample.$(OBJEXT)
+	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -shared -o libraryexample libraryexample.$(OBJEXT) -lgmp -lmpfr
 
 .PHONY: force_compilation$(EXEEXT)
 
