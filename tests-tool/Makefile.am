@@ -9,9 +9,9 @@ force_compilation_SOURCES =
 
 MOSTLYCLEANFILES = $(TESTS)
 
-.PHONY: force_compilation
+.PHONY: force_compilation$(EXEEXT)
 
-force_compilation:
+force_compilation$(EXEEXT):
 	@echo "Recompiling sollya";cd $(top_builddir); $(MAKE) sollya
 
 $(TESTS): check.proto

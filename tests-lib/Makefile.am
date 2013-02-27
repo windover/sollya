@@ -312,14 +312,14 @@ MOSTLYCLEANFILES = $(TESTS) libraryexample
 force_compilation_SOURCES =
 
 libraryexample.o: libraryexample.c
-	gcc $(CFLAGS) $(AM_CPPFLAGS) -fPIC -Wall -c libraryexample.c
+	$(CC) $(CFLAGS) $(AM_CPPFLAGS) -fPIC -Wall -c libraryexample.c
 
 libraryexample: libraryexample.o
-	gcc $(LDFLAGS) $(AM_LDFLAGS) -shared -o libraryexample libraryexample.o -lgmp -lmpfr
+	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -shared -o libraryexample libraryexample.o -lgmp -lmpfr
 
-.PHONY: force_compilation
+.PHONY: force_compilation$(EXEEXT)
 
-force_compilation:
+force_compilation$(EXEEXT):
 	@echo "Recompiling sollya";cd $(top_builddir); $(MAKE) libsollya.la
 
 $(TESTS): check.proto
