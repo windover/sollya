@@ -316,7 +316,7 @@ libraryexample.$(OBJEXT): libraryexample.c
 	$(CC) $(CFLAGS) $(AM_CPPFLAGS) -fPIC -Wall -c libraryexample.c
 
 libraryexample.a: libraryexample.$(OBJEXT)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -shared -o libraryexample.a libraryexample.$(OBJEXT) -lgmp -lmpfr -lmpfi
+	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -shared -o libraryexample.a libraryexample.$(OBJEXT) -lmpfi -lmpfr -lgmp
 
 .PHONY: force_compilation$(EXEEXT)
 
