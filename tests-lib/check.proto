@@ -20,7 +20,7 @@ do
         ############################################################
         TEST=1
       else
-        if ! diff $i.tmp $i.reference > /dev/null
+        if ! diff $i.output $i.reference > /dev/null
         then
           ##################################################################
           ##### $i.reference exists, $i does not return an error code, #####
