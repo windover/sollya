@@ -77,7 +77,7 @@ int main(void) {
   sollya_lib_clear_obj(temp);
 
 
-  /* implementpoly(1 - TD(1/6) * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c"); */
+  /* implementpoly(1 - 1/8 * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c"); */
   for (i=0;i<A_DIM;i++) {
     a[i] = NULL;
   }
@@ -99,7 +99,7 @@ int main(void) {
     }
   }
 
-  a[0] = sollya_lib_parse_string("1 - TD(1/6) * x^2");
+  a[0] = sollya_lib_parse_string("1 - 1/8 * x^2");
   a[1] = sollya_lib_parse_string("[-1b-10;1b-10]");
   a[2] = sollya_lib_parse_string("1b-60");
   a[3] = sollya_lib_double_double_obj();
@@ -120,7 +120,7 @@ int main(void) {
   }
   sollya_lib_clear_obj(res);
 
-  /* implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c",honorcoeffprec); */
+  /* implementpoly(1 - (1/4 + 1b-70 + 1b-140) * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c",honorcoeffprec); */
   for (i=0;i<A_DIM;i++) {
     a[i] = NULL;
   }
@@ -142,7 +142,7 @@ int main(void) {
     }
   }
 
-  a[0] = sollya_lib_parse_string("1 - TD(1/6) * x^2");
+  a[0] = sollya_lib_parse_string("1 - (1/4 + 1b-70 + 1b-140) * x^2");
   a[1] = sollya_lib_parse_string("[-1b-10;1b-10]");
   a[2] = sollya_lib_parse_string("1b-60");
   a[3] = sollya_lib_double_double_obj();
@@ -164,7 +164,7 @@ int main(void) {
   }
   sollya_lib_clear_obj(res);
 
-  /* implementpoly(0x3ff0000000000000 + x * (0x3ff0000000000000 + x * (0x3fe0000000000000 + x * (0x3fc5555555555559 + x * (0x3fa55555555555bd + x * (0x3f811111111106e2 + x * (0x3f56c16c16bf5eb7 + x * (0x3f2a01a01a292dcd + x * (0x3efa01a0218a016a + x * (0x3ec71de360331aad + x * (0x3e927e42e3823bf3 + x * (0x3e5ae6b2710c2c9a + x * (0x3e2203730c0a7c1d + x * 0x3de5da557e0781df)))))))))))),[-1/2;1/2],1b-60,D,"p","implementation.c",honorcoeffprec,"implementation.gappa"); */
+  /* implementpoly(1 + 1 * x + 1/2 * x^2 + 1/4 * x^3 + 1/8 * x^4 + 1/16 * x^5 + 1/32 * x^6 + 1/64 * x^7,[-1/2;1/2],1b-60,D,"p","implementation.c",honorcoeffprec,"implementation.gappa"); */
   for (i=0;i<A_DIM;i++) {
     a[i] = NULL;
   }
@@ -203,7 +203,7 @@ int main(void) {
     }
   }
 
-  a[0] = sollya_lib_parse_string("0x3ff0000000000000 + x * (0x3ff0000000000000 + x * (0x3fe0000000000000 + x * (0x3fc5555555555559 + x * (0x3fa55555555555bd + x * (0x3f811111111106e2 + x * (0x3f56c16c16bf5eb7 + x * (0x3f2a01a01a292dcd + x * (0x3efa01a0218a016a + x * (0x3ec71de360331aad + x * (0x3e927e42e3823bf3 + x * (0x3e5ae6b2710c2c9a + x * (0x3e2203730c0a7c1d + x * 0x3de5da557e0781df))))))))))))");
+  a[0] = sollya_lib_parse_string("1 + 1 * x + 1/2 * x^2 + 1/4 * x^3 + 1/8 * x^4 + 1/16 * x^5 + 1/32 * x^6 + 1/64 * x^7");
   a[1] = sollya_lib_parse_string("[-1/2;1/2]");
   a[2] = sollya_lib_parse_string("1b-60");
   a[3] = sollya_lib_double_double_obj();
