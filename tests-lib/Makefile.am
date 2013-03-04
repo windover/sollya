@@ -308,7 +308,7 @@ check_LIBRARIES = libraryexample.a # libraryexample.a will be a shared library a
 
 TESTS= $(TESTFILES:.c=.sh)
 
-LDADD = $(top_builddir)/.libs/libsollya.la
+LDADD = $(top_builddir)/.libs/libsollya.la -lstdc++
 
 MOSTLYCLEANFILES = $(TESTS) libraryexample.a
 

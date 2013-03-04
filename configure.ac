@@ -427,6 +427,10 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([gettimeofday memmove memset strchr strerror strrchr strtol backtrace dup2 strstr dladdr])
 
+if test "x${FPLLLJUSTHEADER}y" == "xyesy" ; then 
+AM_LDFLAGS="$AM_LDFLAGS -lstdc++"
+fi
+
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(AM_CFLAGS)
 AC_SUBST(AM_LDFLAGS)

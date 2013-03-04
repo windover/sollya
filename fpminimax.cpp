@@ -94,9 +94,9 @@ extern "C" {
 
 #define MAXLOOP 10
 
-void printFPLLLMat(ZZ_mat<mpz_t> *M) { M->print(); }
+extern "C" void printFPLLLMat(ZZ_mat<mpz_t> *M) { M->print(); }
 
-void printMpqMatrix(mpq_t *M, int p, int n) {
+extern "C" void printMpqMatrix(mpq_t *M, int p, int n) {
   int i,j;
   sollyaPrintf("[");
   for(i=1;i<=p;i++) {
@@ -109,9 +109,8 @@ void printMpqMatrix(mpq_t *M, int p, int n) {
   return;
 }
 
-void printMpq(mpq_t a) { mpq_out_str(stdout, 10, a); sollyaPrintf("\n");}
 
-int mpq_cmpabs(mpq_t a, mpq_t b) {
+extern "C" int mpq_cmpabs(mpq_t a, mpq_t b) {
   mpq_t temp1, temp2;
   int res;
 
@@ -128,7 +127,7 @@ int mpq_cmpabs(mpq_t a, mpq_t b) {
   return res;
 }
 
-void mpq_fma(mpq_t r, mpq_t a, mpq_t b, mpq_t c) {
+extern "C" void mpq_fma(mpq_t r, mpq_t a, mpq_t b, mpq_t c) {
   mpq_t temp;
   mpq_init(temp);
 
@@ -143,7 +142,7 @@ void mpq_fma(mpq_t r, mpq_t a, mpq_t b, mpq_t c) {
 /* p is the number of lines (p>=n)           */
 /* the system is supposed to be invertible   */
 /* returns 1 if the system is singular       */
-int exact_system_solve(mpq_t *res, mpq_t *M, mpq_t *b, int p, int n) {
+extern "C" int exact_system_solve(mpq_t *res, mpq_t *M, mpq_t *b, int p, int n) {
   chain *i_list=NULL;
   chain *j_list=NULL;
   chain *curri;
@@ -270,7 +269,7 @@ int exact_system_solve(mpq_t *res, mpq_t *M, mpq_t *b, int p, int n) {
 
 
 
-chain *ChebychevPoints(mpfr_t a, mpfr_t b, int n) {
+extern "C" chain *ChebychevPoints(mpfr_t a, mpfr_t b, int n) {
   chain *res=NULL;
   mpfr_t temp, temp2, u;
   mpfr_t *mpfrptr;
@@ -310,7 +309,7 @@ chain *ChebychevPoints(mpfr_t a, mpfr_t b, int n) {
    the algorithm fails. The algorithm fails also if g(x) = (x+1) and poly = 2*(x+1)*3, whatever the way you
    put parentheses.
 */
-int findCoeffInPseudoPolynomial(node **c, node *poly, node *g) {
+extern "C" int findCoeffInPseudoPolynomial(node **c, node *poly, node *g) {
   node *a, *b;
   node *temp;
   int r1, r2;
@@ -390,7 +389,7 @@ int findCoeffInPseudoPolynomial(node **c, node *poly, node *g) {
    Returns 1 in case of success and 0 in case of failure (in this case nothing can be said about
    the content of coefficients)
 */
-int getCoefficientsInPseudoPolynomial(mpfr_t *coefficients, node *poly, chain *monomials) {
+extern "C" int getCoefficientsInPseudoPolynomial(mpfr_t *coefficients, node *poly, chain *monomials) {
   chain *curr;
   node *coeff;
   int i = 0;
@@ -406,7 +405,7 @@ int getCoefficientsInPseudoPolynomial(mpfr_t *coefficients, node *poly, chain *m
 }
 
 
-chain *computeExponents(chain *formats, mpfr_t* coefficients, int dim) {
+extern "C" chain *computeExponents(chain *formats, mpfr_t* coefficients, int dim) {
   chain *curr;
   chain *res = NULL;
   int *intptr;
@@ -434,7 +433,7 @@ chain *computeExponents(chain *formats, mpfr_t* coefficients, int dim) {
   return res;
 }
 
-int fitInFormat(chain *formats, mpfr_t* coefficients, int dim) {
+extern "C" int fitInFormat(chain *formats, mpfr_t* coefficients, int dim) {
   chain *curr;
   mpfr_t val;
   int prec, i;
@@ -465,10 +464,10 @@ int fitInFormat(chain *formats, mpfr_t* coefficients, int dim) {
 
 
 
-node *FPminimaxMain(node *, chain *, chain *, chain *, node *);
+extern "C" node *FPminimaxMain(node *, chain *, chain *, chain *, node *);
 
 
-node *FPminimax(node *f,
+extern "C" node *FPminimax(node *f,
 		chain *monomials,
 		chain *formats,
 		chain *points,
@@ -665,7 +664,7 @@ node *FPminimax(node *f,
   return res;
 }
 
-node *FPminimaxMain(node *f,
+extern "C" node *FPminimaxMain(node *f,
 		    chain *monomials,
 		    chain *formats,
 		    chain *points,
