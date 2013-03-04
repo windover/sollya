@@ -320,6 +320,8 @@ libraryexample.a: libraryexample.$(OBJEXT)
 
 .PHONY: force_compilation$(EXEEXT)
 
+force_compilation_SOURCES=
+
 force_compilation$(EXEEXT):
 	@echo "Recompiling sollya";cd $(top_builddir); $(MAKE) libsollya.la
 
