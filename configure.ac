@@ -217,7 +217,7 @@ fi
 if test "x$XML2LIBGIVEN" = "x"; then
   XML2LIBS=`$XML2CONFIG --libs --static`
   XML2LIBSPURE=`$XML2CONFIG --libs | $SED -e 's/^-l//g;s/[[:blank:]]-l//g;'`
-  AC_SEARCH_LIBS([xmlTextReaderIsEmptyElement], [$XML2LIBSPURE], [], [$XML2LIBS])
+  AC_SEARCH_LIBS([xmlTextReaderIsEmptyElement], [$XML2LIBSPURE], [], [], [$XML2LIBS])
 fi
 
 
