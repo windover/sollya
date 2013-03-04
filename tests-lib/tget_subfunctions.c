@@ -102,7 +102,7 @@ int main(void) {
   sollya_lib_clear_obj(tmp3);
 
   /* Library function */
-  f = sollya_lib_build_function_libraryfunction(SOLLYA_COS(SOLLYA_X_), NULL, stupid1);
+  f = sollya_lib_build_function_libraryfunction(SOLLYA_COS(SOLLYA_X_), "stupid1", stupid1);
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_get_subfunctions(f, &n, &g[0], &g[1], &g[2], NULL);
@@ -115,7 +115,7 @@ int main(void) {
 
   /* arithmetic operator */
   f = SOLLYA_ADD(SOLLYA_X_,
-                 sollya_lib_build_function_libraryfunction(SOLLYA_X_, NULL, stupid1));
+                 sollya_lib_build_function_libraryfunction(SOLLYA_X_, "stupid1", stupid1));
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_get_subfunctions(f, &n, &g[0], &g[1], &g[2], NULL);
@@ -204,7 +204,7 @@ int main(void) {
   sollya_lib_clear_obj(g[2]);
 
   /* As third argument in a library function */
-  f = sollya_lib_build_function_libraryfunction(SOLLYA_COS(SOLLYA_X_), NULL, stupid1);
+  f = sollya_lib_build_function_libraryfunction(SOLLYA_COS(SOLLYA_X_), "stupid1", stupid1);
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_get_subfunctions(f, &n, NULL, &g[1], &g[2]);
@@ -216,7 +216,7 @@ int main(void) {
   sollya_lib_clear_obj(g[2]);
 
   /* As fourth argument in a library function */
-  f = sollya_lib_build_function_libraryfunction(SOLLYA_COS(SOLLYA_X_), NULL, stupid1);
+  f = sollya_lib_build_function_libraryfunction(SOLLYA_COS(SOLLYA_X_), "stupid1", stupid1);
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_get_subfunctions(f, &n, &g[0], NULL, &g[2]);

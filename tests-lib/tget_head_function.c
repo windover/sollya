@@ -122,7 +122,7 @@ int main(void) {
   sollya_lib_clear_obj(f);
 
   /* Library function */
-  f = sollya_lib_build_function_libraryfunction(SOLLYA_X_, NULL, stupid1);
+  f = sollya_lib_build_function_libraryfunction(SOLLYA_X_, "stupid1", stupid1);
   type = -1;
   res = sollya_lib_get_head_function(&type, f);
   if (res) sollya_lib_printf("Type of %b: %s\n", f, pretty_print(type));
@@ -131,7 +131,7 @@ int main(void) {
 
   /* arithmetic operator */
   f = SOLLYA_ADD(SOLLYA_X_,
-                 sollya_lib_build_function_libraryfunction(SOLLYA_X_, NULL, stupid1));
+                 sollya_lib_build_function_libraryfunction(SOLLYA_X_, "stupid1", stupid1));
   type = -1;
   res = sollya_lib_get_head_function(&type, f);
   if (res) sollya_lib_printf("Type of %b: %s\n", f, pretty_print(type));
