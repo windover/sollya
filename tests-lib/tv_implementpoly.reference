@@ -1,63 +1,56 @@
 Caught the message: the implemented polynomial is different from the original one.
-implementpoly(1b164 - 1948668849774537224271579776955044026207910057301b1 * x^2,[-1b-10;1b-10],1b-60,doubledouble,p,"timplementpoly.implementation.c") returns 1b164 + x^2 * (-6004799503160661b109) and produces the following code:
+implementpoly(649037107316853453566312041152512 - 108172851219475575594385340192085 * x^2,[-1b-10;1b-10],1b-44,double,p,"timplementpoly.implementation.c") returns 649037107316853453566312041152512 + x^2 * (-108172851219475569589585837031424) and produces the following code:
 
-#define p_coeff_0h 2.33840261972944466912589573234605283144949206876160000000000000000000000000000000e+49
-#define p_coeff_2h -3.89733769954907423219745711495893686364513973043200000000000000000000000000000000e+48
+#define p_coeff_0h 6.49037107316853453566312041152512000000000000000000000000000000000000000000000000e+32
+#define p_coeff_2h -1.08172851219475569589585837031424000000000000000000000000000000000000000000000000e+32
 
 
-void p(double *p_resh, double *p_resm, double xh, double xm) {
+void p(double *p_resh, double x) {
 double p_x_0_pow2h;
 
 
-p_x_0_pow2h = xh * xh;
+p_x_0_pow2h = x * x;
 
 
 double p_t_1_0h;
 double p_t_2_0h;
-double p_t_3_0h, p_t_3_0m;
+double p_t_3_0h;
  
 
 
 p_t_1_0h = p_coeff_2h;
 p_t_2_0h = p_t_1_0h * p_x_0_pow2h;
-Add12(p_t_3_0h,p_t_3_0m,p_coeff_0h,p_t_2_0h);
-*p_resh = p_t_3_0h; *p_resm = p_t_3_0m;
+p_t_3_0h = p_coeff_0h + p_t_2_0h;
+*p_resh = p_t_3_0h;
 
 
 }
 
 Caught the message: the infered precision of a coefficient is higher than what seems to be needed to meet the accuracy target.
-implementpoly(1b164 - 1948668849774537224271579776955044026207910057301b1 * x^2,[-1b-10;1b-10],1b-60,doubledouble,p,"timplementpoly.implementation.c",honorcoeffprec) returns 1b164 + x^2 * (-1948668849774537224271579776955044026207910057301b1) and produces the following code:
+implementpoly(649037107316853453566312041152512 - 108172851219475575594385340192085 * x^2,[-1b-10;1b-10],1b-44,double,p,"timplementpoly.implementation.c",honorcoeffprec) returns 649037107316853453566312041152512 + x^2 * (-108172851219475575594385340192085) and produces the following code:
 
-#define p_coeff_0h 2.33840261972944466912589573234605283144949206876160000000000000000000000000000000e+49
-#define p_coeff_2h -3.89733769954907423219745711495893686364513973043200000000000000000000000000000000e+48
-#define p_coeff_2m -2.16345702438951139179171674062848000000000000000000000000000000000000000000000000e+32
-#define p_coeff_2l -1.20095990063213220000000000000000000000000000000000000000000000000000000000000000e+16
-
-
-void p(double *p_resh, double *p_resm, double xh, double xm) {
-double p_x_0_pow2h, p_x_0_pow2m, p_x_0_pow2l;
+#define p_coeff_0h 6.49037107316853453566312041152512000000000000000000000000000000000000000000000000e+32
+#define p_coeff_2h -1.08172851219475569589585837031424000000000000000000000000000000000000000000000000e+32
+#define p_coeff_2m -6.00479950316066100000000000000000000000000000000000000000000000000000000000000000e+15
 
 
-Mul23(&p_x_0_pow2h,&p_x_0_pow2m,&p_x_0_pow2l,xh,xm,xh,xm);
+void p(double *p_resh, double x) {
+double p_x_0_pow2h, p_x_0_pow2m;
 
 
-double p_t_1_0h, p_t_1_0m, p_t_1_0l;
-double p_x_1_pow2h, p_x_1_pow2m, p_x_1_pow2l;
-double p_t_1_1h, p_t_1_1m, p_t_1_1l;
-double p_t_2_0h, p_t_2_0m, p_t_2_0l;
-double p_t_2_1h, p_t_2_1m, p_t_2_1l;
-double p_t_3_0h, p_t_3_0m, p_t_3_0l;
+Mul12(&p_x_0_pow2h,&p_x_0_pow2m,x,x);
+
+
+double p_t_1_0h, p_t_1_0m;
+double p_t_2_0h, p_t_2_0m;
+double p_t_3_0h, p_t_3_0m;
  
 
 
-p_t_1_0h = p_coeff_2h; p_t_1_0m = p_coeff_2m; p_t_1_0l = p_coeff_2l;
-Renormalize3(&p_x_1_pow2h,&p_x_1_pow2m,&p_x_1_pow2l,p_x_0_pow2h,p_x_0_pow2m,p_x_0_pow2l);
-Renormalize3(&p_t_1_1h,&p_t_1_1m,&p_t_1_1l,p_t_1_0h,p_t_1_0m,p_t_1_0l);
-Mul33(&p_t_2_0h,&p_t_2_0m,&p_t_2_0l,p_x_1_pow2h,p_x_1_pow2m,p_x_1_pow2l,p_t_1_1h,p_t_1_1m,p_t_1_1l);
-Renormalize3(&p_t_2_1h,&p_t_2_1m,&p_t_2_1l,p_t_2_0h,p_t_2_0m,p_t_2_0l);
-Add133(&p_t_3_0h,&p_t_3_0m,&p_t_3_0l,p_coeff_0h,p_t_2_1h,p_t_2_1m,p_t_2_1l);
-Renormalize3(p_resh,p_resm,p_resl,p_t_3_0h,p_t_3_0m,p_t_3_0l);
+p_t_1_0h = p_coeff_2h; p_t_1_0m = p_coeff_2m;
+Mul22(&p_t_2_0h,&p_t_2_0m,p_t_1_0h,p_t_1_0m,p_x_0_pow2h,p_x_0_pow2m);
+Add122(&p_t_3_0h,&p_t_3_0m,p_coeff_0h,p_t_2_0h,p_t_2_0m);
+*p_resh = p_t_3_0h; *p_resm = p_t_3_0m;
 
 
 }

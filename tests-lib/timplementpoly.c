@@ -77,7 +77,7 @@ int main(void) {
   sollya_lib_clear_obj(temp);
 
 
-  /* implementpoly(1b164 - 1b164 * TD(1/6) * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c"); */
+  /* implementpoly(1b109 - 1b109 * DD(1/6) * x^2,[-1b-10;1b-10],1b-44,D,"p","implementation.c"); */
   for (i=0;i<A_DIM;i++) {
     a[i] = NULL;
   }
@@ -99,10 +99,10 @@ int main(void) {
     }
   }
 
-  a[0] = sollya_lib_parse_string("1b164 - 1b164 * TD(1/6) * x^2");
+  a[0] = sollya_lib_parse_string("1b109 - 1b109 * DD(1/6) * x^2");
   a[1] = sollya_lib_parse_string("[-1b-10;1b-10]");
-  a[2] = sollya_lib_parse_string("1b-60");
-  a[3] = sollya_lib_double_double_obj();
+  a[2] = sollya_lib_parse_string("1b-44");
+  a[3] = sollya_lib_double_obj();
   a[4] = sollya_lib_string("p");
   a[5] = sollya_lib_string(TEMP_IMPLEMENTATION_FILE);
   
@@ -120,7 +120,7 @@ int main(void) {
   }
   sollya_lib_clear_obj(res);
 
-  /* implementpoly(1b164 - 1b164 * TD(1/6) * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c",honorcoeffprec); */
+  /* implementpoly(1b109 - 1b109 * DD(1/6) * x^2,[-1b-10;1b-10],1b-44,D,"p","implementation.c",honorcoeffprec); */
   for (i=0;i<A_DIM;i++) {
     a[i] = NULL;
   }
@@ -142,10 +142,10 @@ int main(void) {
     }
   }
 
-  a[0] = sollya_lib_parse_string("1b164 - 1b164 * TD(1/6) * x^2");
+  a[0] = sollya_lib_parse_string("1b109 - 1b109 * DD(1/6) * x^2");
   a[1] = sollya_lib_parse_string("[-1b-10;1b-10]");
-  a[2] = sollya_lib_parse_string("1b-60");
-  a[3] = sollya_lib_double_double_obj();
+  a[2] = sollya_lib_parse_string("1b-44");
+  a[3] = sollya_lib_double_obj();
   a[4] = sollya_lib_string("p");
   a[5] = sollya_lib_string(TEMP_IMPLEMENTATION_FILE);
   a[6] = sollya_lib_honorcoeffprec();
