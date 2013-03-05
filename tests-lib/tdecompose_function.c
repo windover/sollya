@@ -338,6 +338,16 @@ int main(void) {
   /*******************************************************/
   /* Testing the function presented in the documentation */
   /*******************************************************/
+  f = sollya_lib_build_function_libraryfunction(SOLLYA_COS(SOLLYA_X_), "stupid1", stupid1);
+  if (is_made_of_constants(f)) sollya_lib_printf("%b is made of constants.\n", f);
+  else sollya_lib_printf("%b is *NOT* made of constants.\n", f);
+  sollya_lib_clear_obj(f);
+
+  f = sollya_lib_build_function_libraryfunction(SOLLYA_COS(SOLLYA_PI), "stupid1", stupid1);
+  if (is_made_of_constants(f)) sollya_lib_printf("%b is made of constants.\n", f);
+  else sollya_lib_printf("%b is *NOT* made of constants.\n", f);
+  sollya_lib_clear_obj(f);
+  
   f = sollya_lib_libraryconstant("superconst", euler_gamma);
   f = SOLLYA_MUL(SOLLYA_ADD(SOLLYA_PI, SOLLYA_CONST(1)), f);
   if (is_made_of_constants(f)) sollya_lib_printf("%b is made of constants.\n", f);

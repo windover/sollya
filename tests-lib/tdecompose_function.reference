@@ -31,6 +31,8 @@ NULL given as 4th argument. sin(_x_) + 17: type = SOLLYA_BASE_FUNC_ADD, n = 2, s
 NULL given as 5th argument. sin(_x_) + 17: type = SOLLYA_BASE_FUNC_ADD, n = 2, subfunctions = sin(_x_) and NULL.
 NULL given as 4th argument. stupid1(cos(_x_)): type = SOLLYA_BASE_FUNC_LIBRARYFUNCTION, n = 1, subfunctions = NULL and NULL.
 NULL given as 5th argument. stupid1(cos(_x_)): type = SOLLYA_BASE_FUNC_LIBRARYFUNCTION, n = 1, subfunctions = cos(_x_) and NULL.
+stupid1(cos(_x_)) is *NOT* made of constants.
+stupid1(cos(pi)) is made of constants.
 ((pi) + 1) * superconst is made of constants.
 _x_ is *NOT* made of constants.
 sin(_x_ + 1) is *NOT* made of constants.
