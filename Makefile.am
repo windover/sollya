@@ -166,7 +166,7 @@ worstcase.h \
 xml.c \
 xml.h 
 
-libsollya_la_LDFLAGS = -version-info 4:0:0
+libsollya_la_LDFLAGS = -version-info 4:0:0 $(AM_LDFLAGS)
 
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 libtool: $(LIBTOOL_DEPS)
