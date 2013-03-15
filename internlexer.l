@@ -66,6 +66,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "chain.h"
 
 #define YY_NO_UNPUT 1
+#define YY_NO_INPUT 1
 
 /* Mess with the mallocs used by the lexer */
 extern void *parserCalloc(size_t, size_t);
@@ -79,12 +80,12 @@ extern void parserFree(void *);
 #define malloc parserMalloc
 #define realloc parserRealloc
 #define calloc parserCalloc
-#define free parserFree
+#define free UNUSED_PARAM(yyscanner); parserFree
 /* End of the malloc mess */
 
 /* Mess with fprintf to use sollyaFprintf instead. */
 #undef  fprintf
-#define fprintf sollyaFprintf
+#define fprintf UNUSED_PARAM(yyscanner); sollyaFprintf
 /* End of fprintf mess */
 
 %}
@@ -469,17 +470,17 @@ NOP             "nop"
 
 <commentstate>{COMMENTEND} { BEGIN(INITIAL); }
 
-<commentstate>. { // Eat up comments
+<commentstate>. { /* Eat up comments */
 
                  }
 
-<commentstate>[\n] { // Eat up newlines in comments
+<commentstate>[\n] { /* Eat up newlines in comments */
 
 		}
 
 
 
-{ONELINECOMMENT} {  // Eat up comments
+{ONELINECOMMENT} {  /* Eat up comments */
 
                  }
 

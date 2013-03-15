@@ -222,6 +222,8 @@ void constantPower_diff(sollya_mpfi_t *res, sollya_mpfi_t x, mpfr_t p, int n, in
   sollya_mpfi_t expo, acc;
   mp_prec_t prec_expo, prec;
   int i;
+
+  UNUSED_PARAM(silent);
   
   prec = getToolPrecision();
   prec_expo = (prec > mpfr_get_prec(p))?prec:mpfr_get_prec(p);
@@ -258,6 +260,8 @@ void powerFunction_diff(sollya_mpfi_t *res, mpfr_t p, sollya_mpfi_t x, int n, in
   sollya_mpfi_t temp1,temp2;
   mp_prec_t prec;
 
+  UNUSED_PARAM(silent);
+
   prec = getToolPrecision();
   sollya_mpfi_init2(temp1, prec);
   sollya_mpfi_init2(temp2, prec);
@@ -282,6 +286,8 @@ void exp_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   int i;
   sollya_mpfi_t temp;
   mp_prec_t prec;
+
+  UNUSED_PARAM(silent);
 
   prec = getToolPrecision();
   sollya_mpfi_init2(temp, prec);
@@ -383,9 +389,8 @@ void log10_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
 
 void sin_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   int i;
-  mp_prec_t prec;
 
-  prec = getToolPrecision();
+  UNUSED_PARAM(silent);
 
   sollya_mpfi_sin(res[0], x); 
   for(i=2; i<=n; i+=2) sollya_mpfi_div_ui(res[i], res[i-2], (i-1)*i);
@@ -402,9 +407,8 @@ void sin_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
 
 void cos_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   int i;
-  mp_prec_t prec;
 
-  prec = getToolPrecision();
+  UNUSED_PARAM(silent);
 
   sollya_mpfi_cos(res[0], x); 
   for(i=2; i<=n; i+=2) sollya_mpfi_div_ui(res[i], res[i-2], (i-1)*i);
@@ -421,9 +425,8 @@ void cos_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
 
 void sinh_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   int i;
-  mp_prec_t prec;
 
-  prec = getToolPrecision();
+  UNUSED_PARAM(silent);
 
   sollya_mpfi_sinh(res[0], x); 
   for(i=2; i<=n; i+=2) sollya_mpfi_div_ui(res[i], res[i-2], (i-1)*i);
@@ -438,10 +441,9 @@ void sinh_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
 
 void cosh_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   int i;
-  mp_prec_t prec;
 
-  prec = getToolPrecision();
-
+  UNUSED_PARAM(silent);
+  
   sollya_mpfi_cosh(res[0], x); 
   for(i=2; i<=n; i+=2) sollya_mpfi_div_ui(res[i], res[i-2], (i-1)*i);
 
@@ -489,6 +491,8 @@ void symbolic_poly_evaluation_powers(sollya_mpfi_t res, sollya_mpfi_t *coeffs_ar
   sollya_mpfi_t temp, acc;
   mp_prec_t prec;
 
+  UNUSED_PARAM(x);
+
   prec = getToolPrecision();
   sollya_mpfi_init2(temp, prec);
   sollya_mpfi_init2(acc, prec);
@@ -517,6 +521,8 @@ void tan_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   sollya_mpfi_t *coeffs_array;
   sollya_mpfi_t u;
   mp_prec_t prec;
+
+  UNUSED_PARAM(silent);
 
   prec = getToolPrecision();
   coeffs_array = (sollya_mpfi_t *)safeCalloc( (n+2),sizeof(sollya_mpfi_t));
@@ -572,6 +578,8 @@ void tanh_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   sollya_mpfi_t *coeffs_array;
   sollya_mpfi_t u;
   mp_prec_t prec;
+
+  UNUSED_PARAM(silent);
 
   prec = getToolPrecision();
   coeffs_array = (sollya_mpfi_t *)safeCalloc( (n+2),sizeof(sollya_mpfi_t));
@@ -629,6 +637,8 @@ void atan_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   sollya_mpfi_t u, temp;
 
   mp_prec_t prec;
+
+  UNUSED_PARAM(silent);
     
   prec = getToolPrecision();
   coeffs_array = (sollya_mpfi_t *)safeCalloc( n,sizeof(sollya_mpfi_t));
@@ -710,6 +720,8 @@ void atanh_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   sollya_mpfi_t u, temp;
 
   mp_prec_t prec;
+
+  UNUSED_PARAM(silent);
     
   prec = getToolPrecision();
   coeffs_array = (sollya_mpfi_t *)safeCalloc( n,sizeof(sollya_mpfi_t));
@@ -793,6 +805,8 @@ void asin_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   sollya_mpfi_t u, temp;
 
   mp_prec_t prec;
+
+  UNUSED_PARAM(silent);
     
   prec = getToolPrecision();
   coeffs_array = (sollya_mpfi_t *)safeCalloc( n,sizeof(sollya_mpfi_t));
@@ -891,6 +905,8 @@ void asinh_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
 
   mp_prec_t prec;
     
+  UNUSED_PARAM(silent);
+
   prec = getToolPrecision();
   coeffs_array = (sollya_mpfi_t *)safeCalloc( n,sizeof(sollya_mpfi_t));
   coeffs_array_diff = (sollya_mpfi_t *)safeCalloc( n,sizeof(sollya_mpfi_t));
@@ -972,6 +988,8 @@ void acosh_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   sollya_mpfi_t u, temp;
 
   mp_prec_t prec;
+
+  UNUSED_PARAM(silent);
     
   prec = getToolPrecision();
   coeffs_array = (sollya_mpfi_t *)safeCalloc( n,sizeof(sollya_mpfi_t));
@@ -1051,6 +1069,8 @@ void erf_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
   sollya_mpfi_t u, temp;
 
   mp_prec_t prec;
+
+  UNUSED_PARAM(silent);
     
   prec = getToolPrecision();
   coeffs_array = (sollya_mpfi_t *)safeCalloc( n,sizeof(sollya_mpfi_t));
@@ -1162,6 +1182,8 @@ void single_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
   mpfr_t temp;
   mp_prec_t prec;
 
+  UNUSED_PARAM(x);
+
   prec = getToolPrecision();
   mpfr_init2(temp, prec);
   mpfr_set_nan(temp);
@@ -1179,6 +1201,8 @@ void quad_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
   int i;
   mpfr_t temp;
   mp_prec_t prec;
+
+  UNUSED_PARAM(x);
 
   prec = getToolPrecision();
   mpfr_init2(temp, prec);
@@ -1198,6 +1222,8 @@ void halfprecision_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent)
   mpfr_t temp;
   mp_prec_t prec;
 
+  UNUSED_PARAM(x);
+
   prec = getToolPrecision();
   mpfr_init2(temp, prec);
   mpfr_set_nan(temp);
@@ -1215,6 +1241,8 @@ void double_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
   int i;
   mpfr_t temp;
   mp_prec_t prec;
+
+  UNUSED_PARAM(x);
 
   prec = getToolPrecision();
   mpfr_init2(temp, prec);
@@ -1234,6 +1262,8 @@ void double_double_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent)
   mpfr_t temp;
   mp_prec_t prec;
 
+  UNUSED_PARAM(x);
+
   prec = getToolPrecision();
   mpfr_init2(temp, prec);
   mpfr_set_nan(temp);
@@ -1251,6 +1281,8 @@ void triple_double_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent)
   int i;
   mpfr_t temp;
   mp_prec_t prec;
+
+  UNUSED_PARAM(x);
 
   prec = getToolPrecision();
   mpfr_init2(temp, prec);
@@ -1270,6 +1302,8 @@ void double_extended_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silen
   mpfr_t temp;
   mp_prec_t prec;
 
+  UNUSED_PARAM(x);
+
   prec = getToolPrecision();
   mpfr_init2(temp, prec);
   mpfr_set_nan(temp);
@@ -1287,6 +1321,8 @@ void ceil_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
   int i;
   mpfr_t temp;
   mp_prec_t prec;
+
+  UNUSED_PARAM(x);
 
   prec = getToolPrecision();
   mpfr_init2(temp, prec);
@@ -1306,6 +1342,8 @@ void floor_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
   mpfr_t temp;
   mp_prec_t prec;
 
+  UNUSED_PARAM(x);
+
   prec = getToolPrecision();
   mpfr_init2(temp, prec);
   mpfr_set_nan(temp);
@@ -1324,6 +1362,8 @@ void nearestint_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent){
   mpfr_t temp;
   mp_prec_t prec;
 
+  UNUSED_PARAM(x);
+
   prec = getToolPrecision();
   mpfr_init2(temp, prec);
   mpfr_set_nan(temp);
@@ -1341,6 +1381,8 @@ void libraryFunction_diff(sollya_mpfi_t *res, node *f, sollya_mpfi_t x, int n, i
   sollya_mpfi_t fact, temp, temp2;
   mp_prec_t prec;
   int i;
+
+  UNUSED_PARAM(silent);
 
   prec = getToolPrecision();
   sollya_mpfi_init2(fact, prec);
@@ -1362,6 +1404,8 @@ void procedureFunction_diff(sollya_mpfi_t *res, node *f, sollya_mpfi_t x, int n,
   sollya_mpfi_t fact;
   mp_prec_t prec;
   int i;
+
+  UNUSED_PARAM(silent);
 
   prec = getToolPrecision();
   sollya_mpfi_init2(fact, prec);

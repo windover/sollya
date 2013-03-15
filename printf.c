@@ -47,6 +47,8 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
+#define _BSD_SOURCE
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -476,16 +478,16 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	case 'i':
 	  switch (starModifiers) {
 	  case 0:
-	    // No star modifier given
-	    //
-	    // We do not have to read an extra int
-	    //
+	    /* No star modifier given
+	    
+	       We do not have to read an extra int
+	    */
 	    switch (hModifiers) {
 	    case 0:
 	      switch (lModifiers) {
 	      case 0:
 		if (jModifier) {
-		  // intmax_t integer conversion, no star
+		  /* intmax_t integer conversion, no star */
 		  tempIntmax_t = va_arg(varlist,intmax_t);
 		  r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempIntmax_t);
 		  if (r >= 0) {
@@ -499,7 +501,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		  *currBuf = '\0';
 		} else {
 		  if (zModifier) {
-		    // ssize_t integer conversion, no star
+		    /* ssize_t integer conversion, no star */
 		    tempSsize_t = va_arg(varlist,ssize_t);
 		    r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempSsize_t);
 		    if (r >= 0) {
@@ -513,7 +515,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		    *currBuf = '\0';
 		  } else {
 		    if (tModifier) {
-		      // ptrdiff_t integer conversion, no star
+		      /* ptrdiff_t integer conversion, no star */
 		      tempPtrdiff_t = va_arg(varlist,ptrdiff_t);
 		      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempPtrdiff_t);
 		      if (r >= 0) {
@@ -526,7 +528,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		      currBuf = buf;
 		      *currBuf = '\0';
 		    } else {
-		      // int integer conversion, no star
+		      /* int integer conversion, no star */
 		      tempInt = va_arg(varlist,int);
 		      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempInt);
 		      if (r >= 0) {
@@ -543,7 +545,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		}
 		break;
 	      case 1:
-		// long int integer conversion, no star
+		/* long int integer conversion, no star */
 		tempLongInt = va_arg(varlist,long int);
 		r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempLongInt);
 		if (r >= 0) {
@@ -557,7 +559,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		*currBuf = '\0';
 		break;
 	      default:
-		// long long int integer conversion, no star
+		/* long long int integer conversion, no star */
 		tempLongLongInt = va_arg(varlist,long long int);
 		r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempLongLongInt);
 		if (r >= 0) {
@@ -573,11 +575,11 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      }
 	      break;
 	    case 1:
-	      // short int integer conversion, no star
-	      // 
-	      // short int integers get promoted to 
-	      // int when passed through variable args.
-	      //
+	      /* short int integer conversion, no star
+	       
+	         short int integers get promoted to 
+	         int when passed through variable args.
+	      */
 	      tempShortInt = (short int) (va_arg(varlist,int));
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempShortInt);
 	      if (r >= 0) {
@@ -591,11 +593,11 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      *currBuf = '\0';
 	      break;
 	    default:
-	      // signed char integer conversion, no star
-	      // 
-	      // signed char integers get promoted to 
-	      // int when passed through variable args.
-	      //
+	      /* signed char integer conversion, no star
+	        
+	         signed char integers get promoted to 
+	         int when passed through variable args.
+	      */
 	      tempSignedChar = (signed char) (va_arg(varlist,int));
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempSignedChar);
 	      if (r >= 0) {
@@ -611,17 +613,17 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	    }
 	    break;
 	  case 1:
-	    // One star modifier given
-	    //
-	    // We have to read an extra int
-	    //	    
+	    /* One star modifier given
+	    
+	       We have to read an extra int
+	    */	    
 	    firstStarInt = va_arg(varlist,int);
 	    switch (hModifiers) {
 	    case 0:
 	      switch (lModifiers) {
 	      case 0:
 		if (jModifier) {
-		  // intmax_t integer conversion, one star
+		  /* intmax_t integer conversion, one star */
 		  tempIntmax_t = va_arg(varlist,intmax_t);
 		  r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempIntmax_t);
 		  if (r >= 0) {
@@ -635,7 +637,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		  *currBuf = '\0';
 		} else {
 		  if (zModifier) {
-		    // ssize_t integer conversion, one star
+		    /* ssize_t integer conversion, one star */
 		    tempSsize_t = va_arg(varlist,ssize_t);
 		    r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempSsize_t);
 		    if (r >= 0) {
@@ -649,7 +651,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		    *currBuf = '\0';
 		  } else {
 		    if (tModifier) {
-		      // ptrdiff_t integer conversion, one star
+		      /* ptrdiff_t integer conversion, one star */
 		      tempPtrdiff_t = va_arg(varlist,ptrdiff_t);
 		      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempPtrdiff_t);
 		      if (r >= 0) {
@@ -662,7 +664,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		      currBuf = buf;
 		      *currBuf = '\0';
 		    } else {
-		      // int integer conversion, one star
+		      /* int integer conversion, one star */
 		      tempInt = va_arg(varlist,int);
 		      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempInt);
 		      if (r >= 0) {
@@ -679,7 +681,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		}
 		break;
 	      case 1:
-		// long int integer conversion, one star
+		/* long int integer conversion, one star */
 		tempLongInt = va_arg(varlist,long int);
 		r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempLongInt);
 		if (r >= 0) {
@@ -693,7 +695,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		*currBuf = '\0';
 		break;
 	      default:
-		// long long int integer conversion, one star
+		/* long long int integer conversion, one star */
 		tempLongLongInt = va_arg(varlist,long long int);
 		r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempLongLongInt);
 		if (r >= 0) {
@@ -709,11 +711,11 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      }
 	      break;
 	    case 1:
-	      // short int integer conversion, one star
-	      // 
-	      // short int integers get promoted to 
-	      // int when passed through variable args.
-	      //
+	      /* short int integer conversion, one star
+	       
+	         short int integers get promoted to 
+	         int when passed through variable args.
+	      */
 	      tempShortInt = (short int) (va_arg(varlist,int));
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempShortInt);
 	      if (r >= 0) {
@@ -727,11 +729,11 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      *currBuf = '\0';
 	      break;
 	    default:
-	      // signed char integer conversion, one star
-	      // 
-	      // signed char integers get promoted to 
-	      // int when passed through variable args.
-	      //
+	      /* signed char integer conversion, one star
+	       
+	         signed char integers get promoted to 
+	         int when passed through variable args.
+	      */
 	      tempSignedChar = (signed char) (va_arg(varlist,int));
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempSignedChar);
 	      if (r >= 0) {
@@ -747,10 +749,10 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	    }
 	    break;
 	  default:
-	    // Two (or more) star modifiers given
-	    //
-	    // We have to read two extra ints
-	    //	    
+	    /* Two (or more) star modifiers given
+	    
+	       We have to read two extra ints
+	    */	    
 	    firstStarInt = va_arg(varlist,int);
 	    secondStarInt = va_arg(varlist,int);
 	    switch (hModifiers) {
@@ -758,7 +760,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      switch (lModifiers) {
 	      case 0:
 		if (jModifier) {
-		  // intmax_t integer conversion, one star
+		  /* intmax_t integer conversion, one star */
 		  tempIntmax_t = va_arg(varlist,intmax_t);
 		  r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempIntmax_t);
 		  if (r >= 0) {
@@ -772,7 +774,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		  *currBuf = '\0';
 		} else {
 		  if (zModifier) {
-		    // ssize_t integer conversion, one star
+		    /* ssize_t integer conversion, one star */
 		    tempSsize_t = va_arg(varlist,ssize_t);
 		    r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempSsize_t);
 		    if (r >= 0) {
@@ -786,7 +788,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		    *currBuf = '\0';
 		  } else {
 		    if (tModifier) {
-		      // ptrdiff_t integer conversion, one star
+		      /* ptrdiff_t integer conversion, one star */
 		      tempPtrdiff_t = va_arg(varlist,ptrdiff_t);
 		      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempPtrdiff_t);
 		      if (r >= 0) {
@@ -799,7 +801,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		      currBuf = buf;
 		      *currBuf = '\0';
 		    } else {
-		      // int integer conversion, one star
+		      /* int integer conversion, one star */
 		      tempInt = va_arg(varlist,int);
 		      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempInt);
 		      if (r >= 0) {
@@ -816,7 +818,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		}
 		break;
 	      case 1:
-		// long int integer conversion, one star
+		/* long int integer conversion, one star */
 		tempLongInt = va_arg(varlist,long int);
 		r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempLongInt);
 		if (r >= 0) {
@@ -830,7 +832,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		*currBuf = '\0';
 		break;
 	      default:
-		// long long int integer conversion, one star
+		/* long long int integer conversion, one star */
 		tempLongLongInt = va_arg(varlist,long long int);
 		r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempLongLongInt);
 		if (r >= 0) {
@@ -846,11 +848,11 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      }
 	      break;
 	    case 1:
-	      // short int integer conversion, one star
-	      // 
-	      // short int integers get promoted to 
-	      // int when passed through variable args.
-	      //
+	      /* short int integer conversion, one star
+	       
+	         short int integers get promoted to 
+	         int when passed through variable args.
+	      */
 	      tempShortInt = (short int) (va_arg(varlist,int));
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempShortInt);
 	      if (r >= 0) {
@@ -864,11 +866,11 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      *currBuf = '\0';
 	      break;
 	    default:
-	      // signed char integer conversion, one star
-	      // 
-	      // signed char integers get promoted to 
-	      // int when passed through variable args.
-	      //
+	      /* signed char integer conversion, one star
+	       
+	         signed char integers get promoted to 
+	         int when passed through variable args.
+	      */
 	      tempSignedChar = (signed char) (va_arg(varlist,int));
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempSignedChar);
 	      if (r >= 0) {
@@ -892,16 +894,16 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	case 'X':
 	  switch (starModifiers) {
 	  case 0:
-	    // No star modifier given
-	    //
-	    // We do not have to read an extra int
-	    //
+	    /* No star modifier given
+	    
+	       We do not have to read an extra int
+	    */
 	    switch (hModifiers) {
 	    case 0:
 	      switch (lModifiers) {
 	      case 0:
 		if (jModifier) {
-		  // uintmax_t integer conversion, no star
+		  /* uintmax_t integer conversion, no star */
 		  tempUintmax_t = va_arg(varlist,uintmax_t);
 		  r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempUintmax_t);
 		  if (r >= 0) {
@@ -915,7 +917,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		  *currBuf = '\0';
 		} else {
 		  if (zModifier) {
-		    // size_t integer conversion, no star
+		    /* size_t integer conversion, no star */
 		    tempSize_t = va_arg(varlist,size_t);
 		    r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempSize_t);
 		    if (r >= 0) {
@@ -929,7 +931,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		    *currBuf = '\0';
 		  } else {
 		    if (tModifier) {
-		      // ptrdiff_t integer conversion, no star
+		      /* ptrdiff_t integer conversion, no star */
 		      tempPtrdiff_t = va_arg(varlist,ptrdiff_t);
 		      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempPtrdiff_t);
 		      if (r >= 0) {
@@ -942,7 +944,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		      currBuf = buf;
 		      *currBuf = '\0';
 		    } else {
-		      // unsigned int integer conversion, no star
+		      /* unsigned int integer conversion, no star */
 		      tempUInt = va_arg(varlist,unsigned int);
 		      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempUInt);
 		      if (r >= 0) {
@@ -959,7 +961,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		}
 		break;
 	      case 1:
-		// unsigned long int integer conversion, no star
+		/* unsigned long int integer conversion, no star */
 		tempULongInt = va_arg(varlist,unsigned long int);
 		r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempULongInt);
 		if (r >= 0) {
@@ -973,7 +975,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		*currBuf = '\0';
 		break;
 	      default:
-		// unsigned long long int integer conversion, no star
+		/* unsigned long long int integer conversion, no star */
 		tempULongLongInt = va_arg(varlist,unsigned long long int);
 		r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempULongLongInt);
 		if (r >= 0) {
@@ -989,11 +991,11 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      }
 	      break;
 	    case 1:
-	      // unsigned short int integer conversion, no star
-	      // 
-	      // unsigned short int integers get promoted to 
-	      // unsigned int when passed through variable args.
-	      //
+	      /* unsigned short int integer conversion, no star
+	       
+	         unsigned short int integers get promoted to 
+	         unsigned int when passed through variable args.
+	      */
 	      tempUShortInt = (unsigned short int) (va_arg(varlist,unsigned int));
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempUShortInt);
 	      if (r >= 0) {
@@ -1007,11 +1009,11 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      *currBuf = '\0';
 	      break;
 	    default:
-	      // unsigned char integer conversion, no star
-	      // 
-	      // unsigned char integers get promoted to 
-	      // unsigned int when passed through variable args.
-	      //
+	      /* unsigned char integer conversion, no star
+	       
+	         unsigned char integers get promoted to 
+	         unsigned int when passed through variable args.
+	      */
 	      tempUnsignedChar = (unsigned char) (va_arg(varlist,unsigned int));
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempUnsignedChar);
 	      if (r >= 0) {
@@ -1027,17 +1029,17 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	    }
 	    break;
 	  case 1:
-	    // One star modifier given
-	    //
-	    // We have to read an extra int
-	    //	    
+	    /* One star modifier given
+	    
+	       We have to read an extra int
+	    */	    
 	    firstStarInt = va_arg(varlist,int);
 	    switch (hModifiers) {
 	    case 0:
 	      switch (lModifiers) {
 	      case 0:
 		if (jModifier) {
-		  // uintmax_t integer conversion, one star
+		  /* uintmax_t integer conversion, one star */
 		  tempUintmax_t = va_arg(varlist,uintmax_t);
 		  r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempUintmax_t);
 		  if (r >= 0) {
@@ -1051,7 +1053,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		  *currBuf = '\0';
 		} else {
 		  if (zModifier) {
-		    // size_t integer conversion, one star
+		    /* size_t integer conversion, one star */
 		    tempSize_t = va_arg(varlist,size_t);
 		    r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempSize_t);
 		    if (r >= 0) {
@@ -1065,7 +1067,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		    *currBuf = '\0';
 		  } else {
 		    if (tModifier) {
-		      // ptrdiff_t integer conversion, one star
+		      /* ptrdiff_t integer conversion, one star */
 		      tempPtrdiff_t = va_arg(varlist,ptrdiff_t);
 		      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempPtrdiff_t);
 		      if (r >= 0) {
@@ -1078,7 +1080,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		      currBuf = buf;
 		      *currBuf = '\0';
 		    } else {
-		      // unsigned int integer conversion, one star
+		      /* unsigned int integer conversion, one star */
 		      tempUInt = va_arg(varlist,unsigned int);
 		      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempUInt);
 		      if (r >= 0) {
@@ -1095,7 +1097,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		}
 		break;
 	      case 1:
-		// unsigned long int integer conversion, one star
+		/* unsigned long int integer conversion, one star */
 		tempULongInt = va_arg(varlist,unsigned long int);
 		r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempULongInt);
 		if (r >= 0) {
@@ -1109,7 +1111,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		*currBuf = '\0';
 		break;
 	      default:
-		// unsigned long long int integer conversion, one star
+		/* unsigned long long int integer conversion, one star */
 		tempULongLongInt = va_arg(varlist,unsigned long long int);
 		r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempULongLongInt);
 		if (r >= 0) {
@@ -1125,11 +1127,11 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      }
 	      break;
 	    case 1:
-	      // unsigned short int integer conversion, one star
-	      // 
-	      // unsigned short int integers get promoted to 
-	      // unsigned int when passed through variable args.
-	      //
+	      /* unsigned short int integer conversion, one star
+	       
+	         unsigned short int integers get promoted to 
+	         unsigned int when passed through variable args.
+	      */
 	      tempUShortInt = (unsigned short int) (va_arg(varlist,unsigned int));
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempUShortInt);
 	      if (r >= 0) {
@@ -1143,11 +1145,11 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      *currBuf = '\0';
 	      break;
 	    default:
-	      // unsigned char integer conversion, one star
-	      // 
-	      // unsigned char integers get promoted to 
-	      // unsigned int when passed through variable args.
-	      //
+	      /* unsigned char integer conversion, one star
+	       
+	         unsigned char integers get promoted to 
+	         unsigned int when passed through variable args.
+	      */
 	      tempUnsignedChar = (unsigned char) (va_arg(varlist,unsigned int));
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempUnsignedChar);
 	      if (r >= 0) {
@@ -1163,10 +1165,10 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	    }
 	    break;
 	  default:
-	    // Two (or more) star modifiers given
-	    //
-	    // We have to read two extra ints
-	    //	    
+	    /* Two (or more) star modifiers given
+	    
+	       We have to read two extra ints
+	    */	    
 	    firstStarInt = va_arg(varlist,int);
 	    secondStarInt = va_arg(varlist,int);
 	    switch (hModifiers) {
@@ -1174,7 +1176,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      switch (lModifiers) {
 	      case 0:
 		if (jModifier) {
-		  // uintmax_t integer conversion, one star
+		  /* uintmax_t integer conversion, one star */
 		  tempUintmax_t = va_arg(varlist,uintmax_t);
 		  r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempUintmax_t);
 		  if (r >= 0) {
@@ -1188,7 +1190,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		  *currBuf = '\0';
 		} else {
 		  if (zModifier) {
-		    // size_t integer conversion, one star
+		    /* size_t integer conversion, one star */
 		    tempSize_t = va_arg(varlist,size_t);
 		    r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempSize_t);
 		    if (r >= 0) {
@@ -1202,7 +1204,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		    *currBuf = '\0';
 		  } else {
 		    if (tModifier) {
-		      // ptrdiff_t integer conversion, one star
+		      /* ptrdiff_t integer conversion, one star */
 		      tempPtrdiff_t = va_arg(varlist,ptrdiff_t);
 		      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempPtrdiff_t);
 		      if (r >= 0) {
@@ -1215,7 +1217,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		      currBuf = buf;
 		      *currBuf = '\0';
 		    } else {
-		      // unsigned int integer conversion, one star
+		      /* unsigned int integer conversion, one star */
 		      tempUInt = va_arg(varlist,unsigned int);
 		      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempUInt);
 		      if (r >= 0) {
@@ -1232,7 +1234,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		}
 		break;
 	      case 1:
-		// unsigned long int integer conversion, one star
+		/* unsigned long int integer conversion, one star */
 		tempULongInt = va_arg(varlist,unsigned long int);
 		r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempULongInt);
 		if (r >= 0) {
@@ -1246,7 +1248,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		*currBuf = '\0';
 		break;
 	      default:
-		// unsigned long long int integer conversion, one star
+		/* unsigned long long int integer conversion, one star */
 		tempULongLongInt = va_arg(varlist,unsigned long long int);
 		r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempULongLongInt);
 		if (r >= 0) {
@@ -1262,11 +1264,11 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      }
 	      break;
 	    case 1:
-	      // unsigned short int integer conversion, one star
-	      // 
-	      // unsigned short int integers get promoted to 
-	      // unsigned int when passed through variable args.
-	      //
+	      /* unsigned short int integer conversion, one star
+	       
+	         unsigned short int integers get promoted to 
+	         unsigned int when passed through variable args.
+	      */
 	      tempUShortInt = (unsigned short int) (va_arg(varlist,unsigned int));
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempUShortInt);
 	      if (r >= 0) {
@@ -1280,11 +1282,11 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      *currBuf = '\0';
 	      break;
 	    default:
-	      // unsigned char integer conversion, one star
-	      // 
-	      // unsigned char integers get promoted to 
-	      // unsigned int when passed through variable args.
-	      //
+	      /* unsigned char integer conversion, one star
+	       
+	         unsigned char integers get promoted to 
+	         unsigned int when passed through variable args.
+	      */
 	      tempUnsignedChar = (unsigned char) (va_arg(varlist,unsigned int));
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempUnsignedChar);
 	      if (r >= 0) {
@@ -1312,14 +1314,14 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	case 'A':
 	  switch (starModifiers) {
 	  case 0:
-	    // No star modifier given
-	    //
-	    // We do not have to read an extra int
-	    //
+	    /* No star modifier given
+	    
+	       We do not have to read an extra int
+	    */
 	    if (LModifier) {
-	      // The floating-point conversion takes
-	      // a long double argument
-	      //
+	      /* The floating-point conversion takes
+	         a long double argument
+	      */
 	      tempLongDouble = va_arg(varlist,long double);
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempLongDouble);
 	      if (r >= 0) {
@@ -1332,9 +1334,9 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      currBuf = buf;
 	      *currBuf = '\0';
 	    } else {
-	      // The floating-point conversion takes
-	      // a double argument
-	      //
+	      /* The floating-point conversion takes
+	         a double argument
+	      */
 	      tempDouble = va_arg(varlist,double);
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempDouble);
 	      if (r >= 0) {
@@ -1349,15 +1351,15 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	    }
 	    break;
 	  case 1:
-	    // One star modifier given
-	    //
-	    // We have to read one extra int
-	    //
+	    /* One star modifier given
+	     
+	       We have to read one extra int
+	    */
 	    firstStarInt = va_arg(varlist,int);
 	    if (LModifier) {
-	      // The floating-point conversion takes
-	      // a long double argument
-	      //
+	      /* The floating-point conversion takes
+	         a long double argument
+	      */
 	      tempLongDouble = va_arg(varlist,long double);
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempLongDouble);
 	      if (r >= 0) {
@@ -1370,9 +1372,9 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      currBuf = buf;
 	      *currBuf = '\0';
 	    } else {
-	      // The floating-point conversion takes
-	      // a double argument
-	      //
+	      /* The floating-point conversion takes
+	         a double argument
+	      */
 	      tempDouble = va_arg(varlist,double);
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, tempDouble);
 	      if (r >= 0) {
@@ -1387,16 +1389,16 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	    }
 	    break;
 	  default:
-	    // Two (or more) star modifiers given
-	    //
-	    // We have to read two extra ints
-	    //
+	    /* Two (or more) star modifiers given
+	    
+	       We have to read two extra ints
+	    */
 	    firstStarInt = va_arg(varlist,int);
 	    secondStarInt = va_arg(varlist,int);
 	    if (LModifier) {
-	      // The floating-point conversion takes
-	      // a long double argument
-	      //
+	      /* The floating-point conversion takes
+	         a long double argument
+	      */
 	      tempLongDouble = va_arg(varlist,long double);
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempLongDouble);
 	      if (r >= 0) {
@@ -1409,9 +1411,9 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      currBuf = buf;
 	      *currBuf = '\0';
 	    } else {
-	      // The floating-point conversion takes
-	      // a double argument
-	      //
+	      /* The floating-point conversion takes
+	         a double argument
+	      */
 	      tempDouble = va_arg(varlist,double);
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, firstStarInt, secondStarInt, tempDouble);
 	      if (r >= 0) {
@@ -1430,7 +1432,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	  break;
 	case 'C':
 	  lModifiers++;
-	  // Fall-through...
+	  /* Fall-through... */
 	case 'c':
 	  if (lModifiers == 0) {
 	    tempUnsignedChar = (unsigned char) va_arg(varlist,int);
@@ -1461,13 +1463,13 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	  break;
 	case 'S':
 	  lModifiers++;
-	  // Fall-through...
+	  /* Fall-through... */
 	case 's':
 	  if (starModifiers == 0) {
-	    // No star modifier given
-	    //
-	    // We do not have to read an extra int
-	    //
+	    /* No star modifier given
+	     
+	       We do not have to read an extra int
+	    */
 	    if (lModifiers == 0) {
 	      tempCharPtr = va_arg(varlist,char *);
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, tempCharPtr);
@@ -1494,10 +1496,10 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      *currBuf = '\0';
 	    }
 	  } else {
-	    // One star modifier given
-	    //
-	    // We have to read one extra int
-	    //
+	    /* One star modifier given
+	    
+	       We have to read one extra int
+	    */
 	    firstStarInt = va_arg(varlist,int);
 	    if (lModifiers == 0) {
 	      tempCharPtr = va_arg(varlist,char *);
@@ -1547,8 +1549,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	    switch (lModifiers) {
 	    case 0:
 	      if (jModifier) {
-		// intmax_t * argument
-		//
+		/* intmax_t * argument */		
 		tempIntMaxTPtr = va_arg(varlist,intmax_t *);
 		r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, &tempIntmax_t);
 		if (res >= 0) {
@@ -1567,8 +1568,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		*currBuf = '\0';
 	      } else {
 		if (zModifier) {
-		  // ssize_t * argument
-		  //
+		  /* ssize_t * argument */
 		  tempSSizePtr = va_arg(varlist,ssize_t *);
 		  r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, &tempSsize_t);
 		  if (res >= 0) {
@@ -1587,8 +1587,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		  *currBuf = '\0';
 		} else {
 		  if (tModifier) {
-		    // ptrdiff_t * argument
-		    //
+		    /*  ptrdiff_t * argument */
 		    tempPtrDiffTPtr = va_arg(varlist,ptrdiff_t *);
 		    r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, &tempPtrdiff_t);
 		    if (res >= 0) {
@@ -1606,8 +1605,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 		    currBuf = buf;
 		    *currBuf = '\0';
 		  } else {
-		    // int * argument
-		    //
+		    /* int * argument */
 		    tempIntPtr = va_arg(varlist,int *);
 		    r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, &tempInt);
 		    if (res >= 0) {
@@ -1629,8 +1627,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      }
 	      break;
 	    case 1:
-	      // long int * argument
-	      //
+	      /* long int * argument */
 	      tempLongIntPtr = va_arg(varlist,long int *);
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, &tempLongInt);
 	      if (res >= 0) {
@@ -1649,8 +1646,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	      *currBuf = '\0';
 	      break;
 	    default:
-	      // long long int * argument
-	      //
+	      /* long long int * */
 	      tempLongLongIntPtr = va_arg(varlist,long long int *);
 	      r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, &tempLongLongInt);
 	      if (res >= 0) {
@@ -1671,8 +1667,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	    }
 	    break;
 	  case 1:
-	    // short int * argument
-	    //
+	    /* short int * argument */
 	    tempShortIntPtr = va_arg(varlist,short int *);
 	    r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, &tempShortInt);
 	    if (res >= 0) {
@@ -1691,8 +1686,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	    *currBuf = '\0';	    
 	    break;
 	  default:
-	    // signed char * argument
-	    //
+	    /* signed char * argument */
 	    tempSignedCharPtr = va_arg(varlist,signed char *);
 	    r = specialSnFprintf(fd, useFd, str, size, res, useSize, buf, &tempSignedChar);
 	    if (res >= 0) {
@@ -1897,4 +1891,17 @@ int sollyaInternalVsnprintf(char *str, size_t size, const char *format, va_list 
 
 int sollyaInternalVsprintf(char *str, const char *format, va_list ap) {
   return sollyaInternalBaseSnFprintf(NULL, 0, str, 0, 0, format, ap);
+}
+
+int sollya_snprintf(char *str, size_t size, const char *format, ...) {
+  va_list varlist;
+  int res;
+
+  va_start(varlist,format);
+
+  res = sollyaInternalVsnprintf(str, size, format, varlist);
+
+  va_end(varlist);
+
+  return res;
 }

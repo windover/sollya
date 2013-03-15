@@ -56,6 +56,9 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
+#define _POSIX_SOURCE
+
+#include <sys/types.h>
 #include <gmp.h>
 #include <mpfr.h>
 #include <stdio.h> /* fprintf, fopen, fclose, */
@@ -81,6 +84,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "execute.h"
 #include "sollya-messaging.h"
 #include "bitfields.h"
+#include "printf.h"
 
 #if HAVE_BACKTRACE
 #include <execinfo.h>
@@ -680,7 +684,7 @@ void newTokenLexed() {
   lastCorrectlyExecuted = 0;
 }
 
-// Precondition: fd can only be one of stdout and stderr
+/* Precondition: fd can only be one of stdout and stderr */
 int sollyaVfprintfSpecial(FILE *fd, const char *format, va_list varlist) {
   int res;
 
@@ -975,7 +979,8 @@ void popTimeCounter(char *s) {
   return;
 }
 
-void signalHandler(int i, siginfo_t *info, void *data) {
+void signalHandler(int i) {
+
   switch (i) {
   case SIGINT: 
     handlingCtrlC = 1;
@@ -1023,8 +1028,7 @@ void initSignalHandler() {
 
   if (libraryMode) return;
 
-  action.sa_sigaction = signalHandler;
-  action.sa_flags = SA_SIGINFO;
+  action.sa_handler = signalHandler;
   sigemptyset(&(action.sa_mask));
   sigaddset(&(action.sa_mask),SIGINT);
   sigaddset(&(action.sa_mask),SIGSEGV);
@@ -1224,7 +1228,7 @@ char *initUniqueId() {
   pid = getpid();
 
   str = safeCalloc(size + 1, sizeof(char));
-  snprintf(str, size, "%lld", (signed long long int) pid);
+  sollya_snprintf(str, size, "%lld", (signed long long int) pid);
   
   res = safeCalloc(strlen(str) + 1, sizeof(char));
   strcpy(res, str);
@@ -1681,6 +1685,7 @@ int general(int argc, char *argv[]) {
     parsedThing = NULL;
     lastWasSyntaxError = 0;
     finishedBeforeParsing = parserCheckEof();
+    (void) finishedBeforeParsing;
     parseAbort = yyparse(scanner);
     lastWasError = 0;
     if (parsedThing != NULL) {

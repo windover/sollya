@@ -313,7 +313,7 @@ void ctMultiplication_CM(chebModel*d, chebModel*s, sollya_mpfi_t c, mp_prec_t pr
 
 
 void  multiplication_CM(chebModel *t,chebModel *c1, chebModel *c2, int boundLevel, int forComposition, mp_prec_t prec){
-  //we will multiply two cm of order n; and obtain a new cm of order n;
+  /*we will multiply two cm of order n; and obtain a new cm of order n;*/
   int n,i,j;
   chebModel *tt;
   sollya_mpfi_t temp1, temp2;
@@ -436,6 +436,8 @@ void composition_CM(chebModel *t,chebModel *g, chebModel *f, int boundLevel, mpf
   chebModel *tt,*tinterm,*tadd, *tcheb0,*tcheb1 ;
   sollya_mpfi_t z, zz, z1,doi,minusOne, one;
   mpfr_t a, b;
+
+  UNUSED_PARAM(targetRem);
   
   n=g->n;
   m=f->n;
@@ -470,7 +472,7 @@ void composition_CM(chebModel *t,chebModel *g, chebModel *f, int boundLevel, mpf
   
   sollya_mpfi_set_fr(zz,b);
   sollya_mpfi_add_fr(zz,zz,a);
-  //mpfi_add_fr(zz,zz,a);
+  /*mpfi_add_fr(zz,zz,a);*/
   sollya_mpfi_mul(zz,zz,z1);
   
   sollya_mpfi_sub(tinterm->poly_array[0],tinterm->poly_array[0],zz);
@@ -504,8 +506,8 @@ void composition_CM(chebModel *t,chebModel *g, chebModel *f, int boundLevel, mpf
       /*t_{i+1}=2x*t_i(x)-t_{i-1}(x)*/
       ctMultiplication_CM(tcheb0, tcheb0,minusOne, prec);
       addition_CM(tadd,tadd,tcheb0, prec);
-      copycModel(tcheb0,tcheb1); //t_{i-1}:=t_i
-      copycModel(tcheb1,tadd); //t_i:= t_{i+1}
+      copycModel(tcheb0,tcheb1); /*t_{i-1}:=t_i*/
+      copycModel(tcheb1,tadd); /*t_i:= t_{i+1}*/
       ctMultiplication_CM(tadd,tadd,g->poly_array[i], prec);
       addition_CM(tt,tt,tadd, prec);
     }
@@ -656,6 +658,8 @@ void base_CMAux(chebModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t 
   
   int silent;
   silent=1; 
+
+  UNUSED_PARAM(verbosity);
    
   tt=createEmptycModelPrecomp(n,x, t->cheb_array,t->cheb_matrix, prec);
   

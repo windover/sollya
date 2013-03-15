@@ -52,6 +52,8 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
+#define _BSD_SOURCE 
+
 #include <gmp.h>
 #include <mpfr.h>
 #include <stdio.h> /* fprintf, fopen, fclose, */
@@ -67,6 +69,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "general.h"
 #include "infnorm.h"
 #include "chain.h"
+#include "printf.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -164,11 +167,11 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   }
 
   if(name==NULL) {
-    n = snprintf(NULL, 0, "%s/%s%s-%04d", getTempDir(), PACKAGE_NAME, getUniqueId(), fileNumber);
+    n = sollya_snprintf(NULL, 0, "%s/%s%s-%04d", getTempDir(), PACKAGE_NAME, getUniqueId(), fileNumber);
     gplotname = (char *)safeCalloc(n+3, sizeof(char));
-    snprintf(gplotname, n+3, "%s/%s%s-%04d.p",getTempDir(), PACKAGE_NAME, getUniqueId(), fileNumber);
+    sollya_snprintf(gplotname, n+3, "%s/%s%s-%04d.p",getTempDir(), PACKAGE_NAME, getUniqueId(), fileNumber);
     dataname = (char *)safeCalloc(n+5, sizeof(char));
-    snprintf(dataname, n+5, "%s/%s%s-%04d.dat",getTempDir(),PACKAGE_NAME,getUniqueId(), fileNumber);
+    sollya_snprintf(dataname, n+5, "%s/%s%s-%04d.dat",getTempDir(),PACKAGE_NAME,getUniqueId(), fileNumber);
     outputname = (char *)safeCalloc(1, sizeof(char));
     fileNumber++;
     if (fileNumber >= NUMBEROFFILES) fileNumber=0;
@@ -266,7 +269,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
 	mpfr_add(current_x, current_x,step,GMP_RNDU);
 	mpfr_urandomb(perturb, random_state); mpfr_mul_2ui(perturb, perturb, 1, GMP_RNDN);
 	mpfr_sub_ui(perturb, perturb, 1, GMP_RNDN); mpfr_div_2ui(perturb, perturb, 2, GMP_RNDN);
-	mpfr_mul(perturb, perturb, step, GMP_RNDN); // perturb \in [-step/4; step/4]
+	mpfr_mul(perturb, perturb, step, GMP_RNDN); /* perturb \in [-step/4; step/4] */
 	mpfr_add(x, current_x, perturb, GMP_RNDU);
       }
 
@@ -326,13 +329,13 @@ void removePlotFiles(void) {
   char *name;
   int n;
 
-  n = snprintf(NULL, 0, "%s/%s%s-%04d", getTempDir(), PACKAGE_NAME, getUniqueId(), NUMBEROFFILES);
+  n = sollya_snprintf(NULL, 0, "%s/%s%s-%04d", getTempDir(), PACKAGE_NAME, getUniqueId(), NUMBEROFFILES);
   name = (char *)safeCalloc(n+5, sizeof(char));
 
   for(i=0;i<NUMBEROFFILES;i++) {
-    snprintf(name, n+3, "%s/%s%s-%04d.p",getTempDir(), PACKAGE_NAME, getUniqueId(), i);
+    sollya_snprintf(name, n+3, "%s/%s%s-%04d.p",getTempDir(), PACKAGE_NAME, getUniqueId(), i);
     remove(name);
-    snprintf(name, n+5, "%s/%s%s-%04d.dat",getTempDir(),PACKAGE_NAME,getUniqueId(), i);
+    sollya_snprintf(name, n+5, "%s/%s%s-%04d.dat",getTempDir(),PACKAGE_NAME,getUniqueId(), i);
     remove(name);
   }
 
@@ -343,7 +346,6 @@ void removePlotFiles(void) {
 
 void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_t y, x, step, minValue, maxValue;
-  gmp_randstate_t random_state;
   int sizeX, sizeY, i, k, drawXAxis, drawYAxis, xAxis, yAxis;
 #if defined(__CYGWIN__)
   struct winsize {

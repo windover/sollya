@@ -322,7 +322,7 @@ int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t
     }
     mpfr_nextbelow(currLeft);
     mpfr_nextabove(currRight);
-    mpfr_sub(t,t,one,GMP_RNDN); // exact
+    mpfr_sub(t,t,one,GMP_RNDN); /* exact*/
   }
   
   mpfr_clear(currLeft);

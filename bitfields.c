@@ -70,7 +70,7 @@ void freeBitfield(bitfield bf) {
 
 void setBitInBitfield(bitfield bf, unsigned int bit) {
   uint64_t *newFields;
-  int i;
+  unsigned int i;
 
   if ((bit >> 6) >= bf->limbs) {
     newFields = (uint64_t *) safeCalloc((bit >> 6) + 1,sizeof(uint64_t));
@@ -108,7 +108,7 @@ int getBitInBitfield(bitfield bf, unsigned int bit) {
 }
 
 void clearBitfield(bitfield bf) {
-  int i;
+  unsigned int i;
   for (i=0;i<bf->limbs;i++) bf->fields[i] = 0ULL;
 }
 

@@ -63,6 +63,8 @@
 #include "mpfi-compat.h"
 #include "sollya-messaging.h"
 #include "sollya-library-wrappers.h"
+#include "printf.h"
+#include "infnorm.h"
 
 /* Some helper macros */
 
@@ -3605,7 +3607,6 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y,
   mpfr_t yLeft, yRight;
   mp_prec_t prec, p;
   mpfr_t threshold;
-  sollya_mpfi_t dummyInterval;
 
   /* Check if object is a function */
   if ((!isPureTree(obj1)) || (!isPureTree(x))) {

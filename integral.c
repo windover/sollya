@@ -134,7 +134,7 @@ rangetype integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) 
     mpfr_add(*(sum.a), *(sum.a), y1, GMP_RNDD);
     mpfr_add(*(sum.b), *(sum.b), y2, GMP_RNDU);
     
-    mpfr_set(x1,x2,GMP_RNDD); // exact
+    mpfr_set(x1,x2,GMP_RNDD); /* exact */
     mpfr_add(x2, x1, delta, GMP_RNDN);
   }
 

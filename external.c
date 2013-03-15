@@ -53,6 +53,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
+#define _BSD_SOURCE 
 
 #include <unistd.h> /* execve, fork, daemon */
 #include <stdio.h>
@@ -70,6 +71,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "plot.h"
 #include "infnorm.h"
 #include "general.h"
+#include "printf.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -90,7 +92,6 @@ int bashExecute(char *command) {
 char *evaluateStringAsBashCommand(char *command, char *input) {
   char *res;
   int okay, errorOnInput;
-  int exitcode;
   int pipesToBash[2];
   int pipesFromBash[2];
   pid_t pid;
@@ -110,35 +111,35 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
   okay = 0;
   fflush(NULL);
   
-  // Create two unnamed pipe
+  /* Create two unnamed pipes */
   if ((input != NULL) && (pipe(pipesToBash) == -1)) {
-    // Error creating the pipe
+    /* Error creating the pipe */
     printMessage(1,SOLLYA_MSG_ERROR_WHILE_CREATING_A_PIPE,"Warning in bashevaluate: error while creating a pipe");
   } else {
     if (pipe(pipesFromBash) == -1) {
-      // Error creating the pipe
+      /* Error creating the pipe */
       printMessage(1, SOLLYA_MSG_ERROR_WHILE_CREATING_A_PIPE, "Warning in bashevaluate: error while creating a pipe");
     } else {
-      // Fork
+      /* Fork
       //
       // Flush before forking
-      //
+      */
       fflush(NULL);
       if ((pid = fork()) == -1) {
-	// Error forking
+	/* Error forking */
 	printMessage(1, SOLLYA_MSG_ERROR_WHILE_FORKING, "Warning in bashevaluate: error while forking");
       } else {
-	// Fork worked
+	/* Fork worked */
 	if (pid == 0) {
-	  // I am the child
+	  /* I am the child
 	  //
 	  // Close the unneeded ends of the pipes.
-	  //
+	  */
 	  if (input != NULL) close(pipesToBash[1]);
 	  close(pipesFromBash[0]);
 	  
-	  // Connect my input and output to the pipe
-	  //
+	  /* Connect my input and output to the pipe
+	   */
 	  if (input != NULL) {
 	    if (dup2(pipesToBash[0],0) == -1) {
 	      _exit(1);
@@ -148,23 +149,23 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
 	    _exit(1);
 	  }
 	  
-	  // Execute bash
-	  //
+	  /* Execute bash
+	   */
 	  fflush(NULL);
 	  execlp("sh","sh","-c",command,(char *) NULL);
 	  fflush(NULL);
 
 	  _exit(1);
 	} else {
-	  // I am the father
+	  /* I am the father
 	  //
 	  // Close the unneeded ends of the pipes.
-	  //
+	  */
 	  if (input != NULL) close(pipesToBash[0]);
 	  close(pipesFromBash[1]);
 	  
-	  // Do my job
-	  //
+	  /* Do my job
+	   */
 	  errorOnInput = 0;
 	  if (input != NULL) {
 	    if (write(pipesToBash[1],input,
@@ -199,11 +200,12 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
 	      }
 	    } while (readLen == READ_BUFFER_SIZE);
 
-	    // Wait for my child to exit
+	    /* Wait for my child to exit */
 	    wait(&childStatus);
 	    
-	    // Read the rest of the pipe if it filled up again after 
-	    // having been emptied already.
+	    /* Read the rest of the pipe if it filled up again after 
+	       having been emptied already.
+	    */
 	    do {
 	      readLen = read(pipesFromBash[0],readBuffer,READ_BUFFER_SIZE);
 	      if (readLen > 0) {
@@ -290,11 +292,11 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
   }
 
   if(name==NULL) {
-    n = snprintf(NULL, 0, "%s/%s%s-%04d", getTempDir(), PACKAGE_NAME, getUniqueId(), fileNumber);
+    n = sollya_snprintf(NULL, 0, "%s/%s%s-%04d", getTempDir(), PACKAGE_NAME, getUniqueId(), fileNumber);
     gplotname = (char *)safeCalloc(n+3, sizeof(char));
-    snprintf(gplotname, n+3, "%s/%s%s-%04d.p",getTempDir(), PACKAGE_NAME, getUniqueId(), fileNumber);
+    sollya_snprintf(gplotname, n+3, "%s/%s%s-%04d.p",getTempDir(), PACKAGE_NAME, getUniqueId(), fileNumber);
     dataname = (char *)safeCalloc(n+5, sizeof(char));
-    snprintf(dataname, n+5, "%s/%s%s-%04d.dat",getTempDir(),PACKAGE_NAME,getUniqueId(), fileNumber);
+    sollya_snprintf(dataname, n+5, "%s/%s%s-%04d.dat",getTempDir(),PACKAGE_NAME,getUniqueId(), fileNumber);
     outputname = (char *)safeCalloc(1, sizeof(char));
     fileNumber++;
     if (fileNumber >= NUMBEROFFILES) fileNumber=0;
@@ -347,7 +349,7 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
   mpfr_set(x_h,a,GMP_RNDD);
   
   while(mpfr_less_p(x_h,b)) {
-    mpfr_set(x, x_h, GMP_RNDN); // exact
+    mpfr_set(x, x_h, GMP_RNDN); /* exact */
     
     if (mpfr_zero_p(x_h)) {
       mpfr_set(x_h, min_value, GMP_RNDU);

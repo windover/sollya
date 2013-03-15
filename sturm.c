@@ -70,7 +70,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <errno.h>
 
 
-//these are the functions that work on mpq_t
+/*these are the functions that work on mpq_t*/
 
 
 int sturm_mpq(int *n, mpq_t *p, int p_degree, sollya_mpfi_t x);
@@ -180,7 +180,7 @@ int polynomialDeriv_mpq(mpq_t **derivCoeff, int *deriv_degree, mpq_t *p, int p_d
   else return 0; 
  
   *derivCoeff= (mpq_t *)safeMalloc((*deriv_degree+1)*sizeof(mpq_t));  
-  mpq_init((*derivCoeff)[0]);//is set to 0
+  mpq_init((*derivCoeff)[0]);/*is set to 0*/
   mpq_init(aux);
   
   for (i=1; i<=p_degree;i++){
@@ -200,7 +200,7 @@ int polynomialEval_mpq( mpq_t *res, mpq_t x, mpq_t *p, int p_degree){
   mpq_set_ui(pow,1,1);
   mpq_init(aux);
   mpq_set_ui(aux,1,1); 
-  mpq_set_ui(*res,0,1);//is set to 0/1
+  mpq_set_ui(*res,0,1);/*is set to 0/1*/
   for (i=0; i<=p_degree; i++) {
     mpq_mul(aux,p[i],pow);
     mpq_add(*res, aux, *res);

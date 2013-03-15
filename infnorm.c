@@ -582,7 +582,7 @@ int newtonMPFRWithStartPoint(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, 
 	lucky = 0;
 	
 	i = 5000;
-	while((n<=prec+25) && (mpfr_cmp(am,x) <= 0) && (mpfr_cmp(x,bm) <= 0) && (i > 0)) {
+	while((n<=(unsigned long int) prec+25) && (mpfr_cmp(am,x) <= 0) && (mpfr_cmp(x,bm) <= 0) && (i > 0)) {
 	  evaluate(temp1, myTree, x, prec);
 	  if (mpfr_zero_p(temp1)) {
 	    lucky = 1;
@@ -722,7 +722,7 @@ int newtonMPFRWithStartPointFaithful(mpfr_t res, node *tree, node *diff_tree, mp
 	lucky = 0;
 	
 	i = 5000;
-	while((n<=prec+25) && (mpfr_cmp(am,x) <= 0) && (mpfr_cmp(x,bm) <= 0) && (i > 0)) {
+	while((n<=(unsigned long int) prec+25) && (mpfr_cmp(am,x) <= 0) && (mpfr_cmp(x,bm) <= 0) && (i > 0)) {
 	  evaluateFaithful(temp1, myTree, x, prec);
 	  if (mpfr_zero_p(temp1)) {
 	    lucky = 1;
@@ -853,7 +853,7 @@ void makeMpfiAroundMpfr(sollya_mpfi_t res, mpfr_t x, unsigned int thousandUlps) 
 
   sollya_mpfi_interv_fr(xI,xp,xs);
   
-  sollya_mpfi_blow(xI,xI,(((double) thousandUlps) * 250.0)); // THIS CAST IS DANGEROUS ON SYSTEMS WHERE INTS ARE 64 BITS
+  sollya_mpfi_blow(xI,xI,(((double) thousandUlps) * 250.0)); /* THIS CAST IS DANGEROUS ON SYSTEMS WHERE INTS ARE 64 BITS */
 
   sollya_mpfi_set(res,xI);
   
@@ -3032,7 +3032,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
       mpfr_add(current_x, current_x, step, GMP_RNDU); /* rounding up ensures that x1(new) > x1(old) */
       mpfr_urandomb(perturb, random_state); mpfr_mul_2ui(perturb, perturb, 1, GMP_RNDN);
       mpfr_sub_ui(perturb, perturb, 1, GMP_RNDN); mpfr_div_2ui(perturb, perturb, 2, GMP_RNDN);
-      mpfr_mul(perturb, perturb, step, GMP_RNDN); // perturb \in [-step/4; step/4]
+      mpfr_mul(perturb, perturb, step, GMP_RNDN); /* perturb \in [-step/4; step/4] */
       mpfr_add(x1, current_x, perturb, GMP_RNDU);
     }
   } while ( (!mpfr_number_p(y1)) && (!stop_algo) );
@@ -3049,7 +3049,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
     mpfr_add(current_x, current_x, step, GMP_RNDU); /* rounding up ensures that x2 > x1 */
     mpfr_urandomb(perturb, random_state); mpfr_mul_2ui(perturb, perturb, 1, GMP_RNDN);
     mpfr_sub_ui(perturb, perturb, 1, GMP_RNDN); mpfr_div_2ui(perturb, perturb, 2, GMP_RNDN);
-    mpfr_mul(perturb, perturb, step, GMP_RNDN); // perturb \in [-step/4; step/4]
+    mpfr_mul(perturb, perturb, step, GMP_RNDN); /* perturb \in [-step/4; step/4] */
     mpfr_add(x2, current_x, perturb, GMP_RNDU);
 
     if (mpfr_greaterequal_p(x2,b)) {
@@ -3089,7 +3089,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
       mpfr_add(current_x, current_x, step, GMP_RNDU); /* rounding up ensures that x3 > x2 */
       mpfr_urandomb(perturb, random_state); mpfr_mul_2ui(perturb, perturb, 1, GMP_RNDN);
       mpfr_sub_ui(perturb, perturb, 1, GMP_RNDN); mpfr_div_2ui(perturb, perturb, 2, GMP_RNDN);
-      mpfr_mul(perturb, perturb, step, GMP_RNDN); // perturb \in [-step/4; step/4]
+      mpfr_mul(perturb, perturb, step, GMP_RNDN); /* perturb \in [-step/4; step/4] */
       mpfr_add(x3, current_x, perturb, GMP_RNDU);
 
       if (mpfr_greaterequal_p(x3,b)) {
@@ -3393,11 +3393,12 @@ void evaluateInterval(sollya_mpfi_t y, node *func, node *deriv, sollya_mpfi_t x)
 
   prec = sollya_mpfi_get_prec(y);
 
-  // We need more precision in the first steps to get the precision in the end.
+  /* We need more precision in the first steps to get the precision in the end. */
   prec <<= 1;
 
-  // Let's use at least the precision of the tool, that gives us
-  // additional 10% on the check examples
+  /* Let's use at least the precision of the tool, that gives us
+     additional 10% on the check examples 
+  */
   if (prec < tools_precision) prec = tools_precision;
 
   evaluateITaylor(y, func, deriv, x, prec, taylorrecursions, NULL, 1);
@@ -5109,8 +5110,7 @@ int compareConstant(int *cmp, node *func1, node *func2, node *difference, int do
 	    if (containsPi(diff)) {
 	      if ((tempNode = convertConstantToFunctionInPi(diff)) != NULL) {
 		if (isPolynomial(tempNode)) {
-		  // Here we have tempNode(pi) = diff and tempNode a polynomial
-		  //
+		  /* Here we have tempNode(pi) = diff and tempNode a polynomial */
 		  getCoefficients(&degree, &coefficients, tempNode);
 		  if (degree >= 0) {
 		    allZero = 1; allOkay = 1;
@@ -5139,7 +5139,7 @@ int compareConstant(int *cmp, node *func1, node *func2, node *difference, int do
 		free_memory(tempNode);
 	      }
 	    }
-	    // Put next case here
+	    /* Put next case here */
 	  }
 	}
       }
@@ -5175,35 +5175,37 @@ int evaluateSignTrigoUnsafe(int *s, node *child, int nodeType) {
     mpfr_div(value,value,piHalf,GMP_RNDN);
     mpfr_rint(value,value,GMP_RNDN);
     mpfr_div_2ui(value,value,1,GMP_RNDN);
-    // Here, diff is approximately value * pi
-    // and value * 2 is an integer
+    /* Here, diff is approximately value * pi
+       and value * 2 is an integer
+    */
     tempNode = makeMul(makeConstant(value),makePi());
     if (compareConstant(&signA, child, tempNode, NULL, 0)) {
       if (signA == 0) {
-	// Here, we have proven that child is equal to value * pi
-	//
+	/* Here, we have proven that child is equal to value * pi
+	 */
 	mpfr_init2(value2,defaultprecision);
-	mpfr_rint(value2,value,GMP_RNDN);      // exact, same precision
-	mpfr_sub(value,value,value2,GMP_RNDN); // exact, Sterbenz
-	// Here, we know that child is equal to (n + value) * pi for
-	// some integer n. We know that value can only be 0 or +/- 0.5
+	mpfr_rint(value2,value,GMP_RNDN);      /* exact, same precision */
+	mpfr_sub(value,value,value2,GMP_RNDN); /* exact, Sterbenz */
+	/* Here, we know that child is equal to (n + value) * pi for
+	   some integer n. We know that value can only be 0 or +/- 0.5
+	*/
 	switch (nodeType) {
 	case SIN:
-	  // sin is zero for all n * pi, n in Z
+	  /* sin is zero for all n * pi, n in Z */
 	  if (mpfr_zero_p(value)) {
 	    okay = 1;
 	    res = 0;
 	  }
 	  break;
 	case COS:
-	  // cos is zero for all (n + 1/2) * pi, n in Z
+	  /* cos is zero for all (n + 1/2) * pi, n in Z */
 	  if (!mpfr_zero_p(value)) {
 	    okay = 1;
 	    res = 0;
 	  }
 	  break;
 	case TAN:
-	  // tan is zero for all n * pi, n in Z
+	  /* tan is zero for all n * pi, n in Z */
 	  if (mpfr_zero_p(value)) {
 	    okay = 1;
 	    res = 0;
@@ -5297,9 +5299,9 @@ int evaluateSign(int *s, node *rawFunc) {
 	}
 	break;
       case LOG:
-	// fall-through
+	/* fall-through */
       case LOG_2:
-	// fall-through
+	/* fall-through */
       case LOG_10:
 	tempNode = makeDoubleConstant(1.0);
 	okayA = compareConstant(&signA, accessThruMemRef(func)->child1, tempNode, NULL, 0);
@@ -5311,9 +5313,9 @@ int evaluateSign(int *s, node *rawFunc) {
 	free_memory(tempNode);
 	break;
       case SIN:
-	// fall-through
+	/* fall-through */
       case COS:
-	// fall-through
+	/* fall-through */
       case TAN:
 	okayA = evaluateSign(&signA, accessThruMemRef(func)->child1);
 	if (okayA && (signA == 0)) {

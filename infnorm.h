@@ -105,6 +105,8 @@ void sollya_mpfi_round_to_single(sollya_mpfi_t rop, sollya_mpfi_t op);
 void sollya_mpfi_round_to_doubledouble(sollya_mpfi_t rop, sollya_mpfi_t op);
 void sollya_mpfi_round_to_tripledouble(sollya_mpfi_t rop, sollya_mpfi_t op);
 void sollya_mpfi_round_to_doubleextended(sollya_mpfi_t rop, sollya_mpfi_t op);
+void sollya_mpfi_round_to_quad(sollya_mpfi_t rop, sollya_mpfi_t op);
+void sollya_mpfi_round_to_halfprecision(sollya_mpfi_t rop, sollya_mpfi_t op);
 void sollya_mpfi_erf(sollya_mpfi_t rop, sollya_mpfi_t op);
 void sollya_mpfi_erfc(sollya_mpfi_t rop, sollya_mpfi_t op);
 void sollya_mpfi_ceil(sollya_mpfi_t rop, sollya_mpfi_t op);

@@ -55,6 +55,9 @@
 
 #include "chebyshevformaux.h"
 #include "general.h"
+#include "autodiff.h"
+#include "infnorm.h"
+
 /*This file contains auxiliary functions for constructing 
                  Chebyshev Models/forms
 */
@@ -309,7 +312,7 @@ if (n>0) mpz_set_ui(chebCoeffsMatrix[0],1);
 if (n>1) mpz_set_ui(chebCoeffsMatrix[n+1],1);
 
 for (i=2;i<n;i++){
-  mpz_neg(chebCoeffsMatrix[i*n],chebCoeffsMatrix[(i-2)*n]); //put constant coeff of T_{n-2}
+  mpz_neg(chebCoeffsMatrix[i*n],chebCoeffsMatrix[(i-2)*n]); /*put constant coeff of T_{n-2}*/
   for (j=0;j<i;j++){
   mpz_mul_ui(temp,chebCoeffsMatrix[(i-1)*n+j],2);
   mpz_sub(chebCoeffsMatrix[i*n+j+1],temp,chebCoeffsMatrix[(i-2)*n+j+1]);
@@ -402,8 +405,8 @@ int i;
   sollya_mpfi_set(c[0],evalP);
   mpfi_set_ui(temp, 1);
   for(i=1;i<n;i++){
-   symbolic_poly_diff(pAux, pAux, n-i); //differentiate in place pAux
-   symbolic_poly_evaluation_horner(evalP, pAux,alpha,n-i-1);//evaluate P^(i)(alpha)
+   symbolic_poly_diff(pAux, pAux, n-i); /*differentiate in place pAux*/
+   symbolic_poly_evaluation_horner(evalP, pAux,alpha,n-i-1);/*evaluate P^(i)(alpha)*/
    sollya_mpfi_mul_ui(temp,temp,i);   
    sollya_mpfi_div(c[i],evalP, temp);
   }
@@ -732,8 +735,6 @@ void getChebCoeffsDerivativePolynomial(sollya_mpfi_t*coeffs, sollya_mpfi_t *cheb
   mp_prec_t prec;
   prec =sollya_mpfi_get_prec(coeffs[0]);
 
-  /*testing parameter that should disappear soon*/
-  int verbosity=0;
  
   c=(sollya_mpfi_t *)safeMalloc((n-1)*sizeof(sollya_mpfi_t));
    

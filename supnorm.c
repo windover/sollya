@@ -220,6 +220,8 @@ int dividePolyByXMinusX0ToTheK(node **pTilde, node *poly, mpfr_t x0, int k, mp_p
   node *quotientSimplified, *quotientShifted, *quotientShiftedHorner;
   mpfr_t kAsMpfr;
 
+  UNUSED_PARAM(prec);
+
   /* Determine the degree of poly and, at the same time, if 
      it really is a polynomial 
   */
@@ -1285,6 +1287,9 @@ int supnormAbsolute(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t 
   node *T;
   int maximumAllowedN;
   node *boundAsNode, *s1, *s2, *pMinusT, *TMinusp;
+
+  UNUSED_PARAM(bisectPoint);
+
   /* Compute ell such that ell <= || p - f || with an accuracy gamma = accuracy/32 */
   mpfr_init2(ell,prec);
   mpfr_init2(gamma,mpfr_get_prec(accuracy));
@@ -1474,6 +1479,8 @@ int supnormRelativeNoSingularity(sollya_mpfi_t result, node *poly, node *func, s
   node *T;
   int maximumAllowedN, signAsInt;
   node *s1, *s2, *boundTimesT, *pMinusT, *TMinusp;
+
+  UNUSED_PARAM(bisectPoint);
   
   /* Makes compiler happy */
   signAsInt = -2;
@@ -2181,7 +2188,7 @@ int supremumNormBisect(sollya_mpfi_t result, node *poly, node *func, mpfr_t a, m
   mp_prec_t prec, p;
   mpfr_t temp;
   prec = getToolPrecision() + 25;
-  //p = sollya_mpfi_get_prec(result);
+  /*p = sollya_mpfi_get_prec(result);*/
  
   /* Compute p = -floor(log2(accuracy)) to get the number of bits we need
      in the end

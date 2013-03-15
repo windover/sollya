@@ -84,7 +84,8 @@ extern void parserFree(void *);
 
 extern int miniyylex(YYSTYPE *lvalp, void *scanner);
 
-void miniyyerror(void *myScanner, char *message) {
+void miniyyerror(void *myScanner, const char *message) {
+  UNUSED_PARAM(myScanner);
   printMessage(1,SOLLYA_MSG_SYNTAX_ERROR_ENCOUNTERED_WHILE_PARSING,"Warning: %s. Will try to continue parsing (expecting \";\"). May leak memory.\n",message);
 }
 

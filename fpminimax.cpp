@@ -675,8 +675,7 @@ extern "C" node *FPminimaxMain(node *f,
   int nbpoints = lengthChain(points);
   node *res;
   mpfr_t zero_mpfr, var1, var2, var3, max;
-  node * temp_tree, *temp_tree2, *temp_tree3;
-  mpfr_t *ptr;
+  node * temp_tree, *temp_tree2;
   mpfr_t *M;
   chain *curr;
   node **monomials_tree;

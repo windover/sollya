@@ -56,6 +56,8 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
+#define _BSD_SOURCE 
+
 #include <gmp.h>
 #include <mpfr.h>
 #include "mpfi-compat.h"
@@ -185,7 +187,7 @@ int mpfr_round_to_single(mpfr_t rop, mpfr_t x) {
   res = mpfr_cmp(temp,x);
   if (res && mpfr_number_p(x) && mpfr_number_p(temp)) {
     xfl.f = xfloat;
-    if (xfl.i == 0x80000000U) {
+    if (*((uint32_t *) &xfl.i) == 0x80000000U) {
       xfl.i = 0x80000001U;
     } else {
       if (res < 0) {
@@ -262,7 +264,7 @@ int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
   res = mpfr_cmp(temp,x);
   if ((res != 0) && mpfr_number_p(x) && mpfr_number_p(temp)) {
     xfl.f = xfloat;
-    if (xfl.i == 0x80000000U) {
+    if (*((uint32_t *) &xfl.i) == 0x80000000U) {
       xfl.i = 0x80000001U;
     } else {
       if (res < 0) {
@@ -304,19 +306,20 @@ int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
     }
   }
 
-  // Now, temp is equal to the single rounding of x under round to nearest
-  //
+  /* Now, temp is equal to the single rounding of x under round to nearest
+   */
   res = mpfr_cmp(temp,x);
   if ((mode != GMP_RNDN) && 
       mpfr_number_p(x) && 
       mpfr_number_p(temp) && 
       (res != 0))  {
-    // Here, we have an inexact single rounding to nearest that is a number
-    // but we must produce a directed rounding
+    /* Here, we have an inexact single rounding to nearest that is a number
+       but we must produce a directed rounding 
+    */
     if ((res < 0) && 
 	((mode == GMP_RNDU) || 
 	 ((mode == GMP_RNDZ) && (mpfr_sgn(x) < 0)))) {
-      // The rounded value is too small
+      /* The rounded value is too small */
       xfl.f = xfloat;
       if (xfl.i >= 0) {
 	xfl.i++;
@@ -333,7 +336,7 @@ int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
       if ((res > 0) && 
 	  ((mode == GMP_RNDD) || 
 	   ((mode == GMP_RNDZ) && (mpfr_sgn(x) > 0)))) {
-	// The rounded value is too great
+	/* The rounded value is too great */
 	xfl.f = xfloat;
 	if (xfl.i >= 0) {
 	  xfl.i--;
@@ -708,7 +711,7 @@ int printSimpleInHexa(mpfr_t x) {
   res = mpfr_cmp(temp,x);
   if (res && mpfr_number_p(x) && mpfr_number_p(temp)) {
     xfl.f = xfloat;
-    if (xfl.i == 0x80000000U) {
+    if (*((uint32_t *) &xfl.i) == 0x80000000U) {
       xfl.i = 0x80000001U;
     } else {
       if (res < 0) {
@@ -1250,6 +1253,8 @@ void mpfr_round_to_format(mpfr_t rop, mpfr_t op, int format) {
   }
 }
 
+int mpfr_round_to_doubleextended_mode(mpfr_t rop, mpfr_t op, mp_rnd_t mode);
+
 int round_to_expansion_format(mpfr_t rop, mpfr_t op, int format, mp_rnd_t mode) {
   int res;
   switch (format) {
@@ -1676,7 +1681,7 @@ void continuedFrac(mpq_t q, sollya_mpfi_t x) {
   mpfr_floor(m2,b);
 
   if (mpfr_equal_p(m1,m2) && (!mpfr_equal_p(a, m1))) {
-    mpfr_get_z(u,m1,GMP_RNDN); //exact
+    mpfr_get_z(u,m1,GMP_RNDN); /* exact */
     mpfr_sub(a,a,m1,GMP_RNDD);
     mpfr_sub(b,b,m1,GMP_RNDU);
     sollya_mpfi_interv_fr(xprime,a,b);

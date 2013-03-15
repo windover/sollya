@@ -415,6 +415,8 @@ AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT8_T
 AC_C_VOLATILE
+AC_C_INLINE
+AC_C_CONST
 AC_CHECK_TYPES([ptrdiff_t])
 
 # Checks for library functions.

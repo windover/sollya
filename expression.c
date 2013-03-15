@@ -905,13 +905,12 @@ char *sprintValue(mpfr_t *aValue) {
   char *tempBufOld;
   char *str4;
   mpfr_t temp;
-  mp_prec_t prec2, prec, p, pp, prec3;
+  mp_prec_t prec2, prec, p, prec3;
   mpfr_t *value, myValue;
   char *res;
   mpfr_t two128;
   
   p = mpfr_get_prec(*aValue);  
-  pp = p;
   mpfr_init2(myValue,p);
   simplifyMpfrPrec(myValue, *aValue);
   if ((p > tools_precision) && (mpfr_get_prec(myValue) < tools_precision)) {
@@ -5162,7 +5161,7 @@ node *differentiatePolynomialUnsafe(node *tree);
 node* differentiateUnsimplified(node *tree) {
   node *derivative;
   mpfr_t *mpfr_temp;
-  node *temp_node, *temp_node2, *temp_node3, *f_diff, *g_diff, *f_copy, *g_copy, *g_copy2, *h_copy, *h_copy2;
+  node *temp_node, *temp_node2, *temp_node3, *f_diff, *g_diff, *f_copy, *g_copy, *g_copy2, *h_copy;
   node *temp_node4, *f_copy2, *temp_node5;
   int deg;
 
@@ -8579,7 +8578,6 @@ int getDegreeUnsafe(node *tree, int silent) {
 int getDegreeUnsafeMpz(mpz_t res, node *tree) {
   mpz_t left, right;
   int l, r;
-  mpfr_t temp;
   node *simplifiedExponent;
 
   if (isConstant(tree)) {
@@ -10409,9 +10407,9 @@ node *dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha);
 node *makePowerOfConstant(node *constTree, int k);
 node *makeBinomialCoefficient(unsigned int n, unsigned int k);
 
-// Computes the coefficients of the polynomial p^k where p is 
+/* Computes the coefficients of the polynomial p^k where p is 
 // given by the coefficients in input
-//
+*/
 void computePowerOfPolynomialCoefficients(int *degreeRes, node ***coeffRes, 
                                           node **coeffs, int degree, int k) {
   int i, t;
@@ -11624,7 +11622,7 @@ node *makePowerOfConstant(node *constTree, int k) {
   return res;
 }
 
-// polynomialShiftAndScaleAbscissaUnsafe(poly, a, b) returns
+/* polynomialShiftAndScaleAbscissaUnsafe(poly, a, b) returns
 //
 // p(a + b * x)
 // 
@@ -11633,7 +11631,7 @@ node *makePowerOfConstant(node *constTree, int k) {
 // If poly is not a polynomial the tool is terminated.
 // If a or b is not a constant expression, the shifting and
 // scaling is performed as if they were.
-//
+*/
 node *polynomialShiftAndScaleAbscissaUnsafe(node *poly, node *a, node *b) {
   node *res;
   node **coeffs;
@@ -11688,8 +11686,8 @@ node *polynomialShiftAndScaleAbscissaUnsafe(node *poly, node *a, node *b) {
   return res;
 }
 
-// Returns p(q)
-//
+/* Returns p(q)
+ */
 node *substitutePolynomialUnsafe(node *p, node *q) {
   node *res;
   node **coeffsP, **coeffsQ, **coeffs, **coeffsQPi;
@@ -12083,13 +12081,13 @@ void composePolynomialsInner(sollya_mpfi_t *res, int degR, sollya_mpfi_t *p, int
   int i, j, k, l;
   sollya_mpfi_t temp;
 
-  // Initialize a temporary
-  //
+  /* Initialize a temporary
+   */
   sollya_mpfi_init2(temp, prec);
 
-  // Allocate two scratch arrays of the length of 
+  /* Allocate two scratch arrays of the length of 
   // the result polynomial.
-  //
+  */
   r = safeCalloc(degR+1,sizeof(sollya_mpfi_t));
   s = safeCalloc(degR+1,sizeof(sollya_mpfi_t));
   for (i=0;i<=degR;i++) {
@@ -12099,14 +12097,15 @@ void composePolynomialsInner(sollya_mpfi_t *res, int degR, sollya_mpfi_t *p, int
     sollya_mpfi_set_si(s[i],0);
   }
 
-  // Perform a stupid Horner:
+  /* Perform a stupid Horner:
   //
   // p(q(x)) = a_0 + q(x) * (.... a_i * q(x) * pTilde(q(x)) ...)
-  //
+  */
   sollya_mpfi_set(r[0],p[degP]);
   for (i=degP-1;i>=0;i--) {
-    // Multiply pTilde(q) with q, result in s
-    // while clearing up r
+    /* Multiply pTilde(q) with q, result in s
+       while clearing up r 
+    */
     for (j=0;j<=degQ*(degP-1-i);j++) {
       for (k=0;k<=degQ;k++) {
 	l = j + k;
@@ -12115,25 +12114,25 @@ void composePolynomialsInner(sollya_mpfi_t *res, int degR, sollya_mpfi_t *p, int
       }
       sollya_mpfi_set_si(r[j],0);
     }
-    // Add in a_i
+    /* Add in a_i */
     sollya_mpfi_add(s[0],s[0],p[i]);
     
-    // Swap r and s for next step
+    /* Swap r and s for next step */
     t = s;
     s = r;
     r = t;
   }
 
-  // Here, the result is in r
+  /* Here, the result is in r
   //
   // Copy it into the result array res
-  //
+  */
   for (i=0;i<=degR;i++) {
     sollya_mpfi_set(res[i],r[i]);
   }
 
-  // Clear and free the scratch arrays
-  //
+  /* Clear and free the scratch arrays
+   */
   for (i=0;i<=degR;i++) {
     sollya_mpfi_clear(r[i]);
     sollya_mpfi_clear(s[i]);
@@ -12141,8 +12140,8 @@ void composePolynomialsInner(sollya_mpfi_t *res, int degR, sollya_mpfi_t *p, int
   safeFree(r);
   safeFree(s);
 
-  // Clear the temporary
-  //
+  /* Clear the temporary
+   */
   sollya_mpfi_clear(temp);
 
 }
@@ -12153,28 +12152,27 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
   sollya_mpfi_t *polyP, *polyQ, *polyR;
   mpfr_t *coeffsR;
   sollya_mpfi_t **radiiArray;
-  node *tempPoly, *tempPoly2;
 
-  // Check if both p and q are polynomials 
+  /* Check if both p and q are polynomials 
   // and implement a fallback solution
   // for when this is not the case
-  //
+  */
   if ((!isPolynomial(p)) || (!isPolynomial(q))) {
     *radii = NULL;
     *poly = substitute(p,q);
     return;
   }
 
-  // Here, we know that p and q are polynomials
+  /* Here, we know that p and q are polynomials
   //
   // Continue by getting all coefficients of p and q
-  //
+  */
   getCoefficients(&degP, &coeffsP, p);
   getCoefficients(&degQ, &coeffsQ, q);
 
-  // Evaluate all coefficients of p and q to 
+  /* Evaluate all coefficients of p and q to 
   // small intervals in two arrays polyP and polyQ.
-  //
+  */
   polyP = (sollya_mpfi_t *) safeCalloc(degP+1,sizeof(sollya_mpfi_t));
   for (i=0;i<=degP;i++) {
     sollya_mpfi_init2(polyP[i],prec);
@@ -12194,8 +12192,8 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
     }
   }
 
-  // Free the arrays with the unevaluated coefficients
-  //
+  /* Free the arrays with the unevaluated coefficients
+   */
   for (i=0;i<=degP;i++) {
     if (coeffsP[i] != NULL) {
       free_memory(coeffsP[i]);
@@ -12209,21 +12207,21 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
   }
   safeFree(coeffsQ);
   
-  // Allocate and initialize an array of interval coefficients for the result 
+  /* Allocate and initialize an array of interval coefficients for the result 
   // polynomial
-  //
+  */
   degR = degP * degQ;
   polyR = (sollya_mpfi_t *) safeCalloc(degR+1,sizeof(sollya_mpfi_t));
   for (i=0;i<=degR;i++) {
     sollya_mpfi_init2(polyR[i],prec);
   }  
 
-  // Have an auxiliary function do the real work of composing p and q
-  //
+  /* Have an auxiliary function do the real work of composing p and q
+   */
   composePolynomialsInner(polyR,degR,polyP,degP,polyQ,degQ,prec);
 
-  // Free the arrays with the evaluated coefficients
-  //
+  /* Free the arrays with the evaluated coefficients
+   */
   for (i=0;i<=degP;i++) {
     sollya_mpfi_clear(polyP[i]);
   }
@@ -12233,14 +12231,14 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
   }
   safeFree(polyQ);
 
-  // Allocate and compute an array of centerpoints
+  /* Allocate and compute an array of centerpoints
   // 
   // Allocate also pointers to intervals and 
   // initialize intervals that will hold the radii.
   //
   // Clear the intervals for the output coefficients
   // as well.
-  //
+  */
   coeffsR = (mpfr_t *) safeCalloc(degR+1,sizeof(mpfr_t));
   radiiArray = (sollya_mpfi_t **) safeCalloc(degR+1,sizeof(sollya_mpfi_t *));
   for (i=0;i<=degR;i++) {
@@ -12252,31 +12250,31 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
     sollya_mpfi_clear(polyR[i]);
   }
 
-  // Free the array of intervals for the output coefficients
-  //
+  /* Free the array of intervals for the output coefficients
+   */
   safeFree(polyR);
 
-  // Convert the array of centerpoints to a tree.
-  //
+  /* Convert the array of centerpoints to a tree.
+   */
   *poly = makePolynomial(coeffsR, degR);
 
-  // Free the arrays with the centerpoints
-  //
+  /* Free the arrays with the centerpoints
+   */
   for (i=0;i<=degR;i++) {
     mpfr_clear(coeffsR[i]);
   }
   safeFree(coeffsR);
   
-  // Convert the array of radii to a list of radii
-  //
+  /* Convert the array of radii to a list of radii
+   */
   *radii = NULL;
   for (i=0;i<=degR;i++) {
     *radii = addElement(*radii,(void *) (radiiArray[i]));
   }
 
-  // Free the array holding the pointers to the 
+  /* Free the array holding the pointers to the 
   // intervals of radii.
-  //
+  */
   safeFree(radiiArray);
   
 }
@@ -12442,7 +12440,7 @@ node *makePolynomialConstantExpressions(node **coeffs, int deg) {
 	temp3 = (node *) safeMalloc(sizeof(node));
 	temp3->nodeType = CONSTANT;
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-	mpfr_init2(*value,(tools_precision > (8 * sizeof(e) + 10) ? tools_precision : (8 * sizeof(e) + 10)));
+	mpfr_init2(*value,(mp_prec_t) ((mp_prec_t) tools_precision > (mp_prec_t) (8 * sizeof(e) + 10) ? (mp_prec_t) tools_precision : (mp_prec_t) (8 * sizeof(e) + 10)));
 	if (mpfr_set_si(*value,e,GMP_RNDN) != 0) {
 	  if (!noRoundingWarnings) {
 	    printMessage(1,SOLLYA_MSG_ROUNDING_UPON_POW_EXPONENT_COMPUTATION,"Warning: rounding occurred on representing a monomial power exponent with %d bits.\n",

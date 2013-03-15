@@ -95,7 +95,7 @@ extern int yylex(YYSTYPE *lvalp, void *scanner);
 extern FILE *yyget_in(void *scanner);
 extern char *getCurrentLexSymbol();
 
-void yyerror(char *message) {
+void yyerror(const char *message) {
   char *str;
   if (!feof(yyget_in(scanner))) {
     str = getCurrentLexSymbol();
@@ -116,7 +116,7 @@ int parserCheckEof() {
   return feof(myFd);
 }
 
-// #define WARN_IF_NO_HELP_TEXT 1
+/* #define WARN_IF_NO_HELP_TEXT 1 */
 
 %}
 

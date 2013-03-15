@@ -203,16 +203,16 @@ chain* concatChains(chain *c1, chain *c2) {
 }
 
 
-// Removes the first occurence of n in a chain containing int values
-// The chain c is modified.
-// If n is not the first element of the chain, the returned pointer
-// points at the same place as c
+/* Removes the first occurence of n in a chain containing int values
+   The chain c is modified.
+   If n is not the first element of the chain, the returned pointer
+   points at the same place as c 
+*/
 chain *removeInt(chain *c, int n) {
   chain *curr;
   int i;
 
   if(c==NULL) return c;
-  //else
 
   curr = c;
   i = *(int *)(curr->value);

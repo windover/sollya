@@ -126,13 +126,13 @@ void freeDoNothing(void *ptr) {
   return;
 }
 
-// Performs a fast check if a < b or a > b 
+/* Performs a fast check if a < b or a > b 
 //
 // Returns 1 on success, 0 on failure
 //
 // Sets res to -1 if a < b and to +1 if a > b
 // 
-//
+*/
 int checkInequalityFast(int *res, node *a, node *b) {
   sollya_mpfi_t aI, bI;
   mpfr_t ahi, alo, bhi, blo;
@@ -192,6 +192,8 @@ int checkInequalityFast(int *res, node *a, node *b) {
 
   return okay;
 }
+
+int isElliptic(node *);
 
 /* Sets up the random access data-structure on a LIST or
    FINALELLIPTICLIST object, if it has not yet been set up.
@@ -279,14 +281,12 @@ node *parseStringInternal(char *str) {
   miniyylex_init(&myScanner);
   miniyyset_in(stdin, myScanner);
   buffer = startMiniparser(myScanner,myStr);
+  (void) buffer;
   if (!miniyyparse(myScanner)) {
     if (minitree != NULL) {
-      
-      // sollyaPrintf("read = %d, all = %d, eof = %d, semicolon = %d\n",miniparserCharactersRead, strlen(myStr), miniparserEofReached, miniparserSemicolonAtEnd);
-
       if (miniparserEofReached || 
 	  (miniparserSemicolonAtEnd && 
-	   ((miniparserCharactersRead <= strlen(myStr)) && parseStringCheckExcessCharacters(myStr+miniparserCharactersRead)))) {
+	   ((miniparserCharactersRead <= (int) strlen(myStr)) && parseStringCheckExcessCharacters(myStr+miniparserCharactersRead)))) {
 	result = evaluateThing(minitree);
       } else {
 	printMessage(1,SOLLYA_MSG_SYNTAX_ERROR_ENCOUNTERED_WHILE_PARSING,
@@ -4249,7 +4249,7 @@ int evaluateThingToExtendedExpansionFormat(int *result, node *tree) {
       printMessage(1,SOLLYA_MSG_CONTINUATION,"Will change the precision indication to 2 bits.\n");
       resA = 2;
     } 
-    *result = resA + 6; // WHAT THE F**K? Look at line 1002 in double.c to understand.
+    *result = resA + 6; /* WHAT THE F**K? Look at line 1002 in double.c to understand. */
     freeThing(evaluatedResult);
     return 1;
   }
@@ -7465,7 +7465,7 @@ int evaluateThingToRangeList(chain **ch, node *tree) {
 	mpfr_clear(b);
 	return 0;
       } else {
-	sollya_mpfi_interv_fr_safe(*(arrayMpfi[i]),a,b); // ANYONE TO UNDERSTAND THIS LINE?
+	sollya_mpfi_interv_fr_safe(*(arrayMpfi[i]),a,b); /* ANYONE TO UNDERSTAND THIS LINE? */
       }
     }
     newChain = NULL;
@@ -7577,7 +7577,7 @@ int tryPrependOptimization(int *res, node *tree) {
 }
 
 int tryTailOptimization(int *res, node *tree) {
-  node *tempNode, *tempNode2;
+  node *tempNode;
   int didCopy;
 
   if ((accessThruMemRef(tree)->nodeType == ASSIGNMENT) &&
@@ -17645,7 +17645,7 @@ void *makeMonomialFromIntOnVoid(void *n) {
 }
 
 /* Check that tree is a finite non-empty list that does not contain the symbol "..."
-/* Return 1 if, moreover, one of the following conditions is satisfied:
+   Return 1 if, moreover, one of the following conditions is satisfied:
      * either the list contains only non-negative and distinct integers;
      * or the list contains only pure trees (i.e. mathematical expressions).
    In case of success, a list of pure trees is stored in monomials. If tree
@@ -17659,7 +17659,6 @@ int evaluateThingToPseudoMonomialsList(chain **monom, node *tree) {
   chain *monomials;
   int prev;
   int failure = 0;
-  int n;
 
   if (!isPureList(tree)) return 0;
   if (evaluateThingToIntegerList(&monomials, &useless, tree)) {
@@ -18089,7 +18088,6 @@ node *evaluateThingInnerst(node *tree) {
   node *firstArg, *secondArg, *thirdArg, *fourthArg, *fifthArg, *sixthArg, *seventhArg, *eighthArg;
   rangetype *rangeTempPtr;
   FILE *fd, *fd2;
-  mpfr_t *tempMpfrPtr;
   mp_exp_t expo;
   mp_prec_t pTemp, pTemp2, pTemp3;
   int undoVariableTrick;
@@ -19623,7 +19621,7 @@ node *evaluateThingInnerst(node *tree) {
 	  }
 	  resE = 1;
 	} else {
-	  if (resA = evaluateThingToConstant(a,copy->child1,NULL,1,1)) {
+	  if ((resA = evaluateThingToConstant(a,copy->child1,NULL,1,1))) {
 	    if (resA == 3) 
 	      printMessage(1,SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT_THAT_IS_NOT_FAITHFUL,"Warning: containment test relies on floating-point result that is not faithfully evaluated.\n");
 	    resC = ((mpfr_cmp(b,a) <= 0) && 
