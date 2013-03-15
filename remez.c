@@ -1643,7 +1643,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     mpfr_mul_2ui(perturb, perturb, 1, GMP_RNDN);
     mpfr_sub_ui(perturb, perturb, 1, GMP_RNDN);
     mpfr_div_2ui(perturb, perturb, 2, GMP_RNDN); /* perturb \in [-1/4; 1/4] */
-    mpfr_set_d(perturb,0.,GMP_RNDN); /* if no perturbation is desired */
+    /* mpfr_set_d(perturb,0.,GMP_RNDN); */ /* if no perturbation is desired */
 
     mpfr_sub(var1, x[i-1], x[i-2], GMP_RNDN);
     mpfr_sub(var2, x[i], x[i-1], GMP_RNDN);
