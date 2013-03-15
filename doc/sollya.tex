@@ -1579,6 +1579,8 @@ Three cases are possible:
 \item If \verb|arg| is neither a regular nor an end-elliptic list, \verb|*L|, \verb|*n| and \verb|*end_ell| are left unchanged and the function returns false.
 \end{itemize}
 
+In case of success, please notice that \verb|(*L)[0]|, \dots, \verb|(*L)[N-1]| should manually be cleared with \verb|sollya_lib_clear_obj| when they become useless. Also, the pointer \verb|*L| itself should be cleared with \verb|sollya_lib_free| since it points to a segment of memory allocated on the heap by \sollya.
+
 \subsection{Recovering the contents of a \sollya structure}
 If \verb|arg| is a \verb|sollya_obj_t| that contains a structure, the contents of a given field can be recovered using
 \begin{center}

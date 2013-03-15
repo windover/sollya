@@ -13,6 +13,7 @@ tatanh.c \
 tbashexecute.c \
 tbinary.c \
 tboolean_list_ops.c \
+tbuild_end_elliptic_list.c \
 tbuild_function_abs.c \
 tbuild_function_acos.c \
 tbuild_function_acosh.c \
@@ -56,6 +57,7 @@ tbuild_function_sub.c \
 tbuild_function_tan.c \
 tbuild_function_tanh.c \
 tbuild_function_triple_double.c \
+tbuild_list.c \
 tcanonical.c \
 tceil.c \
 tcheckinfnorm.c \
@@ -97,6 +99,7 @@ tdoubleextended.c \
 tdoubleextended_obj.c \
 tdouble_obj.c \
 tdyadic.c \
+tend_elliptic_list.c \
 terf.c \
 terfc.c \
 terror.c \
@@ -122,11 +125,13 @@ tget_constant_as_uint64.c \
 tget_diam.c \
 tget_dieonerrormode.c \
 tget_display.c \
+tget_element_in_list.c \
 tget_free_variable_name.c \
 tget_function_arity.c \
 tget_head_function.c \
 tget_hopitalrecursions.c \
 tget_interval_from_range.c \
+tget_list_elements.c \
 tget_midpointmode.c \
 tget_points.c \
 tget_prec.c \
@@ -187,6 +192,7 @@ tis_void.c \
 tlength.c \
 tlibraryconstant.c \
 tlibraryfunction.c \
+tlist.c \
 tlog10.c \
 tlog1p.c \
 tlog2.c \
@@ -291,6 +297,8 @@ ttanh.c \
 ttriple_double.c \
 ttriple_double_obj.c \
 ttrue.c \
+tv_build_end_elliptic_list.c \
+tv_build_list.c \
 tv_decompose_function.c \
 tv_fpminimax.c \
 tv_get_subfunctions.c \
