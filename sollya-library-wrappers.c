@@ -2810,25 +2810,35 @@ int sollya_lib_get_constant_as_uint64(uint64_t *value, sollya_obj_t obj1) {
 sollya_obj_t sollya_lib_list(sollya_obj_t objects[], int num) {
   int i;
   chain *tempChain;
+  node *unevaluatedList;
+  node *evaluatedList;
 
   if (num < 1) return makeEmptyList();
   tempChain = NULL;
   for (i=num-1;i>=0;i--) {
     tempChain = addElement(tempChain, copyThing(objects[i]));
   }
-  return makeList(tempChain);
+  unevaluatedList = makeList(tempChain);
+  evaluatedList = evaluateThing(unevaluatedList);
+  freeThing(unevaluatedList);
+  return evaluatedList;
 }
 
 sollya_obj_t sollya_lib_end_elliptic_list(sollya_obj_t objects[], int num) {
   int i;
   chain *tempChain;
+  node *unevaluatedList;
+  node *evaluatedList;
 
   if (num < 1) return makeError();
   tempChain = NULL;
   for (i=num-1;i>=0;i--) {
     tempChain = addElement(tempChain, copyThing(objects[i]));
   }
-  return makeFinalEllipticList(tempChain);
+  unevaluatedList = makeFinalEllipticList(tempChain);
+  evaluatedList = evaluateThing(unevaluatedList);
+  freeThing(unevaluatedList);
+  return evaluatedList;
 }
 
 int sollya_lib_get_list_elements(sollya_obj_t **objects, int *num, int *end_elliptic, sollya_obj_t obj1) {
@@ -4025,7 +4035,7 @@ int sollya_lib_is_empty_string_list(sollya_string_list_t list) {
 }
 
 sollya_obj_t sollya_lib_build_list(sollya_obj_t obj1, ...) {
-  node *elem;
+  node *elem, *unevaluatedList, *evaluatedList;
   chain *thinglist, *curr;
   va_list varlist;
   
@@ -4046,11 +4056,14 @@ sollya_obj_t sollya_lib_build_list(sollya_obj_t obj1, ...) {
   }
   va_end(varlist);
   
-  return makeList(thinglist);
+  unevaluatedList = makeList(thinglist);
+  evaluatedList = evaluateThing(unevaluatedList);
+  freeThing(unevaluatedList);
+  return evaluatedList;
 }
 
 sollya_obj_t sollya_lib_build_end_elliptic_list(sollya_obj_t obj1, ...) {
-  node *elem;
+  node *elem, *unevaluatedList, *evaluatedList;
   chain *thinglist, *curr;
   va_list varlist;
   
@@ -4071,11 +4084,14 @@ sollya_obj_t sollya_lib_build_end_elliptic_list(sollya_obj_t obj1, ...) {
   }
   va_end(varlist);
   
-  return makeFinalEllipticList(thinglist);
+  unevaluatedList = makeFinalEllipticList(thinglist);
+  evaluatedList = evaluateThing(unevaluatedList);
+  freeThing(unevaluatedList);
+  return evaluatedList;
 } 
 
 sollya_obj_t sollya_lib_v_build_list(va_list varlist) {
-  node *elem;
+  node *elem, *unevaluatedList, *evaluatedList;
   chain *thinglist, *curr;
   
   elem = va_arg(varlist,node *);
@@ -4094,11 +4110,14 @@ sollya_obj_t sollya_lib_v_build_list(va_list varlist) {
       curr->next = NULL;
   }
   
-  return makeList(thinglist);
+  unevaluatedList = makeList(thinglist);
+  evaluatedList = evaluateThing(unevaluatedList);
+  freeThing(unevaluatedList);
+  return evaluatedList;
 }
 
 sollya_obj_t sollya_lib_v_build_end_elliptic_list(va_list varlist) {
-  node *elem;
+  node *elem, *unevaluatedList, *evaluatedList;
   chain *thinglist, *curr;
   
   elem = va_arg(varlist,node *);
@@ -4117,7 +4136,10 @@ sollya_obj_t sollya_lib_v_build_end_elliptic_list(va_list varlist) {
       curr->next = NULL;
   }
   
-  return makeFinalEllipticList(thinglist);
+  unevaluatedList = makeFinalEllipticList(thinglist);
+  evaluatedList = evaluateThing(unevaluatedList);
+  freeThing(unevaluatedList);
+  return evaluatedList;
 }
 
 sollya_obj_t sollya_lib_build_function_free_variable() {
