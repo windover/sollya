@@ -1,60 +1,60 @@
 /*
 
-Copyright 2006-2011 by
+  Copyright 2006-2011 by
 
-Laboratoire de l'Informatique du Parallelisme,
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+  Laboratoire de l'Informatique du Parallelisme,
+  UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
-LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2),
+  LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2),
 
-Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
-UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
+  Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
 
-and by
+  and by
 
-Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
-Sophia Antipolis, France.
+  Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+  Sophia Antipolis, France.
 
-Contributors Ch. Lauter, S. Chevillard
+  Contributors Ch. Lauter, S. Chevillard
 
-christoph.lauter@ens-lyon.org
-sylvain.chevillard@ens-lyon.org
+  christoph.lauter@ens-lyon.org
+  sylvain.chevillard@ens-lyon.org
 
-This software is a computer program whose purpose is to provide an
-environment for safe floating-point code development. It is
-particularily targeted to the automatized implementation of
-mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinity norm, an automatic polynomial
-implementer and a fast Remez algorithm.
+  This software is a computer program whose purpose is to provide an
+  environment for safe floating-point code development. It is
+  particularily targeted to the automatized implementation of
+  mathematical floating-point libraries (libm). Amongst other features,
+  it offers a certified infinity norm, an automatic polynomial
+  implementer and a fast Remez algorithm.
 
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use,
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info".
+  This software is governed by the CeCILL-C license under French law and
+  abiding by the rules of distribution of free software.  You can  use,
+  modify and/ or redistribute the software under the terms of the CeCILL-C
+  license as circulated by CEA, CNRS and INRIA at the following URL
+  "http://www.cecill.info".
 
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability.
+  As a counterpart to the access to the source code and  rights to copy,
+  modify and redistribute granted by the license, users are provided only
+  with a limited warranty  and the software's author,  the holder of the
+  economic rights,  and the successive licensors  have only  limited
+  liability.
 
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-herefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or
-data to be ensured and,  more generally, to use and operate it in the
-same conditions as regards security.
+  In this respect, the user's attention is drawn to the risks associated
+  with loading,  using,  modifying and/or developing or reproducing the
+  software by the user in light of its specific status of free software,
+  that may mean  that it is complicated to manipulate,  and  that  also
+  herefore means  that it is reserved for developers  and  experienced
+  professionals having in-depth computer knowledge. Users are therefore
+  encouraged to load and test the software's suitability as regards their
+  requirements in conditions enabling the security of their systems and/or
+  data to be ensured and,  more generally, to use and operate it in the
+  same conditions as regards security.
 
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
+  The fact that you are presently reading this means that you have had
+  knowledge of the CeCILL-C license and that you accept its terms.
 
-This program is distributed WITHOUT ANY WARRANTY; without even the
-implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  This program is distributed WITHOUT ANY WARRANTY; without even the
+  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
@@ -82,7 +82,7 @@ void myPrintValue(mpfr_t *x, mp_prec_t prec) {
 
 void printMatrix(mpfr_t *M, int n) {
   int i,j;
- sollyaPrintf("[");
+  sollyaPrintf("[");
   for(i=1;i<=n;i++) {
     for(j=1;j<=n;j++) {
       myPrintValue(&M[coeff(i,j,n)],53); if(j!=n) sollyaPrintf(", ");
@@ -255,9 +255,9 @@ node *constructPolynomial(mpfr_t *coeff, chain *monomials, mp_prec_t prec) {
     n = *((int *)(curr->value));
     poly = makeAdd( makeMul( makeConstant(coeff[i-1]),
                              makePow(makeVariable(), makeConstantInt(n))
-                           ),
+                             ),
                     poly
-                  );
+                    );
     i++;
     curr = curr->next;
   }
@@ -268,14 +268,14 @@ node *constructPolynomial(mpfr_t *coeff, chain *monomials, mp_prec_t prec) {
 
 
 /* This function finds an approximate zero of a function f
-// (which derivative if f_diff) in the interval [a;b]
-// using x0 as an initial guess of the zero
-// If n=0 the algorithm stops when the computed zero is
-// a precise estimation of the real zero.
-// If n<>0, n steps are computed.
-// The algorithm uses Newton's method
-// It is assumed that f(a)f(b)<=0 and x0 in [a;b]
-// If x0=NULL the algorithm is free to use any initial guess
+   (which derivative if f_diff) in the interval [a;b]
+   using x0 as an initial guess of the zero
+   If n=0 the algorithm stops when the computed zero is
+   a precise estimation of the real zero.
+   If n<>0, n steps are computed.
+   The algorithm uses Newton's method
+   It is assumed that f(a)f(b)<=0 and x0 in [a;b]
+   If x0=NULL the algorithm is free to use any initial guess
 */
 void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, mpfr_t *x0, int n, mp_prec_t prec) {
 
@@ -291,36 +291,36 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
      So, if 0<a or b<0,  let [u,v]=[a,b] and go directly to step 2.
 
      Otherwise:
-       Let epsa= max(-2^(-2p), a)    and   epsb = min(2^(-2p), b):
-       hence a <= epsa <= 0 <= epsb <= b.
-       Let signepsa = sign(f(epsa)), sign0 = sign(f(0)) and signepsb = sign(f(epsb)).
-       Here sign can be -1,0,1 or NaN if the evaluation of f fails.
-       We separate the different cases for (signepsa, sign0, signepsb):
+     Let epsa= max(-2^(-2p), a)    and   epsb = min(2^(-2p), b):
+     hence a <= epsa <= 0 <= epsb <= b.
+     Let signepsa = sign(f(epsa)), sign0 = sign(f(0)) and signepsb = sign(f(epsb)).
+     Here sign can be -1,0,1 or NaN if the evaluation of f fails.
+     We separate the different cases for (signepsa, sign0, signepsb):
 
-	 (   *       0      *   ) -> f(0)=0 exactly
-	 (   0       *      *   ) -> f(epsa)=0 exactly
-	 (   *       *      0   ) -> f(epsb)=0 exactly
-	 (-sgnfa     *      *   ) -> we can set [u,v] = [a, epsa] (note that epsa<0 in this case)
-	 (   *       *     sgnfa) -> we can set [u,v] = [epsb, b] (note that epsb>0 in this case)
+     (   *       0      *   ) -> f(0)=0 exactly
+     (   0       *      *   ) -> f(epsa)=0 exactly
+     (   *       *      0   ) -> f(epsb)=0 exactly
+     (-sgnfa     *      *   ) -> we can set [u,v] = [a, epsa] (note that epsa<0 in this case)
+     (   *       *     sgnfa) -> we can set [u,v] = [epsb, b] (note that epsb>0 in this case)
 
-	 (   *     sgnfa  -sgnfa) -> f changes its sign in [0,epsb] but f(0) != 0.
-	                             The zero of f cannot be determined accurately.
-				     We can return epsb for instance with an error message.
-	 ( sgnfa  -sgnfa    *   ) -> idem with [epsa,0]
+     (   *     sgnfa  -sgnfa) -> f changes its sign in [0,epsb] but f(0) != 0.
+     The zero of f cannot be determined accurately.
+     We can return epsb for instance with an error message.
+     ( sgnfa  -sgnfa    *   ) -> idem with [epsa,0]
 
-	 ( sgnfa    NaN   -sgnfa) -> f changes its sign in [epsa, epsb].
-	                             It is likely that f(0)=0 but we cannot prove it.
-				     We can return 0 with an error message.
+     ( sgnfa    NaN   -sgnfa) -> f changes its sign in [epsa, epsb].
+     It is likely that f(0)=0 but we cannot prove it.
+     We can return 0 with an error message.
 
-	 ( sgnfa    NaN     NaN ) -> This case is likely to be b=0 (hence epsb=0)
-	                             We cannot prove much but it is reasonnable to return 0
-	 (  NaN     NaN   -sgnfa) -> idem with a=0
-	 (  NaN     NaN     NaN ) -> idem with a=0=b
+     ( sgnfa    NaN     NaN ) -> This case is likely to be b=0 (hence epsb=0)
+     We cannot prove much but it is reasonnable to return 0
+     (  NaN     NaN   -sgnfa) -> idem with a=0
+     (  NaN     NaN     NaN ) -> idem with a=0=b
 
-	 (  *      sgnfa    NaN ) -> We are really in trouble here since f(0) is provably non zero
-                                     but we do not know if f vanishes in [0,epsb] or [epsb, b].
-				     We should better stop with a huge ERROR
-	 (  NaN   -sgnfa     *  ) -> idem with [a, epsa] or [epsa, 0]
+     (  *      sgnfa    NaN ) -> We are really in trouble here since f(0) is provably non zero
+     but we do not know if f vanishes in [0,epsb] or [epsb, b].
+     We should better stop with a huge ERROR
+     (  NaN   -sgnfa     *  ) -> idem with [a, epsa] or [epsa, 0]
 
 
      2) Now we are sure that [u,v] does not contain 0.
@@ -335,17 +335,17 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
      Let x be somewhere in [u,v] (in the beginning, x=x0 if x0 is defined and lies in [u,v]).
      We compute xNew = iterator(x) = x - f(x)/f'(x)
 
-       If (xNew<u) or (xNew>v) or xNew=NaN, we perform a bisection step:
-       replaced by either [u, m] of [m, u] where m=(u+v)/2 and xNew is defined as
-       the middle of the new interval
+     If (xNew<u) or (xNew>v) or xNew=NaN, we perform a bisection step:
+     replaced by either [u, m] of [m, u] where m=(u+v)/2 and xNew is defined as
+     the middle of the new interval
 
-       Otherwise: xNew gives a valid new value. We compute yNew=f(xNew).
-       We have 4 cases depending on sgn(yNew):
-         sgnfa -> we can replace [u,v] by [xNew,v]
-	-sgnfa -> we can replace [u,v] by [u, xNew]
-	   0   -> xNew is an exact zero of f. We can stop
-	  NaN  -> we leave [u,v] as is. Most likely the iterator(xNew) will be NaN and the next
-	          step will be a bisection step.
+     Otherwise: xNew gives a valid new value. We compute yNew=f(xNew).
+     We have 4 cases depending on sgn(yNew):
+     sgnfa -> we can replace [u,v] by [xNew,v]
+     -sgnfa -> we can replace [u,v] by [u, xNew]
+     0   -> xNew is an exact zero of f. We can stop
+     NaN  -> we leave [u,v] as is. Most likely the iterator(xNew) will be NaN and the next
+     step will be a bisection step.
   */
 
   mpfr_t zero_mpfr;
@@ -406,10 +406,10 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
     if (mpfr_cmp(epsb,b)>0) mpfr_set(epsb, b, GMP_RNDD);
 
     /* For the signs, we use the following convention:
-        0 is coded by 0
-	1 is coded by 1
+       0 is coded by 0
+       1 is coded by 1
        -1 is coded by 2
-	NaN is coded by 3
+       NaN is coded by 3
     */
     r = evaluateFaithfulWithCutOffFast(fepsa, f, f_diff, epsa, zero_mpfr, prec);
     if(r==0) mpfr_set_d(fepsa,0,GMP_RNDN);
@@ -748,10 +748,10 @@ chain *uncertifiedFindZeros(node *tree, mpfr_t a, mpfr_t b, unsigned long int po
   while(mpfr_greaterequal_p(x2,a)) {
     if((mpfr_sgn(y1)==0) || (mpfr_sgn(y2)==0) || (mpfr_sgn(y1) != mpfr_sgn(y2))) {
       if (mpfr_sgn(y1)==0) {
-	  temp = safeMalloc(sizeof(mpfr_t));
-	  mpfr_init2(*temp, prec);
-	  mpfr_set(*temp, x1, GMP_RNDN);
-	  result = addElement(result, temp);
+        temp = safeMalloc(sizeof(mpfr_t));
+        mpfr_init2(*temp, prec);
+        mpfr_set(*temp, x1, GMP_RNDN);
+        result = addElement(result, temp);
       }
       else {
 	if (mpfr_sgn(y2)!=0) {
@@ -811,16 +811,16 @@ chain *uncertifiedFindZeros(node *tree, mpfr_t a, mpfr_t b, unsigned long int po
 }
 
 /* Perform a step of exchange algorithm
-// newx is the point to be inserted
-// err_newx is the corresponding error
-// lambdai_vect is the vector of lambda_i corresponding to vector x
-// epsilon is the current radius of reference
-//   note that (p*w-f)(x_{n+1})= epsilon by definition
-//   and lambda_{n+1} = -1 by definition
-//   Thus the rule is
-//            * take the max of mu/lambda if sgn(err_newx)*sgn(epsilon)=-1
-//            * take the min otherwise
-// n is the number of elements in x
+   newx is the point to be inserted
+   err_newx is the corresponding error
+   lambdai_vect is the vector of lambda_i corresponding to vector x
+   epsilon is the current radius of reference
+   note that (p*w-f)(x_{n+1})= epsilon by definition
+   and lambda_{n+1} = -1 by definition
+   Thus the rule is
+   * take the max of mu/lambda if sgn(err_newx)*sgn(epsilon)=-1
+   * take the min otherwise
+   n is the number of elements in x
 */
 void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
 		       node **monomials_tree,
@@ -989,8 +989,8 @@ void single_step_remez(mpfr_t newx, mpfr_t err_newx, mpfr_t *x,
 
 
 /* Store in res the zeros of tree on [a;b]
-// deg+1 indicates the number of zeros which we are expecting.
-// error' = tree  and tree' = diff_tree
+   deg+1 indicates the number of zeros which we are expecting.
+   error' = tree  and tree' = diff_tree
 */
 void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
 		    node *error, node *tree, node *diff_tree,
@@ -1063,21 +1063,21 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
 	   printMessages in it have not (or partially) been converted
 	   to the new style */
 	/* if(mpfr_sgn(y2)==0) {
-	     evaluateFaithfulWithCutOffFast(z, error, tree, x2, zero_mpfr, prec);
-	     if (mpfr_sgn(z)*mpfr_sgn(alpha2)<0) {
-	       i++;
-	       if(i>deg+2)
-	         printMessage(1,"Warning: the function oscillates too much. Nevertheless, we try to continue.\n");
-	       else mpfr_set(res[i-1], x2, GMP_RNDN);
-	     }
-	     if (mpfr_cmpabs(z,maxi)>0) {
-	       if ( (i>deg+2)||(mpfr_sgn(z)*mpfr_sgn(alpha2)>=0) ) test=0;
-	       else test=1;
-	       mpfr_set(maxi,z,GMP_RNDN);
-	       mpfr_set(argmaxi,x2,GMP_RNDN);
-	     }
+           evaluateFaithfulWithCutOffFast(z, error, tree, x2, zero_mpfr, prec);
+           if (mpfr_sgn(z)*mpfr_sgn(alpha2)<0) {
+           i++;
+           if(i>deg+2)
+           printMessage(1,"Warning: the function oscillates too much. Nevertheless, we try to continue.\n");
+           else mpfr_set(res[i-1], x2, GMP_RNDN);
+           }
+           if (mpfr_cmpabs(z,maxi)>0) {
+           if ( (i>deg+2)||(mpfr_sgn(z)*mpfr_sgn(alpha2)>=0) ) test=0;
+           else test=1;
+           mpfr_set(maxi,z,GMP_RNDN);
+           mpfr_set(argmaxi,x2,GMP_RNDN);
+           }
 	   }
-         */
+        */
       }
       else {
 	if (mpfr_sgn(y2)==0) {
@@ -1188,16 +1188,16 @@ void quickFindZeros(mpfr_t *res, mpfr_t *curr_points,
 
 
 /* This function finds the local extrema of a the error function poly*w-f.
-// It uses the derivative and the second derivative of these functions to
-// search the zeros of (poly*w-f)' by Newton's algorithm
-// It expects to find at least freeDegrees+1 alternates extrema and
-// returns it as a result. An initial estimation of these points is given
-// in the vector x.
-// Moreover, the quality of the approximation
-// (defined by abs(err_max)/abs(err_min) - 1 where err_min and err_max
-// denote the minimal and maximal extrema in absolute value) is stored
-// in computedQuality and the infinity norm is stored in infinityNorm
-// if these parameters are non NULL.
+   It uses the derivative and the second derivative of these functions to
+   search the zeros of (poly*w-f)' by Newton's algorithm
+   It expects to find at least freeDegrees+1 alternates extrema and
+   returns it as a result. An initial estimation of these points is given
+   in the vector x.
+   Moreover, the quality of the approximation
+   (defined by abs(err_max)/abs(err_min) - 1 where err_min and err_max
+   denote the minimal and maximal extrema in absolute value) is stored
+   in computedQuality and the infinity norm is stored in infinityNorm
+   if these parameters are non NULL.
 */
 int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
 		   node *poly, node *f, node *w,
@@ -1258,7 +1258,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
 
   printMessage(6, SOLLYA_MSG_REMEZ_COMPUTING_THE_YI, "Computing the yi...\n");
   /* If x = [x1 ... xn], we construct [y0 y1 ... yn] by
-  // y0 = (a+x1)/2, yn = (xn+b)/2 and yi = (xi + x(i+1))/2
+     y0 = (a+x1)/2, yn = (xn+b)/2 and yi = (xi + x(i+1))/2
   */
   y = (mpfr_t *)safeMalloc((n+1)*sizeof(mpfr_t));
   mpfr_init2(y[0], prec);
@@ -1280,9 +1280,9 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
   printMessage(6,SOLLYA_MSG_CONTINUATION,"\n"); 
 
   /* We call *case 1* the case where x1=a and xn=b
-  // We call *case 2* the case where x1<>a and xn=b
-  // and *case 2bis* the symetrical case
-  // We call *case 3* the case where x1<>a and xn<>b
+     We call *case 2* the case where x1<>a and xn=b
+     and *case 2bis* the symetrical case
+     We call *case 3* the case where x1<>a and xn<>b
   */
 
   if (mpfr_equal_p(y[0], a) &&  mpfr_equal_p(y[n],b)) {
@@ -1305,25 +1305,25 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
   printMessage(6, SOLLYA_MSG_REMEZ_ALGORITHM_IS_IN_A_CERTAIN_CASE, "We are in case %s\n", (case1 ? "1" : (case2 ? "2" : (case2b ? "2bis" : (case3 ? "3" : "unknown")))));
 
   /* If one of error_diff(y0) .... error_diff(yn) is a real NaN
-  // (i.e. if evaluateFaithfulWithCutOffFast returns 1 and store a NaN)
-  // this leads to numerical problems -> we use quickFindZeros
+     (i.e. if evaluateFaithfulWithCutOffFast returns 1 and store a NaN)
+     this leads to numerical problems -> we use quickFindZeros
 
-  // If sgn(error_diff(yi))*sgn(error_diff(y(i+1))) > 0 for some i=1..n-2
-  // If we are in case 2 and sgn(error_diff(y0))*sgn(error_diff(y1)) > 0
-  // If we are in case 2bis and sgn(error_diff(y(n-1)))*sgn(error_diff(yn)) > 0
-  // If we are in case 3 and one of this two last condition is not fulfilled
-  // this means the hypothesis (xi ~ zeros of error_diff) is false -> quickFindZeros
+     If sgn(error_diff(yi))*sgn(error_diff(y(i+1))) > 0 for some i=1..n-2
+     If we are in case 2 and sgn(error_diff(y0))*sgn(error_diff(y1)) > 0
+     If we are in case 2bis and sgn(error_diff(y(n-1)))*sgn(error_diff(yn)) > 0
+     If we are in case 3 and one of this two last condition is not fulfilled
+     this means the hypothesis (xi ~ zeros of error_diff) is false -> quickFindZeros
 
-  // If we are in case 1 : if sgn(error_diff(y0))*sgn(error_diff(y1)) > 0 (the most probable)
-  // we have a problem if error(y0) is a real NaN or if sgn(error(y0))*sgn(error_diff(y0))>0
-  // if sgn(error_diff(y(n-1)))*sgn(error_diff(yn)) > 0 (the most probable)
-  // we have a problem if error(yn) is a real NaN or if sgn(error(yn))*sgn(error_diff(yn))<0
+     If we are in case 1 : if sgn(error_diff(y0))*sgn(error_diff(y1)) > 0 (the most probable)
+     we have a problem if error(y0) is a real NaN or if sgn(error(y0))*sgn(error_diff(y0))>0
+     if sgn(error_diff(y(n-1)))*sgn(error_diff(yn)) > 0 (the most probable)
+     we have a problem if error(yn) is a real NaN or if sgn(error(yn))*sgn(error_diff(yn))<0
 
-  // If we are in case 2 if sgn(error_diff(y(n-1)))*sgn(error_diff(yn)) > 0 (the most probable)
-  // we have a problem if error(yn) is a real NaN or if sgn(error(yn))*sgn(error_diff(yn))<0
+     If we are in case 2 if sgn(error_diff(y(n-1)))*sgn(error_diff(yn)) > 0 (the most probable)
+     we have a problem if error(yn) is a real NaN or if sgn(error(yn))*sgn(error_diff(yn))<0
 
-  // If we are in case 2bis, if sgn(error_diff(y0))*sgn(error_diff(y1)) > 0 (the most probable)
-  // we have a problem if error(y0) is a real NaN or if sgn(error(y0))*sgn(error_diff(y0))>0
+     If we are in case 2bis, if sgn(error_diff(y0))*sgn(error_diff(y1)) > 0 (the most probable)
+     we have a problem if error(y0) is a real NaN or if sgn(error(y0))*sgn(error_diff(y0))>0
   */
 
   s = (int *)safeMalloc((n+1)*sizeof(int));
@@ -1401,7 +1401,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
 
 
     /* We expect error(z[i]) ~ - sgn(lambda[i])*epsilon
-    // We check the sign of error at these points and for z[i]<>a,b, we check the sign of error''
+       We check the sign of error at these points and for z[i]<>a,b, we check the sign of error''
     */
     test=1;
     for(i=1; (i<=n) && test; i++) {
@@ -1525,9 +1525,9 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
   If we manage to reach satisfying_error, we stop the algorithm, returning the current polynomial.
   Otherwise, we run the algorithm until the required quality is obtained.
 
- -----------------------|----------------------------|-------------------------->
-                    satisfying                     target
-         :-)                                                       :-(
+  -----------------------|----------------------------|-------------------------->
+  satisfying                     target
+  :-)                                                       :-(
 
 */
 node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t prec, mpfr_t quality, mpfr_t satisfying_error, mpfr_t target_error) {
@@ -1643,7 +1643,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     mpfr_mul_2ui(perturb, perturb, 1, GMP_RNDN);
     mpfr_sub_ui(perturb, perturb, 1, GMP_RNDN);
     mpfr_div_2ui(perturb, perturb, 2, GMP_RNDN); /* perturb \in [-1/4; 1/4] */
-    /* mpfr_set_d(perturb,0.,GMP_RNDN); */ /* if no perturbation is desired */
+    /* If no perturbation is desired, set: mpfr_set_d(perturb,0.,GMP_RNDN); */
 
     mpfr_sub(var1, x[i-1], x[i-2], GMP_RNDN);
     mpfr_sub(var2, x[i], x[i-1], GMP_RNDN);
@@ -1659,36 +1659,38 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
   /*************************************************************/
   /*                  Manually chosen points                   */
+  /*************************************************************/
   /* assume the list of points to be stored in variable list:
-  // run:   i=0; for t in list do {write("mpfr_set_str(x[",i,"],\"",t,"\", 10, GMP_RNDN);\n"); i=i+1;} ;
+     run:   i=0; for t in list do {write("mpfr_set_str(x[",i,"],\"",t,"\", 10, GMP_RNDN);\n"); i=i+1;} ;
   */
 
-  /*   mpfr_set_str(x[0],"-0.3125e-1", 10, GMP_RNDN); */
-  /*   mpfr_set_str(x[1],"-0.270866924296709954921192919457109841628145246303031e-1", 10, GMP_RNDN); */
-  /*   mpfr_set_str(x[2],"-0.156792125481182037300460865714390558114871681447265e-1", 10, GMP_RNDN); */
-  /*   mpfr_set_str(x[3],"0.270866923865259682207709736846537325622398567463872667e-1", 10, GMP_RNDN); */
-
-
+  /*
+    mpfr_set_str(x[0],"-0.3125e-1", 10, GMP_RNDN);
+    mpfr_set_str(x[1],"-0.270866924296709954921192919457109841628145246303031e-1", 10, GMP_RNDN);
+    mpfr_set_str(x[2],"-0.156792125481182037300460865714390558114871681447265e-1", 10, GMP_RNDN);
+    mpfr_set_str(x[3],"0.270866923865259682207709736846537325622398567463872667e-1", 10, GMP_RNDN);
+  */
   /*************************************************************/
 
 
 
   /*************************************************************/
   /*                 Evenly distributed points                 */
-  /*mpfr_sub(var1, v, u, GMP_RNDN);
-  //mpfr_div_si(var1, var1, (long)(freeDegrees), GMP_RNDN); // var1 = (v-u)/freeDegrees
-  */
-
+  /*************************************************************/
   /*
-  //for (i=1 ; i <= freeDegrees+1 ; i++) {
-  //  mpfr_mul_si(x[i-1], var1, i-1, GMP_RNDN);
-  //  mpfr_add(x[i-1], x[i-1], u, GMP_RNDN);
-  //}
-    ************************************************************/
+    mpfr_sub(var1, v, u, GMP_RNDN);
+    mpfr_div_si(var1, var1, (long)(freeDegrees), GMP_RNDN); // var1 = (v-u)/freeDegrees
+    for (i=1 ; i <= freeDegrees+1 ; i++) {
+      mpfr_mul_si(x[i-1], var1, i-1, GMP_RNDN);
+      mpfr_add(x[i-1], x[i-1], u, GMP_RNDN);
+    }
+  */
+  /*************************************************************/
 
 
   /*************************************************************/
   /*                  Alternative Cheb points                  */
+  /*************************************************************/
   /*
     mpfr_const_pi(var1, GMP_RNDN);
     mpfr_div_si(var1, var1, 2*((long)freeDegrees+1), GMP_RNDN); // var1 = Pi/(2*freeDegrees+2)
@@ -1698,11 +1700,12 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     mpfr_div_2ui(var3, var3, 1, GMP_RNDN); // var3 = (u+v)/2
 
     for (i=1 ; i <= freeDegrees+1 ; i++) {
-    mpfr_mul_si(x[i-1], var1, 2*i-1, GMP_RNDN);
-    mpfr_cos(x[i-1], x[i-1], GMP_RNDN);
-    mpfr_fma(x[i-1], x[i-1], var2, var3, GMP_RNDN); // x_i=[cos((2i-1)*Pi/(2freeDegrees+2))]*(u-v)/2 + (u+v)/2
-   }
-   ************************************************************/
+      mpfr_mul_si(x[i-1], var1, 2*i-1, GMP_RNDN);
+      mpfr_cos(x[i-1], x[i-1], GMP_RNDN);
+      mpfr_fma(x[i-1], x[i-1], var2, var3, GMP_RNDN); // x_i=[cos((2i-1)*Pi/(2freeDegrees+2))]*(u-v)/2 + (u+v)/2
+    }
+  */
+  /*************************************************************/
 
   popTimeCounter("Remez: computing initial points set");
   printMessage(4,SOLLYA_MSG_REMEZ_THE_COMPUTED_POINT_SET_IS_CERTAIN_VALUES,"Computed points set:\n");
@@ -1726,8 +1729,8 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       free_memory(poly);
 
       /* Definition of the matrices M and N of Remez algorithm
-      // N lets us determine the modified alternation property
-      // M lets us solve the interpolation problem
+         N lets us determine the modified alternation property
+         M lets us solve the interpolation problem
       */
       printMessage(3, SOLLYA_MSG_REMEZ_COMPUTING_THE_MATRIX, "Step %d\nComputing the matrix...\n",count);
       pushTimeCounter();
@@ -1858,7 +1861,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
       if(crash==-1) {
 
 	/* temporary check until I patch the algorithm in order to handle
-	// correctly cases when the error oscillates too much
+	   correctly cases when the error oscillates too much
 	*/
 	temp_tree = makeSub(makeMul(copyTree(poly), copyTree(w)), copyTree(f));
 	uncertifiedInfnorm(infinityNorm, temp_tree, u, v, getToolPoints(), prec);
@@ -1942,7 +1945,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
 
     if (!res) {
       /* temporary check until I patch the algorithm in order to handle
-      // correctly cases when the error oscillates too much
+         correctly cases when the error oscillates too much
       */
       temp_tree = makeSub(makeMul(copyTree(poly), copyTree(w)), copyTree(f));
       uncertifiedInfnorm(infinityNorm, temp_tree, u, v, getToolPoints(), prec);
