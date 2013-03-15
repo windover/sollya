@@ -32,7 +32,7 @@ with help of commands like <?php linkTo("command","execute","execute");?>, <?php
 <div class="divExample"> 
 <h2 class="category">Example 1: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; bashexecute("LANG=C date");<br> 
-&nbsp;&nbsp;&nbsp;Tue Feb 26 21:37:23 CET 2013<br> 
+&nbsp;&nbsp;&nbsp;Fri Mar 15 09:48:09 CET 2013<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 
