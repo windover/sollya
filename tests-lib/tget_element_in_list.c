@@ -276,7 +276,7 @@ int main(void) {
 
   listobj = sollya_lib_list(tab, 1000);
   gettimeofday(&t1, NULL);
-  for(k=0;k<1000;k++) {
+  for(k=0;k<10000;k++) {
     sollya_lib_get_element_in_list(&a, listobj, 999);
     sollya_lib_clear_obj(a);
   }
@@ -287,7 +287,7 @@ int main(void) {
 
   listobj = sollya_lib_list(tab, 2000);
   gettimeofday(&t1, NULL);
-  for(k=0;k<2000;k++) {
+  for(k=0;k<10000;k++) {
     sollya_lib_get_element_in_list(&a, listobj, 1999);
     sollya_lib_clear_obj(a);
   }
@@ -296,10 +296,10 @@ int main(void) {
     (double)(t2.tv_usec - t1.tv_usec);
   sollya_lib_clear_obj(listobj);
 
-  if ((1.75 <= length2/length1) && (length2/length1 <= 2.25))
+  if ((0.75 <= length2/length1) && (length2/length1 <= 1.25))
     sollya_lib_printf("Testing that a call to get_element_in_list has complexity O(1): OK\n");
   else
-    sollya_lib_printf("Testing that a call to get_element_in_list has complexity O(1): not OK. Observed ratio: %g (should be close to 2 for O(1) complexity, and close to 4 for linear complexity)\n", length2/length1);
+    sollya_lib_printf("Testing that a call to get_element_in_list has complexity O(1): not OK. Observed ratio: %g (should be close to 1 for O(1) complexity, and close to 2 for linear complexity)\n", length2/length1);
 
   for(i=0;i<2000;i++) sollya_lib_clear_obj(tab[i]);
 
