@@ -2308,7 +2308,7 @@ int supremumNormDegenerate(sollya_mpfi_t result, node *poly, node *func, mpfr_t 
   mpfr_clear(temp);
 
   prec = getToolPrecision();
-  if (pr > 2048 * prec) {
+  if ((mp_prec_t) pr > (mp_prec_t) 2048 * prec) {
     printMessage(1,SOLLYA_MSG_SUPNORM_ACCURACY_TOO_HIGH,"Warning: the given accuracy depasses the current maximum precision of %d bits.\n",2048 * prec);
     printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the precision of the tool.\n");
     sollya_mpfi_set_nan(result);
@@ -2316,7 +2316,7 @@ int supremumNormDegenerate(sollya_mpfi_t result, node *poly, node *func, mpfr_t 
     return 0;
   }
 
-  if (pr < prec) pp = prec; else pp = prec;
+  if ((mp_prec_t) pr < prec) pp = prec; else pp = prec;
   pp += 10;
  
   mpfr_init2(y,pp);
