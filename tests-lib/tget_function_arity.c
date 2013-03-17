@@ -9,6 +9,8 @@ void euler_gamma(mpfr_t res, mp_prec_t prec) {
 }
 
 int stupid1(mpfi_t result, mpfi_t x, int n) {
+  (void)x; /* Avoiding "unused parameter" warning */
+  (void)n; /* Avoiding "unused parameter" warning */
   mpfi_set_ui(result, 0);
   return 0;
 }

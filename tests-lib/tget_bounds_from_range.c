@@ -1,6 +1,8 @@
 #include <sollya.h>
 
 int callback(sollya_msg_t m, void *data) {
+  (void)data; /* Avoiding "unused parameter" warning */
+
   int id = sollya_lib_get_msg_id(m);
   switch(id) {
   case SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST:

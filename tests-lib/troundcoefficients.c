@@ -4,6 +4,8 @@
 #define B_DIM 5
 
 int callback(sollya_msg_t msg, void *data) {
+  (void)data; /* Avoiding "unused parameter" warning */
+
   int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_GIVEN_FUNCTION_IS_NO_POLYNOMIAL:

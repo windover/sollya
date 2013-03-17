@@ -10,36 +10,43 @@ void euler_gamma(mpfr_t res, mp_prec_t prec) {
 }
 
 void stupid1(mpfr_t res, mp_prec_t prec) {
+  (void)prec; /* Avoiding "unused parameter" warning */
   mpfr_set_ui(res, 0, GMP_RNDN);
   return;
 }
 
 void stupid2(mpfr_t res, mp_prec_t prec) {
+  (void)prec; /* Avoiding "unused parameter" warning */
   mpfr_set_ui(res, 0, GMP_RNDN);
   return;
 }
 
 void stupid3(mpfr_t res, mp_prec_t prec) {
+  (void)prec; /* Avoiding "unused parameter" warning */
   mpfr_set_ui(res, 0, GMP_RNDN);
   return;
 }
 
 void stupid4(mpfr_t res, mp_prec_t prec) {
+  (void)prec; /* Avoiding "unused parameter" warning */
   mpfr_set_ui(res, 0, GMP_RNDN);
   return;
 }
 
 void stupid5(mpfr_t res, mp_prec_t prec) {
+  (void)prec; /* Avoiding "unused parameter" warning */
   mpfr_set_ui(res, 0, GMP_RNDN);
   return;
 }
 
 void stupid6(mpfr_t res, mp_prec_t prec) {
+  (void)prec; /* Avoiding "unused parameter" warning */
   mpfr_set_ui(res, 0, GMP_RNDN);
   return;
 }
 
 void stupid7(mpfr_t res, mp_prec_t prec) {
+  (void)prec; /* Avoiding "unused parameter" warning */
   mpfr_set_ui(res, 0, GMP_RNDN);
   return;
 }

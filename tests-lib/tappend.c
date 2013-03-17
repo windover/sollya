@@ -4,6 +4,8 @@
 
 int callback(sollya_msg_t msg, void *data) {
   int message = sollya_lib_get_msg_id(msg);
+  (void)data; /* Avoiding "unused parameter" warning */
+
   switch(message) {
   case SOLLYA_MSG_EXPR_NOT_CORRECTLY_TYPED:
     sollya_lib_printf("Caught the message that a certain expression is not correctly typed.\n");

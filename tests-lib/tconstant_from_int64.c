@@ -2,7 +2,7 @@
 #include <inttypes.h>
 
 int main(void) {
-  sollya_obj_t a, a2, prec;
+  sollya_obj_t a, prec;
   int64_t b;
 
   sollya_lib_init();

@@ -20,7 +20,11 @@ int boolean_not_eq(sollya_obj_t a, sollya_obj_t b) {
   return res;
 }
 
-int callback(sollya_msg_t msg, void *data) {return 0;}
+int callback(sollya_msg_t msg, void *data) {
+  (void)msg; /* Avoiding "unused parameter" warning */
+  (void)data; /* Avoiding "unused parameter" warning */
+  return 0;
+}
 
 int main(void) {
   sollya_obj_t f, n, I, w, quality, p, res, pold32, pold64, psvn, prec;

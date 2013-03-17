@@ -13,7 +13,8 @@ int myReallocWithSizeUsed = 0;
 int myFreeWithSizeUsed = 0;
 
 int callback(sollya_msg_t msg, void *data) {
-  int message = sollya_lib_get_msg_id(msg);
+  (void)msg; /* Avoiding "unused parameter" warning */
+  (void)data; /* Avoiding "unused parameter" warning */
   return 0;
 }
 

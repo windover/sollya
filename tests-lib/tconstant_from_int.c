@@ -1,7 +1,7 @@
 #include <sollya.h>
 
 int main(void) {
-  sollya_obj_t a, a2, prec;
+  sollya_obj_t a, prec;
   int b;
 
   sollya_lib_init();

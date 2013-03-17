@@ -3,6 +3,8 @@
 #define NB_OF_TESTS 12
 
 int callback(sollya_msg_t msg, void *data) {
+  (void)data; /* Avoiding "unused parameter" warning */
+
   int message = sollya_lib_get_msg_id(msg);
   switch(message) {
   case SOLLYA_MSG_STURM_COEFF_NOT_CONSTANT_NOR_RATIONAL_ROUNDING:

@@ -5,6 +5,8 @@
 int flag = 0;
 
 int special_callback(sollya_msg_t msg, void *data) {
+  (void)data; /* Avoiding "unused parameter" warning */
+
   sollya_lib_printf("Testing a tricky expression. Might return INT64_MAX with an overflow message or return anything with a message stating that faithful rounding was not possible... ");
   if( sollya_lib_get_msg_id(msg) == SOLLYA_MSG_EXPR_SHOULD_BE_CONSTANT_AND_IS_NOT_FAITHFUL )
     sollya_lib_printf("OK\n");
@@ -96,7 +98,7 @@ int main(void) {
   /* A constant close to an overflow */
   res = -17;
   a = SOLLYA_CONST(1);
-  for (i=1;i<=sizeof(int64_t)*8-1;i++) a = SOLLYA_MUL(a, SOLLYA_CONST(2));
+  for (i=1;(unsigned)(i)+1<=sizeof(int64_t)*8;i++) a = SOLLYA_MUL(a, SOLLYA_CONST(2));
   a = SOLLYA_SUB(a, SOLLYA_CONST(1));
   if (!sollya_lib_get_constant_as_int64(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
@@ -109,7 +111,7 @@ int main(void) {
   /* A constant that overflows */
   res = -17;
   a = SOLLYA_CONST(1);
-  for (i=1;i<=sizeof(int64_t)*8-1;i++) a = SOLLYA_MUL(a, SOLLYA_CONST(2));
+  for (i=1;(unsigned)(i)+1<=sizeof(int64_t)*8;i++) a = SOLLYA_MUL(a, SOLLYA_CONST(2));
   if (!sollya_lib_get_constant_as_int64(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {

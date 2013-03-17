@@ -27,7 +27,7 @@ int counter = 0;
 
 size_t my_strnlen(const char *s, size_t lngmax) {
   int i;
-  for(i=0;i<lngmax;i++) {
+  for(i=0;(unsigned)(i)<lngmax;i++) {
     if (s[i]=='\0') return strlen(s);
   }
   return lngmax;
@@ -217,7 +217,7 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
   clean(test1, test2, result);                                          \
   sprintf(format, "|%%%s*.*%s%c| %%%sn %%s |%%%s*.*%s%c| %%%sn %%s", flags, length[L], conv[c], length[L], flags, length[L], conv[c], length[L]); \
   for(i=0;i<2;i++) r[i] = prntf[i](result[i], format, width[w], prec[p], (cast)(val[v]), (cast *)(test1[i]+9), str, width[w], prec[p], (cast)(val[v]), (cast *)(test2[i]+9), str); \
-  if(!verif(r, result, test1, test2, 2*L+(!c)))  printf("Tested format string was: \"%s\", %d, %d\n\n", format, width[w], prec[p], val[v]);
+  if(!verif(r, result, test1, test2, 2*L+(!c)))  printf("Tested format string was: \"%s\", %d, %d, %d\n\n", format, width[w], prec[p], val[v]);
 
 
 

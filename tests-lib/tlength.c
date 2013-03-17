@@ -1,6 +1,8 @@
 #include <sollya.h>
 
 int callback(sollya_msg_t msg, void *data) {
+  (void)data; /* Avoiding "unused parameter" warning */
+
   int message = sollya_lib_get_msg_id(msg);
   if (message == SOLLYA_MSG_EXPR_NOT_CORRECTLY_TYPED)
     sollya_lib_printf("The following test is not correctly typed\n");

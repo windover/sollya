@@ -2,11 +2,13 @@
 #include <mpfr.h>
 
 void stupid1(mpfr_t res, mp_prec_t prec) {
+  (void)prec; /* Avoiding "unused parameter" warning */
   mpfr_set_ui(res, 0, GMP_RNDN);
   return;
 }
 
 void stupid2(mpfr_t res, mp_prec_t prec) {
+  (void)prec; /* Avoiding "unused parameter" warning */
   mpfr_set_ui(res, 1, GMP_RNDN);
   return;
 }

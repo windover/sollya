@@ -2,6 +2,8 @@
 #include <sollya.h>
 
 int callback(sollya_msg_t msg, void *data) {
+  (void)data; /* Avoiding "unused parameter" warning */
+
   int message = sollya_lib_get_msg_id(msg);
   if (message==SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST)
     sollya_lib_printf("Caught the message about the fact that faithful rounding has occurred.\n");

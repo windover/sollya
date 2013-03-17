@@ -3,11 +3,15 @@
 #include <mpfi.h>
 
 int stupid1(mpfi_t result, mpfi_t x, int n) {
+  (void)x; /* Avoiding "unused parameter" warning */
+  (void)n; /* Avoiding "unused parameter" warning */
   mpfi_set_ui(result, 0);
   return 0;
 }
 
 int stupid2(mpfi_t result, mpfi_t x, int n) {
+  (void)x; /* Avoiding "unused parameter" warning */
+  (void)n; /* Avoiding "unused parameter" warning */
   mpfi_set_ui(result, 1);
   return 0;
 }

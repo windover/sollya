@@ -81,41 +81,57 @@ int myownlog(mpfi_t result, mpfi_t x, int n) {
 }
 
 int stupid1(mpfi_t result, mpfi_t x, int n) {
+  (void)x; /* Avoiding "unused parameter" warning */
+  (void)n; /* Avoiding "unused parameter" warning */
   mpfi_set_ui(result, 0);
   return 0;
 }
 
 int stupid2(mpfi_t result, mpfi_t x, int n) {
+  (void)x; /* Avoiding "unused parameter" warning */
+  (void)n; /* Avoiding "unused parameter" warning */
   mpfi_set_ui(result, 0);
   return 0;
 }
 
 int stupid3(mpfi_t result, mpfi_t x, int n) {
+  (void)x; /* Avoiding "unused parameter" warning */
+  (void)n; /* Avoiding "unused parameter" warning */
   mpfi_set_ui(result, 0);
   return 0;
 }
 
 int stupid4(mpfi_t result, mpfi_t x, int n) {
+  (void)x; /* Avoiding "unused parameter" warning */
+  (void)n; /* Avoiding "unused parameter" warning */
   mpfi_set_ui(result, 0);
   return 0;
 }
 
 int stupid5(mpfi_t result, mpfi_t x, int n) {
+  (void)x; /* Avoiding "unused parameter" warning */
+  (void)n; /* Avoiding "unused parameter" warning */
   mpfi_set_ui(result, 0);
   return 0;
 }
 
 int stupid6(mpfi_t result, mpfi_t x, int n) {
+  (void)x; /* Avoiding "unused parameter" warning */
+  (void)n; /* Avoiding "unused parameter" warning */
   mpfi_set_ui(result, 0);
   return 0;
 }
 
 int stupid7(mpfi_t result, mpfi_t x, int n) {
+  (void)x; /* Avoiding "unused parameter" warning */
+  (void)n; /* Avoiding "unused parameter" warning */
   mpfi_set_ui(result, 0);
   return 0;
 }
 
 int stupid8(mpfi_t result, mpfi_t x, int n) {
+  (void)x; /* Avoiding "unused parameter" warning */
+  (void)n; /* Avoiding "unused parameter" warning */
   mpfi_set_ui(result, 3);
   return 0;
 }
