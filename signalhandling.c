@@ -47,6 +47,8 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
+#define _POSIX_SOURCE
+
 #include "signalhandling.h"
 #include <stdlib.h>
 #include <signal.h>

@@ -343,7 +343,7 @@ static inline int specialSnFprintf(FILE *fd, int useFd, char *str, size_t size, 
 
   if (offset < 0) return offset;
 
-  if (offset > size) {
+  if ((size_t) offset > size) {
     actualSize = 0;
     actualStr = NULL;
   } else {
