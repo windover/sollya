@@ -66,7 +66,7 @@ int myownlog(mpfi_t result, mpfi_t x, int n) {
     return 0;
   }
 
-  // else
+  /* else */
   mpfr_t a,b;
   mpfr_init2(a, mpfi_get_prec(result));
   mpfr_init2(b, mpfi_get_prec(result));
