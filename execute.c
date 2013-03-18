@@ -110,8 +110,8 @@ extern void miniyylex_destroy(void *);
 extern void *startMiniparser(void *scanner, char *str);
 extern void endMiniparser(void *buf, void *scanner);
 
-extern void initSignalHandler();
-extern void blockSignals();
+extern void initSignalHandlerCounted();
+extern void blockSignalsCounted();
 
 node *makeExternalProcedureUsage(libraryProcedure *);
 node *copyThing(node *);
@@ -267,7 +267,7 @@ node *parseStringInternal(char *str) {
   void *buffer;
   char *myStr;
 
-  blockSignals();
+  blockSignalsCounted();
   myStr = (char *) safeCalloc(strlen(str)+1,sizeof(char));
   strcpy(myStr,str);
   oldMinitree = minitree;
@@ -307,7 +307,7 @@ node *parseStringInternal(char *str) {
   miniparserEofReached = oldMiniparserEofReached;
   miniparserSemicolonAtEnd = oldMiniparserSemicolonAtEnd;
   safeFree(myStr);
-  initSignalHandler();
+  initSignalHandlerCounted();
 
   return result;
 }
@@ -348,7 +348,7 @@ void executeFile(FILE *fd) {
 
   commands = NULL;
 
-  blockSignals();
+  blockSignalsCounted();
   oldParsedThingIntern = parsedThingIntern;
   internyylex_init(&myScanner);
   internyyset_in(fd, myScanner);
@@ -364,7 +364,7 @@ void executeFile(FILE *fd) {
 
   internyylex_destroy(myScanner);
   parsedThingIntern = oldParsedThingIntern;
-  initSignalHandler();
+  initSignalHandlerCounted();
   
   commands2 = copyChain(commands, copyThingOnVoid);
   freeChain(commands, freeThingOnVoid);

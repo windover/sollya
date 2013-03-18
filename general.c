@@ -56,6 +56,8 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
+#include "signalhandling.h"
+
 #define _POSIX_SOURCE
 
 #include <sys/types.h>
@@ -66,7 +68,6 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <signal.h>
 #include <setjmp.h>
 #include <stdarg.h>
 #include "main.h"
@@ -89,14 +90,6 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #if HAVE_BACKTRACE
 #include <execinfo.h>
 #endif
-
-/* Some internal signal numbers */
-
-#define HANDLING_SIGINT  1
-#define HANDLING_SIGSEGV 2
-#define HANDLING_SIGBUS  3
-#define HANDLING_SIGFPE  4
-#define HANDLING_SIGPIPE 5
 
 /* STATE OF THE TOOL */
 
@@ -979,37 +972,6 @@ void popTimeCounter(char *s) {
   return;
 }
 
-void signalHandler(int i) {
-
-  switch (i) {
-  case SIGINT: 
-    handlingCtrlC = 1;
-    lastHandledSignal = HANDLING_SIGINT;
-    break;
-  case SIGSEGV:
-    lastHandledSignal = HANDLING_SIGSEGV;
-    break;
-  case SIGBUS:
-    lastHandledSignal = HANDLING_SIGBUS;
-    break;
-  case SIGFPE:
-    lastHandledSignal = HANDLING_SIGFPE;
-    break;
-  case SIGPIPE:
-    lastHandledSignal = HANDLING_SIGPIPE;
-    break;
-  default:
-    sollyaFprintf(stderr,"Error: must handle an unknown signal.\n");
-    exit(1);
-  }
-  if (recoverEnvironmentReady) {
-    if (exitInsteadOfRecover) {
-      sollyaFprintf(stderr,"Error: the recover environment has not been initialized. Exiting.\n");
-      exit(1);
-    }
-    longjmp(recoverEnvironment,1);
-  } 
-}
 
 void printPrompt(void) {
   if (eliminatePromptBackup) return;
@@ -1020,48 +982,6 @@ void printPrompt(void) {
     fflush(NULL);
   }
   sollyaPrintf("> ");
-}
-
-void initSignalHandler() {
-  sigset_t mask;
-  struct sigaction action;
-
-  if (libraryMode) return;
-
-  action.sa_handler = signalHandler;
-  sigemptyset(&(action.sa_mask));
-  sigaddset(&(action.sa_mask),SIGINT);
-  sigaddset(&(action.sa_mask),SIGSEGV);
-  sigaddset(&(action.sa_mask),SIGBUS);
-  sigaddset(&(action.sa_mask),SIGFPE);
-  sigaddset(&(action.sa_mask),SIGPIPE);
-  sigaction(SIGINT, &action, NULL);
-  sigaction(SIGSEGV, &action, NULL);
-  sigaction(SIGBUS, &action, NULL);
-  sigaction(SIGFPE, &action, NULL);
-  sigaction(SIGPIPE, &action, NULL);
-
-  sigemptyset(&mask);
-  sigaddset(&mask,SIGINT);
-  sigaddset(&mask,SIGSEGV);
-  sigaddset(&mask,SIGBUS);
-  sigaddset(&mask,SIGFPE);
-  sigaddset(&mask,SIGPIPE);
-  sigprocmask(SIG_UNBLOCK, &mask, NULL);
-}
-
-void blockSignals() {
-  sigset_t mask;
-
-  if (libraryMode) return;
-
-  sigemptyset(&mask);
-  sigaddset(&mask,SIGINT);
-  sigaddset(&mask,SIGSEGV);
-  sigaddset(&mask,SIGBUS);
-  sigaddset(&mask,SIGFPE);
-  sigaddset(&mask,SIGPIPE);
-  sigprocmask(SIG_BLOCK, &mask, NULL);
 }
 
 void freeTool() {

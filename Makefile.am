@@ -49,6 +49,8 @@ external.c \
 external.h \
 general.c \
 general.h \
+signalhandling.c \
+signalhandling.h \
 implement.c \
 implement.h \
 implementconst.c \
@@ -129,6 +131,8 @@ external.c \
 external.h \
 general.c \
 general.h \
+signalhandling.c \
+signalhandling.h \
 implement.c \
 implement.h \
 implementconst.c \

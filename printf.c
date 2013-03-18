@@ -342,9 +342,14 @@ static inline int specialSnFprintf(FILE *fd, int useFd, char *str, size_t size, 
   }
 
   if (offset < 0) return offset;
-  
-  actualSize = size - offset;
-  actualStr = str + offset;
+
+  if (offset > size) {
+    actualSize = 0;
+    actualStr = NULL;
+  } else {
+    actualSize = size - offset;
+    actualStr = str + offset;
+  }
 
   va_start(varlist, format);
 
