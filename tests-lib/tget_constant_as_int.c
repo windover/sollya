@@ -95,7 +95,7 @@ int main(void) {
   /* A constant close to an overflow */
   res = -17;
   a = SOLLYA_CONST(1);
-  for (i=1;(unsigned)(i)+1<=sizeof(int)*8;i++) a = SOLLYA_MUL(a, SOLLYA_CONST(2));
+  for (i=1;(size_t)(i)+1<=sizeof(int)*8;i++) a = SOLLYA_MUL(a, SOLLYA_CONST(2));
   a = SOLLYA_SUB(a, SOLLYA_CONST(1));
   if (!sollya_lib_get_constant_as_int(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
@@ -108,7 +108,7 @@ int main(void) {
   /* A constant that overflows */
   res = -17;
   a = SOLLYA_CONST(1);
-  for (i=1;(unsigned)(i)+1<=sizeof(int)*8;i++) a = SOLLYA_MUL(a, SOLLYA_CONST(2));
+  for (i=1;(size_t)(i)+1<=sizeof(int)*8;i++) a = SOLLYA_MUL(a, SOLLYA_CONST(2));
   if (!sollya_lib_get_constant_as_int(&res, a))
     sollya_lib_printf("%b is not a constant.\n\n", a);
   else {

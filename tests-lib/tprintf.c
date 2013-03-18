@@ -27,7 +27,7 @@ int counter = 0;
 
 size_t my_strnlen(const char *s, size_t lngmax) {
   int i;
-  for(i=0;(unsigned)(i)<lngmax;i++) {
+  for(i=0;(size_t)(i)<lngmax;i++) {
     if (s[i]=='\0') return strlen(s);
   }
   return lngmax;

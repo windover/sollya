@@ -48,7 +48,7 @@ void read_and_print_file(char *filename) {
       readBuffer[i] = '\0';
     }
     readChars = fread(readBuffer, sizeof(char), READBUFFERSIZE - 1, fd);
-    for (i=0;(unsigned)(i)<readChars;i++) {
+    for (i=0;(size_t)(i)<readChars;i++) {
       if (readBuffer[i] == '\0') readBuffer[i] = ' ';
     }
     printf("%s",readBuffer);
