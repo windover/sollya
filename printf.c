@@ -360,7 +360,7 @@ static inline int specialSnFprintf(FILE *fd, int useFd, char *str, size_t size, 
       res = vsnprintf(actualStr, 0, format, varlist);
     }
   } else {
-    res = vsprintf(actualStr, format, varlist);
+    res = vsprintf(str + offset, format, varlist);
   }
 
   va_end(varlist);
