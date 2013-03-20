@@ -1,3 +1,4 @@
+#define _BSD_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include <inttypes.h>
@@ -79,7 +80,7 @@ void clean(char tab1[2][SIZE], char tab2[2][SIZE], char res[2][BUFSIZE]) {
 */
 int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][SIZE], int length, int all_tests, size_t size_snprintf) {
   int test = 1;
-  int i,j;
+  int i;
   int counter[2];
   char test3[2][SIZE];
   char *ptr;
@@ -104,8 +105,8 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
       if (!test) printf("The pointer should have been left intact by sollya_lib_snprintf, but is now indeed %s\n", result[1]);
     }
     else {
-      if (counter[0] != size_snprintf-1) { test = 0; printf("snprintf wrote %d characters but at most %d characters should have been written. ", counter[0], size_snprintf-1); }
-      if (counter[1] != size_snprintf-1) { test = 0; printf("sollya_lib_snprintf wrote %d characters but (at most) %d characters should have been written. ", counter[0], size_snprintf-1); }
+      if (counter[0] != size_snprintf-1) { test = 0; printf("snprintf wrote %d characters but at most %d characters should have been written. ", counter[0], (int)(size_snprintf)-1); }
+      if (counter[1] != size_snprintf-1) { test = 0; printf("sollya_lib_snprintf wrote %d characters but (at most) %d characters should have been written. ", counter[0], (int)(size_snprintf)-1); }
     }
   }
   if (r[0] != r[1]) { test = 0; printf("sprintf returned %d and sollya_lib_printf returned %d. ", r[0], r[1]); }
@@ -399,9 +400,9 @@ int main(void) {
       }
     }
   }
-
-
   printf("Performed %d tests.\n", counter);
+
+  "%{-#+ 0}{-17, 0, 1, 17, *}.{0, -5, 1, 17, *}{bvwr}"
   sollya_lib_close();
   return 0;
 }
