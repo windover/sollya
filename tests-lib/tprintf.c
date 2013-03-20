@@ -43,9 +43,19 @@ int wrapper_sollya_sprintf(char *str, const char *format, ...) {
   return r;
 }
 
+int wrapper_sollya_snprintf(char *str, size_t size, const char *format, ...) {
+  va_list va;
+  int r;
+  counter++;
+  va_start(va, format);
+  r = sollya_lib_v_snprintf(str, size, format, va);
+  va_end(va);
+  return r;
+}
+
 void clean_simple_tab(char tab[2][SIZE]) {
   int i,j;
-  for(i=0; i<2; i++) 
+  for(i=0; i<2; i++)
     for(j=0;j<SIZE;j++) tab[i][j] = 5;
 }
 void clean(char tab1[2][SIZE], char tab2[2][SIZE], char res[2][BUFSIZE]) {
@@ -54,14 +64,22 @@ void clean(char tab1[2][SIZE], char tab2[2][SIZE], char res[2][BUFSIZE]) {
   clean_simple_tab(tab1);
   clean_simple_tab(tab2);
 
-  for(i=0; i<2; i++) 
-    for(j=0;j<BUFSIZE;j++) res[i][j]='\0';
+  for(i=0; i<2; i++)
+    for(j=0;j<BUFSIZE;j++) res[i][j]='a';
 
 }
 
-int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][SIZE], int length) {
+/* Variable all_tests is a boolean indicating if all tests should be performed.
+   Typically, if snprintf has been used and the output is truncated, some tests
+   should be avoided: the returned value is not equal to the length of the
+   written string for instance, which is one of the tests performed.
+
+   In the case when not all tests are performed, size_snprintf indicates what
+   size argument were passed to snprintf, allowing for specific tests.
+*/
+int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][SIZE], int length, int all_tests, size_t size_snprintf) {
   int test = 1;
-  int i;
+  int i,j;
   int counter[2];
   char test3[2][SIZE];
   char *ptr;
@@ -72,88 +90,108 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
     if (counter[i]==BUFSIZE) counter[i] = -1;
   }
 
-  if (counter[0] != r[0]) { test = 0; printf("sprintf returned %d but %d characters have been written. ", r[0], counter[0]); }
-  if (counter[1] != r[1]) { test = 0; printf("sollya_lib_sprintf returned %d but %d characters have been written. ", r[1], counter[1]); }
+  if (all_tests) {
+    if (counter[0] != r[0]) { test = 0; printf("sprintf returned %d but %d characters have been written. ", r[0], counter[0]); }
+    if (counter[1] != r[1]) { test = 0; printf("sollya_lib_sprintf returned %d but %d characters have been written. ", r[1], counter[1]); }
+  }
+  else {
+    if (size_snprintf == 0) {
+      for(i=0;i<BUFSIZE-1;i++) { if (result[0][i] != 'a') test=0;}
+      if (result[0][BUFSIZE-1] != '\0') test = 0;
+      if (!test) printf("The pointer should have been left intact by snprintf, but is now indeed %s\n", result[0]);
+      for(i=0;i<BUFSIZE-1;i++) { if (result[1][i] != 'a') test=0;}
+      if (result[1][BUFSIZE-1] != '\0') test = 0;
+      if (!test) printf("The pointer should have been left intact by sollya_lib_snprintf, but is now indeed %s\n", result[1]);
+    }
+    else {
+      if (counter[0] != size_snprintf-1) { test = 0; printf("snprintf wrote %d characters but at most %d characters should have been written. ", counter[0], size_snprintf-1); }
+      if (counter[1] != size_snprintf-1) { test = 0; printf("sollya_lib_snprintf wrote %d characters but (at most) %d characters should have been written. ", counter[0], size_snprintf-1); }
+    }
+  }
   if (r[0] != r[1]) { test = 0; printf("sprintf returned %d and sollya_lib_printf returned %d. ", r[0], r[1]); }
 
   for(i=0;i<SIZE;i++) {
-    if(test1[0][i] != test1[1][i]) { 
+    if(test1[0][i] != test1[1][i]) {
       test = 0;
       printf("The first %%n does not lead to the same value with both implementation. ");
       break;
     }
   }
 
-  clean_simple_tab(test3);
-  ptr = strstr(result[0], " Hello");
-  if (ptr==NULL) {
-    test = 0;
-    printf("The string returned by sprintf does not contain ' Hello'. ");
-  }
-  else {
-    n = ptr-result[0];
-    switch(length) {
-    case 0: *((hh_t *)(test3[0]+9)) = (hh_t)n; break;
-    case 1: *((hhu_t *)(test3[0]+9)) = (hhu_t)n; break;
-    case 2: *((h_t *)(test3[0]+9)) = (h_t)n; break;
-    case 3: *((hu_t *)(test3[0]+9)) = (hu_t)n; break;
-    case 4: *((l_t *)(test3[0]+9)) = (l_t)n; break;
-    case 5: *((lu_t *)(test3[0]+9)) = (lu_t)n; break;
-    case 6: *((ll_t *)(test3[0]+9)) = (ll_t)n; break;
-    case 7: *((llu_t *)(test3[0]+9)) = (llu_t)n; break;
-    case 8: *((j_t *)(test3[0]+9)) = (j_t)n; break;
-    case 9: *((ju_t *)(test3[0]+9)) = (ju_t)n; break;
-    case 10: *((z_t *)(test3[0]+9)) = (z_t)n; break;
-    case 11: *((zu_t *)(test3[0]+9)) = (zu_t)n; break;
-    default: *((t_t *)(test3[0]+9)) = (t_t)n; break;
-    }
-  }
-
-  for(i=0;i<SIZE;i++) {
-    if(test1[0][i] != test3[0][i]) { 
+  if (all_tests) {
+    clean_simple_tab(test3);
+    ptr = strstr(result[0], " Hello");
+    if (ptr==NULL) {
       test = 0;
-      printf("The first %%n of sprintf did not return the expected value (%d). ", n);
-      break;
+      printf("The string returned by sprintf does not contain ' Hello'. ");
+    }
+    else {
+      n = ptr-result[0];
+      switch(length) {
+      case 0: *((hh_t *)(test3[0]+9)) = (hh_t)n; break;
+      case 1: *((hhu_t *)(test3[0]+9)) = (hhu_t)n; break;
+      case 2: *((h_t *)(test3[0]+9)) = (h_t)n; break;
+      case 3: *((hu_t *)(test3[0]+9)) = (hu_t)n; break;
+      case 4: *((l_t *)(test3[0]+9)) = (l_t)n; break;
+      case 5: *((lu_t *)(test3[0]+9)) = (lu_t)n; break;
+      case 6: *((ll_t *)(test3[0]+9)) = (ll_t)n; break;
+      case 7: *((llu_t *)(test3[0]+9)) = (llu_t)n; break;
+      case 8: *((j_t *)(test3[0]+9)) = (j_t)n; break;
+      case 9: *((ju_t *)(test3[0]+9)) = (ju_t)n; break;
+      case 10: *((z_t *)(test3[0]+9)) = (z_t)n; break;
+      case 11: *((zu_t *)(test3[0]+9)) = (zu_t)n; break;
+      default: *((t_t *)(test3[0]+9)) = (t_t)n; break;
+      }
+    }
+
+    for(i=0;i<SIZE;i++) {
+      if(test1[0][i] != test3[0][i]) {
+        test = 0;
+        printf("The first %%n of sprintf did not return the expected value (%d). ", n);
+        break;
+      }
     }
   }
 
   for(i=0;i<SIZE;i++) {
-    if(test2[0][i] != test2[1][i]) { 
+    if(test2[0][i] != test2[1][i]) {
       test = 0;
       printf("The second %%n does not lead to the same value with both implementation. ");
       break;
     }
   }
 
-  ptr = strstr(result[0]+n+1, " Hello");
-  if (ptr==NULL) {
-    test = 0;
-    printf("The string returned by sprintf does not contain two instances of ' Hello'. ");
-  }
-  else {
-    n = ptr-result[0];
-    switch(length) {
-    case 0: *((hh_t *)(test3[1]+9)) = (hh_t)n; break;
-    case 1: *((hhu_t *)(test3[1]+9)) = (hhu_t)n; break;
-    case 2: *((h_t *)(test3[1]+9)) = (h_t)n; break;
-    case 3: *((hu_t *)(test3[1]+9)) = (hu_t)n; break;
-    case 4: *((l_t *)(test3[1]+9)) = (l_t)n; break;
-    case 5: *((lu_t *)(test3[1]+9)) = (lu_t)n; break;
-    case 6: *((ll_t *)(test3[1]+9)) = (ll_t)n; break;
-    case 7: *((llu_t *)(test3[1]+9)) = (llu_t)n; break;
-    case 8: *((j_t *)(test3[1]+9)) = (j_t)n; break;
-    case 9: *((ju_t *)(test3[1]+9)) = (ju_t)n; break;
-    case 10: *((z_t *)(test3[1]+9)) = (z_t)n; break;
-    case 11: *((zu_t *)(test3[1]+9)) = (zu_t)n; break;
-    default: *((t_t *)(test3[1]+9)) = (t_t)n; break;
-    }
-  }
-
-  for(i=0;i<SIZE;i++) {
-    if(test2[0][i] != test3[1][i]) { 
+  if (all_tests) {
+    ptr = strstr(result[0]+n+1, " Hello");
+    if (ptr==NULL) {
       test = 0;
-      printf("The second %%n of sprintf did not return the expected value (%d). ", n);
-      break;
+      printf("The string returned by sprintf does not contain two instances of ' Hello'. ");
+    }
+    else {
+      n = ptr-result[0];
+      switch(length) {
+      case 0: *((hh_t *)(test3[1]+9)) = (hh_t)n; break;
+      case 1: *((hhu_t *)(test3[1]+9)) = (hhu_t)n; break;
+      case 2: *((h_t *)(test3[1]+9)) = (h_t)n; break;
+      case 3: *((hu_t *)(test3[1]+9)) = (hu_t)n; break;
+      case 4: *((l_t *)(test3[1]+9)) = (l_t)n; break;
+      case 5: *((lu_t *)(test3[1]+9)) = (lu_t)n; break;
+      case 6: *((ll_t *)(test3[1]+9)) = (ll_t)n; break;
+      case 7: *((llu_t *)(test3[1]+9)) = (llu_t)n; break;
+      case 8: *((j_t *)(test3[1]+9)) = (j_t)n; break;
+      case 9: *((ju_t *)(test3[1]+9)) = (ju_t)n; break;
+      case 10: *((z_t *)(test3[1]+9)) = (z_t)n; break;
+      case 11: *((zu_t *)(test3[1]+9)) = (zu_t)n; break;
+      default: *((t_t *)(test3[1]+9)) = (t_t)n; break;
+      }
+    }
+
+    for(i=0;i<SIZE;i++) {
+      if(test2[0][i] != test3[1][i]) {
+        test = 0;
+        printf("The second %%n of sprintf did not return the expected value (%d). ", n);
+        break;
+      }
     }
   }
 
@@ -190,7 +228,7 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
     for(i=0;i<SIZE-1;i++) printf("%hhu-", test3[1][i]);
     printf("%hhu. [Expected second %%n returned by sprintf]\n", test3[1][SIZE-1]);
   }
-  
+
   return test;
 }
 
@@ -200,25 +238,97 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
     sprintf(format, "|%%%s%d.%.0d%s%c| %%%sn %%s |%%%s%d.%.0d%s%c| %%%sn %%s", \
             flags, width[w], prec[p], length[L], conv[c], length[L],    \
             flags, width[w], prec[p], length[L], conv[c], length[L]);   \
-    for(i=0;i<2;i++) r[i] = prntf[i](result[i], format,  (cast)(val[v]), (cast *)(test1[i]+9), str, (cast)(val[v]), (cast *)(test2[i]+9), str); \
-    if(!verif(r, result, test1, test2, 2*L+(!c)))  printf("Tested format string was: \"%s\", %d\n\n", format, val[v]); \
+    for(i=0;i<2;i++)                                                    \
+      r[i] = prntf[i](result[i], format,                                \
+                      (cast)(val[v]), (cast *)(test1[i]+9), str,        \
+                      (cast)(val[v]), (cast *)(test2[i]+9), str);       \
+    if(!verif(r, result, test1, test2, 2*L+(!c), 1, 17))                \
+      printf("Tested format string was: \"%s\", %d\n\n", format, val[v]); \
+    snlength[3] = (size_t)(r[0]); snlength[4] = (size_t)(r[0])+1;       \
+    for(j=0;j<5;j++) {                                                  \
+      clean(test1, test2, result);                                      \
+      for(i=0;i<2;i++) {                                                \
+        r[i] = snprntf[i]( (j==0)?NULL:result[i], snlength[j], format,  \
+                          (cast)(val[v]), (cast *)(test1[i]+9), str,    \
+                          (cast)(val[v]), (cast *)(test2[i]+9), str);   \
+        result[i][BUFSIZE-1] = '\0';                                    \
+      }                                                                 \
+      if(!verif(r, result, test1, test2, 2*L+(!c), (j==4), snlength[j])) \
+        printf("Tested format string was: \"%s\", %d\n\n", format, val[v]); \
+    }                                                                   \
+                                                                        \
+                                                                        \
                                                                         \
     clean(test1, test2, result);                                        \
-    sprintf(format, "|%%%s*.%.0d%s%c| %%%sn %%s |%%%s*.%.0d%s%c| %%%sn %%s", flags, prec[p], length[L], conv[c], length[L], flags, prec[p], length[L], conv[c], length[L]); \
-    for(i=0;i<2;i++) r[i] = prntf[i](result[i], format, width[w], (cast)(val[v]), (cast *)(test1[i] + 9), str, width[w], (cast)(val[v]), (cast *)(test2[i]+9), str); \
-    if(!verif(r, result, test1, test2, 2*L+(!c)))  printf("Tested format string was: \"%s\", %d, %d\n\n", format, width[w], val[v]); \
+    sprintf(format, "|%%%s*.%.0d%s%c| %%%sn %%s |%%%s*.%.0d%s%c| %%%sn %%s", \
+            flags, prec[p], length[L], conv[c], length[L],              \
+            flags, prec[p], length[L], conv[c], length[L]);             \
+    for(i=0;i<2;i++)                                                    \
+      r[i] = prntf[i](result[i], format,                                \
+                      width[w], (cast)(val[v]), (cast *)(test1[i]+9), str, \
+                      width[w], (cast)(val[v]), (cast *)(test2[i]+9), str); \
+    if(!verif(r, result, test1, test2, 2*L+(!c), 1, 17))                \
+      printf("Tested format string was: \"%s\", %d, %d\n\n", format, width[w], val[v]); \
+    snlength[3] = (size_t)(r[0]); snlength[4] = (size_t)(r[0])+1;       \
+    for(j=0;j<5;j++) {                                                  \
+      clean(test1, test2, result);                                      \
+      for(i=0;i<2;i++) {                                                \
+        r[i] = snprntf[i]( (j==0)?NULL:result[i], snlength[j], format,  \
+                           width[w], (cast)(val[v]), (cast *)(test1[i]+9), str, \
+                           width[w], (cast)(val[v]), (cast *)(test2[i]+9), str); \
+        result[i][BUFSIZE-1] = '\0';                                    \
+      }                                                                 \
+      if(!verif(r, result, test1, test2, 2*L+(!c), (j==4), snlength[j])) \
+        printf("Tested format string was: \"%s\", %d, %d\n\n", format, width[w], val[v]); \
+    }                                                                   \
   }                                                                     \
                                                                         \
   clean(test1, test2, result);                                          \
-  sprintf(format, "|%%%s%d.*%s%c| %%%sn %%s |%%%s%d.*%s%c| %%%sn %%s", flags, width[w], length[L], conv[c], length[L], flags, width[w], length[L], conv[c], length[L]); \
-  for(i=0;i<2;i++) r[i] = prntf[i](result[i], format, prec[p], (cast)(val[v]), (cast *)(test1[i]+9), str, prec[p], (cast)(val[v]), (cast *)(test2[i]+9), str); \
-  if(!verif(r, result, test1, test2, 2*L+(!c)))  printf("Tested format string was: \"%s\", %d, %d\n\n", format, prec[p], val[v]); \
+  sprintf(format, "|%%%s%d.*%s%c| %%%sn %%s |%%%s%d.*%s%c| %%%sn %%s",  \
+          flags, width[w], length[L], conv[c], length[L],               \
+          flags, width[w], length[L], conv[c], length[L]);              \
+  for(i=0;i<2;i++)                                                      \
+    r[i] = prntf[i](result[i], format,                                  \
+                    prec[p], (cast)(val[v]), (cast *)(test1[i]+9), str, \
+                    prec[p], (cast)(val[v]), (cast *)(test2[i]+9), str); \
+  if(!verif(r, result, test1, test2, 2*L+(!c), 1, 17))                  \
+    printf("Tested format string was: \"%s\", %d, %d\n\n", format, prec[p], val[v]); \
+  snlength[3] = (size_t)(r[0]); snlength[4] = (size_t)(r[0])+1;         \
+  for(j=0;j<5;j++) {                                                    \
+    clean(test1, test2, result);                                        \
+    for(i=0;i<2;i++) {                                                  \
+      r[i] = snprntf[i]( (j==0)?NULL:result[i], snlength[j], format,    \
+                         prec[p], (cast)(val[v]), (cast *)(test1[i]+9), str, \
+                         prec[p], (cast)(val[v]), (cast *)(test2[i]+9), str); \
+      result[i][BUFSIZE-1] = '\0';                                      \
+    }                                                                   \
+    if(!verif(r, result, test1, test2, 2*L+(!c), (j==4), snlength[j]))  \
+      printf("Tested format string was: \"%s\", %d, %d\n\n", format, prec[p], val[v]); \
+  }                                                                     \
+                                                                        \
                                                                         \
   clean(test1, test2, result);                                          \
-  sprintf(format, "|%%%s*.*%s%c| %%%sn %%s |%%%s*.*%s%c| %%%sn %%s", flags, length[L], conv[c], length[L], flags, length[L], conv[c], length[L]); \
-  for(i=0;i<2;i++) r[i] = prntf[i](result[i], format, width[w], prec[p], (cast)(val[v]), (cast *)(test1[i]+9), str, width[w], prec[p], (cast)(val[v]), (cast *)(test2[i]+9), str); \
-  if(!verif(r, result, test1, test2, 2*L+(!c)))  printf("Tested format string was: \"%s\", %d, %d, %d\n\n", format, width[w], prec[p], val[v]);
-
+  sprintf(format, "|%%%s*.*%s%c| %%%sn %%s |%%%s*.*%s%c| %%%sn %%s",    \
+          flags, length[L], conv[c], length[L],                         \
+          flags, length[L], conv[c], length[L]);                        \
+  for(i=0;i<2;i++)                                                      \
+    r[i] = prntf[i](result[i], format,                                  \
+                    width[w], prec[p], (cast)(val[v]), (cast *)(test1[i]+9), str, \
+                    width[w], prec[p], (cast)(val[v]), (cast *)(test2[i]+9), str); \
+  if(!verif(r, result, test1, test2, 2*L+(!c), 1, 17))                  \
+    printf("Tested format string was: \"%s\", %d, %d, %d\n\n", format, width[w], prec[p], val[v]); \
+  snlength[3] = (size_t)(r[0]); snlength[4] = (size_t)(r[0])+1;         \
+  for(j=0;j<5;j++) {                                                    \
+    clean(test1, test2, result);                                        \
+    for(i=0;i<2;i++) {                                                  \
+      r[i] = snprntf[i]( (j==0)?NULL:result[i], snlength[j], format,    \
+                         width[w], prec[p], (cast)(val[v]), (cast *)(test1[i]+9), str, \
+                         width[w], prec[p], (cast)(val[v]), (cast *)(test2[i]+9), str); \
+      result[i][BUFSIZE-1] = '\0';                                      \
+    }                                                                   \
+    if(!verif(r, result, test1, test2, 2*L+(!c), (j==4), snlength[j]))  \
+      printf("Tested format string was: \"%s\", %d, %d, %d\n\n", format, width[w], prec[p], val[v]); \
+  }                                                                     \
 
 
 int main(void) {
@@ -241,7 +351,10 @@ int main(void) {
   char result[2][BUFSIZE];
   int (*prntf[2])(char *str, const char *formats, ...);
   prntf[0] = sprintf; prntf[1] = wrapper_sollya_sprintf;
-  int i;
+  int (*snprntf[2])(char *str, size_t size, const char *formats, ...);
+  snprntf[0] = snprintf; snprntf[1] = wrapper_sollya_snprintf;
+  size_t snlength[5] = {0, 0, 1, 42, 42};
+  int i, j;
 
   sollya_lib_init();
 
