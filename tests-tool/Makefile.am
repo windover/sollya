@@ -12,7 +12,7 @@ MOSTLYCLEANFILES = $(TESTS)
 .PHONY: force_compilation$(EXEEXT)
 
 force_compilation$(EXEEXT):
-	@echo "Recompiling sollya";cd $(top_builddir); $(MAKE) sollya
+	@echo "Recompiling sollya";cd $(top_builddir); $(MAKE) sollya$(EXEEXT)
 
 $(TESTS): check.proto
 	@echo "Building "$@
