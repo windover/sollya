@@ -402,7 +402,6 @@ int main(void) {
   }
   printf("Performed %d tests.\n", counter);
 
-  "%{-#+ 0}{-17, 0, 1, 17, *}.{0, -5, 1, 17, *}{bvwr}"
   sollya_lib_close();
   return 0;
 }
