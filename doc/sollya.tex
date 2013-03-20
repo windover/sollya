@@ -1566,8 +1566,14 @@ If \verb|arg| really is a string, this function allocates enough memory on the h
 
 Since this function allocates memory on the heap, this memory should manually be cleared by the user with \verb|sollya_lib_free| once it becomes useless.
 
-\subsection{Converting a \sollya list to a C array}
-The function that allows user to recover a C array of \verb|sollya_obj_t| objects from a \sollya list \verb|arg|~is:\\
+\subsection{Recovering the contents of a \sollya list}
+It is possible to recover the $i$-th element of a list \verb|arg| (as one would do using \verb|arg[i]| withing \sollya) with the following function:\\
+\begin{center}
+  \verb|int sollya_lib_get_element_in_list(sollya_obj_t *res, sollya_obj_t arg, int i)|.
+\end{center}
+It returns a boolean integer: false means failure (i.e. \verb|arg| is not a list or the index is out of range) and true means success. In case of success, a copy of the $i$-th element of \verb|arg| is stored at the address referred to by \verb|res|. Since it is a copy, it should be cleared with \verb|sollya_lib_clear_obj| when it becomes useless. Please notice that this function works with regular lists as well as with end-elliptic lists, just as within the interactive tool.
+
+Another function allows user to recover all elements of a list in a single call. This function returns a C array of \verb|sollya_obj_t| objects and has the following signature:\\
 \begin{center}
 \verb|int sollya_lib_get_list_elements(sollya_obj_t **L, int *n, int *end_ell,|\\
 \verb|                                 sollya_obj_t arg).                      |
