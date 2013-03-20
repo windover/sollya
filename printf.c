@@ -156,7 +156,7 @@ static inline int analyzePrecModifier(uint64_t *analyzedPrec, int *analyzedStar,
 */
 static inline int analyzeWidthModifier(uint64_t *analyzedWidth, int *setAnalyzedWidth, int *analyzedStar, uint64_t *analyzedFlags, 
 				       char *startBuf, char *endBuf) {
-  char *myStartBuf, *myEndBuf;
+  char *myStartBuf, *myEndBuf, *c;
   char *curr;
   int gottaBreak;
   uint64_t flags, width;
@@ -271,6 +271,7 @@ static inline int analyzeWidthModifier(uint64_t *analyzedWidth, int *setAnalyzed
   *analyzedWidth = width;
   *setAnalyzedWidth = 1;
   *analyzedStar = 0;
+
   return 1;
 }
 
@@ -287,18 +288,18 @@ static inline char *justifyString(char *str, int justify, int justifyLeft, size_
   num = width - len;
 
   /* Allocate string for the output */
-  res = safeCalloc(num + 1, sizeof(char));
+  res = safeCalloc(width + 1, sizeof(char));
   
   /* Justify to the left or to the right */
   if (justifyLeft) {
     for (curr1=str,curr2=res;*curr1!='\0';curr1++,curr2++) {
       *curr2 = *curr1;
     }
-    for (;num>0;num--) {
+    for (;num>0;num--,curr2++) {
       *curr2 = ' ';
     }
   } else {
-    for (curr2=res;num>0;num--) {
+    for (curr2=res;num>0;num--,curr2++) {
       *curr2 = ' ';
     }
     for (curr1=str;*curr1!='\0';curr1++,curr2++) {
