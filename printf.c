@@ -156,7 +156,7 @@ static inline int analyzePrecModifier(uint64_t *analyzedPrec, int *analyzedStar,
 */
 static inline int analyzeWidthModifier(uint64_t *analyzedWidth, int *setAnalyzedWidth, int *analyzedStar, uint64_t *analyzedFlags, 
 				       char *startBuf, char *endBuf) {
-  char *myStartBuf, *myEndBuf, *c;
+  char *myStartBuf, *myEndBuf;
   char *curr;
   int gottaBreak;
   uint64_t flags, width;
