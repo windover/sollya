@@ -3538,6 +3538,8 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t 
 
   /* Check if one of the bounds is a NaN */
   if (mpfr_nan_p(yLeft) || mpfr_nan_p(yRight)) {
+    mpfr_clear(yLeft);
+    mpfr_clear(yRight);
     mpfr_set_nan(y);
     return SOLLYA_FP_FAILURE;
   }
@@ -3725,6 +3727,8 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y,
 
   /* Check if one of the bounds is a NaN */
   if (mpfr_nan_p(yLeft) || mpfr_nan_p(yRight)) {
+    mpfr_clear(yLeft);
+    mpfr_clear(yRight);
     mpfr_set_nan(y);
     return SOLLYA_FP_FAILURE;
   }

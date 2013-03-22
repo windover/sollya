@@ -31,6 +31,7 @@ int main(void) {
   b = INT64_C(4194304); /* Does not fit on 20 bits */
   a = sollya_lib_constant_from_int64(b);
   sollya_lib_printf("%b (should be %" PRId64 ")\n", a, (long long int)b);
+  sollya_lib_clear_obj(a);
 
   sollya_lib_close();
   return 0;

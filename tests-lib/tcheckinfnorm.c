@@ -1,6 +1,6 @@
 #include <sollya.h>
 
-#define A_DIM 7
+#define A_DIM 8
 
 int callback(sollya_msg_t msg, void *data) {
   (void)data; /* Avoiding "unused parameter" warning */
@@ -18,7 +18,6 @@ int callback(sollya_msg_t msg, void *data) {
 
 int main(void) {
   sollya_obj_t a[A_DIM];
-  sollya_obj_t res;
   int i;
 
   sollya_lib_init();
@@ -33,9 +32,9 @@ int main(void) {
   a[1] = sollya_lib_parse_string("[0;1.75]");
   a[2] = SOLLYA_CONST(1.0);
 
-  res = sollya_lib_checkinfnorm(a[0],a[1],a[2]);
+  a[A_DIM-1] = sollya_lib_checkinfnorm(a[0],a[1],a[2]);
   
-  sollya_lib_printf("checkinfnorm(%b, %b, %b) = %b - expecting true\n",a[0],a[1],a[2],res);
+  sollya_lib_printf("checkinfnorm(%b, %b, %b) = %b - expecting true\n",a[0],a[1],a[2],a[A_DIM-1]);
   
   for (i=0;i<A_DIM;i++) {
     if (a[i] != NULL) sollya_lib_clear_obj(a[i]);
@@ -50,9 +49,9 @@ int main(void) {
   a[1] = sollya_lib_parse_string("[0;1.75]");
   a[2] = SOLLYA_CONST(0.5);
 
-  res = sollya_lib_checkinfnorm(a[0],a[1],a[2]);
+  a[A_DIM-1] = sollya_lib_checkinfnorm(a[0],a[1],a[2]);
   
-  sollya_lib_printf("checkinfnorm(%b, %b, %b) = %b - expecting false\n",a[0],a[1],a[2],res);
+  sollya_lib_printf("checkinfnorm(%b, %b, %b) = %b - expecting false\n",a[0],a[1],a[2],a[A_DIM-1]);
   
   for (i=0;i<A_DIM;i++) {
     if (a[i] != NULL) sollya_lib_clear_obj(a[i]);
@@ -67,9 +66,9 @@ int main(void) {
   a[1] = sollya_lib_parse_string("[0;23983616612609688914111751100985157245635816089863b-165]");
   a[2] = SOLLYA_CONST(0.5);
 
-  res = sollya_lib_checkinfnorm(a[0],a[1],a[2]);
+  a[A_DIM-1] = sollya_lib_checkinfnorm(a[0],a[1],a[2]);
   
-  sollya_lib_printf("checkinfnorm(%b, %b, %b) = %b - expecting true\n",a[0],a[1],a[2],res);
+  sollya_lib_printf("checkinfnorm(%b, %b, %b) = %b - expecting true\n",a[0],a[1],a[2],a[A_DIM-1]);
   
   for (i=0;i<A_DIM;i++) {
     if (a[i] != NULL) sollya_lib_clear_obj(a[i]);
@@ -85,9 +84,9 @@ int main(void) {
   a[1] = sollya_lib_parse_string("[-1;1]");
   a[2] = sollya_lib_dirtyinfnorm(a[0],a[1]);
 
-  res = sollya_lib_checkinfnorm(a[0],a[1],a[2]);
+  a[A_DIM-1] = sollya_lib_checkinfnorm(a[0],a[1],a[2]);
   
-  sollya_lib_printf("checkinfnorm(%b, %b, %b) = %b - expecting false\n",a[0],a[1],a[2],res);
+  sollya_lib_printf("checkinfnorm(%b, %b, %b) = %b - expecting false\n",a[0],a[1],a[2],a[A_DIM-1]);
   
   for (i=0;i<A_DIM;i++) {
     if (a[i] != NULL) sollya_lib_clear_obj(a[i]);
@@ -109,9 +108,9 @@ int main(void) {
   
   sollya_lib_set_diam(a[6]);
 
-  res = sollya_lib_checkinfnorm(a[0],a[1],a[5]);
+  a[A_DIM-1] = sollya_lib_checkinfnorm(a[0],a[1],a[5]);
   
-  sollya_lib_printf("checkinfnorm(%b, %b, %b) = %b - expecting true\n",a[0],a[1],a[5],res);
+  sollya_lib_printf("checkinfnorm(%b, %b, %b) = %b - expecting true\n",a[0],a[1],a[5],a[A_DIM-1]);
   
   for (i=0;i<A_DIM;i++) {
     if (a[i] != NULL) sollya_lib_clear_obj(a[i]);

@@ -40,6 +40,7 @@ int main(void) {
 
   a = sollya_lib_constant(b);
   sollya_lib_printf("%b (should be the same as above)\n", a);
+  sollya_lib_clear_obj(a);
 
   mpfr_clear(b);
   sollya_lib_close();

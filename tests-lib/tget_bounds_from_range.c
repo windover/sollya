@@ -79,7 +79,8 @@ int main(void) {
   sollya_lib_clear_obj(a);
 
 
-
+  mpfr_clear(resleft);
+  mpfr_clear(resright);
   sollya_lib_close();
   return 0;
 }

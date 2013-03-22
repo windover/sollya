@@ -36,8 +36,7 @@ int main(void) {
   a[26] = sollya_lib_list(NULL, 0);
   a[27] = sollya_lib_list(a, 2);
   a[28] = sollya_lib_end_elliptic_list(a, 2);
-  a[29] = sollya_lib_range(sollya_lib_constant_from_int(1),
-                           sollya_lib_constant_from_int(2));
+  a[29] = sollya_lib_parse_string("[1, 2]");
   a[30] = sollya_lib_round_down();
   a[31] = sollya_lib_round_up();
   a[32] = sollya_lib_round_towards_zero();

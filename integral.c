@@ -67,14 +67,13 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 rangetype integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) {
   node *deriv;
-
-  deriv = differentiate(func);
-  
   rangetype x,y;
   mpfr_t x1,x2,y1,y2,delta;
   sollya_mpfi_t temp, val;
-
   rangetype sum;
+
+  deriv = differentiate(func);
+
   sum.a = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
   sum.b = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*(sum.a),prec);
@@ -85,11 +84,13 @@ rangetype integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) 
   
   if (mpfr_equal_p(*(interval.a),*(interval.b))) {
     printMessage(1,SOLLYA_MSG_DOMAIN_IS_REDUCED_TO_A_POINT_TRIVIAL_RESULT,"Warning: the given interval is reduced to one point.\n");
+    free_memory(deriv);
     return sum;
   }
 
   if (mpfr_less_p(*(interval.b),*(interval.a))) {
     printMessage(1,SOLLYA_MSG_DOMAIN_IS_EMPTY,"Warning: the interval is empty.\n");
+    free_memory(deriv);
     return sum;
   }
 
@@ -97,6 +98,7 @@ rangetype integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) 
     printMessage(1, SOLLYA_MSG_DOMAIN_IS_NO_CLOSED_INTERVAL_ON_THE_REALS, "Warning: the given domain is not a closed interval on the reals.\n");
     mpfr_set_inf(*(sum.a), -1);
     mpfr_set_inf(*(sum.b), 1);
+    free_memory(deriv);
     return sum;
   }
 

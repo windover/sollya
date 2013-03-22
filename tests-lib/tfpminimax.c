@@ -134,6 +134,7 @@ int main(void) {
   sollya_lib_clear_obj(tmp1);
   sollya_lib_clear_obj(tmp2);
 
+  sollya_lib_clear_obj(I);
   sollya_lib_clear_obj(pstar);
   sollya_lib_clear_obj(f);
   sollya_lib_clear_obj(n);

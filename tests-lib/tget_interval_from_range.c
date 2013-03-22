@@ -65,7 +65,7 @@ int main(void) {
   sollya_lib_clear_obj(a);
 
 
-
+  mpfi_clear(res);
   sollya_lib_close();
   return 0;
 }
