@@ -22683,7 +22683,7 @@ node *evaluateThingInnerst(node *tree) {
 		  resD = GMP_RNDN;
 		  if (evaluateThingToRoundingSymbol(&resC,(node *) (curr->value),&resD)) {		
 		    if (timingString != NULL) pushTimeCounter();      
-		    mpfr_init2(b,((tools_precision > resB) ? tools_precision : resB));
+		    mpfr_init2(b,(((mp_prec_t) tools_precision > (mp_prec_t) resB) ? (mp_prec_t) tools_precision : (mp_prec_t) resB));
 		    resG = 0;
 		    if (timingString != NULL) pushTimeCounter();
 		    resF = round_constant_expr_to_format_or_expansion_format(&resE, &resG, b, firstArg, 0, 1, resA, resC);

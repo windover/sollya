@@ -2201,7 +2201,7 @@ int supremumNormBisect(sollya_mpfi_t result, node *poly, node *func, mpfr_t a, m
   mpfr_clear(temp);
   
   /*if the requested accuracy (p) is close to prec, increase prec*/
-  if (abs(p-prec)<(p/2)) {
+  if ((mp_prec_t) abs(p-prec) < (mp_prec_t) (p/2)) {
     if (p>prec)  prec = p + (p/2);
     if (p<=prec)  prec = prec + (p/2);
   }
