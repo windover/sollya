@@ -22686,7 +22686,7 @@ node *evaluateThingInnerst(node *tree) {
 		    mpfr_init2(b,(((mp_prec_t) tools_precision > (mp_prec_t) resB) ? (mp_prec_t) tools_precision : (mp_prec_t) resB));
 		    resG = 0;
 		    if (timingString != NULL) pushTimeCounter();
-		    resF = round_constant_expr_to_format_or_expansion_format(&resE, &resG, b, firstArg, 0, 1, resA, resC);
+		    resF = round_constant_expr_to_format_or_expansion_format(&resE, &resG, b, firstArg, 0, 1, resA, (mp_rnd_t) resC);
 		    if (timingString != NULL) popTimeCounter(timingString);
 		    if (resG) {
 		      if (resE == 0) {
@@ -22718,7 +22718,7 @@ node *evaluateThingInnerst(node *tree) {
 		  mpfr_init2(b,((tools_precision > 200) ? tools_precision : 200));
 		  resG = 0;
 		  if (timingString != NULL) pushTimeCounter();      
-		  resF = round_constant_expr_to_format_or_expansion_format(&resE, &resG, b, firstArg, 1, resA, 1, resC);
+		  resF = round_constant_expr_to_format_or_expansion_format(&resE, &resG, b, firstArg, 1, resA, 1, (mp_rnd_t) resC);
 		  if (timingString != NULL) popTimeCounter(timingString);
 		  if (resG) {
 		    if (resE == 0) {
