@@ -1,8 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title>Users' manual for the Sollya tool - Release 4.0-alpha</title>
-<meta name="author" content="Sylvain Chevillard, Christoph Lauter">
+<title>Users' manual for the Sollya tool - Release 4.0-beta</title>
+<meta name="author" content="Sylvain Chevillard" >
 <meta name="copyright" content="2009-2011 Laboratoire de l'Informatique du Parallélisme - UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668; LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France; Laboratoire d'Informatique de Paris 6, Équipe PEQUAN, UPMC Université Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France; INRIA Sophia-Antipolis Méditerranée, APICS Team, Sophia-Antipolis, France">
 <meta name="keywords" content="help, sollya, User's Manual">
 <meta name="description" content="This is part of Sollya User's Manual">
@@ -20,18 +20,19 @@ h2 { font-size: large;}
 <body>
 
 <p>
-<h1 style="text-align:center">Users' manual for the <span class="sollya">Sollya</span> tool - Release 3.0</h1>
+<h1 style="text-align:center">Users' manual for the <span class="sollya">Sollya</span> tool - Release 4.0-beta</h1>
 <div style="text-align:center; line-height: 1.5em;">Sylvain Chevillard (<a href="sylvain.chevillard@ens-lyon.org">sylvain.chevillard@ens-lyon.org</a>),</div>
 <div style="text-align:center; line-height: 1.5em;">Christoph Lauter (<a href="christoph.lauter@ens-lyon.org; line-height: 1.5em;">christoph.lauter@ens-lyon.org</a>)</div>
 <div style="text-align:center">and Mioara Joldeș (<a href="mioara.joldes@ens-lyon.fr">mioara.joldes@ens-lyon.fr</a>).</div>
 
 <h2 style="margin-top: 3em;">License</h2>
 <p style="font-size:small;">
-The <span class="sollya">Sollya</span> tool is Copyright &copy;&nbsp;2006-2011 by<br>
+The <span class="sollya">Sollya</span> tool is Copyright &copy;&nbsp;2006-2013 by<br>
 <span style="text-indent:3em; display:block;">Laboratoire de l'Informatique du Parallélisme - UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668, Lyon, France, </span>
 <span style="text-indent:3em;display:block;">LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France, </span>
-<span style="text-indent:3em;display:block;">Laboratoire d'Informatique de Paris 6, Équipe PEQUAN, UPMC Université Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France, and by</span>
-<span style="text-indent:3em;display:block;">INRIA Sophia-Antipolis Méditerranée, APICS Team, Sophia-Antipolis, France.</span>
+<span style="text-indent:3em;display:block;">Laboratoire d'Informatique de Paris 6, Équipe PEQUAN, UPMC Université Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,</span>
+<span style="text-indent:3em;display:block;">INRIA Sophia-Antipolis Méditerranée, APICS Team, Sophia-Antipolis, France, and by</span>
+<span style="text-indent:3em;display:block;">CAPA project, Department of Mathematics, Ångström Laboratory, Uppsala University, Sweden.</span>
 All rights reserved.
 <p style="font-size:small;">
 The <span class="sollya">Sollya</span> tool is open software. It is distributed and can be used,
@@ -48,7 +49,14 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 <h1><a href="#commandsAndFunctions">Direct access to the list of available commands</a></h1>
 
-<h1>1 - Compilation and installation of the <span class="sollya">Sollya</span> tool</h1>
+<h1>1 - Compilation and installation of <span class="sollya">Sollya</span></h1>
+<span class="sollya">Sollya</span> comes in two flavors:
+<ul>
+  <li>Either as an interactive tool. This is achieved by running the <span class="sollya">Sollya</span> executable file.</li>
+  <li>Or as a C library that provides all the features of the tool within the C programming language.</li>
+</ul>
+The installation of the tool and the library follow the same steps, desribed below. The present documentation focuses more on the interactive tool. As a matter of fact, the library works exactly the same way as the tool, so it is necessary to know a little about the tool in order to correctly use the library. The reader who is only interested in the library should at least read the following Sections&nbsp;<a href="#sec:introduction">Introduction</a>,  <a href="#sec:general_principles">General Principles</a> and <a href="#sec:data_types">Data Types</a>. A documentation specifically describing the library usage is available in <a href="#Libsollya">Appendix&nbsp;10</a> at the end of the present documentation.
+
 <h2>1.1 - Compilation dependencies</h2>
 <p>
 The <span class="sollya">Sollya</span> distribution can be compiled and installed using the usual
@@ -67,7 +75,7 @@ installed. In this case an error will be displayed at runtime.
 </li><li> <code>gnuplot</code> (external tool)
 </li></ul>
 <p>The use of the external tool <code>rlwrap</code> is highly recommended but
-not required. Use the <code>-A</code> option of <code>rlwrap</code> for
+not required to use the <span class="sollya">Sollya</span> interactive tool. Use the <code>-A</code> option of <code>rlwrap</code> for
 correctly displayed ANSI X3.64/ ISO/IEC 6429 colored prompts (see
 below).
 
@@ -151,6 +159,7 @@ nevertheless, use this deprecated option.
   option.
 </li>
 </ul>
+<a name="sec:introduction"></a>
 <h1>2 - Introduction</h1>
 <p>
 <span class="sollya">Sollya</span> is an interactive tool for handling numerical functions and working with arbitrary precision. It can evaluate functions accurately, compute polynomial approximations of functions, automatically implement polynomials for use in math libraries, plot functions, compute infinity norms, etc. <span class="sollya">Sollya</span> is also a full-featured script programming language with support for procedures&nbsp;etc.
@@ -286,6 +295,8 @@ The following code examples illustrate the use of variables.
 Let us state that a variable identifier, just as every identifier in
 <span class="sollya">Sollya</span>, contains at least one character, starts with a ASCII letter
 and continues with ASCII letters or numerical digits.
+
+<a name="sec:data_types"></a>
 <h1>5 - Data types</h1>
 <p>
 <span class="sollya">Sollya</span> has a (very) basic system of types. If you try to perform an illicit operation (such as adding a number and a string, for instance), you will get a typing error. Let us see the available data types.
@@ -598,9 +609,6 @@ referenced using brackets. Possible indices start at 0. The
 following example illustrates this point:
 <p>
 <?php include("introExample22.php"); ?>
-<p>
-Please be aware of the fact that the complexity for accessing an
-element of the list using indices is&nbsp;O(n), where n is the length of the whole list.
 <p>
 Lists may contain ellipses indicated by <code>,...,</code> between
 elements that are constant and evaluate to integers that are
@@ -1047,4 +1055,6 @@ Finally, if neither I1 nor I2 are point-intervals, we try to give a meaning to f
 <p>
 As a special exception to these rules, [0]^[0] returns [1].
 
+<p><a name="Libsollya"></a>
+<h1>10 - Appendix: the <span class="sollya">Sollya</span> library</h1>
 </body>
