@@ -14,7 +14,20 @@
 
 * { line-height: 1.3em; }
 
-h2 { font-size: large;}
+h2 {
+ font-size: large;
+ padding-top: 15px;
+}
+
+h3 {
+ font-size: medium;
+ padding-top: 5px;
+}
+
+table {
+  margin-left:auto;
+  margin-right: auto;
+}
  --></style>
 </head>
 <body>
@@ -50,11 +63,13 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 <h1><a href="#commandsAndFunctions">Direct access to the list of available commands</a></h1>
 
 <h1>1 - Compilation and installation of <span class="sollya">Sollya</span></h1>
+<p>
 <span class="sollya">Sollya</span> comes in two flavors:
 <ul>
   <li>Either as an interactive tool. This is achieved by running the <span class="sollya">Sollya</span> executable file.</li>
   <li>Or as a C library that provides all the features of the tool within the C programming language.</li>
 </ul>
+<p>
 The installation of the tool and the library follow the same steps, desribed below. The present documentation focuses more on the interactive tool. As a matter of fact, the library works exactly the same way as the tool, so it is necessary to know a little about the tool in order to correctly use the library. The reader who is only interested in the library should at least read the following Sections&nbsp;<a href="#sec:introduction">Introduction</a>,  <a href="#sec:general_principles">General Principles</a> and <a href="#sec:data_types">Data Types</a>. A documentation specifically describing the library usage is available in <a href="#Libsollya">Appendix&nbsp;10</a> at the end of the present documentation.
 
 <h2>1.1 - Compilation dependencies</h2>
@@ -159,7 +174,8 @@ nevertheless, use this deprecated option.
   option.
 </li>
 </ul>
-<a name="sec:introduction"></a>
+
+<p><a name="sec:introduction"></a>
 <h1>2 - Introduction</h1>
 <p>
 <span class="sollya">Sollya</span> is an interactive tool for handling numerical functions and working with arbitrary precision. It can evaluate functions accurately, compute polynomial approximations of functions, automatically implement polynomials for use in math libraries, plot functions, compute infinity norms, etc. <span class="sollya">Sollya</span> is also a full-featured script programming language with support for procedures&nbsp;etc.
@@ -305,7 +321,7 @@ and continues with ASCII letters or numerical digits.
 <p>
 There are two special values <code class="key">true</code> and <code class="key">false</code>. Boolean expressions can be constructed using the boolean connectors <code class="key">&&</code> (and), <code class="key">||</code> (or), <code class="key">!</code> (not), and cosmparisons.
 <p>
-The comparison operators <code class="key"><</code>, <code class="key"><=</code>, <code class="key">></code> and <code class="key">>=</code> can only be used between two numbers or constant expressions.
+The comparison operators <code class="key"><</code>, <code class="key">&lt;=</code>, <code class="key">></code> and <code class="key">&gt;=</code> can only be used between two numbers or constant expressions.
 <p>
 The comparison operators <code class="key">==</code> and <code class="key">!=</code> are polymorphic. You can use them to compare any two objects, like two strings, two intervals, etc. As a matter of fact, polymorphism is allowed on both sides: it is possible to compare objects of different type. Such objects of different type, as they can never be syntactically equal, will always compare unequal (see exception for <code class="key">error</code>, section <a href="help.php?name=error&amp;goBack=none">error</a>) and never equal. It is important to remember that testing the equality between two functions will return <code class="key">true</code> if and only if the expression trees representing the two functions are exactly the same. See <a href="help.php?name=error&amp;goBack=none">error</a> for an exception concerning the special object <code class="key">error</code>. Example:
 <p>
@@ -600,7 +616,7 @@ meaning.
 <p>
 Objects can be grouped into lists. A list can contain elements with different types. As for strings, you can concatenate two lists with <code class="com">@</code>. The function <code class="com">length</code> also gives the length of a list.
 <p>
-You can prepend an element to a list using <code class="com">.:</code> and you can append an element to a list using <code class="com">:.</code>\\ The following example illustrates some features:
+You can prepend an element to a list using <code class="com">.:</code> and you can append an element to a list using <code class="com">:.</code><br> The following example illustrates some features:
 <p>
 <?php include("introExample21.php"); ?>
 <p>
@@ -654,7 +670,7 @@ in the next example. They will also be printed in that syntax.
 <?php include("introExample47.php"); ?>
 
 <p>
-If the variable <code class="com">a</code> is bound to an existing structure, it is possible to use the ``dot notation'' <code class="com">a.b</code> to assign the value of the field <code class="com">b</code> of the structure <code class="com">a</code>. This works even if <code class="com">b</code> is not yet a field of <code class="com">a</code>: in this case a new field is created inside the structure <code class="com">a</code>. 
+If the variable <code class="com">a</code> is bound to an existing structure, it is possible to use the &ldquo;dot notation&rdquo; <code class="com">a.b</code> to assign the value of the field <code class="com">b</code> of the structure <code class="com">a</code>. This works even if <code class="com">b</code> is not yet a field of <code class="com">a</code>: in this case a new field is created inside the structure <code class="com">a</code>. 
 
 <p>
 Besides, the dot notation can be used even when <code class="com">a</code> is unassigned. In this case a new structure is created with a field <code class="com">b</code>, and this structure is bound to <code class="com">a</code>. However, the dot notation cannot be used if <code class="com">a</code> is already bound to something that is not a structure.
@@ -693,13 +709,13 @@ through the keyword <code class="key">var</code>.
 <p>
 <span class="sollya">Sollya</span> has two different assignment operators, <code>=</code> and
 <code>:=</code>. The assignment operator <code>=</code> assigns its
-right-hand-object ``as is'', i.e. without evaluating functional
+right-hand-object &ldquo;as is&rdquo;, i.e. without evaluating functional
 expressions. For instance, <code>i = i + 1;</code> will dereferentiate the
 identifier <code>i</code> with some content, notate it y, build up the
 expression (function) y + 1 and assign this expression back to
 <code>i</code>. In the example, if <code>i</code> stood for the value 1000,
-the statement <code>i = i + 1;</code> would assign ``1000 + 1'' -- and not
-``1001'' -- to <code>i</code>. The assignment operator <code>:=</code> evaluates
+the statement <code>i = i + 1;</code> would assign &ldquo;1000 + 1&rdquo; -- and not
+&ldquo;1001&rdquo; -- to <code>i</code>. The assignment operator <code>:=</code> evaluates
 constant functional expressions before assigning them. On other
 expressions it behaves like <code>=</code>. Still in the example, the
 statement <code>i := i + 1;</code> really assigns 1001 to <code>i</code>.
@@ -1037,7 +1053,7 @@ The topology that we consider is always the usual topology of R bar: R U {-infin
 Let f be a univariate basic function and I an interval. We denote by J the result of the interval evaluation of f over I in <span class="sollya">Sollya</span>. If I is completely included in the domain of f, J will usually be the smallest interval (at the current precision) containing the exact image f(I) However, in some cases, it may happen that J is not as small as possible. It is guaranteed however, that J tends to f(I) when the precision of the tool tends to infinity.
 
 <p>
-When f is not defined at some point x but is defined on a neighborhood of x, we consider that the ``value'' of f at x is the convex hull of the limit points of f around x. For instance, consider the evaluation of f= tan on [0, Pi]. It is not defined at Pi/2 (and only at this point). The limit points of f around Pi/2 are -infinity and +infinity, so, we return [-infinity, +infinity]. Another example: f=sin on [+infinity]. The function has no limit at this point, but all points of [-1, 1] are limit points. So, we return [-1,1].
+When f is not defined at some point x but is defined on a neighborhood of x, we consider that the &ldquo;value&rdquo; of f at x is the convex hull of the limit points of f around x. For instance, consider the evaluation of f= tan on [0, Pi]. It is not defined at Pi/2 (and only at this point). The limit points of f around Pi/2 are -infinity and +infinity, so, we return [-infinity, +infinity]. Another example: f=sin on [+infinity]. The function has no limit at this point, but all points of [-1, 1] are limit points. So, we return [-1,1].
 
 <p>
 Finally, if I contains a subinterval on which f is not defined, we return [NaN, NaN] (example: sqrt([-1, 2])).
@@ -1057,4 +1073,877 @@ As a special exception to these rules, [0]^[0] returns [1].
 
 <p><a name="Libsollya"></a>
 <h1>10 - Appendix: the <span class="sollya">Sollya</span> library</h1>
+ <h2>10.1 - Introduction</h2>
+<p>
+The header file of the <span class="sollya">Sollya</span> library is <code>sollya.h</code>. Its inclusion may provoke the inclusion of other header files, such as <code>gmp.h</code>, <code>mpfr.h</code> or <code>mpfi.h</code>.
+
+<p>
+The library provides a virtual <span class="sollya">Sollya</span> session that is perfectly similar to an interactive session: environment variables such as <code>verbosity</code>, <code>prec</code>, <code>display</code>, <code>midpointmode</code>, etc. are maintained and affect the behavior of the library, warning messages are displayed when something is not exact, etc. Please notice that the <span class="sollya">Sollya</span> library currently is <strong>not</strong> re-entrant and can only be opened once. A process using the library must hence not be multi-threaded and is limited to one single virtual <span class="sollya">Sollya</span> session.
+
+<p>
+In order to get started with the <span class="sollya">Sollya</span> library, the first thing to do is hence to initialize this virtual session. This is performed with the <code>sollya_lib_init</code> function. Accordingly, one should close the session at the end of the program (which has the effect of releasing all the memory used by <span class="sollya">Sollya</span>). Please notice that <span class="sollya">Sollya</span> uses its own allocation functions and registers them to <code>GMP</code> using the custom allocation functions provided by <code>GMP</code>. Particular precautions should hence be taken when using the <span class="sollya">Sollya</span> library in a program that also registers its own functions to <code>GMP</code>: in that case <code>sollya_lib_init_with_custom_memory_functions</code> should be used instead of <code>sollya_lib_init</code> for initializing the library. This is discussed in <a href="customMemoryFunctions">a specific section.</a>
+<p>
+In the usual case when <span class="sollya">Sollya</span> is used in a program that does not register allocation functions to&nbsp;<code>GMP</code>, a minimal file using the library is hence the following.
+
+<div class="divExample">
+#include &lt;sollya.h&gt;<br>
+<br>
+int main(void) {<br>
+&nbsp;&nbsp;sollya_lib_init();<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;/* Functions of the library can be called here */<br>
+<br>
+&nbsp;&nbsp;sollya_lib_close();<br>
+&nbsp;&nbsp;return 0;<br>
+}<br>
+</div>
+
+<p>
+Suppose that this code is saved in a file called <code>foo.c</code>. The compilation is performed as usual without forgetting to link against <code>libsollya</code> (since the libraries <code>libgmp</code>, <code>libmpfr</code> and <code>libmpfi</code> are dependencies of <span class="sollya">Sollya</span>, it might also be necessary to explicitly link against them):
+<div class="divExample">
+&nbsp;&nbsp;/% cc foo.c -c<br>
+&nbsp;&nbsp;/% cc foo.o -o foo -lsollya -lmpfi -lmpfr -lgmp<br>
+</div>
+
+ <h2>10.2 - Sollya object data-type</h2>
+<p>
+The library provides a single data type called <code>sollya_obj_t</code> that can contain any <span class="sollya">Sollya</span> object (a <span class="sollya">Sollya</span> object is anything that can be stored in a variable within the interactive tool. See Section <a href="sec:data_types">Data Types</a> of the present documentation for details). Please notice that <code>sollya_obj_t</code> is in fact a pointer type; this has two consequences:
+<ul>
+  <li> <code>NULL</code> is a placeholder that can be used as a <code>sollya_obj_t</code> in some contexts. This placeholder is particularly useful as an end marker for functions with a variable number of arguments (see Sections <a href="creating_lists">Lists</a> and <a href="library_commands_and_functions">Commands and functions.</a></li>
+  <li> An assignment with the &ldquo;=&rdquo; sign does not copy an object but only copies the reference to it. To perform a (deep) copy, the <code>sollya_lib_copy_obj()</code> function is available.</li>
+</ul>
+<p>
+Except for a few functions for which the contrary is explicitly specified, the following conventions are used:
+<ul>
+  <li>  A function does not touch its arguments. Hence if <code>sollya_lib_foo</code> is a function of the library, a call to <code>sollya_lib_foo(a)</code> leaves the object referenced by <code>a</code> unchanged (the notable exceptions to that rule are the functions containing <code>build</code> in their name, e.g., <code>sollya_lib_build_foo</code>).</li>
+  <li> A function that returns a <code>sollya_obj_t</code> creates a new object (this means that memory is dynamically allocated for that object). The memory allocated for that object should manually be cleared when the object is no longer used and all references to it (on the stack) get out of reach, e.g. on a function return: this is performed by the <code>sollya_lib_clear_obj()</code> function. By convenience <code>sollya_lib_clear_obj(NULL)</code> is a valid call, that just does nothing.</li>
+</ul>
+<p>
+In general, except if the user perfectly knows what they are doing, the following rules should be applied (here <code>a</code> and <code>b</code> are C variables of type <code>sollya_obj_t</code>, and <code>sollya_lib_foo</code> and <code>sollya_lib_bar</code> are functions of the library):
+<ul>
+  <li> One should never write <code>a = b</code>. Instead, use <code>a = sollya_lib_copy_obj(b)</code>.</li>
+  <li> One should never write <code>a = sollya_lib_foo(a)</code> because one loses the reference to the object initially referenced by the variable <code>a</code> (which is hence not cleared).</li>
+  <li> One should never chain function calls such as, e.g., <code>a = sollya_lib_foo(sollya_lib_bar(b))</code> (the reference to the object created by <code>sollya_lib_bar(b)</code> would be lost and hence not cleared).</li>
+  <li> A variable <code>a</code> should never be used twice at the left-hand side of the &ldquo;=&rdquo; sign (or as an lvalue in general) without performing <code>sollya_lib_clear_obj(a)</code> in-between.</li>
+  <li> In an assignment of the form &ldquo;<code>a = ...</code>&rdquo;, the right-hand side should always be a function call (i.e., something like <code>a = sollya_lib_foo(...);</code>).</li>
+</ul>
+<p>
+Please notice that <code>sollya_lib_close()</code> clears the memory allocated by the virtual <span class="sollya">Sollya</span> session but not the objects that have been created and stored in C variables. All the <code>sollya_obj_t</code> created by function calls should be cleared manually.
+<p>
+We can now write a simple Hello World program using the <span class="sollya">Sollya</span> library:
+<div class="divExample">
+#include &lt;sollya.h&gt;<br>
+<br>
+int main(void) {<br>
+&nbsp;&nbsp;sollya_obj_t s1, s2, s;<br>
+&nbsp;&nbsp;sollya_lib_init();<br>
+<br>
+&nbsp;&nbsp;s1 = sollya_lib_string("Hello ");<br>
+&nbsp;&nbsp;s2 = sollya_lib_string("World!");<br>
+&nbsp;&nbsp;s = sollya_lib_concat(s1, s2);<br>
+&nbsp;&nbsp;sollya_lib_clear_obj(s1);<br>
+&nbsp;&nbsp;sollya_lib_clear_obj(s2);<br>
+<br>
+&nbsp;&nbsp;sollya_lib_printf("%b\n", s);<br>
+&nbsp;&nbsp;sollya_lib_clear_obj(s);<br>
+&nbsp;&nbsp;sollya_lib_close();<br>
+&nbsp;&nbsp;return 0;<br>
+}<br>
+</div>
+
+<p>
+A universal function allows the user to execute any expression, as if it were given at the prompt of the <span class="sollya">Sollya</span> tool, and to get a <code>sollya_obj_t</code> containing the result of the evaluation: this function is <code>sollya_lib_parse_string("some expression here")</code>. This is very convenient, and indeed, any script written in the <span class="sollya">Sollya</span> language, could easily be converted into a C program by intensively using <code>sollya_lib_parse_string</code>. However, this should not be the preferred way if efficiency is targeted because (as its name suggests) this function uses a parser to decompose its argument, then constructs intermediate data structures to store the abstract interpretation of the expression, etc. Low-level functions are provided for efficiently creating <span class="sollya">Sollya</span> objects; they are detailed in the next Section.
+<p>
+<h2>10.3 - Conventions in use in the library</h2>
+<p>
+The library follows some conventions that it is useful to remember:
+<ul>
+  <li> When a function is a direct transposition of a command or function available in the interactive tool, it returns a <code>sollya_obj_t</code>. This is true, even when it would sound natural to return, e.g. an <code>int</code>. For instance <code>sollya_lib_get_verbosity()</code> returns a <code>sollya_obj_t</code>, which integer value must then be recovered with <code>sollya_lib_get_constant_as_int</code>. This forces the user to declare (and clear afterwards) a temporary <code>sollya_obj_t</code> to store the value, but this is the price of homogeneity in the library.</li>
+  <li> When a function returns an integer, this integer generally is a boolean in the usual C meaning, i.e. 0 represents false and any non-zero value represents true. In many cases, the integer returned by the function indicates a status of success or failure: the convention is &ldquo;false means failure&rdquo; and &ldquo;true means success&rdquo;. In case of failure, the convention is that the function did not touch any of its arguments.</li>
+  <li> When a function would need to return several things, or when a function would need to return something together with a status of failure or success, the convention is that pointers are given as the first arguments of the function. These pointers shall point to valid addresses where the function will store the results. This can sometimes give obscure signatures, when the function morally returns a pointer and actually takes as argument a pointer to a pointer (this typically happens when the function allocates a segment of memory and should return a pointer to that segment of memory).</li>
+</ul>
+
+<h2>10.4 - Displaying <span class="sollya">Sollya</span> objects and numerical values</h2>
+<p>
+Within the interactive tool, the most simple way of displaying the content of a variable or the value of an expression is to write the name of the variable or the expression, followed by the character &ldquo;;&rdquo;. As a result, <span class="sollya">Sollya</span> evaluates the expression or the variable and displays the result. Alternatively, a set of objects can be displayed the same way, separating the objects with commas. In library mode, the same behavior can be reproduced using the function <code>void sollya_lib_autoprint(sollya_obj_t, ...)</code>. Please notice that this function has a variable number of arguments: they are all displayed, until an argument equal to <code>NULL</code> is found. The <code>NULL</code> argument is mandatory, even if only one object shall be displayed (the function has no other way to know if other arguments follow or not). So, if only one argument should be displayed, the correct function call is <code>sollya_lib_autoprint(arg, NULL)</code>. Accordingly, if two arguments should be displayed, the function call is <code>sollya_lib_autoprint(arg1, arg2, NULL)</code>, etc. The function <code>void sollya_lib_v_autoprint(sollya_obj_t, va_list)</code> is the same, but it takes a <code>va_list</code> argument instead of a variable number of arguments.
+<p>
+Further, there is another way of printing formatted strings containing <span class="sollya">Sollya</span> objects, using a <code>printf</code>-like syntax. Eight functions are provided, namely:
+<ul>
+  <li> <code>sollya_lib_printf</code>, <code>sollya_lib_v_printf</code>,</li>
+  <li> <code>sollya_lib_fprintf</code>, <code>sollya_lib_v_fprintf</code>,</li>
+  <li> <code>sollya_lib_sprintf</code>, <code>sollya_lib_v_sprintf</code>,</li>
+  <li> <code>sollya_lib_snprintf</code> and <code>sollya_lib_v_snprintf</code>.</li>
+</ul>
+<p>
+Each one of these functions overloads the usual function (respectively, <code>printf</code>, <code>vprintf</code>, <code>fprintf</code>, <code>vfprintf</code>, <code>sprintf</code>, <code>vsprintf</code>, <code>snprintf</code> and <code>vsnprintf</code>). The full syntax of conversions specifiers supported with the usual functions is handled (please note that the style using '<code>$</code>' &ndash;&nbsp;as in <code>%3$</code> or <code>%*3$</code>&nbsp;&ndash; is not handled though. It is not included in the C99 standard anyway). Additionally, the following conversion specifiers are provided:
+<ul>
+  <li> <code>%b</code>: corresponds to a <code>sollya_obj_t</code> argument. There is no precision modifier support.</li>
+  <li> <code>%v</code>: corresponds to a <code>mpfr_t</code> argument. An optional precision modifier can be applied (e.g. <code>%.5v</code>).</li>
+  <li> <code>%w</code>: corresponds to a <code>mpfi_t</code> argument. An optional precision modifier can be applied (e.g. <code>%.5w</code>).</li>
+  <li> <code>%r</code>: corresponds to a <code>mpq_t</code> argument. There is no precision modifier support.</li>
+</ul>
+<p>
+When one of the above conversion specifiers is used, the corresponding argument is displayed as it would be within the interactive tool: i.e. the way the argument is displayed depends on <span class="sollya">Sollya</span> environment variables, such as <code>prec</code>, <code>display</code>, <code>midpointmode</code>, etc. When a precision modifier n is used, the argument is first rounded to a binary precision of roughly log2(10)*n bits (i.e. roughly equivalent to n decimal digits) before being displayed. As with traditional <code>printf</code>, the precision modifier can be replaced with&nbsp;<code>*</code> which causes the precision to be determined by an additional <code>int</code> argument.
+<p>
+Flag characters (e.g., &lsquo;<code>#</code>&rsquo;, &lsquo;<code>0</code>&rsquo;, etc.) are allowed but have no effect, except flag character &lsquo;<code>-</code>&rsquo; that is supported with its usual meaning of left-aligning the converted value. The full syntax for minimum field width is supported: it can be given directly as an integer in the format string (e.g., <code>%22b</code>) or it can be replaced with&nbsp;<code>*</code>, which causes the field width to be determined by an additional <code>int</code> argument. As usual, a negative field width is taken as a &lsquo;<code>-</code>&rsquo; flag followed by a positive width.
+<p>
+As a special (and sometimes convenient) case, <code>%b</code> accepts that its corresponding <code>sollya_obj_t</code> argument be <code>NULL</code>: in this particular case, the string &ldquo;NULL&rdquo; is used in the displayed string. Please notice that, except for the particular case of <code>NULL</code>, the behavior of <code>sollya_lib_printf</code> is completely undefined if the argument of <code>%b</code> is not a valid <span class="sollya">Sollya</span> object.
+<p>
+The <code>sollya_lib_printf</code> functions return an integer with the same meaning as the traditional <code>printf</code> functions. It indicates the number of characters that have been output (excluding the final <code>\0</code> character). Similarly, the conversion specifier <code>%n</code> can be used, even together with the <span class="sollya">Sollya</span> conversion specifiers <code>%b</code>, <code>%v</code>, <code>%w</code> and <code>%r</code>. The functions <code>sollya_lib_snprintf</code> and <code>sollya_lib_v_snprintf</code> will
+never write more characters than indicated by their size argument (including the final <code>\0</code> character). If the output gets truncated due to this limit, they will return the number of characters (excluding the final <code>\0</code> character) that would have been output if there had not been any trunctation. In case of error, all <code>sollya_lib_printf</code> functions return a negative value.
+
+<h2>10.5 Creating <span class="sollya">Sollya</span> objects</h2>
+<p>
+<span class="sollya">Sollya</span> objects conceptually fall into one of five categories: numerical constants (e.g. 1 or 1.5), functional expressions (they might contain numerical constants, e.g., sin(cos(x+1.5))), other simple objects (intervals, strings, built-in constants such as <code>dyadic</code>, etc.), lists of objects (e.g., <code>[|1, "Hello"|]</code>) and structures (e.g., <code>{.a = 1; .b = "Hello"}</code>).
+
+<h3>10.5.1 - Numerical constants</h3>
+<p>
+Table <a href="#creating_numerical_constant">Creating numerical constants</a> lists the different functions available to construct numerical constants. A <span class="sollya">Sollya</span> constant is always created without rounding (whatever the value of global variable <code>prec</code> is at the moment of the function call): a sufficient precision is always allocated so that the constant is stored exactly. The objects returned by these functions are newly allocated and copies of the argument. For instance, after the instruction <code>a = sollya_lib_constant(b)</code>, the user will eventually have to clear <code>a</code> (with <code>sollya_lib_clear(a)</code>) and <code>b</code> (with <code>mpfr_clear(b)</code>).
+<p>
+The function <code>sollya_lib_constant_from_double</code> (or more conveniently its shortcut <code>SOLLYA_CONST</code>) is probably the preferred way for constructing numerical constants. As the name indicates it, its argument is a <code>double</code>; however, due to implicit casting in&nbsp;C, it is perfectly possible to give an <code>int</code> as argument: it will be converted into a <code>double</code> (without rounding if the integer fits on 53&nbsp;bits) before being passed to <code>SOLLYA_CONST</code>. On the contrary, the user should be aware of the fact that if decimal non-integer constants are given, C rules of rounding (to double) are applied, regardless of the setting of the <span class="sollya">Sollya</span> precision variable <code>prec</code>.
+
+  <a name="creating_numerical_constant"></a>
+  <table border="1" rules="cols">
+    <caption>Creating numerical constants (Creates a fresh <code>sollya_obj_t</code>. Conversion is always exact)</caption>
+    <tr><th align="center">Type of the argument</th> <th align="center">Name of the function</th> <th align="center">Shortcut macro</th> </tr>
+    <tr><td align="left"><code>double</code></td> <td align="center"><code>sollya_lib_constant_from_double(x)</code></td> <td align="left"><code>SOLLYA_CONST(x)</code></td> </tr>
+    <tr><td align="left"><code>uint64_t</code></td> <td align="center"><code>sollya_lib_constant_from_uint64(x)</code></td> <td align="left"><code>SOLLYA_CONST_UI64(x)</code></td> </tr>
+    <tr><td align="left"><code>int64_t</code></td> <td align="center"><code>sollya_lib_constant_from_int64(x)</code></td> <td align="left"><code>SOLLYA_CONST_SI64(x)</code></td> </tr>
+    <tr><td align="left"><code>int</code></td> <td align="center"><code>sollya_lib_constant_from_int(x)</code></td> <td align="left">N/A</td> </tr>
+    <tr><td align="left"><code>mpfr_t</code></td> <td align="center"><code>sollya_lib_constant(x)</code></td> <td align="left">N/A</td> </tr>
+  </table>
+
+<h3>10.5.2 - Functional expressions</h3>
+<p>
+Functional expressions are built by composition of basic functions with constants and the free mathematical variable. Since it is convenient to build such expressions by chaining function calls, the library provides functions that &ldquo;eat up&rdquo; their arguments (actually embedding them in a bigger expression). The convention is that functions that eat up their arguments are prefixed by <code>sollya_lib_build_</code>. For the purpose of building expressions, shortcut macros for the corresponding functions exist. They are all listed in Table <a href="build_expr">Building functional expressions.</a>
+<p>
+It is worth mentioning that, although <code>SOLLYA_X_</code> and <code>SOLLYA_PI</code> are used without parentheses (as if they denoted constants), they are in fact function calls that create a new object each time they are used. The absence of parentheses is just more convenient for constructing expressions, such as, e.g. <code>SOLLYA_COS(SOLLYA_X_)</code>.
+    <a name="build_expr"></a>
+    <table border="1" rules="cols">
+    <caption>Building functional expressions (Eats up arguments, embedding them in the returned object.)</caption>
+    <tr><th align="center">Name in the interactive tool</th> <th align="center">Function to build it</th> <th align="center">Shortcut macro</th> </tr>
+<tr> <td align="center"><code>_x_</code> </td> <td align="left"> <code>sollya_lib_build_function_free_variable()</code> </td> <td align="left"> <code>SOLLYA_X_</code></td></tr>
+<tr> <td align="center"><code>pi</code> </td> <td align="left"> <code>sollya_lib_build_function_pi()</code> </td> <td align="left"> <code>SOLLYA_PI</code></td></tr>
+<tr> <td align="center"><code>e1 + e2</code> </td> <td align="left"> <code>sollya_lib_build_function_add(e1, e2)</code> </td> <td align="left"> <code>SOLLYA_ADD(e1, e2)</code></td></tr>
+<tr> <td align="center"><code>e1 - e2</code> </td> <td align="left"> <code>sollya_lib_build_function_sub(e1, e2)</code> </td> <td align="left"> <code>SOLLYA_SUB(e1, e2)</code></td></tr>
+<tr> <td align="center"><code>e1 * e2</code> </td> <td align="left"> <code>sollya_lib_build_function_mul(e1, e2)</code> </td> <td align="left"> <code>SOLLYA_MUL(e1, e2)</code></td></tr>
+<tr> <td align="center"><code>e1 / e2</code> </td> <td align="left"> <code>sollya_lib_build_function_div(e1, e2)</code> </td> <td align="left"> <code>SOLLYA_DIV(e1, e2)</code></td></tr>
+<tr> <td align="center"><code>pow(e1, e2)</code> </td> <td align="left"> <code>sollya_lib_build_function_pow(e1, e2)</code> </td> <td align="left"> <code>SOLLYA_POW(e1, e2)</code></td></tr>
+<tr> <td align="center"><code>-e</code> </td> <td align="left"> <code>sollya_lib_build_function_neg(e)</code> </td> <td align="left"> <code>SOLLYA_NEG(e)</code></td></tr>
+<tr> <td align="center"><code>sqrt(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_sqrt(e)</code> </td> <td align="left"> <code>SOLLYA_SQRT(e)</code></td></tr>
+<tr> <td align="center"><code>abs(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_abs(e)</code> </td> <td align="left"> <code>SOLLYA_ABS(e)</code></td></tr>
+<tr> <td align="center"><code>erf(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_erf(e)</code> </td> <td align="left"> <code>SOLLYA_ERF(e)</code></td></tr>
+<tr> <td align="center"><code>erfc(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_erfc(e)</code> </td> <td align="left"> <code>SOLLYA_ERFC(e)</code></td></tr>
+<tr> <td align="center"><code>exp(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_exp(e)</code> </td> <td align="left"> <code>SOLLYA_EXP(e)</code></td></tr>
+<tr> <td align="center"><code>expm1(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_expm1(e)</code> </td> <td align="left"> <code>SOLLYA_EXPM1(e)</code></td></tr>
+<tr> <td align="center"><code>log(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_log(e)</code> </td> <td align="left"> <code>SOLLYA_LOG(e)</code></td></tr>
+<tr> <td align="center"><code>log2(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_log2(e)</code> </td> <td align="left"> <code>SOLLYA_LOG2(e)</code></td></tr>
+<tr> <td align="center"><code>log10(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_log10(e)</code> </td> <td align="left"> <code>SOLLYA_LOG10(e)</code></td></tr>
+<tr> <td align="center"><code>log1p(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_log1p(e)</code> </td> <td align="left"> <code>SOLLYA_LOG1P(e)</code></td></tr>
+<tr> <td align="center"><code>sin(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_sin(e)</code> </td> <td align="left"> <code>SOLLYA_SIN(e)</code></td></tr>
+<tr> <td align="center"><code>cos(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_cos(e)</code> </td> <td align="left"> <code>SOLLYA_COS(e)</code></td></tr>
+<tr> <td align="center"><code>tan(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_tan(e)</code> </td> <td align="left"> <code>SOLLYA_TAN(e)</code></td></tr>
+<tr> <td align="center"><code>asin(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_asin(e)</code> </td> <td align="left"> <code>SOLLYA_ASIN(e)</code></td></tr>
+<tr> <td align="center"><code>acos(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_acos(e)</code> </td> <td align="left"> <code>SOLLYA_ACOS(e)</code></td></tr>
+<tr> <td align="center"><code>atan(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_atan(e)</code> </td> <td align="left"> <code>SOLLYA_ATAN(e)</code></td></tr>
+<tr> <td align="center"><code>sinh(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_sinh(e)</code> </td> <td align="left"> <code>SOLLYA_SINH(e)</code></td></tr>
+<tr> <td align="center"><code>cosh(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_cosh(e)</code> </td> <td align="left"> <code>SOLLYA_COSH(e)</code></td></tr>
+<tr> <td align="center"><code>tanh(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_tanh(e)</code> </td> <td align="left"> <code>SOLLYA_TANH(e)</code></td></tr>
+<tr> <td align="center"><code>asinh(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_asinh(e)</code> </td> <td align="left"> <code>SOLLYA_ASINH(e)</code></td></tr>
+<tr> <td align="center"><code>acosh(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_acosh(e)</code> </td> <td align="left"> <code>SOLLYA_ACOSH(e)</code></td></tr>
+<tr> <td align="center"><code>atanh(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_atanh(e)</code> </td> <td align="left"> <code>SOLLYA_ATANH(e)</code></td></tr>
+<tr> <td align="center"><code>D(e)</code>, <code>double(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_double(e)</code> </td> <td align="left"> <code>SOLLYA_D(e)</code></td></tr>
+<tr> <td align="center"><code>SG(e)</code>, <code>single(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_single(e)</code> </td> <td align="left"> <code>SOLLYA_SG(e)</code></td></tr>
+<tr> <td align="center"><code>QD(e)</code>, <code>quad(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_quad(e)</code> </td> <td align="left"> <code>SOLLYA_QD(e)</code></td></tr>
+<tr> <td align="center"><code>HP(e)</code>, <code>halfprecision(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_halfprecision(e)</code> </td> <td align="left"> <code>SOLLYA_HP(e)</code></td></tr>
+<tr> <td align="center"><code>DD(e)</code>, <code>doubledouble(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_double_double(e)</code> </td> <td align="left"> <code>SOLLYA_DD(e)</code></td></tr>
+<tr> <td align="center"><code>TD(e)</code>, <code>tripledouble(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_triple_double(e)</code> </td> <td align="left"> <code>SOLLYA_TD(e)</code></td></tr>
+<tr> <td align="center"><code>DE(e)</code>, <code>doubleextended(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_doubleextended(e)</code> </td> <td align="left"> <code>SOLLYA_DE(e)</code></td></tr>
+<tr> <td align="center"><code>ceil(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_ceil(e)</code> </td> <td align="left"> <code>SOLLYA_CEIL(e)</code></td></tr>
+<tr> <td align="center"><code>floor(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_floor(e)</code> </td> <td align="left"> <code>SOLLYA_FLOOR(e)</code></td></tr>
+<tr> <td align="center"><code>nearestint(e)</code> </td> <td align="left"> <code>sollya_lib_build_function_nearestint(e)</code> </td> <td align="left"> <code>SOLLYA_NEARESTINT(e)</code></td></tr>
+  </table>
+
+<p>
+For each function of the form <code>sollya_lib_build_function_foo</code>, there exists a function called <code>sollya_lib_foo</code>. There are two differences between them:
+<ul>
+  <li> First, <code>sollya_lib_foo</code> does not &ldquo;eat up&rdquo; its argument. This can sometimes be useful, e.g., if one has an expression stored in a variable <code>a</code> and one wants to build the expression <code>exp(a)</code> without loosing the reference to the expression represented by <code>a</code>.</li>
+  <li> Second, while <code>sollya_lib_build_function_foo</code> mechanically constructs an expression, function <code>sollya_lib_foo</code> also evaluates it, as far as this is possible without rounding.<br>
+For instance, after the instructions <code>a = SOLLYA_CONST(0); b = sollya_lib_exp(a);</code> the variable <code>b</code> contains the number 1, whereas it would have contained the expression "<code>exp(0)</code>" if it had been created by <code>b = sollya_lib_build_function(a)</code>.</li>
+</ul>
+<p>
+Actually, <code>sollya_lib_foo</code> has exactly the same behavior as writing an expression at the prompt within the interactive tool. In particular, it is possible to give a range as an argument to <code>sollya_lib_foo</code>: the returned object will be the result of the evaluation of function <code>foo</code> on that range by interval arithmetic. In contrast, trying to use <code>sollya_lib_build_function_foo</code> on a range would result in a typing error.
+
+<h3>10.5.3 - Library functions, library constants and procedure functions</h3>
+<p>
+In addition to the mathematical base functions and constants provided
+by <span class="sollya">Sollya</span> and listed in the Section above, the user may bind other
+mathematical functions and constants to <span class="sollya">Sollya</span> objects under the
+condition that they can provide code to evaluate these functions or
+constants. The mechanism behind is similar to the one available in
+interactive <span class="sollya">Sollya</span> through the <code>library</code>, <code>libraryconstant</code>
+and <code>function</code> commands (see commands <a href="help.php?name=library">library</a>, <a href="help.php?name=libraryconstant">libraryconstant</a> and <a href="help.php?name=function">function</a>).
+<p>
+With the <span class="sollya">Sollya</span> library, this binding is done through one of the
+following functions:
+<ul>
+<li> Binding of a (non-constant) mathematical function for which evaluation code is available through a <code>C</code> pointer to a function: <br>
+<code>sollya_obj_t sollya_lib_libraryfunction(sollya_obj_t e, </code> <br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char *name, </code> <br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int (*f)(mpfi_t, mpfi_t, int));</code> <br>
+<code>sollya_obj_t sollya_lib_build_function_libraryfunction(sollya_obj_t e, </code> <br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char *name, </code> <br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int (*f)(mpfi_t, mpfi_t, int));</code><br>
+<p>
+These two functions construct a <span class="sollya">Sollya</span> object representing f(e)
+where e is given as the <span class="sollya">Sollya</span> object <code>e</code> and f is given as
+the pointer to a function <code>f(mpfi_t y, mpfi_t x, int n)</code>. This
+code must evaluate the n-th derivative of f over the interval x,
+yielding y. 
+<p>
+As usual, <code>sollya_lib_build_function_libraryfunction</code> &ldquo;eats up&rdquo;
+the object <code>e</code>, while the function
+<code>sollya_lib_libraryfunction</code> does not.
+<p>
+The <code>name</code> argument of the function is taken as a suggestion to
+the name the <span class="sollya">Sollya</span> object representing the function should be
+printed as when displayed. The user may choose to provide <code>NULL</code>
+instead.  In any case, upon the binding, the <span class="sollya">Sollya</span> library will
+determine a unique displaying name for the function. If it is not yet
+taken as a name (for some other <span class="sollya">Sollya</span> object or <span class="sollya">Sollya</span> keyword),
+the suggested name will be used. If no suggested name is provided, the
+name of the dynamic object behind the pointer to the
+function will be used if it can be determined. Otherwise, a
+more-or-less random name is used. If the (suggested) base name is
+already taken, the name is unified appending an underscore and a
+unique number to it. The <code>name</code> argument is never &ldquo;eaten up&rdquo;,
+i.e., it is up to the user to free any memory allocated to that
+pointer.</li>
+<li> Binding of a mathematical constant for which evaluation code is 
+available through a <code>C</code> pointer to a function: <br>
+<code>sollya_obj_t sollya_lib_libraryconstant(char *name, </code> <br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void (*c)(mpfr_t, mp_prec_t));</code> <br>
+<code>sollya_obj_t sollya_lib_build_function_libraryconstant(char *name, </code> <br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void (*c)(mpfr_t, mp_prec_t));</code><br>
+
+<p>
+These two functions construct a <span class="sollya">Sollya</span> object representing the
+mathematical constant c for which a pointer to a function
+<code>c(mpfr_t rop, mp_prec_t prec)</code> is provided. This code must
+evaluate the constant to precision <code>prec</code> and affect the result
+to <code>rop</code>. See command <a href="help.php?name=libraryconstant">libraryconstant</a> for details with
+respect to <code>prec</code>.
+<p>
+The same remark as above concerning the suggested displaying name
+of the <span class="sollya">Sollya</span> object applies for the <code>name</code> argument.</li>
+<li> Binding of a mathematical function for which evaluation code is 
+available through a <span class="sollya">Sollya</span> object representing a <span class="sollya">Sollya</span> procedure: <br>
+<code>sollya_obj_t sollya_lib_procedurefunction(sollya_obj_t e, sollya_obj_t f);</code>  <br>
+<code>sollya_obj_t sollya_lib_build_function_procedurefunction(sollya_obj_t e, </code> <br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sollya_obj_t f);</code><br>
+
+<p>
+These two functions construct a <span class="sollya">Sollya</span> library object representing f(e)
+where e corresponds to the mathematical function (or constant) given with argument
+<code>e</code> and where f is given as a <span class="sollya">Sollya</span> procedure <code>f(x, n, p)</code> evaluating the
+n-th derivative of f over the interval x with precision p. See command <a href="help.php?name=function">function</a> 
+concerning details of the arguments of that <span class="sollya">Sollya</span> procedure.
+<p>
+As usual, <code>sollya_lib_build_function_procedurefunction</code> &ldquo;eats
+up&rdquo; its arguments <code>e</code> and <code>f</code> while
+<code>sollya_obj_t sollya_lib_procedurefunction</code> does not.
+<p>
+Currently, the only way of constructing a <span class="sollya">Sollya</span> library object
+representing a <span class="sollya">Sollya</span> procedure is to use
+<code>sollya_lib_parse_string</code>.
+</li>
+</ul>
+
+<h3>10.5.4 - Other simple objects</h3>
+<p>
+Other simple objects are created with functions listed in Table&nbsp;<a href="#creating_sollya_obj_t">Creating <span class="sollya">Sollya</span> objects from scratch</a>. The functions with a name of the form <code>sollya_lib_range_something</code> follow the same convention as <code>sollya_lib_constant</code>: they build a new object from a copy of their argument, and the conversion is always exact, whatever the value of <code>prec</code> is.
+<p>
+Please note that in the interactive tool, <code>D</code> either denotes the discrete mathematical function that maps a real number to its closest <code>double</code> number, or is used as a symbolic constant to indicate that the <code>double</code> format must be used (as an argument of <code>round</code> for instance). In the library, they are completely distinct objects, the mathematical function being obtained with <code>sollya_lib_build_function_double</code> and the symbolic constant with <code>sollya_lib_double_obj</code>. The same holds for other formats (<code>DD</code>, <code>SG</code>, etc.)
+    <a name="creating_sollya_obj_t"></a>
+    <table border="1" rules="cols">
+    <caption>Creating <span class="sollya">Sollya</span> objects from scratch (Returns a new <code>sollya_obj_t</code>)</caption>
+    <tr><th align="center">Name in the interactive tool</th> <th align="center">Function to create it</th> </tr>
+<tr> <td align="center"><code>on</code> </td> <td align="left"> <code>sollya_lib_on();</code> </td> </tr>
+<tr> <td align="center"><code>off</code> </td> <td align="left"> <code>sollya_lib_off();</code> </td> </tr>
+<tr> <td align="center"><code>dyadic</code> </td> <td align="left"> <code>sollya_lib_dyadic();</code> </td> </tr>
+<tr> <td align="center"><code>powers</code> </td> <td align="left"> <code>sollya_lib_powers();</code> </td> </tr>
+<tr> <td align="center"><code>binary</code> </td> <td align="left"> <code>sollya_lib_binary();</code> </td> </tr>
+<tr> <td align="center"><code>hexadecimal</code> </td> <td align="left"> <code>sollya_lib_hexadecimal();</code> </td> </tr>
+<tr> <td align="center"><code>file</code> </td> <td align="left"> <code>sollya_lib_file();</code> </td> </tr>
+<tr> <td align="center"><code>postscript</code> </td> <td align="left"> <code>sollya_lib_postscript();</code> </td> </tr>
+<tr> <td align="center"><code>postscriptfile</code> </td> <td align="left"> <code>sollya_lib_postscriptfile();</code> </td> </tr>
+<tr> <td align="center"><code>perturb</code> </td> <td align="left"> <code>sollya_lib_perturb();</code> </td> </tr>
+<tr> <td align="center"><code>RD</code> </td> <td align="left"> <code>sollya_lib_round_down();</code> </td> </tr>
+<tr> <td align="center"><code>RU</code> </td> <td align="left"> <code>sollya_lib_round_up();</code> </td> </tr>
+<tr> <td align="center"><code>RZ</code> </td> <td align="left"> <code>sollya_lib_round_towards_zero();</code> </td> </tr>
+<tr> <td align="center"><code>RN</code> </td> <td align="left"> <code>sollya_lib_round_to_nearest();</code> </td> </tr>
+<tr> <td align="center"><code>honorcoeffprec</code> </td> <td align="left"> <code>sollya_lib_honorcoeffprec();</code> </td> </tr>
+<tr> <td align="center"><code>true</code> </td> <td align="left"> <code>sollya_lib_true();</code> </td> </tr>
+<tr> <td align="center"><code>false</code> </td> <td align="left"> <code>sollya_lib_false();</code> </td> </tr>
+<tr> <td align="center"><code>void</code> </td> <td align="left"> <code>sollya_lib_void();</code> </td> </tr>
+<tr> <td align="center"><code>default</code> </td> <td align="left"> <code>sollya_lib_default();</code> </td> </tr>
+<tr> <td align="center"><code>decimal</code> </td> <td align="left"> <code>sollya_lib_decimal();</code> </td> </tr>
+<tr> <td align="center"><code>absolute</code> </td> <td align="left"> <code>sollya_lib_absolute();</code> </td> </tr>
+<tr> <td align="center"><code>relative</code> </td> <td align="left"> <code>sollya_lib_relative();</code> </td> </tr>
+<tr> <td align="center"><code>fixed</code> </td> <td align="left"> <code>sollya_lib_fixed();</code> </td> </tr>
+<tr> <td align="center"><code>floating</code> </td> <td align="left"> <code>sollya_lib_floating();</code> </td> </tr>
+<tr> <td align="center"><code>error</code> </td> <td align="left"> <code>sollya_lib_error();</code> </td> </tr>
+<tr> <td align="center"><code>D, double</code> </td> <td align="left"> <code>sollya_lib_double_obj();</code> </td> </tr>
+<tr> <td align="center"><code>SG, single</code> </td> <td align="left"> <code>sollya_lib_single_obj();</code> </td> </tr>
+<tr> <td align="center"><code>QD, quad</code> </td> <td align="left"> <code>sollya_lib_quad_obj();</code> </td> </tr>
+<tr> <td align="center"><code>HP, halfprecision</code> </td> <td align="left"> <code>sollya_lib_halfprecision_obj();</code> </td> </tr>
+<tr> <td align="center"><code>DE, doubleextended</code> </td> <td align="left"> <code>sollya_lib_doubleextended_obj();</code> </td> </tr>
+<tr> <td align="center"><code>DD, doubledouble</code> </td> <td align="left"> <code>sollya_lib_double_double_obj();</code> </td> </tr>
+<tr> <td align="center"><code>TD, tripledouble</code> </td> <td align="left"> <code>sollya_lib_triple_double_obj();</code> </td> </tr>
+<tr> <td align="center"><code>"Hello"</code> </td> <td align="left">  <code>sollya_lib_string("Hello")</code> </td> </tr>
+<tr> <td align="center"><code>[1, 3.5]</code> </td> <td align="left">  <code>sollya_lib_range_from_interval(a);</code> </td> </tr>
+    <tr> <td align="center"><code>[1, 3.5]</code> </td> <td align="left">  <code>sollya_lib_range_from_bounds(b, c);</code></td> </tr>
+  </table>
+<p>In the last lines of the table, <code>a</code> is a <code>mpfi_t</code> containing the interval [1, 3.5], <code>b</code> and <code>c</code> are <code>mpfr_t</code> respectively containing the numbers 1 and 3.5. Conversion from a <code>mpfi_t</code> or a <code>mpfr_t</code> to a <code>sollya_obj_t</code> is always exact.
+
+<a name="creating_lists"></a>
+<h3>10.5.5 - Lists</h3>
+<p>
+There are actually two kinds of lists: regular lists (such as, e.g., <code>[|1, 2, 3|]</code>) and semi-infinite lists (such as, e.g. <code>[|1, 2, ...|]</code>). Withing the interactive tool, the ellipsis &ldquo;<code>...</code>&rdquo; can sometimes be used as a shortcut to define regular lists, e.g. <code>[|1, 2, ..., 10|]</code>.
+<p>
+In the library, there is no symbol for the ellipsis, and there are two distinct types: one for regular lists and one for semi-infinite lists (called end-elliptic). Defining a regular list with an ellipsis is not possible in the library (except of course with <code>sollya_lib_parse_string</code>).
+<p>
+Constructing regular lists is achieved through three functions:
+<ul>
+  <li> <code>sollya_obj_t sollya_lib_list(sollya_obj_t[] L, int n)</code>: this function returns a new object that is a list the elements of which are copies of <code>L[0]</code>, ..., <code>L[n-1]</code>.</li>
+  <li> <code>sollya_obj_t sollya_lib_build_list(sollya_obj_t obj1, ...)</code>: this function accepts a variable number of arguments. The last one <strong>must</strong> be <code>NULL</code>. It &ldquo;eats up&rdquo; its arguments and returns a list containing the objects given as arguments. Since arguments are eaten up, they may be directly produced by function calls, without being stored in variables. A typical use could be<br>
+    <code>sollya_lib_build_list(SOLLYA_CONST(1), SOLLYA_CONST(2), SOLLYA_CONST(3), NULL);</code><br></li>
+  <li> <code>sollya_obj_t sollya_lib_v_build_list(va_list)</code>: the same as the previous functions, but with a <code>va_list</code>.</li>
+</ul>
+<p>
+Following the same conventions, end-elliptic lists can be constructed with the following functions:
+<ul>
+  <li> <code>sollya_obj_t sollya_lib_end_elliptic_list(sollya_obj_t[] L, int n)</code>.</li>
+  <li> <code>sollya_obj_t sollya_lib_build_end_elliptic_list(sollya_obj_t obj1, ...)</code>.</li>
+  <li> <code>sollya_obj_t sollya_lib_v_build_end_elliptic_list(va_list)</code>.</li>
+</ul>
+
+<p><a name="creating_structures"></a>
+<h3>10.5.6 - Structures</h3>
+<p>
+<span class="sollya">Sollya</span> structures are also available in library mode as any other <span class="sollya">Sollya</span> object. The support for <span class="sollya">Sollya</span> structures is however minimal and creating them might seem cumbersome (users are encouraged to make well-founded feature requests if they feel the need for better support of structures). The only function available to create structures is<br>
+<code>int sollya_lib_create_structure(sollya_obj_t *res, sollya_obj_t s, char *name,</code><br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sollya_obj_t val).</code>
+
+<p>
+This function returns a boolean integer: false means failure, and true means success. Three cases of success are possible. In all cases, the function creates a new object and stores it at the address referred to by <code>res</code>.
+<ul>
+  <li>  If <code>s</code> is <code>NULL</code>: <code>*res</code> is filled with a structure with only one field. This field is named after the string <code>name</code> and contains a copy of the object <code>val</code>.</li>
+  <li> If <code>s</code> is an already existing structure that has a field named after the string <code>name</code>: <code>*res</code> is filled with a newly created structure. This structure is the same as <code>s</code> except that the field corresponding to <code>name</code> contains a copy of <code>val</code>.</li>
+  <li> If <code>s</code> is an already existing structure that does <strong>not</strong> have a field named after the string <code>name</code>: <code>*res</code> is filled with a newly created structure. This structure is the same as <code>s</code> except that it has been augmented with a field corresponding to <code>name</code> and that contains a copy of <code>val</code>.</li>
+</ul>
+<p>
+Please notice that <code>s</code> is not changed by this function: the structure stored in <code>*res</code> is a new one that does not refer to any of the components of <code>s</code>. As a consequence, one should not forget to explicitly clear <code>s</code> as well as <code>*res</code> when they become useless.
+
+<h2>10.6 - Getting the type of an object</h2>
+<p>
+Functions are provided that allow the user to test the type of a <span class="sollya">Sollya</span> object. They are listed in Table&nbsp;<a href="#type_of_an_object">Testing the type of a <span class="sollya">Sollya</span> object</a>. They all return an <code>int</code> interpreted as the boolean result of the test. Please note that from a typing point of view, a mathematical constant and a non-constant functional expression are both functions.
+
+  <a name="type_of_an_object"></a>
+  <table border="1" rules="cols">
+    <caption>Testing the type of a <span class="sollya">Sollya</span> object (Returns non-zero if true, 0 otherwise)</caption>
+      <tr> <td align="left"><code>sollya_lib_obj_is_function(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_obj_is_range(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_obj_is_string(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_obj_is_list(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_obj_is_end_elliptic_list(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_obj_is_structure(obj)</code> </td></tr>
+      <tr style="border-bottom: 1px solid black;"> <td align="left"><code>sollya_lib_obj_is_error(obj)</code></td></tr>
+      <tr> <td style="padding-top: 5px;" align="left"><code>sollya_lib_is_on(obj)</code></td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_off(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_dyadic(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_powers(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_binary(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_hexadecimal(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_file(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_postscript(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_postscriptfile(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_perturb(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_round_down(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_round_up(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_round_towards_zero(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_round_to_nearest(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_honorcoeffprec(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_true(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_false(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_void(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_default(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_decimal(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_absolute(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_relative(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_fixed(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_floating(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_double_obj(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_single_obj(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_quad_obj(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_halfprecision_obj(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_doubleextended_obj(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_double_double_obj(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_triple_double_obj(obj)</code> </td></tr>
+      <tr> <td align="left"><code>sollya_lib_is_pi(obj)</code> </td></tr>
+  </table>
+
+<h2>10.7 - Recovering the value of a range</h2>
+<p>
+If a <code>sollya_obj_t</code> is a range, it is possible to recover the values corresponding to the bounds of the range. The range can be recovered either as a <code>mpfi_t</code> or as two <code>mpfr_t</code> (one per bound). This is achieved with the following conversion functions:
+<ul>
+  <li> <code>int sollya_lib_get_interval_from_range(mpfi_t res, sollya_obj_t arg)</code>,</li>
+  <li> <code>int sollya_lib_get_bounds_from_range(mpfr_t res_left, mpfr_t res_right,</code><br>
+       <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sollya_obj_t arg)</code>.</li>
+</ul>
+<p>
+They return a boolean integer: false means failure (i.e., if the <code>sollya_obj_t</code> is not a range) and true means success. These functions follow the same conventions as those of the <code>MPFR</code> and <code>MPFI</code> libraries: the variables <code>res</code>, <code>res_left</code> and <code>res_right</code> must be initialized beforehand, and are used to store the result of the conversion. Also, the functions <code>sollya_lib_get_something_from_range</code> <strong>do not change the internal precision</strong> of <code>res</code>, <code>res_left</code> and <code>res_right</code>. If the internal precision is sufficient to perform the conversion without rounding, then it is guaranteed to be exact. If, on the contrary, the internal precision is not sufficient, the actual bounds of the range stored in <code>arg</code> will be rounded at the target precision using a rounding mode that ensures that the inclusion property remains valid, i.e. <code>arg</code> is a subset of <code>res</code> (resp. <code>arg</code> is a subset of [<code>res_left</code>, <code>res_right</code>]).
+<p>
+Function  <code>int sollya_lib_get_prec_of_range(mp_prec_t *prec, sollya_obj_t arg)</code> stores at <code>*prec</code> a precision that is guaranteed to be sufficient to represent the range stored in <code>arg</code> without rounding. The returned value of this function is a boolean that follows the same convention as above. In conclusion, this is an example of a completely safe conversion:
+<p>
+<div class="divExample">
+&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;mp_prec_t prec;<br>
+&nbsp;&nbsp;mpfr_t a, b;<br>
+<br>
+&nbsp;&nbsp;if (!sollya_lib_get_prec_of_range(&amp;prec, arg)) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sollya_lib_printf("Unexpected error: %b is not a range\n", arg);<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;mpfr_init2(a, prec);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;mpfr_init2(b, prec);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sollya_lib_get_bounds_from_range(a, b, arg);<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;/* Now [a, b] = arg exactly */<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;...<br>
+</div>
+
+<h2>10.8 - Recovering the value of a numerical constant or a constant expression</h2>
+<p>
+From a conceptual point of view, a numerical constant is nothing but a very simple constant functional expression. Hence there is no difference in <span class="sollya">Sollya</span> between the way constants and constant expressions are handled. The functions presented in this Section allow one to recover the value of such constants or constant expressions into usual C data types.
+<p>
+A constant expression being given, three cases are possible:
+<ul>
+  <li> When naively evaluated at the current global precision, the expression always leads to provably exact computations (i.e., at each step of the evaluation, no rounding happens). For instance numerical constants or simple expressions such as (exp(0)+5)/16 fall in this category.</li>
+  <li> The constant expressions would be exactly representable at some precision but this is not straightforward from a naive evaluation at the current global precision. An example would be sin(pi/3)/sqrt(3) or even 1 + 2^(-<code>prec</code>-10).</li>
+  <li> Finally, a third possibility is that the value of the expression is not exactly representable at any precision on a binary floating-point number. Possible examples are pi or 1/10.</li>
+</ul>
+<p>
+From now on, we suppose that <code>arg</code> is a <code>sollya_obj_t</code> that contains a constant expression (or, as a particular case, a numerical constant). The general scheme followed by the conversion functions is the following: <span class="sollya">Sollya</span> chooses an initial working precision greater than the target precision. If the value of <code>arg</code> is easily proved to be exactly representable at that precision, <span class="sollya">Sollya</span> first computes this exact value and then rounds it to the nearest number of the target format (ties-to-even). Otherwise, <span class="sollya">Sollya</span> tries to adapt the working precision automatically in order to ensure that the result of the conversion is one of both floating-point numbers in the target format that are closest the exact value (a faithful rounding). A warning message indicates that the conversion is not exact and that a faithful rounding has been performed. In some cases really hard to evaluate, the algorithm can even fail to find a faithful rounding. In that case, too, a warning message is emitted indicating that the result of the conversion should not be trusted. Let us remark that these messages can be caught instead of being displayed and adapted handling can be provided by the user of the library at each emission of a warning (see Section&nbsp;<a href="#callbacks">Warning messages in library mode</a>).
+<p>
+The conversion functions are the following. They return a boolean integer: false means failure (i.e., <code>arg</code> is not a constant expression) and true means success.
+<ul>
+  <li> <code>int sollya_lib_get_constant_as_double(double *res, sollya_obj_t arg)</code></li>
+  <li> <code>int sollya_lib_get_constant_as_int(int *res, sollya_obj_t arg)</code></li>
+  <li> <code>int sollya_lib_get_constant_as_int64(int64_t *res, sollya_obj_t arg)</code></li>
+  <li> <code>int sollya_lib_get_constant_as_uint64(uint64_t *res, sollya_obj_t arg)</code></li>
+  <li> <code>int sollya_lib_get_constant(mpfr_t res, sollya_obj_t arg)</code>: the result of the conversion is stored in <code>res</code>. Please note that <code>res</code> must be initialized beforehand and that its internal precision is not modified by the algorithm.</li>
+</ul>
+<p>
+Function  <code>int sollya_lib_get_prec_of_constant(mp_prec_t *prec, sollya_obj_t arg)</code> tries to find a precision that would be sufficient to exactly represent the value of <code>arg</code> without rounding. If it manages to find such a precision, it stores it at <code>*prec</code> and returns true. If it does not manage to find such a precision, or if <code>arg</code> is not a constant expression, it returns false and <code>*prec</code> is left unchanged.
+<p>
+In conclusion, here is an example of use for converting a constant expression to a <code>mpfr_t</code>:
+<p>
+<div class="divExample">
+&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;mp_prec_t prec;<br>
+&nbsp;&nbsp;mpfr_t a;<br>
+&nbsp;&nbsp;int test = 0;<br>
+<br>
+&nbsp;&nbsp;test = sollya_lib_get_prec_of_constant(&amp;prec, arg);<br>
+&nbsp;&nbsp;if (test) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;mpfr_init2(a, prec);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sollya_lib_get_constant(a, arg); /* Exact conversion */<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;mpfr_init2(a, 165); /* Initialization at some default precision */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;test = sollya_lib_get_constant(a, arg);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (!test) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sollya_lib_printf("Error: %b is not a constant expression\n", arg);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;...<br>
+</div>
+
+<h2>10.9 - Converting a string from <span class="sollya">Sollya</span> to C</h2>
+<p>
+If <code>arg</code> is a <code>sollya_obj_t</code> that contains a string, that string can be recovered using<br>
+<code>int sollya_lib_get_string(char **res, sollya_obj_t arg)</code>.<br>
+If <code>arg</code> really is a string, this function allocates enough memory on the heap to store the corresponding string, it copies the string at that newly allocated place, and sets <code>*res</code> so that it points to it. The function returns a boolean integer: false means failure (i.e., <code>arg</code> is not a string) and true means success.
+<p>
+Since this function allocates memory on the heap, this memory should manually be cleared by the user with <code>sollya_lib_free</code> once it becomes useless.
+
+<h2>10.10 - Recovering the contents of a <span class="sollya">Sollya</span> list</h2>
+<p>
+It is possible to recover the i-th element of a list <code>arg</code> (as one would do using <code>arg[i]</code> withing <span class="sollya">Sollya</span>) with the following function:<br>
+  <code>int sollya_lib_get_element_in_list(sollya_obj_t *res, sollya_obj_t arg, int i)</code>.<br>
+It returns a boolean integer: false means failure (i.e. <code>arg</code> is not a list or the index is out of range) and true means success. In case of success, a copy of the i-th element of <code>arg</code> is stored at the address referred to by <code>res</code>. Since it is a copy, it should be cleared with <code>sollya_lib_clear_obj</code> when it becomes useless. Please notice that this function works with regular lists as well as with end-elliptic lists, just as within the interactive tool.
+<p>
+Another function allows user to recover all elements of a list in a single call. This function returns a C array of <code>sollya_obj_t</code> objects and has the following signature:<br>
+<code>int sollya_lib_get_list_elements(sollya_obj_t **L, int *n, int *end_ell,</code><br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sollya_obj_t arg).</code><br>
+Three cases are possible:
+<ul>
+  <li> If <code>arg</code> is a regular list of length N, the function allocates memory on the heap for N <code>sollya_obj_t</code>, sets <code>*L</code> so that it points to that memory segment, and copies each of the elements N of <code>arg</code> to <code>(*L)[0]</code>, ..., <code>(*L)[N-1]</code>. Finally, it sets <code>*n</code> to N, <code>*end_ell</code> to zero and returns true. A particular case is when <code>arg</code> is the empty list: everything is the same except that no memory is allocated and <code>*L</code> is left unchanged.</li>
+  <li> If <code>arg</code> is an end-elliptic list containing N elements plus the ellipsis. The function allocates memory on the heap for N <code>sollya_obj_t</code>, sets <code>*L</code> so that it points to that memory segment, and copies each of the elements N of <code>arg</code> at <code>(*L)[0]</code>, ..., <code>(*L)[N-1]</code>. Finally, it sets <code>*n</code> to N, <code>*end_ell</code> to a non-zero value and returns true. The only difference between a regular list and an end-elliptic list containing the same elements is hence that <code>*end_ell</code> is set to a non-zero value in the latter.</li>
+  <li> If <code>arg</code> is neither a regular nor an end-elliptic list, <code>*L</code>, <code>*n</code> and <code>*end_ell</code> are left unchanged and the function returns false.</li>
+</ul>
+<p>
+In case of success, please notice that <code>(*L)[0]</code>, ..., <code>(*L)[N-1]</code> should manually be cleared with <code>sollya_lib_clear_obj</code> when they become useless. Also, the pointer <code>*L</code> itself should be cleared with <code>sollya_lib_free</code> since it points to a segment of memory allocated on the heap by <span class="sollya">Sollya</span>.
+
+<h2>10.11 - Recovering the contents of a <span class="sollya">Sollya</span> structure</h2>
+<p>
+If <code>arg</code> is a <code>sollya_obj_t</code> that contains a structure, the contents of a given field can be recovered using<br>
+<code>int sollya_lib_get_element_in_structure(sollya_obj_t *res, char *name,</code><br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sollya_obj_t arg).</code><br>
+If <code>arg</code> really is a structure and if that structure has a field named after the string <code>name</code>, this function copies the contents of that field into the <span class="sollya">Sollya</span> object <code>*res</code>. The function returns a boolean integer: false means failure (i.e., if <code>arg</code> is not a structure or if it does not have a field named after <code>name</code>) and true means success.
+<p>
+It is also possible to get all the field names and their contents. This is achieved through the function<br>
+<code>int sollya_lib_get_structure_elements(char ***names, sollya_obj_t **objs, int *n,</code><br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sollya_obj_t arg).</code><br>
+If <code>arg</code> really is a structure, say with N fields called &ldquo;fieldA&rdquo;, ..., &ldquo;fieldZ&rdquo;, this functions sets <code>*n</code> to&nbsp;N, allocates and fills an array of N strings and sets <code>*names</code> so that it points to that segment of memory (hence <code>(*names)[0]</code> is the string &ldquo;fieldA&rdquo;, ..., <code>(*names)[N-1]</code> is the string &ldquo;fieldZ&rdquo;). Moreover, it allocates memory for N <code>sollya_obj_t</code>, sets <code>*objs</code> so that it points on that memory segment, and copies the contents of each of the N fields at <code>(*objs)[0]</code>, ..., <code>(*objs)[N-1]</code>. Finally it returns true. If <code>arg</code> is not a structure, the function simply returns false without doing anything. Please note that since <code>*names</code> and <code>*objs</code> point to memory segments that have been dynamically allocated, they should manually be cleared by the user with <code>sollya_lib_free</code> once they become useless.
+
+<h2>10.12 - Decomposing a functional expression</h2>
+<p>
+If a <code>sollya_obj_t</code> contains a functional expression, one can decompose the expression tree using the following functions. These functions all return a boolean integer: true in case of success (i.e., if the <code>sollya_obj_t</code> argument really contains a functional expression) and false otherwise.
+
+    <a name="list_of_sollya_base_function_t"></a>
+    <table border="1" rules="cols">
+    <caption>List of values defined in type <code>sollya_base_function_t</code></caption>
+<tr> <td align="center">  <code>SOLLYA_BASE_FUNC_COS</code>   </td> <td align="center">  <code>SOLLYA_BASE_FUNC_DOUBLE</code> </td> <td align="center"> <code>SOLLYA_BASE_FUNC_LOG</code> </td></tr>
+<tr> <td align="center">  <code>SOLLYA_BASE_FUNC_ACOS</code>  </td> <td align="center">  <code>SOLLYA_BASE_FUNC_DOUBLEDOUBLE</code>      </td> <td align="center"> <code>SOLLYA_BASE_FUNC_LOG_2</code> </td></tr>
+<tr> <td align="center">  <code>SOLLYA_BASE_FUNC_ACOSH</code> </td> <td align="center">  <code>SOLLYA_BASE_FUNC_DOUBLEEXTENDED</code>    </td> <td align="center"> <code>SOLLYA_BASE_FUNC_LOG_10</code></td></tr>
+<tr> <td align="center">  <code>SOLLYA_BASE_FUNC_COSH</code>  </td> <td align="center">  <code>SOLLYA_BASE_FUNC_TRIPLEDOUBLE</code>      </td> <td align="center"> <code>SOLLYA_BASE_FUNC_LOG_1P</code> </td></tr>
+<tr> <td align="center">  <code>SOLLYA_BASE_FUNC_SIN</code>   </td> <td align="center">  <code>SOLLYA_BASE_FUNC_HALFPRECISION</code>     </td> <td align="center"> <code>SOLLYA_BASE_FUNC_EXP</code> </td></tr>
+<tr> <td align="center">  <code>SOLLYA_BASE_FUNC_ASIN</code>  </td> <td align="center">  <code>SOLLYA_BASE_FUNC_SINGLE</code>            </td> <td align="center"> <code>SOLLYA_BASE_FUNC_EXP_M1</code> </td></tr>
+<tr> <td align="center">  <code>SOLLYA_BASE_FUNC_ASINH</code> </td> <td align="center">  <code>SOLLYA_BASE_FUNC_QUAD</code>              </td> <td align="center"> <code>SOLLYA_BASE_FUNC_NEG</code>  </td></tr>
+<tr> <td align="center">  <code>SOLLYA_BASE_FUNC_SINH</code>  </td> <td align="center">  <code>SOLLYA_BASE_FUNC_FLOOR</code>             </td> <td align="center"> <code>SOLLYA_BASE_FUNC_SUB</code> </td></tr>
+<tr> <td align="center">  <code>SOLLYA_BASE_FUNC_TAN</code>   </td> <td align="center">  <code>SOLLYA_BASE_FUNC_CEIL</code>              </td> <td align="center"> <code>SOLLYA_BASE_FUNC_ADD</code> </td></tr>
+<tr> <td align="center">  <code>SOLLYA_BASE_FUNC_ATAN</code>  </td> <td align="center">  <code>SOLLYA_BASE_FUNC_NEARESTINT</code>        </td> <td align="center"> <code>SOLLYA_BASE_FUNC_MUL</code> </td></tr>
+<tr> <td align="center">  <code>SOLLYA_BASE_FUNC_ATANH</code> </td> <td align="center">  <code>SOLLYA_BASE_FUNC_LIBRARYCONSTANT</code>   </td> <td align="center"> <code>SOLLYA_BASE_FUNC_DIV</code>   </td></tr>
+<tr> <td align="center">  <code>SOLLYA_BASE_FUNC_TANH</code>  </td> <td align="center">  <code>SOLLYA_BASE_FUNC_LIBRARYFUNCTION</code>   </td> <td align="center"> <code>SOLLYA_BASE_FUNC_POW</code></td></tr>
+<tr> <td align="center">  <code>SOLLYA_BASE_FUNC_ERF</code>   </td> <td align="center">  <code>SOLLYA_BASE_FUNC_PROCEDUREFUNCTION</code> </td> <td align="center"> <code>SOLLYA_BASE_FUNC_SQRT</code>    </td></tr>
+<tr> <td align="center">  <code>SOLLYA_BASE_FUNC_ERFC</code>  </td> <td align="center">  <code>SOLLYA_BASE_FUNC_FREE_VARIABLE</code>     </td> <td align="center"> <code>SOLLYA_BASE_FUNC_PI</code>     </td></tr>
+<tr> <td align="center">  <code>SOLLYA_BASE_FUNC_ABS</code>   </td> <td align="center">  <code>SOLLYA_BASE_FUNC_CONSTANT</code>          </td> <td align="center"> </td></tr>
+  </table>
+
+<ul>
+  <li> <code>int sollya_lib_get_function_arity(int *n, sollya_obj_t f)</code>: it stores the arity of the head function in <code>f</code> at the address referred to by <code>n</code>. Currently, the mathematical functions handled in <span class="sollya">Sollya</span> are at most dyadic. Mathematical constants are considered as 0-adic functions. The free variable is regarded as the identity function applied to the free variable: its arity is hence 1.</li>
+  <li> <code>int sollya_lib_get_head_function(sollya_base_function_t *type, sollya_obj_t f)</code>:<br>
+it stores the type of <code>f</code> at the address referred to by <code>type</code>. The <code>sollya_base_function_t</code> is an enum type listing all possible cases (see Table&nbsp;<a href="#list_of_sollya_base_function_t">List of values defined in type <code>sollya_base_function_t</code></a>).</li>
+  <li> <code>int sollya_lib_get_subfunctions(sollya_obj_t f, int *n, ...)</code>: let us denote by <code>g_1</code>, ..., <code>g_k</code> the arguments following the argument <code>n</code>. They must be of type <code>sollya_obj_t *</code>. The function stores the arity of <code>f</code> at the address referred to by <code>n</code> (except if <code>n</code> is <code>NULL</code>, in which case, <code>sollya_lib_get_subfunctions</code> simply ignores it and goes on). Suppose that <code>f</code> contains an expression of the form f<sub>0</sub>(f<sub>1</sub>,...,f<sub>s</sub>) (as a particular case, if <code>f</code> is just the free variable, it is regarded in this context as the identity function applied to the free variable, so both f<sub>0</sub> and f<sub>1</sub> are the free variable). For each i from 1 to s, the expression corresponding to f<sub>i</sub> is stored at the address referred to by <code>g_i</code>, unless one of the <code>g_i</code> is <code>NULL</code> in which case the function returns when encountering it. In practice, it means that the user should always put <code>NULL</code> as last argument, in order to prevent the case when they would not provide enough variables <code>g_i</code>. They can check afterwards that they provided enough variables by checking the value contained at the address referred to by <code>n</code>. If the user does not put <code>NULL</code> as last argument and do not provide enough variables <code>g_i</code>, the algorithm will continue storing arguments at random places in the memory (on the contrary, providing more arguments than necessary does not harm: useless arguments are simply ignored and left unchanged). In the case when f<sub>0</sub> is a library function, a library constant or a procedure function, and if the user provides a non-<code>NULL</code> argument <code>g_t</code> after <code>g_s</code>, additionnal information is returned in the remaining argument:
+  <ul>
+    <li> If f<sub>0</sub> is a library function, a <span class="sollya">Sollya</span> object corresponding to the expression f<sub>0</sub>(x) is stored at the address referred to by <code>g_t</code>. This allows the user to get a <span class="sollya">Sollya</span> object corresponding to function f<sub>0</sub>. This object can further be used to evaluate f<sub>0</sub> at points or to build new expressions involving f<sub>0</sub>. Please notice that a library function object is not necessarily the result of a call to the <code>library</code> command: it can also be, e.g., the derivative of a function created by a call to <code>library</code>.</li>
+    <li> If f<sub>0</sub> is a procedure function, a <span class="sollya">Sollya</span> object corresponding to the expression f<sub>0</sub>(x) is stored at the address referred to by <code>g_t</code>. The same remarks as above apply.</li>
+    <li> If f<sub>0</sub> is a library constant, f<sub>0</sub> itself is stored at the address referred to by <code>g_t</code>. In this particular case, t=1 and the object referred to by <code>g_t</code> simply gets a copy of <code>f</code>. This (somehow useless) mechanism is made only to handle the cases of library functions, procedure functions and library constants in a unified way.</li>
+  </ul>
+Please note that the objects that have been stored in variables <code>g_i</code> must manually be cleared once they become useless.</li>
+  <li> <code>int sollya_lib_v_get_subfunctions(sollya_obj_t f, int *n, va_list va)</code>: the same as the previous function, but with a <code>va_list</code> argument.</li>
+  <li> <code>int sollya_lib_decompose_function(sollya_obj_t f, sollya_base_function_t *type,</code><br>
+       <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int *n, ...)</code>:<br>
+this function is a all-in-one function equivalent to using <code>sollya_lib_get_head_function</code> and <code>sollya_lib_get_subfunctions</code> in only one function call.</li>
+  <li> <code>int sollya_lib_v_decompose_function(sollya_obj_t f, sollya_base_function_t *type,</code><br>
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int *n, va_list va)</code>:<br>
+the same as the previous function, but with a <code>va_list</code>.</li>
+</ul>
+<p>
+As an example of use of these functions, the following code returns 1 if <code>f</code> denotes a functional expression made only of constants (i.e., without the free variable), and returns 0 otherwise:
+<p>
+<div class="divExample">
+#include &lt;sollya.h&gt;<br>
+<br>
+/* Note: we suppose that the library has already been initialized */<br>
+int is_made_of_constants(sollya_obj_t f) {<br>
+&nbsp;&nbsp;sollya_obj_t tmp1 = NULL;<br>
+&nbsp;&nbsp;sollya_obj_t tmp2 = NULL;<br>
+&nbsp;&nbsp;int n, r, res;<br>
+&nbsp;&nbsp;sollya_base_function_t type;<br>
+<br>
+&nbsp;&nbsp;r = sollya_lib_decompose_function(f, &amp;type, &amp;n, &amp;tmp1, &amp;tmp2, NULL);<br>
+&nbsp;&nbsp;if (!r) { sollya_lib_printf("Not a mathematical function\n"); res = 0; }<br>
+&nbsp;&nbsp;else if (n &gt;= 3) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sollya_lib_printf("Unexpected error: %b has more than two arguments.\n", f);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;res = 0;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;switch (type) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case SOLLYA_BASE_FUNC_FREE_VARIABLE: res = 0; break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case SOLLYA_BASE_FUNC_PI: res = 1; break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case SOLLYA_BASE_FUNC_CONSTANT: res = 1; break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case SOLLYA_BASE_FUNC_LIBRARYCONSTANT: res = 1; break;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;default:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res = is_made_of_constants(tmp1);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if ((res) && (n==2)) res = is_made_of_constants(tmp2);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;}<br>
+<br>
+&nbsp;&nbsp;if (tmp1) sollya_lib_clear_obj(tmp1);<br>
+&nbsp;&nbsp;if (tmp2) sollya_lib_clear_obj(tmp2);<br>
+<br>
+&nbsp;&nbsp;return res;<br>
+}<br>
+</div>
+
+<p>
+Functions are provided to allow the user to retrieve further information from library function, library constant or procedure function objects:
+<ul>
+  <li> <code>int sollya_lib_decompose_library_function(int (**f)(mpfi_t, mpfi_t, int),</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>int *deriv, sollya_obj_t *e,</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>sollya_obj_t g)</code>:<br> assume that <code>g</code> represents an expression f<sub>0</sub>(f<sub>1</sub>) where f<sub>0</sub> is a library function. Then, f<sub>0</sub> is the n-th derivative (for some n) of a function provided within Sollya via an external C function <code>int func(mpfi_t, mpfi_t, int)</code>.<br>
+As a result of a call to <code>sollya_lib_decompose_library_function</code>, the value n is stored at the address referred to by <code>deriv</code>, a pointer to <code>func</code> is stored at the address referred to by <code>f</code> and a Sollya object representing f<sub>1</sub> is stored at the address referred to by <code>e</code>. Please notice that the object stored in <code>e</code> must manually be cleared once it becomes useless. Upon success, a boolean integer representing true is returned. If <code>g</code> is not a library function object, nothing happens and false is returned.</li>
+  <li> <code>int sollya_lib_decompose_procedure_function(sollya_obj_t *f, int *deriv,</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>sollya_obj_t *e, sollya_obj_t g)</code>:<br>
+assume that <code>g</code> represents an expression f<sub>0</sub>(f<sub>1</sub>) where f<sub>0</sub> is a procedure function. Then, f<sub>0</sub> is the n-th derivative (for some n) of a function provided within Sollya via a procedure <code>proc(X, n, p) {...}</code>.<br>
+As a result of a call to <code>sollya_lib_decompose_procedure_function</code>, the value n is stored at the address referred to by <code>deriv</code>, a Sollya object representing the procedure is stored at the address referred to by <code>f</code>, a Sollya object representing f<sub>1</sub> is stored at the address referred to by <code>e</code>. Please notice that the objects stored in <code>f</code> and <code>e</code> must manually be cleared once it becomes useless. Upon success, a boolean integer representing true is returned. If <code>g</code> is not a procedure function object, nothing happens and false is returned.</li>
+  <li> <code>int sollya_lib_decompose_library_constant(void (**f)(mpfr_t, mp_prec_t),</code><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>sollya_obj_t c)</code>:<br>
+assume that <code>c</code> is a constant provided via an external C function <code>void func(mpfr_t, mp_prec_t)</code>. As a result of a call to <code>sollya_lib_decompose_library_constant</code>, a pointer to <code>func</code> is stored at the addresse referred to by <code>f</code> and a boolean integer representing true is returned. Otherwise, nothing happens and false is returned.</li>
+</ul>
+
+<h2>10.13 - Faithfully evaluate a functional expression</h2>
+<p>
+Let us suppose that <code>f</code> is a functional expression and <code>a</code> is a numerical value or a constant expression. One of the very convenient features of the interactive tool is that the user can simply write <code>f(a)</code> at the prompt: the tool automatically adapts its internal precision in order to compute a value that is a faithful rounding (at the current tool precision) of the true value f(a). Sometimes it does not achieve to find a faithful rounding, but in any case, if the result is not proved to be exact, a warning is displayed explaining how confident one should be with respect to the returned value. This feature is made available within the library with the two following functions:
+<ul>
+  <li> <code>sollya_fp_result_t</code><br>
+      <code>&nbsp;&nbsp;sollya_lib_evaluate_function_at_constant_expression(mpfr_t res, sollya_obj_t f,</code><br>
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sollya_obj_t a,</code><br>
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mpfr_t *cutoff)</code>,</li>
+  <li> <code>sollya_fp_result_t</code><br>
+      <code>&nbsp;&nbsp;sollya_lib_evaluate_function_at_point(mpfr_t res, sollya_obj_t f,</code><br>
+      <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mpfr_t a, mpfr_t *cutoff)</code>.</li>
+</ul>
+<p>
+In the former, the argument <code>a</code> is any <code>sollya_obj_t</code> containing a numerical constant or a constant expression, while in the latter <code>a</code> is a constant already stored in a <code>mpfr_t</code>. These functions store the result in <code>res</code> and return a <code>sollya_fp_result_t</code> which is an enum type described in Table&nbsp;<a href="#list_of_sollya_fp_result_t">List of values defined in type <code>sollya_fp_result_t</code></a>). In order to understand the role of the <code>cutoff</code> parameter and the value returned by the function, it is necessary to describe the algorithm in a nutshell:
+<div style="width:100%; border-bottom: 1px solid black; margin-top: 15px;"></div>
+<ol>
+  <li><strong>Input:</strong> a functional expression <code>f</code>, a constant expression <code>a</code>, a target precision q, a parameter epsilon.</li>
+  <li> Choose an initial working precision p.</li>
+  <li> Evaluate <code>a</code> with interval arithmetic, performing the computations at precision p.</li>
+  <li> Replace the occurrences of the free variable in <code>f</code> by the interval obtained at step 2. Evaluate the resulting expression with interval arithmetic, performing the computations at precision p. This yields an interval I = [x,y].</li>
+  <li> Examine the following cases successively (RN denotes rounding to nearest at precision&nbsp;q):
+    <ol>
+      <li> If RN(x) = RN(y), set <code>res</code> to that value and return.</li>
+      <li> If I does not contain any floating-point number at precision q, set <code>res</code> to one of both floating-point numbers enclosing I and return.</li>
+      <li> If I contains exactly one floating-point number at precision q, set <code>res</code> to that number and return.</li>
+      <li> If all numbers in I are smaller than epsilon in absolute value, then set <code>res</code> to 0 and return.</li>
+      <li> If p has already been increased many times, then set <code>res</code> to the middle of I and return.</li>
+      <li> Otherwise, increase p and go back to step 2.</li>
+    </ol>
+  </li>
+</ol>
+<div style="width:100%; border-bottom: 1px solid black; margin-bottom: 15px;"></div>
+<p>
+The target precision q is chosen to be the precision of the <code>mpfr_t</code> variable <code>res</code>. The parameter epsilon corresponds to the parameter <code>cutoff</code>. The reason why <code>cutoff</code> is a pointer is that, most of the time, the user may not want to provide it, and using a pointer makes it possible to pass <code>NULL</code> instead. So, if <code>NULL</code> is given, epsilon is set to 0. If <code>cutoff</code> is not <code>NULL</code>, the absolute value of <code>*cutoff</code> is used as value for epsilon. Using a non-zero value for epsilon can be useful when one does not care about the precise value of f(a) whenever its absolute value is below a given threshold. Typically, if one wants to compute the maximum of |f(a<sub>1</sub>)|, ..., |f(a<sub>n</sub>)|, it is not necessary to spend too much effort on the computation of |f(a<sub>i</sub>)| if one already knows that it is smaller than epsilon = max {|f(a<sub>1</sub>)|,...,|f(a<sub>i-1</sub>)|}.
+
+    <a name="list_of_sollya_fp_result_t"></a>
+    <table border="1" rules="cols">
+    <caption>List of values defined in type <code>sollya_fp_result_t</code></caption>
+    <tr><th align="center">Value</th> <th align="center">Meaning</th></tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_OBJ_NO_FUNCTION</code> </td> <td style="padding-bottom: 15px;" align="left"> <code>f</code> is not a functional expression.</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_EXPRESSION_NOT_CONSTANT</code> </td> <td style="padding-bottom: 15px;" align="left"> <code>a</code> is not a constant expression.</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_FAILURE</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (e) and I contained NaN. This typically happens when a is not in the definition domain of f.</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_CUTOFF_IS_NAN</code> </td> <td style="padding-bottom: 15px;" align="left"> <code>cutoff</code> was not <code>NULL</code> and the value of <code>*cutoff</code> is NaN.</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_INFINITY</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (a) with I of the form [+infinity, +infinity] or [-infinity, -infinity]. Hence f(a) is proved to be an exact infinity.</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_PROVEN_EXACT</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (a) with a finite value and x = RN(x) = RN(y) = y.</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (b) with a finite value. and <code>res</code> &lt;= x &lt;= y or x &lt;= y &lt;= <code>res</code>.</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_CORRECTLY_ROUNDED</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (a) with a finite value and x &lt;= <code>res</code> &lt;= y. (Please notice that this means that the algorithm did not manage to conclude whether the result is exact or not. However, it might have been able to conclude if the working precision had been increased.)</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_FAITHFUL_PROVEN_INEXACT</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (b) with a finite value.</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_FAITHFUL</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (c) with a finite value. (again, the algorithm did not manage to conclude whether the result is exact or not, but it might have been able to conclude with a larger working precision).</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_BELOW_CUTOFF</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (d).</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (e) and I was of the form [-delta1, delta2] where 0 &lt; delta1, delta2 &lt;&lt; 1 (below some threshold of the algorithm). This typically happens when f(a) exactly equals zero, but the algorithm does not manage to prove this exact equality.</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (e) with an interval I containing 0 but too large to fall in the above case. (In general, this should be considered as a case of failure and the value stored in <code>res</code> might be completely irrelevant.)</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_NOT_FAITHFUL_ZERO_NOT_CONTAINED</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (e) with an interval I that does not contain 0. (Again, this should be considered as a case of failure.)</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_NOT_FAITHFUL_INFINITY_CONTAINED</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (e) and (at least) one of the bounds of I was infinite. This typically happens when the limit of f(x) when x goes to a is infinite.</td> </tr>
+  </table>
+
+<p>
+In the interactive tool, it is also possible to write <code>f(a)</code> when <code>a</code> contains an interval: <span class="sollya">Sollya</span> performs the evaluation using an enhanced interval arithmetic, e.g., using L'Hopital's rule to produce finite (yet valid of course) enclosures even in cases when f exhibits removable singularities (for instance sin(x)/x over an interval containing 0). This feature is achieved in the library with the function<br>
+<code>int sollya_lib_evaluate_function_over_interval(mpfi_t res, sollya_obj_t f, mpfi_t a).</code><br>
+
+<p>
+This function returns a boolean integer: false means failure (i.e., <code>f</code> is not a functional expression), in which case <code>res</code> is left unchanged, and true means success, in which case <code>res</code> contains the result of the evaluation. The function might succeed, and yet <code>res</code> might contain something useless such as an unbounded interval or even [NaN, NaN] (this happens for instance when <code>a</code> contains points that lie in the interior of the complement of the definition domain of <code>f</code>). It is the user's responsibility to check afterwards whether the computed interval is bounded, unbounded or NaN.
+
+<h2>10.14 - Name of the free variable</h2>
+<p>
+The default name for the free variable is the same in the library and in the interactive tool: it is <code>_x_</code>. In the interactive tool, this name is automatically changed at the first use of an undefined symbol. Accordingly in library mode, if an object is defined by <code>sollya_lib_parse_string</code> with an expression containing an undefined symbol, that symbol will become the free variable name if it has not already been changed before. But what if one does not use <code>sollya_lib_parse_string</code> (because it is not efficient) but one wants to change the name of the free variable? The name can be changed with <code>sollya_lib_name_free_variable("some_name")</code>.
+<p>
+It is possible to get the current name of the free variable with <code>sollya_lib_get_free_variable_name()</code>. This function returns a <code>char *</code> containing the current name of the free variable. Please note that this <code>char *</code> is dynamically allocated on the heap and should be cleared after its use with <code>sollya_lib_free()</code> (see below).
+
+<a name="library_commands_and_functions"></a>
+<h2>10.15 - Commands and functions</h2>
+<p>
+Besides some exceptions, every command and every function available in the <span class="sollya">Sollya</span> interactive tool has its equivalent (with a very close syntax) in the library. Section&nbsp;<a href="#commandsAndFunctions">List of available commands</a> of the present documentation gives the library syntax as well as the interactive tool syntax of each commands and functions. The same information is available within the interactive tool by typing <code>help some_command</code>. So if one knows the name of a command or function in the interactive tool, it is easy to recover its library name and signature.
+<p>
+There are some commands and functions available in interactive mode which, for syntactical reasons, have a different function name in the <span class="sollya">Sollya</span> library:
+<ul>
+  <li> The <span class="sollya">Sollya</span> language construction <code>(obj1)(obj2, obj3, ...)</code> which applies the object <code>obj1</code> to the objects <code>obj2</code>, <code>obj3</code>, etc. is expressed in the <span class="sollya">Sollya</span> library through a call to<br>
+ <code>sollya_obj_t sollya_lib_apply(sollya_obj_t obj1, sollya_obj_t obj2, ...)</code><br>
+ resp. <code>sollya_obj_t sollya_lib_v_apply(sollya_obj_t obj1, sollya_obj_t obj2, va_list)</code>.</li>
+</ul>
+<p>
+A particular point is worth mentioning: some functions of the tool such as <code>remez</code> for instance have a variable number of arguments. For instance, one might call <code>remez(exp(x), 4, [0,1])</code> or <code>remez(1, 4, [0,1], 1/exp(x))</code>. This feature is rendered in the C library by the use of variadic functions (functions with an arbitrary number of arguments), as they are permitted by the C standard. The notable difference is that there must <strong>always be an explicit NULL argument</strong> at the end of the function call. Hence one can write <code>sollya_lib_remez(a, b, c, NULL)</code> or <code>sollya_lib_remez(a, b, c, d, NULL)</code>. It is very easy to forget the <code>NULL</code> argument and use for instance <code>sollya_lib_remez(a, b, c)</code>. This is <strong>completely wrong</strong> because the memory will be read until a <code>NULL</code> pointer is found. In the best case, this will lead to an error or a result obviously wrong, but it could also lead to subtle, not-easy-to-debug errors. The user is advised to be particularly careful with respect to this point.
+<p>
+Each command or function accepting a variable number of arguments comes in a <code>sollya_lib_v_</code> version accepting a <code>va_list</code> parameter containing the list of optional arguments. For instance, one might write a function that takes as arguments a function f, an interval I, optionally a weight function w, optionally a quality parameter q. That function would display the minimax obtained when approximating f over I (possibly with weight w and quality q) by polynomials of degree n=2 to 20. So, that function would get a variable number of arguments (i.e. a <code>va_list</code> in fact) and pass them straight to remez. In that case, one needs to use the <code>v_remez</code> version, as the following code shows:
+
+<div class="divExample">
+#include &lt;sollya.h&gt;<br>
+#include &lt;stdarg.h&gt;<br>
+<br>
+/* Note: we suppose that the library has already been initialized */<br>
+void my_function(sollya_obj_t f, sollya_obj_t I, ...) {<br>
+&nbsp;&nbsp;sollya_obj_t n, res;<br>
+&nbsp;&nbsp;int i;<br>
+&nbsp;&nbsp;va_list va;<br>
+<br>
+&nbsp;&nbsp;for(i=2;i&lt;=20;i++) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;n = SOLLYA_CONST(i);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;va_start(va, I);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;res = sollya_lib_v_remez(f, n, I, va);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sollya_lib_printf("Approximation of degree %b is %b\n", n, res);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;va_end(va);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sollya_lib_clear_obj(n);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sollya_lib_clear_obj(res);<br>
+&nbsp;&nbsp;}<br>
+<br>
+&nbsp;&nbsp;return;<br>
+}<br>
+</div>
+
+<p>
+<a name="callbacks"></a>
+<h2>10.16 - Warning messages in library mode</h2>
+<p>
+The philosophy of <span class="sollya">Sollya</span> is &ldquo;whenever something is not exact, explicitly warn about that&rdquo;. This is a nice feature since this ensures that the user always perfectly knows the degree of confidence they can have in a result (is it exact? or only faithful? or even purely numerical, without any warranty?) However, it is sometimes desirable to hide some (or all) of these messages. This is especially true in library mode where messages coming from <span class="sollya">Sollya</span> are intermingled with the messages of the main program. The library hence provides a specific mechanism to catch all messages emitted by the <span class="sollya">Sollya</span> core and handle each of them specifically: installation of a callback for messages.
+<p>
+Before describing the principle of the message callback, it seems appropriate to recall that several mechanisms are available in the interactive tool to filter the messages emitted by <span class="sollya">Sollya</span>. These mechanisms are also available in library mode for completeness. When a message is emitted, it has two characteristics: a verbosity level and an id (a number uniquely identifying the message). After it has been emitted, it passes through the following steps where it can be filtered. If it has not been filtered (and only in this case) it is displayed.
+<ol>
+  <li> If the verbosity level of the message if greater than the value of the environment variable <code>verbosity</code>, it is filtered.</li>
+  <li> If the environment variable <code>roundingwarnings</code> is set to <code>off</code> and if the message informs the user that a rounding occurred, it is filtered.</li>
+  <li> If the id of the message has been registered with the <code>suppressmessage</code> command, the message is filtered.</li>
+  <li> If a message callback has been installed and if the message has not been previously filtered, it is handled by the callback, which decides to filter it or display it.</li>
+</ol>
+<p>
+A message callback is a function of the form <code>int my_callback(sollya_msg_t msg)</code>. It receives as input an object representing the message, performs whatever treatment seems appropriate and returns an integer interpreted as a boolean. If the returned value is false, the message is not displayed. If, on the contrary, the returned value is true, the message is displayed as usual. By default, no callback is installed and all messages are displayed. To install a callback, use <code>sollya_lib_install_msg_callback(my_callback)</code>. Please remember that, if a message is filtered because of one of the three other mechanisms, it will never be transmitted to the callback. Hence, in library mode, if one wants to catch every single message through the callback, one should set the value of <code>verbosity</code> to <code>MAX_INT</code>, set <code>roundingwarnings</code> to <code>on</code> (this is the default anyway) and one should not use the <code>suppressmessage</code> mechanism.
+<p>
+It is possible to come back to the default behavior, using <code>sollya_lib_uninstall_msg_callback()</code>. Please notice that callbacks do not stack over each other: i.e., if some callback <code>callback1</code> is already installed, and one installs another one <code>callback2</code>, then the effect of <code>sollya_lib_uninstall_msg_callback()</code> is to come back to the default behavior, <strong>and not</strong> to come back to callback <code>callback1</code>.
+<p>
+Both <code>sollya_lib_install_msg_callback</code> and <code>sollya_lib_uninstall_msg_callback</code> return an integer interpreted as a boolean: false means failure and true means success.
+<p>
+It is possible to get the currently installed callback using <code>sollya_lib_get_msg_callback()</code>. This function returns a function pointer to the current callback &ndash; i.e., a <code>int (*)(sollya_msg_t)</code> &ndash; if a callback is installed, or <code>NULL</code> if no callback is currently installed.
+<p>
+Currently the type <code>sollya_msg_t</code> has only two accessors:
+<ul>
+  <li> <code>int sollya_lib_get_msg_id(sollya_msg_t msg)</code> returns an integer that identifies the type of the message. The message types are listed in the file <code>sollya-messages.h</code>. Please note that this file not only lists the possible identifiers but only defines meaningful names to each possible message number (e.g., <code>SOLLYA_MSG_UNDEFINED_ERROR</code> is an alias for the number 2 but is more meaningful to understand what the message is about). It is recommended to use these names instead of numerical values.</li>
+  <li> <code>char *sollya_lib_msg_to_text(sollya_msg_t msg)</code> returns a generic string briefly summarizing the contents of the message. Please note that this <code>char *</code> is dynamically allocated on the heap and should manually be cleared with <code>sollya_lib_free</code> when it becomes useless.</li>
+</ul>
+<p>In the future, other accessors could be added (to get the verbosity level at which the message has been emitted, to get data associated with the message, etc.) The developers of <span class="sollya">Sollya</span> are open to suggestions and feature requests on this subject.
+<p>
+As an illustration let us give a few examples of possible use of callbacks:
+<p>
+<strong>Example 1:</strong> A callback that filters everything.
+<div class="divExample">
+int hide_everything(sollya_msg_t msg) {<br>
+&nbsp;&nbsp;return 0;<br>
+}<br>
+</div>
+
+<p>
+<strong>Example 2:</strong> filter everything but the messages indicating that a comparison is uncertain.
+<div class="divExample">
+int keep_comparison_warnings(sollya_msg_t msg) {<br>
+&nbsp;&nbsp;switch(sollya_lib_get_msg_id(msg)) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;case SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT_THAT_IS_NOT_FAITHFUL:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;case SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;case SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT_FAITHFUL_BUT_UNDECIDED:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;case SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT_FAITHFUL_BUT_NOT_REAL:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;default:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0;<br>
+&nbsp;&nbsp;}<br>
+}<br>
+</div>
+
+<p>
+<strong>Example 3:</strong> ensuring perfect silence for a particular function call (uses the callback defined in Example&nbsp;1).
+<div class="divExample">
+...<br>
+int (*)(sollya_msg_t) old_callback = sollya_lib_get_msg_callback();<br>
+sollya_lib_uninstall_msg_callback();<br>
+sollya_lib_install_msg_callback(hide_everything);<br>
+&nbsp;&nbsp;/* Here takes place the function call that must be completely silent */<br>
+sollya_lib_uninstall_msg_callback();<br>
+if (old_callback) sollya_lib_install_msg_callback(old_callback);<br>
+...<br>
+</div>
+
+<p>
+<strong>Example 4:</strong> changing the value of some flag when some message is emitted.
+<div class="divExample">
+int flag_double_rounding = 0;<br>
+<br>
+int set_flag_on_problem(sollya_msg_t msg) {<br>
+&nbsp;&nbsp;switch(sollya_lib_get_msg_id(msg)) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;case SOLLYA_MSG_DOUBLE_ROUNDING_ON_CONVERSION:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flag&nbsp;&nbsp;= 1;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;return 1;<br>
+}<br>
+<br>
+...<br>
+<br>
+int main() {<br>
+&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;sollya_lib_init();<br>
+&nbsp;&nbsp;sollya_lib_install_msg_callback(set_flag_on_problem);<br>
+&nbsp;&nbsp;...<br>
+}<br>
+</div>
+
+<p>
+More involved examples are possible: for instance, instead of setting a flag, it is possible to keep in some variable what the last message was. One may even implement a stack mechanism and store the messages in a stack, in order to handle them later. One may also decide to raise an exception flag on a particular message, etc.
+
+<a name="customMemoryFunctions"></a>
+<h2>10.17 - Using <span class="sollya">Sollya</span> in a program that has its own allocation functions</h2>
+<p>
+<span class="sollya">Sollya</span> uses its own allocation functions: as a consequence, pointers that have been allocated by <span class="sollya">Sollya</span> functions must be freed using <code>sollya_lib_free</code> instead of the usual <code>free</code> function. Another consequence is that <span class="sollya">Sollya</span> registers its own allocation functions to the <code>GMP</code> library, using the mechanism provided by <code>GMP</code>, so that <code>GMP</code> also uses <span class="sollya">Sollya</span> allocation functions behind the scene, when the user performs a call to, e.g., <code>mpz_init</code>, <code>mpfr_init2</code>, etc.
+<p>
+In general, this is completely harmless and the user might even not notice it. However, this is a problem if <span class="sollya">Sollya</span> is used in a program that also uses its own allocation functions and that has already registered these functions to <code>GMP</code>. Actually:
+<ul>
+  <li> If the main program has already registered allocation functions to <code>GMP</code> and if <span class="sollya">Sollya</span> is naively initialized with <code>sollya_lib_init()</code>, <span class="sollya">Sollya</span> will register its own allocation functions, thus overriding the previously registered functions.</li>
+  <li> If the user initializes first <span class="sollya">Sollya</span>, and then registers its own allocation functions to <code>GMP</code>, the exact opposite happens: <span class="sollya">Sollya</span> allocation functions are overridden by those of the user, and this will likely cause <span class="sollya">Sollya</span> to crash (or worst, silently behave not reliably).</li>
+</ul>
+<p>
+In order to solve this issue, <span class="sollya">Sollya</span> provides a chaining mechanism that we are now going to describe. The idea is the following: suppose that the main program should use a function <code>custom_malloc</code>. The user should not use <code>mp_set_memory_functions</code> as usual, but should instead initialize <span class="sollya">Sollya</span> with the initializing function described above. This will cause <span class="sollya">Sollya</span> to register an allocation function <code>sollya_lib_malloc</code> to <code>GMP</code>. This function overloads <code>custom_malloc</code>: when called, it uses <code>custom_malloc</code> to perform the actual allocation and does nothing else but some internal accounting and verification for that allocation. To repeat, the actual allocation is done by <code>custom_malloc</code>; hence from the point of view of the user, the mechanism is completely transparent and equivalent to directly registering <code>custom_malloc</code> to <code>GMP</code>. The same holds for all other allocation functions: in particular, this is true for <code>free</code> as well: if a function <code>custom_free</code> is given at the initialization of <span class="sollya">Sollya</span>, then the function <code>sollya_lib_free</code> eventually uses <code>custom_free</code> to free the memory. 
+<p>
+The initialization function providing this mechanism is:<br>
+<code>int sollya_lib_init_with_custom_memory_functions(</code><br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void *(*custom_malloc)(size_t),</code><br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void *(*custom_calloc)(size_t, size_t),</code><br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void *(*custom_realloc)(void *, size_t),</code><br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void (*custom_free)(void *),</code><br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void *(*custom_realloc_with_size)(void *, size_t, size_t),</code><br>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;void (*custom_free_with_size)(void *, size_t)).</code><br>
+None of the arguments is mandatory: if the user does not want to provide an argument, they may use <code>NULL</code> as a placeholder for that argument. In that case, the corresponding <span class="sollya">Sollya</span> default function will be used. Indeed, the default initializing function <code>sollya_lib_init()</code> is just an alias to <code>sollya_lib_init_with_custom_memory_functions(NULL, NULL, NULL, NULL, NULL, NULL)</code>.
+<p>
+Please notice, that if <code>custom_malloc</code> is provided, then the function <code>sollya_lib_malloc</code> will be defined as an overloaded version of <code>custom_malloc</code>. Hence, <code>custom_malloc</code> will eventually be used for all the allocations performed by <span class="sollya">Sollya</span> (including the allocation of memory for its own purpose). This is true also for <code>custom_calloc</code>, <code>custom_realloc</code> and <code>custom_free</code>. However, this is not the case for <code>custom_realloc_with_size</code> and <code>custom_free_with_size</code>: these functions are only required for the registration to <code>GMP</code> and are not used by <span class="sollya">Sollya</span> itself (except of course when <span class="sollya">Sollya</span> allocates function through a call to a <code>GMP</code>, <code>MPFR</code> or <code>MPFI</code> function). Thus, to sum up:
+<ul>
+  <li> If the user only wants to register their own functions to <code>GMP</code> through <span class="sollya">Sollya</span>, they  only need to provide <code>custom_malloc</code>, <code>custom_realloc_with_size</code> and <code>custom_free_with_size</code> at the initialization of <span class="sollya">Sollya</span> (actually an overloaded version will be registered to <code>GMP</code> but this is transparent for the user, as explained above).</li>
+  <li> If the user also wants <span class="sollya">Sollya</span> to use their custom allocation functions for all allocations of memory by <span class="sollya">Sollya</span>, then they also need to provide <code>custom_calloc</code>, <code>custom_realloc</code> and <code>custom_free</code>.</li>
+</ul>
+<p>
+Of course, even if the user registers <code>custom_malloc</code>, <code>custom_free</code>, etc., at the initialization of <span class="sollya">Sollya</span>, they stay free to use them for their own allocation needs: only allocations performed by <code>GMP</code> (and consequently <code>MPFR</code> and <code>MPFI</code>) and allocations performed by <span class="sollya">Sollya</span> have to use the chaining mechanism. However, for the convenience of the user, the library also provides access to the allocation functions of <span class="sollya">Sollya</span>. They are the following:
+<ul>
+  <li> <code>void sollya_lib_free(void *)</code></li>
+  <li> <code>void *sollya_lib_malloc(size_t)</code></li>
+  <li> <code>void *sollya_lib_calloc(size_t, size_t)</code></li>
+  <li> <code>void *sollya_lib_realloc(void *, size_t)</code>.</li>
+</ul>
+<p>No access to the overloaded version of <code>custom_realloc_with_size</code> and <code>custom_free_with_size</code> is provided, but if the user really wants to retrieve them, they can do it with <code>mp_get_memory_functions</code> since they are registered to <code>GMP</code>.
+
 </body>

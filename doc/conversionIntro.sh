@@ -39,10 +39,13 @@ sed -n -i 's/\\subsection\*{\([^}]*\)}/<h2>\1<\/h2>/g;p' $target
 sed -n -i 's/\\url{\([^}]*\)}/<a href="\1">\1<\/a>/g;p' $target
 sed -n -i 's/\\begin{itemize}/<ul>/g;p' $target
 sed -n -i 's/\\end{itemize}/<\/li><\/ul>/g;p' $target
+sed -n -i 's/\\begin{enumerate}/<ol>/g;p' $target
+sed -n -i 's/\\end{enumerate}/<\/li><\/ol>/g;p' $target
 sed -n -i 's/\\item/<\/li><li>/g;p' $target  # Warning: the first one should not be closed
 sed -n -i 's/\\input{\([^}]*\)}/<?php include("\1.php"); ?>/g;p' $target
 sed -n -i 's/^%\(.*\)/<!-- \1 -->/g;p' $target
 sed -n -i 's/\\copyright/\&copy;/g;p' $target
+sed -n -i 's/\\dots/.../g;p' $target
 sed -n -i 's/~/\&nbsp;/g;p' $target
 sed -n -i 's/\\emph{\([^}]*\)}/<em>\1<\/em>/g;p' $target
 sed -n -i 's/{\\it \([^}]*\)}/<em>\1<\/em>/g;p' $target

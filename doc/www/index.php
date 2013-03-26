@@ -61,7 +61,7 @@ It is written by <a href="http://www.christoph-lauter.org/">Christoph Lauter</a>
 
 <h2>Download Sollya:</h2>
 <ul>
-  <li> <strong><a href="https://gforge.inria.fr/frs/?group_id=1015&release_id=6035">Sollya 3.0</a></strong> has been released and can be downloaded <a href="https://gforge.inria.fr/frs/download.php/28571/sollya-3.0.tar.gz">here</a>.
+  <li> <strong><a href="https://gforge.inria.fr/frs/?group_id=1015&amp;release_id=6035">Sollya 3.0</a></strong> has been released and can be downloaded <a href="https://gforge.inria.fr/frs/download.php/28571/sollya-3.0.tar.gz">here</a>.
   <li> <?php echo "A weekly build (last compiled on $compile_time) of the SVN sources is available as a <a href=\"$targz_name\">tar.gz</a>, as a <a href=\"$tarbz2_name\">tar.bz2</a> and as a <a href=\"$zip_name\">zip</a> file." ?>
   <li> The latest development version is available through anonymous SVN 
     checkout as indicated <a href="http://gforge.inria.fr/scm/?group_id=1015">here</a>. </li>
@@ -114,11 +114,12 @@ modified. </p>
 
 <h2>License</h2>
 <p style="font-size:small;">
-The Sollya tool and the material of this website is Copyright &copy;&nbsp;2006-2011 by<br>
+The Sollya tool and the material of this website is Copyright &copy;&nbsp;2006-2013 by<br>
 <span style="text-indent:3em; display:block;">Laboratoire de l'Informatique du Parallélisme - UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668, Lyon, France,</span>
 <span style="text-indent:3em;display:block;">LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2) Nancy, France,</span>
-<span style="text-indent:3em;display:block;">Laboratoire d'Informatique de Paris 6, Équipe PEQUAN, UPMC Université Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France, and by</span>
-<span style="text-indent:3em;display:block;">INRIA Sophia-Antipolis Méditerranée, APICS Team, Sophia-Antipolis, France.</span>
+<span style="text-indent:3em;display:block;">Laboratoire d'Informatique de Paris 6, Équipe PEQUAN, UPMC Université Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,</span>
+<span style="text-indent:3em;display:block;">INRIA Sophia-Antipolis Méditerranée, APICS Team, Sophia-Antipolis, France, and by</span>
+<span style="text-indent:3em;display:block;">CAPA project, Department of Mathematics, Ångström Laboratory, Uppsala University, Sweden.</span>
 All rights reserved.
 <p style="font-size:small;">
 The Sollya tool is open software. It is distributed and can be used,
