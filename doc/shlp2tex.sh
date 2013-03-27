@@ -123,7 +123,7 @@ processName() {
 
 
 processLibraryName() {
- nLines=`cat $tempfile | grep "#LIBRARYNAME" | wc -l`
+ nLines=`cat $tempfile | grep "#LIBRARYNAME" | grep -v "(CONTINUED)" | wc -l`
  if [ $nLines -eq 0 ]
  then return
  fi
@@ -132,7 +132,7 @@ processLibraryName() {
    then printf "\\\\noindent Library name:\\\\\\\\\n" >> $target
    else printf "\\\\noindent Library names:\\\\\\\\\n" >> $target
  fi
- grep "#LIBRARYNAME" $tempfile | sed -n 's/#LIBRARYNAME \(.*\)/\\verb|   \1|\\\\ /;p' | tr -d '\n' | sed -n 's/ $/[0.2cm]\n/;p' | sed -n 's/\\\\ /\\\\\n/g;p' >> $target
+ grep "#LIBRARYNAME" $tempfile | sed -n 's/#LIBRARYNAME \(.*\)/\\verb|   \1|\\\\ /;p' | sed -n 's/(CONTINUED)/           /;p' | tr -d '\n' | sed -n 's/ $/[0.2cm]\n/;p' | sed -n 's/\\\\ /\\\\\n/g;p' >> $target
 }
 
 processQuickDescription() {

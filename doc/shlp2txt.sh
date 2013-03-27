@@ -116,7 +116,7 @@ processName() {
 }
 
 processLibraryName() {
- nLines=`cat $tempfile | grep "#LIBRARYNAME" | wc -l`
+ nLines=`cat $tempfile | grep "#LIBRARYNAME" | grep -v "(CONTINUED)" | wc -l`
  if [ $nLines -eq 0 ]
  then return
  fi
@@ -125,7 +125,7 @@ processLibraryName() {
    then printf "Library name:\n" >> $target
    else printf "Library names:\n" >> $target
  fi
- grep "#LIBRARYNAME" $tempfile | sed -n 's/#LIBRARYNAME /   /;p' >> $target
+ grep "#LIBRARYNAME" $tempfile | sed -n 's/#LIBRARYNAME /   /;p' | sed -n 's/(CONTINUED)/           /;p' >> $target
  printf "\n" >> $target
 }
 

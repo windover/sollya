@@ -82,9 +82,9 @@ tcosh.c \
 tcreate_structure.c \
 tdecimal.c \
 tdecompose_function.c \
-tdecompose_library_constant.c \
-tdecompose_library_function.c \
-tdecompose_procedure_function.c \
+tdecompose_libraryconstant.c \
+tdecompose_libraryfunction.c \
+tdecompose_procedurefunction.c \
 tdefault.c \
 tdegree.c \
 tdenominator.c \

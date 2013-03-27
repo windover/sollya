@@ -1,6 +1,11 @@
 #NAME $LIBRARYCONSTANT
 #QUICK_DESCRIPTION binds an external mathematical constant to a variable in $SOLLYA
 
+#LIBRARYNAME sollya_obj_t sollya_lib_libraryconstant(char *, void (*)(mpfr_t, mp_prec_t))
+#LIBRARYNAME sollya_obj_t sollya_lib_build_function_libraryconstant(char *,
+#LIBRARYNAME (CONTINUED)                                            void (*)(mpfr_t,
+#LIBRARYNAME (CONTINUED)                                                     mp_prec_t))
+
 #CALLING $COMMAND(<path>)
 #TYPE $STRING_TYPE -> $FUNCTION_TYPE
 

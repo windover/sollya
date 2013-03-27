@@ -9,8 +9,12 @@
 #CALLING $COMMAND(<polynomial>, <range>, <error bound>, <format>, <functionname>, <filename>, <honor coefficient precisions>, <proof filename>)
 #TYPE ($FUNCTION_TYPE, $RANGE_TYPE, $CONSTANT_TYPE, $DOUBLEFORMAT_TYPE, $STRING_TYPE, $STRING_TYPE, $HONORCOEFF_TYPE, $STRING_TYPE) -> $FUNCTION_TYPE
 
-#LIBRARYNAME sollya_obj_t sollya_lib_implementpoly(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, ...)
-#LIBRARYNAME sollya_obj_t sollya_lib_v_implementpoly(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, va_list)
+#LIBRARYNAME sollya_obj_t sollya_lib_implementpoly(sollya_obj_t, sollya_obj_t,
+#LIBRARYNAME (CONTINUED)                           sollya_obj_t, sollya_obj_t,
+#LIBRARYNAME (CONTINUED)                           sollya_obj_t, sollya_obj_t, ...)
+#LIBRARYNAME sollya_obj_t sollya_lib_v_implementpoly(sollya_obj_t, sollya_obj_t,
+#LIBRARYNAME (CONTINUED)                             sollya_obj_t, sollya_obj_t,
+#LIBRARYNAME (CONTINUED)                             sollya_obj_t, sollya_obj_t, va_list)
 
 #DESCRIPTION 
 The command $COMMAND implements the polynomial <polynomial> in range

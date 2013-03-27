@@ -10,8 +10,10 @@
 #TYPE ($STRING_TYPE, $APPROXERROR_TYPE, $FUNCTION_TYPE, $RANGE_TYPE, $INTEGER_TYPE, $PERTURB_TYPE, $FILE_TYPE, $STRING_TYPE) -> $VOID_TYPE
 
 
-#LIBRARYNAME void sollya_lib_externalplot(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, ...)
-#LIBRARYNAME void sollya_lib_v_externalplot(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, va_list)
+#LIBRARYNAME void sollya_lib_externalplot(sollya_obj_t, sollya_obj_t, sollya_obj_t,
+#LIBRARYNAME (CONTINUED)                  sollya_obj_t, sollya_obj_t, ...)
+#LIBRARYNAME void sollya_lib_v_externalplot(sollya_obj_t, sollya_obj_t, sollya_obj_t,
+#LIBRARYNAME (CONTINUED)                    sollya_obj_t, sollya_obj_t, va_list)
 
 #DESCRIPTION 
 The command $COMMAND plots the error of an external function

@@ -6,8 +6,10 @@
 </div> 
 <div class="divLibraryName"> 
 <h2 class="libraryname">Library names:</h2> 
-<span class="commandline type">sollya_obj_t sollya_lib_fpminimax(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, ...)</span> 
-<span class="commandline type">sollya_obj_t sollya_lib_v_fpminimax(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, va_list)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_fpminimax(sollya_obj_t, sollya_obj_t, sollya_obj_t,</span> 
+<span class="commandline type">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sollya_obj_t, ...)</span> 
+<span class="commandline type">sollya_obj_t sollya_lib_v_fpminimax(sollya_obj_t, sollya_obj_t,</span> 
+<span class="commandline type">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sollya_obj_t, sollya_obj_t, va_list)</span> 
 </div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
@@ -196,7 +198,7 @@ currently <?php linkTo("command","fpminimax","fpminimax");?> has to be run with 
 &nbsp;&nbsp;&nbsp;&gt; print("Error of P2:&nbsp;&nbsp;&nbsp;&nbsp;", dirtyinfnorm(f-P2, [-1b-7; 1b-7]));<br> 
 &nbsp;&nbsp;&nbsp;Error of P2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8.2477144579950871737109573536791331686347620955984e-16<br> 
 &nbsp;&nbsp;&nbsp;&gt; print("Error of P3:&nbsp;&nbsp;&nbsp;&nbsp;", dirtyinfnorm(f-P3, [-1b-7; 1b-7]));<br> 
-&nbsp;&nbsp;&nbsp;Error of P3:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.08454277156993282593701156841863009789063333951055e-15<br> 
+&nbsp;&nbsp;&nbsp;Error of P3:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1.08589225157946674530174198018927191510501967039589e-15<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 5: </h2> 

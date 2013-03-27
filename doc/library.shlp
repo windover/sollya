@@ -1,6 +1,12 @@
 #NAME $LIBRARY
 #QUICK_DESCRIPTION binds an external mathematical function to a variable in $SOLLYA
 
+#LIBRARYNAME sollya_obj_t sollya_lib_libraryfunction(sollya_obj_t, char *,
+#LIBRARYNAME (CONTINUED)                             int (*)(mpfi_t, mpfi_t, int))
+#LIBRARYNAME sollya_obj_t sollya_lib_build_function_libraryfunction(sollya_obj_t, char *,
+#LIBRARYNAME (CONTINUED)                                            int (*)(mpfi_t,
+#LIBRARYNAME (CONTINUED)                                                    mpfi_t, int))
+
 #CALLING $COMMAND(<path>)
 #TYPE $STRING_TYPE -> $FUNCTION_TYPE
 

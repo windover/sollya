@@ -3,8 +3,10 @@
 \noindent Name: \textbf{fpminimax}\\
 \phantom{aaa}computes a good polynomial approximation with fixed-point or floating-point coefficients\\[0.2cm]
 \noindent Library names:\\
-\verb|   sollya_obj_t sollya_lib_fpminimax(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, ...)|\\
-\verb|   sollya_obj_t sollya_lib_v_fpminimax(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, va_list)|\\[0.2cm]
+\verb|   sollya_obj_t sollya_lib_fpminimax(sollya_obj_t, sollya_obj_t, sollya_obj_t,|\\
+\verb|                                     sollya_obj_t, ...)|\\
+\verb|   sollya_obj_t sollya_lib_v_fpminimax(sollya_obj_t, sollya_obj_t,|\\
+\verb|                                       sollya_obj_t, sollya_obj_t, va_list)|\\[0.2cm]
 \noindent Usage: 
 \begin{center}
 \textbf{fpminimax}(\emph{f}, \emph{n}, \emph{formats}, \emph{range}, \emph{indic1}, \emph{indic2}, \emph{indic3}, \emph{P}) : (\textsf{function}, \textsf{integer}, \textsf{list}, \textsf{range}, \textsf{absolute$|$relative} $|$ \textsf{fixed$|$floating} $|$ \textsf{function}, \textsf{absolute$|$relative} $|$ \textsf{fixed$|$floating} $|$ \textsf{function}, \textsf{absolute$|$relative} $|$ \textsf{fixed$|$floating} $|$ \textsf{function}, \textsf{function}) $\rightarrow$ \textsf{function}\\
@@ -205,7 +207,7 @@ Error of P1:     7.9048441259903026580081299123420463921479618202064e-16
 > print("Error of P2:    ", dirtyinfnorm(f-P2, [-1b-7; 1b-7]));
 Error of P2:     8.2477144579950871737109573536791331686347620955984e-16
 > print("Error of P3:    ", dirtyinfnorm(f-P3, [-1b-7; 1b-7]));
-Error of P3:     1.08454277156993282593701156841863009789063333951055e-15
+Error of P3:     1.08589225157946674530174198018927191510501967039589e-15
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 5: 

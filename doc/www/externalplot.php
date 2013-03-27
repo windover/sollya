@@ -6,8 +6,10 @@
 </div> 
 <div class="divLibraryName"> 
 <h2 class="libraryname">Library names:</h2> 
-<span class="commandline type">void sollya_lib_externalplot(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, ...)</span> 
-<span class="commandline type">void sollya_lib_v_externalplot(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, va_list)</span> 
+<span class="commandline type">void sollya_lib_externalplot(sollya_obj_t, sollya_obj_t, sollya_obj_t,</span> 
+<span class="commandline type">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sollya_obj_t, sollya_obj_t, ...)</span> 
+<span class="commandline type">void sollya_lib_v_externalplot(sollya_obj_t, sollya_obj_t, sollya_obj_t,</span> 
+<span class="commandline type">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sollya_obj_t, sollya_obj_t, va_list)</span> 
 </div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 

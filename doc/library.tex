@@ -2,6 +2,12 @@
 \label{lablibrary}
 \noindent Name: \textbf{library}\\
 \phantom{aaa}binds an external mathematical function to a variable in \sollya\\[0.2cm]
+\noindent Library names:\\
+\verb|   sollya_obj_t sollya_lib_libraryfunction(sollya_obj_t, char *,|\\
+\verb|                                           int (*)(mpfi_t, mpfi_t, int))|\\
+\verb|   sollya_obj_t sollya_lib_build_function_libraryfunction(sollya_obj_t, char *,|\\
+\verb|                                                          int (*)(mpfi_t,|\\
+\verb|                                                                  mpfi_t, int))|\\[0.2cm]
 \noindent Usage: 
 \begin{center}
 \textbf{library}(\emph{path}) : \textsf{string} $\rightarrow$ \textsf{function}\\
