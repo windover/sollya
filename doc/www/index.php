@@ -118,8 +118,7 @@ The Sollya tool and the material of this website is Copyright &copy;&nbsp;2006-2
 <span style="text-indent:3em; display:block;">Laboratoire de l'Informatique du Parallélisme - UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668, Lyon, France,</span>
 <span style="text-indent:3em;display:block;">LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2) Nancy, France,</span>
 <span style="text-indent:3em;display:block;">Laboratoire d'Informatique de Paris 6, Équipe PEQUAN, UPMC Université Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,</span>
-<span style="text-indent:3em;display:block;">INRIA Sophia-Antipolis Méditerranée, APICS Team, Sophia-Antipolis, France, and by</span>
-<span style="text-indent:3em;display:block;">CAPA project, Department of Mathematics, Ångström Laboratory, Uppsala University, Sweden.</span>
+<span style="text-indent:3em;display:block;">INRIA Sophia-Antipolis Méditerranée, APICS Team, Sophia-Antipolis, France.</span>
 All rights reserved.
 <p style="font-size:small;">
 The Sollya tool is open software. It is distributed and can be used,

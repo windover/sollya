@@ -19,7 +19,7 @@
 
   christoph.lauter@ens-lyon.org
   sylvain.chevillard@ens-lyon.org
-  mioara.joldes@ens-lyon.fr
+  joldes@lass.fr
 
   This software is a computer program whose purpose is to provide an
   environment for safe floating-point code development. It is

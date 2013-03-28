@@ -3,7 +3,7 @@
 <head>
 <title>Users' manual for the Sollya tool - Release 4.0-beta</title>
 <meta name="author" content="Sylvain Chevillard" >
-<meta name="copyright" content="2009-2011 Laboratoire de l'Informatique du Parallélisme - UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668; LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France; Laboratoire d'Informatique de Paris 6, Équipe PEQUAN, UPMC Université Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France; INRIA Sophia-Antipolis Méditerranée, APICS Team, Sophia-Antipolis, France">
+<meta name="copyright" content="2009-2013 Laboratoire de l'Informatique du Parallélisme - UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668; LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France; Laboratoire d'Informatique de Paris 6, Équipe PEQUAN, UPMC Université Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France; INRIA Sophia-Antipolis Méditerranée, APICS Team, Sophia-Antipolis, France">
 <meta name="keywords" content="help, sollya, User's Manual">
 <meta name="description" content="This is part of Sollya User's Manual">
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -36,7 +36,7 @@ table {
 <h1 style="text-align:center">Users' manual for the <span class="sollya">Sollya</span> tool - Release 4.0-beta</h1>
 <div style="text-align:center; line-height: 1.5em;">Sylvain Chevillard (<a href="sylvain.chevillard@ens-lyon.org">sylvain.chevillard@ens-lyon.org</a>),</div>
 <div style="text-align:center; line-height: 1.5em;">Christoph Lauter (<a href="christoph.lauter@ens-lyon.org; line-height: 1.5em;">christoph.lauter@ens-lyon.org</a>)</div>
-<div style="text-align:center">and Mioara Joldeș (<a href="mioara.joldes@ens-lyon.fr">mioara.joldes@ens-lyon.fr</a>).</div>
+<div style="text-align:center">and Mioara Joldeș (<a href="joldes@lass.fr">joldes@lass.fr</a>).</div>
 
 <h2 style="margin-top: 3em;">License</h2>
 <p style="font-size:small;">
@@ -44,8 +44,7 @@ The <span class="sollya">Sollya</span> tool is Copyright &copy;&nbsp;2006-2013 b
 <span style="text-indent:3em; display:block;">Laboratoire de l'Informatique du Parallélisme - UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668, Lyon, France, </span>
 <span style="text-indent:3em;display:block;">LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France, </span>
 <span style="text-indent:3em;display:block;">Laboratoire d'Informatique de Paris 6, Équipe PEQUAN, UPMC Université Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,</span>
-<span style="text-indent:3em;display:block;">INRIA Sophia-Antipolis Méditerranée, APICS Team, Sophia-Antipolis, France, and by</span>
-<span style="text-indent:3em;display:block;">CAPA project, Department of Mathematics, Ångström Laboratory, Uppsala University, Sweden.</span>
+<span style="text-indent:3em;display:block;">INRIA Sophia-Antipolis Méditerranée, APICS Team, Sophia-Antipolis, France.</span>
 All rights reserved.
 <p style="font-size:small;">
 The <span class="sollya">Sollya</span> tool is open software. It is distributed and can be used,

@@ -3,13 +3,12 @@ Copyright 2007-2013 by
 Laboratoire de l'Informatique du Parallelisme, UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2),
 Laboratoire d'Informatique de Paris 6, equipe PEQUAN, UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
-Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS, Sophia Antipolis, France,
 and by
-CAPA project, Department of Mathematics, Angstrom Laboratory, Uppsala University, Sweden.
+Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS, Sophia Antipolis, France.
 Contributors Ch. Lauter, S. Chevillard, M. Joldes
 christoph.lauter@ens-lyon.org
 sylvain.chevillard@ens-lyon.org
-mioara.joldes@ens-lyon.fr
+joldes@lass.fr
 This software is a computer program whose purpose is to provide an
 environment for safe floating-point code development. It is
 particularily targeted to the automatized implementation of

@@ -1,20 +1,12 @@
 /*
-  Copyright 2012 by
-
-  Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
-  Sophia Antipolis, France.
+  Copyright 2011-2012 by
 
   Laboratoire de l'Informatique du Parallelisme,
   UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
-  Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
-  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
+  Contributor M. Joldes
 
-  Contributors S. Chevillard, M. Joldes, Ch. Lauter
-
-  mioara.joldes@ens-lyon.fr
-  christoph.lauter@ens-lyon.org
-  sylvain.chevillard@ens-lyon.org
+  joldes@lass.fr
 
   This software is a computer program whose purpose is to provide an
   environment for safe floating-point code development. It is

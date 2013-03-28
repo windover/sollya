@@ -16,7 +16,7 @@
 
   christoph.lauter@ens-lyon.org
   sylvain.chevillard@ens-lyon.org
-  mioara.joldes@ens-lyon.fr
+  joldes@lass.fr
 
   This software is a computer program whose purpose is to provide an
   environment for safe floating-point code development. It is
@@ -119,7 +119,7 @@ extern "C" {
      are defined. These types represent the different objects the Sollya
      library is able to handle and objects that can be chained together.
 
-   */
+  */
 #if (!(defined(__SOLLYA_NODE_TYPE_ALREADY_DEFINED) && (__SOLLYA_NODE_TYPE_ALREADY_DEFINED)))
   typedef struct __sollya_internal_type_chain_struct __sollya_internal_type_chain;
 
@@ -294,15 +294,15 @@ extern "C" {
   /* A function to name the free mathematical variable and one to get its name.
 
      - If the variable has already been named when the naming function
-       is called, the variable gets renamed.
+     is called, the variable gets renamed.
 
      - If the variable has not been named yet, "_x_" is returned as its name.
-       This corresponds to the name displayed by other functions.
+     This corresponds to the name displayed by other functions.
 
      - The pointer returned for the name *must* be freed by the user.
 
      - The pointer given to the naming function is not "used up" by
-       the function.
+     the function.
 
   */
   void sollya_lib_name_free_variable(const char *);
@@ -654,7 +654,7 @@ extern "C" {
      In order to create a structure "from scratch", give NULL as an
      existing Sollya structure object to sollya_lib_create_structure.
 
-   */
+  */
   int sollya_lib_get_structure_elements(char ***, sollya_obj_t **, int *, sollya_obj_t);
   int sollya_lib_get_element_in_structure(sollya_obj_t *, char *, sollya_obj_t);
   int sollya_lib_create_structure(sollya_obj_t *, sollya_obj_t, char *, sollya_obj_t);

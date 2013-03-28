@@ -12,7 +12,7 @@
 
   Contributors S. Chevillard, M. Joldes, Ch. Lauter
 
-  mioara.joldes@ens-lyon.fr
+  joldes@lass.fr
   christoph.lauter@ens-lyon.org
   sylvain.chevillard@ens-lyon.org
 
@@ -65,8 +65,8 @@
   i.e. of auxiliary functions for constructing Chebyshev Models/forms*/
 
 /*This function sets an mpfi from evaluating a node* c:
-if c constant after simplification-> ok
-if not sets the value to 0
+  if c constant after simplification-> ok
+  if not sets the value to 0
 */
 int mpfi_set_node( sollya_mpfi_t r, node *c, mp_prec_t prec);
 
@@ -82,25 +82,25 @@ void getChebyshevPoints(sollya_mpfi_t *chebPoints, int n, sollya_mpfi_t x);
 void getChebyshevExtrema(sollya_mpfi_t *chebPoints, int n, sollya_mpfi_t x);
 
 /* Returns a matrix chebMatrix of dimension nxn,
-s.t. chebMatrix[i,j]=T_i(x_j), for  i=0..n-1, j=0..n-1, and
-x_j \in [-1,1] the chebyshev points of first kind in [-1,1].
+   s.t. chebMatrix[i,j]=T_i(x_j), for  i=0..n-1, j=0..n-1, and
+   x_j \in [-1,1] the chebyshev points of first kind in [-1,1].
 */
 void getChebMatrix(sollya_mpfi_t**chebMatrix, int n, mp_prec_t prec);
 
 /* Returns a matrix chebCoeffsMatrix of dimension nxn,
-s.t. chebCoeffsMatrix[i,j]=coeff(T_i(x), j), for  i=0..n-1, j=0..n-1
+   s.t. chebCoeffsMatrix[i,j]=coeff(T_i(x), j), for  i=0..n-1, j=0..n-1
 */
 void getChebPolyCoeffs(mpz_t* chebCoeffsMatrix, int n, mp_prec_t prec);
 
 /*Returns in chebCoeffs the coeffs of the finite Chebyshev basis expansion
- of the polynomial p of degree n-1, over [-1,1];
- The coefficients in monomial basis of p are in *p
- */
+  of the polynomial p of degree n-1, over [-1,1];
+  The coefficients in monomial basis of p are in *p
+*/
 void getPolyCoeffsChebBasis(sollya_mpfi_t *chebCoeffs, sollya_mpfi_t *p, int n);
 
 /*Returns in c the coeffs in the monomial basis for the polynomial p(a*x+b), where:
- -- a and b are mpfi_s
- -- polynomial p  of degree n-1 given by the monomial coefficients stored as mpfi_s in *p*/
+  -- a and b are mpfi_s
+  -- polynomial p  of degree n-1 given by the monomial coefficients stored as mpfi_s in *p*/
 void getTranslatedPolyCoeffs(sollya_mpfi_t *c, sollya_mpfi_t *p, int n, sollya_mpfi_t a, sollya_mpfi_t b);
 
 /***************************************************************/
@@ -117,7 +117,7 @@ void getFunctionValues(sollya_mpfi_t* fValues, sollya_mpfi_t * chebPoints,node* 
 void getChebCoeffs(sollya_mpfi_t* coeffs, sollya_mpfi_t *chebMatrix, sollya_mpfi_t *fValues,int n);
 
 /*Wrapper that returns the coeffs
-of the interpolation polynomial of f at chebpoints
+  of the interpolation polynomial of f at chebpoints
 */
 void getChebCoeffsFromFunction(sollya_mpfi_t* coeffs, sollya_mpfi_t * chebPoints, sollya_mpfi_t * chebMatrix,node *f,int n);
 
@@ -135,8 +135,8 @@ void getCoeffsFromChebPolynomial(sollya_mpfi_t**coeffs, sollya_mpfi_t *chebCoeff
 void getCoeffsFromChebPolynomial(sollya_mpfi_t**coeffs, sollya_mpfi_t *chebCoeffs, int n, sollya_mpfi_t x);
 
 /*wrapper to get directly the coeffs in the chebyshev basis up to degree n-1 (first n coeffs)
- and a bound for the remaining polynomial,from a polynomial in the monomial basis(given by a pointer to node),
- over a given interval x*/
+  and a bound for the remaining polynomial,from a polynomial in the monomial basis(given by a pointer to node),
+  over a given interval x*/
 void getNChebCoeffsFromPolynomial(sollya_mpfi_t *coeffs, sollya_mpfi_t bound, node *f, sollya_mpfi_t x, int n, int boundLevel);
 
 /******************************************************************************/
@@ -147,14 +147,14 @@ void getNChebCoeffsFromPolynomial(sollya_mpfi_t *coeffs, sollya_mpfi_t bound, no
 void getChebCoeffsDerivativePolynomial(sollya_mpfi_t*coeffs, sollya_mpfi_t *chebCoeffs, int n, sollya_mpfi_t x);
 
 /*Computes the antiderivative of a polynomial in Chebyshev basis.
-NOTE: the constant coefficient is set to zero, but it should be viewed as a constant*/
+  NOTE: the constant coefficient is set to zero, but it should be viewed as a constant*/
 void getChebCoeffsIntegrationPolynomial(sollya_mpfi_t*coeffs, sollya_mpfi_t *chebCoeffs, int n, sollya_mpfi_t x);
 
 
 void getChebCoeffsDerivativePolynomial(sollya_mpfi_t*coeffs, sollya_mpfi_t *chebCoeffs, int n, sollya_mpfi_t x);
 
 /*Computes the antiderivative of a polynomial in Chebyshev basis.
-NOTE: the constant coefficient is set to zero, but it should be viewed as a constant*/
+  NOTE: the constant coefficient is set to zero, but it should be viewed as a constant*/
 void getChebCoeffsIntegrationPolynomial(sollya_mpfi_t*coeffs, sollya_mpfi_t *chebCoeffs, int n, sollya_mpfi_t x);
 
 

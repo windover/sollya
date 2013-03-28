@@ -15,7 +15,7 @@
   Contributors S. Chevillard, M. Joldes, Ch. Lauter
 
   sylvain.chevillard@ens-lyon.fr
-  mioara.joldes@ens-lyon.fr
+  joldes@lass.fr
   christoph.lauter@ens-lyon.org
 
   This software is a computer program whose purpose is to provide an

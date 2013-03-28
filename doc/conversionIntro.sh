@@ -9,7 +9,7 @@ printf "<html>\n" >> $target
 printf "<head>\n" >> $target
 printf "<title>Sollya User's Manual</title>\n" >> $target
 printf "<meta name=\"author\" content=\"Sylvain Chevillard, Christoph Lauter\">\n" >> $target
-printf "<meta name=\"copyright\" content=\"2009 Laboratoire de l'Informatique du Parallélisme - UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668\">\n" >> $target
+printf "<meta name=\"copyright\" content=\"2009-2013 Laboratoire de l'Informatique du Parallélisme - UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668; LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France; Laboratoire d'Informatique de Paris 6, Équipe PEQUAN, UPMC Université Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France; INRIA Sophia-Antipolis Méditerranée, APICS Team, Sophia-Antipolis, France\">\n" >> $target
 printf "<meta name=\"keywords\" content=\"help, sollya, User's Manual\">\n" >> $target
 printf "<meta name=\"description\" content=\"This is part of Sollya User's Manual\">\n" >> $target
 printf "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">\n" >> $target
